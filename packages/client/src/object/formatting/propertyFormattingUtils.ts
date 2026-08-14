@@ -15,6 +15,7 @@
  */
 
 import type { PropertyTypeReferenceOrStringConstant } from "@osdk/api";
+
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 
 /**

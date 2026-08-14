@@ -16,6 +16,7 @@
 
 import type { ActionMetadata } from "@osdk/api";
 import * as ActionTypesV2 from "@osdk/foundry.ontologies/ActionTypeV2";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadActionMetadata(
@@ -29,8 +30,7 @@ export async function loadActionMetadata(
     { branch: client.branch },
   );
 
-  const { wireActionTypeV2ToSdkActionMetadata } = await import(
-    "@osdk/generator-converters"
-  );
+  const { wireActionTypeV2ToSdkActionMetadata } =
+    await import("@osdk/generator-converters");
   return wireActionTypeV2ToSdkActionMetadata(r);
 }

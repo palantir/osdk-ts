@@ -16,21 +16,13 @@
 
 import type { DataValue } from "@osdk/foundry.ontologies";
 
-export function toPropertyDataValue(
-  value: unknown,
-): DataValue {
+export function toPropertyDataValue(value: unknown): DataValue {
   if (value == null) {
     return null; // This differs from how actions handles null, which expects a specific enum value.
   }
 
   if (Array.isArray(value)) {
     return value.map((item) => toPropertyDataValue(item));
-  }
-
-  if (isPoint(value)) {
-    return toPropertyDataValue(
-      `${value.coordinates[1]},${value.coordinates[0]}`,
-    );
   }
 
   if (typeof value === "object") {
@@ -45,9 +37,4 @@ export function toPropertyDataValue(
 
   // expected to pass through - boolean, byte, date, decimal, float, double, integer, long, short, string, timestamp, object type reference
   return value;
-}
-
-function isPoint(o: any): o is GeoJSON.Point {
-  return o && typeof o === "object" && "type" in o && o.type === "Point"
-    && "coordinates" in o && o.coordinates.length === 2;
 }

@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import * as crypto from "node:crypto";
+
 import type { Logger } from "@osdk/api";
 import type { Ontology, OntologyV2 } from "@osdk/foundry.ontologies";
 import type { RequestHandler } from "msw";
-import * as crypto from "node:crypto";
+
 import { OntologyNotFoundError } from "../errors.js";
 import { createFauxFoundryHandlers } from "../handlers/createFauxFoundryHandlers.js";
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
@@ -95,8 +97,9 @@ export class FauxFoundry {
   }
 
   getOntology(ontologyApiNameOrRid: string): FauxOntology {
-    const ontology = this.#ontologiesByApiName.get(ontologyApiNameOrRid)
-      ?? this.#ontologiesByRid.get(ontologyApiNameOrRid);
+    const ontology =
+      this.#ontologiesByApiName.get(ontologyApiNameOrRid) ??
+      this.#ontologiesByRid.get(ontologyApiNameOrRid);
     if (!ontology) {
       throw new OpenApiCallError(
         404,
@@ -111,10 +114,7 @@ export class FauxFoundry {
     fauxDataStore: FauxDataStore,
   ): void {
     const ontology = this.getOntology(ontologyApiNameOrRid); // will throw
-    this.#dataStoresByOntologyApiName.set(
-      ontology.apiName,
-      fauxDataStore,
-    );
+    this.#dataStoresByOntologyApiName.set(ontology.apiName, fauxDataStore);
   }
 
   getDataStore(ontologyApiNameOrRid: string): FauxDataStore {

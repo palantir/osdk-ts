@@ -65,8 +65,7 @@ export interface CreateValueTypeFailure_serviceNamespaceDisallowed {
 
 export interface CreateValueTypeFailure_namespaceAttachedToDefaultOntologyDisallowed {
   type: "namespaceAttachedToDefaultOntologyDisallowed";
-  namespaceAttachedToDefaultOntologyDisallowed:
-    NamespaceAttachedToDefaultOntologyDisallowedFailure;
+  namespaceAttachedToDefaultOntologyDisallowed: NamespaceAttachedToDefaultOntologyDisallowedFailure;
 }
 export type CreateValueTypeFailure =
   | CreateValueTypeFailure_createValueTypePermissionDenied

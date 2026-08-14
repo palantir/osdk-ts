@@ -254,6 +254,8 @@ const referencedOntology = {
         "primaryKey": "taskId",
         displayName: "Task",
         pluralDisplayName: "Tasks",
+        aliases: [],
+        datasources: [],
         icon: { type: "blueprint", color: "blue", name: "document" },
 
         titleProperty: "taskId",
@@ -409,6 +411,8 @@ const referencingOntology: WireOntologyDefinition = {
         apiName: "Thing",
         displayName: "Thing",
         pluralDisplayName: "Things",
+        aliases: [],
+        datasources: [],
         icon: { type: "blueprint", color: "blue", name: "document" },
         primaryKey: "id",
         properties: {
@@ -441,6 +445,8 @@ const referencingOntology: WireOntologyDefinition = {
         apiName: "UsesForeignSpt",
         primaryKey: "id",
         displayName: "Uses Foreign Spt",
+        aliases: [],
+        datasources: [],
         icon: { type: "blueprint", color: "blue", name: "document" },
         pluralDisplayName: "Uses Foreign Spts",
         properties: {
@@ -483,6 +489,7 @@ const referencingOntology: WireOntologyDefinition = {
             objectApiName: "com.example.dep.Task",
             objectTypeApiName: "com.example.dep.Task",
           },
+          required: true,
         },
       },
       rid: "ri.a.b.c",
@@ -562,6 +569,11 @@ describe("generator", () => {
         export const $osdkMetadata = { extraUserAgent: 'typescript-sdk/0.0.0 osdk-cli/0.0.0' };
 
         export const $ontologyRid = 'ridHere';
+        /**
+         * The RID of the Foundry branch this SDK was generated against, or
+         * \`undefined\` if it was generated against the main branch.
+         */
+        export const $branch: string | undefined = undefined;
         ",
           "/foo/index.ts": "export { deleteTodos, markTodoCompleted } from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
@@ -572,7 +584,7 @@ describe("generator", () => {
         export { getCount, returnsTodo } from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
         export { $osdkMetadata } from './OntologyMetadata.js';
-        export { $ontologyRid } from './OntologyMetadata.js';
+        export { $branch, $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
         export { markTodoCompleted } from './actions/markTodoCompleted.js';
@@ -593,6 +605,7 @@ describe("generator", () => {
           export type ParamsDefinition = {
             object: {
               description: 'Todo(s) to be deleted';
+              displayName: 'deleteTodos';
               multiplicity: true;
               nullable: true;
               type: ActionMetadata.DataType.Object<Todo>;
@@ -677,6 +690,7 @@ describe("generator", () => {
           export type ParamsDefinition = {
             object: {
               description: 'A Todo to mark completed';
+              displayName: 'markTodoCompleted';
               multiplicity: false;
               nullable: true;
               type: ActionMetadata.DataType.Object<Todo>;
@@ -1253,6 +1267,11 @@ describe("generator", () => {
         export const $osdkMetadata = { extraUserAgent: '' };
 
         export const $ontologyRid = 'ridHere';
+        /**
+         * The RID of the Foundry branch this SDK was generated against, or
+         * \`undefined\` if it was generated against the main branch.
+         */
+        export const $branch: string | undefined = undefined;
         ",
           "/foo/index.ts": "export { deleteTodos, markTodoCompleted } from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
@@ -1263,7 +1282,7 @@ describe("generator", () => {
         export { getCount, returnsTodo } from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
         export { $osdkMetadata } from './OntologyMetadata.js';
-        export { $ontologyRid } from './OntologyMetadata.js';
+        export { $branch, $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
         export { markTodoCompleted } from './actions/markTodoCompleted.js';
@@ -1284,6 +1303,7 @@ describe("generator", () => {
           export type ParamsDefinition = {
             object: {
               description: 'Todo(s) to be deleted';
+              displayName: 'deleteTodos';
               multiplicity: true;
               nullable: true;
               type: ActionMetadata.DataType.Object<Todo>;
@@ -1368,6 +1388,7 @@ describe("generator", () => {
           export type ParamsDefinition = {
             object: {
               description: 'A Todo to mark completed';
+              displayName: 'markTodoCompleted';
               multiplicity: false;
               nullable: true;
               type: ActionMetadata.DataType.Object<Todo>;
@@ -1965,6 +1986,57 @@ describe("generator", () => {
     });
   });
 
+  describe("exportOntologyMetadata", () => {
+    async function generate(exportOntologyMetadata: boolean) {
+      await generateClientSdkVersionTwoPointZero(
+        TodoWireOntology,
+        "",
+        helper.minimalFiles,
+        BASE_PATH,
+        "module",
+        new Map(),
+        new Map(),
+        new Map(),
+        false,
+        [],
+        exportOntologyMetadata,
+      );
+      return helper.getFiles();
+    }
+
+    it("does not write the metadata json when disabled", async () => {
+      const files = await generate(false);
+
+      expect(files[`${BASE_PATH}/UNSTABLE_DO_NOT_USE/ontology-metadata.json`])
+        .toBeUndefined();
+    });
+
+    it("writes the raw metadata as pretty printed json when enabled", async () => {
+      const files = await generate(true);
+      const json =
+        files[`${BASE_PATH}/UNSTABLE_DO_NOT_USE/ontology-metadata.json`];
+
+      expect(JSON.parse(json)).toEqual(TodoWireOntology);
+      expect(json).toContain("\n    \"ontology\": {");
+    });
+
+    it("declares the shim as a default export for esm and export = for cjs", async () => {
+      const files = await generate(true);
+
+      expect(files[`${BASE_PATH}/UNSTABLE_DO_NOT_USE/ontology-metadata.d.mts`])
+        .toContain("export default ontologyFullMetadata;");
+
+      // .d.ts is the fallback for resolvers that ignore the mts/cts split, so
+      // it has to keep the `export =` form.
+      for (const ext of ["d.cts", "d.ts"]) {
+        expect(
+          files[`${BASE_PATH}/UNSTABLE_DO_NOT_USE/ontology-metadata.${ext}`],
+        )
+          .toContain("export = ontologyFullMetadata;");
+      }
+    });
+  });
+
   describe("query depends on foreign object", () => {
     it("generates the correct code", async () => {
       await expect(
@@ -2205,12 +2277,14 @@ describe("generator", () => {
             export type ParamsDefinition = {
               body: {
                 description: undefined;
+                displayName: 'body';
                 multiplicity: false;
                 nullable: false;
                 type: 'string';
               };
               task: {
                 description: undefined;
+                displayName: 'taskBody';
                 multiplicity: false;
                 nullable: false;
                 type: ActionMetadata.DataType.Object<$Imported$com$example$dep$Task>;
@@ -2314,6 +2388,11 @@ describe("generator", () => {
         export const $osdkMetadata = { extraUserAgent: 'typescript-sdk/0.0.0 osdk-cli/0.0.0' };
 
         export const $ontologyRid = 'ridHere';
+        /**
+         * The RID of the Foundry branch this SDK was generated against, or
+         * \`undefined\` if it was generated against the main branch.
+         */
+        export const $branch: string | undefined = undefined;
         ",
           "/foo/index.ts": "export {} from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
@@ -2324,7 +2403,7 @@ describe("generator", () => {
         export { getCount, returnsTodo } from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
         export { $osdkMetadata } from './OntologyMetadata.js';
-        export { $ontologyRid } from './OntologyMetadata.js';
+        export { $branch, $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export {};
         ",
@@ -2714,8 +2793,11 @@ describe("generator", () => {
         export const $osdkMetadata = { extraUserAgent: '' };
 
         export const $ontologyRid = 'ri.ontology.main.ontology.dep';
-
-        export const $branch = 'someRidHere';
+        /**
+         * The RID of the Foundry branch this SDK was generated against, or
+         * \`undefined\` if it was generated against the main branch.
+         */
+        export const $branch: string | undefined = 'someRidHere';
         ",
           "/foo/index.ts": "export {} from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
@@ -2726,7 +2808,7 @@ describe("generator", () => {
         export {} from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
         export { $osdkMetadata } from './OntologyMetadata.js';
-        export { $ontologyRid } from './OntologyMetadata.js';
+        export { $branch, $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export {};
         ",

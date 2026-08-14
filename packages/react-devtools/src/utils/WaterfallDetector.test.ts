@@ -15,21 +15,20 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
+
 import type { ComponentQueryRegistry } from "./ComponentQueryRegistry.js";
 import type { EventTimeline } from "./EventTimeline.js";
 import { WaterfallDetector } from "./WaterfallDetector.js";
 
 function createMockRegistry(
-  components: Map<
+  components = new Map<
     string,
-    Array<
-      {
-        hookType: string;
-        queryParams: Record<string, unknown>;
-        querySignature: string;
-      }
-    >
-  > = new Map(),
+    Array<{
+      hookType: string;
+      queryParams: Record<string, unknown>;
+      querySignature: string;
+    }>
+  >(),
 ): ComponentQueryRegistry {
   return {
     getActiveComponents: vi.fn().mockReturnValue(components),
@@ -49,10 +48,10 @@ function createMockTimeline(
   return {
     getEventsByType: vi.fn().mockImplementation((type: string) => {
       if (type === "EMISSION") {
-        return emissions.map(e => ({ type: "EMISSION", ...e }));
+        return emissions.map((e) => ({ type: "EMISSION", ...e }));
       }
       if (type === "LINK_TRAVERSAL") {
-        return linkTraversals.map(e => ({ type: "LINK_TRAVERSAL", ...e }));
+        return linkTraversals.map((e) => ({ type: "LINK_TRAVERSAL", ...e }));
       }
       return [];
     }),
@@ -78,16 +77,14 @@ describe("WaterfallDetector", () => {
         { timestamp: 100, subscriptionId: "parent-query" },
         { timestamp: 130, subscriptionId: "child-query" },
       ],
-      [
-        { timestamp: 115, linkName: "assignee" },
-      ],
+      [{ timestamp: 115, linkName: "assignee" }],
     );
 
     const detector = new WaterfallDetector(createMockRegistry(), timeline);
     const waterfalls = detector.detectWaterfalls();
 
     expect(waterfalls.length).toBeGreaterThanOrEqual(1);
-    const linkWf = waterfalls.find(w => w.type === "LINK_WATERFALL");
+    const linkWf = waterfalls.find((w) => w.type === "LINK_WATERFALL");
     if (linkWf == null) throw new Error("expected linkWf to be defined");
     expect(linkWf.details.parentQuery).toBe("parent-query");
     expect(linkWf.details.childQuery).toBe("child-query");
@@ -111,7 +108,7 @@ describe("WaterfallDetector", () => {
     );
 
     const waterfalls = detector.detectWaterfalls();
-    const mapWf = waterfalls.find(w => w.type === "MAP_WATERFALL");
+    const mapWf = waterfalls.find((w) => w.type === "MAP_WATERFALL");
     if (mapWf == null) throw new Error("expected mapWf to be defined");
     expect(mapWf.details.count).toBe(5);
     expect(mapWf.details.objectType).toBe("Todo");
@@ -133,7 +130,7 @@ describe("WaterfallDetector", () => {
     );
 
     const waterfalls = detector.detectWaterfalls();
-    const mapWf = waterfalls.find(w => w.type === "MAP_WATERFALL");
+    const mapWf = waterfalls.find((w) => w.type === "MAP_WATERFALL");
     expect(mapWf).toBeUndefined();
   });
 });

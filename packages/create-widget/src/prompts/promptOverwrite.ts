@@ -16,6 +16,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+
 import { consola } from "../consola.js";
 import { green } from "../highlight.js";
 
@@ -34,12 +35,10 @@ export async function promptOverwrite({
     return true;
   }
 
-  const result = await consola.prompt(
-    `The directory ${
-      green(
-        project,
-      )
-    } already exists do you want to overwrite or ignore it?`,
+  const result = (await consola.prompt(
+    `The directory ${green(
+      project,
+    )} already exists do you want to overwrite or ignore it?`,
     {
       type: "select",
       options: [
@@ -48,7 +47,7 @@ export async function promptOverwrite({
         { label: "Cancel", value: "cancel" },
       ],
     },
-  ) as "overwrite" | "ignore" | "cancel";
+  )) as "overwrite" | "ignore" | "cancel";
 
   switch (result) {
     case "overwrite":

@@ -1,4 +1,5 @@
 import { recursiveStruct } from "@osdk/e2e.generated.catchall";
+
 import { client } from "./client.js";
 
 async function runRecursiveQueriesTest(): Promise<void> {

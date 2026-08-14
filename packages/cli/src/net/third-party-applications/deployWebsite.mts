@@ -33,15 +33,12 @@ export async function deployWebsite(
   urlObj.searchParams.set("preview", "true");
   const url = urlObj.toString();
 
-  const result = await fetch(
-    url,
-    {
-      method: "POST",
-      body: JSON.stringify(request),
-      headers: {
-        "Content-Type": "application/json",
-      },
+  const result = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(request),
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+  });
   return result.json();
 }

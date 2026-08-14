@@ -45,21 +45,22 @@ export async function run({ outputDirectory, check }: RunArgs): Promise<void> {
 
   await generateCreateAppExamplesWithOsdk(tmpDir);
   await generateCreateAppExamplesWithoutOsdk(tmpDir);
-  await generateCreateWidgetExamples(tmpDir);
+  await generateCreateWidgetExamplesWithOsdk(tmpDir);
+  await generateCreateWidgetExamplesWithoutOsdk(tmpDir);
 
   await fixMonorepolint(tmpDir);
 
   const templatesWithSdkVersionWithOsdk = templatesWithSdkVersions(
     [
       ...TEMPLATES,
-      ...WIDGET_TEMPLATES,
+      ...WIDGET_TEMPLATES.filter(t => t.supportsOsdk),
     ],
     true,
   );
-  const templatesWithSdkVersionWithoutOsdk = templatesWithSdkVersions(
-    TEMPLATES,
-    false,
-  );
+  const templatesWithSdkVersionWithoutOsdk = [
+    ...templatesWithSdkVersions(TEMPLATES, false),
+    ...templatesWithSdkVersions(WIDGET_TEMPLATES, false),
+  ];
 
   if (check) {
     checkExamples(
@@ -191,34 +192,70 @@ async function generateCreateAppExamplesWithoutOsdk(
   }
 }
 
-async function generateCreateWidgetExamples(
+async function generateCreateWidgetExample(
+  tmpDir: tmp.DirResult,
+  template: WidgetTemplate,
+  sdkVersion: SdkVersion,
+  osdkPackage?: string,
+): Promise<void> {
+  process.chdir(tmpDir.name);
+  const isUsingOsdk = osdkPackage != null;
+  const exampleId = sdkVersionedTemplateExampleId(
+    template,
+    sdkVersion,
+    isUsingOsdk,
+  );
+  consola.info(
+    `Generating example ${exampleId} ${
+      isUsingOsdk ? `using osdkPackage ${osdkPackage}` : "without OSDK"
+    }`,
+  );
+  await runCreateWidget({
+    project: exampleId,
+    overwrite: true,
+    template,
+    sdkVersion,
+    foundryUrl: "https://fake.palantirfoundry.com",
+    widgetSet: "ri.widgetregistry..widget-set.fake",
+    repository: undefined,
+    osdkPackage,
+    osdkRegistryUrl: isUsingOsdk
+      ? "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm"
+      : undefined,
+  });
+  await mutateFiles(tmpDir, exampleId, template, sdkVersion, isUsingOsdk);
+}
+
+async function generateCreateWidgetExamplesWithOsdk(
+  tmpDir: tmp.DirResult,
+): Promise<void> {
+  for (
+    const [template, sdkVersion] of templatesWithSdkVersions(
+      WIDGET_TEMPLATES.filter(t => t.supportsOsdk),
+    )
+  ) {
+    const osdkPackage = sdkVersion === "2.x"
+      ? "@osdk/e2e.generated.catchall"
+      : "@osdk/e2e.generated.1.1.x";
+    await generateCreateWidgetExample(
+      tmpDir,
+      template,
+      sdkVersion,
+      osdkPackage,
+    );
+  }
+}
+
+async function generateCreateWidgetExamplesWithoutOsdk(
   tmpDir: tmp.DirResult,
 ): Promise<void> {
   for (
     const [template, sdkVersion] of templatesWithSdkVersions(
       WIDGET_TEMPLATES,
+      false,
     )
   ) {
-    const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion, true);
-    const osdkPackage = sdkVersion === "2.x"
-      ? "@osdk/e2e.generated.catchall"
-      : "@osdk/e2e.generated.1.1.x";
-    consola.info(
-      `Generating example ${exampleId} using osdkPackage ${osdkPackage}`,
-    );
-    await runCreateWidget({
-      project: exampleId,
-      overwrite: true,
-      template,
-      sdkVersion,
-      foundryUrl: "https://fake.palantirfoundry.com",
-      widgetSet: "ri.widgetregistry..widget-set.fake",
-      repository: undefined,
-      osdkPackage,
-      osdkRegistryUrl:
-        "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
-    });
-    await mutateFiles(tmpDir, exampleId, template, sdkVersion);
+    await generateCreateWidgetExample(tmpDir, template, sdkVersion);
   }
 }
 
@@ -269,7 +306,7 @@ async function fixMonorepolint(tmpDir: tmp.DirResult): Promise<void> {
   process.chdir(path.dirname(mrlConfig));
   const mrlPathsWithOsdk = [
     ...templatesWithSdkVersions(TEMPLATES, true),
-    ...templatesWithSdkVersions(WIDGET_TEMPLATES),
+    ...templatesWithSdkVersions(WIDGET_TEMPLATES.filter(t => t.supportsOsdk)),
   ].map((
     [template, sdkVersion],
   ) =>
@@ -279,7 +316,10 @@ async function fixMonorepolint(tmpDir: tmp.DirResult): Promise<void> {
       "package.json",
     )
   );
-  const mrlPathsWithoutOsdk = templatesWithSdkVersions(TEMPLATES, false)
+  const mrlPathsWithoutOsdk = [
+    ...templatesWithSdkVersions(TEMPLATES, false),
+    ...templatesWithSdkVersions(WIDGET_TEMPLATES, false),
+  ]
     .map((
       [template, sdkVersion],
     ) =>
@@ -543,9 +583,12 @@ This project was generated with [\`@osdk/create-app\`](https://www.npmjs.com/pac
 To quickly create your own version of this template run the following command and answer the prompts based on your Developer Console application:
 
 \`\`\`
-npm create @osdk/app@latest -- --template ${
-    templateCanonicalId(template)
-  } --sdkVersion ${sdkVersion}${!isUsingOsdk ? " --skipOsdk" : ""}
+npm create @osdk/app@latest -- --template ${templateCanonicalId(template)}${
+    // Only surface --sdkVersion when the template offers more than one version;
+    // for single-version templates create-app defaults to the only version.
+    Object.keys(template.files).length > 1
+      ? ` --sdkVersion ${sdkVersion}`
+      : ""}${!isUsingOsdk ? " --skipOsdk" : ""}
 \`\`\`
 
 Alternatively check out the Developer Console docs for a full guide on creating and deploying frontend applications with the Ontology SDK.

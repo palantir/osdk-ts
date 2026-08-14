@@ -17,6 +17,7 @@
 import type { ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
 import { useTableSorting } from "../useTableSorting.js";
 
 const TestObjectType = {
@@ -46,7 +47,7 @@ describe("useTableSorting", () => {
       const { result } = renderHook(() =>
         useTableSorting<TestObject>({
           defaultOrderBy,
-        })
+        }),
       );
 
       expect(result.current.sorting).toEqual([
@@ -61,14 +62,10 @@ describe("useTableSorting", () => {
       expect(result.current.sorting).toEqual([]);
 
       act(() => {
-        result.current.onSortingChange([
-          { id: "name", desc: false },
-        ]);
+        result.current.onSortingChange([{ id: "name", desc: false }]);
       });
 
-      expect(result.current.sorting).toEqual([
-        { id: "name", desc: false },
-      ]);
+      expect(result.current.sorting).toEqual([{ id: "name", desc: false }]);
     });
 
     it("calls onOrderByChanged with converted format when sorting changes", () => {
@@ -76,7 +73,7 @@ describe("useTableSorting", () => {
       const { result } = renderHook(() =>
         useTableSorting<TestObject>({
           onOrderByChanged,
-        })
+        }),
       );
 
       act(() => {
@@ -100,12 +97,10 @@ describe("useTableSorting", () => {
             { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
           ],
           onOrderByChanged,
-        })
+        }),
       );
 
-      expect(result.current.sorting).toEqual([
-        { id: "name", desc: false },
-      ]);
+      expect(result.current.sorting).toEqual([{ id: "name", desc: false }]);
 
       act(() => {
         result.current.onSortingChange([]);
@@ -121,35 +116,29 @@ describe("useTableSorting", () => {
       const orderBy: Array<{
         property: PropertyKeys<TestObject>;
         direction: "asc" | "desc";
-      }> = [
-        { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
-      ];
+      }> = [{ property: "name" as PropertyKeys<TestObject>, direction: "asc" }];
 
       const { result } = renderHook(() =>
         useTableSorting<TestObject>({
           orderBy,
-        })
+        }),
       );
 
-      expect(result.current.sorting).toEqual([
-        { id: "name", desc: false },
-      ]);
+      expect(result.current.sorting).toEqual([{ id: "name", desc: false }]);
     });
 
     it("enables sorting when orderBy is provided with onOrderByChanged", () => {
       const orderBy: Array<{
         property: PropertyKeys<TestObject>;
         direction: "asc" | "desc";
-      }> = [
-        { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
-      ];
+      }> = [{ property: "name" as PropertyKeys<TestObject>, direction: "asc" }];
       const onOrderByChanged = vi.fn();
 
       const { result } = renderHook(() =>
         useTableSorting<TestObject>({
           orderBy,
           onOrderByChanged,
-        })
+        }),
       );
     });
 
@@ -157,27 +146,21 @@ describe("useTableSorting", () => {
       const orderBy: Array<{
         property: PropertyKeys<TestObject>;
         direction: "asc" | "desc";
-      }> = [
-        { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
-      ];
+      }> = [{ property: "name" as PropertyKeys<TestObject>, direction: "asc" }];
 
       const defaultOrderBy: Array<{
         property: PropertyKeys<TestObject>;
         direction: "asc" | "desc";
-      }> = [
-        { property: "age" as PropertyKeys<TestObject>, direction: "asc" },
-      ];
+      }> = [{ property: "age" as PropertyKeys<TestObject>, direction: "asc" }];
 
       const { result } = renderHook(() =>
         useTableSorting<TestObject>({
           orderBy,
           defaultOrderBy,
-        })
+        }),
       );
 
-      expect(result.current.sorting).toEqual([
-        { id: "name", desc: false },
-      ]);
+      expect(result.current.sorting).toEqual([{ id: "name", desc: false }]);
     });
 
     it("calls onOrderByChanged when sorting changes but does not update internal state", () => {
@@ -185,9 +168,7 @@ describe("useTableSorting", () => {
       const orderBy: Array<{
         property: PropertyKeys<TestObject>;
         direction: "asc" | "desc";
-      }> = [
-        { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
-      ];
+      }> = [{ property: "name" as PropertyKeys<TestObject>, direction: "asc" }];
 
       const { result, rerender } = renderHook(
         ({ orderBy }) =>
@@ -200,15 +181,11 @@ describe("useTableSorting", () => {
         },
       );
 
-      expect(result.current.sorting).toEqual([
-        { id: "name", desc: false },
-      ]);
+      expect(result.current.sorting).toEqual([{ id: "name", desc: false }]);
 
       // Change sorting
       act(() => {
-        result.current.onSortingChange([
-          { id: "age", desc: true },
-        ]);
+        result.current.onSortingChange([{ id: "age", desc: true }]);
       });
 
       // Callback is called
@@ -217,23 +194,17 @@ describe("useTableSorting", () => {
       ]);
 
       // State doesn't change (controlled)
-      expect(result.current.sorting).toEqual([
-        { id: "name", desc: false },
-      ]);
+      expect(result.current.sorting).toEqual([{ id: "name", desc: false }]);
 
       // Parent updates prop
       const newOrderBy: Array<{
         property: PropertyKeys<TestObject>;
         direction: "asc" | "desc";
-      }> = [
-        { property: "age" as PropertyKeys<TestObject>, direction: "desc" },
-      ];
+      }> = [{ property: "age" as PropertyKeys<TestObject>, direction: "desc" }];
       rerender({ orderBy: newOrderBy });
 
       // Now state reflects the prop
-      expect(result.current.sorting).toEqual([
-        { id: "age", desc: true },
-      ]);
+      expect(result.current.sorting).toEqual([{ id: "age", desc: true }]);
     });
   });
 
@@ -243,7 +214,7 @@ describe("useTableSorting", () => {
       const { result } = renderHook(() =>
         useTableSorting<TestObject>({
           onOrderByChanged,
-        })
+        }),
       );
 
       act(() => {
@@ -280,7 +251,7 @@ describe("useTableSorting", () => {
       const { result } = renderHook(() =>
         useTableSorting<TestObject>({
           defaultOrderBy,
-        })
+        }),
       );
 
       expect(result.current.sorting).toEqual([
@@ -298,7 +269,7 @@ describe("useTableSorting", () => {
             { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
           ],
           onOrderByChanged,
-        })
+        }),
       );
 
       // Add a second sort column
@@ -330,7 +301,7 @@ describe("useTableSorting", () => {
             { property: "email" as PropertyKeys<TestObject>, direction: "asc" },
           ],
           onOrderByChanged,
-        })
+        }),
       );
 
       // Remove the middle sort column
@@ -361,7 +332,7 @@ describe("useTableSorting", () => {
             { property: "age" as PropertyKeys<TestObject>, direction: "asc" },
           ],
           onOrderByChanged,
-        })
+        }),
       );
 
       // Change direction of second column
@@ -392,7 +363,7 @@ describe("useTableSorting", () => {
             { property: "age" as PropertyKeys<TestObject>, direction: "desc" },
           ],
           onOrderByChanged,
-        })
+        }),
       );
 
       // Reorder: age becomes primary, name becomes secondary
@@ -419,9 +390,7 @@ describe("useTableSorting", () => {
       const initialOrderBy: Array<{
         property: PropertyKeys<TestObject>;
         direction: "asc" | "desc";
-      }> = [
-        { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
-      ];
+      }> = [{ property: "name" as PropertyKeys<TestObject>, direction: "asc" }];
 
       const { result, rerender } = renderHook(
         ({ orderBy }) =>
@@ -434,9 +403,7 @@ describe("useTableSorting", () => {
         },
       );
 
-      expect(result.current.sorting).toEqual([
-        { id: "name", desc: false },
-      ]);
+      expect(result.current.sorting).toEqual([{ id: "name", desc: false }]);
 
       // Parent adds more sort columns
       const newOrderBy: Array<{

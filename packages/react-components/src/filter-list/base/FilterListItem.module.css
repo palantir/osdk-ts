@@ -25,6 +25,8 @@
 .itemHeader {
   display: flex;
   align-items: center;
+  padding: 0 var(--osdk-surface-spacing);
+  gap: var(--osdk-filter-item-gap);
 }
 
 .itemLabel {
@@ -40,6 +42,7 @@
   flex-direction: column;
   min-width: 0;
   overflow: hidden;
+  padding: var(--osdk-surface-spacing);
 }
 
 .dragHandle {
@@ -65,7 +68,8 @@
   }
 
   &:focus-visible {
-    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-item-drag-handle-focus-outline-color);
+    outline: var(--osdk-filter-input-focus-outline-width) solid
+      var(--osdk-filter-item-drag-handle-focus-outline-color);
     outline-offset: var(--osdk-filter-input-focus-outline-offset);
   }
 }
@@ -82,7 +86,8 @@
   border-radius: var(--osdk-filter-item-header-action-border-radius);
   color: var(--osdk-filter-item-header-action-color);
   opacity: 0;
-  transition: opacity var(--osdk-filter-header-button-transition),
+  transition:
+    opacity var(--osdk-filter-header-button-transition),
     background-color var(--osdk-filter-header-button-transition);
 
   &:hover {
@@ -90,9 +95,15 @@
     background: var(--osdk-filter-item-header-action-bg-hover);
   }
 
+  &:active {
+    color: var(--osdk-filter-item-header-action-color-active);
+    background: var(--osdk-filter-item-header-action-bg-active);
+  }
+
   &:focus-visible {
     opacity: 1;
-    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
+    outline: var(--osdk-filter-input-focus-outline-width) solid
+      var(--osdk-filter-input-focus-outline-color);
     outline-offset: var(--osdk-filter-input-focus-outline-offset);
   }
 
@@ -108,26 +119,27 @@
 .headerActionButton[data-popup-open],
 .headerActionButton[aria-pressed="true"] {
   opacity: 1;
+  color: var(--osdk-filter-item-header-action-color-active);
+  background: var(--osdk-filter-item-header-action-bg-active);
 }
 
 .searchRow {
   display: flex;
   align-items: center;
-  background: var(--osdk-filter-input-bg);
-  border: var(--osdk-filter-input-border);
-  border-radius: var(--osdk-filter-input-border-radius);
-  padding: var(--osdk-filter-input-padding);
+  padding: var(--osdk-surface-spacing);
   gap: var(--osdk-filter-input-gap);
 }
 
 .searchInput {
   flex: 1;
-  border: none;
-  background: transparent;
+  border: var(--osdk-filter-input-border);
+  border-radius: var(--osdk-filter-input-border-radius);
+  background: var(--osdk-filter-input-bg);
   font-family: var(--osdk-filter-input-font-family);
   font-size: var(--osdk-filter-input-font-size);
   color: var(--osdk-filter-input-color);
   outline: none;
+  padding: var(--osdk-filter-input-padding);
 
   &::placeholder {
     color: var(--osdk-filter-input-placeholder-color);
@@ -155,7 +167,8 @@
   }
 
   &:focus-visible {
-    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
+    outline: var(--osdk-filter-input-focus-outline-width) solid
+      var(--osdk-filter-input-focus-outline-color);
     outline-offset: var(--osdk-filter-input-focus-outline-offset);
   }
 
@@ -167,10 +180,13 @@
 .excludeRow {
   display: flex;
   align-items: center;
+  width: 100%;
+  gap: var(--osdk-surface-spacing);
   opacity: 0;
   height: 0;
   overflow: hidden;
-  transition: opacity var(--osdk-filter-header-button-transition),
+  transition:
+    opacity var(--osdk-filter-header-button-transition),
     height var(--osdk-filter-header-button-transition);
 
   @media (prefers-reduced-motion: reduce) {
@@ -184,22 +200,29 @@
   overflow: visible;
 }
 
+.excludeRowLeading {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: calc(var(--osdk-surface-spacing) * 0.5);
+}
+
 .excludeCountLabel {
-  font-family: var(--osdk-filter-item-exclude-dropdown-font-family);
+  font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-filter-item-exclude-dropdown-font-size);
   color: var(--osdk-filter-item-exclude-dropdown-color);
-  margin-left: calc(var(--osdk-surface-spacing) * 0.5);
 }
 
 .clearAllButton {
-  margin-left: auto;
+  flex: 0 0 auto;
   background: none;
   border: none;
   cursor: pointer;
-  font-family: var(--osdk-filter-item-exclude-dropdown-font-family);
+  font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-filter-item-exclude-dropdown-font-size);
   color: var(--osdk-filter-item-exclude-dropdown-color);
-  padding: 0;
+  padding: calc(var(--osdk-surface-spacing) * 0.5);
 
   &:hover {
     text-decoration: underline;

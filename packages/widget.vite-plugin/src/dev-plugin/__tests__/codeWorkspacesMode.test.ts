@@ -15,7 +15,9 @@
  */
 
 import fs from "fs";
+
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+
 import * as codeWorkspacesMode from "../codeWorkspacesMode.js";
 
 const FOUNDRY_PROXY_URL = "foundry.proxy.url";
@@ -93,8 +95,9 @@ describe("codeWorkspacesMode", () => {
 
     test("throws if env is missing", () => {
       vi.stubEnv("FOUNDRY_PROXY_TOKEN", undefined);
-      expect(() => codeWorkspacesMode.getCodeWorkspacesFoundryToken())
-        .toThrow();
+      expect(() =>
+        codeWorkspacesMode.getCodeWorkspacesFoundryToken(),
+      ).toThrow();
     });
 
     test("throws if file read fails", () => {
@@ -102,8 +105,9 @@ describe("codeWorkspacesMode", () => {
       vi.spyOn(fs, "readFileSync").mockImplementation(() => {
         throw new Error("fail");
       });
-      expect(() => codeWorkspacesMode.getCodeWorkspacesFoundryToken())
-        .toThrow();
+      expect(() =>
+        codeWorkspacesMode.getCodeWorkspacesFoundryToken(),
+      ).toThrow();
     });
   });
 });

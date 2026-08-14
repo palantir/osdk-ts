@@ -44,16 +44,12 @@ export interface WriteableClientContext {
 }
 
 export interface WriteableClient<X extends AnyEdit>
-  extends Client, WriteMethods<X>
-{
+  extends Client, WriteMethods<X> {
   [writeableClientContext]: WriteableClientContext;
 }
 
 export interface WriteMethods<X extends AnyEdit> {
-  link: <
-    SOL extends AddLinkSources<X>,
-    A extends AddLinkApiNames<X, SOL>,
-  >(
+  link: <SOL extends AddLinkSources<X>, A extends AddLinkApiNames<X, SOL>>(
     source: SOL,
     apiName: A,
     target: AddLinkTargets<X, SOL, A>,

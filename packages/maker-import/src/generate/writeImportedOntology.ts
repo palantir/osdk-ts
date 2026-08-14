@@ -14,76 +14,17 @@
  * limitations under the License.
  */
 
-import { OntologyEntityTypeEnum } from "@osdk/maker";
 import * as fs from "node:fs";
 import * as path from "node:path";
+
+import type * as Ontologies from "@osdk/foundry.ontologies";
+import { OntologyEntityTypeEnum } from "@osdk/maker";
+
 import { convertActionType } from "./convertActionType.js";
 import { convertInterfaceType } from "./convertInterfaceType.js";
 import { convertObjectType } from "./convertObjectType.js";
 import { convertSharedPropertyType } from "./convertSharedPropertyType.js";
 import { camel, fullCamel, withoutNamespace } from "./utils.js";
-
-interface OntologyFullMetadata {
-  objectTypes: Record<string, {
-    objectType: {
-      apiName: string;
-      displayName?: string;
-      description?: string;
-      primaryKey: string;
-      titleProperty: string;
-      status: string;
-      visibility?: string;
-      properties: Record<
-        string,
-        {
-          displayName?: string;
-          description?: string;
-          dataType: { type: string; [key: string]: unknown };
-        }
-      >;
-    };
-    sharedPropertyTypeMapping?: Record<string, string>;
-  }>;
-  actionTypes: Record<string, {
-    apiName: string;
-    displayName?: string;
-    description?: string;
-    status: string;
-    parameters: Record<string, {
-      displayName?: string;
-      description?: string;
-      dataType: { type: string; [key: string]: unknown };
-      required: boolean;
-    }>;
-    operations: Array<{ type: string; [key: string]: unknown }>;
-  }>;
-  interfaceTypes: Record<string, {
-    apiName: string;
-    displayName?: string;
-    description?: string;
-    extendsInterfaces: ReadonlyArray<string>;
-    properties: Record<string, {
-      apiName: string;
-      displayName?: string;
-      description?: string;
-      dataType: { type: string; [key: string]: unknown };
-    }>;
-    links: Record<string, {
-      apiName: string;
-      displayName?: string;
-      description?: string;
-      cardinality: string;
-      required: boolean;
-      linkedEntityApiName: { type: string; apiName?: string };
-    }>;
-  }>;
-  sharedPropertyTypes: Record<string, {
-    apiName: string;
-    displayName?: string;
-    description?: string;
-    dataType: { type: string; [key: string]: unknown };
-  }>;
-}
 
 const TYPE_NAME_MAP: Record<string, string> = {
   [OntologyEntityTypeEnum.OBJECT_TYPE]: "ObjectType",
@@ -114,7 +55,7 @@ interface EntityEntry {
  * a numeric suffix.
  */
 export function resolveVarNames(apiNames: string[]): string[] {
-  const shortNames = apiNames.map(n => camel(withoutNamespace(n)));
+  const shortNames = apiNames.map((n) => camel(withoutNamespace(n)));
 
   // Find which short names appear more than once
   const counts = new Map<string, number>();
@@ -150,7 +91,7 @@ export function resolveVarNames(apiNames: string[]): string[] {
  * that re-exports everything.
  */
 export function writeImportedOntology(
-  metadata: OntologyFullMetadata,
+  metadata: Ontologies.OntologyFullMetadata,
   outputDir: string,
 ): void {
   const codegenDir = path.resolve(outputDir, "codegen");
@@ -206,7 +147,7 @@ export function writeImportedOntology(
   }
 
   // Pass 2: Resolve unique variable names across all entities
-  const varNames = resolveVarNames(entries.map(e => e.apiName));
+  const varNames = resolveVarNames(entries.map((e) => e.apiName));
 
   // Pass 3: Write files with resolved names
   const topLevelExports: string[] = [];
@@ -239,12 +180,11 @@ function writeEntityFile(
   const dirName = DIR_NAME_MAP[entityType];
 
   const entityJSON = JSON.stringify(entity, null, 2).replace(
-    /("__type"\s*:\s*)"([^"]*)"/g,
+    /("__type"\s*:\s*)"([^"]*)"/gu,
     (_, prefix, value) => `${prefix}OntologyEntityTypeEnum.${value}`,
   );
 
-  const content =
-    `import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
+  const content = `import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
 import type { ${typeName} } from '@osdk/maker';
 
 /** @type {import('@osdk/maker').${typeName}} */

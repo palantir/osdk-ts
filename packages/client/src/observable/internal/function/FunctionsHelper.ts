@@ -15,6 +15,7 @@
  */
 
 import type { QueryDefinition } from "@osdk/api";
+
 import type { FunctionPayload } from "../../FunctionPayload.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
@@ -69,25 +70,41 @@ export class FunctionsHelper extends AbstractHelper<
       canonicalParams,
     );
 
-    return this.store.queries.get(functionCacheKey, () =>
-      new FunctionQuery(
-        this.store,
-        this.store.subjects.get(functionCacheKey),
-        queryDef,
-        params,
-        functionCacheKey,
-        observeOpts,
-        objectSetTypesPromise,
-      ));
+    return this.store.queries.get(
+      functionCacheKey,
+      () =>
+        new FunctionQuery(
+          this.store,
+          this.store.subjects.get(functionCacheKey),
+          queryDef,
+          params,
+          functionCacheKey,
+          observeOpts,
+          objectSetTypesPromise,
+        ),
+    );
+  }
+
+  *#functionQueries(): IterableIterator<FunctionQuery> {
+    for (const cacheKey of this.store.queries.keys()) {
+      if (cacheKey.type !== "function") {
+        continue;
+      }
+      const query = this.store.queries.peek(cacheKey) as
+        | FunctionQuery
+        | undefined;
+      if (query) {
+        yield query;
+      }
+    }
   }
 
   async invalidateFunction(
     apiName: string | QueryDefinition<unknown>,
     params?: FunctionParams,
   ): Promise<void> {
-    const functionApiName = typeof apiName === "string"
-      ? apiName
-      : apiName.apiName;
+    const functionApiName =
+      typeof apiName === "string" ? apiName : apiName.apiName;
 
     let canonicalParams: Canonical<CanonicalFunctionParams> | undefined;
     if (params !== undefined) {
@@ -95,34 +112,16 @@ export class FunctionsHelper extends AbstractHelper<
     }
 
     const promises: Array<Promise<void>> = [];
-
-    for (const cacheKey of this.store.queries.keys()) {
-      if (cacheKey.type !== "function") {
-        continue;
-      }
-
-      const query = this.store.queries.peek(cacheKey) as
-        | FunctionQuery
-        | undefined;
-      if (!query) {
-        continue;
-      }
-
-      // Check if apiName matches
+    for (const query of this.#functionQueries()) {
       if (query.apiName !== functionApiName) {
         continue;
       }
-
-      // If params provided, check for exact match
       if (canonicalParams !== undefined) {
-        const queryCacheKey = cacheKey as FunctionCacheKey;
-        const queryParams = queryCacheKey.otherKeys[PARAMS_IDX];
+        const queryParams = query.cacheKey.otherKeys[PARAMS_IDX];
         if (queryParams !== canonicalParams) {
           continue;
         }
       }
-
-      // Invalidate this query
       promises.push(query.revalidate(true));
     }
 
@@ -134,24 +133,11 @@ export class FunctionsHelper extends AbstractHelper<
     primaryKey: PrimaryKeyValue,
   ): Promise<void> {
     const promises: Array<Promise<void>> = [];
-
-    for (const cacheKey of this.store.queries.keys()) {
-      if (cacheKey.type !== "function") {
-        continue;
-      }
-
-      const query = this.store.queries.peek(cacheKey) as
-        | FunctionQuery
-        | undefined;
-      if (!query) {
-        continue;
-      }
-
+    for (const query of this.#functionQueries()) {
       if (query.dependsOnObject(apiName, primaryKey)) {
         promises.push(query.revalidate(true));
       }
     }
-
     await Promise.allSettled(promises);
   }
 }

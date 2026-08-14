@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   RegisterDependencyRequest as _api_provenance_RegisterDependencyRequest,
   RegisterDependencyResponse as _api_provenance_RegisterDependencyResponse,

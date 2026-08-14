@@ -34,7 +34,9 @@ import type {
 } from "@osdk/foundry.ontologies";
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
+
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
+import type { SubscriptionConnection } from "../SubscriptionConnection.js";
 import { ExponentialBackoff } from "../util/exponentialBackoff.js";
 
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
@@ -55,14 +57,14 @@ function fillOutListener<
   Q extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<Q>,
   R extends boolean = false,
->(
-  {
-    onChange = doNothing,
-    onError = doNothing,
-    onOutOfDate = doNothing,
-    onSuccessfulSubscription = doNothing,
-  }: ObjectSetSubscription.Listener<Q, P, R>,
-): Required<ObjectSetSubscription.Listener<Q, P, R>> {
+>({
+  onChange = doNothing,
+  onError = doNothing,
+  onOutOfDate = doNothing,
+  onSuccessfulSubscription = doNothing,
+}: ObjectSetSubscription.Listener<Q, P, R>): Required<
+  ObjectSetSubscription.Listener<Q, P, R>
+> {
   return { onChange, onError, onOutOfDate, onSuccessfulSubscription };
 }
 
@@ -105,10 +107,7 @@ function subscriptionIsDone(sub: Subscription<any, any>) {
 
 /** @internal */
 export class ObjectSetListenerWebsocket {
-  static #instances = new WeakMap<
-    ClientCacheKey,
-    ObjectSetListenerWebsocket
-  >();
+  static #instances = new WeakMap<ClientCacheKey, ObjectSetListenerWebsocket>();
   readonly MINIMUM_RECONNECT_DELAY_MS: number;
 
   // FIXME
@@ -126,9 +125,22 @@ export class ObjectSetListenerWebsocket {
     return instance;
   }
 
-  #ws: WebSocket | undefined;
+  #ws: SubscriptionConnection | undefined;
   #lastWsConnect = 0;
   #client: MinimalClient;
+
+  /**
+   * Default connection factory: constructs a real `WebSocket`, resolving the URL and bearer
+   * token from the client. Used when the client provides no `createSubscriptionConnection`.
+   */
+  #defaultConnectionFactory = async (): Promise<SubscriptionConnection> => {
+    const url = constructWebsocketUrl(
+      this.#client.baseUrl,
+      await this.#client.ontologyRid,
+    );
+    const token = await this.#client.tokenProvider();
+    return new WebSocket(url, [`Bearer-${token}`]);
+  };
   #backoff: ExponentialBackoff;
   #isFirstConnection = true;
 
@@ -137,23 +149,15 @@ export class ObjectSetListenerWebsocket {
   /**
    * map of requestId to all active subscriptions at the time of the request
    */
-  #pendingSubscriptions = new Map<
-    string,
-    Subscription<any, any>[]
-  >();
+  #pendingSubscriptions = new Map<string, Subscription<any, any>[]>();
 
   /**
    * Map of subscriptionId to Subscription. Note: the subscriptionId may be
    * temporary and not the actual subscriptionId from the server.
    */
-  #subscriptions = new Map<
-    string,
-    Subscription<any, any>
-  >();
+  #subscriptions = new Map<string, Subscription<any, any>>();
 
-  #endedSubscriptions = new Set<
-    string
-  >();
+  #endedSubscriptions = new Set<string>();
 
   #maybeDisconnectTimeout: ReturnType<typeof setTimeout> | undefined;
   #heartbeatInterval: ReturnType<typeof setInterval> | undefined;
@@ -161,9 +165,7 @@ export class ObjectSetListenerWebsocket {
   // DO NOT CONSTRUCT DIRECTLY. ONLY EXPOSED AS A TESTING SEAM
   constructor(
     client: MinimalClient,
-    {
-      minimumReconnectDelayMs = MINIMUM_RECONNECT_DELAY_MS,
-    } = {},
+    { minimumReconnectDelayMs = MINIMUM_RECONNECT_DELAY_MS } = {},
   ) {
     this.MINIMUM_RECONNECT_DELAY_MS = minimumReconnectDelayMs;
     this.#client = client;
@@ -173,12 +175,15 @@ export class ObjectSetListenerWebsocket {
       multiplier: EXPONENTIAL_BACKOFF_MULTIPLIER,
       jitterFactor: EXPONENTIAL_BACKOFF_JITTER_FACTOR,
     });
-    this.#logger = client.logger?.child({}, {
-      msgPrefix: "<OSW> ",
-    });
+    this.#logger = client.logger?.child(
+      {},
+      {
+        msgPrefix: "<OSW> ",
+      },
+    );
     invariant(
-      client.baseUrl.startsWith("https://")
-        || client.baseUrl.startsWith("http://"),
+      client.baseUrl.startsWith("https://") ||
+        client.baseUrl.startsWith("http://"),
       "Stack must be a URL",
     );
   }
@@ -193,13 +198,14 @@ export class ObjectSetListenerWebsocket {
     properties: Array<P> = [],
     shouldLoadRids: boolean = false,
   ): Promise<() => void> {
-    const objOrInterfaceDef = objectType.type === "object"
-      ? await this.#client.ontologyProvider.getObjectDefinition(
-        objectType.apiName,
-      )
-      : await this.#client.ontologyProvider.getInterfaceDefinition(
-        objectType.apiName,
-      );
+    const objOrInterfaceDef =
+      objectType.type === "object"
+        ? await this.#client.ontologyProvider.getObjectDefinition(
+            objectType.apiName,
+          )
+        : await this.#client.ontologyProvider.getInterfaceDefinition(
+            objectType.apiName,
+          );
 
     let objectProperties: Array<P> = [];
     let referenceProperties: Array<P> = [];
@@ -208,31 +214,35 @@ export class ObjectSetListenerWebsocket {
       properties = Object.keys(objOrInterfaceDef.properties) as Array<P>;
     }
 
-    objectProperties = properties.filter((p) =>
-      p in objOrInterfaceDef.properties
-      && objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference"
+    objectProperties = properties.filter(
+      (p) =>
+        p in objOrInterfaceDef.properties &&
+        objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference",
     );
 
-    referenceProperties = properties.filter((p) =>
-      p in objOrInterfaceDef.properties
-      && objOrInterfaceDef.properties[p].type === "geotimeSeriesReference"
+    referenceProperties = properties.filter(
+      (p) =>
+        p in objOrInterfaceDef.properties &&
+        objOrInterfaceDef.properties[p].type === "geotimeSeriesReference",
     );
 
     const sub: Subscription<Q, P> = {
       listener: fillOutListener<Q, P>(listener),
       objectSet,
-      primaryKeyPropertyName: objOrInterfaceDef.type === "interface"
-        ? undefined
-        : objOrInterfaceDef.primaryKeyApiName,
+      primaryKeyPropertyName:
+        objOrInterfaceDef.type === "interface"
+          ? undefined
+          : objOrInterfaceDef.primaryKeyApiName,
       requestedProperties: objectProperties,
       requestedReferenceProperties: referenceProperties,
       status: "preparing",
       // Since we don't have a real subscription id yet but we need to keep
       // track of this reference, we can just use a random uuid.
       subscriptionId: `TMP-${nextUuid()}}`,
-      interfaceApiName: objOrInterfaceDef.type === "object"
-        ? undefined
-        : objOrInterfaceDef.apiName,
+      interfaceApiName:
+        objOrInterfaceDef.type === "object"
+          ? undefined
+          : objOrInterfaceDef.apiName,
       loadRids: shouldLoadRids,
     };
 
@@ -240,6 +250,43 @@ export class ObjectSetListenerWebsocket {
 
     // actually prepares the subscription, ensures the ws is ready, and sends
     // a subscribe message. We don't want to block on this.
+    void this.#initiateSubscribe(sub);
+
+    return () => {
+      this.#unsubscribe(sub);
+    };
+  }
+
+  /**
+   * Subscribes to a wire object set without an ontology type lookup.
+   *
+   * Used when the caller has only an object set RID and does not know (or care
+   * about) the underlying object/interface type. No properties are requested,
+   * so emitted `object` payloads carry only `$apiName` (and `$rid` when
+   * `shouldLoadRids` is true). `$primaryKey` will be `undefined`.
+   */
+  subscribeWithoutType(
+    objectSet: ObjectSet,
+    listener: ObjectSetSubscription.Listener<
+      ObjectOrInterfaceDefinition,
+      never
+    >,
+    shouldLoadRids: boolean = false,
+  ): () => void {
+    const sub: Subscription<ObjectOrInterfaceDefinition, never> = {
+      listener: fillOutListener(listener),
+      objectSet,
+      primaryKeyPropertyName: undefined,
+      requestedProperties: [],
+      requestedReferenceProperties: [],
+      status: "preparing",
+      subscriptionId: `TMP-${nextUuid()}}`,
+      interfaceApiName: undefined,
+      loadRids: shouldLoadRids,
+    };
+
+    this.#subscriptions.set(sub.subscriptionId, sub);
+
     void this.#initiateSubscribe(sub);
 
     return () => {
@@ -302,28 +349,25 @@ export class ObjectSetListenerWebsocket {
     // re-included, so we have to reconstitute the entire list of subscriptions
     const subscribe: ObjectSetStreamSubscribeRequests = {
       id,
-      requests: readySubs.map<ObjectSetStreamSubscribeRequest>((
-        {
+      requests: readySubs.map<ObjectSetStreamSubscribeRequest>(
+        ({
           objectSet,
           requestedProperties,
           requestedReferenceProperties,
           interfaceApiName,
+        }) => {
+          return {
+            objectSet,
+            propertySet: requestedProperties,
+            referenceSet: requestedReferenceProperties,
+            objectLoadingResponseOptions: { shouldLoadObjectRids: true },
+          };
         },
-      ) => {
-        return {
-          objectSet,
-          propertySet: requestedProperties,
-          referenceSet: requestedReferenceProperties,
-          objectLoadingResponseOptions: { shouldLoadObjectRids: true },
-        };
-      }),
+      ),
     };
 
     if (process.env.NODE_ENV !== "production") {
-      this.#logger?.debug(
-        { payload: subscribe },
-        "sending subscribe message",
-      );
+      this.#logger?.debug({ payload: subscribe }, "sending subscribe message");
     }
     this.#ws.send(JSON.stringify(subscribe));
   }
@@ -372,16 +416,13 @@ export class ObjectSetListenerWebsocket {
 
   async #ensureWebsocket() {
     if (this.#ws == null) {
-      const { baseUrl, tokenProvider } = this.#client;
-      const url = constructWebsocketUrl(
-        baseUrl,
-        await this.#client.ontologyRid,
-      );
+      const factory =
+        this.#client.createSubscriptionConnection ??
+        this.#defaultConnectionFactory;
 
-      const token = await tokenProvider();
-
-      // tokenProvider is async, there could potentially be a race to create the websocket.
-      // Only the first call to reach here will find a null this.#ws, the rest will bail out
+      // The connection factory (token fetch, url construction) is async, so there could be a
+      // race to create the websocket. Only the first call to reach the construction below will
+      // find a null this.#ws; the rest bail out.
       if (this.#ws == null) {
         // Only apply exponential backoff delay on reconnection attempts, not the first connection
         if (!this.#isFirstConnection) {
@@ -404,10 +445,16 @@ export class ObjectSetListenerWebsocket {
           if (process.env.NODE_ENV !== "production") {
             this.#logger?.debug("Creating websocket");
           }
-          this.#ws = new WebSocket(url, [`Bearer-${token}`]);
-          this.#ws.addEventListener("close", this.#onClose);
-          this.#ws.addEventListener("message", this.#onMessage);
-          this.#ws.addEventListener("open", this.#onOpen);
+          const connection = await factory();
+          // awaiting the factory (token/url) is another chance to lose the race
+          if (this.#ws == null) {
+            this.#ws = connection;
+            this.#ws.addEventListener("close", this.#onClose);
+            this.#ws.addEventListener("message", this.#onMessage);
+            this.#ws.addEventListener("open", this.#onOpen);
+          } else {
+            connection.close();
+          }
         }
       }
       // Allow await-ing the websocket open event if it isn't open already.
@@ -484,47 +531,45 @@ export class ObjectSetListenerWebsocket {
     }
   };
 
-  #handleMessage_objectSetChanged = async (
-    payload: ObjectSetUpdates,
-  ) => {
+  #handleMessage_objectSetChanged = async (payload: ObjectSetUpdates) => {
     const sub = this.#subscriptions.get(payload.id);
     if (sub == null) return;
 
-    const objectUpdates = payload.updates.filter((update) =>
-      update.type === "object"
+    const objectUpdates = payload.updates.filter(
+      (update) => update.type === "object",
     );
-    const referenceUpdates = payload.updates.filter((update) =>
-      update.type === "reference"
+    const referenceUpdates = payload.updates.filter(
+      (update) => update.type === "reference",
     );
     const osdkObjectsWithReferenceUpdates = await Promise.all(
       referenceUpdates.map(async (o) => {
-        const osdkObjectArray = await this.#client.objectFactory2(
+        const osdkObjectArray = await this.#client.objectFactory(
           this.#client,
-          [{
-            __apiName: o.objectType,
-            __primaryKey: sub.primaryKeyPropertyName != null
-              ? o.primaryKey[sub.primaryKeyPropertyName]
-              : undefined,
-            ...o.primaryKey,
-            [o.property]: o.value,
-          }],
+          [
+            {
+              __apiName: o.objectType,
+              __primaryKey:
+                sub.primaryKeyPropertyName != null
+                  ? o.primaryKey[sub.primaryKeyPropertyName]
+                  : undefined,
+              ...o.primaryKey,
+              [o.property]: o.value,
+            },
+          ],
           sub.interfaceApiName,
           {},
           undefined,
           false,
           undefined,
           false,
-          await this.#fetchInterfaceMapping(
-            o.objectType,
-            sub.interfaceApiName,
-          ),
+          await this.#fetchInterfaceMapping(o.objectType, sub.interfaceApiName),
         );
         const singleOsdkObject = osdkObjectArray[0] ?? undefined;
         return singleOsdkObject != null
           ? {
-            object: singleOsdkObject as Osdk.Instance<any, never, any>,
-            state: "ADDED_OR_UPDATED" as ObjectState,
-          }
+              object: singleOsdkObject as Osdk.Instance<any, never, any>,
+              state: "ADDED_OR_UPDATED" as ObjectState,
+            }
           : undefined;
       }),
     );
@@ -540,45 +585,47 @@ export class ObjectSetListenerWebsocket {
       }
     }
 
-    const osdkObjects = await Promise.all(objectUpdates.map(async (o) => {
-      const keysToDelete = Object.keys(o.object).filter((key) =>
-        sub.requestedReferenceProperties.includes(key)
-      );
-      for (const key of keysToDelete) {
-        delete o.object[key];
-      }
+    const osdkObjects = await Promise.all(
+      objectUpdates.map(async (o) => {
+        const keysToDelete = Object.keys(o.object).filter((key) =>
+          sub.requestedReferenceProperties.includes(key),
+        );
+        for (const key of keysToDelete) {
+          delete o.object[key];
+        }
 
-      const osdkObjectArray = await this.#client.objectFactory2(
-        this.#client,
-        [o.object],
-        sub.interfaceApiName,
-        {},
-        undefined,
-        false,
-        undefined,
-        false,
-        await this.#fetchInterfaceMapping(
-          o.object.__apiName,
+        const osdkObjectArray = (await this.#client.objectFactory(
+          this.#client,
+          [o.object],
           sub.interfaceApiName,
-        ),
-      ) as Array<Osdk.Instance<any>>;
-      const singleOsdkObject = osdkObjectArray[0] ?? undefined;
+          {},
+          undefined,
+          false,
+          undefined,
+          false,
+          await this.#fetchInterfaceMapping(
+            o.object.__apiName,
+            sub.interfaceApiName,
+          ),
+        )) as Array<Osdk.Instance<any>>;
+        const singleOsdkObject = osdkObjectArray[0] ?? undefined;
 
-      const rid = singleOsdkObject.$rid as string | undefined;
+        const rid = singleOsdkObject.$rid as string | undefined;
 
-      return singleOsdkObject != null
-        ? rid === undefined
-          ? {
-            object: singleOsdkObject,
-            state: o.state,
-          }
-          : {
-            object: singleOsdkObject,
-            state: o.state,
-            rid,
-          }
-        : undefined;
-    }));
+        return singleOsdkObject != null
+          ? rid === undefined
+            ? {
+                object: singleOsdkObject,
+                state: o.state,
+              }
+            : {
+                object: singleOsdkObject,
+                state: o.state,
+                rid,
+              }
+          : undefined;
+      }),
+    );
 
     for (const osdkObject of osdkObjects) {
       if (osdkObject != null) {
@@ -597,8 +644,9 @@ export class ObjectSetListenerWebsocket {
     interfaceApiName: string | undefined,
   ): Promise<Record<string, Record<string, Record<string, string>>>> {
     if (interfaceApiName == null) return {};
-    const interfaceMap = (await this.#client.ontologyProvider
-      .getObjectDefinition(objectTypeApiName)).interfaceMap;
+    const interfaceMap = (
+      await this.#client.ontologyProvider.getObjectDefinition(objectTypeApiName)
+    ).interfaceMap;
     return {
       [interfaceApiName]: {
         [objectTypeApiName]: interfaceMap[interfaceApiName],
@@ -643,8 +691,8 @@ export class ObjectSetListenerWebsocket {
 
         case "success":
           // `"preparing"` should only be the status on an initial subscribe.
-          const shouldFireOutOfDate = sub.status === "expired"
-            || sub.status === "reconnecting";
+          const shouldFireOutOfDate =
+            sub.status === "expired" || sub.status === "reconnecting";
 
           if (process.env.NODE_ENV !== "production") {
             this.#logger?.debug({ shouldFireOutOfDate }, "success");
@@ -701,8 +749,8 @@ export class ObjectSetListenerWebsocket {
       this.#ws.removeEventListener("close", this.#onClose);
 
       if (
-        this.#ws.readyState !== WebSocket.CLOSING
-        && this.#ws.readyState !== WebSocket.CLOSED
+        this.#ws.readyState !== WebSocket.CLOSING &&
+        this.#ws.readyState !== WebSocket.CLOSED
       ) {
         this.#ws.close();
       }
@@ -749,10 +797,7 @@ export class ObjectSetListenerWebsocket {
         error,
       );
       // eslint-disable-next-line no-console
-      console.error(
-        `The subscription has been closed.`,
-        error,
-      );
+      console.error(`The subscription has been closed.`, error);
 
       if (!subscriptionClosed) {
         this.#logger?.error(error, "Error in onError callback");
@@ -810,7 +855,7 @@ function constructOntologySubscriptionsWebsocketUrl({
 let uuidCounter = 0;
 
 function nextUuid() {
-  return `00000000-0000-0000-0000-${
-    (uuidCounter++).toString().padStart(12, "0")
-  }`;
+  return `00000000-0000-0000-0000-${(uuidCounter++)
+    .toString()
+    .padStart(12, "0")}`;
 }

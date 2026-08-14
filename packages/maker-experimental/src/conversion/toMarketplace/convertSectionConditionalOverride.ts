@@ -16,6 +16,7 @@
 
 import type { OntologyIrSectionConditionalOverride } from "@osdk/client.unstable";
 import type { ActionParameter, SectionConditionalOverride } from "@osdk/maker";
+
 import { convertConditionDefinition } from "./convertConditionDefinition.js";
 
 export function convertSectionConditionalOverride(
@@ -29,15 +30,16 @@ export function convertSectionConditionalOverride(
       {
         type: "visibility",
         visibility: {
-          visibility: defaultVisibility === "visible"
-            ? {
-              type: "hidden",
-              hidden: {},
-            }
-            : {
-              type: "visible",
-              visible: {},
-            },
+          visibility:
+            defaultVisibility === "visible"
+              ? {
+                  type: "hidden",
+                  hidden: {},
+                }
+              : {
+                  type: "visible",
+                  visible: {},
+                },
         },
       },
     ],

@@ -4,7 +4,7 @@
 
 React components for building Foundry applications. These components are Ontology-aware — pass in OSDK entities, and they handle data loading, caching, and state management automatically.
 
-Built on top of [@osdk/react](../react), these components use OSDK hooks internally to provide ready-to-use UI elements. While @osdk/react gives you low-level hooks for data fetching, @osdk/react-components provides UI widgets for common patterns like tables and forms.
+Built on top of [@osdk/react](https://github.com/palantir/osdk-ts/tree/main/packages/react), these components use OSDK hooks internally to provide ready-to-use UI elements. While @osdk/react gives you low-level hooks for data fetching, @osdk/react-components provides UI widgets for common patterns like tables and forms.
 
 ## Table of Contents
 
@@ -21,6 +21,7 @@ Built on top of [@osdk/react](../react), these components use OSDK hooks interna
 - [Example Usage](#example-usage)
 - [Contributing](#contributing)
 - [Development Workflow](#development-workflow)
+- [Documentation](#documentation)
 - [Why this package?](#why-this-package)
 - [What this package is (and isn't)](#what-this-package-is-and-isnt)
 - [License](#license)
@@ -125,12 +126,20 @@ Add `isolation: isolate` to your app's root element. This is required for Base U
 
 The components that this package will provide are:
 
-| Component     | Description                                                                        | Documentation                  |
-| ------------- | ---------------------------------------------------------------------------------- | ------------------------------ |
-| `ObjectTable` | Displays an Object Set as a sortable, paginated table with inline editing support  | [Guide](./docs/ObjectTable.md) |
-| `PdfViewer`   | Renders PDF documents with annotations, search, sidebar navigation, and zoom       | [Guide](./docs/PdfViewer.md)   |
-| `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. | [Guide](./docs/FilterList.md)  |
-| `ActionForm`  | Auto-generated form for executing Ontology Actions                                 | -                              |
+| Component           | Description                                                                                     | Documentation                                                                                              |
+| ------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `ObjectTable`       | Displays an Object Set as a sortable, paginated table with inline editing support               | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ObjectTable.md)       |
+| `PdfViewer`         | Renders PDF documents with annotations, search, sidebar navigation, and zoom                    | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/PdfViewer.md)         |
+| `FilterList`        | Visualize a high-level summary of objects data to allow users to filter that data.              | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/FilterList.md)        |
+| `ActionForm`        | Auto-generated form for executing Ontology Actions                                              | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ActionForm.md)        |
+| `AipAgentChat`      | Chat surface backed by Foundry LMS via `useChat` — takes a `PlatformClient` and model API name. | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/AipAgentChat.md)      |
+| `DocumentViewer`    | Unified media viewer that auto-detects file type and renders the appropriate viewer             | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/DocumentViewer.md)    |
+| `EmailViewer`       | Parses and renders EML files with headers and sandboxed HTML body                               | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/EmailViewer.md)       |
+| `SpreadsheetViewer` | Renders spreadsheets (.xlsx) with sheet tabs and column/row headers                             | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/SpreadsheetViewer.md) |
+| `ImageViewer`       | Renders images (PNG, JPEG, GIF, SVG, WebP, BMP)                                                 | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ImageViewer.md)       |
+| `VideoViewer`       | Renders video with native browser controls                                                      | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/VideoViewer.md)       |
+| `XmlViewer`         | Renders XML content with syntax preservation                                                    | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/XmlViewer.md)         |
+| `CbacPicker`        | Picker for classification-based access control (CBAC) markings with banner display              | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CbacPicker.md)        |
 
 ## Component Architecture
 
@@ -162,7 +171,7 @@ For example, the PDF viewer offers three levels of customization:
 | Building blocks | `PdfViewerToolbar`, `PdfViewerSidebar`, `PdfViewerContent`, etc. | Custom layout using standard parts                               |
 | Hooks           | `usePdfViewerState` / `usePdfViewerCore` / primitive hooks       | Build entirely custom components; hooks do all the heavy lifting |
 
-See the [PdfViewer guide](./docs/PdfViewer.md) for the full API reference.
+See the [PdfViewer guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/PdfViewer.md) for the full API reference.
 
 ### Example: ObjectTable and BaseTable
 
@@ -220,8 +229,8 @@ src/
         ├── object-table.ts
         ├── filter-list.ts
         ├── pdf-viewer.ts
-        ├── markdown-renderer.ts
-        ├── tiff-renderer.ts
+        ├── markdown-viewer.ts
+        ├── tiff-viewer.ts
         └── action-form.ts
 ```
 
@@ -267,7 +276,7 @@ export const MyComponent: typeof _MyComponent = withOsdkMetrics(
 
 ## Custom Styling
 
-See the [CSS Variables Reference](./docs/CSSVariables.md) on how to apply custom themes and styling to the components.
+See the [CSS Variables Reference](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CSSVariables.md) on how to apply custom themes and styling to the components.
 
 ## Example Usage
 
@@ -288,7 +297,12 @@ function EmployeeDirectory() {
 
 ## Contributing
 
-Looking to contribute to the codebase? Read the [contribution guidelines](./CONTRIBUTING.md)
+Looking to contribute to the codebase? Read the [contribution guidelines](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/CONTRIBUTING.md).
+
+If you use [Claude Code](https://claude.com/claude-code), this package ships two skills that wrap `CONTRIBUTING.md`:
+
+- Run `/add-new-component` (or describe the component you want to add) — the [`add-new-component` skill](../../.claude/skills/add-new-component/SKILL.md) walks you through the API-first PR, MVP checklist, and verification loop.
+- Run `/contribute` (or describe the bug to fix / feature to add on an existing component) — the [`contribute` skill](../../.claude/skills/contribute/SKILL.md) adds a failing-test-first gate for bugs, an API-change checkpoint when the diff touches public props, and a verification loop.
 
 ## Development Workflow
 
@@ -315,6 +329,35 @@ pnpm --filter @osdk/e2e.sandbox.peopleapp transpileAllDeps
 ```
 pnpm --filter @osdk/e2e.sandbox.peopleapp dev
 ```
+
+## Documentation
+
+### Props reference tables (auto-generated)
+
+Per-component **props reference tables in `docs/*.md` are generated from the component's props interface**, so they never drift from the source. The generator (`scripts/gen-props.mjs`) reads the named TypeScript interface (or type alias), turns each property into a `Name | Type | Description` row, and writes it between markers. JSDoc on each prop becomes the description — the main comment, `@default`, `@deprecated`, inline `{@link}`, and required/optional are all reflected. If the props type is generic, its type parameters and their constraints (e.g. `Q extends ActionDefinition<unknown>`) are listed above the table so bare `Q`-style types stay meaningful.
+
+Regenerate after changing any documented prop or its JSDoc:
+
+```sh
+pnpm --filter @osdk/react-components gen-props
+```
+
+Commit the regenerated docs alongside your change. CI enforces freshness: the `check-gen-props` task (part of `pnpm turbo check`) runs `gen-props --check` and fails if a committed table is stale (or was hand-edited inside the markers).
+
+**To enable a generated table for a new component**, drop a marker block into its doc where the table should appear, naming the source file (relative to the package root) and the props interface:
+
+```md
+## Props
+
+<!-- AUTOGEN:props START src=src/my-component/MyComponentApi.ts interface=MyComponentProps -->
+<!-- AUTOGEN:props END -->
+```
+
+Then run `gen-props` to fill it in (the generator normalizes the marker and inserts the table). It resolves both `interface` and `type` declarations, following `extends` clauses, intersections (`A & B`), controlled/uncontrolled unions, and `Pick`/`Omit`. References are resolved first in the marker's `src` file, then by following named imports into other files — so a base shared across files (e.g. `FilterDefinitionControls`) still contributes its members. Only bare/external imports (e.g. `@osdk/api`) are left unresolved.
+
+The same marker works for any object-shaped type referenced from the props, not just the top-level props interface — add a block pointing at `interface=ColumnDefinition` (or `PropertyFilterDefinition`, `ObjectSetOptions`, …) to document a config sub-type. A discriminated union of differently-shaped variants (e.g. the column locator union, `FilterDefinitionUnion`) and distributive/conditional/mapped types (e.g. `FormFieldDefinition`, `EditFieldConfig`) resolve to no members; the generator errors rather than emit a misleading merged table, so document each concrete variant with its own block (e.g. one per `FilterDefinitionUnion` member, or `DropdownEditConfig` / `DatePickerEditConfig` for `EditFieldConfig`).
+
+Because the description column comes entirely from JSDoc, **write a JSDoc comment (with `@default` where relevant) on every prop.** Props with no JSDoc render with a blank description — that blank cell is your signal to document them, not a reason to hand-edit the table.
 
 ## Why this package?
 

@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { standardizePathAndFileExtension } from "../standardizePathAndFileExtension.js";
 
 describe("standardizePathAndFileExtension", () => {
@@ -64,13 +65,15 @@ describe("standardizePathAndFileExtension", () => {
     });
 
     it("should normalize Windows paths with mixed separators", () => {
-      expect(standardizePathAndFileExtension("C:\\Users/project\\src/file.tsx"))
-        .toBe("C:/Users/project/src/file.js");
+      expect(
+        standardizePathAndFileExtension("C:\\Users/project\\src/file.tsx"),
+      ).toBe("C:/Users/project/src/file.js");
     });
 
     it("should preserve paths that already use forward slashes", () => {
-      expect(standardizePathAndFileExtension("/Users/project/src/file.ts"))
-        .toBe("/Users/project/src/file.js");
+      expect(
+        standardizePathAndFileExtension("/Users/project/src/file.ts"),
+      ).toBe("/Users/project/src/file.js");
     });
 
     it("should handle Windows config file paths", () => {
@@ -82,8 +85,9 @@ describe("standardizePathAndFileExtension", () => {
     });
 
     it("should handle Windows paths without file extensions", () => {
-      expect(standardizePathAndFileExtension("C:\\Users\\project\\README"))
-        .toBe("C:/Users/project/README");
+      expect(
+        standardizePathAndFileExtension("C:\\Users\\project\\README"),
+      ).toBe("C:/Users/project/README");
     });
   });
 
@@ -99,8 +103,9 @@ describe("standardizePathAndFileExtension", () => {
     });
 
     it("should handle Windows paths with multiple dots", () => {
-      expect(standardizePathAndFileExtension("C:\\path\\to\\file.test.tsx"))
-        .toBe("C:/path/to/file.test.js");
+      expect(
+        standardizePathAndFileExtension("C:\\path\\to\\file.test.tsx"),
+      ).toBe("C:/path/to/file.test.js");
     });
 
     it("should handle virtual paths with @fs prefix", () => {

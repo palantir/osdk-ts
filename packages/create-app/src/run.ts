@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { changeVersionPrefix } from "@osdk/generator-utils";
-import { findUpSync } from "find-up";
-import Handlebars from "handlebars";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { changeVersionPrefix } from "@osdk/generator-utils";
+import { findUpSync } from "find-up";
+import Handlebars from "handlebars";
+
 import { consola } from "./consola.js";
 import {
   generateEnvDevelopment,
@@ -44,25 +46,26 @@ interface RunArgs {
   osdkRegistryUrl: string | undefined;
   corsProxy: boolean;
   scopes: string[] | undefined;
+  /** Opt-in gate for unstable/experimental features; defaults to `false`. */
+  unstableFeatures?: boolean;
 }
 
-export async function run(
-  {
-    project,
-    overwrite,
-    template,
-    sdkVersion,
-    foundryUrl,
-    applicationUrl,
-    application,
-    ontology,
-    clientId,
-    osdkPackage,
-    osdkRegistryUrl,
-    corsProxy,
-    scopes,
-  }: RunArgs,
-): Promise<void> {
+export async function run({
+  project,
+  overwrite,
+  template,
+  sdkVersion,
+  foundryUrl,
+  applicationUrl,
+  application,
+  ontology,
+  clientId,
+  osdkPackage,
+  osdkRegistryUrl,
+  corsProxy,
+  scopes,
+  unstableFeatures = false,
+}: RunArgs): Promise<void> {
   consola.log("");
   consola.start(
     `Creating project ${green(project)} using template ${green(template.id)}`,
@@ -103,10 +106,7 @@ export async function run(
     await fs.promises.mkdir(dirPath, { recursive: true });
     await fs.promises.writeFile(
       finalPath,
-      Buffer.from(
-        contents.body,
-        contents.type === "raw" ? "utf-8" : "base64",
-      ),
+      Buffer.from(contents.body, contents.type === "raw" ? "utf-8" : "base64"),
     );
   }
 
@@ -118,8 +118,8 @@ export async function run(
     ? JSON.parse(fs.readFileSync(ourPackageJsonPath, "utf-8")).version
     : undefined;
 
-  const clientVersion = process.env.PACKAGE_CLIENT_VERSION
-    ?? ourPackageJsonVersion;
+  const clientVersion =
+    process.env.PACKAGE_CLIENT_VERSION ?? ourPackageJsonVersion;
 
   if (clientVersion === undefined) {
     throw new Error("Could not determine current @osdk/client version");
@@ -134,9 +134,10 @@ export async function run(
     corsProxy,
     clientVersion: changeVersionPrefix(clientVersion, "^"),
     scopes,
+    unstableFeatures,
   };
-  const processFiles = function(dir: string) {
-    fs.readdirSync(dir).forEach(function(file) {
+  const processFiles = function (dir: string) {
+    fs.readdirSync(dir).forEach((file) => {
       let fullPath = dir + "/" + file;
       const stat = fs.statSync(fullPath);
       if (stat.isDirectory()) {
@@ -147,7 +148,7 @@ export async function run(
       if (fullPath.endsWith("/_gitignore")) {
         fs.renameSync(
           fullPath,
-          fullPath.replace(/\/_gitignore$/, "/.gitignore"),
+          fullPath.replace(/\/_gitignore$/u, "/.gitignore"),
         );
         return;
       }
@@ -178,11 +179,25 @@ export async function run(
       const templated = Handlebars.compile(fs.readFileSync(fullPath, "utf-8"))(
         templateContext,
       );
-      fs.writeFileSync(fullPath.replace(/.hbs$/, ""), templated);
+      fs.writeFileSync(fullPath.replace(/.hbs$/u, ""), templated);
       fs.rmSync(fullPath);
     });
   };
   processFiles(root);
+
+  if (unstableFeatures && osdkPackage != null) {
+    const packageJsonPath = path.join(root, "package.json");
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+    packageJson.scripts = {
+      ...packageJson.scripts,
+      postinstall: "./node_modules/.bin/osdk unstable branch sync",
+    };
+    packageJson.devDependencies = {
+      "@osdk/cli": "latest",
+      ...packageJson.devDependencies,
+    };
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  }
 
   const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl, foundryUrl });
   fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
@@ -214,12 +229,13 @@ export async function run(
 
   const cdRelative = path.relative(cwd, root);
   consola.box({
-    message: `Done! Run the following commands to get started:\n`
-      + `\n`
-      + `  \`cd ${cdRelative}\`\n`
-      + `  \`export FOUNDRY_TOKEN=<token>\`\n`
-      + `  \`npm install\`\n`
-      + `  \`npm run dev\``,
+    message:
+      `Done! Run the following commands to get started:\n` +
+      `\n` +
+      `  \`cd ${cdRelative}\`\n` +
+      `  \`export FOUNDRY_TOKEN=<token>\`\n` +
+      `  \`npm install\`\n` +
+      `  \`npm run dev\``,
     style: {
       padding: 2,
       borderColor: "green",

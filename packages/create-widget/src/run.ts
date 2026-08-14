@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import Handlebars from "handlebars";
 import fs from "node:fs";
 import path from "node:path";
+
+import Handlebars from "handlebars";
+
 import { consola } from "./consola.js";
 import { generateFoundryConfigJson } from "./generate/generateFoundryConfigJson.js";
 import { generateNpmRc } from "./generate/generateNpmRc.js";
@@ -94,33 +96,59 @@ export async function run({
     project,
     osdkPackage,
   };
-  const processFiles = function(dir: string) {
-    fs.readdirSync(dir).forEach(function(file) {
-      file = dir + "/" + file;
-      const stat = fs.statSync(file);
+  const processFiles = function (dir: string) {
+    fs.readdirSync(dir).forEach((file) => {
+      let fullPath = dir + "/" + file;
+      const stat = fs.statSync(fullPath);
       if (stat.isDirectory()) {
-        processFiles(file);
+        processFiles(fullPath);
         return;
       }
 
-      if (file.endsWith("/_gitignore")) {
-        fs.renameSync(file, file.replace(/\/_gitignore$/, "/.gitignore"));
+      if (fullPath.endsWith("/_gitignore")) {
+        fs.renameSync(
+          fullPath,
+          fullPath.replace(/\/_gitignore$/u, "/.gitignore"),
+        );
         return;
       }
 
-      if (!file.endsWith(".hbs")) {
+      // Files with the `.osdk` extension are only kept if the application uses an OSDK
+      if (file.includes(".osdk")) {
+        if (osdkPackage == null) {
+          fs.rmSync(fullPath);
+          return;
+        } else {
+          const renamed = dir + "/" + file.replace(".osdk", "");
+          fs.renameSync(fullPath, renamed);
+          fullPath = renamed;
+        }
+        // Files with the `.no-osdk` extension are only kept if the application does not use an OSDK
+      } else if (file.includes(".no-osdk")) {
+        if (osdkPackage == null) {
+          const renamed = dir + "/" + file.replace(".no-osdk", "");
+          fs.renameSync(fullPath, renamed);
+          fullPath = renamed;
+        } else {
+          fs.rmSync(fullPath);
+          return;
+        }
+      }
+
+      if (!fullPath.endsWith(".hbs")) {
         return;
       }
-      const templated = Handlebars.compile(fs.readFileSync(file, "utf-8"))(
+      const templated = Handlebars.compile(fs.readFileSync(fullPath, "utf-8"))(
         templateContext,
       );
-      fs.writeFileSync(file.replace(/.hbs$/, ""), templated);
-      fs.rmSync(file);
+      fs.writeFileSync(fullPath.replace(/.hbs$/u, ""), templated);
+      fs.rmSync(fullPath);
     });
   };
   processFiles(root);
 
-  if (template.requiresOsdk) {
+  const useOsdk = osdkPackage != null || osdkRegistryUrl != null;
+  if (useOsdk) {
     if (osdkPackage == null || osdkRegistryUrl == null) {
       throw new Error(
         `Template ${template.id} requires OSDK package and registry URL`,
@@ -142,14 +170,13 @@ export async function run({
 
   const cdRelative = path.relative(cwd, root);
   consola.box({
-    message: `Done! Run the following commands to get started:\n`
-      + `\n`
-      + `  \`cd ${cdRelative}\`\n`
-      + `  \`export FOUNDRY_TOKEN=<token>\`\n`
-      + `  \`npm install\`\n`
-      + `  \`npm run build\`\n`
-      + `  \`npx @osdk/cli@latest widgetset deploy\`\n`
-      + `  \`npm run dev\``,
+    message:
+      `Done! Run the following commands to get started:\n` +
+      `\n` +
+      `  \`cd ${cdRelative}\`\n` +
+      `  \`export FOUNDRY_TOKEN=<token>\`\n` +
+      `  \`npm install\`\n` +
+      `  \`npm run dev\``,
     style: {
       padding: 2,
       borderColor: "green",

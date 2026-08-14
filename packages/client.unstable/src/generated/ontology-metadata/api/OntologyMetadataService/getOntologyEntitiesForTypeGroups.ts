@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetOntologyEntitiesForTypeGroupsRequest
-    as _api_GetOntologyEntitiesForTypeGroupsRequest,
-  GetOntologyEntitiesForTypeGroupsResponse
-    as _api_GetOntologyEntitiesForTypeGroupsResponse,
+  GetOntologyEntitiesForTypeGroupsRequest as _api_GetOntologyEntitiesForTypeGroupsRequest,
+  GetOntologyEntitiesForTypeGroupsResponse as _api_GetOntologyEntitiesForTypeGroupsResponse,
 } from "../__components.js";
 
 /**

@@ -176,9 +176,7 @@ export class MonitorStore {
       interceptedFetch,
     );
 
-    const observableClient: ObservableClient = createObservableClient(
-      client,
-    );
+    const observableClient: ObservableClient = createObservableClient(client);
 
     const fullyWrappedClient = this.wrapWithMonitoring(observableClient);
 
@@ -368,8 +366,7 @@ export class MonitorStore {
       } else {
         await this.monitor.invalidateObjectType(entry.objectType);
       }
-    } catch {
-    }
+    } catch {}
   }
 
   async clearCache(): Promise<void> {
@@ -379,7 +376,6 @@ export class MonitorStore {
 
     try {
       await this.monitor.invalidateAll();
-    } catch {
-    }
+    } catch {}
   }
 }

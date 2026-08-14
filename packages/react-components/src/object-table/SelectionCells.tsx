@@ -16,6 +16,7 @@
 
 import type { Row, RowData } from "@tanstack/react-table";
 import React, { useCallback } from "react";
+
 import { Checkbox } from "../base-components/checkbox/Checkbox.js";
 
 interface SelectionHeaderCellProps {
@@ -29,12 +30,14 @@ export function SelectionHeaderCell({
   hasSelection,
   onToggleAll,
 }: SelectionHeaderCellProps): React.ReactElement {
+  const checkboxLabel = hasSelection ? "Deselect all rows" : "Select all rows";
+
   return (
     <Checkbox
       indeterminate={hasSelection && !isAllSelected}
       checked={isAllSelected}
       onCheckedChange={onToggleAll}
-      aria-label={"Select all rows"}
+      aria-label={checkboxLabel}
     />
   );
 }

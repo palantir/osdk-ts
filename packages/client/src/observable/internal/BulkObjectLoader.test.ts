@@ -23,6 +23,7 @@ import type {
 } from "@osdk/api";
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { Client } from "../../Client.js";
 import { BulkObjectLoader } from "./BulkObjectLoader.js";
 import { createClientMockHelper, type MockClientHelper } from "./testUtils.js";
@@ -31,17 +32,15 @@ describe(BulkObjectLoader, () => {
   let client: Mock<Client> & Client;
   let mockClient: MockClientHelper;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     mockClient = createClientMockHelper();
     client = mockClient.client;
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
     vi.mocked(client.fetchMetadata).mockReturnValue(
-      Promise.resolve(
-        {
-          primaryKeyApiName: "id",
-        } satisfies Pick<ObjectMetadata, "primaryKeyApiName"> as ObjectMetadata,
-      ),
+      Promise.resolve({
+        primaryKeyApiName: "id",
+      } satisfies Pick<ObjectMetadata, "primaryKeyApiName"> as ObjectMetadata),
     );
   });
 
@@ -137,10 +136,7 @@ describe(BulkObjectLoader, () => {
     expect(mockThen).not.toHaveBeenCalled();
 
     secondRequest.resolve({
-      data: [
-        employees[1],
-        employees[2],
-      ],
+      data: [employees[1], employees[2]],
       nextPageToken: undefined,
       totalCount: "2",
     });
@@ -242,21 +238,19 @@ describe(BulkObjectLoader, () => {
 
       // eslint-disable-next-line @typescript-eslint/unbound-method
       vi.mocked(client.fetchMetadata)
-        .mockResolvedValueOnce(
-          {
-            type: "interface",
-            implementedBy: ["Employee"],
-            links: {},
-            apiName: "FooInterface",
-            displayName: "FooInterface",
-            description: undefined,
-            properties: {},
-            rid: "ri.test",
-          } satisfies InterfaceMetadata,
-        )
-        .mockResolvedValueOnce(
-          { primaryKeyApiName: "employeeId" } as ObjectMetadata,
-        );
+        .mockResolvedValueOnce({
+          type: "interface",
+          implementedBy: ["Employee"],
+          links: {},
+          apiName: "FooInterface",
+          displayName: "FooInterface",
+          description: undefined,
+          properties: {},
+          rid: "ri.test",
+        } satisfies InterfaceMetadata)
+        .mockResolvedValueOnce({
+          primaryKeyApiName: "employeeId",
+        } as ObjectMetadata);
 
       const fullObj = {
         $apiName: "Employee",
@@ -279,21 +273,19 @@ describe(BulkObjectLoader, () => {
 
       // eslint-disable-next-line @typescript-eslint/unbound-method
       vi.mocked(client.fetchMetadata)
-        .mockResolvedValueOnce(
-          {
-            type: "interface",
-            implementedBy: ["Employee"],
-            links: {},
-            apiName: "FooInterface",
-            displayName: "FooInterface",
-            description: undefined,
-            properties: {},
-            rid: "ri.test",
-          } satisfies InterfaceMetadata,
-        )
-        .mockResolvedValueOnce(
-          { primaryKeyApiName: "employeeId" } as ObjectMetadata,
-        );
+        .mockResolvedValueOnce({
+          type: "interface",
+          implementedBy: ["Employee"],
+          links: {},
+          apiName: "FooInterface",
+          displayName: "FooInterface",
+          description: undefined,
+          properties: {},
+          rid: "ri.test",
+        } satisfies InterfaceMetadata)
+        .mockResolvedValueOnce({
+          primaryKeyApiName: "employeeId",
+        } as ObjectMetadata);
 
       client.mockReturnValueOnce(mockObjectSet([]));
 
@@ -345,7 +337,7 @@ describe(BulkObjectLoader, () => {
         (def: { type?: string }) =>
           Promise.resolve(
             def.type === "interface"
-              ? interfaceMeta as ObjectMetadata
+              ? (interfaceMeta as ObjectMetadata)
               : objectMeta,
           ),
       );
@@ -366,7 +358,7 @@ describe(BulkObjectLoader, () => {
       };
 
       client.mockImplementation(() =>
-        captureMockSet([employees[0], employees[1]])
+        captureMockSet([employees[0], employees[1]]),
       );
 
       const without = loader.fetch(
@@ -391,7 +383,7 @@ describe(BulkObjectLoader, () => {
 
       expect(capturedArgs).toHaveLength(2);
       const flagValues = capturedArgs
-        .map(a => a.$includeAllBaseObjectProperties)
+        .map((a) => a.$includeAllBaseObjectProperties)
         .sort((a, b) => String(a).localeCompare(String(b)));
       expect(flagValues).toEqual([true, undefined]);
 

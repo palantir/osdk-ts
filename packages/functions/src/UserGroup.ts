@@ -27,10 +27,12 @@ export type UserId = PlatformUserId & {
   __userIdBrand?: void;
 };
 
-export type Principal = {
-  type: "user";
-  id: string;
-} | {
-  type: "group";
-  id: string;
-};
+export type Principal =
+  | {
+      type: "user";
+      id: string;
+    }
+  | {
+      type: "group";
+      id: string;
+    };

@@ -20,6 +20,7 @@
 // console.error, so the Errors panel relies on this boundary for those.
 
 import React from "react";
+
 import type { MonitorStore } from "../store/MonitorStore.js";
 
 export interface OsdkAppErrorBoundaryProps {
@@ -76,7 +77,9 @@ export class OsdkAppErrorBoundary extends React.Component<
       <div role="alert">
         <p>Something went wrong.</p>
         <pre>{error.message}</pre>
-        <button type="button" onClick={this.reset}>Reset</button>
+        <button type="button" onClick={this.reset}>
+          Reset
+        </button>
       </div>
     );
   }

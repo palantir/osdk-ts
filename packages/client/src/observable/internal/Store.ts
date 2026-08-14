@@ -19,16 +19,22 @@ import type {
   ActionEditResponse,
   ActionValidationResponse,
   Logger,
+  ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
   QueryDefinition,
 } from "@osdk/api";
 import invariant from "tiny-invariant";
+
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
-import type { CacheEntry, CacheSnapshot } from "../ObservableClient.js";
+import type {
+  CacheEntry,
+  CacheSnapshot,
+  ObservableClientOptions,
+} from "../ObservableClient.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import { ActionApplication } from "./actions/ActionApplication.js";
 import {
@@ -52,9 +58,7 @@ import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { Entry } from "./Layer.js";
 import { Layers } from "./Layers.js";
 import { LinksHelper } from "./links/LinksHelper.js";
-import {
-  SOURCE_API_NAME_IDX as LINK_API_NAME_IDX,
-} from "./links/SpecificLinkCacheKey.js";
+import { SOURCE_API_NAME_IDX as LINK_API_NAME_IDX } from "./links/SpecificLinkCacheKey.js";
 import {
   API_NAME_IDX as LIST_API_NAME_IDX,
   RDP_IDX as LIST_RDP_IDX,
@@ -91,8 +95,8 @@ export namespace Store {
     - Data is one per layer per cache key
 */
 
-const __DEV__ = typeof process === "undefined"
-  || process.env.NODE_ENV !== "production";
+const __DEV__ =
+  typeof process === "undefined" || process.env.NODE_ENV !== "production";
 
 /**
  * Central data store with layered cache architecture.
@@ -121,6 +125,20 @@ export class Store {
 
   /** @internal */
   readonly logger?: Logger;
+
+  /**
+   * Resolved dev-mode action delay in ms (0 disables); only read in dev builds.
+   * @internal
+   */
+  readonly devModeActionDelayMs: number;
+
+  #devModeDelayWarned = false;
+
+  /**
+   * Resolved dev-mode refcount debug flag; only read in dev builds.
+   * @internal
+   */
+  #debugRefCounts: boolean;
 
   readonly cacheKeys: CacheKeys<KnownCacheKey>;
   readonly queries: Queries = new Queries();
@@ -155,14 +173,22 @@ export class Store {
   readonly media: MediaHelper;
   readonly objectSets: ObjectSetHelper;
 
-  constructor(client: Client) {
-    this.logger = client[additionalContext].logger?.child({}, {
-      msgPrefix: "Store",
-    });
+  constructor(client: Client, options?: ObservableClientOptions) {
+    this.logger = client[additionalContext].logger?.child(
+      {},
+      {
+        msgPrefix: "Store",
+        level: options?.devMode?.logLevel,
+      },
+    );
     this.client = client;
+    this.devModeActionDelayMs = options?.devMode?.actionDelayMs ?? 1000;
+    this.#debugRefCounts =
+      options?.devMode?.debug?.refCounts ?? DEBUG_REFCOUNTS;
 
     this.cacheKeys = new CacheKeys<KnownCacheKey>({
       onDestroy: this.#cleanupCacheKey,
+      debug: options?.devMode?.debug,
     });
 
     this.aggregations = new AggregationsHelper(
@@ -205,21 +231,39 @@ export class Store {
   }
 
   /**
+   * Logs the dev-mode delay explanation once per store. No-op in production.
+   * @internal
+   */
+  maybeWarnDevModeDelayApplied(): void {
+    if (process.env.NODE_ENV !== "production" && !this.#devModeDelayWarned) {
+      this.#devModeDelayWarned = true;
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[@osdk/client] Applied a ${this.devModeActionDelayMs}ms dev-mode ` +
+          `delay to an action with an optimistic update so the optimistic ` +
+          `state is visible before the server responds. This only happens ` +
+          `in dev mode and only for actions with an optimistic update. Tune ` +
+          `it via the OsdkProvider \`devMode={{ actionDelayMs }}\` prop ` +
+          `(or the createObservableClient \`devMode.actionDelayMs\` option); ` +
+          `set it to 0 to disable.`,
+      );
+    }
+  }
+
+  /**
    * Called after a key is no longer retained and the timeout has elapsed
    * @param key
    */
   #cleanupCacheKey = (key: KnownCacheKey) => {
     const subject = this.subjects.peek(key);
 
-    if (DEBUG_REFCOUNTS) {
+    if (process.env.NODE_ENV !== "production" && this.#debugRefCounts) {
       // eslint-disable-next-line no-console
       console.log(
-        `CacheKey cleaning up (${
-          JSON.stringify({
-            closed: subject?.closed,
-            observed: subject?.observed,
-          })
-        })`,
+        `CacheKey cleaning up (${JSON.stringify({
+          closed: subject?.closed,
+          observed: subject?.observed,
+        })})`,
         JSON.stringify([key.type, ...key.otherKeys], null, 2),
       );
     }
@@ -257,14 +301,15 @@ export class Store {
     return result as ActionValidationResponse;
   };
 
-  public getValue<K extends KnownCacheKey>(
-    cacheKey: K,
-  ): Entry<K> | undefined {
+  public getValue<K extends KnownCacheKey>(cacheKey: K): Entry<K> | undefined {
     return this.layers.top.get(cacheKey);
   }
 
   batch<X>(
-    { optimisticId, changes = createChangedObjects() }: {
+    {
+      optimisticId,
+      changes = createChangedObjects(),
+    }: {
       optimisticId?: OptimisticId;
       changes?: Changes;
     },
@@ -294,10 +339,15 @@ export class Store {
     if (variants.size === 0) {
       // No registered variants - create and revalidate the base variant (no RDP)
       promises.push(
-        this.objects.getQuery({
-          apiName,
-          pk,
-        }, undefined).revalidate(/* force */ true),
+        this.objects
+          .getQuery(
+            {
+              apiName,
+              pk,
+            },
+            undefined,
+          )
+          .revalidate(/* force */ true),
       );
     } else {
       // Revalidate all registered variants
@@ -313,6 +363,11 @@ export class Store {
     // keyed on srcType+srcPk+linkName, not the linked object's pk).
     promises.push(this.invalidateLinkQueriesForType(apiName));
 
+    // Function queries with explicit `dependsOnObjects` need to be told the
+    // edited PK directly — they aren't object-cache variants and so aren't
+    // reachable via objectCacheKeyRegistry.
+    promises.push(this.functions.invalidateFunctionsByObject(apiName, pk));
+
     return Promise.allSettled(promises);
   }
 
@@ -327,9 +382,9 @@ export class Store {
    */
   public invalidateLinkQueriesForType(apiName: string): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "invalidateLinkQueriesForType" }).debug(
-        apiName,
-      );
+      this.logger
+        ?.child({ methodName: "invalidateLinkQueriesForType" })
+        .debug(apiName);
     }
 
     const promises: Array<Promise<void>> = [];
@@ -350,9 +405,10 @@ export class Store {
     changes: Changes,
     optimisticId?: OptimisticId | undefined,
   ): Promise<void> {
-    const logger = process.env.NODE_ENV !== "production"
-      ? this.logger?.child({ methodName: "maybeRevalidateQueries" })
-      : undefined;
+    const logger =
+      process.env.NODE_ENV !== "production"
+        ? this.logger?.child({ methodName: "maybeRevalidateQueries" })
+        : undefined;
 
     if (changes.isEmpty()) {
       if (process.env.NODE_ENV !== "production") {
@@ -458,10 +514,8 @@ export class Store {
       const query = this.queries.peek(cacheKey);
       // Both ObjectSetQuery and ListQuery expose objectTypes: ReadonlySet<string>
       if (query && "objectTypes" in query) {
-        for (
-          const objectType of (query as { objectTypes: ReadonlySet<string> })
-            .objectTypes
-        ) {
+        for (const objectType of (query as { objectTypes: ReadonlySet<string> })
+          .objectTypes) {
           if (this.#changesAffectObjectType(changes, objectType)) {
             return true;
           }
@@ -478,15 +532,14 @@ export class Store {
     const affected = this.#changesAffectObjectType(changes, queryObjectType);
 
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "shouldPropagateToQuery" }).debug(
-        `Query type: ${queryObjectType}, affected: ${affected}`,
-        {
+      this.logger
+        ?.child({ methodName: "shouldPropagateToQuery" })
+        .debug(`Query type: ${queryObjectType}, affected: ${affected}`, {
           queryKey: DEBUG_ONLY__cacheKeyToString(cacheKey),
           addedCount: changes.addedObjects.get(queryObjectType)?.length ?? 0,
-          modifiedCount: changes.modifiedObjects.get(queryObjectType)?.length
-            ?? 0,
-        },
-      );
+          modifiedCount:
+            changes.modifiedObjects.get(queryObjectType)?.length ?? 0,
+        });
     }
 
     return affected;
@@ -565,8 +618,8 @@ export class Store {
 
     for (const deletedKey of changes.deleted) {
       if (
-        deletedKey.type === "object"
-        && deletedKey.otherKeys[OBJECT_API_NAME_IDX] === objectType
+        deletedKey.type === "object" &&
+        deletedKey.otherKeys[OBJECT_API_NAME_IDX] === objectType
       ) {
         return true;
       }
@@ -594,18 +647,18 @@ export class Store {
       apiName = apiName.apiName;
     }
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "invalidateObjectType" }).info(
-        changes ? DEBUG_ONLY__changesToString(changes) : void 0,
-      );
+      this.logger
+        ?.child({ methodName: "invalidateObjectType" })
+        .info(changes ? DEBUG_ONLY__changesToString(changes) : void 0);
     }
 
     const promises: Array<Promise<void>> = [];
 
     for (const cacheKey of this.layers.truth.keys()) {
       if (
-        cacheKey.type !== "mediaMetadata"
-        && changes
-        && changes.modified.has(cacheKey)
+        cacheKey.type !== "mediaMetadata" &&
+        changes &&
+        changes.modified.has(cacheKey)
       ) {
         continue;
       }
@@ -619,6 +672,8 @@ export class Store {
     return Promise.allSettled(promises).then(() => void 0);
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   public async invalidateAll(): Promise<void> {
     const promises: Array<Promise<unknown>> = [];
     for (const cacheKey of this.queries.keys()) {
@@ -631,10 +686,12 @@ export class Store {
     return Promise.allSettled(promises).then(() => void 0);
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   public async invalidateObjects(
     objects:
-      | Osdk.Instance<ObjectTypeDefinition>
-      | ReadonlyArray<Osdk.Instance<ObjectTypeDefinition>>,
+      | Osdk.Instance<ObjectOrInterfaceDefinition>
+      | ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>,
   ): Promise<void> {
     const objectsArray = Array.isArray(objects) ? objects : [objects];
     const promises: Array<Promise<unknown>> = [];
@@ -647,6 +704,8 @@ export class Store {
     return Promise.allSettled(promises).then(() => void 0);
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   public async invalidateFunction(
     apiName: string | QueryDefinition<unknown>,
     params?: Record<string, unknown>,
@@ -654,6 +713,8 @@ export class Store {
     return this.functions.invalidateFunction(apiName, params);
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   public async invalidateFunctionsByObject(
     apiName: string,
     primaryKey: string | number,
@@ -665,7 +726,7 @@ export class Store {
 
   public getCacheSnapshot(): CacheSnapshot {
     if (__DEV__) {
-      const sizeCache = this.#sizeCache ??= new WeakMap<object, number>();
+      const sizeCache = (this.#sizeCache ??= new WeakMap<object, number>());
       const entries: CacheEntry[] = [];
       let totalSize = 0;
 

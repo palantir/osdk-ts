@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { CircularBuffer } from "./CircularBuffer.js";
 
 describe("CircularBuffer", () => {
@@ -310,7 +311,10 @@ describe("CircularBuffer", () => {
       buffer.push([4, 5, 6]);
 
       const items = buffer.toArray();
-      expect(items).toEqual([[1, 2, 3], [4, 5, 6]]);
+      expect(items).toEqual([
+        [1, 2, 3],
+        [4, 5, 6],
+      ]);
     });
   });
 });

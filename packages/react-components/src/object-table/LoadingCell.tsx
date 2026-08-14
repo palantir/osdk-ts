@@ -16,27 +16,23 @@
 
 import classNames from "classnames";
 import React from "react";
+
 import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
+
 import styles from "./LoadingCell.module.css";
 import cellStyles from "./TableCell.module.css";
 
 export function LoadingCellContent(): React.ReactElement {
   return (
     <SkeletonBar
-      className={classNames(
-        styles.osdkLoadingCell,
-        styles.osdkCellSkeleton,
-      )}
+      className={classNames(styles.osdkLoadingCell, styles.osdkCellSkeleton)}
     />
   );
 }
 
 export function LoadingCell({ width }: { width: number }): React.ReactElement {
   return (
-    <td
-      className={cellStyles.osdkTableCell}
-      style={{ width }}
-    >
+    <td className={cellStyles.osdkTableCell} style={{ width }}>
       <LoadingCellContent />
     </td>
   );

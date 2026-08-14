@@ -16,6 +16,7 @@
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { PdfViewerSearchBar } from "../PdfViewerSearchBar.js";
 
 const defaultProps = {
@@ -115,8 +116,9 @@ describe("PdfViewerSearchBar", () => {
     expect(
       (screen.getByLabelText("Previous match") as HTMLButtonElement).disabled,
     ).toBe(true);
-    expect((screen.getByLabelText("Next match") as HTMLButtonElement).disabled)
-      .toBe(true);
+    expect(
+      (screen.getByLabelText("Next match") as HTMLButtonElement).disabled,
+    ).toBe(true);
   });
 
   it("should enable nav buttons when there are matches", () => {
@@ -132,7 +134,8 @@ describe("PdfViewerSearchBar", () => {
     expect(
       (screen.getByLabelText("Previous match") as HTMLButtonElement).disabled,
     ).toBe(false);
-    expect((screen.getByLabelText("Next match") as HTMLButtonElement).disabled)
-      .toBe(false);
+    expect(
+      (screen.getByLabelText("Next match") as HTMLButtonElement).disabled,
+    ).toBe(false);
   });
 });

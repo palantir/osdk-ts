@@ -27,6 +27,7 @@ import {
   scheduled,
   switchMap,
 } from "rxjs";
+
 import type { CacheKey } from "../CacheKey.js";
 import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
@@ -51,19 +52,20 @@ export function createCollectionConnectable<
 ): Connectable<P> {
   return connectable<P>(
     subject.pipe(
-      switchMap(listEntry => {
-        const resolvedData = listEntry?.value?.data == null
-          ? of(undefined)
-          : listEntry.value.data.length === 0
-          ? of([])
-          : combineLatest(
-            listEntry.value.data.map((cacheKey: ObjectCacheKey) =>
-              subjects.get(cacheKey).pipe(
-                map(objectEntry => objectEntry?.value!),
-                distinctUntilChanged(),
-              )
-            ),
-          );
+      switchMap((listEntry) => {
+        const resolvedData =
+          listEntry?.value?.data == null
+            ? of(undefined)
+            : listEntry.value.data.length === 0
+              ? of([])
+              : combineLatest(
+                  listEntry.value.data.map((cacheKey: ObjectCacheKey) =>
+                    subjects.get(cacheKey).pipe(
+                      map((objectEntry) => objectEntry?.value!),
+                      distinctUntilChanged(),
+                    ),
+                  ),
+                );
 
         return scheduled(
           combineLatest({
@@ -73,18 +75,19 @@ export function createCollectionConnectable<
             lastUpdated: of(listEntry.lastUpdated),
             totalCount: of(listEntry?.value?.totalCount),
           }).pipe(
-            map(params =>
+            map((params) =>
               createPayload({
-                resolvedData: params.resolvedData === undefined
-                  ? undefined
-                  : Array.isArray(params.resolvedData)
-                  ? params.resolvedData
-                  : [],
+                resolvedData:
+                  params.resolvedData === undefined
+                    ? undefined
+                    : Array.isArray(params.resolvedData)
+                      ? params.resolvedData
+                      : [],
                 isOptimistic: params.isOptimistic,
                 status: params.status,
                 lastUpdated: params.lastUpdated,
                 totalCount: params.totalCount,
-              })
+              }),
             ),
           ),
           asapScheduler,

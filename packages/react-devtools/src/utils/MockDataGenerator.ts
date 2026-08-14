@@ -37,8 +37,8 @@ export class MockDataGenerator {
       const objectType = this.extractObjectTypeFromAction(actionName);
       parameters = this.generateCreateParameters(objectType);
     } else if (
-      actionName.toLowerCase().includes("update")
-      || actionName.toLowerCase().includes("modify")
+      actionName.toLowerCase().includes("update") ||
+      actionName.toLowerCase().includes("modify")
     ) {
       const objectType = this.extractObjectTypeFromAction(actionName);
       parameters = this.generateUpdateParameters(objectType);
@@ -81,7 +81,7 @@ export class MockDataGenerator {
       case "query":
         return this.generateQueryMockData(primitive.data);
       case "aggregation":
-        return "{\n  \"data\": {},\n  \"status\": \"SUCCESS\"\n}";
+        return '{\n  "data": {},\n  "status": "SUCCESS"\n}';
     }
   }
 
@@ -98,7 +98,7 @@ export class MockDataGenerator {
       case "query":
         return this.generateQueryFunctionCode(primitive.data);
       case "aggregation":
-        return "function generateMock(params) {\n  return {\n    data: {},\n    status: \"SUCCESS\"\n  };\n}";
+        return 'function generateMock(params) {\n  return {\n    data: {},\n    status: "SUCCESS"\n  };\n}';
     }
   }
 
@@ -119,7 +119,7 @@ export class MockDataGenerator {
       addedObjects: [
         {
           primaryKey: actionId,
-          objectType: objectType,
+          objectType,
         },
       ],
       modifiedObjects: [],
@@ -457,18 +457,19 @@ function generateId() {
 
   private static extractObjectTypeFromAction(actionName: string): string {
     const patterns = [
-      /create[_-]?(\w+)/i,
-      /add[_-]?(\w+)/i,
-      /new[_-]?(\w+)/i,
-      /(\w+)[_-]?create/i,
-      /(\w+)[_-]?add/i,
+      /create[_-]?(\w+)/iu,
+      /add[_-]?(\w+)/iu,
+      /new[_-]?(\w+)/iu,
+      /(\w+)[_-]?create/iu,
+      /(\w+)[_-]?add/iu,
     ];
 
     for (const pattern of patterns) {
       const match = actionName.match(pattern);
       if (match && match[1]) {
-        return match[1].charAt(0).toUpperCase()
-          + match[1].slice(1).toLowerCase();
+        return (
+          match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase()
+        );
       }
     }
 
@@ -494,7 +495,7 @@ function generateId() {
 
     let singular = linkName;
     if (linkName.endsWith("ies")) {
-      singular = linkName.slice(0, -3) + "y";
+      singular = `${linkName.slice(0, -3)}y`;
     } else if (linkName.endsWith("es")) {
       singular = linkName.slice(0, -2);
     } else if (linkName.endsWith("s")) {

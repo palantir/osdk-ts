@@ -27,5 +27,5 @@ const numEmployee = await client(Employee)
   .where({ department: { $isNull: false } })
   .aggregate({
     $select: { $count: "unordered" },
-    // $groupBy: { department: "exact" },
+    //$groupBy: { department: "exact" },
   });

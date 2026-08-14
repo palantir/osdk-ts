@@ -16,6 +16,7 @@
 
 export * from "./actions.js";
 export * from "./actionTypes.js";
+export * from "./complexImplementationTypes.js";
 export * from "./defaultOntologyForConjure.js";
 export * from "./interfaceTypes.js";
 export * from "./linkTypes.js";

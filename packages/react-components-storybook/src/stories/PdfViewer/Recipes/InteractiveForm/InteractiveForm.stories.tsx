@@ -17,8 +17,8 @@
 /* cspell:disable */
 
 import type {
+  BasePdfViewerProps,
   PdfFormFieldValue,
-  PdfViewerProps,
 } from "@osdk/react-components/experimental/pdf-viewer";
 import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -60,13 +60,13 @@ const FORM_RECIPES: FormRecipe[] = [
     title: "John Smith",
     description: "Software engineer from London",
     data: {
-      "FullName": "John Smith",
-      "ID": "JS-12345",
-      "Gender": "0",
-      "Married": false,
-      "City": "London",
-      "Language": "English",
-      "Notes":
+      FullName: "John Smith",
+      ID: "JS-12345",
+      Gender: "0",
+      Married: false,
+      City: "London",
+      Language: "English",
+      Notes:
         "Senior developer at Acme Corp.\nSpecializes in React and TypeScript.",
     },
   },
@@ -74,26 +74,26 @@ const FORM_RECIPES: FormRecipe[] = [
     title: "Marie Dupont",
     description: "Married designer from Paris",
     data: {
-      "FullName": "Marie Dupont",
-      "ID": "MD-67890",
-      "Gender": "1",
-      "Married": true,
-      "City": "Paris",
-      "Language": "French",
-      "Notes": "Lead UX designer.\nFluent in French and English.",
+      FullName: "Marie Dupont",
+      ID: "MD-67890",
+      Gender: "1",
+      Married: true,
+      City: "Paris",
+      Language: "French",
+      Notes: "Lead UX designer.\nFluent in French and English.",
     },
   },
   {
     title: "Hans Müller",
     description: "Engineer from Berlin",
     data: {
-      "FullName": "Hans Müller",
-      "ID": "HM-24680",
-      "Gender": "0",
-      "Married": true,
-      "City": "Berlin",
-      "Language": "German",
-      "Notes": "Mechanical engineer with 10 years experience.",
+      FullName: "Hans Müller",
+      ID: "HM-24680",
+      Gender: "0",
+      Married: true,
+      City: "Berlin",
+      Language: "German",
+      Notes: "Mechanical engineer with 10 years experience.",
     },
   },
 ];
@@ -203,9 +203,10 @@ interface FormSidebarProps {
   onLoadRecipe: (recipe: Record<string, PdfFormFieldValue>) => void;
 }
 
-function FormSidebar(
-  { formValues, onLoadRecipe }: FormSidebarProps,
-): React.ReactElement {
+function FormSidebar({
+  formValues,
+  onLoadRecipe,
+}: FormSidebarProps): React.ReactElement {
   const handleDownload = useCallback(() => {
     void downloadFilledPdf(formValues);
   }, [formValues]);
@@ -328,9 +329,10 @@ function InteractiveFormWithSidebar(): React.ReactElement {
   );
 }
 
-const meta: Meta<PdfViewerProps> = {
-  title: "Experimental/PdfViewer/Recipes",
+const meta: Meta<BasePdfViewerProps> = {
+  title: "Components/DocumentViewer/Renderers/PdfViewer/Recipes",
   component: BasePdfViewer,
+  tags: ["beta"],
 };
 
 export default meta;

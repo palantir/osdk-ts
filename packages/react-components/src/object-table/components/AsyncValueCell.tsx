@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import { LoadingCellContent } from "../LoadingCell.js";
 import type { AsyncCellData } from "../utils/AsyncCellData.js";
 

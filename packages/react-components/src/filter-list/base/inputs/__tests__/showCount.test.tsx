@@ -17,6 +17,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import type { PropertyAggregationValue } from "../../../types/AggregationTypes.js";
 import { ListogramInput } from "../ListogramInput.js";
 import { MultiSelectInput } from "../MultiSelectInput.js";

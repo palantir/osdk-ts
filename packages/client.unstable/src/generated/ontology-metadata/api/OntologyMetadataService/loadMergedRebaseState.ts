@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   LoadMergedRebaseStateRequest as _api_LoadMergedRebaseStateRequest,
   OntologyBulkLoadEntitiesResponse as _api_OntologyBulkLoadEntitiesResponse,

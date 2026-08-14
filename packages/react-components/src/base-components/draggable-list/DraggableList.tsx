@@ -35,6 +35,7 @@ import { CSS } from "@dnd-kit/utilities";
 import classNames from "classnames";
 import type { RefObject } from "react";
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
+
 import styles from "./DraggableList.module.css";
 
 export interface DraggableItem {
@@ -169,10 +170,7 @@ export function DraggableList<T extends DraggableItem>({
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        <SortableContext
-          items={itemIds}
-          strategy={verticalListSortingStrategy}
-        >
+        <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
           {items.map((item) => (
             <DraggableListItem<T>
               key={item.id}
@@ -216,7 +214,7 @@ const useKeyboardEvents = (containerRef: RefObject<HTMLDivElement>) => {
       }
 
       // Only intercept when a drag is active (an item has [data-dragging="true"])
-      if (el!.querySelector("[data-dragging=\"true\"]") == null) {
+      if (el!.querySelector('[data-dragging="true"]') == null) {
         return;
       }
 

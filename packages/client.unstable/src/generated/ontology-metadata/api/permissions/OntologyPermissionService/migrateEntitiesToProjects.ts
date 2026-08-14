@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  MigrateEntitiesToProjectsRequest
-    as _api_permissions_MigrateEntitiesToProjectsRequest,
-  MigrateEntitiesToProjectsResponse
-    as _api_permissions_MigrateEntitiesToProjectsResponse,
+  MigrateEntitiesToProjectsRequest as _api_permissions_MigrateEntitiesToProjectsRequest,
+  MigrateEntitiesToProjectsResponse as _api_permissions_MigrateEntitiesToProjectsResponse,
 } from "../__components.js";
 
 /**

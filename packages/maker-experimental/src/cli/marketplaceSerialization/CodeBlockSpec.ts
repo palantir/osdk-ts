@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import type { UUID } from "crypto";
+import crypto, { createHash } from "crypto";
+
 import type {
   BlockType,
   InputShape,
@@ -21,10 +24,9 @@ import type {
   OutputShape,
   SerializedDataLocator,
 } from "@osdk/client.unstable/api";
-import type { UUID } from "crypto";
-import crypto, { createHash } from "crypto";
+
 import type { ReadableId } from "../../util/generateRid.js";
-import type { SemverVersion } from "./specGenerators.js";
+import type { SemverVersion } from "./semver.js";
 import type {
   GeneratedBlockExternalRecommendations,
   InputMappingEntry,
@@ -86,8 +88,7 @@ export function getBlockVersionId(
 ): UUID {
   let mergedString = `${blockSpec.blockMavenCoordinate}_${blockSetVersion}`;
   if (randomnessKey) {
-    mergedString =
-      `${blockSpec.blockMavenCoordinate}_${blockSetVersion}_${randomnessKey}`;
+    mergedString = `${blockSpec.blockMavenCoordinate}_${blockSetVersion}_${randomnessKey}`;
   }
 
   return generateUUIDFromStr(mergedString);
@@ -101,7 +102,7 @@ function generateUUIDFromStr(input: crypto.BinaryLike): UUID {
   md5Bytes[8] |= 0x80; /* set to IETF variant  */
   const hex = md5Bytes.toString("hex");
   const uuid = hex.replace(
-    /(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/,
+    /(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/u,
     "$1-$2-$3-$4-$5",
   );
   return uuid as UUID;

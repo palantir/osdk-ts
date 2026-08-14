@@ -53,12 +53,14 @@ const MIXED_ANNOTATIONS: PdfAnnotation[] = [
 ];
 
 const meta: Meta<PdfViewerAnnotationLayerProps> = {
-  title: "Experimental/PdfViewer/Building Blocks/AnnotationLayer",
+  title:
+    "Components/DocumentViewer/Renderers/PdfViewer/Building Blocks/AnnotationLayer",
   component: PdfViewerAnnotationLayer,
+  tags: ["beta"],
   args: {
     annotations: MIXED_ANNOTATIONS,
     pageHeight: 792,
-    scale: 1.0,
+    scale: 1,
     onAnnotationClick: fn(),
   },
   render: (args: PdfViewerAnnotationLayerProps) => (
@@ -71,7 +73,18 @@ const meta: Meta<PdfViewerAnnotationLayerProps> = {
         background: "#fff",
       }}
     >
-      <PdfViewerAnnotationLayer {...args} />
+      <PdfViewerAnnotationLayer
+        {...args}
+        // pdf.js viewport.transform for a non-rotated page: scales and flips y.
+        transform={[
+          args.scale,
+          0,
+          0,
+          -args.scale,
+          0,
+          args.pageHeight * args.scale,
+        ]}
+      />
     </div>
   ),
   argTypes: {
@@ -127,6 +140,6 @@ export const HighlightsOnly: Story = {
 
 export const ZoomedIn: Story = {
   args: {
-    scale: 2.0,
+    scale: 2,
   },
 };

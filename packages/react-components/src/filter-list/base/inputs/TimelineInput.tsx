@@ -18,11 +18,13 @@ import { Button } from "@base-ui/react/button";
 import { Input } from "@base-ui/react/input";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
+
 import {
   formatDateForDisplay,
   formatDateForInput,
   parseDateFromInput,
 } from "../../../shared/dateUtils.js";
+
 import styles from "./TimelineInput.module.css";
 
 interface TimelineInputProps {
@@ -32,6 +34,12 @@ interface TimelineInputProps {
   className?: string;
   minDate?: Date;
   maxDate?: Date;
+  /**
+   * Optional callback used for the period labels above the date inputs.
+   * The HTML `<input type="date">` value attribute is unaffected and stays
+   * ISO `YYYY-MM-DD`.
+   */
+  formatDate?: (date: Date) => string;
 }
 
 function TimelineInputInner({
@@ -41,7 +49,14 @@ function TimelineInputInner({
   className,
   minDate,
   maxDate,
+  formatDate,
 }: TimelineInputProps): React.ReactElement {
+  const renderDate = (date: Date | undefined, fallback: string): string =>
+    date == null
+      ? fallback
+      : formatDate
+        ? formatDate(date)
+        : formatDateForDisplay(date, fallback);
   const handleStartChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const date = parseDateFromInput(e.target.value);
@@ -62,21 +77,15 @@ function TimelineInputInner({
     onChange(undefined, undefined);
   }, [onChange]);
 
-  const startInputMax = useMemo(
-    () => endDate ?? maxDate,
-    [endDate, maxDate],
-  );
-  const endInputMin = useMemo(
-    () => startDate ?? minDate,
-    [startDate, minDate],
-  );
+  const startInputMax = useMemo(() => endDate ?? maxDate, [endDate, maxDate]);
+  const endInputMin = useMemo(() => startDate ?? minDate, [startDate, minDate]);
 
   return (
     <div className={classnames(styles.timeline, className)}>
       <div className={styles.labels}>
-        <span>{formatDateForDisplay(startDate, "—")}</span>
+        <span>{renderDate(startDate, "—")}</span>
         <span>to</span>
-        <span>{formatDateForDisplay(endDate, "—")}</span>
+        <span>{renderDate(endDate, "—")}</span>
         {(startDate || endDate) && (
           <Button
             type="button"

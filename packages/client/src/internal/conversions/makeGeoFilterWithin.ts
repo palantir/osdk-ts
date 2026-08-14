@@ -20,6 +20,7 @@ import type {
   PropertyIdentifier,
   SearchJsonQueryV2,
 } from "@osdk/foundry.ontologies";
+
 import { makeGeoFilterBbox } from "./makeGeoFilterBbox.js";
 import { makeGeoFilterPolygon } from "./makeGeoFilterPolygon.js";
 
@@ -38,9 +39,10 @@ export function makeGeoFilterWithin(
       field,
     );
   } else if (
-    ("$distance" in withinBody && "$of" in withinBody)
-    && withinBody.$distance != null
-    && withinBody.$of != null
+    "$distance" in withinBody &&
+    "$of" in withinBody &&
+    withinBody.$distance != null &&
+    withinBody.$of != null
   ) {
     return {
       type: "withinDistanceOf",
@@ -49,9 +51,9 @@ export function makeGeoFilterWithin(
       value: {
         center: Array.isArray(withinBody.$of)
           ? {
-            type: "Point",
-            coordinates: withinBody.$of,
-          }
+              type: "Point",
+              coordinates: withinBody.$of,
+            }
           : withinBody.$of,
         distance: {
           value: withinBody.$distance[0],
@@ -60,9 +62,8 @@ export function makeGeoFilterWithin(
       },
     };
   } else {
-    const coordinates = ("$polygon" in withinBody)
-      ? withinBody.$polygon
-      : withinBody.coordinates;
+    const coordinates =
+      "$polygon" in withinBody ? withinBody.$polygon : withinBody.coordinates;
     return makeGeoFilterPolygon(
       coordinates,
       "withinPolygon",

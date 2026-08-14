@@ -16,20 +16,26 @@
 
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
+
+import type { FilterDefinitionControls } from "../FilterListItemApi.js";
 import type { BaseFilterListProps } from "./BaseFilterListApi.js";
 import { ExpandIcon } from "./FilterIcons.js";
-import styles from "./FilterList.module.css";
+import { FilterListBoundaryProvider } from "./FilterListBoundaryContext.js";
 import { FilterListContent } from "./FilterListContent.js";
 import { FilterListHeader } from "./FilterListHeader.js";
 
-export function BaseFilterList<D>(
+import styles from "./FilterList.module.css";
+
+export function BaseFilterList<D extends FilterDefinitionControls>(
   props: BaseFilterListProps<D>,
 ): React.ReactElement {
   const {
     title,
     titleIcon,
-    collapsed = false,
+    enableCollapse = true,
+    collapsed,
+    defaultCollapsed,
     onCollapsedChange,
     filterDefinitions,
     filterStates,
@@ -37,6 +43,7 @@ export function BaseFilterList<D>(
     renderInput,
     getFilterKey,
     getFilterLabel,
+    getEmptyDisplayState,
     activeFilterCount,
     onReset,
     onFilterAdded,
@@ -44,30 +51,53 @@ export function BaseFilterList<D>(
     onOrderChange,
     showResetButton = false,
     showActiveFilterCount = false,
-    hasVisibilityChanges,
+    canReset,
     enableSorting,
     className,
     renderAddFilterButton,
   } = props;
 
-  const showHeader = title || titleIcon || showResetButton
-    || showActiveFilterCount || onCollapsedChange;
+  const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(
+    null,
+  );
+
+  // The collapsed state in uncontrolled mode.
+  const [internalCollapsed, setInternalCollapsed] = useState(
+    () => defaultCollapsed ?? false,
+  );
+
+  const isCollapsedControlled = collapsed !== undefined;
+  const collapsedState = isCollapsedControlled ? collapsed : internalCollapsed;
+
+  const showHeader =
+    title ||
+    titleIcon ||
+    showResetButton ||
+    showActiveFilterCount ||
+    enableCollapse;
 
   const showAddButton = renderAddFilterButton != null || onFilterAdded != null;
 
-  const handleExpand = useCallback(() => {
-    onCollapsedChange?.(false);
-  }, [onCollapsedChange]);
+  const handleCollapsedChange = useCallback(
+    (next: boolean) => {
+      if (!isCollapsedControlled) {
+        setInternalCollapsed(next);
+      }
+      onCollapsedChange?.(next);
+    },
+    [isCollapsedControlled, onCollapsedChange],
+  );
 
-  const isCollapsed = collapsed && onCollapsedChange != null;
+  const handleExpand = useCallback(() => {
+    handleCollapsedChange(false);
+  }, [handleCollapsedChange]);
+
+  const isCollapsed = enableCollapse && collapsedState;
 
   return (
     <div className={classnames(styles.filterList, className)}>
       {isCollapsed && (
-        <div
-          className={styles.filterListCollapsed}
-          data-collapsed="true"
-        >
+        <div className={styles.filterListCollapsed} data-collapsed="true">
           <Button
             className={styles.expandButton}
             onClick={handleExpand}
@@ -79,45 +109,49 @@ export function BaseFilterList<D>(
         </div>
       )}
       <div
+        ref={setBoundaryElement}
         className={classnames(
           styles.expandedContent,
           isCollapsed && styles.hiddenContent,
         )}
         data-active-count={activeFilterCount}
       >
-        {showHeader && (
-          <FilterListHeader
-            title={title}
-            titleIcon={titleIcon}
-            collapsed={collapsed}
-            onCollapsedChange={onCollapsedChange}
-            showResetButton={showResetButton}
-            onReset={onReset}
-            showActiveFilterCount={showActiveFilterCount}
-            activeFilterCount={activeFilterCount}
-            hasVisibilityChanges={hasVisibilityChanges}
-          />
-        )}
+        <FilterListBoundaryProvider value={boundaryElement}>
+          {showHeader && (
+            <FilterListHeader
+              title={title}
+              titleIcon={titleIcon}
+              showCollapseButton={enableCollapse}
+              collapsed={isCollapsed}
+              onCollapsedChange={handleCollapsedChange}
+              showResetButton={showResetButton}
+              onReset={onReset}
+              showActiveFilterCount={showActiveFilterCount}
+              activeFilterCount={activeFilterCount}
+              canReset={canReset}
+            />
+          )}
 
-        <div className={styles.scrollableContent}>
-          <FilterListContent
-            filterDefinitions={filterDefinitions}
-            filterStates={filterStates}
-            onFilterStateChanged={onFilterStateChanged}
-            onFilterRemoved={onFilterRemoved}
-            onOrderChange={onOrderChange}
-            renderInput={renderInput}
-            getFilterKey={getFilterKey}
-            getFilterLabel={getFilterLabel}
-            enableSorting={enableSorting}
-          />
-        </div>
+          <div className={styles.scrollableContent}>
+            <FilterListContent
+              filterDefinitions={filterDefinitions}
+              filterStates={filterStates}
+              onFilterStateChanged={onFilterStateChanged}
+              onFilterRemoved={onFilterRemoved}
+              onOrderChange={onOrderChange}
+              renderInput={renderInput}
+              getFilterKey={getFilterKey}
+              getFilterLabel={getFilterLabel}
+              getEmptyDisplayState={getEmptyDisplayState}
+              enableSorting={enableSorting}
+            />
+          </div>
 
-        {showAddButton && (
-          <div className={styles.addButtonContainer}>
-            {renderAddFilterButton
-              ? renderAddFilterButton()
-              : (
+          {showAddButton && (
+            <div className={styles.addButtonContainer}>
+              {renderAddFilterButton ? (
+                renderAddFilterButton()
+              ) : (
                 <Button
                   type="button"
                   className={styles.addButton}
@@ -126,8 +160,9 @@ export function BaseFilterList<D>(
                   + Add filter
                 </Button>
               )}
-          </div>
-        )}
+            </div>
+          )}
+        </FilterListBoundaryProvider>
       </div>
     </div>
   );

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  EXPERIMENTAL_BulkLinkResult,
-} from "../objectSet/BulkLinkResult.js";
+import type { EXPERIMENTAL_BulkLinkResult } from "../objectSet/BulkLinkResult.js";
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { Experiment } from "./Experiment.js";

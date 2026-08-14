@@ -1,5 +1,365 @@
 # @osdk/maker
 
+## 0.57.0
+
+### Minor Changes
+
+- b28235f: check for duplicate links
+
+## 0.56.0
+
+### Minor Changes
+
+- cea978e: Add configurable missing descriptions to all entities
+
+## 0.55.0
+
+### Minor Changes
+
+- e9d7ffa: Add struct action parameter validation types and serialization support.
+
+### Patch Changes
+
+- Updated dependencies [8ce066f]
+- Updated dependencies [3bfccdb]
+  - @osdk/generator-converters.ontologyir@2.57.0
+  - @osdk/api@2.57.0
+
+## 0.54.0
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+  - @osdk/typescript-sdk-docs@0.21.0
+  - @osdk/generator-converters.ontologyir@2.55.0
+
+## 0.53.0
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/generator-converters.ontologyir@2.53.0
+  - @osdk/typescript-sdk-docs@0.20.0
+  - @osdk/api@2.53.0
+
+## 0.52.0
+
+### Minor Changes
+
+- 7ae7004: Revert re-enabling the `unicorn/no-useless-switch-case` oxlint rule; the rule is disabled again and the explicit `case` labels are restored. Behavior-preserving with no runtime or API changes.
+- 7667b67: export interface link constraints
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [7ae7004]
+- Updated dependencies [9ef0982]
+- Updated dependencies [eab0750]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/typescript-sdk-docs@0.19.0
+  - @osdk/generator-converters.ontologyir@2.52.0
+
+## 0.51.0
+
+### Minor Changes
+
+- bce917e: Write dependency file for maker-experimental
+
+### Patch Changes
+
+- Updated dependencies [9d75f4e]
+  - @osdk/generator-converters.ontologyir@2.50.0
+  - @osdk/api@2.50.0
+
+## 0.50.0
+
+### Minor Changes
+
+- 3a1c5a2: Fix inherited optional property being required
+
+### Patch Changes
+
+- @osdk/api@2.49.0
+- @osdk/generator-converters.ontologyir@2.49.0
+
+## 0.49.0
+
+### Minor Changes
+
+- 62f9714: Re-enable the `unicorn/no-useless-switch-case` oxlint rule and drop the redundant empty `case` labels that fell straight through to `default`. Behavior-preserving with no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [62f9714]
+  - @osdk/typescript-sdk-docs@0.18.0
+  - @osdk/api@2.48.0
+  - @osdk/generator-converters.ontologyir@2.48.0
+
+## 0.48.0
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+- @osdk/generator-converters.ontologyir@2.47.0
+
+## 0.47.0
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+- @osdk/generator-converters.ontologyir@2.46.0
+
+## 0.46.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [da96711]
+- Updated dependencies [566ecd3]
+  - @osdk/generator-converters.ontologyir@2.43.0
+  - @osdk/typescript-sdk-docs@0.17.0
+  - @osdk/api@2.43.0
+
+## 0.45.0
+
+### Minor Changes
+
+- f49b4af: Migrate @osdk/maker, @osdk/maker-experimental, and @osdk/maker-import to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint. Each package is reformatted with oxfmt, with its newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving.
+
+### Patch Changes
+
+- Updated dependencies [830d791]
+- Updated dependencies [cbcdce1]
+  - @osdk/api@2.42.0
+  - @osdk/typescript-sdk-docs@0.16.0
+  - @osdk/generator-converters.ontologyir@2.42.0
+
+## 0.44.0
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/api@2.41.0
+  - @osdk/generator-converters.ontologyir@2.41.0
+
+## 0.43.0
+
+### Minor Changes
+
+- fcde4c0: Add `defineDeleteInterfaceLinkAction`.
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/api@2.40.0
+  - @osdk/generator-converters.ontologyir@2.40.0
+
+## 0.42.0
+
+### Minor Changes
+
+- 1796140: Fix list-type action parameters being generated with a scalar required/notRequired configuration.
+
+### Patch Changes
+
+- @osdk/api@2.39.0
+- @osdk/generator-converters.ontologyir@2.39.0
+
+## 0.41.0
+
+### Patch Changes
+
+- Updated dependencies [58b3367]
+  - @osdk/typescript-sdk-docs@0.15.0
+  - @osdk/api@2.38.0
+  - @osdk/generator-converters.ontologyir@2.38.0
+
+## 0.40.0
+
+### Patch Changes
+
+- Updated dependencies [0bd4a2e]
+  - @osdk/typescript-sdk-docs@0.14.0
+  - @osdk/api@2.37.0
+  - @osdk/generator-converters.ontologyir@2.37.0
+
+## 0.39.0
+
+### Minor Changes
+
+- 59115b1: Add `defineCreateInterfaceLinkAction`
+
+### Patch Changes
+
+- @osdk/api@2.35.0
+- @osdk/generator-converters.ontologyir@2.35.0
+
+## 0.38.0
+
+### Minor Changes
+
+- 90c415f: Support interface link actions
+
+## 0.37.0
+
+### Minor Changes
+
+- 07eaaff: Fix function backed actions with interfaces
+
+### Patch Changes
+
+- Updated dependencies [07eaaff]
+- Updated dependencies [4a25731]
+- Updated dependencies [db028a0]
+- Updated dependencies [48eb46e]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters.ontologyir@2.34.0
+  - @osdk/api@2.34.0
+
+## 0.36.0
+
+### Minor Changes
+
+- cae84bd: Fix optional inputs for OAC FBA
+- 9e602f2: allow require implementation for interface action type constraint
+- 0032d94: fix cyclical interfaces on all internal types
+
+### Patch Changes
+
+- Updated dependencies [a9de941]
+  - @osdk/generator-converters.ontologyir@2.33.0
+  - @osdk/api@2.33.0
+
+## 0.35.0
+
+### Minor Changes
+
+- b5d0a61: transitive OAC imports
+- 833f47a: add support for interface action type constraint in ontology as code
+
+### Patch Changes
+
+- Updated dependencies [b5d0a61]
+- Updated dependencies [06adca1]
+- Updated dependencies [833f47a]
+  - @osdk/generator-converters.ontologyir@2.32.0
+  - @osdk/api@2.32.0
+
+## 0.34.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/generator-converters.ontologyir@2.31.0
+
+## 0.33.0
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/api@2.29.0
+  - @osdk/generator-converters.ontologyir@2.29.0
+
+## 0.32.0
+
+### Minor Changes
+
+- 1bc01d1: Add property validation for direct datasources
+
+### Patch Changes
+
+- @osdk/api@2.28.0
+- @osdk/generator-converters.ontologyir@2.28.0
+
+## 0.31.0
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+- Updated dependencies [bd90dba]
+  - @osdk/generator-converters.ontologyir@2.25.0
+  - @osdk/typescript-sdk-docs@0.12.0
+  - @osdk/api@2.25.0
+
+## 0.30.0
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+- Updated dependencies [d087189]
+  - @osdk/api@2.24.0
+  - @osdk/generator-converters.ontologyir@2.24.0
+  - @osdk/typescript-sdk-docs@0.11.0
+
+## 0.29.0
+
+### Minor Changes
+
+- 56c2c9f: write static object file
+
+### Patch Changes
+
+- Updated dependencies [198f219]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/api@2.23.0
+  - @osdk/generator-converters.ontologyir@2.23.0
+
+## 0.28.0
+
+### Minor Changes
+
+- dea392c: Fix maker experimental imports
+
+### Patch Changes
+
+- Updated dependencies [dea392c]
+- Updated dependencies [d8f3dfd]
+  - @osdk/generator-converters.ontologyir@2.22.0
+  - @osdk/api@2.22.0
+
+## 0.27.0
+
+### Minor Changes
+
+- 6bca4fd: fix cbac default nullability
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+- Updated dependencies [5b89f25]
+- Updated dependencies [b98e084]
+  - @osdk/api@2.21.0
+  - @osdk/generator-converters.ontologyir@2.21.0
+
+## 0.26.0
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+  - @osdk/generator-converters.ontologyir@2.20.0
+
+## 0.25.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [46c553f]
+- Updated dependencies [d962309]
+  - @osdk/api@2.19.0
+  - @osdk/generator-converters.ontologyir@2.19.0
+
 ## 0.24.0
 
 ### Minor Changes

@@ -30,6 +30,7 @@
 
 import type { PlatformClient } from "@osdk/client";
 import { describe, expect, it } from "vitest";
+
 import { generateText } from "./generateText.js";
 import {
   assertDefined,
@@ -45,7 +46,7 @@ const describeIfConfigured = baseUrl && token ? describe : describe.skip;
 const E2E_TIMEOUT_MS = 30_000;
 
 function makeClient(baseUrlIn: string, tokenIn: string): PlatformClient {
-  const fetchFn: typeof globalThis.fetch = async (input, init) => {
+  const fetchFn: typeof globalThis.fetch = (input, init) => {
     const headers = new Headers(init?.headers);
     headers.set("Authorization", `Bearer ${tokenIn}`);
     return fetch(input, { ...init, headers });
@@ -121,7 +122,7 @@ describeIfConfigured("generateText (e2e)", () => {
       expect(call.toolName).toBe("getWeather");
       const input = call.input as { city?: string };
       assertDefined(input.city, "tool call city");
-      expect(input.city.toLowerCase()).toMatch(/san\s*francisco|sf/);
+      expect(input.city.toLowerCase()).toMatch(/san\s*francisco|sf/u);
     },
     E2E_TIMEOUT_MS,
   );

@@ -26,6 +26,7 @@ import type {
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import { type Subject } from "rxjs";
+
 import { additionalContext } from "../../../Client.js";
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
@@ -44,8 +45,10 @@ import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import { tombstone } from "../tombstone.js";
+import { reloadDataAsFullObjects } from "../utils/reloadDataAsFullObjects.js";
 import {
   INCLUDE_ALL_BASE_PROPERTIES_IDX as LINK_INCLUDE_ALL_BASE_PROPERTIES_IDX,
+  RESOLVE_TO_OBJECT_TYPE_IDX as LINK_RESOLVE_TO_OBJECT_TYPE_IDX,
   SELECT_IDX as LINK_SELECT_IDX,
   type SpecificLinkCacheKey,
 } from "./SpecificLinkCacheKey.js";
@@ -70,16 +73,16 @@ export class SpecificLinkQuery extends BaseListQuery<
   #whereClause: Canonical<SimpleWhereClause>;
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
   #select: Canonical<readonly string[]> | undefined;
+  #resolveToObjectType: boolean;
 
   protected override createPayload(
     params: CollectionConnectableParams,
   ): SpecificLinkPayload {
     return {
       ...super.createPayload(params),
-      linkedObjectsBySourcePrimaryKey: new Map([[
-        this.#sourcePk,
-        params.resolvedData ?? [],
-      ]]),
+      linkedObjectsBySourcePrimaryKey: new Map([
+        [this.#sourcePk, params.resolvedData ?? []],
+      ]),
     };
   }
 
@@ -102,13 +105,14 @@ export class SpecificLinkQuery extends BaseListQuery<
       opts,
       cacheKey,
       process.env.NODE_ENV !== "production"
-        ? (
-          store.client[additionalContext].logger?.child({}, {
-            msgPrefix: `SpecificLinkQuery<${
-              cacheKey.otherKeys.map(x => JSON.stringify(x)).join(", ")
-            }>`,
-          })
-        )
+        ? store.client[additionalContext].logger?.child(
+            {},
+            {
+              msgPrefix: `SpecificLinkQuery<${cacheKey.otherKeys
+                .map((x) => JSON.stringify(x))
+                .join(", ")}>`,
+            },
+          )
         : undefined,
     );
 
@@ -123,6 +127,8 @@ export class SpecificLinkQuery extends BaseListQuery<
       this.#orderBy,
     ] = cacheKey.otherKeys;
     this.#select = cacheKey.otherKeys[LINK_SELECT_IDX];
+    this.#resolveToObjectType =
+      cacheKey.otherKeys[LINK_RESOLVE_TO_OBJECT_TYPE_IDX] === true;
   }
 
   protected get rawSelect(): Canonical<readonly string[]> | undefined {
@@ -153,10 +159,13 @@ export class SpecificLinkQuery extends BaseListQuery<
     // Resolve the link target's apiName + kind once if needed for sorting or
     // for gating the $includeAllBaseObjectProperties param. The ontology
     // provider caches its lookups, so calling it here is cheap.
-    const hasOrderBy = this.#orderBy
-      && Object.keys(this.#orderBy).length > 0;
+    const hasOrderBy = this.#orderBy && Object.keys(this.#orderBy).length > 0;
     let target: { apiName: string; kind: "object" | "interface" } | undefined;
-    if (hasOrderBy || this.includeAllBaseObjectProperties) {
+    if (
+      hasOrderBy ||
+      this.includeAllBaseObjectProperties ||
+      this.#resolveToObjectType
+    ) {
       if (isInterface) {
         const interfaceMetadata = await ontologyProvider.getInterfaceDefinition(
           this.#sourceApiName,
@@ -273,6 +282,13 @@ export class SpecificLinkQuery extends BaseListQuery<
     // Store the next page token for pagination
     this.nextPageToken = response.nextPageToken;
 
+    // Honor resolveToObjectType only when the link target is an interface —
+    // for concrete object targets the data is already in object form.
+    if (this.#resolveToObjectType && target?.kind === "interface") {
+      const fullData = await reloadDataAsFullObjects(client, response.data);
+      return { ...response, data: fullData };
+    }
+
     return response;
   }
 
@@ -287,17 +303,17 @@ export class SpecificLinkQuery extends BaseListQuery<
 
     if (entry && deepEqual(tombstone, entry.value)) {
       if (process.env.NODE_ENV !== "production") {
-        this.logger?.child({ methodName: "deleteFromStore" }).debug(
-          `Links were already deleted, just setting status`,
-        );
+        this.logger
+          ?.child({ methodName: "deleteFromStore" })
+          .debug(`Links were already deleted, just setting status`);
       }
       return batch.write(this.cacheKey, entry.value, status);
     }
 
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "deleteFromStore" }).debug(
-        JSON.stringify({ status }),
-      );
+      this.logger
+        ?.child({ methodName: "deleteFromStore" })
+        .debug(JSON.stringify({ status }));
     }
 
     // If there is no entry then there is nothing to do
@@ -314,6 +330,8 @@ export class SpecificLinkQuery extends BaseListQuery<
   /**
    * Implements Query.maybeUpdateAndRevalidate to handle cache invalidation
    */
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   maybeUpdateAndRevalidate = async (
     changes: Changes,
     _optimisticId: OptimisticId | undefined,
@@ -336,7 +354,8 @@ export class SpecificLinkQuery extends BaseListQuery<
     // 4. When the target is an interface and the invalidated type implements it
 
     if (
-      this.#sourceTypeKind === "object" && this.#sourceApiName === objectType
+      this.#sourceTypeKind === "object" &&
+      this.#sourceApiName === objectType
     ) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
@@ -344,51 +363,50 @@ export class SpecificLinkQuery extends BaseListQuery<
 
     return (async () => {
       try {
-        const ontologyProvider = this.store.client[additionalContext]
-          .ontologyProvider;
+        const ontologyProvider =
+          this.store.client[additionalContext].ontologyProvider;
 
         if (this.#sourceTypeKind === "interface") {
-          const objectMetadata = await ontologyProvider.getObjectDefinition(
-            objectType,
-          );
+          const objectMetadata =
+            await ontologyProvider.getObjectDefinition(objectType);
           if (this.#sourceApiName in objectMetadata.interfaceMap) {
             changes?.modified.add(this.cacheKey);
-            return void await this.revalidate(true);
+            return void (await this.revalidate(true));
           }
         }
 
         let targetTypeApiName: string | undefined;
 
         if (this.#sourceTypeKind === "interface") {
-          const interfaceMetadata = await ontologyProvider
-            .getInterfaceDefinition(this.#sourceApiName);
-          targetTypeApiName = interfaceMetadata.links?.[this.#linkName]
-            ?.targetTypeApiName;
+          const interfaceMetadata =
+            await ontologyProvider.getInterfaceDefinition(this.#sourceApiName);
+          targetTypeApiName =
+            interfaceMetadata.links?.[this.#linkName]?.targetTypeApiName;
         } else {
-          const objectMetadata = await ontologyProvider
-            .getObjectDefinition(this.#sourceApiName);
+          const objectMetadata = await ontologyProvider.getObjectDefinition(
+            this.#sourceApiName,
+          );
           // Object link def's `targetType` is the target API name; it can be
           // either an object type or an interface name.
-          targetTypeApiName = objectMetadata.links?.[this.#linkName]
-            ?.targetType;
+          targetTypeApiName =
+            objectMetadata.links?.[this.#linkName]?.targetType;
         }
 
         if (!targetTypeApiName) return;
 
         if (targetTypeApiName === objectType) {
           changes?.modified.add(this.cacheKey);
-          return void await this.revalidate(true);
+          return void (await this.revalidate(true));
         }
 
         // If the target is an interface, revalidate when objectType implements
         // it. For object-typed targets, interfaceMap[objectTypeName] is always
         // false, so this is a safe no-op.
-        const objectMetadata = await ontologyProvider.getObjectDefinition(
-          objectType,
-        );
+        const objectMetadata =
+          await ontologyProvider.getObjectDefinition(objectType);
         if (targetTypeApiName in objectMetadata.interfaceMap) {
           changes?.modified.add(this.cacheKey);
-          return void await this.revalidate(true);
+          return void (await this.revalidate(true));
         }
       } catch (e) {
         if (process.env.NODE_ENV !== "production") {
@@ -398,7 +416,7 @@ export class SpecificLinkQuery extends BaseListQuery<
           );
         }
         changes?.modified.add(this.cacheKey);
-        return void await this.revalidate(true);
+        return void (await this.revalidate(true));
       }
     })();
   };

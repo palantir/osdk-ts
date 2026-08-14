@@ -1,5 +1,17 @@
 # @osdk/shared.net.errors
 
+## 2.12.0
+
+### Minor Changes
+
+- 3c48f5a: Set the `name` property on custom error classes so thrown errors report their own class name
+
+## 2.11.0
+
+### Minor Changes
+
+- ff11b06: Lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint. First increment of the repo-wide oxc migration (#3031), covering: `@osdk/shared.net`, `@osdk/shared.net.errors`, `@osdk/shared.net.fetch`, and `@osdk/shared.client.impl`.
+
 ## 2.10.0
 
 ### Minor Changes

@@ -19,8 +19,8 @@
 
 // Example: objectSetOperationsIntersect
 
-// Edit this import if your client location differs
 import { Employee } from "../../../generatedNoCheck/index.js";
+// Edit this import if your client location differs
 import { client } from "./client.js";
 
 const objectSetA = client(Employee).where({
@@ -34,6 +34,4 @@ const objectSetC = client(Employee).where({
 });
 
 // Return all objects common to objectSetA, objectSetB and objectSetC
-const result = objectSetA
-  .intersect(objectSetB)
-  .intersect(objectSetC); // alternatively: objectSetA.intersect(objectSetB, objectSetC)
+const result = objectSetA.intersect(objectSetB).intersect(objectSetC); // alternatively: objectSetA.intersect(objectSetB, objectSetC)

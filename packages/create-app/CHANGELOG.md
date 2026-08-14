@@ -1,5 +1,288 @@
 # @osdk/create-app
 
+## 2.57.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.57.0
+
+## 2.56.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.56.0
+
+## 2.55.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.55.0
+
+## 2.54.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.54.0
+
+## 2.53.0
+
+### Minor Changes
+
+- f6806ee: Add an opt-in `--unstableFeatures` flag. When enabled, apps generated from the 2.x/beta templates (React, Vue, Expo, and the to-do tutorials) are wired for Foundry branch support.
+
+### Patch Changes
+
+- @osdk/generator-utils@2.53.0
+
+## 2.52.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.52.0
+
+## 2.51.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.51.0
+
+## 2.50.0
+
+### Minor Changes
+
+- 5e380f2: Template scripts express every check as a standard lint/typecheck/test task instead of a bespoke `check` script, so a scaffolded project's verification runs under the same tasks its CI already runs. The TypeScript Library template folds formatting into `lint` (`ultracite check`); the React template gains a `typecheck` script (`tsc --noEmit`). Both drop their standalone `check` script.
+- a754871: Reverting "Lowercase generated package.json name fields" (#3681) due to unintended side effects.
+
+### Patch Changes
+
+- Updated dependencies [a754871]
+  - @osdk/generator-utils@2.50.0
+
+## 2.49.0
+
+### Minor Changes
+
+- 98c7343: Fix the TypeScript Library template so a freshly scaffolded project passes `ultracite check`: exclude package.json/tsconfig.json from oxfmt (their key order is owned by the package manager and tsc) and remove the stray blank line between imports in oxlint.config.ts
+
+### Patch Changes
+
+- @osdk/generator-utils@2.49.0
+
+## 2.48.0
+
+### Minor Changes
+
+- 079b488: Lowercase the generated package.json name field so scaffolded projects with uppercase names are npm-publishable
+
+### Patch Changes
+
+- Updated dependencies [079b488]
+  - @osdk/generator-utils@2.48.0
+
+## 2.47.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.47.0
+
+## 2.46.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.46.0
+
+## 2.45.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.45.0
+
+## 2.44.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
+### Patch Changes
+
+- @osdk/generator-utils@2.44.0
+
+## 2.43.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- @osdk/generator-utils@2.43.0
+
+## 2.42.0
+
+### Minor Changes
+
+- 0db78bb: Update React template OSDK dependency ranges.
+- cbcdce1: Re-enable the oxlint rules the `**/*.{js,mjs,cjs}` override had disabled and delete the override, so JS build scripts, bin shims, and config files are held to the same ruleset as TypeScript. Changes are behavior-preserving (lint/format fixes to build tooling only).
+- 255154c: Migrate the remaining low-risk tail packages (the CLIs, create-app/create-widget and their template packages, vite plugins, e2e sandboxes and generated fixtures, tools, and internal test libraries) to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (twelfth increment of the repo-wide oxc migration). Each package is reformatted with oxfmt, with any newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving. Only the generator packages remain on ESLint.
+
+### Patch Changes
+
+- @osdk/generator-utils@2.42.0
+
+## 2.41.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.41.0
+
+## 2.40.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.40.0
+
+## 2.39.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.39.0
+
+## 2.38.0
+
+### Minor Changes
+
+- aabc439: Add a hidden "TypeScript Library" template (`template-typescript-library`) usable programmatically by id but kept out of the interactive template menu.
+
+### Patch Changes
+
+- @osdk/generator-utils@2.38.0
+
+## 2.37.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.37.0
+
+## 2.36.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.36.0
+
+## 2.35.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.35.0
+
+## 2.34.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.34.0
+
+## 2.33.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.33.0
+
+## 2.32.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.32.0
+
+## 2.31.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.31.0
+
+## 2.30.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.30.0
+
+## 2.29.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.29.0
+
+## 2.28.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.28.0
+
+## 2.27.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.27.0
+
+## 2.26.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.26.0
+
+## 2.25.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.25.0
+
+## 2.24.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.24.0
+
+## 2.23.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.23.0
+
+## 2.22.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.22.0
+
+## 2.21.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.21.0
+
+## 2.20.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.20.0
+
+## 2.19.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.19.0
+
+## 2.18.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.18.0
+
+## 2.17.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.17.0
+
 ## 2.16.0
 
 ### Minor Changes

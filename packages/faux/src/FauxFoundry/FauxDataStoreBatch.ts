@@ -21,6 +21,7 @@ import type {
 } from "@osdk/api";
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
 import deepEqual from "fast-deep-equal";
+
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
 import type { BaseServerObject } from "./BaseServerObject.js";
 import type { FauxDataStore } from "./FauxDataStore.js";
@@ -76,24 +77,21 @@ export class FauxDataStoreBatch {
       primaryKey,
     );
     if (existingObject) {
-      throw new OpenApiCallError(
-        500,
-        {
-          errorCode: "CONFLICT",
-          errorName: "ObjectAlreadyExists",
-          errorInstanceId: "",
-          parameters: {
-            objectType,
-            primaryKey,
-          },
-          errorDescription:
-            "The object the user is attempting to create already exists.",
-        } satisfies OntologiesV2.ObjectAlreadyExists,
-      );
+      throw new OpenApiCallError(500, {
+        errorCode: "CONFLICT",
+        errorName: "ObjectAlreadyExists",
+        errorInstanceId: "",
+        parameters: {
+          objectType,
+          primaryKey,
+        },
+        errorDescription:
+          "The object the user is attempting to create already exists.",
+      } satisfies OntologiesV2.ObjectAlreadyExists);
     }
 
-    const fullMetadata = this.#fauxDataStore.ontology
-      .getObjectTypeFullMetadataOrThrow(objectType);
+    const fullMetadata =
+      this.#fauxDataStore.ontology.getObjectTypeFullMetadataOrThrow(objectType);
 
     this.#fauxDataStore.registerObject({
       ...object,
@@ -163,8 +161,8 @@ export class FauxDataStoreBatch {
     rightObjectType: string,
     rightPrimaryKey: string | number | boolean,
   ): void => {
-    const [leftTypeSideV2, rightTypeSideV2] = this.#fauxDataStore.ontology
-      .getBothLinkTypeSides(
+    const [leftTypeSideV2, rightTypeSideV2] =
+      this.#fauxDataStore.ontology.getBothLinkTypeSides(
         leftObjectType,
         leftLinkName,
         rightObjectType,
@@ -201,8 +199,8 @@ export class FauxDataStoreBatch {
     rightObjectType: string,
     rightPrimaryKey: string | number | boolean,
   ): void => {
-    const [leftTypeSideV2, rightTypeSideV2] = this.#fauxDataStore.ontology
-      .getBothLinkTypeSides(
+    const [leftTypeSideV2, rightTypeSideV2] =
+      this.#fauxDataStore.ontology.getBothLinkTypeSides(
         leftObjectType,
         leftLinkName,
         rightObjectType,

@@ -15,6 +15,7 @@
  */
 
 import React, { memo } from "react";
+
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
 
 function formatNumber(value: number | undefined): string {
@@ -50,6 +51,7 @@ interface NumberRangeInputProps {
   showHistogram?: boolean;
   className?: string;
   style?: React.CSSProperties;
+  clickToFilter?: boolean;
 }
 
 function NumberRangeInputInner(

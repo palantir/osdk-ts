@@ -1,0 +1,43 @@
+/* Cascade layer order: app base/components first, osdk last so react-components
+   styles win where they overlap. */
+@layer base, components, osdk.tokens, osdk.components;
+
+@import "@osdk/react-components/styles.css";
+
+@layer base {
+  :root {
+    --oa-bg: #f6f7f9;
+    --oa-surface: #ffffff;
+    --oa-border: #d8dde3;
+    --oa-border-muted: #e7ebef;
+    --oa-text: #1b1f24;
+    --oa-text-secondary: #5b6570;
+    --oa-text-muted: #8a929c;
+    --oa-accent: #2b6cb0;
+    --oa-accent-soft: #e8f0fa;
+    --oa-danger: #c0392b;
+    --oa-warning: #b7791f;
+    --oa-radius: 6px;
+    --oa-font: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    --oa-font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    font-family: var(--oa-font);
+    color: var(--oa-text);
+    background: var(--oa-bg);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+}

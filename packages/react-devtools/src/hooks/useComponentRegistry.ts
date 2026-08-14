@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { ComponentQueryRegistry } from "../utils/ComponentQueryRegistry.js";
 

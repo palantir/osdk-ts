@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetBulkObjectTypePermissionsForUsersRequest
-    as _api_permissions_GetBulkObjectTypePermissionsForUsersRequest,
-  GetBulkObjectTypePermissionsForUsersResponse
-    as _api_permissions_GetBulkObjectTypePermissionsForUsersResponse,
+  GetBulkObjectTypePermissionsForUsersRequest as _api_permissions_GetBulkObjectTypePermissionsForUsersRequest,
+  GetBulkObjectTypePermissionsForUsersResponse as _api_permissions_GetBulkObjectTypePermissionsForUsersResponse,
 } from "../__components.js";
 
 /**

@@ -47,11 +47,13 @@ type CapabilitiesListener = (capabilities: FiberCapabilities) => void;
 export class FiberCapabilitiesManager {
   private capabilities: FiberCapabilities;
   private cachedSnapshot: Readonly<FiberCapabilities> | null = null;
-  private listeners: Set<CapabilitiesListener> = new Set();
-  private featureErrorCounts: Map<FiberFeature, number> = new Map();
-  private featureLastError: Map<FiberFeature, number> = new Map();
-  private recoveryTimers: Map<FiberFeature, ReturnType<typeof setTimeout>> =
-    new Map();
+  private listeners = new Set<CapabilitiesListener>();
+  private featureErrorCounts = new Map<FiberFeature, number>();
+  private featureLastError = new Map<FiberFeature, number>();
+  private recoveryTimers = new Map<
+    FiberFeature,
+    ReturnType<typeof setTimeout>
+  >();
   private config: DegradationConfig;
 
   constructor(config: Partial<DegradationConfig> = {}) {

@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
+import type {
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
+  SimplePropertyDef,
+} from "@osdk/api";
 import type { RowData } from "@tanstack/react-table";
 
 export interface ColumnOption {
   id: string;
   name: string;
   canSort: boolean;
+  /**
+   * The column's underlying property type, i.e. an OSDK `WirePropertyTypes` value
+   */
+  dataType?: string;
 }
 
 export interface CellIdentifier {
@@ -45,17 +54,11 @@ export interface EditableConfig<
   CellValue = unknown,
 > {
   cellEdits: Record<string, CellEditInfo<TData, CellValue>>;
-  onCellEdit: (
-    cellId: string,
-    info: CellEditInfo<TData, CellValue>,
-  ) => void;
+  onCellEdit: (cellId: string, info: CellEditInfo<TData, CellValue>) => void;
   onSubmitEdits?: () => Promise<boolean>;
   clearEdits: () => void;
   editModeState: EditModeState;
-  onCellValidationError: (
-    cellId: string,
-    error: string,
-  ) => void;
+  onCellValidationError: (cellId: string, error: string) => void;
   validationErrors: Map<string, string>;
   clearCellValidationError: (cellId: string) => void;
 }
@@ -75,8 +78,11 @@ export interface DropdownEditConfig<V = unknown> {
 
   /**
    * Converts an item to a display string. Defaults to `String()`.
+   *
+   * `item` may be `undefined` when the cell has no value yet — the formatter
+   * is responsible for producing a sensible label in that case.
    */
-  itemToStringLabel?: (item: V) => string;
+  itemToStringLabel?(item: V | undefined): string;
 
   /**
    * Returns a unique string key for a list item. Used as the React `key`.
@@ -111,9 +117,8 @@ export interface DropdownEditConfig<V = unknown> {
 /**
  * User-facing configuration for a date picker editor in a table cell.
  *
- * This is intentionally a standalone interface rather than re-exporting
- * `DatetimePickerFieldProps` from ActionForm, so the table API doesn't break
- * when ActionForm's prop shape changes.
+ * Standalone by design rather than re-exporting `DatePickerProps` so the
+ * table API doesn't break when the picker's prop shape changes.
  */
 export interface DatePickerEditConfig {
   /**
@@ -168,12 +173,24 @@ type EditFieldComponent = keyof EditFieldPropsByType;
 /**
  * Configuration for an editable cell's field component.
  *
- * `getFieldComponentProps` is called with the row's object so the configuration
- * can vary per row (e.g. dropdown items that depend on row state).
+ * `getFieldComponentProps` is called with the row's object and a map of any
+ * pending cell edits for the same row, keyed by `columnId`. This lets the
+ * configuration depend on row state or on other in-progress edits within the
+ * row (e.g. dropdown items that change once another column is edited).
  */
 export type EditFieldConfig<TData = unknown> = {
   [K in EditFieldComponent]: {
     fieldComponent: K;
-    getFieldComponentProps: (object: TData) => EditFieldPropsByType[K];
+    getFieldComponentProps: (
+      object: TData,
+      edits?: Record<string, CellEditInfo<TData, unknown>>,
+    ) => EditFieldPropsByType[K];
   };
 }[EditFieldComponent];
+
+export type OrderBy<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> = {
+  [K in PropertyKeys<Q> | keyof RDPs]?: "asc" | "desc";
+};

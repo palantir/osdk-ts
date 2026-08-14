@@ -67,7 +67,7 @@ export function createStoreSubscribe(
   onInit: () => void,
   onCleanup: () => void,
 ): (notifyUpdate: () => void) => () => void {
-  return (notifyUpdate: () => void): () => void => {
+  return (notifyUpdate: () => void): (() => void) => {
     const shouldInit = subscribers.size === 0;
     subscribers.add(notifyUpdate);
 

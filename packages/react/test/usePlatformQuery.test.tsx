@@ -17,6 +17,7 @@
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
+
 import { usePlatformQuery } from "../src/utils/usePlatformQuery.js";
 
 describe("usePlatformQuery enabled option", () => {

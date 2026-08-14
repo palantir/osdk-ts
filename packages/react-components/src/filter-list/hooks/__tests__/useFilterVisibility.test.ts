@@ -16,6 +16,7 @@
 
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
 import {
   createPropertyFilterDef,
   createSelectState,
@@ -39,11 +40,7 @@ function makeDef(
 
 describe("useFilterVisibility", () => {
   it("partitions definitions into visible and hidden based on isVisible", () => {
-    const definitions = [
-      makeDef("a"),
-      makeDef("b", false),
-      makeDef("c"),
-    ];
+    const definitions = [makeDef("a"), makeDef("b", false), makeDef("c")];
 
     const { result } = renderHook(() => useFilterVisibility(definitions));
 
@@ -51,16 +48,11 @@ describe("useFilterVisibility", () => {
       definitions[0],
       definitions[2],
     ]);
-    expect(result.current.hiddenDefinitions).toEqual([
-      definitions[1],
-    ]);
+    expect(result.current.hiddenDefinitions).toEqual([definitions[1]]);
   });
 
   it("showFilter moves a hidden filter to visible", () => {
-    const definitions = [
-      makeDef("a"),
-      makeDef("b", false),
-    ];
+    const definitions = [makeDef("a"), makeDef("b", false)];
 
     const { result } = renderHook(() => useFilterVisibility(definitions));
 
@@ -78,10 +70,7 @@ describe("useFilterVisibility", () => {
   });
 
   it("hideFilter moves a visible filter to hidden", () => {
-    const definitions = [
-      makeDef("a"),
-      makeDef("b"),
-    ];
+    const definitions = [makeDef("a"), makeDef("b")];
 
     const { result } = renderHook(() => useFilterVisibility(definitions));
 
@@ -91,12 +80,8 @@ describe("useFilterVisibility", () => {
       result.current.hideFilter("a");
     });
 
-    expect(result.current.visibleDefinitions).toEqual([
-      definitions[1],
-    ]);
-    expect(result.current.hiddenDefinitions).toEqual([
-      definitions[0],
-    ]);
+    expect(result.current.visibleDefinitions).toEqual([definitions[1]]);
+    expect(result.current.hiddenDefinitions).toEqual([definitions[0]]);
   });
 
   it("handles undefined filterDefinitions gracefully", () => {
@@ -107,11 +92,7 @@ describe("useFilterVisibility", () => {
   });
 
   it("reorderVisible changes the order of visible filters", () => {
-    const definitions = [
-      makeDef("a"),
-      makeDef("b"),
-      makeDef("c"),
-    ];
+    const definitions = [makeDef("a"), makeDef("b"), makeDef("c")];
 
     const { result } = renderHook(() => useFilterVisibility(definitions));
 
@@ -127,10 +108,7 @@ describe("useFilterVisibility", () => {
   });
 
   it("reorderVisible is a no-op if order is unchanged", () => {
-    const definitions = [
-      makeDef("a"),
-      makeDef("b"),
-    ];
+    const definitions = [makeDef("a"), makeDef("b")];
 
     const { result } = renderHook(() => useFilterVisibility(definitions));
 
@@ -144,10 +122,7 @@ describe("useFilterVisibility", () => {
   });
 
   it("hasVisibilityChanges is false initially", () => {
-    const definitions = [
-      makeDef("a"),
-      makeDef("b", false),
-    ];
+    const definitions = [makeDef("a"), makeDef("b", false)];
 
     const { result } = renderHook(() => useFilterVisibility(definitions));
 
@@ -155,10 +130,7 @@ describe("useFilterVisibility", () => {
   });
 
   it("hasVisibilityChanges is true after showing a hidden filter", () => {
-    const definitions = [
-      makeDef("a"),
-      makeDef("b", false),
-    ];
+    const definitions = [makeDef("a"), makeDef("b", false)];
 
     const { result } = renderHook(() => useFilterVisibility(definitions));
 
@@ -170,10 +142,7 @@ describe("useFilterVisibility", () => {
   });
 
   it("hasVisibilityChanges is true after hiding a visible filter", () => {
-    const definitions = [
-      makeDef("a"),
-      makeDef("b"),
-    ];
+    const definitions = [makeDef("a"), makeDef("b")];
 
     const { result } = renderHook(() => useFilterVisibility(definitions));
 
@@ -185,10 +154,7 @@ describe("useFilterVisibility", () => {
   });
 
   it("hasVisibilityChanges is true after reordering", () => {
-    const definitions = [
-      makeDef("a"),
-      makeDef("b"),
-    ];
+    const definitions = [makeDef("a"), makeDef("b")];
 
     const { result } = renderHook(() => useFilterVisibility(definitions));
 
@@ -200,11 +166,7 @@ describe("useFilterVisibility", () => {
   });
 
   it("resetVisibility restores original visibility and order", () => {
-    const definitions = [
-      makeDef("a"),
-      makeDef("b", false),
-      makeDef("c"),
-    ];
+    const definitions = [makeDef("a"), makeDef("b", false), makeDef("c")];
 
     const { result } = renderHook(() => useFilterVisibility(definitions));
 
@@ -223,17 +185,12 @@ describe("useFilterVisibility", () => {
       definitions[0],
       definitions[2],
     ]);
-    expect(result.current.hiddenDefinitions).toEqual([
-      definitions[1],
-    ]);
+    expect(result.current.hiddenDefinitions).toEqual([definitions[1]]);
     expect(result.current.hasVisibilityChanges).toBe(false);
   });
 
   it("resetVisibility is a no-op when already at defaults", () => {
-    const definitions = [
-      makeDef("a"),
-      makeDef("b"),
-    ];
+    const definitions = [makeDef("a"), makeDef("b")];
 
     const { result } = renderHook(() => useFilterVisibility(definitions));
 
@@ -247,10 +204,7 @@ describe("useFilterVisibility", () => {
   });
 
   it("showFilter is a no-op for already-visible filters", () => {
-    const definitions = [
-      makeDef("a"),
-      makeDef("b"),
-    ];
+    const definitions = [makeDef("a"), makeDef("b")];
 
     const { result } = renderHook(() => useFilterVisibility(definitions));
 
@@ -264,11 +218,7 @@ describe("useFilterVisibility", () => {
   });
 
   it("showFilter appends newly shown filter to the end", () => {
-    const definitions = [
-      makeDef("a"),
-      makeDef("b", false),
-      makeDef("c"),
-    ];
+    const definitions = [makeDef("a"), makeDef("b", false), makeDef("c")];
 
     const { result } = renderHook(() => useFilterVisibility(definitions));
 
@@ -278,19 +228,16 @@ describe("useFilterVisibility", () => {
 
     // "b" should be appended after the existing visible filters
     expect(
-      result.current.visibleDefinitions.map(d => (d as { key: string }).key),
+      result.current.visibleDefinitions.map((d) => (d as { key: string }).key),
     ).toEqual(["a", "c", "b"]);
   });
 
   it("calls onVisibilityChange when a filter is shown", () => {
     const onChange = vi.fn();
-    const definitions = [
-      makeDef("a"),
-      makeDef("b", false),
-    ];
+    const definitions = [makeDef("a"), makeDef("b", false)];
 
     const { result } = renderHook(() =>
-      useFilterVisibility(definitions, onChange)
+      useFilterVisibility(definitions, onChange),
     );
 
     act(() => {
@@ -303,13 +250,10 @@ describe("useFilterVisibility", () => {
 
   it("calls onVisibilityChange when a filter is hidden", () => {
     const onChange = vi.fn();
-    const definitions = [
-      makeDef("a"),
-      makeDef("b"),
-    ];
+    const definitions = [makeDef("a"), makeDef("b")];
 
     const { result } = renderHook(() =>
-      useFilterVisibility(definitions, onChange)
+      useFilterVisibility(definitions, onChange),
     );
 
     act(() => {
@@ -322,13 +266,10 @@ describe("useFilterVisibility", () => {
 
   it("calls onVisibilityChange when filters are reordered", () => {
     const onChange = vi.fn();
-    const definitions = [
-      makeDef("a"),
-      makeDef("b"),
-    ];
+    const definitions = [makeDef("a"), makeDef("b")];
 
     const { result } = renderHook(() =>
-      useFilterVisibility(definitions, onChange)
+      useFilterVisibility(definitions, onChange),
     );
 
     act(() => {
@@ -353,15 +294,8 @@ describe("useFilterVisibility", () => {
   });
 
   it("syncs state when filterDefinitions change", () => {
-    const defsV1 = [
-      makeDef("a"),
-      makeDef("b"),
-    ];
-    const defsV2 = [
-      makeDef("a"),
-      makeDef("b"),
-      makeDef("c"),
-    ];
+    const defsV1 = [makeDef("a"), makeDef("b")];
+    const defsV2 = [makeDef("a"), makeDef("b"), makeDef("c")];
 
     const { result, rerender } = renderHook(
       ({ defs }) => useFilterVisibility(defs),

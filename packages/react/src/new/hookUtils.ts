@@ -34,6 +34,7 @@ export function isPayloadLoading(
   if (!enabled) {
     return false;
   }
-  return payload?.status === "loading" || payload?.status === "init"
-    || !payload;
+  return (
+    payload?.status === "loading" || payload?.status === "init" || !payload
+  );
 }

@@ -58,9 +58,9 @@ const hintStyles: React.CSSProperties = {
   opacity: 0.9,
 };
 
-export const InspectorBanner: React.FC<InspectorBannerProps> = (
-  { visible },
-) => {
+export const InspectorBanner: React.FC<InspectorBannerProps> = ({
+  visible,
+}) => {
   if (!visible) {
     return null;
   }

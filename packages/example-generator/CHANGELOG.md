@@ -1,5 +1,176 @@
 # @osdk/example-generator
 
+## 0.46.0
+
+### Patch Changes
+
+- @osdk/create-app@2.57.0
+- @osdk/create-widget@3.55.0
+
+## 0.45.0
+
+### Patch Changes
+
+- @osdk/create-app@2.56.0
+- @osdk/create-widget@3.54.0
+
+## 0.44.0
+
+### Patch Changes
+
+- @osdk/create-app@2.55.0
+- @osdk/create-widget@3.53.0
+
+## 0.43.0
+
+### Patch Changes
+
+- Updated dependencies [f6806ee]
+  - @osdk/create-app@2.53.0
+  - @osdk/create-widget@3.51.0
+
+## 0.42.0
+
+### Patch Changes
+
+- @osdk/create-app@2.52.0
+- @osdk/create-widget@3.50.0
+
+## 0.41.0
+
+### Patch Changes
+
+- Updated dependencies [079b488]
+  - @osdk/create-app@2.48.0
+  - @osdk/create-widget@3.46.0
+
+## 0.40.0
+
+### Patch Changes
+
+- @osdk/create-app@2.47.0
+- @osdk/create-widget@3.45.0
+
+## 0.39.0
+
+### Patch Changes
+
+- @osdk/create-app@2.46.0
+- @osdk/create-widget@3.44.0
+
+## 0.38.0
+
+### Patch Changes
+
+- @osdk/create-app@2.41.0
+- @osdk/create-widget@3.38.0
+
+## 0.37.0
+
+### Patch Changes
+
+- @osdk/create-app@2.40.0
+- @osdk/create-widget@3.37.0
+
+## 0.36.0
+
+### Patch Changes
+
+- Updated dependencies [aabc439]
+  - @osdk/create-app@2.38.0
+  - @osdk/create-widget@3.35.0
+
+## 0.35.0
+
+### Patch Changes
+
+- @osdk/create-app@2.37.0
+- @osdk/create-widget@3.34.0
+
+## 0.34.0
+
+### Patch Changes
+
+- @osdk/create-app@2.35.0
+- @osdk/create-widget@3.32.0
+
+## 0.33.0
+
+### Patch Changes
+
+- @osdk/create-app@2.34.0
+- @osdk/create-widget@3.31.0
+
+## 0.32.0
+
+### Patch Changes
+
+- @osdk/create-app@2.32.0
+- @osdk/create-widget@3.29.0
+
+## 0.31.0
+
+### Patch Changes
+
+- @osdk/create-app@2.31.0
+- @osdk/create-widget@3.28.0
+
+## 0.30.0
+
+### Patch Changes
+
+- @osdk/create-app@2.29.0
+- @osdk/create-widget@3.26.0
+
+## 0.29.0
+
+### Patch Changes
+
+- @osdk/create-app@2.28.0
+- @osdk/create-widget@3.25.0
+
+## 0.28.0
+
+### Patch Changes
+
+- @osdk/create-app@2.25.0
+- @osdk/create-widget@3.22.0
+
+## 0.27.0
+
+### Patch Changes
+
+- @osdk/create-app@2.24.0
+- @osdk/create-widget@3.21.0
+
+## 0.26.0
+
+### Patch Changes
+
+- @osdk/create-app@2.23.0
+- @osdk/create-widget@3.20.0
+
+## 0.25.0
+
+### Patch Changes
+
+- @osdk/create-app@2.21.0
+- @osdk/create-widget@3.18.0
+
+## 0.24.0
+
+### Patch Changes
+
+- @osdk/create-app@2.20.0
+- @osdk/create-widget@3.17.0
+
+## 0.23.0
+
+### Patch Changes
+
+- @osdk/create-app@2.19.0
+- @osdk/create-widget@3.16.0
+
 ## 0.22.0
 
 ### Minor Changes

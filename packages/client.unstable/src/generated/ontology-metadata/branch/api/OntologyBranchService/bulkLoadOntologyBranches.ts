@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  BulkLoadOntologyBranchesRequest
-    as _branch_api_BulkLoadOntologyBranchesRequest,
-  BulkLoadOntologyBranchesResponse
-    as _branch_api_BulkLoadOntologyBranchesResponse,
+  BulkLoadOntologyBranchesRequest as _branch_api_BulkLoadOntologyBranchesRequest,
+  BulkLoadOntologyBranchesResponse as _branch_api_BulkLoadOntologyBranchesResponse,
 } from "../__components.js";
 
 /**

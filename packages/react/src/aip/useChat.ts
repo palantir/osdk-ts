@@ -23,6 +23,7 @@ import {
   type UIMessage,
 } from "@osdk/aip-core";
 import React from "react";
+
 import {
   type ChatStatus,
   type ChatStore,
@@ -277,11 +278,10 @@ export function useChat(options: UseChatOptions): UseChatReturn {
   const clearError = React.useCallback((): void => {
     // Resetting from streaming/submitted would race the in-flight stream, so
     // only reset when status === "error".
-    store.setState(
-      (prev) =>
-        prev.status === "error"
-          ? { ...prev, status: "ready", error: undefined }
-          : prev,
+    store.setState((prev) =>
+      prev.status === "error"
+        ? { ...prev, status: "ready", error: undefined }
+        : prev,
     );
   }, [store]);
 
@@ -343,7 +343,7 @@ function resolveRegenerateCutoff(
 ): RegenerateCutoff {
   if (messageId != null) {
     const index = messages.findIndex((m) => m.id === messageId);
-    if (index < 0) {
+    if (index === -1) {
       return { kind: "noop" };
     }
     const target = messages[index];
@@ -351,8 +351,8 @@ function resolveRegenerateCutoff(
       return {
         kind: "error",
         error: new Error(
-          `useChat.regenerate: messageId "${messageId}" is `
-            + `not an assistant message; only assistant messages can be regenerated.`,
+          `useChat.regenerate: messageId "${messageId}" is ` +
+            `not an assistant message; only assistant messages can be regenerated.`,
         ),
       };
     }

@@ -1,5 +1,274 @@
 # @osdk/create-widget
 
+## 3.55.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.57.0
+
+## 3.54.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.56.0
+
+## 3.53.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.55.0
+
+## 3.52.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.54.0
+
+## 3.51.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.53.0
+
+## 3.50.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.52.0
+
+## 3.49.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.51.0
+
+## 3.48.0
+
+### Minor Changes
+
+- a754871: Reverting "Lowercase generated package.json name fields" (#3681) due to unintended side effects.
+
+### Patch Changes
+
+- Updated dependencies [a754871]
+  - @osdk/generator-utils@2.50.0
+
+## 3.47.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.49.0
+
+## 3.46.0
+
+### Minor Changes
+
+- 079b488: Lowercase the generated package.json name field so scaffolded projects with uppercase names are npm-publishable
+
+### Patch Changes
+
+- Updated dependencies [079b488]
+  - @osdk/generator-utils@2.48.0
+
+## 3.45.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.47.0
+
+## 3.44.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.46.0
+
+## 3.43.0
+
+## 3.42.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.45.0
+
+## 3.41.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.44.0
+
+## 3.40.0
+
+### Minor Changes
+
+- 164ed08: Update dev mode guidance
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- @osdk/generator-utils@2.43.0
+
+## 3.39.0
+
+### Minor Changes
+
+- 0db78bb: Update React template OSDK dependency ranges.
+- cbcdce1: Re-enable the oxlint rules the `**/*.{js,mjs,cjs}` override had disabled and delete the override, so JS build scripts, bin shims, and config files are held to the same ruleset as TypeScript. Changes are behavior-preserving (lint/format fixes to build tooling only).
+- 255154c: Migrate the remaining low-risk tail packages (the CLIs, create-app/create-widget and their template packages, vite plugins, e2e sandboxes and generated fixtures, tools, and internal test libraries) to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (twelfth increment of the repo-wide oxc migration). Each package is reformatted with oxfmt, with any newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving. Only the generator packages remain on ESLint.
+
+### Patch Changes
+
+- @osdk/generator-utils@2.42.0
+
+## 3.38.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.41.0
+
+## 3.37.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.40.0
+
+## 3.36.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.39.0
+
+## 3.35.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.38.0
+
+## 3.34.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.37.0
+
+## 3.33.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.36.0
+
+## 3.32.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.35.0
+
+## 3.31.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.34.0
+
+## 3.30.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.33.0
+
+## 3.29.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.32.0
+
+## 3.28.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.31.0
+
+## 3.27.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.30.0
+
+## 3.26.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.29.0
+
+## 3.25.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.28.0
+
+## 3.24.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.27.0
+
+## 3.23.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.26.0
+
+## 3.22.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.25.0
+
+## 3.21.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.24.0
+
+## 3.20.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.23.0
+
+## 3.19.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.22.0
+
+## 3.18.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.21.0
+
+## 3.17.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.20.0
+
+## 3.16.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.19.0
+
+## 3.15.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.18.0
+
+## 3.14.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.17.0
+
 ## 3.13.0
 
 ### Minor Changes

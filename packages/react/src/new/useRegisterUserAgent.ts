@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import { useOnMount } from "./core/useOnMount.js";
 import { UserAgentContext } from "./UserAgentContext.js";
 

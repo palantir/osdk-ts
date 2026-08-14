@@ -17,6 +17,7 @@
 import type { WidgetSetConfig } from "@osdk/foundry-config-json";
 import { consola } from "consola";
 import type { Arguments } from "yargs";
+
 import type { WidgetSetDeployArgs } from "./WidgetSetDeployArgs.js";
 
 export function logWidgetSetDeployCommandConfigFileOverride(
@@ -29,10 +30,7 @@ export function logWidgetSetDeployCommandConfigFileOverride(
     );
   }
 
-  if (
-    config?.repository != null
-    && args.repository !== config.repository
-  ) {
+  if (config?.repository != null && args.repository !== config.repository) {
     consola.debug(
       `Overriding "repository" from config file with ${args.repository}`,
     );

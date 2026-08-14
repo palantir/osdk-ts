@@ -16,23 +16,19 @@
 
 import type { ObjectSet } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
+
 import type { DerivedPropertyRuntimeMetadata } from "../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function extractRdpDefinition(
   clientCtx: MinimalClient,
   objectSet: ObjectSet,
-): Promise<
-  DerivedPropertyRuntimeMetadata
-> {
+): Promise<DerivedPropertyRuntimeMetadata> {
   if (!hasWithProperties(objectSet)) {
     return {};
   }
-  return (await extractRdpDefinitionInternal(
-    clientCtx,
-    objectSet,
-    undefined,
-  )).definitions;
+  return (await extractRdpDefinitionInternal(clientCtx, objectSet, undefined))
+    .definitions;
 }
 
 export function hasWithProperties(objectSet: ObjectSet): boolean {
@@ -49,18 +45,16 @@ export function hasWithProperties(objectSet: ObjectSet): boolean {
 }
 
 /* @internal
-* Returns a tuple of the derived property definitions and the object type that the derived property is defined on.
-*/
+ * Returns a tuple of the derived property definitions and the object type that the derived property is defined on.
+ */
 async function extractRdpDefinitionInternal(
   clientCtx: MinimalClient,
   objectSet: ObjectSet,
   methodInputObjectType: string | undefined,
-): Promise<
-  {
-    definitions: DerivedPropertyRuntimeMetadata;
-    childObjectType?: string;
-  }
-> {
+): Promise<{
+  definitions: DerivedPropertyRuntimeMetadata;
+  childObjectType?: string;
+}> {
   switch (objectSet.type) {
     case "searchAround": {
       const { definitions, childObjectType } =
@@ -73,9 +67,8 @@ async function extractRdpDefinitionInternal(
       if (childObjectType === undefined || childObjectType === "") {
         return { definitions: {} };
       }
-      const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
-        childObjectType,
-      );
+      const objDef =
+        await clientCtx.ontologyProvider.getObjectDefinition(childObjectType);
       const linkDef = objDef.links[objectSet.link];
       invariant(linkDef, `Missing link definition for '${objectSet.link}'`);
       return {
@@ -95,9 +88,9 @@ async function extractRdpDefinitionInternal(
         return { definitions: {} };
       }
 
-      for (
-        const [name, definition] of Object.entries(objectSet.derivedProperties)
-      ) {
+      for (const [name, definition] of Object.entries(
+        objectSet.derivedProperties,
+      )) {
         if (definition.type !== "selection") {
           definitions[name] = {
             selectedOrCollectedPropertyType: undefined,
@@ -110,6 +103,8 @@ async function extractRdpDefinitionInternal(
           case "collectList":
           case "collectSet":
           case "get":
+          case "min":
+          case "max":
             // This is the object set construction for the derived property definition construction. We pass in childObjectType so that when we reach MethodInputObjectSet, we know where to start looking.
             const { childObjectType: operationLevelObjectType } =
               await extractRdpDefinitionInternal(
@@ -118,8 +113,8 @@ async function extractRdpDefinitionInternal(
                 childObjectType,
               );
             if (
-              operationLevelObjectType === undefined
-              || operationLevelObjectType === ""
+              operationLevelObjectType === undefined ||
+              operationLevelObjectType === ""
             ) {
               return { definitions: {} };
             }
@@ -165,11 +160,7 @@ async function extractRdpDefinitionInternal(
       const objectSets = objectSet.objectSets;
       const objectSetTypes = await Promise.all(
         objectSets.map((os) =>
-          extractRdpDefinitionInternal(
-            clientCtx,
-            os,
-            methodInputObjectType,
-          )
+          extractRdpDefinitionInternal(clientCtx, os, methodInputObjectType),
         ),
       );
 
@@ -188,8 +179,8 @@ async function extractRdpDefinitionInternal(
       invariant(
         objectSetTypes.every(
           ({ childObjectType }) =>
-            childObjectType === firstValidChildObjectType
-            || childObjectType == null,
+            childObjectType === firstValidChildObjectType ||
+            childObjectType == null,
         ),
         "All object sets in an intersect, subtract, or union must have the same child object type",
       );

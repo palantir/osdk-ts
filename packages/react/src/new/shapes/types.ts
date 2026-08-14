@@ -43,7 +43,7 @@ export function violationsToError(
   shape: ShapeDefinition<ObjectOrInterfaceDefinition>,
   violations: readonly { property: string; constraint: string }[],
 ): Error | undefined {
-  if (violations.some(v => v.constraint === "require")) {
+  if (violations.some((v) => v.constraint === "require")) {
     return new ShapeNullabilityError(
       shape,
       violations as readonly {
@@ -174,12 +174,12 @@ export function buildDataWithNestedLinks(
 export function isBatchableLink(linkDef: ShapeDerivedLinkDef): boolean {
   const def = linkDef.objectSetDef;
   return (
-    def.segments.length === 1
-    && def.segments[0].type === "pivotTo"
-    && (!def.setOperations || def.setOperations.length === 0)
-    && !def.where
-    && !def.orderBy
-    && def.limit == null
-    && !def.distinct
+    def.segments.length === 1 &&
+    def.segments[0].type === "pivotTo" &&
+    (!def.setOperations || def.setOperations.length === 0) &&
+    !def.where &&
+    !def.orderBy &&
+    def.limit == null &&
+    !def.distinct
   );
 }

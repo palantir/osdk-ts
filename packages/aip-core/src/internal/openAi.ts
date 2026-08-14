@@ -15,6 +15,7 @@
  */
 
 import { getOpenAiBaseUrl } from "@osdk/language-models";
+
 import {
   _getFoundryInternal,
   type LanguageModel,
@@ -159,17 +160,18 @@ export function convertMessage(
           case "file":
             warnings.push({
               type: "other",
-              message:
-                `Unsupported assistant content part "${p.type}": ignored in v0`,
+              message: `Unsupported assistant content part "${p.type}": ignored in v0`,
             });
             break;
         }
       }
-      return [{
-        role: "assistant",
-        content: text.length > 0 ? text : null,
-        tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
-      }];
+      return [
+        {
+          role: "assistant",
+          content: text.length > 0 ? text : null,
+          tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
+        },
+      ];
     }
 
     case "tool":
@@ -217,10 +219,9 @@ export function convertTools<TOOLS extends ToolSet>(
     const parameters = isJsonSchemaLike(tool.inputSchema)
       ? tool.inputSchema
       : (warnings.push({
-        type: "unsupported-tool",
-        details:
-          `Tool "${name}" inputSchema is not a JSON Schema; v0 only supports plain JSON Schema objects. Defaulting to {} parameters.`,
-      }),
+          type: "unsupported-tool",
+          details: `Tool "${name}" inputSchema is not a JSON Schema; v0 only supports plain JSON Schema objects. Defaulting to {} parameters.`,
+        }),
         { type: "object", properties: {} });
     return {
       type: "function" as const,
@@ -247,16 +248,14 @@ export function convertToolChoice<TOOLS extends ToolSet>(
 
 function isJsonSchemaLike(value: unknown): boolean {
   return (
-    typeof value === "object"
-    && value != null
-    && (
-      "type" in value
-      || "properties" in value
-      || "$ref" in value
-      || "oneOf" in value
-      || "anyOf" in value
-      || "allOf" in value
-    )
+    typeof value === "object" &&
+    value != null &&
+    ("type" in value ||
+      "properties" in value ||
+      "$ref" in value ||
+      "oneOf" in value ||
+      "anyOf" in value ||
+      "allOf" in value)
   );
 }
 
@@ -272,8 +271,7 @@ export function parseToolArguments(
   } catch {
     warnings.push({
       type: "other",
-      message:
-        `Tool call arguments were not valid JSON; passing through as a raw string`,
+      message: `Tool call arguments were not valid JSON; passing through as a raw string`,
     });
     return args;
   }
@@ -339,9 +337,8 @@ export function buildOpenAiRequestBody<TOOLS extends ToolSet>(
     seed: args.seed,
     presence_penalty: args.presencePenalty,
     frequency_penalty: args.frequencyPenalty,
-    tools: args.tools != null
-      ? convertTools(args.tools, args.warnings)
-      : undefined,
+    tools:
+      args.tools != null ? convertTools(args.tools, args.warnings) : undefined,
     tool_choice: convertToolChoice(args.toolChoice),
   };
   if (streaming) {
@@ -358,12 +355,13 @@ export function buildAssistantContent(
     return text;
   }
   const parts: Array<
-    { type: "text"; text: string } | {
-      type: "tool-call";
-      toolCallId: string;
-      toolName: string;
-      input: unknown;
-    }
+    | { type: "text"; text: string }
+    | {
+        type: "tool-call";
+        toolCallId: string;
+        toolName: string;
+        input: unknown;
+      }
   > = [];
   if (text.length > 0) {
     parts.push({ type: "text", text });
@@ -391,9 +389,7 @@ export function filterHeaders(
   return out;
 }
 
-export async function safeReadText(
-  res: Response,
-): Promise<string | undefined> {
+export async function safeReadText(res: Response): Promise<string | undefined> {
   try {
     return await res.text();
   } catch {
@@ -434,8 +430,8 @@ export async function postChatCompletions(
   if (!res.ok) {
     const errBody = await safeReadText(res);
     throw new Error(
-      `LMS chat/completions request failed: ${res.status} ${res.statusText}`
-        + (errBody ? `: ${errBody}` : ""),
+      `LMS chat/completions request failed: ${res.status} ${res.statusText}` +
+        (errBody ? `: ${errBody}` : ""),
     );
   }
 

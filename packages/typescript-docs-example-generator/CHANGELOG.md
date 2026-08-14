@@ -1,5 +1,12 @@
 # @osdk/typescript-docs-example-generator
 
+## 0.8.0
+
+### Patch Changes
+
+- Updated dependencies [0bd4a2e]
+  - @osdk/typescript-sdk-docs@0.14.0
+
 ## 0.7.0
 
 ### Minor Changes

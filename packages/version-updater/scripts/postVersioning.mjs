@@ -17,12 +17,14 @@
 
 // @ts-check
 
-import { consola } from "consola";
-import { findUpSync } from "find-up";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { consola } from "consola";
+import { findUpSync } from "find-up";
 import * as semver from "semver";
+
 import { determineMinVersion } from "./determineMinVersion.mjs";
 import { generatePeerRange } from "./generatePeerRange.mjs";
 import { parseChangelog } from "./parseChangelog.mjs";
@@ -49,13 +51,7 @@ const workspaceDirPath = getWorkspaceDirPath();
 const clientPackageVersion = getClientPackageVersion();
 
 updateConstVariable(
-  path.join(
-    workspaceDirPath,
-    "packages",
-    "client",
-    "src",
-    "Client.ts",
-  ),
+  path.join(workspaceDirPath, "packages", "client", "src", "Client.ts"),
   "MaxOsdkVersion",
   clientPackageVersion,
 );
@@ -97,7 +93,7 @@ function applyLoosePeerDep(packageDir, peerName, range) {
     return;
   }
 
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
   if (!packageJson.peerDependencies) {
     packageJson.peerDependencies = {};
   }
@@ -112,7 +108,7 @@ function applyLoosePeerDep(packageDir, peerName, range) {
   packageJson.peerDependencies[peerName] = range;
   fs.writeFileSync(
     packageJsonPath,
-    JSON.stringify(packageJson, null, 2) + "\n",
+    `${JSON.stringify(packageJson, null, 2)}\n`,
   );
   consola.info(
     `Updated ${packageDir} ${peerName} peer dep to "${range}" (loose)`,
@@ -125,17 +121,16 @@ function applyLoosePeerDep(packageDir, peerName, range) {
  * @param {string} value
  */
 function updateConstVariable(filePath, variableName, value) {
-  const fileContents = fs.readFileSync(filePath, "utf8");
+  const fileContents = fs.readFileSync(filePath, "utf-8");
 
+  // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
   const regexp = new RegExp(`const ${variableName} = ".*?";`);
   if (!regexp.test(fileContents)) {
     consola.error(
-      `Variable ${variableName} not found in ${
-        path.relative(
-          workspaceDirPath,
-          filePath,
-        )
-      }`,
+      `Variable ${variableName} not found in ${path.relative(
+        workspaceDirPath,
+        filePath,
+      )}`,
     );
     process.exit(30);
   }
@@ -151,9 +146,10 @@ function updateConstVariable(filePath, variableName, value) {
   } else {
     fs.writeFileSync(filePath, newContents);
     consola.info(
-      `Updated ${variableName} in ${
-        path.relative(workspaceDirPath, filePath)
-      } to ${value}`,
+      `Updated ${variableName} in ${path.relative(
+        workspaceDirPath,
+        filePath,
+      )} to ${value}`,
     );
   }
 }
@@ -178,16 +174,17 @@ function getClientPackageVersion() {
   );
 
   const packageJsonContents = JSON.parse(
-    fs.readFileSync(clientPackageJsonPath, "utf8"),
+    fs.readFileSync(clientPackageJsonPath, "utf-8"),
   );
 
   const currentVersion = packageJsonContents.version;
   const currentSemver = semver.parse(currentVersion);
   if (!currentSemver) {
     consola.error(
-      `Invalid version ${currentVersion} in ${
-        path.relative(workspaceDirPath, clientPackageJsonPath)
-      } )}`,
+      `Invalid version ${currentVersion} in ${path.relative(
+        workspaceDirPath,
+        clientPackageJsonPath,
+      )} )}`,
     );
     process.exit(20);
   }
@@ -195,9 +192,10 @@ function getClientPackageVersion() {
   const { major, minor, patch } = currentSemver;
   if (major == null || minor == null || patch == null) {
     consola.error(
-      `Invalid version ${currentVersion} in ${
-        path.relative(workspaceDirPath, clientPackageJsonPath)
-      } )}`,
+      `Invalid version ${currentVersion} in ${path.relative(
+        workspaceDirPath,
+        clientPackageJsonPath,
+      )} )}`,
     );
     process.exit(21);
   }
@@ -220,7 +218,7 @@ function getPeerPackageVersion(packageName) {
   if (!fs.existsSync(pkgJsonPath)) {
     return undefined;
   }
-  return JSON.parse(fs.readFileSync(pkgJsonPath, "utf8")).version;
+  return JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8")).version;
 }
 
 /**
@@ -228,8 +226,9 @@ function getPeerPackageVersion(packageName) {
  * @param {Record<string, { strategy: string, range?: string }>} peersConfig - Per-peer strategy config
  */
 function updatePeerDependencies(packageDir, peersConfig) {
-  const loosePeers = Object.entries(peersConfig)
-    .filter(([, cfg]) => cfg.strategy === "loose");
+  const loosePeers = Object.entries(peersConfig).filter(
+    ([, cfg]) => cfg.strategy === "loose",
+  );
   const changelogPeers = Object.entries(peersConfig)
     .filter(([, cfg]) => cfg.strategy === "changelog")
     .map(([name]) => name);
@@ -272,7 +271,7 @@ function updatePeerDependencies(packageDir, peersConfig) {
     return;
   }
 
-  const changelog = fs.readFileSync(changelogPath, "utf8");
+  const changelog = fs.readFileSync(changelogPath, "utf-8");
   const versionMappings = parseChangelog(changelog, changelogPeers);
 
   if (versionMappings.length === 0) {
@@ -282,7 +281,7 @@ function updatePeerDependencies(packageDir, peersConfig) {
     return;
   }
 
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
   const currentPackageVersion = packageJson.version;
 
   if (!packageJson.peerDependencies) {
@@ -306,9 +305,7 @@ function updatePeerDependencies(packageDir, peersConfig) {
 
     const currentPeerVersion = getPeerPackageVersion(peerName);
     if (!currentPeerVersion) {
-      consola.warn(
-        `Could not read version for ${peerName}, skipping`,
-      );
+      consola.warn(`Could not read version for ${peerName}, skipping`);
       continue;
     }
 
@@ -331,7 +328,7 @@ function updatePeerDependencies(packageDir, peersConfig) {
   if (changed) {
     fs.writeFileSync(
       packageJsonPath,
-      JSON.stringify(packageJson, null, 2) + "\n",
+      `${JSON.stringify(packageJson, null, 2)}\n`,
     );
   }
 }

@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import type { Logger } from "@osdk/api";
-import { findUpSync } from "find-up";
 import * as path from "node:path";
+
+import type { Logger } from "@osdk/api";
+import type { TsServer } from "@osdk/shared.test.intellisense";
+import { startTsServer } from "@osdk/shared.test.intellisense";
+import { findUpSync } from "find-up";
 import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import {
@@ -28,8 +31,6 @@ import {
   it,
   vi,
 } from "vitest";
-import type { TsServer } from "./tsserver.js";
-import { startTsServer } from "./tsserver.js";
 
 // it needs to be hoisted because its referenced from our mocked WebSocket
 // which must be hoisted to work
@@ -46,17 +47,19 @@ const rootLogger = await vi.hoisted(async (): Promise<Logger> => {
       console.log(a);
     }
   }
-  return Promise.resolve(pino(
-    { level: "info" },
-    (pinoPretty.build)({
-      sync: true,
-      timestampKey: undefined,
-      errorLikeObjectKeys: ["error", "err", "exception"],
-      errorProps: "stack,cause,properties",
-      ignore: "time,hostname,pid",
-      destination: new PinoConsoleLogDestination(),
-    }),
-  ));
+  return Promise.resolve(
+    pino(
+      { level: "info" },
+      pinoPretty.build({
+        sync: true,
+        timestampKey: undefined,
+        errorLikeObjectKeys: ["error", "err", "exception"],
+        errorProps: "stack,cause,properties",
+        ignore: "time,hostname,pid",
+        destination: new PinoConsoleLogDestination(),
+      }),
+    ),
+  );
 });
 
 describe("intellisense", () => {
@@ -69,10 +72,7 @@ describe("intellisense", () => {
     });
     console.log({ clientsPackageJson });
     invariant(clientsPackageJson != null);
-    packagesDir = path.join(
-      path.dirname(clientsPackageJson),
-      "..",
-    );
+    packagesDir = path.join(path.dirname(clientsPackageJson), "..");
 
     clientPackagePath = path.join(packagesDir, "client");
   });
@@ -96,7 +96,7 @@ describe("intellisense", () => {
     await tsServer.sendOpenRequest({ file: intellisenseFilePath });
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     tsServer.stop();
     tsServer = undefined as any;
   });
@@ -104,7 +104,7 @@ describe("intellisense", () => {
   it("callsQueryAcceptsObject", { timeout: 40_000 }, async () => {
     const { resp } = await tsServer.sendQuickInfoRequest({
       file: intellisenseFilePath,
-      line: 27,
+      line: 28,
       offset: 6,
     });
     expect(resp.body?.documentation).toMatchInlineSnapshot(
@@ -126,17 +126,17 @@ describe("intellisense", () => {
   it("interfaceObjectSetIntellisense", { timeout: 40_000 }, async () => {
     const subscribeCompletions = await tsServer.sendCompletionsRequest({
       file: intellisenseFilePath,
-      line: 30,
+      line: 31,
       offset: 28,
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
-    expect(subscribeCompletions.resp.body?.entries.map(e => e.name)).toContain(
-      "subscribe",
-    );
+    expect(
+      subscribeCompletions.resp.body?.entries.map((e) => e.name),
+    ).toContain("subscribe");
 
     const subscribeHover = await tsServer.sendQuickInfoRequest({
       file: intellisenseFilePath,
-      line: 30,
+      line: 31,
       offset: 28,
     });
     expect(subscribeHover.resp.body?.documentation).toContain(
@@ -145,7 +145,7 @@ describe("intellisense", () => {
 
     const narrowToTypeHover = await tsServer.sendQuickInfoRequest({
       file: intellisenseFilePath,
-      line: 32,
+      line: 33,
       offset: 27,
     });
     expect(narrowToTypeHover.resp.body?.displayString).toContain("Employee");
@@ -153,11 +153,11 @@ describe("intellisense", () => {
 
     const instanceCompletions = await tsServer.sendCompletionsRequest({
       file: intellisenseFilePath,
-      line: 34,
+      line: 35,
       offset: 18,
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
-    expect(instanceCompletions.resp.body?.entries.map(e => e.name)).toEqual(
+    expect(instanceCompletions.resp.body?.entries.map((e) => e.name)).toEqual(
       expect.arrayContaining(["$as", "$objectType"]),
     );
   });
@@ -165,19 +165,21 @@ describe("intellisense", () => {
   it("orderBySuggestionIsRight", { timeout: 40_000 }, async () => {
     const { resp } = await tsServer.sendCompletionsRequest({
       file: intellisenseFilePath,
-      line: 29,
+      line: 30,
       offset: 15,
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
-    expect(resp.body?.entries.map(e => e.name)).toEqual([
+    expect(resp.body?.entries.map((e) => e.name)).toEqual([
       "class",
       "employeeId",
       "employeeLocation",
+      "employeeProfile",
       "employeeSensor",
       "employeeStatus",
       "favoriteRestaurants",
       "fullName",
       "office",
+      "performanceScores",
       "skillSet",
       "skillSetEmbedding",
       "startDate",
@@ -185,7 +187,7 @@ describe("intellisense", () => {
 
     const { resp: resp2 } = await tsServer.sendQuickInfoRequest({
       file: intellisenseFilePath,
-      line: 33,
+      line: 34,
       offset: 3,
     });
     expect(resp2.body?.documentation).not.toEqual("'(property) $orderBy: any'");
@@ -193,36 +195,38 @@ describe("intellisense", () => {
     // order by relevance
     const { resp: resp3 } = await tsServer.sendCompletionsRequest({
       file: intellisenseFilePath,
-      line: 39,
+      line: 40,
       offset: 14,
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
 
-    expect(resp3.body?.entries.map(e => e.name)).toEqual([
-      "relevance",
-    ]);
+    expect(resp3.body?.entries.map((e) => e.name)).toEqual(["relevance"]);
   });
 
-  it("fetchPageByRidLoadPropertySecurityMetadata", {
-    timeout: 40_000,
-  }, async () => {
-    const { resp } = await tsServer.sendCompletionsRequest({
-      file: intellisenseFilePath,
-      line: 32,
-      offset: 5,
-      triggerKind: ts.CompletionTriggerKind.Invoked,
-    });
-    expect(resp.body?.entries.map(e => e.name)).toContain(
-      "$loadPropertySecurityMetadata",
-    );
+  it(
+    "fetchPageByRidLoadPropertySecurityMetadata",
+    {
+      timeout: 40_000,
+    },
+    async () => {
+      const { resp } = await tsServer.sendCompletionsRequest({
+        file: intellisenseFilePath,
+        line: 33,
+        offset: 5,
+        triggerKind: ts.CompletionTriggerKind.Invoked,
+      });
+      expect(resp.body?.entries.map((e) => e.name)).toContain(
+        "$loadPropertySecurityMetadata",
+      );
 
-    const { resp: hover } = await tsServer.sendQuickInfoRequest({
-      file: intellisenseFilePath,
-      line: 32,
-      offset: 8,
-    });
-    expect(hover.body?.displayString).toContain(
-      "$loadPropertySecurityMetadata",
-    );
-  });
+      const { resp: hover } = await tsServer.sendQuickInfoRequest({
+        file: intellisenseFilePath,
+        line: 33,
+        offset: 8,
+      });
+      expect(hover.body?.displayString).toContain(
+        "$loadPropertySecurityMetadata",
+      );
+    },
+  );
 });

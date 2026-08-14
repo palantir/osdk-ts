@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   UpdateExistingEventsRequest as _api_registry_UpdateExistingEventsRequest,
   UpdateExistingEventsResponse as _api_registry_UpdateExistingEventsResponse,

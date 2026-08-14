@@ -17,6 +17,7 @@
 import type { FoundryConfig } from "@osdk/foundry-config-json";
 import { consola } from "consola";
 import type { Arguments } from "yargs";
+
 import type { CommonWidgetSetArgs } from "./CommonWidgetSetArgs.js";
 
 export function logWidgetSetCommandConfigFileOverride(
@@ -24,12 +25,10 @@ export function logWidgetSetCommandConfigFileOverride(
   config: FoundryConfig<"widgetSet"> | undefined,
 ): void {
   if (
-    config?.widgetSet.rid != null
-    && args.widgetSet !== config.widgetSet.rid
+    config?.widgetSet.rid != null &&
+    args.widgetSet !== config.widgetSet.rid
   ) {
-    consola.debug(
-      `Overriding "rid" from config file with ${args.widgetSet}`,
-    );
+    consola.debug(`Overriding "rid" from config file with ${args.widgetSet}`);
   }
 
   if (config?.foundryUrl != null && args.foundryUrl !== config.foundryUrl) {

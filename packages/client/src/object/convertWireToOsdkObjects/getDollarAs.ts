@@ -15,6 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition, OsdkBase } from "@osdk/api";
+
 import {
   type FetchedObjectTypeDefinition,
   InterfaceDefinitions,
@@ -22,7 +23,7 @@ import {
 import { createSimpleCache } from "../SimpleCache.js";
 import { createOsdkInterface } from "./createOsdkInterface.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
-import { UnderlyingOsdkObject } from "./InternalSymbols.js";
+import { InterfaceDefRef, UnderlyingOsdkObject } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
 
 /** @internal */
@@ -35,16 +36,13 @@ export type DollarAsFn = <
 ) => OsdkBase<any>;
 
 export const get$as: (key: FetchedObjectTypeDefinition) => DollarAsFn =
-  createSimpleCache<
-    FetchedObjectTypeDefinition,
-    DollarAsFn
-  >(new WeakMap(), $asFactory).get;
+  createSimpleCache<FetchedObjectTypeDefinition, DollarAsFn>(
+    new WeakMap(),
+    $asFactory,
+  ).get;
 
 const osdkObjectToInterfaceView = createSimpleCache(
-  new WeakMap<
-    OsdkBase<any>,
-    Map<string, WeakRef<OsdkBase<any>>>
-  >(),
+  new WeakMap<OsdkBase<any>, Map<string, WeakRef<OsdkBase<any>>>>(),
   () =>
     new Map<
       /* interface api name */ string,
@@ -52,21 +50,44 @@ const osdkObjectToInterfaceView = createSimpleCache(
     >(),
 );
 
-function $asFactory(
+function assertInterfaceToOtCastIsPermitted(
+  holder: { [InterfaceDefRef]?: unknown },
   objDef: FetchedObjectTypeDefinition,
-): DollarAsFn {
+): void {
+  const interfaceDef = holder[InterfaceDefRef] as
+    | { apiName: string }
+    | undefined;
+  if (interfaceDef == null) return;
+  const implementations =
+    objDef.interfaceImplementations?.[interfaceDef.apiName];
+  if (implementations == null) return;
+
+  for (const [iptApiName, impl] of Object.entries(implementations)) {
+    if (impl.type === "localProperty") continue;
+    throw new Error(
+      `Cannot cast interface view of '${interfaceDef.apiName}' to ` +
+        `'${objDef.apiName}': property '${iptApiName}' has a non-local ` +
+        `implementation (${impl.type}), so the underlying object type cannot ` +
+        `be faithfully represented. Load the object type directly.`,
+    );
+  }
+}
+
+function $asFactory(objDef: FetchedObjectTypeDefinition): DollarAsFn {
   // We use the exact same logic for both the interface rep and the underlying rep
 
-  return function $as<
-    NEW_Q extends ObjectOrInterfaceDefinition,
-  >(
-    this: OsdkBase<any> & { [UnderlyingOsdkObject]: any },
+  return function $as<NEW_Q extends ObjectOrInterfaceDefinition>(
+    this: OsdkBase<any> & {
+      [UnderlyingOsdkObject]: any;
+      [InterfaceDefRef]?: unknown;
+    },
     targetMinDef: NEW_Q | string,
   ): OsdkBase<any> {
     let targetInterfaceApiName: string;
 
     if (typeof targetMinDef === "string") {
       if (targetMinDef === objDef.apiName) {
+        assertInterfaceToOtCastIsPermitted(this, objDef);
         return this[UnderlyingOsdkObject];
       }
 
@@ -79,6 +100,7 @@ function $asFactory(
 
       targetInterfaceApiName = targetMinDef;
     } else if (targetMinDef.apiName === objDef.apiName) {
+      assertInterfaceToOtCastIsPermitted(this, objDef);
       return this[UnderlyingOsdkObject];
     } else {
       if (targetMinDef.type === "object") {
@@ -100,14 +122,14 @@ function $asFactory(
 
     const existing = osdkObjectToInterfaceView
       .get(underlying)
-      .get(targetInterfaceApiName)?.deref();
+      .get(targetInterfaceApiName)
+      ?.deref();
     if (existing) return existing;
 
     const osdkInterface = createOsdkInterface(underlying, def.def);
-    osdkObjectToInterfaceView.get(underlying).set(
-      targetInterfaceApiName,
-      new WeakRef(osdkInterface),
-    );
+    osdkObjectToInterfaceView
+      .get(underlying)
+      .set(targetInterfaceApiName, new WeakRef(osdkInterface));
     return osdkInterface;
   };
 }

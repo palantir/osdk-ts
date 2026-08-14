@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { GetObjectTypeSemanticSearchStatusResponse as _api_search_GetObjectTypeSemanticSearchStatusResponse } from "../search/__components.js";
 
 /**

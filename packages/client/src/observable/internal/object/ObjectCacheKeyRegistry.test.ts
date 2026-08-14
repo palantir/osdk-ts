@@ -20,6 +20,7 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import { describe, expect, it } from "vitest";
+
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { Canonical } from "../Canonical.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
@@ -35,10 +36,11 @@ import type { ObjectQuery } from "./ObjectQuery.js";
 function createMockRdp(...fields: string[]): Canonical<Rdp> {
   const rdp: Rdp = {};
   for (const field of fields) {
-    rdp[field] = () => ({} as DerivedProperty.Definition<
-      SimplePropertyDef,
-      ObjectOrInterfaceDefinition
-    >);
+    rdp[field] = () =>
+      ({}) as DerivedProperty.Definition<
+        SimplePropertyDef,
+        ObjectOrInterfaceDefinition
+      >;
   }
   return rdp as Canonical<Rdp>;
 }
@@ -129,12 +131,7 @@ describe("ObjectCacheKeyRegistry", () => {
     );
 
     registry.register(key1, "Employee", "emp1", undefined);
-    registry.register(
-      key2,
-      "Employee",
-      "emp1",
-      createMockRdp("address"),
-    );
+    registry.register(key2, "Employee", "emp1", createMockRdp("address"));
 
     const variants = registry.getVariants("Employee", "emp1");
     expect(variants.size).toBe(2);
@@ -161,12 +158,7 @@ describe("ObjectCacheKeyRegistry", () => {
     );
 
     registry.register(keyWithoutRdp, "Employee", "emp1", undefined);
-    registry.register(
-      keyWithRdp,
-      "Employee",
-      "emp1",
-      createMockRdp("address"),
-    );
+    registry.register(keyWithRdp, "Employee", "emp1", createMockRdp("address"));
 
     expect(registry.hasRdpConfig(keyWithoutRdp)).toBe(false);
     expect(registry.hasRdpConfig(keyWithRdp)).toBe(true);
@@ -199,20 +191,10 @@ describe("ObjectCacheKeyRegistry", () => {
     registry.register(key1, "Employee", "emp1", undefined);
     expect(registry.getVariantCount("Employee", "emp1")).toBe(1);
 
-    registry.register(
-      key2,
-      "Employee",
-      "emp1",
-      createMockRdp("address"),
-    );
+    registry.register(key2, "Employee", "emp1", createMockRdp("address"));
     expect(registry.getVariantCount("Employee", "emp1")).toBe(2);
 
-    registry.register(
-      key3,
-      "Employee",
-      "emp1",
-      createMockRdp("phone"),
-    );
+    registry.register(key3, "Employee", "emp1", createMockRdp("phone"));
     expect(registry.getVariantCount("Employee", "emp1")).toBe(3);
 
     registry.unregister(key1);
@@ -263,12 +245,7 @@ describe("ObjectCacheKeyRegistry", () => {
     );
 
     registry.register(key1, "Employee", "emp1", undefined);
-    registry.register(
-      key2,
-      "Employee",
-      "emp1",
-      createMockRdp("address"),
-    );
+    registry.register(key2, "Employee", "emp1", createMockRdp("address"));
 
     expect(registry.getVariantCount("Employee", "emp1")).toBe(2);
 

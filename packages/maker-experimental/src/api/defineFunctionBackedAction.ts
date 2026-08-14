@@ -21,38 +21,44 @@ export type FunctionBackedActionTypeUserDefinition = {
   functionApiName: string;
   apiName?: string;
   displayName?: string;
+  description?: string;
   status?: ActionStatus;
 };
 
 export function defineFunctionBackedAction(
   def: FunctionBackedActionTypeUserDefinition,
 ): ActionType {
-  const actionApiName = def.apiName
-    ?? `function-action-${kebab(def.functionApiName)}`;
+  const actionApiName =
+    def.apiName ?? `function-action-${kebab(def.functionApiName)}`;
   return defineAction({
     apiName: def.apiName ?? `${def.functionApiName.toLowerCase()}-action`,
     displayName: def.displayName ?? `Function action ${def.functionApiName}`,
-    rules: [{
-      type: "functionRule",
-      functionRule: {
-        // delegate this to conversion step
-        functionRid: def.functionApiName,
-        functionInputValues: {},
-        functionVersion: "0.1.0",
+    description: def.description,
+    rules: [
+      {
+        type: "functionRule",
+        functionRule: {
+          // delegate this to conversion step
+          functionRid: def.functionApiName,
+          functionInputValues: {},
+          functionVersion: "0.1.0",
+        },
       },
-    }],
+    ],
     status: def.status ?? "active",
-    ...({
-      validation: [{
-        condition: {
-          type: "true",
-          true: {},
+    ...{
+      validation: [
+        {
+          condition: {
+            type: "true",
+            true: {},
+          },
+          displayMetadata: {
+            failureMessage: "Validation failed",
+            typeClasses: [],
+          },
         },
-        displayMetadata: {
-          failureMessage: "Validation failed",
-          typeClasses: [],
-        },
-      }],
-    }),
+      ],
+    },
   });
 }

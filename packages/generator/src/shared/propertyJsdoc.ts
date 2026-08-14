@@ -16,6 +16,7 @@
 
 import type { ObjectMetadata } from "@osdk/api";
 import type { PropertyV2 } from "@osdk/foundry.ontologies";
+import { escapeJsDocText } from "../util/escapeJsDocText.js";
 
 export function propertyJsdoc(
   property: ObjectMetadata.Property,
@@ -31,12 +32,16 @@ export function propertyJsdoc(
       let deprecationStatus = "";
       if (status.type === "deprecated") {
         deprecationStatus += ` *   @deprecated\n`;
-        deprecationStatus += ` *   - ${status.message}\n`;
+        deprecationStatus += ` *   - ${escapeJsDocText(status.message)}\n`;
         if (status.deadline) {
-          deprecationStatus += ` *   - deadline: ${status.deadline}\n`;
+          deprecationStatus += ` *   - deadline: ${
+            escapeJsDocText(status.deadline)
+          }\n`;
         }
         if (status.replacedBy) {
-          deprecationStatus += ` *   - replaced by: ${status.replacedBy}\n`;
+          deprecationStatus += ` *   - replaced by: ${
+            escapeJsDocText(status.replacedBy)
+          }\n`;
         }
         ret.push(deprecationStatus);
       } else if (status.type === "experimental") {
@@ -50,14 +55,14 @@ export function propertyJsdoc(
 
     if (renderDisplayName) {
       ret.push(
-        ` *   display name: '${property.displayName}'${
+        ` *   display name: '${escapeJsDocText(property.displayName!)}'${
           property.description ? "," : ""
         }\n`,
       );
     }
 
     if (property.description) {
-      ret.push(` *   description: ${property.description}\n`);
+      ret.push(` *   description: ${escapeJsDocText(property.description)}\n`);
     }
   } else {
     ret.push(` * (no ontology metadata)\n`);

@@ -28,6 +28,7 @@ import type {
 } from "@osdk/foundry.ontologies";
 import * as OntologyObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet";
 import invariant from "tiny-invariant";
+
 import { legacyToModernSingleAggregationResult } from "../internal/conversions/legacyToModernSingleAggregationResult.js";
 import { modernToLegacyAggregationClause } from "../internal/conversions/modernToLegacyAggregationClause.js";
 import { modernToLegacyGroupByClause } from "../internal/conversions/modernToLegacyGroupByClause.js";
@@ -43,14 +44,12 @@ export async function aggregate<
 >(
   clientCtx: MinimalClient,
   objectType: Q,
-  objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
+  objectSet: ObjectSet,
   req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
 ): Promise<AggregationsResults<Q, AO>> {
   const resolvedObjectSet = resolveBaseObjectSetType(objectType);
   const body: AggregateObjectsRequestV2 = {
-    aggregation: modernToLegacyAggregationClause<AO["$select"]>(
-      req.$select,
-    ),
+    aggregation: modernToLegacyAggregationClause<AO["$select"]>(req.$select),
     groupBy: [],
     where: undefined,
   };
@@ -71,13 +70,15 @@ export async function aggregate<
       groupBy: body.groupBy,
       aggregation: body.aggregation,
     },
-    { branch: clientCtx.branch, transactionId: clientCtx.transactionId },
+    {
+      branch: clientCtx.branch,
+      transactionId: clientCtx.transactionId,
+      scenarioRid: clientCtx.scenarioRid,
+    },
   );
 
   if (!result.data || !Array.isArray(result.data)) {
-    throw new Error(
-      `Aggregation request failed: ${JSON.stringify(result)}`,
-    );
+    throw new Error(`Aggregation request failed: ${JSON.stringify(result)}`);
   }
 
   if (!req.$groupBy) {
@@ -88,15 +89,12 @@ export async function aggregate<
 
     return {
       ...aggregationToCountResult(result.data[0]),
-      ...legacyToModernSingleAggregationResult(
-        result.data[0],
-        req.$select,
-      ),
+      ...legacyToModernSingleAggregationResult(result.data[0], req.$select),
     } as any;
   }
 
-  const ret: AggregationResultsWithGroups<Q, AO["$select"], any> = result.data
-    .map((entry) => {
+  const ret: AggregationResultsWithGroups<Q, AO["$select"], any> =
+    result.data.map((entry) => {
       return {
         $group: entry.group as any,
         ...aggregationToCountResult(entry),

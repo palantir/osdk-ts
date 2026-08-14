@@ -17,7 +17,9 @@
 import * as fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { addDependency } from "../addDependency.js";
 import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import { defineInterface } from "../defineInterface.js";
@@ -105,6 +107,7 @@ describe("Miscellaneous Tests", () => {
             "interfaceTypes": {
               "com.palantir.myInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.myInterface",
                   "displayMetadata": {
                     "description": "myInterface",
@@ -119,6 +122,7 @@ describe("Miscellaneous Tests", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -279,6 +283,7 @@ describe("Miscellaneous Tests", () => {
             "interfaceTypes": {
               "com.palantir.myInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.myInterface",
                   "displayMetadata": {
                     "description": "myInterface",
@@ -293,6 +298,7 @@ describe("Miscellaneous Tests", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -379,39 +385,49 @@ describe("Miscellaneous Tests", () => {
       `);
     });
     it("Export files are generated correctly", async () => {
-      const generatedDir = path.resolve(path.join(
-        __dirname,
-        "..",
-        "generatedNoCheck",
-        "export_files_are_generated_correctly",
-      ));
-      await defineOntology("com.my.package.", () => {
-        const mySpt = defineSharedPropertyType({
-          apiName: "mySpt",
-          type: "string",
-        });
-        const myInterface = defineInterface({
-          apiName: "myInterface",
-          properties: {
-            mySpt,
-          },
-        });
-        const myObject = defineObject({
-          titlePropertyApiName: "bar",
-          displayName: "My Object",
-          pluralDisplayName: "myObjects",
-          apiName: "myObject",
-          primaryKeyPropertyApiName: "bar",
-          properties: { "bar": { type: "string" } },
-          implementsInterfaces: [{
-            implements: myInterface,
-            propertyMapping: [{
-              interfaceProperty: "com.my.package.mySpt",
-              mapsTo: "bar",
-            }],
-          }],
-        });
-      }, generatedDir);
+      const generatedDir = path.resolve(
+        path.join(
+          __dirname,
+          "..",
+          "generatedNoCheck",
+          "export_files_are_generated_correctly",
+        ),
+      );
+      await defineOntology(
+        "com.my.package.",
+        () => {
+          const mySpt = defineSharedPropertyType({
+            apiName: "mySpt",
+            type: "string",
+          });
+          const myInterface = defineInterface({
+            apiName: "myInterface",
+            properties: {
+              mySpt,
+            },
+          });
+          const myObject = defineObject({
+            titlePropertyApiName: "bar",
+            displayName: "My Object",
+            pluralDisplayName: "myObjects",
+            apiName: "myObject",
+            primaryKeyPropertyApiName: "bar",
+            properties: { bar: { type: "string" } },
+            implementsInterfaces: [
+              {
+                implements: myInterface,
+                propertyMapping: [
+                  {
+                    interfaceProperty: "com.my.package.mySpt",
+                    mapsTo: "bar",
+                  },
+                ],
+              },
+            ],
+          });
+        },
+        generatedDir,
+      );
 
       expect(
         fs.readFileSync(
@@ -431,7 +447,9 @@ describe("Miscellaneous Tests", () => {
             "description": "myInterface"
           },
           "extendsInterfaces": [],
+          "linkedInterfaces": [],
           "links": [],
+          "actionTypeConstraints": [],
           "status": {
             "type": "active",
             "active": {}
@@ -521,7 +539,9 @@ describe("Miscellaneous Tests", () => {
                   "description": "myInterface"
                 },
                 "extendsInterfaces": [],
+                "linkedInterfaces": [],
                 "links": [],
+                "actionTypeConstraints": [],
                 "status": {
                   "type": "active",
                   "active": {}
@@ -626,35 +646,41 @@ describe("Miscellaneous Tests", () => {
       });
     });
     it("Extended interfaces are propagated to the static objects", async () => {
-      const generatedDir = path.resolve(path.join(
-        __dirname,
-        "..",
-        "generatedNoCheck",
-        "extended_interfaces_are_propagated_to_the_static_objects",
-      ));
-      await defineOntology("com.palantir.", () => {
-        const property1 = defineSharedPropertyType({
-          apiName: "property1",
-          type: "string",
-        });
-        const property2 = defineSharedPropertyType({
-          apiName: "property2",
-          type: "string",
-        });
-        const parentInterface = defineInterface({
-          apiName: "parentInterface",
-          properties: {
-            property1,
-          },
-        });
-        const childInterface = defineInterface({
-          apiName: "childInterface",
-          properties: {
-            property2,
-          },
-          extends: [parentInterface],
-        });
-      }, generatedDir);
+      const generatedDir = path.resolve(
+        path.join(
+          __dirname,
+          "..",
+          "generatedNoCheck",
+          "extended_interfaces_are_propagated_to_the_static_objects",
+        ),
+      );
+      await defineOntology(
+        "com.palantir.",
+        () => {
+          const property1 = defineSharedPropertyType({
+            apiName: "property1",
+            type: "string",
+          });
+          const property2 = defineSharedPropertyType({
+            apiName: "property2",
+            type: "string",
+          });
+          const parentInterface = defineInterface({
+            apiName: "parentInterface",
+            properties: {
+              property1,
+            },
+          });
+          const childInterface = defineInterface({
+            apiName: "childInterface",
+            properties: {
+              property2,
+            },
+            extends: [parentInterface],
+          });
+        },
+        generatedDir,
+      );
 
       expect(
         fs.readFileSync(
@@ -681,7 +707,9 @@ describe("Miscellaneous Tests", () => {
                 "description": "parentInterface"
               },
               "extendsInterfaces": [],
+              "linkedInterfaces": [],
               "links": [],
+              "actionTypeConstraints": [],
               "status": {
                 "type": "active",
                 "active": {}
@@ -734,7 +762,9 @@ describe("Miscellaneous Tests", () => {
               "__type": OntologyEntityTypeEnum.INTERFACE_TYPE
             }
           ],
+          "linkedInterfaces": [],
           "links": [],
+          "actionTypeConstraints": [],
           "status": {
             "type": "active",
             "active": {}
@@ -824,8 +854,8 @@ describe("Miscellaneous Tests", () => {
         displayName: "objectDef",
         pluralDisplayName: "objectDefs",
         properties: {
-          "property1": { type: "string", displayName: "property1" },
-          "property2": { type: "string", displayName: "property2" },
+          property1: { type: "string", displayName: "property1" },
+          property2: { type: "string", displayName: "property2" },
         },
         implementsInterfaces: [
           {
@@ -875,6 +905,7 @@ describe("Miscellaneous Tests", () => {
             "interfaceTypes": {
               "com.palantir.childInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.childInterface",
                   "displayMetadata": {
                     "description": "childInterface",
@@ -892,6 +923,7 @@ describe("Miscellaneous Tests", () => {
                   ],
                   "extendsInterfacesMetadata": [
                     {
+                      "actionTypeConstraints": [],
                       "apiName": "com.palantir.parentInterface",
                       "displayMetadata": {
                         "description": "parentInterface",
@@ -906,6 +938,7 @@ describe("Miscellaneous Tests", () => {
                       },
                       "extendsInterfaces": [],
                       "extendsInterfacesMetadata": [],
+                      "linkedInterfaces": [],
                       "links": [],
                       "permission": undefined,
                       "properties": [],
@@ -997,6 +1030,7 @@ describe("Miscellaneous Tests", () => {
                       },
                     },
                   ],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -1090,6 +1124,7 @@ describe("Miscellaneous Tests", () => {
               },
               "com.palantir.parentInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.parentInterface",
                   "displayMetadata": {
                     "description": "parentInterface",
@@ -1104,6 +1139,7 @@ describe("Miscellaneous Tests", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -1248,6 +1284,7 @@ describe("Miscellaneous Tests", () => {
                   },
                   "implementsInterfaces2": [
                     {
+                      "actionTypes": {},
                       "interfaceTypeApiName": "com.palantir.childInterface",
                       "linksV2": {},
                       "properties": {},
@@ -1447,12 +1484,14 @@ describe("Miscellaneous Tests", () => {
 
   describe("Dependencies", () => {
     it("Correctly adds dependencies", async () => {
-      const generatedDir = path.resolve(path.join(
-        __dirname,
-        "..",
-        "generatedNoCheck",
-        "correctly_adds_dependencies",
-      ));
+      const generatedDir = path.resolve(
+        path.join(
+          __dirname,
+          "..",
+          "generatedNoCheck",
+          "correctly_adds_dependencies",
+        ),
+      );
       await defineOntology(
         "com.palantir.",
         () => {
@@ -1486,10 +1525,9 @@ describe("Miscellaneous Tests", () => {
 
       expect(
         fs.readFileSync(path.join(generatedDir, "index.ts"), "utf8"),
-      )
-        .toContain(
-          `addDependency("com.palantir", new URL(import.meta.url).pathname);`,
-        );
+      ).toContain(
+        `addDependency("com.palantir", new URL(import.meta.url).pathname);`,
+      );
 
       fs.rmSync(path.join(generatedDir, ".."), {
         recursive: true,

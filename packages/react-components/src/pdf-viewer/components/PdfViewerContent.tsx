@@ -16,20 +16,26 @@
 
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
+
 import "pdfjs-dist/web/pdf_viewer.css";
 import React, { useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
+
 import { EMPTY_ANNOTATION_ARRAY } from "../constants.js";
 import { usePdfAnnotationsByPage } from "../hooks/usePdfAnnotationsByPage.js";
 import { usePdfFormFields } from "../hooks/usePdfFormFields.js";
 import { usePdfViewerCore } from "../hooks/usePdfViewerCore.js";
-import styles from "../PdfViewer.module.css";
-import type { PdfAnnotation, PdfFormFieldValue } from "../types.js";
-import { PdfViewerAnnotationLayer } from "./PdfViewerAnnotationLayer.js";
+import type {
+  PdfAnnotation,
+  PdfFormFieldValue,
+  PdfSource,
+} from "../PdfViewerApi.js";
+import { PdfAnnotationOverlay } from "./PdfAnnotationOverlay.js";
+
+import styles from "../BasePdfViewer.module.css";
 
 export interface PdfViewerContentProps {
-  /** PDF source — URL string or ArrayBuffer */
-  src: string | ArrayBuffer;
+  /** PDF source — URL string, ArrayBuffer, Uint8Array, or Blob */
+  src: PdfSource;
   /** Annotations to overlay on the PDF */
   annotations?: PdfAnnotation[];
   /** Callback fired when an annotation is clicked */
@@ -80,19 +86,25 @@ export function PdfViewerContent({
   onScaleChangeRef.current = onScaleChangeProp;
   const isInitialMountRef = useRef(true);
 
-  useEffect(function notifyPageChange() {
-    if (isInitialMountRef.current) {
-      return;
-    }
-    onPageChangeRef.current?.(viewer.currentPage);
-  }, [viewer.currentPage]);
+  useEffect(
+    function notifyPageChange() {
+      if (isInitialMountRef.current) {
+        return;
+      }
+      onPageChangeRef.current?.(viewer.currentPage);
+    },
+    [viewer.currentPage],
+  );
 
-  useEffect(function notifyScaleChange() {
-    if (isInitialMountRef.current) {
-      return;
-    }
-    onScaleChangeRef.current?.(viewer.scale);
-  }, [viewer.scale]);
+  useEffect(
+    function notifyScaleChange() {
+      if (isInitialMountRef.current) {
+        return;
+      }
+      onScaleChangeRef.current?.(viewer.scale);
+    },
+    [viewer.scale],
+  );
 
   useEffect(function clearInitialMount() {
     isInitialMountRef.current = false;
@@ -136,20 +148,18 @@ export function PdfViewerContent({
         <div ref={viewer.containerRef} className={styles.scrollContainer}>
           <div ref={viewer.viewerRef} className="pdfViewer" />
           {viewer.portalTargets.map((target) => {
-            const pageAnnotations = annotationsByPage[target.pageNumber]
-              ?? EMPTY_ANNOTATION_ARRAY;
+            const pageAnnotations =
+              annotationsByPage[target.pageNumber] ?? EMPTY_ANNOTATION_ARRAY;
             if (pageAnnotations.length === 0) {
               return null;
             }
-            return createPortal(
-              <PdfViewerAnnotationLayer
+            return (
+              <PdfAnnotationOverlay
                 key={target.pageNumber}
+                target={target}
                 annotations={pageAnnotations}
-                pageHeight={target.pageHeight}
-                scale={target.scale}
                 onAnnotationClick={onAnnotationClick}
-              />,
-              target.container,
+              />
             );
           })}
         </div>

@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { FiberFeature } from "./capabilities.js";
 import { getCapabilitiesManager } from "./capabilities.js";
 import { safeFiberOperation } from "./SafeFiberOperation.js";

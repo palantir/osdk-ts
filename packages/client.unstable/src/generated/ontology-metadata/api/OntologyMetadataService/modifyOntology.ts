@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   OntologyModifyRequest as _api_OntologyModifyRequest,
   OntologyModifyResponse as _api_OntologyModifyResponse,

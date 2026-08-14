@@ -22,6 +22,7 @@ import type {
 } from "@osdk/api";
 import type { ObjectSet } from "@osdk/foundry.ontologies";
 import { PalantirApiError } from "@osdk/shared.net.errors";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { fetchPage } from "./fetchPage.js";
 

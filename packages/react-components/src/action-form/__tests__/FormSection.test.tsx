@@ -17,6 +17,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
+
 import type { FormSectionDefinition } from "../ActionFormApi.js";
 import { FormSection } from "../FormSection.js";
 
@@ -50,10 +51,7 @@ describe("FormSection", () => {
 
     it("collapses when trigger is clicked", () => {
       render(
-        <FormSection
-          definition={makeDefinition()}
-          errorCount={0}
-        >
+        <FormSection definition={makeDefinition()} errorCount={0}>
           <div data-testid="child-field">Field content</div>
         </FormSection>,
       );
@@ -62,12 +60,13 @@ describe("FormSection", () => {
       expect(screen.getByTestId("child-field")).toBeDefined();
 
       // Click the collapse trigger
-      const trigger = screen.getByRole("button", { name: /test section/i });
+      const trigger = screen.getByRole("button", { name: /test section/iu });
       fireEvent.click(trigger);
 
       // Content should be hidden (panel closed)
-      expect(screen.getByTestId("child-field").closest("[hidden]")).not
-        .toBeNull();
+      expect(
+        screen.getByTestId("child-field").closest("[hidden]"),
+      ).not.toBeNull();
     });
 
     it("starts collapsed when collapsedByDefault is true", () => {
@@ -81,8 +80,9 @@ describe("FormSection", () => {
       );
 
       // Content should be hidden initially
-      expect(screen.getByTestId("child-field").closest("[hidden]")).not
-        .toBeNull();
+      expect(
+        screen.getByTestId("child-field").closest("[hidden]"),
+      ).not.toBeNull();
     });
 
     it("expands when trigger is clicked on a collapsed section", () => {
@@ -96,11 +96,12 @@ describe("FormSection", () => {
       );
 
       // Initially collapsed
-      expect(screen.getByTestId("child-field").closest("[hidden]")).not
-        .toBeNull();
+      expect(
+        screen.getByTestId("child-field").closest("[hidden]"),
+      ).not.toBeNull();
 
       // Click to expand
-      const trigger = screen.getByRole("button", { name: /test section/i });
+      const trigger = screen.getByRole("button", { name: /test section/iu });
       fireEvent.click(trigger);
 
       // Now visible
@@ -135,10 +136,7 @@ describe("FormSection", () => {
 
     it("shows singular error badge when errorCount is 1", () => {
       render(
-        <FormSection
-          definition={makeDefinition()}
-          errorCount={1}
-        >
+        <FormSection definition={makeDefinition()} errorCount={1}>
           <div>content</div>
         </FormSection>,
       );
@@ -148,15 +146,12 @@ describe("FormSection", () => {
 
     it("hides error badge when errorCount is 0", () => {
       render(
-        <FormSection
-          definition={makeDefinition()}
-          errorCount={0}
-        >
+        <FormSection definition={makeDefinition()} errorCount={0}>
           <div>content</div>
         </FormSection>,
       );
 
-      expect(screen.queryByText(/error/)).toBeNull();
+      expect(screen.queryByText(/error/u)).toBeNull();
     });
 
     it("renders without header when showTitleBar is false", () => {

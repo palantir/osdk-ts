@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { evaluateFilter } from "./evaluateFilter.js";
 
 describe("evaluateFilter", () => {
@@ -28,10 +29,9 @@ describe("evaluateFilter", () => {
 
     it("returns false when value is not in the array", () => {
       expect(evaluateFilter("$in", 7, [1, 5, 10], true)).toBe(false);
-      expect(evaluateFilter("$in", "deleted", ["active", "pending"], true))
-        .toBe(
-          false,
-        );
+      expect(
+        evaluateFilter("$in", "deleted", ["active", "pending"], true),
+      ).toBe(false);
     });
 
     it("handles empty arrays", () => {
@@ -96,6 +96,24 @@ describe("evaluateFilter", () => {
       expect(evaluateFilter("$startsWith", "hello world", "world", true)).toBe(
         false,
       );
+    });
+
+    it("$startsWith returns false for null/undefined values without throwing", () => {
+      // $title is `string | undefined`, so filtering by `$title` can reach a
+      // null value here — it must not throw on the `.startsWith` call.
+      expect(evaluateFilter("$startsWith", undefined, "hello", true)).toBe(
+        false,
+      );
+      expect(evaluateFilter("$startsWith", null, "hello", true)).toBe(false);
+      // A missing value definitively cannot match, so loose mode is false too.
+      expect(evaluateFilter("$startsWith", undefined, "hello", false)).toBe(
+        false,
+      );
+      expect(evaluateFilter("$startsWith", null, "hello", false)).toBe(false);
+    });
+
+    it("$startsWith returns false for non-string values", () => {
+      expect(evaluateFilter("$startsWith", 42, "4", true)).toBe(false);
     });
   });
 

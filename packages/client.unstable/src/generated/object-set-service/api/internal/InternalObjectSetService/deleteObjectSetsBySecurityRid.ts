@@ -15,9 +15,9 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  DeleteObjectSetsBySecurityRidResponse
-    as _api_internal_DeleteObjectSetsBySecurityRidResponse,
+  DeleteObjectSetsBySecurityRidResponse as _api_internal_DeleteObjectSetsBySecurityRidResponse,
   SecurityRid as _api_internal_SecurityRid,
 } from "../__components.js";
 

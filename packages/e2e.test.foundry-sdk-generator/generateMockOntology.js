@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-// @ts-check
-import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
-import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
-import { $ } from "execa";
 import * as fs from "node:fs/promises";
 import { tmpdir } from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
+
+// @ts-check
+import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import { $ } from "execa";
+
+const ONTOLOGY_METADATA_ENTRYPOINT = "./UNSTABLE_DO_NOT_USE/ontology-metadata";
 
 async function setup() {
   const dir = await fs.mkdtemp(
@@ -75,10 +78,7 @@ async function setup() {
       "twoDimensionalAggregationFunction",
       "threeDimensionalAggregationFunction",
     ],
-    interfaceTypes: [
-      "FooInterface",
-      "BarInterface",
-    ],
+    interfaceTypes: ["FooInterface", "BarInterface"],
     linkTypes: ["Employee.peeps", "Employee.lead", "Employee.officeLink"],
     palantirOnlyTest: true,
     _: [],
@@ -97,20 +97,14 @@ async function setup() {
     ...baseArgs,
     packageName: "@test-app2-beta/osdk",
     beta: true,
+    experimentalOntologyMetadata: true,
   });
 
   await safeStat(testApp2Dir, "should exist");
   await safeStat(testApp2BetaDir, "should exist");
 
-  await $({
-    stdout: "inherit",
-    stderr: "inherit",
-  })`attw --pack ${path.join(testApp2Dir, "osdk")}`;
-
-  await $({
-    stdout: "inherit",
-    stderr: "inherit",
-  })`attw --pack ${path.join(testApp2BetaDir, "osdk")}`;
+  await checkTypes(path.join(testApp2Dir, "osdk"));
+  await checkTypes(path.join(testApp2BetaDir, "osdk"), true);
 
   const finalOutDir = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
@@ -128,13 +122,23 @@ async function setup() {
 
 await setup();
 
-/**
- * @param {string} testAppDir
- */
+async function checkTypes(packageDir, checkMetadata = false) {
+  const opts = { stdout: "inherit", stderr: "inherit" };
+
+  await $(
+    opts,
+  )`attw --pack ${packageDir} --exclude-entrypoints ${ONTOLOGY_METADATA_ENTRYPOINT}`;
+  if (checkMetadata) {
+    await $(
+      opts,
+    )`attw --pack ${packageDir} --entrypoints ${ONTOLOGY_METADATA_ENTRYPOINT} --ignore-rules false-export-default`;
+  }
+}
+
 async function rmRf(testAppDir) {
   try {
     await fs.rm(testAppDir, { recursive: true, force: true });
-  } catch (e) {
+  } catch {
     // console.debug("rm error", e);
     // Only needed for regenerations
   }
@@ -157,7 +161,7 @@ async function safeStat(filePath, type) {
     return ret;
   } catch (e) {
     if (type === "should exist") {
-      throw new Error(`Expected ${filePath} to exist`);
+      throw new Error(`Expected ${filePath} to exist`, { cause: e });
     }
 
     // eslint-disable-next-line no-console

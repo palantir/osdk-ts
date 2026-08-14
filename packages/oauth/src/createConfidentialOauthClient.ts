@@ -20,6 +20,7 @@ import {
   customFetch,
   processClientCredentialsResponse,
 } from "oauth4webapi";
+
 import { common, createAuthorizationServer } from "./common.js";
 import type { ConfidentialOauthClient } from "./ConfidentialOauthClient.js";
 import { throwIfError } from "./throwIfError.js";

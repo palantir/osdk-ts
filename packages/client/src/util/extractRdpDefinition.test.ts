@@ -17,6 +17,7 @@
 import type { ObjectMetadata } from "@osdk/api";
 import type { ObjectSet } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { extractRdpDefinition } from "./extractRdpDefinition.js";
 
@@ -29,7 +30,7 @@ describe("extractRdpDefinition", () => {
             links: {
               testLink1: {
                 targetType: "SecondType",
-                "multiplicity": "many",
+                multiplicity: "many",
               } satisfies ObjectMetadata.Link<any, any>,
             },
           };
@@ -38,7 +39,7 @@ describe("extractRdpDefinition", () => {
             links: {
               testLink2: {
                 targetType: "ThirdType",
-                "multiplicity": "many",
+                multiplicity: "many",
               } satisfies ObjectMetadata.Link<any, any>,
             },
           };
@@ -47,6 +48,9 @@ describe("extractRdpDefinition", () => {
             properties: {
               testProperty: {
                 type: "attachment",
+              } satisfies ObjectMetadata.Property,
+              decimalProperty: {
+                type: "decimal",
               } satisfies ObjectMetadata.Property,
             },
           };
@@ -78,10 +82,7 @@ describe("extractRdpDefinition", () => {
   };
 
   it("handles 'withProperties' object set type", async () => {
-    const result = await extractRdpDefinition(
-      mockClientCtx,
-      objectSetWithRdps,
-    );
+    const result = await extractRdpDefinition(mockClientCtx, objectSetWithRdps);
 
     expect(result).toMatchInlineSnapshot(
       `
@@ -108,6 +109,58 @@ describe("extractRdpDefinition", () => {
       }
     `,
     );
+  });
+
+  it("captures the source property type for min/max aggregations", async () => {
+    const objectSetWithMinMax: ObjectSet = {
+      type: "withProperties",
+      objectSet: {
+        type: "searchAround",
+        objectSet: { type: "base", objectType: "BaseType" },
+        link: "testLink1",
+      },
+      derivedProperties: {
+        maxAmount: {
+          type: "selection",
+          objectSet: {
+            type: "searchAround",
+            objectSet: { type: "methodInput" },
+            link: "testLink2",
+          },
+          operation: {
+            type: "max",
+            selectedPropertyApiName: "decimalProperty",
+          },
+        },
+        minAmount: {
+          type: "selection",
+          objectSet: {
+            type: "searchAround",
+            objectSet: { type: "methodInput" },
+            link: "testLink2",
+          },
+          operation: {
+            type: "min",
+            selectedPropertyApiName: "decimalProperty",
+          },
+        },
+      },
+    };
+
+    const result = await extractRdpDefinition(
+      mockClientCtx,
+      objectSetWithMinMax,
+    );
+
+    // min/max preserve the aggregated property's type, so the type is captured
+    // exactly (rather than left undefined and falling back to lexicographic
+    // order at sort time).
+    expect(result.maxAmount.selectedOrCollectedPropertyType).toEqual({
+      type: "decimal",
+    });
+    expect(result.minAmount.selectedOrCollectedPropertyType).toEqual({
+      type: "decimal",
+    });
   });
 
   it("combines definitions from multiple derived properties", async () => {
@@ -144,10 +197,7 @@ describe("extractRdpDefinition", () => {
       },
     };
 
-    const result = await extractRdpDefinition(
-      mockClientCtx,
-      nestedObjectSet,
-    );
+    const result = await extractRdpDefinition(mockClientCtx, nestedObjectSet);
 
     expect(result).toMatchInlineSnapshot(`
       {
@@ -223,8 +273,8 @@ describe("extractRdpDefinition", () => {
           objectSet: { type: "base", objectType: "BaseType" },
           link: "testLink1",
         },
-        { type: "static", "objects": ["object1", "object2"] },
-        { type: "reference", "reference": "rid.os.1234" },
+        { type: "static", objects: ["object1", "object2"] },
+        { type: "reference", reference: "rid.os.1234" },
       ],
     };
 
@@ -282,10 +332,13 @@ describe("extractRdpDefinition", () => {
   it("throws with intersect, subtract, or union having nested RDPs", async () => {
     const intersectionObjectSetWithNestedRdps: ObjectSet = {
       type: "intersect",
-      objectSets: [objectSetWithRdps, {
-        type: "base",
-        objectType: "ThirdType",
-      }],
+      objectSets: [
+        objectSetWithRdps,
+        {
+          type: "base",
+          objectType: "ThirdType",
+        },
+      ],
     };
 
     await expect(

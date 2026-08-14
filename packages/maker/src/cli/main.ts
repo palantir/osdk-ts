@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { pathToFileURL } from "node:url";
+
+import { consola } from "consola";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+
 import { defineOntology } from "../api/defineOntology.js";
 
-const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
+const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/u;
 const uuidRegex =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u;
 
 export default async function main(
   args: string[] = process.argv,
@@ -116,9 +118,10 @@ export default async function main(
     .parseAsync();
   let apiNamespace = "";
   if (commandLineOpts.apiNamespace.length !== 0) {
-    apiNamespace = (commandLineOpts.apiNamespace.slice(-1) !== ".")
-      ? commandLineOpts.apiNamespace + "."
-      : commandLineOpts.apiNamespace;
+    apiNamespace =
+      commandLineOpts.apiNamespace.slice(-1) !== "."
+        ? commandLineOpts.apiNamespace + "."
+        : commandLineOpts.apiNamespace;
     invariant(apiNamespace.length < 1024, "API namespace is too long.");
     invariant(
       apiNamespaceRegex.test(apiNamespace),
@@ -128,9 +131,9 @@ export default async function main(
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
 
   if (
-    !commandLineOpts.generateCodeSnippets
-    && (commandLineOpts.codeSnippetPackageName !== ""
-      || commandLineOpts.codeSnippetDir !== path.resolve("./"))
+    !commandLineOpts.generateCodeSnippets &&
+    (commandLineOpts.codeSnippetPackageName !== "" ||
+      commandLineOpts.codeSnippetDir !== path.resolve("./"))
   ) {
     consola.info(
       "Package name and/or directory supplied for code snippets, but code snippet generation is false.",
@@ -160,22 +163,18 @@ export default async function main(
     commandLineOpts.output,
     JSON.stringify(
       ontologyIr,
-      null,
+      (key, value) => (key === "linkedInterfaces" ? undefined : value),
       2,
     ),
   );
   // No point in generating block if there aren't any value types
   if (
-    ontologyIr.valueTypes.valueTypes.length > 0
-    || ontologyIr.importedValueTypes.valueTypes.length > 0
+    ontologyIr.valueTypes.valueTypes.length > 0 ||
+    ontologyIr.importedValueTypes.valueTypes.length > 0
   ) {
     await fs.writeFile(
       commandLineOpts.valueTypesOutput,
-      JSON.stringify(
-        ontologyIr.valueTypes,
-        null,
-        2,
-      ),
+      JSON.stringify(ontologyIr.valueTypes, null, 2),
     );
   }
 }

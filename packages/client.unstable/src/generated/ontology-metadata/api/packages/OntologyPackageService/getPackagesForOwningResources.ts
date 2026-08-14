@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetPackagesForOwningResourcesRequest
-    as _api_packages_GetPackagesForOwningResourcesRequest,
-  GetPackagesForOwningResourcesResponse
-    as _api_packages_GetPackagesForOwningResourcesResponse,
+  GetPackagesForOwningResourcesRequest as _api_packages_GetPackagesForOwningResourcesRequest,
+  GetPackagesForOwningResourcesResponse as _api_packages_GetPackagesForOwningResourcesResponse,
 } from "../__components.js";
 
 /**

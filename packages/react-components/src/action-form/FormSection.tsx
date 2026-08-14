@@ -18,7 +18,9 @@ import { Collapsible } from "@base-ui/react/collapsible";
 import { CaretDown } from "@blueprintjs/icons";
 import classNames from "classnames";
 import React, { memo } from "react";
+
 import type { FormSectionDefinition } from "./ActionFormApi.js";
+
 import styles from "./FormSection.module.css";
 
 export interface FormSectionProps {

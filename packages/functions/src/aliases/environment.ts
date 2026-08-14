@@ -25,8 +25,8 @@ export function detectEnvironment(): AliasEnvironment {
 
   if (aliasesFileSet && resourcesFileSet) {
     throw new Error(
-      `Ambiguous alias configuration: both ${ALIASES_JSON_FILE_ENV_VAR} and `
-        + `${RESOURCES_JSON_FILE_ENV_VAR} are set. Only one should be configured.`,
+      `Ambiguous alias configuration: both ${ALIASES_JSON_FILE_ENV_VAR} and ` +
+        `${RESOURCES_JSON_FILE_ENV_VAR} are set. Only one should be configured.`,
     );
   }
 

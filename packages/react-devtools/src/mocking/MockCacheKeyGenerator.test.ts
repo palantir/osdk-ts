@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import type { SelectedPrimitive } from "../components/PrimitiveSelectionPanel.js";
 import { MockCacheKeyGenerator } from "./MockCacheKeyGenerator.js";
 
@@ -44,7 +45,7 @@ describe("MockCacheKeyGenerator", () => {
         whereClause: { status: "active" },
         location: "EmployeeList",
         hookIndex: 0,
-        querySignature: "useOsdkObjects:Employee:{\"status\":\"active\"}:{}",
+        querySignature: 'useOsdkObjects:Employee:{"status":"active"}:{}',
       },
     };
 
@@ -162,7 +163,7 @@ describe("MockCacheKeyGenerator", () => {
         whereClause: { b: 2, a: 1 },
         location: "EmployeeList",
         hookIndex: 0,
-        querySignature: "useOsdkObjects:Employee:{\"b\":2,\"a\":1}:{}",
+        querySignature: 'useOsdkObjects:Employee:{"b":2,"a":1}:{}',
       },
     };
     const primitive2: SelectedPrimitive = {
@@ -172,7 +173,7 @@ describe("MockCacheKeyGenerator", () => {
         whereClause: { a: 1, b: 2 },
         location: "EmployeeList",
         hookIndex: 0,
-        querySignature: "useOsdkObjects:Employee:{\"a\":1,\"b\":2}:{}",
+        querySignature: 'useOsdkObjects:Employee:{"a":1,"b":2}:{}',
       },
     };
 

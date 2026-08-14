@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
+
 import type { ComputeStore } from "../store/ComputeStore.js";
 import { ComputeMonitor } from "./ComputeMonitor.js";
 import type { EventTimeline } from "./EventTimeline.js";

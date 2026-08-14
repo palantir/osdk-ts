@@ -19,6 +19,7 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
+
 import type { CommonObserveOptions } from "../../ObservableClient/common.js";
 
 export interface ListQueryOptions<
@@ -37,4 +38,5 @@ export interface ListQueryOptions<
   pivotTo?: string;
   $loadPropertySecurityMetadata?: boolean;
   $includeAllBaseObjectProperties?: boolean;
+  resolveToObjectType?: boolean;
 }

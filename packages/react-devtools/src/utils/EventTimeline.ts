@@ -143,8 +143,8 @@ export class EventTimeline {
       ? this.getEventsByType(eventType)
       : this.events.toArray();
 
-    return allEvents.filter((e) =>
-      Math.abs(e.timestamp - timestamp) <= windowMs
+    return allEvents.filter(
+      (e) => Math.abs(e.timestamp - timestamp) <= windowMs,
     );
   }
 
@@ -165,11 +165,11 @@ export class EventTimeline {
   findRenderTrigger(renderEvent: RenderEvent): EmissionEvent | null {
     const CORRELATION_WINDOW = 16;
 
-    const recentEmissions = this.getEventsByType("EMISSION")
-      .filter(e =>
-        e.timestamp <= renderEvent.timestamp
-        && renderEvent.timestamp - e.timestamp <= CORRELATION_WINDOW
-      );
+    const recentEmissions = this.getEventsByType("EMISSION").filter(
+      (e) =>
+        e.timestamp <= renderEvent.timestamp &&
+        renderEvent.timestamp - e.timestamp <= CORRELATION_WINDOW,
+    );
 
     if (recentEmissions.length === 0) {
       return null;
@@ -177,7 +177,7 @@ export class EventTimeline {
 
     // Return most recent emission (closest to render)
     return recentEmissions.reduce((latest, current) =>
-      current.timestamp > latest.timestamp ? current : latest
+      current.timestamp > latest.timestamp ? current : latest,
     );
   }
 
@@ -238,9 +238,9 @@ export class EventTimeline {
   getEventsByType<T extends MonitorEvent["type"]>(
     type: T,
   ): Extract<MonitorEvent, { type: T }>[] {
-    return this.events.toArray().filter(
-      (e): e is Extract<MonitorEvent, { type: T }> => e.type === type,
-    );
+    return this.events
+      .toArray()
+      .filter((e): e is Extract<MonitorEvent, { type: T }> => e.type === type);
   }
 
   getAllEvents(): MonitorEvent[] {
@@ -279,8 +279,8 @@ export class EventTimeline {
     for (let i = arr.length - 1; i >= 0; i--) {
       const event = arr[i];
       if (
-        event.type === type
-        && predicate(event as Extract<MonitorEvent, { type: T }>)
+        event.type === type &&
+        predicate(event as Extract<MonitorEvent, { type: T }>)
       ) {
         return event as Extract<MonitorEvent, { type: T }>;
       }

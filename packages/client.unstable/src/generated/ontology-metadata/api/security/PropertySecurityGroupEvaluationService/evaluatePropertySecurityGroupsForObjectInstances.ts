@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  EvaluatePsgForObjectInstancesRequest
-    as _api_security_EvaluatePsgForObjectInstancesRequest,
-  EvaluatePsgForObjectInstancesResponse
-    as _api_security_EvaluatePsgForObjectInstancesResponse,
+  EvaluatePsgForObjectInstancesRequest as _api_security_EvaluatePsgForObjectInstancesRequest,
+  EvaluatePsgForObjectInstancesResponse as _api_security_EvaluatePsgForObjectInstancesResponse,
 } from "../__components.js";
 
 /**

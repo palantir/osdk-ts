@@ -1,5 +1,280 @@
 # @osdk/client.test.ontology
 
+## 2.57.0
+
+### Patch Changes
+
+- @osdk/api@2.57.0
+
+## 2.56.0
+
+### Patch Changes
+
+- Updated dependencies [342c492]
+  - @osdk/api@2.56.0
+
+## 2.55.0
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+
+## 2.54.0
+
+### Patch Changes
+
+- @osdk/api@2.54.0
+
+## 2.53.0
+
+### Patch Changes
+
+- @osdk/api@2.53.0
+
+## 2.52.0
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+
+## 2.51.0
+
+### Patch Changes
+
+- Updated dependencies [b99b0bb]
+  - @osdk/api@2.51.0
+
+## 2.50.0
+
+### Patch Changes
+
+- @osdk/api@2.50.0
+
+## 2.49.0
+
+### Patch Changes
+
+- @osdk/api@2.49.0
+
+## 2.48.0
+
+### Patch Changes
+
+- @osdk/api@2.48.0
+
+## 2.47.0
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+
+## 2.46.0
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+
+## 2.45.0
+
+### Patch Changes
+
+- Updated dependencies [db2bfa2]
+  - @osdk/api@2.45.0
+
+## 2.44.0
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+  - @osdk/api@2.44.0
+
+## 2.43.0
+
+### Patch Changes
+
+- Updated dependencies [566ecd3]
+  - @osdk/api@2.43.0
+
+## 2.42.0
+
+### Patch Changes
+
+- Updated dependencies [830d791]
+  - @osdk/api@2.42.0
+
+## 2.41.0
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/api@2.41.0
+
+## 2.40.0
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/api@2.40.0
+
+## 2.39.0
+
+### Patch Changes
+
+- @osdk/api@2.39.0
+
+## 2.38.0
+
+### Patch Changes
+
+- @osdk/api@2.38.0
+
+## 2.37.0
+
+### Patch Changes
+
+- @osdk/api@2.37.0
+
+## 2.36.0
+
+### Patch Changes
+
+- @osdk/api@2.36.0
+
+## 2.35.0
+
+### Patch Changes
+
+- @osdk/api@2.35.0
+
+## 2.34.0
+
+### Patch Changes
+
+- Updated dependencies [db028a0]
+- Updated dependencies [ab19740]
+  - @osdk/api@2.34.0
+
+## 2.33.0
+
+### Patch Changes
+
+- @osdk/api@2.33.0
+
+## 2.32.0
+
+### Patch Changes
+
+- Updated dependencies [06adca1]
+  - @osdk/api@2.32.0
+
+## 2.31.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+
+## 2.30.0
+
+### Patch Changes
+
+- @osdk/api@2.30.0
+
+## 2.29.0
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/api@2.29.0
+
+## 2.28.0
+
+### Patch Changes
+
+- @osdk/api@2.28.0
+
+## 2.27.0
+
+### Patch Changes
+
+- @osdk/api@2.27.0
+
+## 2.26.0
+
+### Patch Changes
+
+- @osdk/api@2.26.0
+
+## 2.25.0
+
+### Patch Changes
+
+- Updated dependencies [bd90dba]
+  - @osdk/api@2.25.0
+
+## 2.24.0
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+  - @osdk/api@2.24.0
+
+## 2.23.0
+
+### Patch Changes
+
+- Updated dependencies [198f219]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/api@2.23.0
+
+## 2.22.0
+
+### Patch Changes
+
+- @osdk/api@2.22.0
+
+## 2.21.0
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+  - @osdk/api@2.21.0
+
+## 2.20.0
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+
+## 2.19.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [d962309]
+  - @osdk/api@2.19.0
+
+## 2.18.0
+
+### Patch Changes
+
+- @osdk/api@2.18.0
+
+## 2.17.0
+
+### Patch Changes
+
+- Updated dependencies [147166c]
+  - @osdk/api@2.17.0
+
 ## 2.16.0
 
 ### Minor Changes

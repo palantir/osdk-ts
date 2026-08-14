@@ -29,6 +29,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
+
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 
 type Person = {
@@ -78,8 +79,9 @@ const mockData: Person[] = [
 ];
 
 const meta: Meta<BaseTableProps<Person>> = {
-  title: "Experimental/ObjectTable/Building Blocks/BaseTable",
+  title: "Components/ObjectTable/Building Blocks/BaseTable",
   component: BaseTable,
+  tags: ["beta"],
   parameters: {
     msw: {
       handlers: [...fauxFoundry.handlers],
@@ -300,10 +302,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable
-          {...args}
-          table={table}
-        />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },
@@ -370,10 +369,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable
-          {...args}
-          table={table}
-        />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },
@@ -438,10 +434,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable
-          {...args}
-          table={table}
-        />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },
@@ -464,13 +457,15 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import type {
-  SortingState,
+  VisibilityState,
 } from "@tanstack/react-table";
 
 const headerMenuFeatureFlags = {
-  showSortingItems: true,
+  showConfigItem: true,
 };
-const [sorting, setSorting] = useState<SortingState>();
+const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+  columns.reduce((acc, col) => ({ ...acc, [col.accessorKey]: true }), {})
+);
 
 const table = useReactTable({
   data: mockData,
@@ -478,10 +473,9 @@ const table = useReactTable({
   getCoreRowModel: getCoreRowModel(),
   getSortedRowModel: getSortedRowModel(),
   state: {
-    sorting,
+    columnVisibility,
   },
-  enableSorting: true,
-  onSortingChange: setSorting,
+  onColumnVisibilityChange: setColumnVisibility,
 });
 
 
@@ -513,10 +507,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable
-          {...args}
-          table={table}
-        />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },

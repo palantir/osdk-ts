@@ -16,7 +16,9 @@
 
 import type { ModuleImportFiles } from "./templates.js";
 
-export const getPackageFiles = (
-  importPromise: Promise<{ files: ModuleImportFiles }>,
-): () => Promise<ModuleImportFiles> =>
-async () => (await importPromise).files;
+export const getPackageFiles =
+  (
+    importPromise: Promise<{ files: ModuleImportFiles }>,
+  ): (() => Promise<ModuleImportFiles>) =>
+  async () =>
+    (await importPromise).files;

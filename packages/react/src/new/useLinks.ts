@@ -22,13 +22,16 @@ import type {
 import type { Osdk, PropertyKeys, WhereClause } from "@osdk/client";
 import type { ObserveLinks } from "@osdk/client/observable";
 import React from "react";
+
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
+import type { ResolveToObjectTypeOption } from "./useOsdkObjects.js";
 
-export interface UseLinksOptions<
-  T extends ObjectOrInterfaceDefinition,
-> {
+export type UseLinksOptions<T extends ObjectOrInterfaceDefinition> =
+  UseLinksBaseOptions<T> & ResolveToObjectTypeOption<T>;
+
+interface UseLinksBaseOptions<T extends ObjectOrInterfaceDefinition> {
   /**
    * Standard OSDK Where clause for filtering linked objects
    */
@@ -151,8 +154,12 @@ export function useLinks<
 ): UseLinksResult<LinkedType<T, L>> {
   const { observableClient } = React.useContext(OsdkContext);
 
-  const { enabled = true, $includeAllBaseObjectProperties, ...otherOptions } =
-    options;
+  const {
+    enabled = true,
+    $includeAllBaseObjectProperties,
+    resolveToObjectType,
+    ...otherOptions
+  } = options;
 
   const canonOptions = observableClient.canonicalizeOptions({
     where: otherOptions.where,
@@ -163,7 +170,7 @@ export function useLinks<
   const objectsKey = React.useMemo(() => {
     if (objects === undefined) return "";
     const arr = Array.isArray(objects) ? objects : [objects];
-    return arr.map(obj => `${obj.$apiName}:${obj.$primaryKey}`).join(",");
+    return arr.map((obj) => `${obj.$apiName}:${obj.$primaryKey}`).join(",");
   }, [objects]);
 
   // Convert single object to array for consistent handling
@@ -171,79 +178,74 @@ export function useLinks<
     return objects === undefined
       ? emptyArray
       : Array.isArray(objects)
-      ? objects
-      : [objects];
+        ? objects
+        : [objects];
   }, [objectsKey, objects]);
 
-  const { subscribe, getSnapShot } = React.useMemo(
-    () => {
-      if (!enabled) {
-        return makeExternalStore<
-          ObserveLinks.CallbackArgs<LinkedType<T, L>>
-        >(
-          () => ({ unsubscribe: () => {} }),
-          devToolsMetadata({
-            hookType: "useLinks",
-            sourceObjectType: objectsArray[0]?.$apiName,
-            linkName,
-          }),
-        );
-      }
-      return makeExternalStore<
-        ObserveLinks.CallbackArgs<LinkedType<T, L>>
-      >(
-        (observer) =>
-          observableClient.observeLinks<T, L>(
-            objectsArray,
-            linkName,
-            {
-              linkName,
-              where: canonOptions.where,
-              pageSize: otherOptions.pageSize,
-              orderBy: canonOptions.orderBy,
-              mode: otherOptions.mode,
-              dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
-              $includeAllBaseObjectProperties,
-              ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
-            },
-            observer,
-          ),
+  const { subscribe, getSnapShot } = React.useMemo(() => {
+    if (!enabled) {
+      return makeExternalStore<ObserveLinks.CallbackArgs<LinkedType<T, L>>>(
+        () => ({ unsubscribe: () => {} }),
         devToolsMetadata({
           hookType: "useLinks",
           sourceObjectType: objectsArray[0]?.$apiName,
           linkName,
         }),
       );
-    },
-    [
-      enabled,
-      observableClient,
-      objectsArray,
-      objectsKey,
-      linkName,
-      canonOptions.where,
-      otherOptions.pageSize,
-      canonOptions.orderBy,
-      otherOptions.mode,
-      otherOptions.dedupeIntervalMs,
-      canonOptions.$select,
-      $includeAllBaseObjectProperties,
-    ],
-  );
+    }
+    return makeExternalStore<ObserveLinks.CallbackArgs<LinkedType<T, L>>>(
+      (observer) =>
+        observableClient.observeLinks<T, L>(
+          objectsArray,
+          linkName,
+          {
+            linkName,
+            where: canonOptions.where,
+            pageSize: otherOptions.pageSize,
+            orderBy: canonOptions.orderBy,
+            mode: otherOptions.mode,
+            dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
+            $includeAllBaseObjectProperties,
+            resolveToObjectType,
+            ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
+          },
+          observer,
+        ),
+      devToolsMetadata({
+        hookType: "useLinks",
+        sourceObjectType: objectsArray[0]?.$apiName,
+        linkName,
+      }),
+    );
+  }, [
+    enabled,
+    observableClient,
+    objectsArray,
+    objectsKey,
+    linkName,
+    canonOptions.where,
+    otherOptions.pageSize,
+    canonOptions.orderBy,
+    otherOptions.mode,
+    otherOptions.dedupeIntervalMs,
+    canonOptions.$select,
+    $includeAllBaseObjectProperties,
+    !!resolveToObjectType,
+  ]);
 
-  const payload = React.useSyncExternalStore(
-    subscribe,
-    getSnapShot,
-  );
+  const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  return React.useMemo(() => ({
-    links: payload?.resolvedList,
-    linkedObjectsBySourcePrimaryKey: payload?.linkedObjectsBySourcePrimaryKey
-      ?? emptyMap,
-    isLoading: isPayloadLoading(payload, enabled),
-    isOptimistic: payload?.isOptimistic ?? false,
-    error: extractPayloadError(payload, "Failed to load links"),
-    fetchMore: payload?.hasMore ? payload?.fetchMore : undefined,
-    hasMore: payload?.hasMore ?? false,
-  }), [payload, enabled]);
+  return React.useMemo(
+    () => ({
+      links: payload?.resolvedList,
+      linkedObjectsBySourcePrimaryKey:
+        payload?.linkedObjectsBySourcePrimaryKey ?? emptyMap,
+      isLoading: isPayloadLoading(payload, enabled),
+      isOptimistic: payload?.isOptimistic ?? false,
+      error: extractPayloadError(payload, "Failed to load links"),
+      fetchMore: payload?.hasMore ? payload?.fetchMore : undefined,
+      hasMore: payload?.hasMore ?? false,
+    }),
+    [payload, enabled],
+  );
 }

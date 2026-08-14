@@ -15,6 +15,7 @@
  */
 
 import type { DerivedProperty, ObjectTypeDefinition } from "@osdk/api";
+
 import { additionalContext } from "../../../Client.js";
 import { createObjectSet } from "../../../objectSet/createObjectSet.js";
 import {
@@ -55,7 +56,7 @@ export class ObjectAggregationQuery extends AggregationQuery {
     objectSet = objectSet.where(this.canonicalWhere);
 
     if (intersectWith != null && intersectWith.length > 0) {
-      const intersectSets = intersectWith.map(whereClause => {
+      const intersectSets = intersectWith.map((whereClause) => {
         let intersectSet = this.store.client(objectTypeDef);
 
         if (this.rdpConfig) {

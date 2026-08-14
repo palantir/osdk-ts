@@ -2,6 +2,7 @@ import { createClient } from "@osdk/client";
 import { BrowserLogger } from "@osdk/client/internal";
 import { createPublicOauthClient } from "@osdk/oauth";
 import invariant from "tiny-invariant";
+
 import { $ontologyRid } from "./generatedNoCheck2/index.js";
 
 invariant(

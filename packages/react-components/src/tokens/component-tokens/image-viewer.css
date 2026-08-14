@@ -1,0 +1,5 @@
+:root {
+  /* Image Viewer - Container */
+  --osdk-image-viewer-bg: var(--osdk-background-primary);
+  --osdk-image-viewer-border: var(--osdk-surface-border);
+}

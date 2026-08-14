@@ -18,6 +18,7 @@
 
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
+
 import type { BaseServerObject } from "./BaseServerObject.js";
 
 export function filterObjects(
@@ -163,12 +164,12 @@ export function filterObjects(
         throw new Error("propertyIdentifier not supported");
       }
       invariant(field);
-      const searchTerms = where.value.toLowerCase().split(/\s+/);
+      const searchTerms = where.value.toLowerCase().split(/\s+/u);
       return objects.filter((obj) => {
         const fieldValue = obj[field];
         if (typeof fieldValue === "string") {
           const lowerFieldValue = fieldValue.toLowerCase();
-          return searchTerms.some(term => lowerFieldValue.includes(term));
+          return searchTerms.some((term) => lowerFieldValue.includes(term));
         }
         return false;
       });
@@ -181,12 +182,12 @@ export function filterObjects(
         throw new Error("propertyIdentifier not supported");
       }
       invariant(field);
-      const searchTerms = where.value.toLowerCase().split(/\s+/);
+      const searchTerms = where.value.toLowerCase().split(/\s+/u);
       return objects.filter((obj) => {
         const fieldValue = obj[field];
         if (typeof fieldValue === "string") {
           const lowerFieldValue = fieldValue.toLowerCase();
-          return searchTerms.every(term => lowerFieldValue.includes(term));
+          return searchTerms.every((term) => lowerFieldValue.includes(term));
         }
         return false;
       });
@@ -199,13 +200,13 @@ export function filterObjects(
         throw new Error("propertyIdentifier not supported");
       }
       invariant(field);
-      const searchTerms = where.value.toLowerCase().split(/\s+/);
+      const searchTerms = where.value.toLowerCase().split(/\s+/u);
       return objects.filter((obj) => {
         const fieldValue = obj[field];
         if (typeof fieldValue === "string") {
           const lowerFieldValue = fieldValue.toLowerCase();
           let lastIndex = -1;
-          return searchTerms.every(term => {
+          return searchTerms.every((term) => {
             const index = lowerFieldValue.indexOf(term, lastIndex + 1);
             if (index > lastIndex) {
               lastIndex = index;
@@ -226,7 +227,7 @@ export function filterObjects(
         throw new Error("propertyIdentifier not supported");
       }
       invariant(field);
-      const searchTerms = where.value.toLowerCase().split(/\s+/);
+      const searchTerms = where.value.toLowerCase().split(/\s+/u);
       return objects.filter((obj) => {
         const fieldValue = obj[field];
         if (typeof fieldValue === "string") {
@@ -245,8 +246,10 @@ export function filterObjects(
 
           const lastTerm = searchTerms[searchTerms.length - 1];
           const remainingText = lowerFieldValue.substring(lastIndex + 1);
-          return remainingText.includes(lastTerm)
-            || remainingText.startsWith(lastTerm);
+          return (
+            remainingText.includes(lastTerm) ||
+            remainingText.startsWith(lastTerm)
+          );
         }
         return false;
       });
@@ -258,6 +261,7 @@ export function filterObjects(
         throw new Error("propertyIdentifier not supported");
       }
       invariant(field);
+      // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
       const pattern = new RegExp(where.value);
       return objects.filter((obj) => {
         const fieldValue = obj[field];
@@ -287,10 +291,8 @@ export function filterObjects(
       where satisfies never;
   }
   console.error(
-    "-=-=-=-=-=-= Unhandled where type: \n"
-      + `Unhandled where type: ${JSON.stringify(where)}`,
+    "-=-=-=-=-=-= Unhandled where type: \n" +
+      `Unhandled where type: ${JSON.stringify(where)}`,
   );
-  throw new Error(
-    `Unhandled where type: ${JSON.stringify(where)}`,
-  );
+  throw new Error(`Unhandled where type: ${JSON.stringify(where)}`);
 }

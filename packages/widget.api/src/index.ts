@@ -28,6 +28,7 @@ export { defineConfig } from "./config.js";
 export type {
   OntologySdkInputSpecV1 as OntologySdkInputSpec,
   WidgetManifestConfigV1 as WidgetManifestConfig,
+  WidgetSetAuthorizationsInputSpecV1 as WidgetSetAuthorizationsInputSpec,
   WidgetSetDiscoveredInputSpecV1 as WidgetSetDiscoveredInputSpec,
   WidgetSetInputSpecV1 as WidgetSetInputSpec,
   WidgetSetManifestV1 as WidgetSetManifest,
@@ -41,6 +42,7 @@ export {
 export {
   isWidgetEmitEventMessage,
   isWidgetReadyMessage,
+  isWidgetReloadMessage,
   isWidgetResizeMessage,
   visitWidgetMessage,
 } from "./messages/widgetMessages.js";

@@ -96,11 +96,11 @@ export class Changes {
 
   isEmpty(): boolean {
     return (
-      this.modifiedObjects.size === 0
-      && this.addedObjects.size === 0
-      && this.added.size === 0
-      && this.modified.size === 0
-      && this.deleted.size === 0
+      this.modifiedObjects.size === 0 &&
+      this.addedObjects.size === 0 &&
+      this.added.size === 0 &&
+      this.modified.size === 0 &&
+      this.deleted.size === 0
     );
   }
 }
@@ -130,14 +130,10 @@ function listHelper(set: Set<CacheKey>) {
   return Array.from(set).map(DEBUG_ONLY__cacheKeyToString);
 }
 
-function multimapHelper(
-  multimap: MultiMap<string, ObjectHolder>,
-) {
+function multimapHelper(multimap: MultiMap<string, ObjectHolder>) {
   return Object.fromEntries(
-    Array.from(multimap.associations()).map(
-      ([type, objects]) => {
-        return [type, objects.map(o => o.$primaryKey)];
-      },
-    ),
+    Array.from(multimap.associations()).map(([type, objects]) => {
+      return [type, objects.map((o) => o.$primaryKey)];
+    }),
   );
 }

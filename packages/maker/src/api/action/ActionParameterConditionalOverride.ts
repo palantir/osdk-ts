@@ -15,6 +15,7 @@
  */
 
 import type { OntologyIrParameterPrefill } from "@osdk/client.unstable";
+
 import type { ActionParameterAllowedValues } from "./ActionParameterAllowedValues.js";
 import type { ConditionDefinition } from "./ConditionDefinition.js";
 
@@ -28,19 +29,13 @@ export type ActionParameterConditionalOverride =
 export type VisibilityOverride = {
   type: "visibility";
   condition: ConditionDefinition;
-  then?:
-    | "editable"
-    | "disabled"
-    | "hidden";
+  then?: "editable" | "disabled" | "hidden";
 };
 
 export type DisabledOverride = {
   type: "disabled";
   condition: ConditionDefinition;
-  then?:
-    | "editable"
-    | "disabled"
-    | "hidden";
+  then?: "editable" | "disabled" | "hidden";
 };
 
 export type RequiredOverride = {

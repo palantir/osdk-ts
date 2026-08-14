@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetObjectTypesRequest as _api_GetObjectTypesRequest,
   GetObjectTypesResponse as _api_GetObjectTypesResponse,

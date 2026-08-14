@@ -21,7 +21,10 @@
 
 ## Formatting
 
-- Run `npx dprint fmt` on changed files before committing
+- Format only your changed files before committing — never run bare `npx dprint fmt`, which reformats the entire repo:
+  ```sh
+  git ls-files --modified --others --exclude-standard | xargs npx dprint fmt
+  ```
 - The pre-commit hook runs `dprint check` and will reject unformatted code
 - To check without fixing: `npx dprint check`
 
@@ -52,6 +55,12 @@
 - When making changes to a package's public API (exports, types, function signatures), run API extractor: `pnpm turbo check-api --filter=@osdk/the-package`
 - This updates the API report in `etc/<package>.report.api.md` — commit the updated report
 - API extractor requires transpiled types, so `transpileTypes` runs automatically as a dependency
+
+## Quickinfo Snapshot Tests
+
+- `@osdk/api` has a quickinfo snapshot harness at `packages/api/src/__quickinfo_snapshot__/` that pins the hover-tooltip type strings for high-traffic SDK surfaces (ObjectSet methods, Osdk.Instance, AggregationsResults, Actions, Queries, …)
+- If a snapshot test fails after a type-graph refactor: run `pnpm updateSnapshots --filter=@osdk/api`, inspect the resulting `__snapshots__/*.snap` diff, and confirm the change is intentional before committing
+- Read `packages/api/src/__quickinfo_snapshot__/README.md` before adding new probes — the "Philosophy" section spells out the load-bearing rule (probes must render the same string TS shows on hover; no `Expand<T>`/`Force<T>`-style helpers)
 
 ## Pre-Push Verification
 

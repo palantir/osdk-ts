@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import {
   type ActionCompleteEvent,
   type ActionStartEvent,
@@ -495,9 +496,9 @@ describe("EventTimeline", () => {
     });
 
     it("should handle subscriber errors gracefully", () => {
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(
-        () => {},
-      );
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
       const failingCallback = vi.fn().mockImplementation(() => {
         throw new Error("Subscriber error");
       });

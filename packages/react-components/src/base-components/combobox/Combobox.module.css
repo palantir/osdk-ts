@@ -91,22 +91,24 @@
     );
   }
 
+  /* Override global :focus rules (e.g. Blueprint) that add an outline on
+     mouse click. Only show the ring on keyboard focus (:focus-visible). */
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+
   &:focus-visible {
-    outline: var(
-        --osdk-combobox-trigger-focus-width,
-        var(--osdk-emphasis-focus-width)
-      )
-      solid
-      var(--osdk-combobox-trigger-focus-color, var(--osdk-emphasis-focus-color));
-    outline-offset: var(
-      --osdk-combobox-trigger-focus-offset,
-      var(--osdk-emphasis-focus-offset)
-    );
+    outline: var(--osdk-input-focus-outline);
+    outline-offset: var(--osdk-input-focus-outline-offset);
+  }
+
+  &[data-popup-open]:focus-visible {
+    outline: none;
   }
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: var(--osdk-disabled-opacity, 0.5);
+    opacity: var(--osdk-disabled-opacity);
   }
 
   &[data-popup-open] {
@@ -208,12 +210,8 @@
       --osdk-combobox-focus-border-color,
       var(--osdk-intent-primary-rest)
     );
-    outline: var(--osdk-combobox-focus-width, var(--osdk-emphasis-focus-width))
-      solid var(--osdk-combobox-focus-color, var(--osdk-emphasis-focus-color));
-    outline-offset: var(
-      --osdk-combobox-focus-offset,
-      var(--osdk-emphasis-focus-offset)
-    );
+    outline: var(--osdk-input-focus-outline);
+    outline-offset: var(--osdk-input-focus-outline-offset);
   }
 }
 
@@ -298,13 +296,27 @@
 
 .osdkComboboxPositioner {
   z-index: var(--osdk-combobox-z-index, var(--osdk-surface-z-index-3));
+  /* Base UI may focus popup containers so they can own roving keyboard
+     navigation. Keep visible focus on the trigger/input or highlighted option
+     instead of drawing a browser-default ring around this wrapper. */
+  outline: none;
+
+  /* Hide the popup when its anchor scrolls out of view (e.g. inside a
+     scrollable sidebar). @base-ui/react sets this attribute automatically
+     via floating-ui's hide middleware. */
+  &[data-anchor-hidden] {
+    visibility: hidden;
+  }
 }
 
 .osdkComboboxPopup {
   display: flex;
   flex-direction: column;
   min-width: var(--anchor-width);
-  max-height: var(--available-height);
+  max-height: min(
+    var(--osdk-combobox-popup-max-height),
+    var(--available-height)
+  );
   overflow-y: auto;
   padding: calc(
     var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5
@@ -321,6 +333,10 @@
     var(--osdk-surface-background-color-default-rest)
   );
   box-shadow: var(--osdk-combobox-popup-shadow, var(--osdk-surface-shadow-2));
+
+  &:focus {
+    outline: none;
+  }
 }
 
 /*
@@ -377,7 +393,8 @@
     )
     var(--osdk-combobox-transition-ease, var(--osdk-emphasis-ease-default));
 
-  &[data-highlighted] {
+  &[data-highlighted],
+  &:not([data-disabled]):hover {
     background-color: var(
       --osdk-combobox-item-bg-highlighted,
       var(--osdk-surface-background-color-default-hover)
@@ -398,7 +415,7 @@
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: var(--osdk-disabled-opacity, 0.5);
+    opacity: var(--osdk-disabled-opacity);
   }
 }
 
@@ -440,7 +457,7 @@
   );
   background-color: var(
     --osdk-combobox-chip-bg,
-    var(--osdk-surface-background-color-default-hover)
+    var(--osdk-custom-color-gray-4)
   );
   font-family: var(
     --osdk-combobox-font-family,
@@ -485,6 +502,18 @@
       var(--osdk-typography-color-default-rest)
     );
   }
+
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: var(--osdk-disabled-opacity);
+  }
+
+  &[aria-disabled="true"]:hover {
+    color: var(
+      --osdk-combobox-chip-remove-color,
+      var(--osdk-iconography-color-muted)
+    );
+  }
 }
 
 .osdkComboboxClear {
@@ -526,12 +555,32 @@
       var(--osdk-surface-background-color-default-hover)
     );
   }
+
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: var(--osdk-disabled-opacity);
+  }
+
+  &[aria-disabled="true"]:hover {
+    color: var(
+      --osdk-combobox-clear-color,
+      var(--osdk-iconography-color-muted)
+    );
+    background-color: transparent;
+  }
 }
 
 .osdkComboboxList {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+
+  /* Base UI moves focus into the list when the popup opens for keyboard
+     navigation. Highlighted options provide the visible affordance, so do not
+     draw a browser/default focus ring around the whole popup list. */
+  &:focus {
+    outline: none;
+  }
 }
 
 .osdkComboboxEmpty {
@@ -628,7 +677,7 @@
   );
   background-color: var(
     --osdk-combobox-chip-bg,
-    var(--osdk-surface-background-color-default-hover)
+    var(--osdk-custom-color-gray-4)
   );
   font-size: var(
     --osdk-combobox-chip-font-size,

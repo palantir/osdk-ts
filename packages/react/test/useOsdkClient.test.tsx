@@ -18,6 +18,7 @@ import type { Client } from "@osdk/client";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { describe, expect, it, vitest } from "vitest";
+
 import {
   fakeObservableClient,
   TestOsdkProvider,
@@ -42,10 +43,7 @@ describe(useOsdkMetadata, () => {
       </TestOsdkProvider>
     );
 
-    const { result, rerender } = renderHook(
-      () => useOsdkClient(),
-      { wrapper },
-    );
+    const { result, rerender } = renderHook(() => useOsdkClient(), { wrapper });
 
     expect(result.current).toBe(fakeClient);
   });

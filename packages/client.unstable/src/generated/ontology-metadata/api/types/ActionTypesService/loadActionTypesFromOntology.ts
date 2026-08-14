@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   LoadActionTypesFromOntologyRequest as _api_LoadActionTypesFromOntologyRequest,
-  LoadActionTypesFromOntologyResponse
-    as _api_LoadActionTypesFromOntologyResponse,
+  LoadActionTypesFromOntologyResponse as _api_LoadActionTypesFromOntologyResponse,
 } from "../../__components.js";
 
 /**

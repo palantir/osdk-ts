@@ -1,5 +1,570 @@
 # @osdk/client
 
+## 2.57.0
+
+### Patch Changes
+
+- Updated dependencies [e9d7ffa]
+  - @osdk/client.unstable@2.57.0
+  - @osdk/api@2.57.0
+  - @osdk/generator-converters@2.57.0
+  - @osdk/shared.test@2.38.0
+
+## 2.56.0
+
+### Patch Changes
+
+- Updated dependencies [342c492]
+  - @osdk/api@2.56.0
+  - @osdk/client.unstable@2.56.0
+  - @osdk/generator-converters@2.56.0
+
+## 2.55.0
+
+### Minor Changes
+
+- c40b6e5: Remove the experimental `__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference` export. To upload media, pass `{ data, fileName }` directly to an Action's media parameter; the client uploads it via `uploadMedia` and links the resulting media item.
+- f27a119: Rename the experimental `__EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait` export to `transformAndWait`, and change its argument from `mediaReference: MediaReference` to `media: Media`. It is still only exported from `@osdk/api/unstable`. Callers holding a media property can now pass it straight through instead of unwrapping it with `getMediaReference()` first.
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+  - @osdk/generator-converters@2.55.0
+  - @osdk/shared.test@2.37.0
+  - @osdk/client.unstable@2.55.0
+
+## 2.54.0
+
+### Patch Changes
+
+- @osdk/api@2.54.0
+- @osdk/client.unstable@2.54.0
+- @osdk/generator-converters@2.54.0
+
+## 2.53.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/generator-converters@2.53.0
+  - @osdk/api@2.53.0
+  - @osdk/client.unstable@2.53.0
+  - @osdk/shared.test@2.36.0
+
+## 2.52.0
+
+### Minor Changes
+
+- bf4580a: Add annotate, contrast, encrypt, and decrypt image operations to the experimental media transformation surface, closing parity with the platform image-operation set.
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/generator-converters@2.52.0
+  - @osdk/shared.test@2.35.0
+  - @osdk/client.unstable@2.52.0
+
+## 2.51.0
+
+### Minor Changes
+
+- d96b5de: Export scenario helpers from experimental
+
+### Patch Changes
+
+- Updated dependencies [b99b0bb]
+  - @osdk/api@2.51.0
+  - @osdk/client.unstable@2.51.0
+  - @osdk/generator-converters@2.51.0
+
+## 2.50.0
+
+### Patch Changes
+
+- @osdk/api@2.50.0
+- @osdk/client.unstable@2.50.0
+- @osdk/generator-converters@2.50.0
+
+## 2.49.0
+
+### Patch Changes
+
+- @osdk/api@2.49.0
+- @osdk/client.unstable@2.49.0
+- @osdk/generator-converters@2.49.0
+
+## 2.48.0
+
+### Minor Changes
+
+- b46473d: Remove the unused `getMetaTagContent`, `getOsdkConfig`, and `OsdkConfig` exports from `@osdk/client/unstable-do-not-use`; they referenced browser/Vite-only globals (`document`, `import.meta.env`) that broke non-node environments and had no consumers.
+
+### Patch Changes
+
+- @osdk/api@2.48.0
+- @osdk/client.unstable@2.48.0
+- @osdk/generator-converters@2.48.0
+- @osdk/shared.test@2.34.0
+
+## 2.47.0
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+- @osdk/client.unstable@2.47.0
+- @osdk/generator-converters@2.47.0
+- @osdk/shared.test@2.33.0
+
+## 2.46.0
+
+### Minor Changes
+
+- c26e051: Add unstable `hydrateOsdkObject` helper to hydrate raw wire objects into OSDK object instances using a caller-supplied map of object definitions.
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+- @osdk/client.unstable@2.46.0
+- @osdk/generator-converters@2.46.0
+- @osdk/shared.test@2.32.0
+
+## 2.45.0
+
+### Minor Changes
+
+- db2bfa2: Add ability to pass null for struct action parameters.
+- cbf692b: Pipe next page token through to PSDK loadLinks call in asyncIterLinks
+
+### Patch Changes
+
+- Updated dependencies [db2bfa2]
+  - @osdk/shared.test@2.31.0
+  - @osdk/api@2.45.0
+  - @osdk/client.unstable@2.45.0
+  - @osdk/generator-converters@2.45.0
+
+## 2.44.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+- ffa3daa: Update unstable subscribe injection with unstable subscribe connection injection
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+  - @osdk/client.unstable@2.44.0
+  - @osdk/api@2.44.0
+  - @osdk/generator-converters@2.44.0
+
+## 2.43.0
+
+### Minor Changes
+
+- 3c48f5a: Set the `name` property on custom error classes so thrown errors report their own class name
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/shared.net.errors@2.12.0
+  - @osdk/shared.net.fetch@1.12.0
+  - @osdk/api@2.43.0
+  - @osdk/client.unstable@2.43.0
+  - @osdk/generator-converters@2.43.0
+
+## 2.42.0
+
+### Minor Changes
+
+- 0021ee4: Migrate @osdk/client, @osdk/client.unstable, and @osdk/client.unstable.tpsa to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (eighth and ninth increments of the repo-wide oxc migration). The conjure-generated src/generated trees in @osdk/client.unstable and @osdk/client.unstable.tpsa are re-included (linted and oxfmt-formatted, matching the prior ESLint + dprint coverage) via per-package nested oxlint configs; @osdk/client's newly-surfaced error-level lint rules are turned off in its nested config to keep the change behavior-preserving.
+
+### Patch Changes
+
+- Updated dependencies [830d791]
+- Updated dependencies [0021ee4]
+  - @osdk/api@2.42.0
+  - @osdk/client.unstable@2.42.0
+  - @osdk/generator-converters@2.42.0
+
+## 2.41.0
+
+### Minor Changes
+
+- 9b150d7: Add nullity check for decrypt
+- 15a35f2: Add CipherText support for codegen and implement decryption interface
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/api@2.41.0
+  - @osdk/generator-converters@2.41.0
+  - @osdk/shared.test@2.30.0
+  - @osdk/client.unstable@2.41.0
+
+## 2.40.0
+
+### Minor Changes
+
+- 3e915ee: Array Reducers and Struct Main Value support
+- 742fe69: Add dev-mode observable client debugging knobs. `devMode.logLevel` raises the client's log level so its `debug` tracing is visible, and `devMode.debug.refCounts` / `devMode.debug.cacheKeys` turn on cache-internals logging. They are exposed through `createObservableClient`'s `devMode` option and the `OsdkProvider` `devMode` prop, and are stripped from production builds.
+- ac0303b: Add `createClientWithSubscribe` (unstable) to allow overriding `objectSet.subscribe` behavior with a custom `subscribeFn`.
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/generator-converters@2.40.0
+  - @osdk/shared.test@2.29.0
+  - @osdk/api@2.40.0
+  - @osdk/client.unstable@2.40.0
+
+## 2.39.0
+
+### Patch Changes
+
+- Updated dependencies [397ce96]
+  - @osdk/client.unstable@2.39.0
+  - @osdk/api@2.39.0
+  - @osdk/generator-converters@2.39.0
+
+## 2.38.0
+
+### Minor Changes
+
+- 11c7eb8: Revert the empty-where-clause runtime checks added in #3348. `modernToLegacyWhereClause` no longer throws on an empty clause, and `.where({})` no longer short-circuits to a no-op, restoring the pre-#3348 behavior where an empty clause lowers to an empty AND. Note: this reintroduces the original behavior where a `.where({})` (including no-filter `useOsdkObjects`/`useOsdkAggregation` queries via the observable layer) emits an empty AND on the wire, which some object-storage backends reject on the aggregate path.
+- bbb89ce: Fix `SyntaxError: The requested module 'big.js' does not provide an export named 'Big'`
+
+### Patch Changes
+
+- @osdk/api@2.38.0
+- @osdk/client.unstable@2.38.0
+- @osdk/generator-converters@2.38.0
+- @osdk/shared.test@2.28.0
+
+## 2.37.0
+
+### Minor Changes
+
+- b174a28: Make the dev-mode action delay smart, configurable, and discoverable. The delay now only applies to actions with an optimistic update (function-backed actions stay fast), is tunable via `OsdkProvider`'s `devMode={{ actionDelayMs }}` prop and the `createObservableClient` `devMode.actionDelayMs` option (0 disables), and logs a one-time message explaining it.
+- 75a5c26: Add test for fetchOneWithErrors with cross-type pivot to validate correct primary key usage
+- 915d245: Sort decimal and long properties numerically in observable client orderBy, including derived (RDP) get and min/max properties, instead of lexicographically
+- 01bea93: Fix runtime-derived-property (RDP) cache merges dropping or stale-serving derived values. A write now declares the derived fields it actually computed, so: a derived value that becomes null clears instead of retaining the stale cached value; a derived field shared by two queries with overlapping rdp sets is no longer dropped when one propagates to the other; a query using both `$select` and a derived property keeps the derived field on a partial write; and a subscription update, which carries base props only, preserves the cached derived values instead of clearing them on every tick.
+
+### Patch Changes
+
+- Updated dependencies [ff11b06]
+  - @osdk/shared.net.errors@2.11.0
+  - @osdk/shared.client.impl@1.13.0
+  - @osdk/shared.net.fetch@1.11.0
+  - @osdk/api@2.37.0
+  - @osdk/client.unstable@2.37.0
+  - @osdk/generator-converters@2.37.0
+  - @osdk/shared.test@2.27.0
+
+## 2.36.0
+
+### Minor Changes
+
+- 83d2603: withScenario / createScenario now ignore an active transaction on the supplied client (logging a console.warn and scoping to the scenario) instead of throwing.
+
+### Patch Changes
+
+- @osdk/api@2.36.0
+- @osdk/client.unstable@2.36.0
+- @osdk/generator-converters@2.36.0
+
+## 2.35.0
+
+### Patch Changes
+
+- @osdk/api@2.35.0
+- @osdk/client.unstable@2.35.0
+- @osdk/generator-converters@2.35.0
+- @osdk/shared.test@2.26.0
+
+## 2.34.0
+
+### Minor Changes
+
+- db028a0: Add optional struct param support for actions.
+- ab19740: Add `Media.fetchFullMetadata()` returning a `MediaFullMetadata` wrapper around the type-specific `MediaItemMetadata` discriminated union (parity with python-osdk's `get_media_full_metadata`).
+
+### Patch Changes
+
+- Updated dependencies [db028a0]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters@2.34.0
+  - @osdk/shared.test@2.25.0
+  - @osdk/api@2.34.0
+  - @osdk/client.unstable@2.34.0
+
+## 2.33.0
+
+### Patch Changes
+
+- @osdk/api@2.33.0
+- @osdk/client.unstable@2.33.0
+- @osdk/generator-converters@2.33.0
+
+## 2.32.0
+
+### Minor Changes
+
+- 06adca1: add $snapshot option to fetchPage
+- 79f8a6e: Stop serializing GeoJSON `Point` geometries into a `"lat,lon"` string when sending object property/parameter values. This broke geoshape values that are Points (the transaction edits and action endpoints rejected `"lat,lon"` with `InvalidTransactionEditPropertyValue` / invalid parameter for `GeoShape`). GeoJSON values are now passed through as objects, which the server accepts for both geoshape and geopoint/geohash targets. The FauxFoundry geohash action-parameter validator now also accepts GeoJSON objects, matching the real server.
+
+### Patch Changes
+
+- Updated dependencies [b5d0a61]
+- Updated dependencies [06adca1]
+- Updated dependencies [833f47a]
+  - @osdk/client.unstable@2.32.0
+  - @osdk/api@2.32.0
+  - @osdk/generator-converters@2.32.0
+  - @osdk/shared.test@2.24.0
+
+## 2.31.0
+
+### Minor Changes
+
+- 57cbc6d: Stop shipping Node-only test infrastructure in the browser builds of `@osdk/api` and `@osdk/client`.
+  - `@osdk/api`: the `__quickinfo_snapshot__/` test harness (formerly `probeUtils.ts` + `probes/*.ts`) is renamed under the existing `testUtils.` prefix convention so the transpile tool drops it from every build target. Pure test infrastructure; no runtime surface change.
+  - `@osdk/client`: the `./internal-node` subpath export is removed. The TypeScript-language-server harness it pointed at (`tsserver.ts`) has moved to a new private workspace package, `@osdk/shared.test.intellisense`, which both `@osdk/client` and `@osdk/react` consume as a dev dependency. This eliminates the `node:events` / `node:fs/promises` / `node:path` imports from the browser build and removes the project-internal subpath from the published client API.
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/client.unstable@2.31.0
+  - @osdk/generator-converters@2.31.0
+  - @osdk/shared.test@2.23.0
+
+## 2.30.0
+
+### Minor Changes
+
+- db8df24: Allow `invalidateObjects` to accept interface instances (`Osdk.Instance<ObjectOrInterfaceDefinition>`).
+
+### Patch Changes
+
+- @osdk/api@2.30.0
+- @osdk/client.unstable@2.30.0
+- @osdk/generator-converters@2.30.0
+
+## 2.29.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+- 4b38963: extend resolveToObjectType support to useLinks for interface link targets
+- 9081e32: use $title/$primaryKey special filters in object components and harden the observable matcher
+
+  ObjectSelectField now searches via the generic $title filter instead of resolving the title property from object metadata, and ObjectTable derives its row-selection object set via $primaryKey so interface-typed tables also produce a derived set on partial selection. The observable where-clause matcher no longer throws when $startsWith is evaluated against a null $title.
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/api@2.29.0
+  - @osdk/generator-converters@2.29.0
+  - @osdk/shared.test@2.22.0
+  - @osdk/client.unstable@2.29.0
+
+## 2.28.0
+
+### Minor Changes
+
+- a5066b5: add resolveToObjectType option to useOsdkObjects so interface queries return full concrete object-type instances
+- 3e03544: fix crash when useLinks is called with an interface-typed source object
+- 13132b8: Fix writeable client reads not flushing staged edits: persist `flushEdits` onto the client context and wire it to the EditRequestManager so awaiting a read (fetchOne/fetchPage/aggregate/query) flushes pending creates/updates first.
+
+### Patch Changes
+
+- @osdk/shared.test@2.21.0
+- @osdk/api@2.28.0
+- @osdk/client.unstable@2.28.0
+- @osdk/generator-converters@2.28.0
+
+## 2.27.0
+
+### Minor Changes
+
+- 5ff7aa5: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.61.0` to `2.63.0`. The OntologyScenarios endpoints now expose a `preview` query-param slot, so `createScenario` and the `EXPERIMENTAL_ScenarioClient` read methods pass `{ preview: true }` directly instead of relying on a fetch-level URL rewrite.
+
+### Patch Changes
+
+- Updated dependencies [5ff7aa5]
+  - @osdk/generator-converters@2.27.0
+  - @osdk/api@2.27.0
+  - @osdk/client.unstable@2.27.0
+
+## 2.26.0
+
+### Patch Changes
+
+- @osdk/api@2.26.0
+- @osdk/client.unstable@2.26.0
+- @osdk/generator-converters@2.26.0
+
+## 2.25.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+- 8965bdf: Add `withScenario(client, scenarioRid)` and `createScenario(client)` helpers in `@osdk/client/unstable-do-not-use` for attaching to or minting an ontology scenario, and plumb `scenarioRid` through the client to `applyAction`, `fetchPage`, `aggregate`, and `applyQuery`. Beta — surface may change.
+- bd90dba: Add end-to-end support for `scenarioReference` action parameters:
+  - `@osdk/api` adds `"scenarioReference"` to `ActionMetadata.DataType.BaseActionParameterTypes` and a matching `scenarioReference: ScenarioClient` entry in `DataValueClientToWire` (structurally typed as `{ getScenarioReference(): { scenarioRid } }` to avoid a circular dep on `@osdk/client`).
+  - `@osdk/generator-converters` maps the wire `scenarioReference` variant into the primitive type.
+  - Generated SDKs now emit `ActionParam.PrimitiveType<"scenarioReference">` (resolves to `ScenarioClient`) for scenarioReference parameters, instead of throwing at SDK build time.
+  - `@osdk/client`'s `toDataValue` accepts a `ScenarioClient` and serializes it to the rid string the platform expects.
+  - `@osdk/react-components`'s ActionForm renders scenarioReference parameters as `UNSUPPORTED` for now.
+
+  Enables `client(ScenarioMerge).applyAction({ scenario })` end-to-end in generated SDKs.
+
+- 643c450: Add `getEditedEntityTypes`, `getEditedEntities` (paginated), and `editedEntitiesAsyncIter` (auto-paginating, deduped) methods to `ScenarioClient`. Lets consumers discover which object types and primary keys have been edited within a scenario for diff and merge workflows. Beta — surface may change.
+- d0845dd: Add `getEditedLinkTypes`, `getEditedLinks` (paginated, flattened to directed link triples), and `editedLinksAsyncIter` (auto-paginating, deduped by source/target pk) methods to `ScenarioClient`. Mirrors the existing `experimental_asyncIterLinks` shape on ObjectSet. Many-to-many only — one-to-many edits surface via `getEditedEntities` on the FK-owning object type. Beta — surface may change.
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+- Updated dependencies [bd90dba]
+  - @osdk/generator-converters@2.25.0
+  - @osdk/api@2.25.0
+  - @osdk/shared.test@2.20.0
+  - @osdk/client.unstable@2.25.0
+
+## 2.24.0
+
+### Minor Changes
+
+- a492285: Add $title and $primaryKey special property filters to where clauses
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+- 35ad6d1: Resolve action applications before broad cache invalidation refreshes complete.
+- 6923158: Fix empty filter case
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+  - @osdk/api@2.24.0
+  - @osdk/generator-converters@2.24.0
+  - @osdk/shared.test@2.19.0
+  - @osdk/client.unstable@2.24.0
+
+## 2.23.0
+
+### Minor Changes
+
+- 8290dd7: Unwrap `$primaryKey` and `$title` when they are returned as secured property values, and include them as keys in `$propertySecurities` (both at the type level and at runtime, including interface views).
+
+### Patch Changes
+
+- Updated dependencies [9fb5afb]
+- Updated dependencies [198f219]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/generator-converters@2.23.0
+  - @osdk/api@2.23.0
+  - @osdk/client.unstable@2.23.0
+  - @osdk/shared.test@2.18.0
+
+## 2.22.0
+
+### Patch Changes
+
+- @osdk/api@2.22.0
+- @osdk/client.unstable@2.22.0
+- @osdk/generator-converters@2.22.0
+
+## 2.21.0
+
+### Minor Changes
+
+- 1a07c91: Clean up unstable interface code: remove the `$__UNSTABLE_useOldInterfaceApis` fetch option and its old `OntologyInterfaces.search`-based code path, consolidate `convertWireToOsdkObjects` / `convertWireToOsdkObjects2` into a single factory backed by `loadMultipleObjectTypes`, and rename `__UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition` / `__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst` (the latter is generator-internal). The unused `v2` parameter on `wireInterfaceTypeV2ToSdkObjectDefinition` is also removed.
+- 2db1450: Fix ObjectSetQuery not revalidating when an action edits a type that the query's RDP traverses. Previously only ListQuery (used by useOsdkObjects) checked the RDP invalidation set; ObjectSetQuery (used by useObjectSet) only matched the base object type, leaving RDP columns stale after actions edited a linked type such as Office.
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+  - @osdk/api@2.21.0
+  - @osdk/generator-converters@2.21.0
+  - @osdk/shared.test@2.17.0
+  - @osdk/client.unstable@2.21.0
+
+## 2.20.0
+
+### Minor Changes
+
+- f90a2da: fix $as on objects fetched with $loadPropertySecurityMetadata
+- 9eb67e4: Add experimental support for streaming queries via the `__EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction` marker.
+- 51b3bce: Modify uploadMedia to return a Media object
+- 75f877f: `createClientFromWriteableClient` now accepts an optional `options` argument to override `transactionId`, `baseUrl`, `ontologyRid`, or `tokenProvider` from the source client. `applyAction` also now throws when batch actions are invoked on a client with an active transaction id, since batch actions are not supported for staged edit functions.
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+  - @osdk/generator-converters@2.20.0
+  - @osdk/shared.test@2.16.0
+  - @osdk/client.unstable@2.20.0
+
+## 2.19.0
+
+### Minor Changes
+
+- 02c796c: Array Reducers and Struct Main Value support
+- 2a2b672: Add `@osdk/client/experimental` entry point exposing `createClientWithTransaction` and a new `createClientFromWriteableClient` that clones a writeable client's base URL, ontology, token provider, and transaction id while discarding its fetch implementation.
+- d962309: Add ability to subscribe to an object set RID without a type, experimentally.
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [d962309]
+  - @osdk/generator-converters@2.19.0
+  - @osdk/shared.test@2.15.0
+  - @osdk/api@2.19.0
+  - @osdk/client.unstable@2.19.0
+
+## 2.18.0
+
+### Minor Changes
+
+- 69ebc43: Fix function-backed columns and lists with derived properties rendering stale values after an action edits a related object. ObjectTable's `useFunctionColumnsData` now passes the page's row PKs as `dependsOnObjects` to the underlying `useOsdkFunctions`, and function `ColumnDefinition` locators now accept an optional `dependsOn: string[]` for declaring linked object types the function reads server-side. Lists whose `withProperties` traverse linked types now also revalidate when an action edits one of those linked types. The action invalidation path fans out per-type invalidation in a single walk while the optimistic layer is still on top, so fresh values land in truth before the optimistic layer drops.
+- 85a248d: fix list hooks emitting undefined entries during deletes
+
+  • register `changes.deleted` when `propagateWrite` writes a tombstone, so list/objectset queries drop the cache key in the same batch (fixes `useOsdkObjects` + `applyAction(delete)` and optimistic deletes)
+  • same fix applied to streaming-driven removals in `BaseListQuery.onOswRemoved`
+
+### Patch Changes
+
+- @osdk/shared.test@2.14.0
+- @osdk/api@2.18.0
+- @osdk/client.unstable@2.18.0
+- @osdk/generator-converters@2.18.0
+
+## 2.17.0
+
+### Minor Changes
+
+- 147166c: fix typing so `$loadPropertySecurityMetadata: true` is accepted on the experimental `fetchPageByRid` client method, and `$propertySecurities` is properly typed on returned objects.
+
+### Patch Changes
+
+- Updated dependencies [147166c]
+  - @osdk/api@2.17.0
+  - @osdk/client.unstable@2.17.0
+  - @osdk/generator-converters@2.17.0
+
 ## 2.16.0
 
 ### Minor Changes

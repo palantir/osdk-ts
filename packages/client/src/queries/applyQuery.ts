@@ -31,7 +31,8 @@ import type {
 import type { DataValue } from "@osdk/foundry.ontologies";
 import * as Queries from "@osdk/foundry.ontologies/Query";
 import invariant from "tiny-invariant";
-import { createMediaFromReference } from "../createMediaFromReference.js";
+
+import { createMediaFromReferenceInternal } from "../createMediaFromReference.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { hydrateAttachmentFromRidInternal } from "../public-utils/hydrateAttachmentFromRid.js";
@@ -51,9 +52,7 @@ export async function applyQuery<
   client: MinimalClient,
   query: QD,
   params?: P,
-): Promise<
-  QueryReturnType<CompileTimeMetadata<QD>["output"]>
-> {
+): Promise<QueryReturnType<CompileTimeMetadata<QD>["output"]>> {
   // We fire and forget so if a function has no parameters we don't unnecessarily load all metadata
   const qd: Promise<QueryMetadata> = client.ontologyProvider.getQueryDefinition(
     query.apiName,
@@ -66,7 +65,7 @@ export async function applyQuery<
 
   const response = await Queries.execute(
     addUserAgentAndRequestContextHeaders(
-      augmentRequestContext(client, _ => ({ finalMethodCall: "applyQuery" })),
+      augmentRequestContext(client, (_) => ({ finalMethodCall: "applyQuery" })),
       query,
     ),
     await client.ontologyRid,
@@ -74,15 +73,16 @@ export async function applyQuery<
     {
       parameters: params
         ? await remapQueryParams(
-          params as { [parameterId: string]: any },
-          client,
-          (await qd).parameters,
-        )
+            params as { [parameterId: string]: any },
+            client,
+            (await qd).parameters,
+          )
         : {},
     },
     {
       version: query.isFixedVersion ? query.version : undefined,
       transactionId: client.transactionId,
+      scenarioRid: client.scenarioRid,
       branch: client.branch,
     },
   );
@@ -100,7 +100,7 @@ export async function applyQuery<
   return remappedResponse as QueryReturnType<CompileTimeMetadata<QD>["output"]>;
 }
 
-async function remapQueryParams(
+export async function remapQueryParams(
   params: { [parameterId: string]: any },
   client: MinimalClient,
   paramTypes: Record<string, QueryParameterDefinition<any>>,
@@ -116,7 +116,7 @@ async function remapQueryParams(
   return parameterMap;
 }
 
-async function remapQueryResponse<
+export async function remapQueryResponse<
   Q extends ObjectTypeDefinition,
   T extends QueryDataTypeDefinition<Q | never>,
 >(
@@ -169,31 +169,22 @@ async function remapQueryResponse<
       return hydrateAttachmentFromRidInternal(
         client,
         responseValue,
-      ) as QueryReturnType<
-        typeof responseDataType
-      >;
+      ) as QueryReturnType<typeof responseDataType>;
     }
 
     case "mediaReference": {
-      return createMediaFromReference(
+      return createMediaFromReferenceInternal(
         client,
         responseValue,
-      ) as unknown as QueryReturnType<
-        typeof responseDataType
-      >;
+      ) as unknown as QueryReturnType<typeof responseDataType>;
     }
 
     case "object": {
       const def = definitions.get(responseDataType.object);
       if (!def || def.type !== "object") {
-        throw new Error(
-          `Missing definition for ${responseDataType.object}`,
-        );
+        throw new Error(`Missing definition for ${responseDataType.object}`);
       }
-      return createQueryObjectResponse(
-        responseValue,
-        def,
-      ) as QueryReturnType<
+      return createQueryObjectResponse(responseValue, def) as QueryReturnType<
         typeof responseDataType
       >;
     }
@@ -201,25 +192,19 @@ async function remapQueryResponse<
     case "interface": {
       const def = definitions.get(responseDataType.interface);
       if (!def || def.type !== "interface") {
-        throw new Error(
-          `Missing definition for ${responseDataType.interface}`,
-        );
+        throw new Error(`Missing definition for ${responseDataType.interface}`);
       }
 
       return createQueryInterfaceResponse(
         responseValue,
         def,
-      ) as QueryReturnType<
-        typeof responseDataType
-      >;
+      ) as QueryReturnType<typeof responseDataType>;
     }
 
     case "objectSet": {
       const def = definitions.get(responseDataType.objectSet);
       if (!def) {
-        throw new Error(
-          `Missing definition for ${responseDataType.objectSet}`,
-        );
+        throw new Error(`Missing definition for ${responseDataType.objectSet}`);
       }
       if (typeof responseValue === "string") {
         return createObjectSet(def, client, {
@@ -231,11 +216,7 @@ async function remapQueryResponse<
         }) as QueryReturnType<typeof responseDataType>;
       }
 
-      return createObjectSet(
-        def,
-        client,
-        responseValue,
-      ) as QueryReturnType<
+      return createObjectSet(def, client, responseValue) as QueryReturnType<
         typeof responseDataType
       >;
     }
@@ -266,13 +247,14 @@ async function remapQueryResponse<
           responseDataType.valueType.nullable || entry.value != null,
           "Expected value",
         );
-        const key = responseDataType.keyType.type === "object"
-          ? getObjectSpecifier(
-            entry.key,
-            responseDataType.keyType.object,
-            definitions,
-          )
-          : entry.key;
+        const key =
+          responseDataType.keyType.type === "object"
+            ? getObjectSpecifier(
+                entry.key,
+                responseDataType.keyType.object,
+                definitions,
+              )
+            : entry.key;
         const value = await remapQueryResponse(
           client,
           responseDataType.valueType,
@@ -314,7 +296,7 @@ async function remapQueryResponse<
   return responseValue as QueryReturnType<typeof responseDataType>;
 }
 
-async function getRequiredDefinitions(
+export async function getRequiredDefinitions(
   dataType: QueryDataTypeDefinition,
   client: MinimalClient,
 ): Promise<Map<string, ObjectOrInterfaceDefinition>> {
@@ -361,7 +343,7 @@ async function getRequiredDefinitions(
       const types = [dataType.keyType, dataType.valueType];
 
       const allDefs = await Promise.all(
-        types.map(value => getRequiredDefinitions(value, client)),
+        types.map((value) => getRequiredDefinitions(value, client)),
       );
 
       for (const defs of allDefs) {
@@ -376,7 +358,7 @@ async function getRequiredDefinitions(
       const structValues = Object.values(dataType.struct);
 
       const allDefs = await Promise.all(
-        structValues.map(value => getRequiredDefinitions(value, client)),
+        structValues.map((value) => getRequiredDefinitions(value, client)),
       );
 
       for (const defs of allDefs) {
@@ -450,19 +432,12 @@ function getObjectSpecifier(
 ): string {
   const def = definitions.get(objectTypeApiName);
   if (!def || def.type !== "object") {
-    throw new Error(
-      `Missing definition for ${objectTypeApiName}`,
-    );
+    throw new Error(`Missing definition for ${objectTypeApiName}`);
   }
-  return createObjectSpecifierFromPrimaryKey(
-    def,
-    primaryKey,
-  );
+  return createObjectSpecifierFromPrimaryKey(def, primaryKey);
 }
 
-export function createQueryObjectResponse<
-  Q extends ObjectTypeDefinition,
->(
+export function createQueryObjectResponse<Q extends ObjectTypeDefinition>(
   primaryKey: PrimaryKeyType<Q>,
   objectDef: Q,
 ): OsdkBase<Q> {
@@ -478,9 +453,7 @@ export function createQueryObjectResponse<
   };
 }
 
-export function createQueryInterfaceResponse<
-  Q extends InterfaceDefinition,
->(
+export function createQueryInterfaceResponse<Q extends InterfaceDefinition>(
   interfaceSpecifier: {
     objectTypeApiName: string;
     primaryKeyValue: PrimaryKeyType<Q>;

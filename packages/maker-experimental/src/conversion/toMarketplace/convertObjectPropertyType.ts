@@ -26,6 +26,7 @@ import {
   shouldNotHaveRenderHints,
 } from "@osdk/maker";
 import invariant from "tiny-invariant";
+
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
 import { convertValueType } from "./convertValueType.js";
@@ -39,11 +40,11 @@ export function convertObjectPropertyType(
 ): PropertyType {
   const apiName = getNamespace() + property.apiName;
   invariant(
-    !shouldNotHaveRenderHints(property.type)
-      || !hasRenderHints(property.typeClasses),
-    `Property type ${apiName} of type '${
-      getPropertyTypeName(property.type)
-    }' should not have render hints`,
+    !shouldNotHaveRenderHints(property.type) ||
+      !hasRenderHints(property.typeClasses),
+    `Property type ${apiName} of type '${getPropertyTypeName(
+      property.type,
+    )}' should not have render hints`,
   );
   // TODO: Generate proper RID and ID based on object type and property API name
   const propertyRid = ridGenerator.generatePropertyRid(
@@ -60,29 +61,32 @@ export function convertObjectPropertyType(
       description: property.description,
       visibility: property.visibility ?? "NORMAL",
     },
-    indexedForSearch: property.indexedForSearch
-      ?? shouldBeIndexedForSearch(property.type),
+    indexedForSearch:
+      property.indexedForSearch ?? shouldBeIndexedForSearch(property.type),
     ruleSetBinding: undefined,
     baseFormatter: property.baseFormatter,
     type: property.array
       ? {
-        type: "array" as const,
-        array: {
-          subtype: propertyTypeTypeToOntologyIrType(
-            property.type,
-            ridGenerator,
-            property.apiName,
-          ),
-          reducers: [],
-        },
-      }
+          type: "array" as const,
+          array: {
+            subtype: propertyTypeTypeToOntologyIrType(
+              property.type,
+              ridGenerator,
+              property.apiName,
+              false,
+            ),
+            reducers: [],
+          },
+        }
       : propertyTypeTypeToOntologyIrType(
-        property.type,
-        ridGenerator,
-        property.apiName,
-      ),
-    typeClasses: property.typeClasses
-      ?? (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
+          property.type,
+          ridGenerator,
+          property.apiName,
+          false,
+        ),
+    typeClasses:
+      property.typeClasses ??
+      (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
     status: convertObjectStatus(property.status),
     inlineAction: undefined,
     dataConstraints: property.valueType

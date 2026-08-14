@@ -24,14 +24,16 @@ import type {
 } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
+
 import { fauxFoundry } from "../../../mocks/fauxFoundry.js";
 import { Employee } from "../../../types/Employee.js";
 
 type EmployeeTableProps = ObjectTableProps<typeof Employee>;
 
 const meta: Meta<EmployeeTableProps> = {
-  title: "Experimental/ObjectTable/Recipes",
+  title: "Components/ObjectTable/Features/Advanced",
   component: ObjectTable,
+  tags: ["beta"],
   parameters: {
     msw: {
       handlers: [...fauxFoundry.handlers],
@@ -46,8 +48,7 @@ export const WithConfigureColumnsButton: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
+        code: `const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
 const [columnDefinitions, setColumnDefinitions] = useState(initialColumnDefinitions);
 
 const handleApplyColumnConfig = useCallback(
@@ -127,16 +128,16 @@ return (
 
     const currentVisibility = useMemo(() => {
       const visibility: Record<string, boolean> = {};
-      initialColumnDefinitions.forEach(colDef => {
+      initialColumnDefinitions.forEach((colDef) => {
         visibility[colDef.locator.id] = columnDefinitions.some(
-          def => def.locator.id === colDef.locator.id,
+          (def) => def.locator.id === colDef.locator.id,
         );
       });
       return visibility;
     }, [columnDefinitions]);
 
     const currentColumnOrder = useMemo(
-      () => columnDefinitions.map(colDef => colDef.locator.id),
+      () => columnDefinitions.map((colDef) => colDef.locator.id),
       [columnDefinitions],
     );
 
@@ -146,8 +147,8 @@ return (
           [];
         columns.forEach(({ columnId, isVisible }) => {
           if (isVisible) {
-            const colDef = initialColumnDefinitions.find(def =>
-              def.locator.id === columnId
+            const colDef = initialColumnDefinitions.find(
+              (def) => def.locator.id === columnId,
             );
             if (colDef) {
               newColumnDefinitions.push(colDef);

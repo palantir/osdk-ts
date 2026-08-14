@@ -15,6 +15,7 @@
  */
 
 import type { OntologyIrBaseFormatter } from "@osdk/client.unstable";
+
 import type { PropertyTypeType } from "../properties/PropertyTypeType.js";
 import type {
   PropertyType,

@@ -16,6 +16,7 @@
 
 import type { GeoJsonObject } from "@osdk/foundry.geo";
 import type { PropertySecurities } from "@osdk/foundry.ontologies";
+
 import { employeeInterfaceScoped } from "./interfaces.js";
 
 export const employee50050: {
@@ -51,6 +52,11 @@ export const employee1 = {
   employeeStatus: "TimeSeries<String>",
   employeeSensor: "TimeSeries<>",
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
+  employeeProfile: {
+    bio: "Senior engineer with expertise in distributed systems",
+    yearsExperience: 10,
+  },
+  performanceScores: [95.5, 88.2, 92.1],
 } as const;
 export const employee1_50030_JohnDoe: typeof employee1 = employee1;
 
@@ -68,6 +74,11 @@ export const employee2 = {
   employeeStatus: "TimeSeries<String>",
   employeeSensor: "TimeSeries<>",
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
+  employeeProfile: {
+    bio: "Team lead focused on frontend development",
+    yearsExperience: 8,
+  },
+  performanceScores: [91.0, 89.5, 94.0],
 } as const;
 export const employee2_50031_JaneDoe: typeof employee2 = employee2;
 
@@ -205,12 +216,10 @@ export const objectWithAllPropertyTypes1 = {
   },
   attachmentArray: [
     {
-      rid:
-        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+      rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
     },
     {
-      rid:
-        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a80",
+      rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a80",
     },
   ],
   long: 1,
@@ -271,6 +280,7 @@ export const objectWithAllPropertyTypes1 = {
       },
     },
   },
+  cipherText: "ciphertext-encrypted-value",
 } as const;
 
 export const objectWithAllPropertyTypesEmptyEntries = {
@@ -303,12 +313,10 @@ export const objectWithAllPropertyTypes2 = {
   },
   attachmentArray: [
     {
-      rid:
-        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a81",
+      rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a81",
     },
     {
-      rid:
-        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a82",
+      rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a82",
     },
   ],
   long: 2,
@@ -356,6 +364,7 @@ export const objectWithAllPropertyTypes2 = {
     },
   ],
   mediaReference: "ri.MediaReferencePlaceholder2",
+  cipherText: "ciphertext-encrypted-value",
 } as const;
 
 export const basicPropertySecurities: PropertySecurities[] = [
@@ -398,9 +407,15 @@ export const unsecuredEmployee = {
 
 export const securedEmployee = {
   __rid: "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-as3der",
-  __primaryKey: 20003,
+  __primaryKey: {
+    value: 20003,
+    propertySecurityIndex: 0,
+  },
   __apiName: "Employee",
-  __title: "Bruce Banner",
+  __title: {
+    value: "Bruce Banner",
+    propertySecurityIndex: 0,
+  },
   employeeId: {
     value: 20003,
     propertySecurityIndex: 0,
@@ -421,10 +436,13 @@ export const securedEmployee = {
     value: "2003-01-01",
     propertySecurityIndex: 0,
   },
-  favoriteRestaurants: [{ value: "Pasta Place", propertySecurityIndex: 1 }, {
-    value: "Sushi Spot",
-    propertySecurityIndex: 0,
-  }],
+  favoriteRestaurants: [
+    { value: "Pasta Place", propertySecurityIndex: 1 },
+    {
+      value: "Sushi Spot",
+      propertySecurityIndex: 0,
+    },
+  ],
 } as const;
 
 // Mixed secured and regular properties for testing

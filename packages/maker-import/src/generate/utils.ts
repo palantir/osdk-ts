@@ -33,7 +33,7 @@ export function withoutNamespace(apiName: string): string {
  * "Employee" -> "employee"
  */
 export function fullCamel(apiName: string): string {
-  return camel(apiName.replace(/\./g, "-"));
+  return camel(apiName.replace(/\./gu, "-"));
 }
 
 /**
@@ -45,7 +45,7 @@ export function camel(str: string): string {
   if (!str) {
     return str;
   }
-  let result = str.replace(/[-_]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ""));
+  let result = str.replace(/[-_]+(.)?/gu, (_, c) => (c ? c.toUpperCase() : ""));
   result = result.charAt(0).toLowerCase() + result.slice(1);
   return result;
 }

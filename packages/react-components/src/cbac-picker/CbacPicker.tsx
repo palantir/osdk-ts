@@ -1,0 +1,124 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React from "react";
+
+import { BaseCbacPicker } from "./base/BaseCbacPicker.js";
+import { ConstraintCallout } from "./ConstraintCallout.js";
+import type { MaxClassificationConstraint } from "./types.js";
+import { useCbacSelection } from "./useCbacSelection.js";
+import { EMPTY_ARRAY } from "./utils/cbacPickerUtils.js";
+import { toggleMarking } from "./utils/selectionLogic.js";
+
+export interface CbacPickerProps {
+  /**
+   * Initial set of selected marking IDs.
+   *
+   * @default []
+   */
+  initialMarkingIds?: string[];
+
+  /**
+   * Called when the selection changes.
+   *
+   * @param markingIds The currently selected marking IDs
+   */
+  onChange: (markingIds: string[]) => void;
+
+  /**
+   * Optional constraint capping the maximum classification a user may select.
+   * When set, the picker surfaces a callout if the selection exceeds it.
+   */
+  maxClassificationConstraint?: MaxClassificationConstraint;
+
+  /**
+   * Disables marking toggle interactions.
+   *
+   * @default false
+   */
+  readOnly?: boolean;
+
+  /**
+   * CSS class for the picker container.
+   */
+  className?: string;
+}
+
+export function CbacPicker({
+  initialMarkingIds,
+  onChange,
+  maxClassificationConstraint,
+  readOnly,
+  className,
+}: CbacPickerProps): React.ReactElement {
+  const {
+    selectedIdsRef,
+    setSelectedIds,
+    categoryGroups,
+    markingStates,
+    banner,
+    requiredMarkingGroups,
+    isValid,
+    isLoading,
+    error,
+  } = useCbacSelection(initialMarkingIds);
+
+  const handleMarkingToggle = React.useCallback(
+    (markingId: string) => {
+      if (readOnly) {
+        return;
+      }
+      const newSelection = toggleMarking(
+        markingId,
+        selectedIdsRef.current,
+        categoryGroups,
+      );
+      setSelectedIds(newSelection);
+      onChange(newSelection);
+    },
+    [readOnly, categoryGroups, onChange],
+  );
+
+  const handleDismiss = React.useCallback(() => {
+    setSelectedIds(EMPTY_ARRAY);
+    onChange(EMPTY_ARRAY);
+  }, [onChange]);
+
+  const constraintCallout = React.useMemo(
+    () =>
+      maxClassificationConstraint != null ? (
+        <ConstraintCallout constraint={maxClassificationConstraint} />
+      ) : undefined,
+    [maxClassificationConstraint],
+  );
+
+  return (
+    <BaseCbacPicker
+      categories={categoryGroups}
+      markingStates={markingStates}
+      banner={banner}
+      onMarkingToggle={handleMarkingToggle}
+      onDismissBanner={handleDismiss}
+      requiredMarkingGroups={requiredMarkingGroups}
+      isValid={isValid}
+      readOnly={readOnly}
+      isLoading={isLoading}
+      error={error}
+      validationCallouts={constraintCallout}
+      className={className}
+    />
+  );
+}

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { ExitProcessError, YargsCheckError } from "@osdk/cli.common";
 import invokeLoginFlow from "@osdk/cli.common/loginFlow";
 import type {
@@ -31,9 +35,7 @@ import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { consola } from "consola";
 import deepEqual from "fast-deep-equal";
 import { findUp } from "find-up";
-import * as fs from "node:fs";
-import * as path from "node:path";
-import { fileURLToPath } from "node:url";
+
 import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
 
 const USER_AGENT = `osdk-cli.cmd.typescript/${process.env.PACKAGE_VERSION}`;
@@ -73,9 +75,8 @@ async function generateFromLocalFile(args: TypescriptGenerateArgs) {
 }
 
 async function generateFromStack(args: TypescriptGenerateArgs) {
-  const { foundryUrl, clientId, ontologyWritePath } = args as
-    & TypescriptGenerateArgs
-    & { foundryUrl: string; clientId: string };
+  const { foundryUrl, clientId, ontologyWritePath } =
+    args as TypescriptGenerateArgs & { foundryUrl: string; clientId: string };
 
   const token = await invokeLoginFlow({
     clientId,
@@ -84,14 +85,13 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
   });
   const ctx = createSharedClientContext(
     args.foundryUrl!,
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     async () => token.access_token,
     USER_AGENT,
   );
 
   try {
-    const ontologies = await OntologiesV2.list(
-      ctx,
-    );
+    const ontologies = await OntologiesV2.list(ctx);
 
     if (args.ontologyRid) {
       ontologies.data = ontologies.data.filter(
@@ -136,7 +136,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
       return {
         ...x,
         linkTypes: [...x.linkTypes].sort((a, b) =>
-          a.apiName.localeCompare(b.apiName)
+          a.apiName.localeCompare(b.apiName),
         ),
         implementsInterfaces2: sortKeys(x.implementsInterfaces2),
         sharedPropertyTypeMapping: sortKeys(x.sharedPropertyTypeMapping),
@@ -225,9 +225,7 @@ async function generateClientSdk(
           dependencyVersions.osdkClientPeerVersion = "workspace:^";
         }
 
-        const expectedDeps = getExpectedDependencies(
-          dependencyVersions,
-        );
+        const expectedDeps = getExpectedDependencies(dependencyVersions);
 
         for (const [type, deps] of Object.entries(expectedDeps)) {
           if (!(type in packageJson)) {
@@ -244,10 +242,12 @@ async function generateClientSdk(
             "@osdk/api": dependencyVersions.osdkApiVersion,
           },
           {
-            "@osdk/client": dependencyVersions.osdkClientPeerVersion
-              ?? dependencyVersions.osdkClientVersion,
-            "@osdk/api": dependencyVersions.osdkApiPeerVersion
-              ?? dependencyVersions.osdkApiVersion,
+            "@osdk/client":
+              dependencyVersions.osdkClientPeerVersion ??
+              dependencyVersions.osdkClientVersion,
+            "@osdk/api":
+              dependencyVersions.osdkApiPeerVersion ??
+              dependencyVersions.osdkApiVersion,
           },
         );
 
@@ -274,6 +274,7 @@ async function generateClientSdk(
       process.env.PACKAGE_CLI_VERSION!,
       args.externalObjects,
       args.externalInterfaces,
+      args.experimentalOntologyMetadata ?? false,
     );
     return true;
   } catch (e) {
@@ -324,8 +325,7 @@ export async function getDependencyVersions(): Promise<{
     ourPackageJson.dependencies["@arethetypeswrong/cli"];
   const osdkClientVersion = `^${process.env.PACKAGE_CLIENT_VERSION}`;
   const osdkApiVersion = `^${process.env.PACKAGE_API_VERSION}`;
-  const osdkLegacyClientVersion =
-    `^${process.env.PACKAGE_LEGACY_CLIENT_VERSION}`;
+  const osdkLegacyClientVersion = `^${process.env.PACKAGE_LEGACY_CLIENT_VERSION}`;
 
   return {
     typescriptVersion,
@@ -347,7 +347,7 @@ async function getOurPackageJsonPath() {
   if (!ourPackageJsonPath) {
     throw new Error("Could not find our package.json");
   }
-  return cachedOurPackageJsonPath = ourPackageJsonPath;
+  return (cachedOurPackageJsonPath = ourPackageJsonPath);
 }
 
 async function generateSourceFiles(
@@ -363,6 +363,10 @@ async function generateSourceFiles(
     args.packageType,
     args.externalObjects,
     args.externalInterfaces,
+    undefined, // externalSpts
+    undefined, // forInternalUse
+    undefined, // fixedVersionQueryTypes
+    args.experimentalOntologyMetadata ?? false,
   );
 }
 
@@ -384,6 +388,8 @@ function createNormalFs(): MinimalFs {
     mkdir: async (path: string, options?: { recursive: boolean }) => {
       await fs.promises.mkdir(path, options);
     },
+    // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     readdir: async (path: string) => fs.promises.readdir(path),
   };
 }
@@ -403,14 +409,16 @@ function isOntologyEditQuery(dataType: QueryDataType): boolean {
       return isOntologyEditQuery(dataType.subType);
 
     case "union":
-      return dataType.unionTypes.some(t => isOntologyEditQuery(t));
+      return dataType.unionTypes.some((t) => isOntologyEditQuery(t));
 
     case "struct":
-      return dataType.fields.some(f => isOntologyEditQuery(f.fieldType));
+      return dataType.fields.some((f) => isOntologyEditQuery(f.fieldType));
 
     case "entrySet":
-      return isOntologyEditQuery(dataType.keyType)
-        || isOntologyEditQuery(dataType.valueType);
+      return (
+        isOntologyEditQuery(dataType.keyType) ||
+        isOntologyEditQuery(dataType.valueType)
+      );
 
     case "attachment":
     case "boolean":

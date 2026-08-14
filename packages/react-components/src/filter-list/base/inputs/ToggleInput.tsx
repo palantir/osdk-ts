@@ -16,7 +16,9 @@
 
 import classnames from "classnames";
 import React, { memo } from "react";
+
 import { Switch } from "../../../base-components/switch/Switch.js";
+
 import styles from "./ToggleInput.module.css";
 
 interface ToggleInputProps {
@@ -46,6 +48,5 @@ function ToggleInputInner({
   );
 }
 
-export const ToggleInput: React.NamedExoticComponent<ToggleInputProps> = memo(
-  ToggleInputInner,
-);
+export const ToggleInput: React.NamedExoticComponent<ToggleInputProps> =
+  memo(ToggleInputInner);

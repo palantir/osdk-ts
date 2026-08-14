@@ -97,10 +97,9 @@ const cspell = {
     "CHANGELOG.md",
     "CONTRIBUTING.md",
     "CLAUDE.md",
+    "SKILL.md",
   ],
-  dictionaryDefinitions: [
-    ...getDictionaryDefinitions(),
-  ],
+  dictionaryDefinitions: [...getDictionaryDefinitions()],
   patterns: [
     // In some test code we have some serialized urls that have oauth scopes in url params
     { name: "url-oauth-scopes", pattern: "/api%3A[a-z]+/" },
@@ -130,7 +129,7 @@ const cspell = {
     "oauth",
     "css",
   ],
-  words: ["todoapp"],
+  words: ["todoapp", "borderless", "overfetching", "envrc"],
   suggestWords: [],
   ignoreWords: [],
   import: [],
@@ -172,6 +171,9 @@ const cspell = {
         // Authless client
         "Authless",
         "authless",
+
+        "DCTS",
+        "DMTS",
       ],
       ignoreWords: [
         // it's an NPM package
@@ -185,13 +187,8 @@ const cspell = {
     },
     {
       filename: "**/*.test.{mts,cts,ts,tsx}",
-      dictionaries: [
-        "test-words",
-      ],
-      ignoreRegExpList: [
-        "url-oauth-scopes",
-        "oauth-token",
-      ],
+      dictionaries: ["test-words"],
+      ignoreRegExpList: ["url-oauth-scopes", "oauth-token"],
     },
     {
       filename: [
@@ -220,9 +217,7 @@ const cspell = {
         "examples-extra/*/src/**/*.{mts,cts,ts,tsx}",
       ],
       dictionaries: ["imported-ontologies"],
-      ignoreRegExpList: [
-        /Palo Alto/,
-      ],
+      ignoreRegExpList: [/Palo Alto/],
       words: [
         "Clooney",
         "Downey",

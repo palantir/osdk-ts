@@ -28,13 +28,9 @@ export function createMinimalClientHelper(
     baseUrl: string,
     tokenProvider: () => Promise<string>,
     ...args: infer A
-  ) => any ? A
+  ) => any
+    ? A
     : never
 ): ReturnType<typeof createMinimalClient> {
-  return createMinimalClient(
-    { ontologyRid },
-    baseUrl,
-    tokenProvider,
-    ...args,
-  );
+  return createMinimalClient({ ontologyRid }, baseUrl, tokenProvider, ...args);
 }

@@ -18,8 +18,8 @@ import type {
   CompileTimeMetadata,
   ObjectOrInterfaceDefinition,
 } from "@osdk/api";
-import type { SpecificLinkPayload } from "../../LinkPayload.js";
 
+import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import type { ObserveLinks } from "../../ObservableClient/ObserveLink.js";
 import { AbstractHelper } from "../AbstractHelper.js";
@@ -45,7 +45,9 @@ export interface LinksHelper {
   getQuery<
     T extends ObjectOrInterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
-  >(options: ObserveLinks.Options<T, L>): SpecificLinkQuery;
+  >(
+    options: ObserveLinks.Options<T, L>,
+  ): SpecificLinkQuery;
 }
 
 export class LinksHelper extends AbstractHelper<
@@ -82,9 +84,10 @@ export class LinksHelper extends AbstractHelper<
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(
       options.orderBy ?? {},
     );
-    const canonSelect = options.select && options.select.length > 0
-      ? this.selectCanonicalizer.canonicalize(options.select)
-      : undefined;
+    const canonSelect =
+      options.select && options.select.length > 0
+        ? this.selectCanonicalizer.canonicalize(options.select)
+        : undefined;
     const linkCacheKey = this.cacheKeys.get<SpecificLinkCacheKey>(
       "specificLink",
       apiName,
@@ -96,6 +99,7 @@ export class LinksHelper extends AbstractHelper<
       canonOrderBy,
       canonSelect,
       options.$includeAllBaseObjectProperties ? true : undefined,
+      options.resolveToObjectType ? true : undefined,
     );
 
     return this.store.queries.get(linkCacheKey, () => {

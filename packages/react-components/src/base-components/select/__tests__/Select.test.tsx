@@ -17,6 +17,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { Select } from "../Select.js";
 
 interface User {
@@ -34,7 +35,7 @@ describe("Select", () => {
   afterEach(cleanup);
 
   describe("object values with isItemEqualToValue", () => {
-    it("selects an item using structural equality via isItemEqualToValue", async () => {
+    it("selects an item using structural equality via isItemEqualToValue", () => {
       const onValueChange = vi.fn();
       // Value is structurally equal but referentially different from USERS[0]
       const selectedValue: User = { id: 1, name: "Alice" };

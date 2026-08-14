@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-import { loadFoundryConfig } from "@osdk/foundry-config-json";
 import type { ServerResponse } from "node:http";
 import { inspect } from "node:util";
+
+import { loadFoundryConfig } from "@osdk/foundry-config-json";
 import type { ViteDevServer } from "vite";
+
+import type { DevModeManifest } from "./buildDevModeManifest.js";
 import {
   getCodeWorkspacesFoundryUrl,
   isCodeWorkspacesMode,
 } from "./codeWorkspacesMode.js";
-import { enableDevMode, setWidgetSetSettings } from "./network.js";
+import { enableDevMode, setWidgetSetManifest } from "./network.js";
 
 class ResponseError extends Error {
   // To avoid inspect() from logging the error response since it's already logged
@@ -31,6 +34,7 @@ class ResponseError extends Error {
 
   constructor(message: string, response: string) {
     super(message);
+    this.name = "ResponseError";
     try {
       const parsed = JSON.parse(response);
       this.#response = JSON.stringify(parsed, null, 4);
@@ -49,33 +53,28 @@ class ResponseError extends Error {
   }
 }
 
-function getHintForError(
-  parsed: { errorName?: string },
-): string | undefined {
+function getHintForError(parsed: { errorName?: string }): string | undefined {
   if (
-    parsed.errorName === "Api:WidgetIdNotFound"
-    || parsed.errorName === "WidgetIdNotFound"
+    parsed.errorName === "Api:InvalidManifest" ||
+    parsed.errorName === "InvalidManifest"
   ) {
-    return "You first need to publish changes to your widget configuration files before you can develop against them.\n\nSee: https://www.palantir.com/docs/foundry/custom-widgets/publish/";
+    return "The dev mode manifest was rejected by the server. This may indicate a mismatch between your plugin version and the Foundry platform version.";
   }
   return undefined;
 }
 
 /**
- * Finish the setup process by setting the widget overrides in Foundry and enabling dev mode.
+ * Finish the setup process by setting the widget dev mode manifest in Foundry and enabling dev mode.
  */
 export async function publishDevModeSettings(
   server: ViteDevServer,
-  widgetIdToOverrides: Record<string, string[]>,
-  baseHref: string,
+  manifest: DevModeManifest,
   res: ServerResponse,
 ): Promise<void> {
   try {
     const foundryConfig = await loadFoundryConfig("widgetSet");
     if (foundryConfig == null) {
-      throw new Error(
-        "foundry.config.json file not found.",
-      );
+      throw new Error("foundry.config.json file not found.");
     }
     const rawFoundryUrl = isCodeWorkspacesMode(server.config.mode)
       ? getCodeWorkspacesFoundryUrl()
@@ -85,29 +84,25 @@ export async function publishDevModeSettings(
       : rawFoundryUrl + "/";
 
     const widgetSetRid = foundryConfig.foundryConfig.widgetSet.rid;
-    const settingsResponse = await setWidgetSetSettings(
+    const settingsResponse = await setWidgetSetManifest(
       foundryUrl,
       widgetSetRid,
-      widgetIdToOverrides,
-      baseHref,
+      manifest,
       server.config.mode,
     );
     if (settingsResponse.status !== 200) {
       server.config.logger.warn(
-        `Unable to set widget settings in Foundry: ${settingsResponse.statusText}`,
+        `Unable to set widget manifest in Foundry: ${settingsResponse.statusText}`,
       );
       const responseContent = await settingsResponse.text();
       server.config.logger.warn(responseContent);
       throw new ResponseError(
-        `Unable to set widget settings in Foundry: ${settingsResponse.statusText}`,
+        `Unable to set widget manifest in Foundry: ${settingsResponse.statusText}`,
         responseContent,
       );
     }
 
-    const enableResponse = await enableDevMode(
-      foundryUrl,
-      server.config.mode,
-    );
+    const enableResponse = await enableDevMode(foundryUrl, server.config.mode);
     if (enableResponse.status !== 200) {
       server.config.logger.warn(
         `Unable to enable dev mode in Foundry: ${enableResponse.statusText}`,
@@ -121,31 +116,31 @@ export async function publishDevModeSettings(
     }
 
     res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify({
-      status: "success",
-      // In Code Workspaces the preview UI automatically handles this redirect
-      redirectUrl: isCodeWorkspacesMode(server.config.mode)
-        ? null
-        : new URL(
-          `workspace/custom-widgets/preview/${widgetSetRid}`,
-          foundryUrl,
-        ).toString(),
-    }));
+    res.end(
+      JSON.stringify({
+        status: "success",
+        // In Code Workspaces the preview UI automatically handles this redirect
+        redirectUrl: isCodeWorkspacesMode(server.config.mode)
+          ? null
+          : new URL(
+              `workspace/custom-widgets/preview/${widgetSetRid}`,
+              foundryUrl,
+            ).toString(),
+      }),
+    );
   } catch (error: unknown) {
     server.config.logger.error(
-      `Failed to start dev mode: ${(error as Error)}\n\n${inspect(error)}`,
+      `Failed to start dev mode: ${error as Error}\n\n${inspect(error)}`,
     );
     res.setHeader("Content-Type", "application/json");
     res.statusCode = 500;
     res.end(
-      JSON.stringify(
-        {
-          status: "error",
-          error: inspect(error),
-          response: error instanceof ResponseError ? error.response : undefined,
-          hint: error instanceof ResponseError ? error.hint : undefined,
-        },
-      ),
+      JSON.stringify({
+        status: "error",
+        error: inspect(error),
+        response: error instanceof ResponseError ? error.response : undefined,
+        hint: error instanceof ResponseError ? error.hint : undefined,
+      }),
     );
   }
 }

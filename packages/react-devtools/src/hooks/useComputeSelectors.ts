@@ -15,6 +15,7 @@
  */
 
 import { useCallback, useSyncExternalStore } from "react";
+
 import type { ComputeStore } from "../store/ComputeStore.js";
 import type {
   ComputeMetrics,
@@ -47,9 +48,10 @@ export function useComputeRecording(store: ComputeStore): boolean {
     (callback: () => void) => store.subscribe(callback),
     [store],
   );
-  const getSnapshot = useCallback(() => store.getSnapshot().isRecording, [
-    store,
-  ]);
+  const getSnapshot = useCallback(
+    () => store.getSnapshot().isRecording,
+    [store],
+  );
   return useSyncExternalStore(subscribe, getSnapshot);
 }
 

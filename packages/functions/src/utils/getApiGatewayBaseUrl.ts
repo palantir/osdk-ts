@@ -15,6 +15,7 @@
  */
 
 import { readFileSync } from "fs";
+
 import { parse as parseYaml } from "yaml";
 
 const FOUNDRY_SERVICE_DISCOVERY_V2_ENV_VAR =
@@ -31,10 +32,12 @@ interface ServiceDiscoveryConfig {
  * Type guard to check if config is an object with uris property
  */
 function hasUrisProperty(config: ServiceConfig): config is { uris: string[] } {
-  return !Array.isArray(config)
-    && "uris" in config
-    && Array.isArray(config.uris)
-    && config.uris.every((uri) => typeof uri === "string");
+  return (
+    !Array.isArray(config) &&
+    "uris" in config &&
+    Array.isArray(config.uris) &&
+    config.uris.every((uri) => typeof uri === "string")
+  );
 }
 
 /**

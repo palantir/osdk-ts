@@ -16,11 +16,14 @@
 
 import type {
   ManifestParameterDefinition,
+  ParameterConfig,
   ParameterDefinition,
+  WidgetConfig,
   WidgetManifestConfig,
   WidgetSetInputSpec,
   WidgetSetManifest,
 } from "@osdk/widget.api";
+
 import type { FoundryWidgetPluginOptions } from "../index.js";
 import type { WidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
 import { validateWidgetSet } from "./validateWidgetSet.js";
@@ -52,28 +55,46 @@ function buildWidgetManifest(
   widgetBuild: WidgetBuildOutputs,
   pluginOptions?: FoundryWidgetPluginOptions,
 ): WidgetManifestConfig {
-  const widgetConfig = widgetBuild.widgetConfig;
+  return buildWidgetManifestConfig(
+    widgetBuild.widgetConfig,
+    widgetBuild.scripts.map((script) => ({
+      path: trimLeadingSlash(script.src),
+      type: script.scriptType,
+    })),
+    widgetBuild.stylesheets.map((path) => ({
+      path: trimLeadingSlash(path),
+    })),
+    pluginOptions,
+  );
+}
+
+/**
+ * Builds a WidgetManifestConfig from a WidgetConfig and pre-built entrypoints.
+ * Shared between build and dev mode manifest construction.
+ */
+export function buildWidgetManifestConfig(
+  widgetConfig: WidgetConfig<ParameterConfig>,
+  entrypointJs: Array<{ path: string; type: "module" | "text/javascript" }>,
+  entrypointCss: Array<{ path: string }>,
+  pluginOptions?: FoundryWidgetPluginOptions,
+): WidgetManifestConfig {
   return {
     id: widgetConfig.id,
     name: widgetConfig.name,
     description: widgetConfig.description,
     type: "workshopWidgetV1",
-    entrypointJs: widgetBuild.scripts.map((script) => ({
-      path: trimLeadingSlash(script.src),
-      type: script.scriptType,
-    })),
-    entrypointCss: widgetBuild.stylesheets.map((path) => ({
-      path: trimLeadingSlash(path),
-    })),
+    entrypointJs,
+    entrypointCss,
     parameters: convertParameters(widgetConfig.parameters),
     events: widgetConfig.events,
     permissions: widgetConfig.permissions,
-    refreshHostDataOnAction: widgetConfig.refreshHostDataOnAction
-      ?? pluginOptions?.defaults?.refreshHostDataOnAction,
+    refreshHostDataOnAction:
+      widgetConfig.refreshHostDataOnAction ??
+      pluginOptions?.defaults?.refreshHostDataOnAction,
   };
 }
 
-function convertParameters(
+export function convertParameters(
   parameters: Record<string, ParameterDefinition>,
 ): Record<string, ManifestParameterDefinition> {
   return Object.fromEntries(
@@ -95,9 +116,10 @@ function convertParameter(
     return {
       type: "objectSet",
       displayName: parameter.displayName,
-      objectTypeRids: parameter.allowedType.type === "object"
-        ? [parameter.allowedType.internalDoNotUseMetadata.rid]
-        : [],
+      objectTypeRids:
+        parameter.allowedType.type === "object"
+          ? [parameter.allowedType.internalDoNotUseMetadata.rid]
+          : [],
       allowedType: parameter.allowedType.internalDoNotUseMetadata.rid,
     };
   }

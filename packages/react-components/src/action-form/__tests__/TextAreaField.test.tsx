@@ -16,6 +16,7 @@
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { TextAreaField } from "../fields/TextAreaField.js";
 
 afterEach(cleanup);
@@ -54,6 +55,15 @@ describe("TextAreaField", () => {
       const textarea = document.getElementById("my-textarea");
       expect(textarea).not.toBeNull();
       expect(textarea?.tagName).toBe("TEXTAREA");
+    });
+
+    it("marks the textarea as disabled", () => {
+      render(
+        <TextAreaField value="locked" onChange={vi.fn()} disabled={true} />,
+      );
+
+      const textarea = screen.getByRole("textbox") as HTMLTextAreaElement;
+      expect(textarea.disabled).toBe(true);
     });
   });
 

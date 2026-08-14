@@ -27,12 +27,12 @@ import type {
 } from "@osdk/api";
 import type { Observable, Subscription } from "rxjs";
 import invariant from "tiny-invariant";
+
 import { additionalContext } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
-import type {
-  ObjectHolder,
-} from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
+import { extractRdpDefinition } from "../../../util/extractRdpDefinition.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { CollectionConnectableParams } from "../base-list/BaseCollectionQuery.js";
@@ -55,6 +55,7 @@ import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
+import { EMPTY_RDP_SET } from "../utils/rdpFieldOperations.js";
 import {
   INCLUDE_ALL_BASE_PROPERTIES_IDX,
   INTERSECT_IDX,
@@ -76,11 +77,14 @@ export {
 } from "./ListCacheKey.js";
 import type { ListQueryOptions } from "./ListQueryOptions.js";
 
-type ExtractRelevantObjectsResult = Record<"added" | "modified", {
-  all: (ObjectHolder | InterfaceHolder)[];
-  strictMatches: Set<(ObjectHolder | InterfaceHolder)>;
-  sortaMatches: Set<(ObjectHolder | InterfaceHolder)>;
-}>;
+type ExtractRelevantObjectsResult = Record<
+  "added" | "modified",
+  {
+    all: (ObjectHolder | InterfaceHolder)[];
+    strictMatches: Set<ObjectHolder | InterfaceHolder>;
+    sortaMatches: Set<ObjectHolder | InterfaceHolder>;
+  }
+>;
 
 /**
  * Base class for filtered and sorted object collection queries.
@@ -113,6 +117,10 @@ export abstract class ListQuery extends BaseListQuery<
   #fetchedObjectType: string | undefined;
   #objectTypesCache: ReadonlySet<string> | undefined;
 
+  // Object types this query's RDPs traverse; an edit to any of these triggers
+  // revalidation. Undefined for ObjectSets the walker doesn't support.
+  #rdpInvalidationSet: ReadonlySet<string> | undefined;
+
   public override get rdpConfig(): Canonical<Rdp> | undefined {
     return this.cacheKey.otherKeys[RDP_IDX];
   }
@@ -137,13 +145,14 @@ export abstract class ListQuery extends BaseListQuery<
       opts,
       cacheKey,
       process.env.NODE_ENV !== "production"
-        ? (
-          store.client[additionalContext].logger?.child({}, {
-            msgPrefix: `ListQuery<${
-              cacheKey.otherKeys.map(x => JSON.stringify(x)).join(", ")
-            }>`,
-          })
-        )
+        ? store.client[additionalContext].logger?.child(
+            {},
+            {
+              msgPrefix: `ListQuery<${cacheKey.otherKeys
+                .map((x) => JSON.stringify(x))
+                .join(", ")}>`,
+            },
+          )
         : undefined,
     );
 
@@ -157,10 +166,12 @@ export abstract class ListQuery extends BaseListQuery<
     this.#objectSet = this.createObjectSet(store);
     this.#objectTypesCache = new Set([this.apiName]);
 
-    // Only initialize the sorting strategy here if there's no pivotTo.
-    // When pivotTo is used, the target type differs from apiName, so we
-    // defer initialization to fetchPageData where we can resolve the actual type.
-    if (!this.#pivotInfo) {
+    // Only initialize the sorting strategy here if there's no pivotTo and no
+    // derived properties. When pivotTo is used the target type differs from
+    // apiName, and when derived (RDP) properties are present we need the
+    // derived-property type metadata to sort string-encoded numerics by value;
+    // both are resolved asynchronously in fetchPageData.
+    if (!this.#pivotInfo && this.cacheKey.otherKeys[RDP_IDX] == null) {
       this.sortingStrategy = new OrderBySortingStrategy(
         this.apiName,
         this.#orderBy,
@@ -182,8 +193,7 @@ export abstract class ListQuery extends BaseListQuery<
 
   get canonicalIntersectWith():
     | Canonical<Array<Canonical<SimpleWhereClause>>>
-    | undefined
-  {
+    | undefined {
     return this.#intersectWith;
   }
 
@@ -201,14 +211,13 @@ export abstract class ListQuery extends BaseListQuery<
 
   #updateFetchedObjectType(fetchedApiName: string): void {
     this.#fetchedObjectType = fetchedApiName;
-    this.#objectTypesCache = fetchedApiName !== this.apiName
-      ? new Set([this.apiName, fetchedApiName])
-      : new Set([this.apiName]);
+    this.#objectTypesCache =
+      fetchedApiName !== this.apiName
+        ? new Set([this.apiName, fetchedApiName])
+        : new Set([this.apiName]);
   }
 
-  protected createPayload(
-    params: CollectionConnectableParams,
-  ): ListPayload {
+  protected createPayload(params: CollectionConnectableParams): ListPayload {
     return {
       ...super.createPayload(params),
       objectSet: this.#objectSet,
@@ -226,36 +235,50 @@ export abstract class ListQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
-    const needsResultType = (Object.keys(this.#orderBy).length > 0
-      && !(this.sortingStrategy instanceof OrderBySortingStrategy))
-      || (this.#pivotInfo != null && this.#intersectWith != null
-        && this.#intersectWith.length > 0 && !this.#pivotIntersectApplied);
+    const needsResultType =
+      (Object.keys(this.#orderBy).length > 0 &&
+        !(this.sortingStrategy instanceof OrderBySortingStrategy)) ||
+      (this.#pivotInfo != null &&
+        this.#intersectWith != null &&
+        this.#intersectWith.length > 0 &&
+        !this.#pivotIntersectApplied);
 
     if (needsResultType) {
       const wireObjectSet = getWireObjectSet(this.#objectSet);
-      const { resultType } = await getObjectTypesThatInvalidate(
-        this.store.client[additionalContext],
-        wireObjectSet,
-      );
+      const { resultType, invalidationSet } =
+        await getObjectTypesThatInvalidate(
+          this.store.client[additionalContext],
+          wireObjectSet,
+        );
 
       this.#updateFetchedObjectType(resultType.apiName);
+      this.#rdpInvalidationSet = invalidationSet;
 
       if (
-        Object.keys(this.#orderBy).length > 0
-        && !(this.sortingStrategy instanceof OrderBySortingStrategy)
+        Object.keys(this.#orderBy).length > 0 &&
+        !(this.sortingStrategy instanceof OrderBySortingStrategy)
       ) {
         this.sortingStrategy = new OrderBySortingStrategy(
           resultType.apiName,
           this.#orderBy,
+          // Carries derived-property type metadata so string-encoded numeric
+          // derived properties (decimal/long) sort by value. Returns {} when
+          // there are no derived properties.
+          await extractRdpDefinition(
+            this.store.client[additionalContext],
+            wireObjectSet,
+          ),
         );
       }
 
       if (
-        this.#pivotInfo != null && this.#intersectWith != null
-        && this.#intersectWith.length > 0 && !this.#pivotIntersectApplied
+        this.#pivotInfo != null &&
+        this.#intersectWith != null &&
+        this.#intersectWith.length > 0 &&
+        !this.#pivotIntersectApplied
       ) {
         const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
-        const intersectSets = this.#intersectWith.map(whereClause => {
+        const intersectSets = this.#intersectWith.map((whereClause) => {
           if (resultType.type === "object") {
             let objectSet = this.store.client({
               type: "object",
@@ -271,17 +294,15 @@ export abstract class ListQuery extends BaseListQuery<
             return objectSet.where(whereClause as WhereClause<any>);
           }
 
-          return this.store.client({
-            type: "interface",
-            apiName: resultType.apiName,
-          } as InterfaceDefinition).where(
-            whereClause as WhereClause<any>,
-          );
+          return this.store
+            .client({
+              type: "interface",
+              apiName: resultType.apiName,
+            } as InterfaceDefinition)
+            .where(whereClause as WhereClause<any>);
         });
 
-        this.#objectSet = this.#objectSet.intersect(
-          ...intersectSets,
-        );
+        this.#objectSet = this.#objectSet.intersect(...intersectSets);
         this.#pivotIntersectApplied = true;
       }
     }
@@ -294,11 +315,13 @@ export abstract class ListQuery extends BaseListQuery<
     if (this.#fetchedObjectType == null) {
       try {
         const wireObjectSet = getWireObjectSet(this.#objectSet);
-        const { resultType } = await getObjectTypesThatInvalidate(
-          this.store.client[additionalContext],
-          wireObjectSet,
-        );
+        const { resultType, invalidationSet } =
+          await getObjectTypesThatInvalidate(
+            this.store.client[additionalContext],
+            wireObjectSet,
+          );
         this.#updateFetchedObjectType(resultType.apiName);
+        this.#rdpInvalidationSet = invalidationSet;
       } catch {
         this.#updateFetchedObjectType(this.apiName);
       }
@@ -366,10 +389,14 @@ export abstract class ListQuery extends BaseListQuery<
    * Subclasses override to add type-specific logic (e.g. interface
    * implementation checks).
    */
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   async revalidateObjectType(objectType: string): Promise<boolean> {
-    return this.apiName === objectType
-      || (this.#fetchedObjectType != null
-        && this.#fetchedObjectType === objectType);
+    return (
+      this.apiName === objectType ||
+      (this.#fetchedObjectType != null &&
+        this.#fetchedObjectType === objectType) ||
+      (this.#rdpInvalidationSet?.has(objectType) ?? false)
+    );
   }
 
   /**
@@ -404,12 +431,12 @@ export abstract class ListQuery extends BaseListQuery<
     optimisticId: OptimisticId | undefined,
   ): Promise<void> | undefined => {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
-        DEBUG_ONLY__changesToString(changes),
-      );
-      this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
-        `Already in changes? ${changes.modified.has(this.cacheKey)}`,
-      );
+      this.logger
+        ?.child({ methodName: "maybeUpdateAndRevalidate" })
+        .debug(DEBUG_ONLY__changesToString(changes));
+      this.logger
+        ?.child({ methodName: "maybeUpdateAndRevalidate" })
+        .debug(`Already in changes? ${changes.modified.has(this.cacheKey)}`);
     }
 
     if (changes.modified.has(this.cacheKey)) return;
@@ -421,20 +448,20 @@ export abstract class ListQuery extends BaseListQuery<
     // changes affect this query -- that depends on link relationships the
     // client doesn't have. Fall back to a full server revalidation.
     if (
-      this.#fetchedObjectType != null
-      && this.#fetchedObjectType !== this.apiName
+      this.#fetchedObjectType != null &&
+      this.#fetchedObjectType !== this.apiName
     ) {
       const fetchedType = this.#fetchedObjectType;
       if (
-        (changes.addedObjects.get(fetchedType)?.length ?? 0) > 0
-        || (changes.modifiedObjects.get(fetchedType)?.length ?? 0) > 0
+        (changes.addedObjects.get(fetchedType)?.length ?? 0) > 0 ||
+        (changes.modifiedObjects.get(fetchedType)?.length ?? 0) > 0
       ) {
         return this.revalidate(true);
       }
       for (const key of changes.deleted) {
         if (
-          key.type === "object"
-          && key.otherKeys[OBJECT_API_NAME_IDX] === fetchedType
+          key.type === "object" &&
+          key.otherKeys[OBJECT_API_NAME_IDX] === fetchedType
         ) {
           return this.revalidate(true);
         }
@@ -442,18 +469,18 @@ export abstract class ListQuery extends BaseListQuery<
     }
 
     try {
-      const relevantObjects = this._extractAndCategorizeRelevantObjects(
-        changes,
-      );
+      const relevantObjects =
+        this._extractAndCategorizeRelevantObjects(changes);
 
       // If we got purely strict matches we can just update the list and move
       // on with our lives. But if we got sorta matches, then we need to revalidate
       // the list so we preemptively set it to loading to avoid thrashing the store.
-      const status = optimisticId
-          || relevantObjects.added.sortaMatches.size > 0
-          || relevantObjects.modified.sortaMatches.size > 0
-        ? "loading"
-        : "loaded";
+      const status =
+        optimisticId ||
+        relevantObjects.added.sortaMatches.size > 0 ||
+        relevantObjects.modified.sortaMatches.size > 0
+          ? "loading"
+          : "loaded";
 
       // while we only push updates for the strict matches, we still need to
       // trigger the list updating if some of our objects changed
@@ -462,9 +489,7 @@ export abstract class ListQuery extends BaseListQuery<
 
       let needsRevalidation = false;
       this.store.batch({ optimisticId, changes }, (batch) => {
-        const existingList = new Set(
-          batch.read(this.cacheKey)?.value?.data,
-        );
+        const existingList = new Set(batch.read(this.cacheKey)?.value?.data);
 
         const toAdd = new Set<ObjectHolder | InterfaceHolder>(
           // easy case. objects are new to the cache and they match this filter
@@ -526,7 +551,8 @@ export abstract class ListQuery extends BaseListQuery<
       return undefined;
     } finally {
       if (process.env.NODE_ENV !== "production") {
-        this.logger?.child({ methodName: "maybeUpdateAndRevalidate" })
+        this.logger
+          ?.child({ methodName: "maybeUpdateAndRevalidate" })
           .debug("in finally");
       }
     }
@@ -573,33 +599,36 @@ export abstract class ListQuery extends BaseListQuery<
     this.createWebsocketSubscription(this.#objectSet, sub, "observeList");
   }
 
-  protected onOswChange(
-    { object: objOrIface, state }: ObjectUpdate<ObjectTypeDefinition, string>,
-  ): void {
-    const logger = process.env.NODE_ENV !== "production"
-      ? this.logger?.child({ methodName: "registerStreamUpdates" })
-      : this.logger;
+  protected onOswChange({
+    object: objOrIface,
+    state,
+  }: ObjectUpdate<ObjectTypeDefinition, string>): void {
+    const logger =
+      process.env.NODE_ENV !== "production"
+        ? this.logger?.child({ methodName: "registerStreamUpdates" })
+        : this.logger;
 
     if (process.env.NODE_ENV !== "production") {
-      logger?.child({ methodName: "onChange" }).debug(
-        `Got an update of type: ${state}`,
-        objOrIface,
-      );
+      logger
+        ?.child({ methodName: "onChange" })
+        .debug(`Got an update of type: ${state}`, objOrIface);
     }
 
     if (state === "ADDED_OR_UPDATED") {
-      const object: ObjectHolder =
-        (objOrIface.$apiName !== objOrIface.$objectType
-          ? objOrIface.$as(objOrIface.$objectType)
-          : objOrIface) as unknown as ObjectHolder;
+      const object: ObjectHolder = (objOrIface.$apiName !==
+      objOrIface.$objectType
+        ? objOrIface.$as(objOrIface.$objectType)
+        : objOrIface) as unknown as ObjectHolder;
 
       this.store.batch({}, (batch) => {
+        // the stream carries base props only and computes no derived fields.
         this.store.objects.storeOsdkInstances(
           [object as Osdk.Instance<any>],
           batch,
           this.rdpConfig,
           undefined,
           this.includeAllBaseObjectProperties,
+          EMPTY_RDP_SET,
         );
       });
     } else if (state === "REMOVED") {
@@ -610,9 +639,10 @@ export abstract class ListQuery extends BaseListQuery<
   protected onOswRemoved(
     objOrIface: Osdk.Instance<ObjectTypeDefinition, never, string, {}>,
   ): void {
-    const logger = process.env.NODE_ENV !== "production"
-      ? this.logger?.child({ methodName: "onOswRemoved" })
-      : this.logger;
+    const logger =
+      process.env.NODE_ENV !== "production"
+        ? this.logger?.child({ methodName: "onOswRemoved" })
+        : this.logger;
     this.store.batch({}, (batch) => {
       // Read the truth layer (since not optimistic)
       const existing = batch.read(this.cacheKey);
@@ -668,9 +698,10 @@ export abstract class ListQuery extends BaseListQuery<
     });
   }
 
-  private getObjectCacheKey(
-    obj: { $objectType: string; $primaryKey: string | number },
-  ): ObjectCacheKey {
+  private getObjectCacheKey(obj: {
+    $objectType: string;
+    $primaryKey: string | number;
+  }): ObjectCacheKey {
     const pk = obj.$primaryKey;
     return this.cacheKeys.get<ObjectCacheKey>(
       "object",
@@ -681,9 +712,7 @@ export abstract class ListQuery extends BaseListQuery<
   }
 }
 
-export function isListCacheKey(
-  cacheKey: CacheKey,
-): cacheKey is ListCacheKey {
+export function isListCacheKey(cacheKey: CacheKey): cacheKey is ListCacheKey {
   return cacheKey.type === "list";
 }
 

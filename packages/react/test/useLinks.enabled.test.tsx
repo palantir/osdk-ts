@@ -18,6 +18,7 @@ import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
+
 import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useLinks } from "../src/new/useLinks.js";
 
@@ -105,10 +106,7 @@ describe("useLinks enabled option", () => {
   it("should pass dedupeInterval with default of 2000", () => {
     const wrapper = createWrapper();
 
-    renderHook(
-      () => useLinks(mockObject, "relatedObjects"),
-      { wrapper },
-    );
+    renderHook(() => useLinks(mockObject, "relatedObjects"), { wrapper });
 
     expect(mockObserveLinks).toHaveBeenCalledTimes(1);
     const options = mockObserveLinks.mock.calls[0][2];
@@ -169,8 +167,9 @@ describe("useLinks enabled option", () => {
       });
     });
 
-    expect(result.current.linkedObjectsBySourcePrimaryKey.get("obj-123"))
-      .toEqual([linkedObj]);
+    expect(
+      result.current.linkedObjectsBySourcePrimaryKey.get("obj-123"),
+    ).toEqual([linkedObj]);
   });
 
   it("should forward $includeAllBaseObjectProperties to observeLinks", () => {
@@ -187,5 +186,33 @@ describe("useLinks enabled option", () => {
     expect(mockObserveLinks).toHaveBeenCalledTimes(1);
     const options = mockObserveLinks.mock.calls[0][2];
     expect(options.$includeAllBaseObjectProperties).toBe(true);
+  });
+
+  describe("resolveToObjectType", () => {
+    it("should pass resolveToObjectType: true to observeLinks when true", () => {
+      const wrapper = createWrapper();
+
+      renderHook(
+        () =>
+          useLinks(mockObject, "relatedObjects", {
+            resolveToObjectType: true,
+          }),
+        { wrapper },
+      );
+
+      expect(mockObserveLinks).toHaveBeenCalledTimes(1);
+      const options = mockObserveLinks.mock.calls[0][2];
+      expect(options.resolveToObjectType).toBe(true);
+    });
+
+    it("should not include resolveToObjectType when not set", () => {
+      const wrapper = createWrapper();
+
+      renderHook(() => useLinks(mockObject, "relatedObjects"), { wrapper });
+
+      expect(mockObserveLinks).toHaveBeenCalledTimes(1);
+      const options = mockObserveLinks.mock.calls[0][2];
+      expect(options.resolveToObjectType).toBeUndefined();
+    });
   });
 });

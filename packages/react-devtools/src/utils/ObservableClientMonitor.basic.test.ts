@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { MetricsStore } from "../store/MetricsStore.js";
 import type { ObservableClientMonitorConfig } from "./ObservableClientMonitor.js";
 import { ObservableClientMonitor } from "./ObservableClientMonitor.js";
@@ -185,10 +186,7 @@ describe("ObservableClientMonitor", () => {
     const mockClient = createMockClient();
     const wrapped = monitor.wrapClient(
       mockClient as never,
-    ) as unknown as Record<
-      string,
-      unknown
-    >;
+    ) as unknown as Record<string, unknown>;
 
     expect(wrapped.canonicalizeWhereClause).toBe(
       wrapped.canonicalizeWhereClause,

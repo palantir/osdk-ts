@@ -21,6 +21,7 @@ import type {
   RequestHandlerOptions,
 } from "msw";
 import { http, HttpResponse } from "msw";
+
 import type { BaseAPIError } from "../../BaseError.js";
 import { authHandlerMiddleware } from "../authHandlerMiddleware.js";
 
@@ -36,23 +37,24 @@ export class OpenApiCallError extends Error {
     },
   ) {
     super(
-      `${json.errorCode} ${json.errorName ?? "Unknown error"} ${
-        JSON.stringify(
-          json.parameters,
-        )
-      }`,
+      `${json.errorCode} ${json.errorName ?? "Unknown error"} ${JSON.stringify(
+        json.parameters,
+      )}`,
     );
+    this.name = "OpenApiCallError";
   }
 }
 
 type ExtractStringParams<T extends any[]> = T extends [infer A, ...infer B]
-  ? A extends string ? [A, ...ExtractStringParams<B>]
-  : []
+  ? A extends string
+    ? [A, ...ExtractStringParams<B>]
+    : []
   : [];
 
 export type SkipStringParams<T extends any[]> = T extends [infer A, ...infer B]
-  ? A extends string ? SkipStringParams<B>
-  : T
+  ? A extends string
+    ? SkipStringParams<B>
+    : T
   : T;
 
 /**
@@ -65,7 +67,8 @@ export type SkipStringParams<T extends any[]> = T extends [infer A, ...infer B]
  */
 export type ExtractBody<
   X extends (reqCall: any, ...args: any[]) => Promise<any>,
-> = undefined extends SkipStringParams<ParamsAfterReqCall<X>>[0] ? never
+> = undefined extends SkipStringParams<ParamsAfterReqCall<X>>[0]
+  ? never
   : SkipStringParams<ParamsAfterReqCall<X>>[0];
 
 export type ExtractResponse<X extends (...args: any[]) => Promise<any>> =
@@ -133,7 +136,7 @@ export function handleOpenApiCall<
         u.search = ""; // msw doesn't want the search string
         captured = {
           method: req.method as any,
-          endPoint: u.toString().replace(/%3A/g, ":"),
+          endPoint: u.toString().replace(/%3A/gu, ":"),
         };
 
         // fake a response object so the call doesn't fail

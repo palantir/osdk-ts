@@ -14,8 +14,38 @@
  * limitations under the License.
  */
 
-// MarkdownRenderer
-export {
-  MarkdownRenderer,
-  type MarkdownRendererProps,
-} from "../../markdown-renderer/MarkdownRenderer.js";
+// This subpath keeps its `markdown-renderer` name for now even though the
+// components it exports are named `MarkdownViewer`. It gets renamed when the
+// `experimental/` prefix is dropped, so consumers change import paths once
+// rather than twice.
+
+import { BaseMarkdownViewer as _BaseMarkdownViewer } from "../../markdown-viewer/BaseMarkdownViewer.js";
+import { MarkdownViewer as _MarkdownViewer } from "../../markdown-viewer/MarkdownViewer.js";
+import type { BaseMarkdownViewerProps as _BaseMarkdownViewerProps } from "../../markdown-viewer/MarkdownViewerApi.js";
+import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
+
+// BaseMarkdownViewer
+export { BaseMarkdownViewer } from "../../markdown-viewer/BaseMarkdownViewer.js";
+export type {
+  BaseMarkdownViewerProps,
+  MarkdownViewerProps,
+} from "../../markdown-viewer/MarkdownViewerApi.js";
+
+// MarkdownViewer (Media wrapper)
+export const MarkdownViewer: typeof _MarkdownViewer = withOsdkMetrics(
+  _MarkdownViewer,
+  "MarkdownViewer",
+);
+
+// Deprecated `Renderer` aliases of the same values, cleared in a later pass.
+// `MarkdownViewerMediaProps` has none: the `Media` drop is a uniform break
+// because pdf's old name was reused for a different type.
+
+/** @deprecated Use `BaseMarkdownViewer` instead. */
+export const MarkdownRenderer: typeof _BaseMarkdownViewer = _BaseMarkdownViewer;
+
+/** @deprecated Use `BaseMarkdownViewerProps` instead. */
+export type MarkdownRendererProps = _BaseMarkdownViewerProps;
+
+/** @deprecated Use `MarkdownViewer` instead. */
+export const MarkdownViewerMedia: typeof MarkdownViewer = MarkdownViewer;

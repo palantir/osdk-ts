@@ -20,9 +20,9 @@ import type {
   WhereClause,
 } from "@osdk/api";
 
-export function createGroupByAggregateOptions<
-  Q extends ObjectTypeDefinition,
->(propertyKey: string): AggregateOpts<Q> {
+export function createGroupByAggregateOptions<Q extends ObjectTypeDefinition>(
+  propertyKey: string,
+): AggregateOpts<Q> {
   return {
     $select: { $count: "unordered" as const },
     $groupBy: { [propertyKey]: "exact" as const },
@@ -43,8 +43,27 @@ export type AggregationGroupResult = Iterable<{
   $count?: number;
 }>;
 
-export function createNullWhereClause<
-  Q extends ObjectTypeDefinition,
->(propertyKey: string): WhereClause<Q> {
+export function createNullWhereClause<Q extends ObjectTypeDefinition>(
+  propertyKey: string,
+): WhereClause<Q> {
   return { [propertyKey]: { $isNull: true } } as WhereClause<Q>;
+}
+
+/**
+ * Builds the where clause for a null-count aggregation, combining the
+ * property null-check with the cross-filter where clause.
+ *
+ * The cross-filter clause is only included when it is non-empty. An empty
+ * `{}` clause inside an `$and` is rejected by the aggregation API, so when no
+ * cross-filter is active we return the bare null-check predicate.
+ */
+export function createNullCountWhereClause<Q extends ObjectTypeDefinition>(
+  propertyKey: string,
+  crossFilterWhereClause: WhereClause<Q>,
+): WhereClause<Q> {
+  const nullClause = createNullWhereClause<Q>(propertyKey);
+  if (Object.keys(crossFilterWhereClause).length === 0) {
+    return nullClause;
+  }
+  return { $and: [nullClause, crossFilterWhereClause] } as WhereClause<Q>;
 }

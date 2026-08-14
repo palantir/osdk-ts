@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import {
   CREATE_INTERFACE_OBJECT_PARAMETER,
@@ -30,6 +31,7 @@ import { defineCreateOrModifyObjectAction } from "../defineCreateOrModifyObjectA
 import { defineDeleteInterfaceObjectAction } from "../defineDeleteInterfaceObjectAction.js";
 import { defineDeleteObjectAction } from "../defineDeleteObjectAction.js";
 import { defineInterface } from "../defineInterface.js";
+import { defineInterfaceLinkConstraint } from "../defineInterfaceLinkConstraint.js";
 import { defineModifyInterfaceObjectAction } from "../defineModifyInterfaceObjectAction.js";
 import { defineModifyObjectAction } from "../defineModifyObjectAction.js";
 import { defineObject } from "../defineObject.js";
@@ -43,30 +45,69 @@ describe("Action Types", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, "/tmp/");
   });
+  it("pairs a listLength interface target with listLengthValidation, not scalar required", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      displayName: "Person",
+      properties: {},
+    });
+
+    defineModifyInterfaceObjectAction({
+      interfaceType: person,
+      parameterConfiguration: {
+        [MODIFY_INTERFACE_OBJECT_PARAMETER]: {
+          required: { listLength: { min: 1, max: 5 } },
+        },
+      },
+    });
+
+    const actionType =
+      dumpOntologyFullMetadata().ontology.actionTypes[
+        "com.palantir.modify-person"
+      ].actionType;
+    const param =
+      actionType.metadata.parameters[MODIFY_INTERFACE_OBJECT_PARAMETER];
+    const validation =
+      actionType.actionTypeLogic.validation.parameterValidations[
+        MODIFY_INTERFACE_OBJECT_PARAMETER
+      ].defaultValidation.validation;
+
+    // Opting the target into a list must produce a listLengthValidation, not a
+    // scalar required configuration (OMS rejects scalar required on list types).
+    expect(param.type.type).toBe("interfaceReferenceList");
+    expect(validation.required).toEqual({
+      type: "listLengthValidation",
+      listLengthValidation: { minLength: 1, maxLength: 5 },
+    });
+  });
   it("Concrete actions are properly defined", () => {
     const exampleAction = defineAction({
       apiName: "foo",
       displayName: "exampleAction",
       status: "active",
-      rules: [{
-        type: "addOrModifyObjectRuleV2",
-        addOrModifyObjectRuleV2: {
-          objectToModify: "objectToModifyParameter",
-          propertyValues: {
-            "bar": {
-              type: "parameterId",
-              parameterId: "param1",
+      rules: [
+        {
+          type: "addOrModifyObjectRuleV2",
+          addOrModifyObjectRuleV2: {
+            objectToModify: "objectToModifyParameter",
+            propertyValues: {
+              bar: {
+                type: "parameterId",
+                parameterId: "param1",
+              },
             },
+            structFieldValues: {},
           },
-          structFieldValues: {},
         },
-      }],
-      parameters: [{
-        id: "param1",
-        displayName: "param1",
-        type: "boolean",
-        validation: { required: true, allowedValues: { type: "boolean" } },
-      }],
+      ],
+      parameters: [
+        {
+          id: "param1",
+          displayName: "param1",
+          type: "boolean",
+          validation: { required: true, allowedValues: { type: "boolean" } },
+        },
+      ],
     });
 
     expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -161,6 +202,7 @@ describe("Action Types", () => {
                 "metadata": {
                   "apiName": "com.palantir.foo",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -250,21 +292,25 @@ describe("Action Types", () => {
         apiName: "foo",
         displayName: "exampleAction",
         status: "active",
-        rules: [{
-          type: "addInterfaceRule",
-          addInterfaceRule: {
-            interfaceApiName: "foo",
-            objectTypeParameter: "param1",
-            sharedPropertyValues: {},
-            interfacePropertyValues: {},
+        rules: [
+          {
+            type: "addInterfaceRule",
+            addInterfaceRule: {
+              interfaceApiName: "foo",
+              objectTypeParameter: "param1",
+              sharedPropertyValues: {},
+              interfacePropertyValues: {},
+            },
           },
-        }],
-        parameters: [{
-          id: "param1",
-          displayName: "param1",
-          type: "boolean",
-          validation: { required: true, allowedValues: { type: "boolean" } },
-        }],
+        ],
+        parameters: [
+          {
+            id: "param1",
+            displayName: "param1",
+            type: "boolean",
+            validation: { required: true, allowedValues: { type: "boolean" } },
+          },
+        ],
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -355,6 +401,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -423,6 +470,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.foo": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.foo",
                   "displayMetadata": {
                     "description": "foo",
@@ -437,6 +485,7 @@ describe("Action Types", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -493,32 +542,34 @@ describe("Action Types", () => {
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
         properties: {
-          "bar": { type: "string" },
-          "property1": { type: "string" },
-          "property2": {
+          bar: { type: "string" },
+          property1: { type: "string" },
+          property2: {
             type: {
               type: "struct",
               structDefinition: { simpleProperty: "string" },
             },
           },
         },
-        implementsInterfaces: [{
-          implements: exampleInterface,
-          propertyMapping: [
-            {
-              interfaceProperty: "com.palantir.mySpt",
-              mapsTo: "bar",
-            },
-            {
-              interfaceProperty: "property1",
-              mapsTo: "property1",
-            },
-            {
-              interfaceProperty: "com.palantir.property2",
-              mapsTo: "property2",
-            },
-          ],
-        }],
+        implementsInterfaces: [
+          {
+            implements: exampleInterface,
+            propertyMapping: [
+              {
+                interfaceProperty: "com.palantir.mySpt",
+                mapsTo: "bar",
+              },
+              {
+                interfaceProperty: "property1",
+                mapsTo: "property1",
+              },
+              {
+                interfaceProperty: "com.palantir.property2",
+                mapsTo: "property2",
+              },
+            ],
+          },
+        ],
       });
 
       const createActionWithObjectType = defineCreateInterfaceObjectAction({
@@ -710,6 +761,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-example-interface-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -957,6 +1009,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-example-interface-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -1055,6 +1108,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -1069,6 +1123,7 @@ describe("Action Types", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -1347,6 +1402,7 @@ describe("Action Types", () => {
                   },
                   "implementsInterfaces2": [
                     {
+                      "actionTypes": {},
                       "interfaceTypeApiName": "com.palantir.exampleInterface",
                       "linksV2": {},
                       "properties": {},
@@ -1896,6 +1952,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -2211,6 +2268,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-with-overrides",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -2447,6 +2505,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -2756,6 +2815,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-with-overrides",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -2854,6 +2914,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -2868,6 +2929,7 @@ describe("Action Types", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -3264,6 +3326,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -3443,6 +3506,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -3528,6 +3592,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -3542,6 +3607,7 @@ describe("Action Types", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -3693,6 +3759,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.delete-interface-object-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -3765,6 +3832,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -3779,6 +3847,7 @@ describe("Action Types", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -3933,6 +4002,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.custom-delete-api-name",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -4005,6 +4075,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -4019,6 +4090,7 @@ describe("Action Types", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -4083,12 +4155,14 @@ describe("Action Types", () => {
       });
       const deleteAction = defineDeleteInterfaceObjectAction({
         interfaceType: exampleInterface,
-        actionLevelValidation: [{
-          condition: {
-            type: "group",
-            name: "deleteValidationGroup",
+        actionLevelValidation: [
+          {
+            condition: {
+              type: "group",
+              name: "deleteValidationGroup",
+            },
           },
-        }],
+        ],
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -4176,6 +4250,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.delete-interface-object-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -4248,6 +4323,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -4262,6 +4338,7 @@ describe("Action Types", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -4326,8 +4403,8 @@ describe("Action Types", () => {
         apiName: "exampleInterface",
         properties: {
           property1,
-          "property2": { type: "string" },
-          "property3": { type: "string" },
+          property2: { type: "string" },
+          property3: { type: "string" },
         },
       });
       const createAction = defineCreateInterfaceObjectAction({
@@ -4335,14 +4412,16 @@ describe("Action Types", () => {
         apiName: "custom-api-name-1",
         displayName: "Custom Create Action",
         status: "experimental",
-        actionLevelValidation: [{
-          condition: {
-            type: "group",
-            name: "actionLevelGroup",
+        actionLevelValidation: [
+          {
+            condition: {
+              type: "group",
+              name: "actionLevelGroup",
+            },
           },
-        }],
+        ],
         parameterConfiguration: {
-          "property3": {
+          property3: {
             required: false,
             conditionalOverrides: [
               {
@@ -4409,14 +4488,16 @@ describe("Action Types", () => {
         apiName: "custom-api-name-2",
         displayName: "Custom Modify Action",
         status: "experimental",
-        actionLevelValidation: [{
-          condition: {
-            type: "group",
-            name: "actionLevelGroup",
+        actionLevelValidation: [
+          {
+            condition: {
+              type: "group",
+              name: "actionLevelGroup",
+            },
           },
-        }],
+        ],
         parameterConfiguration: {
-          "property3": {
+          property3: {
             required: false,
             conditionalOverrides: [
               {
@@ -4744,6 +4825,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.custom-api-name-1",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "TABLE",
                         "displayAndFormat": {
@@ -5087,6 +5169,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.custom-api-name-2",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "TABLE",
                         "displayAndFormat": {
@@ -5210,6 +5293,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -5224,6 +5308,7 @@ describe("Action Types", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -5429,70 +5514,70 @@ describe("Action Types", () => {
         type: "string",
       });
       const importedInterface: InterfaceType = {
-        "apiName": "com.palantir.other.ontology.event.Event",
-        "displayMetadata": {
-          "displayName": "Event",
-          "description": "Event",
-          "icon": {
-            "type": "blueprint",
-            "blueprint": {
-              "color": "#4C90F0",
-              "locator": "timeline-events",
+        apiName: "com.palantir.other.ontology.event.Event",
+        displayMetadata: {
+          displayName: "Event",
+          description: "Event",
+          icon: {
+            type: "blueprint",
+            blueprint: {
+              color: "#4C90F0",
+              locator: "timeline-events",
             },
           },
         },
-        "extendsInterfaces": [],
-        "links": [],
-        "status": {
-          "type": "active",
-          "active": {},
+        extendsInterfaces: [],
+        links: [],
+        status: {
+          type: "active",
+          active: {},
         },
-        "propertiesV2": {
+        propertiesV2: {
           "com.palantir.other.ontology.types.id": {
-            "required": true,
-            "sharedPropertyType": {
-              "displayName": "Id",
-              "apiName": "com.palantir.other.ontology.types.id",
-              "type": "string",
-              "nonNameSpacedApiName": "id",
-              "typeClasses": [
+            required: true,
+            sharedPropertyType: {
+              displayName: "Id",
+              apiName: "com.palantir.other.ontology.types.id",
+              type: "string",
+              nonNameSpacedApiName: "id",
+              typeClasses: [
                 {
-                  "kind": "render_hint",
-                  "name": "SELECTABLE",
+                  kind: "render_hint",
+                  name: "SELECTABLE",
                 },
                 {
-                  "kind": "render_hint",
-                  "name": "SORTABLE",
+                  kind: "render_hint",
+                  name: "SORTABLE",
                 },
               ],
-              "__type": "SHARED_PROPERTY_TYPE",
+              __type: "SHARED_PROPERTY_TYPE",
             },
           },
         },
-        "propertiesV3": {
-          "id": {
-            "required": true,
-            "sharedPropertyType": {
-              "displayName": "Id",
-              "apiName": "com.palantir.core.ontology.types.id",
-              "type": "string",
-              "nonNameSpacedApiName": "id",
-              "typeClasses": [
+        propertiesV3: {
+          id: {
+            required: true,
+            sharedPropertyType: {
+              displayName: "Id",
+              apiName: "com.palantir.core.ontology.types.id",
+              type: "string",
+              nonNameSpacedApiName: "id",
+              typeClasses: [
                 {
-                  "kind": "render_hint",
-                  "name": "SELECTABLE",
+                  kind: "render_hint",
+                  name: "SELECTABLE",
                 },
                 {
-                  "kind": "render_hint",
-                  "name": "SORTABLE",
+                  kind: "render_hint",
+                  name: "SORTABLE",
                 },
               ],
-              "__type": "SHARED_PROPERTY_TYPE",
+              __type: "SHARED_PROPERTY_TYPE",
             },
           },
         },
-        "searchable": false,
-        "__type": "INTERFACE_TYPE",
+        searchable: false,
+        __type: "INTERFACE_TYPE",
       } as unknown as InterfaceType;
       importOntologyEntity(importedInterface);
       const interfaceType = defineInterface({
@@ -5507,68 +5592,75 @@ describe("Action Types", () => {
           apiName: "action",
           displayName: "action",
           status: "active",
-          parameters: [{
-            id: "interfaceObjectToModifyParameter",
-            displayName: "Interface object to modify",
-            type: {
-              type: "interfaceReference",
-              interfaceReference: {
-                interfaceTypeRid: interfaceType.apiName,
+          parameters: [
+            {
+              id: "interfaceObjectToModifyParameter",
+              displayName: "Interface object to modify",
+              type: {
+                type: "interfaceReference",
+                interfaceReference: {
+                  interfaceTypeRid: interfaceType.apiName,
+                },
+              },
+              validation: {
+                required: true,
+                allowedValues: { type: "interfaceObjectQuery" },
               },
             },
-            validation: {
-              required: true,
-              allowedValues: { type: "interfaceObjectQuery" },
+            {
+              id: "sptParameter",
+              displayName: "SPT",
+              type: "string",
+              validation: {
+                required: true,
+                allowedValues: { type: "text" },
+              },
             },
-          }, {
-            id: "sptParameter",
-            displayName: "SPT",
-            type: "string",
-            validation: {
-              required: true,
-              allowedValues: { type: "text" },
+            {
+              id: "otherParameter",
+              displayName: "Other parameter",
+              type: "string",
+              validation: {
+                required: true,
+                allowedValues: { type: "text" },
+              },
             },
-          }, {
-            id: "otherParameter",
-            displayName: "Other parameter",
-            type: "string",
-            validation: {
-              required: true,
-              allowedValues: { type: "text" },
-            },
-          }],
-          rules: [{
-            type: "modifyInterfaceRule",
-            modifyInterfaceRule: {
-              interfaceApiName: "com.palantir.other.ontology.event.Event",
-              interfaceObjectToModifyParameter:
-                "interfaceObjectToModifyParameter",
-              sharedPropertyValues: {
-                spt: {
-                  type: "parameterId",
-                  parameterId: "sptParameter",
-                },
-                "com.palantir.other.invalid.spt": {
-                  type: "staticValue",
-                  staticValue: {
-                    type: "double",
-                    double: 4,
+          ],
+          rules: [
+            {
+              type: "modifyInterfaceRule",
+              modifyInterfaceRule: {
+                interfaceApiName: "com.palantir.other.ontology.event.Event",
+                interfaceObjectToModifyParameter:
+                  "interfaceObjectToModifyParameter",
+                sharedPropertyValues: {
+                  spt: {
+                    type: "parameterId",
+                    parameterId: "sptParameter",
+                  },
+                  "com.palantir.other.invalid.spt": {
+                    type: "staticValue",
+                    staticValue: {
+                      type: "double",
+                      double: 4,
+                    },
+                  },
+                  other: {
+                    type: "parameterId",
+                    parameterId: "otherParameter",
                   },
                 },
-                other: {
-                  type: "parameterId",
-                  parameterId: "otherParameter",
-                },
+                interfacePropertyValues: {},
               },
-              interfacePropertyValues: {},
             },
-          }],
-        })
+          ],
+        }),
       ).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Shared property type com.palantir.other.invalid.spt does not exist in interface type com.palantir.interfaceType]`,
       );
-      expect(() => defineCreateInterfaceObjectAction({ interfaceType })).not
-        .toThrow();
+      expect(() =>
+        defineCreateInterfaceObjectAction({ interfaceType }),
+      ).not.toThrow();
     });
 
     it("Interface actions validate SPT existence on the interface", () => {
@@ -5578,13 +5670,13 @@ describe("Action Types", () => {
           type: "string",
         });
         const pulseRepetitionIntervalSecs: SharedPropertyType = {
-          "apiName": "com.palantir.other.ontology.pulseRepetitionIntervalSecs",
-          "displayName": "Pulse Repetition Interval (s)",
-          "description": "Pulse Repetition Interval in seconds.",
-          "type": "double",
-          "nonNameSpacedApiName": "pulseRepetitionIntervalSecs",
-          "typeClasses": [],
-          "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
+          apiName: "com.palantir.other.ontology.pulseRepetitionIntervalSecs",
+          displayName: "Pulse Repetition Interval (s)",
+          description: "Pulse Repetition Interval in seconds.",
+          type: "double",
+          nonNameSpacedApiName: "pulseRepetitionIntervalSecs",
+          typeClasses: [],
+          __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
         } as unknown as SharedPropertyType;
         importOntologyEntity(pulseRepetitionIntervalSecs);
         const interfaceType = defineInterface({
@@ -5597,50 +5689,55 @@ describe("Action Types", () => {
           apiName: "action",
           displayName: "action",
           status: "active",
-          parameters: [{
-            id: "interfaceObjectToModifyParameter",
-            displayName: "Interface object to modify",
-            type: {
-              type: "interfaceReference",
-              interfaceReference: {
-                interfaceTypeRid: interfaceType.apiName,
+          parameters: [
+            {
+              id: "interfaceObjectToModifyParameter",
+              displayName: "Interface object to modify",
+              type: {
+                type: "interfaceReference",
+                interfaceReference: {
+                  interfaceTypeRid: interfaceType.apiName,
+                },
+              },
+              validation: {
+                required: true,
+                allowedValues: { type: "interfaceObjectQuery" },
               },
             },
-            validation: {
-              required: true,
-              allowedValues: { type: "interfaceObjectQuery" },
+            {
+              id: "sptParameter",
+              displayName: "SPT",
+              type: "string",
+              validation: {
+                required: true,
+                allowedValues: { type: "text" },
+              },
             },
-          }, {
-            id: "sptParameter",
-            displayName: "SPT",
-            type: "string",
-            validation: {
-              required: true,
-              allowedValues: { type: "text" },
-            },
-          }],
-          rules: [{
-            type: "modifyInterfaceRule",
-            modifyInterfaceRule: {
-              interfaceApiName: "com.palantir.other.ontology.event.Event",
-              interfaceObjectToModifyParameter:
-                "interfaceObjectToModifyParameter",
-              sharedPropertyValues: {
-                spt: {
-                  type: "parameterId",
-                  parameterId: "sptParameter",
-                },
-                [pulseRepetitionIntervalSecs.apiName]: {
-                  type: "staticValue",
-                  staticValue: {
-                    type: "double",
-                    double: 4,
+          ],
+          rules: [
+            {
+              type: "modifyInterfaceRule",
+              modifyInterfaceRule: {
+                interfaceApiName: "com.palantir.other.ontology.event.Event",
+                interfaceObjectToModifyParameter:
+                  "interfaceObjectToModifyParameter",
+                sharedPropertyValues: {
+                  spt: {
+                    type: "parameterId",
+                    parameterId: "sptParameter",
+                  },
+                  [pulseRepetitionIntervalSecs.apiName]: {
+                    type: "staticValue",
+                    staticValue: {
+                      type: "double",
+                      double: 4,
+                    },
                   },
                 },
+                interfacePropertyValues: {},
               },
-              interfacePropertyValues: {},
             },
-          }],
+          ],
         });
       }).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Shared property type com.palantir.other.ontology.pulseRepetitionIntervalSecs does not exist in interface type com.palantir.interfaceType]`,
@@ -5662,7 +5759,7 @@ describe("Action Types", () => {
         const createAction = defineCreateInterfaceObjectAction({
           interfaceType: sampleInterface,
           parameterConfiguration: {
-            "custom_parameter": {
+            custom_parameter: {
               displayName: "My Custom Param",
             },
           },
@@ -5674,7 +5771,7 @@ describe("Action Types", () => {
         const createAction = defineModifyInterfaceObjectAction({
           interfaceType: sampleInterface,
           parameterConfiguration: {
-            "custom_parameter": {
+            custom_parameter: {
               displayName: "My Custom Param",
             },
           },
@@ -5687,7 +5784,7 @@ describe("Action Types", () => {
           interfaceType: sampleInterface,
           apiName: "test-create-interface0",
           parameterConfiguration: {
-            "custom_parameter": {
+            custom_parameter: {
               displayName: "My Custom Param",
               customParameterType: "string",
             },
@@ -5699,7 +5796,7 @@ describe("Action Types", () => {
           interfaceType: sampleInterface,
           apiName: "test-modify-interface0",
           parameterConfiguration: {
-            "custom_parameter": {
+            custom_parameter: {
               displayName: "My Custom Param",
               customParameterType: "string",
             },
@@ -5731,7 +5828,7 @@ describe("Action Types", () => {
         const createAction = defineCreateInterfaceObjectAction({
           interfaceType: sampleInterface,
           nonParameterMappings: {
-            "custom_parameter": {
+            custom_parameter: {
               type: "staticValue",
               staticValue: {
                 type: "string",
@@ -5747,7 +5844,7 @@ describe("Action Types", () => {
         const createAction = defineModifyInterfaceObjectAction({
           interfaceType: sampleInterface,
           nonParameterMappings: {
-            "custom_parameter": {
+            custom_parameter: {
               type: "staticValue",
               staticValue: {
                 type: "string",
@@ -5764,7 +5861,7 @@ describe("Action Types", () => {
           interfaceType: sampleInterface,
           apiName: "test-create-interface1",
           nonParameterMappings: {
-            "property1": {
+            property1: {
               type: "staticValue",
               staticValue: {
                 type: "string",
@@ -5779,7 +5876,7 @@ describe("Action Types", () => {
           interfaceType: sampleInterface,
           apiName: "test-modify-interface1",
           nonParameterMappings: {
-            "property1": {
+            property1: {
               type: "staticValue",
               staticValue: {
                 type: "string",
@@ -6060,6 +6157,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-sample-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -6324,6 +6422,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-sample-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -6435,6 +6534,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.sampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.sampleInterface",
                   "displayMetadata": {
                     "description": "sampleInterface",
@@ -6449,6 +6549,7 @@ describe("Action Types", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -6600,37 +6701,23 @@ describe("Action Types", () => {
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
         properties: {
-          "bar": { type: "string" },
-          "structProp": {
-            type: {
-              type: "struct",
-              structDefinition: { simpleProperty: "string" },
-            },
-          },
-          "optionalProp": { type: "string" },
+          bar: { type: "string" },
+          optionalProp: { type: "string" },
         },
       });
 
-      const createObjectActionType = defineCreateObjectAction(
-        {
-          objectType: exampleObjectType,
-        },
-      );
-      const modifyObjectActionType = defineModifyObjectAction(
-        {
-          objectType: exampleObjectType,
-        },
-      );
-      const deleteObjectActionType = defineDeleteObjectAction(
-        {
-          objectType: exampleObjectType,
-        },
-      );
-      const createOrModifyObjectActionType = defineCreateOrModifyObjectAction(
-        {
-          objectType: exampleObjectType,
-        },
-      );
+      const createObjectActionType = defineCreateObjectAction({
+        objectType: exampleObjectType,
+      });
+      const modifyObjectActionType = defineModifyObjectAction({
+        objectType: exampleObjectType,
+      });
+      const deleteObjectActionType = defineDeleteObjectAction({
+        objectType: exampleObjectType,
+      });
+      const createOrModifyObjectActionType = defineCreateOrModifyObjectAction({
+        objectType: exampleObjectType,
+      });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
@@ -6756,6 +6843,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -6934,6 +7022,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-or-modify-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -7076,6 +7165,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.delete-object-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -7243,6 +7333,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-object-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -7342,18 +7433,6 @@ describe("Action Types", () => {
                           "optionalProp": {
                             "column": "optionalProp",
                             "type": "column",
-                          },
-                          "structProp": {
-                            "struct": {
-                              "column": "structProp",
-                              "mapping": {
-                                "simpleProperty": {
-                                  "apiName": "simpleProperty",
-                                  "mappings": {},
-                                },
-                              },
-                            },
-                            "type": "struct",
                           },
                         },
                       },
@@ -7473,54 +7552,6 @@ describe("Action Types", () => {
                       ],
                       "valueType": undefined,
                     },
-                    "structProp": {
-                      "apiName": "structProp",
-                      "baseFormatter": undefined,
-                      "dataConstraints": undefined,
-                      "displayMetadata": {
-                        "description": undefined,
-                        "displayName": "StructProp",
-                        "visibility": "NORMAL",
-                      },
-                      "indexedForSearch": true,
-                      "inlineAction": undefined,
-                      "ruleSetBinding": undefined,
-                      "sharedPropertyTypeApiName": undefined,
-                      "sharedPropertyTypeRid": undefined,
-                      "status": {
-                        "active": {},
-                        "type": "active",
-                      },
-                      "type": {
-                        "struct": {
-                          "mainValue": undefined,
-                          "structFields": [
-                            {
-                              "aliases": [],
-                              "apiName": "simpleProperty",
-                              "displayMetadata": {
-                                "description": undefined,
-                                "displayName": "simpleProperty",
-                              },
-                              "fieldType": {
-                                "string": {
-                                  "analyzerOverride": undefined,
-                                  "enableAsciiFolding": undefined,
-                                  "isLongText": false,
-                                  "supportsEfficientLeadingWildcard": false,
-                                  "supportsExactMatching": true,
-                                },
-                                "type": "string",
-                              },
-                              "typeClasses": [],
-                            },
-                          ],
-                        },
-                        "type": "struct",
-                      },
-                      "typeClasses": [],
-                      "valueType": undefined,
-                    },
                   },
                   "redacted": false,
                   "status": {
@@ -7553,22 +7584,23 @@ describe("Action Types", () => {
         apiName: "foo",
         primaryKeyPropertyApiName: "primary",
         properties: {
-          "bar": { type: "string" },
-          "fizz": { type: "string" },
-          "buzz": { type: "string" },
-          "primary": { type: "string" },
+          bar: { type: "string" },
+          fizz: { type: "string" },
+          buzz: { type: "string" },
+          primary: { type: "string" },
         },
       });
 
-      const createObjectActionType = defineCreateObjectAction(
-        {
-          objectType: exampleObjectType,
-          actionLevelValidation: [{
+      const createObjectActionType = defineCreateObjectAction({
+        objectType: exampleObjectType,
+        actionLevelValidation: [
+          {
             condition: {
               type: "group",
               name: "actionLevelGroup",
             },
-          }, {
+          },
+          {
             condition: {
               type: "group",
               name: "actionLevelGroup2",
@@ -7577,81 +7609,82 @@ describe("Action Types", () => {
               failureMessage: "Different custom failure message",
               typeClasses: [],
             },
-          }],
-          parameterOrdering: ["bar", "fizz", "primary"],
-          parameterConfiguration: {
-            "fizz": {
-              required: false,
-              conditionalOverrides: [
-                {
-                  type: "required",
-                  condition: {
-                    type: "and",
-                    conditions: [
-                      {
-                        type: "group",
-                        name: "parameterLevelGroup",
-                      },
-                      {
-                        type: "parameter",
-                        parameterId: "bar",
-                        matches: {
-                          type: "staticValue",
-                          staticValue: {
-                            type: "string",
-                            string: "bar",
-                          },
+          },
+        ],
+        parameterOrdering: ["bar", "fizz", "primary"],
+        parameterConfiguration: {
+          fizz: {
+            required: false,
+            conditionalOverrides: [
+              {
+                type: "required",
+                condition: {
+                  type: "and",
+                  conditions: [
+                    {
+                      type: "group",
+                      name: "parameterLevelGroup",
+                    },
+                    {
+                      type: "parameter",
+                      parameterId: "bar",
+                      matches: {
+                        type: "staticValue",
+                        staticValue: {
+                          type: "string",
+                          string: "bar",
                         },
                       },
-                    ],
-                  },
-                },
-              ],
-              defaultValue: {
-                type: "staticValue",
-                staticValue: {
-                  type: "string",
-                  string: "default_fizz",
+                    },
+                  ],
                 },
               },
-              displayName: "fizz_display",
-              description: "fizz_description",
-              renderHint: {
-                type: "textArea",
-                textArea: {},
+            ],
+            defaultValue: {
+              type: "staticValue",
+              staticValue: {
+                type: "string",
+                string: "default_fizz",
               },
             },
-          },
-          excludedProperties: ["buzz"],
-          defaultFormat: "TABLE",
-          enableLayoutSwitch: true,
-          submissionMetadata: {
-            successMessage: "Custom success message",
-            undoButtonConfiguration: true,
-            submitButtonDisplayMetadata: {
-              intent: "DANGER",
-              text: "Custom button",
+            displayName: "fizz_display",
+            description: "fizz_description",
+            renderHint: {
+              type: "textArea",
+              textArea: {},
             },
-          },
-          tableConfiguration: {
-            columnWidthByParameterRid: {},
-            enableFileImport: false,
-            fitHorizontally: true,
-            frozenColumnCount: 1,
-            rowHeightInLines: 10,
           },
         },
-      );
+        excludedProperties: ["buzz"],
+        defaultFormat: "TABLE",
+        enableLayoutSwitch: true,
+        submissionMetadata: {
+          successMessage: "Custom success message",
+          undoButtonConfiguration: true,
+          submitButtonDisplayMetadata: {
+            intent: "DANGER",
+            text: "Custom button",
+          },
+        },
+        tableConfiguration: {
+          columnWidthByParameterRid: {},
+          enableFileImport: false,
+          fitHorizontally: true,
+          frozenColumnCount: 1,
+          rowHeightInLines: 10,
+        },
+      });
 
-      const modifyObjectActionType = defineModifyObjectAction(
-        {
-          objectType: exampleObjectType,
-          actionLevelValidation: [{
+      const modifyObjectActionType = defineModifyObjectAction({
+        objectType: exampleObjectType,
+        actionLevelValidation: [
+          {
             condition: {
               type: "group",
               name: "actionLevelGroup",
             },
-          }, {
+          },
+          {
             condition: {
               type: "group",
               name: "actionLevelGroup2",
@@ -7660,77 +7693,78 @@ describe("Action Types", () => {
               failureMessage: "Different custom failure message",
               typeClasses: [],
             },
-          }],
-          parameterOrdering: ["bar", "fizz"],
-          parameterConfiguration: {
-            "fizz": {
-              required: false,
-              conditionalOverrides: [
-                {
-                  type: "required",
-                  condition: {
-                    type: "and",
-                    conditions: [
-                      {
-                        type: "group",
-                        name: "parameterLevelGroup",
-                      },
-                      {
-                        type: "parameter",
-                        parameterId: "bar",
-                        matches: {
-                          type: "staticValue",
-                          staticValue: {
-                            type: "string",
-                            string: "bar",
-                          },
+          },
+        ],
+        parameterOrdering: ["bar", "fizz"],
+        parameterConfiguration: {
+          fizz: {
+            required: false,
+            conditionalOverrides: [
+              {
+                type: "required",
+                condition: {
+                  type: "and",
+                  conditions: [
+                    {
+                      type: "group",
+                      name: "parameterLevelGroup",
+                    },
+                    {
+                      type: "parameter",
+                      parameterId: "bar",
+                      matches: {
+                        type: "staticValue",
+                        staticValue: {
+                          type: "string",
+                          string: "bar",
                         },
                       },
-                    ],
-                  },
-                },
-              ],
-              defaultValue: {
-                type: "staticValue",
-                staticValue: {
-                  type: "string",
-                  string: "default_fizz",
+                    },
+                  ],
                 },
               },
-              displayName: "fizz_display",
-              description: "fizz_description",
+            ],
+            defaultValue: {
+              type: "staticValue",
+              staticValue: {
+                type: "string",
+                string: "default_fizz",
+              },
             },
-          },
-          excludedProperties: ["buzz"],
-          defaultFormat: "TABLE",
-          enableLayoutSwitch: true,
-          submissionMetadata: {
-            successMessage: "Custom success message",
-            undoButtonConfiguration: true,
-            submitButtonDisplayMetadata: {
-              intent: "DANGER",
-              text: "Custom button",
-            },
-          },
-          tableConfiguration: {
-            columnWidthByParameterRid: {},
-            enableFileImport: false,
-            fitHorizontally: true,
-            frozenColumnCount: 1,
-            rowHeightInLines: 10,
+            displayName: "fizz_display",
+            description: "fizz_description",
           },
         },
-      );
+        excludedProperties: ["buzz"],
+        defaultFormat: "TABLE",
+        enableLayoutSwitch: true,
+        submissionMetadata: {
+          successMessage: "Custom success message",
+          undoButtonConfiguration: true,
+          submitButtonDisplayMetadata: {
+            intent: "DANGER",
+            text: "Custom button",
+          },
+        },
+        tableConfiguration: {
+          columnWidthByParameterRid: {},
+          enableFileImport: false,
+          fitHorizontally: true,
+          frozenColumnCount: 1,
+          rowHeightInLines: 10,
+        },
+      });
 
-      const createOrModifyObjectActionType = defineCreateOrModifyObjectAction(
-        {
-          objectType: exampleObjectType,
-          actionLevelValidation: [{
+      const createOrModifyObjectActionType = defineCreateOrModifyObjectAction({
+        objectType: exampleObjectType,
+        actionLevelValidation: [
+          {
             condition: {
               type: "group",
               name: "actionLevelGroup",
             },
-          }, {
+          },
+          {
             condition: {
               type: "group",
               name: "actionLevelGroup2",
@@ -7739,68 +7773,68 @@ describe("Action Types", () => {
               failureMessage: "Different custom failure message",
               typeClasses: [],
             },
-          }],
-          parameterOrdering: ["bar", "fizz"],
-          parameterConfiguration: {
-            "fizz": {
-              required: false,
-              conditionalOverrides: [
-                {
-                  type: "required",
-                  condition: {
-                    type: "and",
-                    conditions: [
-                      {
-                        type: "group",
-                        name: "parameterLevelGroup",
-                      },
-                      {
-                        type: "parameter",
-                        parameterId: "bar",
-                        matches: {
-                          type: "staticValue",
-                          staticValue: {
-                            type: "string",
-                            string: "bar",
-                          },
+          },
+        ],
+        parameterOrdering: ["bar", "fizz"],
+        parameterConfiguration: {
+          fizz: {
+            required: false,
+            conditionalOverrides: [
+              {
+                type: "required",
+                condition: {
+                  type: "and",
+                  conditions: [
+                    {
+                      type: "group",
+                      name: "parameterLevelGroup",
+                    },
+                    {
+                      type: "parameter",
+                      parameterId: "bar",
+                      matches: {
+                        type: "staticValue",
+                        staticValue: {
+                          type: "string",
+                          string: "bar",
                         },
                       },
-                    ],
-                  },
-                },
-              ],
-              defaultValue: {
-                type: "staticValue",
-                staticValue: {
-                  type: "string",
-                  string: "default_fizz",
+                    },
+                  ],
                 },
               },
-              displayName: "fizz_display",
-              description: "fizz_description",
+            ],
+            defaultValue: {
+              type: "staticValue",
+              staticValue: {
+                type: "string",
+                string: "default_fizz",
+              },
             },
+            displayName: "fizz_display",
+            description: "fizz_description",
           },
-          excludedProperties: ["buzz"],
-          defaultFormat: "TABLE",
-          enableLayoutSwitch: true,
-          submissionMetadata: {
-            successMessage: "Custom success message",
-            undoButtonConfiguration: true,
-            submitButtonDisplayMetadata: {
-              intent: "DANGER",
-              text: "Custom button",
-            },
-          },
-          tableConfiguration: {
-            columnWidthByParameterRid: {},
-            enableFileImport: false,
-            fitHorizontally: true,
-            frozenColumnCount: 1,
-            rowHeightInLines: 10,
-          },
-          primaryKeyOption: "userInput",
         },
-      );
+        excludedProperties: ["buzz"],
+        defaultFormat: "TABLE",
+        enableLayoutSwitch: true,
+        submissionMetadata: {
+          successMessage: "Custom success message",
+          undoButtonConfiguration: true,
+          submitButtonDisplayMetadata: {
+            intent: "DANGER",
+            text: "Custom button",
+          },
+        },
+        tableConfiguration: {
+          columnWidthByParameterRid: {},
+          enableFileImport: false,
+          fitHorizontally: true,
+          frozenColumnCount: 1,
+          rowHeightInLines: 10,
+        },
+        primaryKeyOption: "userInput",
+      });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
@@ -8095,6 +8129,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "TABLE",
                         "displayAndFormat": {
@@ -8465,6 +8500,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-or-modify-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "TABLE",
                         "displayAndFormat": {
@@ -8841,6 +8877,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-object-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "TABLE",
                         "displayAndFormat": {
@@ -9224,51 +9261,45 @@ describe("Action Types", () => {
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
         properties: {
-          "bar": { type: "string" },
-          "fizz": { type: "string" },
-          "buzz": { type: "timestamp" },
+          bar: { type: "string" },
+          fizz: { type: "string" },
+          buzz: { type: "timestamp" },
         },
       });
 
-      const createObjectActionType = defineCreateObjectAction(
-        {
-          objectType: exampleObjectType,
-          nonParameterMappings: {
-            "fizz": {
-              type: "currentUser",
-            },
-            "buzz": {
-              type: "currentTime",
-            },
+      const createObjectActionType = defineCreateObjectAction({
+        objectType: exampleObjectType,
+        nonParameterMappings: {
+          fizz: {
+            type: "currentUser",
+          },
+          buzz: {
+            type: "currentTime",
           },
         },
-      );
-      const modifyObjectActionType = defineModifyObjectAction(
-        {
-          objectType: exampleObjectType,
-          nonParameterMappings: {
-            "fizz": {
-              type: "currentUser",
-            },
-            "buzz": {
-              type: "currentTime",
-            },
+      });
+      const modifyObjectActionType = defineModifyObjectAction({
+        objectType: exampleObjectType,
+        nonParameterMappings: {
+          fizz: {
+            type: "currentUser",
+          },
+          buzz: {
+            type: "currentTime",
           },
         },
-      );
-      const createOrModifyObjectActionType = defineCreateOrModifyObjectAction(
-        {
-          objectType: exampleObjectType,
-          nonParameterMappings: {
-            "fizz": {
-              type: "currentUser",
-            },
-            "buzz": {
-              type: "currentTime",
-            },
+      });
+      const createOrModifyObjectActionType = defineCreateOrModifyObjectAction({
+        objectType: exampleObjectType,
+        nonParameterMappings: {
+          fizz: {
+            type: "currentUser",
+          },
+          buzz: {
+            type: "currentTime",
           },
         },
-      );
+      });
 
       const property1 = defineSharedPropertyType({
         apiName: "property1",
@@ -9414,6 +9445,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -9556,6 +9588,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -9690,6 +9723,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-or-modify-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -9837,6 +9871,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -9973,6 +10008,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-object-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -10045,6 +10081,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -10059,6 +10096,7 @@ describe("Action Types", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -10507,18 +10545,18 @@ describe("Action Types", () => {
         pluralDisplayName: "tests",
         titlePropertyApiName: "name",
         properties: {
-          "name": { type: "string" },
-          "id": { type: "string" },
+          name: { type: "string" },
+          id: { type: "string" },
         },
       });
       expect(() => {
         const createAction = defineCreateObjectAction({
           objectType: sampleObject,
           parameterConfiguration: {
-            "name": {
+            name: {
               displayName: "Name",
             },
-            "custom_parameter": {
+            custom_parameter: {
               displayName: "My Custom Param",
             },
           },
@@ -10530,7 +10568,7 @@ describe("Action Types", () => {
         const createAction = defineCreateObjectAction({
           objectType: sampleObject,
           nonParameterMappings: {
-            "custom_parameter": {
+            custom_parameter: {
               type: "staticValue",
               staticValue: {
                 type: "string",
@@ -10587,17 +10625,17 @@ describe("Action Types", () => {
         apiName: "foo",
         primaryKeyPropertyApiName: "primary",
         properties: {
-          "bar": { type: "string" },
-          "fizz": { type: "string" },
-          "buzz": { type: "string" },
-          "primary": { type: "string" },
+          bar: { type: "string" },
+          fizz: { type: "string" },
+          buzz: { type: "string" },
+          primary: { type: "string" },
         },
       });
       expect(() =>
         defineCreateObjectAction({
           objectType: exampleObjectType,
           parameterConfiguration: {
-            "buzz": {
+            buzz: {
               defaultValue: {
                 type: "staticValue",
                 staticValue: {
@@ -10607,7 +10645,7 @@ describe("Action Types", () => {
               },
             },
           },
-        })
+        }),
       ).toThrowError(
         "Invariant failed: Default static value for parameter buzz does not match type",
       );
@@ -10622,11 +10660,11 @@ describe("Action Types", () => {
         pluralDisplayName: "tests",
         titlePropertyApiName: "name",
         properties: {
-          "name": {
+          name: {
             type: "string",
             description: "The name of the test object",
           },
-          "id": { type: "string", description: "The ID of the test object" },
+          id: { type: "string", description: "The ID of the test object" },
         },
       });
       expect(() =>
@@ -10634,26 +10672,30 @@ describe("Action Types", () => {
           apiName: "foo",
           displayName: "exampleAction",
           status: "active",
-          rules: [{
-            type: "modifyObjectRule",
-            modifyObjectRule: {
-              objectToModify: "sampleObject",
-              propertyValues: {
-                "name": {
-                  type: "parameterId",
-                  parameterId: "name",
+          rules: [
+            {
+              type: "modifyObjectRule",
+              modifyObjectRule: {
+                objectToModify: "sampleObject",
+                propertyValues: {
+                  name: {
+                    type: "parameterId",
+                    parameterId: "name",
+                  },
                 },
+                structFieldValues: {},
               },
-              structFieldValues: {},
             },
-          }],
-          parameters: [{
-            id: "name",
-            displayName: "Name",
-            type: "string",
-            validation: { required: true, allowedValues: { type: "text" } },
-          }],
-        })
+          ],
+          parameters: [
+            {
+              id: "name",
+              displayName: "Name",
+              type: "string",
+              validation: { required: true, allowedValues: { type: "text" } },
+            },
+          ],
+        }),
       ).toThrowError(
         "Invariant failed: Object to modify parameter must be defined in parameters",
       );
@@ -10667,8 +10709,8 @@ describe("Action Types", () => {
         titlePropertyApiName: "id",
         primaryKeyPropertyApiName: "id",
         properties: {
-          "id": { type: "string", displayName: "ID", description: "dummy" },
-          "managedBy": { type: "string" },
+          id: { type: "string", displayName: "ID", description: "dummy" },
+          managedBy: { type: "string" },
         },
       });
       defineModifyObjectAction({
@@ -10677,13 +10719,15 @@ describe("Action Types", () => {
           [MODIFY_OBJECT_PARAMETER]: {
             displayName: "Chose a manager to modify",
             description: "Description",
-            conditionalOverrides: [{
-              type: "visibility",
-              condition: {
-                type: "group",
-                name: "supervisors",
+            conditionalOverrides: [
+              {
+                type: "visibility",
+                condition: {
+                  type: "group",
+                  name: "supervisors",
+                },
               },
-            }],
+            ],
           },
         },
       });
@@ -10693,13 +10737,15 @@ describe("Action Types", () => {
           [CREATE_OR_MODIFY_OBJECT_PARAMETER]: {
             displayName: "Chose a manager to modify or create a new one",
             description: "Description",
-            conditionalOverrides: [{
-              type: "visibility",
-              condition: {
-                type: "group",
-                name: "supervisors",
+            conditionalOverrides: [
+              {
+                type: "visibility",
+                condition: {
+                  type: "group",
+                  name: "supervisors",
+                },
               },
-            }],
+            ],
           },
         },
       });
@@ -10735,13 +10781,15 @@ describe("Action Types", () => {
           [CREATE_INTERFACE_OBJECT_PARAMETER]: {
             displayName: "Choose an object to create",
             description: "Description",
-            conditionalOverrides: [{
-              type: "visibility",
-              condition: {
-                type: "group",
-                name: "supervisors",
+            conditionalOverrides: [
+              {
+                type: "visibility",
+                condition: {
+                  type: "group",
+                  name: "supervisors",
+                },
               },
-            }],
+            ],
           },
         },
       });
@@ -10751,13 +10799,15 @@ describe("Action Types", () => {
           [MODIFY_INTERFACE_OBJECT_PARAMETER]: {
             displayName: "Choose an object to modify",
             description: "Description",
-            conditionalOverrides: [{
-              type: "visibility",
-              condition: {
-                type: "group",
-                name: "supervisors",
+            conditionalOverrides: [
+              {
+                type: "visibility",
+                condition: {
+                  type: "group",
+                  name: "supervisors",
+                },
               },
-            }],
+            ],
           },
         },
       });
@@ -10767,13 +10817,15 @@ describe("Action Types", () => {
           [DELETE_OBJECT_PARAMETER]: {
             displayName: "Chose managers to delete",
             description: "Description",
-            conditionalOverrides: [{
-              type: "visibility",
-              condition: {
-                type: "group",
-                name: "supervisors",
+            conditionalOverrides: [
+              {
+                type: "visibility",
+                condition: {
+                  type: "group",
+                  name: "supervisors",
+                },
               },
-            }],
+            ],
           },
         },
       });
@@ -10955,6 +11007,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -11181,6 +11234,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-or-modify-employee",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -11323,6 +11377,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.delete-interface-object-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -11363,8 +11418,8 @@ describe("Action Types", () => {
                     "parameters": {
                       "objectToDeleteParameter": {
                         "displayMetadata": {
-                          "description": "",
-                          "displayName": "Delete object",
+                          "description": "Description",
+                          "displayName": "Chose managers to delete",
                           "typeClasses": [],
                         },
                         "id": "objectToDeleteParameter",
@@ -11451,6 +11506,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.delete-object-employee",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -11664,6 +11720,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -11888,6 +11945,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-object-employee",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -11973,6 +12031,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -11987,6 +12046,7 @@ describe("Action Types", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -12280,47 +12340,55 @@ describe("Action Types", () => {
         apiName: "foo",
         displayName: "exampleAction",
         status: "active",
-        rules: [{
-          type: "modifyObjectRule",
-          modifyObjectRule: {
-            objectToModify: "objectToModifyParameter",
-            propertyValues: {
-              "bar": {
-                type: "parameterId",
-                parameterId: "param1",
-              },
-            },
-            structFieldValues: {},
-          },
-        }],
-        parameters: [{
-          id: "param1",
-          displayName: "param1",
-          type: "boolean",
-          validation: {
-            required: true,
-            allowedValues: { type: "boolean" },
-            defaultVisibility: "editable",
-            conditionalOverrides: [
-              {
-                type: "visibility",
-                condition: {
-                  type: "group",
-                  name: "myGroup",
+        rules: [
+          {
+            type: "modifyObjectRule",
+            modifyObjectRule: {
+              objectToModify: "objectToModifyParameter",
+              propertyValues: {
+                bar: {
+                  type: "parameterId",
+                  parameterId: "param1",
                 },
               },
-            ],
+              structFieldValues: {},
+            },
           },
-        }, {
-          id: "objectToModifyParameter",
-          displayName: "objectToModifyParameter",
-          type: "objectTypeReference",
-          validation: {
-            required: true,
-            allowedValues: { type: "objectTypeReference", interfaceTypes: [] },
-            defaultVisibility: "editable",
+        ],
+        parameters: [
+          {
+            id: "param1",
+            displayName: "param1",
+            type: "boolean",
+            validation: {
+              required: true,
+              allowedValues: { type: "boolean" },
+              defaultVisibility: "editable",
+              conditionalOverrides: [
+                {
+                  type: "visibility",
+                  condition: {
+                    type: "group",
+                    name: "myGroup",
+                  },
+                },
+              ],
+            },
           },
-        }],
+          {
+            id: "objectToModifyParameter",
+            displayName: "objectToModifyParameter",
+            type: "objectTypeReference",
+            validation: {
+              required: true,
+              allowedValues: {
+                type: "objectTypeReference",
+                interfaceTypes: [],
+              },
+              defaultVisibility: "editable",
+            },
+          },
+        ],
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -12489,6 +12557,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -12592,8 +12661,8 @@ describe("Action Types", () => {
         titlePropertyApiName: "id",
         primaryKeyPropertyApiName: "id",
         properties: {
-          "id": { type: "string", displayName: "ID", description: "dummy" },
-          "managedBy": { type: "string" },
+          id: { type: "string", displayName: "ID", description: "dummy" },
+          managedBy: { type: "string" },
         },
       });
 
@@ -12604,7 +12673,7 @@ describe("Action Types", () => {
         titlePropertyApiName: "id",
         primaryKeyPropertyApiName: "id",
         properties: {
-          "id": { type: "string", displayName: "ID", description: "dummy" },
+          id: { type: "string", displayName: "ID", description: "dummy" },
         },
         editsEnabled: true,
       });
@@ -12613,7 +12682,7 @@ describe("Action Types", () => {
         objectType: employeeObject,
         parameterOrdering: ["myManager", "id", "managedBy"],
         parameterConfiguration: {
-          "myManager": {
+          myManager: {
             customParameterType: {
               type: "objectReference",
               objectReference: {
@@ -12621,7 +12690,7 @@ describe("Action Types", () => {
               },
             },
           },
-          "managedBy": {
+          managedBy: {
             defaultValue: {
               type: "objectParameterPropertyValue",
               objectParameterPropertyValue: {
@@ -12792,6 +12861,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-employee",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -13158,11 +13228,11 @@ describe("Action Types", () => {
         pluralDisplayName: "tests",
         titlePropertyApiName: "name",
         properties: {
-          "name": {
+          name: {
             type: "string",
             description: "The name of the test object",
           },
-          "id": {
+          id: {
             type: "string",
             displayName: "ID",
             description: "The ID of the test object",
@@ -13171,12 +13241,14 @@ describe("Action Types", () => {
       });
       const createAction = defineCreateObjectAction({
         objectType: sampleObject,
-        actionLevelValidation: [{
-          condition: {
-            type: "group",
-            name: "testGroup",
+        actionLevelValidation: [
+          {
+            condition: {
+              type: "group",
+              name: "testGroup",
+            },
           },
-        }],
+        ],
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -13329,6 +13401,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-sample-object",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -13586,11 +13659,11 @@ describe("Action Types", () => {
         pluralDisplayName: "tests",
         titlePropertyApiName: "name",
         properties: {
-          "name": {
+          name: {
             type: "string",
             description: "The name of the test object",
           },
-          "id": {
+          id: {
             type: "string",
             displayName: "ID",
             description: "The ID of the test object",
@@ -13599,43 +13672,43 @@ describe("Action Types", () => {
       });
       const createAction = defineCreateObjectAction({
         objectType: sampleObject,
-        actionLevelValidation: [{
-          displayMetadata: {
-            failureMessage:
-              "Insufficient permissions. Missing organization membership required to submit action",
-            typeClasses: [],
-          },
-          condition: {
-            type: "comparison",
-            comparison: {
-              operator: "INTERSECTS",
-              left: {
-                type: "userProperty",
-                userProperty: {
-                  userId: {
-                    type: "currentUser",
-                    currentUser: {},
-                  },
-                  propertyValue: {
-                    type: "organizationMarkingIds",
-                    organizationMarkingIds: {},
+        actionLevelValidation: [
+          {
+            displayMetadata: {
+              failureMessage:
+                "Insufficient permissions. Missing organization membership required to submit action",
+              typeClasses: [],
+            },
+            condition: {
+              type: "comparison",
+              comparison: {
+                operator: "INTERSECTS",
+                left: {
+                  type: "userProperty",
+                  userProperty: {
+                    userId: {
+                      type: "currentUser",
+                      currentUser: {},
+                    },
+                    propertyValue: {
+                      type: "organizationMarkingIds",
+                      organizationMarkingIds: {},
+                    },
                   },
                 },
-              },
-              right: {
-                type: "staticValue",
-                staticValue: {
-                  type: "stringList",
-                  stringList: {
-                    strings: [
-                      "87ef507e-f954-457e-ad68-e0df71ef7567",
-                    ],
+                right: {
+                  type: "staticValue",
+                  staticValue: {
+                    type: "stringList",
+                    stringList: {
+                      strings: ["87ef507e-f954-457e-ad68-e0df71ef7567"],
+                    },
                   },
                 },
               },
             },
           },
-        }],
+        ],
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -13788,6 +13861,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-sample-object",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -14044,10 +14118,10 @@ describe("Action Types", () => {
         titlePropertyApiName: "id",
         pluralDisplayName: "Objects With Arrays",
         properties: {
-          "id": { type: "string", displayName: "ID" },
-          "tags": { type: "string", array: true, displayName: "Tags" },
-          "numbers": { type: "integer", array: true, displayName: "Numbers" },
-          "singleValue": { type: "string", displayName: "Single Value" },
+          id: { type: "string", displayName: "ID" },
+          tags: { type: "string", array: true, displayName: "Tags" },
+          numbers: { type: "integer", array: true, displayName: "Numbers" },
+          singleValue: { type: "string", displayName: "Single Value" },
         },
       });
 
@@ -14252,6 +14326,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-object-with-arrays",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -14540,6 +14615,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-object-object-with-arrays",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -14911,8 +14987,8 @@ describe("Action Types", () => {
         pluralDisplayName: "tests",
         titlePropertyApiName: "name",
         properties: {
-          "name": { type: "string" },
-          "id": { type: "string" },
+          name: { type: "string" },
+          id: { type: "string" },
         },
       });
       const createAction = defineCreateObjectAction({
@@ -15113,6 +15189,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-sample-object",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -15388,8 +15465,8 @@ describe("Action Types", () => {
         pluralDisplayName: "tests",
         titlePropertyApiName: "name",
         properties: {
-          "name": { type: "string" },
-          "id": { type: "string" },
+          name: { type: "string" },
+          id: { type: "string" },
         },
       });
       expect(() => {
@@ -15417,9 +15494,9 @@ describe("Action Types", () => {
         pluralDisplayName: "tests",
         titlePropertyApiName: "name",
         properties: {
-          "name": { type: "string" },
-          "id": { type: "string" },
-          "foo": { type: "string" },
+          name: { type: "string" },
+          id: { type: "string" },
+          foo: { type: "string" },
         },
       });
       expect(() => {
@@ -15453,7 +15530,7 @@ describe("Action Types", () => {
         const createBadAction = defineCreateObjectAction({
           objectType: sampleObject,
           nonParameterMappings: {
-            "foo": {
+            foo: {
               type: "currentUser",
             },
           },
@@ -15467,7 +15544,7 @@ describe("Action Types", () => {
         const createBadAction = defineModifyObjectAction({
           objectType: sampleObject,
           nonParameterMappings: {
-            "foo": {
+            foo: {
               type: "currentUser",
             },
           },
@@ -15481,7 +15558,7 @@ describe("Action Types", () => {
         const createBadAction = defineCreateOrModifyObjectAction({
           objectType: sampleObject,
           nonParameterMappings: {
-            "foo": {
+            foo: {
               type: "currentUser",
             },
           },
@@ -15495,7 +15572,7 @@ describe("Action Types", () => {
         objectType: sampleObject,
         parameterOrdering: ["foo", "name", "id"],
         parameterConfiguration: {
-          "name": {
+          name: {
             conditionalOverrides: [
               {
                 type: "visibility",
@@ -15702,6 +15779,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-sample-object",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -16007,50 +16085,50 @@ describe("Action Types", () => {
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
         properties: {
-          "bar": { type: "string" },
-          "fizz": { type: "string" },
-          "buzz": { type: "string" },
-          "fizzbuzz": { type: "string" },
+          bar: { type: "string" },
+          fizz: { type: "string" },
+          buzz: { type: "string" },
+          fizzbuzz: { type: "string" },
         },
       });
 
-      const createObjectActionType = defineCreateObjectAction(
-        {
-          objectType: exampleObjectType,
-          parameterConfiguration: {
-            "bar": {
-              allowedValues: {
-                type: "multipassGroup",
-              },
+      const createObjectActionType = defineCreateObjectAction({
+        objectType: exampleObjectType,
+        parameterConfiguration: {
+          bar: {
+            allowedValues: {
+              type: "multipassGroup",
             },
-            "fizz": {
-              allowedValues: {
-                type: "user",
-                fromGroups: [{
+          },
+          fizz: {
+            allowedValues: {
+              type: "user",
+              fromGroups: [
+                {
                   type: "parameter",
                   parameter: "bar",
-                }],
-              },
+                },
+              ],
             },
-            "buzz": {
-              allowedValues: {
-                type: "user",
-              },
+          },
+          buzz: {
+            allowedValues: {
+              type: "user",
             },
-            "fizzbuzz": {
-              allowedValues: {
-                type: "user",
-                fromGroups: [
-                  {
-                    type: "static",
-                    name: "inputGroup",
-                  },
-                ],
-              },
+          },
+          fizzbuzz: {
+            allowedValues: {
+              type: "user",
+              fromGroups: [
+                {
+                  type: "static",
+                  name: "inputGroup",
+                },
+              ],
             },
           },
         },
-      );
+      });
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
           "importedOntology": {
@@ -16268,6 +16346,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -16623,31 +16702,263 @@ describe("Action Types", () => {
     });
   });
 
+  it("Interface link actions are properly defined", () => {
+    const personInterface = defineInterface({
+      apiName: "person",
+      displayName: "Person",
+      properties: {},
+    });
+    const companyInterface = defineInterface({
+      apiName: "company",
+      displayName: "Company",
+      properties: {},
+    });
+    defineInterfaceLinkConstraint({
+      apiName: "employer",
+      from: personInterface,
+      toOne: companyInterface,
+    });
+
+    defineAction({
+      apiName: "link-person-to-company",
+      displayName: "Link person to company",
+      status: "active",
+      rules: [
+        {
+          type: "addInterfaceLinkRuleV2",
+          addInterfaceLinkRuleV2: {
+            interfaceTypeRid: "person",
+            interfaceLinkTypeRid: "employer",
+            sourceObjects: [
+              {
+                type: "existingObject",
+                existingObject: "sourceParam",
+              },
+            ],
+            targetObjects: [
+              {
+                type: "existingObject",
+                existingObject: "targetParam",
+              },
+            ],
+          },
+        },
+      ],
+      parameters: [
+        {
+          id: "sourceParam",
+          displayName: "Source",
+          type: {
+            type: "interfaceReference",
+            interfaceReference: { interfaceTypeRid: "com.palantir.person" },
+          },
+          validation: {
+            required: true,
+            allowedValues: { type: "interfaceObjectQuery" },
+          },
+        },
+        {
+          id: "targetParam",
+          displayName: "Target",
+          type: {
+            type: "interfaceReference",
+            interfaceReference: { interfaceTypeRid: "com.palantir.company" },
+          },
+          validation: {
+            required: true,
+            allowedValues: { type: "interfaceObjectQuery" },
+          },
+        },
+      ],
+    });
+
+    const dumped = dumpOntologyFullMetadata();
+    const rule =
+      dumped.ontology.actionTypes["com.palantir.link-person-to-company"]
+        .actionType.actionTypeLogic.logic.rules[0];
+    expect(rule).toMatchInlineSnapshot(`
+      {
+        "addInterfaceLinkRuleV2": {
+          "interfaceLinkTypeRid": "com.palantir.employer",
+          "interfaceTypeRid": "com.palantir.person",
+          "sourceObjects": [
+            {
+              "existingObject": "sourceParam",
+              "type": "existingObject",
+            },
+          ],
+          "targetObjects": [
+            {
+              "existingObject": "targetParam",
+              "type": "existingObject",
+            },
+          ],
+        },
+        "type": "addInterfaceLinkRuleV2",
+      }
+    `);
+  });
+
+  it("Interface link action referencing an undefined parameter throws", () => {
+    const personInterface = defineInterface({
+      apiName: "person",
+      displayName: "Person",
+      properties: {},
+    });
+    const companyInterface = defineInterface({
+      apiName: "company",
+      displayName: "Company",
+      properties: {},
+    });
+    defineInterfaceLinkConstraint({
+      apiName: "employer",
+      from: personInterface,
+      toOne: companyInterface,
+    });
+
+    expect(() =>
+      defineAction({
+        apiName: "link-person-to-company",
+        displayName: "Link person to company",
+        status: "active",
+        rules: [
+          {
+            type: "addInterfaceLinkRuleV2",
+            addInterfaceLinkRuleV2: {
+              interfaceTypeRid: "person",
+              interfaceLinkTypeRid: "employer",
+              sourceObjects: [
+                {
+                  type: "existingObject",
+                  existingObject: "sourceParam",
+                },
+              ],
+              targetObjects: [
+                {
+                  type: "existingObject",
+                  existingObject: "missingTargetParam",
+                },
+              ],
+            },
+          },
+        ],
+        parameters: [
+          {
+            id: "sourceParam",
+            displayName: "Source",
+            type: {
+              type: "interfaceReference",
+              interfaceReference: { interfaceTypeRid: "com.palantir.person" },
+            },
+            validation: {
+              required: true,
+              allowedValues: { type: "interfaceObjectQuery" },
+            },
+          },
+        ],
+      }),
+    ).toThrow(/referenced but not defined/u);
+  });
+
+  it("Interface link action with unknown ILC throws", () => {
+    const personInterface = defineInterface({
+      apiName: "person",
+      displayName: "Person",
+      properties: {},
+    });
+    defineInterface({
+      apiName: "company",
+      displayName: "Company",
+      properties: {},
+    });
+    // NOTE: no defineInterfaceLinkConstraint — the ILC "employer" does not exist
+    void personInterface;
+
+    expect(() =>
+      defineAction({
+        apiName: "link-person-to-company",
+        displayName: "Link person to company",
+        status: "active",
+        rules: [
+          {
+            type: "addInterfaceLinkRuleV2",
+            addInterfaceLinkRuleV2: {
+              interfaceTypeRid: "person",
+              interfaceLinkTypeRid: "employer",
+              sourceObjects: [
+                {
+                  type: "existingObject",
+                  existingObject: "sourceParam",
+                },
+              ],
+              targetObjects: [
+                {
+                  type: "existingObject",
+                  existingObject: "targetParam",
+                },
+              ],
+            },
+          },
+        ],
+        parameters: [
+          {
+            id: "sourceParam",
+            displayName: "Source",
+            type: {
+              type: "interfaceReference",
+              interfaceReference: { interfaceTypeRid: "com.palantir.person" },
+            },
+            validation: {
+              required: true,
+              allowedValues: { type: "interfaceObjectQuery" },
+            },
+          },
+          {
+            id: "targetParam",
+            displayName: "Target",
+            type: {
+              type: "interfaceReference",
+              interfaceReference: { interfaceTypeRid: "com.palantir.company" },
+            },
+            validation: {
+              required: true,
+              allowedValues: { type: "interfaceObjectQuery" },
+            },
+          },
+        ],
+      }),
+    ).toThrow(/Interface link type .* does not exist on interface/u);
+  });
+
   it("serializes publicProject permission on action type", async () => {
-    await defineOntology("com.palantir.", () => {
-      const obj = defineObject({
-        apiName: "bar",
-        displayName: "Bar",
-        pluralDisplayName: "Bars",
-        primaryKeyPropertyApiName: "id",
-        titlePropertyApiName: "id",
-        properties: { "id": { type: "string" } },
-      });
+    await defineOntology(
+      "com.palantir.",
+      () => {
+        const obj = defineObject({
+          apiName: "bar",
+          displayName: "Bar",
+          pluralDisplayName: "Bars",
+          primaryKeyPropertyApiName: "id",
+          titlePropertyApiName: "id",
+          properties: { id: { type: "string" } },
+        });
 
-      defineCreateObjectAction({
-        objectType: obj,
-        permission: "publicProject",
-      });
+        defineCreateObjectAction({
+          objectType: obj,
+          permission: "publicProject",
+        });
 
-      const bpi = dumpOntologyFullMetadata().ontology
-        .blockPermissionInformation!;
-      const atPerms = Object.values(bpi.actionTypes);
-      expect(atPerms).toHaveLength(1);
-      expect(atPerms[0].restrictionStatus).toEqual({
-        hasRolesApplied: true,
-        publicProject: true,
-        ontologyPackageRid: null,
-      });
-    }, "/tmp/");
+        const bpi =
+          dumpOntologyFullMetadata().ontology.blockPermissionInformation!;
+        const atPerms = Object.values(bpi.actionTypes);
+        expect(atPerms).toHaveLength(1);
+        expect(atPerms[0].restrictionStatus).toEqual({
+          hasRolesApplied: true,
+          publicProject: true,
+          ontologyPackageRid: null,
+        });
+      },
+      "/tmp/",
+    );
   });
 });

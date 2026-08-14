@@ -84,8 +84,7 @@ export interface ValueTypeValidationError_invalidDeprecationMessage {
 
 export interface ValueTypeValidationError_deprecationReplacementMismatchedBaseType {
   type: "deprecationReplacementMismatchedBaseType";
-  deprecationReplacementMismatchedBaseType:
-    DeprecationReplacementMismatchedBaseTypeError;
+  deprecationReplacementMismatchedBaseType: DeprecationReplacementMismatchedBaseTypeError;
 }
 
 export interface ValueTypeValidationError_deprecationReplacementNotFound {
@@ -95,14 +94,12 @@ export interface ValueTypeValidationError_deprecationReplacementNotFound {
 
 export interface ValueTypeValidationError_deprecationReplacementAlreadyDeprecated {
   type: "deprecationReplacementAlreadyDeprecated";
-  deprecationReplacementAlreadyDeprecated:
-    DeprecationReplacementAlreadyDeprecatedError;
+  deprecationReplacementAlreadyDeprecated: DeprecationReplacementAlreadyDeprecatedError;
 }
 
 export interface ValueTypeValidationError_deprecationReplacementPermissionDenied {
   type: "deprecationReplacementPermissionDenied";
-  deprecationReplacementPermissionDenied:
-    DeprecationReplacementPermissionDeniedError;
+  deprecationReplacementPermissionDenied: DeprecationReplacementPermissionDeniedError;
 }
 
 export interface ValueTypeValidationError_nestedTypeMustBePrimitiveType {
@@ -167,56 +164,47 @@ export interface ValueTypeValidationError_emptyStructTypeConstraint {
 
 export interface ValueTypeValidationError_unknownStructElementsOnConstraint {
   type: "unknownStructElementsOnConstraint";
-  unknownStructElementsOnConstraint:
-    StructTypeConstraintWithUnknownStructElementsError;
+  unknownStructElementsOnConstraint: StructTypeConstraintWithUnknownStructElementsError;
 }
 
 export interface ValueTypeValidationError_duplicateStructFieldIdentifiersInBaseType {
   type: "duplicateStructFieldIdentifiersInBaseType";
-  duplicateStructFieldIdentifiersInBaseType:
-    DuplicateStructFieldIdentifiersInBaseTypeError;
+  duplicateStructFieldIdentifiersInBaseType: DuplicateStructFieldIdentifiersInBaseTypeError;
 }
 
 export interface ValueTypeValidationError_structFieldIdentifierInConstraintsNotFoundInBaseType {
   type: "structFieldIdentifierInConstraintsNotFoundInBaseType";
-  structFieldIdentifierInConstraintsNotFoundInBaseType:
-    StructFieldIdentifierInConstraintsNotFoundInBaseTypeError;
+  structFieldIdentifierInConstraintsNotFoundInBaseType: StructFieldIdentifierInConstraintsNotFoundInBaseTypeError;
 }
 
 export interface ValueTypeValidationError_structFieldBaseTypeAndConstraintBaseTypesDoNotMatch {
   type: "structFieldBaseTypeAndConstraintBaseTypesDoNotMatch";
-  structFieldBaseTypeAndConstraintBaseTypesDoNotMatch:
-    StructFieldBaseTypeAndConstraintBaseTypesDoNotMatchError;
+  structFieldBaseTypeAndConstraintBaseTypesDoNotMatch: StructFieldBaseTypeAndConstraintBaseTypesDoNotMatchError;
 }
 
 export interface ValueTypeValidationError_structFieldConstraintValueTypeReferenceCannotBeFound {
   type: "structFieldConstraintValueTypeReferenceCannotBeFound";
-  structFieldConstraintValueTypeReferenceCannotBeFound:
-    StructFieldConstraintValueTypeReferenceCannotBeFoundError;
+  structFieldConstraintValueTypeReferenceCannotBeFound: StructFieldConstraintValueTypeReferenceCannotBeFoundError;
 }
 
 export interface ValueTypeValidationError_nonPrivilegedUserCreatingSuffixedValueTypeVersion {
   type: "nonPrivilegedUserCreatingSuffixedValueTypeVersion";
-  nonPrivilegedUserCreatingSuffixedValueTypeVersion:
-    NonPrivilegedUserCreatingSuffixedValueTypeVersionError;
+  nonPrivilegedUserCreatingSuffixedValueTypeVersion: NonPrivilegedUserCreatingSuffixedValueTypeVersionError;
 }
 
 export interface ValueTypeValidationError_nonPrivilegedUserCreatingVersionOnMarketplaceOwnedValueType {
   type: "nonPrivilegedUserCreatingVersionOnMarketplaceOwnedValueType";
-  nonPrivilegedUserCreatingVersionOnMarketplaceOwnedValueType:
-    NonPrivilegedUserCreatingVersionOnMarketplaceOwnedValueTypeError;
+  nonPrivilegedUserCreatingVersionOnMarketplaceOwnedValueType: NonPrivilegedUserCreatingVersionOnMarketplaceOwnedValueTypeError;
 }
 
 export interface ValueTypeValidationError_nonPrivilegedUserCreatingValueTypeWithMarketplaceProvenance {
   type: "nonPrivilegedUserCreatingValueTypeWithMarketplaceProvenance";
-  nonPrivilegedUserCreatingValueTypeWithMarketplaceProvenance:
-    NonPrivilegedUserCreatingValueTypeWithMarketplaceProvenanceError;
+  nonPrivilegedUserCreatingValueTypeWithMarketplaceProvenance: NonPrivilegedUserCreatingValueTypeWithMarketplaceProvenanceError;
 }
 
 export interface ValueTypeValidationError_invalidPermissioningRidCompassNamespaceWithNonNamespaceRid {
   type: "invalidPermissioningRidCompassNamespaceWithNonNamespaceRid";
-  invalidPermissioningRidCompassNamespaceWithNonNamespaceRid:
-    InvalidPermissioningRidCompassNamespaceWithNonNamespaceRidError;
+  invalidPermissioningRidCompassNamespaceWithNonNamespaceRid: InvalidPermissioningRidCompassNamespaceWithNonNamespaceRidError;
 }
 
 export interface ValueTypeValidationError_referencedTypeMaxCountExceeded {

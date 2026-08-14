@@ -15,24 +15,32 @@
  */
 
 import React, { memo, useCallback, useMemo } from "react";
+
 import { SingleDateInput } from "../base/inputs/SingleDateInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 
 interface SingleDateFilterInputProps {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  /**
+   * Consumer-provided display formatter forwarded to the underlying
+   * `SingleDateInput` / `DatePicker`. Falls back to ISO `YYYY-MM-DD` when
+   * omitted.
+   */
+  formatDate?: (date: Date) => string;
 }
 
 function SingleDateFilterInputInner({
   filterState,
   onFilterStateChanged,
+  formatDate,
 }: SingleDateFilterInputProps): React.ReactElement {
   const selectedDate = useMemo(
     () =>
       filterState?.type === "SELECT"
-        ? (filterState.selectedValues[0] instanceof Date
+        ? filterState.selectedValues[0] instanceof Date
           ? filterState.selectedValues[0]
-          : undefined)
+          : undefined
         : undefined,
     [filterState],
   );
@@ -53,6 +61,7 @@ function SingleDateFilterInputInner({
     <SingleDateInput
       selectedDate={selectedDate}
       onChange={handleChange}
+      formatDate={formatDate}
     />
   );
 }

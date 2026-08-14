@@ -16,6 +16,7 @@
 
 import type { ObjectSpecifier, ObjectTypeDefinition } from "@osdk/api";
 import { describe, expect, it } from "vitest";
+
 import {
   createObjectSpecifierFromPrimaryKey,
   extractObjectTypeFromObjectSpecifier,

@@ -49,9 +49,9 @@ function generateShuffleChanges(
 
   if (offices.length === 0) return changes;
 
-  const officesWithPk = offices.filter((
-    o,
-  ): o is typeof o & { primaryKey_: string } => o.primaryKey_ != null);
+  const officesWithPk = offices.filter(
+    (o): o is typeof o & { primaryKey_: string } => o.primaryKey_ != null,
+  );
   if (officesWithPk.length === 0) return changes;
 
   const officeIds = officesWithPk.map((o) => o.primaryKey_);
@@ -98,12 +98,13 @@ function generateShuffleChanges(
       continue;
     }
 
-    const otherOffices = availableOffices.filter((id) =>
-      id !== currentOfficeId
+    const otherOffices = availableOffices.filter(
+      (id) => id !== currentOfficeId,
     );
-    const targetOfficeId = otherOffices.length > 0
-      ? otherOffices[Math.floor(Math.random() * otherOffices.length)]
-      : availableOffices[Math.floor(Math.random() * availableOffices.length)];
+    const targetOfficeId =
+      otherOffices.length > 0
+        ? otherOffices[Math.floor(Math.random() * otherOffices.length)]
+        : availableOffices[Math.floor(Math.random() * availableOffices.length)];
 
     changes.set(employee.employeeNumber, { targetOfficeId });
     targetCounts.set(

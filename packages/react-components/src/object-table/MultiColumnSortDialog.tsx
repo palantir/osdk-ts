@@ -15,23 +15,20 @@
  */
 
 import { Button } from "@base-ui/react/button";
-import {
-  Add,
-  CaretDown,
-  Cog,
-  SortAlphabetical,
-  SortAlphabeticalDesc,
-} from "@blueprintjs/icons";
+import { Add, CaretDown, Cog } from "@blueprintjs/icons";
 import { arrayMove } from "@dnd-kit/sortable";
 import type { SortingState } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { Dialog } from "../base-components/dialog/Dialog.js";
 import { SearchableMenu } from "../base-components/searchable-menu/SearchableMenu.js";
-import styles from "./MultiColumnSortDialog.module.css";
 import { type SortableItem, SortableItemsList } from "./SortableItemsList.js";
+import { getSortIcons } from "./utils/getSortIcons.js";
 import type { ColumnOption } from "./utils/types.js";
+
+import styles from "./MultiColumnSortDialog.module.css";
 
 export interface SortColumnItem extends ColumnOption {
   direction: "asc" | "desc";
@@ -95,8 +92,8 @@ export function MultiColumnSortDialog({
       prev.map((item) =>
         item.id === id
           ? { ...item, direction: item.direction === "asc" ? "desc" : "asc" }
-          : item
-      )
+          : item,
+      ),
     );
   }, []);
 
@@ -113,8 +110,8 @@ export function MultiColumnSortDialog({
     () =>
       columnOptions.filter(
         (col) =>
-          col.canSort
-          && !selectedSortColumns.some((selected) => selected.id === col.id),
+          col.canSort &&
+          !selectedSortColumns.some((selected) => selected.id === col.id),
       ),
     [columnOptions, selectedSortColumns],
   );
@@ -135,44 +132,48 @@ export function MultiColumnSortDialog({
   );
 
   const sortableItems: SortableItem[] = useMemo(() => {
-    return selectedSortColumns.map((item) => ({
-      id: item.id,
-      label: item.name,
-      content: (
-        <div className={styles.sortColumnItem}>
-          <span className={classNames(styles.sortColumnName, styles.truncate)}>
-            {item.name}
-          </span>
-          <Button
-            className={styles.sortDirectionButton}
-            onClick={() => handleToggleSortDirection(item.id)}
-            aria-label={`Toggle sort direction for ${item.name}`}
-          >
-            {item.direction === "asc"
-              ? (
-                <SortAlphabetical
-                  className={styles.sortIcon}
-                />
-              )
-              : (
-                <SortAlphabeticalDesc
-                  className={styles.sortIcon}
-                />
+    return selectedSortColumns.map((item) => {
+      const { asc: SortAscendingIcon, desc: SortDescendingIcon } = getSortIcons(
+        item.dataType,
+      );
+      return {
+        id: item.id,
+        label: item.name,
+        content: (
+          <div className={styles.sortColumnItem}>
+            <span
+              className={classNames(styles.sortColumnName, styles.truncate)}
+            >
+              {item.name}
+            </span>
+            <Button
+              className={styles.sortDirectionButton}
+              onClick={() => handleToggleSortDirection(item.id)}
+              aria-label={`Toggle sort direction for ${item.name}`}
+            >
+              {item.direction === "asc" ? (
+                <SortAscendingIcon className={styles.sortIcon} />
+              ) : (
+                <SortDescendingIcon className={styles.sortIcon} />
               )}
-          </Button>
-        </div>
-      ),
-    }));
+            </Button>
+          </div>
+        ),
+      };
+    });
   }, [selectedSortColumns, handleToggleSortDirection]);
 
-  const footer = useMemo(() => (
-    <>
-      <ActionButton onClick={onClose}>Cancel</ActionButton>
-      <ActionButton variant="primary" onClick={handleApply}>
-        Apply
-      </ActionButton>
-    </>
-  ), [handleApply, onClose]);
+  const footer = useMemo(
+    () => (
+      <>
+        <ActionButton onClick={onClose}>Cancel</ActionButton>
+        <ActionButton variant="primary" onClick={handleApply}>
+          Apply
+        </ActionButton>
+      </>
+    ),
+    [handleApply, onClose],
+  );
 
   return (
     <Dialog
@@ -194,9 +195,7 @@ export function MultiColumnSortDialog({
           trigger={
             <>
               <Add className={styles.addIcon} />
-              <span className={styles.addColumnText}>
-                Add Column to Sort
-              </span>
+              <span className={styles.addColumnText}>Add Column to Sort</span>
               <CaretDown />
             </>
           }
@@ -212,6 +211,7 @@ export function MultiColumnSortDialog({
 
 const DialogTitle = (
   <div className={styles.title}>
-    <Cog />Sort on Multiple Columns
+    <Cog />
+    Sort on Multiple Columns
   </div>
 );

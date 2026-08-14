@@ -17,12 +17,15 @@
 export { bulkLoadOntologyEntities } from "./OntologyMetadataService/bulkLoadOntologyEntities.js";
 export { bulkLoadOntologyEntitiesByDatasources } from "./OntologyMetadataService/bulkLoadOntologyEntitiesByDatasources.js";
 export { getActionTypesForInterfaceType } from "./OntologyMetadataService/getActionTypesForInterfaceType.js";
+export { getActionTypesForInterfaceTypes } from "./OntologyMetadataService/getActionTypesForInterfaceTypes.js";
 export { getActionTypesForObjectType } from "./OntologyMetadataService/getActionTypesForObjectType.js";
+export { getActionTypesForObjectTypes } from "./OntologyMetadataService/getActionTypesForObjectTypes.js";
 export { getEntityDelegateDataset } from "./OntologyMetadataService/getEntityDelegateDataset.js";
 export { getEntityQueryableSource } from "./OntologyMetadataService/getEntityQueryableSource.js";
 export { getFeatureConfigurations } from "./OntologyMetadataService/getFeatureConfigurations.js";
 export { getLinkMetadataForObjectTypes } from "./OntologyMetadataService/getLinkMetadataForObjectTypes.js";
 export { getLinkTypesForObjectTypes } from "./OntologyMetadataService/getLinkTypesForObjectTypes.js";
+export { getLinkTypesForObjectTypesV2 } from "./OntologyMetadataService/getLinkTypesForObjectTypesV2.js";
 export { getObjectTypesForInterfaceTypes } from "./OntologyMetadataService/getObjectTypesForInterfaceTypes.js";
 export { getObjectTypesForSharedPropertyTypes } from "./OntologyMetadataService/getObjectTypesForSharedPropertyTypes.js";
 export { getObjectTypesForTypeGroups } from "./OntologyMetadataService/getObjectTypesForTypeGroups.js";

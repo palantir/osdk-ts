@@ -15,6 +15,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { ConsoleLogStore } from "./ConsoleLogStore.js";
 import type { ConsoleLogLevel } from "./ConsoleLogStore.js";
 
@@ -106,7 +107,7 @@ describe("ConsoleLogStore", () => {
 
       const entries = store.getEntries();
       const reentrantEntries = entries.filter((e) =>
-        e.args.some((a) => a === "reentrant")
+        e.args.some((a) => a === "reentrant"),
       );
       expect(reentrantEntries).toHaveLength(0);
       expect(entries).toHaveLength(1);
@@ -129,7 +130,7 @@ describe("ConsoleLogStore", () => {
     it("should serialize BigInt values", async () => {
       store.install();
 
-      console.log(BigInt(42));
+      console.log(42n);
       await flushMicrotasks();
 
       const entries = store.getEntries();
@@ -174,7 +175,7 @@ describe("ConsoleLogStore", () => {
       await flushMicrotasks();
 
       const entries = store.getEntries();
-      expect(entries[0].args[0]).toMatch(/\[Function:.*\]/);
+      expect(entries[0].args[0]).toMatch(/\[Function:.*\]/u);
     });
 
     it("should serialize Error with stack", async () => {
@@ -244,7 +245,7 @@ describe("ConsoleLogStore", () => {
       const entries = store.getEntries();
       const serialized = entries[0].args[0];
       expect(serialized).not.toContain("[Circular]");
-      expect(serialized).toContain("\"x\":1");
+      expect(serialized).toContain('"x":1');
     });
 
     it("should truncate individual args over 10KB", async () => {
@@ -288,7 +289,7 @@ describe("ConsoleLogStore", () => {
       const realOriginal = console.log;
       store.install();
 
-      const externalPatch = function(..._args: unknown[]) {};
+      const externalPatch = function externalPatch(..._args: unknown[]) {};
       console.log = externalPatch;
 
       store.uninstall();
@@ -327,12 +328,11 @@ describe("ConsoleLogStore", () => {
 
       const entries = store.getEntries();
       expect(entries).toHaveLength(1);
-      expect(entries[0].source).toBeDefined();
-      // The source must skip frames internal to ConsoleLogStore. We can't
-      // assert the exact caller path because happy-dom and Vitest layer their
-      // own frames between the test and the wrapper, but the captured source
-      // must never resolve back into our own module.
-      expect(entries[0].source).not.toContain("ConsoleLogStore");
+      // The source must resolve to this test file (the real caller), not to
+      // ConsoleLogStore's own wrapper or the callerLocation utility it
+      // delegates to for the capture.
+      expect(entries[0].source).toContain("ConsoleLogStore.test.ts");
+      expect(entries[0].source).not.toContain("callerLocation.ts");
     });
   });
 

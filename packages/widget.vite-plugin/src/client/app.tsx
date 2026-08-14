@@ -16,22 +16,23 @@
 
 import { NonIdealState, Pre, Spinner, SpinnerSize } from "@blueprintjs/core";
 import React, { useEffect } from "react";
+
 import { EntrypointIframe } from "./entrypointIframe.js";
 
 type PageState =
   | {
-    state: "loading";
-  }
+      state: "loading";
+    }
   | {
-    state: "failed";
-    error?: string;
-    response?: string;
-    hint?: string;
-  }
+      state: "failed";
+      error?: string;
+      response?: string;
+      hint?: string;
+    }
   | {
-    state: "success";
-    isRedirecting: boolean;
-  };
+      state: "success";
+      isRedirecting: boolean;
+    };
 
 const POLLING_INTERVAL = 250;
 const REDIRECT_DELAY = 500;
@@ -42,6 +43,7 @@ class ResponseError extends Error {
 
   constructor(message: string, response: string, hint?: string) {
     super(message);
+    this.name = "ResponseError";
     this.response = response;
     this.hint = hint;
   }
@@ -61,11 +63,22 @@ export const App: React.FC = () => {
 
   // Poll the finish endpoint until it returns a success or error
   useEffect(() => {
-    const poll = window.setInterval(() => {
+    let timeoutId: number | undefined;
+    let cancelled = false;
+
+    const scheduleNext = () => {
+      timeoutId = window.setTimeout(poll, POLLING_INTERVAL);
+    };
+
+    const poll = () => {
       void finish(numAttempts.current)
         .then((result) => {
+          if (cancelled) {
+            return;
+          }
           if (result.status === "pending") {
             numAttempts.current++;
+            scheduleNext();
             return;
           }
           if (result.status === "error") {
@@ -79,8 +92,6 @@ export const App: React.FC = () => {
             throw new Error(result.error);
           }
 
-          // On success, we clear the poll and end the loading state
-          window.clearInterval(poll);
           setPageState({
             state: "success",
             isRedirecting: result.redirectUrl != null,
@@ -94,20 +105,28 @@ export const App: React.FC = () => {
           }
         })
         .catch((error: unknown) => {
-          window.clearInterval(poll);
+          if (cancelled) {
+            return;
+          }
           // eslint-disable-next-line no-console
           console.error("Failed to finish dev mode setup:", error);
           setPageState({
             state: "failed",
             error: error instanceof Error ? error.message : undefined,
-            response: error instanceof ResponseError
-              ? error.response
-              : undefined,
+            response:
+              error instanceof ResponseError ? error.response : undefined,
             hint: error instanceof ResponseError ? error.hint : undefined,
           });
         });
-    }, POLLING_INTERVAL);
-    return () => window.clearInterval(poll);
+    };
+
+    scheduleNext();
+    return () => {
+      cancelled = true;
+      if (timeoutId != null) {
+        window.clearTimeout(timeoutId);
+      }
+    };
   }, []);
 
   return (
@@ -125,9 +144,11 @@ export const App: React.FC = () => {
           description={
             <div className="description">
               <Spinner intent="primary" size={SpinnerSize.SMALL} />{" "}
-              {pageState.isRedirecting
-                ? <span>Redirecting you…</span>
-                : <span>Loading preview…</span>}
+              {pageState.isRedirecting ? (
+                <span>Redirecting you…</span>
+              ) : (
+                <span>Loading preview…</span>
+              )}
             </div>
           }
         />
@@ -163,18 +184,18 @@ function loadEntrypoints(): Promise<string[]> {
 
 function finish(attempt: number): Promise<
   | {
-    status: "success";
-    redirectUrl: string | null;
-  }
+      status: "success";
+      redirectUrl: string | null;
+    }
   | {
-    status: "error";
-    error: string;
-    response?: string;
-    hint?: string;
-  }
+      status: "error";
+      error: string;
+      response?: string;
+      hint?: string;
+    }
   | {
-    status: "pending";
-  }
+      status: "pending";
+    }
 > {
   return fetch(`../finish?attempt=${attempt}`).then((res) => res.json());
 }

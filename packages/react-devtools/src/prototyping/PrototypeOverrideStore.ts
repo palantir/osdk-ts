@@ -89,7 +89,7 @@ export class PrototypeOverrideStore extends SubscribableStore {
   }
 
   getAll(): PrototypeOverride[] {
-    return Array.from(this.overrides.values());
+    return [...this.overrides.values()];
   }
 
   hasOverride(querySignature: string): boolean {

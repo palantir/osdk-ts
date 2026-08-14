@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetObjectTypesForInterfaceTypesRequest
-    as _api_GetObjectTypesForInterfaceTypesRequest,
-  GetObjectTypesForInterfaceTypesResponse
-    as _api_GetObjectTypesForInterfaceTypesResponse,
+  GetObjectTypesForInterfaceTypesRequest as _api_GetObjectTypesForInterfaceTypesRequest,
+  GetObjectTypesForInterfaceTypesResponse as _api_GetObjectTypesForInterfaceTypesResponse,
 } from "../__components.js";
 
 /**

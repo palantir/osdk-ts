@@ -16,7 +16,8 @@
 
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { PdfAnnotation } from "../../types.js";
+
+import type { PdfAnnotation } from "../../PdfViewerApi.js";
 import { PdfViewerAnnotationLayer } from "../PdfViewerAnnotationLayer.js";
 
 afterEach(() => {
@@ -35,6 +36,12 @@ function createAnnotation(
   } as PdfAnnotation;
 }
 
+// pdfjs's viewport.transform for a non-rotated page: scales and flips y.
+// Applied to (x, y): (scale*x, scale*(pageHeight - y)).
+function pageTransform(scale: number, pageHeight: number): number[] {
+  return [scale, 0, 0, -scale, 0, pageHeight * scale];
+}
+
 describe("PdfViewerAnnotationLayer", () => {
   it("should render an annotation for each item", () => {
     const annotations = [
@@ -48,6 +55,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={annotations}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
@@ -64,6 +72,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
@@ -81,17 +90,41 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     // top = (pageHeight - y - height) * scale = (792 - 500 - 20) * 1.0 = 272
     expect(item.style.top).toBe("272px");
     expect(item.style.left).toBe("100px");
     expect(item.style.width).toBe("200px");
     expect(item.style.height).toBe("20px");
+  });
+
+  it("should handle 90° rotation transform by swapping axes", () => {
+    const annotation = createAnnotation({
+      rect: { x: 100, y: 500, width: 200, height: 20 },
+    });
+    const scale = 1.0;
+    const pageWidth = 612;
+    const pageHeight = 792;
+    const rotatedTransform = [0, scale, -scale, 0, pageWidth * scale, 0];
+
+    const { container } = render(
+      <PdfViewerAnnotationLayer
+        annotations={[annotation]}
+        pageHeight={pageHeight}
+        scale={scale}
+        transform={rotatedTransform}
+      />,
+    );
+
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
+    expect(item.style.left).toBe("92px");
+    expect(item.style.top).toBe("100px");
+    expect(item.style.width).toBe("20px");
+    expect(item.style.height).toBe("200px");
   });
 
   it("should apply scale to coordinates", () => {
@@ -104,12 +137,11 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={2.0}
+        transform={pageTransform(2.0, 792)}
       />,
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     // top = (792 - 500 - 20) * 2.0 = 544
     expect(item.style.top).toBe("544px");
     expect(item.style.left).toBe("200px");
@@ -126,6 +158,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
         onAnnotationClick={onClick}
       />,
     );
@@ -148,6 +181,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
         onAnnotationClick={onClick}
       />,
     );
@@ -170,13 +204,12 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
         onAnnotationClick={onClick}
       />,
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     fireEvent.keyDown(item, { key: "Tab" });
 
     expect(onClick).not.toHaveBeenCalled();
@@ -190,12 +223,11 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     expect(item.title).toBe("My Note");
   });
 
@@ -207,12 +239,11 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     expect(item.style.getPropertyValue("--osdk-pdf-annotation-color")).toBe(
       "#ff0000",
     );
@@ -226,12 +257,11 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     expect(item.style.getPropertyValue("--osdk-pdf-annotation-color")).toBe("");
   });
 
@@ -243,12 +273,11 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     expect(item.getAttribute("role")).toBe("button");
     expect(item.getAttribute("tabindex")).toBe("0");
   });
@@ -261,12 +290,11 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     // Should not throw
     fireEvent.click(item);
     fireEvent.keyDown(item, { key: "Enter" });
@@ -274,25 +302,28 @@ describe("PdfViewerAnnotationLayer", () => {
 
   it("should render custom annotation with render function", () => {
     const renderFn = vi.fn(
-      (
-        { scale }: {
-          annotation: PdfAnnotation;
-          scale: number;
-          pageHeight: number;
-        },
-      ) => <span data-testid="custom-content">Scaled: {scale}</span>,
+      ({
+        scale,
+      }: {
+        annotation: PdfAnnotation;
+        scale: number;
+        pageHeight: number;
+        transform: number[];
+      }) => <span data-testid="custom-content">Scaled: {scale}</span>,
     );
     const annotation = createAnnotation({
       id: "custom-1",
       type: "custom",
       render: renderFn,
     });
+    const transform = pageTransform(1.5, 792);
 
     const { container } = render(
       <PdfViewerAnnotationLayer
         annotations={[annotation]}
         pageHeight={792}
         scale={1.5}
+        transform={transform}
       />,
     );
 
@@ -300,6 +331,7 @@ describe("PdfViewerAnnotationLayer", () => {
       annotation,
       scale: 1.5,
       pageHeight: 792,
+      transform,
     });
     const customContent = container.querySelector(
       "[data-testid='custom-content']",
@@ -321,6 +353,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
@@ -344,6 +377,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
         onAnnotationClick={onClick}
       />,
     );

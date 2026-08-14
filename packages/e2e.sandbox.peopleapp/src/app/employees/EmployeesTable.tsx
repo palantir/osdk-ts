@@ -1,16 +1,33 @@
-import type { DerivedProperty, Osdk, PropertyKeys } from "@osdk/api";
+import type { DerivedProperty, Osdk } from "@osdk/api";
 import { useOsdkClient } from "@osdk/react";
-import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
+import type {
+  ColumnDefinition,
+  ObjectTableHandle,
+} from "@osdk/react-components/experimental/object-table";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import React, { useCallback } from "react";
+import {
+  type OsdkThemeMode,
+  OsdkThemeProvider,
+  useOsdkTheme,
+} from "@osdk/react-components/experimental/theme";
+import React, { useCallback, useRef } from "react";
+
+import { Button } from "../../components/Button.js";
+
+import "./EmployeesTable.css";
 import {
   Employee,
   getEmployeeDaysSinceStart,
 } from "../../generatedNoCheck2/index.js";
-import "./EmployeesTable.css";
+import { DownloadEmployeesButton } from "./DownloadEmployeesButton.js";
 
 type RDPs = {
   managerName: "string";
+  // Derived `long` via a `get` selection -- the reported scenario.
+  leadStockOptions: "long";
+  // Derived `long` via a `max` aggregation -- min/max preserve the source type,
+  // so this also arrives as a string and must sort numerically.
+  maxPeepStockOptions: "long";
 };
 
 type FunctionColumns = {
@@ -18,11 +35,7 @@ type FunctionColumns = {
 };
 
 const columnDefinitions: Array<
-  ColumnDefinition<
-    Employee,
-    RDPs,
-    FunctionColumns
-  >
+  ColumnDefinition<Employee, RDPs, FunctionColumns>
 > = [
   {
     locator: {
@@ -30,6 +43,7 @@ const columnDefinitions: Array<
       id: "fullName",
     },
     columnName: "My Name",
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     validateEdit: async (value: unknown) => {
       if (typeof value !== "string" || !value.trim()) {
         return "Name cannot be empty";
@@ -60,6 +74,34 @@ const columnDefinitions: Array<
   },
   {
     locator: { type: "property", id: "jobTitle" },
+  },
+  // Base long property -- longs arrive as strings; sorting must be numeric.
+  {
+    locator: { type: "property", id: "stockOptions" },
+    columnName: "Stock Options",
+  },
+  // Derived long via `get` selection (the reported scenario): the lead's stock
+  // options.
+  {
+    locator: {
+      type: "rdp",
+      id: "leadStockOptions",
+      creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
+        baseObjectSet.pivotTo("lead").selectProperty("stockOptions"),
+    },
+    columnName: "Lead Stock Options (derived get)",
+  },
+  // Derived long via `max` aggregation: the highest stock options among the
+  // employee's reports. min/max preserve the aggregated property's type, so
+  // this is captured as `long` and sorts numerically.
+  {
+    locator: {
+      type: "rdp",
+      id: "maxPeepStockOptions",
+      creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
+        baseObjectSet.pivotTo("peeps").aggregate("stockOptions:max"),
+    },
+    columnName: "Max Report Stock Options (derived max)",
   },
   {
     locator: { type: "property", id: "firstFullTimeStartDate" },
@@ -101,57 +143,124 @@ const columnDefinitions: Array<
     },
     orderable: false,
   },
+  // Custom + editable: no ontology property backs this column, so `getCellValue`
+  // supplies the value and `cellValueType` picks the editor. Without it the
+  // cell would get a text input and commit "12345" instead of 12345.
+  {
+    locator: {
+      type: "custom",
+      id: "reportsTo",
+    },
+    columnName: "Reports To (#)",
+    getCellValue: (object: Osdk.Instance<Employee>) =>
+      object.leadEmployeeNumber ?? object.mentorEmployeeNumber,
+    cellValueType: "integer",
+    editable: true,
+    orderable: false,
+  },
+  // Custom + editable, string-typed, and `renderCell` reusing the value the
+  // table already derived rather than recomputing it.
+  {
+    locator: {
+      type: "custom",
+      id: "contact",
+    },
+    columnName: "Contact",
+    getCellValue: (object: Osdk.Instance<Employee>) =>
+      [object.emailPrimaryWork, object.jobTitle]
+        .filter((part) => part != null)
+        .join(" · "),
+    cellValueType: "string",
+    editable: true,
+    orderable: false,
+    renderCell: (
+      _object: Osdk.Instance<Employee>,
+      _locator: unknown,
+      value: unknown,
+    ) => <em>{(value as string) || "No value"}</em>,
+  },
 ];
 
-export function EmployeesTable() {
-  const handleSubmitEdits = useCallback(
-    async () => {
-      alert(`Submitting edits...`);
-      return true;
-    },
-    [],
-  );
+const THEME_MODES: readonly OsdkThemeMode[] = ["light", "dark", "system"];
 
-  const getRowAttributes = useCallback(
-    (
-      employee: Osdk.Instance<
-        Employee,
-        "$allBaseProperties",
-        PropertyKeys<Employee>,
-        RDPs
-      >,
-    ): Record<string, string | undefined> => ({
-      "data-highlight-row": employee.jobTitle === "Content Manager"
-        ? "true"
-        : undefined,
-    }),
-    [],
+function ThemeToggle(): React.ReactElement {
+  const { theme, resolvedTheme, setTheme } = useOsdkTheme();
+  return (
+    <div
+      style={{
+        display: "flex",
+        gap: 8,
+        alignItems: "center",
+        marginBottom: 8,
+        fontSize: 12,
+      }}
+    >
+      <span style={{ color: "#666" }}>
+        Theme: <strong>{theme}</strong>
+        {theme === "system" ? ` (resolved: ${resolvedTheme})` : ""}
+      </span>
+      {THEME_MODES.map((mode) => (
+        <Button
+          key={mode}
+          type="button"
+          onClick={() => setTheme(mode)}
+          disabled={theme === mode}
+        >
+          {mode}
+        </Button>
+      ))}
+    </div>
   );
+}
+
+export function EmployeesTable(): React.ReactElement {
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
+  const handleSubmitEdits = useCallback(async () => {
+    alert(`Submitting edits...`);
+    return true;
+  }, []);
 
   const client = useOsdkClient();
 
   const os = client(Employee);
 
+  const tableRef = useRef<ObjectTableHandle<Employee, RDPs>>(null);
+
   return (
-    <div
-      style={{
-        height: "300px",
-        overflow: "hidden",
-      }}
-    >
-      <ObjectTable<Employee, RDPs, FunctionColumns>
-        objectSet={os}
-        objectType={Employee}
-        columnDefinitions={columnDefinitions}
-        selectionMode={"multiple"}
-        defaultOrderBy={[{
-          property: "firstFullTimeStartDate",
-          direction: "desc",
-        }]}
-        onSubmitEdits={handleSubmitEdits}
-        getRowAttributes={getRowAttributes}
-        className={"customEmployeesTable"}
-      />
-    </div>
+    <OsdkThemeProvider>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+        }}
+      >
+        <ThemeToggle />
+        <div style={{ marginBottom: 8 }}>
+          <DownloadEmployeesButton tableRef={tableRef} />
+        </div>
+        <div
+          style={{
+            height: "300px",
+            overflow: "hidden",
+          }}
+        >
+          <ObjectTable<Employee, RDPs, FunctionColumns>
+            objectSet={os}
+            objectType={Employee}
+            columnDefinitions={columnDefinitions}
+            selectionMode={"multiple"}
+            defaultOrderBy={[
+              {
+                property: "leadStockOptions",
+                direction: "asc",
+              },
+            ]}
+            onSubmitEdits={handleSubmitEdits}
+            tableRef={tableRef}
+          />
+        </div>
+      </div>
+    </OsdkThemeProvider>
   );
 }

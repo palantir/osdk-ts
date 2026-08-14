@@ -15,21 +15,19 @@
  */
 
 import { OntologyInterfaces } from "@osdk/foundry.ontologies";
+
 import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
 import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 
 export const list: CallFactory<
   "ontologyApiName",
   typeof OntologyInterfaces.list
-> = handleOpenApiCall(
-  OntologyInterfaces.list,
-  ["ontologyApiName"],
-);
+> = handleOpenApiCall(OntologyInterfaces.list, ["ontologyApiName"]);
 
 export const get: CallFactory<
   "ontologyApiName" | "interfaceType",
   typeof OntologyInterfaces.get
-> = handleOpenApiCall(
-  OntologyInterfaces.get,
-  ["ontologyApiName", "interfaceType"],
-);
+> = handleOpenApiCall(OntologyInterfaces.get, [
+  "ontologyApiName",
+  "interfaceType",
+]);

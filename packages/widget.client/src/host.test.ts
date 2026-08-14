@@ -17,6 +17,7 @@
 import type { HostMessage } from "@osdk/widget.api";
 import { defineConfig } from "@osdk/widget.api";
 import { describe, expectTypeOf, it } from "vitest";
+
 import type { HostMessageEventListener } from "./host.js";
 import { FoundryHostEventTarget } from "./host.js";
 

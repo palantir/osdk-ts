@@ -20,6 +20,7 @@ import type {
   LinkTypeMetadata,
   Visibility,
 } from "@osdk/client.unstable";
+
 import type { OptionalFields } from "../../util/OptionalFields.js";
 import type { RequiredFields } from "../../util/RequiredFields.js";
 import type { EntityPermission } from "../common/EntityPermission.js";
@@ -30,40 +31,47 @@ import type { ObjectType } from "../object/ObjectType.js";
 import type { ObjectTypeDefinition } from "../object/ObjectTypeDefinition.js";
 
 export type LinkType =
-  | (OntologyEntityBase & OneToManyLinkTypeDefinition & {
-    __type: OntologyEntityTypeEnum.LINK_TYPE;
-  })
-  | (OntologyEntityBase & ManyToManyLinkTypeDefinition & {
-    __type: OntologyEntityTypeEnum.LINK_TYPE;
-  })
-  | (OntologyEntityBase & IntermediaryLinkTypeDefinition & {
-    __type: OntologyEntityTypeEnum.LINK_TYPE;
-  });
+  | (OntologyEntityBase &
+      OneToManyLinkTypeDefinition & {
+        __type: OntologyEntityTypeEnum.LINK_TYPE;
+      })
+  | (OntologyEntityBase &
+      ManyToManyLinkTypeDefinition & {
+        __type: OntologyEntityTypeEnum.LINK_TYPE;
+      })
+  | (OntologyEntityBase &
+      IntermediaryLinkTypeDefinition & {
+        __type: OntologyEntityTypeEnum.LINK_TYPE;
+      });
 
 export type LinkTypeDefinition =
   | Omit<
-    OntologyEntityBase & OneToManyLinkTypeUserDefinition & {
-      __type: OntologyEntityTypeEnum.LINK_TYPE;
-    },
-    "__type"
-  >
+      OntologyEntityBase &
+        OneToManyLinkTypeUserDefinition & {
+          __type: OntologyEntityTypeEnum.LINK_TYPE;
+        },
+      "__type"
+    >
   | Omit<
-    OntologyEntityBase & ManyToManyLinkTypeUserDefinition & {
-      __type: OntologyEntityTypeEnum.LINK_TYPE;
-    },
-    "__type"
-  >
+      OntologyEntityBase &
+        ManyToManyLinkTypeUserDefinition & {
+          __type: OntologyEntityTypeEnum.LINK_TYPE;
+        },
+      "__type"
+    >
   | Omit<
-    OntologyEntityBase & IntermediaryLinkTypeUserDefinition & {
-      __type: OntologyEntityTypeEnum.LINK_TYPE;
-    },
-    "__type"
-  >;
+      OntologyEntityBase &
+        IntermediaryLinkTypeUserDefinition & {
+          __type: OntologyEntityTypeEnum.LINK_TYPE;
+        },
+      "__type"
+    >;
 
 export type ObjectTypePropertyApiName = string;
 
 export interface OneToManyLinkTypeDefinition {
   apiName: string;
+  description?: string;
   one: OneToManyObjectLinkReference;
   toMany: OneToManyObjectLinkReference;
   manyForeignKeyProperty: ObjectTypePropertyApiName;
@@ -81,6 +89,7 @@ export interface OneToManyObjectLinkReference {
 
 export interface OneToManyLinkTypeUserDefinition {
   apiName: string;
+  description?: string;
   one: OneToManyObjectLinkReferenceUserDefinition;
   toMany: OneToManyObjectLinkReferenceUserDefinition;
   manyForeignKeyProperty: ObjectTypePropertyApiName;
@@ -97,6 +106,7 @@ export interface OneToManyObjectLinkReferenceUserDefinition {
 
 export interface ManyToManyLinkTypeDefinition {
   apiName: string;
+  description?: string;
   many: ManyToManyObjectLinkReference;
   toMany: ManyToManyObjectLinkReference;
   editsEnabled?: boolean;
@@ -113,6 +123,7 @@ export interface ManyToManyObjectLinkReference {
 
 export interface ManyToManyLinkTypeUserDefinition {
   apiName: string;
+  description?: string;
   many: ManyToManyObjectLinkReferenceUserDefinition;
   toMany: ManyToManyObjectLinkReferenceUserDefinition;
   editsEnabled?: boolean;
@@ -128,6 +139,7 @@ export interface ManyToManyObjectLinkReferenceUserDefinition {
 
 export interface IntermediaryLinkTypeDefinition {
   apiName: string;
+  description?: string;
   many: IntermediaryObjectLinkReference;
   toMany: IntermediaryObjectLinkReference;
   intermediaryObjectType: ObjectTypeDefinition | ObjectType;
@@ -148,6 +160,7 @@ export interface IntermediaryLinkTypeUserDefinition {
   many: IntermediaryObjectLinkReferenceUserDefinition;
   toMany: IntermediaryObjectLinkReferenceUserDefinition;
   intermediaryObjectType: ObjectTypeDefinition | ObjectType | string;
+  description?: string;
   editsEnabled?: boolean;
   permission?: EntityPermission;
   status?: UserLinkTypeStatus;
@@ -181,8 +194,8 @@ export type UserLinkTypeStatus =
   | "experimental"
   | "example"
   | {
-    type: "deprecated";
-    message: string;
-    deadline: string;
-    replacedBy?: LinkTypeId;
-  };
+      type: "deprecated";
+      message: string;
+      deadline: string;
+      replacedBy?: LinkTypeId;
+    };

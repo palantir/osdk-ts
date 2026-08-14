@@ -25,6 +25,7 @@ import type {
 import { useOsdkFunctions, type UseOsdkFunctionsResult } from "@osdk/react";
 import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
 import {
   DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
@@ -125,33 +126,34 @@ const mockObject2 = {
   $primaryKey: "obj2",
 };
 
-const mockObjects = [
-  mockObject1,
-  mockObject2,
-] as Osdk.Instance<TestObject, "$allBaseProperties", TestObjectKeys, {}>[];
-
-const mockInterfaceObjects = [
-  mockObject1,
-  mockObject2,
-] as Osdk.Instance<TestInterface, "$allBaseProperties", TestObjectKeys, {}>[];
-
-const columnDefinitions: ColumnDefinition<
+const mockObjects = [mockObject1, mockObject2] as Osdk.Instance<
   TestObject,
-  {},
-  FunctionColumnDef
->[] = [
-  {
-    locator: {
-      type: "function",
-      id: "testColumn",
-      queryDefinition: mockQueryDefinition,
-      getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
-        [OBJ_SET_KEY]: objectSet,
-      })) as any,
-      getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
+  "$allBaseProperties",
+  TestObjectKeys,
+  {}
+>[];
+
+const mockInterfaceObjects = [mockObject1, mockObject2] as Osdk.Instance<
+  TestInterface,
+  "$allBaseProperties",
+  TestObjectKeys,
+  {}
+>[];
+
+const columnDefinitions: ColumnDefinition<TestObject, {}, FunctionColumnDef>[] =
+  [
+    {
+      locator: {
+        type: "function",
+        id: "testColumn",
+        queryDefinition: mockQueryDefinition,
+        getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
+          [OBJ_SET_KEY]: objectSet,
+        })) as any,
+        getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
+      },
     },
-  },
-];
+  ];
 
 describe("useFunctionColumnsData", () => {
   beforeEach(() => {
@@ -161,12 +163,11 @@ describe("useFunctionColumnsData", () => {
   it("should return empty data when objects array is empty", () => {
     vi.mocked(useOsdkFunctions).mockReturnValue([]);
 
-    const { result } = renderHook(
-      () =>
-        useFunctionColumnsData({
-          objectOrInterfaceType: TestObjectType,
-          objects: [],
-        }),
+    const { result } = renderHook(() =>
+      useFunctionColumnsData({
+        objectOrInterfaceType: TestObjectType,
+        objects: [],
+      }),
     );
 
     expect(result.current).toEqual({});
@@ -197,13 +198,12 @@ describe("useFunctionColumnsData", () => {
     ];
     vi.mocked(useOsdkFunctions).mockReturnValue([]);
 
-    const { result } = renderHook(
-      () =>
-        useFunctionColumnsData({
-          objectOrInterfaceType: TestInterfaceType,
-          objects: mockInterfaceObjects,
-          columnDefinitions,
-        }),
+    const { result } = renderHook(() =>
+      useFunctionColumnsData({
+        objectOrInterfaceType: TestInterfaceType,
+        objects: mockInterfaceObjects,
+        columnDefinitions,
+      }),
     );
 
     expect(result.current).toEqual({});
@@ -215,7 +215,7 @@ describe("useFunctionColumnsData", () => {
     });
   });
 
-  it("should fetch data for function columns", async () => {
+  it("should fetch data for function columns", () => {
     const mockResult = {
       "TestObject:obj1": { value: "result1" },
       "TestObject:obj2": { value: "result2" },
@@ -231,13 +231,12 @@ describe("useFunctionColumnsData", () => {
       },
     ] as unknown as UseOsdkFunctionsResult);
 
-    const { result, rerender } = renderHook(
-      () =>
-        useFunctionColumnsData({
-          objectOrInterfaceType: TestObjectType,
-          objects: mockObjects,
-          columnDefinitions,
-        }),
+    const { result, rerender } = renderHook(() =>
+      useFunctionColumnsData({
+        objectOrInterfaceType: TestObjectType,
+        objects: mockObjects,
+        columnDefinitions,
+      }),
     );
 
     // Initially shows isLoading state
@@ -287,31 +286,43 @@ describe("useFunctionColumnsData", () => {
       },
     });
 
-    expect(useOsdkFunctions).toHaveBeenCalledWith({
-      queries: [
-        {
-          queryDefinition: mockQueryDefinition,
-          options: {
-            dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
-            params: { [OBJ_SET_KEY]: mockObjectSet },
-          },
-        },
-      ],
-      enabled: true,
-      maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
-    });
+    expect(useOsdkFunctions).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queries: [
+          expect.objectContaining({
+            queryDefinition: mockQueryDefinition,
+            options: expect.objectContaining({
+              dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+              dependsOn: undefined,
+              dependsOnObjects: mockObjects,
+              params: {
+                [OBJ_SET_KEY]: expect.objectContaining({
+                  __filteredObjectSet: true,
+                  whereClause: { $primaryKey: { $in: ["obj1", "obj2"] } },
+                }),
+              },
+            }),
+          }),
+        ],
+        enabled: true,
+        maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
+      }),
+    );
   });
 
-  it("should extract value using getValue function when specified", async () => {
+  it("should extract value using getValue function when specified", () => {
     const mockResult = {
       "TestObject:obj1": {
         status: "active",
         timestamp: "2024-01-01",
       },
     };
-    const mockOneObject = [
-      mockObject1,
-    ] as Osdk.Instance<TestObject, "$allBaseProperties", TestObjectKeys, {}>[];
+    const mockOneObject = [mockObject1] as Osdk.Instance<
+      TestObject,
+      "$allBaseProperties",
+      TestObjectKeys,
+      {}
+    >[];
 
     const columnDefinitions: ColumnDefinition<
       TestObject,
@@ -341,13 +352,12 @@ describe("useFunctionColumnsData", () => {
       },
     ] as unknown as UseOsdkFunctionsResult);
 
-    const { result } = renderHook(
-      () =>
-        useFunctionColumnsData({
-          objectOrInterfaceType: TestObjectType,
-          objects: mockOneObject,
-          columnDefinitions,
-        }),
+    const { result } = renderHook(() =>
+      useFunctionColumnsData({
+        objectOrInterfaceType: TestObjectType,
+        objects: mockOneObject,
+        columnDefinitions,
+      }),
     );
 
     expect(result.current).toEqual({
@@ -362,7 +372,7 @@ describe("useFunctionColumnsData", () => {
     });
   });
 
-  it("should handle multiple queries", async () => {
+  it("should handle multiple queries", () => {
     const mockObjects = [
       {
         $objectType: "TestObject",
@@ -370,8 +380,6 @@ describe("useFunctionColumnsData", () => {
         $primaryKey: "obj1",
       },
     ] as Osdk.Instance<TestObject, "$allBaseProperties", TestObjectKeys, {}>[];
-
-    const mockObjectSet = {} as ObjectSet<TestObject>;
 
     const mockResult1 = {
       "TestObject:obj1": {
@@ -436,13 +444,12 @@ describe("useFunctionColumnsData", () => {
       },
     ] as unknown as UseOsdkFunctionsResult);
 
-    const { result } = renderHook(
-      () =>
-        useFunctionColumnsData({
-          objectOrInterfaceType: TestObjectType,
-          objects: mockObjects,
-          columnDefinitions,
-        }),
+    const { result } = renderHook(() =>
+      useFunctionColumnsData({
+        objectOrInterfaceType: TestObjectType,
+        objects: mockObjects,
+        columnDefinitions,
+      }),
     );
 
     expect(result.current).toEqual({
@@ -465,29 +472,39 @@ describe("useFunctionColumnsData", () => {
     });
 
     // Should make two queries since columns use different query definitions
-    expect(useOsdkFunctions).toHaveBeenCalledWith({
-      queries: [
-        {
-          queryDefinition: mockQueryDefinition,
-          options: {
-            params: { [OBJ_SET_KEY]: mockObjectSet },
-            dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
-          },
-        },
-        {
-          queryDefinition: mockQueryDefinition2,
-          options: {
-            params: { [OBJ_SET_KEY]: mockObjectSet },
-            dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
-          },
-        },
-      ],
-      enabled: true,
-      maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
+    const expectedFilteredSet = expect.objectContaining({
+      __filteredObjectSet: true,
+      whereClause: { $primaryKey: { $in: ["obj1"] } },
     });
+    expect(useOsdkFunctions).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queries: [
+          expect.objectContaining({
+            queryDefinition: mockQueryDefinition,
+            options: expect.objectContaining({
+              params: { [OBJ_SET_KEY]: expectedFilteredSet },
+              dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+              dependsOn: undefined,
+              dependsOnObjects: mockObjects,
+            }),
+          }),
+          expect.objectContaining({
+            queryDefinition: mockQueryDefinition2,
+            options: expect.objectContaining({
+              params: { [OBJ_SET_KEY]: expectedFilteredSet },
+              dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+              dependsOn: undefined,
+              dependsOnObjects: mockObjects,
+            }),
+          }),
+        ],
+        enabled: true,
+        maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
+      }),
+    );
   });
 
-  it("should handle missing object in the result", async () => {
+  it("should handle missing object in the result", () => {
     // 2 objects
     const mockObjects = [
       {
@@ -517,13 +534,12 @@ describe("useFunctionColumnsData", () => {
       },
     ] as unknown as UseOsdkFunctionsResult);
 
-    const { result } = renderHook(
-      () =>
-        useFunctionColumnsData({
-          objectOrInterfaceType: TestObjectType,
-          objects: mockObjects,
-          columnDefinitions,
-        }),
+    const { result } = renderHook(() =>
+      useFunctionColumnsData({
+        objectOrInterfaceType: TestObjectType,
+        objects: mockObjects,
+        columnDefinitions,
+      }),
     );
 
     expect(result.current).toEqual({
@@ -544,7 +560,59 @@ describe("useFunctionColumnsData", () => {
     });
   });
 
-  it("should handle errors gracefully", async () => {
+  it("clears a cell whose value disappears from a resolved result, but keeps previous data while reloading", () => {
+    // First render: obj1 has a value.
+    vi.mocked(useOsdkFunctions).mockReturnValue([
+      {
+        data: { "TestObject:obj1": { value: "result1" } },
+        error: undefined,
+        isLoading: false,
+        lastUpdated: Date.now(),
+      },
+    ] as unknown as UseOsdkFunctionsResult);
+
+    const { result, rerender } = renderHook(() =>
+      useFunctionColumnsData({
+        objectOrInterfaceType: TestObjectType,
+        objects: mockObjects,
+        columnDefinitions,
+      }),
+    );
+
+    expect(result.current.testColumn.obj1.data).toEqual({ value: "result1" });
+
+    // Refetch in flight: obj1's key not yet present but loading — keep the
+    // previous value so the cell doesn't flash empty.
+    vi.mocked(useOsdkFunctions).mockReturnValue([
+      {
+        data: {},
+        error: undefined,
+        isLoading: true,
+        lastUpdated: 0,
+      },
+    ] as unknown as UseOsdkFunctionsResult);
+    rerender();
+
+    expect(result.current.testColumn.obj1.isLoading).toBe(true);
+    expect(result.current.testColumn.obj1.data).toEqual({ value: "result1" });
+
+    // Refetch resolved with obj1 absent (its value became null) — the cell
+    // must clear instead of retaining the stale previous value.
+    vi.mocked(useOsdkFunctions).mockReturnValue([
+      {
+        data: {},
+        error: undefined,
+        isLoading: false,
+        lastUpdated: Date.now(),
+      },
+    ] as unknown as UseOsdkFunctionsResult);
+    rerender();
+
+    expect(result.current.testColumn.obj1.isLoading).toBe(false);
+    expect(result.current.testColumn.obj1.data).toBeUndefined();
+  });
+
+  it("should handle errors gracefully", () => {
     const mockError = new Error("Query failed");
 
     vi.mocked(useOsdkFunctions).mockReturnValue([
@@ -556,13 +624,12 @@ describe("useFunctionColumnsData", () => {
       },
     ] as unknown as UseOsdkFunctionsResult);
 
-    const { result } = renderHook(
-      () =>
-        useFunctionColumnsData({
-          objectOrInterfaceType: TestObjectType,
-          objects: mockObjects,
-          columnDefinitions,
-        }),
+    const { result } = renderHook(() =>
+      useFunctionColumnsData({
+        objectOrInterfaceType: TestObjectType,
+        objects: mockObjects,
+        columnDefinitions,
+      }),
     );
 
     expect(result.current).toEqual({
@@ -595,13 +662,12 @@ describe("useFunctionColumnsData", () => {
 
     vi.mocked(useOsdkFunctions).mockReturnValue([]);
 
-    renderHook(
-      () =>
-        useFunctionColumnsData({
-          objectOrInterfaceType: TestObjectType,
-          objects: mockObjects,
-          columnDefinitions: nonFunctionColumns,
-        }),
+    renderHook(() =>
+      useFunctionColumnsData({
+        objectOrInterfaceType: TestObjectType,
+        objects: mockObjects,
+        columnDefinitions: nonFunctionColumns,
+      }),
     );
 
     expect(useOsdkFunctions).toHaveBeenCalledWith({
@@ -612,8 +678,6 @@ describe("useFunctionColumnsData", () => {
   });
 
   describe("paginated object sets", () => {
-    const PRIMARY_KEY_API_NAME = "id";
-
     function makeObjects(count: number) {
       return Array.from({ length: count }, (_, i) => ({
         $objectType: "TestObject",
@@ -627,40 +691,7 @@ describe("useFunctionColumnsData", () => {
       >[];
     }
 
-    it("should pass full object set when primaryKeyApiName is not provided", () => {
-      vi.mocked(useOsdkFunctions).mockReturnValue([
-        {
-          data: {},
-          error: undefined,
-          isLoading: false,
-          lastUpdated: Date.now(),
-        },
-      ] as unknown as UseOsdkFunctionsResult);
-
-      renderHook(() =>
-        useFunctionColumnsData({
-          objectOrInterfaceType: TestObjectType,
-          objects: mockObjects,
-          columnDefinitions,
-        })
-      );
-
-      expect(useOsdkFunctions).toHaveBeenCalledWith(
-        expect.objectContaining({
-          queries: [
-            expect.objectContaining({
-              queryDefinition: mockQueryDefinition,
-              options: expect.objectContaining({
-                params: { [OBJ_SET_KEY]: mockObjectSet },
-              }),
-            }),
-          ],
-          enabled: true,
-        }),
-      );
-    });
-
-    it("should chunk objects into paginated object sets when primaryKeyApiName is provided", () => {
+    it("should chunk objects into paginated object sets via $primaryKey", () => {
       const pageSize = 2;
       const objects = makeObjects(5);
 
@@ -678,9 +709,8 @@ describe("useFunctionColumnsData", () => {
           objectOrInterfaceType: TestObjectType,
           objects,
           columnDefinitions,
-          primaryKeyApiName: PRIMARY_KEY_API_NAME,
           pageSize,
-        })
+        }),
       );
 
       const call = vi.mocked(useOsdkFunctions).mock.calls[0][0];
@@ -708,7 +738,7 @@ describe("useFunctionColumnsData", () => {
           __filteredObjectSet: true,
           objectOrInterfaceType: TestObjectType,
           whereClause: {
-            [PRIMARY_KEY_API_NAME]: { $in: ["obj0", "obj1"] },
+            $primaryKey: { $in: ["obj0", "obj1"] },
           },
         }),
       );
@@ -719,7 +749,7 @@ describe("useFunctionColumnsData", () => {
           __filteredObjectSet: true,
           objectOrInterfaceType: TestObjectType,
           whereClause: {
-            [PRIMARY_KEY_API_NAME]: { $in: ["obj2", "obj3"] },
+            $primaryKey: { $in: ["obj2", "obj3"] },
           },
         }),
       );
@@ -730,7 +760,7 @@ describe("useFunctionColumnsData", () => {
           __filteredObjectSet: true,
           objectOrInterfaceType: TestObjectType,
           whereClause: {
-            [PRIMARY_KEY_API_NAME]: { $in: ["obj4"] },
+            $primaryKey: { $in: ["obj4"] },
           },
         }),
       );
@@ -753,8 +783,7 @@ describe("useFunctionColumnsData", () => {
           objectOrInterfaceType: TestObjectType,
           objects,
           columnDefinitions,
-          primaryKeyApiName: PRIMARY_KEY_API_NAME,
-        })
+        }),
       );
 
       const call = vi.mocked(useOsdkFunctions).mock.calls[0][0];
@@ -815,9 +844,8 @@ describe("useFunctionColumnsData", () => {
           objectOrInterfaceType: TestObjectType,
           objects,
           columnDefinitions: multiColumnDefs,
-          primaryKeyApiName: PRIMARY_KEY_API_NAME,
           pageSize,
-        })
+        }),
       );
 
       const call = vi.mocked(useOsdkFunctions).mock.calls[0][0];
@@ -837,7 +865,7 @@ describe("useFunctionColumnsData", () => {
       expect(page0Col0Params[OBJ_SET_KEY]).toEqual(
         expect.objectContaining({
           whereClause: {
-            [PRIMARY_KEY_API_NAME]: { $in: ["obj0", "obj1"] },
+            $primaryKey: { $in: ["obj0", "obj1"] },
           },
         }),
       );
@@ -850,7 +878,7 @@ describe("useFunctionColumnsData", () => {
       expect(page1Col0Params[OBJ_SET_KEY]).toEqual(
         expect.objectContaining({
           whereClause: {
-            [PRIMARY_KEY_API_NAME]: { $in: ["obj2"] },
+            $primaryKey: { $in: ["obj2"] },
           },
         }),
       );
@@ -887,9 +915,8 @@ describe("useFunctionColumnsData", () => {
           objectOrInterfaceType: TestObjectType,
           objects,
           columnDefinitions,
-          primaryKeyApiName: PRIMARY_KEY_API_NAME,
           pageSize,
-        })
+        }),
       );
 
       expect(result.current).toEqual({
@@ -928,13 +955,12 @@ describe("useFunctionColumnsData", () => {
       },
     ] as unknown as UseOsdkFunctionsResult);
 
-    const { result, rerender } = renderHook(
-      () =>
-        useFunctionColumnsData({
-          objectOrInterfaceType: TestObjectType,
-          objects: mockObjects,
-          columnDefinitions,
-        }),
+    const { result, rerender } = renderHook(() =>
+      useFunctionColumnsData({
+        objectOrInterfaceType: TestObjectType,
+        objects: mockObjects,
+        columnDefinitions,
+      }),
     );
 
     // Check initial loading state

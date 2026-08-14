@@ -15,6 +15,7 @@
  */
 
 import { expect, test } from "vitest";
+
 import { generateNpmRc } from "./generateNpmRc.js";
 
 const expected = `

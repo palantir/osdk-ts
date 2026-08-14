@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import type { FauxFoundry } from "@osdk/faux";
-import { msw } from "@osdk/faux";
 import type { IncomingMessage, ServerResponse } from "http";
 import type { EventEmitter } from "node:events";
 import { Readable } from "stream";
+
+import type { FauxFoundry } from "@osdk/faux";
+import { msw } from "@osdk/faux";
 import type { Connect } from "vite";
 
 export async function routeConnectToMsw(
@@ -50,7 +51,7 @@ export async function routeConnectToMsw(
     {
       onUnhandledRequest: "bypass",
     },
-    emitter as unknown as Parameters<typeof msw["handleRequest"]>[4],
+    emitter as unknown as Parameters<(typeof msw)["handleRequest"]>[4],
     {
       resolutionContext: {
         baseUrl,

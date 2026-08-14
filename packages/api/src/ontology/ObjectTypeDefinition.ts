@@ -25,9 +25,7 @@ import type { VersionString } from "./VersionString.js";
 import type { WirePropertyTypes } from "./WirePropertyTypes.js";
 
 export type CompileTimeMetadata<T extends { __DefinitionMetadata?: {} }> =
-  NonNullable<
-    T["__DefinitionMetadata"]
-  >;
+  NonNullable<T["__DefinitionMetadata"]>;
 
 export type ObjectTypePropertyDefinitionFrom2<
   Q extends ObjectOrInterfaceDefinition,
@@ -65,10 +63,7 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
   type: "object";
   primaryKeyApiName: keyof this["properties"];
   titleProperty: keyof this["properties"];
-  links: Record<
-    string,
-    ObjectMetadata.Link<any, any>
-  >;
+  links: Record<string, ObjectMetadata.Link<any, any>>;
   primaryKeyType: PrimaryKeyTypes;
   icon: Icon | undefined;
   visibility: ObjectTypeVisibility | undefined;
@@ -88,6 +83,13 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
       /* InterfaceType property api name */ string
     >
   >;
+  interfaceImplementations?: Record<
+    /* InterfaceType api name */ string,
+    Record<
+      /* InterfaceType property api name */ string,
+      ObjectMetadata.InterfacePropertyImplementation
+    >
+  >;
 }
 
 export namespace ObjectMetadata {
@@ -100,15 +102,77 @@ export namespace ObjectMetadata {
     nullable?: boolean;
     valueTypeApiName?: string;
     valueFormatting?: PropertyValueFormattingRule;
+    mainValue?: {
+      fields: readonly string[];
+    };
+    hasReducers?: boolean;
+    /**
+     * Per-`type` metadata, discriminated on the wire property `type`.
+     *
+     * New per-type fields should be added as variants of {@link PropertyTypeMetadata}
+     * rather than as new top-level optionals on `Property`, so that the shape
+     * stays narrow and illegal combinations (e.g. a marking subtype on a `double`)
+     * are not representable.
+     */
+    typeMetadata?: PropertyTypeMetadata;
   }
 
-  export interface Link<
-    Q extends ObjectTypeDefinition,
-    M extends boolean,
-  > {
+  /**
+   * Discriminated union of per-`type` property metadata. Narrow on
+   * `typeMetadata.type` to access the variant-specific fields.
+   */
+  export type PropertyTypeMetadata = {
+    /**
+     * Marking subtype: `"CBAC"` for classification-based access control,
+     * `"MANDATORY"` for mandatory markings. Absent for marking properties
+     * whose subtype is not exposed by the platform.
+     */
+    type: "marking";
+    markingType?: "CBAC" | "MANDATORY";
+  };
+
+  export interface Link<Q extends ObjectTypeDefinition, M extends boolean> {
     __OsdkLinkTargetType?: Q;
     targetType: Q["apiName"];
     multiplicity: M;
+  }
+
+  export type InterfacePropertyImplementation =
+    | InterfacePropertyLocalImplementation
+    | InterfacePropertyStructFieldImplementation
+    | InterfacePropertyStructImplementation
+    | InterfacePropertyReducedImplementation;
+
+  export interface InterfacePropertyLocalImplementation {
+    type: "localProperty";
+    propertyApiName: string;
+  }
+
+  export interface InterfacePropertyStructFieldImplementation {
+    type: "structField";
+    propertyApiName: string;
+    structFieldApiName: string;
+  }
+
+  export interface InterfacePropertyStructImplementation {
+    type: "struct";
+    mapping: Record<
+      /* struct field api name */ string,
+      | { type: "property"; propertyApiName: string }
+      | {
+          type: "structFieldOfProperty";
+          propertyApiName: string;
+          structFieldApiName: string;
+        }
+    >;
+  }
+
+  export interface InterfacePropertyReducedImplementation {
+    type: "reduced";
+    implementation:
+      | InterfacePropertyLocalImplementation
+      | InterfacePropertyStructFieldImplementation
+      | InterfacePropertyStructImplementation;
   }
 }
 
@@ -118,25 +182,27 @@ export interface ObjectTypeDefinition {
   primaryKeyApiName?: string;
   primaryKeyType?: PrimaryKeyTypes;
   osdkMetadata?: OsdkMetadata;
-  __DefinitionMetadata?:
-    & ObjectMetadata
-    & ObjectInterfaceCompileDefinition;
+  __DefinitionMetadata?: ObjectMetadata & ObjectInterfaceCompileDefinition;
 }
 
-export type ObjectTypeLinkKeysFrom2<
-  Q extends ObjectOrInterfaceDefinition,
-> =
-  & keyof CompileTimeMetadata<Q>["links"]
-  & string;
+export type ObjectTypeLinkKeysFrom2<Q extends ObjectOrInterfaceDefinition> =
+  keyof CompileTimeMetadata<Q>["links"] & string;
 
 export interface PropertyDef<
   T extends WirePropertyTypes,
   N extends "nullable" | "non-nullable" = "nullable",
   M extends "array" | "single" = "single",
-> extends ObjectMetadata.Property {
+  MAIN_VALUE_FIELDS extends readonly string[] | undefined = undefined,
+  HAS_REDUCERS extends boolean = false,
+>
+  extends ObjectMetadata.Property {
   type: T;
   multiplicity: M extends "array" ? true : false;
   nullable: N extends "nullable" ? true : false;
+  mainValue: MAIN_VALUE_FIELDS extends readonly string[]
+    ? { fields: MAIN_VALUE_FIELDS }
+    : undefined;
+  hasReducers: HAS_REDUCERS;
 }
 
 export type ReleaseStatus =

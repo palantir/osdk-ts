@@ -17,6 +17,7 @@
 /* eslint-disable @typescript-eslint/require-await */
 
 import { randomUUID } from "node:crypto";
+
 import { OntologiesV2 } from "../mock/index.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
 import { requireSearchParams } from "./util/requireSearchParams.js";
@@ -36,13 +37,12 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
    */
   OntologiesV2.MediaReferenceProperties.getMediaMetadata(
     baseUrl,
-    async (
-      { params: { ontologyApiName, objectType, primaryKey, propertyName } },
-    ) => {
+    async ({
+      params: { ontologyApiName, objectType, primaryKey, propertyName },
+    }) => {
       return fauxFoundry
         .getDataStore(ontologyApiName)
-        .getMediaOrThrow(objectType, primaryKey, propertyName)
-        .metaData;
+        .getMediaOrThrow(objectType, primaryKey, propertyName).metaData;
     },
   ),
   /**
@@ -50,10 +50,13 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
    */
   OntologiesV2.MediaReferenceProperties.getMediaContent(
     baseUrl,
-    async (
-      { params: { ontologyApiName, objectType, primaryKey, propertyName } },
-    ) => {
-      const { content, metaData: { mediaType } } = fauxFoundry
+    async ({
+      params: { ontologyApiName, objectType, primaryKey, propertyName },
+    }) => {
+      const {
+        content,
+        metaData: { mediaType },
+      } = fauxFoundry
         .getDataStore(ontologyApiName)
         .getMediaOrThrow(objectType, primaryKey, propertyName);
 
@@ -63,11 +66,27 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
     },
   ),
 
+  /**
+   * Load full (type-specific) media metadata via MediaSets.metadata.
+   *
+   * The faux data store is keyed by ontology object identity, not by media-item RID, so this
+   * mock returns a stable `untyped` variant for any RID. Sufficient for testing that the
+   * `fetchFullMetadata` wiring resolves a `MediaFullMetadata` wrapper end-to-end.
+   */
+  OntologiesV2.MediaReferenceProperties.getFullMediaMetadata(
+    baseUrl,
+    async () => ({
+      type: "untyped" as const,
+      sizeBytes: 25,
+    }),
+  ),
+
   OntologiesV2.MediaReferenceProperties.upload(
     baseUrl,
-    async (
-      { params: { ontologyApiName, objectType, propertyName }, request },
-    ) => {
+    async ({
+      params: { ontologyApiName, objectType, propertyName },
+      request,
+    }) => {
       const { mediaItemPath } = requireSearchParams(["mediaItemPath"], request);
 
       return fauxFoundry
@@ -85,20 +104,17 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
   /**
    * Initiate a media transformation job
    */
-  OntologiesV2.MediaReferenceProperties.transform(
-    baseUrl,
-    async () => {
-      const jobId = randomUUID();
-      transformationJobs.set(jobId, {
-        status: "SUCCESSFUL",
-        content: new TextEncoder().encode("transformed-content").buffer,
-      });
-      return {
-        jobId,
-        status: "SUCCESSFUL" as const,
-      };
-    },
-  ),
+  OntologiesV2.MediaReferenceProperties.transform(baseUrl, async () => {
+    const jobId = randomUUID();
+    transformationJobs.set(jobId, {
+      status: "SUCCESSFUL",
+      content: new TextEncoder().encode("transformed-content").buffer,
+    });
+    return {
+      jobId,
+      status: "SUCCESSFUL" as const,
+    };
+  }),
 
   /**
    * Get transformation job status

@@ -32,10 +32,10 @@ const checkDCE = (fn: unknown): void => {
     if (code.indexOf("^_^") > -1) {
       setTimeout(() => {
         throw new Error(
-          "React is running in production mode, but dead code "
-            + "elimination has not been applied. Read how to correctly "
-            + "configure React for production: "
-            + "https://reactjs.org/link/perf-use-production-build",
+          "React is running in production mode, but dead code " +
+            "elimination has not been applied. Read how to correctly " +
+            "configure React for production: " +
+            "https://reactjs.org/link/perf-use-production-build",
         );
       });
     }
@@ -50,11 +50,11 @@ const fiberRoots = new Map<number, Set<FiberRoot>>();
 
 function isClientEnvironment(): boolean {
   return (
-    typeof window !== "undefined"
+    typeof window !== "undefined" &&
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- Browser detection pattern from React DevTools
-    && (typeof window.document?.createElement === "function"
+    (typeof window.document?.createElement === "function" ||
       // eslint-disable-next-line @typescript-eslint/no-deprecated -- ReactNative detection pattern
-      || window.navigator?.product === "ReactNative")
+      window.navigator?.product === "ReactNative")
   );
 }
 
@@ -65,9 +65,7 @@ function hasDevToolsHook(): boolean {
   );
 }
 
-function installDevToolsHook(
-  onActive?: () => void,
-): ReactDevToolsGlobalHook {
+function installDevToolsHook(onActive?: () => void): ReactDevToolsGlobalHook {
   const renderers = new Map<number, ReactRenderer>();
   let nextId = 0;
 
@@ -133,10 +131,7 @@ function installDevToolsHook(
     Object.defineProperty(window, "hasOwnProperty", {
       configurable: true,
       writable: true,
-      value: function(
-        this: unknown,
-        prop: PropertyKey,
-      ): boolean | number {
+      value(this: unknown, prop: PropertyKey): boolean | number {
         try {
           if (!hasRunHack && prop === "__REACT_DEVTOOLS_GLOBAL_HOOK__") {
             globalThis.__REACT_DEVTOOLS_GLOBAL_HOOK__ = undefined;
@@ -227,9 +222,7 @@ function patchDevToolsHook(onActive?: () => void): void {
   }
 }
 
-function getDevToolsHook(
-  onActive?: () => void,
-): ReactDevToolsGlobalHook {
+function getDevToolsHook(onActive?: () => void): ReactDevToolsGlobalHook {
   if (!hasDevToolsHook()) {
     return installDevToolsHook(onActive);
   }

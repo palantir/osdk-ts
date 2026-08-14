@@ -16,6 +16,7 @@
 
 import type { ObjectMetadata } from "@osdk/api";
 import * as ObjectTypesV2 from "@osdk/foundry.ontologies/ObjectTypeV2";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadFullObjectMetadata(
@@ -28,9 +29,8 @@ export async function loadFullObjectMetadata(
     objectType,
     { preview: true, branch: client.branch },
   );
-  const { wireObjectTypeFullMetadataToSdkObjectMetadata } = await import(
-    "@osdk/generator-converters"
-  );
+  const { wireObjectTypeFullMetadataToSdkObjectMetadata } =
+    await import("@osdk/generator-converters");
   const ret = wireObjectTypeFullMetadataToSdkObjectMetadata(full, true);
   return { ...ret };
 }

@@ -15,16 +15,19 @@
  */
 
 import { LinkedObjectsV2 } from "@osdk/foundry.ontologies";
+
 import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
 import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 
 export const listLinkedObjects: CallFactory<
   "ontologyApiName" | "objectType" | "primaryKey" | "linkType",
   typeof LinkedObjectsV2.listLinkedObjects
-> = handleOpenApiCall(
-  LinkedObjectsV2.listLinkedObjects,
-  ["ontologyApiName", "objectType", "primaryKey", "linkType"],
-);
+> = handleOpenApiCall(LinkedObjectsV2.listLinkedObjects, [
+  "ontologyApiName",
+  "objectType",
+  "primaryKey",
+  "linkType",
+]);
 
 export const getLinkedObject: CallFactory<
   | "ontologyApiName"
@@ -33,13 +36,10 @@ export const getLinkedObject: CallFactory<
   | "linkType"
   | "targetPrimaryKey",
   typeof LinkedObjectsV2.getLinkedObject
-> = handleOpenApiCall(
-  LinkedObjectsV2.getLinkedObject,
-  [
-    "ontologyApiName",
-    "objectType",
-    "primaryKey",
-    "linkType",
-    "targetPrimaryKey",
-  ],
-);
+> = handleOpenApiCall(LinkedObjectsV2.getLinkedObject, [
+  "ontologyApiName",
+  "objectType",
+  "primaryKey",
+  "linkType",
+  "targetPrimaryKey",
+]);

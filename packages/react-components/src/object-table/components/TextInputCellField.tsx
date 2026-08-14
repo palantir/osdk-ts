@@ -18,6 +18,7 @@ import { Input } from "@base-ui/react/input";
 import { Error } from "@blueprintjs/icons";
 import classNames from "classnames";
 import React from "react";
+
 import styles from "../EditableCell.module.css";
 
 interface TextInputCellFieldProps {

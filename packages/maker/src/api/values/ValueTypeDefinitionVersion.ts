@@ -23,6 +23,7 @@ import type {
   ValueTypeStatus,
   ValueTypeVersion,
 } from "@osdk/client.unstable";
+
 import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 

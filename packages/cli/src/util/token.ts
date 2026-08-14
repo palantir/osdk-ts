@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { ExitProcessError } from "@osdk/cli.common";
-import { consola } from "consola";
 import { promises as fsPromises } from "node:fs";
 import path from "node:path";
+
+import { ExitProcessError } from "@osdk/cli.common";
+import { consola } from "consola";
 
 const TOKEN_ENV_VARS = ["FOUNDRY_TOKEN", "FOUNDRY_SDK_AUTH_TOKEN"] as const;
 
@@ -105,6 +106,6 @@ export function validate(token: string): void {
 
 function isJWT(token: string): boolean {
   // https://stackoverflow.com/a/65755789
-  const jwtPattern = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/;
+  const jwtPattern = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/u;
   return jwtPattern.test(token);
 }

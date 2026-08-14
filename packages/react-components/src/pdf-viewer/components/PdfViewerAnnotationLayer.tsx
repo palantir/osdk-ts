@@ -16,37 +16,63 @@
 
 import classnames from "classnames";
 import React, { useCallback, useMemo } from "react";
-import type { PdfAnnotation, PdfCustomAnnotation, PdfRect } from "../types.js";
+
+import type {
+  PdfAnnotation,
+  PdfCustomAnnotation,
+  PdfRect,
+} from "../PdfViewerApi.js";
+
 import styles from "./PdfViewerAnnotationLayer.module.css";
 
 export interface PdfViewerAnnotationLayerProps {
   annotations: PdfAnnotation[];
   pageHeight: number;
   scale: number;
+  transform: number[];
   onAnnotationClick?: (annotation: PdfAnnotation) => void;
 }
 
 interface AnnotationItemProps {
   annotation: PdfAnnotation;
+  transform: number[];
+  onClick?: (annotation: PdfAnnotation) => void;
+}
+
+interface CustomAnnotationItemProps extends AnnotationItemProps {
+  annotation: PdfCustomAnnotation;
   pageHeight: number;
   scale: number;
-  onClick?: (annotation: PdfAnnotation) => void;
+}
+
+function applyTransform(
+  point: readonly [number, number],
+  m: readonly number[],
+): [number, number] {
+  return [
+    m[0] * point[0] + m[2] * point[1] + m[4],
+    m[1] * point[0] + m[3] * point[1] + m[5],
+  ];
 }
 
 /** Convert a single PDF rect (bottom-left origin) to CSS positioning (top-left origin). */
 function computeRectStyle(
   rect: PdfRect,
-  pageHeight: number,
-  scale: number,
+  transform: readonly number[],
   color: string | undefined,
 ): React.CSSProperties {
+  const [x1, y1] = applyTransform([rect.x, rect.y], transform);
+  const [x2, y2] = applyTransform(
+    [rect.x + rect.width, rect.y + rect.height],
+    transform,
+  );
   return {
-    left: rect.x * scale,
-    top: (pageHeight - rect.y - rect.height) * scale,
-    width: rect.width * scale,
-    height: rect.height * scale,
+    left: Math.min(x1, x2),
+    top: Math.min(y1, y2),
+    width: Math.abs(x2 - x1),
+    height: Math.abs(y2 - y1),
     ...(color != null
-      ? { "--osdk-pdf-annotation-color": color } as React.CSSProperties
+      ? ({ "--osdk-pdf-annotation-color": color } as React.CSSProperties)
       : {}),
   };
 }
@@ -74,8 +100,7 @@ function useAnnotationHandlers(
 
 function AnnotationItem({
   annotation,
-  pageHeight,
-  scale,
+  transform,
   onClick,
 }: AnnotationItemProps): React.ReactElement {
   const { handleClick, handleKeyDown } = useAnnotationHandlers(
@@ -83,18 +108,14 @@ function AnnotationItem({
     onClick,
   );
 
-  const className = classnames(
-    styles.annotation,
-    styles[annotation.type],
-  );
+  const className = classnames(styles.annotation, styles[annotation.type]);
 
   const multiRects = annotation.rects;
   const hasMultipleRects = multiRects != null && multiRects.length > 1;
 
   const style = useMemo(
-    () =>
-      computeRectStyle(annotation.rect, pageHeight, scale, annotation.color),
-    [annotation, pageHeight, scale],
+    () => computeRectStyle(annotation.rect, transform, annotation.color),
+    [annotation, transform],
   );
 
   // Multi-rect: render a group wrapper with one div per rect
@@ -113,12 +134,7 @@ function AnnotationItem({
           <div
             key={i}
             className={className}
-            style={computeRectStyle(
-              rect,
-              pageHeight,
-              scale,
-              annotation.color,
-            )}
+            style={computeRectStyle(rect, transform, annotation.color)}
           />
         ))}
       </div>
@@ -145,23 +161,22 @@ function CustomAnnotationItem({
   annotation,
   pageHeight,
   scale,
+  transform,
   onClick,
-}: AnnotationItemProps & {
-  annotation: PdfCustomAnnotation;
-}): React.ReactElement {
+}: CustomAnnotationItemProps): React.ReactElement {
   const { handleClick, handleKeyDown } = useAnnotationHandlers(
     annotation,
     onClick,
   );
 
   const style = useMemo(
-    () => computeRectStyle(annotation.rect, pageHeight, scale, undefined),
-    [annotation, pageHeight, scale],
+    () => computeRectStyle(annotation.rect, transform, undefined),
+    [annotation, transform],
   );
 
   const renderProps = useMemo(
-    () => ({ annotation, scale, pageHeight }),
-    [annotation, scale, pageHeight],
+    () => ({ annotation, scale, pageHeight, transform }),
+    [annotation, scale, pageHeight, transform],
   );
 
   return (
@@ -184,30 +199,29 @@ export function PdfViewerAnnotationLayer({
   annotations,
   pageHeight,
   scale,
+  transform,
   onAnnotationClick,
 }: PdfViewerAnnotationLayerProps): React.ReactElement {
   return (
     <div className={styles.annotationLayer}>
       {annotations.map((annotation) =>
-        annotation.type === "custom"
-          ? (
-            <CustomAnnotationItem
-              key={annotation.id}
-              annotation={annotation}
-              pageHeight={pageHeight}
-              scale={scale}
-              onClick={onAnnotationClick}
-            />
-          )
-          : (
-            <AnnotationItem
-              key={annotation.id}
-              annotation={annotation}
-              pageHeight={pageHeight}
-              scale={scale}
-              onClick={onAnnotationClick}
-            />
-          )
+        annotation.type === "custom" ? (
+          <CustomAnnotationItem
+            key={annotation.id}
+            annotation={annotation}
+            pageHeight={pageHeight}
+            scale={scale}
+            transform={transform}
+            onClick={onAnnotationClick}
+          />
+        ) : (
+          <AnnotationItem
+            key={annotation.id}
+            annotation={annotation}
+            transform={transform}
+            onClick={onAnnotationClick}
+          />
+        ),
       )}
     </div>
   );

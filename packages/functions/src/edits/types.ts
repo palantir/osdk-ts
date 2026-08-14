@@ -63,8 +63,12 @@ export interface AddLink<
   type: "addLink";
   apiName: L;
   source: ObjectLocator<S>;
-  target: CompileTimeMetadata<S>["links"][L] extends
-    ObjectMetadata.Link<infer T, any> ? ObjectLocator<T> : never;
+  target: CompileTimeMetadata<S>["links"][L] extends ObjectMetadata.Link<
+    infer T,
+    any
+  >
+    ? ObjectLocator<T>
+    : never;
 }
 
 export interface RemoveLink<
@@ -74,28 +78,28 @@ export interface RemoveLink<
   type: "removeLink";
   apiName: L;
   source: ObjectLocator<S>;
-  target: CompileTimeMetadata<S>["links"][L] extends
-    ObjectMetadata.Link<infer T, any> ? ObjectLocator<T> : never;
+  target: CompileTimeMetadata<S>["links"][L] extends ObjectMetadata.Link<
+    infer T,
+    any
+  >
+    ? ObjectLocator<T>
+    : never;
 }
 
-type PartialForOptionalProperties<T> =
-  & {
-    [K in keyof T as undefined extends T[K] ? K : never]?: NonNullable<T[K]>;
-  }
-  & {
-    [K in keyof T as undefined extends T[K] ? never : K]-?: T[K];
-  };
+type PartialForOptionalProperties<T> = {
+  [K in keyof T as undefined extends T[K] ? K : never]?: NonNullable<T[K]>;
+} & {
+  [K in keyof T as undefined extends T[K] ? never : K]-?: T[K];
+};
 
 export interface CreateObject<S extends ObjectTypeDefinition> {
   type: "createObject";
   obj: S;
-  properties: PartialForOptionalProperties<
-    {
-      [P in PropertyKeys<S>]: OsdkObjectCreatePropertyType<
-        CompileTimeMetadata<S>["properties"][P]
-      >;
-    }
-  >;
+  properties: PartialForOptionalProperties<{
+    [P in PropertyKeys<S>]: OsdkObjectCreatePropertyType<
+      CompileTimeMetadata<S>["properties"][P]
+    >;
+  }>;
 }
 
 export interface DeleteObject<S extends ObjectTypeDefinition> {
@@ -111,16 +115,12 @@ export interface DeleteObjectForInterface<S extends InterfaceDefinition> {
 export interface UpdateObject<S extends ObjectTypeDefinition> {
   type: "updateObject";
   obj: ObjectLocator<S>;
-  properties: Partial<
-    {
-      [
-        P in Exclude<
-          PropertyKeys<S>,
-          CompileTimeMetadata<S>["primaryKeyApiName"]
-        >
-      ]: OsdkObjectCreatePropertyType<CompileTimeMetadata<S>["properties"][P]>;
-    }
-  >;
+  properties: Partial<{
+    [P in Exclude<
+      PropertyKeys<S>,
+      CompileTimeMetadata<S>["primaryKeyApiName"]
+    >]: OsdkObjectCreatePropertyType<CompileTimeMetadata<S>["properties"][P]>;
+  }>;
 }
 
 export interface CreateObjectForInterface<S extends InterfaceDefinition> {
@@ -140,13 +140,11 @@ export interface CreateObjectForInterface<S extends InterfaceDefinition> {
 export interface UpdateObjectForInterface<S extends InterfaceDefinition> {
   type: "updateObjectForInterface";
   obj: InterfaceLocator<S>;
-  properties: Partial<
-    {
-      [P in PropertyKeys<S>]: OsdkObjectCreatePropertyType<
-        CompileTimeMetadata<S>["properties"][P]
-      >;
-    }
-  >;
+  properties: Partial<{
+    [P in PropertyKeys<S>]: OsdkObjectCreatePropertyType<
+      CompileTimeMetadata<S>["properties"][P]
+    >;
+  }>;
 }
 
 export type AnyEdit =
@@ -163,7 +161,11 @@ export type AnyEdit =
 // Both object types and interfaces store the object type API name in $objectType,
 // but interfaces store the interface API name in $apiName.
 export function isInterfaceLocator(obj: any): obj is InterfaceLocator<any> {
-  return obj != null && typeof obj === "object"
-    && typeof obj.$objectType === "string" && typeof obj.$apiName === "string"
-    && obj.$apiName !== obj.$objectType;
+  return (
+    obj != null &&
+    typeof obj === "object" &&
+    typeof obj.$objectType === "string" &&
+    typeof obj.$apiName === "string" &&
+    obj.$apiName !== obj.$objectType
+  );
 }

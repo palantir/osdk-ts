@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  BulkGetBranchesForMonitorRequest
-    as _api_registry_BulkGetBranchesForMonitorRequest,
-  BulkGetBranchesForMonitorResponse
-    as _api_registry_BulkGetBranchesForMonitorResponse,
+  BulkGetBranchesForMonitorRequest as _api_registry_BulkGetBranchesForMonitorRequest,
+  BulkGetBranchesForMonitorResponse as _api_registry_BulkGetBranchesForMonitorResponse,
 } from "../__components.js";
 
 /**

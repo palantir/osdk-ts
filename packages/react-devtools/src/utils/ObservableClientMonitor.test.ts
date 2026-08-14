@@ -16,6 +16,7 @@
 
 import type { ObservableClient } from "@osdk/client/observable";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { MetricsStore } from "../store/MetricsStore.js";
 import type { ComponentQueryRegistry } from "./ComponentQueryRegistry.js";
 import type { EventTimeline } from "./EventTimeline.js";

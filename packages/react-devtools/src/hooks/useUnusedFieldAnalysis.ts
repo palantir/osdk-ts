@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import type { MonitorStore } from "../store/MonitorStore.js";
 import {
   UnusedFieldAnalyzer,
@@ -79,10 +80,7 @@ class AnalysisStore {
       const propertyTracker = this.monitorStore.getPropertyAccessTracker();
       const cacheSnapshot = await this.monitorStore.getCacheSnapshot();
 
-      const analyzer = new UnusedFieldAnalyzer(
-        registry,
-        propertyTracker,
-      );
+      const analyzer = new UnusedFieldAnalyzer(registry, propertyTracker);
 
       const report = analyzer.generateGlobalReport(cacheSnapshot);
 
@@ -117,9 +115,7 @@ export function useUnusedFieldAnalysis(
 ): UnusedFieldAnalysisState {
   const storeRef = React.useRef<AnalysisStore | null>(null);
 
-  if (
-    storeRef.current == null
-  ) {
+  if (storeRef.current == null) {
     storeRef.current = new AnalysisStore(monitorStore, updateIntervalMs);
   }
 
@@ -130,10 +126,7 @@ export function useUnusedFieldAnalysis(
     [store],
   );
 
-  const getSnapshot = React.useCallback(
-    () => store.getSnapshot(),
-    [store],
-  );
+  const getSnapshot = React.useCallback(() => store.getSnapshot(), [store]);
 
   return React.useSyncExternalStore(subscribe, getSnapshot);
 }

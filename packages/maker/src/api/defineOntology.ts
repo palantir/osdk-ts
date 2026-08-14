@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import * as fs from "fs";
+import * as path from "path";
+
 import type {
   ActionTypeStatus,
   OntologyIr,
@@ -28,8 +31,7 @@ import type {
   ParameterRenderHint,
   SectionId,
 } from "@osdk/client.unstable";
-import * as fs from "fs";
-import * as path from "path";
+
 import { convertActionParameters } from "../conversion/toMarketplace/convertActionParameters.js";
 import { convertActionSections } from "../conversion/toMarketplace/convertActionSections.js";
 import { convertActionValidation } from "../conversion/toMarketplace/convertActionValidation.js";
@@ -46,6 +48,14 @@ import { createCodeSnippets } from "./code-snippets/createCodeSnippets.js";
 import type { OntologyDefinition } from "./common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import type { OntologyEntityType } from "./common/OntologyEntityTypeMapping.js";
+import type { InterfaceType } from "./interface/InterfaceType.js";
+import type {
+  IntermediaryObjectLinkReference,
+  LinkType,
+} from "./links/LinkType.js";
+import type { InterfaceImplementation } from "./object/InterfaceImplementation.js";
+import type { ObjectType } from "./object/ObjectType.js";
+import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 
 // type -> apiName -> entity
 /** @internal */
@@ -62,24 +72,21 @@ export let dependencies: Record<string, string>;
 /** @internal */
 export let namespace: string;
 
-export function updateOntology<
-  T extends OntologyEntityType,
->(
-  entity: T,
-): void {
+export function updateOntology<T extends OntologyEntityType>(entity: T): void {
   if (entity.__type !== OntologyEntityTypeEnum.VALUE_TYPE) {
     ontologyDefinition[entity.__type][entity.apiName] = entity;
     return;
   }
   // value types are a special case
   if (
-    ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
-      === undefined
+    ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName] ===
+    undefined
   ) {
     ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName] = [];
   }
-  ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
-    .push(entity);
+  ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName].push(
+    entity,
+  );
 }
 
 export async function defineOntology(
@@ -152,7 +159,7 @@ export function writeStaticObjects(outputDir: string): void {
     fs.mkdirSync(codegenDir, { recursive: true });
   }
 
-  Object.values(typeDirs).forEach(typeDirNameFromMap => {
+  Object.values(typeDirs).forEach((typeDirNameFromMap) => {
     const currentTypeDirPath = path.join(codegenDir, typeDirNameFromMap);
     if (fs.existsSync(currentTypeDirPath)) {
       fs.rmSync(currentTypeDirPath, { recursive: true, force: true });
@@ -172,15 +179,20 @@ export function writeStaticObjects(outputDir: string): void {
 
       Object.entries(entities).forEach(
         ([apiName, entity]: [string, OntologyEntityType]) => {
-          const entityFileNameBase = camel(withoutNamespace(apiName))
-            + (ontologyTypeEnumKey as OntologyEntityTypeEnum
-                === OntologyEntityTypeEnum.VALUE_TYPE
+          const entityFileNameBase =
+            camel(withoutNamespace(apiName)) +
+            ((ontologyTypeEnumKey as OntologyEntityTypeEnum) ===
+            OntologyEntityTypeEnum.VALUE_TYPE
               ? "ValueType"
               : "");
           const filePath = path.join(typeDirPath, `${entityFileNameBase}.ts`);
           const entityTypeName = getEntityTypeName(ontologyTypeEnumKey);
-          const entityJSON = JSON.stringify(entity, null, 2).replace(
-            /("__type"\s*:\s*)"([^"]*)"/g,
+          const entityJSON = JSON.stringify(
+            sanitizeTypes(entity),
+            null,
+            2,
+          ).replace(
+            /("__type"\s*:\s*)"([^"]*)"/gu,
             (_, prefix, value) => `${prefix}OntologyEntityTypeEnum.${value}`,
           );
           const content = `
@@ -210,8 +222,8 @@ export const ${entityFileNameBase}: ${entityTypeName} = wrapWithProxy(${entityFi
   );
 
   if (topLevelExportStatements.length > 0) {
-    const mainIndexContent = dependencyInjectionString()
-      + topLevelExportStatements.join("\n") + "\n";
+    const mainIndexContent =
+      dependencyInjectionString() + topLevelExportStatements.join("\n") + "\n";
     const mainIndexFilePath = path.join(outputDir, "index.ts");
     fs.writeFileSync(mainIndexFilePath, mainIndexContent, { flag: "w" });
   }
@@ -223,44 +235,174 @@ export function buildDatasource(
   classificationMarkingGroupName?: string,
   mandatoryMarkingGroupName?: string,
 ): OntologyIrObjectTypeDatasource {
-  const needsSecurity = classificationMarkingGroupName !== undefined
-    || mandatoryMarkingGroupName !== undefined;
+  const needsSecurity =
+    classificationMarkingGroupName !== undefined ||
+    mandatoryMarkingGroupName !== undefined;
 
   const securityConfig = needsSecurity
     ? {
-      classificationConstraint: classificationMarkingGroupName
-        ? {
-          markingGroupName: classificationMarkingGroupName,
-        }
-        : undefined,
-      markingConstraint: mandatoryMarkingGroupName
-        ? {
-          markingGroupName: mandatoryMarkingGroupName,
-        }
-        : undefined,
-    }
+        classificationConstraint: classificationMarkingGroupName
+          ? {
+              markingGroupName: classificationMarkingGroupName,
+            }
+          : undefined,
+        markingConstraint: mandatoryMarkingGroupName
+          ? {
+              markingGroupName: mandatoryMarkingGroupName,
+            }
+          : undefined,
+      }
     : undefined;
-  return ({
+  return {
     datasourceName: apiName,
     datasource: definition,
     editsConfiguration: {
       onlyAllowPrivilegedEdits: false,
     },
     redacted: false,
-    ...((securityConfig !== undefined) && { dataSecurity: securityConfig }),
-  });
+    ...(securityConfig !== undefined && { dataSecurity: securityConfig }),
+  };
+}
+
+export function sanitizeTypes(entity: OntologyEntityType): OntologyEntityType {
+  switch (entity.__type) {
+    case OntologyEntityTypeEnum.INTERFACE_TYPE:
+      return filterCyclicReferences({
+        ...entity,
+        linkedInterfaces: (entity.linkedInterfaces ?? []).map(
+          (interfaceTypeOrApiName) =>
+            typeof interfaceTypeOrApiName === "string"
+              ? ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][
+                  interfaceTypeOrApiName
+                ]
+              : interfaceTypeOrApiName,
+        ),
+      });
+    case OntologyEntityTypeEnum.OBJECT_TYPE:
+      return entity.implementsInterfaces === undefined
+        ? entity
+        : {
+            ...entity,
+            implementsInterfaces: sanitizeImplements(
+              entity.implementsInterfaces,
+            ),
+          };
+    case OntologyEntityTypeEnum.LINK_TYPE:
+      return sanitizeLinkInterfaces(entity);
+    default:
+      return entity;
+  }
+}
+
+function sanitizeImplements(
+  implementsInterfaces: Array<InterfaceImplementation>,
+): Array<InterfaceImplementation> {
+  return implementsInterfaces.map((impl) => ({
+    ...impl,
+    implements: filterCyclicReferences(impl.implements),
+  }));
+}
+
+function sanitizeImplementer(
+  object: ObjectTypeDefinition | ObjectType,
+): ObjectTypeDefinition | ObjectType {
+  return object.implementsInterfaces === undefined
+    ? object
+    : {
+        ...object,
+        implementsInterfaces: sanitizeImplements(object.implementsInterfaces),
+      };
+}
+
+function sanitizeLinkSideObject(
+  object: ObjectTypeDefinition | ObjectType | string,
+): ObjectTypeDefinition | ObjectType | string {
+  return typeof object === "string" ? object : sanitizeImplementer(object);
+}
+
+function sanitizeLinkInterfaces(link: LinkType): LinkType {
+  if ("one" in link) {
+    return {
+      ...link,
+      one: { ...link.one, object: sanitizeLinkSideObject(link.one.object) },
+      toMany: {
+        ...link.toMany,
+        object: sanitizeLinkSideObject(link.toMany.object),
+      },
+    };
+  }
+  if ("intermediaryObjectType" in link) {
+    return {
+      ...link,
+      intermediaryObjectType: sanitizeImplementer(link.intermediaryObjectType),
+      many: sanitizeIntermediarySide(link.many),
+      toMany: sanitizeIntermediarySide(link.toMany),
+    };
+  }
+  return {
+    ...link,
+    many: { ...link.many, object: sanitizeLinkSideObject(link.many.object) },
+    toMany: {
+      ...link.toMany,
+      object: sanitizeLinkSideObject(link.toMany.object),
+    },
+  };
+}
+
+function sanitizeIntermediarySide(
+  side: IntermediaryObjectLinkReference,
+): IntermediaryObjectLinkReference {
+  return {
+    ...side,
+    object: sanitizeLinkSideObject(side.object),
+    linkToIntermediary: sanitizeLinkInterfaces(side.linkToIntermediary),
+  };
+}
+
+function filterCyclicReferences(
+  iface: InterfaceType,
+  ancestors = new Set<string>(),
+  expanded = new Set<string>(),
+): InterfaceType {
+  ancestors.add(iface.apiName);
+
+  const processLinked = (
+    linked: InterfaceType | string,
+  ): InterfaceType | string => {
+    if (typeof linked === "string") return linked;
+    if (ancestors.has(linked.apiName)) return linked.apiName;
+    if (expanded.has(linked.apiName)) {
+      const { linkedInterfaces: _, extendsInterfaces: __, ...shallow } = linked;
+      return {
+        ...shallow,
+        linkedInterfaces: [],
+        extendsInterfaces: [],
+      } as InterfaceType;
+    }
+    return filterCyclicReferences(linked, new Set(ancestors), expanded);
+  };
+
+  expanded.add(iface.apiName);
+  return {
+    ...iface,
+    linkedInterfaces: (iface.linkedInterfaces ?? []).map(processLinked),
+    extendsInterfaces: iface.extendsInterfaces.map(
+      (parent) => processLinked(parent) as InterfaceType,
+    ),
+  };
 }
 
 export function cleanAndValidateLinkTypeId(apiName: string): string {
   // Insert a dash before any uppercase letter that follows a lowercase letter or digit
-  const step1 = apiName.replace(/([a-z0-9])([A-Z])/g, "$1-$2");
+  const step1 = apiName.replace(/([a-z0-9])([A-Z])/gu, "$1-$2");
   // Insert a dash after a sequence of uppercase letters when followed by a lowercase letter
   // then convert the whole string to lowercase
   // e.g., apiName, APIname, and apiNAME will all be converted to api-name
-  const linkTypeId = step1.replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
+  const linkTypeId = step1
+    .replace(/([A-Z])([A-Z][a-z])/gu, "$1-$2")
     .toLowerCase();
 
-  const VALIDATION_PATTERN = /^([a-z][a-z0-9\-]*)$/;
+  const VALIDATION_PATTERN = /^([a-z][a-z0-9\-]*)$/u;
   if (!VALIDATION_PATTERN.test(linkTypeId)) {
     throw new Error(
       `LinkType id '${linkTypeId}' must be lower case with dashes.`,
@@ -328,8 +470,8 @@ export function convertAction(
     convertActionParameters(action);
   const actionSections: Record<SectionId, OntologyIrSection> =
     convertActionSections(action);
-  const parameterOrdering = action.parameterOrdering
-    ?? (action.parameters ?? []).map(p => p.id);
+  const parameterOrdering =
+    action.parameterOrdering ?? (action.parameters ?? []).map((p) => p.id);
   return {
     actionType: {
       actionTypeLogic: {
@@ -361,33 +503,35 @@ export function convertAction(
             blueprint: action.icon ?? { locator: "edit", color: "#000000" },
           },
           successMessage: action.submissionMetadata?.successMessage
-            ? [{
-              type: "message",
-              message: action.submissionMetadata.successMessage,
-            }]
+            ? [
+                {
+                  type: "message",
+                  message: action.submissionMetadata.successMessage,
+                },
+              ]
             : [],
           typeClasses: action.typeClasses ?? [],
-          ...(action.submissionMetadata?.submitButtonDisplayMetadata
-            && {
-              submitButtonDisplayMetadata:
-                action.submissionMetadata.submitButtonDisplayMetadata,
-            }),
-          ...(action.submissionMetadata?.undoButtonConfiguration
-            && {
-              undoButtonConfiguration:
-                action.submissionMetadata.undoButtonConfiguration,
-            }),
+          applyingMessage: [],
+          ...(action.submissionMetadata?.submitButtonDisplayMetadata && {
+            submitButtonDisplayMetadata:
+              action.submissionMetadata.submitButtonDisplayMetadata,
+          }),
+          ...(action.submissionMetadata?.undoButtonConfiguration && {
+            undoButtonConfiguration:
+              action.submissionMetadata.undoButtonConfiguration,
+          }),
         },
-        parameterOrdering: parameterOrdering,
+        parameterOrdering,
         formContentOrdering: getFormContentOrdering(action, parameterOrdering),
         parameters: actionParameters,
         sections: actionSections,
-        status: typeof action.status === "string"
-          ? {
-            type: action.status,
-            [action.status]: {},
-          } as unknown as ActionTypeStatus
-          : action.status,
+        status:
+          typeof action.status === "string"
+            ? ({
+                type: action.status,
+                [action.status]: {},
+              } as unknown as ActionTypeStatus)
+            : action.status,
         entities: action.entities,
       },
     },
@@ -406,8 +550,7 @@ export function extractAllowedValues(
           oneOf: {
             labelledValues: allowedValues.oneOf,
             otherValueAllowed: {
-              allowed: allowedValues.otherValueAllowed
-                ?? false,
+              allowed: allowedValues.otherValueAllowed ?? false,
             },
           },
         },
@@ -435,15 +578,11 @@ export function extractAllowedValues(
         text: {
           type: "text",
           text: {
-            ...(minLength === undefined
-              ? {}
-              : { minLength: minLength }),
-            ...(maxLength === undefined
-              ? {}
-              : { maxLength: maxLength }),
+            ...(minLength === undefined ? {} : { minLength }),
+            ...(maxLength === undefined ? {} : { maxLength }),
             ...(regex === undefined
               ? {}
-              : { regex: { regex: regex, failureMessage: "Invalid input" } }),
+              : { regex: { regex, failureMessage: "Invalid input" } }),
           },
         },
       };
@@ -488,22 +627,23 @@ export function extractAllowedValues(
         user: {
           type: "user",
           user: {
-            filter: (allowedValues.fromGroups ?? []).map(group => {
+            filter: (allowedValues.fromGroups ?? []).map((group) => {
               return {
                 type: "groupFilter",
                 groupFilter: {
-                  groupId: group.type === "static"
-                    ? {
-                      type: "staticValue",
-                      staticValue: {
-                        type: "string",
-                        string: group.name,
-                      },
-                    }
-                    : {
-                      type: "parameterId",
-                      parameterId: group.parameter,
-                    },
+                  groupId:
+                    group.type === "static"
+                      ? {
+                          type: "staticValue",
+                          staticValue: {
+                            type: "string",
+                            string: group.name,
+                          },
+                        }
+                      : {
+                          type: "parameterId",
+                          parameterId: group.parameter,
+                        },
                 },
               };
             }),
@@ -528,7 +668,7 @@ export function extractAllowedValues(
           [k]: {},
         },
       } as unknown as OntologyIrAllowedParameterValues;
-      // TODO(dpaquin): there's probably a TS clean way to do this
+    // TODO(dpaquin): there's probably a TS clean way to do this
   }
 }
 
@@ -537,9 +677,8 @@ export function renderHintFromBaseType(
   validation?: ActionParameterValidation,
 ): ParameterRenderHint {
   // TODO(dpaquin): these are just guesses, we should find where they're actually defined
-  const type = typeof parameter.type === "string"
-    ? parameter.type
-    : parameter.type.type;
+  const type =
+    typeof parameter.type === "string" ? parameter.type : parameter.type.type;
   switch (type) {
     case "boolean":
     case "booleanList":
@@ -555,8 +694,8 @@ export function renderHintFromBaseType(
       return { type: "numericInput", numericInput: {} };
     case "string":
       if (
-        validation?.allowedValues?.type === "user"
-        || validation?.allowedValues?.type === "multipassGroup"
+        validation?.allowedValues?.type === "user" ||
+        validation?.allowedValues?.type === "multipassGroup"
       ) {
         return { type: "userDropdown", userDropdown: {} };
       }
@@ -621,7 +760,7 @@ function camel(str: string): string {
   if (!str) {
     return str;
   }
-  let result = str.replace(/[-_]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ""));
+  let result = str.replace(/[-_]+(.)?/gu, (_, c) => (c ? c.toUpperCase() : ""));
   result = result.charAt(0).toLowerCase() + result.slice(1);
   return result;
 }
@@ -640,7 +779,7 @@ function getEntityTypeName(type: string): string {
   }[type]!;
 }
 
-function writeDependencyFile(dependencyFile: string): void {
+export function writeDependencyFile(dependencyFile: string): void {
   fs.writeFileSync(dependencyFile, JSON.stringify(dependencies, null, 2));
 }
 

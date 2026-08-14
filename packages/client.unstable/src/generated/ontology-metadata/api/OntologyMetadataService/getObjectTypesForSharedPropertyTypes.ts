@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetObjectTypesForSharedPropertyTypesRequest
-    as _api_GetObjectTypesForSharedPropertyTypesRequest,
-  GetObjectTypesForSharedPropertyTypesResponse
-    as _api_GetObjectTypesForSharedPropertyTypesResponse,
+  GetObjectTypesForSharedPropertyTypesRequest as _api_GetObjectTypesForSharedPropertyTypesRequest,
+  GetObjectTypesForSharedPropertyTypesResponse as _api_GetObjectTypesForSharedPropertyTypesResponse,
 } from "../__components.js";
 
 /**

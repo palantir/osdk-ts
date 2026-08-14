@@ -17,6 +17,7 @@
 export type {
   ActionTypeProvenance,
   ActionTypeProvenanceSource,
+  BuilderDirectWriter,
   BuilderEntityProvenance,
   EditsHistoryProvenance,
   EntityProvenance,
@@ -27,4 +28,5 @@ export type {
   OntologyIrEntityProvenance,
   OntologyIrEntityProvenanceSource,
   OntologyMetadataAppEntityProvenance,
+  OwningDirectWriter,
 } from "./__components.js";

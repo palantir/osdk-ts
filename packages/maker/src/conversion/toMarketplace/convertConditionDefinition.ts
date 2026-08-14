@@ -16,6 +16,7 @@
 
 import type { OntologyIrCondition } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
+
 import type { ActionParameter } from "../../api/action/ActionParameter.js";
 import type { ConditionDefinition } from "../../api/action/ConditionDefinition.js";
 
@@ -29,8 +30,8 @@ export function convertConditionDefinition(
         return {
           type: "and",
           and: {
-            conditions: condition.conditions.map(c =>
-              convertConditionDefinition(c, actionParameters)
+            conditions: condition.conditions.map((c) =>
+              convertConditionDefinition(c, actionParameters),
             ),
           },
         };
@@ -42,8 +43,8 @@ export function convertConditionDefinition(
         return {
           type: "or",
           or: {
-            conditions: condition.conditions.map(c =>
-              convertConditionDefinition(c, actionParameters)
+            conditions: condition.conditions.map((c) =>
+              convertConditionDefinition(c, actionParameters),
             ),
           },
         };
@@ -73,9 +74,7 @@ export function convertConditionDefinition(
             staticValue: {
               type: "stringList",
               stringList: {
-                strings: [
-                  condition.name,
-                ],
+                strings: [condition.name],
               },
             },
           },
@@ -83,7 +82,7 @@ export function convertConditionDefinition(
       };
     case "parameter":
       invariant(
-        actionParameters?.some(param => param.id === condition.parameterId),
+        actionParameters?.some((param) => param.id === condition.parameterId),
         `Action parameter condition references unknown parameter ${condition.parameterId}`,
       );
       return {

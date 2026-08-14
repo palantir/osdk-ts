@@ -17,6 +17,7 @@
 import type { InterfaceMetadata, ObjectMetadata } from "@osdk/api";
 import type { ObjectSet } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { extractObjectOrInterfaceType } from "./extractObjectOrInterfaceType.js";
 
@@ -29,7 +30,7 @@ describe("extractObjectOrInterfaceType", () => {
             links: {
               testLink1: {
                 targetType: "SecondType",
-                "multiplicity": "many",
+                multiplicity: "many",
               } satisfies ObjectMetadata.Link<any, any>,
             },
           };
@@ -38,7 +39,7 @@ describe("extractObjectOrInterfaceType", () => {
             links: {
               testLink2: {
                 targetType: "ThirdType",
-                "multiplicity": "many",
+                multiplicity: "many",
               } satisfies ObjectMetadata.Link<any, any>,
             },
           };
@@ -112,8 +113,8 @@ describe("extractObjectOrInterfaceType", () => {
           },
           interfaceLink: "linkToInterface2",
         },
-        { type: "static", "objects": ["object1", "object2"] },
-        { type: "reference", "reference": "rid.os.1234" },
+        { type: "static", objects: ["object1", "object2"] },
+        { type: "reference", reference: "rid.os.1234" },
       ],
     };
 

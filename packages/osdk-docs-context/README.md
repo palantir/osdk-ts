@@ -69,7 +69,7 @@ const variations = NestedOsdkExamplesContext.getVariations(
 // Returns: ["#isUnary", "^isUnary"]
 
 // Access specific variations
-variations.forEach(variation => {
+variations.forEach((variation) => {
   const code = NestedOsdkExamplesContext.getExample("2.4.0", [
     "derivedPropertyNumericExpression",
     variation,
@@ -97,14 +97,12 @@ The package implements semantic version fallback - newer versions include exampl
 
 ```typescript
 // 2.4.0 includes examples from 2.0.0, 2.1.0, and 2.4.0
-const examples240 = NestedOsdkExamplesContext.getBaseExamplesForVersion(
-  "2.4.0",
-);
+const examples240 =
+  NestedOsdkExamplesContext.getBaseExamplesForVersion("2.4.0");
 
 // 2.1.0 includes examples from 2.0.0 and 2.1.0 (but NOT 2.4.0)
-const examples210 = NestedOsdkExamplesContext.getBaseExamplesForVersion(
-  "2.1.0",
-);
+const examples210 =
+  NestedOsdkExamplesContext.getBaseExamplesForVersion("2.1.0");
 ```
 
 ## Data Structure

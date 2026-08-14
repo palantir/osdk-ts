@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  CheckBulkOperationPermissionsRequest
-    as _api_CheckBulkOperationPermissionsRequest,
-  CheckBulkOperationPermissionsResponse
-    as _api_CheckBulkOperationPermissionsResponse,
+  CheckBulkOperationPermissionsRequest as _api_CheckBulkOperationPermissionsRequest,
+  CheckBulkOperationPermissionsResponse as _api_CheckBulkOperationPermissionsResponse,
 } from "../__components.js";
 
 /**

@@ -15,6 +15,7 @@
  */
 
 import type { OntologyIrValueTypeBlockData } from "@osdk/client.unstable";
+
 import { type OntologyDefinition } from "../../api/common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../../api/common/OntologyEntityTypeEnum.js";
 import { convertValueTypesToIr } from "./convertValueTypesToIr.js";

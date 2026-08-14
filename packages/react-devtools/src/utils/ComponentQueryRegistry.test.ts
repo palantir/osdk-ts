@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { ComponentQueryRegistry } from "./ComponentQueryRegistry.js";
 import type { QueryParams } from "./ComponentQueryRegistry.js";
 
@@ -43,7 +44,7 @@ describe("ComponentQueryRegistry", () => {
       });
 
       expect(bindingId).toBeTruthy();
-      expect(bindingId).toMatch(/^binding-\d+$/);
+      expect(bindingId).toMatch(/^binding-\d+$/u);
     });
 
     it("should index binding by component", () => {

@@ -106,8 +106,7 @@ export interface BatchExecutionWarnings {
 /**
  * Batch size must be greater than 0.
  */
-export interface BatchSizeIsNotPositive {
-}
+export interface BatchSizeIsNotPositive {}
 /**
  * If an effect with webhooks or notifications is selected, the batch size must be set to 1.
  */
@@ -163,8 +162,7 @@ export interface InvalidParallelism {
 /**
  * Must select at least one effect.
  */
-export interface MustSelectAtLeastOneEffect {
-}
+export interface MustSelectAtLeastOneEffect {}
 /**
  * Orderable effects are selected. Effects will not be ordered in manual execution.
  */

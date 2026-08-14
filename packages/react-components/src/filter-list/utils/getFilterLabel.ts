@@ -15,6 +15,7 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
+
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 

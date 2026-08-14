@@ -17,8 +17,10 @@
 import fs from "node:fs";
 import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+
 import { dirSync } from "tmp";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
+
 import { cli } from "./cli.js";
 import { TEMPLATES } from "./generatedNoCheck/templates.js";
 import type { Template } from "./templates.js";
@@ -77,7 +79,7 @@ describe.each(TEMPLATES)("template $id", (template) => {
   });
 });
 
-describe.each(TEMPLATES.filter(template => !template.hidden))(
+describe.each(TEMPLATES.filter((template) => !template.hidden))(
   "template $id",
   (template) => {
     test(`CLI creates ${template.id} without OSDK`, async () => {
@@ -92,50 +94,48 @@ describe.each(TEMPLATES.filter(template => !template.hidden))(
   },
 );
 
-const VISIBLE_TEMPLATE = TEMPLATES.filter(template => !template.hidden)[0];
+const VISIBLE_TEMPLATE = TEMPLATES.filter((template) => !template.hidden)[0];
 
 test(`CLI rejects no OSDK with 1.x`, async () => {
-  await expect(runTest({
-    project: `expected-${VISIBLE_TEMPLATE.id}`,
-    template: VISIBLE_TEMPLATE,
-    corsProxy: false,
-    sdkVersion: "1.x",
-    skipOsdk: true,
-  })).rejects.toThrowError();
+  await expect(
+    runTest({
+      project: `expected-${VISIBLE_TEMPLATE.id}`,
+      template: VISIBLE_TEMPLATE,
+      corsProxy: false,
+      sdkVersion: "1.x",
+      skipOsdk: true,
+    }),
+  ).rejects.toThrowError();
 });
 
-async function runTest(
-  {
-    project,
-    template,
-    corsProxy,
-    sdkVersion,
-    skipOsdk,
-    ontology,
-    osdkPackage,
-    osdkRegistryUrl,
-  }:
-    & {
-      project: string;
-      template: Template;
-      corsProxy: boolean;
-      sdkVersion: string;
+async function runTest({
+  project,
+  template,
+  corsProxy,
+  sdkVersion,
+  skipOsdk,
+  ontology,
+  osdkPackage,
+  osdkRegistryUrl,
+}: {
+  project: string;
+  template: Template;
+  corsProxy: boolean;
+  sdkVersion: string;
+} & (
+  | {
+      skipOsdk: true;
+      ontology?: undefined;
+      osdkPackage?: undefined;
+      osdkRegistryUrl?: undefined;
     }
-    & (
-      | {
-        skipOsdk: true;
-        ontology?: undefined;
-        osdkPackage?: undefined;
-        osdkRegistryUrl?: undefined;
-      }
-      | {
-        skipOsdk: false;
-        ontology: string;
-        osdkPackage: string;
-        osdkRegistryUrl: string;
-      }
-    ),
-): Promise<void> {
+  | {
+      skipOsdk: false;
+      ontology: string;
+      osdkPackage: string;
+      osdkRegistryUrl: string;
+    }
+)): Promise<void> {
   const args = [
     "npx",
     "@osdk/create-app",
@@ -169,18 +169,26 @@ async function runTest(
 
   await cli(args);
 
-  expect(fs.readdirSync(path.join(process.cwd(), project)).length)
-    .toBeGreaterThan(0);
-  expect(fs.existsSync(path.join(process.cwd(), project, "package.json")))
-    .toBe(true);
-  expect(fs.existsSync(path.join(process.cwd(), project, "README.md")))
-    .toBe(true);
+  expect(
+    fs.readdirSync(path.join(process.cwd(), project)).length,
+  ).toBeGreaterThan(0);
+  expect(fs.existsSync(path.join(process.cwd(), project, "package.json"))).toBe(
+    true,
+  );
+  expect(fs.existsSync(path.join(process.cwd(), project, "README.md"))).toBe(
+    true,
+  );
 
   const packageJson = JSON.parse(
     fs.readFileSync(path.join(process.cwd(), project, "package.json"), "utf-8"),
   );
 
-  if (sdkVersion === "2.x") {
+  // The TypeScript library template is a hidden, non-OSDK scaffold: it ships no
+  // @osdk/client dependency, so the version-pinning assertions below don't apply.
+  // Assert the absence instead so a regression that started injecting it is caught.
+  if (template.id === "template-typescript-library") {
+    expect(packageJson.dependencies?.["@osdk/client"]).toBeUndefined();
+  } else if (sdkVersion === "2.x") {
     // Since the example-generator needs to set the version to `workspace:*`,
     // we cannot use PRs to check that the version is being generated correctly.
 
@@ -190,9 +198,82 @@ async function runTest(
     expect(packageJson.dependencies["@osdk/client"]).toBe(
       `^${createAppVersion}`,
     );
+
+    // The React template pins @osdk/react to the same clientVersion as
+    // @osdk/client (they publish in lockstep via the same fixed changeset
+    // group). Other 2.x templates either don't ship @osdk/react or pin it
+    // independently, so this assertion is scoped to template-react.
+    if (template.id === "template-react") {
+      expect(packageJson.dependencies["@osdk/react"]).toBe(
+        `^${createAppVersion}`,
+      );
+    }
   } else {
-    expect(packageJson.dependencies["@osdk/client"]).toBe(
-      undefined,
-    );
+    expect(packageJson.dependencies["@osdk/client"]).toBe(undefined);
   }
 }
+
+describe("--unstableFeatures flag", () => {
+  const argsFor = (project: string, extra: string[]): string[] => [
+    "npx",
+    "@osdk/create-app",
+    project,
+    "--overwrite",
+    "--template",
+    "template-react",
+    "--foundryUrl",
+    "https://example.palantirfoundry.com",
+    "--applicationUrl",
+    "https://app.example.palantirfoundry.com",
+    "--application",
+    "ri.third-party-applications.main.application.fake",
+    "--clientId",
+    "123",
+    "--corsProxy",
+    "false",
+    "--sdkVersion",
+    "2.x",
+    "--scopes",
+    "api:read-data",
+    "--ontology",
+    "ri.ontology.main.ontology.fake",
+    "--osdkPackage",
+    "@fake/sdk",
+    "--osdkRegistryUrl",
+    "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
+    ...extra,
+  ];
+
+  const readProject = (project: string) => {
+    const root = path.join(process.cwd(), project);
+    const pkgPath = path.join(root, "package.json");
+    const clientPath = path.join(root, "src", "client.ts");
+    return {
+      packageJson: JSON.parse(fs.readFileSync(pkgPath, "utf-8")),
+      clientTs: fs.readFileSync(clientPath, "utf-8"),
+    };
+  };
+
+  test("wires Foundry branch support when enabled", async () => {
+    const project = "expected-unstable-on";
+    await cli(argsFor(project, ["--unstableFeatures", "true"]));
+    const { packageJson, clientTs } = readProject(project);
+
+    const postinstall = "./node_modules/.bin/osdk unstable branch sync";
+    expect(packageJson.scripts.postinstall).toBe(postinstall);
+    expect(packageJson.devDependencies["@osdk/cli"]).toBe("latest");
+    expect(clientTs).toContain('import { $branch } from "@fake/sdk";');
+    expect(clientTs).toContain("UNSTABLE_DO_NOT_USE_BRANCH: $branch");
+  });
+
+  test("omits Foundry branch support by default", async () => {
+    const project = "expected-unstable-off";
+    await cli(argsFor(project, []));
+    const { packageJson, clientTs } = readProject(project);
+
+    expect(packageJson.scripts.postinstall).toBeUndefined();
+    expect(packageJson.devDependencies?.["@osdk/cli"]).toBeUndefined();
+    expect(clientTs).not.toContain("UNSTABLE_DO_NOT_USE_BRANCH");
+    expect(clientTs).not.toContain("$branch");
+  });
+});

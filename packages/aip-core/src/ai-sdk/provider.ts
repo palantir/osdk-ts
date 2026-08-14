@@ -16,6 +16,7 @@
 
 import type { LanguageModelV3 } from "@ai-sdk/provider";
 import type { PlatformClient } from "@osdk/client";
+
 import { FoundryChatLanguageModel } from "./foundry-chat-language-model.js";
 import type { ModelIdentifier } from "./types.js";
 
@@ -70,13 +71,13 @@ export function createFoundryAI(
   const createLanguageModel = (
     model: string | ModelIdentifier,
   ): LanguageModelV3 => {
-    const identifier: ModelIdentifier = typeof model === "string"
-      ? { type: "lmsModel", apiName: model }
-      : model;
+    const identifier: ModelIdentifier =
+      typeof model === "string" ? { type: "lmsModel", apiName: model } : model;
 
-    const id = identifier.type === "lmsModel"
-      ? identifier.apiName
-      : identifier.registeredModelRid;
+    const id =
+      identifier.type === "lmsModel"
+        ? identifier.apiName
+        : identifier.registeredModelRid;
 
     return new FoundryChatLanguageModel(`foundry/${id}`, {
       client: options.client,
@@ -84,9 +85,7 @@ export function createFoundryAI(
     });
   };
 
-  const provider = function(
-    model: string | ModelIdentifier,
-  ): LanguageModelV3 {
+  const provider = function (model: string | ModelIdentifier): LanguageModelV3 {
     return createLanguageModel(model);
   };
 

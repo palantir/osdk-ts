@@ -44,21 +44,18 @@ export function useTimeElapsed(
     [startMs],
   );
 
-  const getSnapshot = React.useCallback(
-    (): number | undefined => {
-      if (startMs == null) {
-        return undefined;
-      }
-      const state = stateRef.current;
-      if (state.cachedTick === state.tick) {
-        return state.cachedValue;
-      }
-      state.cachedValue = Date.now() - startMs;
-      state.cachedTick = state.tick;
+  const getSnapshot = React.useCallback((): number | undefined => {
+    if (startMs == null) {
+      return undefined;
+    }
+    const state = stateRef.current;
+    if (state.cachedTick === state.tick) {
       return state.cachedValue;
-    },
-    [startMs],
-  );
+    }
+    state.cachedValue = Date.now() - startMs;
+    state.cachedTick = state.tick;
+    return state.cachedValue;
+  }, [startMs]);
 
   return React.useSyncExternalStore(subscribe, getSnapshot);
 }

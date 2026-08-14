@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
+import * as fs from "node:fs/promises";
+import { tmpdir } from "node:os";
+import * as path from "node:path";
+
 // @ts-check
 import { createClient } from "@osdk/client";
 import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import { $ } from "execa";
-import * as fs from "node:fs/promises";
-import { tmpdir } from "node:os";
-import * as path from "node:path";
+
 import { safeStat } from "./safeStat.js";
 
+const ONTOLOGY_METADATA_ENTRYPOINT = "./UNSTABLE_DO_NOT_USE/ontology-metadata";
+
 export async function generateWithMockOntology(): Promise<void> {
-  const testSetup = startNodeApiServer(
-    new LegacyFauxFoundry(),
-    createClient,
-  );
+  const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
 
   try {
     const dir = await fs.mkdtemp(
@@ -44,65 +45,63 @@ export async function generateWithMockOntology(): Promise<void> {
 
     const generatePackageCommand = new GeneratePackageCommand();
 
-    const baseArgs: Parameters<typeof generatePackageCommand["handler"]>[0] = {
-      packageName: "@test-app2/osdk",
-      packageVersion: "0.0.1",
-      outputDir: dir,
-      authToken: "myAccessToken",
-      foundryHostname: "https://stack.palantir.com",
-      ontology:
-        "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
-      objectTypes: [
-        "Employee",
-        "Office",
-        "objectTypeWithAllPropertyTypes",
-        "ObjectWithTimestampPrimaryKey",
-        "equipment",
-      ],
-      actionTypes: [
-        "createOffice",
-        "moveOffice",
-        "createOfficeAndEmployee",
-        "actionTakesObjectSet",
-      ],
-      queryTypes: [
-        "addOne",
-        "incrementPersonAge",
-        "returnsTimestamp",
-        "returnsDate",
-        "returnsObject",
-        "twoDimensionalAggregationFunction",
-        "threeDimensionalAggregationFunction",
-      ],
-      interfaceTypes: [
-        "FooInterface",
-        "BarInterface",
-      ],
-      linkTypes: ["Employee.peeps", "Employee.lead", "Employee.officeLink"],
-      palantirOnlyTest: true,
-      _: [],
-      $0: "",
-    };
+    const baseArgs: Parameters<(typeof generatePackageCommand)["handler"]>[0] =
+      {
+        packageName: "@test-app2/osdk",
+        packageVersion: "0.0.1",
+        outputDir: dir,
+        authToken: "myAccessToken",
+        foundryHostname: "https://stack.palantir.com",
+        ontology:
+          "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+        objectTypes: [
+          "Employee",
+          "Office",
+          "objectTypeWithAllPropertyTypes",
+          "ObjectWithTimestampPrimaryKey",
+          "equipment",
+        ],
+        actionTypes: [
+          "createOffice",
+          "moveOffice",
+          "createOfficeAndEmployee",
+          "actionTakesObjectSet",
+        ],
+        queryTypes: [
+          "addOne",
+          "incrementPersonAge",
+          "returnsTimestamp",
+          "returnsDate",
+          "returnsObject",
+          "twoDimensionalAggregationFunction",
+          "threeDimensionalAggregationFunction",
+        ],
+        interfaceTypes: ["FooInterface", "BarInterface"],
+        linkTypes: ["Employee.peeps", "Employee.lead", "Employee.officeLink"],
+        palantirOnlyTest: true,
+        _: [],
+        $0: "",
+      };
 
     await generatePackageCommand.handler({
       ...baseArgs,
       packageName: "@test-app2/osdk",
       beta: false,
+      experimentalOntologyMetadata: true,
     });
 
     await safeStat(testApp2Dir, "should exist");
 
-    await $({
-      stdout: "inherit",
-      stderr: "inherit",
-    })`attw --pack ${
-      path.join(testApp2Dir, "osdk")
-    } --ignore-rules internal-resolution-error`;
+    const packageDir = path.join(testApp2Dir, "osdk");
+    const attwOpts = { stdout: "inherit", stderr: "inherit" } as const;
+    await $(
+      attwOpts,
+    )`attw --pack ${packageDir} --ignore-rules internal-resolution-error --exclude-entrypoints ${ONTOLOGY_METADATA_ENTRYPOINT}`;
+    await $(
+      attwOpts,
+    )`attw --pack ${packageDir} --ignore-rules internal-resolution-error false-export-default --entrypoints ${ONTOLOGY_METADATA_ENTRYPOINT}`;
 
-    const finalOutDir = path.join(
-      process.cwd(),
-      "osdk",
-    );
+    const finalOutDir = path.join(process.cwd(), "osdk");
 
     await fs.rm(path.join(finalOutDir, "@test-app2"), {
       recursive: true,

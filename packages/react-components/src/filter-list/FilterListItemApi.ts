@@ -16,11 +16,12 @@
 
 import type {
   CompileTimeMetadata,
-  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
   WirePropertyTypes,
 } from "@osdk/api";
+import type { ReactNode } from "react";
+
 import type { CustomFilterState } from "./types/CustomRendererTypes.js";
 import type { KeywordSearchFilterState } from "./types/KeywordSearchTypes.js";
 import type {
@@ -35,6 +36,39 @@ export type PropertyTypeFromKey<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q>,
 > = CompileTimeMetadata<Q>["properties"][K]["type"];
+
+/**
+ * Fields shared by every filter definition, regardless of kind.
+ */
+export interface FilterDefinitionControls {
+  /**
+   * When `false`, the header monocle (search-values icon) is hidden even for
+   * filter components that ordinarily support in-filter search. Useful for
+   * `MULTI_SELECT`, which already has its own inline search field.
+   *
+   * @default true
+   */
+  searchField?: boolean;
+
+  /**
+   * Optional unique identifier for stable keying across filter reorders.
+   * Set it explicitly when that derived value would collide, e.g. two filters on the
+   * same property.
+   *
+   * This is the key used in `defaultFilterStates`; `getFilterKey(definition)`
+   * returns it.
+   *
+   * @default a value derived from the definition (its `key`, or its link and property names)
+   */
+  id?: string;
+
+  /**
+   * Controls whether this filter is rendered.
+   * When false, the filter is hidden but its state is preserved.
+   * @default true
+   */
+  isVisible?: boolean;
+}
 
 /**
  * All available filter component types
@@ -56,24 +90,27 @@ export type FilterComponentType =
  * Gets valid component types for a given property type
  */
 export type ValidComponentsForPropertyType<P extends WirePropertyTypes> =
-  P extends "boolean" ? "LISTOGRAM" | "SINGLE_SELECT" | "TOGGLE"
-    : P extends "string" ?
-        | "LISTOGRAM"
-        | "TEXT_TAGS"
-        | "CONTAINS_TEXT"
-        | "SINGLE_SELECT"
-        | "MULTI_SELECT"
-    : P extends "datetime" | "timestamp"
-      ? "DATE_RANGE" | "SINGLE_DATE" | "MULTI_DATE" | "TIMELINE"
-    : P extends
-      | "double"
-      | "integer"
-      | "long"
-      | "float"
-      | "short"
-      | "byte"
-      | "decimal" ? "NUMBER_RANGE" | "SINGLE_SELECT" | "MULTI_SELECT"
-    : never;
+  P extends "boolean"
+    ? "LISTOGRAM" | "SINGLE_SELECT" | "TOGGLE"
+    : P extends "string"
+      ?
+          | "LISTOGRAM"
+          | "TEXT_TAGS"
+          | "CONTAINS_TEXT"
+          | "SINGLE_SELECT"
+          | "MULTI_SELECT"
+      : P extends "datetime" | "timestamp"
+        ? "DATE_RANGE" | "SINGLE_DATE" | "MULTI_DATE" | "TIMELINE"
+        : P extends
+              | "double"
+              | "integer"
+              | "long"
+              | "float"
+              | "short"
+              | "byte"
+              | "decimal"
+          ? "NUMBER_RANGE" | "SINGLE_SELECT" | "MULTI_SELECT"
+          : never;
 
 /**
  * Union of all possible filter states
@@ -148,9 +185,9 @@ export interface BaseFilterState {
   includeNull?: boolean;
 }
 
-export interface ExactMatchFilterState<T = string | boolean>
-  extends BaseFilterState
-{
+export interface ExactMatchFilterState<
+  T = string | boolean,
+> extends BaseFilterState {
   type: "EXACT_MATCH";
   values: T[];
 }
@@ -188,9 +225,9 @@ export interface NumberRangeFilterState extends BaseFilterState {
  * Consolidated state type for select-based filters.
  * Used by SINGLE_SELECT, MULTI_SELECT, SINGLE_DATE, and MULTI_DATE.
  */
-export interface SelectFilterState<T = string | boolean | number | Date>
-  extends BaseFilterState
-{
+export interface SelectFilterState<
+  T = string | boolean | number | Date,
+> extends BaseFilterState {
   type: "SELECT";
   selectedValues: T[];
 }
@@ -208,28 +245,45 @@ export interface ToggleFilterState extends BaseFilterState {
 }
 
 /**
- * A property filter definition specifies configuration for filtering on a single property
+ * Optional date display formatter. Mixed into `PropertyFilterDefinition`
+ * only when the property is `datetime` or `timestamp` — see
+ * {@link PropertyFilterDateExtras}.
  *
- * The component type C must be compatible with the property type derived from the key.
- * For example, boolean properties can only use LISTOGRAM or SINGLE_SELECT,
- * while string properties can use LISTOGRAM, TEXT_TAGS, CONTAINS_TEXT, SINGLE_SELECT, or MULTI_SELECT.
+ * `formatDate` overrides the displayed string everywhere the filter
+ * surfaces a date: the shared `DateRangePicker` / `DatePicker` idle text,
+ * the date-range histogram tooltip and period subtitle, the multi-date
+ * chip text, and timeline labels. The picker's internal value remains
+ * ISO `YYYY-MM-DD` so cross-locale viewers see a consistent input format
+ * regardless of `formatDate`.
+ *
+ * Receives a `Date` in local time. If the property is a UTC ISO string and
+ * you want a different timezone, do that conversion inside your callback.
  */
-export interface PropertyFilterDefinition<
+export interface DateFormattingProps {
+  formatDate?: (date: Date) => string;
+}
+
+/**
+ * Conditionally adds `formatDate` to a property filter definition only for
+ * `datetime` / `timestamp` properties. For other property types this field
+ * is typed as `never` so attempting to set it is a TypeScript error.
+ */
+export type PropertyFilterDateExtras<P extends WirePropertyTypes> = P extends
+  | "datetime"
+  | "timestamp"
+  ? DateFormattingProps
+  : { formatDate?: never };
+
+interface PropertyFilterDefinitionBase<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
-  C extends ValidComponentsForPropertyType<
-    PropertyTypeFromKey<Q, K>
-  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
-> {
+  C extends ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>> =
+    ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
+> extends FilterDefinitionControls {
   /**
    * Discriminator for filter definition type
    */
   type: "PROPERTY";
-
-  /**
-   * Optional unique identifier for stable keying across filter reorders.
-   */
-  id?: string;
 
   /**
    * The property key to filter on
@@ -248,10 +302,16 @@ export interface PropertyFilterDefinition<
   filterComponent: C;
 
   /**
-   * The current state of the filter.
-   * If provided, the filter is controlled.
+   * Seeds the filter's state on mount, FilterList owns the state from then on
+   *
+   * @default undefined (filter starts empty)
    */
-  filterState: FilterStateByComponentType[C];
+  defaultFilterState?: FilterStateByComponentType[C];
+
+  /**
+   * @deprecated Rename to `defaultFilterState`.
+   */
+  filterState?: FilterStateByComponentType[C];
 
   /**
    * Maps filter values to colors for visual differentiation.
@@ -275,9 +335,11 @@ export interface PropertyFilterDefinition<
   /**
    * Custom display function for filter values.
    * Replaces the default string display in dropdown items, chips, and listogram rows.
-   * The returned string is also used for search matching within filter dropdowns.
+   * When the function returns a string, that string is also used for search matching
+   * within filter dropdowns. When it returns a non-string `ReactNode`, search falls
+   * back to the raw value.
    */
-  renderValue?: (value: string) => string;
+  renderValue?: (value: string) => ReactNode;
 
   /**
    * Show aggregation counts next to filter option values.
@@ -287,31 +349,34 @@ export interface PropertyFilterDefinition<
   showCount?: boolean;
 
   /**
-   * Controls whether this filter is rendered.
-   * When false, the filter is hidden but its state is preserved.
-   * @default true
+   * When true, clicking a bar in the histogram replaces the filter range
+   * with that bucket's `[min, max]`. Only applies to histogram-rendering
+   * filter components (`NUMBER_RANGE` and `DATE_RANGE`); ignored on other
+   * component types.
+   *
+   * Click replaces the current range — clicking a second bar discards the
+   * previous selection. Multi-bucket selection / shift+click union is NOT
+   * supported in v1.
+   *
+   * @default false
    */
-  isVisible?: boolean;
+  clickToFilter?: boolean;
 }
 
 /**
- * Props for a single filter list item component.
- * Extends PropertyFilterDefinition with runtime props for rendering.
+ * A property filter definition specifies configuration for filtering on a single property
+ *
+ * The component type C must be compatible with the property type derived from the key.
+ * For example, boolean properties can only use LISTOGRAM or SINGLE_SELECT,
+ * while string properties can use LISTOGRAM, TEXT_TAGS, CONTAINS_TEXT, SINGLE_SELECT, or MULTI_SELECT.
+ *
+ * Date and datetime properties may additionally specify `formatDate` — see
+ * {@link PropertyFilterDateExtras}.
  */
-export interface FilterListItemProps<
+export type PropertyFilterDefinition<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
-  C extends ValidComponentsForPropertyType<
-    PropertyTypeFromKey<Q, K>
-  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
-> extends PropertyFilterDefinition<Q, K, C> {
-  objectSet: ObjectSet<Q>;
-
-  /**
-   * Called when the state of the filter changes.
-   * Required in controlled mode.
-   */
-  onFilterStateChanged: (state: FilterStateByComponentType[C]) => void;
-
-  onFilterRemoved?: (key: PropertyKeys<Q>) => void;
-}
+  C extends ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>> =
+    ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
+> = PropertyFilterDefinitionBase<Q, K, C> &
+  PropertyFilterDateExtras<PropertyTypeFromKey<Q, K>>;

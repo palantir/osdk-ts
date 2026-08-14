@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { existsSync } from "fs";
+import { readFile, writeFile } from "fs/promises";
+import { join } from "path";
+
 import { getChangelogEntry } from "@changesets/release-utils";
 import consola from "consola";
 import type { Result } from "execa";
 import { execa } from "execa";
-import { existsSync } from "fs";
-import { readFile, writeFile } from "fs/promises";
-import { join } from "path";
 import semver from "semver";
 import yargs from "yargs";
 
@@ -127,7 +128,7 @@ async function updateChangelog(
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    const versionMatch = line.match(/^## ([\d.]+(?:-beta\.\d+)?)$/);
+    const versionMatch = line.match(/^## ([\d.]+(?:-beta\.\d+)?)$/u);
 
     if (versionMatch) {
       const entryVersion = versionMatch[1];
@@ -138,7 +139,7 @@ async function updateChangelog(
     }
   }
 
-  entry.content = entry.content.replace(/\n$/, "");
+  entry.content = entry.content.replace(/\n$/u, "");
   lines.splice(insertAt, 0, `\n## ${targetVersion}\n\n${entry.content}`);
 
   const updatedContent = lines.join("\n");
@@ -169,10 +170,7 @@ export async function copyChangelogs(
       continue;
     }
 
-    const changelogContent = await getChangelogContent(
-      pkg.name,
-      releaseBranch,
-    );
+    const changelogContent = await getChangelogContent(pkg.name, releaseBranch);
     if (changelogContent) {
       await updateChangelog(pkg.name, pkg.targetVersion, changelogContent);
     }

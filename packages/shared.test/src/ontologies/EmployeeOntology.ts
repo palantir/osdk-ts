@@ -15,6 +15,7 @@
  */
 
 import type { FauxOntology } from "@osdk/faux";
+
 import { FooInterface } from "../stubs/interfaceTypes.js";
 import {
   employeeObjectWithLinkTypes,

@@ -18,6 +18,7 @@ import type { Osdk } from "@osdk/api";
 import type { Employee } from "@osdk/client.test.ontology";
 import { BehaviorSubject } from "rxjs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { CacheKey } from "../CacheKey.js";

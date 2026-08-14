@@ -1,23 +1,23 @@
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+
 import { Section } from "../../components/Section.js";
-import { Office } from "../../generatedNoCheck2/index.js";
+import type { Office } from "../../generatedNoCheck2/index.js";
+import { CustomOfficeTable } from "./CustomOfficeTable.js";
 import { OfficeDetails } from "./OfficeDetails.js";
 import { OfficesList } from "./OfficesList.js";
-import styles from "./OfficeTable.module.css";
 
 export function OfficesPage() {
   const [selectedOffice, setSelectedOffice] = useState<
     Office.OsdkInstance | undefined
   >(undefined);
 
-  const handleOfficeClick = (office: Office.OsdkInstance) => {
+  const handleOfficeClick = useCallback((office: Office.OsdkInstance) => {
     setSelectedOffice(office);
-  };
+  }, []);
 
-  const handleOfficeDeleted = () => {
+  const handleOfficeDeleted = useCallback(() => {
     setSelectedOffice(undefined);
-  };
+  }, []);
 
   return (
     <div className="flex flex-col">
@@ -42,11 +42,7 @@ export function OfficesPage() {
         </div>
       </div>
       <div className="flex h-100 w-130">
-        <ObjectTable
-          objectType={Office}
-          className={styles.officeTable}
-          selectionMode="single"
-        />
+        <CustomOfficeTable onOfficeClick={handleOfficeClick} />
       </div>
     </div>
   );

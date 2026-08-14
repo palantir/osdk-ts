@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import type { FauxFoundry, msw } from "@osdk/faux";
 import EventEmitter from "node:events";
 import * as fs from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import * as util from "node:util";
+
+import type { FauxFoundry, msw } from "@osdk/faux";
 import type { Connect, ViteDevServer } from "vite";
+
 import { applyOntologyAndSeed } from "./applyOntologyAndSeed.js";
 import { generateOntologyAssets } from "./generateOntologyAssets.js";
 import type { OacConfig } from "./OacConfig.js";
@@ -51,14 +53,14 @@ export class OacDevServer extends OacServerContext {
   ): Promise<void> => {
     const mswEmitter = new EventEmitter<msw.LifeCycleEventsMap>();
 
-    return void await routeConnectToMsw(
+    return void (await routeConnectToMsw(
       this.serverUrl,
       this.foundry.handlers,
       mswEmitter,
       req,
       res,
       next,
-    );
+    ));
   };
 
   watchOntologyAsCode = async (): Promise<void> => {

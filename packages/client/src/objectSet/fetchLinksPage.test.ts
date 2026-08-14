@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { remapLinksPage, remapObjectLocator } from "./fetchLinksPage.js";
 
 describe("remapObjectLocator", () => {

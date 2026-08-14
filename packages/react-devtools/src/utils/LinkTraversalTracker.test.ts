@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { LinkTraversalTracker } from "./LinkTraversalTracker.js";
 
 describe("LinkTraversalTracker", () => {

@@ -2,6 +2,7 @@ import type { ObjectTypeDefinition, Osdk } from "@osdk/client";
 import type { UseOsdkListResult } from "@osdk/react";
 import type { ReactNode } from "react";
 import React from "react";
+
 import { ErrorMessage } from "./ErrorMessage.js";
 import { H2 } from "./headers.js";
 import { InlineSpinner } from "./InlineSpinner.js";
@@ -43,15 +44,15 @@ export function List<T extends ObjectTypeDefinition>({
         <ErrorMessage message={`Error loading items: ${error.message}`} />
       )}
 
-      {!data || data.length === 0
-        ? (
-          <div className={"text-sm italic mt-2"}>
-            {!error && !isLoading ? "None found." : "Loading..."}
-          </div>
-        )
-        : (
-          <ul className={className}>
-            {data.filter(item => item != null).map(item => (
+      {!data || data.length === 0 ? (
+        <div className={"text-sm italic mt-2"}>
+          {!error && !isLoading ? "None found." : "Loading..."}
+        </div>
+      ) : (
+        <ul className={className}>
+          {data
+            .filter((item) => item != null)
+            .map((item) => (
               <Component
                 key={item.$primaryKey}
                 item={item}
@@ -59,8 +60,8 @@ export function List<T extends ObjectTypeDefinition>({
                 onSelect={() => onSelect(item)}
               />
             ))}
-          </ul>
-        )}
+        </ul>
+      )}
     </div>
   );
 }

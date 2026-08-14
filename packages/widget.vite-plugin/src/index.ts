@@ -15,6 +15,7 @@
  */
 
 import type { PluginOption } from "vite";
+
 import { FoundryWidgetBuildPlugin } from "./build-plugin/FoundryWidgetBuildPlugin.js";
 import { FoundryWidgetDevPlugin } from "./dev-plugin/FoundryWidgetDevPlugin.js";
 
@@ -34,5 +35,5 @@ export interface FoundryWidgetPluginOptions {
 export default function FoundryWidgetPlugin(
   options?: FoundryWidgetPluginOptions,
 ): PluginOption {
-  return [FoundryWidgetDevPlugin(), FoundryWidgetBuildPlugin(options)];
+  return [FoundryWidgetDevPlugin(options), FoundryWidgetBuildPlugin(options)];
 }

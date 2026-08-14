@@ -43,11 +43,8 @@ export namespace DerivedObjectOrInterfaceDefinition {
   } & K;
 }
 
-export type PropertyKeys<
-  O extends ObjectOrInterfaceDefinition,
-> =
-  & (keyof CompileTimeMetadata<O>["properties"])
-  & string;
+export type PropertyKeys<O extends ObjectOrInterfaceDefinition> =
+  keyof CompileTimeMetadata<O>["properties"] & string;
 
 export namespace PropertyKeys {
   export type Filtered<

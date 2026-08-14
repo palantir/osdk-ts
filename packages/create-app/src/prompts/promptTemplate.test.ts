@@ -15,6 +15,7 @@
  */
 
 import { afterEach, describe, expect, it, test, vi } from "vitest";
+
 import { consola } from "../consola.js";
 import { TEMPLATES } from "../generatedNoCheck/templates.js";
 import {
@@ -46,17 +47,13 @@ test("it accepts valid initial template id value without 'template-' prefix with
     await promptTemplate({
       template: TEMPLATES[0].id.substring("template-".length),
     }),
-  ).toEqual(
-    TEMPLATES[0],
-  );
+  ).toEqual(TEMPLATES[0]);
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
 });
 
 test("it prompts if initial value is invalid", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce(TEMPLATES[0].id);
-  expect(await promptTemplate({ template: "missing" })).toEqual(
-    TEMPLATES[0],
-  );
+  expect(await promptTemplate({ template: "missing" })).toEqual(TEMPLATES[0]);
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });
 
@@ -76,9 +73,7 @@ describe(getAvailableTemplatesOrThrow, () => {
     for (const id of tutorials) {
       // First be sure that the templates are in TEMPLATES, otherwise if someone
       // renamed them the other checks could pass since we are checking by name
-      expect(TEMPLATES).toContainEqual(
-        expect.objectContaining({ id }),
-      );
+      expect(TEMPLATES).toContainEqual(expect.objectContaining({ id }));
 
       // Be sure that the function for prompting does not include the known tutorials
       expect(getAvailableTemplatesOrThrow(false)).not.toContainEqual(

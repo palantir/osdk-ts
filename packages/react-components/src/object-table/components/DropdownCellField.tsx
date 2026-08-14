@@ -16,16 +16,25 @@
 
 import classNames from "classnames";
 import React from "react";
+
 import { DropdownField } from "../../action-form/fields/DropdownField.js";
-import styles from "../EditableCell.module.css";
 import { useRegisterPortal } from "../utils/PortalTracker.js";
 import type { DropdownEditConfig } from "../utils/types.js";
 import { ReadonlyDisplayCell } from "./ReadonlyDisplayCell.js";
 
+import styles from "../EditableCell.module.css";
+
 interface DropdownCellFieldProps {
   fieldComponentProps: DropdownEditConfig;
   isRowFocused: boolean;
+  /**
+   * Stringified value for the readonly (non-focused) cell display.
+   */
   inputValue: string;
+  /**
+   * The actual typed cell value.
+   */
+  value: unknown;
   hasValidationError: boolean;
   isEdited: boolean;
   onChange: (newValue: unknown) => void;
@@ -35,16 +44,18 @@ function DropdownCellFieldInner({
   fieldComponentProps,
   isRowFocused,
   inputValue,
+  value,
   hasValidationError,
   isEdited,
   onChange,
 }: DropdownCellFieldProps): React.ReactElement {
   const portalRef = useRegisterPortal();
+  const { itemToStringLabel } = fieldComponentProps;
 
   if (!isRowFocused) {
     return (
       <ReadonlyDisplayCell
-        inputValue={inputValue}
+        inputValue={itemToStringLabel ? itemToStringLabel(value) : inputValue}
         hasValidationError={hasValidationError}
         isEdited={isEdited}
       />
@@ -52,19 +63,17 @@ function DropdownCellFieldInner({
   }
   return (
     <div
-      className={classNames(
-        styles.osdkEditableCellDropdown,
-        {
-          [styles.error]: hasValidationError,
-          [styles.osdkEditedInput]: isEdited,
-        },
-      )}
+      className={classNames(styles.osdkEditableCellDropdown, {
+        [styles.error]: hasValidationError,
+        [styles.osdkEditedInput]: isEdited,
+      })}
     >
       <DropdownField
         {...fieldComponentProps}
         portalRef={portalRef}
-        value={inputValue}
+        value={value}
         onChange={onChange}
+        modal={false}
       />
     </div>
   );

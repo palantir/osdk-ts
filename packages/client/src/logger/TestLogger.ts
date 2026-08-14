@@ -17,6 +17,7 @@
 import type { Logger } from "@osdk/api";
 import { Chalk } from "chalk";
 import { vi } from "vitest";
+
 import { BaseLogger } from "./BaseLogger.js";
 
 const chalk = new Chalk(); // new Chalk({ level: 3 });
@@ -62,9 +63,8 @@ export class TestLogger extends BaseLogger implements Logger {
     }
 
     // eslint-disable-next-line no-console
-    return vi.fn<Logger.LogFn>(console[name === "fatal" ? "error" : name].bind(
-      console,
-      msgs.join(" "),
-    )) as Logger.LogFn;
+    return vi.fn<Logger.LogFn>(
+      console[name === "fatal" ? "error" : name].bind(console, msgs.join(" ")),
+    ) as Logger.LogFn;
   }
 }

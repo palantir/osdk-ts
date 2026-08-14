@@ -6,6 +6,89 @@
     "description": ""
   },
   "actionTypes": {
+    "delete-scenario-test-osdk": {
+      "apiName": "delete-scenario-test-osdk",
+      "displayName": "Delete Scenario Test Osdk",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "ScenarioTestOsdk": {
+          "displayName": "Scenario Test Osdk",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "ScenarioTestOsdk",
+            "objectTypeApiName": "ScenarioTestOsdk"
+          },
+          "required": true,
+          "typeClasses": []
+        }
+      },
+      "rid": "ri.actions.main.action-type.1ba8424e-7997-436d-a53d-471ea776d589",
+      "operations": [
+        {
+          "type": "deleteObject",
+          "objectTypeApiName": "ScenarioTestOsdk"
+        }
+      ]
+    },
+    "create-scenario-test-osdk": {
+      "apiName": "create-scenario-test-osdk",
+      "displayName": "Create Scenario Test Osdk",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "string": {
+          "displayName": "String",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true,
+          "typeClasses": []
+        },
+        "scenarioRidCreatedOn": {
+          "displayName": "ScenarioRidCreatedOn",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true,
+          "typeClasses": []
+        }
+      },
+      "rid": "ri.actions.main.action-type.fddb9db7-30bb-43c0-9026-72794537ca98",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "ScenarioTestOsdk"
+        }
+      ]
+    },
+    "scenario-osdk-test-action": {
+      "apiName": "scenario-osdk-test-action",
+      "displayName": "Scenario Osdk Test Action",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "scenario": {
+          "displayName": "Scenario",
+          "dataType": {
+            "type": "scenarioReference"
+          },
+          "required": true,
+          "typeClasses": []
+        }
+      },
+      "rid": "ri.actions.main.action-type.ed0f3aba-1eed-4d3c-b60f-417971f2b7dc",
+      "operations": [
+        {
+          "type": "applyScenario",
+          "scenarioParameter": "scenario",
+          "objectTypeApiNames": ["ScenarioTestOsdk"],
+          "linkTypes": [
+            {
+              "objectTypeApiName": "ScenarioTestOsdk",
+              "linkTypes": ["right", "left"]
+            }
+          ]
+        }
+      ]
+    },
     "create-osdk-test-object": {
       "apiName": "create-osdk-test-object",
       "displayName": "Create Osdk Test Object",
@@ -420,7 +503,7 @@
                 "fieldType": {
                   "type": "integer"
                 },
-                "required": true
+                "required": false
               }
             ]
           },
@@ -445,6 +528,643 @@
     }
   },
   "objectTypes": {
+    "Game": {
+      "implementsInterfaces": ["LibraryItem"],
+      "implementsInterfaces2": {
+        "LibraryItem": {
+          "apiName": "LibraryItem",
+          "links": {
+            "rental": ["rental"]
+          },
+          "properties": {},
+          "propertiesV2": {
+            "id": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "id"
+            },
+            "name": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "title"
+            }
+          },
+          "rid": "ri.ontology.main.interface.9f83383d-d264-4d58-ab5e-a879b9ec5668"
+        }
+      },
+      "linkTypes": [],
+      "objectType": {
+        "apiName": "Game",
+        "description": "",
+        "displayName": "Game",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "pluralDisplayName": "Games",
+        "primaryKey": "id",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "string"
+            },
+            "displayName": "id",
+            "rid": "ri.ontology.main.property.ccd86c34-8d04-4644-a334-689a7e3555fd",
+            "status": {
+              "type": "experimental"
+            },
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ],
+            "visibility": "NORMAL"
+          },
+          "title": {
+            "dataType": {
+              "type": "string"
+            },
+            "displayName": "title",
+            "rid": "ri.ontology.main.property.c19a3f5c-a931-4a3c-9b7f-08d18b0645d6",
+            "status": {
+              "type": "experimental"
+            },
+            "typeClasses": [],
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.154bc90c-d163-4dc5-b6c5-673a12723787",
+        "status": "EXPERIMENTAL",
+        "titleProperty": "title",
+        "visibility": "NORMAL"
+      },
+      "sharedPropertyTypeMapping": {}
+    },
+    "Book": {
+      "objectType": {
+        "apiName": "Book",
+        "displayName": "Book",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Books",
+        "icon": { "type": "blueprint", "color": "#4C90F0", "name": "cube" },
+        "primaryKey": "id",
+        "properties": {
+          "author": {
+            "displayName": "author",
+            "dataType": { "type": "string" },
+            "rid": "ri.ontology.main.property.1174d27c-ad2b-53f0-9e24-81ac29e85b62",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              { "kind": "render_hint", "name": "SELECTABLE" },
+              { "kind": "render_hint", "name": "SORTABLE" }
+            ]
+          },
+          "isbn": {
+            "displayName": "isbn",
+            "dataType": { "type": "string" },
+            "rid": "ri.ontology.main.property.130fc318-1753-503c-82ff-7f9427114586",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              { "kind": "render_hint", "name": "SELECTABLE" },
+              { "kind": "render_hint", "name": "SORTABLE" }
+            ]
+          },
+          "id": {
+            "displayName": "id",
+            "dataType": { "type": "string" },
+            "rid": "ri.ontology.main.property.d8974ff5-6055-5d7a-9ea4-a256d23ed1f8",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              { "kind": "render_hint", "name": "SELECTABLE" },
+              { "kind": "render_hint", "name": "SORTABLE" }
+            ]
+          },
+          "title": {
+            "displayName": "title",
+            "dataType": { "type": "string" },
+            "rid": "ri.ontology.main.property.31a9e02d-fc02-5a44-8608-22db81587f0a",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              { "kind": "render_hint", "name": "SELECTABLE" },
+              { "kind": "render_hint", "name": "SORTABLE" }
+            ]
+          }
+        },
+        "rid": "ri.ontology.main.object-type.909cb811-27c5-5194-8b16-dc5944ade59f",
+        "titleProperty": "title",
+        "visibility": "NORMAL",
+        "aliases": [],
+        "datasources": []
+      },
+      "linkTypes": [],
+      "implementsInterfaces": ["LibraryItem"],
+      "implementsInterfaces2": {
+        "LibraryItem": {
+          "apiName": "LibraryItem",
+          "rid": "ri.ontology.main.interface.9f83383d-d264-4d58-ab5e-a879b9ec5668",
+          "properties": {},
+          "propertiesV2": {
+            "name": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "title"
+            },
+            "id": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "id"
+            }
+          },
+          "links": { "rental": ["rental"] },
+          "actionTypes": {}
+        }
+      },
+      "sharedPropertyTypeMapping": {}
+    },
+    "ScenarioTestOsdk": {
+      "objectType": {
+        "apiName": "ScenarioTestOsdk",
+        "displayName": "Scenario Test Osdk",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Scenario Test Osdks",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "primaryKey_",
+        "properties": {
+          "string": {
+            "displayName": "String",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.c1adf8c9-699e-474d-9037-88d5da1578dc",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "primaryKey_": {
+            "displayName": "Primary Key",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.076f3343-8305-4514-be34-52117563e7f6",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "scenarioRidCreatedOn": {
+            "displayName": "ScenarioRidCreatedOn",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.7e022eee-cec3-43a7-b7c9-d33f662b5a0a",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          }
+        },
+        "rid": "ri.ontology.main.object-type.ec8dc938-1a0b-45cd-96fd-68752f1ab199",
+        "titleProperty": "primaryKey_",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
+    "ReducerTest": {
+      "objectType": {
+        "apiName": "ReducerTest",
+        "displayName": "Reducer Test",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Reducer Tests",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "primaryKey_",
+        "properties": {
+          "struct": {
+            "displayName": "struct",
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "string",
+                  "rid": "ri.ontology.main.struct-field.4b825b33-00f9-4c0e-8068-ca47719a4a76",
+                  "dataType": {
+                    "type": "string"
+                  },
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE"
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE"
+                    }
+                  ]
+                },
+                {
+                  "apiName": "integer",
+                  "rid": "ri.ontology.main.struct-field.d8df4024-9a09-45d3-a725-a2dd1a8c8e13",
+                  "dataType": {
+                    "type": "integer"
+                  },
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE"
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE"
+                    }
+                  ]
+                },
+                {
+                  "apiName": "integer2",
+                  "rid": "ri.ontology.main.struct-field.bd5fb8f9-f8fc-4990-bdcb-d606aed06cb7",
+                  "dataType": {
+                    "type": "string"
+                  },
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE"
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE"
+                    }
+                  ]
+                }
+              ],
+              "mainValue": {
+                "mainValueType": {
+                  "type": "integer"
+                },
+                "fields": ["integer"]
+              }
+            },
+            "rid": "ri.ontology.main.property.eab1141a-1c13-4512-bb55-356afafba73f",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": []
+          },
+          "integerArray": {
+            "displayName": "integerArray",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "integer"
+              },
+              "reducers": [
+                {
+                  "direction": "DESCENDING_NULLS_LAST"
+                }
+              ]
+            },
+            "rid": "ri.ontology.main.property.828b27d1-b11e-43ad-a471-fc665e861f89",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "structWithMultipleMain": {
+            "displayName": "structWithMultipleMain",
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "integer1",
+                  "rid": "ri.ontology.main.struct-field.18b55a6b-5862-4d90-936c-6f7a9b1f7173",
+                  "dataType": {
+                    "type": "string"
+                  },
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE"
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE"
+                    }
+                  ]
+                },
+                {
+                  "apiName": "string1",
+                  "rid": "ri.ontology.main.struct-field.f6812e46-5aee-4639-839d-e5e558b67dc4",
+                  "dataType": {
+                    "type": "string"
+                  },
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE"
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE"
+                    }
+                  ]
+                },
+                {
+                  "apiName": "integer2",
+                  "rid": "ri.ontology.main.struct-field.2902be4b-32f9-4290-8c8f-cac65c7729a5",
+                  "dataType": {
+                    "type": "integer"
+                  },
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE"
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE"
+                    }
+                  ]
+                }
+              ],
+              "mainValue": {
+                "mainValueType": {
+                  "type": "struct",
+                  "structFieldTypes": [
+                    {
+                      "apiName": "integer1",
+                      "rid": "ri.ontology.main.struct-field.18b55a6b-5862-4d90-936c-6f7a9b1f7173",
+                      "dataType": {
+                        "type": "string"
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE"
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE"
+                        }
+                      ]
+                    },
+                    {
+                      "apiName": "string1",
+                      "rid": "ri.ontology.main.struct-field.f6812e46-5aee-4639-839d-e5e558b67dc4",
+                      "dataType": {
+                        "type": "string"
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE"
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "fields": ["string1", "integer1"]
+              }
+            },
+            "rid": "ri.ontology.main.property.ba531aa8-9242-48ea-ba0a-4e51df8a621e",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": []
+          },
+          "primaryKey_": {
+            "displayName": "primaryKey",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.638579c8-a1e6-4676-ba55-c5490a354c47",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "stringArray": {
+            "displayName": "stringArray",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "string"
+              },
+              "reducers": [
+                {
+                  "direction": "ASCENDING_NULLS_LAST"
+                }
+              ]
+            },
+            "rid": "ri.ontology.main.property.41e9f7de-fd9a-4522-a24c-c1d3a28ead76",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              }
+            ]
+          },
+          "structArray": {
+            "displayName": "structArray",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "string",
+                    "rid": "ri.ontology.main.struct-field.c9205bd2-0e17-4997-87bf-59dfc60be8fb",
+                    "dataType": {
+                      "type": "string"
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE"
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE"
+                      }
+                    ]
+                  },
+                  {
+                    "apiName": "integer",
+                    "rid": "ri.ontology.main.struct-field.53b47165-6cc5-40b1-b013-93b0bcb231f6",
+                    "dataType": {
+                      "type": "string"
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE"
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "reducers": [
+                {
+                  "direction": "ASCENDING_NULLS_LAST",
+                  "field": "integer"
+                },
+                {
+                  "direction": "ASCENDING_NULLS_LAST",
+                  "field": "string"
+                }
+              ]
+            },
+            "rid": "ri.ontology.main.property.2f2f3bda-dec8-4487-85ba-8a7d5ababde5",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": []
+          }
+        },
+        "rid": "ri.ontology.main.object-type.4069c2c9-9497-45ec-8fa2-02caf0c261e9",
+        "titleProperty": "primaryKey_",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [],
+      "implementsInterfaces": ["ReducerTestInterface"],
+      "implementsInterfaces2": {
+        "ReducerTestInterface": {
+          "apiName": "ReducerTestInterface",
+          "rid": "ri.ontology.main.interface.ee112779-ed04-44c6-bf84-9543513eb80b",
+          "properties": {},
+          "propertiesV2": {
+            "stringFromNonMainValueOfStruct": {
+              "type": "structFieldImplementation",
+              "structFieldOfProperty": {
+                "propertyApiName": "struct",
+                "structFieldApiName": "string"
+              }
+            },
+            "stringFromReducedMainValueStructArray": {
+              "type": "structFieldImplementation",
+              "structFieldOfProperty": {
+                "propertyApiName": "struct",
+                "structFieldApiName": "integer"
+              }
+            },
+            "stringFromArrayFromAlreadyReduced": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "stringArray"
+            },
+            "stringFromSingleMainValue": {
+              "type": "reducedPropertyImplementation",
+              "implementation": {
+                "type": "structFieldImplementation",
+                "structFieldOfProperty": {
+                  "propertyApiName": "structArray",
+                  "structFieldApiName": "integer"
+                }
+              }
+            },
+            "structFromMultipleMainValue": {
+              "type": "structImplementation",
+              "mapping": {
+                "string": {
+                  "type": "structFieldOfProperty",
+                  "propertyApiName": "structWithMultipleMain",
+                  "structFieldApiName": "string1"
+                },
+                "integer": {
+                  "type": "structFieldOfProperty",
+                  "propertyApiName": "structWithMultipleMain",
+                  "structFieldApiName": "integer2"
+                }
+              }
+            }
+          },
+          "links": {}
+        }
+      },
+      "sharedPropertyTypeMapping": {}
+    },
     "MasonHeavyEquipment": {
       "objectType": {
         "apiName": "MasonHeavyEquipment",
@@ -3303,6 +4023,13 @@
             "dataType": {
               "type": "boolean"
             }
+          },
+          "assigneeEmail": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Foreign key to the assigned Person's email",
+            "displayName": "Assignee Email"
           }
         },
         "status": "ACTIVE",
@@ -3322,7 +4049,8 @@
           "displayName": "Assignee",
           "objectTypeApiName": "Person",
           "status": "ACTIVE",
-          "foreignKeyPropertyApiName": "email"
+          "foreignKeyPropertyApiName": "assigneeEmail",
+          "linkTypeRid": "ri.ontology.main.link-type.0f9d43a2-6c33-4c9d-8d2b-3d1f5a4e91c7"
         }
       ]
     },
@@ -3357,14 +4085,23 @@
           "displayName": "Todos",
           "objectTypeApiName": "Todo",
           "status": "ACTIVE",
-          "foreignKeyPropertyApiName": "id"
+          "linkTypeRid": "ri.ontology.main.link-type.0f9d43a2-6c33-4c9d-8d2b-3d1f5a4e91c7"
         },
         {
           "apiName": "Friends",
           "cardinality": "MANY",
           "displayName": "Friends",
           "objectTypeApiName": "Person",
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "linkTypeRid": "ri.ontology.main.link-type.6b1e0d84-2f57-4a1e-9c0b-8ad3f21e5b46"
+        },
+        {
+          "apiName": "FriendOf",
+          "cardinality": "MANY",
+          "displayName": "Friend Of",
+          "objectTypeApiName": "Person",
+          "status": "ACTIVE",
+          "linkTypeRid": "ri.ontology.main.link-type.6b1e0d84-2f57-4a1e-9c0b-8ad3f21e5b46"
         }
       ]
     },
@@ -5211,6 +5948,97 @@
         }
       },
       "sharedPropertyTypeMapping": {}
+    },
+    "CipherTextTest": {
+      "objectType": {
+        "apiName": "CipherTextTest",
+        "displayName": "CipherTextTest",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "CipherTextTests",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "pk",
+        "properties": {
+          "encrypted": {
+            "displayName": "encrypted",
+            "dataType": {
+              "type": "cipherText"
+            },
+            "rid": "ri.ontology.main.property.65b638f4-00b2-4a21-ae85-4b6a730daae4",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": []
+          },
+          "hashed": {
+            "displayName": "hashed",
+            "dataType": {
+              "type": "cipherText"
+            },
+            "rid": "ri.ontology.main.property.8792e5f4-3547-4faf-8c02-779163dabf7c",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": []
+          },
+          "plaintext": {
+            "displayName": "plaintext",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.62a94791-6be7-4457-827f-9dc41d8ad954",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "pk": {
+            "displayName": "pk",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.48147c7b-beb8-4d22-98e2-4c9c1b61ca70",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          }
+        },
+        "rid": "ri.ontology.main.object-type.583bebf4-2a64-4af4-8c86-8068ef5a5371",
+        "titleProperty": "pk",
+        "visibility": "NORMAL",
+        "aliases": []
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
     }
   },
   "queryTypes": {
@@ -5384,6 +6212,25 @@
       },
       "parameters": {},
       "rid": "query.rid2",
+      "version": "0.1.2"
+    },
+    "getFriends": {
+      "apiName": "getFriends",
+      "parameters": {
+        "person": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Person",
+            "objectTypeApiName": "Person"
+          },
+          "required": true
+        }
+      },
+      "output": {
+        "type": "objectSet",
+        "objectTypeApiName": "Person"
+      },
+      "rid": "query.rid3",
       "version": "0.1.2"
     },
     "getNamesOfCustomersFromCountry": {
@@ -5670,6 +6517,306 @@
     }
   },
   "interfaceTypes": {
+    "LibraryItem": {
+      "allExtendsInterfaces": [],
+      "allLinks": {},
+      "allProperties": {},
+      "allPropertiesV2": {
+        "id": {
+          "apiName": "id",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "id",
+          "requireImplementation": true,
+          "rid": "ri.ontology.main.interface-property.6c4abe95-9bce-4ea7-bed3-5bbcbd22fa09"
+        },
+        "name": {
+          "apiName": "name",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "name",
+          "requireImplementation": true,
+          "rid": "ri.ontology.main.interface-property.30f02a0e-30b6-4f35-8f22-d2667ccda79a"
+        }
+      },
+      "apiName": "LibraryItem",
+      "description": "",
+      "displayName": "Library Item",
+      "extendsInterfaces": [],
+      "implementedByObjectTypes": ["Game", "Book"],
+      "links": {},
+      "properties": {},
+      "propertiesV2": {
+        "id": {
+          "type": "interfaceDefinedPropertyType",
+          "apiName": "id",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "id",
+          "requireImplementation": true,
+          "rid": "ri.ontology.main.interface-property.6c4abe95-9bce-4ea7-bed3-5bbcbd22fa09",
+          "typeClasses": [
+            {
+              "kind": "render_hint",
+              "name": "SELECTABLE"
+            },
+            {
+              "kind": "render_hint",
+              "name": "SORTABLE"
+            }
+          ]
+        },
+        "name": {
+          "type": "interfaceDefinedPropertyType",
+          "apiName": "name",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "name",
+          "requireImplementation": true,
+          "rid": "ri.ontology.main.interface-property.30f02a0e-30b6-4f35-8f22-d2667ccda79a",
+          "typeClasses": [
+            {
+              "kind": "render_hint",
+              "name": "SELECTABLE"
+            },
+            {
+              "kind": "render_hint",
+              "name": "SORTABLE"
+            }
+          ]
+        }
+      },
+      "rid": "ri.ontology.main.interface.9f83383d-d264-4d58-ab5e-a879b9ec5668"
+    },
+    "ReducerTestInterface": {
+      "rid": "ri.ontology.main.interface.ee112779-ed04-44c6-bf84-9543513eb80b",
+      "apiName": "ReducerTestInterface",
+      "displayName": "ReducerTestInterface",
+      "description": "",
+      "properties": {},
+      "allProperties": {},
+      "propertiesV2": {
+        "stringFromNonMainValueOfStruct": {
+          "type": "interfaceDefinedPropertyType",
+          "rid": "ri.ontology.main.interface-property.f73ecda3-ffb0-47f0-b16f-0b894c9a7006",
+          "apiName": "stringFromNonMainValueOfStruct",
+          "displayName": "stringFromStruct",
+          "dataType": {
+            "type": "string"
+          },
+          "requireImplementation": true,
+          "typeClasses": [
+            {
+              "kind": "render_hint",
+              "name": "SELECTABLE"
+            },
+            {
+              "kind": "render_hint",
+              "name": "SORTABLE"
+            }
+          ]
+        },
+        "stringFromReducedMainValueStructArray": {
+          "type": "interfaceDefinedPropertyType",
+          "rid": "ri.ontology.main.interface-property.6410cf6b-c991-46bd-9085-799ef71cba2d",
+          "apiName": "stringFromReducedMainValueStructArray",
+          "displayName": "integerFromReducedMainValueStructArray",
+          "dataType": {
+            "type": "integer"
+          },
+          "requireImplementation": true,
+          "typeClasses": [
+            {
+              "kind": "render_hint",
+              "name": "SELECTABLE"
+            },
+            {
+              "kind": "render_hint",
+              "name": "SORTABLE"
+            }
+          ]
+        },
+        "stringFromArrayFromAlreadyReduced": {
+          "type": "interfaceDefinedPropertyType",
+          "rid": "ri.ontology.main.interface-property.524744e2-cac6-4fe9-a112-bdf25fe3ceaa",
+          "apiName": "stringFromArrayFromAlreadyReduced",
+          "displayName": "stringArray",
+          "dataType": {
+            "type": "array",
+            "subType": {
+              "type": "string"
+            },
+            "reducers": []
+          },
+          "requireImplementation": true,
+          "typeClasses": [
+            {
+              "kind": "render_hint",
+              "name": "SELECTABLE"
+            },
+            {
+              "kind": "render_hint",
+              "name": "SORTABLE"
+            }
+          ]
+        },
+        "stringFromSingleMainValue": {
+          "type": "interfaceDefinedPropertyType",
+          "rid": "ri.ontology.main.interface-property.62bf7924-5ebd-4413-821f-f85a17fa2d04",
+          "apiName": "stringFromSingleMainValue",
+          "displayName": "stringFromReducedArray",
+          "dataType": {
+            "type": "string"
+          },
+          "requireImplementation": true,
+          "typeClasses": [
+            {
+              "kind": "render_hint",
+              "name": "SELECTABLE"
+            },
+            {
+              "kind": "render_hint",
+              "name": "SORTABLE"
+            }
+          ]
+        },
+        "structFromMultipleMainValue": {
+          "type": "interfaceDefinedPropertyType",
+          "rid": "ri.ontology.main.interface-property.0c837cd3-91ab-42c2-927d-6c72c3cd817f",
+          "apiName": "structFromMultipleMainValue",
+          "displayName": "structWithLessPropsThanOt",
+          "dataType": {
+            "type": "struct",
+            "structFieldTypes": [
+              {
+                "apiName": "string",
+                "rid": "ri.ontology.main.struct-field.75ea440b-57cf-4c66-9961-4013f87ea9b4",
+                "dataType": {
+                  "type": "string"
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE"
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE"
+                  }
+                ]
+              },
+              {
+                "apiName": "integer",
+                "rid": "ri.ontology.main.struct-field.e466a43c-e802-4fab-b522-27cafece80fc",
+                "dataType": {
+                  "type": "integer"
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE"
+                  }
+                ]
+              }
+            ]
+          },
+          "requireImplementation": true,
+          "typeClasses": []
+        }
+      },
+      "allPropertiesV2": {
+        "stringFromReducedMainValueStructArray": {
+          "rid": "ri.ontology.main.interface-property.6410cf6b-c991-46bd-9085-799ef71cba2d",
+          "apiName": "stringFromReducedMainValueStructArray",
+          "displayName": "integerFromReducedMainValueStructArray",
+          "dataType": {
+            "type": "integer"
+          },
+          "requireImplementation": true
+        },
+        "stringFromNonMainValueOfStruct": {
+          "rid": "ri.ontology.main.interface-property.f73ecda3-ffb0-47f0-b16f-0b894c9a7006",
+          "apiName": "stringFromNonMainValueOfStruct",
+          "displayName": "stringFromStruct",
+          "dataType": {
+            "type": "string"
+          },
+          "requireImplementation": true
+        },
+        "stringFromArrayFromAlreadyReduced": {
+          "rid": "ri.ontology.main.interface-property.524744e2-cac6-4fe9-a112-bdf25fe3ceaa",
+          "apiName": "stringFromArrayFromAlreadyReduced",
+          "displayName": "stringArray",
+          "dataType": {
+            "type": "array",
+            "subType": {
+              "type": "string"
+            },
+            "reducers": []
+          },
+          "requireImplementation": true
+        },
+        "stringFromSingleMainValue": {
+          "rid": "ri.ontology.main.interface-property.62bf7924-5ebd-4413-821f-f85a17fa2d04",
+          "apiName": "stringFromSingleMainValue",
+          "displayName": "stringFromReducedArray",
+          "dataType": {
+            "type": "string"
+          },
+          "requireImplementation": true
+        },
+        "structFromMultipleMainValue": {
+          "rid": "ri.ontology.main.interface-property.0c837cd3-91ab-42c2-927d-6c72c3cd817f",
+          "apiName": "structFromMultipleMainValue",
+          "displayName": "structWithLessPropsThanOt",
+          "dataType": {
+            "type": "struct",
+            "structFieldTypes": [
+              {
+                "apiName": "string",
+                "rid": "ri.ontology.main.struct-field.75ea440b-57cf-4c66-9961-4013f87ea9b4",
+                "dataType": {
+                  "type": "string"
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE"
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE"
+                  }
+                ]
+              },
+              {
+                "apiName": "integer",
+                "rid": "ri.ontology.main.struct-field.e466a43c-e802-4fab-b522-27cafece80fc",
+                "dataType": {
+                  "type": "integer"
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE"
+                  }
+                ]
+              }
+            ]
+          },
+          "requireImplementation": true
+        }
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": ["ReducerTest"],
+      "links": {},
+      "allLinks": {}
+    },
     "iltTest": {
       "rid": "ri.ontology.main.interface.93463b40-940d-430d-9283-9eca82fa9aa4",
       "apiName": "TestAsTypeIltInterface",
@@ -5949,7 +7096,8 @@
             "type": "string"
           },
           "displayName": "Name",
-          "description": "Name of Foo"
+          "description": "Name of Foo",
+          "required": false
         },
         "description": {
           "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
@@ -5958,7 +7106,8 @@
             "type": "string"
           },
           "displayName": "Description",
-          "description": "Description of Description"
+          "description": "Description of Description",
+          "required": false
         },
         "deprecatedName": {
           "rid": "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d7",
@@ -6011,7 +7160,8 @@
             "type": "string"
           },
           "displayName": "Name",
-          "description": "Name of Foo"
+          "description": "Name of Foo",
+          "required": false
         },
         "description": {
           "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
@@ -6020,7 +7170,8 @@
             "type": "string"
           },
           "displayName": "Description",
-          "description": "Description of Description"
+          "description": "Description of Description",
+          "required": false
         },
         "inheritedDescription": {
           "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
@@ -6029,7 +7180,8 @@
             "type": "string"
           },
           "displayName": "Inherited Description",
-          "description": "Description property we inherited from some parent interface"
+          "description": "Description property we inherited from some parent interface",
+          "required": false
         },
         "deprecatedName": {
           "rid": "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d7",
@@ -6089,7 +7241,8 @@
             "type": "integer"
           },
           "displayName": "Jersey Number",
-          "description": "Jersey Number"
+          "description": "Jersey Number",
+          "required": false
         },
         "athleteId": {
           "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
@@ -6098,7 +7251,8 @@
             "type": "string"
           },
           "displayName": "Athlete ID",
-          "description": "Athlete ID"
+          "description": "Athlete ID",
+          "required": true
         },
         "name22": {
           "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
@@ -6107,7 +7261,8 @@
             "type": "string"
           },
           "displayName": "Name",
-          "description": "Name"
+          "description": "Name",
+          "required": false
         }
       },
       "allProperties": {
@@ -6118,7 +7273,8 @@
             "type": "integer"
           },
           "displayName": "Jersey Number",
-          "description": "Jersey Number"
+          "description": "Jersey Number",
+          "required": false
         },
         "athleteId": {
           "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
@@ -6127,7 +7283,8 @@
             "type": "string"
           },
           "displayName": "Athlete ID",
-          "description": "Athlete ID"
+          "description": "Athlete ID",
+          "required": true
         },
         "name22": {
           "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
@@ -6136,7 +7293,8 @@
             "type": "string"
           },
           "displayName": "Name",
-          "description": "Name"
+          "description": "Name",
+          "required": false
         }
       },
       "rid": "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b",
@@ -6381,7 +7539,8 @@
           "apiName": "objectDescription",
           "dataType": {
             "type": "string"
-          }
+          },
+          "required": false
         }
       },
       "rid": "ri.ontology.main.interface.06c534fd-4f68-44d9-b268-72729a47eaab",
@@ -6459,9 +7618,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "MwaltherPersonOt"
-      ],
+      "implementedByObjectTypes": ["MwaltherPersonOt"],
       "links": {},
       "allLinks": {}
     },
@@ -6566,15 +7723,9 @@
           "requireImplementation": false
         }
       },
-      "extendsInterfaces": [
-        "MwaltherPersonV2"
-      ],
-      "allExtendsInterfaces": [
-        "MwaltherPersonV2"
-      ],
-      "implementedByObjectTypes": [
-        "MwaltherPersonOt"
-      ],
+      "extendsInterfaces": ["MwaltherPersonV2"],
+      "allExtendsInterfaces": ["MwaltherPersonV2"],
+      "implementedByObjectTypes": ["MwaltherPersonOt"],
       "links": {},
       "allLinks": {}
     },
@@ -6610,9 +7761,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "MwaltherPersonOt"
-      ],
+      "implementedByObjectTypes": ["MwaltherPersonOt"],
       "links": {},
       "allLinks": {}
     }

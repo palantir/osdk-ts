@@ -16,6 +16,7 @@
 
 import type { StructFieldType, Type } from "@osdk/client.unstable";
 import type { PropertyTypeType } from "@osdk/maker";
+
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { distributeTypeHelper } from "../toConjure/distributeTypeHelper.js";
 
@@ -26,13 +27,13 @@ export function propertyTypeTypeToOntologyIrType(
   includeMainValue?: boolean,
 ): Type {
   switch (true) {
-    case (typeof type === "object" && type.type === "marking"):
+    case typeof type === "object" && type.type === "marking":
       return {
-        "type": "marking",
+        type: "marking",
         marking: { markingType: type.markingType },
       };
 
-    case (typeof type === "object" && type.type === "struct"):
+    case typeof type === "object" && type.type === "struct":
       const structFields: Array<StructFieldType> = new Array();
       for (const key in type.structDefinition) {
         const fieldTypeDefinition = type.structDefinition[key];
@@ -50,6 +51,7 @@ export function propertyTypeTypeToOntologyIrType(
               fieldTypeDefinition,
               ridGenerator,
               propertyApiName,
+              undefined,
             ),
           };
         } else {
@@ -65,9 +67,12 @@ export function propertyTypeTypeToOntologyIrType(
                 fieldTypeDefinition.fieldType,
                 ridGenerator,
                 propertyApiName,
+                undefined,
               ),
-              displayMetadata: fieldTypeDefinition.displayMetadata
-                ?? { displayName: key, description: undefined },
+              displayMetadata: fieldTypeDefinition.displayMetadata ?? {
+                displayName: key,
+                description: undefined,
+              },
               typeClasses: fieldTypeDefinition.typeClasses ?? [],
               aliases: fieldTypeDefinition.aliases ?? [],
             };
@@ -84,6 +89,7 @@ export function propertyTypeTypeToOntologyIrType(
                 fieldTypeDefinition,
                 ridGenerator,
                 propertyApiName,
+                undefined,
               ),
             };
           }
@@ -95,12 +101,12 @@ export function propertyTypeTypeToOntologyIrType(
       // Build mainValue from the first struct field (matches Java behavior)
       // Only SPTs get mainValue populated; object property structs have mainValue: null
       const mainValue = includeMainValue
-        ? (structFields[0]
+        ? structFields[0]
           ? {
-            type: structFields[0].fieldType,
-            fields: [structFields[0].structFieldRid],
-          }
-          : undefined)
+              type: structFields[0].fieldType,
+              fields: [structFields[0].structFieldRid],
+            }
+          : undefined
         : undefined;
 
       return {
@@ -108,10 +114,10 @@ export function propertyTypeTypeToOntologyIrType(
         struct: { structFields, mainValue },
       };
 
-    case (typeof type === "object" && type.type === "string"):
+    case typeof type === "object" && type.type === "string":
       return {
-        "type": "string",
-        "string": {
+        type: "string",
+        string: {
           analyzerOverride: type.analyzerOverride,
           enableAsciiFolding: type.enableAsciiFolding,
           isLongText: type.isLongText ?? false,
@@ -122,22 +128,22 @@ export function propertyTypeTypeToOntologyIrType(
         },
       };
 
-    case (typeof type === "object" && type.type === "decimal"):
+    case typeof type === "object" && type.type === "decimal":
       return {
-        "type": "decimal",
-        "decimal": {
+        type: "decimal",
+        decimal: {
           precision: type.precision,
           scale: type.scale,
         },
       };
 
-    case (type === "geopoint"):
+    case type === "geopoint":
       return { type: "geohash", geohash: {} };
 
-    case (type === "decimal"):
+    case type === "decimal":
       return { type, [type]: { precision: undefined, scale: undefined } };
 
-    case (type === "string"):
+    case type === "string":
       return {
         type,
         [type]: {
@@ -149,18 +155,18 @@ export function propertyTypeTypeToOntologyIrType(
         },
       };
 
-    case (type === "mediaReference"):
+    case type === "mediaReference":
       return {
         type,
         mediaReference: {},
       };
 
-    case (type === "geotimeSeries"):
+    case type === "geotimeSeries":
       return {
         type: "geotimeSeriesReference",
         geotimeSeriesReference: {},
       };
-    case (type === "attachment"):
+    case type === "attachment":
       return {
         type: "attachment",
         attachment: {},

@@ -29,12 +29,12 @@ export interface PendingComputeRequest extends ComputeRequestBase {
 export type ComputeRequestError =
   | { type: "osdk-network-paused" }
   | {
-    type: "api-gateway-error";
-    status: number;
-    errorCode: string;
-    errorInstanceId: string;
-    errorName: string;
-  }
+      type: "api-gateway-error";
+      status: number;
+      errorCode: string;
+      errorInstanceId: string;
+      errorName: string;
+    }
   | { type: "http-error"; status: number; message?: string }
   | { type: "fetch-error"; message: string }
   | { type: "unknown" };
@@ -54,9 +54,7 @@ export interface FulfilledComputeRequest extends ComputeRequestBase {
   responsePayloadHash: number;
 }
 
-export interface FulfilledWithoutUsageComputeRequest
-  extends ComputeRequestBase
-{
+export interface FulfilledWithoutUsageComputeRequest extends ComputeRequestBase {
   type: "fulfilled-without-usage";
   responseTimestamp: Date;
   responsePayload: string;

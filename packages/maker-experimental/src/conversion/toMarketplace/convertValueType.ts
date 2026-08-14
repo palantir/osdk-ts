@@ -16,6 +16,7 @@
 
 import type { ValueTypeReference } from "@osdk/client.unstable";
 import type { ValueTypeDefinitionVersion } from "@osdk/maker";
+
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 
 export function convertValueType(

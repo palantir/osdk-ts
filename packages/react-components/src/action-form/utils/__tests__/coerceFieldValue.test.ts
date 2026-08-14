@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { coerceFieldValue } from "../coerceFieldValue.js";
 
 describe("coerceFieldValue", () => {

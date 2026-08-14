@@ -23,6 +23,7 @@ import type {
 import { defineConfig } from "@osdk/widget.client";
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { extendParametersWithObjectSets } from "./extendParametersWithObjectSets.js";
 
 vi.mock("@osdk/client/internal", () => ({
@@ -332,12 +333,7 @@ describe("extendParametersWithObjectSets", () => {
     };
 
     expect(() =>
-      extendParametersWithObjectSets(
-        undefined,
-        config,
-        parameters,
-        cache,
-      )
+      extendParametersWithObjectSets(undefined, config, parameters, cache),
     ).toThrow("Not provided an OSDK client");
   });
 

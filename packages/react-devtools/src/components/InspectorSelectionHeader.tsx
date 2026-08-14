@@ -16,6 +16,7 @@
 
 import { Button, Callout, Icon, Tooltip } from "@blueprintjs/core";
 import React from "react";
+
 import styles from "./InterceptTab.module.scss";
 
 export interface InspectorSelectionHeaderProps {
@@ -63,11 +64,7 @@ export const InspectorSelectionHeader: React.FC<
           <>
             {" "}
             <Tooltip content="If you're unable to find OSDK usage where you expect try hovering over a related component">
-              <Icon
-                icon="info-sign"
-                size={12}
-                className={styles.helpIcon}
-              />
+              <Icon icon="info-sign" size={12} className={styles.helpIcon} />
             </Tooltip>
           </>
         )}

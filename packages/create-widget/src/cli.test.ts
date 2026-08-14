@@ -17,8 +17,10 @@
 import fs from "node:fs";
 import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+
 import { dirSync } from "tmp";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
+
 import { cli } from "./cli.js";
 import { TEMPLATES } from "./generatedNoCheck/templates.js";
 import type { Template } from "./templates.js";
@@ -46,12 +48,23 @@ beforeEach(() => {
 
 for (const template of TEMPLATES) {
   describe.each(["2.x"])("For SDK version %s", (sdkVersion) => {
-    test(`CLI creates ${template.id}`, async () => {
+    if (template.supportsOsdk) {
+      test(`CLI creates ${template.id} with an OSDK`, async () => {
+        await runTest({
+          project: `expected-${template.id}`,
+          template,
+          sdkVersion,
+          withOsdk: true,
+        });
+      });
+    }
+
+    test(`CLI creates ${template.id} without an OSDK`, async () => {
       await runTest({
-        project: `expected-${template.id}`,
+        project: `expected-${template.id}-no-osdk`,
         template,
         sdkVersion,
-        requiresOsdk: template.requiresOsdk,
+        withOsdk: false,
       });
     });
   });
@@ -61,12 +74,12 @@ async function runTest({
   project,
   template,
   sdkVersion,
-  requiresOsdk,
+  withOsdk,
 }: {
   project: string;
   template: Template;
   sdkVersion: string;
-  requiresOsdk: boolean;
+  withOsdk: boolean;
 }): Promise<void> {
   let options = [
     "npx",
@@ -83,13 +96,17 @@ async function runTest({
     sdkVersion,
   ];
 
-  if (requiresOsdk) {
-    options = options.concat([
-      "--osdkPackage",
-      "@custom-widget/sdk",
-      "--osdkRegistryUrl",
-      "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
-    ]);
+  if (template.supportsOsdk) {
+    if (withOsdk) {
+      options = options.concat([
+        "--osdkPackage",
+        "@custom-widget/sdk",
+        "--osdkRegistryUrl",
+        "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
+      ]);
+    } else {
+      options = options.concat(["--skipOsdk"]);
+    }
   }
 
   await cli(options);

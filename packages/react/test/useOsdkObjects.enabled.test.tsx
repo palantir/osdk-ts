@@ -18,6 +18,7 @@ import type { ObjectTypeDefinition } from "@osdk/api";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
+
 import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useOsdkObjects } from "../src/new/useOsdkObjects.js";
 
@@ -53,10 +54,9 @@ describe("useOsdkObjects enabled option", () => {
   it("should NOT call observeList when enabled is false", () => {
     const wrapper = createWrapper();
 
-    renderHook(
-      () => useOsdkObjects(MockObjectType, { enabled: false }),
-      { wrapper },
-    );
+    renderHook(() => useOsdkObjects(MockObjectType, { enabled: false }), {
+      wrapper,
+    });
 
     expect(mockObserveList).not.toHaveBeenCalled();
   });

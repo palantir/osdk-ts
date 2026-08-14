@@ -210,10 +210,8 @@ export interface CreateAssociationRequest {
 /**
  * Response received after creating an association with an Ontology entity
  */
-export interface CreateAssociationResponse {
-}
-export interface DataConnectorMetadata {
-}
+export interface CreateAssociationResponse {}
+export interface DataConnectorMetadata {}
 /**
  * Request to delete one or more associations between a resource and ontology
  * entity.
@@ -224,8 +222,7 @@ export interface DeleteAssociationsRequest {
 /**
  * Response received after deleting associations
  */
-export interface DeleteAssociationsResponse {
-}
+export interface DeleteAssociationsResponse {}
 /**
  * Request to load all resource metadata associated with an ontology entity
  */
@@ -256,8 +253,7 @@ export interface LoadResourceAssociationsRequest {
 export interface LoadResourceAssociationsResponse {
   response: Array<OntologyAssociation>;
 }
-export interface ObjectViewMetadata {
-}
+export interface ObjectViewMetadata {}
 /**
  * A tab id for an object's hubble view
  */
@@ -280,8 +276,7 @@ export interface OntologyAssociationIdentifier {
   associatedResourceIdentifier: AssociatedResourceIdentifier;
   ontologyEntityRid: AssociationMetadataOntologyEntityRid;
 }
-export interface RepositoryMetadata {
-}
+export interface RepositoryMetadata {}
 export interface ResourceRid_blobsterRid {
   type: "blobsterRid";
   blobsterRid: string;
@@ -338,10 +333,8 @@ export type ResourceRid =
   | ResourceRid_taurusWorkflowRid
   | ResourceRid_vertexGraphTemplateRid;
 
-export interface SlateMetadata {
-}
-export interface TaurusWorkflowMetadata {
-}
+export interface SlateMetadata {}
+export interface TaurusWorkflowMetadata {}
 /**
  * Request to update an association between the given resource and ontology entity.
  * The ontologyEntityRid and associated resource identifier will uniquely identify
@@ -357,9 +350,6 @@ export interface UpdateAssociationRequest {
 /**
  * Response received after updating an association with an Ontology entity
  */
-export interface UpdateAssociationResponse {
-}
-export interface VertexGraphTemplateMetadata {
-}
-export interface WorkshopModuleMetadata {
-}
+export interface UpdateAssociationResponse {}
+export interface VertexGraphTemplateMetadata {}
+export interface WorkshopModuleMetadata {}

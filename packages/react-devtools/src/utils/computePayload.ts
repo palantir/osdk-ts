@@ -24,7 +24,7 @@ export function truncatePayload(payload: string): string {
   if (payload.length <= MAX_PAYLOAD_LENGTH) {
     return payload;
   }
-  return payload.substring(0, MAX_PAYLOAD_LENGTH) + "...";
+  return `${payload.substring(0, MAX_PAYLOAD_LENGTH)}...`;
 }
 
 export function hashPayload(payload: unknown): number {
@@ -33,7 +33,7 @@ export function hashPayload(payload: unknown): number {
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
     hash = (hash << 5) - hash + char;
-    hash = hash & hash;
+    hash &= hash;
   }
   return hash;
 }

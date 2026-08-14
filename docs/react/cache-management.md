@@ -85,37 +85,6 @@ Automatic updates don't cover:
 
 The `ObservableClient` provides methods to manually invalidate cached data.
 
-### Setup
-
-`OsdkProvider` creates its own `ObservableClient` internally — you only need to construct one yourself if you want to call invalidation methods (`invalidateObjects`, `invalidateObjectType`, `invalidateFunction`, …) from outside the React tree (for example, from a WebSocket handler in `client.ts`). In that case, create one and pass it explicitly so React and your handler share the same cache:
-
-```tsx
-import { Todo } from "@my/osdk";
-import { useObservableClient } from "@osdk/react";
-
-const client = createClient(
-  "https://your-stack.palantirfoundry.com",
-  "your-ontology-rid",
-  authProvider,
-);
-
-// Create and export the observable client for invalidation
-export const observableClient = createObservableClient(client);
-export { client };
-```
-
-```tsx
-// main.tsx
-import { OsdkProvider } from "@osdk/react";
-import { client, observableClient } from "./client";
-
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <OsdkProvider client={client} observableClient={observableClient}>
-    <App />
-  </OsdkProvider>,
-);
-```
-
 ### Invalidation Methods
 
 #### Object Invalidation
@@ -224,6 +193,24 @@ function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
   );
 }
 ```
+
+## Dev-Mode Debugging
+
+The observable client has dev-only debugging knobs on the `OsdkProvider` `devMode` prop. They have no effect in production builds, where the relevant code is stripped at build time.
+
+The client's loggers default to the `error` level, which hides the `debug` tracing the observable layer emits. Raise the level to surface it:
+
+```tsx
+<OsdkProvider client={client} devMode={{ logLevel: "debug" }}>
+```
+
+The cache internals can also log their behavior. `refCounts` logs cache-entry reference-count lifecycle (creation, live counts, time-to-live countdown, cleanup, finalization) and shortens the retention window so cleanup is observable sooner; `cacheKeys` logs cache-key canonicalization lookups:
+
+```tsx
+<OsdkProvider client={client} devMode={{ debug: { refCounts: true, cacheKeys: true } }}>
+```
+
+If you are configuring the observable client directly, the same options are available as `createObservableClient(client, extraUserAgents, { devMode: { logLevel: "debug", debug: { refCounts: true } } })`.
 
 ## Best Practices
 

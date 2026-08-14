@@ -16,23 +16,49 @@
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { memo, useCallback } from "react";
+
+import { FilterInputExcludeRow } from "./base/FilterInputExcludeRow.js";
 import { ContainsTextInput } from "./base/inputs/ContainsTextInput.js";
+import type { MultiSelectInputLayout } from "./base/inputs/MultiSelectInput.js";
 import { ToggleInput } from "./base/inputs/ToggleInput.js";
 import type { FilterDefinitionUnion } from "./FilterListApi.js";
 import type { FilterState } from "./FilterListItemApi.js";
 import { LinkedPropertyInput } from "./inputs/LinkedPropertyInput.js";
 import { PropertyFilterInput } from "./inputs/PropertyFilterInput.js";
 import { StaticValuesFilterInput } from "./inputs/StaticValuesFilterInput.js";
+import type { CustomFilterState } from "./types/CustomRendererTypes.js";
+import type { LinkedFilter } from "./types/LinkedFilterTypes.js";
 
-interface FilterInputProps<Q extends ObjectTypeDefinition> {
+/**
+ * Handed to a custom filter's `renderInput` when the definition seeds no state
+ * at all, so renderers can rely on always receiving a state object.
+ */
+const EMPTY_CUSTOM_STATE: CustomFilterState = {
+  type: "custom",
+  customState: {},
+};
+
+export interface FilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet?: ObjectSet<Q>;
   definition: FilterDefinitionUnion<Q>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  /** Per-filter excluding-self where clause (direct filters only). */
   whereClause: WhereClause<Q>;
+  /** Per-filter excluding-self linked-filter records. */
+  linkedFilters?: ReadonlyArray<LinkedFilter<Q>>;
+  showFilteredOutValues?: boolean;
   searchQuery?: string;
   excludeRowOpen?: boolean;
+  /**
+   * Layout for `MULTI_SELECT` filter components. Pass `"inline"` when this
+   * input renders inside a popover (or any container where chips would feel
+   * redundant) so the value list is always visible. Defaults to `"dropdown"`,
+   * which renders chips + a portaled Combobox popup. Ignored by other
+   * filter components.
+   */
+  layout?: MultiSelectInputLayout;
 }
 
 function FilterInputInner<Q extends ObjectTypeDefinition>({
@@ -42,34 +68,11 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  linkedFilters,
+  showFilteredOutValues,
   searchQuery,
   excludeRowOpen,
-}: FilterInputProps<Q>): React.ReactElement {
-  return (
-    <FilterInputContent
-      objectType={objectType}
-      objectSet={objectSet}
-      definition={definition}
-      filterState={filterState}
-      onFilterStateChanged={onFilterStateChanged}
-      whereClause={whereClause}
-      searchQuery={searchQuery}
-      excludeRowOpen={excludeRowOpen}
-    />
-  );
-}
-
-export const FilterInput = memo(FilterInputInner) as typeof FilterInputInner;
-
-function FilterInputContent<Q extends ObjectTypeDefinition>({
-  objectType,
-  objectSet,
-  definition,
-  filterState,
-  onFilterStateChanged,
-  whereClause,
-  searchQuery,
-  excludeRowOpen,
+  layout,
 }: FilterInputProps<Q>): React.ReactElement {
   switch (definition.type) {
     case "HAS_LINK":
@@ -77,6 +80,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
         <HasLinkInput
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          excludeRowOpen={excludeRowOpen}
         />
       );
 
@@ -90,7 +94,12 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           definition={definition}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          whereClause={whereClause}
+          linkedFilters={linkedFilters}
+          showFilteredOutValues={showFilteredOutValues}
           searchQuery={searchQuery}
+          excludeRowOpen={excludeRowOpen}
+          layout={layout}
         />
       );
     }
@@ -110,9 +119,8 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           <div data-unsupported="true">Custom filter missing renderInput</div>
         );
       }
-      const customFilterState = filterState?.type === "custom"
-        ? filterState
-        : definition.filterState;
+      const customFilterState =
+        filterState?.type === "custom" ? filterState : EMPTY_CUSTOM_STATE;
       return (
         <>
           {definition.renderInput({
@@ -134,8 +142,11 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          linkedFilters={linkedFilters}
+          showFilteredOutValues={showFilteredOutValues}
           searchQuery={searchQuery}
           excludeRowOpen={excludeRowOpen}
+          layout={layout}
         />
       );
 
@@ -147,6 +158,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           onFilterStateChanged={onFilterStateChanged}
           searchQuery={searchQuery}
           excludeRowOpen={excludeRowOpen}
+          layout={layout}
         />
       );
 
@@ -155,27 +167,46 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
   }
 }
 
+export const FilterInput = memo(FilterInputInner) as typeof FilterInputInner;
+
 interface HasLinkInputProps {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  excludeRowOpen?: boolean;
 }
 
 const HasLinkInput = memo(function HasLinkInput({
   filterState,
   onFilterStateChanged,
+  excludeRowOpen,
 }: HasLinkInputProps): React.ReactElement {
-  const hasLink = filterState?.type === "hasLink"
-    ? filterState.hasLink
-    : false;
+  const hasLink = filterState?.type === "hasLink" ? filterState.hasLink : false;
+  const isExcluding =
+    filterState?.type === "hasLink"
+      ? (filterState.isExcluding ?? false)
+      : false;
 
   const handleChange = useCallback(
     (hasLink: boolean) => {
-      onFilterStateChanged({ type: "hasLink", hasLink });
+      onFilterStateChanged({ type: "hasLink", hasLink, isExcluding });
     },
-    [onFilterStateChanged],
+    [onFilterStateChanged, isExcluding],
   );
 
-  return <ToggleInput enabled={hasLink} onChange={handleChange} />;
+  const handleClearAll = useCallback(() => {
+    onFilterStateChanged({ type: "hasLink", hasLink: false, isExcluding });
+  }, [onFilterStateChanged, isExcluding]);
+
+  return (
+    <FilterInputExcludeRow
+      excludeRowOpen={excludeRowOpen}
+      filterState={filterState}
+      onFilterStateChanged={onFilterStateChanged}
+      onClearAll={handleClearAll}
+    >
+      <ToggleInput enabled={hasLink} onChange={handleChange} />
+    </FilterInputExcludeRow>
+  );
 });
 
 interface KeywordSearchInputProps {
@@ -189,12 +220,10 @@ const KeywordSearchInput = memo(function KeywordSearchInput({
   onFilterStateChanged,
   placeholder,
 }: KeywordSearchInputProps): React.ReactElement {
-  const searchTerm = filterState?.type === "keywordSearch"
-    ? filterState.searchTerm
-    : undefined;
-  const operator = filterState?.type === "keywordSearch"
-    ? filterState.operator
-    : "AND";
+  const searchTerm =
+    filterState?.type === "keywordSearch" ? filterState.searchTerm : undefined;
+  const operator =
+    filterState?.type === "keywordSearch" ? filterState.operator : "AND";
 
   const handleChange = useCallback(
     (newSearchTerm: string | undefined) => {

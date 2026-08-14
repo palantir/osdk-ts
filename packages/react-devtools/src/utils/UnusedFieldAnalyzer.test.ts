@@ -16,6 +16,7 @@
 
 import type { CacheSnapshot } from "@osdk/client/observable";
 import { describe, expect, it, vi } from "vitest";
+
 import type {
   ComponentHookBinding,
   ComponentQueryRegistry,

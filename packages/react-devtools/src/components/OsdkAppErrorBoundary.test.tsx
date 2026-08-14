@@ -17,6 +17,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { createMockMonitorStore } from "./testHelpers.js";
 
 const { OsdkAppErrorBoundary } = await import("./OsdkAppErrorBoundary.js");
@@ -82,7 +83,9 @@ describe("OsdkAppErrorBoundary", () => {
         fallback={(err, reset) => (
           <div>
             <span>custom-{err.message}</span>
-            <button type="button" onClick={reset}>retry</button>
+            <button type="button" onClick={reset}>
+              retry
+            </button>
           </div>
         )}
       >

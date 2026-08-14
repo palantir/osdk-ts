@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { GetTopRowsRequest as _api_dataframe_GetTopRowsRequest } from "../__components.js";
 
 /**

@@ -21,6 +21,7 @@ import { useParentSize } from "@visx/responsive";
 import { scaleLinear } from "@visx/scale";
 import { Text, type TextProps } from "@visx/text";
 import React from "react";
+
 import {
   useComputeLastRecordingEvent,
   useComputeRecording,
@@ -30,6 +31,7 @@ import { useTimeElapsed } from "../hooks/useTimeElapsed.js";
 import type { ComputeStore } from "../store/ComputeStore.js";
 import { visitComputeRequest } from "../utils/computeRequest.js";
 import { formatMilliseconds } from "../utils/format.js";
+
 import css from "./BubbleChart.module.scss";
 
 type Datum = {
@@ -55,7 +57,7 @@ const TICK_LABEL_PROPS = {
   fill: "#5c6b77",
   fontSize: 11,
   fontFamily:
-    "\"JetBrains Mono\", \"SF Mono\", \"Monaco\", \"Menlo\", \"Consolas\", monospace",
+    '"JetBrains Mono", "SF Mono", "Monaco", "Menlo", "Consolas", monospace',
 } as const;
 
 interface BubbleChartProps {
@@ -101,9 +103,7 @@ export const BubbleChart: React.FC<BubbleChartProps> = ({
           fulfilledWithoutUsage: () => "#7a8693",
           pending: () => "#6b7785",
         }),
-        isSelected: selectedSet
-          ? selectedSet.has(request.id)
-          : undefined,
+        isSelected: selectedSet ? selectedSet.has(request.id) : undefined,
         id: request.id,
       }),
     );
@@ -126,10 +126,11 @@ export const BubbleChart: React.FC<BubbleChartProps> = ({
 
   const timeElapsed = useTimeElapsed(isRecording ? startTimestamp : undefined);
 
-  const maxTimeDomain = lastRecordingEvent?.type === "ended"
-    ? (lastRecordingEvent.endTimestamp?.getTime() ?? Date.now())
-      - lastRecordingEvent.timestamp.getTime()
-    : timeElapsed;
+  const maxTimeDomain =
+    lastRecordingEvent?.type === "ended"
+      ? (lastRecordingEvent.endTimestamp?.getTime() ?? Date.now()) -
+        lastRecordingEvent.timestamp.getTime()
+      : timeElapsed;
 
   const { parentRef, width, height } = useParentSize();
 

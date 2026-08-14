@@ -1,8 +1,5 @@
 /* Datetime Picker Styling */
 :root {
-  /* Input error */
-  --osdk-datetime-input-error-border-color: var(--osdk-intent-danger-rest);
-
   /* Popover */
   --osdk-datetime-popover-bg: var(--osdk-background-primary);
   --osdk-datetime-popover-padding: calc(var(--osdk-surface-spacing) * 2);
@@ -11,7 +8,7 @@
 
   /* Calendar */
   --osdk-datetime-calendar-font-family: var(--osdk-typography-family-default);
-  --osdk-datetime-calendar-font-size: var(--osdk-typography-size-body-small);
+  --osdk-datetime-calendar-font-size: var(--osdk-input-font-size);
   --osdk-datetime-calendar-cell-size: calc(var(--osdk-surface-spacing) * 8);
   --osdk-datetime-calendar-gap: 2px;
 
@@ -26,10 +23,10 @@
   /* Calendar weekday header */
   --osdk-datetime-calendar-weekday-color: var(--osdk-typography-color-muted);
   --osdk-datetime-calendar-weekday-font-size: var(
-    --osdk-typography-size-body-x-small
+    --osdk-datetime-calendar-font-size
   );
 
-  --osdk-datetime-calendar-day-color: var(--osdk-typography-color-default);
+  --osdk-datetime-calendar-day-color: var(--osdk-typography-color-default-rest);
   --osdk-datetime-calendar-day-hover-bg: var(
     --osdk-surface-background-color-default-hover
   );
@@ -49,9 +46,8 @@
   --osdk-datetime-calendar-selected-hover-bg: var(--osdk-intent-primary-hover);
 
   /* Calendar today */
-  --osdk-datetime-calendar-today-font-weight: var(
-    --osdk-typography-weight-bold
-  );
+  --osdk-datetime-calendar-today-border: 1px solid
+    var(--osdk-input-border-color);
 
   /* Calendar range middle (days between start and end) */
   --osdk-datetime-calendar-range-middle-bg: color-mix(
@@ -115,13 +111,18 @@
     var(--osdk-typography-line-height-default)
   );
   --osdk-datetime-input-placeholder-color: var(--osdk-input-placeholder-color);
-  --osdk-datetime-input-border-width: var(--osdk-input-border-width);
-  --osdk-datetime-input-border-color: var(--osdk-input-border-color);
-  --osdk-datetime-input-border-color-focus: var(--osdk-input-border-color-focus);
-  --osdk-datetime-input-focus-width: var(--osdk-input-focus-width);
-  --osdk-datetime-input-focus-color: var(--osdk-input-focus-color);
-  --osdk-datetime-input-focus-offset: var(--osdk-input-focus-offset);
-  --osdk-datetime-input-transition-duration: var(--osdk-input-transition-duration);
+
+  --osdk-datetime-input-shadow: var(--osdk-input-shadow);
+  --osdk-datetime-input-shadow-error: var(--osdk-input-shadow-error);
+  --osdk-datetime-input-focus-outline: var(--osdk-input-focus-outline);
+  --osdk-datetime-input-focus-shadow: var(--osdk-input-focus-shadow);
+  --osdk-datetime-input-focus-shadow-error: var(
+    --osdk-input-focus-shadow-error
+  );
+
+  --osdk-datetime-input-transition-duration: var(
+    --osdk-input-transition-duration
+  );
   --osdk-datetime-input-transition-ease: var(--osdk-input-transition-ease);
 
   /* Calendar fallback / loading */

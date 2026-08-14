@@ -15,6 +15,7 @@
  */
 
 import { http, HttpResponse } from "msw";
+
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
 
 export const createMultipassServerHandlers: FauxFoundryHandlersFactory = (
@@ -32,11 +33,11 @@ export const createMultipassServerHandlers: FauxFoundryHandlersFactory = (
       const parsedBodyArray = Array.from(parsedBody.entries());
 
       if (
-        parsedBody.get("grant_type") === "client_credentials"
-        && parsedBody.get("client_id") === "myClientId"
-        && parsedBody.get("client_secret") === "myClientSecret"
-        && parsedBody.get("scopes")?.includes("offline_access")
-        && parsedBodyArray.length === 4
+        parsedBody.get("grant_type") === "client_credentials" &&
+        parsedBody.get("client_id") === "myClientId" &&
+        parsedBody.get("client_secret") === "myClientSecret" &&
+        parsedBody.get("scopes")?.includes("offline_access") &&
+        parsedBodyArray.length === 4
       ) {
         return HttpResponse.json({
           access_token: "myAccessToken",
@@ -47,12 +48,12 @@ export const createMultipassServerHandlers: FauxFoundryHandlersFactory = (
       }
 
       if (
-        parsedBody.get("client_id") === "myClientId"
-        && parsedBody.get("grant_type") === "authorization_code"
-        && parsedBody.get("code") === "callBackCode"
-        && parsedBody.get("redirect_uri") === "localhost"
-        && parsedBody.get("code_verifier") === "01020304"
-        && parsedBodyArray.length === 5
+        parsedBody.get("client_id") === "myClientId" &&
+        parsedBody.get("grant_type") === "authorization_code" &&
+        parsedBody.get("code") === "callBackCode" &&
+        parsedBody.get("redirect_uri") === "localhost" &&
+        parsedBody.get("code_verifier") === "01020304" &&
+        parsedBodyArray.length === 5
       ) {
         return HttpResponse.json({
           access_token: "myAccessToken",
@@ -63,19 +64,17 @@ export const createMultipassServerHandlers: FauxFoundryHandlersFactory = (
       }
 
       if (
-        parsedBody.get("client_id") === "myClientId"
-        && parsedBody.get("grant_type") === "refresh_token"
-        && parsedBody.get("refresh_token") === "myRefreshToken"
-        && parsedBodyArray.length === 3
+        parsedBody.get("client_id") === "myClientId" &&
+        parsedBody.get("grant_type") === "refresh_token" &&
+        parsedBody.get("refresh_token") === "myRefreshToken" &&
+        parsedBodyArray.length === 3
       ) {
-        return HttpResponse.json(
-          {
-            access_token: "refreshedAccessToken",
-            token_type: "bearer",
-            refresh_token: "refreshedRefreshToken",
-            expires_in: 3600,
-          },
-        );
+        return HttpResponse.json({
+          access_token: "refreshedAccessToken",
+          token_type: "bearer",
+          refresh_token: "refreshedRefreshToken",
+          expires_in: 3600,
+        });
       }
 
       return HttpResponse.json(
@@ -92,18 +91,18 @@ export const createMultipassServerHandlers: FauxFoundryHandlersFactory = (
       const parsedBody = new URLSearchParams(body);
       const parsedBodyArray = Array.from(parsedBody.entries());
       if (
-        parsedBodyArray.length === 3
-        && parsedBody.get("client_id") === "myClientId"
-        && parsedBody.get("client_secret") === "myClientSecret"
-        && parsedBody.get("token") === "myAccessToken"
+        parsedBodyArray.length === 3 &&
+        parsedBody.get("client_id") === "myClientId" &&
+        parsedBody.get("client_secret") === "myClientSecret" &&
+        parsedBody.get("token") === "myAccessToken"
       ) {
         return HttpResponse.json({});
       }
 
       if (
-        parsedBodyArray.length === 2
-        && parsedBody.get("client_id") === "myClientId"
-        && parsedBody.get("token") === "myAccessToken"
+        parsedBodyArray.length === 2 &&
+        parsedBody.get("client_id") === "myClientId" &&
+        parsedBody.get("token") === "myAccessToken"
       ) {
         return HttpResponse.json({});
       }

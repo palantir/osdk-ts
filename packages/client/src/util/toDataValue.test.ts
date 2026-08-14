@@ -26,6 +26,7 @@ import {
 } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
@@ -33,6 +34,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAttachmentUpload } from "../object/AttachmentUpload.js";
 import { isMediaReference } from "../object/mediaUpload.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
+import { withScenario } from "../scenarios/withScenario.js";
 import { toDataValue } from "./toDataValue.js";
 
 describe(toDataValue, () => {
@@ -125,6 +127,31 @@ describe(toDataValue, () => {
     });
   });
 
+  it("passes GeoJSON geometries through as objects", async () => {
+    const point: GeoJSON.Point = {
+      type: "Point",
+      coordinates: [-74.0, 40.7],
+    };
+    const polygon: GeoJSON.Polygon = {
+      type: "Polygon",
+      coordinates: [
+        [
+          [0, 0],
+          [1, 0],
+          [1, 1],
+          [0, 0],
+        ],
+      ],
+    };
+
+    expect(await toDataValue(point, clientCtx, mockActionMetadata)).toEqual(
+      point,
+    );
+    expect(await toDataValue(polygon, clientCtx, mockActionMetadata)).toEqual(
+      polygon,
+    );
+  });
+
   it("maps an ontology object into just its primary key", async () => {
     const employee = stubData.employee1;
     const ontologyConversion = await toDataValue(
@@ -132,9 +159,7 @@ describe(toDataValue, () => {
       clientCtx,
       mockActionMetadata,
     );
-    expect(ontologyConversion).toEqual(
-      stubData.employee1.__primaryKey,
-    );
+    expect(ontologyConversion).toEqual(stubData.employee1.__primaryKey);
   });
 
   it("maps an ontology object into just its primary key with osdk wrapper", async () => {
@@ -144,9 +169,7 @@ describe(toDataValue, () => {
       clientCtx,
       mockActionMetadata,
     );
-    expect(ontologyConversion).toEqual(
-      task.$primaryKey,
-    );
+    expect(ontologyConversion).toEqual(task.$primaryKey);
   });
 
   it("passes through object set definitions", async () => {
@@ -172,9 +195,7 @@ describe(toDataValue, () => {
       clientCtx,
       mockActionMetadata,
     );
-    expect(objectSetConversion).toMatchInlineSnapshot(
-      expected,
-    );
+    expect(objectSetConversion).toMatchInlineSnapshot(expected);
 
     const definitionConversion = await toDataValue(
       definition,
@@ -185,7 +206,7 @@ describe(toDataValue, () => {
   });
 
   it("converts blob attachment uploads correctly", async () => {
-    const blob = new Blob([JSON.stringify({ "hi": "mom" })]);
+    const blob = new Blob([JSON.stringify({ hi: "mom" })]);
     const attachmentUpload = createAttachmentUpload(blob, "file1.txt");
     const converted = await toDataValue(
       attachmentUpload,
@@ -193,29 +214,25 @@ describe(toDataValue, () => {
       mockActionMetadata,
     );
 
-    expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/i);
+    expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/iu);
   });
 
   it("converts file attachment uploads correctly", async () => {
     // Mimics the Web file API (https://developer.mozilla.org/en-US/docs/Web/API/File). The File constructor is only available in Node 19.2.0 and above
     const file = Object.assign(
-      new Blob([
-        JSON.stringify({ name: "Hello World" }, null, 2),
-      ], {
+      new Blob([JSON.stringify({ name: "Hello World" }, null, 2)], {
         type: "application/json",
       }),
       { name: "file1.txt" },
     );
 
     const converted = await toDataValue(file, clientCtx, mockActionMetadata);
-    expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/i);
+    expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/iu);
   });
 
-  it("converts media uploads correctly", async () => {
+  it("converts media uploads correctly", () => {
     const file: MediaUpload = {
-      data: new Blob([
-        JSON.stringify({ name: "Hello World" }, null, 2),
-      ], {
+      data: new Blob([JSON.stringify({ name: "Hello World" }, null, 2)], {
         type: "application/json",
       }),
       fileName: "file.txt",
@@ -268,11 +285,7 @@ describe(toDataValue, () => {
   });
 
   it("passes through nulls correctly", async () => {
-    const converted = await toDataValue(
-      null,
-      clientCtx,
-      mockActionMetadata,
-    );
+    const converted = await toDataValue(null, clientCtx, mockActionMetadata);
     expect(converted).toBeNull();
   });
 
@@ -290,11 +303,11 @@ describe(toDataValue, () => {
     };
 
     const mockMedia: Media = {
-      fetchMetadata: async () => ({
+      fetchMetadata: () => ({
         sizeBytes: 1024,
         mediaType: "image/png",
       }),
-      fetchContents: async () => new Response(),
+      fetchContents: () => new Response(),
       getMediaReference: () => expectedMediaReference,
     };
 
@@ -306,5 +319,16 @@ describe(toDataValue, () => {
 
     expect(converted).toEqual(expectedMediaReference);
     expect(isMediaReference(converted)).toBe(true);
+  });
+
+  it("converts a ScenarioClient into the rid string", async () => {
+    const scenario = withScenario(client, "ri.actions..scenario.abc");
+
+    const converted = await toDataValue(
+      scenario,
+      clientCtx,
+      mockActionMetadata,
+    );
+    expect(converted).toBe("ri.actions..scenario.abc");
   });
 });

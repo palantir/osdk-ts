@@ -17,13 +17,14 @@
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
 import React, { memo, useCallback, useMemo } from "react";
-import { DateRangeInput } from "../base/inputs/DateRangeInput.js";
+
+import { DateRangeHistogramInput } from "../base/inputs/DateRangeHistogramInput.js";
 import { NullValueWrapper } from "../base/inputs/NullValueWrapper.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import {
   createGroupByAggregateOptions,
   createNullCountAggregateOptions,
-  createNullWhereClause,
+  createNullCountWhereClause,
 } from "../utils/aggregationHelpers.js";
 
 interface DateRangeFilterInputProps<Q extends ObjectTypeDefinition> {
@@ -33,6 +34,8 @@ interface DateRangeFilterInputProps<Q extends ObjectTypeDefinition> {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  formatDate?: (date: Date) => string;
+  clickToFilter?: boolean;
 }
 
 function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -42,10 +45,11 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  formatDate,
+  clickToFilter,
 }: DateRangeFilterInputProps<Q>): React.ReactElement {
-  const dateRangeState = filterState?.type === "DATE_RANGE"
-    ? filterState
-    : undefined;
+  const dateRangeState =
+    filterState?.type === "DATE_RANGE" ? filterState : undefined;
   const includeNull = filterState?.includeNull;
 
   const handleNullChange = useCallback(
@@ -87,40 +91,32 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     histogramArgs,
   );
 
-  const valueCountPairs = useMemo<Array<{ value: Date; count: number }>>(
-    () => {
-      if (!aggregateData) return [];
-      const dataArray = aggregateData as Iterable<{
-        $group: Record<string, unknown>;
-        $count?: number;
-      }>;
-      const pairs: Array<{ value: Date; count: number }> = [];
-      for (const item of dataArray) {
-        const rawValue = item.$group[propertyKey];
-        if (rawValue != null) {
-          const date = new Date(String(rawValue));
-          if (!isNaN(date.getTime())) {
-            pairs.push({ value: date, count: item.$count ?? 0 });
-          }
+  const valueCountPairs = useMemo<Array<{ value: Date; count: number }>>(() => {
+    if (!aggregateData) return [];
+    const dataArray = aggregateData as Iterable<{
+      $group: Record<string, unknown>;
+      $count?: number;
+    }>;
+    const pairs: Array<{ value: Date; count: number }> = [];
+    for (const item of dataArray) {
+      const rawValue = item.$group[propertyKey];
+      if (rawValue != null) {
+        const date = new Date(String(rawValue));
+        if (!isNaN(date.getTime())) {
+          pairs.push({ value: date, count: item.$count ?? 0 });
         }
       }
-      return pairs;
-    },
-    [aggregateData, propertyKey],
-  );
+    }
+    return pairs;
+  }, [aggregateData, propertyKey]);
 
   const nullCountAggregateOptions = useMemo(
     () => createNullCountAggregateOptions<Q>(),
     [],
   );
 
-  // Combine null-check with cross-filter where clause so the null count
-  // reflects the filtered dataset, not the full dataset
   const nullCountWhereClause = useMemo(
-    () =>
-      ({
-        $and: [createNullWhereClause<Q>(propertyKey), whereClause],
-      }) as WhereClause<Q>,
+    () => createNullCountWhereClause<Q>(propertyKey, whereClause),
     [propertyKey, whereClause],
   );
 
@@ -137,10 +133,7 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     data: nullCountData,
     isLoading: nullLoading,
     error: nullError,
-  } = useOsdkAggregation(
-    objectType,
-    nullCountArgs,
-  );
+  } = useOsdkAggregation(objectType, nullCountArgs);
 
   const nullCount = useMemo(() => {
     if (!nullCountData) return 0;
@@ -161,12 +154,14 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
       includeNull={includeNull}
       onIncludeNullChange={handleNullChange}
     >
-      <DateRangeInput
+      <DateRangeHistogramInput
         valueCountPairs={valueCountPairs}
         isLoading={isLoading}
         minValue={dateRangeState?.minValue}
         maxValue={dateRangeState?.maxValue}
         onChange={handleRangeChange}
+        formatDate={formatDate}
+        clickToFilter={clickToFilter}
       />
     </NullValueWrapper>
   );

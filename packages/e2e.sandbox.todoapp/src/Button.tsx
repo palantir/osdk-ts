@@ -1,12 +1,14 @@
 import React from "react";
 
-export function Button(
-  { children, onClick, disabled }: {
-    children: React.ReactNode;
-    onClick?: () => void;
-    disabled?: boolean;
-  },
-) {
+export function Button({
+  children,
+  onClick,
+  disabled,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+}) {
   return (
     <button
       className="

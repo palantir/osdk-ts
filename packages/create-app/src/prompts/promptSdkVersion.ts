@@ -17,9 +17,13 @@
 import { consola } from "../consola.js";
 import type { SdkVersion, Template } from "../templates.js";
 
-export async function promptSdkVersion(
-  { sdkVersion, template }: { sdkVersion?: string; template: Template },
-): Promise<SdkVersion> {
+export async function promptSdkVersion({
+  sdkVersion,
+  template,
+}: {
+  sdkVersion?: string;
+  template: Template;
+}): Promise<SdkVersion> {
   if (sdkVersion == null) {
     // Default to the latest discovered version for the template
     return Object.keys(template.files).at(-1) as SdkVersion;
@@ -33,10 +37,12 @@ export async function promptSdkVersion(
       `Please choose which version of the OSDK you'd like to use for the ${template.label} template:`,
       {
         type: "select",
-        options: Object.keys(template.files).reverse().map(sdkVersion => ({
-          label: sdkVersion,
-          value: sdkVersion,
-        })),
+        options: Object.keys(template.files)
+          .reverse()
+          .map((sdkVersion) => ({
+            label: sdkVersion,
+            value: sdkVersion,
+          })),
       },
     );
   }

@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BulkUpdateEntityRolesRequest as _api_permissions_BulkUpdateEntityRolesRequest,
-  BulkUpdateEntityRolesResponse
-    as _api_permissions_BulkUpdateEntityRolesResponse,
+  BulkUpdateEntityRolesResponse as _api_permissions_BulkUpdateEntityRolesResponse,
 } from "../__components.js";
 
 /**

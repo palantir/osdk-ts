@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   OntologyPackageRid as _api_OntologyPackageRid,
   OntologyRid as _api_OntologyRid,

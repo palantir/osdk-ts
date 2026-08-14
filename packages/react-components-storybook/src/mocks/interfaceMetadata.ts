@@ -16,143 +16,141 @@
 
 import type { FauxOntology } from "@osdk/faux";
 
-type InterfaceType = Parameters<
-  FauxOntology["registerInterfaceType"]
->[0];
+type InterfaceType = Parameters<FauxOntology["registerInterfaceType"]>[0];
 
 export const interfaceMetadata: Record<string, InterfaceType> = {
-  "Person": {
-    "apiName": "Person",
-    "displayName": "Person",
-    "description": "A person interface",
-    "rid": "ri.ontology.main.interface.353734ce-ae2d-4e49-8070-163b2126af5a",
-    "properties": {
-      "email": {
-        "rid": "ri.property.12345678-90ab-cdef-1234-567890abcdef",
-        "apiName": "email",
-        "displayName": "Email",
-        "dataType": {
-          "type": "string",
+  Person: {
+    apiName: "Person",
+    displayName: "Person",
+    description: "A person interface",
+    rid: "ri.ontology.main.interface.353734ce-ae2d-4e49-8070-163b2126af5a",
+    properties: {
+      email: {
+        rid: "ri.property.12345678-90ab-cdef-1234-567890abcdef",
+        apiName: "email",
+        displayName: "Email",
+        dataType: {
+          type: "string",
         },
-        "required": false,
-        "typeClasses": [],
+        required: false,
+        typeClasses: [],
       },
-      "employeeNumber": {
-        "rid": "ri.property.12345678-90ab-cdef-1234-567890abc123",
-        "apiName": "employeeNumber",
-        "displayName": "Employee Number",
-        "dataType": {
-          "type": "integer",
+      employeeNumber: {
+        rid: "ri.property.12345678-90ab-cdef-1234-567890abc123",
+        apiName: "employeeNumber",
+        displayName: "Employee Number",
+        dataType: {
+          type: "integer",
         },
-        "required": false,
-        "typeClasses": [],
-      },
-    },
-    "allProperties": {
-      "email": {
-        "rid": "ri.property.12345678-90ab-cdef-1234-567890abcdef",
-        "apiName": "email",
-        "displayName": "Email",
-        "dataType": {
-          "type": "string",
-        },
-        "required": false,
-        "typeClasses": [],
-      },
-      "employeeNumber": {
-        "rid": "ri.property.12345678-90ab-cdef-1234-567890abc123",
-        "apiName": "employeeNumber",
-        "displayName": "Employee Number",
-        "dataType": {
-          "type": "integer",
-        },
-        "required": false,
-        "typeClasses": [],
+        required: false,
+        typeClasses: [],
       },
     },
-    "propertiesV2": {},
-    "allPropertiesV2": {},
-    "extendsInterfaces": [],
-    "allExtendsInterfaces": [],
-    "implementedByObjectTypes": ["Employee"],
-    "links": {},
-    "allLinks": {},
+    allProperties: {
+      email: {
+        rid: "ri.property.12345678-90ab-cdef-1234-567890abcdef",
+        apiName: "email",
+        displayName: "Email",
+        dataType: {
+          type: "string",
+        },
+        required: false,
+        typeClasses: [],
+      },
+      employeeNumber: {
+        rid: "ri.property.12345678-90ab-cdef-1234-567890abc123",
+        apiName: "employeeNumber",
+        displayName: "Employee Number",
+        dataType: {
+          type: "integer",
+        },
+        required: false,
+        typeClasses: [],
+      },
+    },
+    propertiesV2: {},
+    allPropertiesV2: {},
+    extendsInterfaces: [],
+    allExtendsInterfaces: [],
+    implementedByObjectTypes: ["Employee"],
+    links: {},
+    allLinks: {},
   },
-  "Worker": {
-    "apiName": "Worker",
-    "displayName": "Worker",
-    "description": "A worker interface",
-    "rid": "ri.ontology.main.interface.777ffb22-9b3c-4fb6-908f-56d23c3a5198",
-    "properties": {
-      "email": {
-        "rid": "ri.property.12345678-90ab-cdef-5678-567890abc123",
-        "apiName": "email",
-        "displayName": "Email",
-        "dataType": {
-          "type": "string",
+  Worker: {
+    apiName: "Worker",
+    displayName: "Worker",
+    description: "A worker interface",
+    rid: "ri.ontology.main.interface.777ffb22-9b3c-4fb6-908f-56d23c3a5198",
+    properties: {
+      email: {
+        rid: "ri.property.12345678-90ab-cdef-5678-567890abc123",
+        apiName: "email",
+        displayName: "Email",
+        dataType: {
+          type: "string",
         },
-        "required": false,
-        "typeClasses": [],
+        required: false,
+        typeClasses: [],
       },
-      "name": {
-        "rid": "ri.property.12345678-90ab-xyzw-5678-567890abc123",
-        "apiName": "name",
-        "displayName": "Name",
-        "dataType": {
-          "type": "string",
+      name: {
+        rid: "ri.property.12345678-90ab-xyzw-5678-567890abc123",
+        apiName: "name",
+        displayName: "Name",
+        dataType: {
+          type: "string",
         },
-        "required": false,
-        "typeClasses": [],
+        required: false,
+        typeClasses: [],
       },
-      "employeeNumber": {
-        "rid": "ri.property.01235678-90ab-xyzw-5678-567890abc123",
-        "apiName": "employeeNumber",
-        "displayName": "Employee Number",
-        "dataType": {
-          "type": "integer",
+      employeeNumber: {
+        rid: "ri.property.01235678-90ab-xyzw-5678-567890abc123",
+        apiName: "employeeNumber",
+        displayName: "Employee Number",
+        dataType: {
+          type: "integer",
         },
-        "required": false,
-        "typeClasses": [],
-      },
-    },
-    "allProperties": {
-      "email": {
-        "rid": "ri.property.12345678-90ab-cdef-5678-567890abc123",
-        "apiName": "email",
-        "displayName": "Email",
-        "dataType": {
-          "type": "string",
-        },
-        "required": false,
-        "typeClasses": [],
-      },
-      "name": {
-        "rid": "ri.property.12345678-90ab-xyzw-5678-567890abc123",
-        "apiName": "name",
-        "displayName": "Name",
-        "dataType": {
-          "type": "string",
-        },
-        "required": false,
-        "typeClasses": [],
-      },
-      "employeeNumber": {
-        "rid": "ri.property.01235678-90ab-xyzw-5678-567890abc123",
-        "apiName": "employeeNumber",
-        "displayName": "Employee Number",
-        "dataType": {
-          "type": "integer",
-        },
-        "required": false,
-        "typeClasses": [],
+        required: false,
+        typeClasses: [],
       },
     },
-    "propertiesV2": {},
-    "allPropertiesV2": {},
-    "extendsInterfaces": [],
-    "allExtendsInterfaces": [],
-    "implementedByObjectTypes": ["Employee"],
-    "links": {},
-    "allLinks": {},
+    allProperties: {
+      email: {
+        rid: "ri.property.12345678-90ab-cdef-5678-567890abc123",
+        apiName: "email",
+        displayName: "Email",
+        dataType: {
+          type: "string",
+        },
+        required: false,
+        typeClasses: [],
+      },
+      name: {
+        rid: "ri.property.12345678-90ab-xyzw-5678-567890abc123",
+        apiName: "name",
+        displayName: "Name",
+        dataType: {
+          type: "string",
+        },
+        required: false,
+        typeClasses: [],
+      },
+      employeeNumber: {
+        rid: "ri.property.01235678-90ab-xyzw-5678-567890abc123",
+        apiName: "employeeNumber",
+        displayName: "Employee Number",
+        dataType: {
+          type: "integer",
+        },
+        required: false,
+        typeClasses: [],
+      },
+    },
+    propertiesV2: {},
+    allPropertiesV2: {},
+    extendsInterfaces: [],
+    allExtendsInterfaces: [],
+    implementedByObjectTypes: ["Employee"],
+    links: {},
+    allLinks: {},
   },
 };

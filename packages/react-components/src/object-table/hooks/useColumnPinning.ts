@@ -21,10 +21,11 @@ import type {
 } from "@osdk/api";
 import type { ColumnPinningState, OnChangeFn } from "@tanstack/react-table";
 import { useCallback, useEffect, useState } from "react";
+
 import type { ObjectTableProps } from "../ObjectTableApi.js";
 import { SELECTION_COLUMN_ID } from "../utils/constants.js";
 
-interface UseColumnPinningProps<
+export interface UseColumnPinningProps<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -47,7 +48,7 @@ interface UseColumnPinningProps<
   >["onColumnsPinnedChanged"];
 }
 
-interface UseColumnPinningResults {
+export interface UseColumnPinningResult {
   columnPinning: ColumnPinningState;
   onColumnPinningChange: OnChangeFn<ColumnPinningState>;
 }
@@ -63,11 +64,7 @@ export const useColumnPinning = <
   columnDefinitions,
   hasSelectionColumn,
   onColumnsPinnedChanged,
-}: UseColumnPinningProps<
-  Q,
-  RDPs,
-  FunctionColumns
->): UseColumnPinningResults => {
+}: UseColumnPinningProps<Q, RDPs, FunctionColumns>): UseColumnPinningResult => {
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({
     left: [],
     right: [],
@@ -86,9 +83,8 @@ export const useColumnPinning = <
   const onColumnPinningChange: OnChangeFn<ColumnPinningState> = useCallback(
     (updater) => {
       setColumnPinning((prev) => {
-        const newPinning = typeof updater === "function"
-          ? updater(prev)
-          : updater;
+        const newPinning =
+          typeof updater === "function" ? updater(prev) : updater;
 
         if (onColumnsPinnedChanged) {
           const newStates = convertColumnPinningStateToArray(newPinning);
@@ -124,30 +120,29 @@ const getColumnPinningStateFromColumnDefs = <
   if (!columnDefinitions) {
     return {};
   }
-  const columnPinningState: ColumnPinningState = columnDefinitions.reduce<
-    ColumnPinningState
-  >(
-    (acc, { locator, pinned }) => {
-      const colKey: string = locator.id.toString();
-      const isPinned = pinned != null && pinned !== "none";
-      if (!isPinned) {
-        return acc;
-      }
+  const columnPinningState: ColumnPinningState =
+    columnDefinitions.reduce<ColumnPinningState>(
+      (acc, { locator, pinned }) => {
+        const colKey: string = locator.id.toString();
+        const isPinned = pinned != null && pinned !== "none";
+        if (!isPinned) {
+          return acc;
+        }
 
-      if (pinned === "left") {
+        if (pinned === "left") {
+          return {
+            ...acc,
+            left: [...(acc.left ?? []), colKey],
+          };
+        }
+
         return {
           ...acc,
-          left: [...(acc.left ?? []), colKey],
+          right: [...(acc.right ?? []), colKey],
         };
-      }
-
-      return {
-        ...acc,
-        right: [...(acc.right ?? []), colKey],
-      };
-    },
-    { left: [], right: [] },
-  );
+      },
+      { left: [], right: [] },
+    );
   return columnPinningState;
 };
 

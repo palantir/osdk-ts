@@ -15,15 +15,21 @@
  */
 
 export { augment } from "../object/fetchPage.js";
+export { hydrateOsdkObject } from "../object/hydrateOsdkObject.js";
 export { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 
 export {
-  getMetaTagContent,
-  getOsdkConfig,
-} from "../public-utils/osdkConfig.js";
-export type { OsdkConfig } from "../public-utils/osdkConfig.js";
+  createClientWithSubscriptionConnection,
+  createClientWithTransaction,
+} from "../createClient.js";
+export type {
+  CreateSubscriptionConnectionFn,
+  SubscriptionConnection,
+} from "../SubscriptionConnection.js";
 
-export { createClientWithTransaction } from "../createClient.js";
+export { createScenario } from "../scenarios/createScenario.js";
+export type { EXPERIMENTAL_ScenarioClient } from "../scenarios/ScenarioClient.js";
+export { withScenario } from "../scenarios/withScenario.js";
 
 export {
   applyShapeTransformations,

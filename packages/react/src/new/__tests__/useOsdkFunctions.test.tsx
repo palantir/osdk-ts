@@ -20,10 +20,23 @@ import type { ObservableClient } from "@osdk/client/observable";
 import { act, renderHook } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { OsdkContext } from "../OsdkContext.js";
 import type { UseOsdkFunctionOptions } from "../useOsdkFunction.js";
 import type { UseOsdkFunctionsProps } from "../useOsdkFunctions.js";
 import { useOsdkFunctions } from "../useOsdkFunctions.js";
+
+const MOCK_WIRE_FORM = Symbol.for("test.mockWireForm");
+vi.mock("@osdk/client", () => {
+  return {
+    isObjectSet: (o: unknown): boolean =>
+      o != null &&
+      typeof o === "object" &&
+      (o as Record<symbol, unknown>)[MOCK_WIRE_FORM] !== undefined,
+    getWireObjectSet: (o: unknown): unknown =>
+      (o as Record<symbol, unknown>)[MOCK_WIRE_FORM],
+  };
+});
 
 const MOCK_QUERY_DEF_1: QueryDefinition<unknown> = {
   type: "query",
@@ -85,12 +98,11 @@ function createWrapper(observableClient: ObservableClient) {
   };
 }
 
-function captureObservers(
-  mockObservableClient: ObservableClient,
-): Observer[] {
+function captureObservers(mockObservableClient: ObservableClient): Observer[] {
   const observers: Observer[] = [];
   (mockObservableClient as unknown as Record<string, unknown>).observeFunction =
-    vi.fn()
+    vi
+      .fn()
       .mockImplementation(
         (
           _def: unknown,
@@ -118,10 +130,9 @@ describe("useOsdkFunctions", () => {
 
   it("should return initial state when no queries are provided", () => {
     const props: UseOsdkFunctionsProps = { queries: [] };
-    const { result } = renderHook(
-      () => useOsdkFunctions(props),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    const { result } = renderHook(() => useOsdkFunctions(props), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     expect(result.current).toEqual([]);
   });
@@ -131,10 +142,9 @@ describe("useOsdkFunctions", () => {
       queries: [{ queryDefinition: MOCK_QUERY_DEF_1 }],
       enabled: false,
     };
-    const { result } = renderHook(
-      () => useOsdkFunctions(props),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    const { result } = renderHook(() => useOsdkFunctions(props), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     expect(result.current[0]).toEqual({
       data: undefined,
@@ -163,10 +173,9 @@ describe("useOsdkFunctions", () => {
       ],
     };
 
-    const { result } = renderHook(
-      () => useOsdkFunctions(props),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    const { result } = renderHook(() => useOsdkFunctions(props), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     act(() => {
       observers[0].next({
@@ -228,10 +237,9 @@ describe("useOsdkFunctions", () => {
       ],
     };
 
-    const { result } = renderHook(
-      () => useOsdkFunctions(props),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    const { result } = renderHook(() => useOsdkFunctions(props), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     act(() => {
       observers[0].next({
@@ -299,10 +307,9 @@ describe("useOsdkFunctions", () => {
       ],
     };
 
-    const { result } = renderHook(
-      () => useOsdkFunctions(props),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    const { result } = renderHook(() => useOsdkFunctions(props), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     // First query should not be loading (disabled)
     expect(result.current[0].isLoading).toBe(false);
@@ -346,10 +353,9 @@ describe("useOsdkFunctions", () => {
       queries: [{ queryDefinition: MOCK_QUERY_DEF_1 }],
     };
 
-    const { result } = renderHook(
-      () => useOsdkFunctions(props),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    const { result } = renderHook(() => useOsdkFunctions(props), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     const mockError = new Error("Query failed");
     act(() => {
@@ -372,10 +378,9 @@ describe("useOsdkFunctions", () => {
       ],
     };
 
-    const { result } = renderHook(
-      () => useOsdkFunctions(props),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    const { result } = renderHook(() => useOsdkFunctions(props), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     const mockResult = { total: 100 };
     const mockError = new Error("Second query failed");
@@ -416,10 +421,9 @@ describe("useOsdkFunctions", () => {
       ],
     };
 
-    const { unmount } = renderHook(
-      () => useOsdkFunctions(props),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    const { unmount } = renderHook(() => useOsdkFunctions(props), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     unmount();
 
@@ -436,10 +440,9 @@ describe("useOsdkFunctions", () => {
       ],
     };
 
-    const { result } = renderHook(
-      () => useOsdkFunctions(props),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    const { result } = renderHook(() => useOsdkFunctions(props), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     act(() => {
       observers[0].next({
@@ -492,10 +495,9 @@ describe("useOsdkFunctions", () => {
       queries: [{ queryDefinition: MOCK_QUERY_DEF_1 }],
     };
 
-    const { result } = renderHook(
-      () => useOsdkFunctions(props),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    const { result } = renderHook(() => useOsdkFunctions(props), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     act(() => {
       observers[0].next({
@@ -506,9 +508,7 @@ describe("useOsdkFunctions", () => {
 
     expect(result.current[0].isLoading).toBe(false);
     expect(result.current[0].error).toBeInstanceOf(Error);
-    expect(result.current[0].error?.message).toBe(
-      "Failed to execute function",
-    );
+    expect(result.current[0].error?.message).toBe("Failed to execute function");
   });
 
   it("should prefer payload.error over generic error message", () => {
@@ -517,10 +517,9 @@ describe("useOsdkFunctions", () => {
       queries: [{ queryDefinition: MOCK_QUERY_DEF_1 }],
     };
 
-    const { result } = renderHook(
-      () => useOsdkFunctions(props),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    const { result } = renderHook(() => useOsdkFunctions(props), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     const specificError = new Error("Specific failure");
     act(() => {
@@ -540,10 +539,9 @@ describe("useOsdkFunctions", () => {
       queries: [{ queryDefinition: MOCK_QUERY_DEF_1 }],
     };
 
-    const { result } = renderHook(
-      () => useOsdkFunctions(props),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    const { result } = renderHook(() => useOsdkFunctions(props), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     act(() => {
       observers[0].error("string error");
@@ -567,10 +565,9 @@ describe("useOsdkFunctions", () => {
       ],
     };
 
-    renderHook(
-      () => useOsdkFunctions(props),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    renderHook(() => useOsdkFunctions(props), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     expect(mockObservableClient.observeFunction).toHaveBeenCalledWith(
       MOCK_QUERY_DEF_1,
@@ -581,6 +578,70 @@ describe("useOsdkFunctions", () => {
         dependsOnObjects: [testObject],
       },
       expect.objectContaining({ next: expect.any(Function) }),
+    );
+  });
+
+  describe("params memoization", () => {
+    function makeMockObjectSet(wireForm: object): object {
+      const o: Record<PropertyKey, unknown> = {};
+      Object.defineProperty(o, MOCK_WIRE_FORM, {
+        enumerable: false,
+        configurable: true,
+        writable: true,
+        value: wireForm,
+      });
+      return o;
+    }
+
+    it(
+      "should re-subscribe when a query's params contains ObjectSets with " +
+        "different filter chains",
+      () => {
+        const osA = makeMockObjectSet({
+          type: "filter",
+          objectSet: { type: "base", objectType: "Employee" },
+          where: { type: "eq", field: "dept", value: "A" },
+        });
+        const osB = makeMockObjectSet({
+          type: "filter",
+          objectSet: { type: "base", objectType: "Employee" },
+          where: { type: "eq", field: "dept", value: "B" },
+        });
+
+        // Sanity: both serialize to {} via the default JSON.stringify path —
+        // this is what makes the buggy memo key collide.
+        expect(JSON.stringify({ someInput: osA })).toBe(
+          JSON.stringify({ someInput: osB }),
+        );
+
+        const { rerender } = renderHook(
+          ({ os }: { os: object }) =>
+            useOsdkFunctions({
+              queries: [
+                {
+                  queryDefinition: MOCK_QUERY_DEF_1,
+                  options: {
+                    params: {
+                      someInput: os,
+                    } as unknown as UseOsdkFunctionOptions<
+                      typeof MOCK_QUERY_DEF_1
+                    >["params"],
+                  },
+                },
+              ],
+            }),
+          {
+            wrapper: createWrapper(mockObservableClient),
+            initialProps: { os: osA },
+          },
+        );
+
+        expect(mockObservableClient.observeFunction).toHaveBeenCalledTimes(1);
+
+        rerender({ os: osB });
+
+        expect(mockObservableClient.observeFunction).toHaveBeenCalledTimes(2);
+      },
     );
   });
 
@@ -596,10 +657,9 @@ describe("useOsdkFunctions", () => {
         maxConcurrent: 1,
       };
 
-      renderHook(
-        () => useOsdkFunctions(props),
-        { wrapper: createWrapper(mockObservableClient) },
-      );
+      renderHook(() => useOsdkFunctions(props), {
+        wrapper: createWrapper(mockObservableClient),
+      });
 
       // Only the first query should be subscribed
       expect(mockObservableClient.observeFunction).toHaveBeenCalledTimes(1);
@@ -623,10 +683,9 @@ describe("useOsdkFunctions", () => {
         maxConcurrent: 1,
       };
 
-      const { result } = renderHook(
-        () => useOsdkFunctions(props),
-        { wrapper: createWrapper(mockObservableClient) },
-      );
+      const { result } = renderHook(() => useOsdkFunctions(props), {
+        wrapper: createWrapper(mockObservableClient),
+      });
 
       expect(observers).toHaveLength(1);
 
@@ -690,10 +749,9 @@ describe("useOsdkFunctions", () => {
         maxConcurrent: 1,
       };
 
-      const { result } = renderHook(
-        () => useOsdkFunctions(props),
-        { wrapper: createWrapper(mockObservableClient) },
-      );
+      const { result } = renderHook(() => useOsdkFunctions(props), {
+        wrapper: createWrapper(mockObservableClient),
+      });
 
       expect(observers).toHaveLength(1);
 
@@ -728,10 +786,9 @@ describe("useOsdkFunctions", () => {
         maxConcurrent: 2,
       };
 
-      const { result } = renderHook(
-        () => useOsdkFunctions(props),
-        { wrapper: createWrapper(mockObservableClient) },
-      );
+      const { result } = renderHook(() => useOsdkFunctions(props), {
+        wrapper: createWrapper(mockObservableClient),
+      });
 
       // First two should be subscribed immediately
       expect(observers).toHaveLength(2);
@@ -778,10 +835,9 @@ describe("useOsdkFunctions", () => {
         maxConcurrent: 1,
       };
 
-      renderHook(
-        () => useOsdkFunctions(props),
-        { wrapper: createWrapper(mockObservableClient) },
-      );
+      renderHook(() => useOsdkFunctions(props), {
+        wrapper: createWrapper(mockObservableClient),
+      });
 
       // First is disabled, so second should be the initial subscription
       expect(observers).toHaveLength(1);

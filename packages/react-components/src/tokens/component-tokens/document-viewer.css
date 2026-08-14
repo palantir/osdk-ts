@@ -1,0 +1,5 @@
+:root {
+  /* Document Viewer - Container */
+  --osdk-document-viewer-bg: var(--osdk-background-primary);
+  --osdk-document-viewer-border: var(--osdk-surface-border);
+}

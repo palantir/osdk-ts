@@ -30,6 +30,7 @@ import {
 } from "@osdk/react";
 import type { SortingState } from "@tanstack/react-table";
 import { useMemo } from "react";
+
 import type { ColumnDefinition, ObjectSetOptions } from "../ObjectTableApi.js";
 import type { AsyncCellData } from "../utils/AsyncCellData.js";
 import {
@@ -40,17 +41,55 @@ import { useFunctionColumnsData } from "./useFunctionColumnsData.js";
 
 type WithProperties<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > = {
   [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
 };
 
-interface UseObjectTableDataResult<
+export interface UseObjectTableDataProps<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> {
+  /** The object or interface type to load rows for. */
+  objectOrInterfaceType: Q;
+  /**
+   * Column definitions. Used to extract derived-property (`rdp`) and
+   * function-column locators so the correct `withProperties` / function data
+   * is fetched. Optional — omit to load the type's base properties only.
+   */
+  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>;
+  /** Server-side `where` clause applied to the query. */
+  filter?: WhereClause<Q, RDPs>;
+  /** TanStack sorting state, converted to an OSDK `orderBy` internally. */
+  sorting?: SortingState;
+  /**
+   * A pre-built object set to page through instead of fetching by type. When
+   * provided, rows come from this set (filter / ordering still applied).
+   */
+  objectSet?: ObjectSet<Q>;
+  /** Extra options forwarded to `useObjectSet` when `objectSet` is provided. */
+  objectSetOptions?: ObjectSetOptions<Q>;
+  /**
+   * Minimum interval between duplicate requests, in milliseconds.
+   * @default 60000
+   */
+  dedupeIntervalMs?: number;
+  /**
+   * Number of rows to request per page.
+   * @default 50
+   */
+  pageSize?: number;
+  /** Whether to subscribe to live updates for the loaded objects. */
+  streamUpdates?: boolean;
+}
+
+export interface UseObjectTableDataResult<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > extends Omit<UseOsdkListResult<Q, RDPs>, "isOptimistic"> {}
 /**
  * This hook is a wrapper that conditionally uses either useObjectSet or useOsdkObjects
@@ -60,24 +99,25 @@ interface UseObjectTableDataResult<
  */
 export function useObjectTableData<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
   >,
->(
-  objectOrInterfaceType: Q,
-  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
-  filter?: WhereClause<Q, RDPs>,
-  sorting?: SortingState,
-  objectSet?: ObjectSet<Q>,
-  objectSetOptions?: ObjectSetOptions<Q>,
-  dedupeIntervalMs: number = DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS,
-  pageSize: number = DEFAULT_PAGE_SIZE,
-): UseObjectTableDataResult<Q, RDPs> {
+>({
+  objectOrInterfaceType,
+  columnDefinitions,
+  filter,
+  sorting,
+  objectSet,
+  objectSetOptions,
+  dedupeIntervalMs = DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS,
+  pageSize = DEFAULT_PAGE_SIZE,
+  streamUpdates,
+}: UseObjectTableDataProps<Q, RDPs, FunctionColumns>): UseObjectTableDataResult<
+  Q,
+  RDPs
+> {
   const orderBy = useMemo(() => {
     if (!sorting || sorting.length === 0) {
       return undefined;
@@ -98,11 +138,11 @@ export function useObjectTableData<
       return;
     }
 
-    const rdpColumns = columnDefinitions.map(colDef => colDef.locator).filter(
-      (colLocator) => {
+    const rdpColumns = columnDefinitions
+      .map((colDef) => colDef.locator)
+      .filter((colLocator) => {
         return colLocator.type === "rdp";
-      },
-    );
+      });
 
     if (!rdpColumns.length) {
       return;
@@ -119,56 +159,43 @@ export function useObjectTableData<
     );
   }, [columnDefinitions]);
 
-  // When objectSet is provided and it's an object type, use useObjectSet. Otherwise, use useOsdkObjects.
-  const isObjectType = objectOrInterfaceType.type === "object";
-  const shouldUseObjectSet = !!objectSet && isObjectType;
+  // Use the caller's objectSet whenever provided (object or interface types), else fetch
+  // by type. For an interface objectSet, rows carry interface-declared props (+ withProperties)
+  // only, not the full underlying object — see the objectSet prop docs.
+  const shouldUseObjectSet = !!objectSet;
 
-  // When shouldUseObjectSet is true, we know objectSet is defined
-  // and objectOrInterfaceType is an ObjectTypeDefinition
   const objectSetResult = useObjectSet(
-    shouldUseObjectSet ? objectSet as ObjectSet<Q, RDPs> : undefined as any,
+    shouldUseObjectSet ? (objectSet as ObjectSet<Q, RDPs>) : (undefined as any),
     {
       ...(objectSetOptions as ObjectSetOptions<Q>),
-      withProperties: withProperties as WithProperties<
-        Q,
-        RDPs
-      >,
+      withProperties: withProperties as WithProperties<Q, RDPs>,
       where: filter,
       orderBy,
       pageSize,
       enabled: shouldUseObjectSet,
       dedupeIntervalMs,
+      streamUpdates,
     },
   );
 
-  const osdkObjectsResult = useOsdkObjects<
-    Q,
-    RDPs
-  >(
-    objectOrInterfaceType,
-    {
-      withProperties,
-      pageSize,
-      where: filter,
-      orderBy,
-      enabled: !shouldUseObjectSet,
-      dedupeIntervalMs,
-    },
-  );
+  const osdkObjectsResult = useOsdkObjects<Q, RDPs>(objectOrInterfaceType, {
+    withProperties,
+    pageSize,
+    where: filter,
+    orderBy,
+    enabled: !shouldUseObjectSet,
+    dedupeIntervalMs,
+    streamUpdates,
+  });
 
   // Get the result from the appropriate hook
   const baseResult = shouldUseObjectSet ? objectSetResult : osdkObjectsResult;
-
-  const primaryKeyApiName = objectOrInterfaceType.type === "object"
-    ? objectOrInterfaceType.primaryKeyApiName
-    : undefined;
 
   // Call useFunctionColumnsData to get function column data
   const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>({
     objectOrInterfaceType,
     objects: baseResult.data,
     columnDefinitions,
-    primaryKeyApiName,
     pageSize,
   });
 
@@ -176,7 +203,7 @@ export function useObjectTableData<
   const mergedData = useMemo(() => {
     if (!baseResult.data) return baseResult.data;
 
-    return baseResult.data.map(obj => {
+    return baseResult.data.map((obj) => {
       const objKey = String(obj.$primaryKey);
       const functionData: Record<string, AsyncCellData> = {};
 

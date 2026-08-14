@@ -18,6 +18,10 @@ import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
+import type {
+  ApplyModifiersArg,
+  PropertyModifierValue,
+} from "../ontology/PropertyModifiers.js";
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type {
   ExtractOptions,
@@ -35,18 +39,22 @@ export type RespectNullability<S extends NullabilityAdherence> = S extends false
 
 /** exposed for a test */
 export type UnionIfFalse<S extends string, JUST_S_IF_TRUE extends boolean, E> =
-  IsNever<S> extends true ? never
-    : JUST_S_IF_TRUE extends true ? S
-    : S | E;
+  IsNever<S> extends true ? never : JUST_S_IF_TRUE extends true ? S : S | E;
 
 /** exposed for a test */
 export type UnionIfTrue<
   S extends string,
   UNION_IF_TRUE extends boolean,
   E extends string,
-> = IsNever<S> extends true ? never
-  : UNION_IF_TRUE extends true ? S | E
-  : S;
+> = IsNever<S> extends true ? never : UNION_IF_TRUE extends true ? S | E : S;
+
+type ModifiersToSelectStrings<M> = {
+  [K in keyof M]: K extends string
+    ? M[K] extends PropertyModifierValue
+      ? `${K}:${M[K]}`
+      : never
+    : never;
+}[keyof M];
 
 /**
  * Helper type for converting fetch options into an Osdk object
@@ -59,12 +67,15 @@ export type FetchPageResult<
   T extends boolean = false,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
   PROPERTY_SECURITIES extends boolean = false,
+  MODIFIERS extends ApplyModifiersArg<Q> = {},
 > = PageResult<
   MaybeScore<
     Osdk.Instance<
       Q,
       ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
-      PropertyKeys<Q> extends L ? never : L
+      | Exclude<PropertyKeys<Q> extends L ? never : L, keyof MODIFIERS>
+      | ModifiersToSelectStrings<MODIFIERS>,
+      {}
     >,
     ORDER_BY_OPTIONS
   >
@@ -92,5 +103,7 @@ export type SingleOsdkResult<
 >;
 
 export type IsAny<T> = unknown extends T
-  ? [keyof T] extends [never] ? false : true
+  ? [keyof T] extends [never]
+    ? false
+    : true
   : false;

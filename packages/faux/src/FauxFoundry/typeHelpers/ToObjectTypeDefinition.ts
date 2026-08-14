@@ -22,28 +22,30 @@ import type {
 import type { ObjectTypeV2, PropertyV2 } from "@osdk/foundry.ontologies";
 
 type PropertyV2ToWirePropertyTypes<T extends PropertyV2> =
-  T["dataType"]["type"] extends "array" ? never
-    : T["dataType"]["type"] extends "date" ? "timestamp"
-    : Exclude<
-      T["dataType"]["type"],
-      "array" | "date" | "struct" | "cipherText" | "timeseries" | "vector"
-    >;
+  T["dataType"]["type"] extends "array"
+    ? never
+    : T["dataType"]["type"] extends "date"
+      ? "timestamp"
+      : Exclude<
+          T["dataType"]["type"],
+          "array" | "date" | "struct" | "cipherText" | "timeseries" | "vector"
+        >;
 
 export type ToObjectTypeDefinition<T extends ObjectTypeV2> = {
   type: "object";
   apiName: T["apiName"];
   __DefinitionMetadata: Omit<ObjectMetadata, "properties"> & {
-    props:
-      & {
-        [key in keyof T["properties"] & string]?: PropertyValueWireToClient[
-          PropertyV2ToWirePropertyTypes<T["properties"][key]>
-        ];
-      }
+    props: {
+      [key in keyof T["properties"] &
+        string]?: PropertyValueWireToClient[PropertyV2ToWirePropertyTypes<
+        T["properties"][key]
+      >];
+    } &
       // setup the primary key to not be optional
-      & {
-        [key in T["primaryKey"]]: PropertyValueWireToClient[
-          PropertyV2ToWirePropertyTypes<T["properties"][key]>
-        ];
+      {
+        [key in T["primaryKey"]]: PropertyValueWireToClient[PropertyV2ToWirePropertyTypes<
+          T["properties"][key]
+        >];
       };
     properties: {
       [key in keyof T["properties"] & string]: PropertyDef<

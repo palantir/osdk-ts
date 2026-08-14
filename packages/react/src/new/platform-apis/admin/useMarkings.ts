@@ -17,6 +17,7 @@
 import type { Marking } from "@osdk/foundry.admin";
 import { Markings } from "@osdk/foundry.admin";
 import React from "react";
+
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext } from "../../OsdkContext.js";
 
@@ -49,9 +50,9 @@ export interface UseMarkingsResult {
  * List all markings.
  * @param options Options to control the query.
  */
-export function useMarkings(
-  { enabled = true }: UseMarkingsOptions = {},
-): UseMarkingsResult {
+export function useMarkings({
+  enabled = true,
+}: UseMarkingsOptions = {}): UseMarkingsResult {
   const { client } = React.useContext(OsdkContext);
 
   const handleQuery = React.useCallback(() => {

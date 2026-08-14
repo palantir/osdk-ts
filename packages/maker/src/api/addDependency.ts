@@ -16,6 +16,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+
 import { dependencies } from "./defineOntology.js";
 
 const MAX_SEARCH_DEPTH = 5;

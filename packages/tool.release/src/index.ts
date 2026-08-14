@@ -46,11 +46,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import * as fs from "node:fs";
+
 import { getExecOutput } from "@actions/exec";
 import { readChangesetState } from "@changesets/release-utils";
 import { consola } from "consola";
-import * as fs from "node:fs";
 import yargs from "yargs";
+
 import { FailedWithUserMessage } from "./FailedWithUserMessage.js";
 import { checkIfClean as isGitClean, setupUser } from "./gitUtils.js";
 import { runPublish } from "./runPublish.js";
@@ -68,9 +70,11 @@ async function getStdoutOrThrow(...args: Parameters<typeof getExecOutput>) {
   return stdout;
 }
 
-async function getContext(
-  args: { repo: string; branch?: string; commitSha?: string },
-): Promise<GithubContext> {
+async function getContext(args: {
+  repo: string;
+  branch?: string;
+  commitSha?: string;
+}): Promise<GithubContext> {
   const parts = args.repo.split("/");
 
   return {
@@ -78,14 +82,15 @@ async function getContext(
       owner: parts[0],
       repo: parts[1],
     },
-    sha: args.commitSha
-      ?? (await getStdoutOrThrow("git", ["rev-parse", "HEAD"])).trim(),
-    branch: args.branch
-      ?? process.env.GITHUB_HEAD_REF
-      ?? (await getStdoutOrThrow("git", ["symbolic-ref", "HEAD"])).replace(
-        "refs/heads/",
-        "",
-      ).trim(),
+    sha:
+      args.commitSha ??
+      (await getStdoutOrThrow("git", ["rev-parse", "HEAD"])).trim(),
+    branch:
+      args.branch ??
+      process.env.GITHUB_HEAD_REF ??
+      (await getStdoutOrThrow("git", ["symbolic-ref", "HEAD"]))
+        .replace("refs/heads/", "")
+        .trim(),
     octokit: setupOctokit(await getGithubTokenOrFail()),
   };
 }
@@ -158,7 +163,7 @@ async function getContext(
     await setupUser();
   }
 
-  if (process.env.SKIP_GIT_CLEAN_CHECK !== "true" && !await isGitClean()) {
+  if (process.env.SKIP_GIT_CLEAN_CHECK !== "true" && !(await isGitClean())) {
     throw new FailedWithUserMessage(
       "Your working directory is not clean. We are aborting for your protection.",
     );
@@ -211,7 +216,7 @@ async function getContext(
       );
       const authLine = userNpmrcContent.split("\n").find((line) => {
         // check based on https://github.com/npm/cli/blob/8f8f71e4dd5ee66b3b17888faad5a7bf6c657eed/test/lib/adduser.js#L103-L105
-        return /^\s*\/\/registry\.npmjs\.org\/:[_-]authToken=/i.test(line);
+        return /^\s*\/\/registry\.npmjs\.org\/:[_-]authToken=/iu.test(line);
       });
       if (authLine) {
         consola.info(
@@ -261,9 +266,11 @@ async function getGithubTokenOrFail() {
     );
 
     try {
-      const token = (await getStdoutOrThrow("gh", ["auth", "token"], {
-        silent: true,
-      })).trim();
+      const token = (
+        await getStdoutOrThrow("gh", ["auth", "token"], {
+          silent: true,
+        })
+      ).trim();
       consola.info("GitHub token was found through GitHub CLI.");
       return token;
     } catch (e) {

@@ -15,6 +15,7 @@
  */
 
 import type { StrictRequest } from "msw";
+
 import { InvalidRequest } from "../../errors.js";
 import { OpenApiCallError } from "./handleOpenApiCall.js";
 
@@ -23,11 +24,13 @@ export function requireSearchParams<T extends string>(
   req: StrictRequest<any>,
 ): Record<T, string> {
   const url = new URL(req.url);
-  return Object.fromEntries(names.map(name => {
-    const value = url.searchParams.get(name);
-    if (value == null) {
-      throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
-    }
-    return [name, value];
-  })) as Record<T, string>;
+  return Object.fromEntries(
+    names.map((name) => {
+      const value = url.searchParams.get(name);
+      if (value == null) {
+        throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
+      }
+      return [name, value];
+    }),
+  ) as Record<T, string>;
 }

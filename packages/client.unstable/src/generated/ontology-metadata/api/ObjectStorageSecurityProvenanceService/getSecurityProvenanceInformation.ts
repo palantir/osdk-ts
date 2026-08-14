@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetSecurityProvenanceRequest
-    as _api_objectstorage_GetSecurityProvenanceRequest,
-  GetSecurityProvenanceResponse
-    as _api_objectstorage_GetSecurityProvenanceResponse,
+  GetSecurityProvenanceRequest as _api_objectstorage_GetSecurityProvenanceRequest,
+  GetSecurityProvenanceResponse as _api_objectstorage_GetSecurityProvenanceResponse,
 } from "../objectstorage/__components.js";
 
 /**

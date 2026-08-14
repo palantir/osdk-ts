@@ -17,6 +17,7 @@
 import { useRegisterUserAgent } from "@osdk/react";
 import type { FunctionComponent } from "react";
 import React from "react";
+
 import { componentUserAgent } from "./UserAgent.js";
 
 // `any` is required: FunctionComponent defaults to FunctionComponent<{}> which

@@ -15,7 +15,11 @@
  */
 
 import type React from "react";
-import type { FilterState } from "../FilterListItemApi.js";
+
+import type {
+  FilterDefinitionControls,
+  FilterState,
+} from "../FilterListItemApi.js";
 
 export type RenderFilterInput<D> = (props: {
   definition: D;
@@ -26,26 +30,69 @@ export type RenderFilterInput<D> = (props: {
   excludeRowOpen?: boolean;
 }) => React.ReactNode;
 
-export interface BaseFilterListProps<D> {
+export interface BaseFilterListProps<D extends FilterDefinitionControls> {
   filterDefinitions?: Array<D>;
   filterStates: Map<string, FilterState>;
   onFilterStateChanged: (filterKey: string, state: FilterState) => void;
   renderInput: RenderFilterInput<D>;
   getFilterKey: (definition: D) => string;
   getFilterLabel: (definition: D) => string;
+  /**
+   * Display-only fallback state for a filter that has no stored state, used so
+   * capability-driven header controls (overflow … menu, search) render for
+   * empty/just-added filters. Never written into the filter-state map.
+   */
+  getEmptyDisplayState?: (definition: D) => FilterState | undefined;
   activeFilterCount: number;
   onReset?: () => void;
   onFilterAdded?: () => void;
   onFilterRemoved?: (filterKey: string) => void;
   onOrderChange?: (orderedKeys: string[]) => void;
 
+  /**
+   * Whether the collapse/expand control is available. When `false` the panel is
+   * always expanded, no collapse control is rendered, and `collapsed` /
+   * `defaultCollapsed` are ignored.
+   * @default true
+   */
+  enableCollapse?: boolean;
+
+  /**
+   * Controlled mode. When supplied, this prop is the source of truth for
+   * whether the panel is collapsed and the component keeps no internal state;
+   * re-render with a new value in response to `onCollapsedChange`.
+   *
+   * If both `collapsed` and `defaultCollapsed` are provided, `collapsed` takes
+   * precedence. Ignored when `enableCollapse` is `false`.
+   */
   collapsed?: boolean;
+
+  /**
+   * Uncontrolled mode. Seeds the panel's internal collapsed state; the
+   * component continues to own the state after mount, so later changes to this
+   * prop are ignored.
+   *
+   * If both `collapsed` and `defaultCollapsed` are provided, `collapsed` takes
+   * precedence. Ignored when `enableCollapse` is `false`.
+   * @default false
+   */
+  defaultCollapsed?: boolean;
+
+  /**
+   * Called whenever the collapsed state changes.
+   *
+   * @param collapsed The new collapsed state
+   */
   onCollapsedChange?: (collapsed: boolean) => void;
   title?: React.ReactNode;
   titleIcon?: React.ReactNode;
   showResetButton?: boolean;
   showActiveFilterCount?: boolean;
-  hasVisibilityChanges?: boolean;
+  /**
+   * Whether the reset button is enabled. Hosts compute this from whether the
+   * filter and/or visibility state has diverged from its initial snapshot.
+   */
+  canReset?: boolean;
   enableSorting?: boolean;
   className?: string;
   renderAddFilterButton?: () => React.ReactNode;

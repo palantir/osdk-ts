@@ -25,6 +25,7 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import type { Mock } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { FoundryWidget } from "./client.js";
 import { useFoundryWidgetContext } from "./context.js";
 import { transformEmitEventPayload } from "./utils/transformEmitEventPayload.js";
@@ -35,6 +36,7 @@ const mockWidgetClient = {
   subscribe: vi.fn(),
   unsubscribe: vi.fn(),
   ready: vi.fn(),
+  reload: vi.fn(),
   resize: vi.fn(),
   emitEvent: mockEmitEvent,
   hostEventTarget: new FoundryHostEventTarget(),
@@ -82,9 +84,11 @@ describe("FoundryWidget emitEvent race condition handling", () => {
   let container: HTMLDivElement;
   let root: Root;
 
-  function EmitEventCapture(
-    { emitEventRef }: { emitEventRef: { current: EmitEventFn } },
-  ) {
+  function EmitEventCapture({
+    emitEventRef,
+  }: {
+    emitEventRef: { current: EmitEventFn };
+  }) {
     const context = useFoundryWidgetContext<typeof config>();
     emitEventRef.current = context.emitEvent as EmitEventFn;
     return null;
@@ -92,7 +96,7 @@ describe("FoundryWidget emitEvent race condition handling", () => {
 
   const mountWidget = async () => {
     container = document.createElement("div");
-    document.body.appendChild(container);
+    document.body.append(container);
     root = createRoot(container);
 
     const emitEventRef = { current: null as unknown as EmitEventFn };
@@ -131,9 +135,9 @@ describe("FoundryWidget emitEvent race condition handling", () => {
         payload: new Promise((resolve) => {
           pending.push({
             payload: payload as { parameterUpdates: { myParam: string } },
-            resolve: resolve as (
-              value: { parameterUpdates: { myParam: string } },
-            ) => void,
+            resolve: resolve as (value: {
+              parameterUpdates: { myParam: string };
+            }) => void,
           });
         }),
       }),

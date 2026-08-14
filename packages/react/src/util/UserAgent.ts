@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export const REACT_USER_AGENT: string =
-  `osdk-react/${process.env.PACKAGE_VERSION}`;
+export const REACT_USER_AGENT: string = `osdk-react/${process.env.PACKAGE_VERSION}`;

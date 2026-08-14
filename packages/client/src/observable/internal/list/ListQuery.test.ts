@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import type { DerivedProperty } from "@osdk/api";
 import {
   Employee,
   FooInterface,
+  objectTypeWithAllPropertyTypes,
   Office,
   Todo,
 } from "@osdk/client.test.ontology";
@@ -29,9 +31,11 @@ import {
 } from "@osdk/shared.test";
 import chalk from "chalk";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import { TestLogger } from "../../../logger/TestLogger.js";
+import type { OrderBy } from "../../ObservableClient.js";
 import { Store } from "../Store.js";
 import {
   createDefer,
@@ -53,9 +57,36 @@ function testStage(s: string) {
 function setupOntology(fauxFoundry: FauxFoundry) {
   const fauxOntology = fauxFoundry.getDefaultOntology();
   ontologies.addEmployeeOntology(fauxOntology);
-  fauxFoundry.getDefaultOntology().registerObjectType(
-    stubData.todoWithLinkTypes,
-  );
+  fauxFoundry
+    .getDefaultOntology()
+    .registerObjectType(stubData.todoWithLinkTypes);
+  // objectTypeWithAllPropertyTypes needs a self-referential link with a foreign key;
+  // the stub default omits it, which FauxFoundry (strict) rejects on registerLink.
+  const allPropsApiName =
+    stubData.objectTypeWithAllPropertyTypesWithLinkTypes.objectType.apiName;
+  const allPropsSelfLinkRid = "rid.link-type.all-props-self";
+  fauxFoundry.getDefaultOntology().registerObjectType({
+    ...stubData.objectTypeWithAllPropertyTypesWithLinkTypes,
+    linkTypes: [
+      {
+        apiName: "linkedObjectType",
+        status: "EXPERIMENTAL",
+        objectTypeApiName: allPropsApiName,
+        cardinality: "ONE",
+        displayName: "Linked Object Type",
+        linkTypeRid: allPropsSelfLinkRid,
+        foreignKeyPropertyApiName: "integer",
+      },
+      {
+        apiName: "linkedFrom",
+        status: "EXPERIMENTAL",
+        objectTypeApiName: allPropsApiName,
+        cardinality: "MANY",
+        displayName: "Linked From",
+        linkTypeRid: allPropsSelfLinkRid,
+      },
+    ],
+  });
 }
 
 function setupTodos(
@@ -129,9 +160,7 @@ describe("ListQuery autoFetchMore tests", () => {
     testStage("Wait for threshold to be met");
     const payload = await waitForPayload(
       listSub,
-      (p) =>
-        p?.status === "loaded"
-        && (p?.resolvedList?.length ?? 0) >= 50,
+      (p) => p?.status === "loaded" && (p?.resolvedList?.length ?? 0) >= 50,
     );
 
     testStage("Verify final state meets threshold");
@@ -161,7 +190,7 @@ describe("ListQuery autoFetchMore tests", () => {
     testStage("Wait for all items to load");
     const payload = await waitForPayload(
       listSub,
-      (p) => p?.status === "loaded" && !(p?.hasMore),
+      (p) => p?.status === "loaded" && !p?.hasMore,
     );
 
     testStage("Verify all items fetched");
@@ -228,7 +257,7 @@ describe("ListQuery autoFetchMore tests", () => {
     testStage("Wait for all data despite high threshold");
     const payload = await waitForPayload(
       listSub,
-      (p) => p?.status === "loaded" && !(p?.hasMore),
+      (p) => p?.status === "loaded" && !p?.hasMore,
     );
 
     testStage("Verify all available items fetched");
@@ -439,16 +468,7 @@ describe("ListQuery sort stability across pages", () => {
     // serverOrdered skips client re-sort, preserving page order
     expect(payload?.resolvedList?.length).toBe(10);
     expect(payload!.resolvedList!.map((t) => t.id)).toEqual([
-      0,
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
     ]);
   });
 
@@ -504,14 +524,7 @@ describe("ListQuery sort stability across pages", () => {
     // Page 1 items stay before page 2 items with no interleaving
     expect(payload?.resolvedList?.length).toBe(8);
     expect(payload!.resolvedList!.map((t) => t.id)).toEqual([
-      0,
-      2,
-      4,
-      6,
-      1,
-      3,
-      5,
-      7,
+      0, 2, 4, 6, 1, 3, 5, 7,
     ]);
   });
 
@@ -572,6 +585,181 @@ describe("ListQuery sort stability across pages", () => {
     const ids = payload!.resolvedList!.map((t) => t.id);
     expect(ids).toEqual([10, 30, 31, 20]);
   });
+
+  it("clientOrdered sorts decimal/long properties numerically", async () => {
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+
+    // decimal/long arrive as strings. Lexicographically these sort as
+    // "10" < "100" < "2" < "9", which is wrong; the fix sorts them by value.
+    // The longs straddle 2^53, where doubles lose precision.
+    const rows = [
+      { id: 1, decimal: "10", long: "9007199254740993" },
+      { id: 2, decimal: "9", long: "9007199254740992" },
+      { id: 3, decimal: "100", long: "42" },
+      { id: 4, decimal: "2", long: "100" },
+    ];
+    for (const row of rows) {
+      dataStore.registerObject(objectTypeWithAllPropertyTypes, {
+        $apiName: "objectTypeWithAllPropertyTypes",
+        ...row,
+      });
+    }
+
+    // Fetch real instances (carry the object metadata used to resolve types).
+    const fetched = await Promise.all(
+      rows.map((row) =>
+        client(objectTypeWithAllPropertyTypes).fetchOne(row.id),
+      ),
+    );
+
+    async function expectClientOrdered(
+      orderByProp: "decimal" | "long",
+      expectedValues: string[],
+    ) {
+      const listSub = mockListSubCallback();
+      defer(
+        store.lists.observe(
+          {
+            type: objectTypeWithAllPropertyTypes,
+            where: {},
+            orderBy: { [orderByProp]: "asc" },
+            pageSize: 10,
+          },
+          listSub,
+        ),
+      );
+
+      await waitForCall(listSub.next, 1);
+      expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
+      await waitForCall(listSub.next, 1);
+      expectSingleListCallAndClear(listSub, expect.anything(), {
+        status: "loaded",
+      });
+
+      // Push in id order (i.e. unsorted by the ordered property).
+      updateList(
+        store,
+        {
+          type: objectTypeWithAllPropertyTypes,
+          where: {},
+          orderBy: { [orderByProp]: "asc" },
+        },
+        fetched,
+      );
+
+      await waitForCall(listSub.next, 1);
+      const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+        status: "loaded",
+      });
+      const resolved = payload!.resolvedList!;
+      // The ordered property itself is in true numeric order.
+      expect(resolved.map((o) => o[orderByProp])).toEqual(expectedValues);
+    }
+
+    // decimal asc: 2 < 9 < 10 < 100
+    await expectClientOrdered("decimal", ["2", "9", "10", "100"]);
+    // long asc: 42 < 100 < 2^53 < 2^53+1
+    await expectClientOrdered("long", [
+      "42",
+      "100",
+      "9007199254740992",
+      "9007199254740993",
+    ]);
+  });
+
+  it("clientOrdered sorts a DERIVED long property numerically (observeList/useOsdkObjects path)", async () => {
+    // Derived (RDP) properties flow through ListQuery (observeList /
+    // useOsdkObjects), NOT ObjectSetQuery. A derived long arrives as a string
+    // and must sort by value -- ordering by the derived key resolves its type
+    // from the RDP metadata, which ListQuery must thread into the sort strategy.
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+
+    // Each row links (linkedObjectType) to another whose `long` becomes this
+    // row's derived value, so the derived order differs from the base order.
+    const rows = [
+      { id: 1, long: "1", linksTo: 2 }, // derivedLong = 100
+      { id: 2, long: "100", linksTo: 3 }, // derivedLong = 42
+      { id: 3, long: "42", linksTo: 4 }, // derivedLong = 9007199254740993
+      { id: 4, long: "9007199254740993", linksTo: 1 }, // derivedLong = 1
+    ];
+    for (const { id, long } of rows) {
+      dataStore.registerObject(objectTypeWithAllPropertyTypes, {
+        $apiName: "objectTypeWithAllPropertyTypes",
+        id,
+        long,
+      });
+    }
+    for (const { id, linksTo } of rows) {
+      dataStore.registerLink(
+        { __apiName: "objectTypeWithAllPropertyTypes", __primaryKey: id },
+        "linkedObjectType",
+        { __apiName: "objectTypeWithAllPropertyTypes", __primaryKey: linksTo },
+        "linkedFrom",
+      );
+    }
+
+    // The derived key is not in the object's own metadata, so its type can only
+    // come from the RDP metadata threaded into the sort strategy.
+    const withProperties: DerivedProperty.Clause<
+      typeof objectTypeWithAllPropertyTypes
+    > = {
+      derivedLong: (b) => b.pivotTo("linkedObjectType").selectProperty("long"),
+    };
+
+    const { data: fetched } = await client(objectTypeWithAllPropertyTypes)
+      .withProperties(withProperties)
+      .fetchPage();
+
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: objectTypeWithAllPropertyTypes,
+          where: {},
+          orderBy: { derivedLong: "asc" } as OrderBy<
+            typeof objectTypeWithAllPropertyTypes
+          >,
+          pageSize: 10,
+          withProperties,
+        },
+        listSub,
+      ),
+    );
+
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+
+    // Push unsorted by the derived value.
+    updateList(
+      store,
+      {
+        type: objectTypeWithAllPropertyTypes,
+        where: {},
+        orderBy: { derivedLong: "asc" } as OrderBy<
+          typeof objectTypeWithAllPropertyTypes
+        >,
+      },
+      fetched,
+      {},
+      { dedupeInterval: 0, withProperties },
+    );
+
+    await waitForCall(listSub.next, 1);
+    const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+    const resolved = payload!.resolvedList!;
+    // Numeric order of the derived long ("100" must sort after "42").
+    expect(
+      resolved.map((o) => (o as { derivedLong: string }).derivedLong),
+    ).toEqual(["1", "42", "100", "9007199254740993"]);
+  });
 });
 
 describe("ListQuery pivotTo tests", () => {
@@ -630,24 +818,15 @@ describe("ListQuery pivotTo tests", () => {
       fullName: "Employee 3",
     });
 
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp1,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp2,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp3,
-      "officeLink",
-      officeB,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp1, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp2, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp3, "officeLink", officeB, "occupants");
 
     testStage("Observe with pivotTo and where clause filtering on employeeId");
     const listSub = mockListSubCallback();
@@ -717,24 +896,15 @@ describe("ListQuery pivotTo tests", () => {
       fullName: "Employee 3",
     });
 
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp1,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp2,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp3,
-      "officeLink",
-      officeB,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp1, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp2, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp3, "officeLink", officeB, "occupants");
 
     testStage("Observe with rids for emp1 and emp3, pivotTo officeLink");
     const listSub = mockListSubCallback();
@@ -803,18 +973,12 @@ describe("ListQuery pivotTo tests", () => {
       fullName: "Employee 2",
     });
 
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp1,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp2,
-      "officeLink",
-      officeB,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp1, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp2, "officeLink", officeB, "occupants");
 
     testStage(
       "Observe with rids for both employees, where filters to employeeId 1",
@@ -873,12 +1037,9 @@ describe("ListQuery pivotTo tests", () => {
       fullName: "Employee 1",
     });
 
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp1,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp1, "officeLink", officeA, "occupants");
 
     testStage("Observe with empty rids + pivotTo");
     const listSub = mockListSubCallback();
@@ -960,12 +1121,9 @@ describe("ListQuery pivotTo tests", () => {
       employeeId: 1,
       fullName: "Employee 1",
     });
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp,
-      "officeLink",
-      office,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp, "officeLink", office, "occupants");
 
     testStage("Observe object type with pivotTo");
     const listSub = mockListSubCallback();
@@ -1020,18 +1178,12 @@ describe("ListQuery pivotTo tests", () => {
       fullName: "Employee 2",
     });
 
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp1,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp2,
-      "officeLink",
-      officeB,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp1, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp2, "officeLink", officeB, "occupants");
 
     testStage("Observe with pivotTo and no where clause");
     const listSub = mockListSubCallback();
@@ -1057,9 +1209,10 @@ describe("ListQuery pivotTo tests", () => {
 
     testStage("Verify both linked offices are returned");
     expect(payload?.resolvedList).toHaveLength(2);
-    expect(
-      payload?.resolvedList?.map((o) => o.$primaryKey).sort(),
-    ).toEqual(["office-a", "office-b"]);
+    expect(payload?.resolvedList?.map((o) => o.$primaryKey).sort()).toEqual([
+      "office-a",
+      "office-b",
+    ]);
 
     expectNoMoreCalls(listSub);
   });
@@ -1228,12 +1381,10 @@ describe("ListQuery shared query autoFetchMore tests", () => {
     );
 
     testStage("Verify no status oscillation");
-    const allEmissions = sub.next.mock.calls.map(
-      (call) => ({
-        count: call[0]?.resolvedList?.length ?? 0,
-        status: call[0]?.status,
-      }),
-    );
+    const allEmissions = sub.next.mock.calls.map((call) => ({
+      count: call[0]?.resolvedList?.length ?? 0,
+      status: call[0]?.status,
+    }));
 
     let sawLoadedWithData = false;
     for (const emission of allEmissions) {

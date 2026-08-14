@@ -379,6 +379,7 @@ describe("Load Ontologies Metadata", () => {
                 "dataType": {
                   "type": "integer",
                 },
+                "required": true,
               },
             },
             "rid": "ri.function-registry.main.function.abd64ff3-276e-48c5-afee-5a6ef0b2ea47",
@@ -423,6 +424,7 @@ describe("Load Ontologies Metadata", () => {
                 "dataType": {
                   "type": "integer",
                 },
+                "required": true,
               },
             },
             "rid": "ri.function-registry.main.function.abd64ff3-276e-48c5-afee-5a6ef0b2ea47",

@@ -15,13 +15,11 @@
  */
 
 import { Queries } from "@osdk/foundry.ontologies";
+
 import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
 import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 
 export const execute: CallFactory<
   "ontologyApiName" | "queryApiName",
   typeof Queries.execute
-> = handleOpenApiCall(
-  Queries.execute,
-  ["ontologyApiName", "queryApiName"],
-);
+> = handleOpenApiCall(Queries.execute, ["ontologyApiName", "queryApiName"]);

@@ -103,9 +103,6 @@ export function useShapeSingle<
 
 export function useShapeList<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
->(
-  _shape: S,
-  _options: UseShapeListOptions<S>,
-): UseShapeListResult<S> {
+>(_shape: S, _options: UseShapeListOptions<S>): UseShapeListResult<S> {
   throw new Error("useShapeList is not implemented yet");
 }

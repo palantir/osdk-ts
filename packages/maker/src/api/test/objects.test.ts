@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { defineCreateObjectAction } from "../defineCreateObjectAction.js";
 import { defineDeleteObjectAction } from "../defineDeleteObjectAction.js";
 import { defineInterface } from "../defineInterface.js";
@@ -36,10 +37,10 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo_with_underscores",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
+        properties: { bar: { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Invalid API name foo_with_underscores. API names must match the regex /^[a-zA-Z][a-zA-Z0-9]{0,99}$/.]`,
+      `[Error: Invariant failed: Invalid API name foo_with_underscores. API names must match the regex /^[a-zA-Z][a-zA-Z0-9]{0,99}$/u.]`,
     );
   });
   it("Fails if any property reference does not exist", () => {
@@ -60,7 +61,7 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
+        properties: { bar: { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
       `[Error: Invariant failed: Title property fizz is not defined on object foo]`,
@@ -73,7 +74,7 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "fizz",
-        properties: { "bar": { type: "string" } },
+        properties: { bar: { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
       `[Error: Invariant failed: Primary key property fizz does not exist on object foo]`,
@@ -86,14 +87,18 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
-        implementsInterfaces: [{
-          implements: sample,
-          propertyMapping: [{
-            interfaceProperty: "com.palantir.foo",
-            mapsTo: "fizz",
-          }],
-        }],
+        properties: { bar: { type: "string" } },
+        implementsInterfaces: [
+          {
+            implements: sample,
+            propertyMapping: [
+              {
+                interfaceProperty: "com.palantir.foo",
+                mapsTo: "fizz",
+              },
+            ],
+          },
+        ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
       `[Error: Invariant failed: \nOntology Definition Error: Object property mapped to interface does not exist. Object Property Mapped: fizz\n]`,
@@ -106,20 +111,118 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
-        implementsInterfaces: [{
-          implements: sample,
-          propertyMapping: [{
-            interfaceProperty: "com.palantir.fizz",
-            mapsTo: "bar",
-          }, {
-            interfaceProperty: "com.palantir.foo",
-            mapsTo: "bar",
-          }],
-        }],
+        properties: { bar: { type: "string" } },
+        implementsInterfaces: [
+          {
+            implements: sample,
+            propertyMapping: [
+              {
+                interfaceProperty: "com.palantir.fizz",
+                mapsTo: "bar",
+              },
+              {
+                interfaceProperty: "com.palantir.foo",
+                mapsTo: "bar",
+              },
+            ],
+          },
+        ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
       `[Error: Invariant failed: \nOntology Definition Error: Interface property com.palantir.fizz referenced in foo object does not exist\n]`,
+    );
+  });
+
+  it("Allows inherited optional interface properties to be omitted", () => {
+    const optionalProperty = defineSharedPropertyType({
+      apiName: "optionalProperty",
+      type: "string",
+    });
+    const parentInterface = defineInterface({
+      apiName: "parentInterface",
+      properties: {
+        optionalProperty: {
+          required: false,
+          sharedPropertyType: optionalProperty,
+        },
+        optionalInterfaceProperty: {
+          required: false,
+          type: "string",
+        },
+      },
+    });
+    const childInterface = defineInterface({
+      apiName: "childInterface",
+      extends: parentInterface,
+    });
+
+    expect(() =>
+      defineObject({
+        titlePropertyApiName: "id",
+        displayName: "Sample Object",
+        pluralDisplayName: "Sample Objects",
+        apiName: "sampleObject",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+        implementsInterfaces: [
+          {
+            implements: childInterface,
+            propertyMapping: [],
+          },
+        ],
+      }),
+    ).not.toThrow();
+  });
+
+  it("Validates supplied mappings for inherited optional interface properties", () => {
+    const optionalProperty = defineSharedPropertyType({
+      apiName: "optionalProperty",
+      type: "string",
+    });
+    const parentInterface = defineInterface({
+      apiName: "parentInterface",
+      properties: {
+        optionalProperty: {
+          required: false,
+          sharedPropertyType: optionalProperty,
+        },
+        optionalInterfaceProperty: {
+          required: false,
+          type: "string",
+        },
+      },
+    });
+    const childInterface = defineInterface({
+      apiName: "childInterface",
+      extends: parentInterface,
+    });
+
+    expect(() =>
+      defineObject({
+        titlePropertyApiName: "id",
+        displayName: "Sample Object",
+        pluralDisplayName: "Sample Objects",
+        apiName: "sampleObject",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+        implementsInterfaces: [
+          {
+            implements: childInterface,
+            propertyMapping: [
+              {
+                interfaceProperty: "optionalProperty",
+                mapsTo: "missingSpt",
+              },
+              {
+                interfaceProperty: "com.palantir.optionalInterfaceProperty",
+                mapsTo: "missingIdp",
+              },
+            ],
+          },
+        ],
+      }),
+    ).toThrowError(
+      /Object Property Mapped: missingSpt[\s\S]*Object Property Mapped: missingIdp/u,
     );
   });
 
@@ -141,13 +244,13 @@ describe("Object Types", () => {
       apiName: "foo",
       primaryKeyPropertyApiName: "bar",
       properties: {
-        "bar": { type: "string", displayName: "Bar" },
-        "arrayProp": {
+        bar: { type: "string", displayName: "Bar" },
+        arrayProp: {
           type: "string",
           array: true,
           displayName: "Array Property Test",
         },
-        "geopoint": {
+        geopoint: {
           type: {
             type: "struct",
             structDefinition: { lat: "double", lng: "double" },
@@ -156,13 +259,17 @@ describe("Object Types", () => {
         },
       },
       aliases: ["alias1", "alias2"],
-      implementsInterfaces: [{
-        implements: sample,
-        propertyMapping: [{
-          interfaceProperty: spt.apiName,
-          mapsTo: "bar",
-        }],
-      }],
+      implementsInterfaces: [
+        {
+          implements: sample,
+          propertyMapping: [
+            {
+              interfaceProperty: spt.apiName,
+              mapsTo: "bar",
+            },
+          ],
+        },
+      ],
     });
 
     expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
@@ -178,6 +285,7 @@ describe("Object Types", () => {
         "interfaceTypes": {
           "com.palantir.interface": {
             "interfaceType": {
+              "actionTypeConstraints": [],
               "apiName": "com.palantir.interface",
               "displayMetadata": {
                 "description": "interface",
@@ -192,6 +300,7 @@ describe("Object Types", () => {
               },
               "extendsInterfaces": [],
               "extendsInterfacesMetadata": [],
+              "linkedInterfaces": [],
               "links": [],
               "permission": undefined,
               "properties": [],
@@ -355,6 +464,7 @@ describe("Object Types", () => {
               },
               "implementsInterfaces2": [
                 {
+                  "actionTypes": {},
                   "interfaceTypeApiName": "com.palantir.interface",
                   "linksV2": {},
                   "properties": {},
@@ -574,7 +684,7 @@ describe("Object Types", () => {
       pluralDisplayName: "datasetBackedObject",
       apiName: "foo",
       primaryKeyPropertyApiName: "bar",
-      properties: { "bar": { type: "string" } },
+      properties: { bar: { type: "string" } },
       datasources: [{ type: "dataset" }],
     });
 
@@ -584,7 +694,7 @@ describe("Object Types", () => {
       pluralDisplayName: "streamBackedObjectNoRetention",
       apiName: "fizz",
       primaryKeyPropertyApiName: "fizz",
-      properties: { "fizz": { type: "string" }, "bar": { type: "string" } },
+      properties: { fizz: { type: "string" }, bar: { type: "string" } },
       datasources: [{ type: "stream" }],
     });
 
@@ -594,7 +704,7 @@ describe("Object Types", () => {
       pluralDisplayName: "streamBackedObjectWithRetention",
       apiName: "buzz",
       primaryKeyPropertyApiName: "buzz",
-      properties: { "buzz": { type: "string" } },
+      properties: { buzz: { type: "string" } },
       datasources: [{ type: "stream", retentionPeriod: "PT1H" }],
     });
 
@@ -978,7 +1088,7 @@ describe("Object Types", () => {
       apiName: "foo",
       primaryKeyPropertyApiName: "bar",
       properties: {
-        "bar": { type: "string" },
+        bar: { type: "string" },
       },
       datasources: [{ type: "restrictedView" }],
     });
@@ -1134,11 +1244,11 @@ describe("Object Types", () => {
       apiName: "foo",
       primaryKeyPropertyApiName: "fizz",
       properties: {
-        "bar": {
+        bar: {
           type: "string",
           editOnly: true,
         },
-        "fizz": {
+        fizz: {
           type: "string",
         },
       },
@@ -1339,7 +1449,7 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string", editOnly: true } },
+        properties: { bar: { type: "string", editOnly: true } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
       `[Error: Invariant failed: Primary key property bar on object foo cannot be edit-only]`,
@@ -1354,12 +1464,14 @@ describe("Object Types", () => {
         pluralDisplayName: "streamBackedObjectWithRetention",
         apiName: "buzz",
         primaryKeyPropertyApiName: "buzz",
-        properties: { "buzz": { type: "string" } },
-        datasources: [{
-          type: "stream",
-          retentionPeriod: "bad retention period string",
-        }],
-      })
+        properties: { buzz: { type: "string" } },
+        datasources: [
+          {
+            type: "stream",
+            retentionPeriod: "bad retention period string",
+          },
+        ],
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
       `[Error: Invariant failed: Retention period "bad retention period string" on object "buzz" is not a valid ISO 8601 duration string]`,
     );
@@ -1373,8 +1485,8 @@ describe("Object Types", () => {
       apiName: "fizz",
       primaryKeyPropertyApiName: "bar",
       properties: {
-        "fizz": { type: "mediaReference" },
-        "bar": { type: "string" },
+        fizz: { type: "mediaReference" },
+        bar: { type: "string" },
       },
       datasources: [{ type: "stream" }],
     });
@@ -1416,6 +1528,7 @@ describe("Object Types", () => {
                   "datasource": {
                     "mediaSetView": {
                       "assumedMarkings": [],
+                      "clearOnDeleteProperties": [],
                       "mediaSetViewLocator": "com.palantir.fizz.fizz",
                       "properties": [
                         "fizz",
@@ -1568,6 +1681,62 @@ describe("Object Types", () => {
       }
     `);
   });
+  it("Fails if a derived datasource added after defineObject maps a property not on the object", () => {
+    const passenger = defineObject({
+      displayName: "Passenger",
+      pluralDisplayName: "Passengers",
+      apiName: "passenger",
+      primaryKeyPropertyApiName: "name",
+      titlePropertyApiName: "name",
+      editsEnabled: true,
+      properties: {
+        name: { type: "string", displayName: "Name" },
+        flight_id: { type: "string", displayName: "Flight ID" },
+      },
+    });
+    const flightToPassengers = defineLink({
+      apiName: "flightToPassengersLink",
+      one: {
+        object: "com.palantir.flight",
+        metadata: { apiName: "flightFromPassengers" },
+      },
+      toMany: {
+        object: passenger.apiName,
+        metadata: { apiName: "passengersFromFlight" },
+      },
+      manyForeignKeyProperty: "flight_id",
+    });
+    const flight = defineObject({
+      displayName: "Flight",
+      pluralDisplayName: "Flights",
+      apiName: "flight",
+      primaryKeyPropertyApiName: "id",
+      titlePropertyApiName: "id",
+      editsEnabled: true,
+      properties: {
+        id: { type: "string", displayName: "ID" },
+        passengersList: {
+          type: "string",
+          array: true,
+          displayName: "Passengers",
+        },
+      },
+      datasources: [{ type: "dataset" }],
+    });
+    // Mirror the real-world factory pattern: the derived datasource is pushed
+    // onto the object AFTER defineObject() returns, so defineObject's own
+    // validation never sees it. 'ghostProperty' is not a property on flight.
+    flight.datasources!.push({
+      type: "derived",
+      linkDefinition: [{ linkType: flightToPassengers }],
+      propertyMapping: {
+        ghostProperty: { type: "collectList", property: "name", limit: 100 },
+      },
+    });
+    expect(() => dumpOntologyFullMetadata()).toThrow(
+      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/u,
+    );
+  });
   it("Derived datasources are properly defined", () => {
     const passenger = defineObject({
       displayName: "Passenger",
@@ -1577,11 +1746,11 @@ describe("Object Types", () => {
       titlePropertyApiName: "name",
       editsEnabled: true,
       properties: {
-        "name": {
+        name: {
           type: "string",
           displayName: "Name",
         },
-        "flight_id": {
+        flight_id: {
           type: "string",
           displayName: "Flight ID",
         },
@@ -1624,9 +1793,11 @@ describe("Object Types", () => {
           { type: "dataset" },
           {
             type: "derived",
-            linkDefinition: [{
-              linkType: flightToPassengers,
-            }],
+            linkDefinition: [
+              {
+                linkType: flightToPassengers,
+              },
+            ],
             propertyMapping: {
               numPassengers: {
                 type: "collectList",
@@ -1662,9 +1833,11 @@ describe("Object Types", () => {
         { type: "dataset" },
         {
           type: "derived",
-          linkDefinition: [{
-            linkType: flightToPassengers,
-          }],
+          linkDefinition: [
+            {
+              linkType: flightToPassengers,
+            },
+          ],
           propertyMapping: {
             passengersList: {
               type: "collectList",
@@ -1783,6 +1956,7 @@ describe("Object Types", () => {
                 "metadata": {
                   "apiName": "com.palantir.create-object-flight",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -1945,6 +2119,7 @@ describe("Object Types", () => {
                 "metadata": {
                   "apiName": "com.palantir.create-object-passenger",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -2081,6 +2256,7 @@ describe("Object Types", () => {
                 "metadata": {
                   "apiName": "com.palantir.delete-object-flight",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -2206,6 +2382,7 @@ describe("Object Types", () => {
                 "metadata": {
                   "apiName": "com.palantir.delete-object-passenger",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -2715,13 +2892,13 @@ describe("Object Types", () => {
       titlePropertyApiName: "pk",
       primaryKeyPropertyApiName: "pk",
       properties: {
-        "pk": { displayName: "pk", type: "string", status: "experimental" },
-        "parentFk": {
+        pk: { displayName: "pk", type: "string", status: "experimental" },
+        parentFk: {
           displayName: "Parent FK",
           type: "string",
           status: "experimental",
         },
-        "siblingIds": {
+        siblingIds: {
           displayName: "Sibling IDs",
           type: "string",
           array: true,
@@ -3107,9 +3284,9 @@ describe("Object Types", () => {
       titlePropertyApiName: "pk",
       primaryKeyPropertyApiName: "pk",
       properties: {
-        "pk": { displayName: "pk", type: "string" },
-        "normalProperty": { displayName: "Normal Property", type: "string" },
-        "SSN": {
+        pk: { displayName: "pk", type: "string" },
+        normalProperty: { displayName: "Normal Property", type: "string" },
+        SSN: {
           displayName: "SSN",
           type: "string",
         },
@@ -3431,9 +3608,9 @@ describe("Object Types", () => {
       titlePropertyApiName: "pk",
       primaryKeyPropertyApiName: "pk",
       properties: {
-        "pk": { displayName: "pk", type: "string" },
-        "group": { displayName: "Group Property", type: "string" },
-        "mandatory": {
+        pk: { displayName: "pk", type: "string" },
+        group: { displayName: "Group Property", type: "string" },
+        mandatory: {
           type: {
             type: "marking",
             markingType: "MANDATORY",
@@ -3441,7 +3618,7 @@ describe("Object Types", () => {
           },
           displayName: "mandatory",
         },
-        "SSN": {
+        SSN: {
           displayName: "SSN",
           type: "string",
         },
@@ -3456,7 +3633,7 @@ describe("Object Types", () => {
               name: "objectLevelGroup",
             },
             appliedMarkings: {
-              "objectLevelMarking": "CBAC",
+              objectLevelMarking: "CBAC",
             },
           },
           propertySecurityGroups: [
@@ -3477,10 +3654,10 @@ describe("Object Types", () => {
                 ],
               },
               appliedMarkings: {
-                "propertyLevelMarking": "MANDATORY",
+                propertyLevelMarking: "MANDATORY",
               },
               assumedMarkings: {
-                "propertyLevelAssumedMarking": "MANDATORY",
+                propertyLevelAssumedMarking: "MANDATORY",
               },
             },
           ],
@@ -3782,6 +3959,7 @@ describe("Object Types", () => {
                     "dataConstraints": {
                       "nullability": undefined,
                       "nullabilityV2": {
+                        "noEmptyCollections": true,
                         "noNulls": true,
                       },
                       "propertyTypeConstraints": [],
@@ -3898,13 +4076,16 @@ describe("Object Types", () => {
         },
       },
       array: true,
-      reducers: [{
-        direction: "descending",
-        structField: "prop1",
-      }, {
-        direction: "ascending",
-        structField: "prop2",
-      }],
+      reducers: [
+        {
+          direction: "descending",
+          structField: "prop1",
+        },
+        {
+          direction: "ascending",
+          structField: "prop2",
+        },
+      ],
     });
     const object = defineObject({
       titlePropertyApiName: "bar",
@@ -3913,10 +4094,10 @@ describe("Object Types", () => {
       apiName: "foo",
       primaryKeyPropertyApiName: "bar",
       properties: {
-        "bar": {
+        bar: {
           type: "string",
         },
-        "spt": {
+        spt: {
           sharedPropertyType: spt,
           type: {
             type: "struct",
@@ -3927,7 +4108,7 @@ describe("Object Types", () => {
           },
           array: true,
         },
-        "prop": {
+        prop: {
           type: {
             type: "struct",
             structDefinition: {
@@ -3946,13 +4127,16 @@ describe("Object Types", () => {
             },
           },
           array: true,
-          reducers: [{
-            direction: "descending",
-            structField: "field1",
-          }, {
-            direction: "ascending",
-            structField: "field2",
-          }],
+          reducers: [
+            {
+              direction: "descending",
+              structField: "field1",
+            },
+            {
+              direction: "ascending",
+              structField: "field2",
+            },
+          ],
         },
       },
     });
@@ -4464,32 +4648,37 @@ describe("Object Types", () => {
   });
 
   it("serializes ontologyPackage permission on object type", async () => {
-    await defineOntology("com.palantir.", () => {
-      defineObject({
-        apiName: "foo",
-        displayName: "Foo",
-        pluralDisplayName: "Foos",
-        primaryKeyPropertyApiName: "id",
-        titlePropertyApiName: "id",
-        properties: { "id": { type: "string" } },
-        permission: {
-          type: "ontologyPackage",
+    await defineOntology(
+      "com.palantir.",
+      () => {
+        defineObject({
+          apiName: "foo",
+          displayName: "Foo",
+          pluralDisplayName: "Foos",
+          primaryKeyPropertyApiName: "id",
+          titlePropertyApiName: "id",
+          properties: { id: { type: "string" } },
+          permission: {
+            type: "ontologyPackage",
+            ontologyPackageRid:
+              "ri.ontology-package.main.ontology-package.abc-123",
+          },
+        });
+
+        const bpi =
+          dumpOntologyFullMetadata().ontology.blockPermissionInformation!;
+        const otPerms = Object.values(bpi.objectTypes);
+        expect(otPerms).toHaveLength(1);
+        expect(otPerms[0].restrictionStatus).toEqual({
+          restrictedByDatasources: false,
+          editRestrictedByDatasources: false,
+          publicProject: false,
           ontologyPackageRid:
             "ri.ontology-package.main.ontology-package.abc-123",
-        },
-      });
-
-      const bpi = dumpOntologyFullMetadata().ontology
-        .blockPermissionInformation!;
-      const otPerms = Object.values(bpi.objectTypes);
-      expect(otPerms).toHaveLength(1);
-      expect(otPerms[0].restrictionStatus).toEqual({
-        restrictedByDatasources: false,
-        editRestrictedByDatasources: false,
-        publicProject: false,
-        ontologyPackageRid: "ri.ontology-package.main.ontology-package.abc-123",
-      });
-    }, "/tmp/");
+        });
+      },
+      "/tmp/",
+    );
   });
 
   describe("EditsHistoryConfig", () => {
@@ -4500,11 +4689,11 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
+        properties: { bar: { type: "string" } },
       });
 
-      const objectData = dumpOntologyFullMetadata().ontology
-        .objectTypes["com.palantir.foo"];
+      const objectData =
+        dumpOntologyFullMetadata().ontology.objectTypes["com.palantir.foo"];
       expect(objectData.entityMetadata?.editsHistory).toBeUndefined();
     });
 
@@ -4515,12 +4704,12 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
+        properties: { bar: { type: "string" } },
         editsHistoryConfig: { enabled: true },
       });
 
-      const objectData = dumpOntologyFullMetadata().ontology
-        .objectTypes["com.palantir.foo"];
+      const objectData =
+        dumpOntologyFullMetadata().ontology.objectTypes["com.palantir.foo"];
       expect(objectData.entityMetadata?.editsHistory).toEqual({
         type: "config",
         config: {
@@ -4537,12 +4726,12 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
+        properties: { bar: { type: "string" } },
         editsHistoryConfig: { enabled: false },
       });
 
-      const objectData = dumpOntologyFullMetadata().ontology
-        .objectTypes["com.palantir.foo"];
+      const objectData =
+        dumpOntologyFullMetadata().ontology.objectTypes["com.palantir.foo"];
       expect(objectData.entityMetadata?.editsHistory).toEqual({
         type: "none",
         none: {},

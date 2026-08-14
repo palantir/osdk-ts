@@ -28,18 +28,19 @@ import type {
   PropertyTypeRid as _api_PropertyTypeRid,
 } from "../__components.js";
 import type { ObjectTypeGothamMapping as _api_typemapping_ObjectTypeGothamMapping } from "../typemapping/__components.js";
-import type { EntityProvenance as _api_entitymetadata_provenance_EntityProvenance } from "./provenance/__components.js";
+import type {
+  EntityProvenance as _api_entitymetadata_provenance_EntityProvenance,
+  OwningDirectWriter as _api_entitymetadata_provenance_OwningDirectWriter,
+} from "./provenance/__components.js";
 
 /**
  * Action Log is not required for this ObjectType.
  */
-export interface ActionLogNotRequired {
-}
+export interface ActionLogNotRequired {}
 /**
  * Action Log is required for this ObjectType.
  */
-export interface ActionLogRequiredForObjectType {
-}
+export interface ActionLogRequiredForObjectType {}
 /**
  * Types of Action Log requiredness. Currently logging is either required or not but in future other kinds of
  * requiredness, such as property-level logging requiredness, may be introduced.
@@ -71,8 +72,7 @@ export type Alias = string;
 /**
  * Indicates the that given object type is archived.
  */
-export interface ArchivedState {
-}
+export interface ArchivedState {}
 export interface ArchiveState_archivedState {
   type: "archivedState";
   archivedState: ArchivedState;
@@ -96,8 +96,7 @@ export type ArchiveState =
 /**
  * Delegates the selected transform profile to Funnel.
  */
-export interface AutomaticTransformProfile {
-}
+export interface AutomaticTransformProfile {}
 export type CombinedModificationType = "CREATED" | "UPDATED" | "DELETED";
 
 /**
@@ -132,8 +131,7 @@ export type CombinedOntologyHistoryPageToken = string;
  * datasources containing the edited properties. In such cases, if the new datasource were not otherwise marked
  * as alive, the values of the migrated properties would become nulls.
  */
-export interface DatasourceScopedLivenessStrategy {
-}
+export interface DatasourceScopedLivenessStrategy {}
 export type DayOfWeek =
   | "MONDAY"
   | "TUESDAY"
@@ -146,6 +144,15 @@ export interface DayTime {
   day: DayOfWeek;
   time: string;
   zoneId: string;
+}
+/**
+ * Additional configuration for direct datasources on an object type.
+ */
+export interface DirectDatasourceConfiguration {
+  sourceTimestampProperties: Record<
+    _api_DatasourceRid,
+    SourceTimestampProperty
+  >;
 }
 export interface EditsHistory_config {
   type: "config";
@@ -169,8 +176,7 @@ export interface EditsHistoryConfig {
 /**
  * Contains configuration to import edits history from Phonograph to Funnel/Highbury.
  */
-export interface EditsHistoryImportConfiguration {
-}
+export interface EditsHistoryImportConfiguration {}
 /**
  * Wrapper for multiple strategies as objects can have multiple datasources.
  */
@@ -251,8 +257,7 @@ export interface EntityMigrationInProgress {
 /**
  * Empty type used as a placeholder for ontology entities which were never migrated.
  */
-export interface EntityMigrationNotAttempted {
-}
+export interface EntityMigrationNotAttempted {}
 /**
  * Current stage the entity migration is in.
  */
@@ -329,8 +334,7 @@ export type EntityMigrationStatusModification =
  * value is designed as a break-the-glass option for failing jobs and should be used carefully. Unnecessary
  * usage of this option could lead to expensive builds and hog resources from other builds/services.
  */
-export interface ExtraLargeTransformProfile {
-}
+export interface ExtraLargeTransformProfile {}
 /**
  * Request to load a page of the combined history of an Ontology and
  * SystemEntityMetadata.
@@ -359,13 +363,11 @@ export interface GetStreamingProfileConfigsResponse {
 /**
  * Interface actions are disabled for this ObjectType.
  */
-export interface InterfaceActionDisabled {
-}
+export interface InterfaceActionDisabled {}
 /**
  * Interface actions are enabled for this ObjectType.
  */
-export interface InterfaceActionEnabled {
-}
+export interface InterfaceActionEnabled {}
 export interface InterfaceActionSettings_enabled {
   type: "enabled";
   enabled: InterfaceActionEnabled;
@@ -482,8 +484,7 @@ export interface MigrationConfiguration {
 /**
  * Edits history is disabled for this entity.
  */
-export interface NoEditsHistory {
-}
+export interface NoEditsHistory {}
 /**
  * Configuration for one instance of an ObjectDb, for example for one Highbury cluster.
  * If `configValue` is left empty, the ObjectDb should apply the default configuration for this entity.
@@ -518,15 +519,13 @@ export interface ObjectDbTypeSyncConfig {
  * With this strategy, liveness is no longer evaluated on a datasource-by-datasource level, and is evaluated at
  * the object level. This provides improved UX for MDOs, and has no effect for non-MDOs.
  */
-export interface ObjectScopedLivenessStrategy {
-}
+export interface ObjectScopedLivenessStrategy {}
 /**
  * Entity can be stored in Phonograph. Note that it is not guaranteed that the object type or link type is
  * currently registered with Phonograph. There is no guarantee the object type or link type has finished
  * syncing and is queryable via Phonograph.
  */
-export interface ObjectStorageV1 {
-}
+export interface ObjectStorageV1 {}
 /**
  * Entity can be stored in Highbury and other V2 Object DBs. It is not possible to store the entity in Phonograph.
  * Edits can be enabled or disabled using the `arePatchesEnabled` field in ObjectTypeEntityMetadata/LinkTypeEntityMetadata.
@@ -559,12 +558,17 @@ export interface ObjectTypeEntityMetadata {
   aliases: Array<ObjectTypeAlias>;
   arePatchesEnabled: boolean;
   diffEdits: boolean;
+  directDatasourceConfiguration?:
+    | DirectDatasourceConfiguration
+    | null
+    | undefined;
   editsHistory: EditsHistory;
   editsResolutionStrategies: EditsResolutionStrategies;
   entityConfig: EntityConfig;
   gothamMapping?: _api_typemapping_ObjectTypeGothamMapping | null | undefined;
   interfaceSettings: InterfaceSettings;
   objectTypeIndexingSettings?: ObjectTypeIndexingSettings | null | undefined;
+  owningDirectWriters: Record<_api_DatasourceRid, OwningDirectWriters>;
   patchApplicationStrategy: PatchApplicationStrategy;
   provenance?:
     | _api_entitymetadata_provenance_EntityProvenance
@@ -679,6 +683,12 @@ export interface OntologyIrLinkTypeEntityMetadata {
 export interface OntologyIrTimestampPropertyStrategy {
   timestampPropertyRid: _api_ObjectTypeFieldApiName;
 }
+/**
+ * The set of owning direct writers for a single direct datasource.
+ */
+export interface OwningDirectWriters {
+  writers: Array<_api_entitymetadata_provenance_OwningDirectWriter>;
+}
 export interface PatchApplicationStrategy_datasourceScopedLiveness {
   type: "datasourceScopedLiveness";
   datasourceScopedLiveness: DatasourceScopedLivenessStrategy;
@@ -697,13 +707,11 @@ export type PatchApplicationStrategy =
  * This is a legacy state which should not be used anymore. OMS guarantees that the latest version of each
  * ontology does not return this state for any object type or link type.
  */
-export interface ReadOnlyV1V2 {
-}
+export interface ReadOnlyV1V2 {}
 /**
  * Indicates that the given object type is in the process of being restored by funnel.
  */
-export interface RestorationState {
-}
+export interface RestorationState {}
 export type SharedPropertyTypeAlias = Alias;
 
 /**
@@ -712,6 +720,13 @@ export type SharedPropertyTypeAlias = Alias;
 export interface SoakPeriodInformation {
   end: string;
   start: string;
+}
+/**
+ * A source timestamp property for a direct datasource. The timestamp represents the source time
+ * of the object and is used for deduplicating base data of objects with the same primary key.
+ */
+export interface SourceTimestampProperty {
+  timestampPropertyRid: _api_PropertyTypeRid;
 }
 export interface StorageBackend_objectStorageV1 {
   type: "objectStorageV1";
@@ -775,8 +790,7 @@ export type StreamingProfileConfigId =
  * No distinct SyncConfig is supported at the moment.
  * This object is included for potential extensions in the future only.
  */
-export interface SyncConfig {
-}
+export interface SyncConfig {}
 /**
  * Used by services to set up additional Funnel syncs to ObjectDbs.
  */

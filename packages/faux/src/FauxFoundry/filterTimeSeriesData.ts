@@ -22,14 +22,14 @@ const toDuration: Record<
   OntologiesV2.RelativeTimeSeriesTimeUnit,
   (v: number) => Duration
 > = {
-  "DAYS": (v) => ({ days: v }),
-  "HOURS": (v) => ({ hours: v }),
-  "MILLISECONDS": (v) => ({ seconds: v / 1000 }),
-  "MINUTES": (v) => ({ minutes: v }),
-  "MONTHS": (v) => ({ months: v }),
-  "SECONDS": (v) => ({ seconds: v }),
-  "WEEKS": (v) => ({ weeks: v }),
-  "YEARS": (v) => ({ years: v }),
+  DAYS: (v) => ({ days: v }),
+  HOURS: (v) => ({ hours: v }),
+  MILLISECONDS: (v) => ({ seconds: v / 1000 }),
+  MINUTES: (v) => ({ minutes: v }),
+  MONTHS: (v) => ({ months: v }),
+  SECONDS: (v) => ({ seconds: v }),
+  WEEKS: (v) => ({ weeks: v }),
+  YEARS: (v) => ({ years: v }),
 };
 
 export function filterTimeSeriesData(
@@ -46,11 +46,15 @@ export function filterTimeSeriesData(
 
   const ret = data.filter((point) => {
     if (range.type === "relative") {
-      return (!end || isBefore(point.time, end))
-        && (!start || isAfter(point.time, start));
+      return (
+        (!end || isBefore(point.time, end)) &&
+        (!start || isAfter(point.time, start))
+      );
     } else {
-      return (!end || isBefore(point.time, end))
-        && (!start || isAfter(point.time, start));
+      return (
+        (!end || isBefore(point.time, end)) &&
+        (!start || isAfter(point.time, start))
+      );
     }
   });
 

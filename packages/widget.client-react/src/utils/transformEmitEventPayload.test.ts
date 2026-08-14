@@ -20,6 +20,7 @@ import type { AllowedObjectSetParameterType } from "@osdk/widget.api";
 import { defineConfig } from "@osdk/widget.client";
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { transformEmitEventPayload } from "./transformEmitEventPayload.js";
 
 vi.mock("@osdk/client/internal", () => ({
@@ -166,7 +167,7 @@ describe("transformEmitEventPayload", () => {
 
     expect(result.type).toBe("async");
     await expect(result.payload).rejects.toThrow(
-      "Cannot emit event \"updateObjectSet\" with ObjectSet parameter \"myObjectSet\" without an osdk client",
+      'Cannot emit event "updateObjectSet" with ObjectSet parameter "myObjectSet" without an osdk client',
     );
   });
 
@@ -231,7 +232,7 @@ describe("transformEmitEventPayload", () => {
 
     expect(result.type).toBe("async");
     await expect(result.payload).rejects.toThrow(
-      "Event with ID \"nonExistentEvent\" not found in widget config",
+      'Event with ID "nonExistentEvent" not found in widget config',
     );
   });
 });

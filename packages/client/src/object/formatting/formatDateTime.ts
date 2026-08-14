@@ -20,6 +20,7 @@ import type {
   DatetimeTimezone,
 } from "@osdk/api";
 import type { DatetimeLocalizedFormatType } from "@osdk/foundry.ontologies";
+
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { resolvePropertyReference } from "./propertyFormattingUtils.js";
 

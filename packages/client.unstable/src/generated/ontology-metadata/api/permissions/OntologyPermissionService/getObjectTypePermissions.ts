@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ObjectTypeRid as _api_ObjectTypeRid } from "../../__components.js";
 import type { GetObjectTypePermissionsResponse as _api_permissions_GetObjectTypePermissionsResponse } from "../__components.js";
 

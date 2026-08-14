@@ -1,5 +1,7 @@
+ACMR
 aggregatable
 aimpoints
+AUTOGEN
 BACKCOMPAT
 backlink
 blockquote
@@ -10,6 +12,7 @@ codegen
 commitish
 Cpath
 Csvg
+dedups
 devx
 Discoverability
 duplicative
@@ -29,13 +32,15 @@ onwarn
 peopleapp
 pypi
 retryable
+revals
 rsort
 semver
 streamutils
-subdependencies
-subdeps
 struct
 structs
+subdependencies
+subdeps
+trackpad
 tsdoc
 typecheck
 typemapping
@@ -47,4 +52,3 @@ unioned
 unresolve
 Unsubscribable
 webapi
-ACMR

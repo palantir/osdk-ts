@@ -46,10 +46,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { getChangelogEntry } from "@changesets/release-utils";
-import type { Package } from "@manypkg/get-packages";
 import * as fs from "node:fs";
 import path from "node:path";
+
+import { getChangelogEntry } from "@changesets/release-utils";
+import type { Package } from "@manypkg/get-packages";
+
 import type { GithubContext } from "./runVersion.js";
 
 export const createRelease = async (
@@ -84,10 +86,10 @@ export const createRelease = async (
   } catch (err) {
     // if we can't find a changelog, the user has probably disabled changelogs
     if (
-      err
-      && typeof err === "object"
-      && "code" in err
-      && err.code !== "ENOENT"
+      err &&
+      typeof err === "object" &&
+      "code" in err &&
+      err.code !== "ENOENT"
     ) {
       throw err;
     }

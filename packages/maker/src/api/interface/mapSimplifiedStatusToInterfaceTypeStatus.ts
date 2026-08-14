@@ -15,6 +15,7 @@
  */
 
 import type { InterfaceTypeStatus } from "@osdk/client.unstable";
+
 import type { SimplifiedInterfaceTypeStatus } from "../defineInterface.js";
 
 export function mapSimplifiedStatusToInterfaceTypeStatus(

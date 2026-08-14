@@ -1,3 +1,8 @@
+/* Cascade layer order: tailwind layers first, osdk last so osdk.components
+   wins over tailwind's preflight (e.g. button { opacity: 1 } would otherwise
+   override .headerActionButton { opacity: 0 } from react-components). */
+@layer theme, base, components, utilities, osdk.tokens, osdk.components;
+
 @import "@osdk/react-components/styles.css";
 @import "tailwindcss";
 

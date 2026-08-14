@@ -51,11 +51,11 @@ export const FIBER_TAG = {
 export function isUserComponent(fiber: Fiber): boolean {
   const tag = fiber.tag;
   return (
-    tag === FIBER_TAG.FUNCTION_COMPONENT
-    || tag === FIBER_TAG.CLASS_COMPONENT
-    || tag === FIBER_TAG.FORWARD_REF
-    || tag === FIBER_TAG.MEMO
-    || tag === FIBER_TAG.SIMPLE_MEMO
-    || tag === FIBER_TAG.LAZY
+    tag === FIBER_TAG.FUNCTION_COMPONENT ||
+    tag === FIBER_TAG.CLASS_COMPONENT ||
+    tag === FIBER_TAG.FORWARD_REF ||
+    tag === FIBER_TAG.MEMO ||
+    tag === FIBER_TAG.SIMPLE_MEMO ||
+    tag === FIBER_TAG.LAZY
   );
 }

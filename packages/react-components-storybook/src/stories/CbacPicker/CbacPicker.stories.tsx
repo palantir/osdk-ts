@@ -20,9 +20,10 @@ import {
   CbacPicker,
   CbacPickerDialog,
   computeMarkingStates,
-} from "@osdk/cbac-components/experimental";
+} from "@osdk/react-components/experimental/cbac-picker";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
+
 import {
   mockBannerGradient,
   mockBannerSecret,
@@ -32,9 +33,9 @@ import {
 } from "./mockData.js";
 
 const meta: Meta<typeof BaseCbacPicker> = {
-  title: "Experimental/CbacPicker",
-  tags: ["experimental"],
+  title: "Components/CbacPicker",
   component: BaseCbacPicker,
+  tags: ["beta"],
   parameters: {
     controls: {
       expanded: true,
@@ -55,19 +56,18 @@ const BANNER_ROW_STYLE = {
 
 const EMPTY_SELECTED: string[] = [];
 
-function InteractivePicker(
-  { initialSelection }: { initialSelection?: string[] },
-) {
+function InteractivePicker({
+  initialSelection,
+}: {
+  initialSelection?: string[];
+}) {
   const [selectedIds, setSelectedIds] = useState<string[]>(
     initialSelection ?? EMPTY_SELECTED,
   );
 
   return (
     <div style={PICKER_STYLE}>
-      <CbacPicker
-        initialMarkingIds={selectedIds}
-        onChange={setSelectedIds}
-      />
+      <CbacPicker initialMarkingIds={selectedIds} onChange={setSelectedIds} />
     </div>
   );
 }
@@ -101,16 +101,16 @@ export const ReadOnly: Story = {
 };
 
 function WithBannerPicker() {
-  const [selectedIds, setSelectedIds] = useState<string[]>(
-    ["m-top-secret", "m-alpha", "m-bravo", "m-no-foreign"],
-  );
+  const [selectedIds, setSelectedIds] = useState<string[]>([
+    "m-top-secret",
+    "m-alpha",
+    "m-bravo",
+    "m-no-foreign",
+  ]);
 
   return (
     <div style={PICKER_STYLE}>
-      <CbacPicker
-        initialMarkingIds={selectedIds}
-        onChange={setSelectedIds}
-      />
+      <CbacPicker initialMarkingIds={selectedIds} onChange={setSelectedIds} />
     </div>
   );
 }
@@ -125,12 +125,7 @@ function WithImpliedAndDisallowedPicker() {
   const disallowedIds = useMemo(() => ["m-top-secret"], []);
 
   const markingStates = useMemo(
-    () =>
-      computeMarkingStates(
-        selectedIds,
-        impliedIds,
-        disallowedIds,
-      ),
+    () => computeMarkingStates(selectedIds, impliedIds, disallowedIds),
     [selectedIds, impliedIds, disallowedIds],
   );
 
@@ -205,6 +200,26 @@ export const BannerOnly: Story = {
         classificationString={mockBannerGradient.classificationString}
         textColor={mockBannerGradient.textColor}
         backgroundColors={mockBannerGradient.backgroundColors}
+      />
+    </div>
+  ),
+};
+
+const EMPTY_BACKGROUND_COLORS: string[] = [];
+
+export const BannerLoading: Story = {
+  render: () => (
+    <div style={BANNER_ROW_STYLE}>
+      <BaseCbacBanner
+        classificationString=""
+        textColor=""
+        backgroundColors={EMPTY_BACKGROUND_COLORS}
+        isLoading={true}
+      />
+      <BaseCbacBanner
+        classificationString={mockBannerSecret.classificationString}
+        textColor={mockBannerSecret.textColor}
+        backgroundColors={mockBannerSecret.backgroundColors}
       />
     </div>
   ),

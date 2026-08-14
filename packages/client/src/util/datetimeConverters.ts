@@ -17,7 +17,7 @@
 import invariant from "tiny-invariant";
 
 const isoRegex =
-  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?$/;
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?$/u;
 
 /**
  * Extracts the date from a ISO 8601 formatted date time string. Throws if the input is not in the correct format.

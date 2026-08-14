@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ObjectTypeSearchRequestV2 as _api_search_ObjectTypeSearchRequestV2,
   ObjectTypeSearchResponseV2 as _api_search_ObjectTypeSearchResponseV2,

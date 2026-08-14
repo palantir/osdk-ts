@@ -15,6 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, PrimaryKeyType } from "@osdk/api";
+
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
@@ -29,19 +30,16 @@ export const SELECT_IDX = 3;
 export const LOAD_PROPERTY_SECURITY_IDX = 4;
 export const INCLUDE_ALL_BASE_PROPERTIES_IDX = 5;
 
-export interface ObjectCacheKey extends
-  CacheKey<
-    "object",
-    ObjectHolder,
-    ObjectQuery,
-    [
-      apiName: string,
-      pk: PrimaryKeyType<ObjectTypeDefinition>,
-      rdpConfig?: Canonical<Rdp> | undefined,
-      select?: Canonical<readonly string[]> | undefined,
-      loadPropertySecurity?: true | undefined,
-      includeAllBaseObjectProperties?: true | undefined,
-    ]
-  >
-{
-}
+export interface ObjectCacheKey extends CacheKey<
+  "object",
+  ObjectHolder,
+  ObjectQuery,
+  [
+    apiName: string,
+    pk: PrimaryKeyType<ObjectTypeDefinition>,
+    rdpConfig?: Canonical<Rdp> | undefined,
+    select?: Canonical<readonly string[]> | undefined,
+    loadPropertySecurity?: true | undefined,
+    includeAllBaseObjectProperties?: true | undefined,
+  ]
+> {}

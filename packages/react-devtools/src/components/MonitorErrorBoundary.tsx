@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import styles from "./MonitorErrorBoundary.module.scss";
 
 export interface MonitorErrorBoundaryProps {
@@ -53,9 +54,7 @@ export class MonitorErrorBoundary extends React.Component<
       if (process.env.NODE_ENV === "development") {
         return (
           <div className={styles.container}>
-            <h3 className={styles.title}>
-              Monitor Error
-            </h3>
+            <h3 className={styles.title}>Monitor Error</h3>
             <p className={styles.message}>
               An error occurred in the monitoring panel:
             </p>

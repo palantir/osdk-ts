@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetUsageSettingsByUserRequest as _api_usage_GetUsageSettingsByUserRequest,
   GetUsageSettingsByUserResponse as _api_usage_GetUsageSettingsByUserResponse,

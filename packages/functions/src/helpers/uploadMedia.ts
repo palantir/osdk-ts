@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import type { Client, MediaReference, MediaUpload } from "@osdk/client";
+import type { Client, Media, MediaUpload } from "@osdk/client";
+import { createMediaFromReference } from "@osdk/client/internal";
 import { MediaSets } from "@osdk/foundry.mediasets";
 
 export async function uploadMedia(
   client: Client,
   mediaUpload: MediaUpload,
-): Promise<MediaReference> {
+): Promise<Media> {
   const gatewayMediaRef = await MediaSets.uploadMedia(
     client,
     mediaUpload.data,
@@ -30,7 +31,7 @@ export async function uploadMedia(
     },
   );
 
-  return {
+  return createMediaFromReference(client, {
     mimeType: gatewayMediaRef.mimeType,
     reference: {
       type: "mediaSetViewItem",
@@ -43,5 +44,5 @@ export async function uploadMedia(
         readToken: gatewayMediaRef.reference.mediaSetViewItem.token,
       },
     },
-  };
+  });
 }

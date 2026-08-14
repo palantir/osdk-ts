@@ -15,188 +15,89 @@
  */
 
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
+import type { Media } from "@osdk/api";
 import classnames from "classnames";
-import "pdfjs-dist/web/pdf_viewer.css";
-import React, { forwardRef, useImperativeHandle } from "react";
-import { createPortal } from "react-dom";
-import { PdfViewerAnnotationLayer } from "./components/PdfViewerAnnotationLayer.js";
-import { PdfViewerOutlineSidebar } from "./components/PdfViewerOutlineSidebar.js";
-import { PdfViewerSearchBar } from "./components/PdfViewerSearchBar.js";
-import { PdfViewerSidebar } from "./components/PdfViewerSidebar.js";
-import { PdfViewerToolbar } from "./components/PdfViewerToolbar.js";
-import { EMPTY_ANNOTATION_ARRAY } from "./constants.js";
-import { usePdfAnnotationsByPage } from "./hooks/usePdfAnnotationsByPage.js";
-import { usePdfFormFields } from "./hooks/usePdfFormFields.js";
-import { usePdfHighlightMode } from "./hooks/usePdfHighlightMode.js";
-import { usePdfViewerState } from "./hooks/usePdfViewerState.js";
-import styles from "./PdfViewer.module.css";
-import type { PdfViewerHandle, PdfViewerProps } from "./types.js";
+import React, { useEffect, useState } from "react";
 
-export const BasePdfViewer: React.ForwardRefExoticComponent<
-  PdfViewerProps & React.RefAttributes<PdfViewerHandle>
-> = forwardRef<PdfViewerHandle, PdfViewerProps>(
-  function BasePdfViewer({
-    src,
-    annotations = EMPTY_ANNOTATION_ARRAY,
-    onAnnotationClick,
-    onDownload,
-    enableHighlight = false,
-    onTextHighlight,
-    onHighlightDelete,
-    formData,
-    onFormSubmit,
-    onFormChange,
-    initialPage = 1,
-    initialScale = 1.0,
-    initialSidebarOpen = false,
-    enableDownload = false,
-    sidebarMode: sidebarModeProp = "thumbnails",
-    outlineIcons,
-    className,
-  }, ref) {
-    const viewer = usePdfViewerState({
-      src,
-      initialPage,
-      initialScale,
-      initialSidebarOpen,
-      sidebarMode: sidebarModeProp,
-      onDownload,
-    });
+import { BasePdfViewer } from "./BasePdfViewer.js";
+import type { PdfViewerProps } from "./PdfViewerApi.js";
 
-    const { highlightModeActive, toggleHighlightMode, deleteHighlight } =
-      usePdfHighlightMode({
-        pdfViewerRef: viewer.pdfViewerRef,
-        document: viewer.document,
-        enabled: enableHighlight,
-        onTextHighlight,
-        onHighlightDelete,
-      });
+import styles from "./BasePdfViewer.module.css";
 
-    useImperativeHandle(ref, () => ({
-      scrollToPage: viewer.scrollToPage,
-      deleteHighlight,
-    }), [viewer.scrollToPage, deleteHighlight]);
+async function fetchMediaContents(media: Media): Promise<ArrayBuffer> {
+  const result = await media.fetchContents();
+  return result.arrayBuffer();
+}
 
-    const { hasFormFields, submitFormData } = usePdfFormFields({
-      pdfViewerRef: viewer.pdfViewerRef,
-      eventBusRef: viewer.eventBusRef,
-      document: viewer.document,
-      formData,
-      onFormSubmit,
-      onFormChange,
-    });
+export function PdfViewer({
+  media,
+  className,
+  ...pdfViewerProps
+}: PdfViewerProps): React.ReactElement {
+  const [src, setSrc] = useState<ArrayBuffer | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | undefined>(undefined);
 
-    const annotationsByPage = usePdfAnnotationsByPage(annotations);
+  // This is required until we either support React 19+ or a data fetching hook
+  useEffect(
+    function fetchMediaSource() {
+      let cancelled = false;
+      setLoading(true);
+      setError(undefined);
+      setSrc(undefined);
 
-    const rootClassName = classnames(styles.pdfViewer, className);
+      fetchMediaContents(media)
+        .then((buffer) => {
+          if (!cancelled) {
+            setSrc(buffer);
+            setLoading(false);
+          }
+        })
+        .catch((err: unknown) => {
+          if (!cancelled) {
+            setError(err instanceof Error ? err : new Error(String(err)));
+            setLoading(false);
+          }
+        });
 
-    if (viewer.loading) {
-      return (
-        <div className={rootClassName}>
-          <div className={styles.loadingContainer}>
-            <Spin className={styles.spinnerIcon} />
-            Loading…
-          </div>
-        </div>
-      );
-    }
+      return () => {
+        cancelled = true;
+      };
+    },
+    [media],
+  );
 
-    if (viewer.error != null) {
-      return (
-        <div className={rootClassName}>
-          <div className={styles.errorContainer}>
-            <ErrorIcon className={styles.errorIcon} />
-            Failed to load PDF: {viewer.error.message}
-          </div>
-        </div>
-      );
-    }
+  const rootClassName = classnames(styles.pdfViewer, className);
 
-    if (viewer.document == null) {
-      return (
-        <div className={rootClassName}>
-          <div className={styles.loadingContainer}>No document</div>
-        </div>
-      );
-    }
-
+  if (loading) {
     return (
       <div className={rootClassName}>
-        <PdfViewerToolbar
-          currentPage={viewer.currentPage}
-          numPages={viewer.numPages}
-          scale={viewer.scale}
-          sidebarOpen={viewer.sidebarOpen}
-          onPageChange={viewer.scrollToPage}
-          onScaleChange={viewer.setScale}
-          onSearchOpen={viewer.search.openSearch}
-          onSidebarToggle={viewer.toggleSidebar}
-          onDownload={viewer.download}
-          enableDownload={enableDownload}
-          onRotateLeft={viewer.rotateLeft}
-          onRotateRight={viewer.rotateRight}
-          enableHighlight={enableHighlight}
-          highlightModeActive={highlightModeActive}
-          onHighlightToggle={toggleHighlightMode}
-          enableFormSave={onFormSubmit != null && hasFormFields}
-          onFormSave={submitFormData}
-        />
-        {viewer.search.isSearchOpen && (
-          <PdfViewerSearchBar
-            query={viewer.search.query}
-            totalMatches={viewer.search.totalMatches}
-            currentMatchIndex={viewer.search.currentMatchIndex}
-            onQueryChange={viewer.search.setQuery}
-            onNext={viewer.search.nextMatch}
-            onPrev={viewer.search.prevMatch}
-            onClose={viewer.search.closeSearch}
-          />
-        )}
-        <div className={styles.contentArea}>
-          {viewer.sidebarOpen && viewer.sidebarMode === "thumbnails" && (
-            <PdfViewerSidebar
-              document={viewer.document}
-              numPages={viewer.numPages}
-              currentPage={viewer.currentPage}
-              onPageClick={viewer.scrollToPage}
-              sidebarMode={viewer.sidebarMode}
-              onSidebarModeChange={viewer.setSidebarMode}
-            />
-          )}
-          {viewer.sidebarOpen && viewer.sidebarMode === "outline" && (
-            <PdfViewerOutlineSidebar
-              outlineItems={viewer.outlineItems}
-              currentPage={viewer.currentPage}
-              onItemClick={viewer.scrollToPage}
-              sidebarMode={viewer.sidebarMode}
-              onSidebarModeChange={viewer.setSidebarMode}
-              outlineIcons={outlineIcons}
-            />
-          )}
-          <div className={styles.scrollContainerWrapper}>
-            <div ref={viewer.containerRef} className={styles.scrollContainer}>
-              <div ref={viewer.viewerRef} className="pdfViewer" />
-              {viewer.portalTargets.map((target) => {
-                const pageAnnotations = annotationsByPage[target.pageNumber]
-                  ?? EMPTY_ANNOTATION_ARRAY;
-                if (pageAnnotations.length === 0) {
-                  return null;
-                }
-                return createPortal(
-                  <PdfViewerAnnotationLayer
-                    key={target.pageNumber}
-                    annotations={pageAnnotations}
-                    pageHeight={target.pageHeight}
-                    scale={target.scale}
-                    onAnnotationClick={onAnnotationClick}
-                  />,
-                  target.container,
-                );
-              })}
-            </div>
-          </div>
+        <div className={styles.loadingContainer}>
+          <Spin className={styles.spinnerIcon} />
+          Loading…
         </div>
       </div>
     );
-  },
-);
+  }
+
+  if (error != null) {
+    return (
+      <div className={rootClassName}>
+        <div className={styles.errorContainer}>
+          <ErrorIcon className={styles.errorIcon} />
+          Failed to load PDF: {error.message}
+        </div>
+      </div>
+    );
+  }
+
+  if (src == null) {
+    return (
+      <div className={rootClassName}>
+        <div className={styles.loadingContainer}>No document</div>
+      </div>
+    );
+  }
+
+  return <BasePdfViewer src={src} className={className} {...pdfViewerProps} />;
+}

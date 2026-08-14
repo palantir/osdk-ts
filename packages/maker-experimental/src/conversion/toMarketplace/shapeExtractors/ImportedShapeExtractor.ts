@@ -26,9 +26,13 @@ import type {
   ActionTypeParameterShape,
   ActionTypeShape,
   BaseParameterType,
+  InterfaceActionTypeConstraintShape,
   InterfaceLinkTypeInputShape,
+  InterfaceParameterConstraintShape,
   InterfacePropertyTypeInputShape,
   InterfaceTypeInputShape,
+  InputPreset,
+  InputShapeResolver,
   LinkTypeInputShape,
   LinkTypeIntermediaryShape,
   LinkTypeManyToManyInputShape,
@@ -38,12 +42,21 @@ import type {
   PropertyInputShape,
   SharedPropertyTypeInputShape,
 } from "@osdk/client.unstable/api";
+
 import type {
   BlockShapes,
   OntologyRidGenerator,
+  ReadableId,
 } from "../../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../../util/generateRid.js";
 import { typeToMarketplaceObjectPropertyType } from "../typeVisitors.js";
+import { extractValueTypeInputShapeIfPresent } from "./IrShapeExtractor.js";
+
+interface ImportedBlockShapes extends BlockShapes {
+  inputPresets: Map<ReadableId, InputPreset>;
+}
+
+export type LinkTypeIdsByApiName = Readonly<Record<string, string>>;
 
 function createLocalizedAbout(
   fallbackTitle: string,
@@ -65,16 +78,23 @@ function createLocalizedAbout(
 export function getImportedShapes(
   importedBlockData: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,
-): BlockShapes {
-  const blockShapes: BlockShapes = {
+  linkTypeIdsByApiName: LinkTypeIdsByApiName = {},
+): ImportedBlockShapes {
+  const blockShapes: ImportedBlockShapes = {
     inputShapes: new Map(),
+    inputPresets: new Map(),
     outputShapes: new Map(),
     inputShapeMetadata: new Map(),
     inputMappings: [],
   };
 
   extractImportedObjectTypes(importedBlockData, ridGenerator, blockShapes);
-  extractImportedLinkTypes(importedBlockData, ridGenerator, blockShapes);
+  extractImportedLinkTypes(
+    importedBlockData,
+    ridGenerator,
+    blockShapes,
+    linkTypeIdsByApiName,
+  );
   extractImportedInterfaceTypes(importedBlockData, ridGenerator, blockShapes);
   extractImportedSharedPropertyTypes(
     importedBlockData,
@@ -89,21 +109,21 @@ export function getImportedShapes(
 function extractImportedObjectTypes(
   importedBlockData: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,
-  blockShapes: BlockShapes,
+  blockShapes: ImportedBlockShapes,
 ): void {
   const objectReadableIds = ridGenerator.getObjectTypeRids().inverse();
   const propertyReadableIds = ridGenerator.getPropertyTypeRids().inverse();
 
-  for (
-    const [rid, objectType] of Object.entries(importedBlockData.objectTypes)
-  ) {
+  for (const [rid, objectType] of Object.entries(
+    importedBlockData.objectTypes,
+  )) {
     const readableId = objectReadableIds.get(rid as ObjectTypeRid);
     if (!readableId) continue;
 
     const propertyBlockIds: string[] = [];
-    for (
-      const propertyRid of Object.keys(objectType.objectType.propertyTypes)
-    ) {
+    for (const propertyRid of Object.keys(
+      objectType.objectType.propertyTypes,
+    )) {
       const propReadableId = propertyReadableIds.get(propertyRid);
       if (propReadableId) {
         propertyBlockIds.push(ridGenerator.toBlockInternalId(propReadableId));
@@ -124,6 +144,7 @@ function extractImportedObjectTypes(
       type: "objectType",
       objectType: inputShape,
     });
+    addApiNamePreset(blockShapes, readableId, objectType.objectType.apiName!);
 
     blockShapes.inputShapeMetadata.set(readableId, {
       isOptional: false,
@@ -133,18 +154,17 @@ function extractImportedObjectTypes(
     });
 
     // Generate property input shapes
-    for (
-      const [propertyRid, propertyType] of Object.entries(
-        objectType.objectType.propertyTypes,
-      )
-    ) {
+    for (const [propertyRid, propertyType] of Object.entries(
+      objectType.objectType.propertyTypes,
+    )) {
       const propReadableId = propertyReadableIds.get(propertyRid);
       if (!propReadableId) continue;
 
       const sptReadableId = propertyType.sharedPropertyTypeRid
-        ? ridGenerator.getSharedPropertyTypeRids().inverse().get(
-          propertyType.sharedPropertyTypeRid,
-        )
+        ? ridGenerator
+            .getSharedPropertyTypeRids()
+            .inverse()
+            .get(propertyType.sharedPropertyTypeRid)
         : undefined;
 
       const propInputShape: PropertyInputShape = {
@@ -168,6 +188,7 @@ function extractImportedObjectTypes(
         type: "property",
         property: propInputShape,
       });
+      addApiNamePreset(blockShapes, propReadableId, propertyType.apiName!);
 
       blockShapes.inputShapeMetadata.set(propReadableId, {
         isOptional: false,
@@ -182,7 +203,8 @@ function extractImportedObjectTypes(
 function extractImportedLinkTypes(
   importedBlockData: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,
-  blockShapes: BlockShapes,
+  blockShapes: ImportedBlockShapes,
+  linkTypeIdsByApiName: LinkTypeIdsByApiName,
 ): void {
   const linkReadableIds = ridGenerator.getLinkTypeRids().inverse();
 
@@ -214,9 +236,8 @@ function extractImportedLinkTypes(
           oneToManyLinkMetadata: createLocalizedAbout(
             def.oneToManyLinkMetadata.displayMetadata.displayName,
           ),
-          cardinalityHint: def.cardinalityHint === "ONE_TO_ONE"
-            ? "ONE_TO_ONE"
-            : "ONE_TO_MANY",
+          cardinalityHint:
+            def.cardinalityHint === "ONE_TO_ONE" ? "ONE_TO_ONE" : "ONE_TO_MANY",
         };
         linkInputShape = { type: "oneToMany", oneToMany: shape };
         break;
@@ -291,6 +312,15 @@ function extractImportedLinkTypes(
       type: "linkType",
       linkType: linkInputShape,
     });
+    const linkTypeId = linkTypeIdsByApiName[linkType.linkType.id];
+    if (linkTypeId !== undefined) {
+      addPreset(blockShapes, readableId, {
+        type: "linkTypeIdResolver",
+        linkTypeIdResolver: {
+          linkTypeIdWithoutOntologyPrefix: linkTypeId,
+        },
+      });
+    }
 
     blockShapes.inputShapeMetadata.set(readableId, {
       isOptional: false,
@@ -304,38 +334,48 @@ function extractImportedLinkTypes(
 function extractImportedInterfaceTypes(
   importedBlockData: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,
-  blockShapes: BlockShapes,
+  blockShapes: ImportedBlockShapes,
 ): void {
   const knownIdentifiers = importedBlockData.knownIdentifiers;
 
-  for (
-    const [_rid, interfaceTypeBlock] of Object.entries(
-      importedBlockData.interfaceTypes,
-    )
-  ) {
+  for (const [_rid, interfaceTypeBlock] of Object.entries(
+    importedBlockData.interfaceTypes,
+  )) {
     const interfaceType = interfaceTypeBlock.interfaceType;
     const interfaceReadableId = ReadableIdGenerator.getForInterface(
       interfaceType.apiName,
     );
 
-    // Build properties list (SPT references)
-    const properties: string[] = (interfaceType.properties ?? []).map(
-      (spt: any) => {
-        const sptId = knownIdentifiers.sharedPropertyTypes?.[spt.rid];
-        return sptId ?? spt.rid;
-      },
+    // Build properties list from propertiesV2 (SPT references as BlockInternalIds)
+    const properties: string[] = Object.values(
+      interfaceType.propertiesV2 ?? {},
+    ).map((propEntry) =>
+      ridGenerator.toBlockInternalId(
+        ReadableIdGenerator.getForSpt(propEntry.sharedPropertyType.apiName),
+      ),
     );
 
-    // Build propertiesV2 list (interface property references)
     const propertiesV2: string[] = [];
-    for (
-      const [propertyRid] of Object.entries(interfaceType.propertiesV3 ?? {})
-    ) {
-      const propReadableId = ridGenerator.getInterfacePropertyTypeRids()
-        .inverse().get(propertyRid);
-      if (propReadableId) {
-        propertiesV2.push(ridGenerator.toBlockInternalId(propReadableId));
+    for (const [propertyRid, property] of Object.entries(
+      interfaceType.propertiesV3 ?? {},
+    )) {
+      const propReadableId =
+        property.type === "sharedPropertyBasedPropertyType"
+          ? ReadableIdGenerator.getForSptBackedInterfaceProperty(
+              interfaceType.apiName,
+              property.sharedPropertyBasedPropertyType.sharedPropertyType
+                .apiName,
+            )
+          : ridGenerator
+              .getInterfacePropertyTypeRids()
+              .inverse()
+              .get(propertyRid);
+      if (!propReadableId) {
+        throw new Error(
+          `Missing readable ID for interface property RID ${propertyRid} on interface ${interfaceType.apiName}`,
+        );
       }
+      propertiesV2.push(ridGenerator.toBlockInternalId(propReadableId));
     }
 
     // Build links list
@@ -346,11 +386,21 @@ function extractImportedInterfaceTypes(
       },
     );
 
+    // Build actionTypeConstraints list
+    const actionTypeConstraints: string[] = (
+      interfaceType.actionTypeConstraints ?? []
+    ).map((constraint) => {
+      const constraintId =
+        knownIdentifiers.interfaceActionTypeConstraints?.[constraint.rid];
+      return constraintId ?? constraint.rid;
+    });
+
     const inputShape: InterfaceTypeInputShape = {
       about: createLocalizedAbout(
         interfaceType.displayMetadata.displayName,
         interfaceType.displayMetadata.description ?? "",
       ),
+      actionTypeConstraints,
       properties,
       propertiesV2,
       links,
@@ -360,23 +410,62 @@ function extractImportedInterfaceTypes(
       type: "interfaceType",
       interfaceType: inputShape,
     });
+    addApiNamePreset(blockShapes, interfaceReadableId, interfaceType.apiName);
+
+    // Generate SPT input shapes
+    for (const [_sptRid, propEntry] of Object.entries(
+      interfaceType.propertiesV2 ?? {},
+    )) {
+      const spt = propEntry.sharedPropertyType;
+      const sptReadableId = ReadableIdGenerator.getForSpt(spt.apiName);
+      if (blockShapes.inputShapes.has(sptReadableId)) continue;
+
+      blockShapes.inputShapes.set(sptReadableId, {
+        type: "sharedPropertyType",
+        sharedPropertyType: {
+          about: createLocalizedAbout(
+            spt.displayMetadata.displayName,
+            spt.displayMetadata.description ?? "",
+          ),
+          type: {
+            type: "objectPropertyType",
+            objectPropertyType: typeToMarketplaceObjectPropertyType(spt.type),
+          },
+        },
+      });
+      addApiNamePreset(blockShapes, sptReadableId, spt.apiName);
+      blockShapes.inputShapeMetadata.set(sptReadableId, {
+        isOptional: false,
+        isAccessedInReconcile: true,
+        reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+        preallocateAccessRequirements: "RESOURCE_PREALLOCATION_REQUIRED",
+      });
+    }
 
     // Generate interface property type input shapes
-    for (
-      const [propertyRid, property] of Object.entries(
-        interfaceType.propertiesV3 ?? {},
-      )
-    ) {
-      const propReadableId = ridGenerator.getInterfacePropertyTypeRids()
-        .inverse().get(propertyRid);
-      if (!propReadableId) continue;
-
+    for (const [propertyRid, property] of Object.entries(
+      interfaceType.propertiesV3 ?? {},
+    )) {
+      let propReadableId: ReadableId;
+      let propApiName: string;
+      let propInputShape: InterfacePropertyTypeInputShape;
       if (property.type === "interfaceDefinedPropertyType") {
-        const propInputShape: InterfacePropertyTypeInputShape = {
+        const registeredReadableId = ridGenerator
+          .getInterfacePropertyTypeRids()
+          .inverse()
+          .get(propertyRid);
+        if (!registeredReadableId) {
+          throw new Error(
+            `Missing readable ID for interface-defined property RID ${propertyRid} on interface ${interfaceType.apiName}`,
+          );
+        }
+        propReadableId = registeredReadableId;
+        propApiName = property.interfaceDefinedPropertyType.apiName;
+        propInputShape = {
           about: createLocalizedAbout(
             property.interfaceDefinedPropertyType.displayMetadata.displayName,
-            property.interfaceDefinedPropertyType.displayMetadata.description
-              ?? "",
+            property.interfaceDefinedPropertyType.displayMetadata.description ??
+              "",
           ),
           type: {
             type: "objectPropertyType",
@@ -389,14 +478,14 @@ function extractImportedInterfaceTypes(
             property.interfaceDefinedPropertyType.constraints
               .requireImplementation,
         };
-        blockShapes.inputShapes.set(propReadableId, {
-          type: "interfacePropertyType",
-          interfacePropertyType: propInputShape,
-        });
-      } else if (property.type === "sharedPropertyBasedPropertyType") {
+      } else {
         const spt = property.sharedPropertyBasedPropertyType.sharedPropertyType;
-        const sptReadableId = ReadableIdGenerator.getForSpt(spt.apiName);
-        const sharedPropInputShape: SharedPropertyTypeInputShape = {
+        propReadableId = ReadableIdGenerator.getForSptBackedInterfaceProperty(
+          interfaceType.apiName,
+          spt.apiName,
+        );
+        propApiName = spt.apiName;
+        propInputShape = {
           about: createLocalizedAbout(
             spt.displayMetadata.displayName,
             spt.displayMetadata.description ?? "",
@@ -405,12 +494,19 @@ function extractImportedInterfaceTypes(
             type: "objectPropertyType",
             objectPropertyType: typeToMarketplaceObjectPropertyType(spt.type),
           },
+          interfaceType: ridGenerator.toBlockInternalId(interfaceReadableId),
+          requireImplementation:
+            property.sharedPropertyBasedPropertyType.requireImplementation,
+          sharedPropertyType: ridGenerator.toBlockInternalId(
+            ReadableIdGenerator.getForSpt(spt.apiName),
+          ),
         };
-        blockShapes.inputShapes.set(sptReadableId, {
-          type: "sharedPropertyType",
-          sharedPropertyType: sharedPropInputShape,
-        });
       }
+      blockShapes.inputShapes.set(propReadableId, {
+        type: "interfacePropertyType",
+        interfacePropertyType: propInputShape,
+      });
+      addApiNamePreset(blockShapes, propReadableId, propApiName);
     }
 
     // Generate interface link type input shapes
@@ -420,25 +516,20 @@ function extractImportedInterfaceTypes(
         interfaceLinkType.metadata.apiName,
       );
 
-      const linkedEntityTypeRef = interfaceLinkType.linkedEntityTypeId.type
-          === "interfaceType"
+      const linkedInterfaceRid =
+        interfaceLinkType.linkedEntityTypeId.type === "interfaceType"
+          ? interfaceLinkType.linkedEntityTypeId.interfaceType
+          : undefined;
+
+      const linkedReadableId = linkedInterfaceRid
+        ? ridGenerator.getInterfaceRids().inverse().get(linkedInterfaceRid)
+        : undefined;
+
+      const linkedEntityTypeRef = linkedReadableId
         ? {
-          type: "interfaceType" as const,
-          interfaceType: ridGenerator.toBlockInternalId(
-            ReadableIdGenerator.getForInterface(
-              // resolve interface RID to apiName
-              ridGenerator.getInterfaceRids().inverse().get(
-                  interfaceLinkType.linkedEntityTypeId.interfaceType,
-                )
-                ? ridGenerator.toBlockInternalId(
-                  ridGenerator.getInterfaceRids().inverse().get(
-                    interfaceLinkType.linkedEntityTypeId.interfaceType,
-                  )!,
-                )
-                : interfaceLinkType.linkedEntityTypeId.interfaceType,
-            ),
-          ),
-        }
+            type: "interfaceType" as const,
+            interfaceType: ridGenerator.toBlockInternalId(linkedReadableId),
+          }
         : undefined;
 
       if (!linkedEntityTypeRef) continue;
@@ -450,9 +541,8 @@ function extractImportedInterfaceTypes(
         ),
         interfaceType: ridGenerator.toBlockInternalId(interfaceReadableId),
         linkedEntityType: linkedEntityTypeRef,
-        cardinality: interfaceLinkType.cardinality === "SINGLE"
-          ? "SINGLE"
-          : "MANY",
+        cardinality:
+          interfaceLinkType.cardinality === "SINGLE" ? "SINGLE" : "MANY",
         required: interfaceLinkType.required,
       };
 
@@ -460,6 +550,85 @@ function extractImportedInterfaceTypes(
         type: "interfaceLinkType",
         interfaceLinkType: linkInputShape,
       });
+      addApiNamePreset(
+        blockShapes,
+        linkReadableId,
+        interfaceLinkType.metadata.apiName,
+      );
+    }
+
+    // Generate interface action type constraint input shapes
+    for (const actionTypeConstraint of interfaceType.actionTypeConstraints ??
+      []) {
+      const constraintReadableId =
+        ReadableIdGenerator.getForInterfaceActionTypeConstraint(
+          interfaceType.apiName,
+          actionTypeConstraint.metadata.apiName,
+        );
+
+      const parameterConstraintRefs: string[] = Object.entries(
+        actionTypeConstraint.parameters ?? {},
+      ).map(([paramRid, paramConstraint]) => {
+        const paramDisplayApiName = paramConstraint.displayMetadata.apiName!;
+        return ridGenerator.toBlockInternalId(
+          ReadableIdGenerator.getForInterfaceParameterConstraint(
+            interfaceType.apiName,
+            actionTypeConstraint.metadata.apiName,
+            paramDisplayApiName,
+          ),
+        );
+      });
+
+      const constraintInputShape: InterfaceActionTypeConstraintShape = {
+        about: createLocalizedAbout(
+          actionTypeConstraint.metadata.displayName,
+          actionTypeConstraint.metadata.description ??
+            actionTypeConstraint.metadata.displayName,
+        ),
+        interfaceType: ridGenerator.toBlockInternalId(interfaceReadableId),
+        parameterConstraints: parameterConstraintRefs,
+        requireImplementation: actionTypeConstraint.requireImplementation,
+      };
+
+      blockShapes.inputShapes.set(constraintReadableId, {
+        type: "interfaceActionTypeConstraint",
+        interfaceActionTypeConstraint: constraintInputShape,
+      });
+      addApiNamePreset(
+        blockShapes,
+        constraintReadableId,
+        actionTypeConstraint.metadata.apiName,
+      );
+
+      // Generate interface parameter constraint input shapes
+      for (const [paramRid, paramConstraint] of Object.entries(
+        actionTypeConstraint.parameters ?? {},
+      )) {
+        const paramDisplayApiName = paramConstraint.displayMetadata.apiName!;
+        const paramReadableId =
+          ReadableIdGenerator.getForInterfaceParameterConstraint(
+            interfaceType.apiName,
+            actionTypeConstraint.metadata.apiName,
+            paramDisplayApiName,
+          );
+
+        const paramInputShape: InterfaceParameterConstraintShape = {
+          about: createLocalizedAbout(
+            paramConstraint.displayMetadata.displayName,
+            paramConstraint.displayMetadata.displayName,
+          ),
+          actionTypeConstraint:
+            ridGenerator.toBlockInternalId(constraintReadableId),
+          requireImplementation: paramConstraint.requireImplementation,
+          type: paramConstraint.type,
+        };
+
+        blockShapes.inputShapes.set(paramReadableId, {
+          type: "interfaceParameterConstraint",
+          interfaceParameterConstraint: paramInputShape,
+        });
+        addApiNamePreset(blockShapes, paramReadableId, paramDisplayApiName);
+      }
     }
   }
 }
@@ -467,13 +636,11 @@ function extractImportedInterfaceTypes(
 function extractImportedSharedPropertyTypes(
   importedBlockData: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,
-  blockShapes: BlockShapes,
+  blockShapes: ImportedBlockShapes,
 ): void {
-  for (
-    const [_rid, sptBlock] of Object.entries(
-      importedBlockData.sharedPropertyTypes,
-    )
-  ) {
+  for (const [_rid, sptBlock] of Object.entries(
+    importedBlockData.sharedPropertyTypes,
+  )) {
     const spt = sptBlock.sharedPropertyType;
     const readableId = ReadableIdGenerator.getForSpt(spt.apiName);
 
@@ -492,6 +659,7 @@ function extractImportedSharedPropertyTypes(
       type: "sharedPropertyType",
       sharedPropertyType: inputShape,
     });
+    addApiNamePreset(blockShapes, readableId, spt.apiName);
 
     blockShapes.inputShapeMetadata.set(readableId, {
       isOptional: false,
@@ -499,24 +667,29 @@ function extractImportedSharedPropertyTypes(
       reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
       preallocateAccessRequirements: "RESOURCE_PREALLOCATION_REQUIRED",
     });
+
+    extractValueTypeInputShapeIfPresent(
+      spt.valueType ?? undefined,
+      spt.displayMetadata.displayName,
+      spt.type,
+      blockShapes,
+      ridGenerator,
+    );
   }
 }
 
 function extractImportedActionTypes(
   importedBlockData: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,
-  blockShapes: BlockShapes,
+  blockShapes: ImportedBlockShapes,
 ): void {
-  for (
-    const [_rid, actionTypeBlock] of Object.entries(
-      importedBlockData.actionTypes ?? {},
-    )
-  ) {
-    const actionApiName =
-      (actionTypeBlock.actionType as ActionType).metadata.apiName;
-    const actionReadableId = ReadableIdGenerator.getForActionType(
-      actionApiName,
-    );
+  for (const [_rid, actionTypeBlock] of Object.entries(
+    importedBlockData.actionTypes ?? {},
+  )) {
+    const actionApiName = (actionTypeBlock.actionType as ActionType).metadata
+      .apiName;
+    const actionReadableId =
+      ReadableIdGenerator.getForActionType(actionApiName);
 
     const parametersV2: string[] = Object.entries(
       actionTypeBlock.parameterIds ?? {},
@@ -543,10 +716,11 @@ function extractImportedActionTypes(
       type: "action",
       action: actionShape,
     });
+    addApiNamePreset(blockShapes, actionReadableId, actionApiName);
 
     // Generate parameter input shapes
-    const parameters =
-      (actionTypeBlock.actionType as ActionType).metadata.parameters;
+    const parameters = (actionTypeBlock.actionType as ActionType).metadata
+      .parameters;
     if (parameters) {
       const converter = new ImportedBaseParameterTypeConverter(
         importedBlockData.knownIdentifiers.objectTypeIds,
@@ -572,18 +746,47 @@ function extractImportedActionTypes(
           type: "actionParameter",
           actionParameter: parameterShape,
         });
+        addApiNamePreset(blockShapes, paramReadableId, parameterId);
       }
     }
   }
+}
+
+function addApiNamePreset(
+  blockShapes: ImportedBlockShapes,
+  readableId: ReadableId,
+  apiName: string,
+): void {
+  addPreset(blockShapes, readableId, {
+    type: "apiNameResolver",
+    apiNameResolver: { apiName },
+  });
+}
+
+function addPreset(
+  blockShapes: ImportedBlockShapes,
+  readableId: ReadableId,
+  resolver: InputShapeResolver,
+): void {
+  blockShapes.inputPresets.set(readableId, {
+    value: {
+      type: "fromSource",
+      fromSource: { resolver },
+    },
+    exportCompatibility: "COMPATIBLE",
+    enforcement: "SUGGESTED",
+    isDefault: false,
+  });
 }
 
 function getObjectTypeBlockId(
   ridGenerator: OntologyRidGenerator,
   objectTypeRid: ObjectTypeRid,
 ): string {
-  const readableId = ridGenerator.getObjectTypeRids().inverse().get(
-    objectTypeRid,
-  );
+  const readableId = ridGenerator
+    .getObjectTypeRids()
+    .inverse()
+    .get(objectTypeRid);
   if (!readableId) {
     throw new Error(`Object type RID not found: ${objectTypeRid}`);
   }
@@ -658,8 +861,9 @@ class ImportedBaseParameterTypeConverter {
 
     // Object reference types
     if (
-      t === "objectReference" || t === "objectReferenceList"
-      || t === "objectSetRid"
+      t === "objectReference" ||
+      t === "objectReferenceList" ||
+      t === "objectSetRid"
     ) {
       const objRef = pt[t] as { objectTypeId: string } | undefined;
       const blockId = objRef
@@ -673,8 +877,9 @@ class ImportedBaseParameterTypeConverter {
 
     // Interface reference types
     if (
-      t === "interfaceReference" || t === "interfaceReferenceList"
-      || t === "interfaceObjectSetRid"
+      t === "interfaceReference" ||
+      t === "interfaceReferenceList" ||
+      t === "interfaceObjectSetRid"
     ) {
       const ifRef = pt[t] as { interfaceTypeRid: string } | undefined;
       const blockId = ifRef
@@ -688,9 +893,7 @@ class ImportedBaseParameterTypeConverter {
 
     // Decimal types
     if (t === "decimal" || t === "decimalList") {
-      const dec = pt[t] as
-        | { precision?: number; scale?: number }
-        | undefined;
+      const dec = pt[t] as { precision?: number; scale?: number } | undefined;
       return {
         type: t,
         [t]: { precision: dec?.precision, scale: dec?.scale },

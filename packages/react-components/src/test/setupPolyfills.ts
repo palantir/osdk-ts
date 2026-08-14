@@ -37,3 +37,11 @@ if (typeof Promise.withResolvers !== "function") {
     return { promise, resolve, reject };
   };
 }
+
+if (typeof Element.prototype.setPointerCapture !== "function") {
+  Element.prototype.setPointerCapture = function setPointerCapture() {};
+  Element.prototype.releasePointerCapture = function releasePointerCapture() {};
+  Element.prototype.hasPointerCapture = function hasPointerCapture() {
+    return false;
+  };
+}

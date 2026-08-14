@@ -9,7 +9,7 @@ versions:
 
             const client = createClient(
               "https://your-stack.palantirfoundry.com",
-              "{{{packageName}}}",
+              "ri.ontology.main.ontology.{UUID}",
               async () => "your-token"
             );
 
@@ -655,7 +655,7 @@ versions:
 
             const client = createClient(
               "https://your-stack.palantirfoundry.com",
-              "{{{packageName}}}",
+              "ri.ontology.main.ontology.{UUID}",
               async () => "your-token"
             );
 
@@ -1758,25 +1758,19 @@ versions:
       uploadMedia:
         - template: |-
             import { useOsdkClient } from "@osdk/react";
-            import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
-            import type { MediaReference } from "@osdk/api";
-            import { {{actionApiName}}, {{objectType}} } from "{{{packageName}}}";
+            import type { MediaUpload } from "@osdk/api";
+            import { {{actionApiName}} } from "{{{packageName}}}";
 
             function MediaUploader() {
               const client = useOsdkClient();
 
               const handleUpload = async (file: File) => {
-                const mediaReference: MediaReference = await client(
-                  __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-                ).createMediaReference({
-                  data: file,
-                  fileName: file.name,
-                  objectType: {{objectType}},
-                  propertyType: "{{property}}",
-                });
+                // Pass the media data straight to a media parameter on the Action. The client
+                // uploads it and links the resulting media item to the object.
+                const mediaUpload: MediaUpload = { data: file, fileName: file.name };
                 await client({{actionApiName}}).applyAction({
                   // Pass the required action parameters including the primary key
-                  {{mediaParameter}}: mediaReference
+                  {{mediaParameter}}: mediaUpload
                 });
               };
 

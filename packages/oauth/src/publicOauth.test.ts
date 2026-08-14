@@ -38,8 +38,9 @@ const hoistedMocks = vi.hoisted(() => {
 });
 
 vi.mock("./delay.js", () => ({
-  delay: vi.fn((ms: number) =>
-    new Promise<void>(resolve => setTimeout(resolve, ms / 100))
+  delay: vi.fn(
+    (ms: number) =>
+      new Promise<void>((resolve) => setTimeout(resolve, ms / 100)),
   ),
 }));
 
@@ -176,19 +177,16 @@ describe(createPublicOauthClient, () => {
     clientArgs = undefined!;
   });
 
-  async function expectRedirectToMultipass(
-    tokenPromise: Promise<string>,
-  ) {
+  async function expectRedirectToMultipass(tokenPromise: Promise<string>) {
     // we assume window.location.assign will take you away therefore we
     // also have to expect in this scenario that the thrown error happens
-    await expect(tokenPromise)
-      .rejects.toThrowError(new Error("Unable to redirect"));
+    await expect(tokenPromise).rejects.toThrowError(
+      new Error("Unable to redirect"),
+    );
 
     expect(mockWindow.location.assign).toHaveBeenCalledOnce();
 
-    const url = new URL(
-      mockWindow.location.assign.mock.calls[0][0],
-    );
+    const url = new URL(mockWindow.location.assign.mock.calls[0][0]);
     expect(url.origin).toEqual(clientArgs.foundryUrl);
     expect(url.pathname).toEqual("/multipass/api/oauth2/authorize");
     expect(Object.fromEntries(url.searchParams.entries())).toEqual(
@@ -200,8 +198,8 @@ describe(createPublicOauthClient, () => {
         code_challenge_method: "S256",
         scope: [
           "offline_access",
-          ...(clientArgs.scopes
-            ?? [
+          ...(clientArgs.scopes ??
+            [
               "api:read-data",
               "api:write-data",
               "api:use-ontologies-read",
@@ -229,9 +227,7 @@ describe(createPublicOauthClient, () => {
         // Testing with default scopes
       });
 
-      await expectRedirectToMultipass(
-        client(),
-      );
+      await expectRedirectToMultipass(client());
     });
 
     it("should not allow refresh if requested scopes are different", async () => {
@@ -245,9 +241,7 @@ describe(createPublicOauthClient, () => {
         scopes: ["api:write-data"],
       });
 
-      await expectRedirectToMultipass(
-        client(),
-      );
+      await expectRedirectToMultipass(client());
     });
 
     it("should not allow refresh if the refresh markers do not match", async () => {
@@ -263,9 +257,7 @@ describe(createPublicOauthClient, () => {
         scopes: ["api:read-data"],
       });
 
-      await expectRedirectToMultipass(
-        client(),
-      );
+      await expectRedirectToMultipass(client());
     });
 
     it("should try to refresh if refresh markers match and requested scopes are equal", async () => {
@@ -281,13 +273,11 @@ describe(createPublicOauthClient, () => {
         scopes: ["api:datasets-read", "api:admin-read"],
       });
 
-      hoistedMocks.makeTokenAndSaveRefresh.mockImplementationOnce(
-        () => ({
-          access_token: "some token",
-          expires_at: Date.now(),
-          expires_in: 10000,
-        }),
-      );
+      hoistedMocks.makeTokenAndSaveRefresh.mockImplementationOnce(() => ({
+        access_token: "some token",
+        expires_at: Date.now(),
+        expires_in: 10000,
+      }));
 
       const tokenPromise = client();
 
@@ -385,30 +375,37 @@ describe(createPublicOauthClient, () => {
         expect.anything(),
         expect.any(Function),
         undefined,
-        (clientArgs.scopes
-          ?? [
+        (
+          clientArgs.scopes ?? [
             "api:read-data",
             "api:write-data",
             "api:use-ontologies-read",
             "api:use-ontologies-write",
-          ]).sort().join(" "),
+          ]
+        )
+          .sort()
+          .join(" "),
         undefined,
       );
     });
 
-    describe.each<
-      { localStorage: LocalStorageState; sessionStorage: SessionStorageState }
-    >([
+    describe.each<{
+      localStorage: LocalStorageState;
+      sessionStorage: SessionStorageState;
+    }>([
       {
         localStorage: {
           refresh_token: "a-refresh-token",
-          requestedScopes: (clientArgs.scopes
-            ?? [
+          requestedScopes: (
+            clientArgs.scopes ?? [
               "api:read-data",
               "api:write-data",
               "api:use-ontologies-read",
               "api:use-ontologies-write",
-            ]).sort().join(" "),
+            ]
+          )
+            .sort()
+            .join(" "),
         },
         sessionStorage: {},
       },
@@ -425,26 +422,24 @@ describe(createPublicOauthClient, () => {
       const ACCESS_TOKEN = (Math.random() + 1).toString(36).substring(7);
 
       beforeEach(() => {
-        vi.mocked(commonJs.readLocal).mockImplementation(() =>
-          initialState.localStorage
+        vi.mocked(commonJs.readLocal).mockImplementation(
+          () => initialState.localStorage,
         );
 
-        vi.mocked(commonJs.readSession).mockImplementation(() =>
-          initialState.sessionStorage
+        vi.mocked(commonJs.readSession).mockImplementation(
+          () => initialState.sessionStorage,
         );
 
-        hoistedMocks.makeTokenAndSaveRefresh.mockImplementation(
-          () => ({
-            access_token: ACCESS_TOKEN,
-            expires_at: Date.now(),
-            expires_in: 10000,
-          }),
-        );
+        hoistedMocks.makeTokenAndSaveRefresh.mockImplementation(() => ({
+          access_token: ACCESS_TOKEN,
+          expires_at: Date.now(),
+          expires_in: 10000,
+        }));
       });
 
       if (
-        Object.keys(initialState.localStorage).length === 0
-        && Object.keys(initialState.sessionStorage).length === 0
+        Object.keys(initialState.localStorage).length === 0 &&
+        Object.keys(initialState.sessionStorage).length === 0
       ) {
         if (should.redirectToLoginPage) {
           it("redirects to login page", async () => {
@@ -487,9 +482,7 @@ describe(createPublicOauthClient, () => {
               return;
             }
 
-            await expectRedirectToMultipass(
-              tokenPromise,
-            );
+            await expectRedirectToMultipass(tokenPromise);
           });
         }
       }
@@ -497,9 +490,7 @@ describe(createPublicOauthClient, () => {
       if (initialState.sessionStorage.codeVerifier) {
         it("tries to auth with return results", async () => {
           await expect(client()).resolves.toEqual(ACCESS_TOKEN);
-          expect(hoistedMocks.makeTokenAndSaveRefresh).toHaveBeenCalledTimes(
-            1,
-          );
+          expect(hoistedMocks.makeTokenAndSaveRefresh).toHaveBeenCalledTimes(1);
           expect(hoistedMocks.makeTokenAndSaveRefresh).toHaveBeenCalledWith(
             undefined, // this is only because we didn't mock out the internals
             "signIn",
@@ -518,9 +509,7 @@ describe(createPublicOauthClient, () => {
         it("refreshes", async () => {
           await expect(client()).resolves.toEqual(ACCESS_TOKEN);
 
-          expect(hoistedMocks.makeTokenAndSaveRefresh).toHaveBeenCalledTimes(
-            1,
-          );
+          expect(hoistedMocks.makeTokenAndSaveRefresh).toHaveBeenCalledTimes(1);
           expect(hoistedMocks.makeTokenAndSaveRefresh).toHaveBeenCalledWith(
             undefined, // this is only because we didn't mock out the internals
             "refresh",

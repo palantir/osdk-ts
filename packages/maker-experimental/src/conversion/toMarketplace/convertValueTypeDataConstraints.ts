@@ -19,6 +19,7 @@ import type {
   PropertyTypeDataConstraintsWrapper,
   ValueTypeDataConstraint,
 } from "@osdk/client.unstable";
+
 import { dataConstraintToPropertyTypeDataConstraint } from "./dataConstraintToPropertyTypeDataConstraint.js";
 
 export function convertValueTypeDataConstraints(

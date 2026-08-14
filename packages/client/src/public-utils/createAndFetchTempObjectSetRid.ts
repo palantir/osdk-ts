@@ -20,6 +20,7 @@ import type {
   ObjectSet,
 } from "@osdk/api";
 import * as OntologyObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet";
+
 import { additionalContext, type Client } from "../Client.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 
@@ -34,7 +35,8 @@ export async function createAndFetchTempObjectSetRid<
   Q extends ObjectOrInterfaceDefinition,
 >(
   client: Client,
-  objectSet: unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q>
+  objectSet: unknown extends CompileTimeMetadata<Q>["objectSet"]
+    ? ObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"],
 ): Promise<string> {
   const response = await OntologyObjectSets.createTemporary(

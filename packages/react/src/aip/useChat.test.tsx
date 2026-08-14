@@ -17,6 +17,7 @@
 import type { ChatTransport, UIMessage, UIMessageChunk } from "@osdk/aip-core";
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { useChat } from "./useChat.js";
 
 interface MockTransport {
@@ -47,33 +48,36 @@ function createMockTransport(): MockTransport {
     abortSignal: AbortSignal | undefined;
   }> = [];
 
-  const sendMessages = vi.fn(async (args: {
-    trigger: "submit-message" | "regenerate-message";
-    chatId: string;
-    messageId: string;
-    messages: Array<UIMessage>;
-    abortSignal: AbortSignal | undefined;
-  }) => {
-    calls.push({
-      trigger: args.trigger,
-      chatId: args.chatId,
-      messageId: args.messageId,
-      messages: args.messages,
-      abortSignal: args.abortSignal,
-    });
-    return new ReadableStream<UIMessageChunk>({
-      start(c) {
-        controller = c;
-      },
-    });
-  });
+  const sendMessages = vi.fn(
+    // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
+    async (args: {
+      trigger: "submit-message" | "regenerate-message";
+      chatId: string;
+      messageId: string;
+      messages: Array<UIMessage>;
+      abortSignal: AbortSignal | undefined;
+    }) => {
+      calls.push({
+        trigger: args.trigger,
+        chatId: args.chatId,
+        messageId: args.messageId,
+        messages: args.messages,
+        abortSignal: args.abortSignal,
+      });
+      return new ReadableStream<UIMessageChunk>({
+        start(c) {
+          controller = c;
+        },
+      });
+    },
+  );
+  // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
   const reconnect = vi.fn(async () => null);
 
   const transport: ChatTransport<UIMessage> = {
     sendMessages: sendMessages as ChatTransport<UIMessage>["sendMessages"],
-    reconnectToStream: reconnect as ChatTransport<
-      UIMessage
-    >["reconnectToStream"],
+    reconnectToStream:
+      reconnect as ChatTransport<UIMessage>["reconnectToStream"],
   };
 
   return {
@@ -104,7 +108,7 @@ describe("useChat", () => {
     it("starts ready with no messages by default", () => {
       const m = createMockTransport();
       const { result } = renderHook(() =>
-        useChat({ transport: m.transport, experimentalThrottle: 0 })
+        useChat({ transport: m.transport, experimentalThrottle: 0 }),
       );
       expect(result.current.messages).toEqual([]);
       expect(result.current.status).toBe("ready");
@@ -123,7 +127,7 @@ describe("useChat", () => {
           transport: m.transport,
           messages: seed,
           experimentalThrottle: 0,
-        })
+        }),
       );
       expect(result.current.messages).toEqual(seed);
     });
@@ -135,7 +139,7 @@ describe("useChat", () => {
           transport: m.transport,
           id: "fixed-id",
           experimentalThrottle: 0,
-        })
+        }),
       );
       expect(result.current.id).toBe("fixed-id");
     });
@@ -150,7 +154,7 @@ describe("useChat", () => {
           transport: m.transport,
           experimentalThrottle: 0,
           onFinish,
-        })
+        }),
       );
 
       await act(async () => {
@@ -216,7 +220,7 @@ describe("useChat", () => {
     it("supports text-delta concatenation with no preceding text-start", async () => {
       const m = createMockTransport();
       const { result } = renderHook(() =>
-        useChat({ transport: m.transport, experimentalThrottle: 0 })
+        useChat({ transport: m.transport, experimentalThrottle: 0 }),
       );
 
       await act(async () => {
@@ -251,7 +255,7 @@ describe("useChat", () => {
           transport: m.transport,
           experimentalThrottle: 0,
           onError,
-        })
+        }),
       );
 
       await act(async () => {
@@ -278,7 +282,7 @@ describe("useChat", () => {
           transport: m.transport,
           experimentalThrottle: 0,
           onError,
-        })
+        }),
       );
 
       await act(async () => {
@@ -303,7 +307,7 @@ describe("useChat", () => {
     it("aborts an in-flight stream and resets to ready", async () => {
       const m = createMockTransport();
       const { result } = renderHook(() =>
-        useChat({ transport: m.transport, experimentalThrottle: 0 })
+        useChat({ transport: m.transport, experimentalThrottle: 0 }),
       );
 
       await act(async () => {
@@ -358,7 +362,7 @@ describe("useChat", () => {
           transport: m.transport,
           messages: seed,
           experimentalThrottle: 0,
-        })
+        }),
       );
 
       await act(async () => {
@@ -396,7 +400,7 @@ describe("useChat", () => {
     it("is a no-op when there's no assistant message to drop", async () => {
       const m = createMockTransport();
       const { result } = renderHook(() =>
-        useChat({ transport: m.transport, experimentalThrottle: 0 })
+        useChat({ transport: m.transport, experimentalThrottle: 0 }),
       );
 
       await act(async () => {
@@ -412,7 +416,7 @@ describe("useChat", () => {
     it("resets to ready and clears the error", async () => {
       const m = createMockTransport();
       const { result } = renderHook(() =>
-        useChat({ transport: m.transport, experimentalThrottle: 0 })
+        useChat({ transport: m.transport, experimentalThrottle: 0 }),
       );
 
       await act(async () => {
@@ -438,13 +442,15 @@ describe("useChat", () => {
     it("replaces messages with an array", () => {
       const m = createMockTransport();
       const { result } = renderHook(() =>
-        useChat({ transport: m.transport, experimentalThrottle: 0 })
+        useChat({ transport: m.transport, experimentalThrottle: 0 }),
       );
-      const next: Array<UIMessage> = [{
-        id: "x",
-        role: "user",
-        parts: [{ type: "text", text: "set" }],
-      }];
+      const next: Array<UIMessage> = [
+        {
+          id: "x",
+          role: "user",
+          parts: [{ type: "text", text: "set" }],
+        },
+      ];
 
       act(() => result.current.setMessages(next));
       expect(result.current.messages).toEqual(next);
@@ -455,13 +461,15 @@ describe("useChat", () => {
       const { result } = renderHook(() =>
         useChat({
           transport: m.transport,
-          messages: [{
-            id: "u-1",
-            role: "user",
-            parts: [{ type: "text", text: "a" }],
-          }],
+          messages: [
+            {
+              id: "u-1",
+              role: "user",
+              parts: [{ type: "text", text: "a" }],
+            },
+          ],
           experimentalThrottle: 0,
-        })
+        }),
       );
       act(() =>
         result.current.setMessages((prev) => [
@@ -471,7 +479,7 @@ describe("useChat", () => {
             role: "user",
             parts: [{ type: "text", text: "b" }],
           },
-        ])
+        ]),
       );
       expect(result.current.messages).toHaveLength(2);
     });
@@ -479,7 +487,7 @@ describe("useChat", () => {
     it("is a no-op while a stream is in flight", async () => {
       const m = createMockTransport();
       const { result } = renderHook(() =>
-        useChat({ transport: m.transport, experimentalThrottle: 0 })
+        useChat({ transport: m.transport, experimentalThrottle: 0 }),
       );
 
       await act(async () => {
@@ -525,7 +533,7 @@ describe("useChat", () => {
     it("is a no-op when reconnectToStream returns null", async () => {
       const m = createMockTransport();
       const { result } = renderHook(() =>
-        useChat({ transport: m.transport, experimentalThrottle: 0 })
+        useChat({ transport: m.transport, experimentalThrottle: 0 }),
       );
 
       await act(async () => {
@@ -539,8 +547,9 @@ describe("useChat", () => {
 
   describe("validation", () => {
     it("throws when neither model nor transport is provided", () => {
-      expect(() => renderHook(() => useChat({ experimentalThrottle: 0 })))
-        .toThrow(/`model` is required/);
+      expect(() =>
+        renderHook(() => useChat({ experimentalThrottle: 0 })),
+      ).toThrow(/`model` is required/u);
     });
   });
 });

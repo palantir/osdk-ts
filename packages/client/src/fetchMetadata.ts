@@ -24,31 +24,34 @@ import type {
   QueryDefinition,
   QueryMetadata,
 } from "@osdk/api";
+
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { InterfaceDefinitions } from "./ontology/OntologyProvider.js";
 
 /** @internal */
 export const fetchMetadataInternal = async <
-  Q extends (
+  Q extends
     | ObjectTypeDefinition
     | InterfaceDefinition
     | ActionDefinition<any>
-    | QueryDefinition<any>
-  ),
+    | QueryDefinition<any>,
 >(
   client: MinimalClient,
   definition: Q,
 ): Promise<
-  Q extends ObjectTypeDefinition ? ObjectMetadata
-    : Q extends InterfaceDefinition ? InterfaceMetadata
-    : Q extends ActionDefinition<any> ? ActionMetadata
-    : Q extends QueryDefinition<any> ? QueryMetadata
-    : never
+  Q extends ObjectTypeDefinition
+    ? ObjectMetadata
+    : Q extends InterfaceDefinition
+      ? InterfaceMetadata
+      : Q extends ActionDefinition<any>
+        ? ActionMetadata
+        : Q extends QueryDefinition<any>
+          ? QueryMetadata
+          : never
 > => {
   if (definition.type === "object") {
     const { [InterfaceDefinitions]: interfaceDefs, ...objectTypeDef } =
-      await client.ontologyProvider
-        .getObjectDefinition(definition.apiName);
+      await client.ontologyProvider.getObjectDefinition(definition.apiName);
     return objectTypeDef as any;
   } else if (definition.type === "interface") {
     return client.ontologyProvider.getInterfaceDefinition(

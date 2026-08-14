@@ -37,9 +37,10 @@ export type AugmentedEventParameterValueMap<
 > = {
   [P in keyof EventParameterValueMap<C, K>]: P extends keyof C["parameters"]
     ? C["parameters"][P] extends { type: "objectSet"; allowedType: infer T }
-      ? T extends AllowedObjectSetParameterType ? ObjectSet<T>
+      ? T extends AllowedObjectSetParameterType
+        ? ObjectSet<T>
+        : EventParameterValueMap<C, K>[P]
       : EventParameterValueMap<C, K>[P]
-    : EventParameterValueMap<C, K>[P]
     : EventParameterValueMap<C, K>[P];
 };
 
@@ -50,9 +51,9 @@ type AugmentedEmitEventIdMap<C extends WidgetConfig<C["parameters"]>> = {
   };
 };
 
-interface AugmentedWidgetEmitEvent<C extends WidgetConfig<C["parameters"]>>
-  extends Omit<WidgetMessage.EmitEvent<C>, "payload">
-{
+interface AugmentedWidgetEmitEvent<
+  C extends WidgetConfig<C["parameters"]>,
+> extends Omit<WidgetMessage.EmitEvent<C>, "payload"> {
   payload: AugmentedEmitEventIdMap<C>[EventId<C>];
 }
 
@@ -104,8 +105,8 @@ export type ExtendedParameterValueMap<C extends WidgetConfig<C["parameters"]>> =
       ? C["parameters"][K] extends { type: "objectSet"; allowedType: infer T }
         ? T extends AllowedObjectSetParameterType
           ? ParameterValueMap<C>[K] & { objectSet: ObjectSet<T> }
+          : ParameterValueMap<C>[K]
         : ParameterValueMap<C>[K]
-      : ParameterValueMap<C>[K]
       : never;
   };
 
@@ -116,12 +117,12 @@ export type ExtendedAsyncParameterValueMap<
     ? C["parameters"][K] extends { type: "objectSet"; allowedType: infer T }
       ? T extends AllowedObjectSetParameterType
         ? AsyncParameterValueMap<C>[K] & {
-          value: AsyncValue<
-            ParameterValueMap<C>[K] & { objectSet: ObjectSet<T> }
-          >;
-        }
+            value: AsyncValue<
+              ParameterValueMap<C>[K] & { objectSet: ObjectSet<T> }
+            >;
+          }
+        : AsyncParameterValueMap<C>[K]
       : AsyncParameterValueMap<C>[K]
-    : AsyncParameterValueMap<C>[K]
     : never;
 };
 

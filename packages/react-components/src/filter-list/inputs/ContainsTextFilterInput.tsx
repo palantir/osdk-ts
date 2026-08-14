@@ -15,6 +15,7 @@
  */
 
 import React, { memo, useCallback, useMemo } from "react";
+
 import { ContainsTextInput } from "../base/inputs/ContainsTextInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 
@@ -31,9 +32,7 @@ function ContainsTextFilterInputInner({
 }: ContainsTextFilterInputProps): React.ReactElement {
   const value = useMemo(
     () =>
-      filterState?.type === "CONTAINS_TEXT"
-        ? filterState.value
-        : undefined,
+      filterState?.type === "CONTAINS_TEXT" ? filterState.value : undefined,
     [filterState],
   );
 

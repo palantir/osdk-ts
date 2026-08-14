@@ -31,9 +31,10 @@ export interface Canonicalizer<TInput, TCanonical> {
  * Base class for canonicalizers that provides common caching infrastructure.
  * Subclasses control how structural deduplication is performed.
  */
-export abstract class CachingCanonicalizer<TInput extends object, TCanonical>
-  implements Canonicalizer<TInput, TCanonical>
-{
+export abstract class CachingCanonicalizer<
+  TInput extends object,
+  TCanonical,
+> implements Canonicalizer<TInput, TCanonical> {
   /**
    * Cache for input object identity.
    */

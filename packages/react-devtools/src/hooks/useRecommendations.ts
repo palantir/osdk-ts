@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { Recommendation } from "../utils/PerformanceRecommendationEngine.js";
 
@@ -89,7 +90,7 @@ class RecommendationsStore {
         merged.set(rec.id, rec);
       }
       this.state = {
-        recommendations: Array.from(merged.values()),
+        recommendations: [...merged.values()],
         isLoading: false,
         error: null,
       };
@@ -137,24 +138,15 @@ export function useRecommendations(
     [store],
   );
 
-  const getSnapshot = React.useCallback(
-    () => store.getSnapshot(),
-    [store],
-  );
+  const getSnapshot = React.useCallback(() => store.getSnapshot(), [store]);
 
   const state = React.useSyncExternalStore(subscribe, getSnapshot);
 
-  const refresh = React.useCallback(
-    () => {
-      void store.refresh();
-    },
-    [store],
-  );
+  const refresh = React.useCallback(() => {
+    void store.refresh();
+  }, [store]);
 
-  const dismiss = React.useCallback(
-    (id: string) => store.dismiss(id),
-    [store],
-  );
+  const dismiss = React.useCallback((id: string) => store.dismiss(id), [store]);
 
   return {
     recommendations: state.recommendations,

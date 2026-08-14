@@ -19,6 +19,7 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
+
 import type { Canonical } from "./Canonical.js";
 import { CachingCanonicalizer } from "./Canonicalizer.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
@@ -49,7 +50,7 @@ export class IntersectCanonicalizer extends CachingCanonicalizer<
     intersectWith: IntersectWithInput,
   ): Canonical<Array<Canonical<SimpleWhereClause>>> {
     const canonicalClauses = intersectWith.map((item) =>
-      this.whereCanonicalizer.canonicalize(item.where ?? {})
+      this.whereCanonicalizer.canonicalize(item.where ?? {}),
     );
 
     const structuralKey = canonicalClauses

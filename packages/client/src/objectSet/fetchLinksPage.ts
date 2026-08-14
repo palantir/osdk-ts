@@ -26,6 +26,7 @@ import type {
   OntologyObjectV2,
 } from "@osdk/foundry.ontologies";
 import * as OntologyObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 /** @internal */
@@ -37,14 +38,15 @@ export const fetchLinksPage = async <
   objectType: Q,
   objectSet: ObjectSet,
   links: LINK_TYPES[],
+  pageToken: string | undefined,
 ): Promise<FetchLinksPageResult<Q, LINK_TYPES>> => {
   if (objectType.type === "interface") {
     throw new Error("Interface object sets are not supported yet.");
   }
 
-  void client.ontologyProvider.getObjectDefinition(objectType.apiName).catch(
-    () => {},
-  );
+  void client.ontologyProvider
+    .getObjectDefinition(objectType.apiName)
+    .catch(() => {});
 
   const result = await OntologyObjectSets.loadLinks(
     client,
@@ -52,6 +54,7 @@ export const fetchLinksPage = async <
     {
       objectSet,
       links,
+      pageToken,
     },
     { branch: client.branch, preview: true },
   );
@@ -73,7 +76,7 @@ export const remapLinksPage = <
         source: remapObjectLocator(sourceObject!),
         target: remapObjectLocator(targetObject!),
         linkType: linkType! as LINK_TYPES,
-      }))
+      })),
     ),
   };
 };

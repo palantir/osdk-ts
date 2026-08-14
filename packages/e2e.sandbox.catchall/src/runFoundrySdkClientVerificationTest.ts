@@ -16,6 +16,7 @@
 
 import { PalantirApiError } from "@osdk/client";
 import { Datasets } from "@osdk/foundry";
+
 import { platformClient as client } from "./client.js";
 import { logger } from "./logger.js";
 
@@ -29,15 +30,10 @@ export async function runFoundrySdkClientVerificationTest(
   const dataset = await Datasets.Datasets.get(client, datasetRid);
   logger.info({ dataset }, `Loaded dataset ${datasetRid}`);
 
-  const branchesResult = await Datasets.Branches.list(
-    client,
-    datasetRid,
-    { pageSize },
-  );
-  logger.info(
-    { branchesResult },
-    `Loaded branches for dataset ${datasetRid}`,
-  );
+  const branchesResult = await Datasets.Branches.list(client, datasetRid, {
+    pageSize,
+  });
+  logger.info({ branchesResult }, `Loaded branches for dataset ${datasetRid}`);
 
   if (branchesResult.nextPageToken) {
     throw new Error(
@@ -45,13 +41,13 @@ export async function runFoundrySdkClientVerificationTest(
     );
   }
 
-  if (!branchesResult.data.find(b => b.name === "master")) {
+  if (!branchesResult.data.find((b) => b.name === "master")) {
     throw new Error(
       `You can not run this test as dataset ${datasetRid} does not have a master branch.`,
     );
   }
 
-  if (branchesResult.data.find(b => b.name === branchToCreate)) {
+  if (branchesResult.data.find((b) => b.name === branchToCreate)) {
     throw new Error(
       `Expected that dataset ${datasetRid} would not have a branch called "${branchToCreate}". Aborting`,
     );
@@ -78,19 +74,13 @@ export async function runFoundrySdkClientVerificationTest(
     }
   }
 
-  const testBranch = await Datasets.Branches.create(
-    client,
-    datasetRid,
-    { name: branchToCreate },
-  );
+  const testBranch = await Datasets.Branches.create(client, datasetRid, {
+    name: branchToCreate,
+  });
   logger.info({ testBranch }, "Created test branch");
 
   // Returns Promise<void> and should not error
-  await Datasets.Branches.deleteBranch(
-    client,
-    datasetRid,
-    testBranch.name,
-  );
+  await Datasets.Branches.deleteBranch(client, datasetRid, testBranch.name);
 
   logger.info(
     testBranch,

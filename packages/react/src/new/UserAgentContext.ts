@@ -18,7 +18,5 @@ import React from "react";
 
 export type AddUserAgent = (agent: string) => () => void;
 
-export const UserAgentContext: React.Context<AddUserAgent> = React
-  .createContext<AddUserAgent>(
-    () => () => {},
-  );
+export const UserAgentContext: React.Context<AddUserAgent> =
+  React.createContext<AddUserAgent>(() => () => {});

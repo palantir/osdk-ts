@@ -15,12 +15,11 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { MockRequest, MockResponse } from "./MockManager.js";
 import { MockManager } from "./MockManager.js";
 
-function createObjectMock(
-  overrides: Partial<MockResponse> = {},
-): MockResponse {
+function createObjectMock(overrides: Partial<MockResponse> = {}): MockResponse {
   return {
     id: overrides.id ?? "mock-1",
     type: "object",
@@ -181,7 +180,7 @@ describe("MockManager", () => {
   it("findMock matches by regex primaryKey", () => {
     manager.registerMock(
       createObjectMock({
-        matcher: { objectType: "Employee", primaryKey: /^pk-\d+$/ },
+        matcher: { objectType: "Employee", primaryKey: /^pk-\d+$/u },
       }),
     );
 

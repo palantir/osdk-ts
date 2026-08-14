@@ -16,7 +16,7 @@
 
 export type { Experiment, ExperimentFns } from "../experimental/Experiment.js";
 
-export { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "../experimental/createMediaReference.js";
+export { __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction } from "../experimental/executeStreamingFunction.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid } from "../experimental/fetchOneByRid.js";
 export {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
@@ -28,9 +28,14 @@ export {
   type LinkSubscription,
 } from "../experimental/subscribeToLinks.js";
 export type {
+  AnnotateGeometry,
+  Annotation,
   AudioEncoding,
   AudioOperation,
   AudioToTextOperation,
+  BoundingBox,
+  Color,
+  ContrastType,
   DicomToImageOperation,
   DocumentTextExtractionConfig,
   DocumentToDocumentOperation,
@@ -39,6 +44,8 @@ export type {
   EmailToAttachmentOperation,
   EmailToTextOperation,
   ImageOperation,
+  ImagePixelCoordinate,
+  ImageRegionPolygon,
   ImageSpec,
   ImageToDocumentOperation,
   ImageToEmbeddingOperation,
@@ -59,8 +66,9 @@ export type {
   VideoToTextOperation,
   VlmPreprocessingConfig,
 } from "../experimental/MediaTransformation.js";
+export { __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet } from "../experimental/subscribeToNoTypeObjectSet.js";
 export {
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
+  transformAndWait,
   type TransformOptions,
 } from "../experimental/transformAndWait.js";
 export {

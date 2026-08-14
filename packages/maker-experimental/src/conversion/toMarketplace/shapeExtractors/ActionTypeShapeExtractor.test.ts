@@ -20,6 +20,7 @@ import type {
   KnownMarketplaceIdentifiers,
 } from "@osdk/client.unstable";
 import { describe, expect, it } from "vitest";
+
 import type {
   BiMap,
   OntologyRidGenerator,
@@ -35,6 +36,9 @@ class MockBiMap<K, V> implements BiMap<K, V> {
   constructor(entries: Array<[K, V]>) {
     this.forward = new Map(entries);
     this.backward = new Map(entries.map(([k, v]) => [v, k]));
+  }
+  includes(key: K): boolean {
+    return this.forward.has(key);
   }
   asMap(): Map<K, V> {
     return this.forward;
@@ -111,6 +115,8 @@ function createMockRidGenerator(
       apiName: string,
       interfaceTypeApiName: string,
     ) => `interface-prop.${interfaceTypeApiName}.${apiName}` as any,
+    generateIptRidFromSptRid: (sptRid: string) =>
+      sptRid.replace("shared-property-type", "interface-property-type") as any,
     generateStructFieldRid: (propertyApiName: string, apiName: string) =>
       `struct-field.${propertyApiName}.${apiName}` as any,
     generateDatasetLocator: (
@@ -140,7 +146,7 @@ function createMockRidGenerator(
     },
     getObjectTypeIds: () => new MockBiMap([]) as any,
     generateObjectTypeId: (objectTypeApiName: string) =>
-      objectTypeApiName.replace(/\./g, "-").toLowerCase(),
+      objectTypeApiName.replace(/\./gu, "-").toLowerCase(),
     generateDatasourceRid: (datasourceName: string) =>
       `ri.ontology.main.datasource.${datasourceName}`,
     generateValidationRuleRid: (actionTypeApiName: string, index: number) =>
@@ -149,6 +155,19 @@ function createMockRidGenerator(
       `ri.ontology-metadata.temp.section.${sectionId}`,
     generatePropertySecurityGroupRid: (groupName: string) =>
       `ri.ontology-metadata.temp.property-security-group.${groupName}`,
+    generateRidForInterfaceActionTypeConstraint: (
+      apiName: string,
+      interfaceTypeApiName: string,
+    ) =>
+      `interface-action-type-constraint.${interfaceTypeApiName}.${apiName}` as any,
+    generateRidForInterfaceParameterConstraint: (
+      constraintApiName: string,
+      interfaceTypeApiName: string,
+      paramApiName: string,
+    ) =>
+      `interface-parameter-constraint.${interfaceTypeApiName}.${constraintApiName}.${paramApiName}` as any,
+    getInterfaceActionTypeConstraintRids: () => new MockBiMap([]) as any,
+    getInterfaceParameterConstraintRids: () => new MockBiMap([]) as any,
     ...overrides,
   };
 }
@@ -242,17 +261,21 @@ describe("ActionTypeShapeExtractor", () => {
         functions: {},
         geotimeSeriesSyncs: {},
         groupIds: {},
+        interfaceActionTypeConstraints: {},
         interfaceLinkTypes: {},
+        interfaceParameterConstraints: {},
         interfacePropertyTypes: {},
         interfaceTypes: {},
         linkTypeIds: {},
         linkTypes: {},
         markings: {},
+        objectPropertyTypeIdsToRids: {},
         objectTypeIds: {},
         objectTypes: {},
         propertyTypeIds: {},
         propertyTypes: {},
         sharedPropertyTypes: {},
+        structFieldRidsToApiNames: {},
         timeSeriesSyncs: {},
         valueTypes: {},
         webhooks: {},
@@ -268,10 +291,9 @@ describe("ActionTypeShapeExtractor", () => {
 
       // Should have output shapes for action type and parameters
       expect(result.outputShapes.size).toBe(3); // action + 2 parameters
-      expect(result.outputShapes.has("action-type-createTask" as ReadableId))
-        .toBe(
-          true,
-        );
+      expect(
+        result.outputShapes.has("action-type-createTask" as ReadableId),
+      ).toBe(true);
 
       const actionShape = result.outputShapes.get(
         "action-type-createTask" as ReadableId,
@@ -353,17 +375,21 @@ describe("ActionTypeShapeExtractor", () => {
         functions: {},
         geotimeSeriesSyncs: {},
         groupIds: {},
+        interfaceActionTypeConstraints: {},
         interfaceLinkTypes: {},
+        interfaceParameterConstraints: {},
         interfacePropertyTypes: {},
         interfaceTypes: {},
         linkTypeIds: {},
         linkTypes: {},
         markings: {},
+        objectPropertyTypeIdsToRids: {},
         objectTypeIds: {},
         objectTypes: {},
         propertyTypeIds: {},
         propertyTypes: {},
         sharedPropertyTypes: {},
+        structFieldRidsToApiNames: {},
         timeSeriesSyncs: {},
         valueTypes: {},
         webhooks: {},
@@ -432,17 +458,21 @@ describe("ActionTypeShapeExtractor", () => {
         functions: {},
         geotimeSeriesSyncs: {},
         groupIds: {},
+        interfaceActionTypeConstraints: {},
         interfaceLinkTypes: {},
+        interfaceParameterConstraints: {},
         interfacePropertyTypes: {},
         interfaceTypes: {},
         linkTypeIds: {},
         linkTypes: {},
         markings: {},
+        objectPropertyTypeIdsToRids: {},
         objectTypeIds: {},
         objectTypes: {},
         propertyTypeIds: {},
         propertyTypes: {},
         sharedPropertyTypes: {},
+        structFieldRidsToApiNames: {},
         timeSeriesSyncs: {},
         valueTypes: {},
         webhooks: {},
@@ -547,17 +577,21 @@ describe("ActionTypeShapeExtractor", () => {
         functions: {},
         geotimeSeriesSyncs: {},
         groupIds: {},
+        interfaceActionTypeConstraints: {},
         interfaceLinkTypes: {},
+        interfaceParameterConstraints: {},
         interfacePropertyTypes: {},
         interfaceTypes: {},
         linkTypeIds: {},
         linkTypes: {},
         markings: {},
+        objectPropertyTypeIdsToRids: {},
         objectTypeIds: {},
         objectTypes: {},
         propertyTypeIds: {},
         propertyTypes: {},
         sharedPropertyTypes: {},
+        structFieldRidsToApiNames: {},
         timeSeriesSyncs: {},
         valueTypes: {},
         webhooks: {},
@@ -573,10 +607,9 @@ describe("ActionTypeShapeExtractor", () => {
 
       // Should have action + 3 parameters
       expect(result.outputShapes.size).toBe(4);
-      expect(result.outputShapes.has("action-type-complexAction" as ReadableId))
-        .toBe(
-          true,
-        );
+      expect(
+        result.outputShapes.has("action-type-complexAction" as ReadableId),
+      ).toBe(true);
       expect(
         result.outputShapes.has(
           "action-complexAction-parameter-param1" as ReadableId,
@@ -665,17 +698,21 @@ describe("ActionTypeShapeExtractor", () => {
         functions: {},
         geotimeSeriesSyncs: {},
         groupIds: {},
+        interfaceActionTypeConstraints: {},
         interfaceLinkTypes: {},
+        interfaceParameterConstraints: {},
         interfacePropertyTypes: {},
         interfaceTypes: {},
         linkTypeIds: {},
         linkTypes: {},
         markings: {},
+        objectPropertyTypeIdsToRids: {},
         objectTypeIds: {},
         objectTypes: {},
         propertyTypeIds: {},
         propertyTypes: {},
         sharedPropertyTypes: {},
+        structFieldRidsToApiNames: {},
         timeSeriesSyncs: {},
         valueTypes: {},
         webhooks: {},

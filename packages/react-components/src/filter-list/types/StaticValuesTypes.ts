@@ -15,7 +15,10 @@
  */
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type { ReactNode } from "react";
+
 import type {
+  FilterDefinitionControls,
   FilterState,
   FilterStateByComponentType,
 } from "../FilterListItemApi.js";
@@ -38,14 +41,8 @@ export type StaticValuesComponentType =
 export interface StaticValuesFilterDefinition<
   Q extends ObjectTypeDefinition,
   C extends StaticValuesComponentType = StaticValuesComponentType,
-> {
+> extends FilterDefinitionControls {
   type: "STATIC_VALUES";
-
-  /**
-   * Optional unique identifier for stable keying across filter reorders.
-   * If provided, takes precedence over `key` for state keying.
-   */
-  id?: string;
 
   /**
    * Key used for state management and auto WHERE clause generation.
@@ -65,9 +62,16 @@ export interface StaticValuesFilterDefinition<
   filterComponent: C;
 
   /**
-   * The current state of the filter
+   * Seeds the filter's state on mount, FilterList owns the state from then on
+   *
+   * @default undefined (filter starts empty)
    */
-  filterState: FilterStateByComponentType[C];
+  defaultFilterState?: FilterStateByComponentType[C];
+
+  /**
+   * @deprecated Rename to `defaultFilterState`.
+   */
+  filterState?: FilterStateByComponentType[C];
 
   /**
    * The static list of values to display in the filter component.
@@ -78,8 +82,11 @@ export interface StaticValuesFilterDefinition<
   /**
    * Custom display function for filter values.
    * Replaces the default string display in dropdown items, chips, and listogram rows.
+   * When the function returns a string, that string is also used for search matching
+   * within filter dropdowns. When it returns a non-string `ReactNode`, search falls
+   * back to the raw value.
    */
-  renderValue?: (value: string) => string;
+  renderValue?: (value: string) => ReactNode;
 
   /**
    * Show aggregation counts next to filter option values.
@@ -113,11 +120,4 @@ export interface StaticValuesFilterDefinition<
    * from the `key` and filter state.
    */
   toWhereClause?: (state: FilterState) => WhereClause<Q> | undefined;
-
-  /**
-   * Controls whether this filter is rendered.
-   * When false, the filter is hidden but its state is preserved.
-   * @default true
-   */
-  isVisible?: boolean;
 }

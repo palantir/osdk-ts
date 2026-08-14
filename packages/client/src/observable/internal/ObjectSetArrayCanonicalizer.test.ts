@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { ObjectSetArrayCanonicalizer } from "./ObjectSetArrayCanonicalizer.js";
 
 describe(ObjectSetArrayCanonicalizer, () => {

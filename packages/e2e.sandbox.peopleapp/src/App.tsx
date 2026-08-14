@@ -1,4 +1,5 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+
 import "./App.css";
 import { Button } from "./components/Button.js";
 import { H1 } from "./components/headers.js";
@@ -7,17 +8,18 @@ function PeopleApp() {
   const navigate = useNavigate();
   const location = useLocation();
   const path = location.pathname;
-  const activeTab = path === "/" || path === "/employees"
-    ? "employees"
-    : path === "/employees/filter-list"
-    ? "filter-list"
-    : path === "/form"
-    ? "form"
-    : path === "/chat"
-    ? "chat"
-    : path === "/chat-ai-sdk"
-    ? "chat-ai-sdk"
-    : "offices";
+  const activeTab =
+    path === "/" || path === "/employees"
+      ? "employees"
+      : path === "/employees/filter-list"
+        ? "filter-list"
+        : path === "/employees/action-form-filter-list-repro"
+          ? "action-form-filter-list-repro"
+          : path === "/form"
+            ? "form"
+            : path === "/aip-agent-chat"
+              ? "aip-agent-chat"
+              : "offices";
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
@@ -40,6 +42,13 @@ function PeopleApp() {
         </Button>
         <Button
           variant="tab"
+          active={activeTab === "action-form-filter-list-repro"}
+          onClick={() => navigate("/employees/action-form-filter-list-repro")}
+        >
+          ActionForm Repro
+        </Button>
+        <Button
+          variant="tab"
           active={activeTab === "offices"}
           onClick={() => navigate("/offices")}
         >
@@ -54,17 +63,10 @@ function PeopleApp() {
         </Button>
         <Button
           variant="tab"
-          active={activeTab === "chat"}
-          onClick={() => navigate("/chat")}
+          active={activeTab === "aip-agent-chat"}
+          onClick={() => navigate("/aip-agent-chat")}
         >
-          Chat
-        </Button>
-        <Button
-          variant="tab"
-          active={activeTab === "chat-ai-sdk"}
-          onClick={() => navigate("/chat-ai-sdk")}
-        >
-          Chat (AI SDK)
+          AipAgentChat
         </Button>
       </div>
 

@@ -16,30 +16,40 @@
 
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import React, { memo } from "react";
+
+import {
+  DatePicker,
+  type DateRange,
+  DateRangePicker,
+  EMPTY_RANGE,
+} from "../../shared/calendar/index.js";
 import { FormField } from "../FormField.js";
 import {
-  type DateRange,
-  EMPTY_RANGE,
   type PortalContainer,
   type RendererFieldDefinition,
 } from "../FormFieldApi.js";
 import { CustomField } from "./CustomField.js";
-import { DateRangeInputField } from "./DateRangeInputField.js";
-import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
 import { FilePickerField } from "./FilePickerField.js";
 import { NumberInputField } from "./NumberInputField.js";
 import { ObjectSelectField } from "./ObjectSelectField.js";
 import { ObjectSetField } from "./ObjectSetField.js";
 import { RadioButtonsField } from "./RadioButtonsField.js";
+import { SwitchField } from "./SwitchField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
+
+const UNSUPPORTED_FIELD_MESSAGE =
+  "Unsupported field type. Use a CUSTOM field instead";
 
 export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
   value: unknown;
   onFieldValueChange: (value: unknown) => void;
-  onBlur: (e: React.FocusEvent<HTMLDivElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void;
+  /** Field-level blur for fields that own their touched state (e.g. dropdowns). */
+  onFieldBlur?: () => void;
+  isEdited: boolean;
   error: string | undefined;
   portalContainer?: PortalContainer;
 }
@@ -50,6 +60,8 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
     value,
     onFieldValueChange,
     onBlur,
+    onFieldBlur,
+    isEdited,
     error,
     portalContainer,
   }: FormFieldRendererProps): React.ReactElement {
@@ -63,6 +75,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
         fieldKey={fieldDefinition.fieldKey}
         helperText={helperText}
         helperTextPlacement={helperTextPlacement}
+        isEdited={isEdited}
         error={error}
         onBlur={onBlur}
       >
@@ -72,6 +85,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
           onFieldValueChange,
           error,
           portalContainer,
+          onFieldBlur,
         )}
       </FormField>
     );
@@ -84,16 +98,19 @@ function renderFieldComponent(
   onChange: (value: unknown) => void,
   error: string | undefined,
   portalContainer: PortalContainer | undefined,
+  onFieldBlur: (() => void) | undefined,
 ): React.ReactElement {
+  const disabled = fieldDefinition.disabled === true;
   switch (fieldDefinition.fieldComponent) {
     case "DATE_RANGE_INPUT":
       return (
-        <DateRangeInputField
+        <DateRangePicker
           id={fieldDefinition.fieldKey}
           value={coerceToDateRange(value)}
           onChange={onChange}
           placeholderStart={fieldDefinition.placeholder}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
           portalContainer={resolvePortalContainer(
             fieldDefinition.fieldComponentProps,
             portalContainer,
@@ -109,6 +126,17 @@ function renderFieldComponent(
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
+        />
+      );
+    case "UNSUPPORTED":
+      return (
+        <TextInputField
+          {...fieldDefinition.fieldComponentProps}
+          id={fieldDefinition.fieldKey}
+          value={UNSUPPORTED_FIELD_MESSAGE}
+          error={error}
+          disabled={true}
         />
       );
     case "TEXT_AREA":
@@ -120,6 +148,7 @@ function renderFieldComponent(
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
         />
       );
     case "DROPDOWN": {
@@ -131,16 +160,18 @@ function renderFieldComponent(
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
           portalContainer={resolvePortalContainer(
             fieldDefinition.fieldComponentProps,
             portalContainer,
           )}
+          onBlur={onFieldBlur}
         />
       );
     }
     case "DATETIME_PICKER":
       return (
-        <DatetimePickerField
+        <DatePicker
           id={fieldDefinition.fieldKey}
           placeholder={fieldDefinition.placeholder}
           // TODO: Use coerceFieldValue
@@ -148,6 +179,7 @@ function renderFieldComponent(
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
           portalContainer={resolvePortalContainer(
             fieldDefinition.fieldComponentProps,
             portalContainer,
@@ -162,6 +194,19 @@ function renderFieldComponent(
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
+        />
+      );
+    case "SWITCH":
+      return (
+        <SwitchField
+          id={fieldDefinition.fieldKey}
+          label={fieldDefinition.label}
+          value={!!value}
+          onChange={onChange}
+          error={error}
+          {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
         />
       );
     case "CUSTOM":
@@ -172,6 +217,7 @@ function renderFieldComponent(
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
         />
       );
     case "NUMBER_INPUT":
@@ -184,6 +230,7 @@ function renderFieldComponent(
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
         />
       );
     case "FILE_PICKER":
@@ -194,6 +241,7 @@ function renderFieldComponent(
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
         />
       );
     case "OBJECT_SELECT":
@@ -205,6 +253,7 @@ function renderFieldComponent(
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
           portalContainer={resolvePortalContainer(
             fieldDefinition.fieldComponentProps,
             portalContainer,
@@ -216,6 +265,7 @@ function renderFieldComponent(
         <ObjectSetField
           id={fieldDefinition.fieldKey}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
         />
       );
     default:

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyRid as _api_OntologyRid } from "../../../api/__components.js";
 import type {
   ModifyOntologyBranchRequest as _approvals_api_ModifyOntologyBranchRequest,

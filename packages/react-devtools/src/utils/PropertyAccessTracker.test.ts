@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { PropertyAccessTracker } from "./PropertyAccessTracker.js";
 
 describe("PropertyAccessTracker", () => {

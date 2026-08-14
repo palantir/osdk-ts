@@ -21,10 +21,15 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import React, { memo, useCallback, useMemo } from "react";
+
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { ListogramInput } from "../base/inputs/ListogramInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
+import { useFilterPropertyAggregation } from "../hooks/useFilterPropertyAggregation.js";
+import {
+  EMPTY_LINKED_FILTERS,
+  type LinkedFilter,
+} from "../types/LinkedFilterTypes.js";
 import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
@@ -34,13 +39,15 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  linkedFilters?: ReadonlyArray<LinkedFilter<Q>>;
+  showFilteredOutValues?: boolean;
   colorMap?: Record<string, string>;
   displayMode?: "full" | "count" | "minimal";
   showCount?: boolean;
   maxVisibleItems?: number;
   searchQuery?: string;
   excludeRowOpen?: boolean;
-  renderValue?: (value: string) => string;
+  renderValue?: (value: string) => React.ReactNode;
 }
 
 function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -50,6 +57,8 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  linkedFilters = EMPTY_LINKED_FILTERS,
+  showFilteredOutValues,
   colorMap,
   displayMode,
   showCount,
@@ -86,19 +95,16 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     [onFilterStateChanged, isExcluding],
   );
 
-  const sortBy = displayMode === "minimal"
-    ? "value" as const
-    : "count" as const;
-  const aggregationOptions = useMemo(
-    () => ({ where: whereClause, sortBy }),
-    [whereClause, sortBy],
-  );
+  const sortBy =
+    displayMode === "minimal" ? ("value" as const) : ("count" as const);
 
-  const { data, maxCount, isLoading, error } = usePropertyAggregation(
+  const { data, maxCount, isLoading, error } = useFilterPropertyAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
     objectSet,
-    aggregationOptions,
+    whereClause,
+    linkedFilters,
+    { sortBy, selectedValues, showFilteredOutValues },
   );
 
   return (

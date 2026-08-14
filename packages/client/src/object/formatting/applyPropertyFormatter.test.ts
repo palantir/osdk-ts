@@ -15,6 +15,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { InterfaceDefinitions } from "../../ontology/OntologyProvider.js";
@@ -640,8 +641,8 @@ describe("getFormattedValue", () => {
   describe("Date and time formatting", () => {
     it("formats date without timezone", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "createdDate",
           EN_US,
         );
@@ -651,8 +652,8 @@ describe("getFormattedValue", () => {
 
     it("formats date in different locale", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "createdDate",
           DE_DE,
         );
@@ -662,8 +663,8 @@ describe("getFormattedValue", () => {
 
     it("formats timestamp with static timezone (America/New_York)", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "createdDateTime",
           EN_US,
         );
@@ -674,8 +675,8 @@ describe("getFormattedValue", () => {
 
     it("formats timestamp short with static timezone (America/Los_Angeles)", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "createdDateTimeShort",
           EN_US,
         );
@@ -686,8 +687,8 @@ describe("getFormattedValue", () => {
 
     it("formats time only with UTC timezone", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "createdTime",
           EN_US,
         );
@@ -698,8 +699,8 @@ describe("getFormattedValue", () => {
 
     it("formats year and month only", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "yearMonth",
           EN_US,
         );
@@ -709,8 +710,8 @@ describe("getFormattedValue", () => {
 
     it("formats ISO instant", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "isoInstant",
           EN_US,
         );
@@ -720,8 +721,8 @@ describe("getFormattedValue", () => {
 
     it("formats timestamp with user timezone (no override)", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "timestampWithUserTimezone",
           EN_US,
         );
@@ -734,8 +735,8 @@ describe("getFormattedValue", () => {
 
     it("formats timestamp with user timezone override", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "timestampWithUserTimezone",
           EN_US_TOKYO,
         );
@@ -746,8 +747,8 @@ describe("getFormattedValue", () => {
 
     it("formats timestamp with dynamic timezone from property", () => {
       const obj = getObject({ timezoneId: "Europe/London" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "timestampWithDynamicTimezone",
           EN_US,
         );
@@ -758,8 +759,8 @@ describe("getFormattedValue", () => {
 
     it("formats timestamp with dynamic timezone from property (different timezone)", () => {
       const obj = getObject({ timezoneId: "Australia/Sydney" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "timestampWithDynamicTimezone",
           EN_US,
         );
@@ -770,8 +771,8 @@ describe("getFormattedValue", () => {
 
     it("formats timestamp when dynamic timezone property is null", () => {
       const obj = getObject({ timezoneId: undefined });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "timestampWithDynamicTimezone",
           EN_US,
         );
@@ -784,8 +785,8 @@ describe("getFormattedValue", () => {
 
     it("handles invalid date strings gracefully", () => {
       const obj = getObject({ createdDate: "invalid-date" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "createdDate",
           EN_US,
         );
@@ -806,8 +807,8 @@ describe("getFormattedValue", () => {
 
     it("formats time 45 seconds ago", () => {
       const obj = getObject({ relativeDateTime: "2025-01-15T11:59:15.000Z" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "relativeDateTime",
           EN_US,
         );
@@ -817,8 +818,8 @@ describe("getFormattedValue", () => {
 
     it("formats time 30 minutes from now", () => {
       const obj = getObject({ relativeDateTime: "2025-01-15T12:30:00.000Z" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "relativeDateTime",
           EN_US,
         );
@@ -828,8 +829,8 @@ describe("getFormattedValue", () => {
 
     it("formats time 3 hours ago", () => {
       const obj = getObject({ relativeDateTime: "2025-01-15T09:00:00.000Z" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "relativeDateTime",
           EN_US,
         );
@@ -839,8 +840,8 @@ describe("getFormattedValue", () => {
 
     it("formats now", () => {
       const obj = getObject({ relativeDateTime: "2025-01-15T12:00:00.000Z" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "relativeDateTime",
           EN_US,
         );
@@ -850,8 +851,8 @@ describe("getFormattedValue", () => {
 
     it("falls back to absolute date formatting for times more than 1 day ago", () => {
       const obj = getObject({ relativeDateTime: "2025-01-10T08:00:00.000Z" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "relativeDateTime",
           EN_US_TOKYO,
         );

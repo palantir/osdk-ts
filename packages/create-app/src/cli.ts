@@ -36,6 +36,7 @@ interface CliArgs {
   project?: string;
   overwrite?: boolean;
   beta?: boolean;
+  unstableFeatures?: boolean;
   template?: string;
   sdkVersion?: string;
   foundryUrl?: string;
@@ -73,6 +74,11 @@ export async function cli(args: string[] = process.argv): Promise<void> {
             type: "boolean",
             describe:
               "Use templates compatible with the Beta version of the SDK",
+          })
+          .option("unstableFeatures", {
+            type: "boolean",
+            describe:
+              "Enable unstable/experimental features in the generated app.",
           })
           .option("template", {
             type: "string",
@@ -135,8 +141,8 @@ export async function cli(args: string[] = process.argv): Promise<void> {
           })
           .check((argv) => {
             if (
-              argv.skipOsdk
-              && (argv.sdkVersion == null || argv.sdkVersion.startsWith("1."))
+              argv.skipOsdk &&
+              (argv.sdkVersion == null || argv.sdkVersion.startsWith("1."))
             ) {
               throw new Error(
                 "The --skipOsdk flag is only allowed when sdkVersion is 2.x. Please set --sdkVersion to 2.x or remove the --skipOsdk flag.",
@@ -159,9 +165,10 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   const application: string = await promptApplicationRid(parsed);
   const clientId: string = await promptClientId(parsed);
   const { osdkPackage, ontology, osdkRegistryUrl } =
-    await promptOntologyAndOsdkPackageAndOsdkRegistryUrl(
-      { ...parsed, sdkVersion },
-    );
+    await promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
+      ...parsed,
+      sdkVersion,
+    });
   const corsProxy: boolean = await promptCorsProxy(parsed);
   const scopes: string[] | undefined = await promptScopes(parsed);
 
@@ -179,5 +186,6 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     corsProxy,
     scopes,
     ontology,
+    unstableFeatures: parsed.unstableFeatures ?? false,
   });
 }

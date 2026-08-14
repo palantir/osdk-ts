@@ -1,0 +1,34 @@
+.container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: var(--osdk-document-viewer-bg);
+  border: var(--osdk-document-viewer-border);
+  border-radius: var(--osdk-surface-border-radius);
+  overflow: hidden;
+}
+
+.unsupportedContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--osdk-surface-spacing);
+  width: 100%;
+  height: 100%;
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-medium);
+  color: var(--osdk-typography-color-muted);
+}
+
+.unsupportedIcon {
+  flex-shrink: 0;
+}
+
+.loadingContainer {
+  composes: loadingContainer from "../shared/LoadingError.module.css";
+  width: 100%;
+}
+
+.spinnerIcon {
+  composes: spinnerIcon from "../shared/LoadingError.module.css";
+}

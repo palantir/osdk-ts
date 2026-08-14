@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import dedent from "dedent";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import dedent from "dedent";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -27,14 +28,14 @@ export const TEMPLATES = [
     label: "OSDK React",
     envPrefix: "VITE_",
     buildDirectory: "./dist",
-    requiresOsdk: true,
+    supportsOsdk: true,
   },
   {
     id: "minimal-react",
     label: "Minimal React",
     envPrefix: "VITE_",
     buildDirectory: "./dist",
-    requiresOsdk: false,
+    supportsOsdk: false,
   },
 ];
 
@@ -53,32 +54,30 @@ fs.writeFileSync(
   import { getPackageFiles } from "../getPackageFiles.js";
 
   export const TEMPLATES: readonly Template[] = [
-  ${
-    TEMPLATES.map((template) => {
-      const v1Name = findPackageName([
-        `@osdk/create-widget.template.${template.id}.v1`,
-        `@osdk/create-widget.template.${template.id}`,
-      ]);
-      const v2Name = findPackageName([
-        `@osdk/create-widget.template.${template.id}.v2`,
-        `@osdk/create-widget.template.${template.id}.beta`,
-        `@osdk/create-widget.template.${template.id}`,
-      ]);
-      return dedent`
+  ${TEMPLATES.map((template) => {
+    const v1Name = findPackageName([
+      `@osdk/create-widget.template.${template.id}.v1`,
+      `@osdk/create-widget.template.${template.id}`,
+    ]);
+    const v2Name = findPackageName([
+      `@osdk/create-widget.template.${template.id}.v2`,
+      `@osdk/create-widget.template.${template.id}.beta`,
+      `@osdk/create-widget.template.${template.id}`,
+    ]);
+    return dedent`
           // ${template.label}
           {
             id: "template-widget-${template.id}",
             label: "${template.label}",
             envPrefix: "${template.envPrefix}",
             buildDirectory: "${template.buildDirectory}",
-            requiresOsdk: ${template.requiresOsdk},
+            supportsOsdk: ${template.supportsOsdk},
             files: {
               ${v1Name ? `"1.x": getPackageFiles(import("${v1Name}")),` : ""}
               ${v2Name ? `"2.x": getPackageFiles(import("${v2Name}")),` : ""}
             },
           },`;
-    }).join("\n")
-  }
+  }).join("\n")}
   ];
   `,
 );

@@ -16,18 +16,20 @@
 
 import { Error as ErrorIcon } from "@blueprintjs/icons";
 import classNames from "classnames";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { useAsyncAction } from "../shared/hooks/useAsyncAction.js";
 import type { BaseFormProps, FormContentItem } from "./ActionFormApi.js";
-import styles from "./BaseForm.module.css";
 import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
 import { FormSection } from "./FormSection.js";
+
+import styles from "./BaseForm.module.css";
 
 export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   formTitle,
@@ -41,8 +43,8 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   className,
   submitButtonText = "Submit",
   submitButtonVariant = "primary",
-  portalContainer,
 }: BaseFormProps): React.ReactElement {
+  const portalContainerRef = useRef<HTMLFormElement>(null);
   const isControlled = controlledFormState != null;
 
   const allFieldDefinitions = useMemo(
@@ -76,32 +78,29 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     execute: executeSubmit,
     clearError,
   } = useAsyncAction(onSubmit);
-  const submissionErrorMessage = submissionError != null
-    ? submissionError instanceof Error
-      ? submissionError.message
-      // TODO: provide better error message
-      : "Submission failed"
-    : undefined;
+  const submissionErrorMessage =
+    submissionError != null
+      ? submissionError instanceof Error
+        ? submissionError.message
+        : // TODO: provide better error message
+          "Submission failed"
+      : undefined;
 
-  const handleFormSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      setHasAttemptedSubmit(true);
+  const submitForm = useCallback(async () => {
+    setHasAttemptedSubmit(true);
 
-      const isValid = await trigger();
-      if (!isValid) {
-        return;
-      }
+    const isValid = await trigger();
+    if (!isValid) {
+      return;
+    }
 
-      // In controlled mode, always submit the controlled state, not RHF's
-      // internal state. Between a user keystroke and the parent re-rendering,
-      // RHF's store may hold the user-typed value rather than the parent's
-      // value. Using controlledFormState directly preserves the existing
-      // guarantee that controlled mode submits the parent's state.
-      await executeSubmit(controlledFormState ?? getValues());
-    },
-    [trigger, executeSubmit, controlledFormState, getValues],
-  );
+    // In controlled mode, always submit the controlled state, not RHF's
+    // internal state. Between a user keystroke and the parent re-rendering,
+    // RHF's store may hold the user-typed value rather than the parent's
+    // value. Using controlledFormState directly preserves the existing
+    // guarantee that controlled mode submits the parent's state.
+    await executeSubmit(controlledFormState ?? getValues());
+  }, [trigger, executeSubmit, controlledFormState, getValues]);
 
   const handleFieldChange = useCallback(
     (fieldKey: string, value: unknown) => {
@@ -110,8 +109,6 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     },
     [clearError, onFieldValueChange],
   );
-
-  const isFormPending = isPending || isSubmitting;
 
   const labelByFieldKey = useMemo(
     () => new Map(allFieldDefinitions.map((d) => [d.fieldKey, d.label])),
@@ -127,11 +124,18 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   const buttonErrorMessage = areErrorsPresent
     ? "Some fields are invalid"
     : submissionErrorMessage;
+  const isFormPending = isPending || isSubmitting;
+  const isSubmitButtonDisabled =
+    isSubmitDisabled || (hasAttemptedSubmit && areErrorsPresent);
 
   return (
     <form
+      ref={portalContainerRef}
       className={classNames(styles.osdkForm, className)}
-      onSubmit={handleFormSubmit}
+      // Workshop widgets can run in iframes without `allow-forms`, where
+      // native form submission is blocked. Keep the form landmark, but do not
+      // wire any form-level submit handlers; the submit button invokes our
+      // JavaScript submit path directly.
     >
       {formTitle != null && <FormHeader title={formTitle} />}
       {isLoading && allFieldDefinitions.length === 0 && (
@@ -152,7 +156,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
                 fieldDef={item.definition}
                 control={control}
                 onExternalChange={handleFieldChange}
-                portalContainer={portalContainer}
+                portalContainer={portalContainerRef}
               />
             );
           }
@@ -172,7 +176,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
                   fieldDef={fieldDef}
                   control={control}
                   onExternalChange={handleFieldChange}
-                  portalContainer={portalContainer}
+                  portalContainer={portalContainerRef}
                 />
               ))}
             </FormSection>
@@ -184,11 +188,11 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
         <div className={styles.osdkFormSubmitButton}>
           <SubmitButton
             isPending={isFormPending}
-            isSubmitDisabled={isSubmitDisabled
-              || (hasAttemptedSubmit && areErrorsPresent)}
+            isSubmitDisabled={isSubmitButtonDisabled}
             errorMessage={buttonErrorMessage}
             buttonText={submitButtonText}
             buttonVariant={submitButtonVariant}
+            onClick={submitForm}
           />
         </div>
       </div>
@@ -221,15 +225,12 @@ function flattenFieldDefinitions(
 const SKELETON_FIELD_COUNT = 3;
 
 // Mimics the label + input layout of real form fields.
-const FORM_SKELETON = Array.from(
-  { length: SKELETON_FIELD_COUNT },
-  (_, i) => (
-    <div key={i} className={styles.osdkFormSkeletonField}>
-      <SkeletonBar className={styles.osdkFormSkeletonLabel} />
-      <SkeletonBar className={styles.osdkFormSkeletonInput} />
-    </div>
-  ),
-);
+const FORM_SKELETON = Array.from({ length: SKELETON_FIELD_COUNT }, (_, i) => (
+  <div key={i} className={styles.osdkFormSkeletonField}>
+    <SkeletonBar className={styles.osdkFormSkeletonLabel} />
+    <SkeletonBar className={styles.osdkFormSkeletonInput} />
+  </div>
+));
 
 function buildDefaultValues(
   fieldDefinitions: ReadonlyArray<RendererFieldDefinition>,
@@ -255,6 +256,7 @@ interface SubmitButtonProps {
   errorMessage: string | undefined;
   buttonText: string;
   buttonVariant: "primary" | "secondary";
+  onClick: () => void;
 }
 
 const SubmitButton = memo(function SubmitButtonFn({
@@ -263,13 +265,15 @@ const SubmitButton = memo(function SubmitButtonFn({
   errorMessage,
   buttonText,
   buttonVariant,
+  onClick,
 }: SubmitButtonProps): React.ReactElement {
   const buttonLabel = isPending ? "Submitting\u2026" : buttonText;
   const button = (
     <ActionButton
-      type="submit"
+      type="button"
       variant={buttonVariant}
       disabled={isSubmitDisabled || isPending}
+      onClick={onClick}
     >
       {buttonLabel}
     </ActionButton>

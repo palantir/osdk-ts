@@ -17,14 +17,16 @@
 import type { ObservableClient } from "@osdk/client/observable";
 import { registerDevTools } from "@osdk/react/devtools-registry";
 import React from "react";
+
 import { SafeMonitoringPanel } from "./components/MonitoringPanel.js";
 import { DevToolsContext } from "./DevToolsContext.js";
 import { safelyInstallDevToolsHook } from "./fiber/DevtoolsHook.js";
 import { MonitorStore } from "./store/MonitorStore.js";
 
-const isDev = typeof process !== "undefined"
-  ? process.env?.NODE_ENV !== "production"
-  : true;
+const isDev =
+  typeof process !== "undefined"
+    ? process.env?.NODE_ENV !== "production"
+    : true;
 
 if (isDev) {
   safelyInstallDevToolsHook();

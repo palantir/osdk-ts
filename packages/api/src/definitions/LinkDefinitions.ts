@@ -30,42 +30,43 @@ import type {
 import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
 
 /** The $link container to get from one object type to its linked objects */
-export type OsdkObjectLinksObject<
-  O extends ObjectOrInterfaceDefinition,
-> = ObjectTypeLinkKeysFrom2<O> extends never ? never : {
-  readonly [L in ObjectTypeLinkKeysFrom2<O>]: OsdkObjectLinksEntry<O, L>;
-};
+export type OsdkObjectLinksObject<O extends ObjectOrInterfaceDefinition> =
+  ObjectTypeLinkKeysFrom2<O> extends never
+    ? never
+    : {
+        readonly [L in ObjectTypeLinkKeysFrom2<O>]: OsdkObjectLinksEntry<O, L>;
+      };
 
 export type OsdkObjectLinksEntry<
   Q extends ObjectOrInterfaceDefinition,
   L extends ObjectTypeLinkKeysFrom2<Q>,
-> = CompileTimeMetadata<Q>["links"][L] extends
-  ObjectMetadata.Link<infer T, infer M> ? (
-    M extends false ? SingleLinkAccessor<T> : ObjectSet<T>
-  )
-  : CompileTimeMetadata<Q>["links"][L] extends
-    InterfaceMetadata.Link<infer T, infer M> ? (
-      M extends false ? SingleLinkAccessor<T> : ObjectSet<T>
-    )
-  : never;
+> =
+  CompileTimeMetadata<Q>["links"][L] extends ObjectMetadata.Link<
+    infer T,
+    infer M
+  >
+    ? M extends false
+      ? SingleLinkAccessor<T>
+      : ObjectSet<T>
+    : CompileTimeMetadata<Q>["links"][L] extends InterfaceMetadata.Link<
+          infer T,
+          infer M
+        >
+      ? M extends false
+        ? SingleLinkAccessor<T>
+        : ObjectSet<T>
+      : never;
 
 export type DefaultToFalse<B extends boolean | undefined> = false extends B
   ? false
-  : undefined extends B ? false
-  : true;
+  : undefined extends B
+    ? false
+    : true;
 
-export interface SingleLinkAccessor<
-  T extends ObjectOrInterfaceDefinition,
-> {
+export interface SingleLinkAccessor<T extends ObjectOrInterfaceDefinition> {
   /** Load the linked object
    */
-  fetchOne: <
-    const A extends SelectArg<
-      T,
-      PropertyKeys<T>,
-      boolean
-    >,
-  >(
+  fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(
     options?: A,
   ) => Promise<
     A extends FetchPageArgs<T, infer L, infer R, any, infer S>
@@ -75,13 +76,7 @@ export interface SingleLinkAccessor<
 
   /** Load the linked object, with a result wrapper
    */
-  fetchOneWithErrors: <
-    const A extends SelectArg<
-      T,
-      PropertyKeys<T>,
-      boolean
-    >,
-  >(
+  fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(
     options?: A,
   ) => Promise<
     Result<

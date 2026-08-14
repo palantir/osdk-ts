@@ -24,10 +24,10 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-
 import { getWireObjectSet } from "@osdk/client";
 import type { ObserveObjectSetArgs } from "@osdk/client/observable";
 import React from "react";
+
 import { extractPayloadError } from "./hookUtils.js";
 import {
   devToolsMetadata,
@@ -231,14 +231,18 @@ export function useObjectSet<
 ): UseObjectSetResult<Q, RDPs> {
   const { observableClient } = React.useContext(OsdkContext);
 
-  const { enabled: enabledOption = true, streamUpdates, ...otherOptions } =
-    options;
+  const {
+    enabled: enabledOption = true,
+    streamUpdates,
+    ...otherOptions
+  } = options;
   const enabled = enabledOption && baseObjectSet != null;
 
   // Track object type to detect when we switch to a different object type
-  const objectTypeKey = enabled && baseObjectSet
-    ? baseObjectSet.$objectSetInternals.def.apiName
-    : OBJECT_TYPE_PLACEHOLDER;
+  const objectTypeKey =
+    enabled && baseObjectSet
+      ? baseObjectSet.$objectSetInternals.def.apiName
+      : OBJECT_TYPE_PLACEHOLDER;
 
   const previousObjectTypeRef = React.useRef<string>(objectTypeKey);
   const previousCompletedPayloadRef = React.useRef<
@@ -273,73 +277,70 @@ export function useObjectSet<
   const baseObjectSetRef = React.useRef(baseObjectSet);
   baseObjectSetRef.current = baseObjectSet;
 
-  const { subscribe, getSnapShot } = React.useMemo(
-    () => {
-      if (!enabled) {
-        return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
-          () => ({ unsubscribe: () => {} }),
-          devToolsMetadata({
-            hookType: "useObjectSet",
-            objectType: objectTypeKey,
-          }),
-        );
-      }
-
-      const initialValue = objectTypeChanged
-        ? undefined
-        : previousCompletedPayloadRef.current;
-
+  const { subscribe, getSnapShot } = React.useMemo(() => {
+    if (!enabled) {
       return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
-        (observer) => {
-          if (!baseObjectSetRef.current) {
-            return { unsubscribe: () => {} };
-          }
-          const subscription = observableClient.observeObjectSet(
-            baseObjectSetRef.current as ObjectSet<Q>,
-            {
-              where: canonOptions.where,
-              withProperties: canonOptions.withProperties,
-              union: canonOptions.union,
-              intersect: canonOptions.intersect,
-              subtract: canonOptions.subtract,
-              pivotTo: otherOptions.pivotTo,
-              pageSize: otherOptions.pageSize,
-              orderBy: canonOptions.orderBy,
-              dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
-              autoFetchMore: otherOptions.autoFetchMore,
-              streamUpdates,
-              select: canonOptions.$select,
-            },
-            observer,
-          );
-          return subscription;
-        },
+        () => ({ unsubscribe: () => {} }),
         devToolsMetadata({
           hookType: "useObjectSet",
           objectType: objectTypeKey,
         }),
-        initialValue,
       );
-    },
-    [
-      enabled,
-      observableClient,
-      objectSetKey,
-      canonOptions.where,
-      canonOptions.withProperties,
-      canonOptions.orderBy,
-      canonOptions.union,
-      canonOptions.intersect,
-      canonOptions.subtract,
-      canonOptions.$select,
-      otherOptions.pivotTo,
-      otherOptions.pageSize,
-      otherOptions.autoFetchMore,
-      otherOptions.dedupeIntervalMs,
-      streamUpdates,
-      objectTypeKey,
-    ],
-  );
+    }
+
+    const initialValue = objectTypeChanged
+      ? undefined
+      : previousCompletedPayloadRef.current;
+
+    return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
+      (observer) => {
+        if (!baseObjectSetRef.current) {
+          return { unsubscribe: () => {} };
+        }
+        const subscription = observableClient.observeObjectSet(
+          baseObjectSetRef.current as ObjectSet<Q>,
+          {
+            where: canonOptions.where,
+            withProperties: canonOptions.withProperties,
+            union: canonOptions.union,
+            intersect: canonOptions.intersect,
+            subtract: canonOptions.subtract,
+            pivotTo: otherOptions.pivotTo,
+            pageSize: otherOptions.pageSize,
+            orderBy: canonOptions.orderBy,
+            dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
+            autoFetchMore: otherOptions.autoFetchMore,
+            streamUpdates,
+            select: canonOptions.$select,
+          },
+          observer,
+        );
+        return subscription;
+      },
+      devToolsMetadata({
+        hookType: "useObjectSet",
+        objectType: objectTypeKey,
+      }),
+      initialValue,
+    );
+  }, [
+    enabled,
+    observableClient,
+    objectSetKey,
+    canonOptions.where,
+    canonOptions.withProperties,
+    canonOptions.orderBy,
+    canonOptions.union,
+    canonOptions.intersect,
+    canonOptions.subtract,
+    canonOptions.$select,
+    otherOptions.pivotTo,
+    otherOptions.pageSize,
+    otherOptions.autoFetchMore,
+    otherOptions.dedupeIntervalMs,
+    streamUpdates,
+    objectTypeKey,
+  ]);
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
   if (payload && isPayloadCompleted(payload)) {
@@ -365,9 +366,7 @@ export function useObjectSet<
         PropertyKeys<Q>,
         RDPs
       >[],
-      isLoading: enabled
-        ? !isPayloadCompleted(payload)
-        : false,
+      isLoading: enabled ? !isPayloadCompleted(payload) : false,
       error: extractPayloadError(lastLoaded, "Failed to load object set"),
       isOptimistic: payload?.isOptimistic ?? false,
       fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
@@ -382,9 +381,7 @@ export function useObjectSet<
 function isPayloadCompleted<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
->(
-  payload: Snapshot<ObserveObjectSetArgs<Q, RDPs>>,
-): boolean {
+>(payload: Snapshot<ObserveObjectSetArgs<Q, RDPs>>): boolean {
   if (payload != null && "error" in payload) {
     return true;
   }

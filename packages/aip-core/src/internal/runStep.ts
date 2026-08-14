@@ -133,18 +133,17 @@ function parseResponse<TOOLS extends ToolSet>(
   const text = message.content ?? "";
   const reasoningText = message.reasoning ?? message.reasoning_content;
 
-  const toolCalls: Array<ToolCall<keyof TOOLS & string>> = (message.tool_calls
-    ?? [])
-    .map((c) => ({
-      type: "tool-call",
-      toolCallId: c.id,
-      toolName: c.function.name as keyof TOOLS & string,
-      input: parseToolArguments(c.function.arguments, warnings),
-    }));
+  const toolCalls: Array<ToolCall<keyof TOOLS & string>> = (
+    message.tool_calls ?? []
+  ).map((c) => ({
+    type: "tool-call",
+    toolCallId: c.id,
+    toolName: c.function.name as keyof TOOLS & string,
+    input: parseToolArguments(c.function.arguments, warnings),
+  }));
 
-  const reasoning: Array<ReasoningOutput> = reasoningText != null
-    ? [{ type: "reasoning", text: reasoningText }]
-    : [];
+  const reasoning: Array<ReasoningOutput> =
+    reasoningText != null ? [{ type: "reasoning", text: reasoningText }] : [];
 
   const content: Array<ContentPart<TOOLS>> = [];
   if (text.length > 0) {
@@ -157,16 +156,17 @@ function parseResponse<TOOLS extends ToolSet>(
     content.push({ ...tc, type: "tool-call" });
   }
 
-  const usage: LanguageModelUsage = res.usage != null
-    ? mapUsage(res.usage)
-    : EMPTY_USAGE;
+  const usage: LanguageModelUsage =
+    res.usage != null ? mapUsage(res.usage) : EMPTY_USAGE;
 
   const finishReason = mapFinishReason(choice.finish_reason);
 
-  const responseMessages: Array<AssistantModelMessage> = [{
-    role: "assistant",
-    content: buildAssistantContent(text, toolCalls),
-  }];
+  const responseMessages: Array<AssistantModelMessage> = [
+    {
+      role: "assistant",
+      content: buildAssistantContent(text, toolCalls),
+    },
+  ];
 
   return {
     content,

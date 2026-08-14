@@ -18,6 +18,7 @@ import { BarInterface } from "@osdk/client.test.ontology";
 import * as SharedClientContext from "@osdk/shared.client.impl";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { metadataCacheClient } from "./__unstable/ConjureSupport.js";
 import type { Client } from "./Client.js";
 import { createClient, createClientWithTransaction } from "./createClient.js";
@@ -52,7 +53,7 @@ describe(createClient, () => {
     client = createClient(
       "https://mock.com",
       ontologyRid,
-      async () => "Token",
+      () => "Token",
       undefined,
       fetchFunction,
     );
@@ -62,10 +63,9 @@ describe(createClient, () => {
 
   describe("user agent passing", () => {
     function getUserAgentPartsFromMockedFetch() {
-      const userAgent = (fetchFunction.mock.calls[0][1]?.headers as Headers)
-        .get(
-          "Fetch-User-Agent",
-        );
+      const userAgent = (
+        fetchFunction.mock.calls[0][1]?.headers as Headers
+      ).get("Fetch-User-Agent");
       const parts = userAgent?.split(" ") ?? [];
       return parts;
     }
@@ -76,9 +76,7 @@ describe(createClient, () => {
 
       const parts = getUserAgentPartsFromMockedFetch();
       expect(parts).toEqual([
-        ...BarInterface.osdkMetadata!
-          .extraUserAgent
-          .split(" "),
+        ...BarInterface.osdkMetadata!.extraUserAgent.split(" "),
         USER_AGENT,
       ]);
     });
@@ -90,7 +88,7 @@ describe(createClient, () => {
       const clientWithHeaders = createClient(
         "https://mock.com",
         ontologyRid,
-        async () => "Token",
+        () => "Token",
         { headers: { "Fetch-User-Agent": "my-app/1.0" } },
         customFetch,
       );
@@ -103,9 +101,7 @@ describe(createClient, () => {
       );
       const parts = userAgent?.split(" ") ?? [];
       expect(parts).toEqual([
-        ...BarInterface.osdkMetadata!
-          .extraUserAgent
-          .split(" "),
+        ...BarInterface.osdkMetadata!.extraUserAgent.split(" "),
         USER_AGENT,
         "my-app/1.0",
       ]);
@@ -113,12 +109,12 @@ describe(createClient, () => {
   });
 
   describe("check url formatting", () => {
-    it("urls are correctly formatted", async () => {
+    it("urls are correctly formatted", () => {
       const spy = vi.spyOn(SharedClientContext, "createSharedClientContext");
       const client = createClient(
         "https://mock.com",
         ontologyRid,
-        async () => "Token",
+        () => "Token",
         undefined,
         fetchFunction,
       );
@@ -127,7 +123,7 @@ describe(createClient, () => {
       createClient(
         "https://mock1.com/",
         ontologyRid,
-        async () => "Token",
+        () => "Token",
         undefined,
         fetchFunction,
       );
@@ -136,7 +132,7 @@ describe(createClient, () => {
       createClient(
         "https://mock2.com/stuff/first/foo",
         ontologyRid,
-        async () => "Token",
+        () => "Token",
         undefined,
         fetchFunction,
       );
@@ -147,7 +143,7 @@ describe(createClient, () => {
       createClient(
         "https://mock3.com/stuff/first/foo/",
         ontologyRid,
-        async () => "Token",
+        () => "Token",
         undefined,
         fetchFunction,
       );
@@ -160,16 +156,14 @@ describe(createClient, () => {
         "makeConjureContext",
       );
 
-      void metadataCacheClient(
-        {
-          baseUrl: "https://mock4.com/",
-          ontologyProvider: { getObjectDefinition: async () => ({}) },
-        } as any,
-      );
+      void metadataCacheClient({
+        baseUrl: "https://mock4.com/",
+        ontologyProvider: { getObjectDefinition: () => ({}) },
+      } as any);
 
       expect(
-        conjureContextSpy.mock.results[0].value.baseUrl
-          + conjureContextSpy.mock.results[0].value.servicePath,
+        conjureContextSpy.mock.results[0].value.baseUrl +
+          conjureContextSpy.mock.results[0].value.servicePath,
       ).toBe("https://mock4.com/ontology-metadata/api");
     });
   });
@@ -182,7 +176,7 @@ describe(createClient, () => {
         async () => {},
         "https://mock.com",
         ontologyRid,
-        async () => "Token",
+        () => "Token",
         {},
         fetchFunction,
       );

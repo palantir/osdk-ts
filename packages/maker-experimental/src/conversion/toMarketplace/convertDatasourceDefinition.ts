@@ -21,6 +21,7 @@ import type {
   PropertySecurityGroups,
   PropertyTypeMappingInfo,
   RetentionPolicy,
+  SecurityGroupComparisonValue,
   SecurityGroupGranularCondition,
   SecurityGroupGranularSecurityDefinition,
 } from "@osdk/client.unstable";
@@ -32,6 +33,7 @@ import type {
   SecurityConditionDefinition,
 } from "@osdk/maker";
 import invariant from "tiny-invariant";
+
 import {
   type OntologyRidGenerator,
   ReadableIdGenerator,
@@ -42,13 +44,13 @@ export function convertDatasourceDefinition(
   properties: ObjectPropertyType[],
   ridGenerator: OntologyRidGenerator,
 ): ObjectTypeDatasourceDefinition {
-  const baseDatasource = objectType.datasources?.find(ds =>
-    ["dataset", "stream", "restrictedView"].includes(ds.type)
+  const baseDatasource = objectType.datasources?.find((ds) =>
+    ["dataset", "stream", "restrictedView"].includes(ds.type),
   );
 
   // Helper to get column names from properties
   const getColumnNames = (props: ObjectPropertyType[]): Set<string> => {
-    return new Set(props.map(p => p.apiName));
+    return new Set(props.map((p) => p.apiName));
   };
 
   switch (baseDatasource?.type) {
@@ -67,13 +69,8 @@ export function convertDatasourceDefinition(
       );
 
       const propertyMapping = Object.fromEntries(
-        properties.map((
-          prop,
-        ) => [
-          ridGenerator.generatePropertyRid(
-            prop.apiName,
-            objectType.apiName,
-          ),
+        properties.map((prop) => [
+          ridGenerator.generatePropertyRid(prop.apiName, objectType.apiName),
           prop.apiName,
         ]),
       );
@@ -139,11 +136,12 @@ export function convertDatasourceDefinition(
       );
 
       if (
-        objectType.properties?.some(prop =>
-          typeof prop.type === "object" && prop.type.type === "marking"
-        )
-        || baseDatasource?.objectSecurityPolicy
-        || baseDatasource?.propertySecurityGroups
+        objectType.properties?.some(
+          (prop) =>
+            typeof prop.type === "object" && prop.type.type === "marking",
+        ) ||
+        baseDatasource?.objectSecurityPolicy ||
+        baseDatasource?.propertySecurityGroups
       ) {
         return {
           type: "datasetV3",
@@ -191,12 +189,12 @@ function convertPropertySecurityGroups(
   ridGenerator: OntologyRidGenerator,
 ): PropertySecurityGroups {
   if (
-    !ds
-    || (!("objectSecurityPolicy" in ds) && !("propertySecurityGroups" in ds))
+    !ds ||
+    (!("objectSecurityPolicy" in ds) && !("propertySecurityGroups" in ds))
   ) {
     // Default security group - use property RIDs
-    const propertyRids = properties.map(prop =>
-      ridGenerator.generatePropertyRid(prop.apiName, objectTypeApiName)
+    const propertyRids = properties.map((prop) =>
+      ridGenerator.generatePropertyRid(prop.apiName, objectTypeApiName),
     );
 
     return {
@@ -230,7 +228,7 @@ function convertPropertySecurityGroups(
     };
   }
 
-  const validPropertyNames = new Set(properties.map(prop => prop.apiName));
+  const validPropertyNames = new Set(properties.map((prop) => prop.apiName));
   const usedPropertyApiNames = new Set<string>();
 
   // Collect and register group IDs (matching Java's collectSecurityGroupIds)
@@ -242,10 +240,9 @@ function convertPropertySecurityGroups(
         case "group":
           // Register group ID with the ridGenerator
           const groupId = condition.name;
-          ridGenerator.getGroupIds().put(
-            ReadableIdGenerator.getForGroup(groupId),
-            groupId,
-          );
+          ridGenerator
+            .getGroupIds()
+            .put(ReadableIdGenerator.getForGroup(groupId), groupId);
           break;
         case "and":
         case "or":
@@ -265,13 +262,13 @@ function convertPropertySecurityGroups(
   }
 
   // Validate and collect property security groups
-  ds.propertySecurityGroups?.forEach(psg => {
+  ds.propertySecurityGroups?.forEach((psg) => {
     // Collect group IDs from property security groups
     if (psg.granularPolicy) {
       collectGroupIds(psg.granularPolicy);
     }
 
-    psg.properties.forEach(propertyName => {
+    psg.properties.forEach((propertyName) => {
       invariant(
         validPropertyNames.has(propertyName),
         `Property "${propertyName}" in property security group ${psg.name} does not exist in the properties list`,
@@ -290,7 +287,7 @@ function convertPropertySecurityGroups(
 
   // Build property RID mapping
   const propertyApiNameToRid = new Map<string, string>();
-  properties.forEach(prop => {
+  properties.forEach((prop) => {
     propertyApiNameToRid.set(
       prop.apiName,
       ridGenerator.generatePropertyRid(prop.apiName, objectTypeApiName),
@@ -316,13 +313,13 @@ function convertPropertySecurityGroups(
       primaryKey: {},
     },
     properties: properties
-      .filter(prop => !usedPropertyApiNames.has(prop.apiName))
-      .map(prop => propertyApiNameToRid.get(prop.apiName)!),
+      .filter((prop) => !usedPropertyApiNames.has(prop.apiName))
+      .map((prop) => propertyApiNameToRid.get(prop.apiName)!),
   };
 
   return {
     groups: [
-      ...(ds.propertySecurityGroups?.map(psg => ({
+      ...(ds.propertySecurityGroups?.map((psg) => ({
         rid: ridGenerator.generatePropertySecurityGroupRid(psg.name),
         security: {
           type: "granular" as const,
@@ -340,8 +337,8 @@ function convertPropertySecurityGroups(
             name: psg.name,
           },
         },
-        properties: psg.properties.map(apiName =>
-          propertyApiNameToRid.get(apiName)!
+        properties: psg.properties.map(
+          (apiName) => propertyApiNameToRid.get(apiName)!,
         ),
       })) ?? []),
       objectSecurityPolicyGroup,
@@ -360,16 +357,16 @@ function convertGranularPolicy(
     viewPolicy: {
       granularPolicyCondition: granularPolicy
         ? convertSecurityCondition(
-          granularPolicy,
-          ridGenerator,
-          objectTypeApiName,
-        )
+            granularPolicy,
+            ridGenerator,
+            objectTypeApiName,
+          )
         : {
-          type: "and",
-          and: {
-            conditions: [],
+            type: "and",
+            and: {
+              conditions: [],
+            },
           },
-        },
       additionalMandatory: {
         markings: Object.keys(appliedMarkings ?? {}),
         assumedMarkings: Object.keys(assumedMarkings ?? {}),
@@ -389,37 +386,87 @@ function convertSecurityCondition(
         return {
           type: "and",
           and: {
-            conditions: condition.conditions.map(c =>
-              convertSecurityCondition(c, ridGenerator, objectTypeApiName)
+            conditions: condition.conditions.map((c) =>
+              convertSecurityCondition(c, ridGenerator, objectTypeApiName),
             ),
           },
         };
-      } else {
-        return condition;
       }
+      return {
+        type: "and",
+        and: {
+          conditions: condition.and.conditions.map((c) =>
+            convertSecurityCondition(c, ridGenerator, objectTypeApiName),
+          ),
+        },
+      };
     case "or":
       if ("conditions" in condition) {
         return {
           type: "or",
           or: {
-            conditions: condition.conditions.map(c =>
-              convertSecurityCondition(c, ridGenerator, objectTypeApiName)
+            conditions: condition.conditions.map((c) =>
+              convertSecurityCondition(c, ridGenerator, objectTypeApiName),
             ),
           },
         };
-      } else {
-        return condition;
       }
+      return {
+        type: "or",
+        or: {
+          conditions: condition.or.conditions.map((c) =>
+            convertSecurityCondition(c, ridGenerator, objectTypeApiName),
+          ),
+        },
+      };
+    case "not":
+      return {
+        type: "not",
+        not: {
+          condition: convertSecurityCondition(
+            condition.not.condition,
+            ridGenerator,
+            objectTypeApiName,
+          ),
+        },
+      };
+    case "markings":
+      return {
+        type: "markings",
+        markings: {
+          property: convertSecurityProperty(
+            condition.markings.property,
+            ridGenerator,
+            objectTypeApiName,
+          ),
+        },
+      };
+    case "comparison":
+      return {
+        type: "comparison",
+        comparison: {
+          ...condition.comparison,
+          left: convertSecurityComparisonValue(
+            condition.comparison.left,
+            ridGenerator,
+            objectTypeApiName,
+          ),
+          right: convertSecurityComparisonValue(
+            condition.comparison.right,
+            ridGenerator,
+            objectTypeApiName,
+          ),
+        },
+      };
     case "markingProperty":
       return {
         type: "markings",
         markings: {
-          property: ridGenerator && objectTypeApiName
-            ? ridGenerator.generatePropertyRid(
-              condition.property,
-              objectTypeApiName,
-            )
-            : condition.property,
+          property: convertSecurityProperty(
+            condition.property,
+            ridGenerator,
+            objectTypeApiName,
+          ),
         },
       };
     case "groupProperty":
@@ -436,12 +483,11 @@ function convertSecurityCondition(
           },
           right: {
             type: "property",
-            property: ridGenerator && objectTypeApiName
-              ? ridGenerator.generatePropertyRid(
-                condition.property,
-                objectTypeApiName,
-              )
-              : condition.property,
+            property: convertSecurityProperty(
+              condition.property,
+              ridGenerator,
+              objectTypeApiName,
+            ),
           },
         },
       };
@@ -461,9 +507,7 @@ function convertSecurityCondition(
             type: "constant",
             constant: {
               type: "strings",
-              strings: [
-                condition.name,
-              ],
+              strings: [condition.name],
             },
           },
         },
@@ -474,6 +518,34 @@ function convertSecurityCondition(
   }
 }
 
+function convertSecurityComparisonValue(
+  value: SecurityGroupComparisonValue,
+  ridGenerator?: OntologyRidGenerator,
+  objectTypeApiName?: string,
+): SecurityGroupComparisonValue {
+  if (value.type !== "property") {
+    return value;
+  }
+  return {
+    type: "property",
+    property: convertSecurityProperty(
+      value.property,
+      ridGenerator,
+      objectTypeApiName,
+    ),
+  };
+}
+
+function convertSecurityProperty(
+  property: string,
+  ridGenerator?: OntologyRidGenerator,
+  objectTypeApiName?: string,
+): string {
+  return ridGenerator && objectTypeApiName
+    ? ridGenerator.generatePropertyRid(property, objectTypeApiName)
+    : property;
+}
+
 /**
  * Converts ISO 8601 duration to Java Duration format (hours/minutes/seconds only).
  * Java's Duration class doesn't support days/weeks/months/years natively,
@@ -481,7 +553,7 @@ function convertSecurityCondition(
  */
 function convertToJavaDurationFormat(iso8601: string): string {
   const match = iso8601.match(
-    /^P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/,
+    /^P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/u,
   );
   if (!match) return iso8601;
 

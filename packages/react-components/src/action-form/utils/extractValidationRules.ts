@@ -15,6 +15,7 @@
  */
 
 import type { RegisterOptions } from "react-hook-form";
+
 import type {
   RendererFieldDefinition,
   ValidationError,
@@ -81,16 +82,12 @@ export function extractValidationRules(
       if (min != null) {
         const msg = getMessage(fieldDef, { type: "min", min });
         validateFns.min = (value) =>
-          value instanceof Date && value.getTime() < min.getTime()
-            ? msg
-            : true;
+          value instanceof Date && value.getTime() < min.getTime() ? msg : true;
       }
       if (max != null) {
         const msg = getMessage(fieldDef, { type: "max", max });
         validateFns.max = (value) =>
-          value instanceof Date && value.getTime() > max.getTime()
-            ? msg
-            : true;
+          value instanceof Date && value.getTime() > max.getTime() ? msg : true;
       }
       break;
     }
@@ -113,7 +110,7 @@ export function extractValidationRules(
       }
       break;
     }
-    // DROPDOWN, RADIO_BUTTONS, CUSTOM, OBJECT_SET: only `required` applies
+    // DROPDOWN, RADIO_BUTTONS, CUSTOM, OBJECT_SET, UNSUPPORTED: only `required` applies
     default:
       break;
   }

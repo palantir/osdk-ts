@@ -40,8 +40,9 @@ export async function* parseStreamedResponse(
     for (; i < chunk.length; i++) {
       // if we aren't currently parsing an object, skip until we find the next object start
       while (
-        openBracesCount === 0 && chunk[i] !== OBJECT_OPEN_CHAR_CODE
-        && i < chunk.length
+        openBracesCount === 0 &&
+        chunk[i] !== OBJECT_OPEN_CHAR_CODE &&
+        i < chunk.length
       ) {
         i++;
       }

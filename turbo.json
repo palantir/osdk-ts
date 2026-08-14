@@ -22,12 +22,25 @@
       "inputs": [
         "src/**/*.ts",
         "src/**/*.tsx",
+        "src/**/*.css",
+        "src/**/*.scss",
+        "src/**/*.html",
+        ".storybook/**/*.css",
+        "*.html",
         ".eslintrc.cjs",
         "eslint.config.mjs",
+        "oxlint.config.ts",
+        "oxfmt.config.ts",
         "tsconfig.json"
       ],
       "outputs": [],
-      "dependsOn": ["//#global-eslint-config", "//#dprint", "codegen", "^transpileTypes"]
+      "dependsOn": [
+        "//#global-eslint-config",
+        "//#global-oxc-config",
+        "//#dprint",
+        "codegen",
+        "^transpileTypes"
+      ]
     },
 
     /* Psuedo task to let us depend on dprint config */
@@ -54,6 +67,13 @@
       "inputs": ["**/*.{ts,tsx,cts,mts,md,json,js,mjs,cjs}"]
     },
 
+    /* Fails when a doc's AUTOGEN:props table has drifted from its source type. */
+    "check-gen-props": {
+      "outputLogs": "new-only",
+      "dependsOn": ["//#global-oxc-config"],
+      "inputs": ["src/**/*.{ts,tsx}", "docs/**/*.md", "scripts/gen-props.mjs"]
+    },
+
     /* Psuedo task to depend on the script contents */
     "//#babel-config": {
       "inputs": ["babel.config.mjs"]
@@ -61,6 +81,11 @@
 
     "//#global-eslint-config": {
       "inputs": ["eslint.config.mjs"]
+    },
+
+    /* Psuedo task to let oxc-migrated packages depend on the global oxlint + oxfmt config */
+    "//#global-oxc-config": {
+      "inputs": ["oxlint.config.ts", "oxfmt.config.ts", "plugins/oxlint-plugin-header.js"]
     },
 
     "clean": {
@@ -160,6 +185,8 @@
       "inputs": [
         "bin/**",
         "src/**",
+        "!src/generatedNoCheck/**",
+        "!src/generatedNoCheck2/**",
         "templates/**",
         "tsconfig.json"
       ],
@@ -178,6 +205,8 @@
       "inputs": [
         "bin/**",
         "src/**",
+        "!src/generatedNoCheck/**",
+        "!src/generatedNoCheck2/**",
         "templates/**",
         "tsup.config.js",
         "tsconfig.json"
@@ -197,6 +226,8 @@
       "inputs": [
         "bin/**",
         "src/**",
+        "!src/generatedNoCheck/**",
+        "!src/generatedNoCheck2/**",
         "templates/**",
         "tsconfig.json"
       ],
@@ -222,6 +253,8 @@
       "inputs": [
         "bin/**",
         "src/**",
+        "!src/generatedNoCheck/**",
+        "!src/generatedNoCheck2/**",
         "templates/**",
         "tsup.config.js",
         "tsconfig.json"
@@ -237,17 +270,33 @@
       "dependsOn": ["^transpileEsm"]
     },
 
+    "updateSnapshots": {
+      "cache": false,
+      "env": ["FORCE_COLOR"],
+      "dependsOn": ["^transpileEsm"]
+    },
+
     "//#check-mrl": {
+      // Keep in sync with .monorepolint.config.mjs
       "inputs": [
         "package.json",
         ".monorepolint.config.mjs",
+        "dprint.json",
         "packages/*/package.json",
         "packages/*/tsconfig.json",
-        "packages/*/src/public/*",
-        "examples/*/*/package.json",
-        "examples/*/*/tsconfig.json",
-        "examples-extra/*/*/package.json",
-        "examples-extra/*/*/tsconfig.json",
+        "packages/*/tsconfig.cjs.json",
+        "packages/*/vitest.config.mts",
+        "packages/*/tsup.config.js",
+        "packages/*/turbo.json",
+        "packages/*/api-extractor.json",
+        "packages/*/README.md",
+        "packages/*/src/public/**",
+        "examples/*/package.json",
+        "examples-extra/*/package.json",
+        "examples-extra/basic/*/package.json",
+        "tests/*/package.json",
+        "benchmarks/*/*/package.json",
+        "docs/package.json",
         "templates/*"
       ]
     },
@@ -261,7 +310,8 @@
         "check-attw",
         "check-bundle",
         "check-api",
-        "check-spelling"
+        "//#cspell:all",
+        "check-gen-props"
       ]
     }
   },

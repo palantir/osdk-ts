@@ -22,6 +22,8 @@ import {
   convertValidationRule,
   createDefaultParameterOrdering,
   createParameters,
+  createPropertyParameterValues,
+  createStructFieldValues,
   defineAction,
   isPropertyParameter,
   kebab,
@@ -33,7 +35,6 @@ import {
   getPropertyKeys,
   toPropertyMap,
 } from "./object/objectPropertyHelpers.js";
-import { isStruct } from "./properties/PropertyTypeType.js";
 
 export function defineCreateObjectAction(
   defInput: ActionTypeUserDefinition,
@@ -41,30 +42,24 @@ export function defineCreateObjectAction(
   const def = cloneDefinition(defInput);
   const propertyKeys = getPropertyKeys(def.objectType);
 
-  validateActionParameters(
-    def,
-    propertyKeys,
-    def.objectType.apiName,
-  );
+  validateActionParameters(def, propertyKeys, def.objectType.apiName);
   const propertiesWithDerivedDatasources = (def.objectType.datasources ?? [])
-    .filter(ds => ds.type === "derived").flatMap(ds =>
-      Object.keys(ds.propertyMapping)
-    );
-  const propertyParameters = propertyKeys
-    .filter(
-      id =>
-        isPropertyParameter(def, id, getProperty(def.objectType, id)?.type!)
-        && !isStruct(getProperty(def.objectType, id)?.type!)
-        && !propertiesWithDerivedDatasources.includes(id),
-    );
-  const parameterNames = new Set(propertyParameters);
-  Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
-    parameterNames.add(param)
+    .filter((ds) => ds.type === "derived")
+    .flatMap((ds) => Object.keys(ds.propertyMapping));
+  const propertyParameters = propertyKeys.filter(
+    (id) =>
+      isPropertyParameter(def, id, getProperty(def.objectType, id)?.type!) &&
+      !propertiesWithDerivedDatasources.includes(id),
   );
-  const actionApiName = def.apiName
-    ?? `create-object-${
-      kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
-    }`;
+  const parameterNames = new Set(propertyParameters);
+  Object.keys(def.parameterConfiguration ?? {}).forEach((param) =>
+    parameterNames.add(param),
+  );
+  const actionApiName =
+    def.apiName ??
+    `create-object-${kebab(
+      def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
+    )}`;
   if (def.parameterOrdering) {
     validateParameterOrdering(
       def.parameterOrdering,
@@ -78,14 +73,16 @@ export function defineCreateObjectAction(
     parameterNames,
   );
   const mappings = Object.fromEntries(
-    Object.entries(def.nonParameterMappings ?? {}).map((
-      [id, value],
-    ) => [id, convertMappingValue(value)]),
+    Object.entries(def.nonParameterMappings ?? {}).map(([id, value]) => [
+      id,
+      convertMappingValue(value),
+    ]),
   );
 
   return defineAction({
     apiName: actionApiName,
     displayName: def.displayName ?? `Create ${def.objectType.displayName}`,
+    description: def.description,
     parameters,
     status: def.status ?? "active",
     entities: {
@@ -94,51 +91,47 @@ export function defineCreateObjectAction(
       affectedLinkTypes: [],
       typeGroups: [],
     },
-    rules: [{
-      type: "addObjectRule",
-      addObjectRule: {
-        objectTypeId: def.objectType.apiName,
-        propertyValues: {
-          ...Object.fromEntries(
-            propertyParameters.map(
-              p => [p, { type: "parameterId", parameterId: p }],
-            ),
-          ),
-          ...mappings,
+    rules: [
+      {
+        type: "addObjectRule",
+        addObjectRule: {
+          objectTypeId: def.objectType.apiName,
+          propertyValues: {
+            ...createPropertyParameterValues(def, propertyParameters),
+            ...mappings,
+          },
+          structFieldValues: createStructFieldValues(def, parameters),
         },
-        structFieldValues: {},
       },
-    }],
-    parameterOrdering: def.parameterOrdering
-      ?? createDefaultParameterOrdering(
-        def,
-        propertyKeys,
-        parameters,
-      ),
+    ],
+    parameterOrdering:
+      def.parameterOrdering ??
+      createDefaultParameterOrdering(def, propertyKeys, parameters),
     ...(def.actionLevelValidation
       ? {
-        validation: convertValidationRule(
-          def.actionLevelValidation,
-          parameters,
-        ),
-      }
+          validation: convertValidationRule(
+            def.actionLevelValidation,
+            parameters,
+          ),
+        }
       : {}),
     ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
-    ...(def.enableLayoutSwitch
-      && { enableLayoutSwitch: def.enableLayoutSwitch }),
+    ...(def.enableLayoutSwitch && {
+      enableLayoutSwitch: def.enableLayoutSwitch,
+    }),
     ...(def.tableConfiguration && {
       displayAndFormat: {
         table: def.tableConfiguration,
       },
     }),
-    ...(def.sections
-      && {
-        sections: Object.fromEntries(
-          def.sections.map(section => [section.id, section]),
-        ),
-      }),
-    ...(def.submissionMetadata
-      && { submissionMetadata: def.submissionMetadata }),
+    ...(def.sections && {
+      sections: Object.fromEntries(
+        def.sections.map((section) => [section.id, section]),
+      ),
+    }),
+    ...(def.submissionMetadata && {
+      submissionMetadata: def.submissionMetadata,
+    }),
     ...(def.permission && { permission: def.permission }),
     ...(def.icon && { icon: def.icon }),
   });

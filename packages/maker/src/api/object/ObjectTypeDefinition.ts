@@ -15,6 +15,7 @@
  */
 
 import type { Visibility } from "@osdk/client.unstable";
+
 import type { BlueprintIcon } from "../common/BlueprintIcons.js";
 import type { EntityPermission } from "../common/EntityPermission.js";
 import type { EditsHistoryConfig } from "./EditsHistoryConfig.js";

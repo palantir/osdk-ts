@@ -16,7 +16,8 @@
 
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { PdfAnnotation } from "../../types.js";
+
+import type { PdfAnnotation } from "../../PdfViewerApi.js";
 import { usePdfAnnotationsByPage } from "../usePdfAnnotationsByPage.js";
 
 function createAnnotation(
@@ -73,7 +74,7 @@ describe("usePdfAnnotationsByPage", () => {
     const annotations = [createAnnotation({ id: "a1", page: 1 })];
 
     const { result, rerender } = renderHook(() =>
-      usePdfAnnotationsByPage(annotations)
+      usePdfAnnotationsByPage(annotations),
     );
 
     const firstResult = result.current;

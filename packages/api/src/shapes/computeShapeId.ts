@@ -27,14 +27,12 @@ interface ShapeIdInput {
 }
 
 function sortedStringify(obj: unknown): string {
-  return JSON.stringify(
-    obj,
-    (_, v) =>
-      v && typeof v === "object" && !Array.isArray(v)
-        ? Object.fromEntries(
+  return JSON.stringify(obj, (_, v) =>
+    v && typeof v === "object" && !Array.isArray(v)
+      ? Object.fromEntries(
           Object.entries(v).sort(([a], [b]) => a.localeCompare(b)),
         )
-        : v,
+      : v,
   );
 }
 
@@ -49,18 +47,17 @@ export function computeShapeId(input: ShapeIdInput): string {
   return simpleHash(sortedStringify(canonical));
 }
 
-function canonicalizeShapeInput(
-  input: ShapeIdInput,
-): Record<string, unknown> {
+function canonicalizeShapeInput(input: ShapeIdInput): Record<string, unknown> {
   const sortedPropKeys = [...Object.keys(input.props)].sort();
   const canonicalProps: Record<string, unknown> = {};
 
   for (const key of sortedPropKeys) {
     const config = input.props[key];
     const op = config.nullabilityOp;
-    canonicalProps[key] = op.type === "withDefault"
-      ? { type: op.type, defaultValue: op.defaultValue }
-      : op.type;
+    canonicalProps[key] =
+      op.type === "withDefault"
+        ? { type: op.type, defaultValue: op.defaultValue }
+        : op.type;
   }
 
   const canonicalLinks = input.derivedLinks.map((link) => ({

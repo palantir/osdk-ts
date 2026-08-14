@@ -1,5 +1,5 @@
-@use 'tokens' as t;
-@use 'mixins' as m;
+@use "tokens" as t;
+@use "mixins" as m;
 
 .componentCard {
   @include m.dt-entrance;
@@ -23,7 +23,9 @@
   cursor: pointer;
   user-select: none;
   border-left: 2px solid transparent;
-  transition: background-color t.$transition-fast, border-left-color t.$transition-fast;
+  transition:
+    background-color t.$transition-fast,
+    border-left-color t.$transition-fast;
 
   &:hover {
     background: t.$bg-hover;

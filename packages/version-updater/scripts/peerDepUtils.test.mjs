@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { determineMinVersion } from "./determineMinVersion.mjs";
 import { generatePeerRange } from "./generatePeerRange.mjs";
 import { parseChangelog } from "./parseChangelog.mjs";
@@ -155,11 +156,7 @@ describe("determineMinVersion", () => {
       },
     ];
 
-    const min = determineMinVersion(
-      mappings,
-      "0.10.0-beta.5",
-      "@osdk/client",
-    );
+    const min = determineMinVersion(mappings, "0.10.0-beta.5", "@osdk/client");
     expect(min).toBe("2.8.0-beta.3");
   });
 
@@ -175,11 +172,7 @@ describe("determineMinVersion", () => {
       },
     ];
 
-    const min = determineMinVersion(
-      mappings,
-      "0.2.0-beta.3",
-      "@osdk/client",
-    );
+    const min = determineMinVersion(mappings, "0.2.0-beta.3", "@osdk/client");
     expect(min).toBe("2.8.0-beta.6");
   });
 
@@ -199,11 +192,7 @@ describe("determineMinVersion", () => {
       },
     ];
 
-    const min = determineMinVersion(
-      mappings,
-      "1.6.0-beta.2",
-      "@osdk/client",
-    );
+    const min = determineMinVersion(mappings, "1.6.0-beta.2", "@osdk/client");
     expect(min).toBe("2.2.0-beta.18");
   });
 
@@ -215,11 +204,7 @@ describe("determineMinVersion", () => {
       },
     ];
 
-    const min = determineMinVersion(
-      mappings,
-      "1.0.0",
-      "@osdk/client",
-    );
+    const min = determineMinVersion(mappings, "1.0.0", "@osdk/client");
     expect(min).toBeUndefined();
   });
 

@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { ComponentContextCapture } from "./ComponentContextCapture.js";
 
 interface ParseStackTraceResult {

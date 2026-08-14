@@ -1,0 +1,30 @@
+.tabBar {
+  display: flex;
+  gap: 2px;
+  padding: 0 18px;
+  background: var(--oa-surface);
+  border-bottom: 1px solid var(--oa-border);
+}
+
+.tab,
+.tabActive {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--oa-text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.tab:hover {
+  color: var(--oa-text);
+}
+
+.tabActive {
+  color: var(--oa-accent);
+  border-bottom-color: var(--oa-accent);
+  font-weight: 600;
+}

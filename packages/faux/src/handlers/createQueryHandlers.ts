@@ -15,6 +15,7 @@
  */
 
 import { valid } from "semver";
+
 import { OntologiesV2 } from "../mock/index.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
 

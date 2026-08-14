@@ -14,31 +14,32 @@
  * limitations under the License.
  */
 
-import { createInternalClientContext, widgetRegistry } from "#net";
+import * as fs from "node:fs";
+import path from "node:path";
+import { Readable } from "node:stream";
+
 import { ExitProcessError } from "@osdk/cli.common";
 import type { WidgetSetManifest } from "@osdk/widget.api";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget.api";
 import archiver from "archiver";
 import { consola } from "consola";
-import * as fs from "node:fs";
-import path from "node:path";
-import { Readable } from "node:stream";
 import prettyBytes from "pretty-bytes";
+
+import { createInternalClientContext, widgetRegistry } from "#net";
+
 import type { StemmaRepositoryRid } from "../../../net/StemmaRepositoryRid.js";
 import type { WidgetSetRid } from "../../../net/WidgetSetRid.js";
 import { loadToken } from "../../../util/token.js";
 import type { WidgetSetDeployArgs } from "./WidgetSetDeployArgs.js";
 
-export default async function widgetSetDeployCommand(
-  {
-    widgetSet,
-    foundryUrl,
-    directory,
-    repository,
-    token,
-    tokenFile,
-  }: WidgetSetDeployArgs,
-): Promise<void> {
+export default async function widgetSetDeployCommand({
+  widgetSet,
+  foundryUrl,
+  directory,
+  repository,
+  token,
+  tokenFile,
+}: WidgetSetDeployArgs): Promise<void> {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
@@ -110,9 +111,9 @@ function logArchiveStats(archive: archiver.Archiver): void {
   });
   archive.on("finish", () => {
     consola.info(
-      `Zipped ${
-        prettyBytes(archiveStats.bytes, { binary: true })
-      } total over ${archiveStats.fileCount} files`,
+      `Zipped ${prettyBytes(archiveStats.bytes, {
+        binary: true,
+      })} total over ${archiveStats.fileCount} files`,
     );
   });
 }

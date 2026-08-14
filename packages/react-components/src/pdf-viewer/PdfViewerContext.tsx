@@ -22,10 +22,9 @@ import type {
 } from "pdfjs-dist/web/pdf_viewer.mjs";
 import React, { createContext, useContext, useMemo } from "react";
 import type { RefObject } from "react";
+
 import { EMPTY_ANNOTATION_ARRAY } from "./constants.js";
-import type {
-  AnnotationPortalTarget,
-} from "./hooks/usePdfAnnotationPortals.js";
+import type { AnnotationPortalTarget } from "./hooks/usePdfAnnotationPortals.js";
 import { usePdfAnnotationsByPage } from "./hooks/usePdfAnnotationsByPage.js";
 import { usePdfFormFields } from "./hooks/usePdfFormFields.js";
 import { usePdfHighlightMode } from "./hooks/usePdfHighlightMode.js";
@@ -36,7 +35,7 @@ import type {
   PdfAnnotation,
   PdfViewerInstanceOptions,
   SidebarMode,
-} from "./types.js";
+} from "./PdfViewerApi.js";
 
 /** The shape of the value provided by {@link PdfViewerProvider}. */
 export interface PdfViewerContextValue {
@@ -51,8 +50,11 @@ export interface PdfViewerContextValue {
   scrollToPage: (page: number) => void;
   scale: number;
   setScale: (scale: number) => void;
+  autoSize: boolean;
+  setAutoSize: (autoSize: boolean) => void;
   zoomIn: () => void;
   zoomOut: () => void;
+  toggleAutoSize: () => void;
   rotation: number;
   rotateLeft: () => void;
   rotateRight: () => void;
@@ -98,9 +100,10 @@ export interface PdfViewerProviderProps {
 }
 
 /** Provides {@link PdfViewerContextValue} to descendant components. */
-export function PdfViewerProvider(
-  { value, children }: PdfViewerProviderProps,
-): React.ReactElement {
+export function PdfViewerProvider({
+  value,
+  children,
+}: PdfViewerProviderProps): React.ReactElement {
   return (
     <PdfViewerContext.Provider value={value}>
       {children}
@@ -134,6 +137,7 @@ export function usePdfViewerInstance(
     src: options.src,
     initialPage: options.initialPage,
     initialScale: options.initialScale,
+    initialAutoSize: options.initialAutoSize,
     initialSidebarOpen: options.initialSidebarOpen,
     sidebarMode: options.sidebarMode,
     onDownload: options.onDownload,
@@ -142,7 +146,7 @@ export function usePdfViewerInstance(
   const { highlightModeActive, toggleHighlightMode } = usePdfHighlightMode({
     pdfViewerRef: viewer.pdfViewerRef,
     document: viewer.document,
-    enabled: options.highlightEnabled ?? false,
+    enabled: options.enableHighlight ?? options.highlightEnabled ?? false,
     onTextHighlight: options.onTextHighlight,
     onHighlightDelete: options.onHighlightDelete,
   });
@@ -159,7 +163,9 @@ export function usePdfViewerInstance(
   const annotations = options.annotations ?? EMPTY_ANNOTATION_ARRAY;
   const annotationsByPage = usePdfAnnotationsByPage(annotations);
 
-  const highlightEnabled = options.highlightEnabled ?? false;
+  // `highlightEnabled` is the deprecated spelling of `enableHighlight`.
+  const highlightEnabled =
+    options.enableHighlight ?? options.highlightEnabled ?? false;
   const enableDownload = options.enableDownload ?? false;
   const enableFormSave = options.onFormSubmit != null && hasFormFields;
   const { onAnnotationClick, outlineIcons } = options;

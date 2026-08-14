@@ -21,6 +21,7 @@
 
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid } from "@osdk/api/unstable";
 import { Employee } from "@osdk/client.test.ontology";
+
 import type { Client } from "../Client.js";
 
 declare const client: Client;

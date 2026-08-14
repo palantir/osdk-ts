@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+
+import { consola } from "consola";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+
 import { writeImportedOntology } from "../generate/writeImportedOntology.js";
 
 export default async function main(

@@ -15,6 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
+
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type {
   ContainsTextFilterState,
@@ -54,13 +55,13 @@ export function createPropertyFilterDef<
 >(
   key: K,
   filterComponent: C,
-  filterState: FilterState,
+  defaultFilterState: FilterState,
 ): FilterDefinitionUnion<typeof MockObjectType> {
   return {
     type: "PROPERTY",
     key,
     filterComponent,
-    filterState,
+    defaultFilterState,
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }
 
@@ -73,29 +74,33 @@ export function createHasLinkFilterDef(
   return {
     type: "HAS_LINK",
     linkName,
-    filterState: { type: "hasLink", hasLink: false },
+    defaultFilterState: { type: "hasLink", hasLink: false },
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }
 
 /**
  * Create a linkedProperty filter definition for testing.
+ * Pass `reverseLinkName: null` to omit it (UI-only filter); otherwise it
+ * defaults to `"reverseLink"`.
  * Cast required because LinkedPropertyFilterDefinition has complex generic constraints
  * that can't be satisfied with literal link names.
  */
 export function createLinkedPropertyFilterDef(
   linkName: string,
   linkedPropertyKey: string,
+  options: { reverseLinkName?: string | null } = {},
 ): FilterDefinitionUnion<typeof MockObjectType> {
+  const reverseLinkName: string | undefined =
+    "reverseLinkName" in options
+      ? (options.reverseLinkName ?? undefined)
+      : "reverseLink";
   return {
     type: "LINKED_PROPERTY",
     linkName,
+    ...(reverseLinkName !== undefined ? { reverseLinkName } : {}),
     linkedPropertyKey,
-    linkedFilterComponent: "LISTOGRAM",
-    linkedFilterState: { type: "EXACT_MATCH", values: [] },
-    filterState: {
-      type: "linkedProperty",
-      linkedFilterState: { type: "EXACT_MATCH", values: [] },
-    },
+    filterComponent: "LISTOGRAM",
+    defaultFilterState: { type: "EXACT_MATCH", values: [] },
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }
 
@@ -108,7 +113,11 @@ export function createKeywordSearchFilterDef(
   return {
     type: "KEYWORD_SEARCH",
     properties,
-    filterState: { type: "keywordSearch", searchTerm: "", operator: "AND" },
+    defaultFilterState: {
+      type: "keywordSearch",
+      searchTerm: "",
+      operator: "AND",
+    },
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }
 
@@ -123,7 +132,7 @@ export function createCustomFilterDef(
     type: "CUSTOM",
     key,
     filterComponent: "CUSTOM",
-    filterState: { type: "custom", customState: {} },
+    defaultFilterState: { type: "custom", customState: {} },
     renderInput: () => null,
     toWhereClause: () => ({}),
   } as FilterDefinitionUnion<typeof MockObjectType>;
@@ -212,7 +221,7 @@ export function createStaticValuesFilterDef(
   key: string,
   filterComponent: StaticValuesComponentType,
   values: string[],
-  filterState: FilterState,
+  defaultFilterState: FilterState,
   options?: {
     toWhereClause?: (
       state: FilterState,
@@ -224,7 +233,7 @@ export function createStaticValuesFilterDef(
     key,
     filterComponent,
     values,
-    filterState,
+    defaultFilterState,
     toWhereClause: options?.toWhereClause,
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }

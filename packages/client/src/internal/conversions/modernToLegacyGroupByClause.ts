@@ -49,30 +49,35 @@ export function modernToLegacyGroupByClause(
           field,
           maxGroupCount: type.$exact?.$limit ?? undefined,
           defaultValue: type.$exact.$defaultValue ?? undefined,
-          includeNullValues: type.$exact.$includeNullValue === true
-            ? true
-            : undefined,
+          includeNullValues:
+            type.$exact.$includeNullValue === true ? true : undefined,
         },
       ];
     } else if ("$fixedWidth" in type) {
-      return [{
-        type: "fixedWidth",
-        field,
-        fixedWidth: type.$fixedWidth,
-      }];
+      return [
+        {
+          type: "fixedWidth",
+          field,
+          fixedWidth: type.$fixedWidth,
+        },
+      ];
     } else if ("$ranges" in type) {
-      return [{
-        type: "ranges",
-        field,
-        ranges: type.$ranges.map(range => convertRange(range)),
-      }];
+      return [
+        {
+          type: "ranges",
+          field,
+          ranges: type.$ranges.map((range) => convertRange(range)),
+        },
+      ];
     } else if ("$duration" in type) {
-      return [{
-        type: "duration",
-        field,
-        value: type.$duration[0],
-        unit: DurationMapping[type.$duration[1]],
-      }];
+      return [
+        {
+          type: "duration",
+          field,
+          value: type.$duration[0],
+          unit: DurationMapping[type.$duration[1]],
+        },
+      ];
     } else return [];
   });
 }

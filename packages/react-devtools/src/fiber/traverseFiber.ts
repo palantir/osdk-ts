@@ -109,9 +109,7 @@ export function walkFiberTree(
   visitor: (fiber: Fiber) => void,
   maxDepth: number = DEFAULT_MAX_DEPTH,
 ): void {
-  const stack: Array<{ fiber: Fiber; depth: number }> = [
-    { fiber, depth: 0 },
-  ];
+  const stack: Array<{ fiber: Fiber; depth: number }> = [{ fiber, depth: 0 }];
 
   while (stack.length > 0) {
     const entry = stack.pop();

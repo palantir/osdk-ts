@@ -15,6 +15,7 @@
  */
 
 import type { Logger } from "@osdk/api";
+
 import { BaseLogger } from "./BaseLogger.js";
 
 export class MinimalLogger extends BaseLogger implements Logger {

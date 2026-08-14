@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-export const DEBUG_REFCOUNTS: boolean = process.env.NODE_ENV !== "production"
-  && false;
+export const DEBUG_REFCOUNTS: boolean =
+  process.env.NODE_ENV !== "production" && false;
 
-export const DEBUG_CACHE_KEYS: boolean = process.env.NODE_ENV !== "production"
-  && false;
+export const DEBUG_CACHE_KEYS: boolean =
+  process.env.NODE_ENV !== "production" && false;

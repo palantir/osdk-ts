@@ -16,6 +16,7 @@
 
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import type { SharedClientContext } from "@osdk/shared.client2";
+
 import { USER_AGENT } from "./util/UserAgent.js";
 
 export interface PlatformClient extends SharedClientContext {}
@@ -34,10 +35,5 @@ export function createPlatformClient(
   options: undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
 ): PlatformClient {
-  return createSharedClientContext(
-    baseUrl,
-    tokenProvider,
-    USER_AGENT,
-    fetchFn,
-  );
+  return createSharedClientContext(baseUrl, tokenProvider, USER_AGENT, fetchFn);
 }

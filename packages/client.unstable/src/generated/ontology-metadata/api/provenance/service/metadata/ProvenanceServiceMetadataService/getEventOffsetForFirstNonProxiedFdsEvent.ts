@@ -15,9 +15,9 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetEventOffsetForFirstNonProxiedFdsEventResponse
-    as _api_provenance_GetEventOffsetForFirstNonProxiedFdsEventResponse,
+  GetEventOffsetForFirstNonProxiedFdsEventResponse as _api_provenance_GetEventOffsetForFirstNonProxiedFdsEventResponse,
   OmsOpsDependentType as _api_provenance_OmsOpsDependentType,
 } from "../../../__components.js";
 

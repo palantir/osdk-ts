@@ -37,9 +37,9 @@ export type CacheKey<
  */
 export function DEBUG_ONLY__cacheKeyToString(x: CacheKey) {
   if (process.env.NODE_ENV !== "production") {
-    return `${x.type}CacheKey<${
-      x.otherKeys.map(xx => JSON.stringify(xx)).join(", ")
-    }>`.replaceAll("\"", "'");
+    return `${x.type}CacheKey<${x.otherKeys
+      .map((xx) => JSON.stringify(xx))
+      .join(", ")}>`.replaceAll('"', "'");
   } else {
     throw new Error("not implemented");
   }

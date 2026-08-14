@@ -16,6 +16,7 @@
 
 import type { ViteDevServer } from "vite";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+
 import * as codeWorkspacesMode from "../codeWorkspacesMode.js";
 import { getBaseHref } from "../getBaseHref.js";
 

@@ -31,6 +31,7 @@ export type BaseWirePropertyTypes =
   | "decimal"
   | "byte"
   | "marking"
+  | "cipherText"
   | "mediaReference"
   | "numericTimeseries"
   | "stringTimeseries"

@@ -28,6 +28,7 @@ import {
 } from "@osdk/client.test.ontology";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
+
 import type { Client } from "./Client.js";
 import { createClient } from "./createClient.js";
 
@@ -45,9 +46,7 @@ describe("FetchMetadata", () => {
   it("fetches object metadata correctly", async () => {
     const objectMetadata = await client.fetchMetadata($Objects.Employee);
 
-    expectTypeOf(objectMetadata).toEqualTypeOf<
-      ObjectMetadata
-    >();
+    expectTypeOf(objectMetadata).toEqualTypeOf<ObjectMetadata>();
 
     expect(objectMetadata).toMatchInlineSnapshot(`
       {
@@ -64,6 +63,18 @@ describe("FetchMetadata", () => {
         "implements": [
           "FooInterface",
         ],
+        "interfaceImplementations": {
+          "FooInterface": {
+            "fooIdp": {
+              "propertyApiName": "office",
+              "type": "localProperty",
+            },
+            "fooSpt": {
+              "propertyApiName": "fullName",
+              "type": "localProperty",
+            },
+          },
+        },
         "interfaceMap": {
           "FooInterface": {
             "fooIdp": "office",
@@ -125,6 +136,23 @@ describe("FetchMetadata", () => {
             "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
+          "employeeProfile": {
+            "description": "Employee profile with main value being the bio",
+            "displayName": undefined,
+            "mainValue": {
+              "fields": [
+                "bio",
+              ],
+            },
+            "multiplicity": false,
+            "nullable": true,
+            "type": {
+              "bio": "string",
+              "yearsExperience": "integer",
+            },
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
+          },
           "employeeSensor": {
             "description": "TimeSeries sensor of the status of the employee",
             "displayName": undefined,
@@ -146,6 +174,7 @@ describe("FetchMetadata", () => {
           "favoriteRestaurants": {
             "description": undefined,
             "displayName": undefined,
+            "hasReducers": false,
             "multiplicity": true,
             "nullable": true,
             "type": "string",
@@ -168,6 +197,16 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "string",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
+          },
+          "performanceScores": {
+            "description": "Array of performance scores with reducers",
+            "displayName": undefined,
+            "hasReducers": true,
+            "multiplicity": true,
+            "nullable": true,
+            "type": "double",
             "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
@@ -213,9 +252,7 @@ describe("FetchMetadata", () => {
       $Interfaces.FooInterface,
     );
 
-    expectTypeOf(interfaceMetadata).toEqualTypeOf<
-      InterfaceMetadata
-    >();
+    expectTypeOf(interfaceMetadata).toEqualTypeOf<InterfaceMetadata>();
 
     expect(interfaceMetadata).toMatchInlineSnapshot(`
       {
@@ -235,6 +272,16 @@ describe("FetchMetadata", () => {
           },
         },
         "properties": {
+          "fooArray": {
+            "description": "An array-valued Foo property",
+            "displayName": "Foo Array",
+            "hasReducers": false,
+            "multiplicity": true,
+            "nullable": true,
+            "type": "string",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
+          },
           "fooIdp": {
             "description": "A Foo IDP",
             "displayName": "Foo IDP",
@@ -261,9 +308,7 @@ describe("FetchMetadata", () => {
   });
 
   it("fetches action metadata correctly", async () => {
-    const actionMetadata = await client.fetchMetadata(
-      $Actions.moveOffice,
-    );
+    const actionMetadata = await client.fetchMetadata($Actions.moveOffice);
 
     expectTypeOf(actionMetadata).toEqualTypeOf<ActionMetadata>();
 
@@ -281,24 +326,28 @@ describe("FetchMetadata", () => {
         "parameters": {
           "newAddress": {
             "description": "The office's new physical address (not necessarily shipping address)",
+            "displayName": "New Address",
             "multiplicity": false,
             "nullable": true,
             "type": "string",
           },
           "newCapacity": {
             "description": "The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)",
+            "displayName": "New Capacity",
             "multiplicity": false,
             "nullable": true,
             "type": "integer",
           },
           "officeId": {
             "description": undefined,
+            "displayName": "Office ID",
             "multiplicity": false,
             "nullable": false,
             "type": "string",
           },
           "officeNames": {
             "description": "A list of all office names",
+            "displayName": "Office Names",
             "multiplicity": true,
             "nullable": true,
             "type": "integer",

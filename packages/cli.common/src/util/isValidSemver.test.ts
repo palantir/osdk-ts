@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { isValidSemver } from "./isValidSemver.js";
 
 describe("isValidSemver", () => {

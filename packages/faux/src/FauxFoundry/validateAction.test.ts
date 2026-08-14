@@ -16,6 +16,7 @@
 
 import type { OntologyDataType } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
+
 import {
   isInterfaceActionParam,
   isMediaReference,
@@ -391,10 +392,18 @@ describe("matchesOntologyDataType", () => {
         },
       };
 
-      expect(matchesOntologyDataType(dataType, [[1, 2], [3, 4]])).toBe(true);
-      expect(matchesOntologyDataType(dataType, [[1, 2], ["a", "b"]])).toBe(
-        false,
-      );
+      expect(
+        matchesOntologyDataType(dataType, [
+          [1, 2],
+          [3, 4],
+        ]),
+      ).toBe(true);
+      expect(
+        matchesOntologyDataType(dataType, [
+          [1, 2],
+          ["a", "b"],
+        ]),
+      ).toBe(false);
     });
 
     it("should return false for non-array values", () => {

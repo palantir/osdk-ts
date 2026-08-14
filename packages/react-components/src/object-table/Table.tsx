@@ -23,9 +23,11 @@ import React, {
   useRef,
   useState,
 } from "react";
+
+import { PortalContainerProvider } from "../shared/PortalContainerContext.js";
+import { useFocusedRow } from "./hooks/useFocusedRow.js";
 import { LoadingStateTable } from "./LoadingStateTable.js";
 import { NonIdealState } from "./NonIdealState.js";
-import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableEditContainer } from "./TableEditContainer.js";
 import { TableHeader } from "./TableHeader.js";
@@ -42,6 +44,8 @@ import type {
   EditFieldConfig,
 } from "./utils/types.js";
 
+import styles from "./Table.module.css";
+
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData = unknown, TValue = unknown> {
     columnName?: string;
@@ -49,18 +53,20 @@ declare module "@tanstack/react-table" {
     isVisible?: boolean;
     editable?: boolean | ((object: TData) => boolean);
     dataType?: string;
+    /**
+     * For columns backed by a `"marking"` property, the marking subtype as
+     * surfaced by the platform: `"CBAC"` for classification-based access
+     * control or `"MANDATORY"` for mandatory markings. Absent for
+     * non-marking columns and for marking columns whose subtype isn't
+     * exposed.
+     */
+    markingType?: "CBAC" | "MANDATORY";
     editFieldConfig?: EditFieldConfig<TData>;
     validateEdit?: (value: unknown) => Promise<string | undefined>;
   }
   interface TableMeta<TData extends RowData = unknown> {
-    onCellEdit?: (
-      cellId: string,
-      info: CellEditInfo<TData, unknown>,
-    ) => void;
-    onCellValidationError?: (
-      cellId: string,
-      error: string,
-    ) => void;
+    onCellEdit?: (cellId: string, info: CellEditInfo<TData, unknown>) => void;
+    onCellValidationError?: (cellId: string, error: string) => void;
     clearCellValidationError?: (cellId: string) => void;
     cellEdits?: Record<string, CellEditInfo<TData, unknown>>;
     isInEditMode?: boolean;
@@ -69,37 +75,121 @@ declare module "@tanstack/react-table" {
   }
 }
 
-export interface BaseTableProps<
-  TData extends RowData,
-> {
+export interface BaseTableProps<TData extends RowData> {
+  /**
+   * The TanStack React Table instance backing the table. Build it with
+   * `useReactTable` (see the `useColumnDefs` / `useObjectTableData` hooks for
+   * the pieces `ObjectTable` itself feeds in).
+   */
   table: Table<TData>;
+
+  /**
+   * Whether a fetch is in flight. While loading with no rows yet, a skeleton
+   * table is rendered in place of the header and body; while loading with rows
+   * already present, an extra skeleton row is appended and further
+   * `fetchNextPage` calls are suppressed.
+   */
   isLoading?: boolean;
+
+  /**
+   * Loads the next page of rows. Called when the user scrolls near the bottom
+   * of the table. Omit it to disable infinite scrolling.
+   */
   fetchNextPage?: () => Promise<void>;
+
+  /**
+   * Called when a row is clicked.
+   *
+   * @param row The row data of the clicked row
+   */
   onRowClick?: (row: TData) => void;
+
+  /**
+   * Called when a column header is clicked.
+   *
+   * The dropdown menu trigger is excluded — clicking the chevron opens the
+   * header menu instead of firing this callback.
+   *
+   * @param columnId The id of the clicked column
+   */
   onColumnHeaderClick?: (columnId: string) => void;
+
+  /**
+   * The height of each row in pixels. Also drives row virtualization, so an
+   * accurate value keeps scrolling smooth.
+   *
+   * @default 40
+   */
   rowHeight?: number;
+
+  /**
+   * If provided, will render this context menu when right clicking on a cell
+   */
   renderCellContextMenu?: (
     row: TData,
     cell: Cell<TData, unknown>,
   ) => React.ReactNode;
-  className?: string;
-  error?: Error;
+
+  /**
+   * Toggles which items appear in the column header menu (sorting, pinning,
+   * resizing, and so on). Every flag defaults to shown. See
+   * {@link HeaderMenuFeatureFlags}.
+   */
   headerMenuFeatureFlags?: HeaderMenuFeatureFlags;
+
+  /**
+   * Wiring for inline cell editing — pending edits, edit-mode state, and the
+   * submit/clear/validation callbacks. Omit it to render a read-only table.
+   * `useEditableTable` produces this shape. See {@link EditableConfig}.
+   */
   editableConfig?: EditableConfig<TData, unknown>;
-  getRowAttributes?: (
-    object: TData,
-  ) => Record<string, string | undefined>;
+
   /**
    * Whether to render the bottom edit footer. Defaults to `true`; the
    * footer is only rendered when the table has at least one editable
    * column (`hasEditableColumns`).
    */
   showEditFooter?: boolean;
+
+  /**
+   * The row ID of the row to render as visually focused. When provided, focus state is controlled by the caller.
+   */
+  focusedRowId?: string | null;
+
+  /**
+   * Fires whenever the focused row changes, in both controlled and
+   * uncontrolled modes.
+   */
+  onFocusedRowChanged?: (row: TData | null) => void;
+
+  /**
+   * Render override for the empty state. Called when the table has no
+   * rows and no error. When omitted, a default "No Data" indicator is
+   * rendered.
+   */
+  renderEmptyState?: () => React.ReactNode;
+
+  /**
+   * A fetch error to surface. When set, an error message is rendered in place
+   * of the empty state.
+   */
+  error?: Error;
+
+  /**
+   * Returns extra HTML attributes (typically `data-*`) to apply to each
+   * row element. Use this to drive conditional row styling
+   */
+  getRowAttributes?: (object: TData) => Record<string, string | undefined>;
+
+  /**
+   * Class name applied to the table's outermost wrapper element.
+   */
+  className?: string;
 }
 
-export function BaseTable<
-  TData extends RowData,
->(props: BaseTableProps<TData>): ReactElement {
+export function BaseTable<TData extends RowData>(
+  props: BaseTableProps<TData>,
+): ReactElement {
   return (
     <PortalTrackerProvider>
       <BaseTableInner {...props} />
@@ -107,28 +197,47 @@ export function BaseTable<
   );
 }
 
-function BaseTableInner<
-  TData extends RowData,
->(
-  {
-    table,
-    isLoading,
-    fetchNextPage,
-    onRowClick,
-    onColumnHeaderClick,
-    rowHeight,
-    renderCellContextMenu,
-    className,
-    error,
-    headerMenuFeatureFlags,
-    editableConfig,
-    getRowAttributes,
-    showEditFooter = true,
-  }: BaseTableProps<TData>,
-): ReactElement {
+function BaseTableInner<TData extends RowData>({
+  table,
+  isLoading,
+  fetchNextPage,
+  onRowClick,
+  onColumnHeaderClick,
+  rowHeight,
+  renderCellContextMenu,
+  className,
+  error,
+  headerMenuFeatureFlags,
+  editableConfig,
+  getRowAttributes,
+  showEditFooter = true,
+  renderEmptyState,
+  focusedRowId: focusedRowIdProp,
+  onFocusedRowChanged,
+}: BaseTableProps<TData>): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const objectTablePortalRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
+
+  const getRowById = useCallback(
+    (id: string) => {
+      try {
+        return table.getRow(id, true)?.original ?? null;
+      } catch {
+        // table.getRow throws when the id no longer matches a row
+        // (e.g. the row was removed or has not loaded yet). Treat a
+        // missing row as "no focus" rather than crashing.
+        return null;
+      }
+    },
+    [table],
+  );
+
+  const { focusedRowId, setFocusedRowId } = useFocusedRow<TData>({
+    focusedRowId: focusedRowIdProp,
+    onFocusedRowChanged,
+    getRowById,
+  });
   const portalTracker = usePortalTracker();
 
   // Sync focusedRowId into table meta so cell renderers (which only
@@ -154,8 +263,9 @@ function BaseTableInner<
       if (containerRefElement && !fetchingRef.current && !isLoadingMore) {
         const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
         if (
-          scrollHeight - scrollTop - clientHeight < SCROLL_FETCH_THRESHOLD
-          && !isLoading && fetchNextPage != null
+          scrollHeight - scrollTop - clientHeight < SCROLL_FETCH_THRESHOLD &&
+          !isLoading &&
+          fetchNextPage != null
         ) {
           fetchingRef.current = true;
           setIsLoadingMore(true);
@@ -184,7 +294,7 @@ function BaseTableInner<
   const hasEditableColumns = table
     .getAllColumns()
     .some((column) =>
-      isColumnDeclaredEditable(column.columnDef.meta?.editable)
+      isColumnDeclaredEditable(column.columnDef.meta?.editable),
     );
 
   // Use pointerdown instead of click to detect outside interactions.
@@ -198,9 +308,9 @@ function BaseTableInner<
     const handleClickOutside = (event: PointerEvent) => {
       const target = event.target as Node;
       if (
-        tableContainerRef.current
-        && !tableContainerRef.current.contains(target)
-        && !portalTracker?.containsElement(target)
+        tableContainerRef.current &&
+        !tableContainerRef.current.contains(target) &&
+        !portalTracker?.containsElement(target)
       ) {
         setFocusedRowId(null);
       }
@@ -210,26 +320,28 @@ function BaseTableInner<
     return () => {
       document.removeEventListener("pointerdown", handleClickOutside);
     };
-  }, [portalTracker]);
+  }, [portalTracker, setFocusedRowId]);
 
   return (
-    <div className={classNames(styles.osdkTableWrapper, className)}>
+    <PortalContainerProvider container={objectTablePortalRef}>
       <div
-        ref={tableContainerRef}
-        className={styles.osdkTableContainer}
-        onScroll={handleScroll}
+        ref={objectTablePortalRef}
+        className={classNames(styles.osdkTableWrapper, className)}
       >
-        <table>
-          {isLoading && !hasData
-            ? (
+        <div
+          ref={tableContainerRef}
+          className={styles.osdkTableContainer}
+          onScroll={handleScroll}
+        >
+          <table>
+            {isLoading && !hasData ? (
               <LoadingStateTable
                 table={table}
                 headerGroups={headerGroups}
                 rowHeight={rowHeight}
                 tableContainerRef={tableContainerRef}
               />
-            )
-            : (
+            ) : (
               <>
                 <TableHeader
                   table={table}
@@ -251,18 +363,25 @@ function BaseTableInner<
                 />
               </>
             )}
-        </table>
-        {!hasData && error == null && <NonIdealState message={"No Data"} />}
-        {error != null && (
-          <NonIdealState message={`Error Loading Data: ${error.message}`} />
+          </table>
+          {!hasData &&
+            error == null &&
+            (renderEmptyState != null ? (
+              renderEmptyState()
+            ) : (
+              <NonIdealState message={"No Data"} />
+            ))}
+          {error != null && (
+            <NonIdealState message={`Error Loading Data: ${error.message}`} />
+          )}
+        </div>
+        {showEditFooter && hasEditableColumns && editableConfig && (
+          <TableEditContainer
+            editableConfig={editableConfig}
+            hasFocusedRow={focusedRowId != null}
+          />
         )}
       </div>
-      {showEditFooter && hasEditableColumns && editableConfig && (
-        <TableEditContainer
-          editableConfig={editableConfig}
-          focusedRowId={focusedRowId}
-        />
-      )}
-    </div>
+    </PortalContainerProvider>
   );
 }

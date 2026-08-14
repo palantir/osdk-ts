@@ -55,6 +55,7 @@ export type {
   ReportUsageMetadataResponse,
   SetUsageSettingsByOrganizationRequest,
   SetUsageSettingsByOrganizationResponse,
+  UndeclaredEntities,
   UsageOverall,
   UsagePerDay,
   UsagePerObjectType,

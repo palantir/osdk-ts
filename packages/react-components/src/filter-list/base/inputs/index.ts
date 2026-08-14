@@ -20,7 +20,7 @@ export {
   parseDateFromInput,
 } from "../../../shared/dateUtils.js";
 export { ContainsTextInput } from "./ContainsTextInput.js";
-export { DateRangeInput } from "./DateRangeInput.js";
+export { DateRangeHistogramInput } from "./DateRangeHistogramInput.js";
 export { NullValueWrapper } from "./NullValueWrapper.js";
 export { NumberRangeInput } from "./NumberRangeInput.js";
 export { RangeInput } from "./RangeInput.js";

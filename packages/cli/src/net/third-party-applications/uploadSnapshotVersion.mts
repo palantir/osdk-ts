@@ -38,16 +38,13 @@ export async function uploadSnapshotVersion(
   }
   const url = urlObj.toString();
 
-  const result = await fetch(
-    url,
-    {
-      method: "POST",
-      body: zipFile,
-      headers: {
-        "Content-Type": "application/octet-stream",
-      },
-      duplex: "half", // Node hates me
-    } satisfies RequestInit & { duplex: "half" } as any,
-  );
+  const result = await fetch(url, {
+    method: "POST",
+    body: zipFile,
+    headers: {
+      "Content-Type": "application/octet-stream",
+    },
+    duplex: "half", // Node hates me
+  } satisfies RequestInit & { duplex: "half" } as any);
   return result.json();
 }

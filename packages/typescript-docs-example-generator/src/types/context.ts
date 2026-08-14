@@ -53,6 +53,7 @@ export interface BaseTemplateContext {
   propertyValueIncrementedV2: number;
   distanceUnit: string;
   arrayElementValue: string;
+  arrayContains?: boolean;
   timeUnit: string;
   actionApiName: string;
   attachmentProperty: string;

@@ -29,8 +29,10 @@ export function shouldShowEditableCell<TData>(
   onCellEdit: unknown,
   isInEditMode: boolean | undefined,
 ): boolean {
-  return editable != null
-    && editable !== false
-    && onCellEdit != null
-    && isInEditMode === true;
+  return (
+    editable != null &&
+    editable !== false &&
+    onCellEdit != null &&
+    isInEditMode === true
+  );
 }

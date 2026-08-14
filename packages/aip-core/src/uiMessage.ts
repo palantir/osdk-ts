@@ -47,19 +47,19 @@ export type UIMessageChunk =
   | { type: "reasoning-delta"; id: string; delta: string }
   | { type: "reasoning-end"; id: string }
   | {
-    type: "tool-input-available";
-    toolCallId: string;
-    toolName: string;
-    input: unknown;
-  }
+      type: "tool-input-available";
+      toolCallId: string;
+      toolName: string;
+      input: unknown;
+    }
   | { type: "finish-step" }
   | {
-    type: "finish";
-    messageMetadata?: {
-      finishReason?: FinishReason;
-      usage?: LanguageModelUsage;
-    };
-  }
+      type: "finish";
+      messageMetadata?: {
+        finishReason?: FinishReason;
+        usage?: LanguageModelUsage;
+      };
+    }
   | { type: "error"; errorText: string };
 
 export type ChatTransportTrigger = "submit-message" | "regenerate-message";

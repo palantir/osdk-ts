@@ -16,6 +16,7 @@
 
 import type { ObjectTypeDefinition } from "@osdk/api";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 
@@ -29,9 +30,7 @@ interface FilterVisibilityResult<D> {
   resetVisibility: () => void;
 }
 
-export function useFilterVisibility<
-  Q extends ObjectTypeDefinition,
->(
+export function useFilterVisibility<Q extends ObjectTypeDefinition>(
   filterDefinitions: Array<FilterDefinitionUnion<Q>> | undefined,
   onVisibilityChange?: (visibleKeys: string[], hiddenKeys: string[]) => void,
 ): FilterVisibilityResult<FilterDefinitionUnion<Q>> {
@@ -43,7 +42,7 @@ export function useFilterVisibility<
   const defaultVisibleKeyOrder = useMemo(
     () =>
       filterDefinitions
-        ?.filter(def => def.isVisible !== false)
+        ?.filter((def) => def.isVisible !== false)
         .map(getFilterKey) ?? [],
     [filterDefinitions],
   );
@@ -114,38 +113,50 @@ export function useFilterVisibility<
     };
   }, [filterDefinitions, defByKey, visibleKeyOrder, allKeys]);
 
-  const showFilter = useCallback((key: string) => {
-    setVisibleKeyOrder((prev) => {
-      if (prev.includes(key)) return prev;
-      const next = [...prev, key];
-      fireVisibilityChange(next);
-      return next;
-    });
-  }, [fireVisibilityChange]);
+  const showFilter = useCallback(
+    (key: string) => {
+      setVisibleKeyOrder((prev) => {
+        if (prev.includes(key)) return prev;
+        const next = [...prev, key];
+        fireVisibilityChange(next);
+        return next;
+      });
+    },
+    [fireVisibilityChange],
+  );
 
-  const hideFilter = useCallback((key: string) => {
-    setVisibleKeyOrder((prev) => {
-      const next = prev.filter((k) => k !== key);
-      fireVisibilityChange(next);
-      return next;
-    });
-  }, [fireVisibilityChange]);
+  const hideFilter = useCallback(
+    (key: string) => {
+      setVisibleKeyOrder((prev) => {
+        const next = prev.filter((k) => k !== key);
+        fireVisibilityChange(next);
+        return next;
+      });
+    },
+    [fireVisibilityChange],
+  );
 
-  const reorderVisible = useCallback((keys: string[]) => {
-    setVisibleKeyOrder((prev) => {
-      if (keys.length === prev.length && keys.every((k, i) => k === prev[i])) {
-        return prev;
-      }
-      fireVisibilityChange(keys);
-      return keys;
-    });
-  }, [fireVisibilityChange]);
+  const reorderVisible = useCallback(
+    (keys: string[]) => {
+      setVisibleKeyOrder((prev) => {
+        if (
+          keys.length === prev.length &&
+          keys.every((k, i) => k === prev[i])
+        ) {
+          return prev;
+        }
+        fireVisibilityChange(keys);
+        return keys;
+      });
+    },
+    [fireVisibilityChange],
+  );
 
   const resetVisibility = useCallback(() => {
     setVisibleKeyOrder((prev) => {
       if (
-        defaultVisibleKeyOrder.length === prev.length
-        && defaultVisibleKeyOrder.every((k, i) => k === prev[i])
+        defaultVisibleKeyOrder.length === prev.length &&
+        defaultVisibleKeyOrder.every((k, i) => k === prev[i])
       ) {
         return prev;
       }
@@ -158,8 +169,8 @@ export function useFilterVisibility<
     if (visibleKeyOrder.length !== defaultVisibleKeyOrder.length) {
       return true;
     }
-    return !visibleKeyOrder.every((key, i) =>
-      key === defaultVisibleKeyOrder[i]
+    return !visibleKeyOrder.every(
+      (key, i) => key === defaultVisibleKeyOrder[i],
     );
   }, [visibleKeyOrder, defaultVisibleKeyOrder]);
 

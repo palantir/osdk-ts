@@ -14,33 +14,45 @@
  * limitations under the License.
  */
 
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { pathToFileURL } from "node:url";
+
 import type {
   LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
 } from "@osdk/client.unstable";
-import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
+import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
+import {
+  OntologyBlockDataToFullMetadataConverter,
+  OntologyIrToFullMetadataConverter,
+} from "@osdk/generator-converters.ontologyir";
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
 import { cleanAndValidateLinkTypeId } from "@osdk/maker";
 import { consola } from "consola";
-import { createJiti } from "jiti";
-import * as fs from "node:fs";
-import * as path from "node:path";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+
 import { defineOntologyV2 } from "../api/defineOntologyV2.js";
+import { getExternalRecommendations } from "../conversion/toMarketplace/RecommendationUtils.js";
+import type { LinkTypeIdsByApiName } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
   generateBackingDatasetBlockResultForLink,
   getNonEditOnlyProperties,
 } from "./generateBackingDataset.js";
+import {
+  generateValueTypeBlockResults,
+  getValueTypeInternalMappings,
+} from "./generateValueTypeBlockResults.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
 import type { InputMappingEntry } from "./marketplaceSerialization/supportingTypes.js";
 
-const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
+const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/u;
 const uuidRegex =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u;
 
 export default async function main(
   args: string[] = process.argv,
@@ -50,13 +62,16 @@ export default async function main(
   const commandLineOpts: {
     input: string;
     output: string;
+    valueTypesOutput: string;
     apiNamespace: string;
     buildDir: string;
+    codegenDir?: string;
     temporaryBlockDataFile?: string;
     functionsDir?: string;
     nodeModulesDir?: string;
     functionsIrOutputFile?: string;
     randomnessKey?: string;
+    importJson?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -72,9 +87,15 @@ export default async function main(
       },
       output: {
         alias: "o",
-        describe: "Output file for BlockGeneratorResult JSON",
+        describe: "Output file for ontology BlockGeneratorResult JSON",
         type: "string",
         default: "build/block_generator_result.json",
+        coerce: path.resolve,
+      },
+      valueTypesOutput: {
+        describe: "Output file for value types BlockGeneratorResult JSON",
+        type: "string",
+        default: "build/value_types_block_generator_result.json",
         coerce: path.resolve,
       },
       apiNamespace: {
@@ -87,6 +108,13 @@ export default async function main(
         describe: "Directory for build files",
         type: "string",
         default: "build/",
+        coerce: path.resolve,
+      },
+      codegenDir: {
+        alias: "c",
+        describe:
+          "Output directory for generated TypeScript files (defaults to the parent of the input file's directory)",
+        type: "string",
         coerce: path.resolve,
       },
       temporaryBlockDataFile: {
@@ -112,14 +140,21 @@ export default async function main(
         describe: "Value used to assure uniqueness of entities",
         type: "string",
       },
+      "import-json": {
+        describe:
+          "Path to imported ontology metadata produced by 'foundry import ontology'",
+        type: "string",
+        coerce: path.resolve,
+      },
     })
     .parseAsync();
 
   let apiNamespace = "";
   if (commandLineOpts.apiNamespace.length !== 0) {
-    apiNamespace = (commandLineOpts.apiNamespace.slice(-1) !== ".")
-      ? commandLineOpts.apiNamespace + "."
-      : commandLineOpts.apiNamespace;
+    apiNamespace =
+      commandLineOpts.apiNamespace.slice(-1) !== "."
+        ? commandLineOpts.apiNamespace + "."
+        : commandLineOpts.apiNamespace;
     invariant(apiNamespace.length < 1024, "API namespace is too long.");
     invariant(
       apiNamespaceRegex.test(apiNamespace),
@@ -153,8 +188,8 @@ export default async function main(
       );
       process.exit(1);
     }
-    const previewMetadata = PreviewOntologyIrConverter
-      .getPreviewFullMetadataFromBlockData(
+    const previewMetadata =
+      PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData(
         blockDataJson as Parameters<
           typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData
         >[0],
@@ -175,16 +210,42 @@ export default async function main(
     );
   }
 
+  // Default the codegen output directory to the parent of the input file's directory.
+  const codegenDir =
+    commandLineOpts.codegenDir ??
+    path.dirname(path.dirname(commandLineOpts.input));
+
+  const dependencyFile = path.join(
+    commandLineOpts.buildDir,
+    "dependencies.json",
+  );
+  if (!fs.existsSync(dependencyFile)) {
+    await fs.promises.mkdir(commandLineOpts.buildDir, { recursive: true });
+  }
+
+  const importedLinkTypeIdsByApiName =
+    commandLineOpts.importJson && fs.existsSync(commandLineOpts.importJson)
+      ? getImportedLinkTypeIdsByApiName(
+          JSON.parse(
+            await fs.promises.readFile(commandLineOpts.importJson, "utf-8"),
+          ) as ImportedOntologyMetadata,
+        )
+      : undefined;
+
   const {
     ontologyIr,
     shapes,
+    importedInputPresets,
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
   } = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
+    codegenDir,
+    dependencyFile,
     functionsIrFile,
     commandLineOpts.randomnessKey,
+    importedLinkTypeIdsByApiName,
   );
 
   // Create temp directory for block data
@@ -198,6 +259,37 @@ export default async function main(
   const ontologyJson = JSON.stringify(ontologyIr.ontology, null, 2);
   await fs.promises.writeFile(ontologyJsonPath, ontologyJson);
   consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
+
+  const importedMetadata =
+    OntologyBlockDataToFullMetadataConverter.getFullMetadataFromBlockData(
+      ontologyIr.importedOntology,
+      undefined,
+      ontologyIr.transitiveImportedOntology,
+    );
+  const directlyImportedInterfaceTypes = Object.values(
+    ontologyIr.importedOntology.interfaceTypes,
+  ).map(({ interfaceType }) => interfaceType.apiName);
+  const importedMetadataPath = path.join(
+    commandLineOpts.buildDir,
+    "oac-imported-metadata.json",
+  );
+  await fs.promises.writeFile(
+    importedMetadataPath,
+    JSON.stringify(
+      { ...importedMetadata, directlyImportedInterfaceTypes },
+      null,
+      2,
+    ),
+  );
+  consola.info(`Wrote oac-imported-metadata.json to ${importedMetadataPath}`);
+
+  let valueTypeResults: BlockGeneratorResult[] = [];
+  if (ontologyIr.valueTypes.length > 0) {
+    valueTypeResults = await generateValueTypeBlockResults(
+      ontologyIr.valueTypes,
+      commandLineOpts.buildDir,
+    );
+  }
 
   // Collect input_mapping_entries for the ontology block
   // These map ontology inputs to datasource block outputs for objects with includeEmptyBackingDatasource
@@ -215,9 +307,8 @@ export default async function main(
     // The ontology block has inputs with these readable IDs (from shape extraction)
     // Map them to the datasource block's outputs (which use the same readable IDs)
     const inputDatasetReadableId = ReadableIdGenerator.getForDataset(apiName);
-    const outputDatasetReadableId = ReadableIdGenerator.getForDatasetOutput(
-      apiName,
-    );
+    const outputDatasetReadableId =
+      ReadableIdGenerator.getForDatasetOutput(apiName);
     if (shapes.inputShapes.has(inputDatasetReadableId)) {
       ontologyInputMappingEntries.push({
         input: inputDatasetReadableId,
@@ -230,8 +321,8 @@ export default async function main(
         apiName,
         prop.apiName!,
       );
-      const getForDatasetColumnOutput = ReadableIdGenerator
-        .getForDatasetColumnOutput(apiName, prop.apiName!);
+      const getForDatasetColumnOutput =
+        ReadableIdGenerator.getForDatasetColumnOutput(apiName, prop.apiName!);
       if (shapes.inputShapes.has(colInputReadableId)) {
         ontologyInputMappingEntries.push({
           input: colInputReadableId,
@@ -287,35 +378,41 @@ export default async function main(
     }
   }
 
+  ontologyInputMappingEntries.push(
+    ...getValueTypeInternalMappings(ontologyIr.valueTypes, shapes.inputShapes),
+  );
+
   // Generate backing datasource BlockGeneratorResults for objects with includeEmptyBackingDatasource
   const backingDsGeneratorResults = await Promise.all(
-    backingDatasourceApiNames.filter(apiName => {
-      const objectTypeBlockData = findObjectTypeByApiName(
-        ontologyIr.ontology.objectTypes,
-        apiName,
-      );
-      return objectTypeBlockData !== undefined;
-    }).map(async apiName => {
-      const objectTypeBlockData = findObjectTypeByApiName(
-        ontologyIr.ontology.objectTypes,
-        apiName,
-      );
-      consola.info(
-        `Generating backing datasource BlockGeneratorResult for ${apiName}...`,
-      );
+    backingDatasourceApiNames
+      .filter((apiName) => {
+        const objectTypeBlockData = findObjectTypeByApiName(
+          ontologyIr.ontology.objectTypes,
+          apiName,
+        );
+        return objectTypeBlockData !== undefined;
+      })
+      .map(async (apiName) => {
+        const objectTypeBlockData = findObjectTypeByApiName(
+          ontologyIr.ontology.objectTypes,
+          apiName,
+        );
+        consola.info(
+          `Generating backing datasource BlockGeneratorResult for ${apiName}...`,
+        );
 
-      return await generateBackingDatasetBlockResult(
-        objectTypeBlockData!,
-        commandLineOpts.buildDir,
-        commandLineOpts.randomnessKey,
-      );
-    }),
+        return await generateBackingDatasetBlockResult(
+          objectTypeBlockData!,
+          commandLineOpts.buildDir,
+          commandLineOpts.randomnessKey,
+        );
+      }),
   );
 
   // Generate backing datasource BlockGeneratorResults for link types with includeEmptyBackingDatasource
   const backingDsLinkGeneratorResults = await Promise.all(
     backingDatasourceLinkApiNames
-      .map(linkApiName => {
+      .map((linkApiName) => {
         const linkTypeBlockData = findLinkTypeByApiName(
           ontologyIr.ontology.linkTypes,
           linkApiName,
@@ -332,9 +429,7 @@ export default async function main(
           commandLineOpts.randomnessKey,
         );
       })
-      .filter(
-        (p): p is Promise<BlockGeneratorResult> => p !== undefined,
-      ),
+      .filter((p): p is Promise<BlockGeneratorResult> => p !== undefined),
   );
 
   // Create BlockGeneratorResult
@@ -344,9 +439,15 @@ export default async function main(
     oci_block_data_metadata: undefined,
     maven_block_data_metadata: undefined,
     inputs: Object.fromEntries(shapes.inputShapes),
+    input_presets: Object.fromEntries(importedInputPresets),
     outputs: Object.fromEntries(shapes.outputShapes),
     input_mapping_entries: ontologyInputMappingEntries,
-    external_recommendations: [],
+    external_recommendations: getExternalRecommendations(
+      ontologyIr.importedOntology,
+      ontologyIr.valueTypes,
+      ontologyIr.importedValueTypes,
+      shapes.inputShapes,
+    ),
     add_on_override: undefined,
     input_shape_metadata: Object.fromEntries(shapes.inputShapeMetadata),
     block_type: "ONTOLOGY",
@@ -358,41 +459,64 @@ export default async function main(
       blockGeneratorResult,
       ...backingDsGeneratorResults,
       ...backingDsLinkGeneratorResults,
+      ...valueTypeResults,
     ],
     null,
     2,
   );
-  await fs.promises.writeFile(
-    commandLineOpts.output,
-    blockGeneratorResultJson,
-  );
-  consola.success(
-    `BlockGeneratorResult written to ${commandLineOpts.output}`,
-  );
-  consola.info(
-    `Block data directory: ${blockDataDir}`,
-  );
+  await fs.promises.writeFile(commandLineOpts.output, blockGeneratorResultJson);
+  consola.success(`BlockGeneratorResult written to ${commandLineOpts.output}`);
+  consola.info(`Block data directory: ${blockDataDir}`);
+
+  if (valueTypeResults.length > 0) {
+    const valueTypeResultsJson = JSON.stringify(valueTypeResults, null, 2);
+    await fs.promises.writeFile(
+      commandLineOpts.valueTypesOutput,
+      valueTypeResultsJson,
+    );
+    consola.success(
+      `Value type BlockGeneratorResult written to ${commandLineOpts.valueTypesOutput}`,
+    );
+  }
 }
 
 async function loadOntology(
   input: string,
   apiNamespace: string,
+  outputDir?: string,
+  dependencyFile?: string,
   functionsIrFile?: string,
   randomnessKey?: string,
+  importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
 ) {
   const result = await defineOntologyV2(
     apiNamespace,
-    async () => {
-      const jiti = createJiti(import.meta.filename, {
-        moduleCache: true,
-        debug: false,
-        importMeta: import.meta,
-      });
-      const module = await jiti.import(input);
-    },
+    async () => await import(pathToFileURL(input).href),
+    outputDir,
+    dependencyFile,
     functionsIrFile,
     randomnessKey,
+    importedLinkTypeIdsByApiName,
   );
+  return result;
+}
+
+type ImportedOntologyMetadata = OntologyFullMetadata & {
+  linkTypeIdsByRid?: Record<string, string>;
+};
+
+function getImportedLinkTypeIdsByApiName(
+  metadata: ImportedOntologyMetadata,
+): LinkTypeIdsByApiName {
+  const result: Record<string, string> = {};
+  for (const objectType of Object.values(metadata.objectTypes)) {
+    for (const linkType of objectType.linkTypes) {
+      const linkTypeId = metadata.linkTypeIdsByRid?.[linkType.linkTypeRid];
+      if (linkTypeId !== undefined) {
+        result[cleanAndValidateLinkTypeId(linkType.apiName)] = linkTypeId;
+      }
+    }
+  }
   return result;
 }
 
@@ -416,7 +540,5 @@ function findLinkTypeByApiName(
   apiName: string,
 ): LinkTypeBlockDataV2 | undefined {
   const linkTypeId = cleanAndValidateLinkTypeId(apiName);
-  return Object.values(linkTypes).find(
-    (lt) => lt.linkType.id === linkTypeId,
-  );
+  return Object.values(linkTypes).find((lt) => lt.linkType.id === linkTypeId);
 }

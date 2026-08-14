@@ -35,14 +35,15 @@ export namespace SimplePropertyDef {
     // | (P["multiplicity"] extends true ? Array<P["type"]> : P["type"])
     // | (P["nullable"] extends true ? undefined : never);
     // we do:
-    M extends "array" ? N extends "nullable" ? Array<T> | undefined
-      : Array<T>
-      : N extends "nullable" ? T | undefined
-      : T;
+    M extends "array"
+      ? N extends "nullable"
+        ? Array<T> | undefined
+        : Array<T>
+      : N extends "nullable"
+        ? T | undefined
+        : T;
 
-  export type FromPropertyMetadata<
-    P extends ObjectMetadata.Property,
-  > = Make<
+  export type FromPropertyMetadata<P extends ObjectMetadata.Property> = Make<
     P["type"],
     P["nullable"] extends true ? "nullable" : "non-nullable",
     P["multiplicity"] extends true ? "array" : "single"
@@ -50,23 +51,21 @@ export namespace SimplePropertyDef {
 
   // exported for testing
   export type ExtractMultiplicity<
-    T extends
-      | WirePropertyTypes
-      | undefined
-      | Array<WirePropertyTypes>,
+    T extends WirePropertyTypes | undefined | Array<WirePropertyTypes>,
   > = NonNullable<T> extends Array<any> ? "array" : "single";
 
   // exported for testing
-  export type ExtractWirePropertyType<
-    T extends SimplePropertyDef,
-  > = T extends Array<infer Z> ? NonNullable<Z> : NonNullable<T>;
+  export type ExtractWirePropertyType<T extends SimplePropertyDef> =
+    T extends Array<infer Z> ? NonNullable<Z> : NonNullable<T>;
 
   // exported for testing
-  export type ExtractNullable<
-    T extends SimplePropertyDef,
-  > = [undefined] extends [T] ? "nullable"
-    : [[undefined]] extends [T] ? "nullable"
-    : "non-nullable";
+  export type ExtractNullable<T extends SimplePropertyDef> = [
+    undefined,
+  ] extends [T]
+    ? "nullable"
+    : [[undefined]] extends [T]
+      ? "nullable"
+      : "non-nullable";
 
   export type ToPropertyDef<S extends SimplePropertyDef> = PropertyDef<
     SimplePropertyDef.ExtractWirePropertyType<S>,
@@ -83,8 +82,8 @@ export namespace SimplePropertyDef {
     ExtractMultiplicity<S> extends "array"
       ? ExtractNullable<S> extends "nullable"
         ? Array<ExtractRuntimeBaseType<S>> | undefined
-      : Array<ExtractRuntimeBaseType<S>>
+        : Array<ExtractRuntimeBaseType<S>>
       : ExtractNullable<S> extends "nullable"
         ? ExtractRuntimeBaseType<S> | undefined
-      : ExtractRuntimeBaseType<S>;
+        : ExtractRuntimeBaseType<S>;
 }

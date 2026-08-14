@@ -17,12 +17,17 @@
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
+
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
+import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
+import { getOptionLabelText, OptionLabel } from "./OptionLabel.js";
+import { SelectInputSkeleton } from "./SelectInputSkeleton.js";
+
 import sharedStyles from "./shared.module.css";
 import styles from "./TextTagsInput.module.css";
 
-const TAG_SEPARATOR_PATTERN = /[,\n]/;
+const TAG_SEPARATOR_PATTERN = /[,\n]/u;
 
 interface TagItemProps {
   tag: string;
@@ -34,14 +39,16 @@ const TagItem = memo(function TagItem({ tag, onRemove }: TagItemProps) {
     onRemove(tag);
   }, [tag, onRemove]);
 
+  const displayLabel = getOptionLabelText(tag);
+
   return (
     <span className={sharedStyles.tag}>
-      {tag}
+      <OptionLabel value={tag} />
       <Button
         type="button"
         className={sharedStyles.tagRemove}
         onClick={handleRemove}
-        aria-label={`Remove ${tag}`}
+        aria-label={`Remove ${displayLabel}`}
       >
         ×
       </Button>
@@ -76,6 +83,7 @@ function TextTagsInputInner({
   suggestionLimit = 10,
   ariaLabel = "Add tag",
 }: TextTagsInputProps): React.ReactElement {
+  const collisionBoundary = useFilterListBoundary();
   const [inputValue, setInputValue] = useState("");
 
   const filteredSuggestions = useMemo(() => {
@@ -84,9 +92,8 @@ function TextTagsInputInner({
     return suggestions
       .filter(
         (s) =>
-          (!inputValue.trim()
-            || s.value.toLowerCase().includes(lowerInput))
-          && !tags.includes(s.value),
+          (!inputValue.trim() || s.value.toLowerCase().includes(lowerInput)) &&
+          !tags.includes(s.value),
       )
       .slice(0, suggestionLimit);
   }, [suggestions, inputValue, tags, suggestionLimit]);
@@ -116,12 +123,9 @@ function TextTagsInputInner({
     [onChange],
   );
 
-  const handleInputValueChange = useCallback(
-    (value: string) => {
-      setInputValue(value);
-    },
-    [],
-  );
+  const handleInputValueChange = useCallback((value: string) => {
+    setInputValue(value);
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -161,8 +165,12 @@ function TextTagsInputInner({
     <div
       className={classnames(styles.textTags, className)}
       style={style}
-      data-loading={isLoading}
+      data-loading={isLoading && suggestions.length > 0}
     >
+      <span className={sharedStyles.srOnly} role="status">
+        {isLoading ? "Loading options" : ""}
+      </span>
+
       {error && (
         <div className={sharedStyles.errorMessage}>
           Error loading suggestions: {error.message}
@@ -193,38 +201,32 @@ function TextTagsInputInner({
         />
 
         <Combobox.Portal>
-          <Combobox.Positioner>
+          <Combobox.Positioner collisionBoundary={collisionBoundary}>
             <Combobox.Popup>
-              {filteredSuggestions.length === 0
-                ? (
-                  allowCustomTags && inputValue.trim()
-                    ? (
-                      <Combobox.Empty>
-                        Press Enter to add "{inputValue}"
-                      </Combobox.Empty>
-                    )
-                    : (
-                      <Combobox.Empty>
-                        {suggestionLimit
-                          ? "No suggestions"
-                          : "Type to add a tag"}
-                      </Combobox.Empty>
-                    )
+              {filteredSuggestions.length === 0 ? (
+                allowCustomTags && inputValue.trim() ? (
+                  <Combobox.Empty>
+                    Press Enter to add "{inputValue}"
+                  </Combobox.Empty>
+                ) : (
+                  <Combobox.Empty>
+                    {suggestionLimit ? "No suggestions" : "Type to add a tag"}
+                  </Combobox.Empty>
                 )
-                : filteredSuggestions.map(({ value, count }) => (
+              ) : (
+                filteredSuggestions.map(({ value, count }) => (
                   <Combobox.Item key={value} value={value}>
-                    {value} ({count.toLocaleString()})
+                    <OptionLabel value={value} /> ({count.toLocaleString()})
                   </Combobox.Item>
-                ))}
+                ))
+              )}
             </Combobox.Popup>
           </Combobox.Positioner>
         </Combobox.Portal>
       </Combobox.Root>
 
-      {isLoading && !!suggestionLimit && (
-        <div className={sharedStyles.loadingMessage}>
-          Loading suggestions...
-        </div>
+      {!error && suggestions.length === 0 && isLoading && !!suggestionLimit && (
+        <SelectInputSkeleton />
       )}
     </div>
   );

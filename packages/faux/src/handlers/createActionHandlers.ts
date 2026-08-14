@@ -15,6 +15,7 @@
  */
 
 import type { RequestHandler } from "msw";
+
 import { ApplyActionFailedError } from "../errors.js";
 import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
 import { OntologiesV2 } from "../mock/index.js";

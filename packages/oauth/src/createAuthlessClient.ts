@@ -20,6 +20,7 @@
  * @returns A token provider function that returns a Promise resolving to a public token
  */
 export function createAuthlessClient(): () => Promise<string> {
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   return async () => {
     return "PUBLIC";
   };

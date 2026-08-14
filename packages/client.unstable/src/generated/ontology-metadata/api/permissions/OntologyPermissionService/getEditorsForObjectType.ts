@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetEditorsForObjectTypeRequest
-    as _api_permissions_GetEditorsForObjectTypeRequest,
-  GetEditorsForObjectTypeResponse
-    as _api_permissions_GetEditorsForObjectTypeResponse,
+  GetEditorsForObjectTypeRequest as _api_permissions_GetEditorsForObjectTypeRequest,
+  GetEditorsForObjectTypeResponse as _api_permissions_GetEditorsForObjectTypeResponse,
 } from "../__components.js";
 
 /**

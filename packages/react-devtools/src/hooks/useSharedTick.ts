@@ -24,7 +24,7 @@ function startTick() {
   if (!tickInterval) {
     tickInterval = setInterval(() => {
       tickVersion++;
-      tickListeners.forEach(fn => fn());
+      tickListeners.forEach((fn) => fn());
     }, 1000);
   }
 }

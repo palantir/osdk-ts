@@ -21,6 +21,7 @@ import {
 } from "@osdk/api/unstable";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import type { Transformation } from "@osdk/foundry.mediasets";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 /**
@@ -71,7 +72,7 @@ export async function transformAndWaitInternal(
       throw new MediaTransformationFailedError(jobId);
     }
     if (status !== "SUCCESSFUL") {
-      await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
+      await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
     }
   }
 

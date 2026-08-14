@@ -373,8 +373,7 @@ export type SafeEventType =
   | SafeEventType_notSavedObjectSetEvent
   | SafeEventType_functionGeneratedObjectSetEvent;
 
-export interface SafeExpiryConfig {
-}
+export interface SafeExpiryConfig {}
 export interface SafeFoundryLogicEffect {
   executionMode?: _api_ExecutionMode | null | undefined;
   executionSettings?: _api_EffectExecutionSettings | null | undefined;
@@ -433,8 +432,7 @@ export interface SafeMonitor {
     _api_VersionedObjectSet
   >;
 }
-export interface SafeMonitorEventIdInput {
-}
+export interface SafeMonitorEventIdInput {}
 export interface SafeMonitorLogic_event {
   type: "event";
   event: SafeEvent;
@@ -516,8 +514,7 @@ export interface SafeMonitorMetadata {
     | undefined;
   triggerExecutionSettings?: _api_TriggerExecutionSettings | null | undefined;
 }
-export interface SafeMonitorRidInput {
-}
+export interface SafeMonitorRidInput {}
 export interface SafeMonitorSubscriber {
   recoveryEffects: Record<_api_EffectId, SafeEffect>;
   subscriberType: _api_MonitorSubscriberType;
@@ -580,8 +577,7 @@ export interface SafeNotSavedObjectSetEvent {
   eventType: _api_ObjectSetEventTypeV2;
   objectSetRid: _api_ObjectSetRid;
 }
-export interface SafeObjectReference {
-}
+export interface SafeObjectReference {}
 export interface SafeObjectReferenceList {
   objectList: Array<SafeObjectReference>;
 }
@@ -724,10 +720,8 @@ export type SafePredicateFunctionInput =
   | SafePredicateFunctionInput_versionedObjectSetRid
   | SafePredicateFunctionInput_objectSetRid;
 
-export interface SafeRateLimited {
-}
-export interface SafeRelativeTimestamp {
-}
+export interface SafeRateLimited {}
+export interface SafeRelativeTimestamp {}
 /**
  * Allows users to configure how side effects should be rendered for all the subscribers of this monitor.
  * User's effects (e.g. notifications) will only use these settings if they have a notification side effect
@@ -854,8 +848,7 @@ export type SafeTimeseriesIntermediateObjectTypeMonitorLogic =
   | SafeTimeseriesIntermediateObjectTypeMonitorLogic_event
   | SafeTimeseriesIntermediateObjectTypeMonitorLogic_scheduledEvent;
 
-export interface SafeUrl {
-}
+export interface SafeUrl {}
 export interface SafeUrlTarget_rid {
   type: "rid";
   rid: SafeUrlTargetRid;
@@ -871,8 +864,7 @@ export type SafeUrlTarget = SafeUrlTarget_rid | SafeUrlTarget_url;
  * The rid should either be a Compass rid or an Object rid. Anything else will render to the stack homepage.
  */
 export type SafeUrlTargetRid = string;
-export interface SafeUserProvided {
-}
+export interface SafeUserProvided {}
 export interface SafeValue {
   typeName: string;
 }
@@ -886,8 +878,7 @@ export interface SafeWaitTime {
 export interface SafeWebhookLocator {
   webhookRid: string;
 }
-export interface SafeWithRecoveryCondition {
-}
+export interface SafeWithRecoveryCondition {}
 export interface ScenarioTitleInput_currentProperty {
   type: "currentProperty";
   currentProperty: _api_ObjectChangedProperty;

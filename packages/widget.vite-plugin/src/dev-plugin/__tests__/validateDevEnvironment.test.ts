@@ -16,6 +16,7 @@
 
 import type { Logger } from "vite";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+
 import * as validateDevEnvironment from "../validateDevEnvironment.js";
 
 function createMockLogger(): Logger {

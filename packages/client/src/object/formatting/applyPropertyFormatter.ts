@@ -15,6 +15,7 @@
  */
 
 import type { ObjectMetadata, PropertyValueFormattingRule } from "@osdk/api";
+
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { formatBoolean } from "./formatBoolean.js";
 import { formatDateTime } from "./formatDateTime.js";

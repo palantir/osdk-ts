@@ -30,10 +30,7 @@ export async function deleteRelease(
   );
   urlObj.searchParams.set("preview", "true");
   const url = urlObj.toString();
-  await fetch(
-    url,
-    {
-      method: "DELETE",
-    },
-  );
+  await fetch(url, {
+    method: "DELETE",
+  });
 }

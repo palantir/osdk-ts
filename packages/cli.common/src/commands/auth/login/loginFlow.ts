@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import consola from "consola";
 import { getRandomValues, subtle } from "node:crypto";
 import { createServer } from "node:http";
 import { exit } from "node:process";
 import { parse } from "node:url";
+
+import consola from "consola";
 import open from "open";
+
 import { ensureTrailingSlash } from "../../../util/ensureTrailingSlash.js";
 import type { LoginArgs } from "./LoginArgs.js";
 import type { TokenResponse, TokenSuccessResponse } from "./token.js";
@@ -131,9 +133,9 @@ async function generateCodeChallenge(codeVerifier: string) {
   const digest = await subtle.digest("SHA-256", data);
   const codeChallengeMethod = "S256";
   const codeChallenge = btoa(String.fromCharCode(...new Uint8Array(digest)))
-    .replace(/\//g, "_")
-    .replace(/\+/g, "-")
-    .replace(/=/g, "");
+    .replace(/\//gu, "_")
+    .replace(/\+/gu, "-")
+    .replace(/=/gu, "");
   return {
     codeChallenge,
     codeChallengeMethod,
@@ -195,8 +197,9 @@ async function getTokenWithCodeVerifier(
   } catch (e) {
     throw new Error(
       `Failed to get token: ${
-        (e as { cause?: any })?.cause?.toString() ?? e?.toString()
-          ?? "Unknown error"
+        (e as { cause?: any })?.cause?.toString() ??
+        e?.toString() ??
+        "Unknown error"
       }`,
     );
   }

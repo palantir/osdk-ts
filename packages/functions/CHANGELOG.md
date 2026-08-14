@@ -1,5 +1,137 @@
 # @osdk/functions
 
+## 1.20.0
+
+### Minor Changes
+
+- feaf298: Add `Aliases.dataset`, `Aliases.mediaset`, and `Aliases.stream` APIs for resolving dataset, media set, and stream aliases
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/client@2.53.0
+
+## 1.19.0
+
+### Minor Changes
+
+- 21f7434: Fix EditBatch/WriteableClient `update` rejecting interface (and object) edits whose types have array-valued properties.
+
+### Patch Changes
+
+- Updated dependencies [bf4580a]
+  - @osdk/client@2.52.0
+
+## 1.18.0
+
+### Minor Changes
+
+- d3d5895: Add new Annotated type to @osdk/functions
+
+### Patch Changes
+
+- @osdk/client@2.50.0
+
+## 1.17.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+- f733ceb: Added support for actions in function Scope
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+- Updated dependencies [ffa3daa]
+  - @osdk/client@2.44.0
+
+## 1.16.0
+
+### Minor Changes
+
+- 3c48f5a: Set the `name` property on custom error classes so thrown errors report their own class name
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/client@2.43.0
+
+## 1.15.0
+
+### Minor Changes
+
+- 830d791: Migrate @osdk/api, @osdk/functions, and @osdk/unit-testing to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (eleventh increment of the repo-wide oxc migration; the check-api core libraries). Each package is reformatted with oxfmt, with its newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving; the public API surface is unchanged.
+
+### Patch Changes
+
+- Updated dependencies [0021ee4]
+  - @osdk/client@2.42.0
+
+## 1.14.0
+
+### Minor Changes
+
+- 9186c14: Added datasets and mediaSets to ScopeResources
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+- Updated dependencies [742fe69]
+- Updated dependencies [ac0303b]
+  - @osdk/client@2.40.0
+
+## 1.13.0
+
+### Minor Changes
+
+- c4d39ed: Added support for Byte and Short types in @osdk/functions
+- b6f0fc3: Added FunctionConfig and Scope experimental types
+- 79f8a6e: Stop serializing GeoJSON `Point` geometries into a `"lat,lon"` string when sending object property/parameter values. This broke geoshape values that are Points (the transaction edits and action endpoints rejected `"lat,lon"` with `InvalidTransactionEditPropertyValue` / invalid parameter for `GeoShape`). GeoJSON values are now passed through as objects, which the server accepts for both geoshape and geopoint/geohash targets. The FauxFoundry geohash action-parameter validator now also accepts GeoJSON objects, matching the real server.
+
+### Patch Changes
+
+- Updated dependencies [06adca1]
+- Updated dependencies [79f8a6e]
+  - @osdk/client@2.32.0
+
+## 1.12.0
+
+### Minor Changes
+
+- 13132b8: Fix writeable client reads not flushing staged edits: persist `flushEdits` onto the client context and wire it to the EditRequestManager so awaiting a read (fetchOne/fetchPage/aggregate/query) flushes pending creates/updates first.
+
+### Patch Changes
+
+- Updated dependencies [a5066b5]
+- Updated dependencies [3e03544]
+- Updated dependencies [13132b8]
+  - @osdk/client@2.28.0
+
+## 1.11.0
+
+### Minor Changes
+
+- 21003f1: Export additional GeoJSON subtypes (GeometryCollection, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon) alongside Geometry and Point.
+
+### Patch Changes
+
+- @osdk/client@2.26.0
+
+## 1.10.0
+
+### Minor Changes
+
+- 51b3bce: Modify uploadMedia to return a Media object
+
+### Patch Changes
+
+- Updated dependencies [f90a2da]
+- Updated dependencies [9eb67e4]
+- Updated dependencies [51b3bce]
+- Updated dependencies [75f877f]
+  - @osdk/client@2.20.0
+
 ## 1.9.0
 
 ### Minor Changes

@@ -15,6 +15,7 @@
  */
 
 import { afterEach, expect, test, vi } from "vitest";
+
 import { consola } from "../consola.js";
 import { promptScopes } from "./promptScopes.js";
 
@@ -44,17 +45,16 @@ test("it prompts again if answered scopes are invalid", async () => {
 });
 
 test("it accepts valid initial scopes without prompt", async () => {
-  expect(await promptScopes({ scopes: ["api:admin-read", "api:admin-write"] }))
-    .toEqual(
-      ["api:admin-read", "api:admin-write"],
-    );
+  expect(
+    await promptScopes({ scopes: ["api:admin-read", "api:admin-write"] }),
+  ).toEqual(["api:admin-read", "api:admin-write"]);
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
 });
 
 test("it prompts if initial scopes are invalid", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce("api:datasets-read");
-  expect(await promptScopes({ scopes: ["<api:datasets-read>"] })).toEqual(
-    ["api:datasets-read"],
-  );
+  expect(await promptScopes({ scopes: ["<api:datasets-read>"] })).toEqual([
+    "api:datasets-read",
+  ]);
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });

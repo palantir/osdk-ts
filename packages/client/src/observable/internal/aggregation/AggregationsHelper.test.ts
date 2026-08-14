@@ -18,6 +18,7 @@ import { Employee, Office } from "@osdk/client.test.ontology";
 import type { SetupServer } from "@osdk/shared.test";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import { TestLogger } from "../../../logger/TestLogger.js";
@@ -84,7 +85,8 @@ describe("aggregation ObjectSet support", () => {
 
     await query.ensureInvalidationTypesReady();
 
-    const revalidateSpy = vi.spyOn(query, "revalidate")
+    const revalidateSpy = vi
+      .spyOn(query, "revalidate")
       .mockResolvedValue(undefined);
 
     await query.invalidateObjectType("Employee", undefined);
@@ -98,7 +100,8 @@ describe("aggregation ObjectSet support", () => {
       aggregate: { $select: { $count: "unordered" } },
     });
 
-    const revalidateSpy = vi.spyOn(query, "revalidate")
+    const revalidateSpy = vi
+      .spyOn(query, "revalidate")
       .mockResolvedValue(undefined);
 
     await query.invalidateObjectType("Employee", undefined);

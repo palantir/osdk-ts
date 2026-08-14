@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectSet } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -21,18 +22,27 @@ vi.mock("@osdk/react", () => ({
   useOsdkMetadata: vi.fn(() => ({ loading: false, metadata: undefined })),
 }));
 import {
+  createCustomFilterDef,
+  createHasLinkFilterDef,
+  createKeywordSearchFilterDef,
+  createLinkedPropertyFilterDef,
   createPropertyFilterDef,
+  createStaticValuesFilterDef,
   createToggleState,
   MockObjectType,
 } from "../../__tests__/testUtils.js";
 import type { ExactMatchFilterState } from "../../FilterListItemApi.js";
+import type { LinkedPropertyFilterState } from "../../types/LinkedFilterTypes.js";
 
 function createExactMatchState(
   values: string[],
 ): ExactMatchFilterState<string> {
   return { type: "EXACT_MATCH", values };
 }
-import type { FilterListProps } from "../../FilterListApi.js";
+import type {
+  FilterDefinitionUnion,
+  FilterListProps,
+} from "../../FilterListApi.js";
 import { getFilterKey } from "../../utils/getFilterKey.js";
 import { useFilterListState } from "../useFilterListState.js";
 
@@ -60,13 +70,9 @@ describe("useFilterListState", () => {
     expect(result.current.filterStates.size).toBe(0);
   });
 
-  it("initializes filter states from filterState for property filters", () => {
+  it("initializes filter states from defaultFilterState for property filters", () => {
     const initialState = createExactMatchState([]);
-    const nameDef = createPropertyFilterDef(
-      "name",
-      "LISTOGRAM",
-      initialState,
-    );
+    const nameDef = createPropertyFilterDef("name", "LISTOGRAM", initialState);
     const props = createProps({
       filterDefinitions: [nameDef],
     });
@@ -74,6 +80,266 @@ describe("useFilterListState", () => {
     expect(result.current.filterStates.get(getFilterKey(nameDef))).toEqual(
       initialState,
     );
+  });
+
+  describe("defaultFilterState seeding across definition kinds", () => {
+    it("seeds every filter kind from the same field", () => {
+      const propertyDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState(["Alice"]),
+      );
+      const hasLinkDef = createHasLinkFilterDef("primaryOffice");
+      const keywordDef = createKeywordSearchFilterDef(["name"]);
+      const customDef = createCustomFilterDef("custom");
+      const staticDef = createStaticValuesFilterDef(
+        "region",
+        "LISTOGRAM",
+        ["East"],
+        createExactMatchState(["East"]),
+      );
+      const definitions = [
+        propertyDef,
+        hasLinkDef,
+        keywordDef,
+        customDef,
+        staticDef,
+      ];
+      const props = createProps({ filterDefinitions: definitions });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      for (const definition of definitions) {
+        expect(
+          result.current.filterStates.get(getFilterKey(definition)),
+        ).toBeDefined();
+      }
+    });
+
+    it("leaves a filter unseeded when it declares no defaultFilterState", () => {
+      const bareDef = {
+        type: "PROPERTY" as const,
+        key: "name",
+        filterComponent: "LISTOGRAM" as const,
+      };
+      const props = createProps({ filterDefinitions: [bareDef] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.filterStates.size).toBe(0);
+      expect(result.current.activeFilterCount).toBe(0);
+    });
+  });
+
+  describe("activeFilterCount for CUSTOM filters", () => {
+    function customDefWithClause(
+      state: unknown,
+      toWhereClause: (s: { customState: Record<string, unknown> }) => unknown,
+    ) {
+      return {
+        type: "CUSTOM" as const,
+        key: "custom",
+        filterComponent: "CUSTOM" as const,
+        defaultFilterState: state,
+        renderInput: () => null,
+        toWhereClause,
+      } as unknown as FilterDefinitionUnion<typeof MockObjectType>;
+    }
+
+    // A seeded custom filter is only "active" if its own `toWhereClause` turns
+    // that state into a clause — the state itself is opaque to FilterList.
+    it("does not count a seeded filter whose toWhereClause returns undefined", () => {
+      const definition = customDefWithClause(
+        { type: "custom", customState: { value: "all" } },
+        () => undefined,
+      );
+      const props = createProps({ filterDefinitions: [definition] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.filterStates.size).toBe(1);
+      expect(result.current.activeFilterCount).toBe(0);
+    });
+
+    it("does not count a seeded filter whose toWhereClause returns an empty clause", () => {
+      const definition = customDefWithClause(
+        { type: "custom", customState: {} },
+        () => ({}),
+      );
+      const props = createProps({ filterDefinitions: [definition] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.activeFilterCount).toBe(0);
+    });
+
+    it("counts a seeded filter that produces a clause", () => {
+      const definition = customDefWithClause(
+        { type: "custom", customState: { value: "located" } },
+        () => ({ name: { $isNull: false } }),
+      );
+      const props = createProps({ filterDefinitions: [definition] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.activeFilterCount).toBe(1);
+    });
+  });
+
+  describe("deprecated seed fields stay honoured", () => {
+    it("seeds from the deprecated initialFilterStates prop", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        initialFilterStates: new Map([
+          [getFilterKey(nameDef), createExactMatchState(["Legacy"])],
+        ]),
+      });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.filterStates.get(getFilterKey(nameDef))).toEqual(
+        createExactMatchState(["Legacy"]),
+      );
+    });
+
+    it("prefers defaultFilterStates over the deprecated initialFilterStates", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const key = getFilterKey(nameDef);
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        defaultFilterStates: new Map([[key, createExactMatchState(["Wins"])]]),
+        initialFilterStates: new Map([[key, createExactMatchState(["Loses"])]]),
+      });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.filterStates.get(key)).toEqual(
+        createExactMatchState(["Wins"]),
+      );
+    });
+
+    it("seeds a PROPERTY filter from the deprecated filterState", () => {
+      const legacyDef = {
+        type: "PROPERTY" as const,
+        key: "name",
+        filterComponent: "LISTOGRAM" as const,
+        filterState: createExactMatchState(["Legacy"]),
+      };
+      const props = createProps({ filterDefinitions: [legacyDef] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.filterStates.get(getFilterKey(legacyDef))).toEqual(
+        createExactMatchState(["Legacy"]),
+      );
+    });
+
+    it("prefers defaultFilterState over the deprecated filterState", () => {
+      const bothDef = {
+        type: "PROPERTY" as const,
+        key: "name",
+        filterComponent: "LISTOGRAM" as const,
+        defaultFilterState: createExactMatchState(["Wins"]),
+        filterState: createExactMatchState(["Loses"]),
+      };
+      const props = createProps({ filterDefinitions: [bothDef] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.filterStates.get(getFilterKey(bothDef))).toEqual(
+        createExactMatchState(["Wins"]),
+      );
+    });
+
+    it("still ignores filterState on kinds that never read it", () => {
+      // Cast for the same reason testUtils casts: spreading the definition
+      // union widens `filterState` past the HAS_LINK member.
+      const hasLinkDef = {
+        ...createHasLinkFilterDef("primaryOffice"),
+        defaultFilterState: undefined,
+        filterState: { type: "hasLink" as const, hasLink: true },
+      } as FilterDefinitionUnion<typeof MockObjectType>;
+      const props = createProps({ filterDefinitions: [hasLinkDef] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.filterStates.size).toBe(0);
+    });
+  });
+
+  describe("LINKED_PROPERTY seeding", () => {
+    it("wraps a LINKED_PROPERTY seed in a linkedProperty state", () => {
+      const linkedDef = createLinkedPropertyFilterDef("primaryOffice", "name");
+      const props = createProps({ filterDefinitions: [linkedDef] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.filterStates.get(getFilterKey(linkedDef))).toEqual({
+        type: "linkedProperty",
+        linkedFilterState: { type: "EXACT_MATCH", values: [] },
+      } satisfies LinkedPropertyFilterState);
+    });
+
+    it("seeds a LINKED_PROPERTY filter from the deprecated defaultLinkedFilterState", () => {
+      const legacyLinkedDef = {
+        ...createLinkedPropertyFilterDef("primaryOffice", "name"),
+        defaultFilterState: undefined,
+        defaultLinkedFilterState: createExactMatchState(["Legacy"]),
+      };
+      const props = createProps({ filterDefinitions: [legacyLinkedDef] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(
+        result.current.filterStates.get(getFilterKey(legacyLinkedDef)),
+      ).toEqual({
+        type: "linkedProperty",
+        linkedFilterState: createExactMatchState(["Legacy"]),
+      } satisfies LinkedPropertyFilterState);
+    });
+
+    it("prefers defaultFilterState over the deprecated defaultLinkedFilterState", () => {
+      // Cast for the same reason testUtils casts: spreading the definition
+      // union widens both seed fields past the LINKED_PROPERTY member.
+      const bothLinkedDef = {
+        ...createLinkedPropertyFilterDef("primaryOffice", "name"),
+        defaultFilterState: createExactMatchState(["Wins"]),
+        defaultLinkedFilterState: createExactMatchState(["Loses"]),
+      } as FilterDefinitionUnion<typeof MockObjectType>;
+      const props = createProps({ filterDefinitions: [bothLinkedDef] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(
+        result.current.filterStates.get(getFilterKey(bothLinkedDef)),
+      ).toEqual({
+        type: "linkedProperty",
+        linkedFilterState: createExactMatchState(["Wins"]),
+      } satisfies LinkedPropertyFilterState);
+    });
+
+    // Such a definition renders as unsupported, so seeding it would narrow the
+    // object set off a filter the user can neither see nor clear.
+    it("does not seed when neither component field is set", () => {
+      const noComponentDef = {
+        ...createLinkedPropertyFilterDef("primaryOffice", "name"),
+        filterComponent: undefined,
+      } as FilterDefinitionUnion<typeof MockObjectType>;
+      const props = createProps({ filterDefinitions: [noComponentDef] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.filterStates.size).toBe(0);
+    });
   });
 
   it("updates filter state via setFilterState", () => {
@@ -135,88 +401,159 @@ describe("useFilterListState", () => {
     expect(result.current.whereClause).toEqual({ name: "John" });
   });
 
-  it("calls onFilterClauseChanged on mount with initial where clause", () => {
-    const onFilterClauseChanged = vi.fn();
-    const nameDef = createPropertyFilterDef(
-      "name",
-      "LISTOGRAM",
-      createExactMatchState([]),
-    );
-    const props = createProps({
-      filterDefinitions: [nameDef],
-      onFilterClauseChanged,
-    });
-    renderHook(() => useFilterListState(props));
-    expect(onFilterClauseChanged).toHaveBeenCalledTimes(1);
-    expect(onFilterClauseChanged).toHaveBeenCalledWith({});
-  });
-
-  it("calls onFilterClauseChanged on mount when initialFilterStates has active filters", () => {
-    const onFilterClauseChanged = vi.fn();
-    const nameDef = createPropertyFilterDef(
-      "name",
-      "LISTOGRAM",
-      createExactMatchState([]),
-    );
-    const initialFilterStates = new Map([
-      [getFilterKey(nameDef), createExactMatchState(["John"])],
-    ]);
-    const props = createProps({
-      filterDefinitions: [nameDef],
-      onFilterClauseChanged,
-      initialFilterStates,
-    });
-    renderHook(() => useFilterListState(props));
-    expect(onFilterClauseChanged).toHaveBeenCalledTimes(1);
-    expect(onFilterClauseChanged).toHaveBeenCalledWith({ name: "John" });
-  });
-
-  it("calls onFilterClauseChanged on setFilterState", () => {
-    const onFilterClauseChanged = vi.fn();
-    const nameDef = createPropertyFilterDef(
-      "name",
-      "LISTOGRAM",
-      createExactMatchState([]),
-    );
-    const props = createProps({
-      filterDefinitions: [nameDef],
-      onFilterClauseChanged,
-    });
-    const { result } = renderHook(() => useFilterListState(props));
-    onFilterClauseChanged.mockClear();
-    act(() => {
-      result.current.setFilterState(
-        getFilterKey(nameDef),
-        createExactMatchState(["John"]),
+  describe("onEffectiveObjectSet", () => {
+    it("emits a where()-narrowed objectSet on filter changes", () => {
+      const onEffectiveObjectSet = vi.fn();
+      const narrowed = { _kind: "narrowed" } as unknown as ObjectSet<
+        typeof MockObjectType
+      >;
+      const objectSet = {
+        where: vi.fn().mockReturnValue(narrowed),
+      } as unknown as ObjectSet<typeof MockObjectType>;
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
       );
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        objectSet,
+        onEffectiveObjectSet,
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+
+      act(() => {
+        result.current.setFilterState(
+          getFilterKey(nameDef),
+          createExactMatchState(["John"]),
+        );
+      });
+
+      expect(objectSet.where).toHaveBeenCalledWith({ name: "John" });
+      expect(onEffectiveObjectSet).toHaveBeenLastCalledWith(narrowed);
     });
-    expect(onFilterClauseChanged).toHaveBeenCalledTimes(1);
-    expect(onFilterClauseChanged).toHaveBeenCalledWith({ name: "John" });
+
+    it("fires on reset() with the snapshot's effectiveObjectSet", () => {
+      const onEffectiveObjectSet = vi.fn();
+      const narrowedJohn = { _kind: "narrowed-john" } as unknown as ObjectSet<
+        typeof MockObjectType
+      >;
+      const narrowedJane = { _kind: "narrowed-jane" } as unknown as ObjectSet<
+        typeof MockObjectType
+      >;
+      const objectSet = {
+        where: vi.fn().mockImplementation((w: Record<string, unknown>) => {
+          if (w.name === "John") return narrowedJohn;
+          if (w.name === "Jane") return narrowedJane;
+          return objectSet;
+        }),
+      } as unknown as ObjectSet<typeof MockObjectType>;
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const defaultFilterStates = new Map([
+        [getFilterKey(nameDef), createExactMatchState(["John"])],
+      ]);
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        objectSet,
+        defaultFilterStates,
+        onEffectiveObjectSet,
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+
+      act(() => {
+        result.current.setFilterState(
+          getFilterKey(nameDef),
+          createExactMatchState(["Jane"]),
+        );
+      });
+
+      onEffectiveObjectSet.mockClear();
+
+      act(() => {
+        result.current.reset();
+      });
+
+      expect(result.current.whereClause).toEqual({ name: "John" });
+      expect(onEffectiveObjectSet).toHaveBeenLastCalledWith(narrowedJohn);
+    });
   });
 
-  it("calls onFilterClauseChanged on reset", () => {
-    const onFilterClauseChanged = vi.fn();
-    const nameDef = createPropertyFilterDef(
-      "name",
-      "LISTOGRAM",
-      createExactMatchState([]),
-    );
-    const props = createProps({
-      filterDefinitions: [nameDef],
-      onFilterClauseChanged,
-    });
-    const { result } = renderHook(() => useFilterListState(props));
-    act(() => {
-      result.current.setFilterState(
-        getFilterKey(nameDef),
-        createExactMatchState(["John"]),
+  describe("onFilterClauseChanged", () => {
+    it("fires on mount with the initial whereClause", () => {
+      const onFilterClauseChanged = vi.fn();
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
       );
+      const defaultFilterStates = new Map([
+        [getFilterKey(nameDef), createExactMatchState(["Seed"])],
+      ]);
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        defaultFilterStates,
+        onFilterClauseChanged,
+      });
+      renderHook(() => useFilterListState(props));
+      expect(onFilterClauseChanged).toHaveBeenCalledWith({ name: "Seed" });
     });
-    onFilterClauseChanged.mockClear();
-    act(() => {
-      result.current.reset();
+
+    it("fires after setFilterState with the updated whereClause", () => {
+      const onFilterClauseChanged = vi.fn();
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        onFilterClauseChanged,
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      act(() => {
+        result.current.setFilterState(
+          getFilterKey(nameDef),
+          createExactMatchState(["John"]),
+        );
+      });
+      expect(onFilterClauseChanged).toHaveBeenLastCalledWith({ name: "John" });
     });
-    expect(onFilterClauseChanged).toHaveBeenCalledWith({});
+  });
+
+  describe("reset()", () => {
+    it("restores the mount snapshot of defaultFilterStates", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const defaultFilterStates = new Map([
+        [getFilterKey(nameDef), createExactMatchState(["Seed"])],
+      ]);
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        defaultFilterStates,
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      expect(result.current.whereClause).toEqual({ name: "Seed" });
+
+      act(() => {
+        result.current.setFilterState(
+          getFilterKey(nameDef),
+          createExactMatchState(["Other"]),
+        );
+      });
+      expect(result.current.whereClause).toEqual({ name: "Other" });
+
+      act(() => {
+        result.current.reset();
+      });
+      expect(result.current.whereClause).toEqual({ name: "Seed" });
+    });
   });
 
   describe("clearFilterState", () => {
@@ -244,35 +581,6 @@ describe("useFilterListState", () => {
         result.current.clearFilterState(filterKey);
       });
       expect(result.current.filterStates.has(filterKey)).toBe(false);
-    });
-
-    it("calls onFilterClauseChanged with updated clause", () => {
-      const onFilterClauseChanged = vi.fn();
-      const nameDef = createPropertyFilterDef(
-        "name",
-        "LISTOGRAM",
-        createExactMatchState([]),
-      );
-      const props = createProps({
-        filterDefinitions: [nameDef],
-        onFilterClauseChanged,
-      });
-      const { result } = renderHook(() => useFilterListState(props));
-      const filterKey = getFilterKey(nameDef);
-
-      act(() => {
-        result.current.setFilterState(
-          filterKey,
-          createExactMatchState(["John"]),
-        );
-      });
-      onFilterClauseChanged.mockClear();
-
-      act(() => {
-        result.current.clearFilterState(filterKey);
-      });
-      expect(onFilterClauseChanged).toHaveBeenCalledTimes(1);
-      expect(onFilterClauseChanged).toHaveBeenCalledWith({});
     });
 
     it("updates whereClause after clearing", () => {
@@ -346,10 +654,7 @@ describe("useFilterListState", () => {
       const activeKey = getFilterKey(activeDef);
 
       act(() => {
-        result.current.setFilterState(
-          nameKey,
-          createExactMatchState(["John"]),
-        );
+        result.current.setFilterState(nameKey, createExactMatchState(["John"]));
         result.current.setFilterState(activeKey, createToggleState(true));
       });
       expect(result.current.activeFilterCount).toBe(2);
@@ -417,6 +722,333 @@ describe("useFilterListState", () => {
     });
     expect(result.current.whereClause).toEqual({
       $and: [{ name: "John" }, { active: true }],
+    });
+  });
+
+  describe("perFilterWhereClauses ref stability", () => {
+    it("preserves the entry reference for the just-changed filter (its excluding-self clause is unchanged)", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const activeDef = createPropertyFilterDef(
+        "active",
+        "TOGGLE",
+        createToggleState(false),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef, activeDef],
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      const nameKey = getFilterKey(nameDef);
+
+      const beforeName = result.current.perFilterWhereClauses.get(nameKey);
+      expect(beforeName).toBeDefined();
+
+      act(() => {
+        result.current.setFilterState(nameKey, createExactMatchState(["John"]));
+      });
+
+      const afterName = result.current.perFilterWhereClauses.get(nameKey);
+      expect(afterName).toBe(beforeName);
+    });
+
+    it("rebuilds the entry reference for sibling filters whose excluding-self clause content changed", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const activeDef = createPropertyFilterDef(
+        "active",
+        "TOGGLE",
+        createToggleState(false),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef, activeDef],
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      const nameKey = getFilterKey(nameDef);
+      const activeKey = getFilterKey(activeDef);
+
+      const beforeActive = result.current.perFilterWhereClauses.get(activeKey);
+
+      act(() => {
+        result.current.setFilterState(nameKey, createExactMatchState(["John"]));
+      });
+
+      const afterActive = result.current.perFilterWhereClauses.get(activeKey);
+      expect(afterActive).not.toBe(beforeActive);
+      expect(afterActive).toEqual({ name: "John" });
+    });
+
+    it("preserves all entry refs when setFilterState writes an equal value", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const activeDef = createPropertyFilterDef(
+        "active",
+        "TOGGLE",
+        createToggleState(false),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef, activeDef],
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      const nameKey = getFilterKey(nameDef);
+      const activeKey = getFilterKey(activeDef);
+
+      act(() => {
+        result.current.setFilterState(nameKey, createExactMatchState(["John"]));
+      });
+
+      const beforeName = result.current.perFilterWhereClauses.get(nameKey);
+      const beforeActive = result.current.perFilterWhereClauses.get(activeKey);
+      expect(beforeName).toBeDefined();
+      expect(beforeActive).toBeDefined();
+
+      act(() => {
+        result.current.setFilterState(nameKey, createExactMatchState(["John"]));
+      });
+
+      const afterName = result.current.perFilterWhereClauses.get(nameKey);
+      const afterActive = result.current.perFilterWhereClauses.get(activeKey);
+      expect(afterName).toBe(beforeName);
+      expect(afterActive).toBe(beforeActive);
+    });
+
+    it("preserves all entry refs when filterDefinitions is a fresh array", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState(["John"]),
+      );
+      const activeDef = createPropertyFilterDef(
+        "active",
+        "TOGGLE",
+        createToggleState(false),
+      );
+      const { result, rerender } = renderHook(
+        (defs: FilterListProps<typeof MockObjectType>["filterDefinitions"]) =>
+          useFilterListState(createProps({ filterDefinitions: defs })),
+        { initialProps: [nameDef, activeDef] },
+      );
+      const nameKey = getFilterKey(nameDef);
+      const activeKey = getFilterKey(activeDef);
+
+      const beforeName = result.current.perFilterWhereClauses.get(nameKey);
+      const beforeActive = result.current.perFilterWhereClauses.get(activeKey);
+      expect(beforeName).toBeDefined();
+      expect(beforeActive).toBeDefined();
+
+      rerender([
+        createPropertyFilterDef(
+          "name",
+          "LISTOGRAM",
+          createExactMatchState(["John"]),
+        ),
+        createPropertyFilterDef("active", "TOGGLE", createToggleState(false)),
+      ]);
+
+      const afterName = result.current.perFilterWhereClauses.get(nameKey);
+      const afterActive = result.current.perFilterWhereClauses.get(activeKey);
+      expect(afterName).toBe(beforeName);
+      expect(afterActive).toBe(beforeActive);
+    });
+  });
+
+  describe("LINKED_PROPERTY filters without reverseLinkName", () => {
+    function createLinkedState(values: string[]): LinkedPropertyFilterState {
+      return {
+        type: "linkedProperty",
+        linkedFilterState: { type: "EXACT_MATCH", values },
+      };
+    }
+
+    it("excludes definitions missing reverseLinkName from linkedFilters", () => {
+      const narrowingDef = createLinkedPropertyFilterDef("manager", "fullName");
+      const uiOnlyDef = createLinkedPropertyFilterDef("office", "city", {
+        reverseLinkName: null,
+      });
+      const props = createProps({
+        filterDefinitions: [narrowingDef, uiOnlyDef],
+        defaultFilterStates: new Map([
+          [getFilterKey(narrowingDef), createLinkedState(["Alice"])],
+          [getFilterKey(uiOnlyDef), createLinkedState(["Berlin"])],
+        ]),
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.linkedFilters).toHaveLength(1);
+      expect(result.current.linkedFilters[0].linkName).toBe("manager");
+    });
+
+    it("still reports state changes for UI-only linked filters", () => {
+      const uiOnlyDef = createLinkedPropertyFilterDef("office", "city", {
+        reverseLinkName: null,
+      });
+      const onFilterStateChanged = vi.fn();
+      const props = createProps({
+        filterDefinitions: [uiOnlyDef],
+        onFilterStateChanged,
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+
+      const nextState = createLinkedState(["Berlin"]);
+      act(() => {
+        result.current.setFilterState(getFilterKey(uiOnlyDef), nextState);
+      });
+
+      expect(onFilterStateChanged).toHaveBeenCalledWith(uiOnlyDef, nextState);
+      expect(result.current.linkedFilters).toHaveLength(0);
+    });
+  });
+
+  describe("hasChangesFromInitial", () => {
+    it("is false when filterDefinitions is empty", () => {
+      const props = createProps({ filterDefinitions: undefined });
+      const { result } = renderHook(() => useFilterListState(props));
+      expect(result.current.hasChangesFromInitial).toBe(false);
+    });
+
+    it("is false on mount when definitions carry a populated initial filterState", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState(["John"]),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef],
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      expect(result.current.hasChangesFromInitial).toBe(false);
+    });
+
+    it("becomes true after setFilterState writes a structurally different value", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState(["John"]),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef],
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      const filterKey = getFilterKey(nameDef);
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["Jane"]),
+        );
+      });
+      expect(result.current.hasChangesFromInitial).toBe(true);
+    });
+
+    it("returns to false after setFilterState writes back the snapshot value", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState(["John"]),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef],
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      const filterKey = getFilterKey(nameDef);
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["Jane"]),
+        );
+      });
+      expect(result.current.hasChangesFromInitial).toBe(true);
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["John"]),
+        );
+      });
+      expect(result.current.hasChangesFromInitial).toBe(false);
+    });
+
+    it("becomes true after clearFilterState removes a key from the snapshot", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState(["John"]),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef],
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      const filterKey = getFilterKey(nameDef);
+
+      act(() => {
+        result.current.clearFilterState(filterKey);
+      });
+      expect(result.current.hasChangesFromInitial).toBe(true);
+    });
+
+    it("returns to false after reset() when definitions are unchanged", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState(["John"]),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef],
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      const filterKey = getFilterKey(nameDef);
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["Jane"]),
+        );
+      });
+      expect(result.current.hasChangesFromInitial).toBe(true);
+
+      act(() => {
+        result.current.reset();
+      });
+      expect(result.current.hasChangesFromInitial).toBe(false);
+    });
+
+    it("returns to false after reset() when mounted with defaultFilterStates", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const filterKey = getFilterKey(nameDef);
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        defaultFilterStates: new Map([
+          [filterKey, createExactMatchState(["Seed"])],
+        ]),
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      expect(result.current.hasChangesFromInitial).toBe(false);
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["Other"]),
+        );
+      });
+      expect(result.current.hasChangesFromInitial).toBe(true);
+
+      act(() => {
+        result.current.reset();
+      });
+      expect(result.current.hasChangesFromInitial).toBe(false);
     });
   });
 });

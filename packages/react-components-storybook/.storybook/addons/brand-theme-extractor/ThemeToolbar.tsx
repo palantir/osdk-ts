@@ -1,0 +1,558 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  PaintBrushIcon,
+  SearchIcon,
+} from "@storybook/icons";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
+import {
+  useGlobals,
+  useStorybookApi,
+  useStorybookState,
+} from "storybook/manager-api";
+import { styled } from "storybook/theming";
+
+import { GLOBALS_KEY, PANEL_ID } from "./constants.js";
+import { THEME_PRESETS, type ThemePreset } from "./presets.js";
+import {
+  createThemeStateForMode,
+  findThemePreset,
+  parseBrandThemeState,
+  stringifyBrandThemeState,
+} from "./state.js";
+import type { BrandThemeGlobals } from "./types.js";
+
+const DEFAULT_SWATCHES: [string, string, string] = [
+  "#ffffff",
+  "#2d72d2",
+  "#1c2127",
+];
+const DROPDOWN_WIDTH = 340;
+const DROPDOWN_MARGIN = 8;
+const DROPDOWN_OFFSET = 6;
+
+interface DropdownPosition {
+  blockStart: number;
+  inlineStart: number;
+}
+
+export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
+  const [globals, updateGlobals] = useGlobals();
+  const api = useStorybookApi();
+  const storybookState = useStorybookState();
+  const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>({
+    blockStart: 0,
+    inlineStart: 0,
+  });
+  const rootRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const rawState = globals[GLOBALS_KEY];
+  const themeState = useMemo(() => parseBrandThemeState(rawState), [rawState]);
+  const selectedPreset = useMemo(
+    () => findThemePreset(themeState.selectedPresetId),
+    [themeState.selectedPresetId],
+  );
+  const isCustom = themeState.selectedPresetId === "custom";
+  const selectedLabel = selectedPreset?.label ?? "Custom";
+  const selectedSwatches = useMemo(
+    () => selectedPreset?.swatches ?? getCustomSwatches(themeState),
+    [selectedPreset?.swatches, themeState],
+  );
+  const { builtInPresets, customPresets } = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    const filtered =
+      normalizedQuery === ""
+        ? THEME_PRESETS
+        : THEME_PRESETS.filter((preset) =>
+            preset.label.toLowerCase().includes(normalizedQuery),
+          );
+
+    const builtIn: ThemePreset[] = [];
+    const custom: ThemePreset[] = [];
+    for (const p of filtered) {
+      (p.category === "built-in" ? builtIn : custom).push(p);
+    }
+    return { builtInPresets: builtIn, customPresets: custom };
+  }, [searchQuery]);
+  const showCustomInSearch =
+    searchQuery.trim() === "" ||
+    "custom".includes(searchQuery.trim().toLowerCase());
+  const currentEntry = useMemo(() => {
+    try {
+      return api.getData(storybookState.storyId);
+    } catch {
+      return undefined;
+    }
+  }, [api, storybookState.storyId]);
+  const customDisabled = currentEntry?.type !== "story";
+  const totalVisible =
+    builtInPresets.length + customPresets.length + (showCustomInSearch ? 1 : 0);
+
+  useEffect(
+    function closeDropdownOnOutsidePointerDown() {
+      if (!open) {
+        return undefined;
+      }
+
+      function handlePointerDown(event: PointerEvent) {
+        const target = event.target;
+        if (!(target instanceof Node)) {
+          setOpen(false);
+          return;
+        }
+
+        const clickedToolbar = rootRef.current?.contains(target) ?? false;
+        const clickedDropdown = dropdownRef.current?.contains(target) ?? false;
+        if (!clickedToolbar && !clickedDropdown) {
+          setOpen(false);
+        }
+      }
+
+      document.addEventListener("pointerdown", handlePointerDown);
+      return () =>
+        document.removeEventListener("pointerdown", handlePointerDown);
+    },
+    [open],
+  );
+
+  const updateDropdownPosition = useCallback(() => {
+    const trigger = rootRef.current;
+    if (!trigger) {
+      return;
+    }
+
+    const triggerRect = trigger.getBoundingClientRect();
+    const maxInlineStart = window.innerWidth - DROPDOWN_WIDTH - DROPDOWN_MARGIN;
+    setDropdownPosition({
+      blockStart: triggerRect.bottom + DROPDOWN_OFFSET,
+      inlineStart: Math.max(
+        DROPDOWN_MARGIN,
+        Math.min(triggerRect.left, maxInlineStart),
+      ),
+    });
+  }, []);
+
+  useLayoutEffect(
+    function positionDropdown() {
+      if (!open) {
+        return undefined;
+      }
+
+      updateDropdownPosition();
+      window.addEventListener("resize", updateDropdownPosition);
+      // Storybook panes can scroll independently, so use capture to keep the
+      // portaled dropdown anchored to the toolbar button during panel scrolls.
+      window.addEventListener("scroll", updateDropdownPosition, true);
+      return () => {
+        window.removeEventListener("resize", updateDropdownPosition);
+        window.removeEventListener("scroll", updateDropdownPosition, true);
+      };
+    },
+    [open, updateDropdownPosition],
+  );
+
+  const toggleDropdown = useCallback(() => {
+    setOpen((currentOpen) => !currentOpen);
+  }, []);
+
+  const selectPreset = useCallback(
+    (preset: ThemePreset) => {
+      const nextState = createThemeStateForMode({
+        presetId: preset.id,
+        colorMode: preset.colorMode ?? "light",
+      });
+      updateGlobals({ [GLOBALS_KEY]: stringifyBrandThemeState(nextState) });
+      setOpen(false);
+      setSearchQuery("");
+    },
+    [updateGlobals],
+  );
+
+  const openCustomPanel = useCallback(() => {
+    api.setSelectedPanel(PANEL_ID);
+    api.togglePanel(true);
+    setOpen(false);
+    setSearchQuery("");
+  }, [api]);
+
+  return (
+    <ToolbarRoot ref={rootRef}>
+      <ToolbarButton
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label={`Theme: ${selectedLabel}`}
+        onClick={toggleDropdown}
+      >
+        <PaintBrushIcon />
+        <SwatchGroup aria-hidden="true">
+          {selectedSwatches.map((swatch, i) => (
+            <ToolbarSwatch key={i} color={swatch} />
+          ))}
+        </SwatchGroup>
+        <ToolbarLabel>{selectedLabel}</ToolbarLabel>
+        <ChevronDownIcon />
+      </ToolbarButton>
+
+      {open &&
+        createPortal(
+          <Dropdown
+            ref={dropdownRef}
+            role="dialog"
+            aria-label="Theme picker"
+            dropdownPosition={dropdownPosition}
+          >
+            <SearchRow>
+              <SearchIcon />
+              <SearchInput
+                autoFocus={true}
+                type="search"
+                value={searchQuery}
+                placeholder="Search themes…"
+                aria-label="Search themes"
+                onChange={(event) => setSearchQuery(event.target.value)}
+              />
+            </SearchRow>
+
+            <DropdownHeaderRow>
+              <DropdownCount>{totalVisible} themes</DropdownCount>
+            </DropdownHeaderRow>
+
+            {builtInPresets.length > 0 && (
+              <>
+                <SectionLabel>Built-in themes</SectionLabel>
+                <PresetList role="listbox" aria-label="Built-in theme presets">
+                  {builtInPresets.map((preset) => (
+                    <PresetOption
+                      key={preset.id}
+                      preset={preset}
+                      selected={preset.id === themeState.selectedPresetId}
+                      onSelect={selectPreset}
+                    />
+                  ))}
+                </PresetList>
+              </>
+            )}
+
+            {customPresets.length > 0 && (
+              <>
+                <SectionLabel>Custom themes</SectionLabel>
+                <PresetList role="listbox" aria-label="Custom theme presets">
+                  {customPresets.map((preset) => (
+                    <PresetOption
+                      key={preset.id}
+                      preset={preset}
+                      selected={preset.id === themeState.selectedPresetId}
+                      onSelect={selectPreset}
+                    />
+                  ))}
+                </PresetList>
+              </>
+            )}
+
+            {showCustomInSearch && (
+              <>
+                <SectionLabel>{isCustom ? "Current" : "Custom"}</SectionLabel>
+                <PresetList role="listbox" aria-label="Custom theme">
+                  <CustomOption
+                    disabled={customDisabled}
+                    swatches={isCustom ? selectedSwatches : DEFAULT_SWATCHES}
+                    selected={isCustom}
+                    onOpenPanel={openCustomPanel}
+                  />
+                </PresetList>
+              </>
+            )}
+          </Dropdown>,
+          document.body,
+        )}
+    </ToolbarRoot>
+  );
+});
+
+interface PresetOptionProps {
+  preset: ThemePreset;
+  selected: boolean;
+  onSelect: (preset: ThemePreset) => void;
+}
+
+const PresetOption = React.memo(function PresetOptionFn({
+  preset,
+  selected,
+  onSelect,
+}: PresetOptionProps) {
+  const handleSelect = useCallback(() => {
+    onSelect(preset);
+  }, [onSelect, preset]);
+
+  return (
+    <PresetButtonStyled
+      type="button"
+      role="option"
+      aria-selected={selected}
+      selected={selected}
+      onClick={handleSelect}
+      title={preset.description}
+    >
+      <SwatchGroup aria-hidden="true">
+        {preset.swatches.map((swatch, i) => (
+          <PresetSwatch key={i} color={swatch} />
+        ))}
+      </SwatchGroup>
+      <PresetLabelStyled>{preset.label}</PresetLabelStyled>
+      {selected && <CheckIcon />}
+    </PresetButtonStyled>
+  );
+});
+
+interface CustomOptionProps {
+  disabled: boolean;
+  swatches: [string, string, string];
+  selected: boolean;
+  onOpenPanel: () => void;
+}
+
+function CustomOption({
+  disabled,
+  swatches,
+  selected,
+  onOpenPanel,
+}: CustomOptionProps): React.ReactElement {
+  return (
+    <PresetButtonStyled
+      type="button"
+      role="option"
+      aria-selected={selected}
+      disabled={disabled}
+      selected={selected}
+      onClick={onOpenPanel}
+      title={
+        disabled
+          ? "Custom themes are available on component stories"
+          : "Open the Brand Theme panel to customize tokens"
+      }
+    >
+      <SwatchGroup aria-hidden="true">
+        {swatches.map((swatch, i) => (
+          <PresetSwatch key={i} color={swatch} />
+        ))}
+      </SwatchGroup>
+      <PresetLabelStyled>Custom</PresetLabelStyled>
+      <CustomHint>{disabled ? "unavailable" : "open panel"}</CustomHint>
+    </PresetButtonStyled>
+  );
+}
+
+const ToolbarRoot = styled.div({
+  position: "relative",
+});
+
+const ToolbarButton = styled.button(({ theme }) => ({
+  alignItems: "center",
+  backgroundColor: "transparent",
+  borderWidth: 0,
+  color: theme.color.defaultText,
+  cursor: "pointer",
+  display: "flex",
+  fontSize: 13,
+  gap: 6,
+  height: 28,
+  paddingBlock: 0,
+  paddingInline: 8,
+  "&:hover": {
+    backgroundColor: theme.background.hoverable,
+  },
+}));
+
+const ToolbarLabel = styled.span({
+  fontSize: 13,
+  maxWidth: 120,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+});
+
+const SwatchGroup = styled.span({
+  display: "flex",
+  gap: 3,
+});
+
+const ToolbarSwatch = styled.span<{ color: string }>(({ color, theme }) => ({
+  backgroundColor: color,
+  borderColor: theme.appBorderColor,
+  borderRadius: 3,
+  borderStyle: "solid",
+  borderWidth: 1,
+  height: 10,
+  width: 10,
+}));
+
+const Dropdown = styled.div<{ dropdownPosition: DropdownPosition }>(
+  ({ dropdownPosition, theme }) => ({
+    backgroundColor: theme.background.content,
+    borderColor: theme.appBorderColor,
+    borderRadius: 8,
+    borderStyle: "solid",
+    borderWidth: 1,
+    boxShadow: "0 12px 32px rgba(0,0,0,0.24)",
+    color: theme.color.defaultText,
+    fontSize: 13,
+    inlineSize: 340,
+    insetBlockStart: dropdownPosition.blockStart,
+    insetInlineStart: dropdownPosition.inlineStart,
+    paddingBlock: 8,
+    paddingInline: 8,
+    position: "fixed",
+    zIndex: 10000,
+  }),
+);
+
+const SearchRow = styled.div(({ theme }) => ({
+  alignItems: "center",
+  backgroundColor: theme.input.background,
+  borderColor: theme.appBorderColor,
+  borderRadius: 6,
+  borderStyle: "solid",
+  borderWidth: 1,
+  display: "flex",
+  gap: 8,
+  paddingBlock: 6,
+  paddingInline: 8,
+}));
+
+const SearchInput = styled.input(({ theme }) => ({
+  backgroundColor: "transparent",
+  borderWidth: 0,
+  color: theme.input.color,
+  flex: 1,
+  fontSize: 13,
+  minWidth: 0,
+  outline: "none",
+}));
+
+const DropdownHeaderRow = styled.div({
+  alignItems: "center",
+  display: "flex",
+  justifyContent: "space-between",
+  paddingBlock: 10,
+  paddingInline: 2,
+});
+
+const DropdownCount = styled.span(({ theme }) => ({
+  color: theme.color.mediumdark,
+  fontSize: 13,
+}));
+
+const SectionLabel = styled.div(({ theme }) => ({
+  color: theme.color.mediumdark,
+  fontSize: 12,
+  fontWeight: 600,
+  paddingBlock: 4,
+  paddingInline: 2,
+}));
+
+const PresetList = styled.div({
+  display: "flex",
+  flexDirection: "column",
+  maxHeight: 420,
+  overflowY: "auto",
+});
+
+const PresetButtonStyled = styled.button<{
+  selected: boolean;
+  disabled?: boolean;
+}>(({ disabled, selected, theme }) => ({
+  alignItems: "center",
+  backgroundColor: selected ? theme.background.hoverable : "transparent",
+  borderRadius: 4,
+  borderWidth: 0,
+  color: disabled ? theme.color.mediumdark : theme.color.defaultText,
+  cursor: disabled ? "not-allowed" : "pointer",
+  display: "flex",
+  fontSize: 13,
+  gap: 10,
+  minHeight: 36,
+  opacity: disabled ? 0.6 : 1,
+  paddingBlock: 6,
+  paddingInline: 8,
+  textAlign: "start",
+  "&:hover:not(:disabled)": {
+    backgroundColor: theme.background.hoverable,
+  },
+  "& > svg": {
+    marginInlineStart: "auto",
+  },
+}));
+
+const PresetSwatch = styled.span<{ color: string }>(({ color, theme }) => ({
+  backgroundColor: color,
+  borderColor: theme.appBorderColor,
+  borderRadius: 3,
+  borderStyle: "solid",
+  borderWidth: 1,
+  height: 14,
+  width: 14,
+}));
+
+const PresetLabelStyled = styled.span({
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+});
+
+const CustomHint = styled.span(({ theme }) => ({
+  color: theme.color.mediumdark,
+  fontSize: 11,
+  fontStyle: "italic",
+  marginInlineStart: "auto",
+}));
+
+function resolveAssignmentColor(
+  themeState: BrandThemeGlobals,
+  role: string,
+  fallback: string,
+): string {
+  const assignment = themeState.assignments.find((item) => item.role === role);
+  if (!assignment) {
+    return fallback;
+  }
+  return assignment.customValue ?? fallback;
+}
+
+function getCustomSwatches(
+  themeState: BrandThemeGlobals,
+): [string, string, string] {
+  const [backgroundFallback, primaryFallback, textFallback] = DEFAULT_SWATCHES;
+  return [
+    resolveAssignmentColor(themeState, "background", backgroundFallback),
+    resolveAssignmentColor(themeState, "primary", primaryFallback),
+    resolveAssignmentColor(themeState, "text", textFallback),
+  ];
+}

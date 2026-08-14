@@ -28,6 +28,7 @@ import {
 } from "@osdk/client.unstable";
 import type { ConjureContext } from "conjure-lite";
 import invariant from "tiny-invariant";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   createSimpleAsyncCache,
@@ -47,11 +48,14 @@ export interface ObjectPropertyMapping {
   };
 }
 
-type ObjectLinkMapping = Record<string, {
-  apiName: string;
-  directedLinkTypeRid: DirectedLinkTypeRid;
-  otherObjectType: string; // rid
-}>;
+type ObjectLinkMapping = Record<
+  string,
+  {
+    apiName: string;
+    directedLinkTypeRid: DirectedLinkTypeRid;
+    otherObjectType: string; // rid
+  }
+>;
 
 let cachedAllOntologies: LoadAllOntologiesResponse | undefined;
 async function getOntologyVersionForRid(
@@ -99,6 +103,8 @@ export class MetadataClient {
     getLinkMapping: () => Promise<ObjectLinkMapping>;
     getRid: () => string;
     getApiName: () => Promise<string | null | undefined>;
+    // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   }> = strongMemoAsync(async (rid: string) => {
     return Promise.resolve({
       getPropertyMapping: this.#objectPropertyMapping.bind(this, rid),
@@ -113,14 +119,11 @@ export class MetadataClient {
     getLinkMapping: () => Promise<ObjectLinkMapping>;
     getRid: () => string;
     getApiName: () => Promise<string | null | undefined>;
-  }> = strongMemoAsync(
-    async (objectApiName: string) => {
-      const objectDef = await this.#client.ontologyProvider.getObjectDefinition(
-        objectApiName,
-      );
-      return this.forObjectByRid(objectDef.rid);
-    },
-  );
+  }> = strongMemoAsync(async (objectApiName: string) => {
+    const objectDef =
+      await this.#client.ontologyProvider.getObjectDefinition(objectApiName);
+    return this.forObjectByRid(objectDef.rid);
+  });
 
   #objectPropertyMapping = strongMemoAsync(async (objectTypeRid: string) => {
     const conjureObjectType = await this.#getConjureObjectType(objectTypeRid);
@@ -136,10 +139,7 @@ export class MetadataClient {
         [objectTypeRid]: await this.ontologyVersion(""),
       },
     });
-    invariant(
-      linkTypes.linkTypes[objectTypeRid],
-      "link type should be loaded",
-    );
+    invariant(linkTypes.linkTypes[objectTypeRid], "link type should be loaded");
 
     // apiName to content
     const ret: ObjectLinkMapping = {};
@@ -170,18 +170,10 @@ export class MetadataClient {
           },
         } = l.definition;
         if (objectTypeRidManySide === objectTypeRid) {
-          helper(
-            manyToOneLinkMetadata,
-            "TARGET",
-            objectTypeRidOneSide,
-          );
+          helper(manyToOneLinkMetadata, "TARGET", objectTypeRidOneSide);
         }
         if (objectTypeRidOneSide === objectTypeRid) {
-          helper(
-            oneToManyLinkMetadata,
-            "SOURCE",
-            objectTypeRidManySide,
-          );
+          helper(oneToManyLinkMetadata, "SOURCE", objectTypeRidManySide);
         }
       } else if (l.definition.type === "manyToMany") {
         const {
@@ -193,19 +185,11 @@ export class MetadataClient {
           },
         } = l.definition;
         if (objectTypeRidA === objectTypeRid) {
-          helper(
-            objectTypeAToBLinkMetadata,
-            "SOURCE",
-            objectTypeRidB,
-          );
+          helper(objectTypeAToBLinkMetadata, "SOURCE", objectTypeRidB);
         }
 
         if (objectTypeRidB === objectTypeRid) {
-          helper(
-            objectTypeBToALinkMetadata,
-            "TARGET",
-            objectTypeRidA,
-          );
+          helper(objectTypeBToALinkMetadata, "TARGET", objectTypeRidA);
         }
       }
     }
@@ -217,16 +201,18 @@ export class MetadataClient {
     this.#logger?.debug(`getConjureObjectType(${objectTypeRid})`);
     const body = {
       datasourceTypes: [],
-      objectTypes: [{
-        identifier: {
-          type: "objectTypeRid" as const,
-          objectTypeRid: objectTypeRid,
+      objectTypes: [
+        {
+          identifier: {
+            type: "objectTypeRid" as const,
+            objectTypeRid: objectTypeRid,
+          },
+          versionReference: {
+            type: "ontologyVersion" as const,
+            ontologyVersion: await this.ontologyVersion(""),
+          },
         },
-        versionReference: {
-          type: "ontologyVersion" as const,
-          ontologyVersion: await this.ontologyVersion(""),
-        },
-      }],
+      ],
       linkTypes: [],
       sharedPropertyTypes: [],
       interfaceTypes: [],
@@ -247,15 +233,16 @@ export class MetadataClient {
     return entities.objectTypes[0].objectType;
   });
 
-  ontologyVersion: (key: string) => Promise<string> = strongMemoAsync(async (
-    _: string,
-  ) => getOntologyVersionForRid(this.#ctx, await this.#client.ontologyRid));
+  ontologyVersion: (key: string) => Promise<string> = strongMemoAsync(
+    async (_: string) =>
+      getOntologyVersionForRid(this.#ctx, await this.#client.ontologyRid),
+  );
 }
 
 export const metadataCacheClient: (
   key: MinimalClient,
-) => Promise<MetadataClient> = weakMemoAsync(
-  (client: MinimalClient) => Promise.resolve(new MetadataClient(client)),
+) => Promise<MetadataClient> = weakMemoAsync((client: MinimalClient) =>
+  Promise.resolve(new MetadataClient(client)),
 );
 
 function createObjectPropertyMapping(
@@ -267,30 +254,24 @@ function createObjectPropertyMapping(
   );
   const pkRid = conjureOT.primaryKeys[0];
 
-  const pkProperty = Object.values(conjureOT.propertyTypes).find(a =>
-    a.rid === pkRid
+  const pkProperty = Object.values(conjureOT.propertyTypes).find(
+    (a) => a.rid === pkRid,
   );
   if (!pkProperty) {
     throw new Error(`Could not find PK property by rid: ${pkRid}`);
   }
 
-  const propertyIdToApiNameMapping: Record<string, string> = Object
-    .fromEntries(
-      Object.values(conjureOT.propertyTypes).map(
-        property => {
-          return [property.id, property.apiName!];
-        },
-      ),
-    );
+  const propertyIdToApiNameMapping: Record<string, string> = Object.fromEntries(
+    Object.values(conjureOT.propertyTypes).map((property) => {
+      return [property.id, property.apiName!];
+    }),
+  );
 
-  const propertyApiNameToIdMapping: Record<string, string> = Object
-    .fromEntries(
-      Object.values(conjureOT.propertyTypes).map(
-        property => {
-          return [property.apiName!, property.id];
-        },
-      ),
-    );
+  const propertyApiNameToIdMapping: Record<string, string> = Object.fromEntries(
+    Object.values(conjureOT.propertyTypes).map((property) => {
+      return [property.apiName!, property.id];
+    }),
+  );
 
   return {
     apiName: conjureOT.apiName!,

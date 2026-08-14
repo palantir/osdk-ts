@@ -15,13 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetStreamingTimeseriesTemplateInstancesRequest
-    as _api_timeseries_GetStreamingTimeseriesTemplateInstancesRequest,
-  GetStreamingTimeseriesTemplateInstancesResponse
-    as _api_timeseries_GetStreamingTimeseriesTemplateInstancesResponse,
-  StreamingTimeseriesMonitorGroupRid
-    as _api_timeseries_StreamingTimeseriesMonitorGroupRid,
+  GetStreamingTimeseriesTemplateInstancesRequest as _api_timeseries_GetStreamingTimeseriesTemplateInstancesRequest,
+  GetStreamingTimeseriesTemplateInstancesResponse as _api_timeseries_GetStreamingTimeseriesTemplateInstancesResponse,
+  StreamingTimeseriesMonitorGroupRid as _api_timeseries_StreamingTimeseriesMonitorGroupRid,
 } from "../__components.js";
 
 /**

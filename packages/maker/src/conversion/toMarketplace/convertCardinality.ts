@@ -15,6 +15,7 @@
  */
 
 import type { OntologyIrOneToManyLinkDefinition } from "@osdk/client.unstable";
+
 import type { OneToManyLinkTypeDefinition } from "../../api/links/LinkType.js";
 
 export function convertCardinality(

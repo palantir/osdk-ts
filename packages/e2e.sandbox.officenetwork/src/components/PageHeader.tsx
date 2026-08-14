@@ -6,9 +6,11 @@ interface PageHeaderProps {
   featureTag: string;
 }
 
-export function PageHeader(
-  { title, description, featureTag }: PageHeaderProps,
-) {
+export function PageHeader({
+  title,
+  description,
+  featureTag,
+}: PageHeaderProps) {
   return (
     <div className="mb-6">
       <div className="flex items-center gap-3 mb-2">

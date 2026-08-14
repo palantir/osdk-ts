@@ -28,6 +28,7 @@ import type {
 } from "@ai-sdk/provider";
 import type { PlatformClient } from "@osdk/client";
 import { getOpenAiBaseUrl } from "@osdk/language-models";
+
 import type { OpenAiAssistantToolCall } from "./convert-prompt.js";
 import { convertPrompt } from "./convert-prompt.js";
 import { mapFinishReason } from "./map-finish-reason.js";
@@ -72,8 +73,8 @@ export class FoundryChatLanguageModel implements LanguageModelV3 {
     if (!res.ok) {
       const errBody = await safeReadText(res);
       throw new Error(
-        `LMS chat/completions request failed: ${res.status} ${res.statusText}`
-          + (errBody ? ` — ${errBody}` : ""),
+        `LMS chat/completions request failed: ${res.status} ${res.statusText}` +
+          (errBody ? ` — ${errBody}` : ""),
       );
     }
 
@@ -102,8 +103,8 @@ export class FoundryChatLanguageModel implements LanguageModelV3 {
     if (!res.ok) {
       const errBody = await safeReadText(res);
       throw new Error(
-        `LMS chat/completions request failed: ${res.status} ${res.statusText}`
-          + (errBody ? ` — ${errBody}` : ""),
+        `LMS chat/completions request failed: ${res.status} ${res.statusText}` +
+          (errBody ? ` — ${errBody}` : ""),
       );
     }
 
@@ -121,25 +122,23 @@ export class FoundryChatLanguageModel implements LanguageModelV3 {
   ): { body: OpenAiChatRequest; url: string } {
     const baseUrl = getOpenAiBaseUrl(this.config.client);
     const url = new URL("chat/completions", `${baseUrl}/`).toString();
-    const apiName = this.config.identifier.type === "lmsModel"
-      ? this.config.identifier.apiName
-      : this.config.identifier.registeredModelRid;
+    const apiName =
+      this.config.identifier.type === "lmsModel"
+        ? this.config.identifier.apiName
+        : this.config.identifier.registeredModelRid;
 
     const messages = convertPrompt(options.prompt, warnings);
 
     const tools = options.tools
-      ?.filter(
-        (t): t is LanguageModelV3FunctionTool => {
-          if (t.type === "function") return true;
-          warnings.push({
-            type: "unsupported",
-            feature: `${t.type} tool type`,
-            details:
-              `Only "function" tools are supported; "${t.type}" tools are ignored`,
-          });
-          return false;
-        },
-      )
+      ?.filter((t): t is LanguageModelV3FunctionTool => {
+        if (t.type === "function") return true;
+        warnings.push({
+          type: "unsupported",
+          feature: `${t.type} tool type`,
+          details: `Only "function" tools are supported; "${t.type}" tools are ignored`,
+        });
+        return false;
+      })
       .map((t) => ({
         type: "function" as const,
         function: {

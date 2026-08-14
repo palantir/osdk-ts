@@ -30,10 +30,7 @@ export async function undeployWebsite(
   urlObj.searchParams.set("preview", "true");
   const url = urlObj.toString();
 
-  await fetch(
-    url,
-    {
-      method: "POST",
-    },
-  );
+  await fetch(url, {
+    method: "POST",
+  });
 }

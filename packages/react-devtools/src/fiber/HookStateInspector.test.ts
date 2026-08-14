@@ -15,15 +15,14 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { getCapabilitiesManager } from "./capabilities.js";
 import { extractOsdkMetadataFromFiber } from "./HookStateInspector.js";
 import type { Fiber, MemoizedState } from "./types.js";
 
 const OSDK_HOOK_METADATA = Symbol.for("__OSDK_HOOK_METADATA__");
 
-function createMockFiber(
-  overrides: Partial<Fiber> = {},
-): Fiber {
+function createMockFiber(overrides: Partial<Fiber> = {}): Fiber {
   return {
     alternate: null,
     child: null,
@@ -48,9 +47,7 @@ function createMockFiber(
   } as Fiber;
 }
 
-function createMemoizedStateChain(
-  states: unknown[],
-): MemoizedState | null {
+function createMemoizedStateChain(states: unknown[]): MemoizedState | null {
   if (states.length === 0) {
     return null;
   }
@@ -82,9 +79,7 @@ describe("HookStateInspector", () => {
       };
 
       const fiber = createMockFiber({
-        memoizedState: createMemoizedStateChain([
-          { current: metadata },
-        ]),
+        memoizedState: createMemoizedStateChain([{ current: metadata }]),
       });
 
       const results = extractOsdkMetadataFromFiber(fiber);

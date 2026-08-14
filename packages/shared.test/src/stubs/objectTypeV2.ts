@@ -20,6 +20,8 @@ export const employeeObjectType: ObjectTypeV2 = {
   apiName: "Employee",
   displayName: "Employee",
   pluralDisplayName: "Employees",
+  aliases: [],
+  datasources: [],
   icon: { type: "blueprint", color: "blue", name: "person" },
   description: "A full-time or part-time \n\n employee of our firm",
   primaryKey: "employeeId",
@@ -42,7 +44,7 @@ export const employeeObjectType: ObjectTypeV2 = {
     },
     office: {
       description:
-        "The unique \"ID\" of the employee's \\\"primary\\\" assigned office.\n This is some more text.",
+        'The unique "ID" of the employee\'s \\"primary\\" assigned office.\n This is some more text.',
       dataType: {
         type: "string",
       },
@@ -107,7 +109,7 @@ export const employeeObjectType: ObjectTypeV2 = {
       dataType: {
         type: "vector",
         dimension: 1536,
-        supportsSearchWith: [{ "value": "COSINE_SIMILARITY" }],
+        supportsSearchWith: [{ value: "COSINE_SIMILARITY" }],
         embeddingModel: {
           type: "lms",
           value: "OPENAI_TEXT_EMBEDDING_ADA_002",
@@ -127,6 +129,42 @@ export const employeeObjectType: ObjectTypeV2 = {
       rid: "rid",
       typeClasses: [],
     },
+    employeeProfile: {
+      description: "Employee profile with main value being the bio",
+      dataType: {
+        type: "struct",
+        structFieldTypes: [
+          {
+            apiName: "bio",
+            dataType: { type: "string" },
+            rid: "ri.struct.bio",
+            typeClasses: [],
+          },
+          {
+            apiName: "yearsExperience",
+            dataType: { type: "integer" },
+            rid: "ri.struct.yearsExperience",
+            typeClasses: [],
+          },
+        ],
+        mainValue: {
+          mainValueType: { type: "string" },
+          fields: ["bio"],
+        },
+      },
+      rid: "rid",
+      typeClasses: [],
+    },
+    performanceScores: {
+      description: "Array of performance scores with reducers",
+      dataType: {
+        type: "array",
+        subType: { type: "double" },
+        reducers: [{ direction: "DESCENDING_NULLS_LAST" }],
+      },
+      rid: "rid",
+      typeClasses: [],
+    },
   },
   rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
   status: "ACTIVE",
@@ -136,6 +174,8 @@ export const officeObjectType: ObjectTypeV2 = {
   apiName: "Office",
   displayName: "Office",
   pluralDisplayName: "Office",
+  aliases: [],
+  datasources: [],
   icon: { type: "blueprint", color: "blue", name: "office" },
   description: "A office in our Company",
   primaryKey: "officeId",
@@ -188,6 +228,8 @@ export const equipmentObjectType: ObjectTypeV2 = {
   apiName: "equipment",
   displayName: "Equipment",
   pluralDisplayName: "Equipment",
+  aliases: [],
+  datasources: [],
   icon: { type: "blueprint", color: "blue", name: "gear" },
   primaryKey: "equipmentId",
   titleProperty: "type",
@@ -216,6 +258,8 @@ export const objectTypeWithTimestampPrimaryKey: ObjectTypeV2 = {
   apiName: "ObjectWithTimestampPrimaryKey",
   displayName: "ObjectWithTimestampPrimaryKey",
   pluralDisplayName: "ObjectWithTimestampPrimaryKeys",
+  aliases: [],
+  datasources: [],
   icon: { type: "blueprint", color: "blue", name: "person" },
   description: "Object Type With Timestamp Primary Key",
   primaryKey: "timestamp",
@@ -244,6 +288,8 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
   apiName: "objectTypeWithAllPropertyTypes",
   displayName: "objectTypeWithAllPropertyType",
   pluralDisplayName: "objectTypeWithAllPropertyTypes",
+  aliases: [],
+  datasources: [],
   icon: { type: "blueprint", color: "blue", name: "person" },
   description: "An object type with all property types",
   primaryKey: "id",
@@ -531,6 +577,13 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
       rid: "rid",
       typeClasses: [],
     },
+    cipherText: {
+      dataType: {
+        type: "cipherText",
+      },
+      rid: "rid",
+      typeClasses: [],
+    },
   },
   rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
   status: "ACTIVE",
@@ -548,6 +601,8 @@ export const taskObjectType: ObjectTypeV2 = {
   apiName: "Task",
   displayName: "Task",
   pluralDisplayName: "Tasks",
+  aliases: [],
+  datasources: [],
   icon: { type: "blueprint", color: "blue", name: "box" },
   primaryKey: "id",
   properties: {
@@ -574,6 +629,8 @@ export const todoObjectType: ObjectTypeV2 = {
   apiName: "Todo",
   displayName: "Todo",
   pluralDisplayName: "ManyTodo",
+  aliases: [],
+  datasources: [],
   icon: { type: "blueprint", color: "blue", name: "box" },
   primaryKey: "id",
   properties: {
@@ -601,6 +658,8 @@ export const personObjectType: ObjectTypeV2 = {
   apiName: "Person",
   displayName: "Person",
   pluralDisplayName: "Persons",
+  aliases: [],
+  datasources: [],
   icon: { type: "blueprint", color: "blue", name: "person" },
   primaryKey: "id",
   properties: {
@@ -628,6 +687,8 @@ export const BGaoNflPlayerObjectType: ObjectTypeV2 = {
   apiName: "BgaoNflPlayer",
   displayName: "id",
   pluralDisplayName: "BgaoNflPlayers",
+  aliases: [],
+  datasources: [],
   icon: { type: "blueprint", color: "blue", name: "box" },
   primaryKey: "id",
   properties: {

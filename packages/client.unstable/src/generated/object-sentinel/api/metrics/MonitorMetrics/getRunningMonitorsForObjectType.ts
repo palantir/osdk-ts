@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetRunningMonitorsForObjectTypeRequest
-    as _api_metrics_GetRunningMonitorsForObjectTypeRequest,
-  GetRunningMonitorsForObjectTypeResponse
-    as _api_metrics_GetRunningMonitorsForObjectTypeResponse,
+  GetRunningMonitorsForObjectTypeRequest as _api_metrics_GetRunningMonitorsForObjectTypeRequest,
+  GetRunningMonitorsForObjectTypeResponse as _api_metrics_GetRunningMonitorsForObjectTypeResponse,
 } from "../__components.js";
 
 /**

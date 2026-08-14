@@ -16,12 +16,10 @@
 
 export function distributeTypeHelper<T extends string>(
   type: T,
-): T extends any ?
-    & { type: T }
-    & {
+): T extends any
+  ? { type: T } & {
       [K in T]: {};
     }
-  : never
-{
+  : never {
   return { type, [type]: {} } as any; // any cast to match conditional return type
 }

@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { DiscoveredPrimitives } from "../utils/ComponentPrimitiveDiscovery.js";
 
@@ -129,10 +130,7 @@ export function useInspectorSelection(
     [store],
   );
 
-  const getSnapshot = React.useCallback(
-    () => store.getSnapshot(),
-    [store],
-  );
+  const getSnapshot = React.useCallback(() => store.getSnapshot(), [store]);
 
   const snapshot = React.useSyncExternalStore(subscribe, getSnapshot);
 

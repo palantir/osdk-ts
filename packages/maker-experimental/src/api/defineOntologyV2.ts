@@ -14,24 +14,34 @@
  * limitations under the License.
  */
 
+import * as fs from "fs";
+
 import type { OntologyIrV2 } from "@osdk/client.unstable";
+import type { InputPreset } from "@osdk/client.unstable/api";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import type { LinkType, ObjectType } from "@osdk/maker";
 import {
+  getImportedTypes,
   getOntologyDefinition,
   initializeOntologyState,
   OntologyEntityTypeEnum,
+  writeDependencyFile,
+  writeStaticObjects,
 } from "@osdk/maker";
-import * as fs from "fs";
+
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
-import { getImportedShapes } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
+import {
+  getImportedShapes,
+  type LinkTypeIdsByApiName,
+} from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
-import type { BlockShapes } from "../util/generateRid.js";
+import type { BlockShapes, ReadableId } from "../util/generateRid.js";
 import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
 
 export interface OntologyV2Result {
   ontologyIr: OntologyIrV2;
   shapes: BlockShapes;
+  importedInputPresets: Map<ReadableId, InputPreset>;
   backingDatasourceApiNames: string[];
   backingDatasourceLinkApiNames: string[];
 }
@@ -43,8 +53,11 @@ export interface FunctionsIr {
 export async function defineOntologyV2(
   ns: string,
   body: () => void | Promise<void>,
+  outputDir?: string,
+  dependencyFile?: string,
   functionsIrFile?: string,
   randomnessKey?: string,
+  importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
 
@@ -63,12 +76,13 @@ export async function defineOntologyV2(
 
   let functionsIr: FunctionsIr | undefined;
   if (functionsIrFile) {
-    functionsIr = JSON.parse(
-      fs.readFileSync(functionsIrFile, "utf-8"),
-    );
+    functionsIr = JSON.parse(fs.readFileSync(functionsIrFile, "utf-8"));
   }
 
-  const ridGenerator = new OntologyRidGeneratorImpl(randomnessKey);
+  const ridGenerator = new OntologyRidGeneratorImpl(
+    getImportedTypes(),
+    randomnessKey,
+  );
   const ontDef = convertOntologyDefinition(
     ontologyDefinition,
     ridGenerator,
@@ -87,6 +101,7 @@ export async function defineOntologyV2(
   const importedShapes = getImportedShapes(
     ontDef.importedOntology,
     ridGenerator,
+    importedLinkTypeIdsByApiName,
   );
   for (const [key, value] of importedShapes.inputShapes) {
     shapes.inputShapes.set(key, value);
@@ -98,8 +113,8 @@ export async function defineOntologyV2(
   const backingDatasourceApiNames = Object.entries(
     ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
   )
-    .filter(([_, obj]) =>
-      (obj as ObjectType).includeEmptyBackingDatasource === true
+    .filter(
+      ([_, obj]) => (obj as ObjectType).includeEmptyBackingDatasource === true,
     )
     .map(([apiName]) => apiName);
 
@@ -108,16 +123,26 @@ export async function defineOntologyV2(
   )
     .filter(([_, link]) => {
       const lt = link as LinkType;
-      return "many" in lt
-        && !("intermediaryObjectType" in lt)
-        && (lt as LinkType & { includeEmptyBackingDatasource?: boolean })
-            .includeEmptyBackingDatasource === true;
+      return (
+        "many" in lt &&
+        !("intermediaryObjectType" in lt) &&
+        (lt as LinkType & { includeEmptyBackingDatasource?: boolean })
+          .includeEmptyBackingDatasource === true
+      );
     })
     .map(([apiName]) => apiName);
+
+  if (outputDir) {
+    writeStaticObjects(outputDir);
+  }
+  if (dependencyFile) {
+    writeDependencyFile(dependencyFile);
+  }
 
   return {
     ontologyIr: ontDef,
     shapes,
+    importedInputPresets: importedShapes.inputPresets,
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
   };

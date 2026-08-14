@@ -16,6 +16,7 @@
 
 import { ExitProcessError } from "@osdk/cli.common";
 import { PalantirApiError } from "@osdk/shared.net.errors";
+
 import { createFetch } from "../createFetch.mjs";
 import type { InternalClientContext } from "../internalClientContext.mjs";
 import type { ThirdPartyAppRid } from "../ThirdPartyAppRid.js";
@@ -39,9 +40,10 @@ export async function getWebsite(
   } catch (e) {
     // Revisit this error handling in the API
     if (
-      e instanceof ExitProcessError && e.originalError != null
-      && e.originalError instanceof PalantirApiError
-      && e.originalError.errorName === "WebsiteNotFound"
+      e instanceof ExitProcessError &&
+      e.originalError != null &&
+      e.originalError instanceof PalantirApiError &&
+      e.originalError.errorName === "WebsiteNotFound"
     ) {
       return undefined;
     }

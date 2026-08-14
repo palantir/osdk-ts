@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-const PACKAGE_USER_AGENT =
-  `osdk-cbac-components/${process.env.PACKAGE_VERSION}`;
+const PACKAGE_USER_AGENT = `osdk-cbac-components/${process.env.PACKAGE_VERSION}`;
 
 export function componentUserAgent(componentName: string): string {
   return `${PACKAGE_USER_AGENT}/${componentName}`;

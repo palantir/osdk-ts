@@ -14,12 +14,31 @@
  * limitations under the License.
  */
 
-import type { Media, MediaMetadata, MediaReference } from "@osdk/api";
+import type {
+  Media,
+  MediaFullMetadata,
+  MediaMetadata,
+  MediaReference,
+} from "@osdk/api";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import invariant from "tiny-invariant";
+
+import type { Client } from "./Client.js";
+import { additionalContext } from "./Client.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
+import { validateMediaItemMetadata } from "./object/validateMediaItemMetadata.js";
 
 export function createMediaFromReference(
+  client: Client,
+  mediaReference: MediaReference,
+): Media {
+  return createMediaFromReferenceInternal(
+    client[additionalContext],
+    mediaReference,
+  );
+}
+
+export function createMediaFromReferenceInternal(
   client: MinimalClient,
   mediaReference: MediaReference,
 ): Media {
@@ -27,6 +46,8 @@ export function createMediaFromReference(
     mediaReference.reference.mediaSetViewItem;
   const token = mediaReference.reference.mediaSetViewItem.token;
   return {
+    // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     async fetchContents(): Promise<Response> {
       return MediaSets.read(
         client,
@@ -54,6 +75,17 @@ export function createMediaFromReference(
         sizeBytes: info.sizeBytes,
         mediaType: info.mimeType,
       };
+    },
+
+    async fetchFullMetadata(): Promise<MediaFullMetadata> {
+      const raw = await MediaSets.metadata(
+        client,
+        mediaSetRid,
+        mediaItemRid,
+        { preview: true },
+        token ? { ReadToken: token } : undefined,
+      );
+      return { itemMetadata: validateMediaItemMetadata(raw) };
     },
 
     getMediaReference(): MediaReference {

@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import {
   type FiberCapabilities,
   FiberCapabilitiesManager,
@@ -77,9 +78,7 @@ describe("FiberCapabilitiesManager", () => {
         manager.getCapabilities().disabledFeatures.has("hook-discovery"),
       ).toBe(false);
       expect(
-        manager.getCapabilities().disabledFeatures.has(
-          "component-inspection",
-        ),
+        manager.getCapabilities().disabledFeatures.has("component-inspection"),
       ).toBe(false);
       expect(manager.getCapabilities().errorCount).toBe(3);
     });
@@ -115,9 +114,7 @@ describe("FiberCapabilitiesManager", () => {
         manager.getCapabilities().disabledFeatures.has("hook-discovery"),
       ).toBe(false);
       expect(
-        manager.getCapabilities().disabledFeatures.has(
-          "component-inspection",
-        ),
+        manager.getCapabilities().disabledFeatures.has("component-inspection"),
       ).toBe(true);
     });
   });

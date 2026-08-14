@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { MAX_SCALE, MIN_SCALE, SCALE_STEP } from "../constants.js";
-import type { PdfDownloadResult, SidebarMode } from "../types.js";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+import {
+  MAX_SCALE,
+  MIN_SCALE,
+  PAGE_WIDTH_SCALE_VALUE,
+  SCALE_STEP,
+} from "../constants.js";
+import type {
+  PdfDownloadResult,
+  PdfSource,
+  SidebarMode,
+} from "../PdfViewerApi.js";
 import { usePdfOutline } from "./usePdfOutline.js";
 import type {
   UsePdfViewerCoreOptions,
@@ -36,10 +46,12 @@ export interface UsePdfViewerStateOptions extends UsePdfViewerCoreOptions {
 }
 
 export interface UsePdfViewerStateResult extends UsePdfViewerCoreResult {
-  /** Zoom in by one step */
+  /** Zoom in by one step (disables auto-size) */
   zoomIn: () => void;
-  /** Zoom out by one step */
+  /** Zoom out by one step (disables auto-size) */
   zoomOut: () => void;
+  /** Toggle auto-size (fit to width) on or off */
+  toggleAutoSize: () => void;
 
   /** Current rotation in degrees (0, 90, 180, 270) */
   rotation: number;
@@ -71,11 +83,17 @@ export function usePdfViewerState({
   src,
   initialPage,
   initialScale,
+  initialAutoSize,
   initialSidebarOpen = false,
   sidebarMode: sidebarModeProp = "thumbnails",
   onDownload,
 }: UsePdfViewerStateOptions): UsePdfViewerStateResult {
-  const core = usePdfViewerCore({ src, initialPage, initialScale });
+  const core = usePdfViewerCore({
+    src,
+    initialPage,
+    initialScale,
+    initialAutoSize,
+  });
 
   const [rotation, setRotation] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(initialSidebarOpen);
@@ -90,39 +108,72 @@ export function usePdfViewerState({
   const outlineItems = usePdfOutline(core.document);
 
   // Sync sidebarMode prop changes to state
-  useEffect(function syncSidebarMode() {
-    setSidebarMode(sidebarModeProp);
-  }, [sidebarModeProp]);
+  useEffect(
+    function syncSidebarMode() {
+      setSidebarMode(sidebarModeProp);
+    },
+    [sidebarModeProp],
+  );
 
   // Sync rotation → PDFViewer
-  useEffect(function syncRotationToViewer() {
-    const pdfViewer = core.pdfViewerRef.current;
-    if (pdfViewer != null) {
-      pdfViewer.pagesRotation = rotation;
-    }
-  }, [core.pdfViewerRef, rotation]);
+  useEffect(
+    function syncRotationToViewer() {
+      const pdfViewer = core.pdfViewerRef.current;
+      if (pdfViewer != null) {
+        pdfViewer.pagesRotation = rotation;
+      }
+    },
+    [core.pdfViewerRef, rotation],
+  );
+
+  // Re-apply page-width after rotation changes while auto-size is active.
+  // Rotation changes the effective page width, so auto-size must re-fit.
+  const prevRotationRef = useRef(rotation);
+  useEffect(
+    function reapplyAutoSizeAfterRotation() {
+      if (prevRotationRef.current === rotation) {
+        return;
+      }
+      prevRotationRef.current = rotation;
+      const pdfViewer = core.pdfViewerRef.current;
+      if (pdfViewer == null || !core.autoSize) {
+        return;
+      }
+      pdfViewer.currentScaleValue = PAGE_WIDTH_SCALE_VALUE;
+    },
+    [core.pdfViewerRef, core.autoSize, rotation],
+  );
 
   // Ctrl+F keyboard shortcut
-  useEffect(function registerSearchShortcut() {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "f") {
-        e.preventDefault();
-        search.openSearch();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [search.openSearch]);
+  useEffect(
+    function registerSearchShortcut() {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+          e.preventDefault();
+          search.openSearch();
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    },
+    [search.openSearch],
+  );
 
   const zoomIn = useCallback(() => {
+    core.setAutoSize(false);
     core.setScale(Math.min(core.scale + SCALE_STEP, MAX_SCALE));
-  }, [core.scale, core.setScale]);
+  }, [core.scale, core.setScale, core.setAutoSize]);
 
   const zoomOut = useCallback(() => {
+    core.setAutoSize(false);
     core.setScale(Math.max(core.scale - SCALE_STEP, MIN_SCALE));
-  }, [core.scale, core.setScale]);
+  }, [core.scale, core.setScale, core.setAutoSize]);
+
+  const toggleAutoSize = useCallback(() => {
+    core.setAutoSize(!core.autoSize);
+  }, [core.autoSize, core.setAutoSize]);
 
   const rotateLeft = useCallback(() => {
     setRotation((prev) => (prev - 90 + 360) % 360);
@@ -136,66 +187,76 @@ export function usePdfViewerState({
     setSidebarOpen((prev) => !prev);
   }, []);
 
-  const download = useCallback((filename?: string) => {
-    if (core.document == null) {
-      return;
-    }
-    void core.document.getData().then((data) => {
-      const blob = new Blob([data.buffer as ArrayBuffer], {
-        type: "application/pdf",
-      });
-      const url = URL.createObjectURL(blob);
-      const resolvedFilename = resolveDownloadFilename(src, filename);
-      const a = globalThis.document.createElement("a");
-      a.href = url;
-      a.download = resolvedFilename;
-      a.click();
-      URL.revokeObjectURL(url);
-      onDownload?.({ success: true, filename: resolvedFilename });
-    }).catch((err: unknown) => {
-      onDownload?.({
-        success: false,
-        error: err instanceof Error
-          ? err
-          : new Error("Failed to download PDF"),
-      });
-    });
-  }, [core.document, src, onDownload]);
+  const download = useCallback(
+    (filename?: string) => {
+      if (core.document == null) {
+        return;
+      }
+      void core.document
+        .getData()
+        .then((data) => {
+          const blob = new Blob([data.buffer as ArrayBuffer], {
+            type: "application/pdf",
+          });
+          const url = URL.createObjectURL(blob);
+          const resolvedFilename = resolveDownloadFilename(src, filename);
+          const a = globalThis.document.createElement("a");
+          a.href = url;
+          a.download = resolvedFilename;
+          a.click();
+          URL.revokeObjectURL(url);
+          onDownload?.({ success: true, filename: resolvedFilename });
+        })
+        .catch((err: unknown) => {
+          onDownload?.({
+            success: false,
+            error:
+              err instanceof Error ? err : new Error("Failed to download PDF"),
+          });
+        });
+    },
+    [core.document, src, onDownload],
+  );
 
-  return useMemo((): UsePdfViewerStateResult => ({
-    ...core,
-    zoomIn,
-    zoomOut,
-    rotation,
-    rotateLeft,
-    rotateRight,
-    sidebarOpen,
-    sidebarMode,
-    setSidebarMode,
-    toggleSidebar,
-    search,
-    outlineItems,
-    download,
-  }), [
-    core,
-    zoomIn,
-    zoomOut,
-    rotation,
-    rotateLeft,
-    rotateRight,
-    sidebarOpen,
-    sidebarMode,
-    setSidebarMode,
-    toggleSidebar,
-    search,
-    outlineItems,
-    download,
-  ]);
+  return useMemo(
+    (): UsePdfViewerStateResult => ({
+      ...core,
+      zoomIn,
+      zoomOut,
+      toggleAutoSize,
+      rotation,
+      rotateLeft,
+      rotateRight,
+      sidebarOpen,
+      sidebarMode,
+      setSidebarMode,
+      toggleSidebar,
+      search,
+      outlineItems,
+      download,
+    }),
+    [
+      core,
+      zoomIn,
+      zoomOut,
+      toggleAutoSize,
+      rotation,
+      rotateLeft,
+      rotateRight,
+      sidebarOpen,
+      sidebarMode,
+      setSidebarMode,
+      toggleSidebar,
+      search,
+      outlineItems,
+      download,
+    ],
+  );
 }
 
 /** Derive a download filename from an explicit name, the src URL, or a fallback. */
 function resolveDownloadFilename(
-  src: string | ArrayBuffer,
+  src: PdfSource,
   filename: string | undefined,
 ): string {
   if (filename != null) {

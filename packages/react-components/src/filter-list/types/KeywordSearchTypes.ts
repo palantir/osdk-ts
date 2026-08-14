@@ -15,7 +15,11 @@
  */
 
 import type { ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
-import type { BaseFilterState } from "../FilterListItemApi.js";
+
+import type {
+  BaseFilterState,
+  FilterDefinitionControls,
+} from "../FilterListItemApi.js";
 
 /**
  * Keys of string properties on an object type
@@ -43,12 +47,8 @@ export interface KeywordSearchFilterState extends BaseFilterState {
 export interface KeywordSearchFilterDefinition<
   Q extends ObjectTypeDefinition,
   K extends StringPropertyKeys<Q> = StringPropertyKeys<Q>,
-> {
+> extends FilterDefinitionControls {
   type: "KEYWORD_SEARCH";
-  /**
-   * Optional unique identifier for stable keying across filter reorders.
-   */
-  id?: string;
   /**
    * Properties to search within
    * - "all": Search all string properties
@@ -57,20 +57,14 @@ export interface KeywordSearchFilterDefinition<
   properties: "all" | K[];
   label?: string;
   /**
-   * Controlled state for the filter.
-   * When provided, the filter becomes controlled and changes should be
-   * handled via onFilterStateChanged callback.
-   */
-  filterState?: KeywordSearchFilterState;
-  /**
-   * Default state for uncontrolled mode.
-   * Used when filterState is not provided.
+   * Seeds the filter's state on mount, FilterList owns the state from then on
+   *
+   * @default undefined (filter starts empty)
    */
   defaultFilterState?: KeywordSearchFilterState;
+
   /**
-   * Controls whether this filter is rendered.
-   * When false, the filter is hidden but its state is preserved.
-   * @default true
+   * @deprecated Has no effect, remove it.
    */
-  isVisible?: boolean;
+  filterState?: KeywordSearchFilterState;
 }

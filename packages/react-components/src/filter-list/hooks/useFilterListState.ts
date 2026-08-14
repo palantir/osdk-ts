@@ -14,37 +14,42 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
+import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { assertUnreachable } from "../../shared/assertUnreachable.js";
+
 import type { FilterListProps } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import type { LinkedPropertyFilterState } from "../types/LinkedFilterTypes.js";
+import type { LinkedFilter } from "../types/LinkedFilterTypes.js";
 import {
   buildWhereClause,
+  getActiveLinkedFilters,
   type PropertyTypeInfo,
 } from "../utils/filterStateToWhereClause.js";
 import { filterHasActiveState } from "../utils/filterValues.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
+import { getSeedFilterState } from "../utils/getSeedFilterState.js";
+import { narrowObjectSet } from "../utils/narrowObjectSet.js";
+import { useStableMapEntries } from "./useStableMapEntries.js";
 
 export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
   filterStates: Map<string, FilterState>;
-  setFilterState: (
-    filterKey: string,
-    state: FilterState,
-  ) => void;
+  setFilterState: (filterKey: string, state: FilterState) => void;
   clearFilterState: (filterKey: string) => void;
+  /** Direct (non-link-traversing) filters combined into a `WhereClause<Q>`. */
   whereClause: WhereClause<Q>;
+  /** Active linked-property records; apply via `narrowObjectSet`. */
+  linkedFilters: ReadonlyArray<LinkedFilter<Q>>;
+  /** Per-filter excluding-self where clauses keyed by `getFilterKey`. */
   perFilterWhereClauses: Map<string, WhereClause<Q>>;
+  /** Per-filter excluding-self linked filters keyed by `getFilterKey`. */
+  perFilterLinkedFilters: Map<string, ReadonlyArray<LinkedFilter<Q>>>;
   activeFilterCount: number;
+  hasChangesFromInitial: boolean;
   reset: () => void;
 }
 
-/**
- * Build initial states from filter definitions.
- * Uses string keys derived from getFilterKey() for stable lookups.
- */
 function buildInitialStates<Q extends ObjectTypeDefinition>(
   definitions: FilterListProps<Q>["filterDefinitions"],
 ): Map<string, FilterState> {
@@ -55,44 +60,9 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
   }
 
   for (const definition of definitions) {
-    const key = getFilterKey(definition);
-    switch (definition.type) {
-      case "PROPERTY": {
-        const state = definition.filterState;
-        if (state) {
-          states.set(key, state);
-        }
-        break;
-      }
-      case "HAS_LINK":
-      case "KEYWORD_SEARCH":
-      case "CUSTOM": {
-        const state = definition.defaultFilterState;
-        if (state) {
-          states.set(key, state);
-        }
-        break;
-      }
-      case "STATIC_VALUES": {
-        const state = definition.filterState;
-        if (state) {
-          states.set(key, state);
-        }
-        break;
-      }
-      case "LINKED_PROPERTY": {
-        const innerState = definition.defaultLinkedFilterState;
-        if (innerState) {
-          const state: LinkedPropertyFilterState = {
-            type: "linkedProperty",
-            linkedFilterState: innerState,
-          };
-          states.set(key, state);
-        }
-        break;
-      }
-      default:
-        assertUnreachable(definition);
+    const state = getSeedFilterState(definition);
+    if (state) {
+      states.set(getFilterKey(definition), state);
     }
   }
 
@@ -104,14 +74,23 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
 ): UseFilterListStateResult<Q> {
   const {
     objectType,
+    objectSet,
     filterDefinitions,
     onFilterStateChanged,
     onFilterClauseChanged,
+    onEffectiveObjectSet,
+    defaultFilterStates,
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat fallback for the pre-rename prop
     initialFilterStates,
   } = props;
+  const seededFilterStates = defaultFilterStates ?? initialFilterStates;
   const { metadata } = useOsdkMetadata(objectType);
   const onFilterClauseChangedRef = useRef(onFilterClauseChanged);
   onFilterClauseChangedRef.current = onFilterClauseChanged;
+  const onEffectiveObjectSetRef = useRef(onEffectiveObjectSet);
+  onEffectiveObjectSetRef.current = onEffectiveObjectSet;
+  const filterDefinitionsRef = useRef(filterDefinitions);
+  filterDefinitionsRef.current = filterDefinitions;
 
   const propertyTypes = useMemo(() => {
     const map = new Map<string, PropertyTypeInfo>();
@@ -128,17 +107,24 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     return map;
   }, [metadata?.properties]);
 
-  const [filterStates, setFilterStates] = useState<
-    Map<string, FilterState>
-  >(() => {
-    const states = buildInitialStates(filterDefinitions);
-    if (initialFilterStates) {
-      for (const [key, state] of initialFilterStates) {
-        states.set(key, state);
+  // Captured once on first render to provide a stable baseline for the reset
+  // button's enabled state. `useState`'s lazy initializer pins the value for
+  // the lifetime of the component (unlike `useMemo`, which React may discard).
+  const [initialFilterStatesSnapshot] = useState<Map<string, FilterState>>(
+    () => {
+      const snapshot = buildInitialStates(filterDefinitions);
+      if (seededFilterStates) {
+        for (const [key, state] of seededFilterStates) {
+          snapshot.set(key, state);
+        }
       }
-    }
-    return states;
-  });
+      return snapshot;
+    },
+  );
+
+  const [filterStates, setFilterStates] = useState<Map<string, FilterState>>(
+    () => new Map(initialFilterStatesSnapshot),
+  );
 
   const setFilterState = useCallback(
     (filterKey: string, state: FilterState) => {
@@ -148,93 +134,140 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
         return next;
       });
 
-      const definition = filterDefinitions?.find(
+      const definition = filterDefinitionsRef.current?.find(
         (d) => getFilterKey(d) === filterKey,
       );
       if (definition) {
         onFilterStateChanged?.(definition, state);
       }
     },
-    [
-      filterDefinitions,
-      onFilterStateChanged,
-    ],
+    [onFilterStateChanged],
   );
 
-  const clearFilterState = useCallback(
-    (filterKey: string) => {
-      setFilterStates((prev) => {
-        const next = new Map(prev);
-        next.delete(filterKey);
-        return next;
-      });
-    },
-    [],
-  );
+  const clearFilterState = useCallback((filterKey: string) => {
+    setFilterStates((prev) => {
+      const next = new Map(prev);
+      next.delete(filterKey);
+      return next;
+    });
+  }, []);
+
+  const reset = useCallback(() => {
+    setFilterStates(new Map(initialFilterStatesSnapshot));
+  }, [initialFilterStatesSnapshot]);
 
   const whereClause = useMemo(
-    () =>
-      buildWhereClause(
-        filterDefinitions,
-        filterStates,
-        propertyTypes,
-      ),
+    () => buildWhereClause(filterDefinitions, filterStates, propertyTypes),
     [filterDefinitions, filterStates, propertyTypes],
+  );
+
+  const linkedFilters = useMemo(
+    () => getActiveLinkedFilters(filterDefinitions, filterStates),
+    [filterDefinitions, filterStates],
+  );
+
+  const effectiveObjectSet = useMemo<ObjectSet<Q> | undefined>(
+    () =>
+      objectSet == null
+        ? undefined
+        : narrowObjectSet(objectSet, whereClause, linkedFilters),
+    [objectSet, whereClause, linkedFilters],
   );
 
   useEffect(() => {
     onFilterClauseChangedRef.current?.(whereClause);
   }, [whereClause]);
 
-  const perFilterWhereClauses = useMemo(() => {
-    const map = new Map<string, WhereClause<Q>>();
-    if (!filterDefinitions) {
-      return map;
+  useEffect(() => {
+    if (effectiveObjectSet == null) {
+      return;
     }
-    for (const definition of filterDefinitions) {
-      const key = getFilterKey(definition);
-      map.set(
-        key,
-        buildWhereClause(
-          filterDefinitions,
-          filterStates,
-          propertyTypes,
+    onEffectiveObjectSetRef.current?.(effectiveObjectSet);
+  }, [effectiveObjectSet]);
+
+  const perFilterWhereClauses = useStableMapEntries(
+    useMemo(() => {
+      const map = new Map<string, WhereClause<Q>>();
+      for (const definition of filterDefinitions ?? []) {
+        const key = getFilterKey(definition);
+        map.set(
           key,
-        ),
-      );
-    }
-    return map;
-  }, [filterDefinitions, filterStates, propertyTypes]);
+          buildWhereClause(filterDefinitions, filterStates, propertyTypes, key),
+        );
+      }
+      return map;
+    }, [filterDefinitions, filterStates, propertyTypes]),
+  );
+
+  const perFilterLinkedFilters = useStableMapEntries(
+    useMemo(() => {
+      const map = new Map<string, ReadonlyArray<LinkedFilter<Q>>>();
+      for (const definition of filterDefinitions ?? []) {
+        const key = getFilterKey(definition);
+        map.set(
+          key,
+          getActiveLinkedFilters(filterDefinitions, filterStates, key),
+        );
+      }
+      return map;
+    }, [filterDefinitions, filterStates]),
+  );
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    for (const state of filterStates.values()) {
+    for (const definition of filterDefinitions ?? []) {
+      const state = filterStates.get(getFilterKey(definition));
+      if (state == null) {
+        continue;
+      }
+      // A custom filter's state is opaque, so `filterHasActiveState` can only
+      // say "some state exists". Only its own `toWhereClause` knows whether
+      // that state filters anything, so match what `buildWhereClause` keeps.
+      if (definition.type === "CUSTOM") {
+        if (state.type === "custom") {
+          const clause = definition.toWhereClause(state);
+          if (clause != null && Object.keys(clause).length > 0) {
+            count++;
+          }
+        }
+        continue;
+      }
       if (filterHasActiveState(state)) {
         count++;
       }
     }
     return count;
-  }, [filterStates]);
+  }, [filterDefinitions, filterStates]);
 
-  const reset = useCallback(() => {
-    setFilterStates(buildInitialStates(filterDefinitions));
-  }, [filterDefinitions]);
+  const hasChangesFromInitial = useMemo(
+    () => !isEqual(filterStates, initialFilterStatesSnapshot),
+    [filterStates, initialFilterStatesSnapshot],
+  );
 
-  return useMemo(() => ({
-    filterStates,
-    setFilterState,
-    clearFilterState,
-    whereClause,
-    perFilterWhereClauses,
-    activeFilterCount,
-    reset,
-  }), [
-    filterStates,
-    setFilterState,
-    clearFilterState,
-    whereClause,
-    perFilterWhereClauses,
-    activeFilterCount,
-    reset,
-  ]);
+  return useMemo(
+    () => ({
+      filterStates,
+      setFilterState,
+      clearFilterState,
+      whereClause,
+      linkedFilters,
+      perFilterWhereClauses,
+      perFilterLinkedFilters,
+      activeFilterCount,
+      hasChangesFromInitial,
+      reset,
+    }),
+    [
+      filterStates,
+      setFilterState,
+      clearFilterState,
+      whereClause,
+      linkedFilters,
+      perFilterWhereClauses,
+      perFilterLinkedFilters,
+      activeFilterCount,
+      hasChangesFromInitial,
+      reset,
+    ],
+  );
 }

@@ -15,6 +15,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { MetricsStore } from "../store/MetricsStore.js";
 import { ActionLifecycleTracker } from "./ActionLifecycleTracker.js";
 import type { EventTimeline } from "./EventTimeline.js";

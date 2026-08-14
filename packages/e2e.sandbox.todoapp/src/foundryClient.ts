@@ -2,6 +2,7 @@ import { createClient } from "@osdk/client";
 import { BrowserLogger } from "@osdk/client/internal";
 import { createPublicOauthClient } from "@osdk/oauth";
 import invariant from "tiny-invariant";
+
 import { $ontologyRid } from "./generatedNoCheck2/index.js";
 
 invariant(
@@ -20,9 +21,6 @@ const auth = createPublicOauthClient(
   { useHistory: true, logger },
 );
 
-export const $ = createClient(
-  "http://localhost:8080",
-  $ontologyRid,
-  auth,
-  { logger },
-);
+export const $ = createClient("http://localhost:8080", $ontologyRid, auth, {
+  logger,
+});

@@ -19,6 +19,7 @@ import type {
   SharedPropertyType as SharedPropertyTypeWire,
 } from "@osdk/client.unstable";
 import type { SharedPropertyType } from "@osdk/maker";
+
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
 import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIrType.js";
@@ -54,29 +55,30 @@ export function convertSpt(
     },
     type: array
       ? {
-        type: "array" as const,
-        array: {
-          subtype: propertyTypeTypeToOntologyIrType(
-            type,
-            ridGenerator,
-            apiName,
-            true,
-          ),
-          reducers: [{ direction: "DESCENDING_NULLS_LAST", field: null }],
-        },
-      }
+          type: "array" as const,
+          array: {
+            subtype: propertyTypeTypeToOntologyIrType(
+              type,
+              ridGenerator,
+              apiName,
+              true,
+            ),
+            reducers: [],
+          },
+        }
       : propertyTypeTypeToOntologyIrType(type, ridGenerator, apiName, true),
     aliases: aliases ?? [],
     baseFormatter,
     dataConstraints: dataConstraint,
-    gothamMapping: gothamMapping,
+    gothamMapping,
     indexedForSearch: true,
     typeClasses: typeClasses ?? [],
-    valueType: valueType === undefined
-      ? undefined
-      : ridGenerator.generateRidForValueType(
-        valueType.apiName,
-        valueType.version,
-      ),
+    valueType:
+      valueType === undefined
+        ? undefined
+        : ridGenerator.generateRidForValueType(
+            valueType.apiName,
+            valueType.version,
+          ),
   };
 }

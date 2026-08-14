@@ -250,8 +250,9 @@ class ShapeLinkBuilderImpl<
         ...this.#state.setOperations,
         ...others.map((other) => ({
           type,
-          other: (other as ShapeLinkBuilderImpl<SOURCE, CURRENT>)
-            .toObjectSetDef(),
+          other: (
+            other as ShapeLinkBuilderImpl<SOURCE, CURRENT>
+          ).toObjectSetDef(),
         })),
       ],
     });
@@ -323,14 +324,16 @@ class ShapeLinkBuilderImpl<
     return {
       segments: Object.freeze([...this.#state.segments]),
       where: this.#state.where,
-      orderBy: this.#state.orderBy.length > 0
-        ? Object.freeze([...this.#state.orderBy])
-        : undefined,
+      orderBy:
+        this.#state.orderBy.length > 0
+          ? Object.freeze([...this.#state.orderBy])
+          : undefined,
       limit: this.#state.limit,
       distinct: this.#state.distinct || undefined,
-      setOperations: this.#state.setOperations.length > 0
-        ? Object.freeze([...this.#state.setOperations])
-        : undefined,
+      setOperations:
+        this.#state.setOperations.length > 0
+          ? Object.freeze([...this.#state.setOperations])
+          : undefined,
     };
   }
 }

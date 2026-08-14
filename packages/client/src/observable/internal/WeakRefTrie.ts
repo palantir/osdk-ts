@@ -25,25 +25,18 @@ const defaultMakeData = () => Object.create(null);
  * The original trie from @wry/trie does not do automatic cleanup of old entries.
  */
 export class WeakRefTrie<X extends object> {
-  #finalizer = new FinalizationRegistry<
-    Array<string>
-  >((orderBy) => {
-    this.#trie.removeArray(
-      Object.entries(orderBy).flat(),
-    );
+  #finalizer = new FinalizationRegistry<Array<string>>((orderBy) => {
+    this.#trie.removeArray(Object.entries(orderBy).flat());
   });
 
   #trie: Trie<WeakRef<X>>;
 
   constructor(makeData: (array: any[]) => X = defaultMakeData) {
-    this.#trie = new Trie<WeakRef<X>>(
-      false,
-      (array) => {
-        const data = makeData(array);
-        this.#finalizer.register(data, array);
-        return new WeakRef(data);
-      },
-    );
+    this.#trie = new Trie<WeakRef<X>>(false, (array) => {
+      const data = makeData(array);
+      this.#finalizer.register(data, array);
+      return new WeakRef(data);
+    });
   }
 
   lookupArray<T extends IArguments | any[]>(array: T): X {

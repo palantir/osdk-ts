@@ -1,5 +1,6 @@
 import { useLinks } from "@osdk/react";
 import React from "react";
+
 import {
   type ConnectionCollection,
   type ConnectionFeature,
@@ -114,8 +115,9 @@ export function useNetworkConnections({
         const skipOffice = skipLevelOffice?.[0];
         const skipCoords = getOfficeCoords(skipOffice);
         if (
-          skipCoords && skipOffice?.primaryKey_ !== empOffice?.primaryKey_
-          && skipOffice?.primaryKey_ !== mgrOffice?.primaryKey_
+          skipCoords &&
+          skipOffice?.primaryKey_ !== empOffice?.primaryKey_ &&
+          skipOffice?.primaryKey_ !== mgrOffice?.primaryKey_
         ) {
           features.push(
             createConnection(
@@ -137,8 +139,9 @@ export function useNetworkConnections({
             }
             const peerOfficeId = peer.primaryOfficeId;
             if (
-              peerOfficeId && peerOfficeId !== empOffice?.primaryKey_
-              && !peerOfficeIds.has(peerOfficeId)
+              peerOfficeId &&
+              peerOfficeId !== empOffice?.primaryKey_ &&
+              !peerOfficeIds.has(peerOfficeId)
             ) {
               peerOfficeIds.add(peerOfficeId);
               const peerOffice = officeMap.get(peerOfficeId);
@@ -164,8 +167,9 @@ export function useNetworkConnections({
           for (const report of directReports) {
             const reportOfficeId = report.primaryOfficeId;
             if (
-              reportOfficeId && reportOfficeId !== empOffice?.primaryKey_
-              && !reportOfficeIds.has(reportOfficeId)
+              reportOfficeId &&
+              reportOfficeId !== empOffice?.primaryKey_ &&
+              !reportOfficeIds.has(reportOfficeId)
             ) {
               reportOfficeIds.add(reportOfficeId);
               const reportOffice = officeMap.get(reportOfficeId);
@@ -262,13 +266,14 @@ export function useNetworkConnections({
     officeMap,
   ]);
 
-  const isLoading = officeLoading
-    || managerLoading
-    || managerOfficeLoading
-    || skipLoading
-    || skipOfficeLoading
-    || peersLoading
-    || reportsLoading;
+  const isLoading =
+    officeLoading ||
+    managerLoading ||
+    managerOfficeLoading ||
+    skipLoading ||
+    skipOfficeLoading ||
+    peersLoading ||
+    reportsLoading;
 
   return { connections, isLoading };
 }

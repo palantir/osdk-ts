@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyRid as _api_OntologyRid } from "../../../api/__components.js";
 import type {
-  LoadAllOntologyBranchesWithProposalPageRequest
-    as _approvals_api_LoadAllOntologyBranchesWithProposalPageRequest,
-  LoadAllOntologyBranchesWithProposalPageResponse
-    as _approvals_api_LoadAllOntologyBranchesWithProposalPageResponse,
+  LoadAllOntologyBranchesWithProposalPageRequest as _approvals_api_LoadAllOntologyBranchesWithProposalPageRequest,
+  LoadAllOntologyBranchesWithProposalPageResponse as _approvals_api_LoadAllOntologyBranchesWithProposalPageResponse,
 } from "../__components.js";
 
 /**

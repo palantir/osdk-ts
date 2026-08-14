@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { findUp } from "find-up";
 import { promises as fsPromises } from "node:fs";
 import { extname } from "node:path";
+
+import { findUp } from "find-up";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { loadFoundryConfig } from "./config.js";
 
 vi.mock("find-up");

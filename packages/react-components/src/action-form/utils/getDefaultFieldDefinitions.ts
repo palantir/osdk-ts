@@ -15,6 +15,7 @@
  */
 
 import type { ActionMetadata } from "@osdk/api";
+
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
 
@@ -27,8 +28,8 @@ import type { RendererFieldDefinition } from "../FormFieldApi.js";
 export function getDefaultFieldDefinitions(
   metadata: ActionMetadata,
 ): ReadonlyArray<RendererFieldDefinition> {
-  return Object.entries(metadata.parameters).map(
-    ([key, param]) => buildFieldDefinition(key, param),
+  return Object.entries(metadata.parameters).map(([key, param]) =>
+    buildFieldDefinition(key, param),
   );
 }
 
@@ -44,7 +45,7 @@ function buildFieldDefinition(
 ): RendererFieldDefinition {
   const base = {
     fieldKey: key,
-    label: key,
+    label: param.displayName ?? key,
     isRequired: !param.nullable,
     fieldType: param.type,
   };
@@ -74,15 +75,10 @@ function buildFieldDefinition(
           },
         };
       case "interface":
-        return {
-          ...base,
-          fieldComponent: "TEXT_INPUT",
-          fieldComponentProps: {},
-        };
       case "struct":
         return {
           ...base,
-          fieldComponent: "TEXT_INPUT",
+          fieldComponent: "UNSUPPORTED",
           fieldComponentProps: {},
         };
     }
@@ -90,13 +86,19 @@ function buildFieldDefinition(
 
   switch (paramType) {
     case "string":
+      return {
+        ...base,
+        fieldComponent: "TEXT_INPUT",
+        fieldComponentProps: {},
+      };
     case "marking":
     case "geohash":
     case "geoshape":
     case "objectType":
+    case "scenarioReference":
       return {
         ...base,
-        fieldComponent: "TEXT_INPUT",
+        fieldComponent: "UNSUPPORTED",
         fieldComponentProps: {},
       };
     case "boolean":
@@ -104,10 +106,13 @@ function buildFieldDefinition(
         ...base,
         fieldComponent: "RADIO_BUTTONS",
         fieldComponentProps: {
-          options: [{ label: "True", value: true }, {
-            label: "False",
-            value: false,
-          }],
+          options: [
+            { label: "True", value: true },
+            {
+              label: "False",
+              value: false,
+            },
+          ],
         },
       };
     case "integer":

@@ -5,6 +5,7 @@ Thanks for your interest in contributing to `@osdk/react-components`! This docum
 ## Table of Contents
 
 - [Getting Started](#getting-started)
+- [Using Claude Code](#using-claude-code)
 - [Development Setup](#development-setup)
 - [Development Workflow](#development-workflow)
 - [Component Architecture](#component-architecture)
@@ -27,6 +28,17 @@ Thanks for your interest in contributing to `@osdk/react-components`! This docum
 
 - Palantir employees can push branches directly to this repository.
 - External contributors should [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the repo and open pull requests from their fork.
+
+## Using Claude Code
+
+If you use [Claude Code](https://claude.com/claude-code), this package ships opinionated skills that wrap this guide:
+
+- **`add-new-component`** — for scaffolding a fresh OSDK-aware component. Mention "create a component" / "add a component" or invoke `/add-new-component`. Adds three gates on top of this document: an API-first design checkpoint (agree on `<Name>Api.ts` before writing implementation, on the same branch), a user-supplied MVP checklist, and a verification loop driven by Playwright
+- **`contribute`** — for fixing a bug or adding a feature to a component that already exists (covers both `@osdk/react-components` and `@osdk/react`). Mention "fix a bug" / "add a feature to <component>" / "extend <component>" or invoke `/contribute`. Adds a failing-test-first gate for bug fixes (TDD), an API-change checkpoint when the diff touches public props, and a verification loop
+
+If a skill ever conflicts with this document, this document wins — flag the conflict.
+
+**Skill sources:** repo-root `.claude/skills/add-new-component/SKILL.md` and `.claude/skills/contribute/SKILL.md` if you want to read or refine them.
 
 ## Development Setup
 
@@ -95,7 +107,14 @@ All components follow a **layered architecture**. Understanding this pattern is 
 
 ### When does a component belong here?
 
-`@osdk/react-components` is for **OSDK-aware** components — components that fetch or operate on Foundry ontology data via `@osdk/react` hooks. If your component is a generic UI primitive (button, dropdown, dialog, etc.) with no OSDK awareness, it does **not** belong here. Contribute it to [BlueprintJS](https://blueprintjs.com/) instead, or to your application's local component library.
+`@osdk/react-components` is for **OSDK-aware** components — components that fetch or operate on Foundry ontology data via `@osdk/react` hooks, OR that integrate with an api-gateway endpoint.
+
+Use this gate before you start:
+
+> Does this component fetch OSDK data **OR** hit an api-gateway endpoint?
+
+- **No to both** → the component does not belong here. Contribute it to [BlueprintJS](https://blueprintjs.com/) instead, or to your application's local component library
+- **Yes to either** → continue. Note the justification in the PR description if the answer isn't obvious
 
 ### Core Layers
 
@@ -119,21 +138,28 @@ Components in this package favour **minimum configuration**. A consumer should b
 - **Aim for one required prop.** Question every required prop you add — most "required" inputs can be derived (e.g. column definitions from `objectType`) or defaulted. If you genuinely need more than one required prop, justify it based on the component type.
 - **Default `enable*` boolean flags to `true`** when the feature is part of the out-of-the-box experience (e.g. `enableOrdering`, `enableColumnPinning`).
 - **Document defaults inline** with `@default` JSDoc tags on every optional prop.
-- **Provide controlled and uncontrolled variants** where applicable — see how `ObjectTable` exposes both `defaultOrderBy` (uncontrolled) and `orderBy` + `onOrderByChanged` (controlled).
-- **Define the API in its own file:** `<Name>Api.ts` co-located with the component, exporting only the OSDK-aware outer-component props plus public sub-types (column definitions, locators, options). Base props live inline in `Base<Name>.tsx`.
+- **Provide controlled and/or uncontrolled variants** for any stateful feature — implement **at least one** (both encouraged where useful). State the chosen mode(s) explicitly in JSDoc on each prop, e.g. `"Controlled mode only. Caller owns selection state..."` or `"Uncontrolled. Seeds initial sort; component continues to own the state."`. See how `ObjectTable` exposes both `defaultOrderBy` (uncontrolled) and `orderBy` + `onOrderByChanged` (controlled); `useRowSelection.ts` is the canonical both-modes hook implementation — drop the branch you don't support for single-mode features.
+- **Define the API in its own file:** `<Name>Api.ts` co-located with the component, exporting the base props, the OSDK-aware outer-component props, and any public sub-types (column definitions, locators, options).
+- **Name a viewer's primary input `src` or `content`, by form.** `src` is the binary source to render from, in whatever forms the renderer supports (a URL, raw bytes, or both); `content` is the already-decoded payload (text, or a parsed object). Never overload one name across both categories, and never name the prop after the file type. See [`PdfViewerApi.ts`](./src/pdf-viewer/PdfViewerApi.ts) for the reference `src` and [`XmlViewerApi.ts`](./src/xml-viewer/XmlViewerApi.ts) for `content`.
 
 ### Adding a New Component
 
 1. Create a new folder under `src/` (e.g., `src/my-component/`).
 2. **Define the API.** Write `<Name>Api.ts` in the new folder following the [API Design](#api-design) rules.
-
 3. Start with the **Base component** — focus on interactions and styling first.
 4. Create the **OSDK wrapper** that handles data fetching and type conversion.
 5. Keep the Base component API simple using primitive types.
 6. For complex components, consider a building blocks tier with sub-components and hooks.
-7. Export the OSDK component (and optionally the Base component) from `src/public/experimental.ts`.
-8. **Update documentation** add <COMPONENT>.md to `react-components/docs`. If there were changes to CSS Variables, update `docs/CSSVariables.md`.
-9. **Update storybook** update `react-components-storybook` with examples of the new component
+7. **Reuse before writing.** Check `src/base-components/` for existing primitives, and consult `src/public/primitives.ts` (the sanctioned-reuse barrel) before creating new UI primitives. If a primitive is reusable across components, add it to `src/base-components/` rather than co-locating it in the component folder.
+8. Export the OSDK component (and optionally the Base component) from `src/public/experimental/<name>.ts`.
+9. **Update documentation:**
+   - Add `docs/<Name>.md` with usage and a minimal example, matching the structure of existing per-component docs
+   - **Add an auto-generated props table.** Drop a `<!-- AUTOGEN:props START src=... interface=... -->` / `END` marker block into the doc and run `pnpm --filter @osdk/react-components gen-props`. See [Props reference tables (auto-generated)](./README.md#props-reference-tables-auto-generated) in the README. Don't hand-author the props table
+   - If you added CSS variables, update `docs/CSSVariables.md`
+   - Add a one-line entry to the components table in `AGENTS.md` and `README.md`
+   - **Register the new doc with Docusaurus.** Add `"<Name>"` to the `@osdk/react-components` category in [`docs/sidebarsReactComponents.ts`](../../docs/sidebarsReactComponents.ts) (repo root).
+10. **Update Storybook** with examples of the new component (see [Storybook](#storybook) below).
+11. **Add a live example in `@osdk/e2e.sandbox.peopleapp`.** Wire it into the sandbox's existing routing/navigation against real Foundry types (`Employee`, `Office`, etc.) so reviewers can exercise the component end-to-end against a real Foundry instance. Treat the peopleapp example as part of the MVP definition of done; do not defer to a follow-up PR.
 
 ### Folder Structure
 
@@ -149,15 +175,27 @@ src/my-component/
 
 ### Export Rules
 
-- **OSDK components** are exported through `src/public/experimental.ts`.
-- **Base components** may be exported for advanced use cases.
-- **UI primitives** in `src/base-components/` are internal and must **not** be exported.
+- **OSDK components** are exported through per-component files in `src/public/experimental/<name>.ts`. Check `package.json` `exports` first — the existing wildcard pattern (`"./experimental/*"`) may already cover the new sub-path; only add an explicit entry if the wildcard doesn't resolve to it
+- **Base components** may be exported for advanced use cases
+- **UI primitives** in `src/base-components/` are internal and must **not** be exported. The sanctioned reuse list is `src/public/primitives.ts`
 
 ## Styling Guidelines
 
 - **Never hardcode colors or pixel values.** Use CSS variables for all visual properties.
 - **Use `--bp` design tokens first.** Any `--bp` token used must be mapped from an `--osdk` token.
-- **Add default styles** to src/tokens
+- **Declare defaults for your own tokens in `src/tokens/`.** A component's own `--osdk-<name>-*` tokens must be declared in `src/tokens/component-tokens/<name>.css` — never in a `.module.css` or inline in a `.tsx`. Document each one in [`docs/CSSVariables.md`](./docs/CSSVariables.md).
+- **Exception — nested-primitive scoping.** A `.module.css` **may** assign to a token _owned by another primitive_, scoped to a local class, to restyle that primitive where your component embeds it. Feed the value from one of your own tokens wherever a sensible one exists, so the override stays themeable:
+
+  ```css
+  .osdkEditableCellDropdown {
+    /* re-point Select's own token at the table's cell-input background */
+    --osdk-select-trigger-bg: var(--osdk-table-cell-input-bg);
+  }
+  ```
+
+  This is a cascade override, not a token declaration — it introduces no new public token, so it does not belong in `src/tokens/`.
+
+- **Every token you reference must be declared — except when its default is a CSS-wide keyword.** Don't lean on `var(--osdk-x, <fallback>)` to stand in for a token you simply forgot to declare. But a token whose default is `inherit` / `initial` / `unset` **cannot** be declared: `--osdk-x: inherit` at `:root` has no parent to inherit from, so it resolves to the guaranteed-invalid value and `var(--osdk-x)` silently computes to the property's initial value. Such defaults must live in the `var()` fallback; leave a comment in the token file saying so. Canonical case: `--osdk-table-cell-bg` (see `component-tokens/table.css`), where declaring it turned sticky pinned table cells transparent.
 - **Use CSS modules** (`.module.css`) for component-scoped styles.
 - **Combine class names** with the `classnames` utility. Never use template literals for class names.
 - **Respect CSS layers.** See the [README CSS Setup section](./README.md#css-setup)
@@ -201,10 +239,23 @@ Storybook runs on `http://localhost:6006`.
 
 ### Writing Stories
 
-- Story files live in `packages/react-components-storybook/src/stories/`.
-- Follow the [Component Story Format (CSF)](https://storybook.js.org/docs/api/csf).
-- Include stories that demonstrate the component's key states: default, loading, error, empty, and edge cases.
-- Use the MSW addon for mocking API responses when needed.
+- Story files live in `packages/react-components-storybook/src/stories/<Name>/<Name>.stories.tsx`. Folders match the component name; sub-stories live alongside, optionally under a `Recipes/` or `Features/` subfolder
+- Follow the [Component Story Format (CSF)](https://storybook.js.org/docs/api/csf)
+- **Tier placement is via the meta `title:`, not the folder path.** New components belong under the `Beta/` category:
+
+  ```ts
+  const meta: Meta<typeof MyComponent> = {
+    title: "Beta/<Name>", // or "Beta/<Parent>/<Subfeature>"
+    component: MyComponent,
+  };
+  ```
+
+  The `beta` tag (and resulting tag badge) is injected automatically by the indexer in `.storybook/main.ts` for any title starting with `Beta/` — do **not** add `tags: ["beta"]` manually.
+
+  This produces URLs like `beta-myname--default`, matching the existing pattern (`beta-baseform--default`, `beta-objecttable-building-blocks-basetable--default`)
+
+- Include stories that demonstrate the component's key states: default, loading, error, empty, and edge cases
+- **OSDK-aware components must accept mocked data via props in stories** — Storybook runs without a Foundry stack. Either expose a `data` / `objects` / `value` prop the story can populate, or render the `Base<Name>` component (not the OSDK wrapper) in the story. Use the MSW addon for stories that exercise hook-level fetch paths against a fake server
 
 ## Submitting a Pull Request
 
@@ -223,7 +274,7 @@ Storybook runs on `http://localhost:6006`.
    pnpm turbo check
    ```
 6. **Push and open a PR** against `main`. Fill out the PR template.
-7. **Do not force-push** amended commits during review — push new commits so reviewers can see incremental changes.
+7. **Attach a screenshot or short screen-capture video to the PR description if the change is user-visible** (new UI, visual fix, interaction change, layout tweak). Reviewers shouldn't have to check out the branch to see what changed. Pure refactors, type-only edits, and non-visible internals don't need one.
 
 ## Code Review
 
@@ -237,6 +288,7 @@ Every PR that changes published package code needs **exactly one changeset** per
 
 1. Create a file in `.changeset/` with a descriptive name (e.g., `.changeset/add-date-column.md`).
 2. Use YAML front matter to list affected packages and semver bump type:
+
    ```md
    ---
    "@osdk/react-components":minor
@@ -244,6 +296,7 @@ Every PR that changes published package code needs **exactly one changeset** per
 
    Add date column rendering support to ObjectTable
    ```
+
 3. Write a specific summary ("add drag-and-drop reordering to filter list", not "update filter list").
 4. Check `.changeset/` before creating — do not create duplicate changesets on the same branch.
 5. CI will fail if a changeset is missing for changed packages.

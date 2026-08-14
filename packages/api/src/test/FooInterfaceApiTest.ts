@@ -25,17 +25,19 @@ import type {
 export type OsdkObjectLinks$FooInterface = {};
 
 export namespace FooInterfaceApiTest {
-  export type PropertyKeys = "name" | "description";
+  export type PropertyKeys = "name" | "description" | "fooSpt";
 
   export interface Props {
     readonly description: $PropType["string"] | undefined;
     readonly name: $PropType["string"] | undefined;
+    readonly fooSpt: $PropType["string"] | undefined;
   }
   export type StrictProps = Props;
 
-  export interface ObjectSet
-    extends $ObjectSet<FooInterfaceApiTest, FooInterfaceApiTest.ObjectSet>
-  {}
+  export interface ObjectSet extends $ObjectSet<
+    FooInterfaceApiTest,
+    FooInterfaceApiTest.ObjectSet
+  > {}
 
   export type OsdkInstance<
     OPTIONS extends never | "$rid" = never,
@@ -73,6 +75,10 @@ export interface FooInterfaceApiTest extends $InterfaceDefinition {
        *   description: Name of Foo
        */
       name: $PropertyDef<"string", "nullable", "single">;
+      /**
+       *   Shared property type backed by `fullName` on Employee.
+       */
+      fooSpt: $PropertyDef<"string", "nullable", "single">;
     };
     rid: "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b";
     type: "interface";

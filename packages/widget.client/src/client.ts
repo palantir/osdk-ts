@@ -21,6 +21,7 @@ import {
   type WidgetMessage,
 } from "@osdk/widget.api";
 import invariant from "tiny-invariant";
+
 import { FoundryHostEventTarget } from "./host.js";
 
 export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
@@ -28,6 +29,11 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
    * Notifies the host that this client is ready to receive the first parameter values
    */
   ready: () => void;
+
+  /**
+   * Notifies the host that the widget should reload
+   */
+  reload: () => void;
 
   /**
    * Notifies the host that the widget has resized
@@ -42,10 +48,7 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
     ID extends M["payload"]["eventId"],
   >(
     eventId: ID,
-    payload: Omit<
-      ExtractEmitEventPayload<M, ID>,
-      "eventId"
-    >,
+    payload: Omit<ExtractEmitEventPayload<M, ID>, "eventId">,
   ) => void;
 
   /**
@@ -73,10 +76,7 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
 type ExtractEmitEventPayload<
   M extends WidgetMessage.EmitEvent<any>,
   ID extends M["payload"]["eventId"],
-> = Extract<
-  M["payload"],
-  { eventId: ID }
->;
+> = Extract<M["payload"], { eventId: ID }>;
 
 interface PalantirWidgetApiEvents<C extends WidgetConfig<C["parameters"]>> {
   message: CustomEvent<HostMessage<C>>;
@@ -128,6 +128,12 @@ export function createFoundryWidgetClient<
         payload: {
           apiVersion: HostMessage.Version,
         },
+      });
+    },
+    reload: () => {
+      sendMessageToHost({
+        type: "widget.reload",
+        payload: {},
       });
     },
     resize: (payload) => {

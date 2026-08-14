@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   InterfaceTypeSearchRequest as _api_search_InterfaceTypeSearchRequest,
   InterfaceTypeSearchResponse as _api_search_InterfaceTypeSearchResponse,

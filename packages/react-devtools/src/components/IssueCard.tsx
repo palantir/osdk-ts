@@ -17,10 +17,12 @@
 import { Button, Collapse, Icon, Tag } from "@blueprintjs/core";
 import classNames from "classnames";
 import React, { useState } from "react";
+
 import { formatRelativeTime } from "../utils/format.js";
 import { CopyableCodeBlock } from "./CopyableCodeBlock.js";
-import styles from "./IssueCard.module.scss";
 import type { Issue } from "./issueTypes.js";
+
+import styles from "./IssueCard.module.scss";
 
 export interface IssueCardProps {
   issue: Issue;
@@ -54,9 +56,11 @@ export const IssueCard: React.FC<IssueCardProps> = ({
   const [expanded, setExpanded] = useState(false);
 
   const { icon, intent } = severityIcon[issue.severity];
-  const hasDetails = issue.expandable
-    && (issue.expandable.stack || issue.expandable.detailsJson
-      || issue.expandable.code);
+  const hasDetails =
+    issue.expandable &&
+    (issue.expandable.stack ||
+      issue.expandable.detailsJson ||
+      issue.expandable.code);
 
   return (
     <div

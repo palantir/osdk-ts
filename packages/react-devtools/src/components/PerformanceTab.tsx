@@ -17,6 +17,7 @@
 import { Button, ButtonGroup } from "@blueprintjs/core";
 import classNames from "classnames";
 import React, { useMemo, useState } from "react";
+
 import { createPollingStore } from "../hooks/createPollingStore.js";
 import { useMetrics } from "../hooks/useMetrics.js";
 import { useRecommendations } from "../hooks/useRecommendations.js";
@@ -33,8 +34,9 @@ import {
 } from "../utils/RecommendationMatcher.js";
 import { ActionMetrics } from "./ActionMetrics.js";
 import { CacheMetrics } from "./CacheMetrics.js";
-import styles from "./MonitoringPanel.module.scss";
 import { ObjectLoadingMetrics } from "./ObjectLoadingMetrics.js";
+
+import styles from "./MonitoringPanel.module.scss";
 
 const CACHE_OPERATION_TYPES = new Set<Operation["type"]>([
   "cache-hit",
@@ -56,9 +58,10 @@ export interface PerformanceTabProps {
   monitorStore: MonitorStore;
 }
 
-export const PerformanceTab: React.FC<PerformanceTabProps> = (
-  { metricsStore, monitorStore },
-) => {
+export const PerformanceTab: React.FC<PerformanceTabProps> = ({
+  metricsStore,
+  monitorStore,
+}) => {
   const metrics = useMetrics(metricsStore);
   const { report: unusedFieldReport, isLoading: analysisLoading } =
     useUnusedFieldAnalysis(monitorStore);
@@ -97,12 +100,17 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = (
         const data = entry.data as Record<string, unknown>;
         const primaryKey = data.$primaryKey;
         const objectType = data.$objectType ?? entry.objectType;
-        const displayName = data.title ?? data.name ?? data.label
-          ?? data.displayName ?? data.description;
+        const displayName =
+          data.title ??
+          data.name ??
+          data.label ??
+          data.displayName ??
+          data.description;
         if (
-          typeof displayName === "string" && displayName.length > 0
-          && (typeof primaryKey === "string" || typeof primaryKey === "number")
-          && typeof objectType === "string"
+          typeof displayName === "string" &&
+          displayName.length > 0 &&
+          (typeof primaryKey === "string" || typeof primaryKey === "number") &&
+          typeof objectType === "string"
         ) {
           map.set(`${objectType}:${String(primaryKey)}`, displayName);
         }
@@ -130,23 +138,24 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = (
     return null;
   };
 
-  const filteredOperations = useMemo(() =>
-    metrics.recent.filter((op) => {
-      if (filter === "all") {
-        return true;
-      }
-      if (filter === "cache") {
-        return CACHE_OPERATION_TYPES.has(op.type);
-      }
-      if (filter === "actions") {
-        return ACTION_OPERATION_TYPES.has(op.type);
-      }
-      return false;
-    }), [metrics.recent, filter]);
+  const filteredOperations = useMemo(
+    () =>
+      metrics.recent.filter((op) => {
+        if (filter === "all") {
+          return true;
+        }
+        if (filter === "cache") {
+          return CACHE_OPERATION_TYPES.has(op.type);
+        }
+        if (filter === "actions") {
+          return ACTION_OPERATION_TYPES.has(op.type);
+        }
+        return false;
+      }),
+    [metrics.recent, filter],
+  );
 
-  const operations = filteredOperations.slice(
-    -MAX_RECENT_OPERATIONS,
-  ).reverse();
+  const operations = filteredOperations.slice(-MAX_RECENT_OPERATIONS).reverse();
 
   return (
     <>
@@ -201,10 +210,10 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = (
       </div>
 
       <div className={styles.operationsList}>
-        {operations.length > 0
-          ? operations.map((op) => {
-            const isCacheOp = op.type !== "action"
-              && op.type !== "action-validation";
+        {operations.length > 0 ? (
+          operations.map((op) => {
+            const isCacheOp =
+              op.type !== "action" && op.type !== "action-validation";
             const causingAction = isCacheOp
               ? findCausingAction(op.timestamp)
               : null;
@@ -218,22 +227,22 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = (
                   op,
                   recommendationMap,
                 )}
-                displayName={displayKey
-                  ? displayNameMap.get(displayKey)
-                  : undefined}
+                displayName={
+                  displayKey ? displayNameMap.get(displayKey) : undefined
+                }
                 causingActionName={causingAction?.actionName}
               />
             );
           })
-          : (
-            <div className={styles.emptyState}>
-              {filter === "all"
-                ? "No recent activity"
-                : filter === "cache"
+        ) : (
+          <div className={styles.emptyState}>
+            {filter === "all"
+              ? "No recent activity"
+              : filter === "cache"
                 ? "No recent cache activity"
                 : "No recent action activity"}
-            </div>
-          )}
+          </div>
+        )}
       </div>
     </>
   );
@@ -249,27 +258,27 @@ const OPERATION_DISPLAY: Record<
     tooltip: "Cache hit \u2014 served from cache",
   },
   "cache-miss": {
-    icon: "\u00d7",
+    icon: "\u00D7",
     class: styles.cacheMiss,
     tooltip: "Cache miss \u2014 fetched from network",
   },
-  "revalidation": {
-    icon: "\u21bb",
+  revalidation: {
+    icon: "\u21BB",
     class: styles.revalidation,
     tooltip:
       "Stale-while-revalidate \u2014 data already served from cache, re-fetching in background",
   },
-  "deduplication": {
+  deduplication: {
     icon: "=",
     class: styles.deduplication,
     tooltip: "Deduplicated \u2014 shared with existing subscription",
   },
   "optimistic-update": {
-    icon: "\u26a1",
+    icon: "\u26A1",
     class: styles.optimistic,
     tooltip: "Optimistic update",
   },
-  "action": { icon: "\u2699", class: styles.action, tooltip: "Action" },
+  action: { icon: "\u2699", class: styles.action, tooltip: "Action" },
   "action-validation": {
     icon: "\u2714",
     class: styles.validation,
@@ -287,15 +296,13 @@ interface OperationItemProps {
   causingActionName?: string;
 }
 
-const OperationItem: React.FC<OperationItemProps> = (
-  {
-    operation,
-    formatTime,
-    recommendations = [],
-    displayName,
-    causingActionName,
-  },
-) => {
+const OperationItem: React.FC<OperationItemProps> = ({
+  operation,
+  formatTime,
+  recommendations = [],
+  displayName,
+  causingActionName,
+}) => {
   const isAction = operation.type === "action";
   const isValidation = operation.type === "action-validation";
   const isCacheOperation = !isAction && !isValidation;
@@ -308,9 +315,10 @@ const OperationItem: React.FC<OperationItemProps> = (
       const parts = operation.signature.split(":");
       if (parts.length >= 2) {
         const objectType = parts[1];
-        const truncatedName = displayName.length > 20
-          ? displayName.slice(0, 20) + "\u2026"
-          : displayName;
+        const truncatedName =
+          displayName.length > 20
+            ? `${displayName.slice(0, 20)}\u2026`
+            : displayName;
         return `${objectType}: ${truncatedName}`;
       }
     }
@@ -335,7 +343,8 @@ const OperationItem: React.FC<OperationItemProps> = (
     }
 
     if (
-      operation.optimisticObserved && operation.optimisticRenderTime != null
+      operation.optimisticObserved &&
+      operation.optimisticRenderTime != null
     ) {
       metricBadges.push(
         <span key="optimistic" className={styles.operationMetric}>
@@ -405,10 +414,7 @@ const OperationItem: React.FC<OperationItemProps> = (
             </span>
           )}
           {topRec && (
-            <span
-              className={styles.inlineIndicator}
-              title={topRec.suggestion}
-            >
+            <span className={styles.inlineIndicator} title={topRec.suggestion}>
               {topRec.level === "critical" || topRec.level === "high"
                 ? "⚠️"
                 : "💡"}
@@ -418,11 +424,7 @@ const OperationItem: React.FC<OperationItemProps> = (
         <div className={styles.operationTime}>
           {new Date(operation.timestamp).toLocaleTimeString()}
         </div>
-        {topRec && (
-          <div className={styles.inlineTip}>
-            {topRec.title}
-          </div>
-        )}
+        {topRec && <div className={styles.inlineTip}>{topRec.title}</div>}
         {metricBadges.length > 0 && (
           <div className={styles.operationMetrics}>{metricBadges}</div>
         )}

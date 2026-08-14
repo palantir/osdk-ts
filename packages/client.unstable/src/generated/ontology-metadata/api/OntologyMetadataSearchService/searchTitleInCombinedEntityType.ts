@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  SearchTitleInCombinedEntityTypeRequest
-    as _api_search_SearchTitleInCombinedEntityTypeRequest,
-  SearchTitleInCombinedEntityTypeResponse
-    as _api_search_SearchTitleInCombinedEntityTypeResponse,
+  SearchTitleInCombinedEntityTypeRequest as _api_search_SearchTitleInCombinedEntityTypeRequest,
+  SearchTitleInCombinedEntityTypeResponse as _api_search_SearchTitleInCombinedEntityTypeResponse,
 } from "../search/__components.js";
 
 /**

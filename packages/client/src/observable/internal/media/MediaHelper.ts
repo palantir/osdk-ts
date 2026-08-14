@@ -16,6 +16,7 @@
 
 import type { Attachment, Media, MediaMetadata } from "@osdk/api";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
+
 import { additionalContext } from "../../../Client.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import type { MediaPropertyLocation } from "../../ObservableClient/MediaTypes.js";
@@ -86,8 +87,8 @@ export class MediaHelper extends AbstractHelper<
     options?: { preview?: boolean },
   ): Promise<MediaMetadata> {
     const ontologyRid = await this.store.client[additionalContext].ontologyRid;
-    const response = await OntologiesV2.MediaReferenceProperties
-      .getMediaMetadata(
+    const response =
+      await OntologiesV2.MediaReferenceProperties.getMediaMetadata(
         this.store.client[additionalContext],
         ontologyRid,
         coords.objectType,
@@ -120,8 +121,8 @@ export class MediaHelper extends AbstractHelper<
 
     const coords = this.resolveToCoords(mediaOrLocation);
     if (coords) {
-      const ontologyRid = await this.store.client[additionalContext]
-        .ontologyRid;
+      const ontologyRid =
+        await this.store.client[additionalContext].ontologyRid;
       response = await OntologiesV2.MediaReferenceProperties.getMediaContent(
         this.store.client[additionalContext],
         ontologyRid,
@@ -133,8 +134,8 @@ export class MediaHelper extends AbstractHelper<
     } else if ("fetchContents" in mediaOrLocation) {
       response = await mediaOrLocation.fetchContents();
       const arrayBuffer = await response.arrayBuffer();
-      const contentType = response.headers.get("content-type")
-        || "application/octet-stream";
+      const contentType =
+        response.headers.get("content-type") || "application/octet-stream";
       const blob = new Blob([arrayBuffer], { type: contentType });
       this.blobManager.add(baseCacheKey, blob);
       return blob;
@@ -145,8 +146,8 @@ export class MediaHelper extends AbstractHelper<
     }
 
     const arrayBuffer = await response.arrayBuffer();
-    const contentType = response.headers.get("content-type")
-      || "application/octet-stream";
+    const contentType =
+      response.headers.get("content-type") || "application/octet-stream";
     const blob = new Blob([arrayBuffer], { type: contentType });
 
     this.blobManager.add(cacheKey, blob);
@@ -158,8 +159,9 @@ export class MediaHelper extends AbstractHelper<
     source: Media | Attachment | MediaPropertyLocation,
   ): MediaPropertyLocation | undefined {
     if (
-      "objectType" in source && "primaryKey" in source
-      && "propertyName" in source
+      "objectType" in source &&
+      "primaryKey" in source &&
+      "propertyName" in source
     ) {
       return source;
     }

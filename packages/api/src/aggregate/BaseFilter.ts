@@ -17,7 +17,7 @@
 import type { Just } from "./Just.js";
 
 type EqFilterOption<T> = {
-  "$eq": T;
+  $eq: T;
 };
 
 export namespace EqFilter {
@@ -25,12 +25,12 @@ export namespace EqFilter {
 }
 
 export interface BaseFilterOptions<T> extends EqFilterOption<T> {
-  "$ne": T;
-  "$isNull": boolean;
+  $ne: T;
+  $isNull: boolean;
   /**
    * Matches any of the provided values. If an empty array is provided, the filter will match all objects.
    */
-  "$in": ReadonlyArray<T>;
+  $in: ReadonlyArray<T>;
 }
 
 export namespace BaseFilter {

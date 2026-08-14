@@ -15,6 +15,7 @@
  */
 
 import fs from "fs";
+
 import { safeGetEnvVar } from "../common/safeGetEnvVar.js";
 
 const CODE_WORKSPACES = "code-workspaces";
@@ -30,13 +31,11 @@ export function isCodeWorkspacesMode(mode: string | undefined): boolean {
 }
 
 export function getCodeWorkspacesFoundryUrl(): string {
-  return `https://${
-    safeGetEnvVar(
-      process.env,
-      FOUNDRY_PROXY_URL,
-      "This value is required when running dev mode in Code Workspaces mode.",
-    )
-  }`;
+  return `https://${safeGetEnvVar(
+    process.env,
+    FOUNDRY_PROXY_URL,
+    "This value is required when running dev mode in Code Workspaces mode.",
+  )}`;
 }
 
 export function getCodeWorkspacesBaseHref(): string {

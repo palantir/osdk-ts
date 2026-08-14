@@ -17,6 +17,7 @@
 import type { ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
 import type {
   ColumnDefinition,
   ObjectTableProps,
@@ -47,7 +48,7 @@ describe("useColumnPinning", () => {
       const { result } = renderHook(() =>
         useColumnPinning<TestObject>({
           columnDefinitions: undefined,
-        })
+        }),
       );
 
       expect(result.current.columnPinning).toEqual({
@@ -57,14 +58,12 @@ describe("useColumnPinning", () => {
     });
 
     it("initializes with empty pinning state when columnDefinitions has no pinned columns", () => {
-      const columnDefinitions = [
-        createColumnDef("name"),
-      ];
+      const columnDefinitions = [createColumnDef("name")];
 
       const { result } = renderHook(() =>
         useColumnPinning<TestObject>({
           columnDefinitions,
-        })
+        }),
       );
 
       expect(result.current.columnPinning).toEqual({
@@ -84,7 +83,7 @@ describe("useColumnPinning", () => {
       const { result } = renderHook(() =>
         useColumnPinning<TestObject>({
           columnDefinitions,
-        })
+        }),
       );
 
       expect(result.current.columnPinning).toEqual({
@@ -94,15 +93,13 @@ describe("useColumnPinning", () => {
     });
 
     it("adds selection column to left pinning when hasSelectionColumn is true", () => {
-      const columnDefinitions = [
-        createColumnDef("name", "left"),
-      ];
+      const columnDefinitions = [createColumnDef("name", "left")];
 
       const { result } = renderHook(() =>
         useColumnPinning<TestObject>({
           columnDefinitions,
           hasSelectionColumn: true,
-        })
+        }),
       );
 
       expect(result.current.columnPinning).toEqual({
@@ -112,15 +109,13 @@ describe("useColumnPinning", () => {
     });
 
     it("does not add selection column when hasSelectionColumn is false", () => {
-      const columnDefinitions = [
-        createColumnDef("name", "left"),
-      ];
+      const columnDefinitions = [createColumnDef("name", "left")];
 
       const { result } = renderHook(() =>
         useColumnPinning<TestObject>({
           columnDefinitions,
           hasSelectionColumn: false,
-        })
+        }),
       );
 
       expect(result.current.columnPinning).toEqual({
@@ -135,7 +130,7 @@ describe("useColumnPinning", () => {
       const { result } = renderHook(() =>
         useColumnPinning<TestObject>({
           columnDefinitions: undefined,
-        })
+        }),
       );
 
       expect(result.current.columnPinning).toEqual({
@@ -162,7 +157,7 @@ describe("useColumnPinning", () => {
         useColumnPinning<TestObject>({
           columnDefinitions: undefined,
           onColumnsPinnedChanged,
-        })
+        }),
       );
 
       act(() => {
@@ -185,7 +180,7 @@ describe("useColumnPinning", () => {
         useColumnPinning<TestObject>({
           columnDefinitions: undefined,
           onColumnsPinnedChanged,
-        })
+        }),
       );
 
       act(() => {
@@ -207,7 +202,7 @@ describe("useColumnPinning", () => {
         useColumnPinning<TestObject>({
           columnDefinitions: undefined,
           onColumnsPinnedChanged,
-        })
+        }),
       );
 
       // Set initial pinning
@@ -257,14 +252,16 @@ describe("useColumnPinning", () => {
 
   describe("updates when props change", () => {
     it("updates pinning state when columnDefinitions change", () => {
-      const initialColumnDefinitions: ObjectTableProps<
-        TestObject
-      >["columnDefinitions"] = [
-        {
-          locator: { type: "property", id: "name" as PropertyKeys<TestObject> },
-          pinned: "left",
-        },
-      ];
+      const initialColumnDefinitions: ObjectTableProps<TestObject>["columnDefinitions"] =
+        [
+          {
+            locator: {
+              type: "property",
+              id: "name" as PropertyKeys<TestObject>,
+            },
+            pinned: "left",
+          },
+        ];
 
       const { result, rerender } = renderHook(
         ({ columnDefinitions }) =>
@@ -281,18 +278,23 @@ describe("useColumnPinning", () => {
         right: [],
       });
 
-      const newColumnDefinitions: ObjectTableProps<
-        TestObject
-      >["columnDefinitions"] = [
-        {
-          locator: { type: "property", id: "name" as PropertyKeys<TestObject> },
-          pinned: "left",
-        },
-        {
-          locator: { type: "property", id: "age" as PropertyKeys<TestObject> },
-          pinned: "right",
-        },
-      ];
+      const newColumnDefinitions: ObjectTableProps<TestObject>["columnDefinitions"] =
+        [
+          {
+            locator: {
+              type: "property",
+              id: "name" as PropertyKeys<TestObject>,
+            },
+            pinned: "left",
+          },
+          {
+            locator: {
+              type: "property",
+              id: "age" as PropertyKeys<TestObject>,
+            },
+            pinned: "right",
+          },
+        ];
 
       rerender({ columnDefinitions: newColumnDefinitions });
 

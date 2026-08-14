@@ -17,6 +17,7 @@
 import type { ActionDefinition } from "@osdk/api";
 import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
 import React, { useCallback, useEffect, useMemo } from "react";
+
 import { typedReactMemo } from "../shared/typedMemo.js";
 import type {
   ActionFormProps,
@@ -38,6 +39,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
 >({
   actionDefinition,
   formTitle,
+  showFormTitle = false,
   formFieldDefinitions,
   formState: controlledFormState,
   onFormStateChange,
@@ -46,11 +48,9 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   onValidationResponse: _onValidationResponse,
   onSuccess,
   onError,
-  portalContainer,
 }: ActionFormProps<Q>): React.ReactElement {
-  const { applyAction: osdkApplyAction, isPending } = useOsdkAction(
-    actionDefinition,
-  );
+  const { applyAction: osdkApplyAction, isPending } =
+    useOsdkAction(actionDefinition);
   const {
     metadata,
     loading: metadataLoading,
@@ -76,23 +76,26 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
       // RendererFieldDefinition is a discriminated union keyed by fieldComponent.
       // TypeScript can't verify that the spread preserves the fieldComponent ↔
       // fieldComponentProps pairing, but FormFieldDefinition guarantees it.
-      return formFieldDefinitions.map(
-        (def) =>
-          ({
-            ...def,
-            fieldKey: String(def.fieldKey),
-            fieldType: parameters?.[String(def.fieldKey)]?.type,
-            defaultValue: def.defaultValue,
-          }) as RendererFieldDefinition,
-      );
+      return formFieldDefinitions.map((def) => {
+        const { defaultValue, ...fieldDefinition } = def;
+        return {
+          ...fieldDefinition,
+          fieldKey: String(def.fieldKey),
+          fieldType: parameters?.[String(def.fieldKey)]?.type,
+          fieldComponentProps:
+            defaultValue === undefined
+              ? def.fieldComponentProps
+              : { ...def.fieldComponentProps, defaultValue },
+        } as RendererFieldDefinition;
+      });
     }, [formFieldDefinitions, parameters]);
 
   const rendererFieldDefinitions = useMemo(
     () =>
-      customFieldDefinitions
-        ?? (metadata != null
-          ? getDefaultFieldDefinitions(metadata)
-          : EMPTY_FIELD_DEFINITIONS),
+      customFieldDefinitions ??
+      (metadata != null
+        ? getDefaultFieldDefinitions(metadata)
+        : EMPTY_FIELD_DEFINITIONS),
     [customFieldDefinitions, metadata],
   );
 
@@ -101,8 +104,8 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
       rendererFieldDefinitions.length === 0
         ? EMPTY_FORM_CONTENT
         : rendererFieldDefinitions.map(
-          (def): FormContentItem => ({ type: "field", definition: def }),
-        ),
+            (def): FormContentItem => ({ type: "field", definition: def }),
+          ),
     [rendererFieldDefinitions],
   );
 
@@ -147,8 +150,9 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     [onFormStateChange],
   );
 
-  const resolvedTitle = formTitle ?? metadata?.displayName
-    ?? actionDefinition.apiName;
+  const resolvedTitle = showFormTitle
+    ? (formTitle ?? metadata?.displayName ?? actionDefinition.apiName)
+    : undefined;
 
   const isControlled = controlledFormState != null;
 
@@ -160,7 +164,6 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     isPending,
     isLoading: metadataLoading,
     onFieldValueChange: handleFieldValueChange,
-    portalContainer,
   };
 
   if (!isControlled) {
@@ -169,3 +172,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
 
   return <BaseForm {...commonProps} formState={controlledFormState} />;
 });
+
+// The inner render fn is anonymous in the published build, so set a displayName
+// on the memo wrapper for React DevTools and the OSDK devtools component tree.
+(ActionForm as { displayName?: string }).displayName = "ActionForm";

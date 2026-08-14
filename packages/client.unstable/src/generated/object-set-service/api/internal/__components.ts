@@ -27,8 +27,7 @@ import type {
   EntityTypeRid as _api_EntityTypeRid,
   EntityVersion as _api_EntityVersion,
   GeoShapePropertyValue as _api_GeoShapePropertyValue,
-  GeotimeSeriesReferencePropertyValue
-    as _api_GeotimeSeriesReferencePropertyValue,
+  GeotimeSeriesReferencePropertyValue as _api_GeotimeSeriesReferencePropertyValue,
   IntegerPropertyValue as _api_IntegerPropertyValue,
   LongPropertyValue as _api_LongPropertyValue,
   MarkingPropertyValue as _api_MarkingPropertyValue,
@@ -44,8 +43,7 @@ import type {
   TimestampPropertyValue as _api_TimestampPropertyValue,
   VectorPropertyValue as _api_VectorPropertyValue,
 } from "../__components.js";
-export interface DeleteObjectSetsBySecurityRidResponse {
-}
+export interface DeleteObjectSetsBySecurityRidResponse {}
 export interface HighburyPageTokenComponents_v1 {
   type: "v1";
   v1: HighburyPageTokenComponentsV1;

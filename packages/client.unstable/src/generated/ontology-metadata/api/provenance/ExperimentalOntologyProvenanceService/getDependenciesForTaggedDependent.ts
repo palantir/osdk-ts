@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetDependenciesForTaggedDependentRequest
-    as _api_provenance_GetDependenciesForTaggedDependentRequest,
-  GetDependenciesForTaggedDependentResponse
-    as _api_provenance_GetDependenciesForTaggedDependentResponse,
+  GetDependenciesForTaggedDependentRequest as _api_provenance_GetDependenciesForTaggedDependentRequest,
+  GetDependenciesForTaggedDependentResponse as _api_provenance_GetDependenciesForTaggedDependentResponse,
 } from "../__components.js";
 
 /**

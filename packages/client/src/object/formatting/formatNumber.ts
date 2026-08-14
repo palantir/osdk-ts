@@ -26,6 +26,7 @@ import type {
   NumberScaleType,
   PropertyNumberFormattingRuleType,
 } from "@osdk/api";
+
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { resolvePropertyReference } from "./propertyFormattingUtils.js";
 
@@ -50,11 +51,7 @@ export function formatNumber(
 ): string | undefined {
   switch (numberType.type) {
     case "standard":
-      return formatStandardNumber(
-        value,
-        numberType.baseFormatOptions,
-        locale,
-      );
+      return formatStandardNumber(value, numberType.baseFormatOptions, locale);
 
     case "fixedValues":
       return numberType.values[value];
@@ -170,12 +167,14 @@ function formatAffix(
   objectData: SimpleOsdkProperties,
   locale: string,
 ): string {
-  const prefix = rule.affix.prefix != null
-    ? resolvePropertyReference(rule.affix.prefix, objectData) ?? ""
-    : "";
-  const suffix = rule.affix.postfix != null
-    ? resolvePropertyReference(rule.affix.postfix, objectData) ?? ""
-    : "";
+  const prefix =
+    rule.affix.prefix != null
+      ? (resolvePropertyReference(rule.affix.prefix, objectData) ?? "")
+      : "";
+  const suffix =
+    rule.affix.postfix != null
+      ? (resolvePropertyReference(rule.affix.postfix, objectData) ?? "")
+      : "";
   return formatNumberWithAffixes(
     value,
     rule.baseFormatOptions,
@@ -216,7 +215,7 @@ function getLocalizedCompactSuffix(
   });
 
   const parts = compactFormatter.formatToParts(scaleDivisor);
-  const compactPart = parts.find(p => p.type === "compact");
+  const compactPart = parts.find((p) => p.type === "compact");
   return compactPart?.value ?? "";
 }
 
@@ -360,7 +359,7 @@ function maybeConvertNegativeToParenthesis(
   shouldConvert: boolean,
 ): string {
   if (shouldConvert && value < 0) {
-    return formatted.replace(/^-/, "(") + ")";
+    return formatted.replace(/^-/u, "(") + ")";
   }
   return formatted;
 }

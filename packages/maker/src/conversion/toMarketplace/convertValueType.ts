@@ -15,6 +15,7 @@
  */
 
 import type { OntologyIrValueTypeReferenceWithMetadata } from "@osdk/client.unstable";
+
 import type { ValueTypeDefinitionVersion } from "../../api/values/ValueTypeDefinitionVersion.js";
 
 export function convertValueType(

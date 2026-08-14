@@ -15,6 +15,7 @@
  */
 
 import type { ObjectSet } from "@osdk/api";
+
 import type { BaseCollectionPayload } from "./internal/base-list/BaseCollectionQuery.js";
 
 export interface ObjectSetPayload extends BaseCollectionPayload {

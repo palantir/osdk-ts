@@ -16,6 +16,7 @@
 
 import type { Attachment } from "@osdk/api";
 import * as Attachments from "@osdk/foundry.ontologies/Attachment";
+
 import { additionalContext, type Client } from "../Client.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
@@ -39,6 +40,8 @@ export function hydrateAttachmentFromRidInternal(
 ): Attachment {
   return {
     rid,
+    // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     async fetchContents() {
       return Attachments.read(client, rid);
     },

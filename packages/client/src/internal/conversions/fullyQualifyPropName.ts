@@ -15,6 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+
 import { extractNamespace } from "./extractNamespace.js";
 
 export function fullyQualifyPropName(
@@ -24,7 +25,7 @@ export function fullyQualifyPropName(
   if (objectOrInterface.type === "interface") {
     const [objApiNamespace] = extractNamespace(objectOrInterface.apiName);
     const [fieldApiNamespace, fieldShortName] = extractNamespace(fieldName);
-    return (fieldApiNamespace == null && objApiNamespace != null)
+    return fieldApiNamespace == null && objApiNamespace != null
       ? `${objApiNamespace}.${fieldShortName}`
       : fieldName;
   }

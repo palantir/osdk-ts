@@ -15,6 +15,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import {
   common,
   createAuthorizationServer,
@@ -88,12 +89,15 @@ describe("local functions", () => {
       storage,
     );
 
-    makeTokenAndSaveRefresh({
-      refresh_token: "refresh",
-      access_token: "access",
-      token_type: "idk",
-      expires_in: 10_000,
-    }, "signIn");
+    makeTokenAndSaveRefresh(
+      {
+        refresh_token: "refresh",
+        access_token: "access",
+        token_type: "idk",
+        expires_in: 10_000,
+      },
+      "signIn",
+    );
 
     expect(globalThis.localStorage.setItem).toBeCalledWith(
       `@osdk/oauth : refresh : ${client.client_id}`,

@@ -20,6 +20,7 @@ import type {
   SyncApplyActionResponseV2,
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
+
 import { createLazyDoNothingActionImpl } from "../createLazyDoNothingActionImpl.js";
 import { moveOfficeImpl } from "./actions/moveOffice.js";
 import {
@@ -128,33 +129,37 @@ export const actionRequestWithStruct: ApplyActionRequestV2 = {
   },
 };
 
+export const actionRequestWithStructAcceptNull: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    name: "testMan",
+    address: { city: "NYC", state: "NY", zipcode: null },
+  },
+};
+
+export const actionRequestWithStructAcceptUndefined: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    name: "testMan",
+    address: { city: "NYC", state: "NY" },
+  },
+};
+
 export const actionRequestWithGeoshape: ApplyActionRequestV2 = {
   options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
   parameters: {
-    geohashParam: "40.917859676842255,-79.4382042508868",
+    geohashParam: {
+      type: "Point",
+      coordinates: [-79.4382042508868, 40.917859676842255],
+    },
     geoshapeParam: {
       coordinates: [
         [
-          [
-            -97.86567863752134,
-            38.418052586871624,
-          ],
-          [
-            -97.86567863752134,
-            35.410223767370525,
-          ],
-          [
-            -91.98573135442845,
-            35.410223767370525,
-          ],
-          [
-            -91.98573135442845,
-            38.418052586871624,
-          ],
-          [
-            -97.86567863752134,
-            38.418052586871624,
-          ],
+          [-97.86567863752134, 38.418052586871624],
+          [-97.86567863752134, 35.410223767370525],
+          [-91.98573135442845, 35.410223767370525],
+          [-91.98573135442845, 38.418052586871624],
+          [-97.86567863752134, 38.418052586871624],
         ],
       ],
       type: "Polygon",
@@ -198,11 +203,13 @@ const actionResponseCreateOffice: SyncApplyActionResponseV2 = {
   },
   edits: {
     type: "edits",
-    edits: [{
-      type: "addObject",
-      primaryKey: "NYC",
-      objectType: officeObjectType.apiName,
-    }],
+    edits: [
+      {
+        type: "addObject",
+        primaryKey: "NYC",
+        objectType: officeObjectType.apiName,
+      },
+    ],
     addedObjectCount: 1,
     addedLinksCount: 0,
     modifiedObjectsCount: 0,
@@ -249,10 +256,9 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
 
   fauxOntology.registerActionType(
     ActionTakesGeoshape,
-    createLazyDoNothingActionImpl([[
-      actionRequestWithGeoshape,
-      actionResponse,
-    ]]),
+    createLazyDoNothingActionImpl([
+      [actionRequestWithGeoshape, actionResponse],
+    ]),
   );
 
   fauxOntology.registerActionType(
@@ -274,9 +280,7 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
 
   fauxOntology.registerActionType(
     ActionTakesMedia,
-    createLazyDoNothingActionImpl([
-      [actionRequestMediaUpload, actionResponse],
-    ]),
+    createLazyDoNothingActionImpl([[actionRequestMediaUpload, actionResponse]]),
   );
 
   fauxOntology.registerActionType(
@@ -290,6 +294,8 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
     ActionTakesStruct,
     createLazyDoNothingActionImpl([
       [actionRequestWithStruct, actionResponse],
+      [actionRequestWithStructAcceptNull, actionResponse],
+      [actionRequestWithStructAcceptUndefined, actionResponse],
     ]),
   );
 

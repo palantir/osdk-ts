@@ -20,6 +20,7 @@ import {
   type HttpResponseResolver,
   type PathParams,
 } from "msw";
+
 import { OpenApiCallError } from "./util/handleOpenApiCall.js";
 
 export function authHandlerMiddleware<
@@ -32,9 +33,12 @@ export function authHandlerMiddleware<
     const authHeader = info.request.headers.get("authorization");
 
     if (!authHeader || authHeader !== `Bearer myAccessToken`) {
-      return HttpResponse.json({ message: "Missing Authorization header" }, {
-        status: 401,
-      });
+      return HttpResponse.json(
+        { message: "Missing Authorization header" },
+        {
+          status: 401,
+        },
+      );
     }
 
     try {

@@ -17,6 +17,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { AsyncDropdownField } from "../fields/AsyncDropdownField.js";
 
 // useInfiniteScroll uses IntersectionObserver which HappyDOM doesn't implement.
@@ -51,14 +52,16 @@ afterEach(() => {
 const ITEMS = ["Alpha", "Beta", "Gamma"];
 const NOOP = (): void => {};
 
-function renderAsyncDropdown(overrides: {
-  items?: string[];
-  isLoading?: boolean;
-  isSearching?: boolean;
-  hasMore?: boolean;
-  onFetchMore?: () => void;
-  fetchError?: Error;
-} = {}) {
+function renderAsyncDropdown(
+  overrides: {
+    items?: string[];
+    isLoading?: boolean;
+    isSearching?: boolean;
+    hasMore?: boolean;
+    onFetchMore?: () => void;
+    fetchError?: Error;
+  } = {},
+) {
   return render(
     <AsyncDropdownField
       items={ITEMS}

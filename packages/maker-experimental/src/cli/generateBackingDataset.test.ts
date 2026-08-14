@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
+
 import type {
   LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
@@ -21,10 +25,8 @@ import type {
   PropertyTypeMappingInfo,
   Type,
 } from "@osdk/client.unstable";
-import * as fs from "node:fs";
-import * as os from "node:os";
-import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
 import type { ReadableId } from "../util/generateRid.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
@@ -32,6 +34,7 @@ import {
   generateBackingDatasetBlockResultForLink,
   getNonEditOnlyProperties,
   propertyTypeToSchemaType,
+  typeToFieldSchema,
 } from "./generateBackingDataset.js";
 
 function makePropertyType(
@@ -84,15 +87,14 @@ function createObjectTypeBlockData(
   const propertyMapping: Record<string, PropertyTypeMappingInfo> = {};
 
   for (const prop of props) {
-    const rid =
-      `ri.ontology-metadata.temp.property-type.${apiName}.${prop.apiName}`;
+    const rid = `ri.ontology-metadata.temp.property-type.${apiName}.${prop.apiName}`;
     propertyTypes[rid] = makePropertyType(prop.apiName, prop.type, rid);
     propertyMapping[rid] = prop.editOnly
       ? { type: "editOnly", editOnly: {} }
       : {
-        type: "column",
-        column: prop.apiName,
-      };
+          type: "column",
+          column: prop.apiName,
+        };
   }
 
   return {
@@ -143,20 +145,18 @@ function createObjectTypeBlockData(
 }
 
 describe("propertyTypeToSchemaType", () => {
-  it.each(
-    [
-      ["string", "STRING"],
-      ["boolean", "BOOLEAN"],
-      ["integer", "INTEGER"],
-      ["long", "LONG"],
-      ["double", "DOUBLE"],
-      ["float", "FLOAT"],
-      ["byte", "BYTE"],
-      ["short", "SHORT"],
-      ["date", "DATE"],
-      ["timestamp", "TIMESTAMP"],
-    ] as const,
-  )("maps '%s' to '%s'", (input, expected) => {
+  it.each([
+    ["string", "STRING"],
+    ["boolean", "BOOLEAN"],
+    ["integer", "INTEGER"],
+    ["long", "LONG"],
+    ["double", "DOUBLE"],
+    ["float", "FLOAT"],
+    ["byte", "BYTE"],
+    ["short", "SHORT"],
+    ["date", "DATE"],
+    ["timestamp", "TIMESTAMP"],
+  ] as const)("maps '%s' to '%s'", (input, expected) => {
     expect(propertyTypeToSchemaType(input)).toBe(expected);
   });
 
@@ -170,11 +170,131 @@ describe("propertyTypeToSchemaType", () => {
 
   it("throws on unsupported property types", () => {
     expect(() => propertyTypeToSchemaType("unknownType")).toThrow(
-      /Unsupported property type "unknownType".*empty backing datasource/,
+      /Unsupported property type "unknownType".*empty backing datasource/u,
     );
     expect(() => propertyTypeToSchemaType({ type: "geopoint" })).toThrow(
-      /Unsupported property type "geopoint".*empty backing datasource/,
+      /Unsupported property type "geopoint".*empty backing datasource/u,
     );
+  });
+});
+
+const DECIMAL_PROPERTY_TYPE: Type = {
+  type: "decimal",
+  decimal: { precision: 10, scale: 2 },
+};
+
+function makeArrayType(subtype: Type): Type {
+  return { type: "array", array: { reducers: [], subtype } };
+}
+
+function makeStructType(
+  fields: Array<{ apiName: string; fieldType: Type }>,
+): Type {
+  return {
+    type: "struct",
+    struct: {
+      structFields: fields.map((f) => ({
+        aliases: [],
+        apiName: f.apiName,
+        displayMetadata: { displayName: f.apiName },
+        fieldType: f.fieldType,
+        structFieldRid: `ri.struct-field.${f.apiName}`,
+        typeClasses: [],
+      })),
+    },
+  };
+}
+
+describe("typeToFieldSchema", () => {
+  it("builds a primitive field schema with the given name", () => {
+    expect(typeToFieldSchema(STRING_PROPERTY_TYPE, "id")).toEqual({
+      type: "STRING",
+      name: "id",
+      nullable: null,
+      userDefinedTypeClass: null,
+      customMetadata: {},
+      arraySubtype: null,
+      precision: null,
+      scale: null,
+      mapKeyType: null,
+      mapValueType: null,
+      subSchemas: null,
+    });
+  });
+
+  it("defaults name to null when omitted", () => {
+    expect(typeToFieldSchema(STRING_PROPERTY_TYPE).name).toBeNull();
+  });
+
+  it("populates precision and scale for decimal", () => {
+    const schema = typeToFieldSchema(DECIMAL_PROPERTY_TYPE, "amount");
+    expect(schema.type).toBe("DECIMAL");
+    expect(schema.precision).toBe(10);
+    expect(schema.scale).toBe(2);
+  });
+
+  it("describes array elements via arraySubtype with a null name", () => {
+    const schema = typeToFieldSchema(
+      makeArrayType(STRING_PROPERTY_TYPE),
+      "tags",
+    );
+    expect(schema.type).toBe("ARRAY");
+    expect(schema.subSchemas).toBeNull();
+    expect(schema.arraySubtype).toEqual({
+      type: "STRING",
+      name: null,
+      nullable: null,
+      userDefinedTypeClass: null,
+      customMetadata: {},
+      arraySubtype: null,
+      precision: null,
+      scale: null,
+      mapKeyType: null,
+      mapValueType: null,
+      subSchemas: null,
+    });
+  });
+
+  it("describes struct fields via named subSchemas", () => {
+    const schema = typeToFieldSchema(
+      makeStructType([
+        { apiName: "a", fieldType: STRING_PROPERTY_TYPE },
+        { apiName: "b", fieldType: INTEGER_PROPERTY_TYPE },
+      ]),
+      "info",
+    );
+    expect(schema.type).toBe("STRUCT");
+    expect(schema.arraySubtype).toBeNull();
+    expect(schema.subSchemas?.map((s) => [s.name, s.type])).toEqual([
+      ["a", "STRING"],
+      ["b", "INTEGER"],
+    ]);
+  });
+
+  it("recurses through nested struct/array combinations", () => {
+    // struct field that is itself an array
+    const structOfArray = typeToFieldSchema(
+      makeStructType([
+        { apiName: "items", fieldType: makeArrayType(INTEGER_PROPERTY_TYPE) },
+      ]),
+      "info",
+    );
+    const itemsField = structOfArray.subSchemas?.[0];
+    expect(itemsField?.name).toBe("items");
+    expect(itemsField?.type).toBe("ARRAY");
+    expect(itemsField?.arraySubtype?.type).toBe("INTEGER");
+    expect(itemsField?.arraySubtype?.name).toBeNull();
+
+    // array whose element is a struct: element name is null, inner fields keep names
+    const arrayOfStruct = typeToFieldSchema(
+      makeArrayType(
+        makeStructType([{ apiName: "x", fieldType: STRING_PROPERTY_TYPE }]),
+      ),
+      "rows",
+    );
+    expect(arrayOfStruct.arraySubtype?.name).toBeNull();
+    expect(arrayOfStruct.arraySubtype?.type).toBe("STRUCT");
+    expect(arrayOfStruct.arraySubtype?.subSchemas?.[0].name).toBe("x");
   });
 });
 
@@ -183,7 +303,7 @@ describe("getNonEditOnlyProperties", () => {
     const blockData = createObjectTypeBlockData();
     const props = getNonEditOnlyProperties(blockData);
     expect(props).toHaveLength(2);
-    expect(props.map(p => p.apiName)).toEqual(["id", "count"]);
+    expect(props.map((p) => p.apiName)).toEqual(["id", "count"]);
   });
 
   it("excludes edit-only properties", () => {
@@ -196,7 +316,7 @@ describe("getNonEditOnlyProperties", () => {
     });
     const props = getNonEditOnlyProperties(blockData);
     expect(props).toHaveLength(2);
-    expect(props.map(p => p.apiName)).toEqual(["id", "count"]);
+    expect(props.map((p) => p.apiName)).toEqual(["id", "count"]);
   });
 });
 
@@ -314,7 +434,7 @@ describe("generateBackingDatasetBlockResult", () => {
       path.join(result.block_data_directory, "VERSION"),
       "utf-8",
     );
-    expect(version).toBe("\"1\"");
+    expect(version).toBe('"1"');
 
     // files.zip
     const zipBuffer = await fs.promises.readFile(
@@ -371,14 +491,14 @@ function createLinkTypeBlockData(
     columnB?: string;
   } = {},
 ): LinkTypeBlockDataV2 {
-  const objectTypeRidA = overrides.objectTypeRidA
-    ?? "ri.ontology-metadata.temp.object-type.ObjA";
-  const objectTypeRidB = overrides.objectTypeRidB
-    ?? "ri.ontology-metadata.temp.object-type.ObjB";
-  const pkRidA = overrides.pkRidA
-    ?? "ri.ontology-metadata.temp.property-type.ObjA.fooId";
-  const pkRidB = overrides.pkRidB
-    ?? "ri.ontology-metadata.temp.property-type.ObjB.barId";
+  const objectTypeRidA =
+    overrides.objectTypeRidA ?? "ri.ontology-metadata.temp.object-type.ObjA";
+  const objectTypeRidB =
+    overrides.objectTypeRidB ?? "ri.ontology-metadata.temp.object-type.ObjB";
+  const pkRidA =
+    overrides.pkRidA ?? "ri.ontology-metadata.temp.property-type.ObjA.fooId";
+  const pkRidB =
+    overrides.pkRidB ?? "ri.ontology-metadata.temp.property-type.ObjB.barId";
   const columnA = overrides.columnA ?? "fooId";
   const columnB = overrides.columnB ?? "barId";
 
@@ -407,21 +527,23 @@ function createLinkTypeBlockData(
       status: { type: "active", active: {} },
       redacted: false,
     },
-    datasources: [{
-      rid: "ri.ontology.main.datasource.test",
-      datasource: {
-        type: "dataset",
-        dataset: {
-          datasetRid: "ri.foundry.main.dataset.link-test",
-          branchId: "main",
-          writebackDatasetRid: undefined,
-          objectTypeAPrimaryKeyMapping: { [pkRidA]: columnA },
-          objectTypeBPrimaryKeyMapping: { [pkRidB]: columnB },
+    datasources: [
+      {
+        rid: "ri.ontology.main.datasource.test",
+        datasource: {
+          type: "dataset",
+          dataset: {
+            datasetRid: "ri.foundry.main.dataset.link-test",
+            branchId: "main",
+            writebackDatasetRid: undefined,
+            objectTypeAPrimaryKeyMapping: { [pkRidA]: columnA },
+            objectTypeBPrimaryKeyMapping: { [pkRidB]: columnB },
+          },
         },
+        editsConfiguration: { onlyAllowPrivilegedEdits: false },
+        redacted: false,
       },
-      editsConfiguration: { onlyAllowPrivilegedEdits: false },
-      redacted: false,
-    }],
+    ],
     entityMetadata: undefined,
   } as unknown as LinkTypeBlockDataV2;
 }
@@ -436,14 +558,14 @@ function createObjectTypesForLink(
     pkTypeB?: Type;
   } = {},
 ): Record<string, ObjectTypeBlockDataV2> {
-  const objectTypeRidA = overrides.objectTypeRidA
-    ?? "ri.ontology-metadata.temp.object-type.ObjA";
-  const objectTypeRidB = overrides.objectTypeRidB
-    ?? "ri.ontology-metadata.temp.object-type.ObjB";
-  const pkRidA = overrides.pkRidA
-    ?? "ri.ontology-metadata.temp.property-type.ObjA.fooId";
-  const pkRidB = overrides.pkRidB
-    ?? "ri.ontology-metadata.temp.property-type.ObjB.barId";
+  const objectTypeRidA =
+    overrides.objectTypeRidA ?? "ri.ontology-metadata.temp.object-type.ObjA";
+  const objectTypeRidB =
+    overrides.objectTypeRidB ?? "ri.ontology-metadata.temp.object-type.ObjB";
+  const pkRidA =
+    overrides.pkRidA ?? "ri.ontology-metadata.temp.property-type.ObjA.fooId";
+  const pkRidB =
+    overrides.pkRidB ?? "ri.ontology-metadata.temp.property-type.ObjB.barId";
   const pkTypeA = overrides.pkTypeA ?? STRING_PROPERTY_TYPE;
   const pkTypeB = overrides.pkTypeB ?? STRING_PROPERTY_TYPE;
 
@@ -560,7 +682,7 @@ describe("generateBackingDatasetBlockResultForLink", () => {
       path.join(result.block_data_directory, "VERSION"),
       "utf-8",
     );
-    expect(version).toBe("\"1\"");
+    expect(version).toBe('"1"');
 
     // files.zip
     const zipBuffer = await fs.promises.readFile(

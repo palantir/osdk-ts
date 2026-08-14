@@ -1,5 +1,297 @@
 # @osdk/react-components-storybook
 
+## 0.46.0
+
+### Minor Changes
+
+- 4179237: Revert labels override on ObjectTable in PR 3697
+
+## 0.45.0
+
+### Patch Changes
+
+- @osdk/faux@0.42.0
+
+## 0.44.0
+
+### Patch Changes
+
+- @osdk/faux@0.41.0
+
+## 0.43.0
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/faux@0.40.0
+
+## 0.42.0
+
+### Minor Changes
+
+- d1038c9: Re-organize ObjectTable features
+- 86e1f85: Fit markdown table width to parent container width
+
+### Patch Changes
+
+- @osdk/faux@0.39.0
+
+## 0.41.0
+
+### Patch Changes
+
+- @osdk/faux@0.38.0
+
+## 0.40.0
+
+### Minor Changes
+
+- 520152e: Add interaction tests for ObjectTable
+
+### Patch Changes
+
+- @osdk/faux@0.37.0
+
+## 0.39.0
+
+### Patch Changes
+
+- @osdk/faux@0.36.0
+
+## 0.38.0
+
+### Patch Changes
+
+- Updated dependencies [db2bfa2]
+  - @osdk/faux@0.35.0
+
+## 0.37.0
+
+### Minor Changes
+
+- f1ab8ce: Fill AI Chat to the full page
+
+## 0.36.0
+
+### Minor Changes
+
+- d99575d: Make the Components Overview page fill the full available height so the ObjectTable, FilterList, and DocumentViewer stretch to the viewport.
+
+## 0.35.0
+
+### Minor Changes
+
+- 3833cdd: Render the AipAgentChat story as a folder under Components (matching CbacPicker) with a Docs page and beta badge
+- f5fd886: Hide the canvas Code tab on the Overview story
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/faux@0.34.0
+
+## 0.34.0
+
+### Minor Changes
+
+- 56f6317: Enable DESIGN.md and CSS export for built-in Workshop Light and Dark themes
+- 6600566: Migrate @osdk/react, @osdk/react-devtools, and @osdk/react-components-storybook to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (sixth increment of the repo-wide oxc migration; the React family ahead of @osdk/react-components)
+- 7884819: Add Component Overview story with tabbed layout showing FilterList, ObjectTable, PdfViewer, and ActionForm
+- 9e4f284: Add brand theme plugin to Storybook: theme preset picker toolbar with built-in/custom categories, interactive token mapping panel with WCAG contrast checking, style presets for radius/spacing, CSS/Markdown export, and dark mode support
+
+### Patch Changes
+
+- Updated dependencies [6010d45]
+  - @osdk/faux@0.33.0
+
+## 0.33.0
+
+### Minor Changes
+
+- 0ed0b5c: Restyle AipAgentChat to match Threads 2.0 design with light gray user bubbles, plain-text assistant messages, rounded inlined composer, centered max-width layout, and no composer divider. Add reusable Callout base component with intent-tinted backgrounds and dark mode support. Add AipAgentChat storybook stories.
+
+### Patch Changes
+
+- Updated dependencies [15a35f2]
+  - @osdk/faux@0.32.0
+
+## 0.32.0
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/faux@0.31.0
+
+## 0.31.0
+
+### Patch Changes
+
+- @osdk/faux@0.30.0
+
+## 0.30.0
+
+### Minor Changes
+
+- c24b0cf: Align OSDK component tokens with Blueprint styling: use box-shadow instead of border for inputs, buttons, and selects; add proper dark mode token overrides; group Storybook theme presets into built-in and custom categories
+
+### Patch Changes
+
+- @osdk/faux@0.29.0
+
+## 0.29.0
+
+### Patch Changes
+
+- @osdk/faux@0.28.0
+
+## 0.28.0
+
+### Minor Changes
+
+- b237ef9: Run Storybook interaction (play-function) tests in CI via @storybook/addon-vitest, add a MultipleSelection play function, disable MSW per-request console logging, and bump @vitest/browser to the patched 3.2.5+.
+
+### Patch Changes
+
+- Updated dependencies [ab19740]
+  - @osdk/faux@0.27.0
+
+## 0.27.0
+
+### Patch Changes
+
+- Updated dependencies [79f8a6e]
+  - @osdk/faux@0.26.0
+
+## 0.26.0
+
+### Minor Changes
+
+- 65c742b: Add theme preset switcher toolbar to Storybook with Workshop Light, Workshop Dark, and other built-in presets
+
+### Patch Changes
+
+- @osdk/faux@0.25.0
+
+## 0.25.0
+
+### Minor Changes
+
+- a0602d1: Fix conflicting primary keys
+
+## 0.24.0
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/faux@0.24.0
+
+## 0.23.0
+
+### Minor Changes
+
+- 46f3ef6: Import CbacPicker docs from source package instead of inlining a summary in Storybook MDX
+
+### Patch Changes
+
+- Updated dependencies [58922c1]
+  - @osdk/faux@0.23.0
+
+## 0.22.0
+
+### Patch Changes
+
+- Updated dependencies [5ff7aa5]
+  - @osdk/faux@0.22.0
+
+## 0.21.0
+
+### Minor Changes
+
+- e7acde5: Add per-component MDX documentation pages importing existing docs
+- ef3e8c1: Sort Docs entry first within each component folder in Storybook sidebar
+- a26b490: Sort attached MDX docs entries first within component folders
+- 2e92b90: Enable standalone MDX documentation pages co-located with stories
+
+## 0.20.0
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+  - @osdk/faux@0.21.0
+
+## 0.19.0
+
+### Minor Changes
+
+- 4c53e48: Hide the DatePicker popover when its anchor scrolls out of view. Fixes an issue where the date picker in `ObjectTable` cells continued to render outside the table bounds after the cell scrolled out of the visible area.
+
+## 0.18.0
+
+### Patch Changes
+
+- Updated dependencies [60aff19]
+  - @osdk/faux@0.20.0
+
+## 0.17.0
+
+### Minor Changes
+
+- b3229eb: Fix ObjectTable overlay menus and dialogs inside drawers and dialogs.
+- 1760597: Change experimental labels to beta
+- bde8026: group viewer/renderer storybook entries under DocumentViewer/Renderers, reorder WithMedia stories to appear first, and split out top-level ImageViewer/PdfViewer media stories
+
+### Patch Changes
+
+- @osdk/faux@0.19.0
+
+## 0.16.0
+
+### Minor Changes
+
+- 7945245: add missing postal-mime dev dep so storybook dev resolves the email viewer stories
+
+## 0.15.0
+
+### Minor Changes
+
+- ddeda7f: Fix custom value rendering in ObjectTable dropdown cells for non-string item types (booleans, numbers, etc.)
+
+### Patch Changes
+
+- @osdk/faux@0.18.0
+
+## 0.14.0
+
+### Patch Changes
+
+- @osdk/faux@0.17.0
+
+## 0.13.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [ecc5b36]
+  - @osdk/faux@0.16.0
+
+## 0.12.0
+
+### Patch Changes
+
+- Updated dependencies [2f3271b]
+  - @osdk/faux@0.15.0
+
+## 0.11.0
+
+### Minor Changes
+
+- 9be8339: Polish ActionForm date/time controls, boolean switch fields, form submission, popup positioning, component tokens, and FauxFoundry action typings.
+
+### Patch Changes
+
+- Updated dependencies [9be8339]
+  - @osdk/faux@0.14.0
+
 ## 0.10.0
 
 ### Minor Changes

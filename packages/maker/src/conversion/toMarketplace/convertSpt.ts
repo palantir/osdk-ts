@@ -15,28 +15,27 @@
  */
 
 import type { OntologyIrSharedPropertyType } from "@osdk/client.unstable";
+
 import type { SharedPropertyType } from "../../api/properties/SharedPropertyType.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
 import { convertReducers } from "./convertReducers.js";
 import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIrType.js";
 
-export function convertSpt(
-  {
-    type,
-    array,
-    reducers,
-    description,
-    apiName,
-    displayName,
-    visibility,
-    gothamMapping,
-    typeClasses,
-    aliases,
-    valueType,
-    nullability,
-    baseFormatter,
-  }: SharedPropertyType,
-): OntologyIrSharedPropertyType {
+export function convertSpt({
+  type,
+  array,
+  reducers,
+  description,
+  apiName,
+  displayName,
+  visibility,
+  gothamMapping,
+  typeClasses,
+  aliases,
+  valueType,
+  nullability,
+  baseFormatter,
+}: SharedPropertyType): OntologyIrSharedPropertyType {
   const dataConstraint:
     | OntologyIrSharedPropertyType["dataConstraints"]
     | undefined = convertNullabilityToDataConstraint({ type, nullability });
@@ -49,12 +48,12 @@ export function convertSpt(
     },
     type: array
       ? {
-        type: "array" as const,
-        array: {
-          subtype: propertyTypeTypeToOntologyIrType(type, apiName),
-          reducers: convertReducers(type, apiName, reducers),
-        },
-      }
+          type: "array" as const,
+          array: {
+            subtype: propertyTypeTypeToOntologyIrType(type, apiName),
+            reducers: convertReducers(type, apiName, reducers),
+          },
+        }
       : propertyTypeTypeToOntologyIrType(type, apiName),
     aliases: aliases ?? [],
     baseFormatter,
@@ -62,11 +61,14 @@ export function convertSpt(
     gothamMapping: gothamMapping,
     indexedForSearch: true,
     typeClasses: typeClasses ?? [],
-    valueType: valueType === undefined ? undefined : {
-      apiName: valueType.apiName,
-      version: valueType.version,
-      packageNamespace: valueType.packageNamespace,
-      displayMetadata: valueType.displayMetadata,
-    },
+    valueType:
+      valueType === undefined
+        ? undefined
+        : {
+            apiName: valueType.apiName,
+            version: valueType.version,
+            packageNamespace: valueType.packageNamespace,
+            displayMetadata: valueType.displayMetadata,
+          },
   };
 }

@@ -1,5 +1,11 @@
 # @osdk/tool.release
 
+## 0.17.0
+
+### Minor Changes
+
+- 661cd31: Add "merge when ready" label to release PRs when they are created or updated.
+
 ## 0.16.0
 
 ### Minor Changes

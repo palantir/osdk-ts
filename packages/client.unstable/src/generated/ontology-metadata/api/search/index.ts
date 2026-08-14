@@ -26,6 +26,7 @@ export type {
   ActionTypeSortBy,
   ActionTypeSortOrder,
   ActionTypeStatusFilter,
+  ArchiveStateFilter,
   CombinedEntityTypeInclude,
   CombinedEntityTypeRid,
   CombinedEntityTypeSearchHit,

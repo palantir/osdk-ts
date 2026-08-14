@@ -19,6 +19,7 @@ import type { ObservableClient } from "@osdk/client/observable";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { describe, expect, it } from "vitest";
+
 import {
   fakeObservableClient,
   TestOsdkProvider,

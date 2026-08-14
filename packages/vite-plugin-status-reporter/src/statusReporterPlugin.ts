@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import fs from "node:fs";
-import path from "node:path";
+import {
+  findSuperrepoRoot,
+  readDiscovery,
+} from "@osdk/vite-plugin-superrepo/discovery";
 import type { Logger, Plugin, ResolvedConfig } from "vite";
 
 export type ServiceName =
@@ -39,11 +41,9 @@ interface ServiceEvent {
 }
 
 export interface StatusReporterConfig {
-  /** Service name reported in status payloads (e.g. "APP") */
+  /** Service name reported in status payloads (e.g. "APP"). */
   service: ServiceName;
-  /** Path to the gateway address file, relative to the Vite project root. */
-  gatewayAddrFile: string;
-  /** Heartbeat interval in milliseconds. Default: 30000 */
+  /** Heartbeat interval in milliseconds. Default: 30000. */
   heartbeatInterval?: number;
 }
 
@@ -54,42 +54,35 @@ export interface StatusReporterConfig {
  * Lifecycle: PREPARING → READY (with heartbeat) → FAILED on error → STOPPED on close.
  */
 export function statusReporterPlugin(config: StatusReporterConfig): Plugin {
-  const {
-    service,
-    gatewayAddrFile,
-    heartbeatInterval = 30_000,
-  } = config;
+  const { service, heartbeatInterval = 30_000 } = config;
 
-  let resolvedAddrFile: string;
-  let logger: Logger | undefined;
+  let viteRoot: string;
+  let logger: Logger;
   let heartbeatTimer: ReturnType<typeof setInterval> | undefined;
 
   /**
-   * Reads the gateway address from the port file written by the status-server.
-   * Returns undefined if the file does not exist or is empty, allowing the
-   * plugin to silently no-op when no gateway is running.
+   * Resolve the running status server's base URL via its discovery file.
+   * Returns undefined if no foundry.yml ancestor exists, no discovery file
+   * is present, the JSON is malformed, or the recorded PID is dead.
    */
-  function readStatusAddr(): string | undefined {
-    try {
-      const content = fs.readFileSync(resolvedAddrFile, "utf-8").trim();
-      return content || undefined;
-    } catch {
-      return undefined;
-    }
+  function readStatusBaseUrl(): string | undefined {
+    const superrepoRoot = findSuperrepoRoot(viteRoot);
+    if (!superrepoRoot) return undefined;
+    return readDiscovery(superrepoRoot, "status-server")?.url;
   }
 
   /**
-   * Posts a lifecycle event to the gateway's status endpoint. This is
-   * best-effort: if the gateway is unreachable the error is logged via
-   * Vite's logger and the dev server continues normally.
+   * Posts a lifecycle event to the status server. Best-effort: if the
+   * server is unreachable the error is logged via Vite's logger and the
+   * dev server continues normally.
    */
   async function publishStatus(
     status: ServiceLifecycle,
     level: StatusLevel,
     message?: string,
   ): Promise<void> {
-    const addr = readStatusAddr();
-    if (!addr) return;
+    const base = readStatusBaseUrl();
+    if (!base) return;
 
     const event: ServiceEvent = {
       service,
@@ -100,14 +93,14 @@ export function statusReporterPlugin(config: StatusReporterConfig): Plugin {
     };
 
     try {
-      const res = await fetch(`http://${addr}/api/status`, {
+      const res = await fetch(new URL("/api/status", base), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(event),
       });
       await res.body?.cancel();
     } catch (e) {
-      logger?.warn(`[status-reporter] Failed to publish status: ${e}`);
+      logger.warn(`[status-reporter] Failed to publish status: ${e}`);
     }
   }
 
@@ -134,7 +127,7 @@ export function statusReporterPlugin(config: StatusReporterConfig): Plugin {
     apply: "serve",
 
     configResolved(resolvedConfig: ResolvedConfig) {
-      resolvedAddrFile = path.resolve(resolvedConfig.root, gatewayAddrFile);
+      viteRoot = resolvedConfig.root;
       logger = resolvedConfig.logger;
     },
 

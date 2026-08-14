@@ -1197,17 +1197,14 @@ versions:
             // Edit this import if your client location differs
             import { client } from "./client";
             {{#hasAttachmentProperty}}
-            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference {{/hasMediaParameter}} } from "@osdk/api";
+            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference, MediaUpload {{/hasMediaParameter}} } from "@osdk/api";
             {{/hasAttachmentProperty}}
             {{^hasAttachmentProperty}}{{#hasMediaParameter}}
-            import type { MediaReference } from "@osdk/api";
+            import type { MediaReference, MediaUpload } from "@osdk/api";
             {{/hasMediaParameter}}{{/hasAttachmentProperty}}
             {{#hasAttachmentProperty}}
             import { createAttachmentUpload } from "@osdk/client";
             {{/hasAttachmentProperty}}
-            {{#hasMediaParameter}}
-            import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
-            {{/hasMediaParameter}}
             import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
 
             async function callAction() {
@@ -1220,19 +1217,15 @@ versions:
                 // const attachmentRid = objectTypeWithAttachment.{attachmentProperty}?.rid;
             {{/hasAttachmentProperty}}
             {{#hasMediaParameter}}
-                // Create media reference
+                // You can upload media data via your Action
                 const mediaFile = await fetch("media.mp4");
                 const mediaBlob = await mediaFile.blob();
-                const mediaReference: MediaReference = await client(
-                    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-                ).createMediaReference({
-                    data: mediaBlob,
-                    fileName: "myMedia",
-                    objectType: {{objectType}},
-                    propertyType: "{{property}}",
-                });
-                // alternatively, you can get the Rid from the media property on the object type you are modifying
-                // const mediaRid = objectTypeWithMedia.{mediaProperty}?.rid;
+                const mediaUpload: MediaUpload = { data: mediaBlob, fileName: "myMedia" };
+
+                // You can also pass an existing media reference into your Action
+                const objectPage = await client({{objectType}}).fetchPage();
+                const mediaReference: MediaReference = objectPage.data[0].{{property}}!.getMediaReference();
+
             {{/hasMediaParameter}}
                 const result = await client({{actionApiName}}).applyAction(
                     {
@@ -1261,17 +1254,14 @@ versions:
             // Edit this import if your client location differs
             import { client } from "./client";
             {{#hasAttachmentProperty}}
-            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference {{/hasMediaParameter}} } from "@osdk/api";
+            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference, MediaUpload {{/hasMediaParameter}} } from "@osdk/api";
             {{/hasAttachmentProperty}}
             {{^hasAttachmentProperty}}{{#hasMediaParameter}}
-            import type { MediaReference } from "@osdk/api";
+            import type { MediaReference, MediaUpload } from "@osdk/api";
             {{/hasMediaParameter}}{{/hasAttachmentProperty}}
             {{#hasAttachmentProperty}}
             import { createAttachmentUpload } from "@osdk/client";
             {{/hasAttachmentProperty}}
-            {{#hasMediaParameter}}
-            import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
-            {{/hasMediaParameter}}
             import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
 
             async function callBatchAction() {
@@ -1282,17 +1272,15 @@ versions:
                 const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
             {{/hasAttachmentProperty}}
             {{#hasMediaParameter}}
-                // Create media reference
+                // You can upload media data via your Action
                 const mediaFile = await fetch("media.mp4");
                 const mediaBlob = await mediaFile.blob();
-                const mediaReference: MediaReference = await client(
-                    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-                ).createMediaReference({
-                    data: mediaBlob,
-                    fileName: "myMedia",
-                    objectType: {{objectType}},
-                    propertyType: "{{property}}",
-                });
+                const mediaUpload: MediaUpload = { data: mediaBlob, fileName: "myMedia" };
+
+                // You can also pass an existing media reference into your Action
+                const objectPage = await client({{objectType}}).fetchPage();
+                const mediaReference: MediaReference = objectPage.data[0].{{property}}!.getMediaReference();
+
             {{/hasMediaParameter}}
                 const result = await client({{actionApiName}}).batchApplyAction([
                         {
@@ -1410,12 +1398,22 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
+                    {{#arrayContains}}
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { $contains: { {{structSubPropertyApiName}}: { $startsWith: "foo" } } }
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $contains: { $startsWith: "foo" } }
+                    {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
+                    {{^arrayContains}}
                     {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $startsWith: "foo" }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
                     {{property}}: { $startsWith: "foo" }
                     {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
                 })
       containsAllTermsInOrderTemplate:
         - template: |-
@@ -1425,12 +1423,22 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
+                    {{#arrayContains}}
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { $contains: { {{structSubPropertyApiName}}: { $containsAllTermsInOrder: "foo bar" } } }
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $contains: { $containsAllTermsInOrder: "foo bar" } }
+                    {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
+                    {{^arrayContains}}
                     {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $containsAllTermsInOrder: "foo bar" }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
                     {{property}}: { $containsAllTermsInOrder: "foo bar" }
                     {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
                 })
       containsAnyTermTemplate:
         - template: |-
@@ -1440,12 +1448,22 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
+                    {{#arrayContains}}
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { $contains: { {{structSubPropertyApiName}}: { $containsAnyTerm: "foo bar" } } }
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $contains: { $containsAnyTerm: "foo bar" } }
+                    {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
+                    {{^arrayContains}}
                     {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $containsAnyTerm: "foo bar" }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
                     {{property}}: { $containsAnyTerm: "foo bar" }
                     {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
                 })
       containsAllTermsTemplate:
         - template: |-
@@ -1455,12 +1473,22 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
+                    {{#arrayContains}}
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { $contains: { {{structSubPropertyApiName}}: { $containsAllTerms: "foo bar" } } }
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $contains: { $containsAllTerms: "foo bar" } }
+                    {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
+                    {{^arrayContains}}
                     {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $containsAllTerms: "foo bar" }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
                     {{property}}: { $containsAllTerms: "foo bar" }
                     {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
                 })
       equalityTemplate:
         - template: |-
@@ -1470,12 +1498,22 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
+                    {{#arrayContains}}
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { $contains: { {{structSubPropertyApiName}}: { $eq: {{{propertyValueV2}}} } } }
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $contains: { $eq: {{{propertyValueV2}}} } }
+                    {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
+                    {{^arrayContains}}
                     {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $eq: {{{propertyValueV2}}} }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
                     {{property}}: { $eq: {{{propertyValueV2}}} }
                     {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
                 });
           computedVariables:
             - propertyValueV2
@@ -1487,12 +1525,22 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
+                    {{#arrayContains}}
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { $contains: { {{structSubPropertyApiName}}: { $in: [{{{propertyValueV2}}}] } } }
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $contains: { $in: [{{{propertyValueV2}}}] } }
+                    {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
+                    {{^arrayContains}}
                     {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $in: [{{{propertyValueV2}}}] }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
                     {{property}}: { $in: [{{{propertyValueV2}}}] }
                     {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
                 });
           computedVariables:
             - propertyValueV2
@@ -1519,12 +1567,22 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
+                    {{#arrayContains}}
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { $contains: { {{structSubPropertyApiName}}: { ${{operation}}: {{{propertyValueV2}}} } } }
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $contains: { ${{operation}}: {{{propertyValueV2}}} } }
+                    {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
+                    {{^arrayContains}}
                     {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { ${{operation}}: {{{propertyValueV2}}} }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
                     {{property}}: { ${{operation}}: {{{propertyValueV2}}} }
                     {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
                 });
           computedVariables:
             - propertyValueV2
@@ -2217,30 +2275,19 @@ versions:
             export default createObject;
       uploadMedia:
         - template: |-
-            import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
-            import { {{objectType}}, {{actionApiName}} } from "{{{packageName}}}"
+            import { {{actionApiName}} } from "{{{packageName}}}"
             // Edit this import if your client location differs
             import { client } from "./client";
-            import type { MediaReference } from "@osdk/api";
+            import type { MediaUpload } from "@osdk/api";
             // To upload media with 2.x, it has to be linked to an Action call
-            async function createMediaReference() {
-                const file = await fetch("file.json");
-                const data = await file.blob();
-                // Upload media to an object type with a media property. This returns a media reference that can passed to
-                // a media parameter in an Action.
-                return await client(
-                    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-                ).createMediaReference({
-                    data,
-                    fileName: "myFile",
-                    objectType: {{objectType}},
-                    propertyType: "{{property}}",
-                });
-            }
-            const mediaReference: MediaReference = await createMediaReference();
+            const file = await fetch("file.json");
+            const data = await file.blob();
+            // Pass the media data straight to a media parameter on the Action. The client uploads it
+            // and links the resulting media item to the object.
+            const mediaUpload: MediaUpload = { data, fileName: "myFile" };
             const actionResult = client({{actionApiName}}).applyAction({
                 {{primaryKeyPropertyV2.apiName}}: {{{propertyValueV2}}},
-                {{mediaParameter}}: mediaReference
+                {{mediaParameter}}: mediaUpload
             });
           computedVariables:
             - propertyValueV2

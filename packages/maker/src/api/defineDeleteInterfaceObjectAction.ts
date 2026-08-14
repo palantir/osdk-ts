@@ -17,26 +17,34 @@
 import type { ActionType } from "./action/ActionType.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import type { InterfaceActionTypeUserDefinition } from "./defineAction.js";
-import { defineAction, kebab } from "./defineAction.js";
+import {
+  defineAction,
+  DELETE_OBJECT_PARAMETER,
+  kebab,
+} from "./defineAction.js";
 
 export function defineDeleteInterfaceObjectAction(
   defInput: InterfaceActionTypeUserDefinition,
 ): ActionType {
   const def = cloneDefinition(defInput);
   return defineAction({
-    apiName: def.apiName
-      ?? `delete-interface-object-${
-        kebab(
-          def.interfaceType.apiName.split(".").pop()
-            ?? def.interfaceType.apiName,
-        )
-      }`,
-    displayName: def.displayName
-      ?? `Delete ${def.interfaceType.displayMetadata.displayName}`,
+    apiName:
+      def.apiName ??
+      `delete-interface-object-${kebab(
+        def.interfaceType.apiName.split(".").pop() ?? def.interfaceType.apiName,
+      )}`,
+    displayName:
+      def.displayName ??
+      `Delete ${def.interfaceType.displayMetadata.displayName}`,
+    description: def.description,
     parameters: [
       {
-        id: "objectToDeleteParameter",
-        displayName: "Delete object",
+        id: DELETE_OBJECT_PARAMETER,
+        displayName:
+          def.parameterConfiguration?.[DELETE_OBJECT_PARAMETER]?.displayName ??
+          "Delete object",
+        description:
+          def.parameterConfiguration?.[DELETE_OBJECT_PARAMETER]?.description,
         type: {
           type: "interfaceReference",
           interfaceReference: { interfaceTypeRid: def.interfaceType.apiName },
@@ -48,12 +56,14 @@ export function defineDeleteInterfaceObjectAction(
       },
     ],
     status: def.status ?? "active",
-    rules: [{
-      type: "deleteObjectRule",
-      deleteObjectRule: {
-        objectToDelete: "objectToDeleteParameter",
+    rules: [
+      {
+        type: "deleteObjectRule",
+        deleteObjectRule: {
+          objectToDelete: DELETE_OBJECT_PARAMETER,
+        },
       },
-    }],
+    ],
     entities: {
       affectedInterfaceTypes: [def.interfaceType.apiName],
       affectedObjectTypes: [],

@@ -21,6 +21,7 @@ import {
   type UIMessageChunk,
 } from "@osdk/aip-core";
 import type React from "react";
+
 import type { ChatStore } from "./chatStore.js";
 
 /**
@@ -34,9 +35,9 @@ export interface StreamContext {
   stoppedRef: React.MutableRefObject<boolean>;
   onFinish:
     | ((event: {
-      message: UIMessage;
-      messages: ReadonlyArray<UIMessage>;
-    }) => void)
+        message: UIMessage;
+        messages: ReadonlyArray<UIMessage>;
+      }) => void)
     | undefined;
   onError: ((error: Error) => void) | undefined;
 }
@@ -59,7 +60,7 @@ export async function runChatStream(
       trigger,
       chatId,
       messageId: assistantId,
-      messages: seed.slice(),
+      messages: [...seed],
       abortSignal: ctrl.signal,
     });
     await drainStream(ctx, stream, assistantId, ctrl);
@@ -85,8 +86,9 @@ export async function drainStream(
   // Treat as "the consumer no longer wants this stream" — quietly stop.
   const isOrphaned = (): boolean => {
     const messages = store.getSnapshot().messages;
-    return textBuf.length > 0
-      && !messages.some((m) => m.id === assistantMessageId);
+    return (
+      textBuf.length > 0 && !messages.some((m) => m.id === assistantMessageId)
+    );
   };
 
   try {
@@ -142,18 +144,18 @@ function upsertAssistantText(
     const exists = prev.messages.some((m) => m.id === assistantMessageId);
     const messages = exists
       ? prev.messages.map((m) =>
-        m.id === assistantMessageId
-          ? { ...m, parts: [{ type: "text" as const, text }] }
-          : m
-      )
+          m.id === assistantMessageId
+            ? { ...m, parts: [{ type: "text" as const, text }] }
+            : m,
+        )
       : [
-        ...prev.messages,
-        {
-          id: assistantMessageId,
-          role: "assistant" as const,
-          parts: [{ type: "text" as const, text }],
-        },
-      ];
+          ...prev.messages,
+          {
+            id: assistantMessageId,
+            role: "assistant" as const,
+            parts: [{ type: "text" as const, text }],
+          },
+        ];
     return { ...prev, status: "streaming", messages };
   });
 }
@@ -168,9 +170,9 @@ function handleStreamError(
   }
   const error = err instanceof Error ? err : new Error(String(err));
   if (
-    ctx.stoppedRef.current
-    || error.name === "AbortError"
-    || capturedCtrl.signal.aborted
+    ctx.stoppedRef.current ||
+    error.name === "AbortError" ||
+    capturedCtrl.signal.aborted
   ) {
     ctx.store.setState((prev) => ({
       ...prev,

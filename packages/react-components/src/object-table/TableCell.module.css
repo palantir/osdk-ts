@@ -23,7 +23,7 @@
   padding: var(--osdk-table-cell-padding);
   font-size: var(--osdk-table-cell-fontSize);
   color: var(--osdk-table-cell-color);
-  background-color: inherit;
+  background-color: var(--osdk-table-cell-bg, inherit);
   border-right: var(--osdk-table-cell-divider);
 
   &:first-child {
@@ -39,7 +39,7 @@
 .osdkTableCell[data-pinned="right"] {
   position: sticky;
   z-index: var(--osdk-surface-z-index-1);
-  background-color: inherit;
+  background-color: var(--osdk-table-cell-bg, inherit);
 }
 
 /* Last left-pinned column - no left-pinned siblings after it */

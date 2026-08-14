@@ -23,7 +23,6 @@ import { Office } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const OfficeObjectSet = client(Office)
-  .where({
-    entrance: { $isNull: true },
-  });
+const OfficeObjectSet = client(Office).where({
+  entrance: { $isNull: true },
+});

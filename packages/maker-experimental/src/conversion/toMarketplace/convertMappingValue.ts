@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import { randomUUID } from "crypto";
+
 import type {
   OntologyIrInterfacePropertyLogicRuleValue,
   OntologyIrLogicRuleValue,
 } from "@osdk/client.unstable";
 import type { MappingValue } from "@osdk/maker";
-import { randomUUID } from "crypto";
 
 export function convertInterfacePropertyMappingValue(
   value: MappingValue,

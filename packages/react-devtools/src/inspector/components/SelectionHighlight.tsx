@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import { useAnimatedBounds } from "../hooks/useAnimatedBounds.js";
 import type { HighlightVariant, SelectionHighlightProps } from "../types.js";
 import { INTERPOLATION_FACTORS } from "../utils/interpolation.js";
@@ -52,8 +53,8 @@ export function SelectionHighlight({
   const colors = variantColors[variant];
 
   const effectiveAnimationOptions = {
-    interpolationFactor: animationOptions?.interpolationFactor
-      ?? INTERPOLATION_FACTORS.selection,
+    interpolationFactor:
+      animationOptions?.interpolationFactor ?? INTERPOLATION_FACTORS.selection,
     convergenceThreshold: animationOptions?.convergenceThreshold,
     enabled: animationOptions?.enabled ?? true,
   };

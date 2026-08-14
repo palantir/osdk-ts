@@ -16,7 +16,7 @@
 
 import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
 
-const ID_PATTERN = /^([a-z][a-z0-9]*)([A-Z][a-z0-9]*)*$/;
+const ID_PATTERN = /^([a-z][a-z0-9]*)([A-Z][a-z0-9]*)*$/u;
 const ID_MAX_LENGTH = 100;
 const NAME_MAX_LENGTH = 100;
 const DESCRIPTION_MAX_LENGTH = 250;
@@ -77,13 +77,13 @@ function validateWidgetParameters(parameters: ParameterConfig): void {
     }
     if (parameterConfig.type === "objectSet") {
       if (
-        typeof parameterConfig.allowedType.internalDoNotUseMetadata?.rid
-          !== "string"
+        typeof parameterConfig.allowedType.internalDoNotUseMetadata?.rid !==
+        "string"
       ) {
         throw new Error(
-          `ObjectSet parameter "${parameterId}" must have a valid rid in its metadata, make sure your OSDK was generated with a generator version >=2.6.2. Provided type: '${
-            JSON.stringify(parameterConfig.allowedType)
-          }'`,
+          `ObjectSet parameter "${parameterId}" must have a valid rid in its metadata, make sure your OSDK was generated with a generator version >=2.6.2. Provided type: '${JSON.stringify(
+            parameterConfig.allowedType,
+          )}'`,
         );
       }
     }

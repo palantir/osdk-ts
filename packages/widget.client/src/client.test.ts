@@ -16,6 +16,7 @@
 
 import { defineConfig } from "@osdk/widget.api";
 import { describe, it } from "vitest";
+
 import type { FoundryWidgetClient } from "./client.js";
 
 describe("FoundryWidgetClient", () => {

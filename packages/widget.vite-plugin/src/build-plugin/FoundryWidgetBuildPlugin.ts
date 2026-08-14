@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import fs from "fs";
+import path from "path";
+
 import type { LoadedFoundryConfig } from "@osdk/foundry-config-json";
 import { autoVersion, loadFoundryConfig } from "@osdk/foundry-config-json";
 import type { WidgetSetManifest } from "@osdk/widget.api";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget.api";
-import fs from "fs";
-import path from "path";
 import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
 import { createServer } from "vite";
+
 import {
   BUILD_PLUGIN_ID,
   MODULE_EVALUATION_MODE,
@@ -80,16 +82,12 @@ export function FoundryWidgetBuildPlugin(
         const widgetSetVersion = await computeWidgetSetVersion(foundryConfig);
         const widgetBuilds = await Promise.all(
           htmlEntrypoints.map((input) =>
-            getWidgetBuildOutputs(
-              bundle,
-              input,
-              config.build.outDir,
-              server,
-            )
+            getWidgetBuildOutputs(bundle, input, config.build.outDir, server),
           ),
         );
         const widgetSetInputSpec = await getWidgetSetInputSpec(
           path.resolve(process.cwd(), "package.json"),
+          path.resolve(process.cwd(), "resources.json"),
         );
         const widgetSetManifest = buildWidgetSetManifest(
           foundryConfig.foundryConfig.widgetSet.rid,
@@ -123,12 +121,15 @@ async function createModuleEvaluationServer(
   });
 }
 
+// TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 async function computeWidgetSetVersion(
   foundryConfig: LoadedFoundryConfig<"widgetSet">,
 ): Promise<string> {
   return autoVersion(
-    foundryConfig.foundryConfig.widgetSet.autoVersion
-      ?? { "type": "package-json" },
+    foundryConfig.foundryConfig.widgetSet.autoVersion ?? {
+      type: "package-json",
+    },
   );
 }
 
@@ -138,8 +139,5 @@ function writeManifest(
 ): void {
   const manifestPath = path.join(outDir, MANIFEST_FILE_LOCATION);
   fs.mkdirSync(path.dirname(manifestPath), { recursive: true });
-  fs.writeFileSync(
-    manifestPath,
-    JSON.stringify(widgetSetManifest, null, 2),
-  );
+  fs.writeFileSync(manifestPath, JSON.stringify(widgetSetManifest, null, 2));
 }

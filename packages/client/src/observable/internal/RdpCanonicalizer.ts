@@ -20,6 +20,7 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
+
 import { createWithPropertiesObjectSet } from "../../derivedProperties/createWithPropertiesObjectSet.js";
 import type { Canonical } from "./Canonical.js";
 import { CachingCanonicalizer } from "./Canonicalizer.js";

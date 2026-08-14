@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { CreateApplicationRequestV2 } from "../CreateApplicationRequestV2.js";
 import type { VersionedApplication } from "../VersionedApplication.js";
 

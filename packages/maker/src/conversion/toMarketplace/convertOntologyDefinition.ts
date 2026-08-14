@@ -15,6 +15,7 @@
  */
 
 import type { OntologyIr } from "@osdk/client.unstable";
+
 import type { OntologyDefinition } from "../../api/common/OntologyDefinition.js";
 import { importedTypes } from "../../api/defineOntology.js";
 import { convertOntologyDefinitionToWireBlockData } from "./convertOntologyDefinitionToWireBlockData.js";

@@ -23,10 +23,11 @@ import type {
   ParameterValue,
 } from "@osdk/widget.api";
 import type { WidgetConfig } from "@osdk/widget.client";
+
 import type { AugmentedEventParameterValueMap } from "../context.js";
 
-type ObjectSetEmitEventPayload = ParameterValue.ObjectSet["value"] extends
-  AsyncValue<infer T> ? T : never;
+type ObjectSetEmitEventPayload =
+  ParameterValue.ObjectSet["value"] extends AsyncValue<infer T> ? T : never;
 
 type TransformedEmitEventPayload<
   C extends WidgetConfig<C["parameters"]>,
@@ -38,13 +39,15 @@ type TransformedEmitEventPayload<
 type TransformedEmitEventPayloadResult<
   C extends WidgetConfig<C["parameters"]>,
   K extends EventId<C>,
-> = {
-  type: "async";
-  payload: Promise<TransformedEmitEventPayload<C, K>>;
-} | {
-  type: "passThrough";
-  payload: TransformedEmitEventPayload<C, K>;
-};
+> =
+  | {
+      type: "async";
+      payload: Promise<TransformedEmitEventPayload<C, K>>;
+    }
+  | {
+      type: "passThrough";
+      payload: TransformedEmitEventPayload<C, K>;
+    };
 
 export function transformEmitEventPayload<
   C extends WidgetConfig<C["parameters"]>,

@@ -19,10 +19,10 @@ import { safeFiberOperation } from "./SafeFiberOperation.js";
 import type { Fiber, SourceLocation } from "./types.js";
 
 export function getComponentName(fiber: Fiber): string {
-  return safeFiberOperation(
-    () => getComponentNameUnsafe(fiber),
-    { fallback: "Unknown", feature: "component-inspection" },
-  );
+  return safeFiberOperation(() => getComponentNameUnsafe(fiber), {
+    fallback: "Unknown",
+    feature: "component-inspection",
+  });
 }
 
 function getComponentNameUnsafe(fiber: Fiber): string {
@@ -103,9 +103,8 @@ export function getComponentId(fiber: Fiber): string {
       }
 
       const name = getComponentNameUnsafe(fiber);
-      const typeHash = typeof fiber.type === "function"
-        ? fiber.type.toString().length
-        : 0;
+      const typeHash =
+        typeof fiber.type === "function" ? fiber.type.toString().length : 0;
       return `fiber-${name}-${typeHash}`;
     },
     {

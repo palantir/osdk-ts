@@ -15,6 +15,7 @@
  */
 
 import type { WidgetConfig } from "@osdk/widget.client";
+
 import type { ExtendedAsyncParameterValueMap } from "../context.js";
 
 /**

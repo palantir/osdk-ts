@@ -19,6 +19,7 @@ import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import { useObjectSet, useOsdkMetadata } from "@osdk/react";
 import classnames from "classnames";
 import React from "react";
+
 import {
   BlueprintIcon,
   type Icon,
@@ -26,9 +27,13 @@ import {
 import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { ObjectSetFieldProps } from "../FormFieldApi.js";
+
 import styles from "./ObjectSetField.module.css";
 
-const DEFAULT_OBJECT_ICON: Icon = { name: "cube", color: "#4C90F0" };
+const DEFAULT_OBJECT_ICON: Icon = {
+  name: "cube",
+  color: "var(--osdk-object-set-icon-default-color)",
+};
 const ICON_SIZE = IconSize.STANDARD;
 const DEFAULT_EMPTY_MESSAGE = "Object set is not defined";
 
@@ -39,6 +44,7 @@ export const ObjectSetField: <T extends ObjectTypeDefinition>(
 >({
   value,
   emptyMessage = DEFAULT_EMPTY_MESSAGE,
+  disabled,
 }: ObjectSetFieldProps<T>): React.ReactElement {
   if (value == null) {
     return (
@@ -47,19 +53,22 @@ export const ObjectSetField: <T extends ObjectTypeDefinition>(
           styles.osdkObjectSetField,
           styles.osdkObjectSetFieldEmpty,
         )}
+        aria-disabled={disabled === true || undefined}
       >
         {emptyMessage}
       </div>
     );
   }
 
-  return <ObjectSetFieldContent objectSet={value} />;
+  return <ObjectSetFieldContent objectSet={value} disabled={disabled} />;
 });
 
 const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
   objectSet,
+  disabled,
 }: {
   objectSet: ObjectSet;
+  disabled: boolean | undefined;
 }): React.ReactElement {
   const objectTypeDef = objectSet.$objectSetInternals.def;
   const { metadata, loading: metadataLoading } = useOsdkMetadata(objectTypeDef);
@@ -93,25 +102,26 @@ const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
   const showLoadingState = metadataLoading && !hasMetadata;
 
   return (
-    <div className={styles.osdkObjectSetField}>
-      {showLoadingState
-        ? (
-          <>
-            {OBJECT_SET_ICON_SKELETON}
-            {OBJECT_SET_LABEL_SKELETON}
-          </>
-        )
-        : (
-          <>
-            <BlueprintIcon icon={icon} size={ICON_SIZE} />
-            <ObjectSetLabel
-              displayName={displayName}
-              totalCount={totalCount}
-              error={objectSetError}
-              isLoading={objectSetLoading}
-            />
-          </>
-        )}
+    <div
+      className={styles.osdkObjectSetField}
+      aria-disabled={disabled === true || undefined}
+    >
+      {showLoadingState ? (
+        <>
+          {OBJECT_SET_ICON_SKELETON}
+          {OBJECT_SET_LABEL_SKELETON}
+        </>
+      ) : (
+        <>
+          <BlueprintIcon icon={icon} size={ICON_SIZE} />
+          <ObjectSetLabel
+            displayName={displayName}
+            totalCount={totalCount}
+            error={objectSetError}
+            isLoading={objectSetLoading}
+          />
+        </>
+      )}
     </div>
   );
 });

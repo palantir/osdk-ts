@@ -19,7 +19,7 @@ import type {
   CbacBannerData,
   PickerMarking,
   PickerMarkingCategory,
-} from "@osdk/cbac-components/experimental";
+} from "@osdk/react-components/experimental/cbac-picker";
 
 export const classificationLevelCategory: PickerMarkingCategory = {
   id: "cat-classification",

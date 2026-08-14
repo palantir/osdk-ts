@@ -28,29 +28,38 @@ import type {
 } from "@osdk/client.unstable";
 import type {
   IDataType,
+  IInterfaceDataType,
+  IInterfaceObjectSetDataType,
   IListDataType,
   IObjectDataType,
   IObjectSetDataType,
+  IOptionalDataType,
   ISetDataType,
 } from "@osdk/generator-converters.ontologyir";
 import type {
   ActionParameter,
   ActionParameterAllowedValues,
+  ActionParameterType,
   ActionParameterValidation,
   ActionType,
   InterfaceType,
 } from "@osdk/maker";
 import {
+  extractAllowedValuesFromActionParameterType,
   getOntologyDefinition,
   isActionParameterTypePrimitive,
   uppercaseFirstLetter,
 } from "@osdk/maker";
 import consola from "consola";
 import invariant from "tiny-invariant";
+
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
-import { convertActionParameters } from "./convertActionParameters.js";
+import {
+  convertActionParameters,
+  resolveInterfaceTypeRid,
+} from "./convertActionParameters.js";
 import { convertActionSections } from "./convertActionSections.js";
 import { convertActionValidation } from "./convertActionValidation.js";
 import { flattenInterface } from "./convertObject.js";
@@ -63,32 +72,33 @@ export function buildDatasource(
   classificationMarkingGroupName?: string,
   mandatoryMarkingGroupName?: string,
 ): ObjectTypeDatasource {
-  const needsSecurity = classificationMarkingGroupName !== undefined
-    || mandatoryMarkingGroupName !== undefined;
+  const needsSecurity =
+    classificationMarkingGroupName !== undefined ||
+    mandatoryMarkingGroupName !== undefined;
 
   const securityConfig = needsSecurity
     ? {
-      classificationConstraint: classificationMarkingGroupName
-        ? {
-          markings: [classificationMarkingGroupName],
-        }
-        : undefined,
-      markingConstraint: mandatoryMarkingGroupName
-        ? {
-          markingIds: [mandatoryMarkingGroupName],
-        }
-        : undefined,
-    }
+        classificationConstraint: classificationMarkingGroupName
+          ? {
+              markings: [classificationMarkingGroupName],
+            }
+          : undefined,
+        markingConstraint: mandatoryMarkingGroupName
+          ? {
+              markingIds: [mandatoryMarkingGroupName],
+            }
+          : undefined,
+      }
     : undefined;
-  return ({
+  return {
     rid: ridGenerator.generateDatasourceRid(apiName),
     datasource: definition,
     editsConfiguration: {
       onlyAllowPrivilegedEdits: false,
     },
     redacted: false,
-    ...((securityConfig !== undefined) && { dataSecurity: securityConfig }),
-  });
+    ...(securityConfig !== undefined && { dataSecurity: securityConfig }),
+  };
 }
 
 export function convertAction(
@@ -96,7 +106,7 @@ export function convertAction(
   ridGenerator: OntologyRidGenerator,
   functionsIr?: FunctionsIr,
 ): ActionTypeBlockDataV2 | undefined {
-  if (action.rules.map(rule => rule.type === "functionRule").some(v => v)) {
+  if (action.rules.map((rule) => rule.type === "functionRule").some((v) => v)) {
     if (!functionsIr) {
       consola.info(
         "No functions IR file found, skipping some function-backed actions",
@@ -112,12 +122,12 @@ export function convertAction(
     action,
     ridGenerator,
   );
-  const parameterOrdering = action.parameterOrdering
-    ?? (action.parameters ?? []).map(p => p.id);
+  const parameterOrdering =
+    action.parameterOrdering ?? (action.parameters ?? []).map((p) => p.id);
 
   // Build parameterIds mapping: UUID (BlockInternalId) -> ParameterId (API name)
   const parameterIds: Record<string, ParameterId> = {};
-  (action.parameters ?? []).forEach(p => {
+  (action.parameters ?? []).forEach((p) => {
     const readableId = ReadableIdGenerator.getForParameter(
       action.apiName,
       p.id,
@@ -135,14 +145,33 @@ export function convertAction(
   ): Record<string, any> => {
     const result: Record<string, any> = {};
     for (const [apiName, value] of Object.entries(interfacePropertyValues)) {
-      const parentInterface = allParentInterfaces.find(maybeSourceParent =>
-        maybeSourceParent.propertiesV3[apiName] !== undefined
-      )!;
-      const rid = ridGenerator.generateInterfacePropertyTypeRid(
-        apiName,
-        parentInterface.apiName,
+      const parentInterface = allParentInterfaces.find(
+        (maybeSourceParent) =>
+          maybeSourceParent.propertiesV3[apiName] !== undefined,
       );
-      result[rid] = value;
+      if (parentInterface) {
+        // check for IDP first
+        const rid = ridGenerator.generateInterfacePropertyTypeRid(
+          apiName,
+          parentInterface.apiName,
+        );
+        result[rid] = value;
+      } else {
+        // fall back to SPT
+        const sptReadableId = ReadableIdGenerator.getForSpt(apiName);
+        const sptRid = ridGenerator
+          .getSharedPropertyTypeRids()
+          .get(sptReadableId);
+        invariant(
+          sptRid,
+          `Could not find SPT RID for property "${apiName}" used in action logic rule`,
+        );
+        const iptRid = sptRid.replace(
+          "shared-property-type",
+          "interface-property-type",
+        );
+        result[iptRid] = value;
+      }
     }
     return result;
   };
@@ -158,16 +187,36 @@ export function convertAction(
     }
     return result;
   };
+  const convertStructFieldValues = <T>(
+    structFieldValues: Record<string, Record<string, T>>,
+  ): Record<string, Record<string, T>> =>
+    Object.fromEntries(
+      Object.entries(structFieldValues).map(
+        ([propertyApiName, fieldValues]) => [
+          propertyApiName,
+          Object.fromEntries(
+            Object.entries(fieldValues).map(([fieldApiName, value]) => [
+              ridGenerator.generateStructFieldRid(
+                propertyApiName,
+                fieldApiName,
+              ),
+              value,
+            ]),
+          ),
+        ],
+      ),
+    );
   return {
     actionType: {
       actionTypeLogic: {
         logic: {
           // Convert logic rules with proper RID mappings
-          rules: action.rules.map(rule => {
+          rules: action.rules.map((rule) => {
             if (rule.type === "addInterfaceRule") {
               const interfaceAndParents = flattenInterface(
-                ontologyDefinition
-                  .INTERFACE_TYPE[rule.addInterfaceRule.interfaceApiName],
+                ontologyDefinition.INTERFACE_TYPE[
+                  rule.addInterfaceRule.interfaceApiName
+                ],
                 new Set(),
               );
               return {
@@ -190,8 +239,9 @@ export function convertAction(
               };
             } else if (rule.type === "modifyInterfaceRule") {
               const interfaceAndParents = flattenInterface(
-                ontologyDefinition
-                  .INTERFACE_TYPE[rule.modifyInterfaceRule.interfaceApiName],
+                ontologyDefinition.INTERFACE_TYPE[
+                  rule.modifyInterfaceRule.interfaceApiName
+                ],
                 new Set(),
               );
 
@@ -218,8 +268,62 @@ export function convertAction(
                     rule.addObjectRule.objectTypeId,
                   ),
                   propertyValues: rule.addObjectRule.propertyValues,
-                  structFieldValues: rule.addObjectRule.structFieldValues,
+                  structFieldValues: convertStructFieldValues(
+                    rule.addObjectRule.structFieldValues,
+                  ),
                   logicRuleRid: rule.addObjectRule.logicRuleRid,
+                },
+              };
+            } else if (rule.type === "addOrModifyObjectRuleV2") {
+              return {
+                type: "addOrModifyObjectRuleV2",
+                addOrModifyObjectRuleV2: {
+                  ...rule.addOrModifyObjectRuleV2,
+                  structFieldValues: convertStructFieldValues(
+                    rule.addOrModifyObjectRuleV2.structFieldValues,
+                  ),
+                },
+              };
+            } else if (rule.type === "modifyObjectRule") {
+              return {
+                type: "modifyObjectRule",
+                modifyObjectRule: {
+                  ...rule.modifyObjectRule,
+                  structFieldValues: convertStructFieldValues(
+                    rule.modifyObjectRule.structFieldValues,
+                  ),
+                },
+              };
+            } else if (rule.type === "addInterfaceLinkRuleV2") {
+              return {
+                type: "addInterfaceLinkRuleV2",
+                addInterfaceLinkRuleV2: {
+                  interfaceTypeRid: ridGenerator.generateRidForInterface(
+                    rule.addInterfaceLinkRuleV2.interfaceTypeRid,
+                  ),
+                  interfaceLinkTypeRid:
+                    ridGenerator.generateRidForInterfaceLinkType(
+                      rule.addInterfaceLinkRuleV2.interfaceLinkTypeRid,
+                      rule.addInterfaceLinkRuleV2.interfaceTypeRid,
+                    ),
+                  sourceObjects: rule.addInterfaceLinkRuleV2.sourceObjects,
+                  targetObjects: rule.addInterfaceLinkRuleV2.targetObjects,
+                },
+              };
+            } else if (rule.type === "deleteInterfaceLinkRule") {
+              return {
+                type: "deleteInterfaceLinkRule",
+                deleteInterfaceLinkRule: {
+                  interfaceTypeRid: ridGenerator.generateRidForInterface(
+                    rule.deleteInterfaceLinkRule.interfaceTypeRid,
+                  ),
+                  interfaceLinkTypeRid:
+                    ridGenerator.generateRidForInterfaceLinkType(
+                      rule.deleteInterfaceLinkRule.interfaceLinkTypeRid,
+                      rule.deleteInterfaceLinkRule.interfaceTypeRid,
+                    ),
+                  sourceObject: rule.deleteInterfaceLinkRule.sourceObject,
+                  targetObject: rule.deleteInterfaceLinkRule.targetObject,
                 },
               };
             }
@@ -258,7 +362,7 @@ function convertFunctionBackedAction(
   const functionName = rule.functionRule.functionRid;
 
   const discoveredFunction = functionsIr.discoveredFunctions.find(
-    f => f.locator.typescript?.functionName === functionName,
+    (f) => f.locator.typescript?.functionName === functionName,
   );
   invariant(
     discoveredFunction != null,
@@ -274,8 +378,10 @@ function convertFunctionBackedAction(
 
   for (const input of discoveredFunction.inputs) {
     if (
-      input.dataType.type === "ontologyEdit" || input.dataType.type === "client"
-    ) continue;
+      input.dataType.type === "ontologyEdit" ||
+      input.dataType.type === "client"
+    )
+      continue;
 
     const paramId = input.name;
     parameterOrdering.push(paramId);
@@ -285,21 +391,26 @@ function convertFunctionBackedAction(
     };
 
     const paramType = dataTypeToActionParameterType(input.dataType);
-    const isObjectParam = input.dataType.type === "object"
-      || (input.dataType.type === "list"
-        && (input.dataType as IListDataType).list.elementsType.type
-          === "object");
+    const listTypes = [
+      ...Object.values(PRIMITIVE_LIST_TYPES),
+      "objectReferenceList",
+      "interfaceReferenceList",
+      "structList",
+    ];
 
     syntheticParameters.push({
       id: paramId,
       displayName: uppercaseFirstLetter(paramId),
       type: paramType,
       validation: {
-        required: true,
+        required:
+          typeof paramType === "object" && listTypes.includes(paramType.type)
+            ? {
+                listLength: {},
+              }
+            : input.required,
         defaultVisibility: "editable",
-        allowedValues: isObjectParam
-          ? { type: "objectQuery" }
-          : undefined,
+        allowedValues: extractAllowedValuesFromActionParameterType(paramType),
       },
     });
   }
@@ -326,26 +437,30 @@ function convertFunctionBackedAction(
     actionType: {
       actionTypeLogic: {
         logic: {
-          rules: [{
-            type: "functionRule",
-            functionRule: {
-              functionRid,
-              functionVersion: "0.1.0",
-              functionInputValues,
-              customExecutionMode: null,
-              experimentalDeclarativeEditInformation: null,
+          rules: [
+            {
+              type: "functionRule",
+              functionRule: {
+                functionRid,
+                functionVersion: "0.1.0",
+                functionInputValues,
+                customExecutionMode: null,
+                experimentalDeclarativeEditInformation: null,
+              },
             },
-          }],
+          ],
           actionLogRule: null,
         },
         validation: convertActionValidation(action, ridGenerator),
         revert: {
-          enabledFor: [{
-            type: "actionApplier",
-            actionApplier: {
-              withinDuration: { value: 24, unit: "HOUR" },
+          enabledFor: [
+            {
+              type: "actionApplier",
+              actionApplier: {
+                withinDuration: { value: 24, unit: "HOUR" },
+              },
             },
-          }],
+          ],
         },
         webhooks: null,
         notifications: [],
@@ -386,6 +501,24 @@ function dataTypeToActionParameterType(
         },
       };
     }
+    case "interface": {
+      const interfaceData = dataType as IInterfaceDataType;
+      return {
+        type: "interfaceReference",
+        interfaceReference: {
+          interfaceTypeRid: interfaceData.interface.interfaceTypeRid,
+        },
+      };
+    }
+    case "interfaceObjectSet": {
+      const interfaceData = dataType as IInterfaceObjectSetDataType;
+      return {
+        type: "interfaceReferenceList",
+        interfaceReferenceList: {
+          interfaceTypeRid: interfaceData.interfaceObjectSet.interfaceTypeRid,
+        },
+      };
+    }
     case "list": {
       const listData = dataType as IListDataType;
       return dataTypeToActionParameterListType(listData.list.elementsType);
@@ -393,6 +526,12 @@ function dataTypeToActionParameterType(
     case "set": {
       const setData = dataType as ISetDataType;
       return dataTypeToActionParameterListType(setData.set.elementsType);
+    }
+    case "optionalType": {
+      const optionalData = dataType as IOptionalDataType;
+      return dataTypeToActionParameterType(
+        optionalData.optionalType.wrappedType,
+      );
     }
     default: {
       if (isActionParameterTypePrimitive(dataType.type)) {
@@ -406,14 +545,18 @@ function dataTypeToActionParameterType(
 }
 
 const PRIMITIVE_LIST_TYPES: Record<string, ActionParameter["type"]> = {
-  "string": "stringList",
-  "boolean": "booleanList",
-  "integer": "integerList",
-  "long": "longList",
-  "double": "doubleList",
-  "date": "dateList",
-  "timestamp": "timestampList",
-  "attachment": "attachmentList",
+  string: "stringList",
+  boolean: "booleanList",
+  integer: "integerList",
+  long: "longList",
+  double: "doubleList",
+  date: "dateList",
+  timestamp: "timestampList",
+  attachment: "attachmentList",
+  decimal: "decimalList",
+  geoshape: "geoshapeList",
+  mediaReference: "mediaReferenceList",
+  marking: "markingList",
 };
 
 function dataTypeToActionParameterListType(
@@ -425,6 +568,15 @@ function dataTypeToActionParameterListType(
       type: "objectReferenceList",
       objectReferenceList: {
         objectTypeId: objectData.object.objectTypeId,
+      },
+    };
+  }
+  if (elementType.type === "interface") {
+    const interfaceData = elementType as IInterfaceDataType;
+    return {
+      type: "interfaceReferenceList",
+      interfaceReferenceList: {
+        interfaceTypeRid: interfaceData.interface.interfaceTypeRid,
       },
     };
   }
@@ -467,22 +619,22 @@ function buildActionMetadata(
     displayName: action.displayName,
     applyingMessage: [] as Array<{ type: string; message: string }>,
     successMessage: action.submissionMetadata?.successMessage
-      ? [{
-        type: "message" as const,
-        message: action.submissionMetadata.successMessage,
-      }]
+      ? [
+          {
+            type: "message" as const,
+            message: action.submissionMetadata.successMessage,
+          },
+        ]
       : [],
     typeClasses: action.typeClasses ?? [],
-    ...(action.submissionMetadata?.submitButtonDisplayMetadata
-      && {
-        submitButtonDisplayMetadata:
-          action.submissionMetadata.submitButtonDisplayMetadata,
-      }),
-    ...(action.submissionMetadata?.undoButtonConfiguration
-      && {
-        undoButtonConfiguration:
-          action.submissionMetadata.undoButtonConfiguration,
-      }),
+    ...(action.submissionMetadata?.submitButtonDisplayMetadata && {
+      submitButtonDisplayMetadata:
+        action.submissionMetadata.submitButtonDisplayMetadata,
+    }),
+    ...(action.submissionMetadata?.undoButtonConfiguration && {
+      undoButtonConfiguration:
+        action.submissionMetadata.undoButtonConfiguration,
+    }),
   };
 
   const metadata = {
@@ -501,29 +653,33 @@ function buildActionMetadata(
     formContentOrdering: getFormContentOrdering(action, parameterOrdering),
     parameters: actionParameters,
     sections: actionSections,
-    status: typeof action.status === "string"
-      ? {
-        type: action.status,
-        [action.status]: {},
-      }
-      : action.status,
+    status:
+      typeof action.status === "string"
+        ? {
+            type: action.status,
+            [action.status]: {},
+          }
+        : action.status,
     entities: action.entities
       ? {
-        affectedInterfaceTypes: action.entities.affectedInterfaceTypes.map(
-          apiName => ridGenerator.generateRidForInterface(apiName),
-        ),
-        affectedLinkTypes: action.entities.affectedLinkTypes,
-        affectedObjectTypes: action.entities.affectedObjectTypes.map(
-          apiName => ridGenerator.generateObjectTypeId(apiName),
-        ),
-        typeGroups: action.entities.typeGroups,
-      }
+          // affectedInterfaceTypes may hold either API names (interface-link
+          // actions) or already-resolved RIDs (function-backed actions)
+          affectedInterfaceTypes: action.entities.affectedInterfaceTypes.map(
+            (apiNameOrRid) =>
+              resolveInterfaceTypeRid(apiNameOrRid, ridGenerator),
+          ),
+          affectedLinkTypes: action.entities.affectedLinkTypes,
+          affectedObjectTypes: action.entities.affectedObjectTypes.map(
+            (apiName) => ridGenerator.generateObjectTypeId(apiName),
+          ),
+          typeGroups: action.entities.typeGroups,
+        }
       : {
-        affectedInterfaceTypes: [],
-        affectedLinkTypes: [],
-        affectedObjectTypes: [],
-        typeGroups: [],
-      },
+          affectedInterfaceTypes: [],
+          affectedLinkTypes: [],
+          affectedObjectTypes: [],
+          typeGroups: [],
+        },
   };
   return metadata as MarketplaceActionTypeMetadata;
 }
@@ -552,19 +708,26 @@ export function extractAllowedValues(
   ridGenerator: OntologyRidGenerator,
 ): OntologyIrAllowedParameterValues {
   switch (allowedValues.type) {
+    case "struct":
+      return {
+        type: "struct",
+        struct: {
+          type: "delegateToAllowedStructFieldValues",
+          delegateToAllowedStructFieldValues: {},
+        },
+      };
     case "oneOf":
       return {
         type: "oneOf",
         oneOf: {
           type: "oneOf",
           oneOf: {
-            labelledValues: allowedValues.oneOf.map(option => ({
+            labelledValues: allowedValues.oneOf.map((option) => ({
               ...option,
               value: convertAllowedValueOptionValue(option.value, ridGenerator),
             })),
             otherValueAllowed: {
-              allowed: allowedValues.otherValueAllowed
-                ?? false,
+              allowed: allowedValues.otherValueAllowed ?? false,
             },
           },
         },
@@ -592,12 +755,8 @@ export function extractAllowedValues(
         text: {
           type: "text",
           text: {
-            ...(minLength === undefined
-              ? {}
-              : { minLength }),
-            ...(maxLength === undefined
-              ? {}
-              : { maxLength }),
+            ...(minLength === undefined ? {} : { minLength }),
+            ...(maxLength === undefined ? {} : { maxLength }),
             ...(regex === undefined
               ? {}
               : { regex: { regex, failureMessage: "Invalid input" } }),
@@ -622,7 +781,9 @@ export function extractAllowedValues(
         objectTypeReference: {
           type: "objectTypeReference",
           objectTypeReference: {
-            interfaceTypeRids: allowedValues.interfaceTypes,
+            interfaceTypeRids: allowedValues.interfaceTypes.map((apiName) =>
+              ridGenerator.generateRidForInterface(apiName),
+            ),
           },
         },
       };
@@ -645,30 +806,30 @@ export function extractAllowedValues(
         user: {
           type: "user",
           user: {
-            filter: (allowedValues.fromGroups ?? []).map(group => {
+            filter: (allowedValues.fromGroups ?? []).map((group) => {
               // Register static group IDs with ridGenerator
               if (group.type === "static") {
-                ridGenerator.getGroupIds().put(
-                  ReadableIdGenerator.getForGroup(group.name),
-                  group.name,
-                );
+                ridGenerator
+                  .getGroupIds()
+                  .put(ReadableIdGenerator.getForGroup(group.name), group.name);
               }
 
               return {
                 type: "groupFilter",
                 groupFilter: {
-                  groupId: group.type === "static"
-                    ? {
-                      type: "staticValue",
-                      staticValue: {
-                        type: "string",
-                        string: group.name,
-                      },
-                    }
-                    : {
-                      type: "parameterId",
-                      parameterId: group.parameter,
-                    },
+                  groupId:
+                    group.type === "static"
+                      ? {
+                          type: "staticValue",
+                          staticValue: {
+                            type: "string",
+                            string: group.name,
+                          },
+                        }
+                      : {
+                          type: "parameterId",
+                          parameterId: group.parameter,
+                        },
                 },
               };
             }),
@@ -700,9 +861,20 @@ export function renderHintFromBaseType(
   parameter: ActionParameter,
   validation?: ActionParameterValidation,
 ): ParameterRenderHint {
-  const type = typeof parameter.type === "string"
-    ? parameter.type
-    : parameter.type.type;
+  return renderHintFromActionParameterType(
+    parameter.type,
+    validation?.allowedValues ?? parameter.validation.allowedValues,
+    parameter.displayName,
+  );
+}
+
+export function renderHintFromActionParameterType(
+  parameterType: ActionParameterType,
+  allowedValues: ActionParameterAllowedValues | undefined,
+  displayName: string,
+): ParameterRenderHint {
+  const type =
+    typeof parameterType === "string" ? parameterType : parameterType.type;
   switch (type) {
     case "boolean":
     case "booleanList":
@@ -718,8 +890,8 @@ export function renderHintFromBaseType(
       return { type: "numericInput", numericInput: {} };
     case "string":
       if (
-        validation?.allowedValues?.type === "user"
-        || validation?.allowedValues?.type === "multipassGroup"
+        allowedValues?.type === "user" ||
+        allowedValues?.type === "multipassGroup"
       ) {
         return { type: "userDropdown", userDropdown: {} };
       }
@@ -740,13 +912,13 @@ export function renderHintFromBaseType(
       return { type: "filePicker", filePicker: {} };
     case "marking":
     case "markingList":
-      if (parameter.validation.allowedValues?.type === "mandatoryMarking") {
+      if (allowedValues?.type === "mandatoryMarking") {
         return { type: "mandatoryMarkingPicker", mandatoryMarkingPicker: {} };
-      } else if (parameter.validation.allowedValues?.type === "cbacMarking") {
+      } else if (allowedValues?.type === "cbacMarking") {
         return { type: "cbacMarkingPicker", cbacMarkingPicker: {} };
       } else {
         throw new Error(
-          `The allowed values for "${parameter.displayName}" are not compatible with the base parameter type`,
+          `The allowed values for "${displayName}" are not compatible with the base parameter type`,
         );
       }
     case "timeSeriesReference":
@@ -762,7 +934,7 @@ export function renderHintFromBaseType(
       return { type: "dropdown", dropdown: {} };
     case "struct":
     case "structList":
-      throw new Error("Structs are not supported yet");
+      return { type: "textInput", textInput: {} };
     default:
       throw new Error(`Unknown type ${type}`);
   }

@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { IntersectCanonicalizer } from "./IntersectCanonicalizer.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 

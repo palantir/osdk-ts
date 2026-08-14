@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-import type { MinimalFs } from "@osdk/generator";
+import { mkdir, writeFile } from "node:fs/promises";
+import path, { dirname, isAbsolute, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { resolveDependenciesFromFindUp } from "@osdk/generator-utils";
-import { mkdir, readdir, writeFile } from "fs/promises";
-import path from "node:path";
-import { normalize } from "node:path/posix";
-import { fileURLToPath } from "node:url";
-import { dirname, isAbsolute, join } from "path";
+
+import type { SlsLogger } from "../../logging/index.js";
 import type { OntologyInfo } from "../../ontologyMetadata/ontologyMetadataResolver.js";
 import { USER_AGENT } from "../../utils/UserAgent.js";
 import { generateBundles } from "../generateBundles.js";
 import { bundleDependencies } from "./bundleDependencies.js";
 import { compileInMemory } from "./compileInMemory.js";
+import { createHostFs } from "./createHostFs.js";
+import { customNormalize } from "./customNormalize.js";
 import { generatePackageJson } from "./generatePackageJson.js";
 
 const betaPeerDependencies: { [key: string]: string | undefined } = {
@@ -42,9 +44,11 @@ export async function generatePackage(
     beta: boolean;
     ontologyJsonOnly: boolean;
     packageRid: string | undefined;
+    branch: string | undefined;
+    exportOntologyMetadata: boolean | undefined;
   },
+  logger: SlsLogger,
 ): Promise<void> {
-  const { consola } = await import("consola");
   let success = true;
 
   if (options.ontologyJsonOnly) {
@@ -68,15 +72,7 @@ export async function generatePackage(
   await mkdir(packagePath, { recursive: true });
 
   const inMemoryFileSystem: { [fileName: string]: string } = {};
-  const hostFs: MinimalFs = {
-    writeFile: async (path, contents) => {
-      inMemoryFileSystem[customNormalize(path)] = contents;
-    },
-    mkdir: async (path, _options?: { recursive: boolean }) => {
-      await mkdir(customNormalize(path), { recursive: true });
-    },
-    readdir: path => readdir(path),
-  };
+  const hostFs = createHostFs(inMemoryFileSystem);
 
   await generateClientSdkVersionTwoPointZero(
     ontologyInfo.requestedMetadata,
@@ -89,6 +85,7 @@ export async function generatePackage(
     new Map(),
     false,
     ontologyInfo.fixedVersionQueryTypes,
+    options.exportOntologyMetadata,
   );
 
   // actually write file plus save contents
@@ -100,6 +97,8 @@ export async function generatePackage(
     peerDependencies: resolvedPeerDependencies,
     beta: options.beta,
     packageRid: options.packageRid,
+    branch: options.branch,
+    exportOntologyMetadata: options.exportOntologyMetadata ?? false,
   });
 
   const compilerOutput: Record<
@@ -118,8 +117,16 @@ export async function generatePackage(
     );
 
     compilerOutput[type] = compileInMemory(inMemoryFileSystem, type);
-    compilerOutput[type].diagnostics.forEach(d => {
-      consola.error(`Error compiling file`, d.file?.fileName, d.messageText);
+    compilerOutput[type].diagnostics.forEach((d) => {
+      logger.error("Error compiling generated file", {
+        params: { moduleType: type },
+        unsafeParams: {
+          fileName: d.file?.fileName,
+          messageText: typeof d.messageText === "string"
+            ? d.messageText
+            : JSON.stringify(d.messageText),
+        },
+      });
       success = false;
     });
 
@@ -129,18 +136,15 @@ export async function generatePackage(
     await mkdir(join(packagePath, "cjs"), { recursive: true });
 
     for (const [path, contents] of Object.entries(compilerOutput[type].files)) {
-      const newPath = path.replace(
-        packagePath,
-        join(packagePath, type),
-      );
+      const newPath = path.replace(packagePath, join(packagePath, type));
       await mkdir(dirname(newPath), { recursive: true });
       await writeFile(newPath, contents, { flag: "w" });
     }
 
-    void await writeFile(
+    void (await writeFile(
       join(packagePath, type, "package.json"),
       JSON.stringify({ type: type === "esm" ? "module" : "commonjs" }),
-    );
+    ));
   }
 
   await mkdir(join(packagePath, "dist", "bundle"), { recursive: true });
@@ -157,15 +161,19 @@ export async function generatePackage(
       bundleDts = await bundleDependencies(
         [],
         options.packageName,
-        compilerOutput["esm"].files,
+        compilerOutput.esm.files,
         undefined,
       );
     } catch (e) {
-      consola.error("Failed bundling DTS", e);
+      logger.error(
+        "Failed bundling DTS",
+        undefined,
+        e instanceof Error ? e : undefined,
+      );
       success = false;
     }
   } else {
-    consola.error(
+    logger.error(
       "Could not find node_modules directory, skipping DTS bundling",
     );
     success = false;
@@ -183,15 +191,15 @@ export async function generatePackage(
   try {
     await generateBundles(absolutePackagePath, options.packageName);
   } catch (e) {
-    consola.error(e);
+    logger.error(
+      "Failed generating bundles",
+      undefined,
+      e instanceof Error ? e : undefined,
+    );
     success = false;
   }
 
   if (!success) {
     throw new Error("Failed to generate package");
   }
-}
-
-export function customNormalize(pathName: string): string {
-  return normalize(pathName.replace(/\\/g, "/"));
 }

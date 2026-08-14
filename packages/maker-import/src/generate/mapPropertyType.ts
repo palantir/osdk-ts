@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectPropertyType } from "@osdk/foundry.ontologies";
 import type { PropertyTypeType } from "@osdk/maker";
 import { consola } from "consola";
 
@@ -33,7 +34,7 @@ export interface MappedPropertyType {
  * Returns undefined for unsupported types (with a warning).
  */
 export function mapPropertyType(
-  dataType: { type: string; [key: string]: unknown },
+  dataType: ObjectPropertyType,
 ): MappedPropertyType | undefined {
   switch (dataType.type) {
     case "string":
@@ -69,7 +70,7 @@ export function mapPropertyType(
     case "geotimeSeriesReference":
       return { type: "geotimeSeries" };
     case "array": {
-      const subType = (dataType as { subType?: { type: string } }).subType;
+      const subType = dataType.subType;
       if (!subType) {
         consola.warn("Array type missing subType, skipping");
         return undefined;

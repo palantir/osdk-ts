@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   TypeGroupSearchRequest as _api_search_TypeGroupSearchRequest,
   TypeGroupSearchResponse as _api_search_TypeGroupSearchResponse,

@@ -15,16 +15,15 @@
  */
 
 import invariant from "tiny-invariant";
+
 import type { TokenStorageType } from "./common.js";
 import type { PublicOauthClientOptions } from "./createPublicOauthClient.js";
 import type { OauthLogger } from "./Logger.js";
 
-interface ProcessedPublicOauthClientOptions extends
-  Omit<
-    Required<PublicOauthClientOptions>,
-    "loginPage" | "refreshTokenMarker" | "scopes" | "tokenStorage" | "logger"
-  >
-{
+interface ProcessedPublicOauthClientOptions extends Omit<
+  Required<PublicOauthClientOptions>,
+  "loginPage" | "refreshTokenMarker" | "scopes" | "tokenStorage" | "logger"
+> {
   loginPage?: string;
   refreshTokenMarker?: string;
   joinedScopes: string;
@@ -70,15 +69,15 @@ export function processOptionsAndAssignDefaults(
     loginPage: options.loginPage,
     postLoginPage: options.postLoginPage || window.location.toString(),
     joinedScopes: [
-      ...options.scopes
-        ?? [
-          "api:read-data",
-          "api:write-data",
-          "api:use-ontologies-read",
-          "api:use-ontologies-write",
-        ],
+      ...(options.scopes ?? [
+        "api:read-data",
+        "api:write-data",
+        "api:use-ontologies-read",
+        "api:use-ontologies-write",
+      ]),
     ]
-      .sort().join(" "),
+      .sort()
+      .join(" "),
     fetchFn: options.fetchFn ?? globalThis.fetch,
     ctxPath: options.ctxPath ?? "multipass",
     refreshTokenMarker: options.refreshTokenMarker,

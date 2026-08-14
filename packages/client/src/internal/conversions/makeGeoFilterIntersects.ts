@@ -19,6 +19,7 @@ import type {
   PropertyIdentifier,
   SearchJsonQueryV2,
 } from "@osdk/foundry.ontologies";
+
 import { makeGeoFilterBbox } from "./makeGeoFilterBbox.js";
 import { makeGeoFilterPolygon } from "./makeGeoFilterPolygon.js";
 
@@ -42,9 +43,10 @@ export function makeGeoFilterIntersects(
       field,
     );
   } else {
-    const coordinates = ("$polygon" in intersectsBody)
-      ? intersectsBody.$polygon
-      : intersectsBody.coordinates;
+    const coordinates =
+      "$polygon" in intersectsBody
+        ? intersectsBody.$polygon
+        : intersectsBody.coordinates;
     return makeGeoFilterPolygon(
       coordinates,
       "intersectsPolygon",

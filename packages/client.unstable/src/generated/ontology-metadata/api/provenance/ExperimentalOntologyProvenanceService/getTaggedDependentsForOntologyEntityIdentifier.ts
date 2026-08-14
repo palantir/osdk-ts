@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetTaggedDependentsForOntologyEntityIdentifierRequest
-    as _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierRequest,
-  GetTaggedDependentsForOntologyEntityIdentifierResponse
-    as _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierResponse,
+  GetTaggedDependentsForOntologyEntityIdentifierRequest as _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierRequest,
+  GetTaggedDependentsForOntologyEntityIdentifierResponse as _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierResponse,
 } from "../__components.js";
 
 /**
@@ -28,11 +27,8 @@ import type {
  */
 export async function getTaggedDependentsForOntologyEntityIdentifier(
   ctx: ConjureContext,
-  request:
-    _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierRequest,
-): Promise<
-  _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierResponse
-> {
+  request: _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierRequest,
+): Promise<_api_provenance_GetTaggedDependentsForOntologyEntityIdentifierResponse> {
   return conjureFetch(
     ctx,
     `/provenance/getTaggedDependentsForOntologyEntityIdentifier`,

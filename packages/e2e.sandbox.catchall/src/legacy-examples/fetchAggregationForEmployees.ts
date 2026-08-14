@@ -70,9 +70,12 @@ fetchAggregationForEmployees()
 
   // adUsername shouldn't be present
   expectType<
-    TypeOf<{
-      adUsername: any;
-    }, typeof result>
+    TypeOf<
+      {
+        adUsername: any;
+      },
+      typeof result
+    >
   >(false);
 
   // Runtime Verification
@@ -85,9 +88,9 @@ fetchAggregationForEmployees()
     `the result should have 3 keys, got: ${Object.keys(result)}`,
   );
   invariant(
-    "employeeNumber" in result
-      && "locationName" in result
-      && "locationCity" in result,
+    "employeeNumber" in result &&
+      "locationName" in result &&
+      "locationCity" in result,
     "The keys should be the expected ones",
   );
   invariant(Object.keys(result.employeeNumber).length === 3);

@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import type {
   AnimatedBounds,
   AnimationOptions,
@@ -29,7 +30,7 @@ import {
 class AnimationBoundsStore {
   private current: AnimatedBounds | null = null;
   private animationFrameId: number | null = null;
-  private listeners: Set<() => void> = new Set();
+  private listeners = new Set<() => void>();
   private hasRenderedOnce = false;
 
   constructor(
@@ -51,7 +52,7 @@ class AnimationBoundsStore {
     }
   }
 
-  subscribe = (onStoreChange: () => void): () => void => {
+  subscribe = (onStoreChange: () => void): (() => void) => {
     this.listeners.add(onStoreChange);
     return () => {
       this.listeners.delete(onStoreChange);
@@ -135,10 +136,11 @@ class AnimationBoundsStore {
         this.interpolationFactor,
       );
 
-      const hasConverged = Math.abs(nextX - targetX) < this.convergenceThreshold
-        && Math.abs(nextY - targetY) < this.convergenceThreshold
-        && Math.abs(nextWidth - targetWidth) < this.convergenceThreshold
-        && Math.abs(nextHeight - targetHeight) < this.convergenceThreshold;
+      const hasConverged =
+        Math.abs(nextX - targetX) < this.convergenceThreshold &&
+        Math.abs(nextY - targetY) < this.convergenceThreshold &&
+        Math.abs(nextWidth - targetWidth) < this.convergenceThreshold &&
+        Math.abs(nextHeight - targetHeight) < this.convergenceThreshold;
 
       if (hasConverged) {
         this.current = {
@@ -215,13 +217,16 @@ export function useAnimatedBounds(
   // Deps use `targetBounds == null` (boolean) so callbacks only change when
   // transitioning between null/non-null, not on every bounds update.
   // The store handles internal updates via its own subscription mechanism.
-  const subscribe = React.useCallback((onStoreChange: () => void) => {
-    const store = storeRef.current;
-    if (!store) {
-      return () => {};
-    }
-    return store.subscribe(onStoreChange);
-  }, [targetBounds == null]);
+  const subscribe = React.useCallback(
+    (onStoreChange: () => void) => {
+      const store = storeRef.current;
+      if (!store) {
+        return () => {};
+      }
+      return store.subscribe(onStoreChange);
+    },
+    [targetBounds == null],
+  );
 
   const getSnapshot = React.useCallback((): AnimatedBounds | null => {
     const store = storeRef.current;

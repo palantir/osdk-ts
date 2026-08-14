@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  BulkGetAccessRequestForOntologyEntityRequest
-    as _api_accessrequest_BulkGetAccessRequestForOntologyEntityRequest,
-  BulkGetAccessRequestsForOntologyEntityResponse
-    as _api_accessrequest_BulkGetAccessRequestsForOntologyEntityResponse,
+  BulkGetAccessRequestForOntologyEntityRequest as _api_accessrequest_BulkGetAccessRequestForOntologyEntityRequest,
+  BulkGetAccessRequestsForOntologyEntityResponse as _api_accessrequest_BulkGetAccessRequestsForOntologyEntityResponse,
 } from "../__components.js";
 
 /**

@@ -18,19 +18,13 @@
 
 import { defineInterface, defineSharedPropertyType } from "@osdk/maker";
 
-const fooSpt = defineSharedPropertyType(
-  "fooSpt",
-  {
-    type: "string",
-  },
-);
+const fooSpt = defineSharedPropertyType("fooSpt", {
+  type: "string",
+});
 
-const FooInterface = defineInterface(
-  "FooInterface",
-  {
-    displayName: "Foo Interface",
-    properties: {
-      fooSpt,
-    },
+const FooInterface = defineInterface("FooInterface", {
+  displayName: "Foo Interface",
+  properties: {
+    fooSpt,
   },
-);
+});

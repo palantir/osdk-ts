@@ -20,6 +20,8 @@ import type {
   ActionParameterV2,
   ActionTypeV2,
 } from "@osdk/foundry.ontologies";
+
+import { GeneratorError } from "./GeneratorError.js";
 import { getModifiedEntityTypes } from "./getEditedEntities.js";
 import {
   ensureStringEnumSupportedOrUndefined,
@@ -36,11 +38,12 @@ export function wireActionTypeV2ToSdkActionMetadata(
     apiName: input.apiName,
     unsanitizedApiName: unsanitizedApiName ?? input.apiName,
     parameters: Object.fromEntries(
-      Object.entries(input.parameters).sort(
-        ([a], [b]) => a.localeCompare(b),
-      ).map((
-        [key, value],
-      ) => [key, wireActionParameterV2ToSdkParameterDefinition(value)]),
+      Object.entries(input.parameters)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([key, value]) => [
+          key,
+          wireActionParameterV2ToSdkParameterDefinition(value),
+        ]),
     ),
     displayName: input.displayName,
     description: input.description,
@@ -66,6 +69,7 @@ function wireActionParameterV2ToSdkParameterDefinition(
     ),
     nullable: !value.required,
     description: value.description,
+    displayName: value.displayName,
   };
 }
 
@@ -99,6 +103,8 @@ function actionPropertyToSdkPropertyDefinition(
         type: "interface",
         interface: parameterType.interfaceTypeApiName,
       };
+    case "scenarioReference":
+      return "scenarioReference";
     case "struct":
       return {
         type: "struct",
@@ -106,22 +112,28 @@ function actionPropertyToSdkPropertyDefinition(
           (
             structMap: Record<
               string,
-              ActionMetadata.DataType.BaseActionParameterTypes
+              {
+                type: ActionMetadata.DataType.BaseActionParameterTypes;
+                nullable: boolean;
+              }
             >,
             structField,
           ) => {
-            structMap[structField.name] = actionPropertyToSdkPropertyDefinition(
-              structField.fieldType as ActionParameterType,
-            ) as ActionMetadata.DataType.BaseActionParameterTypes;
+            structMap[structField.name] = {
+              type: actionPropertyToSdkPropertyDefinition(
+                structField.fieldType as ActionParameterType,
+              ) as ActionMetadata.DataType.BaseActionParameterTypes,
+              nullable: !structField.required,
+            };
             return structMap;
           },
           {},
         ),
       };
     default:
-      throw new Error(
-        `Unsupported action parameter type: ${JSON.stringify(parameterType)}`,
-      );
+      throw new GeneratorError("Unsupported action parameter type", {
+        parameterType: JSON.stringify(parameterType),
+      });
   }
 }
 

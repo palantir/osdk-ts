@@ -338,8 +338,10 @@ export function useReorgState(): UseReorgStateResult {
   }, [changesCount]);
 
   const isExecuting = React.useMemo(() => {
-    return state.execution.status === "running"
-      || state.execution.status === "rolling-back";
+    return (
+      state.execution.status === "running" ||
+      state.execution.status === "rolling-back"
+    );
   }, [state.execution.status]);
 
   return {

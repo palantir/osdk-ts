@@ -68,9 +68,10 @@ export class WaterfallDetector {
 
       const timeBetween = emissionB.timestamp - emissionA.timestamp;
       if (timeBetween > 0 && timeBetween < timingThresholdMs) {
-        const linkInWindow = linkTraversals.find(link =>
-          link.timestamp > emissionA.timestamp
-          && link.timestamp < emissionB.timestamp
+        const linkInWindow = linkTraversals.find(
+          (link) =>
+            link.timestamp > emissionA.timestamp &&
+            link.timestamp < emissionB.timestamp,
         );
 
         if (linkInWindow) {
@@ -80,8 +81,7 @@ export class WaterfallDetector {
             type: "LINK_WATERFALL",
             priority: estimatedFetchTime > 200 ? "high" : "medium",
             timeSaved: estimatedFetchTime,
-            suggestion:
-              `Prefetch the "${linkInWindow.linkName}" relationship to run queries in parallel`,
+            suggestion: `Prefetch the "${linkInWindow.linkName}" relationship to run queries in parallel`,
             code: this.generateLinkWaterfallCode(
               emissionA.subscriptionId,
               emissionB.subscriptionId,
@@ -104,8 +104,8 @@ export class WaterfallDetector {
     const components = this.registry.getActiveComponents();
 
     for (const [componentId, bindings] of components) {
-      const objectQueries = bindings.filter(b =>
-        b.hookType === "useOsdkObject"
+      const objectQueries = bindings.filter(
+        (b) => b.hookType === "useOsdkObject",
       );
       const grouped = new Map<string, ComponentHookBinding[]>();
 
@@ -131,8 +131,7 @@ export class WaterfallDetector {
             type: "MAP_WATERFALL",
             priority: queries.length > 10 ? "high" : "medium",
             timeSaved: queries.length * 100, // Rough estimate
-            suggestion:
-              `Replace ${queries.length} useOsdkObject calls with single useOsdkObjects batch query`,
+            suggestion: `Replace ${queries.length} useOsdkObject calls with single useOsdkObjects batch query`,
             code: this.generateMapWaterfallCode(objectType, queries.length),
             details: {
               component: binding ? binding.componentName : undefined,
@@ -169,8 +168,7 @@ export class WaterfallDetector {
             timeSaved: totalTime,
             suggestion:
               "Consider parallelizing these queries or prefetching data",
-            code:
-              "// Analyze the queries in this sequence and look for prefetching opportunities",
+            code: "// Analyze the queries in this sequence and look for prefetching opportunities",
             details: {},
           });
         }

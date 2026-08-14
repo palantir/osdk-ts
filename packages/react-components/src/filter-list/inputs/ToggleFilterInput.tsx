@@ -15,6 +15,7 @@
  */
 
 import React, { memo, useCallback } from "react";
+
 import { ToggleInput } from "../base/inputs/ToggleInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 

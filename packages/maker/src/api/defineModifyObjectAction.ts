@@ -22,6 +22,8 @@ import {
   convertValidationRule,
   createDefaultParameterOrdering,
   createParameters,
+  createPropertyParameterValues,
+  createStructFieldValues,
   defineAction,
   isPropertyParameter,
   kebab,
@@ -34,32 +36,29 @@ import {
   getPropertyKeys,
   toPropertyMap,
 } from "./object/objectPropertyHelpers.js";
+import { isStruct } from "./properties/PropertyTypeType.js";
 
 export function defineModifyObjectAction(
   defInput: ActionTypeUserDefinition,
 ): ActionType {
   const def = cloneDefinition(defInput);
   const propertyKeys = getPropertyKeys(def.objectType);
-  validateActionParameters(
-    def,
-    propertyKeys,
-    def.objectType.apiName,
+  validateActionParameters(def, propertyKeys, def.objectType.apiName);
+  const propertyParameters = propertyKeys.filter(
+    (id) =>
+      isPropertyParameter(def, id, getProperty(def.objectType, id)?.type!) &&
+      id !== def.objectType.primaryKeyPropertyApiName,
   );
-  const propertyParameters = propertyKeys
-    .filter(
-      id =>
-        isPropertyParameter(def, id, getProperty(def.objectType, id)?.type!)
-        && id !== def.objectType.primaryKeyPropertyApiName,
-    );
   const parameterNames = new Set(propertyParameters);
-  Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
-    parameterNames.add(param)
+  Object.keys(def.parameterConfiguration ?? {}).forEach((param) =>
+    parameterNames.add(param),
   );
   parameterNames.add(MODIFY_OBJECT_PARAMETER);
-  const actionApiName = def.apiName
-    ?? `modify-object-${
-      kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
-    }`;
+  const actionApiName =
+    def.apiName ??
+    `modify-object-${kebab(
+      def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
+    )}`;
   if (def.parameterOrdering) {
     if (!def.parameterOrdering.includes(MODIFY_OBJECT_PARAMETER)) {
       def.parameterOrdering.unshift(MODIFY_OBJECT_PARAMETER);
@@ -75,55 +74,55 @@ export function defineModifyObjectAction(
     toPropertyMap(def.objectType),
     parameterNames,
   );
-  parameters.forEach(
-    p => {
-      // create prefilled parameters for object type properties unless overridden
-      if (getProperty(def.objectType, p.id) && p.defaultValue === undefined) {
-        p.defaultValue = {
-          type: "objectParameterPropertyValue",
-          objectParameterPropertyValue: {
-            parameterId: MODIFY_OBJECT_PARAMETER,
-            propertyTypeId: p.id,
-          },
-        };
-      }
-    },
-  );
+  parameters.forEach((p) => {
+    // create prefilled parameters for object type properties unless overridden
+    const property = getProperty(def.objectType, p.id);
+    if (property && !isStruct(property.type) && p.defaultValue === undefined) {
+      p.defaultValue = {
+        type: "objectParameterPropertyValue",
+        objectParameterPropertyValue: {
+          parameterId: MODIFY_OBJECT_PARAMETER,
+          propertyTypeId: p.id,
+        },
+      };
+    }
+  });
 
   const mappings = Object.fromEntries(
-    Object.entries(def.nonParameterMappings ?? {}).map((
-      [id, value],
-    ) => [id, convertMappingValue(value)]),
+    Object.entries(def.nonParameterMappings ?? {}).map(([id, value]) => [
+      id,
+      convertMappingValue(value),
+    ]),
   );
 
   return defineAction({
     apiName: actionApiName,
     displayName: def.displayName ?? `Modify ${def.objectType.displayName}`,
+    description: def.description,
     parameters,
     status: def.status ?? "active",
-    rules: [{
-      type: "modifyObjectRule",
-      modifyObjectRule: {
-        objectToModify: MODIFY_OBJECT_PARAMETER,
-        propertyValues: {
-          ...Object.fromEntries(
-            propertyParameters.map(
-              p => [p, { type: "parameterId", parameterId: p }],
-            ),
-          ),
-          ...mappings,
+    rules: [
+      {
+        type: "modifyObjectRule",
+        modifyObjectRule: {
+          objectToModify: MODIFY_OBJECT_PARAMETER,
+          propertyValues: {
+            ...createPropertyParameterValues(def, propertyParameters),
+            ...mappings,
+          },
+          structFieldValues: createStructFieldValues(def, parameters),
         },
-        structFieldValues: {},
       },
-    }],
+    ],
     entities: {
       affectedInterfaceTypes: [],
       affectedObjectTypes: [def.objectType.apiName],
       affectedLinkTypes: [],
       typeGroups: [],
     },
-    parameterOrdering: def.parameterOrdering
-      ?? createDefaultParameterOrdering(
+    parameterOrdering:
+      def.parameterOrdering ??
+      createDefaultParameterOrdering(
         def,
         propertyKeys,
         parameters,
@@ -131,28 +130,29 @@ export function defineModifyObjectAction(
       ),
     ...(def.actionLevelValidation
       ? {
-        validation: convertValidationRule(
-          def.actionLevelValidation,
-          parameters,
-        ),
-      }
+          validation: convertValidationRule(
+            def.actionLevelValidation,
+            parameters,
+          ),
+        }
       : {}),
     ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
-    ...(def.enableLayoutSwitch
-      && { enableLayoutSwitch: def.enableLayoutSwitch }),
+    ...(def.enableLayoutSwitch && {
+      enableLayoutSwitch: def.enableLayoutSwitch,
+    }),
     ...(def.tableConfiguration && {
       displayAndFormat: {
         table: def.tableConfiguration,
       },
     }),
-    ...(def.sections
-      && {
-        sections: Object.fromEntries(
-          def.sections.map(section => [section.id, section]),
-        ),
-      }),
-    ...(def.submissionMetadata
-      && { submissionMetadata: def.submissionMetadata }),
+    ...(def.sections && {
+      sections: Object.fromEntries(
+        def.sections.map((section) => [section.id, section]),
+      ),
+    }),
+    ...(def.submissionMetadata && {
+      submissionMetadata: def.submissionMetadata,
+    }),
     ...(def.permission && { permission: def.permission }),
     ...(def.icon && { icon: def.icon }),
   });

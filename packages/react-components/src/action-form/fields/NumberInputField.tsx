@@ -18,7 +18,9 @@ import { Button } from "@base-ui/react/button";
 import { Input } from "@base-ui/react/input";
 import { ChevronDown, ChevronUp } from "@blueprintjs/icons";
 import React, { useCallback, useRef, useState } from "react";
+
 import type { NumberInputFieldProps } from "../FormFieldApi.js";
+
 import styles from "./NumberInputField.module.css";
 
 /**
@@ -33,7 +35,7 @@ import styles from "./NumberInputField.module.css";
  *
  * Rejects obviously invalid strings like "1.2.3" or "+-5".
  */
-const VALID_NUMERIC_REGEX = /^[+-.]?(\d+\.?\d*|\d*\.?\d+)?([eE][+-]?\d*)?$/;
+const VALID_NUMERIC_REGEX = /^[+-.]?(\d+\.?\d*|\d*\.?\d+)?([eE][+-]?\d*)?$/u;
 
 const DEFAULT_STEP = 1;
 const CHEVRON_SIZE = 12;
@@ -47,9 +49,10 @@ export function NumberInputField({
   min,
   max,
   step,
+  disabled,
 }: NumberInputFieldProps): React.ReactElement {
   const [displayValue, setDisplayValue] = useState<string>(() =>
-    formatNumberForDisplay(value)
+    formatNumberForDisplay(value),
   );
 
   const prevValueRef = useRef(value);
@@ -121,12 +124,14 @@ export function NumberInputField({
         onValueChange={handleValueChange}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
+        disabled={disabled}
       />
       <div className={styles.osdkNumberInputStepper}>
         <Button
           className={styles.osdkNumberInputStepButton}
           aria-label="Increment"
           tabIndex={-1}
+          disabled={disabled}
           onClick={handleStepUp}
         >
           <ChevronUp size={CHEVRON_SIZE} />
@@ -135,6 +140,7 @@ export function NumberInputField({
           className={styles.osdkNumberInputStepButton}
           aria-label="Decrement"
           tabIndex={-1}
+          disabled={disabled}
           onClick={handleStepDown}
         >
           <ChevronDown size={CHEVRON_SIZE} />

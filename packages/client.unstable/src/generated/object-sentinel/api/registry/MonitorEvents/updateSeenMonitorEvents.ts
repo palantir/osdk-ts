@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   SeenMonitorEventsRequest as _api_registry_SeenMonitorEventsRequest,
   SeenMonitorEventsResponse as _api_registry_SeenMonitorEventsResponse,

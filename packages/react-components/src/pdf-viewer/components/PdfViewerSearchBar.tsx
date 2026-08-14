@@ -16,6 +16,7 @@
 
 import { ChevronDown, ChevronUp, Cross } from "@blueprintjs/icons";
 import React, { useCallback } from "react";
+
 import styles from "./PdfViewerSearchBar.module.css";
 
 export interface PdfViewerSearchBarProps {
@@ -61,11 +62,12 @@ export function PdfViewerSearchBar({
     [onNext, onPrev, onClose],
   );
 
-  const matchDisplay = totalMatches > 0
-    ? `${currentMatchIndex + 1} of ${totalMatches}`
-    : query.length > 0
-    ? "No results"
-    : "";
+  const matchDisplay =
+    totalMatches > 0
+      ? `${currentMatchIndex + 1} of ${totalMatches}`
+      : query.length > 0
+        ? "No results"
+        : "";
 
   return (
     <div className={styles.searchBar}>

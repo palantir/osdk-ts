@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export interface StringTypeIsRidConstraint {
-}
+export interface StringTypeIsRidConstraint {}

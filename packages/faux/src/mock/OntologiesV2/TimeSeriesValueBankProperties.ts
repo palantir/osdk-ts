@@ -15,21 +15,26 @@
  */
 
 import { TimeSeriesValueBankProperties } from "@osdk/foundry.ontologies";
+
 import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
 import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 
 export const getLatestValue: CallFactory<
   "ontologyApiName" | "objectType" | "primaryKey" | "propertyName",
   typeof TimeSeriesValueBankProperties.getLatestValue
-> = handleOpenApiCall(
-  TimeSeriesValueBankProperties.getLatestValue,
-  ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
-);
+> = handleOpenApiCall(TimeSeriesValueBankProperties.getLatestValue, [
+  "ontologyApiName",
+  "objectType",
+  "primaryKey",
+  "propertyName",
+]);
 
 export const streamValues: CallFactory<
   "ontologyApiName" | "objectType" | "primaryKey" | "propertyName",
   typeof TimeSeriesValueBankProperties.streamValues
-> = handleOpenApiCall(
-  TimeSeriesValueBankProperties.streamValues,
-  ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
-);
+> = handleOpenApiCall(TimeSeriesValueBankProperties.streamValues, [
+  "ontologyApiName",
+  "objectType",
+  "primaryKey",
+  "propertyName",
+]);

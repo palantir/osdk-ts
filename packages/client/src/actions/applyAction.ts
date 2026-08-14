@@ -31,6 +31,8 @@ import type {
   SyncApplyActionResponseV2,
 } from "@osdk/foundry.ontologies";
 import * as Actions from "@osdk/foundry.ontologies/Action";
+import invariant from "tiny-invariant";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
@@ -45,55 +47,46 @@ type BaseType<APD extends Pick<ActionMetadata.Parameter<any>, "type">> =
     ? ActionParam.ObjectType<TTargetType>
     : APD["type"] extends ActionMetadata.DataType.ObjectSet<infer TTargetType>
       ? ActionParam.ObjectSetType<TTargetType>
-    : APD["type"] extends ActionMetadata.DataType.Struct<infer TStructType>
-      ? ActionParam.StructType<TStructType>
-    : APD["type"] extends keyof DataValueClientToWire
-      ? ActionParam.PrimitiveType<APD["type"]>
-    : never;
+      : APD["type"] extends ActionMetadata.DataType.Struct<infer TStructType>
+        ? ActionParam.StructType<TStructType>
+        : APD["type"] extends keyof DataValueClientToWire
+          ? ActionParam.PrimitiveType<APD["type"]>
+          : never;
 
 type MaybeArrayType<APD extends ActionMetadata.Parameter<any>> =
-  APD["multiplicity"] extends true ? Array<BaseType<APD>>
-    : BaseType<APD>;
+  APD["multiplicity"] extends true ? Array<BaseType<APD>> : BaseType<APD>;
 
 type NotOptionalParams<X extends ActionParametersDefinition> = {
   [P in keyof X]: MaybeArrayType<X[P]>;
 };
 
-export type OsdkActionParameters<
-  X extends ActionParametersDefinition,
-> = NullableProps<X> extends never ? NotOptionalParams<X>
-  : PartialBy<NotOptionalParams<X>, NullableProps<X>>;
+export type OsdkActionParameters<X extends ActionParametersDefinition> =
+  NullableProps<X> extends never
+    ? NotOptionalParams<X>
+    : PartialBy<NotOptionalParams<X>, NullableProps<X>>;
 
-export type ActionSignatureFromDef<
-  T extends ActionDefinition<any>,
-> = {
-  applyAction:
-    [CompileTimeActionMetadata<T>["signatures"]["applyAction"]] extends [never]
-      ? ActionSignature<CompileTimeActionMetadata<T>["parameters"]>
-      : CompileTimeActionMetadata<T>["signatures"]["applyAction"];
+export type ActionSignatureFromDef<T extends ActionDefinition<any>> = {
+  applyAction: [
+    CompileTimeActionMetadata<T>["signatures"]["applyAction"],
+  ] extends [never]
+    ? ActionSignature<CompileTimeActionMetadata<T>["parameters"]>
+    : CompileTimeActionMetadata<T>["signatures"]["applyAction"];
 
-  batchApplyAction:
-    [CompileTimeActionMetadata<T>["signatures"]["batchApplyAction"]] extends
-      [never] ? BatchActionSignature<CompileTimeActionMetadata<T>["parameters"]>
-      : CompileTimeActionMetadata<T>["signatures"]["batchApplyAction"];
+  batchApplyAction: [
+    CompileTimeActionMetadata<T>["signatures"]["batchApplyAction"],
+  ] extends [never]
+    ? BatchActionSignature<CompileTimeActionMetadata<T>["parameters"]>
+    : CompileTimeActionMetadata<T>["signatures"]["batchApplyAction"];
 };
 
-type ActionParametersDefinition = Record<
-  any,
-  ActionMetadata.Parameter<any>
->;
+type ActionParametersDefinition = Record<any, ActionMetadata.Parameter<any>>;
 
 export type ActionSignature<
   X extends Record<any, ActionMetadata.Parameter<any>>,
-> = <
-  A extends NOOP<OsdkActionParameters<X>>,
-  OP extends ApplyActionOptions,
->(
+> = <A extends NOOP<OsdkActionParameters<X>>, OP extends ApplyActionOptions>(
   args: A,
   options?: OP,
-) => Promise<
-  ActionReturnTypeForOptions<OP>
->;
+) => Promise<ActionReturnTypeForOptions<OP>>;
 
 export type BatchActionSignature<
   X extends Record<any, ActionMetadata.Parameter<any>>,
@@ -103,9 +96,7 @@ export type BatchActionSignature<
 >(
   args: A,
   options?: OP,
-) => Promise<
-  ActionReturnTypeForOptions<OP>
->;
+) => Promise<ActionReturnTypeForOptions<OP>>;
 
 export async function applyAction<
   AD extends ActionDefinition<any>,
@@ -114,21 +105,28 @@ export async function applyAction<
     | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>[],
   Op extends P extends OsdkActionParameters<
     CompileTimeActionMetadata<AD>["parameters"]
-  >[] ? ApplyBatchActionOptions
+  >[]
+    ? ApplyBatchActionOptions
     : ApplyActionOptions,
 >(
   client: MinimalClient,
   action: AD,
   parameters?: P,
   options: Op = {} as Op,
-): Promise<
-  ActionReturnTypeForOptions<Op>
-> {
+): Promise<ActionReturnTypeForOptions<Op>> {
   const clientWithHeaders = addUserAgentAndRequestContextHeaders(
-    augmentRequestContext(client, _ => ({ finalMethodCall: "applyAction" })),
+    augmentRequestContext(client, (_) => ({ finalMethodCall: "applyAction" })),
     action,
   );
   if (Array.isArray(parameters)) {
+    invariant(
+      client.transactionId == null,
+      "Batch actions are not supported for staged edit functions or when supplying a transaction ID",
+    );
+    invariant(
+      client.scenarioRid == null,
+      "Batch actions are not supported when scoped to a scenario",
+    );
     const response = await Actions.applyBatch(
       clientWithHeaders,
       await client.ontologyRid,
@@ -136,12 +134,12 @@ export async function applyAction<
       {
         requests: parameters
           ? await remapBatchActionParams(
-            parameters,
-            client,
-            await client.ontologyProvider.getActionDefinition(
-              action.unsanitizedApiName ?? action.apiName,
-            ),
-          )
+              parameters,
+              client,
+              await client.ontologyProvider.getActionDefinition(
+                action.unsanitizedApiName ?? action.apiName,
+              ),
+            )
           : [],
         options: {
           returnEdits: options?.$returnEdits ? "ALL" : "NONE",
@@ -151,9 +149,13 @@ export async function applyAction<
     );
 
     const edits = response.edits;
-    return (options?.$returnEdits
-      ? edits?.type === "edits" ? remapActionResponse(response) : edits
-      : undefined) as ActionReturnTypeForOptions<Op>;
+    return (
+      options?.$returnEdits
+        ? edits?.type === "edits"
+          ? remapActionResponse(response)
+          : edits
+        : undefined
+    ) as ActionReturnTypeForOptions<Op>;
   } else {
     const response = await Actions.apply(
       clientWithHeaders,
@@ -173,13 +175,14 @@ export async function applyAction<
           mode: (options as ApplyActionOptions)?.$validateOnly
             ? "VALIDATE_ONLY"
             : "VALIDATE_AND_EXECUTE",
-          returnEdits: options
-              ?.$returnEdits
-            ? "ALL_V2_WITH_DELETIONS"
-            : "NONE",
+          returnEdits: options?.$returnEdits ? "ALL_V2_WITH_DELETIONS" : "NONE",
         },
       },
-      { branch: client.branch, transactionId: client.transactionId },
+      {
+        branch: client.branch,
+        transactionId: client.transactionId,
+        scenarioRid: client.scenarioRid,
+      },
     );
 
     if ((options as ApplyActionOptions)?.$validateOnly) {
@@ -192,9 +195,13 @@ export async function applyAction<
     }
 
     const edits = response.edits;
-    return (options?.$returnEdits
-      ? edits?.type === "edits" ? remapActionResponse(response) : edits
-      : undefined) as ActionReturnTypeForOptions<Op>;
+    return (
+      options?.$returnEdits
+        ? edits?.type === "edits"
+          ? remapActionResponse(response)
+          : edits
+        : undefined
+    ) as ActionReturnTypeForOptions<Op>;
   }
 }
 
@@ -217,20 +224,18 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
   return parameterMap;
 }
 
-async function remapBatchActionParams<
-  AD extends ActionDefinition<any>,
->(
+async function remapBatchActionParams<AD extends ActionDefinition<any>>(
   params: OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>[],
   client: MinimalClient,
   actionMetadata: ActionMetadata,
 ) {
-  const remappedParams = await Promise.all(params.map(
-    async param => {
+  const remappedParams = await Promise.all(
+    params.map(async (param) => {
       return {
         parameters: await remapActionParams<AD>(param, client, actionMetadata),
       };
-    },
-  ));
+    }),
+  );
 
   return remappedParams;
 }
@@ -262,15 +267,14 @@ export function remapActionResponse(
           bSideObject: edit.bSideObject,
         };
         edit.type === "addLink"
-          ? remappedActionResponse.addedLinks.push(
-            osdkEdit,
-          )
+          ? remappedActionResponse.addedLinks.push(osdkEdit)
           : remappedActionResponse.deletedLinks?.push(osdkEdit);
         editedObjectTypesSet.add(edit.aSideObject.objectType);
         editedObjectTypesSet.add(edit.bSideObject.objectType);
       } else if (
-        edit.type === "addObject" || edit.type === "deleteObject"
-        || edit.type === "modifyObject"
+        edit.type === "addObject" ||
+        edit.type === "deleteObject" ||
+        edit.type === "modifyObject"
       ) {
         const osdkEdit = {
           objectType: edit.objectType,
@@ -287,9 +291,7 @@ export function remapActionResponse(
       } else {
         if (process.env.NODE_ENV !== "production") {
           // eslint-disable-next-line no-console
-          console.warn(
-            `Unexpected edit type: ${JSON.stringify(edit)}`,
-          );
+          console.warn(`Unexpected edit type: ${JSON.stringify(edit)}`);
         }
       }
     }

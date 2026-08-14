@@ -17,6 +17,7 @@
 import { Popover } from "@base-ui/react/popover";
 import { InfoSign } from "@blueprintjs/icons";
 import React, { memo } from "react";
+
 import styles from "./FormField.module.css";
 
 interface FormFieldProps {
@@ -25,6 +26,7 @@ interface FormFieldProps {
   isRequired?: boolean;
   helperText?: React.ReactNode;
   helperTextPlacement?: "bottom" | "tooltip";
+  isEdited?: boolean;
   error?: string;
   onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void;
   children: React.ReactNode;
@@ -36,6 +38,7 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
   isRequired,
   helperText,
   helperTextPlacement = "tooltip",
+  isEdited,
   error,
   onBlur,
   children,
@@ -43,9 +46,10 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
   const hasHelperText = helperText != null && helperText !== "";
   const showTooltip = hasHelperText && helperTextPlacement === "tooltip";
   const showBottomText = hasHelperText && helperTextPlacement === "bottom";
+  const showEditedTag = isEdited === true;
 
-  const labelElement = label != null
-    ? (
+  const labelElement =
+    label != null ? (
       <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
         {label}
         {isRequired === true && (
@@ -55,28 +59,37 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
           </span>
         )}
       </label>
-    )
-    : null;
+    ) : null;
+  const labelRow =
+    labelElement != null || showTooltip || showEditedTag ? (
+      <div className={styles.osdkFormFieldLabelRow}>
+        {labelElement}
+        {showTooltip && <InfoTip label={label}>{helperText}</InfoTip>}
+        {showEditedTag && (
+          <span className={styles.osdkFormFieldEditedTag}>Edited</span>
+        )}
+      </div>
+    ) : null;
 
   return (
     <div className={styles.osdkFormField} onBlur={onBlur}>
-      {showTooltip
-        ? (
-          <div className={styles.osdkFormFieldLabelRow}>
-            {labelElement}
-            <InfoTip label={label}>{helperText}</InfoTip>
-          </div>
-        )
-        : labelElement}
+      {labelRow}
       {showBottomText && (
         <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
       )}
       {children}
-      {error != null && (
-        <div className={styles.osdkFormFieldError} role="alert">
-          {error}
-        </div>
-      )}
+      <div
+        className={styles.osdkFormFieldErrorSlot}
+        // Used for testing because we want to make sure the slot is rendered to
+        // verify that validation errors do not shift the layout.
+        data-osdk-form-field-error-slot=""
+      >
+        {error != null && (
+          <div className={styles.osdkFormFieldError} role="alert">
+            {error}
+          </div>
+        )}
+      </div>
     </div>
   );
 });

@@ -41,8 +41,9 @@ const DEFAULT_VISIBILITY: Record<string, boolean> = {
 const DEFAULT_COLUMN_ORDER = ["fullName", "email", "jobTitle", "department"];
 
 const meta: Meta<ColumnConfigDialogProps> = {
-  title: "Experimental/ObjectTable/Building Blocks/ColumnConfigDialog",
+  title: "Components/ObjectTable/Building Blocks/ColumnConfigDialog",
   component: ColumnConfigDialog,
+  tags: ["beta"],
   args: {
     isOpen: true,
     onClose: fn(),
@@ -94,8 +95,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { ColumnConfigDialog } from "@osdk/react-components/experimental/object-table";
+        code: `import { ColumnConfigDialog } from "@osdk/react-components/experimental/object-table";
 
 const [isOpen, setIsOpen] = useState(false);
 
@@ -136,6 +136,37 @@ export const AllColumnsVisible: Story = {
       "location",
     ],
   },
+  parameters: {
+    docs: {
+      description: {
+        story: "Every column is toggled on.",
+      },
+      source: {
+        code: `<ColumnConfigDialog
+  isOpen={isOpen}
+  onClose={handleClose}
+  columnOptions={columnOptions}
+  currentVisibility={{
+    fullName: true,
+    email: true,
+    jobTitle: true,
+    department: true,
+    startDate: true,
+    location: true,
+  }}
+  currentColumnOrder={[
+    "fullName",
+    "email",
+    "jobTitle",
+    "department",
+    "startDate",
+    "location",
+  ]}
+  onApply={handleApply}
+/>`,
+      },
+    },
+  },
 };
 
 export const SingleColumnVisible: Story = {
@@ -149,6 +180,30 @@ export const SingleColumnVisible: Story = {
       location: false,
     },
     currentColumnOrder: ["fullName"],
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Only a single column is visible; the rest are toggled off.",
+      },
+      source: {
+        code: `<ColumnConfigDialog
+  isOpen={isOpen}
+  onClose={handleClose}
+  columnOptions={columnOptions}
+  currentVisibility={{
+    fullName: true,
+    email: false,
+    jobTitle: false,
+    department: false,
+    startDate: false,
+    location: false,
+  }}
+  currentColumnOrder={["fullName"]}
+  onApply={handleApply}
+/>`,
+      },
+    },
   },
 };
 

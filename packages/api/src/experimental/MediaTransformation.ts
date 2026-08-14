@@ -27,45 +27,45 @@ import type { Just } from "../aggregate/Just.js";
  * @experimental
  */
 export interface MediaTransformationOptions {
-  "$image": {
+  $image: {
     $encoding: ImageryEncoding;
     $operations: Array<ImageOperation>;
   };
-  "$video": { $encoding: VideoEncoding; $operation: VideoOperation };
-  "$audio": { $operation: AudioOperation };
-  "$emailToText": { $operation: EmailToTextOperation };
-  "$spreadsheetToText": { $operation: SpreadsheetToTextOperation };
-  "$videoToAudio": {
+  $video: { $encoding: VideoEncoding; $operation: VideoOperation };
+  $audio: { $operation: AudioOperation };
+  $emailToText: { $operation: EmailToTextOperation };
+  $spreadsheetToText: { $operation: SpreadsheetToTextOperation };
+  $videoToAudio: {
     $encoding: AudioEncoding;
     $operation: VideoToAudioOperation;
   };
-  "$audioToText": { $operation: AudioToTextOperation };
-  "$emailToAttachment": { $operation: EmailToAttachmentOperation };
-  "$videoToArchive": {
+  $audioToText: { $operation: AudioToTextOperation };
+  $emailToAttachment: { $operation: EmailToAttachmentOperation };
+  $videoToArchive: {
     $encoding: ArchiveEncoding;
     $operation: VideoToArchiveOperation;
   };
-  "$videoToText": { $operation: VideoToTextOperation };
-  "$imageToText": { $operation: ImageToTextOperation };
-  "$videoToImage": {
+  $videoToText: { $operation: VideoToTextOperation };
+  $imageToText: { $operation: ImageToTextOperation };
+  $videoToImage: {
     $encoding: ImageryEncoding;
     $operation: VideoToImageOperation;
   };
-  "$imageToDocument": { $operation: ImageToDocumentOperation };
-  "$dicomToImage": {
+  $imageToDocument: { $operation: ImageToDocumentOperation };
+  $dicomToImage: {
     $encoding: ImageryEncoding;
     $operation: DicomToImageOperation;
   };
-  "$documentToDocument": {
+  $documentToDocument: {
     $encoding: DocumentEncoding;
     $operation: DocumentToDocumentOperation;
   };
-  "$documentToImage": {
+  $documentToImage: {
     $encoding: ImageryEncoding;
     $operation: DocumentToImageOperation;
   };
-  "$imageToEmbedding": { $operation: ImageToEmbeddingOperation };
-  "$documentToText": { $operation: DocumentToTextOperation };
+  $imageToEmbedding: { $operation: ImageToEmbeddingOperation };
+  $documentToText: { $operation: DocumentToTextOperation };
 }
 
 /**
@@ -75,51 +75,66 @@ export namespace MediaTransformation {
   export interface $image extends Just<"$image", MediaTransformationOptions> {}
   export interface $video extends Just<"$video", MediaTransformationOptions> {}
   export interface $audio extends Just<"$audio", MediaTransformationOptions> {}
-  export interface $emailToText
-    extends Just<"$emailToText", MediaTransformationOptions>
-  {}
-  export interface $spreadsheetToText
-    extends Just<"$spreadsheetToText", MediaTransformationOptions>
-  {}
-  export interface $videoToAudio
-    extends Just<"$videoToAudio", MediaTransformationOptions>
-  {}
-  export interface $audioToText
-    extends Just<"$audioToText", MediaTransformationOptions>
-  {}
-  export interface $emailToAttachment
-    extends Just<"$emailToAttachment", MediaTransformationOptions>
-  {}
-  export interface $videoToArchive
-    extends Just<"$videoToArchive", MediaTransformationOptions>
-  {}
-  export interface $videoToText
-    extends Just<"$videoToText", MediaTransformationOptions>
-  {}
-  export interface $imageToText
-    extends Just<"$imageToText", MediaTransformationOptions>
-  {}
-  export interface $videoToImage
-    extends Just<"$videoToImage", MediaTransformationOptions>
-  {}
-  export interface $imageToDocument
-    extends Just<"$imageToDocument", MediaTransformationOptions>
-  {}
-  export interface $dicomToImage
-    extends Just<"$dicomToImage", MediaTransformationOptions>
-  {}
-  export interface $documentToDocument
-    extends Just<"$documentToDocument", MediaTransformationOptions>
-  {}
-  export interface $documentToImage
-    extends Just<"$documentToImage", MediaTransformationOptions>
-  {}
-  export interface $imageToEmbedding
-    extends Just<"$imageToEmbedding", MediaTransformationOptions>
-  {}
-  export interface $documentToText
-    extends Just<"$documentToText", MediaTransformationOptions>
-  {}
+  export interface $emailToText extends Just<
+    "$emailToText",
+    MediaTransformationOptions
+  > {}
+  export interface $spreadsheetToText extends Just<
+    "$spreadsheetToText",
+    MediaTransformationOptions
+  > {}
+  export interface $videoToAudio extends Just<
+    "$videoToAudio",
+    MediaTransformationOptions
+  > {}
+  export interface $audioToText extends Just<
+    "$audioToText",
+    MediaTransformationOptions
+  > {}
+  export interface $emailToAttachment extends Just<
+    "$emailToAttachment",
+    MediaTransformationOptions
+  > {}
+  export interface $videoToArchive extends Just<
+    "$videoToArchive",
+    MediaTransformationOptions
+  > {}
+  export interface $videoToText extends Just<
+    "$videoToText",
+    MediaTransformationOptions
+  > {}
+  export interface $imageToText extends Just<
+    "$imageToText",
+    MediaTransformationOptions
+  > {}
+  export interface $videoToImage extends Just<
+    "$videoToImage",
+    MediaTransformationOptions
+  > {}
+  export interface $imageToDocument extends Just<
+    "$imageToDocument",
+    MediaTransformationOptions
+  > {}
+  export interface $dicomToImage extends Just<
+    "$dicomToImage",
+    MediaTransformationOptions
+  > {}
+  export interface $documentToDocument extends Just<
+    "$documentToDocument",
+    MediaTransformationOptions
+  > {}
+  export interface $documentToImage extends Just<
+    "$documentToImage",
+    MediaTransformationOptions
+  > {}
+  export interface $imageToEmbedding extends Just<
+    "$imageToEmbedding",
+    MediaTransformationOptions
+  > {}
+  export interface $documentToText extends Just<
+    "$documentToText",
+    MediaTransformationOptions
+  > {}
 }
 
 /**
@@ -164,11 +179,11 @@ export type AudioEncoding =
   | "mp3"
   | "ts"
   | {
-    $wav: {
-      $sampleRate?: number;
-      $audioChannelLayout?: { $numberOfChannels: number };
+      $wav: {
+        $sampleRate?: number;
+        $audioChannelLayout?: { $numberOfChannels: number };
+      };
     };
-  };
 
 /**
  * @experimental
@@ -194,8 +209,8 @@ export interface PageRange {
  * @experimental
  */
 export interface OcrOutputFormatOptions {
-  "$hocr": {};
-  "$text": {};
+  $hocr: {};
+  $text: {};
 }
 
 export namespace OcrOutputFormat {
@@ -203,25 +218,25 @@ export namespace OcrOutputFormat {
   export interface $text extends Just<"$text", OcrOutputFormatOptions> {}
 }
 
-export type OcrOutputFormat =
-  | OcrOutputFormat.$hocr
-  | OcrOutputFormat.$text;
+export type OcrOutputFormat = OcrOutputFormat.$hocr | OcrOutputFormat.$text;
 
 /**
  * @experimental
  */
 export interface OcrLanguageOrScriptOptions {
-  "$language": string;
-  "$script": string;
+  $language: string;
+  $script: string;
 }
 
 export namespace OcrLanguageOrScript {
-  export interface $language
-    extends Just<"$language", OcrLanguageOrScriptOptions>
-  {}
-  export interface $script
-    extends Just<"$script", OcrLanguageOrScriptOptions>
-  {}
+  export interface $language extends Just<
+    "$language",
+    OcrLanguageOrScriptOptions
+  > {}
+  export interface $script extends Just<
+    "$script",
+    OcrLanguageOrScriptOptions
+  > {}
 }
 
 export type OcrLanguageOrScript =
@@ -256,19 +271,21 @@ export interface DocumentTextExtractionConfig {
  * @experimental
  */
 export interface TranscribeOutputFormatOptions {
-  "$plainTextNoSegmentData": { $addTimestamps: boolean };
-  "$json": {};
-  "$pttml": {};
+  $plainTextNoSegmentData: { $addTimestamps: boolean };
+  $json: {};
+  $pttml: {};
 }
 
 export namespace TranscribeOutputFormat {
-  export interface $plainTextNoSegmentData
-    extends Just<"$plainTextNoSegmentData", TranscribeOutputFormatOptions>
-  {}
+  export interface $plainTextNoSegmentData extends Just<
+    "$plainTextNoSegmentData",
+    TranscribeOutputFormatOptions
+  > {}
   export interface $json extends Just<"$json", TranscribeOutputFormatOptions> {}
-  export interface $pttml
-    extends Just<"$pttml", TranscribeOutputFormatOptions>
-  {}
+  export interface $pttml extends Just<
+    "$pttml",
+    TranscribeOutputFormatOptions
+  > {}
 }
 
 export type TranscribeOutputFormat =
@@ -292,20 +309,22 @@ export interface LlmSpec {
  * @experimental
  */
 export interface VlmPreprocessingConfigOptions {
-  "$layoutAware": {
+  $layoutAware: {
     $transformationConfig: DocumentTextExtractionConfig;
     $cropConfig?: { $tablePrompt: string };
   };
-  "$extractText": DocumentTextExtractionConfig;
+  $extractText: DocumentTextExtractionConfig;
 }
 
 export namespace VlmPreprocessingConfig {
-  export interface $layoutAware
-    extends Just<"$layoutAware", VlmPreprocessingConfigOptions>
-  {}
-  export interface $extractText
-    extends Just<"$extractText", VlmPreprocessingConfigOptions>
-  {}
+  export interface $layoutAware extends Just<
+    "$layoutAware",
+    VlmPreprocessingConfigOptions
+  > {}
+  export interface $extractText extends Just<
+    "$extractText",
+    VlmPreprocessingConfigOptions
+  > {}
 }
 
 export type VlmPreprocessingConfig =
@@ -322,23 +341,113 @@ export interface ImageSpec {
   $mimeType: "BMP" | "TIFF" | "NITF" | "JP2K" | "JPG" | "PNG" | "WEBP";
 }
 
+/**
+ * @experimental
+ */
+export interface Annotation {
+  $geometry: AnnotateGeometry;
+  $label?: string;
+  $color?: Color;
+  $thickness?: number;
+  $fontSize?: number;
+}
+
+/**
+ * @experimental
+ */
+export interface AnnotateGeometryOptions {
+  $boundingBox: BoundingBox;
+}
+
+export namespace AnnotateGeometry {
+  export interface $boundingBox extends Just<
+    "$boundingBox",
+    AnnotateGeometryOptions
+  > {}
+}
+
+export type AnnotateGeometry = AnnotateGeometry.$boundingBox;
+
+/**
+ * @experimental
+ */
+export interface BoundingBox {
+  $left: number;
+  $top: number;
+  $width: number;
+  $height: number;
+}
+
+/**
+ * @experimental
+ */
+export interface Color {
+  $r: number;
+  $g: number;
+  $b: number;
+  $a?: number;
+}
+
+/**
+ * @experimental
+ */
+export interface ContrastTypeOptions {
+  $equalize: {};
+  $rayleigh: { $sigma: number };
+  $binarize: { $threshold?: number };
+}
+
+export namespace ContrastType {
+  export interface $equalize extends Just<"$equalize", ContrastTypeOptions> {}
+  export interface $rayleigh extends Just<"$rayleigh", ContrastTypeOptions> {}
+  export interface $binarize extends Just<"$binarize", ContrastTypeOptions> {}
+}
+
+export type ContrastType =
+  | ContrastType.$equalize
+  | ContrastType.$rayleigh
+  | ContrastType.$binarize;
+
+/**
+ * @experimental
+ */
+export interface ImagePixelCoordinate {
+  $x: number;
+  $y: number;
+}
+
+/**
+ * @experimental
+ */
+export type ImageRegionPolygon = Array<ImagePixelCoordinate>;
+
 // ─── Image operations ─────────────────────────────────────────────────────────
 
 /**
  * @experimental
  */
 export interface ImageOperationOptions {
-  "$resize": { $width?: number; $height?: number; $autoOrient?: boolean };
-  "$resizeToFitBoundingBox": { $width: number; $height: number };
-  "$rotate": { $angle: "DEGREE_90" | "DEGREE_180" | "DEGREE_270" };
-  "$crop": {
+  $resize: { $width?: number; $height?: number; $autoOrient?: boolean };
+  $resizeToFitBoundingBox: { $width: number; $height: number };
+  $rotate: { $angle: "DEGREE_90" | "DEGREE_180" | "DEGREE_270" };
+  $crop: {
     $xOffset: number;
     $yOffset: number;
     $width: number;
     $height: number;
   };
-  "$grayscale": {};
-  "$tile": { $zoom: number; $x: number; $y: number };
+  $grayscale: {};
+  $tile: { $zoom: number; $x: number; $y: number };
+  $annotate: { $annotations: Array<Annotation> };
+  $contrast: { $contrastType: ContrastType };
+  $encrypt: {
+    $polygons: Array<ImageRegionPolygon>;
+    $cipherLicenseRid: string;
+  };
+  $decrypt: {
+    $polygons: Array<ImageRegionPolygon>;
+    $cipherLicenseRid: string;
+  };
 }
 
 /**
@@ -346,15 +455,21 @@ export interface ImageOperationOptions {
  */
 export namespace ImageOperation {
   export interface $resize extends Just<"$resize", ImageOperationOptions> {}
-  export interface $resizeToFitBoundingBox
-    extends Just<"$resizeToFitBoundingBox", ImageOperationOptions>
-  {}
+  export interface $resizeToFitBoundingBox extends Just<
+    "$resizeToFitBoundingBox",
+    ImageOperationOptions
+  > {}
   export interface $rotate extends Just<"$rotate", ImageOperationOptions> {}
   export interface $crop extends Just<"$crop", ImageOperationOptions> {}
-  export interface $grayscale
-    extends Just<"$grayscale", ImageOperationOptions>
-  {}
+  export interface $grayscale extends Just<
+    "$grayscale",
+    ImageOperationOptions
+  > {}
   export interface $tile extends Just<"$tile", ImageOperationOptions> {}
+  export interface $annotate extends Just<"$annotate", ImageOperationOptions> {}
+  export interface $contrast extends Just<"$contrast", ImageOperationOptions> {}
+  export interface $encrypt extends Just<"$encrypt", ImageOperationOptions> {}
+  export interface $decrypt extends Just<"$decrypt", ImageOperationOptions> {}
 }
 
 /**
@@ -366,7 +481,11 @@ export type ImageOperation =
   | ImageOperation.$rotate
   | ImageOperation.$crop
   | ImageOperation.$grayscale
-  | ImageOperation.$tile;
+  | ImageOperation.$tile
+  | ImageOperation.$annotate
+  | ImageOperation.$contrast
+  | ImageOperation.$encrypt
+  | ImageOperation.$decrypt;
 
 // ─── Video operations ─────────────────────────────────────────────────────────
 
@@ -374,26 +493,25 @@ export type ImageOperation =
  * @experimental
  */
 export interface VideoOperationOptions {
-  "$transcode": {};
-  "$chunk": { $chunkDurationMilliseconds: number; $chunkIndex: number };
+  $transcode: {};
+  $chunk: { $chunkDurationMilliseconds: number; $chunkIndex: number };
 }
 
 /**
  * @experimental
  */
 export namespace VideoOperation {
-  export interface $transcode
-    extends Just<"$transcode", VideoOperationOptions>
-  {}
+  export interface $transcode extends Just<
+    "$transcode",
+    VideoOperationOptions
+  > {}
   export interface $chunk extends Just<"$chunk", VideoOperationOptions> {}
 }
 
 /**
  * @experimental
  */
-export type VideoOperation =
-  | VideoOperation.$transcode
-  | VideoOperation.$chunk;
+export type VideoOperation = VideoOperation.$transcode | VideoOperation.$chunk;
 
 // ─── Audio operations ─────────────────────────────────────────────────────────
 
@@ -401,13 +519,13 @@ export type VideoOperation =
  * @experimental
  */
 export interface AudioOperationOptions {
-  "$channel": { $encodeFormat: AudioEncoding; $channel: number };
-  "$chunk": {
+  $channel: { $encodeFormat: AudioEncoding; $channel: number };
+  $chunk: {
     $encodeFormat: AudioEncoding;
     $chunkDurationMilliseconds: number;
     $chunkIndex: number;
   };
-  "$convert": { $encodeFormat: AudioEncoding };
+  $convert: { $encodeFormat: AudioEncoding };
 }
 
 /**
@@ -433,13 +551,14 @@ export type AudioOperation =
  * @experimental
  */
 export interface VideoToAudioOperationOptions {
-  "$extractAudio": {};
+  $extractAudio: {};
 }
 
 export namespace VideoToAudioOperation {
-  export interface $extractAudio
-    extends Just<"$extractAudio", VideoToAudioOperationOptions>
-  {}
+  export interface $extractAudio extends Just<
+    "$extractAudio",
+    VideoToAudioOperationOptions
+  > {}
 }
 
 export type VideoToAudioOperation = VideoToAudioOperation.$extractAudio;
@@ -448,22 +567,24 @@ export type VideoToAudioOperation = VideoToAudioOperation.$extractAudio;
  * @experimental
  */
 export interface AudioToTextOperationOptions {
-  "$transcribe": {
+  $transcribe: {
     $language?: string;
     $diarize?: boolean;
     $outputFormat?: TranscribeOutputFormat;
     $performanceMode?: "MORE_ECONOMICAL" | "MORE_PERFORMANT";
   };
-  "$waveform": { $peaksPerSecond: number };
+  $waveform: { $peaksPerSecond: number };
 }
 
 export namespace AudioToTextOperation {
-  export interface $transcribe
-    extends Just<"$transcribe", AudioToTextOperationOptions>
-  {}
-  export interface $waveform
-    extends Just<"$waveform", AudioToTextOperationOptions>
-  {}
+  export interface $transcribe extends Just<
+    "$transcribe",
+    AudioToTextOperationOptions
+  > {}
+  export interface $waveform extends Just<
+    "$waveform",
+    AudioToTextOperationOptions
+  > {}
 }
 
 export type AudioToTextOperation =
@@ -474,13 +595,14 @@ export type AudioToTextOperation =
  * @experimental
  */
 export interface EmailToTextOperationOptions {
-  "$getEmailBody": { $outputFormat: "TEXT" | "HTML" };
+  $getEmailBody: { $outputFormat: "TEXT" | "HTML" };
 }
 
 export namespace EmailToTextOperation {
-  export interface $getEmailBody
-    extends Just<"$getEmailBody", EmailToTextOperationOptions>
-  {}
+  export interface $getEmailBody extends Just<
+    "$getEmailBody",
+    EmailToTextOperationOptions
+  > {}
 }
 
 export type EmailToTextOperation = EmailToTextOperation.$getEmailBody;
@@ -489,13 +611,14 @@ export type EmailToTextOperation = EmailToTextOperation.$getEmailBody;
  * @experimental
  */
 export interface EmailToAttachmentOperationOptions {
-  "$getEmailAttachment": { $mimeType: string; $attachmentIndex: number };
+  $getEmailAttachment: { $mimeType: string; $attachmentIndex: number };
 }
 
 export namespace EmailToAttachmentOperation {
-  export interface $getEmailAttachment
-    extends Just<"$getEmailAttachment", EmailToAttachmentOperationOptions>
-  {}
+  export interface $getEmailAttachment extends Just<
+    "$getEmailAttachment",
+    EmailToAttachmentOperationOptions
+  > {}
 }
 
 export type EmailToAttachmentOperation =
@@ -505,13 +628,14 @@ export type EmailToAttachmentOperation =
  * @experimental
  */
 export interface SpreadsheetToTextOperationOptions {
-  "$convertSheetToJson": { $sheetName: string };
+  $convertSheetToJson: { $sheetName: string };
 }
 
 export namespace SpreadsheetToTextOperation {
-  export interface $convertSheetToJson
-    extends Just<"$convertSheetToJson", SpreadsheetToTextOperationOptions>
-  {}
+  export interface $convertSheetToJson extends Just<
+    "$convertSheetToJson",
+    SpreadsheetToTextOperationOptions
+  > {}
 }
 
 export type SpreadsheetToTextOperation =
@@ -521,16 +645,17 @@ export type SpreadsheetToTextOperation =
  * @experimental
  */
 export interface VideoToArchiveOperationOptions {
-  "$extractSceneFrames": {
+  $extractSceneFrames: {
     $encoding: ImageryEncoding;
     $sceneScore?: "MORE_SENSITIVE" | "STANDARD" | "LESS_SENSITIVE";
   };
 }
 
 export namespace VideoToArchiveOperation {
-  export interface $extractSceneFrames
-    extends Just<"$extractSceneFrames", VideoToArchiveOperationOptions>
-  {}
+  export interface $extractSceneFrames extends Just<
+    "$extractSceneFrames",
+    VideoToArchiveOperationOptions
+  > {}
 }
 
 export type VideoToArchiveOperation =
@@ -540,15 +665,16 @@ export type VideoToArchiveOperation =
  * @experimental
  */
 export interface VideoToTextOperationOptions {
-  "$getTimestampsForSceneFrames": {
+  $getTimestampsForSceneFrames: {
     $sceneScore?: "MORE_SENSITIVE" | "STANDARD" | "LESS_SENSITIVE";
   };
 }
 
 export namespace VideoToTextOperation {
-  export interface $getTimestampsForSceneFrames
-    extends Just<"$getTimestampsForSceneFrames", VideoToTextOperationOptions>
-  {}
+  export interface $getTimestampsForSceneFrames extends Just<
+    "$getTimestampsForSceneFrames",
+    VideoToTextOperationOptions
+  > {}
 }
 
 export type VideoToTextOperation =
@@ -558,16 +684,17 @@ export type VideoToTextOperation =
  * @experimental
  */
 export interface ImageToTextOperationOptions {
-  "$extractLayoutAwareContent": {
+  $extractLayoutAwareContent: {
     $parameters: LayoutAwareExtractionParameters;
   };
-  "$ocr": { $parameters: OcrParameters };
+  $ocr: { $parameters: OcrParameters };
 }
 
 export namespace ImageToTextOperation {
-  export interface $extractLayoutAwareContent
-    extends Just<"$extractLayoutAwareContent", ImageToTextOperationOptions>
-  {}
+  export interface $extractLayoutAwareContent extends Just<
+    "$extractLayoutAwareContent",
+    ImageToTextOperationOptions
+  > {}
   export interface $ocr extends Just<"$ocr", ImageToTextOperationOptions> {}
 }
 
@@ -579,8 +706,8 @@ export type ImageToTextOperation =
  * @experimental
  */
 export interface VideoToImageOperationOptions {
-  "$extractFirstFrame": { $height?: number; $width?: number };
-  "$extractFramesAtTimestamps": {
+  $extractFirstFrame: { $height?: number; $width?: number };
+  $extractFramesAtTimestamps: {
     $height?: number;
     $width?: number;
     $timestamp: number;
@@ -588,12 +715,14 @@ export interface VideoToImageOperationOptions {
 }
 
 export namespace VideoToImageOperation {
-  export interface $extractFirstFrame
-    extends Just<"$extractFirstFrame", VideoToImageOperationOptions>
-  {}
-  export interface $extractFramesAtTimestamps
-    extends Just<"$extractFramesAtTimestamps", VideoToImageOperationOptions>
-  {}
+  export interface $extractFirstFrame extends Just<
+    "$extractFirstFrame",
+    VideoToImageOperationOptions
+  > {}
+  export interface $extractFramesAtTimestamps extends Just<
+    "$extractFramesAtTimestamps",
+    VideoToImageOperationOptions
+  > {}
 }
 
 export type VideoToImageOperation =
@@ -604,13 +733,14 @@ export type VideoToImageOperation =
  * @experimental
  */
 export interface ImageToDocumentOperationOptions {
-  "$createPdf": {};
+  $createPdf: {};
 }
 
 export namespace ImageToDocumentOperation {
-  export interface $createPdf
-    extends Just<"$createPdf", ImageToDocumentOperationOptions>
-  {}
+  export interface $createPdf extends Just<
+    "$createPdf",
+    ImageToDocumentOperationOptions
+  > {}
 }
 
 export type ImageToDocumentOperation = ImageToDocumentOperation.$createPdf;
@@ -619,7 +749,7 @@ export type ImageToDocumentOperation = ImageToDocumentOperation.$createPdf;
  * @experimental
  */
 export interface DicomToImageOperationOptions {
-  "$renderImageLayer": {
+  $renderImageLayer: {
     $layerNumber?: number;
     $height?: number;
     $width?: number;
@@ -627,9 +757,10 @@ export interface DicomToImageOperationOptions {
 }
 
 export namespace DicomToImageOperation {
-  export interface $renderImageLayer
-    extends Just<"$renderImageLayer", DicomToImageOperationOptions>
-  {}
+  export interface $renderImageLayer extends Just<
+    "$renderImageLayer",
+    DicomToImageOperationOptions
+  > {}
 }
 
 export type DicomToImageOperation = DicomToImageOperation.$renderImageLayer;
@@ -638,21 +769,23 @@ export type DicomToImageOperation = DicomToImageOperation.$renderImageLayer;
  * @experimental
  */
 export interface DocumentToDocumentOperationOptions {
-  "$slicePdfRange": {
+  $slicePdfRange: {
     $startPageInclusive: number;
     $endPageExclusive: number;
     $strictlyEnforceEndPage?: boolean;
   };
-  "$convertDocument": {};
+  $convertDocument: {};
 }
 
 export namespace DocumentToDocumentOperation {
-  export interface $slicePdfRange
-    extends Just<"$slicePdfRange", DocumentToDocumentOperationOptions>
-  {}
-  export interface $convertDocument
-    extends Just<"$convertDocument", DocumentToDocumentOperationOptions>
-  {}
+  export interface $slicePdfRange extends Just<
+    "$slicePdfRange",
+    DocumentToDocumentOperationOptions
+  > {}
+  export interface $convertDocument extends Just<
+    "$convertDocument",
+    DocumentToDocumentOperationOptions
+  > {}
 }
 
 export type DocumentToDocumentOperation =
@@ -663,8 +796,8 @@ export type DocumentToDocumentOperation =
  * @experimental
  */
 export interface DocumentToImageOperationOptions {
-  "$renderPage": { $pageNumber?: number; $height?: number; $width?: number };
-  "$renderPageToFitBoundingBox": {
+  $renderPage: { $pageNumber?: number; $height?: number; $width?: number };
+  $renderPageToFitBoundingBox: {
     $pageNumber?: number;
     $width: number;
     $height: number;
@@ -672,12 +805,14 @@ export interface DocumentToImageOperationOptions {
 }
 
 export namespace DocumentToImageOperation {
-  export interface $renderPage
-    extends Just<"$renderPage", DocumentToImageOperationOptions>
-  {}
-  export interface $renderPageToFitBoundingBox
-    extends Just<"$renderPageToFitBoundingBox", DocumentToImageOperationOptions>
-  {}
+  export interface $renderPage extends Just<
+    "$renderPage",
+    DocumentToImageOperationOptions
+  > {}
+  export interface $renderPageToFitBoundingBox extends Just<
+    "$renderPageToFitBoundingBox",
+    DocumentToImageOperationOptions
+  > {}
 }
 
 export type DocumentToImageOperation =
@@ -688,13 +823,14 @@ export type DocumentToImageOperation =
  * @experimental
  */
 export interface ImageToEmbeddingOperationOptions {
-  "$generateEmbedding": { $modelId: string };
+  $generateEmbedding: { $modelId: string };
 }
 
 export namespace ImageToEmbeddingOperation {
-  export interface $generateEmbedding
-    extends Just<"$generateEmbedding", ImageToEmbeddingOperationOptions>
-  {}
+  export interface $generateEmbedding extends Just<
+    "$generateEmbedding",
+    ImageToEmbeddingOperationOptions
+  > {}
 }
 
 export type ImageToEmbeddingOperation =
@@ -704,35 +840,35 @@ export type ImageToEmbeddingOperation =
  * @experimental
  */
 export interface DocumentToTextOperationOptions {
-  "$extractAllText": {};
-  "$extractTableOfContents": {};
-  "$getPdfPageDimensions": {};
-  "$extractFormFields": {};
-  "$extractUnstructuredTextFromPage": { $pageNumber: number };
-  "$extractTextFromPagesToArray": {
+  $extractAllText: {};
+  $extractTableOfContents: {};
+  $getPdfPageDimensions: {};
+  $extractFormFields: {};
+  $extractUnstructuredTextFromPage: { $pageNumber: number };
+  $extractTextFromPagesToArray: {
     $startPage?: number;
     $endPage?: number;
   };
-  "$ocrOnPage": {
+  $ocrOnPage: {
     $pageNumber: number;
     $parameters: OcrParameters;
   };
-  "$ocrOnPages": {
+  $ocrOnPages: {
     $pageNumber: number;
     $parameters: OcrParameters;
   };
-  "$extractLayoutAwareContent": {
+  $extractLayoutAwareContent: {
     $parameters: LayoutAwareExtractionParameters;
   };
-  "$extractLayoutAwareTextV2": {
+  $extractLayoutAwareTextV2: {
     $pageRange?: PageRange;
     $config: DocumentTextExtractionConfig;
   };
-  "$extractTextV2": {
+  $extractTextV2: {
     $pageRange?: PageRange;
     $config: DocumentTextExtractionConfig;
   };
-  "$extractVlmText": {
+  $extractVlmText: {
     $llmSpec: LlmSpec;
     $preprocessingConfiguration?: VlmPreprocessingConfig;
     $imageSpec?: ImageSpec;
@@ -742,43 +878,54 @@ export interface DocumentToTextOperationOptions {
 }
 
 export namespace DocumentToTextOperation {
-  export interface $extractAllText
-    extends Just<"$extractAllText", DocumentToTextOperationOptions>
-  {}
-  export interface $extractTableOfContents
-    extends Just<"$extractTableOfContents", DocumentToTextOperationOptions>
-  {}
-  export interface $getPdfPageDimensions
-    extends Just<"$getPdfPageDimensions", DocumentToTextOperationOptions>
-  {}
-  export interface $extractFormFields
-    extends Just<"$extractFormFields", DocumentToTextOperationOptions>
-  {}
-  export interface $extractUnstructuredTextFromPage
-    extends
-      Just<"$extractUnstructuredTextFromPage", DocumentToTextOperationOptions>
-  {}
-  export interface $extractTextFromPagesToArray
-    extends Just<"$extractTextFromPagesToArray", DocumentToTextOperationOptions>
-  {}
-  export interface $ocrOnPage
-    extends Just<"$ocrOnPage", DocumentToTextOperationOptions>
-  {}
-  export interface $ocrOnPages
-    extends Just<"$ocrOnPages", DocumentToTextOperationOptions>
-  {}
-  export interface $extractLayoutAwareContent
-    extends Just<"$extractLayoutAwareContent", DocumentToTextOperationOptions>
-  {}
-  export interface $extractLayoutAwareTextV2
-    extends Just<"$extractLayoutAwareTextV2", DocumentToTextOperationOptions>
-  {}
-  export interface $extractTextV2
-    extends Just<"$extractTextV2", DocumentToTextOperationOptions>
-  {}
-  export interface $extractVlmText
-    extends Just<"$extractVlmText", DocumentToTextOperationOptions>
-  {}
+  export interface $extractAllText extends Just<
+    "$extractAllText",
+    DocumentToTextOperationOptions
+  > {}
+  export interface $extractTableOfContents extends Just<
+    "$extractTableOfContents",
+    DocumentToTextOperationOptions
+  > {}
+  export interface $getPdfPageDimensions extends Just<
+    "$getPdfPageDimensions",
+    DocumentToTextOperationOptions
+  > {}
+  export interface $extractFormFields extends Just<
+    "$extractFormFields",
+    DocumentToTextOperationOptions
+  > {}
+  export interface $extractUnstructuredTextFromPage extends Just<
+    "$extractUnstructuredTextFromPage",
+    DocumentToTextOperationOptions
+  > {}
+  export interface $extractTextFromPagesToArray extends Just<
+    "$extractTextFromPagesToArray",
+    DocumentToTextOperationOptions
+  > {}
+  export interface $ocrOnPage extends Just<
+    "$ocrOnPage",
+    DocumentToTextOperationOptions
+  > {}
+  export interface $ocrOnPages extends Just<
+    "$ocrOnPages",
+    DocumentToTextOperationOptions
+  > {}
+  export interface $extractLayoutAwareContent extends Just<
+    "$extractLayoutAwareContent",
+    DocumentToTextOperationOptions
+  > {}
+  export interface $extractLayoutAwareTextV2 extends Just<
+    "$extractLayoutAwareTextV2",
+    DocumentToTextOperationOptions
+  > {}
+  export interface $extractTextV2 extends Just<
+    "$extractTextV2",
+    DocumentToTextOperationOptions
+  > {}
+  export interface $extractVlmText extends Just<
+    "$extractVlmText",
+    DocumentToTextOperationOptions
+  > {}
 }
 
 export type DocumentToTextOperation =

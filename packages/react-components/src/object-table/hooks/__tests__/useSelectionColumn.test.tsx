@@ -17,6 +17,7 @@
 import type { ObjectTypeDefinition } from "@osdk/api";
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
 import { SELECTION_COLUMN_ID } from "../../utils/constants.js";
 import { useSelectionColumn } from "../useSelectionColumn.js";
 
@@ -37,7 +38,7 @@ describe("useSelectionColumn", () => {
           hasSelection: false,
           onToggleAll: vi.fn(),
           onToggleRow: vi.fn(),
-        })
+        }),
       );
 
       expect(result.current).toBeNull();
@@ -51,7 +52,7 @@ describe("useSelectionColumn", () => {
           hasSelection: true,
           onToggleAll: vi.fn(),
           onToggleRow: vi.fn(),
-        })
+        }),
       );
 
       expect(result.current).toBeNull();
@@ -67,7 +68,7 @@ describe("useSelectionColumn", () => {
           hasSelection: false,
           onToggleAll: vi.fn(),
           onToggleRow: vi.fn(),
-        })
+        }),
       );
 
       expect(result.current).not.toBeNull();
@@ -89,16 +90,17 @@ describe("useSelectionColumn", () => {
           hasSelection: false,
           onToggleAll: vi.fn(),
           onToggleRow: vi.fn(),
-        })
+        }),
       );
 
       const columnDef = result.current;
       expect(columnDef).not.toBeNull();
 
       // Call header function
-      const headerResult = typeof columnDef?.header === "function"
-        ? columnDef.header({} as any)
-        : null;
+      const headerResult =
+        typeof columnDef?.header === "function"
+          ? columnDef.header({} as any)
+          : null;
 
       expect(headerResult).toBeNull();
     });
@@ -112,7 +114,7 @@ describe("useSelectionColumn", () => {
           hasSelection: false,
           onToggleAll: vi.fn(),
           onToggleRow,
-        })
+        }),
       );
 
       const columnDef = result.current;
@@ -150,9 +152,11 @@ describe("useSelectionColumn", () => {
       const onToggleAll = vi.fn();
 
       const { result, rerender } = renderHook(
-        (
-          { selectionMode }: { selectionMode: "single" | "multiple" | "none" },
-        ) =>
+        ({
+          selectionMode,
+        }: {
+          selectionMode: "single" | "multiple" | "none";
+        }) =>
           useSelectionColumn<TestObject>({
             selectionMode,
             isAllSelected: false,
@@ -182,7 +186,7 @@ describe("useSelectionColumn", () => {
           hasSelection: false,
           onToggleAll: vi.fn(),
           onToggleRow: vi.fn(),
-        })
+        }),
       );
 
       expect(result.current).not.toBeNull();
@@ -205,16 +209,17 @@ describe("useSelectionColumn", () => {
           hasSelection: false,
           onToggleAll,
           onToggleRow: vi.fn(),
-        })
+        }),
       );
 
       const columnDef = result.current;
       expect(columnDef).not.toBeNull();
 
       // Render header
-      const headerResult = typeof columnDef?.header === "function"
-        ? columnDef.header({} as any)
-        : null;
+      const headerResult =
+        typeof columnDef?.header === "function"
+          ? columnDef.header({} as any)
+          : null;
 
       expect(headerResult).not.toBeNull();
     });
@@ -229,7 +234,7 @@ describe("useSelectionColumn", () => {
           hasSelection: false,
           onToggleAll: vi.fn(),
           onToggleRow: vi.fn(),
-        })
+        }),
       );
 
       const columnDef = result.current;

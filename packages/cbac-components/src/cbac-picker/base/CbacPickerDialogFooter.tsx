@@ -16,6 +16,7 @@
 
 import { ActionButton, Tooltip } from "@osdk/react-components/primitives";
 import React from "react";
+
 import styles from "./CbacPickerDialogFooter.module.css";
 
 interface CbacPickerDialogFooterProps {
@@ -46,25 +47,25 @@ export function CbacPickerDialogFooter({
       <ActionButton variant="secondary" onClick={onCancel}>
         Cancel
       </ActionButton>
-      {isSubmitDisabled
-        ? (
-          <Tooltip.Root>
-            <Tooltip.Trigger
-              render={<span className={styles.tooltipTriggerWrapper} />}
-            >
-              {submitButton}
-            </Tooltip.Trigger>
-            <Tooltip.Portal>
-              <Tooltip.Positioner side="top">
-                <Tooltip.Popup>
-                  {submitDisabledReason}
-                  <Tooltip.Arrow />
-                </Tooltip.Popup>
-              </Tooltip.Positioner>
-            </Tooltip.Portal>
-          </Tooltip.Root>
-        )
-        : submitButton}
+      {isSubmitDisabled ? (
+        <Tooltip.Root>
+          <Tooltip.Trigger
+            render={<span className={styles.tooltipTriggerWrapper} />}
+          >
+            {submitButton}
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Positioner side="top">
+              <Tooltip.Popup>
+                {submitDisabledReason}
+                <Tooltip.Arrow />
+              </Tooltip.Popup>
+            </Tooltip.Positioner>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      ) : (
+        submitButton
+      )}
     </>
   );
 }

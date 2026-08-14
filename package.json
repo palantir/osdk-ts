@@ -7,6 +7,9 @@
     "check-mrl": "mrl check --verbose",
     "ci:publish": "./scripts/ci-publish.sh",
     "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot --tag=next",
+    "coverage": "pnpm run coverage:collect; ec=$?; pnpm run coverage:merge; exit $ec",
+    "coverage:collect": "./scripts/coverage/collect.sh",
+    "coverage:merge": "node scripts/coverage/merge-coverage.mjs",
     "cspell:all": "cspell . --quiet",
     "e2e": "./scripts/run-e2e.sh",
     "lint": "turbo run lint",
@@ -17,7 +20,8 @@
     "tag-release": "./scripts/tag-release.sh",
     "test": "FORCE_COLOR=1 turbo run test",
     "test:watch": "FORCE_COLOR=1 turbo run test:watch",
-    "typecheckAll": "tsc --build packages/* examples-extra/basic/*"
+    "typecheckAll": "tsc --build packages/* examples-extra/basic/*",
+    "updateSnapshots": "FORCE_COLOR=1 turbo run updateSnapshots"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.4",
@@ -59,8 +63,14 @@
     "find-up": "^7.0.0",
     "globals": "^15.15.0",
     "husky": "^9.1.7",
+    "istanbul-lib-coverage": "^3.2.2",
+    "istanbul-lib-report": "^3.0.1",
+    "istanbul-reports": "^3.1.7",
     "lint-staged": "^15.5.2",
     "micromatch": "^4.0.8",
+    "oxfmt": "^0.53.0",
+    "oxlint": "^1.68.0",
+    "oxlint-tsgolint": "^0.23.0",
     "postcss": "^8.5.6",
     "postcss-cli": "^11.0.1",
     "postcss-import": "^16.1.1",
@@ -77,6 +87,7 @@
     "typedoc-plugin-missing-exports": "^3.1.0",
     "typescript": "~5.5.4",
     "typescript-eslint": "^8.43.0",
+    "ultracite": "7.8.2",
     "vitest": "^3.2.4"
   },
   "pnpm": {
@@ -91,6 +102,9 @@
       "dprint",
       "esbuild",
       "msw",
+      "oxfmt",
+      "oxlint",
+      "oxlint-tsgolint",
       "unrs-resolver"
     ],
     "overrides": {

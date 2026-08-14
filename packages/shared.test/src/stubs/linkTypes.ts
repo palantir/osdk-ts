@@ -15,6 +15,7 @@
  */
 
 import type { LinkTypeSideV2 } from "@osdk/foundry.ontologies";
+
 import {
   employeeObjectType,
   objectTypeWithAllPropertyTypes,

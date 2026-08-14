@@ -26,18 +26,19 @@ import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithou
 export type AggregationsResults<
   Q extends ObjectOrInterfaceDefinition,
   AO extends AggregateOpts<Q>,
-> = Exclude<keyof AO["$select"], ValidAggregationKeys<Q>> extends never
-  ? unknown extends AO["$groupBy"] // groupBy is missing
-    ? AggregationResultsWithoutGroups<Q, AO["$select"]>
-  : Exclude<AO["$groupBy"], undefined> extends never // groupBy is explicitly undefined
-    ? AggregationResultsWithoutGroups<Q, AO["$select"]>
-  : Exclude<keyof AO["$groupBy"], AggregatableKeys<Q>> extends never
-    ? AggregationResultsWithGroups<Q, AO["$select"], AO["$groupBy"]>
-  : `Sorry, the following are not valid groups for an aggregation: ${Exclude<
-    keyof AO["$groupBy"] & string,
-    AggregatableKeys<Q>
-  >}`
-  : `Sorry, the following are not valid selectors for an aggregation: ${Exclude<
-    keyof AO["$select"] & string,
-    ValidAggregationKeys<Q>
-  >}`;
+> =
+  Exclude<keyof AO["$select"], ValidAggregationKeys<Q>> extends never
+    ? unknown extends AO["$groupBy"] // groupBy is missing
+      ? AggregationResultsWithoutGroups<Q, AO["$select"]>
+      : Exclude<AO["$groupBy"], undefined> extends never // groupBy is explicitly undefined
+        ? AggregationResultsWithoutGroups<Q, AO["$select"]>
+        : Exclude<keyof AO["$groupBy"], AggregatableKeys<Q>> extends never
+          ? AggregationResultsWithGroups<Q, AO["$select"], AO["$groupBy"]>
+          : `Sorry, the following are not valid groups for an aggregation: ${Exclude<
+              keyof AO["$groupBy"] & string,
+              AggregatableKeys<Q>
+            >}`
+    : `Sorry, the following are not valid selectors for an aggregation: ${Exclude<
+        keyof AO["$select"] & string,
+        ValidAggregationKeys<Q>
+      >}`;

@@ -23,6 +23,7 @@ import type {
 } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { describe, expect, it, vi } from "vitest";
+
 import { usePdfViewerSearch } from "../usePdfViewerSearch.js";
 
 type Listener = (...args: unknown[]) => void;
@@ -73,7 +74,7 @@ describe("usePdfViewerSearch", () => {
 
     const mockDocument = {} as PDFDocumentProxy;
     const { result } = renderHook(() =>
-      usePdfViewerSearch(eventBusRef, findControllerRef, mockDocument)
+      usePdfViewerSearch(eventBusRef, findControllerRef, mockDocument),
     );
 
     return { result, eventBus, findController };

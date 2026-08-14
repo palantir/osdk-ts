@@ -26,10 +26,8 @@ import type {
 export interface AcceptedReview {
   reviewMetadata: ReviewMetadata;
 }
-export interface ActionAccepted {
-}
-export interface ActionCreated {
-}
+export interface ActionAccepted {}
+export interface ActionCreated {}
 export interface ActionEffect {
   actionInputs: Record<ActionParameterRid, EffectInput>;
   actionTypeRid: ActionTypeRid;
@@ -117,10 +115,8 @@ export type ActionOrLogicLocator =
  * An action parameter rid.
  */
 export type ActionParameterRid = string;
-export interface ActionParameterRidNotFound {
-}
-export interface ActionRejected {
-}
+export interface ActionParameterRidNotFound {}
+export interface ActionRejected {}
 /**
  * An action instance resource identifier.
  */
@@ -137,16 +133,14 @@ export type ActionTypeRid = string;
  * An action type version.
  */
 export type ActionTypeVersion = string;
-export interface ActionUpdated {
-}
+export interface ActionUpdated {}
 /**
  * The type of the object locator. Corresponds to the object set type set in the event condition.
  */
 export interface AffectedObject {
   objectTypeRid: ObjectTypeRid;
 }
-export interface AffectedObjectProvidedForNonLiveMonitor {
-}
+export interface AffectedObjectProvidedForNonLiveMonitor {}
 /**
  * Will be substituted at runtime with the affected objects. The corresponding type is an object set rid.
  */
@@ -198,32 +192,24 @@ export type Aggregation =
   | Aggregation_min
   | Aggregation_max;
 
-export interface AllBatchesToRetry {
-}
-export interface AllMetricIdsShouldBeUnique {
-}
-export interface AllNewRecords {
-}
+export interface AllBatchesToRetry {}
+export interface AllMetricIdsShouldBeUnique {}
+export interface AllNewRecords {}
 /**
  * Triggers on all objects in the defined object set when evaluated. This changes the semantics of
  * "affected objects", as there is no diff when using this condition.
  */
-export interface AllObjectsEvent {
-}
-export interface AllowCyclesUpToLimit {
-}
+export interface AllObjectsEvent {}
+export interface AllowCyclesUpToLimit {}
 /**
  * Default configuration. Send all notifications (monitor metadata or side effects) to all users.
  */
-export interface AllSubscribers {
-}
-export interface AllUsers {
-}
+export interface AllSubscribers {}
+export interface AllUsers {}
 export interface AndPredicate {
   predicates: Array<Predicate>;
 }
-export interface AnyPropertyModifiedEvent {
-}
+export interface AnyPropertyModifiedEvent {}
 /**
  * The resource identifier for an artifact's backing repository.
  */
@@ -231,8 +217,7 @@ export type ArtifactsRepositoryRid = string;
 export interface ArtifactsResource {
   repoRid: ArtifactsRepositoryRid;
 }
-export interface AtLeastOneMetricIsUsed {
-}
+export interface AtLeastOneMetricIsUsed {}
 export interface AttachmentObjectPropertyInput_previousProperty {
   type: "previousProperty";
   previousProperty: ObjectChangedProperty;
@@ -303,14 +288,12 @@ export interface AutomationBlockCreationError_scopedTokenUnsupported {
 
 export interface AutomationBlockCreationError_scopedTokenWithLanguageModelUnsupported {
   type: "scopedTokenWithLanguageModelUnsupported";
-  scopedTokenWithLanguageModelUnsupported:
-    ScopedTokenWithLanguageModelUnsupported;
+  scopedTokenWithLanguageModelUnsupported: ScopedTokenWithLanguageModelUnsupported;
 }
 
 export interface AutomationBlockCreationError_groupedExecutionNotSupportedForScheduled {
   type: "groupedExecutionNotSupportedForScheduled";
-  groupedExecutionNotSupportedForScheduled:
-    GroupedExecutionNotSupportedForScheduled;
+  groupedExecutionNotSupportedForScheduled: GroupedExecutionNotSupportedForScheduled;
 }
 
 export interface AutomationBlockCreationError_multipleObjectTypesUsedInCondition {
@@ -330,8 +313,7 @@ export interface AutomationBlockCreationError_timeSeriesMonitorUnsupported {
 
 export interface AutomationBlockCreationError_automationDependencyMonitorUnsupported {
   type: "automationDependencyMonitorUnsupported";
-  automationDependencyMonitorUnsupported:
-    AutomationDependencyMonitorUnsupported;
+  automationDependencyMonitorUnsupported: AutomationDependencyMonitorUnsupported;
 }
 export type AutomationBlockCreationError =
   | AutomationBlockCreationError_actionEffectsUnsupported
@@ -375,8 +357,7 @@ export interface AutomationDependency {
   triggerIfNoAffectedObjects?: boolean | null | undefined;
   waitTime?: WaitTime | null | undefined;
 }
-export interface AutomationDependencyMonitorUnsupported {
-}
+export interface AutomationDependencyMonitorUnsupported {}
 export interface AutomationInstantEvent {
   invoicedDimension: string;
   timestamp: string;
@@ -411,8 +392,7 @@ export type AutomationValidationError =
   | AutomationValidationError_installingDisabledAutomation
   | AutomationValidationError_installingMutedAutomation;
 
-export interface AutoUpgradingUnsupported {
-}
+export interface AutoUpgradingUnsupported {}
 /**
  * The backing dataset for the root object type of a timeseries monitor is not in project scope.
  */
@@ -498,10 +478,8 @@ export interface BatchExecutionInstanceCompleted {
 export type BatchExecutionInstanceFailed = FailureEffectLog;
 export type BatchExecutionInstanceId = string;
 export type BatchExecutionInstanceIndex = number;
-export interface BatchExecutionInstanceQueued {
-}
-export interface BatchExecutionInstanceSubmitted {
-}
+export interface BatchExecutionInstanceQueued {}
+export interface BatchExecutionInstanceSubmitted {}
 export interface BatchExecutionInstanceType_queued {
   type: "queued";
   queued: BatchExecutionInstanceQueued;
@@ -560,14 +538,10 @@ export interface BooleanExpression {
   operator: ComparisonOperator;
   right: Operand;
 }
-export interface BranchingUnsupportedForConditionType {
-}
-export interface BranchingUnsupportedForEffect {
-}
-export interface BranchingUnsupportedForVersionedObjectSets {
-}
-export interface BranchingUnsupportedInScopedMode {
-}
+export interface BranchingUnsupportedForConditionType {}
+export interface BranchingUnsupportedForEffect {}
+export interface BranchingUnsupportedForVersionedObjectSets {}
+export interface BranchingUnsupportedInScopedMode {}
 /**
  * The global branch rid tracked by foundry-branching's branch-service.
  */
@@ -580,8 +554,7 @@ export type ComparisonOperator =
   | "LESS_THAN_OR_EQUAL_TO"
   | "GREATER_THAN"
   | "GREATER_THAN_OR_EQUAL_TO";
-export interface ConditionErrorLocation {
-}
+export interface ConditionErrorLocation {}
 export type ConjureErrorArgs = Record<ErrorArgName, ErrorArgValue>;
 export interface ConstantBackoff {
   attemptLimit: number;
@@ -592,8 +565,7 @@ export interface CouldNotGetAllTimeseriesSyncs {
   rootObjectTypeRid: ObjectTypeRid;
   sensorObjectTypeRids: Array<ObjectTypeRid>;
 }
-export interface CountAggregation {
-}
+export interface CountAggregation {}
 /**
  * A newly created object changed caused this monitor to be evaluated and it's predicate returned true.
  */
@@ -614,13 +586,11 @@ export interface CreateScenario {
  * A cron expression string
  */
 export type CronExpression = string;
-export interface CronTooFrequent {
-}
+export interface CronTooFrequent {}
 /**
  * Will be substituted at runtime with the current user. The corresponding type is a User.
  */
-export interface CurrentUser {
-}
+export interface CurrentUser {}
 export interface CycleDetected {
   automationsInCycle: Array<MonitorRid>;
   selfTriggerLimitHit?: number | null | undefined;
@@ -704,8 +674,7 @@ export type DropEventsConfig =
   | DropEventsConfig_failIfAnyEventsDropped
   | DropEventsConfig_dropEventsOverLimit;
 
-export interface DropEventsOverLimit {
-}
+export interface DropEventsOverLimit {}
 export interface DroppedObjects {
   numDropped: number;
 }
@@ -741,8 +710,7 @@ export type Effect =
   | Effect_logic
   | Effect_function;
 
-export interface EffectDependenciesInconsistentWithEffectOrdering {
-}
+export interface EffectDependenciesInconsistentWithEffectOrdering {}
 export interface EffectDryRunExecutionValidation_v1 {
   type: "v1";
   v1: EffectDryRunExecutionValidationV1;
@@ -1064,8 +1032,7 @@ export type EventType =
   | EventType_notSavedObjectSetEvent
   | EventType_functionGeneratedObjectSetEvent;
 
-export interface ExceededFailureThreshold {
-}
+export interface ExceededFailureThreshold {}
 export interface ExceptPropertiesModifiedEvent {
   propertiesToExclude: Array<ObjectPropertyTypeRid>;
 }
@@ -1105,8 +1072,7 @@ export type ExecutionModeTypeEnum =
   | "PER_OBJECT"
   | "PER_BATCH"
   | "PER_PARTITION";
-export interface ExecutorUser {
-}
+export interface ExecutorUser {}
 /**
  * Staged action that has not been reviewed within the specified retention window. Does not contain parameters.
  */
@@ -1131,8 +1097,7 @@ export interface ExponentialBackoff {
   maxDurationMillis: number;
   stepDurationMillis: number;
 }
-export interface FailIfAnyEventsDropped {
-}
+export interface FailIfAnyEventsDropped {}
 /**
  * This contains information on a failed effect. This could be because e.g. the user does not pass the action
  * validations or because there was a critical error while triggering the effect.
@@ -1155,8 +1120,7 @@ export interface FailureFoundryLogicEffectLog {
   triggeredBy: ObjectRid;
   triggeredByV2?: TriggeredBy | null | undefined;
 }
-export interface FailureInputProvidedWithoutEffectDependency {
-}
+export interface FailureInputProvidedWithoutEffectDependency {}
 /**
  * Will be substituted at runtime with the failure message.
  */
@@ -1188,8 +1152,7 @@ export interface FeatureIsNotAvailable {
  * The automation was force disabled via runtime config. Used for breakglass situations, and should only
  * be used after consulting with the automate team.
  */
-export interface ForceDisabledByServer {
-}
+export interface ForceDisabledByServer {}
 export type ForkRid = string;
 export interface FoundryFieldSchema {
   arraySubtype?: FoundryFieldSchema | null | undefined;
@@ -1291,20 +1254,17 @@ export type FunctionEffectLog =
 export interface FunctionEffectLogs {
   logs: Array<FunctionEffectLog>;
 }
-export interface FunctionEffectsUnsupported {
-}
+export interface FunctionEffectsUnsupported {}
 export interface FunctionGeneratedObjectSetEvent {
   eventType: ObjectSetEventTypeV2;
   function: ObjectSetFunction;
 }
-export interface FunctionGeneratedObjectSetsUnsupported {
-}
+export interface FunctionGeneratedObjectSetsUnsupported {}
 export interface FunctionGeneratedRecipients {
   functionInputs: Record<FunctionInputName, EffectInput>;
   functionLocator: FunctionLocator;
 }
-export interface FunctionGeneratedRecipientsNeedsScopedMode {
-}
+export interface FunctionGeneratedRecipientsNeedsScopedMode {}
 /**
  * Name of an Input to a Function.
  */
@@ -1317,8 +1277,7 @@ export interface FunctionLocator {
   functionRid: FunctionRid;
   functionVersion: FunctionVersion;
 }
-export interface FunctionOutputTypeNotBoolean {
-}
+export interface FunctionOutputTypeNotBoolean {}
 /**
  * Defines a Function on Object that will be called. The function output must be a boolean.
  */
@@ -1332,14 +1291,12 @@ export interface FunctionPredicateParameterTypeDoesNotMatch {
 /**
  * A function can return null | undefined, which will cause a notification to be skipped.
  */
-export interface FunctionReturnEmpty {
-}
+export interface FunctionReturnEmpty {}
 /**
  * The rid for a Function.
  */
 export type FunctionRid = string;
-export interface FunctionSpecsNotFound {
-}
+export interface FunctionSpecsNotFound {}
 export interface FunctionValue_untyped {
   type: "untyped";
   untyped: UntypedValue;
@@ -1390,8 +1347,7 @@ export type GroupBy = GroupBy_properties;
 /**
  * For scheduled automations, there is not exactly one object type that is operated on - this makes it hard for us to generate a marketplace identifier (which required object type rid as well as property type rid.). This constraint will be relaxed in future versions.
  */
-export interface GroupedExecutionNotSupportedForScheduled {
-}
+export interface GroupedExecutionNotSupportedForScheduled {}
 /**
  * A Multipass group id.
  */
@@ -1404,12 +1360,9 @@ export interface GroupSubscriberType {
  * Using min/max operations on object set should be preferred over comparing multi metrics
  * against a single value
  */
-export interface InefficientMultiMetricUsage {
-}
-export interface InstallingDisabledAutomation {
-}
-export interface InstallingMutedAutomation {
-}
+export interface InefficientMultiMetricUsage {}
+export interface InstallingDisabledAutomation {}
+export interface InstallingMutedAutomation {}
 export interface InvalidAutomationError {
   errorMessage: string;
 }
@@ -1417,8 +1370,7 @@ export interface InvalidBatchSize {
   maximumBatchSize: number;
   providedBatchSize: number;
 }
-export interface InvalidCron {
-}
+export interface InvalidCron {}
 export interface InvalidEffectInputForExecutionMode {
   effectId: EffectId;
   effectInputType: EffectInputTypeEnum;
@@ -1439,12 +1391,9 @@ export interface InvalidMgsRateLimit {
   minimumRateLimit: number;
   providedRateLimit: number;
 }
-export interface InvalidObjectSet {
-}
-export interface InvalidTemplateEmailNotificationString {
-}
-export interface InvalidTemplateShortNotificationString {
-}
+export interface InvalidObjectSet {}
+export interface InvalidTemplateEmailNotificationString {}
+export interface InvalidTemplateShortNotificationString {}
 export interface InvalidTransactionReadLimit {
   datasetsNotInInput: Array<DatasetRid>;
   override: TransactionReadLimit;
@@ -1452,16 +1401,13 @@ export interface InvalidTransactionReadLimit {
 /**
  * Url for notification link must be a valid Url.
  */
-export interface InvalidUrlNotificationLink {
-}
-export interface InvalidZoneId {
-}
+export interface InvalidUrlNotificationLink {}
+export interface InvalidZoneId {}
 /**
  * Not actually configurable, we evaluate this to a boolean at runtime based on the monitor's current triggering
  * state. Not supported in event-based monitor logic.
  */
-export interface IsMonitorTriggeringContextInput {
-}
+export interface IsMonitorTriggeringContextInput {}
 export interface JitterConfiguration_jitterFactor {
   type: "jitterFactor";
   jitterFactor: number | "NaN" | "Infinity" | "-Infinity";
@@ -1518,10 +1464,8 @@ export interface ManagementSettings {
  * Only send failure notifications (side effects or monitor metadata) to managers. Note that since side effect
  * execution is scoped to users, side effects will fail silently for non-manager users.
  */
-export interface ManagersOnly {
-}
-export interface ManagerUsers {
-}
+export interface ManagersOnly {}
+export interface ManagerUsers {}
 export interface MarketplaceActionEffect {
   actionInputs: Record<MarketplaceActionParameterRid, MarketplaceEffectInput>;
   actionTypeRid: MarketplaceActionTypeRid;
@@ -1984,8 +1928,7 @@ export interface MarketplaceMonitor {
     MarketplaceVersionedObjectSet
   >;
 }
-export interface MarketplaceMonitorEvent {
-}
+export interface MarketplaceMonitorEvent {}
 export interface MarketplaceMonitorLogic_event {
   type: "event";
   event: MarketplaceEvent;
@@ -2119,8 +2062,7 @@ export interface MarketplaceMutedConfig {
   isMutedIndefinitely?: boolean | null | undefined;
   until?: string | null | undefined;
 }
-export interface MarketplaceMutedForUsers {
-}
+export interface MarketplaceMutedForUsers {}
 export interface MarketplaceNotepadAttachmentSource {
   notepadRid: MarketplaceNotepadRid;
 }
@@ -2538,8 +2480,7 @@ export interface MarketplaceSingleMetricType_objectSetAggregateMetric {
 
 export interface MarketplaceSingleMetricType_versionedObjectSetAggregateMetric {
   type: "versionedObjectSetAggregateMetric";
-  versionedObjectSetAggregateMetric:
-    MarketplaceVersionedObjectSetAggregateMetric;
+  versionedObjectSetAggregateMetric: MarketplaceVersionedObjectSetAggregateMetric;
 }
 
 export interface MarketplaceSingleMetricType_objectMetric {
@@ -2567,8 +2508,7 @@ export type MarketplaceStreamingDatasetRid = MarketplaceId;
  * Condition for monitoring time series.
  */
 export interface MarketplaceTimeSeriesCondition {
-  intermediateObjectTypeCondition:
-    MarketplaceTimeSeriesConditionAutomationCondition;
+  intermediateObjectTypeCondition: MarketplaceTimeSeriesConditionAutomationCondition;
   outputInfo: MarketplaceTimeSeriesConditionOutputInfo;
   quiverLocator: TimeSeriesQuiverLocator;
   streaming?: TimeSeriesStreamingConfiguration | null | undefined;
@@ -2627,8 +2567,7 @@ export type MarketplaceUrlTarget =
   | MarketplaceUrlTarget_url;
 
 export type MarketplaceUrlTargetRid = string;
-export interface MarketplaceUserId {
-}
+export interface MarketplaceUserId {}
 export type MarketplaceUserPropertyRid = MarketplaceObjectPropertyTypeRid;
 export interface MarketplaceUserSubscriberType {
   userId: MarketplaceUserId;
@@ -2688,8 +2627,7 @@ export interface MediaSetResource {
   rid: MediaSetRid;
 }
 export type MediaSetRid = string;
-export interface MetadataErrorLocation {
-}
+export interface MetadataErrorLocation {}
 export interface MetadataNotificationRecipients_allSubscribers {
   type: "allSubscribers";
   allSubscribers: AllSubscribers;
@@ -2738,8 +2676,7 @@ export interface MgsAttemptMetadata {
 export interface MgsConfig {
   maxParallelism: number;
 }
-export interface MissingRequiredActionParameter {
-}
+export interface MissingRequiredActionParameter {}
 export interface MissingResource {
   resource: ProjectScopedResource;
 }
@@ -2811,8 +2748,7 @@ export interface MonitorEvent {
  * A programmatically generated UUID.
  */
 export type MonitorEventId = string;
-export interface MonitorEventIdInput {
-}
+export interface MonitorEventIdInput {}
 export interface MonitorEventMetadata {
   branchRid?: BranchRid | null | undefined;
   evaluationId?: MonitorEvaluationId | null | undefined;
@@ -3097,14 +3033,12 @@ export interface MonitorRecovered {
 /**
  * This can only happen if someone un-disables a monitor via the API.
  */
-export interface MonitorReenabled {
-}
+export interface MonitorReenabled {}
 /**
  * A monitor resource identifier.
  */
 export type MonitorRid = string;
-export interface MonitorRidInput {
-}
+export interface MonitorRidInput {}
 /**
  * A runtime error occurred while trying to evaluate this monitor.
  */
@@ -3115,23 +3049,19 @@ export interface MonitorRuntimeError {
   monitorVersion: MonitorVersion;
   traceId?: TraceId | null | undefined;
 }
-export interface MonitorScheduleBatchExecutionCancelled {
-}
+export interface MonitorScheduleBatchExecutionCancelled {}
 /**
  * All batches are currently being cancelled
  */
-export interface MonitorScheduleBatchExecutionCancelling {
-}
+export interface MonitorScheduleBatchExecutionCancelling {}
 /**
  * Batches failed to cancel
  */
 export interface MonitorScheduleBatchExecutionCancellingFailed {
   failureLog: FailureEffectLog;
 }
-export interface MonitorScheduleBatchExecutionCompleted {
-}
-export interface MonitorScheduleBatchExecutionQueued {
-}
+export interface MonitorScheduleBatchExecutionCompleted {}
+export interface MonitorScheduleBatchExecutionQueued {}
 export interface MonitorScheduleBatchExecutionStatus_queued {
   type: "queued";
   queued: MonitorScheduleBatchExecutionQueued;
@@ -3179,8 +3109,7 @@ export interface MonitorScheduleBatchExecutionStatusWithTimestamp {
   status: MonitorScheduleBatchExecutionStatus;
   timestamp: string;
 }
-export interface MonitorScheduleBatchGeneratingObjectRids {
-}
+export interface MonitorScheduleBatchGeneratingObjectRids {}
 export interface MonitorScheduleBatchGeneratingObjectRidsFailed {
   failureLog: FailureEffectLog;
 }
@@ -3211,8 +3140,7 @@ export type MonitorSubscriberType =
   | MonitorSubscriberType_user
   | MonitorSubscriberType_group;
 
-export interface MonitorTimeseriesConditionOutputLive {
-}
+export interface MonitorTimeseriesConditionOutputLive {}
 /**
  * An event signifying an execution of a timeseries alert evaluation job.
  */
@@ -3328,8 +3256,7 @@ export interface MonitorValidationErrorUnion_invalidLookbackWindow {
 
 export interface MonitorValidationErrorUnion_unauthorizedForTimeseriesScopeObjectSet {
   type: "unauthorizedForTimeseriesScopeObjectSet";
-  unauthorizedForTimeseriesScopeObjectSet:
-    UnauthorizedForTimeseriesScopeObjectSet;
+  unauthorizedForTimeseriesScopeObjectSet: UnauthorizedForTimeseriesScopeObjectSet;
 }
 
 export interface MonitorValidationErrorUnion_rootObjectTypeNotFound {
@@ -3364,14 +3291,12 @@ export interface MonitorValidationErrorUnion_noBackingDatasetForRootObjectType {
 
 export interface MonitorValidationErrorUnion_multipleBackingDatasetsForRootObjectType {
   type: "multipleBackingDatasetsForRootObjectType";
-  multipleBackingDatasetsForRootObjectType:
-    MultipleBackingDatasetsForRootObjectType;
+  multipleBackingDatasetsForRootObjectType: MultipleBackingDatasetsForRootObjectType;
 }
 
 export interface MonitorValidationErrorUnion_backingDatasetForRootObjectTypeNotInProjectScope {
   type: "backingDatasetForRootObjectTypeNotInProjectScope";
-  backingDatasetForRootObjectTypeNotInProjectScope:
-    BackingDatasetForRootObjectTypeNotInProjectScope;
+  backingDatasetForRootObjectTypeNotInProjectScope: BackingDatasetForRootObjectTypeNotInProjectScope;
 }
 
 export interface MonitorValidationErrorUnion_outputsNotInSingleProject {
@@ -3386,8 +3311,7 @@ export interface MonitorValidationErrorUnion_invalidExpiryAndLocation {
 
 export interface MonitorValidationErrorUnion_actionOrLogicEffectAddedForNonUserSubscriber {
   type: "actionOrLogicEffectAddedForNonUserSubscriber";
-  actionOrLogicEffectAddedForNonUserSubscriber:
-    ActionOrLogicEffectAddedForNonUserSubscriber;
+  actionOrLogicEffectAddedForNonUserSubscriber: ActionOrLogicEffectAddedForNonUserSubscriber;
 }
 
 export interface MonitorValidationErrorUnion_allMetricIdsShouldBeUnique {
@@ -3412,8 +3336,7 @@ export interface MonitorValidationErrorUnion_onlyTemporarySetsAllowed {
 
 export interface MonitorValidationErrorUnion_actionTypeNotPermittedToRunFromAutomate {
   type: "actionTypeNotPermittedToRunFromAutomate";
-  actionTypeNotPermittedToRunFromAutomate:
-    ActionTypeNotPermittedToRunFromAutomate;
+  actionTypeNotPermittedToRunFromAutomate: ActionTypeNotPermittedToRunFromAutomate;
 }
 
 export interface MonitorValidationErrorUnion_onlyOneEffectDependencyAllowed {
@@ -3423,38 +3346,32 @@ export interface MonitorValidationErrorUnion_onlyOneEffectDependencyAllowed {
 
 export interface MonitorValidationErrorUnion_effectDependenciesInconsistentWithEffectOrdering {
   type: "effectDependenciesInconsistentWithEffectOrdering";
-  effectDependenciesInconsistentWithEffectOrdering:
-    EffectDependenciesInconsistentWithEffectOrdering;
+  effectDependenciesInconsistentWithEffectOrdering: EffectDependenciesInconsistentWithEffectOrdering;
 }
 
 export interface MonitorValidationErrorUnion_invalidTemplateShortNotificationString {
   type: "invalidTemplateShortNotificationString";
-  invalidTemplateShortNotificationString:
-    InvalidTemplateShortNotificationString;
+  invalidTemplateShortNotificationString: InvalidTemplateShortNotificationString;
 }
 
 export interface MonitorValidationErrorUnion_invalidTemplateEmailNotificationString {
   type: "invalidTemplateEmailNotificationString";
-  invalidTemplateEmailNotificationString:
-    InvalidTemplateEmailNotificationString;
+  invalidTemplateEmailNotificationString: InvalidTemplateEmailNotificationString;
 }
 
 export interface MonitorValidationErrorUnion_duplicateEffectInputIdsInTemplateNotification {
   type: "duplicateEffectInputIdsInTemplateNotification";
-  duplicateEffectInputIdsInTemplateNotification:
-    DuplicateEffectInputIdsInTemplateNotification;
+  duplicateEffectInputIdsInTemplateNotification: DuplicateEffectInputIdsInTemplateNotification;
 }
 
 export interface MonitorValidationErrorUnion_templateNotificationInputsMissingParameters {
   type: "templateNotificationInputsMissingParameters";
-  templateNotificationInputsMissingParameters:
-    TemplateNotificationInputsMissingParameters;
+  templateNotificationInputsMissingParameters: TemplateNotificationInputsMissingParameters;
 }
 
 export interface MonitorValidationErrorUnion_invalidEffectInputForTemplateNotification {
   type: "invalidEffectInputForTemplateNotification";
-  invalidEffectInputForTemplateNotification:
-    InvalidEffectInputForTemplateNotification;
+  invalidEffectInputForTemplateNotification: InvalidEffectInputForTemplateNotification;
 }
 
 export interface MonitorValidationErrorUnion_effectInputTypeMismatch {
@@ -3469,8 +3386,7 @@ export interface MonitorValidationErrorUnion_invalidObjectSet {
 
 export interface MonitorValidationErrorUnion_affectedObjectProvidedForNonLiveMonitor {
   type: "affectedObjectProvidedForNonLiveMonitor";
-  affectedObjectProvidedForNonLiveMonitor:
-    AffectedObjectProvidedForNonLiveMonitor;
+  affectedObjectProvidedForNonLiveMonitor: AffectedObjectProvidedForNonLiveMonitor;
 }
 
 export interface MonitorValidationErrorUnion_objectLocatorInputNotPermitted {
@@ -3480,8 +3396,7 @@ export interface MonitorValidationErrorUnion_objectLocatorInputNotPermitted {
 
 export interface MonitorValidationErrorUnion_providedPropertyRidsDoNotExistOnObjectTypes {
   type: "providedPropertyRidsDoNotExistOnObjectTypes";
-  providedPropertyRidsDoNotExistOnObjectTypes:
-    ProvidedPropertyRidsDoNotExistOnObjectTypes;
+  providedPropertyRidsDoNotExistOnObjectTypes: ProvidedPropertyRidsDoNotExistOnObjectTypes;
 }
 
 export interface MonitorValidationErrorUnion_actionParameterRidNotFound {
@@ -3511,8 +3426,7 @@ export interface MonitorValidationErrorUnion_invalidEffectInputForExecutionMode 
 
 export interface MonitorValidationErrorUnion_failureInputProvidedWithoutEffectDependency {
   type: "failureInputProvidedWithoutEffectDependency";
-  failureInputProvidedWithoutEffectDependency:
-    FailureInputProvidedWithoutEffectDependency;
+  failureInputProvidedWithoutEffectDependency: FailureInputProvidedWithoutEffectDependency;
 }
 
 export interface MonitorValidationErrorUnion_functionOutputTypeNotBoolean {
@@ -3522,8 +3436,7 @@ export interface MonitorValidationErrorUnion_functionOutputTypeNotBoolean {
 
 export interface MonitorValidationErrorUnion_functionPredicateParameterTypeDoesNotMatch {
   type: "functionPredicateParameterTypeDoesNotMatch";
-  functionPredicateParameterTypeDoesNotMatch:
-    FunctionPredicateParameterTypeDoesNotMatch;
+  functionPredicateParameterTypeDoesNotMatch: FunctionPredicateParameterTypeDoesNotMatch;
 }
 
 export interface MonitorValidationErrorUnion_functionSpecsNotFound {
@@ -3563,14 +3476,12 @@ export interface MonitorValidationErrorUnion_branchingUnsupportedForConditionTyp
 
 export interface MonitorValidationErrorUnion_branchingUnsupportedForVersionedObjectSets {
   type: "branchingUnsupportedForVersionedObjectSets";
-  branchingUnsupportedForVersionedObjectSets:
-    BranchingUnsupportedForVersionedObjectSets;
+  branchingUnsupportedForVersionedObjectSets: BranchingUnsupportedForVersionedObjectSets;
 }
 
 export interface MonitorValidationErrorUnion_functionGeneratedRecipientsNeedsScopedMode {
   type: "functionGeneratedRecipientsNeedsScopedMode";
-  functionGeneratedRecipientsNeedsScopedMode:
-    FunctionGeneratedRecipientsNeedsScopedMode;
+  functionGeneratedRecipientsNeedsScopedMode: FunctionGeneratedRecipientsNeedsScopedMode;
 }
 
 export interface MonitorValidationErrorUnion_functionEffectsUnsupported {
@@ -3642,8 +3553,7 @@ export type MonitorValidationErrorUnion =
 
 export interface MonitorValidationWarning_streamingSyncsIgnoredForTimeseriesMonitor {
   type: "streamingSyncsIgnoredForTimeseriesMonitor";
-  streamingSyncsIgnoredForTimeseriesMonitor:
-    StreamingSyncsIgnoredForTimeseriesMonitor;
+  streamingSyncsIgnoredForTimeseriesMonitor: StreamingSyncsIgnoredForTimeseriesMonitor;
 }
 
 export interface MonitorValidationWarning_scopedEffectsRunningOnGpsObjectTypes {
@@ -3716,8 +3626,7 @@ export interface MultipleBackingDatasetsForRootObjectType {
 /**
  * Multiple object types are used in the object set condition; this is currently unsupported.
  */
-export interface MultipleObjectTypesUsedInCondition {
-}
+export interface MultipleObjectTypesUsedInCondition {}
 /**
  * If muted, no effects will be triggered. The monitor history will still be saved.
  */
@@ -3744,17 +3653,14 @@ export type MutedReason =
  * There is no dataset datasource for the root object type of a timeseries monitor. If the root object type is
  * backed by a restricted view, users should set up a materialization on the object type.
  */
-export interface NoBackingDatasetForRootObjectType {
-}
-export interface NoCyclesAllowed {
-}
+export interface NoBackingDatasetForRootObjectType {}
+export interface NoCyclesAllowed {}
 export interface NoEditsGeneratedEffectLog {
   traceId?: TraceId | null | undefined;
   tracing?: FoundryTelemetryServiceTracingMetadata | null | undefined;
   triggeredBy: TriggeredBy;
 }
-export interface NoObjectSetProvided {
-}
+export interface NoObjectSetProvided {}
 export interface NotepadAttachmentSource {
   notepadRid: NotepadRid;
 }
@@ -3797,8 +3703,7 @@ export interface NotificationAttachment {
  * Not actually configurable, we will generate a notification based on the underlying change with a link to the
  * monitor.
  */
-export interface NotificationEffect {
-}
+export interface NotificationEffect {}
 export interface NotificationEffectFunctionRendering {
   additionalAttachments: Array<NotificationAttachment>;
   functionInputs: Record<FunctionInputName, EffectInput>;
@@ -3874,8 +3779,7 @@ export type NotificationRecipients =
  * Name of a notification type. This name is hard-coded in cdconfig.
  */
 export type NotificationType = string;
-export interface NoTransactionBound {
-}
+export interface NoTransactionBound {}
 export interface NotSavedObjectSetEvent {
   eventType: ObjectSetEventTypeV2;
   objectSetRid: ObjectSetRid;
@@ -3923,8 +3827,7 @@ export interface ObjectEvent {
  * Events that can be watched on object rids.
  */
 export type ObjectEventType = "ANY_CHANGE";
-export interface ObjectLocatorInputNotPermitted {
-}
+export interface ObjectLocatorInputNotPermitted {}
 export interface ObjectMetric {
   objectRid: ObjectRid;
   propertyTypeRid: ObjectPropertyTypeRid;
@@ -3942,14 +3845,12 @@ export type ObjectPropertyTypeId = string;
  */
 export type ObjectPropertyTypeRid = string;
 export type ObjectPropertyValue = any;
-export interface ObjectReferenceListType {
-}
+export interface ObjectReferenceListType {}
 /**
  * An object resource identifier.
  */
 export type ObjectRid = string;
-export interface ObjectsAddedEvent {
-}
+export interface ObjectsAddedEvent {}
 export interface ObjectsChangedEventOrigin {
   objectTypeRid?: ObjectTypeRid | null | undefined;
   origin: ObjectChangedEventOriginEnum;
@@ -4019,8 +3920,7 @@ export interface ObjectSetMultiMetric {
  * An object set resource identifier.
  */
 export type ObjectSetRid = string;
-export interface ObjectSetRidType {
-}
+export interface ObjectSetRidType {}
 export interface ObjectSetSource_objectSetRid {
   type: "objectSetRid";
   objectSetRid: ObjectSetRid;
@@ -4049,8 +3949,7 @@ export interface ObjectsModifiedEvent {
   shouldMonitorObjectsAdded: boolean;
   shouldMonitorObjectsRemoved: boolean;
 }
-export interface ObjectsRemovedEvent {
-}
+export interface ObjectsRemovedEvent {}
 /**
  * An object type rid.
  */
@@ -4060,18 +3959,15 @@ export interface OffsetLocator {
   patchOffset?: PatchOffset | null | undefined;
   scrollOffset?: ScrollOffset | null | undefined;
 }
-export interface OnlyOneEffectDependencyAllowed {
-}
-export interface OnlyTemporarySetsAllowed {
-}
+export interface OnlyOneEffectDependencyAllowed {}
+export interface OnlyTemporarySetsAllowed {}
 export interface OnSuccess_createScenario {
   type: "createScenario";
   createScenario: CreateScenario;
 }
 export type OnSuccess = OnSuccess_createScenario;
 
-export interface OpenReview {
-}
+export interface OpenReview {}
 export interface Operand_value {
   type: "value";
   value: _api_types_Value;
@@ -4109,8 +4005,7 @@ export type Operand =
 export interface OrPredicate {
   predicates: Array<Predicate>;
 }
-export interface OutputObjectTypeNotFound {
-}
+export interface OutputObjectTypeNotFound {}
 /**
  * All outputs of a build must be in the same project including the automations and output datasets.
  */
@@ -4130,13 +4025,11 @@ export type PatchOffset = number;
  * Batch execution of side effects. Input objects are coalesced into an object set, then side effects are
  * executed with the entire set.
  */
-export interface PerBatchOfObjects {
-}
+export interface PerBatchOfObjects {}
 /**
  * Sequential execution of side effects. Side effects are executed once with each object provided.
  */
-export interface PerObject {
-}
+export interface PerObject {}
 export interface PerPartition {
   groupBy: GroupBy;
 }
@@ -4361,10 +4254,8 @@ export type RetryableIssues =
   | RetryableIssues_retryAllFailures
   | RetryableIssues_retryAllFailuresWithoutAllowlist;
 
-export interface RetryAllFailures {
-}
-export interface RetryAllFailuresWithoutAllowlist {
-}
+export interface RetryAllFailures {}
+export interface RetryAllFailuresWithoutAllowlist {}
 export interface RetryBackoffStrategy_exponentialBackoff {
   type: "exponentialBackoff";
   exponentialBackoff: ExponentialBackoff;
@@ -4407,8 +4298,7 @@ export interface ReviewMetadata {
   reviewedBy: UserId;
 }
 export type ReviewStatus = "OPEN" | "ACCEPTED" | "REJECTED";
-export interface RootObjectTypeNotFound {
-}
+export interface RootObjectTypeNotFound {}
 /**
  * Scope that the automation is running against, includes the entities that the token that we run with has
  * access to.
@@ -4486,8 +4376,7 @@ export interface ScheduledSimpleCondition {
 export interface ScheduleImmediately {
   batchDelay?: BatchDelay | null | undefined;
 }
-export interface SchedulingJobFailure {
-}
+export interface SchedulingJobFailure {}
 export interface SchedulingStrategy_scheduleImmediately {
   type: "scheduleImmediately";
   scheduleImmediately: ScheduleImmediately;
@@ -4573,10 +4462,8 @@ export interface ScopedTokenEffects {
   generatedScope: RunningAutomationScope;
   sideEffects: ScopedSideEffects;
 }
-export interface ScopedTokenUnsupported {
-}
-export interface ScopedTokenWithLanguageModelUnsupported {
-}
+export interface ScopedTokenUnsupported {}
+export interface ScopedTokenWithLanguageModelUnsupported {}
 export interface ScopedTriggerEventMetadata {
   userIds: Array<UserId>;
 }
@@ -4585,8 +4472,7 @@ export type ScrollOffset = string;
 /**
  * Semantic versions - not supported by logic so this is left empty for now
  */
-export interface SemVer {
-}
+export interface SemVer {}
 export interface SemVerValueTypesUnsupported {
   valueTypeRid: ValueTypeRid;
 }
@@ -4859,16 +4745,14 @@ export interface SuccessStagedActionRejectionEffectLog {
  * Emails and notifications will render with the default configuration.
  * This has the same effect as not specifying any EffectRendering at all.
  */
-export interface SystemDefaultRendering {
-}
+export interface SystemDefaultRendering {}
 export interface TelemetryConfig {
   enableTelemetry: boolean;
 }
 export interface TemplateNotificationInputsMissingParameters {
   missingEffectInputId: EffectInputId;
 }
-export interface ThrowOnFailure {
-}
+export interface ThrowOnFailure {}
 export interface TimeSeriesAlertingOverrides {
   transactionReadLimit?: TransactionReadLimit | null | undefined;
 }
@@ -4931,8 +4815,7 @@ export type TimeseriesIntermediateObjectTypeMonitorLogic =
  * A job rid for a given build. This job is owned by job-tracker
  */
 export type TimeseriesJobRid = string;
-export interface TimeSeriesMonitorUnsupported {
-}
+export interface TimeSeriesMonitorUnsupported {}
 export interface TimeSeriesQuiverLocator_versionedQuiverLocator {
   type: "versionedQuiverLocator";
   versionedQuiverLocator: VersionedQuiverLocator;
@@ -5040,21 +4923,16 @@ export interface TriggerExecutionSettings {
 export interface TriggerOnFailureThreshold {
   numFailures: number;
 }
-export interface TriggerOnSuccess {
-}
+export interface TriggerOnSuccess {}
 /**
  * The property mapping is determined from typeclasses on the properties.
  * Note that in future, we may allow extra properties that are injected as static values per-automation, or
  * injected dynamically from the root object type.
  */
-export interface TypeclassBackedPropertyMapping {
-}
-export interface UnauthorizedForTimeseriesScopeObjectSet {
-}
-export interface UnknownTimeseriesQuiverArtifact {
-}
-export interface UnsupportedEffectInputType {
-}
+export interface TypeclassBackedPropertyMapping {}
+export interface UnauthorizedForTimeseriesScopeObjectSet {}
+export interface UnknownTimeseriesQuiverArtifact {}
+export interface UnsupportedEffectInputType {}
 export interface UnsupportedForScopedMode_statefulFunctionsUnsupported {
   type: "statefulFunctionsUnsupported";
   statefulFunctionsUnsupported: StatefulFunctionsUnsupported;
@@ -5062,8 +4940,7 @@ export interface UnsupportedForScopedMode_statefulFunctionsUnsupported {
 
 export interface UnsupportedForScopedMode_functionGeneratedObjectSetsUnsupported {
   type: "functionGeneratedObjectSetsUnsupported";
-  functionGeneratedObjectSetsUnsupported:
-    FunctionGeneratedObjectSetsUnsupported;
+  functionGeneratedObjectSetsUnsupported: FunctionGeneratedObjectSetsUnsupported;
 }
 
 export interface UnsupportedForScopedMode_sourcesUnsupported {
@@ -5125,8 +5002,7 @@ export type UrlTarget = UrlTarget_rid | UrlTarget_url;
  * The rid should either be a Compass rid or an Object rid. Anything else will render to the stack homepage.
  */
 export type UrlTargetRid = string;
-export interface UserCancelledBatchExecution {
-}
+export interface UserCancelledBatchExecution {}
 /**
  * A Multipass user id. This is a UUID (although the MP api declares it as a string).
  */
@@ -5148,8 +5024,7 @@ export type UserIdLocation =
   | UserIdLocation_managers
   | UserIdLocation_notificationEffect;
 
-export interface UserManuallyMuted {
-}
+export interface UserManuallyMuted {}
 export type UserPropertyRid = ObjectPropertyTypeRid;
 export interface UserProvidedReason {
   reason: string;
@@ -5157,8 +5032,7 @@ export interface UserProvidedReason {
 export interface UserSubscriberType {
   userId: UserId;
 }
-export interface V2JobsNotEnabled {
-}
+export interface V2JobsNotEnabled {}
 export interface ValidateAllModifiedObjectsAreInObjectSet {
   objectSet: ObjectSetRid;
 }
@@ -5216,8 +5090,7 @@ export interface WaitTime {
   minutes: number;
   seconds: number;
 }
-export interface WarnOnFailure {
-}
+export interface WarnOnFailure {}
 /**
  * The rid for a Webhook.
  */

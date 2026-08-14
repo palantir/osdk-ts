@@ -15,10 +15,10 @@
  */
 
 import type {
+  CompileTimeMetadata,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
-  PropertyKeys,
 } from "@osdk/api";
 
 export interface OptimisticBuilder {
@@ -28,7 +28,7 @@ export interface OptimisticBuilder {
   createObject: <T extends ObjectTypeDefinition>(
     type: T,
     primaryKey: PrimaryKeyType<T>,
-    properties: Pick<Osdk.Instance<T>, PropertyKeys<T>>,
+    properties: CompileTimeMetadata<T>["props"],
   ) => this;
   deleteObject: <T extends ObjectTypeDefinition>(
     value: Osdk.Instance<T>,

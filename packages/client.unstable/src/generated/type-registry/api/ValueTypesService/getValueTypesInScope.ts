@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { GetValueTypesInScopeRequest } from "../GetValueTypesInScopeRequest.js";
 import type { GetValueTypesInScopeResponse } from "../GetValueTypesInScopeResponse.js";
 

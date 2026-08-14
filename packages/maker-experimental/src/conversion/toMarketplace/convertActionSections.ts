@@ -17,6 +17,7 @@
 import type { Section, SectionId } from "@osdk/client.unstable";
 import type { ActionType } from "@osdk/maker";
 import { uppercaseFirstLetter } from "@osdk/maker";
+
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 
 export function convertActionSections(
@@ -24,29 +25,30 @@ export function convertActionSections(
   ridGenerator: OntologyRidGenerator,
 ): Record<SectionId, Section> {
   return Object.fromEntries(
-    Object.entries(action.sections ?? {}).map((
-      [sectionId, section],
-    ) => [sectionId, {
-      id: sectionId,
-      // TODO: Generate proper RID for section
-      rid: ridGenerator.generateSectionRid(sectionId),
-      content: section.parameters.map(p => ({
-        type: "parameterId",
-        parameterId: p,
-      })),
-      displayMetadata: {
-        collapsedByDefault: section.collapsedByDefault ?? false,
-        columnCount: section.columnCount ?? 1,
-        description: section.description ?? "",
-        displayName: section.displayName ?? uppercaseFirstLetter(sectionId),
-        showTitleBar: section.showTitleBar ?? true,
-        ...section.style
-          && {
-            style: section.style === "box"
-              ? { type: "box", box: {} }
-              : { type: "minimal", minimal: {} },
-          },
+    Object.entries(action.sections ?? {}).map(([sectionId, section]) => [
+      sectionId,
+      {
+        id: sectionId,
+        // TODO: Generate proper RID for section
+        rid: ridGenerator.generateSectionRid(sectionId),
+        content: section.parameters.map((p) => ({
+          type: "parameterId",
+          parameterId: p,
+        })),
+        displayMetadata: {
+          collapsedByDefault: section.collapsedByDefault ?? false,
+          columnCount: section.columnCount ?? 1,
+          description: section.description ?? "",
+          displayName: section.displayName ?? uppercaseFirstLetter(sectionId),
+          showTitleBar: section.showTitleBar ?? true,
+          ...(section.style && {
+            style:
+              section.style === "box"
+                ? { type: "box", box: {} }
+                : { type: "minimal", minimal: {} },
+          }),
+        },
       },
-    }]),
+    ]),
   );
 }

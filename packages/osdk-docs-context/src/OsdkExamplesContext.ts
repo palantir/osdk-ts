@@ -37,6 +37,15 @@ export interface ExamplesHierarchy {
 }
 
 /**
+ * A single example matched by `searchExamples` / `findExamplesByCodePattern`.
+ */
+export interface ExampleSearchResult {
+  version: string;
+  exampleName: string;
+  metadata: ExampleMetadata;
+}
+
+/**
  * Utility class for working with the original flat examples structure
  */
 export class OsdkExamplesContext {
@@ -51,8 +60,10 @@ export class OsdkExamplesContext {
    * Get all example names for a specific version
    */
   static getExamplesForVersion(version: string): string[] {
-    const versionData = TYPESCRIPT_OSDK_EXAMPLES
-      .versions[version as keyof typeof TYPESCRIPT_OSDK_EXAMPLES.versions];
+    const versionData =
+      TYPESCRIPT_OSDK_EXAMPLES.versions[
+        version as keyof typeof TYPESCRIPT_OSDK_EXAMPLES.versions
+      ];
     return versionData ? Object.keys(versionData.examples) : [];
   }
 
@@ -63,12 +74,13 @@ export class OsdkExamplesContext {
     version: string,
     exampleName: string,
   ): ExampleMetadata | undefined {
-    const versionData = TYPESCRIPT_OSDK_EXAMPLES
-      .versions[version as keyof typeof TYPESCRIPT_OSDK_EXAMPLES.versions];
-    return versionData
-      ?.examples[exampleName as keyof typeof versionData.examples] as
-        | ExampleMetadata
-        | undefined;
+    const versionData =
+      TYPESCRIPT_OSDK_EXAMPLES.versions[
+        version as keyof typeof TYPESCRIPT_OSDK_EXAMPLES.versions
+      ];
+    return versionData?.examples[
+      exampleName as keyof typeof versionData.examples
+    ] as ExampleMetadata | undefined;
   }
 
   /**
@@ -85,24 +97,17 @@ export class OsdkExamplesContext {
   /**
    * Search for examples by name pattern across all versions
    */
-  static searchExamples(
-    pattern: string,
-  ): Array<
-    { version: string; exampleName: string; metadata: ExampleMetadata }
-  > {
-    const results: Array<
-      { version: string; exampleName: string; metadata: ExampleMetadata }
-    > = [];
+  static searchExamples(pattern: string): Array<ExampleSearchResult> {
+    const results: Array<ExampleSearchResult> = [];
+    // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
     const regex = new RegExp(pattern, "i");
 
-    for (
-      const [version, versionData] of Object.entries(
-        TYPESCRIPT_OSDK_EXAMPLES.versions,
-      )
-    ) {
-      for (
-        const [exampleName, metadata] of Object.entries(versionData.examples)
-      ) {
+    for (const [version, versionData] of Object.entries(
+      TYPESCRIPT_OSDK_EXAMPLES.versions,
+    )) {
+      for (const [exampleName, metadata] of Object.entries(
+        versionData.examples,
+      )) {
         if (regex.test(exampleName)) {
           results.push({
             version,
@@ -121,22 +126,17 @@ export class OsdkExamplesContext {
    */
   static findExamplesByCodePattern(
     pattern: string,
-  ): Array<
-    { version: string; exampleName: string; metadata: ExampleMetadata }
-  > {
-    const results: Array<
-      { version: string; exampleName: string; metadata: ExampleMetadata }
-    > = [];
+  ): Array<ExampleSearchResult> {
+    const results: Array<ExampleSearchResult> = [];
+    // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
     const regex = new RegExp(pattern, "i");
 
-    for (
-      const [version, versionData] of Object.entries(
-        TYPESCRIPT_OSDK_EXAMPLES.versions,
-      )
-    ) {
-      for (
-        const [exampleName, metadata] of Object.entries(versionData.examples)
-      ) {
+    for (const [version, versionData] of Object.entries(
+      TYPESCRIPT_OSDK_EXAMPLES.versions,
+    )) {
+      for (const [exampleName, metadata] of Object.entries(
+        versionData.examples,
+      )) {
         const typedMetadata = metadata as ExampleMetadata;
         if (regex.test(typedMetadata.code)) {
           results.push({

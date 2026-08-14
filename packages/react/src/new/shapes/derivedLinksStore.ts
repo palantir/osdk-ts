@@ -43,6 +43,7 @@ import {
   buildObjectSetFromLinkDefByType,
   getLinkQueryOptions,
 } from "@osdk/client/unstable-do-not-use";
+
 import {
   createCachingNotifier,
   createStoreSubscribe,
@@ -143,9 +144,10 @@ export function createDerivedLinksStore<
   const cache = createVersionedCache<DerivedLinksPayload<S>>();
   const notifySubscribers = createCachingNotifier(subscribers, cache);
 
-  const pendingNestedEntries: Array<
-    { entry: LinkEntry; sourceType: ObjectOrInterfaceDefinition }
-  > = [];
+  const pendingNestedEntries: Array<{
+    entry: LinkEntry;
+    sourceType: ObjectOrInterfaceDefinition;
+  }> = [];
   let nestedFlushTimer: ReturnType<typeof setTimeout> | undefined;
   let isDestroyed = false;
 
@@ -164,9 +166,9 @@ export function createDerivedLinksStore<
       if (isDestroyed) {
         return;
       }
-      const batch = pendingNestedEntries.splice(0).filter(({ entry }) =>
-        !entry.cleaned
-      );
+      const batch = pendingNestedEntries
+        .splice(0)
+        .filter(({ entry }) => !entry.cleaned);
       if (batch.length > 0) {
         startLinksInBatch(batch);
       }
@@ -246,9 +248,10 @@ export function createDerivedLinksStore<
    * to `"error"` individually.
    */
   function startLinksInBatch(
-    entries: Array<
-      { entry: LinkEntry; sourceType: ObjectOrInterfaceDefinition }
-    >,
+    entries: Array<{
+      entry: LinkEntry;
+      sourceType: ObjectOrInterfaceDefinition;
+    }>,
   ): void {
     for (const { entry } of entries) {
       entry.status = "loading";
@@ -281,9 +284,7 @@ export function createDerivedLinksStore<
    * link handling, and rebuilds the entry's data with any nested link data
    * attached. On `error` it flips the entry to `"error"`.
    */
-  function createLinkObserver(
-    entry: LinkEntry,
-  ): Observer<ListObserverPayload> {
+  function createLinkObserver(entry: LinkEntry): Observer<ListObserverPayload> {
     return {
       next: (payload) => {
         if (isDestroyed) {
@@ -373,8 +374,8 @@ export function createDerivedLinksStore<
 
       for (const [name, entry] of linkEntries) {
         links[name] = entry.data;
-        const isLoadingOrInit = entry.status === "loading"
-          || entry.status === "init";
+        const isLoadingOrInit =
+          entry.status === "loading" || entry.status === "init";
         if (isLoadingOrInit) {
           anyLoading = true;
         }
@@ -391,9 +392,9 @@ export function createDerivedLinksStore<
 
       return {
         links,
-        linkStatus: linkStatus as Partial<
-          { [K in keyof ShapeDerivedLinks<S>]: LinkStatus }
-        >,
+        linkStatus: linkStatus as Partial<{
+          [K in keyof ShapeDerivedLinks<S>]: LinkStatus;
+        }>,
         anyLoading,
         anyError,
       };
@@ -425,9 +426,10 @@ export function createDerivedLinksStore<
   const subscribe = createStoreSubscribe(
     subscribers,
     () => {
-      const entriesToStart: Array<
-        { entry: LinkEntry; sourceType: ObjectOrInterfaceDefinition }
-      > = [];
+      const entriesToStart: Array<{
+        entry: LinkEntry;
+        sourceType: ObjectOrInterfaceDefinition;
+      }> = [];
       for (const entry of linkEntries.values()) {
         if (entry.status === "init") {
           entriesToStart.push({ entry, sourceType: shape.__baseType });
@@ -444,9 +446,7 @@ export function createDerivedLinksStore<
    * Starts observation for a link that was configured with `defer: true`.
    * No-op for unknown link names or links not in the `deferred` state.
    */
-  function loadDeferred(
-    linkName: keyof ShapeDerivedLinks<S>,
-  ): void {
+  function loadDeferred(linkName: keyof ShapeDerivedLinks<S>): void {
     const entry = linkEntries.get(String(linkName));
     if (!entry || entry.status !== "deferred") {
       return;

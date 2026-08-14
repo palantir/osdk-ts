@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import consola from "consola";
-import { execa } from "execa";
 import { existsSync } from "fs";
 import { readFile } from "fs/promises";
 import { join } from "path";
+
+import consola from "consola";
+import { execa } from "execa";
 import semver from "semver";
 
 async function ciPublish(): Promise<void> {
@@ -70,39 +71,39 @@ async function ciPublish(): Promise<void> {
 
 async function getRemoteBranches(): Promise<string[]> {
   const repoRoot = process.cwd();
-  const { stdout } = await execa("git", [
-    "ls-remote",
-    "--heads",
-    "origin",
-    "refs/heads/release/*",
-  ], { cwd: repoRoot });
-  return stdout.split("\n").filter(line => !!line).map(line => {
-    const match = line.match(/release\/(.*)/);
-    if (!match) {
-      consola.log(match);
-      throw new Error(`Invalid branch name: ${line}`);
-    }
-    return match[0];
-  });
+  const { stdout } = await execa(
+    "git",
+    ["ls-remote", "--heads", "origin", "refs/heads/release/*"],
+    { cwd: repoRoot },
+  );
+  return stdout
+    .split("\n")
+    .filter((line) => !!line)
+    .map((line) => {
+      const match = line.match(/release\/(.*)/u);
+      if (!match) {
+        consola.log(match);
+        throw new Error(`Invalid branch name: ${line}`);
+      }
+      return match[0];
+    });
 }
 
 async function getCurrentBranch(): Promise<string> {
   const repoRoot = process.cwd();
-  const { stdout } = await execa("git", [
-    "rev-parse",
-    "--abbrev-ref",
-    "HEAD",
-  ], { cwd: repoRoot });
+  const { stdout } = await execa("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+    cwd: repoRoot,
+  });
   return stdout;
 }
 
 export function findGreatestVersion(releaseBranches: string[]): string | null {
   if (releaseBranches.length === 0) return null;
   return releaseBranches.reduce((maxBranch, branch) => {
-    let version = branch.replace(/^.*?release\//, "");
-    let maxVersion = maxBranch.replace(/^.*?release\//, "");
-    version = version.replace(/\.x$/, ".0");
-    maxVersion = maxVersion.replace(/\.x$/, ".0");
+    let version = branch.replace(/^.*?release\//u, "");
+    let maxVersion = maxBranch.replace(/^.*?release\//u, "");
+    version = version.replace(/\.x$/u, ".0");
+    maxVersion = maxVersion.replace(/\.x$/u, ".0");
 
     if (!semver.valid(version)) {
       return maxBranch;

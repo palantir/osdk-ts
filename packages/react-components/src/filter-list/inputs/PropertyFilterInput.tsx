@@ -16,11 +16,14 @@
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { memo } from "react";
+
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
+import type { MultiSelectInputLayout } from "../base/inputs/MultiSelectInput.js";
 import type {
   FilterState,
   PropertyFilterDefinition,
 } from "../FilterListItemApi.js";
+import type { LinkedFilter } from "../types/LinkedFilterTypes.js";
 import { ContainsTextFilterInput } from "./ContainsTextFilterInput.js";
 import { DateRangeFilterInput } from "./DateRangeFilterInput.js";
 import { ListogramFilterInput } from "./ListogramFilterInput.js";
@@ -40,8 +43,11 @@ interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  linkedFilters?: ReadonlyArray<LinkedFilter<Q>>;
+  showFilteredOutValues?: boolean;
   searchQuery?: string;
   excludeRowOpen?: boolean;
+  layout?: MultiSelectInputLayout;
 }
 
 function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -51,8 +57,11 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  linkedFilters,
+  showFilteredOutValues,
   searchQuery,
   excludeRowOpen,
+  layout,
 }: PropertyFilterInputProps<Q>): React.ReactElement {
   switch (definition.filterComponent) {
     case "CONTAINS_TEXT":
@@ -87,6 +96,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          clickToFilter={definition.clickToFilter}
         />
       );
 
@@ -99,6 +109,8 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          formatDate={definition.formatDate}
+          clickToFilter={definition.clickToFilter}
         />
       );
 
@@ -111,6 +123,8 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          linkedFilters={linkedFilters}
+          showFilteredOutValues={showFilteredOutValues}
           excludeRowOpen={excludeRowOpen}
           renderValue={definition.renderValue}
           showCount={definition.showCount}
@@ -126,9 +140,12 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          linkedFilters={linkedFilters}
+          showFilteredOutValues={showFilteredOutValues}
           excludeRowOpen={excludeRowOpen}
           renderValue={definition.renderValue}
           showCount={definition.showCount}
+          layout={layout}
         />
       );
 
@@ -137,6 +154,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
         <SingleDateFilterInput
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          formatDate={definition.formatDate}
         />
       );
 
@@ -145,6 +163,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
         <MultiDateFilterInput
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          formatDate={definition.formatDate}
         />
       );
 
@@ -157,6 +176,8 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          linkedFilters={linkedFilters}
+          showFilteredOutValues={showFilteredOutValues}
           colorMap={definition.colorMap}
           displayMode={definition.listogramConfig?.displayMode}
           showCount={definition.showCount}
@@ -190,6 +211,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           <TimelineFilterInput
             filterState={filterState}
             onFilterStateChanged={onFilterStateChanged}
+            formatDate={definition.formatDate}
           />
         </FilterInputExcludeRow>
       );

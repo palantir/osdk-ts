@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export interface DeprecationInvalidMessageError {
-}
+export interface DeprecationInvalidMessageError {}

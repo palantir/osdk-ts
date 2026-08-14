@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   LatestVersionResponse as _api_LatestVersionResponse,
   UpdateLatestVersionRequest as _api_UpdateLatestVersionRequest,
