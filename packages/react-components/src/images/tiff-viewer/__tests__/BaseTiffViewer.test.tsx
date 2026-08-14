@@ -165,7 +165,7 @@ describe("BaseTiffViewer", () => {
     expect(decoded.byteLength).toBe(fromSrc.byteLength);
   });
 
-  it("should render nothing when neither prop is set", async () => {
+  it("should render no canvas when neither prop is set", async () => {
     let container: HTMLElement;
     await act(() => {
       ({ container } = render(<BaseTiffViewer />));
@@ -173,5 +173,24 @@ describe("BaseTiffViewer", () => {
 
     expect(container!.querySelector("canvas")).toBeNull();
     expect(mockedDecode).not.toHaveBeenCalled();
+  });
+
+  it("should apply className to the root element", async () => {
+    const mockImage = createMockImage(100, 50);
+    mockedDecode.mockReturnValue([mockImage]);
+    mockedDecodeImage.mockReturnValue(undefined);
+    mockedToRGBA8.mockReturnValue(new Uint8Array(100 * 50 * 4));
+
+    let container: HTMLElement;
+    await act(() => {
+      ({ container } = render(
+        <BaseTiffViewer src={new Uint8Array(100)} className="custom-tiff" />,
+      ));
+    });
+
+    const root = container!.firstElementChild;
+    expect(root?.classList.contains("custom-tiff")).toBe(true);
+    // The container class stays alongside it rather than being replaced.
+    expect(root?.classList.length).toBeGreaterThan(1);
   });
 });

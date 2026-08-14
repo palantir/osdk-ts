@@ -17,6 +17,7 @@
 /* cspell:words ifds */
 
 import { Error as ErrorIcon } from "@blueprintjs/icons";
+import classnames from "classnames";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as UTIF from "utif";
 
@@ -121,7 +122,7 @@ const TiffCanvas: React.FunctionComponent<{ imageData: TiffImageData }> =
   });
 
 export const BaseTiffViewer: React.FunctionComponent<BaseTiffViewerProps> =
-  React.memo(({ src, content, onError }) => {
+  React.memo(({ src, content, className, onError }) => {
     const [result, setResult] = useState<DecodeResult | undefined>(undefined);
     const onErrorRef = useRef(onError);
     onErrorRef.current = onError;
@@ -141,13 +142,14 @@ export const BaseTiffViewer: React.FunctionComponent<BaseTiffViewerProps> =
       }
     }, [bytes]);
 
-    if (result == null) {
-      return null;
-    }
+    const rootClassName = classnames(styles.container, className);
 
-    if (result.status === "error") {
-      return <ErrorMessage message={result.message} />;
-    }
-
-    return <TiffCanvas imageData={result.data} />;
+    return (
+      <div className={rootClassName}>
+        {result?.status === "error" && (
+          <ErrorMessage message={result.message} />
+        )}
+        {result?.status === "ok" && <TiffCanvas imageData={result.data} />}
+      </div>
+    );
   });

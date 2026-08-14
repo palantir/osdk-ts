@@ -36,11 +36,12 @@ import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-rendere
 
 ### `BaseTiffViewerProps`
 
-| Prop      | Type         | Default     | Description                         |
-| --------- | ------------ | ----------- | ----------------------------------- |
-| `src`     | `Uint8Array` | `undefined` | TIFF bytes to render                |
-| `content` | `Uint8Array` | `undefined` | **Deprecated** — rename to `src`    |
-| `onError` | `() => void` | `undefined` | Callback fired when rendering fails |
+| Prop        | Type         | Default     | Description                           |
+| ----------- | ------------ | ----------- | ------------------------------------- |
+| `src`       | `Uint8Array` | `undefined` | TIFF bytes to render                  |
+| `content`   | `Uint8Array` | `undefined` | **Deprecated** — rename to `src`      |
+| `className` | `string`     | `undefined` | CSS class applied to the root element |
+| `onError`   | `() => void` | `undefined` | Callback fired when rendering fails   |
 
 ### `TiffViewerProps`
 
