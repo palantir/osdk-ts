@@ -32,3 +32,4 @@ catalogs:
     "@osdk/foundry.ontologies": 2.70.0
     "@osdk/foundry.thirdpartyapplications": 2.70.0
     "@osdk/internal.foundry.ontologies": 2.70.0
+ignoreScripts: true
