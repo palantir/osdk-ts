@@ -228,14 +228,15 @@ export function createClientFromContext(clientCtx: MinimalClient) {
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__linkSubscriptions.name:
           return {
             subscribeToLinks: (args: any) => {
-              const pendingSubscription = import(
-                "./objectSet/LinkSubscriptionWebsocket.js"
-              ).then(({ LinkSubscriptionWebsocket }) =>
-                new LinkSubscriptionWebsocket(clientCtx, args).subscribe()
-              );
+              const pendingSubscription =
+                import("./objectSet/LinkSubscriptionWebsocket.js").then(
+                  ({ LinkSubscriptionWebsocket }) =>
+                    LinkSubscriptionWebsocket.getInstance(clientCtx).subscribe(
+                      args,
+                    ),
+                );
               return {
-                unsubscribe: async () =>
-                  (await pendingSubscription).unsubscribe(),
+                unsubscribe: async () => (await pendingSubscription)(),
               };
             },
           } as any;

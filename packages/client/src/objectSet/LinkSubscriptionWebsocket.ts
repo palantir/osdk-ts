@@ -29,7 +29,9 @@ import type {
 } from "@osdk/foundry.ontologies";
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
-import type { MinimalClient } from "../MinimalClientContext.js";
+
+import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
+import type { SubscriptionConnection } from "../SubscriptionConnection.js";
 import { ExponentialBackoff } from "../util/exponentialBackoff.js";
 import {
   constructLinkSubscriptionWebsocketUrl,
@@ -37,17 +39,50 @@ import {
   EXPONENTIAL_BACKOFF_JITTER_FACTOR,
   EXPONENTIAL_BACKOFF_MAX_DELAY_MS,
   EXPONENTIAL_BACKOFF_MULTIPLIER,
+  nextUuid,
   WEBSOCKET_HEARTBEAT_INTERVAL_MS,
+  WEBSOCKET_IDLE_DISCONNECT_DELAY_MS,
 } from "./ObjectSetListenerWebsocket.js";
 
-type Status = "closed" | "preparing" | "reconnecting" | "subscribed";
-
-/** @internal */
-export class LinkSubscriptionWebsocket<
+interface Subscription<
   Q extends ObjectTypeDefinition,
   L extends LinkTypeApiNamesFor<Q>,
 > {
-  readonly #args: LinkSubscription.Args<Q, L>;
+  readonly links: readonly [L, ...ReadonlyArray<L>];
+  listener: LinkSubscription.Listener<Q, L>;
+  readonly objects: LinkSubscription.Args<Q, L>["objects"];
+  request?: LinkTypeSubscribeRequest;
+  status: "done" | "error" | "preparing" | "reconnecting" | "subscribed";
+  subscriptionId: string;
+}
+
+function isReady(
+  subscription: Subscription<any, any>,
+): subscription is Subscription<any, any> & {
+  request: LinkTypeSubscribeRequest;
+} {
+  return subscription.request != null;
+}
+
+function isDone(subscription: Subscription<any, any>): boolean {
+  return subscription.status === "done" || subscription.status === "error";
+}
+
+/** @internal */
+export class LinkSubscriptionWebsocket {
+  static #instances = new WeakMap<ClientCacheKey, LinkSubscriptionWebsocket>();
+
+  static getInstance(client: MinimalClient): LinkSubscriptionWebsocket {
+    let instance = LinkSubscriptionWebsocket.#instances.get(
+      client.clientCacheKey,
+    );
+    if (instance == null) {
+      instance = new LinkSubscriptionWebsocket(client);
+      LinkSubscriptionWebsocket.#instances.set(client.clientCacheKey, instance);
+    }
+    return instance;
+  }
+
   readonly #backoff = new ExponentialBackoff({
     initialDelayMs: EXPONENTIAL_BACKOFF_INITIAL_DELAY_MS,
     jitterFactor: EXPONENTIAL_BACKOFF_JITTER_FACTOR,
@@ -55,57 +90,95 @@ export class LinkSubscriptionWebsocket<
     multiplier: EXPONENTIAL_BACKOFF_MULTIPLIER,
   });
   readonly #client: MinimalClient;
-  readonly #pendingRequestIds = new Set<string>();
+  readonly #pendingSubscriptions = new Map<
+    string,
+    Array<Subscription<any, any>>
+  >();
+  readonly #subscriptions = new Map<string, Subscription<any, any>>();
 
+  #connectionPromise: Promise<void> | undefined;
   #heartbeatInterval: ReturnType<typeof setInterval> | undefined;
-  #reconnectTimeout: ReturnType<typeof setTimeout> | undefined;
-  #request: LinkTypeSubscribeRequest | undefined;
-  #status: Status = "preparing";
-  #subscriptionId: string | undefined;
-  #ws: WebSocket | undefined;
+  #isFirstConnection = true;
+  #maybeDisconnectTimeout: ReturnType<typeof setTimeout> | undefined;
+  #ws: SubscriptionConnection | undefined;
 
-  constructor(
-    client: MinimalClient,
-    args: LinkSubscription.Args<Q, L>,
-  ) {
-    this.#args = args;
+  constructor(client: MinimalClient) {
     this.#client = client;
   }
 
-  subscribe(): { readonly unsubscribe: () => void } {
-    void this.#prepare();
-    return { unsubscribe: () => this.#close() };
+  subscribe<Q extends ObjectTypeDefinition, L extends LinkTypeApiNamesFor<Q>>(
+    args: LinkSubscription.Args<Q, L>,
+  ): () => void {
+    const subscription: Subscription<Q, L> = {
+      links: args.links,
+      listener: args.listener,
+      objects: args.objects,
+      status: "preparing",
+      subscriptionId: `TMP-${nextUuid()}`,
+    };
+    this.#subscriptions.set(subscription.subscriptionId, subscription);
+
+    if (this.#maybeDisconnectTimeout != null) {
+      clearTimeout(this.#maybeDisconnectTimeout);
+      this.#maybeDisconnectTimeout = undefined;
+    }
+
+    void this.#prepare(subscription);
+    return () => this.#unsubscribe(subscription);
   }
 
-  async #prepare(): Promise<void> {
+  async #prepare(subscription: Subscription<any, any>): Promise<void> {
     try {
-      const [firstObject] = this.#args.objects;
-      const objectDefinition = await this.#client.ontologyProvider
-        .getObjectDefinition(firstObject.$apiName);
-      this.#request = {
-        linkTypes: [...this.#args.links],
-        selectedObjects: this.#args.objects.map((object) => ({
+      const [firstObject] = subscription.objects;
+      const objectDefinition =
+        await this.#client.ontologyProvider.getObjectDefinition(
+          firstObject.$apiName,
+        );
+      if (isDone(subscription)) return;
+
+      subscription.request = {
+        linkTypes: [...subscription.links],
+        selectedObjects: subscription.objects.map((object) => ({
           objectType: object.$apiName,
           primaryKey: {
             [objectDefinition.primaryKeyApiName]: object.$primaryKey,
           },
         })),
       };
-
-      if (this.#status !== "closed") {
-        await this.#connect();
+      await this.#ensureWebsocket();
+      if (this.#ws?.readyState === WebSocket.OPEN) {
+        this.#sendSubscribeMessage();
       }
     } catch (error) {
-      this.#fail(error);
+      this.#fail(subscription, error);
+    }
+  }
+
+  async #ensureWebsocket(): Promise<void> {
+    if (this.#ws != null) return;
+    if (this.#connectionPromise != null) return this.#connectionPromise;
+
+    this.#connectionPromise = this.#connect();
+    try {
+      await this.#connectionPromise;
+    } finally {
+      this.#connectionPromise = undefined;
     }
   }
 
   async #connect(): Promise<void> {
+    if (!this.#isFirstConnection) {
+      await new Promise((resolve) => {
+        setTimeout(resolve, this.#backoff.calculateDelay());
+      });
+    }
+    if (this.#ws != null || this.#subscriptions.size === 0) return;
+
     const [ontologyRid, token] = await Promise.all([
       this.#client.ontologyRid,
       this.#client.tokenProvider(),
     ]);
-    if (this.#status === "closed") return;
+    if (this.#ws != null || this.#subscriptions.size === 0) return;
 
     const url = constructLinkSubscriptionWebsocketUrl(
       this.#client.baseUrl,
@@ -118,10 +191,15 @@ export class LinkSubscriptionWebsocket<
   }
 
   #handleOpen = (): void => {
+    this.#isFirstConnection = false;
     this.#backoff.reset();
-    this.#sendSubscribeRequest();
+    this.#sendSubscribeMessage();
+
+    if (this.#heartbeatInterval != null) {
+      clearInterval(this.#heartbeatInterval);
+    }
     this.#heartbeatInterval = setInterval(
-      this.#sendSubscribeRequest,
+      this.#sendSubscribeMessage,
       WEBSOCKET_HEARTBEAT_INTERVAL_MS,
     );
   };
@@ -130,158 +208,196 @@ export class LinkSubscriptionWebsocket<
     const data = JSON.parse(String(message.data)) as LinksMessage;
     switch (data.type) {
       case "refresh": {
-        if (data.id === this.#subscriptionId) {
-          this.#callListener(() =>
-            this.#args.listener.onOutOfDate?.({
-              links: data.linkTypes as ReadonlyArray<L>,
-            })
+        const subscription = this.#subscriptions.get(data.id);
+        if (subscription != null) {
+          this.#callListener(subscription, () =>
+            subscription.listener.onOutOfDate?.({
+              links: data.linkTypes,
+            }),
           );
         }
         return;
       }
       case "subscribeResponses":
-        this.#handleSubscribeResponse(data.id, data.responses[0]);
+        this.#handleSubscribeResponses(data.id, data.responses);
         return;
-      case "subscriptionClosed":
-        if (data.id === this.#subscriptionId) {
-          this.#fail(data.cause);
+      case "subscriptionClosed": {
+        const subscription = this.#subscriptions.get(data.id);
+        if (subscription != null) {
+          this.#fail(subscription, data.cause);
         }
         return;
+      }
       case "updates": {
-        if (data.id === this.#subscriptionId) {
-          this.#callListener(() =>
-            this.#args.listener.onChange?.({
+        const subscription = this.#subscriptions.get(data.id);
+        if (subscription != null) {
+          this.#callListener(subscription, () =>
+            subscription.listener.onChange?.({
               updates: data.updates.map((update) => ({
                 linkType: update.linkType,
                 source: toObjectIdentifiers(update.selectedSide),
                 state: update.state,
                 target: toObjectIdentifiers(update.linkedSide),
-              })) as ReadonlyArray<LinkSubscription.Update<Q, L>>,
-            })
+              })),
+            }),
           );
         }
         return;
       }
       default: {
         const unexpectedMessage: never = data;
-        this.#fail(new Error(`Unexpected message: ${unexpectedMessage}`));
+        this.#failAll(new Error(`Unexpected message: ${unexpectedMessage}`));
       }
     }
   };
 
-  #handleSubscribeResponse(
+  #handleSubscribeResponses(
     requestId: string,
-    response: ObjectSetSubscribeResponse | undefined,
+    responses: ReadonlyArray<ObjectSetSubscribeResponse>,
   ): void {
-    if (!this.#pendingRequestIds.delete(requestId) || response == null) return;
+    const subscriptions = this.#pendingSubscriptions.get(requestId);
+    if (subscriptions == null) return;
+    this.#pendingSubscriptions.delete(requestId);
 
-    switch (response.type) {
-      case "error":
-        this.#fail(response.errors);
-        return;
-      case "qos":
-        this.#reconnect();
-        return;
-      case "success": {
-        const previousStatus = this.#status;
-        this.#status = "subscribed";
-        this.#subscriptionId = response.id;
-        this.#callListener(() => {
-          if (previousStatus === "reconnecting") {
-            this.#args.listener.onOutOfDate?.({ links: this.#args.links });
-          } else if (previousStatus === "preparing") {
-            this.#args.listener.onSuccessfulSubscription?.();
-          }
-        });
-        return;
+    responses.forEach((response, index) => {
+      const subscription = subscriptions[index];
+      if (subscription == null || isDone(subscription)) return;
+
+      switch (response.type) {
+        case "error":
+          this.#fail(subscription, response.errors);
+          return;
+        case "qos":
+          this.#cycleWebsocket();
+          return;
+        case "success": {
+          const previousStatus = subscription.status;
+          this.#subscriptions.delete(subscription.subscriptionId);
+          subscription.status = "subscribed";
+          subscription.subscriptionId = response.id;
+          this.#subscriptions.set(subscription.subscriptionId, subscription);
+          this.#callListener(subscription, () => {
+            if (previousStatus === "reconnecting") {
+              subscription.listener.onOutOfDate?.({
+                links: subscription.links,
+              });
+            } else if (previousStatus === "preparing") {
+              subscription.listener.onSuccessfulSubscription?.();
+            }
+          });
+          return;
+        }
+        default: {
+          const unexpectedResponse: never = response;
+          this.#fail(
+            subscription,
+            new Error(`Unexpected response: ${unexpectedResponse}`),
+          );
+        }
       }
-      default: {
-        const unexpectedResponse: never = response;
-        this.#fail(new Error(`Unexpected response: ${unexpectedResponse}`));
-      }
-    }
+    });
   }
 
-  #handleClose = (): void => {
-    if (this.#status !== "closed") {
-      this.#status = this.#status === "subscribed"
-        ? "reconnecting"
-        : this.#status;
-      this.#clearSocket();
-      this.#reconnectTimeout = setTimeout(
-        () => void this.#connect().catch(error => this.#fail(error)),
-        this.#backoff.calculateDelay(),
-      );
-    }
-  };
-
-  #sendSubscribeRequest = (): void => {
-    invariant(this.#request, "Expected a prepared subscription request.");
+  #sendSubscribeMessage = (): void => {
     if (this.#ws?.readyState !== WebSocket.OPEN) return;
 
+    const subscriptions = [...this.#subscriptions.values()].filter(isReady);
     const request: LinkTypeSubscribeRequests = {
       id: nextUuid(),
-      requests: [this.#request],
+      requests: subscriptions.map((subscription) => subscription.request),
     };
-    this.#pendingRequestIds.add(request.id);
+    this.#pendingSubscriptions.set(request.id, subscriptions);
     this.#ws.send(JSON.stringify(request));
   };
 
-  #reconnect(): void {
-    if (this.#status === "subscribed") {
-      this.#status = "reconnecting";
-    }
-    this.#ws?.close();
-  }
+  #unsubscribe(
+    subscription: Subscription<any, any>,
+    status: "done" | "error" = "done",
+  ): void {
+    if (isDone(subscription)) return;
 
-  #callListener(callback: () => void): void {
-    try {
-      callback();
-    } catch (error) {
-      try {
-        this.#args.listener.onError?.({ error, subscriptionClosed: false });
-      } catch (onErrorError) {
-        this.#fail(onErrorError);
+    subscription.status = status;
+    subscription.listener = {};
+    this.#subscriptions.delete(subscription.subscriptionId);
+    this.#sendSubscribeMessage();
+
+    if (this.#maybeDisconnectTimeout != null) {
+      clearTimeout(this.#maybeDisconnectTimeout);
+    }
+    this.#maybeDisconnectTimeout = setTimeout(() => {
+      this.#maybeDisconnectTimeout = undefined;
+      if (this.#subscriptions.size === 0) {
+        this.#cycleWebsocket();
       }
-    }
+    }, WEBSOCKET_IDLE_DISCONNECT_DELAY_MS);
   }
 
-  #fail(error: unknown): void {
-    if (this.#status === "closed") return;
-    try {
-      this.#args.listener.onError?.({ error, subscriptionClosed: true });
-    } finally {
-      this.#close();
-    }
-  }
+  #handleClose = (): void => {
+    this.#cycleWebsocket();
+  };
 
-  #close(): void {
-    this.#status = "closed";
-    this.#clearSocket();
-    if (this.#reconnectTimeout != null) {
-      clearTimeout(this.#reconnectTimeout);
-      this.#reconnectTimeout = undefined;
-    }
-  }
-
-  #clearSocket(): void {
+  #cycleWebsocket(): void {
     if (this.#heartbeatInterval != null) {
       clearInterval(this.#heartbeatInterval);
       this.#heartbeatInterval = undefined;
     }
-    this.#pendingRequestIds.clear();
+    this.#pendingSubscriptions.clear();
+
     if (this.#ws != null) {
       this.#ws.removeEventListener("close", this.#handleClose);
       this.#ws.removeEventListener("message", this.#handleMessage);
       this.#ws.removeEventListener("open", this.#handleOpen);
       if (
-        this.#ws.readyState !== WebSocket.CLOSED
-        && this.#ws.readyState !== WebSocket.CLOSING
+        this.#ws.readyState !== WebSocket.CLOSED &&
+        this.#ws.readyState !== WebSocket.CLOSING
       ) {
         this.#ws.close();
       }
       this.#ws = undefined;
     }
+
+    if (this.#subscriptions.size > 0) {
+      for (const subscription of this.#subscriptions.values()) {
+        if (subscription.status === "subscribed") {
+          subscription.status = "reconnecting";
+        }
+      }
+      void this.#ensureWebsocket().catch((error) => this.#failAll(error));
+    }
+  }
+
+  #callListener(
+    subscription: Subscription<any, any>,
+    callback: () => void,
+  ): void {
+    try {
+      callback();
+    } catch (error) {
+      try {
+        subscription.listener.onError?.({
+          error,
+          subscriptionClosed: false,
+        });
+      } catch (onErrorError) {
+        this.#fail(subscription, onErrorError);
+      }
+    }
+  }
+
+  #fail(subscription: Subscription<any, any>, error: unknown): void {
+    if (isDone(subscription)) return;
+    try {
+      subscription.listener.onError?.({ error, subscriptionClosed: true });
+    } finally {
+      this.#unsubscribe(subscription, "error");
+    }
+  }
+
+  #failAll(error: unknown): void {
+    for (const subscription of this.#subscriptions.values()) {
+      this.#fail(subscription, error);
+    }
+    this.#cycleWebsocket();
   }
 }
 
@@ -294,12 +410,4 @@ function toObjectIdentifiers(
     $apiName: locator.objectType,
     $primaryKey: primaryKey,
   };
-}
-
-let uuidCounter = 0;
-
-function nextUuid(): string {
-  return `10000000-0000-0000-0000-${
-    (uuidCounter++).toString().padStart(12, "0")
-  }`;
 }
