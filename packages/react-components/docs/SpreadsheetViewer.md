@@ -30,7 +30,7 @@ import { SpreadsheetViewer } from "@osdk/react-components/experimental/spreadshe
 import { BaseSpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
 
 <BaseSpreadsheetViewer
-  spreadsheet={{
+  content={{
     sheets: [
       {
         name: "Sheet1",
@@ -51,7 +51,8 @@ import { BaseSpreadsheetViewer } from "@osdk/react-components/experimental/sprea
 
 | Prop          | Type                | Required | Description                           |
 | ------------- | ------------------- | -------- | ------------------------------------- |
-| `spreadsheet` | `ParsedSpreadsheet` | Yes      | Parsed spreadsheet data               |
+| `content`     | `ParsedSpreadsheet` | No       | The parsed spreadsheet to render      |
+| `spreadsheet` | `ParsedSpreadsheet` | No       | **Deprecated** — rename to `content`  |
 | `className`   | `string`            | No       | CSS class applied to the root element |
 
 ### SpreadsheetViewerProps

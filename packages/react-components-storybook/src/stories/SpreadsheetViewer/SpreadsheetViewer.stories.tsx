@@ -164,7 +164,7 @@ const meta: Meta<BaseSpreadsheetViewerProps> = {
   component: BaseSpreadsheetViewer,
   tags: ["beta"],
   args: {
-    spreadsheet: SAMPLE_SPREADSHEET,
+    content: SAMPLE_SPREADSHEET,
   },
   render: (args: BaseSpreadsheetViewerProps) => (
     <div style={{ height: "500px" }}>
@@ -175,8 +175,8 @@ const meta: Meta<BaseSpreadsheetViewerProps> = {
     controls: { expanded: true },
   },
   argTypes: {
-    spreadsheet: {
-      description: "Parsed spreadsheet data",
+    content: {
+      description: "The parsed spreadsheet to render",
       control: false,
     },
     className: {
@@ -215,7 +215,7 @@ export const WithSpreadsheet: Story = {
       source: {
         code: `import { BaseSpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
 
-<BaseSpreadsheetViewer spreadsheet={parsedSpreadsheet} />`,
+<BaseSpreadsheetViewer content={parsedSpreadsheet} />`,
       },
     },
   },
@@ -223,7 +223,7 @@ export const WithSpreadsheet: Story = {
 
 export const SingleSheet: Story = {
   args: {
-    spreadsheet: {
+    content: {
       sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
     },
   },

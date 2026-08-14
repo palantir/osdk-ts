@@ -29,8 +29,11 @@ export interface ParsedSpreadsheet {
 }
 
 export interface BaseSpreadsheetViewerProps {
-  /** Parsed spreadsheet data */
-  spreadsheet: ParsedSpreadsheet;
+  /** The parsed spreadsheet to render. */
+  // TODO: make this required when `spreadsheet` is removed.
+  content?: ParsedSpreadsheet;
+  /** @deprecated Rename to `content`. */
+  spreadsheet?: ParsedSpreadsheet;
   /** Additional CSS class name for the root element
    * @default undefined */
   className?: string;
@@ -38,7 +41,7 @@ export interface BaseSpreadsheetViewerProps {
 
 export interface SpreadsheetViewerProps extends Omit<
   BaseSpreadsheetViewerProps,
-  "spreadsheet"
+  "content" | "spreadsheet"
 > {
   /** The Media object to fetch spreadsheet contents from */
   media: Media;

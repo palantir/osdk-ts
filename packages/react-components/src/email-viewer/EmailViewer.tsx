@@ -31,7 +31,7 @@ export function EmailViewer({
   ...emailViewerProps
 }: EmailViewerProps): React.ReactElement {
   const {
-    data: email,
+    data: content,
     loading,
     error,
   } = useMediaContents<ParsedEmail>(media, parseEmailFromResponse);
@@ -52,7 +52,9 @@ export function EmailViewer({
           Failed to load email: {error.message}
         </div>
       )}
-      {email != null && <BaseEmailViewer email={email} {...emailViewerProps} />}
+      {content != null && (
+        <BaseEmailViewer content={content} {...emailViewerProps} />
+      )}
     </div>
   );
 }
