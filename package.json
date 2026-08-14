@@ -90,38 +90,6 @@
     "ultracite": "7.8.2",
     "vitest": "^3.2.4"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "less",
-      "@swc/core",
-      "@tailwindcss/oxide",
-      "canvas",
-      "core-js",
-      "core-js-pure",
-      "dprint",
-      "esbuild",
-      "msw",
-      "oxfmt",
-      "oxlint",
-      "oxlint-tsgolint",
-      "unrs-resolver"
-    ],
-    "overrides": {
-      "trim@0.0.1": "0.0.3",
-      "cookie@0.6.0": "0.7.2",
-      "cookie@0.7.1": "0.7.2",
-      "esbuild@^0.23.0": "^0.25.0",
-      "esbuild@^0.24.0": "^0.25.0",
-      "react-server-dom-webpack": ">=19.2.2",
-      "webpackbar": "^7.0.0",
-      "@types/react": "^18.3.24",
-      "@types/react-dom": "^18.3.7",
-      "@cspell/dict-css": "^4.0.18",
-      "@cspell/dict-html": "^4.0.12",
-      "@cspell/dict-html-symbol-entities": "^4.0.4"
-    }
-  },
   "engines": {
     "node": ">=18.19.0",
     "pnpm": "=10.27.0"
