@@ -539,7 +539,7 @@ workflows:
       - cspell:
           requires: [install]
       - e2e:
-          requires: [install]
+          requires: [build]
       - bundle-size:
           requires: [build]
           filters:
