@@ -19,7 +19,7 @@ import { useOsdkMetadata } from "@osdk/react";
 import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import type { FilterListProps } from "../FilterListApi.js";
+import type { FilterKey, FilterListProps } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { LinkedFilter } from "../types/LinkedFilterTypes.js";
 import {
@@ -77,6 +77,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     objectSet,
     filterDefinitions,
     onFilterStateChanged,
+    onFilterChanged,
     onFilterClauseChanged,
     onEffectiveObjectSet,
     defaultFilterStates,
@@ -89,8 +90,12 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   onFilterClauseChangedRef.current = onFilterClauseChanged;
   const onEffectiveObjectSetRef = useRef(onEffectiveObjectSet);
   onEffectiveObjectSetRef.current = onEffectiveObjectSet;
+  const onFilterChangedRef = useRef(onFilterChanged);
+  onFilterChangedRef.current = onFilterChanged;
   const filterDefinitionsRef = useRef(filterDefinitions);
   filterDefinitionsRef.current = filterDefinitions;
+  const objectSetRef = useRef(objectSet);
+  objectSetRef.current = objectSet;
 
   const propertyTypes = useMemo(() => {
     const map = new Map<string, PropertyTypeInfo>();
@@ -106,6 +111,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     }
     return map;
   }, [metadata?.properties]);
+  const propertyTypesRef = useRef(propertyTypes);
+  propertyTypesRef.current = propertyTypes;
 
   // Captured once on first render to provide a stable baseline for the reset
   // button's enabled state. `useState`'s lazy initializer pins the value for
@@ -126,34 +133,67 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     () => new Map(initialFilterStatesSnapshot),
   );
 
+  // `onFilterChanged` reports the clause and object set derived from the state
+  // being set, so it needs the next map before React re-renders with it. Kept in
+  // sync eagerly on every write so back-to-back writes in one tick still build
+  // on each other.
+  const filterStatesRef = useRef(filterStates);
+  filterStatesRef.current = filterStates;
+
   const setFilterState = useCallback(
     (filterKey: string, state: FilterState) => {
-      setFilterStates((prev) => {
-        const next = new Map(prev);
-        next.set(filterKey, state);
-        return next;
-      });
+      const next = new Map(filterStatesRef.current);
+      next.set(filterKey, state);
+      filterStatesRef.current = next;
+      setFilterStates(next);
 
-      const definition = filterDefinitionsRef.current?.find(
+      const definitions = filterDefinitionsRef.current;
+      const definition = definitions?.find(
         (d) => getFilterKey(d) === filterKey,
       );
       if (definition) {
         onFilterStateChanged?.(definition, state);
+
+        const onChanged = onFilterChangedRef.current;
+        if (onChanged) {
+          const filterClause = buildWhereClause(
+            definitions,
+            next,
+            propertyTypesRef.current,
+          );
+          const activeLinkedFilters = getActiveLinkedFilters(definitions, next);
+          const currentObjectSet = objectSetRef.current;
+          onChanged({
+            filterKey: filterKey as FilterKey<Q>,
+            newState: state,
+            filterClause,
+            linkedFilters: activeLinkedFilters,
+            filteredObjectSet:
+              currentObjectSet == null
+                ? undefined
+                : narrowObjectSet(
+                    currentObjectSet,
+                    filterClause,
+                    activeLinkedFilters,
+                  ),
+          });
+        }
       }
     },
     [onFilterStateChanged],
   );
 
   const clearFilterState = useCallback((filterKey: string) => {
-    setFilterStates((prev) => {
-      const next = new Map(prev);
-      next.delete(filterKey);
-      return next;
-    });
+    const next = new Map(filterStatesRef.current);
+    next.delete(filterKey);
+    filterStatesRef.current = next;
+    setFilterStates(next);
   }, []);
 
   const reset = useCallback(() => {
-    setFilterStates(new Map(initialFilterStatesSnapshot));
+    const next = new Map(initialFilterStatesSnapshot);
+    filterStatesRef.current = next;
+    setFilterStates(next);
   }, [initialFilterStatesSnapshot]);
 
   const whereClause = useMemo(

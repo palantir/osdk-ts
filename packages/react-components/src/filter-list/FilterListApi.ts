@@ -31,6 +31,7 @@ import type { CustomFilterDefinition } from "./types/CustomRendererTypes.js";
 import type { KeywordSearchFilterDefinition } from "./types/KeywordSearchTypes.js";
 import type {
   HasLinkFilterDefinition,
+  LinkedFilter,
   LinkedPropertyFilterDefinition,
 } from "./types/LinkedFilterTypes.js";
 import type { StaticValuesFilterDefinition } from "./types/StaticValuesTypes.js";
@@ -67,6 +68,37 @@ type ExtractFilterKey<D> = D extends { key: infer K }
 export type FilterKey<Q extends ObjectTypeDefinition> = ExtractFilterKey<
   FilterDefinitionUnion<Q>
 >;
+
+/**
+ * Everything that changed when a single filter's state changed, in one payload.
+ */
+export interface FilterChangeEvent<Q extends ObjectTypeDefinition> {
+  /** Key of the filter the user changed. */
+  filterKey: FilterKey<Q>;
+
+  /** The changed filter's new state. */
+  newState: FilterState;
+
+  /**
+   * The combined clause for all active filters.
+   *
+   * `LINKED_PROPERTY` filters are not represented in the clause — read
+   * `linkedFilters` or `filteredObjectSet` for those.
+   */
+  filterClause: WhereClause<Q>;
+
+  /**
+   * The `objectSet` prop narrowed by all active filters, or `undefined` when no
+   * `objectSet` was supplied.
+   *
+   * A linked filter only narrows the set when its definition has
+   * `reverseLinkName`; linked filters without it are skipped here.
+   */
+  filteredObjectSet: ObjectSet<Q> | undefined;
+
+  /** Active linked-property filters; apply with `narrowObjectSet`. */
+  linkedFilters: ReadonlyArray<LinkedFilter<Q>>;
+}
 
 export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
@@ -120,6 +152,18 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
     definition: FilterDefinitionUnion<Q>,
     newState: FilterState,
   ) => void;
+
+  /**
+   * Called when a filter's state changes, with the new state, the resulting
+   * clause, the narrowed `ObjectSet` and the active linked filters in a single
+   * payload.
+   *
+   * Prefer this over combining `onFilterStateChanged`, `onFilterClauseChanged`
+   * and `onEffectiveObjectSet`, which each report one slice of the same change.
+   *
+   * @param event The changed filter and everything derived from the change
+   */
+  onFilterChanged?: (event: FilterChangeEvent<Q>) => void;
 
   /**
    * Called with the narrowed `ObjectSet` whenever filters change. Requires
