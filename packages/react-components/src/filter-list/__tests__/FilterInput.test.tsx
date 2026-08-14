@@ -51,32 +51,46 @@ function customState(value: string): CustomFilterState {
 function renderCustomFilter(
   definitionFields: Record<string, unknown>,
   filterState?: FilterState,
+  onFilterStateChanged: (state: FilterState) => void = vi.fn(),
 ) {
-  const definition = {
+  const definition: FilterDefinitionUnion<typeof MockObjectType> = {
     type: "CUSTOM",
     key: "custom",
     filterComponent: "CUSTOM",
     toWhereClause: () => ({}),
-    renderInput: ({ filterState: received }: { filterState: unknown }) => (
-      <div data-testid="received">
-        {JSON.stringify((received as CustomFilterState).customState)}
-      </div>
+    renderInput: ({
+      filterState: received,
+      onFilterStateChanged: report,
+    }: {
+      filterState: unknown;
+      onFilterStateChanged: (state: CustomFilterState) => void;
+    }) => (
+      <>
+        <div data-testid="received">{JSON.stringify(received)}</div>
+        <div data-testid="received-value">
+          {String((received as CustomFilterState).customState.value)}
+        </div>
+        <button
+          data-testid="report"
+          onClick={() => report(customState("from input"))}
+        />
+      </>
     ),
     ...definitionFields,
-  } as unknown as FilterDefinitionUnion<typeof MockObjectType>;
+  };
 
   return render(
     <FilterInput
       objectType={MockObjectType as ObjectTypeDefinition}
       definition={definition}
       filterState={filterState}
-      onFilterStateChanged={vi.fn()}
+      onFilterStateChanged={onFilterStateChanged}
       whereClause={EMPTY_WHERE}
     />,
   );
 }
 
-function receivedCustomState() {
+function receivedState() {
   return JSON.parse(screen.getByTestId("received").textContent ?? "null");
 }
 
@@ -85,35 +99,45 @@ afterEach(cleanup);
 describe("FilterInput", () => {
   describe("CUSTOM state resolution", () => {
     it("hands renderInput the stored state when there is one", () => {
-      renderCustomFilter(
-        { filterState: customState("definition") },
-        customState("stored"),
-      );
+      renderCustomFilter({}, customState("stored"));
 
-      expect(receivedCustomState()).toEqual({ value: "stored" });
+      expect(receivedState()).toEqual(customState("stored"));
     });
 
     it("hands renderInput an empty custom state when nothing is stored", () => {
       renderCustomFilter({});
 
-      expect(receivedCustomState()).toEqual({});
+      expect(receivedState()).toEqual({ type: "custom", customState: {} });
+      // The renderer read `customState.value` off it without guarding.
+      expect(screen.getByTestId("received-value").textContent).toBe(
+        "undefined",
+      );
     });
 
-    // Both seed fields reach the input by seeding the state map, the same way
-    // they do for every other kind — see the useFilterListState tests.
     it("does not read the definition's seed fields directly", () => {
       renderCustomFilter({
         defaultFilterState: customState("default"),
         filterState: customState("deprecated"),
       });
 
-      expect(receivedCustomState()).toEqual({});
+      expect(receivedState()).toEqual({ type: "custom", customState: {} });
     });
 
     it("ignores a stored state that is not a custom state", () => {
       renderCustomFilter({}, { type: "EXACT_MATCH", values: ["stray"] });
 
-      expect(receivedCustomState()).toEqual({});
+      expect(receivedState()).toEqual({ type: "custom", customState: {} });
+    });
+
+    it("reports the state renderInput produces", () => {
+      const onFilterStateChanged = vi.fn();
+      renderCustomFilter({}, undefined, onFilterStateChanged);
+
+      screen.getByTestId("report").click();
+
+      expect(onFilterStateChanged).toHaveBeenCalledWith(
+        customState("from input"),
+      );
     });
 
     it("renders an unsupported marker when renderInput is missing", () => {

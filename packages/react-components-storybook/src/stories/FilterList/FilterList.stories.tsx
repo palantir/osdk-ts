@@ -2118,7 +2118,7 @@ function CustomNameContainsFilter({
   filterState,
   onFilterStateChanged,
 }: {
-  filterState: { type: "custom"; customState: { value: string } };
+  filterState: { type: "custom"; customState: { value?: string } };
   onFilterStateChanged: (state: {
     type: "custom";
     customState: { value: string };
@@ -2146,7 +2146,7 @@ function CustomNameContainsFilter({
     <div style={{ padding: "12px 0", display: "flex", gap: "8px" }}>
       <input
         type="text"
-        value={filterState.customState.value}
+        value={filterState.customState.value ?? ""}
         onChange={handleChange}
         placeholder="Enter name substring..."
         style={{
@@ -2188,13 +2188,12 @@ function WithCustomFiltersStory(args: Partial<EmployeeFilterListProps>) {
         key: "custom-name-contains",
         label: "Name Contains",
         filterComponent: "CUSTOM",
-        defaultFilterState: { type: "custom", customState: { value: "" } },
         renderInput: ({ filterState, onFilterStateChanged }) => (
           <CustomNameContainsFilter
             filterState={
               filterState as {
                 type: "custom";
-                customState: { value: string };
+                customState: { value?: string };
               }
             }
             onFilterStateChanged={onFilterStateChanged}
@@ -2259,11 +2258,10 @@ const nameContainsFilter = {
   key: "custom-name-contains",
   label: "Name Contains",
   filterComponent: "CUSTOM",
-  defaultFilterState: { type: "custom", customState: { value: "" } },
   renderInput: ({ filterState, onFilterStateChanged }) => (
     <input
       type="text"
-      value={filterState.customState.value}
+      value={filterState.customState.value ?? ""}
       onChange={(e) =>
         onFilterStateChanged({
           type: "custom",
@@ -2289,165 +2287,6 @@ const nameContainsFilter = {
     },
   },
   render: (args) => <WithCustomFiltersStory {...args} />,
-};
-
-// ---------------------------------------------------------------------------
-// How a CUSTOM filter picks up its initial state
-// ---------------------------------------------------------------------------
-
-const REMOTENESS_OPTIONS = [
-  { value: "all", label: "All" },
-  { value: "remote", label: "Remote" },
-  { value: "onsite", label: "On-site" },
-];
-
-/**
- * Deliberately reads `filterState.customState.value` without guarding, the way
- * a renderer written against the old required `filterState` would.
- */
-function RemotenessInput({
-  filterState,
-  onFilterStateChanged,
-}: {
-  filterState: { customState: Record<string, unknown> };
-  onFilterStateChanged: (state: unknown) => void;
-}) {
-  const selected = (filterState.customState as { value?: string }).value;
-  return (
-    <div>
-      <div style={{ display: "flex", gap: 4, marginBottom: 6 }}>
-        {REMOTENESS_OPTIONS.map((opt) => (
-          <button
-            key={opt.value}
-            type="button"
-            aria-pressed={selected === opt.value}
-            style={{
-              fontWeight: selected === opt.value ? 700 : 400,
-            }}
-            onClick={() =>
-              onFilterStateChanged({
-                type: "custom",
-                customState: { value: opt.value },
-              })
-            }
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
-      <code style={{ fontSize: 11 }}>
-        renderInput got: {JSON.stringify(filterState)}
-      </code>
-    </div>
-  );
-}
-
-function remotenessFilter(
-  seed: Record<string, unknown>,
-): FilterDefinitionUnion<Employee> {
-  return {
-    type: "CUSTOM",
-    key: "remoteness",
-    label: "Location",
-    filterComponent: "CUSTOM",
-    ...seed,
-    renderInput: ({ filterState, onFilterStateChanged }) => (
-      <RemotenessInput
-        filterState={filterState as { customState: Record<string, unknown> }}
-        onFilterStateChanged={onFilterStateChanged as (s: unknown) => void}
-      />
-    ),
-    toWhereClause: (state) => {
-      const value = (state.customState as { value?: string }).value;
-      if (value === "remote") return { isRemote: true };
-      if (value === "onsite") return { isRemote: false };
-      return undefined;
-    },
-  } as FilterDefinitionUnion<Employee>;
-}
-
-/** One FilterList per seeding shape, each reporting its own clause. */
-function SeedShapePanel({
-  heading,
-  note,
-  definition,
-}: {
-  heading: string;
-  note: string;
-  definition: FilterDefinitionUnion<Employee>;
-}) {
-  const [clause, setClause] = useState<WhereClause<Employee> | undefined>(
-    undefined,
-  );
-  const definitions = useMemo(() => [definition], [definition]);
-
-  return (
-    <div style={{ width: 300 }}>
-      <h4 style={{ marginBottom: 2 }}>{heading}</h4>
-      <p style={{ fontSize: 11, marginTop: 0, minHeight: 32 }}>{note}</p>
-      <FilterList
-        objectType={Employee}
-        filterDefinitions={definitions}
-        showActiveFilterCount
-        onFilterClauseChanged={setClause}
-      />
-      <h5 style={{ marginBottom: 2 }}>Where clause</h5>
-      <pre style={PRE_STYLE}>
-        {clause && Object.keys(clause).length > 0
-          ? JSON.stringify(clause)
-          : "(none)"}
-      </pre>
-    </div>
-  );
-}
-
-function CustomFilterSeedingStory() {
-  return (
-    <div style={{ display: "flex", gap: 24 }}>
-      <SeedShapePanel
-        heading="defaultFilterState"
-        note="The canonical spelling. Seeds the filter, so it applies on mount and counts as active."
-        definition={remotenessFilter({
-          defaultFilterState: {
-            type: "custom",
-            customState: { value: "remote" },
-          },
-        })}
-      />
-      <SeedShapePanel
-        heading="filterState (deprecated)"
-        note="What existing definitions look like, since this field used to be required."
-        definition={remotenessFilter({
-          filterState: { type: "custom", customState: { value: "remote" } },
-        })}
-      />
-      <SeedShapePanel
-        heading="neither"
-        note="Only expressible once filterState stops being required. renderInput still needs a state object."
-        definition={remotenessFilter({})}
-      />
-    </div>
-  );
-}
-
-export const CustomFilterSeeding: Story = {
-  name: "Custom filter seeding",
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Three `CUSTOM` definitions that differ only in which seed field is " +
-          "set, each with its own resulting where clause and active filter " +
-          "count. Compare the panels to see whether a given spelling only " +
-          "pre-fills the input or actually filters the object set. The third " +
-          "panel is the shape that becomes expressible once `filterState` is " +
-          "optional — `renderInput` reads `filterState.customState.value` " +
-          "without guarding, as a renderer written against the previously " +
-          "required field would.",
-      },
-    },
-  },
-  render: () => <CustomFilterSeedingStory />,
 };
 
 const departmentMultiSelectFilter: FilterDefinitionUnion<Employee> = {
@@ -2759,6 +2598,26 @@ const linkedCitySingleSelectFilter: FilterDefinitionUnion<Employee> = {
   label: "Manager City (linked single)",
 } as FilterDefinitionUnion<Employee>;
 
+const savedNameContainsFilter: FilterDefinitionUnion<Employee> = {
+  type: "CUSTOM",
+  key: "custom-name-contains",
+  label: "Name Contains (custom)",
+  filterComponent: "CUSTOM",
+  renderInput: ({ filterState, onFilterStateChanged }) => (
+    <CustomNameContainsFilter
+      filterState={
+        filterState as { type: "custom"; customState: { value?: string } }
+      }
+      onFilterStateChanged={onFilterStateChanged}
+    />
+  ),
+  toWhereClause: (state) => {
+    const value = (state.customState as { value?: string })?.value;
+    if (!value) return undefined;
+    return { fullName: { $containsAnyTerm: value } };
+  },
+};
+
 const SAVED_FILTER_STATES = new Map<string, FilterState>([
   // "Research", "Chief Scientist", and "Berlin" are NOT in the mock employee
   // dataset — they simulate saved selections that currently have zero matching
@@ -2795,6 +2654,9 @@ const SAVED_FILTER_STATES = new Map<string, FilterState>([
       linkedFilterState: { type: "SELECT", selectedValues: ["Berlin"] },
     },
   ],
+  // A CUSTOM filter's state is opaque to FilterList, so the saved entry is
+  // whatever shape its own `renderInput`/`toWhereClause` agree on.
+  ["custom-name-contains", { type: "custom", customState: { value: "man" } }],
 ]);
 
 const INITIAL_STATE_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
@@ -2803,6 +2665,7 @@ const INITIAL_STATE_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
   locationCitySingleSelectFilter,
   linkedDepartmentMultiSelectFilter,
   linkedCitySingleSelectFilter,
+  savedNameContainsFilter,
 ];
 
 function WithInitialFilterStatesStory(args: Partial<EmployeeFilterListProps>) {
@@ -2854,7 +2717,9 @@ export const WithInitialFilterStates: Story = {
           "mount, including values that currently have zero matching rows " +
           "— they appear with a count of 0 so users can see and clear them. " +
           "Demonstrated across LISTOGRAM, MULTI_SELECT, SINGLE_SELECT, " +
-          "and LINKED_PROPERTY filters.",
+          "LINKED_PROPERTY, and CUSTOM filters. A CUSTOM filter hydrates the " +
+          "same way, except its state shape is defined by the filter itself " +
+          "rather than by FilterList.",
       },
       source: {
         code: `// "Research", "Chief Scientist", and "Berlin" are not in the current
@@ -2874,6 +2739,8 @@ const savedStates = new Map([
     type: "linkedProperty",
     linkedFilterState: { type: "SELECT", selectedValues: ["Berlin"] },
   }],
+  // Custom filter — state shape is whatever its renderInput/toWhereClause use
+  ["custom-name-contains", { type: "custom", customState: { value: "man" } }],
 ]);
 
 <FilterList
