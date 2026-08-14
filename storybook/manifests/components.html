@@ -13093,7 +13093,7 @@ function CustomNameContainsFilter({
   filterState,
   onFilterStateChanged,
 }: {
-  filterState: { type: &quot;custom&quot;; customState: { value: string } };
+  filterState: { type: &quot;custom&quot;; customState: { value?: string } };
   onFilterStateChanged: (state: {
     type: &quot;custom&quot;;
     customState: { value: string };
@@ -13121,7 +13121,7 @@ function CustomNameContainsFilter({
     &lt;div style={{ padding: &quot;12px 0&quot;, display: &quot;flex&quot;, gap: &quot;8px&quot; }}&gt;
       &lt;input
         type=&quot;text&quot;
-        value={filterState.customState.value}
+        value={filterState.customState.value ?? &quot;&quot;}
         onChange={handleChange}
         placeholder=&quot;Enter name substring...&quot;
         style={{
@@ -13163,13 +13163,12 @@ function WithCustomFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;custom-name-contains&quot;,
         label: &quot;Name Contains&quot;,
         filterComponent: &quot;CUSTOM&quot;,
-        filterState: { type: &quot;custom&quot;, customState: { value: &quot;&quot; } },
         renderInput: ({ filterState, onFilterStateChanged }) =&gt; (
           &lt;CustomNameContainsFilter
             filterState={
               filterState as {
                 type: &quot;custom&quot;;
-                customState: { value: string };
+                customState: { value?: string };
               }
             }
             onFilterStateChanged={onFilterStateChanged}
@@ -13234,11 +13233,10 @@ const nameContainsFilter = {
   key: &quot;custom-name-contains&quot;,
   label: &quot;Name Contains&quot;,
   filterComponent: &quot;CUSTOM&quot;,
-  filterState: { type: &quot;custom&quot;, customState: { value: &quot;&quot; } },
   renderInput: ({ filterState, onFilterStateChanged }) =&gt; (
     &lt;input
       type=&quot;text&quot;
-      value={filterState.customState.value}
+      value={filterState.customState.value ?? &quot;&quot;}
       onChange={(e) =&gt;
         onFilterStateChanged({
           type: &quot;custom&quot;,
@@ -13575,6 +13573,26 @@ const linkedCitySingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   label: &quot;Manager City (linked single)&quot;,
 } as FilterDefinitionUnion&lt;Employee&gt;;
 
+const savedNameContainsFilter: FilterDefinitionUnion&lt;Employee&gt; = {
+  type: &quot;CUSTOM&quot;,
+  key: &quot;custom-name-contains&quot;,
+  label: &quot;Name Contains (custom)&quot;,
+  filterComponent: &quot;CUSTOM&quot;,
+  renderInput: ({ filterState, onFilterStateChanged }) =&gt; (
+    &lt;CustomNameContainsFilter
+      filterState={
+        filterState as { type: &quot;custom&quot;; customState: { value?: string } }
+      }
+      onFilterStateChanged={onFilterStateChanged}
+    /&gt;
+  ),
+  toWhereClause: (state) =&gt; {
+    const value = (state.customState as { value?: string })?.value;
+    if (!value) return undefined;
+    return { fullName: { $containsAnyTerm: value } };
+  },
+};
+
 const SAVED_FILTER_STATES = new Map&lt;string, FilterState&gt;([
   // &quot;Research&quot;, &quot;Chief Scientist&quot;, and &quot;Berlin&quot; are NOT in the mock employee
   // dataset — they simulate saved selections that currently have zero matching
@@ -13611,6 +13629,9 @@ const SAVED_FILTER_STATES = new Map&lt;string, FilterState&gt;([
       linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [&quot;Berlin&quot;] },
     },
   ],
+  // A CUSTOM filter&#39;s state is opaque to FilterList, so the saved entry is
+  // whatever shape its own `renderInput`/`toWhereClause` agree on.
+  [&quot;custom-name-contains&quot;, { type: &quot;custom&quot;, customState: { value: &quot;man&quot; } }],
 ]);
 
 const INITIAL_STATE_FILTER_DEFINITIONS: FilterDefinitionUnion&lt;Employee&gt;[] = [
@@ -13619,6 +13640,7 @@ const INITIAL_STATE_FILTER_DEFINITIONS: FilterDefinitionUnion&lt;Employee&gt;[] 
   locationCitySingleSelectFilter,
   linkedDepartmentMultiSelectFilter,
   linkedCitySingleSelectFilter,
+  savedNameContainsFilter,
 ];
 
 function WithInitialFilterStatesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
@@ -13670,7 +13692,9 @@ export const WithInitialFilterStates: Story = {
           &quot;mount, including values that currently have zero matching rows &quot; +
           &quot;— they appear with a count of 0 so users can see and clear them. &quot; +
           &quot;Demonstrated across LISTOGRAM, MULTI_SELECT, SINGLE_SELECT, &quot; +
-          &quot;and LINKED_PROPERTY filters.&quot;,
+          &quot;LINKED_PROPERTY, and CUSTOM filters. A CUSTOM filter hydrates the &quot; +
+          &quot;same way, except its state shape is defined by the filter itself &quot; +
+          &quot;rather than by FilterList.&quot;,
       },
       source: {
         code: `// &quot;Research&quot;, &quot;Chief Scientist&quot;, and &quot;Berlin&quot; are not in the current
@@ -13690,6 +13714,8 @@ const savedStates = new Map([
     type: &quot;linkedProperty&quot;,
     linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [&quot;Berlin&quot;] },
   }],
+  // Custom filter — state shape is whatever its renderInput/toWhereClause use
+  [&quot;custom-name-contains&quot;, { type: &quot;custom&quot;, customState: { value: &quot;man&quot; } }],
 ]);
 
 &lt;FilterList
@@ -31597,7 +31623,7 @@ function CustomNameContainsFilter({
   filterState,
   onFilterStateChanged,
 }: {
-  filterState: { type: &quot;custom&quot;; customState: { value: string } };
+  filterState: { type: &quot;custom&quot;; customState: { value?: string } };
   onFilterStateChanged: (state: {
     type: &quot;custom&quot;;
     customState: { value: string };
@@ -31625,7 +31651,7 @@ function CustomNameContainsFilter({
     &lt;div style={{ padding: &quot;12px 0&quot;, display: &quot;flex&quot;, gap: &quot;8px&quot; }}&gt;
       &lt;input
         type=&quot;text&quot;
-        value={filterState.customState.value}
+        value={filterState.customState.value ?? &quot;&quot;}
         onChange={handleChange}
         placeholder=&quot;Enter name substring...&quot;
         style={{
@@ -31667,13 +31693,12 @@ function WithCustomFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;custom-name-contains&quot;,
         label: &quot;Name Contains&quot;,
         filterComponent: &quot;CUSTOM&quot;,
-        filterState: { type: &quot;custom&quot;, customState: { value: &quot;&quot; } },
         renderInput: ({ filterState, onFilterStateChanged }) =&gt; (
           &lt;CustomNameContainsFilter
             filterState={
               filterState as {
                 type: &quot;custom&quot;;
-                customState: { value: string };
+                customState: { value?: string };
               }
             }
             onFilterStateChanged={onFilterStateChanged}
@@ -31738,11 +31763,10 @@ const nameContainsFilter = {
   key: &quot;custom-name-contains&quot;,
   label: &quot;Name Contains&quot;,
   filterComponent: &quot;CUSTOM&quot;,
-  filterState: { type: &quot;custom&quot;, customState: { value: &quot;&quot; } },
   renderInput: ({ filterState, onFilterStateChanged }) =&gt; (
     &lt;input
       type=&quot;text&quot;
-      value={filterState.customState.value}
+      value={filterState.customState.value ?? &quot;&quot;}
       onChange={(e) =&gt;
         onFilterStateChanged({
           type: &quot;custom&quot;,
@@ -32079,6 +32103,26 @@ const linkedCitySingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   label: &quot;Manager City (linked single)&quot;,
 } as FilterDefinitionUnion&lt;Employee&gt;;
 
+const savedNameContainsFilter: FilterDefinitionUnion&lt;Employee&gt; = {
+  type: &quot;CUSTOM&quot;,
+  key: &quot;custom-name-contains&quot;,
+  label: &quot;Name Contains (custom)&quot;,
+  filterComponent: &quot;CUSTOM&quot;,
+  renderInput: ({ filterState, onFilterStateChanged }) =&gt; (
+    &lt;CustomNameContainsFilter
+      filterState={
+        filterState as { type: &quot;custom&quot;; customState: { value?: string } }
+      }
+      onFilterStateChanged={onFilterStateChanged}
+    /&gt;
+  ),
+  toWhereClause: (state) =&gt; {
+    const value = (state.customState as { value?: string })?.value;
+    if (!value) return undefined;
+    return { fullName: { $containsAnyTerm: value } };
+  },
+};
+
 const SAVED_FILTER_STATES = new Map&lt;string, FilterState&gt;([
   // &quot;Research&quot;, &quot;Chief Scientist&quot;, and &quot;Berlin&quot; are NOT in the mock employee
   // dataset — they simulate saved selections that currently have zero matching
@@ -32115,6 +32159,9 @@ const SAVED_FILTER_STATES = new Map&lt;string, FilterState&gt;([
       linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [&quot;Berlin&quot;] },
     },
   ],
+  // A CUSTOM filter&#39;s state is opaque to FilterList, so the saved entry is
+  // whatever shape its own `renderInput`/`toWhereClause` agree on.
+  [&quot;custom-name-contains&quot;, { type: &quot;custom&quot;, customState: { value: &quot;man&quot; } }],
 ]);
 
 const INITIAL_STATE_FILTER_DEFINITIONS: FilterDefinitionUnion&lt;Employee&gt;[] = [
@@ -32123,6 +32170,7 @@ const INITIAL_STATE_FILTER_DEFINITIONS: FilterDefinitionUnion&lt;Employee&gt;[] 
   locationCitySingleSelectFilter,
   linkedDepartmentMultiSelectFilter,
   linkedCitySingleSelectFilter,
+  savedNameContainsFilter,
 ];
 
 function WithInitialFilterStatesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
@@ -32174,7 +32222,9 @@ export const WithInitialFilterStates: Story = {
           &quot;mount, including values that currently have zero matching rows &quot; +
           &quot;— they appear with a count of 0 so users can see and clear them. &quot; +
           &quot;Demonstrated across LISTOGRAM, MULTI_SELECT, SINGLE_SELECT, &quot; +
-          &quot;and LINKED_PROPERTY filters.&quot;,
+          &quot;LINKED_PROPERTY, and CUSTOM filters. A CUSTOM filter hydrates the &quot; +
+          &quot;same way, except its state shape is defined by the filter itself &quot; +
+          &quot;rather than by FilterList.&quot;,
       },
       source: {
         code: `// &quot;Research&quot;, &quot;Chief Scientist&quot;, and &quot;Berlin&quot; are not in the current
@@ -32194,6 +32244,8 @@ const savedStates = new Map([
     type: &quot;linkedProperty&quot;,
     linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [&quot;Berlin&quot;] },
   }],
+  // Custom filter — state shape is whatever its renderInput/toWhereClause use
+  [&quot;custom-name-contains&quot;, { type: &quot;custom&quot;, customState: { value: &quot;man&quot; } }],
 ]);
 
 &lt;FilterList
