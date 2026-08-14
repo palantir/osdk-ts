@@ -43,9 +43,6 @@ allowBuilds:
     "dprint": true
     "esbuild": true
     "msw": true
-    "oxfmt": true
-    "oxlint": true
-    "oxlint-tsgolint": true
     "unrs-resolver": true
 overrides:
     "trim@0.0.1": "0.0.3"
