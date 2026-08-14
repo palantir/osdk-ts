@@ -218,6 +218,7 @@ export class OntologyBlockDataToFullMetadataConverter {
           properties: propertyMappings,
           propertiesV2: {},
           links: {},
+          actionTypes: {},
         };
       }
 

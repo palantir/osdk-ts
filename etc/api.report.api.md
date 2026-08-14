@@ -2206,6 +2206,8 @@ export interface SelectArg<
     $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
     	// (undocumented)
     $select?: readonly L[];
+    	// (undocumented)
+    $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
 }
 
 // @public (undocumented)

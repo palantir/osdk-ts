@@ -400,6 +400,7 @@ const referencingOntology: WireOntologyDefinition = {
       implementsInterfaces2: {
         "com.example.dep.SomeInterface": {
           links: {},
+          actionTypes: {},
           properties: {
             "com.example.dep.spt": "body",
           },
