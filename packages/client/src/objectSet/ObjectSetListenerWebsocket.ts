@@ -40,12 +40,12 @@ import type { SubscriptionConnection } from "../SubscriptionConnection.js";
 import { ExponentialBackoff } from "../util/exponentialBackoff.js";
 
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
-const EXPONENTIAL_BACKOFF_INITIAL_DELAY_MS = 1000;
-const EXPONENTIAL_BACKOFF_MAX_DELAY_MS = 60000;
-const EXPONENTIAL_BACKOFF_MULTIPLIER = 2;
-const EXPONENTIAL_BACKOFF_JITTER_FACTOR = 0.3;
-const WEBSOCKET_IDLE_DISCONNECT_DELAY_MS = 15000;
-const WEBSOCKET_HEARTBEAT_INTERVAL_MS = 45 * 1000;
+export const EXPONENTIAL_BACKOFF_INITIAL_DELAY_MS: number = 1000;
+export const EXPONENTIAL_BACKOFF_JITTER_FACTOR: number = 0.3;
+export const EXPONENTIAL_BACKOFF_MAX_DELAY_MS: number = 60000;
+export const EXPONENTIAL_BACKOFF_MULTIPLIER: number = 2;
+export const WEBSOCKET_IDLE_DISCONNECT_DELAY_MS: number = 15 * 1000;
+export const WEBSOCKET_HEARTBEAT_INTERVAL_MS: number = 45 * 1000;
 
 /** Noop function to reduce conditional checks */
 function doNothing() {}
@@ -810,9 +810,39 @@ export class ObjectSetListenerWebsocket {
 
 /** @internal */
 export function constructWebsocketUrl(baseUrl: string, ontologyRid: string) {
+  return constructOntologySubscriptionsWebsocketUrl({
+    baseUrl,
+    endpoint: "streamSubscriptions",
+    ontologyRid,
+  });
+}
+
+/** @internal */
+export function constructLinkSubscriptionWebsocketUrl(
+  baseUrl: string,
+  ontologyRid: string,
+) {
+  return constructOntologySubscriptionsWebsocketUrl({
+    baseUrl,
+    endpoint: "linkTypeSubscriptions",
+    ontologyRid,
+  });
+}
+
+interface ConstructOntologySubscriptionsWebsocketUrlArgs {
+  readonly baseUrl: string;
+  readonly endpoint: "linkTypeSubscriptions" | "streamSubscriptions";
+  readonly ontologyRid: string;
+}
+
+function constructOntologySubscriptionsWebsocketUrl({
+  baseUrl,
+  endpoint,
+  ontologyRid,
+}: ConstructOntologySubscriptionsWebsocketUrlArgs) {
   const base = new URL(baseUrl);
   const url = new URL(
-    `api/v2/ontologySubscriptions/ontologies/${ontologyRid}/streamSubscriptions`,
+    `api/v2/ontologySubscriptions/ontologies/${ontologyRid}/${endpoint}`,
     base,
   );
   url.protocol = url.protocol.replace("https", "wss");
@@ -821,7 +851,7 @@ export function constructWebsocketUrl(baseUrl: string, ontologyRid: string) {
 
 let uuidCounter = 0;
 
-function nextUuid() {
+export function nextUuid(): string {
   return `00000000-0000-0000-0000-${(uuidCounter++)
     .toString()
     .padStart(12, "0")}`;
