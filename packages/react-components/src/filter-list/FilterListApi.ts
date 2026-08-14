@@ -27,6 +27,7 @@ import type {
   FilterState,
   PropertyFilterDefinition,
 } from "./FilterListItemApi.js";
+import type { ActiveFilter } from "./types/ActiveFilterTypes.js";
 import type { CustomFilterDefinition } from "./types/CustomRendererTypes.js";
 import type { KeywordSearchFilterDefinition } from "./types/KeywordSearchTypes.js";
 import type {
@@ -56,17 +57,46 @@ export type FilterDefinitionUnion<Q extends ObjectTypeDefinition> =
   | StaticValuesFilterDefinition<Q>;
 
 /**
- * Extract the key from a filter definition union
+ * The filter state after a change, in one payload.
  */
-type ExtractFilterKey<D> = D extends { key: infer K }
-  ? K
-  : D extends { linkName: infer L }
-    ? L
-    : never;
+export interface FilterChangeSnapshot<Q extends ObjectTypeDefinition> {
+  /**
+   * The combined clause for all active filters.
+   *
+   * `HAS_LINK` and `LINKED_PROPERTY` filters are not represented in the clause —
+   * read `activeFilters` or `filteredObjectSet` for those.
+   */
+  filterClause: WhereClause<Q>;
 
-export type FilterKey<Q extends ObjectTypeDefinition> = ExtractFilterKey<
-  FilterDefinitionUnion<Q>
->;
+  /**
+   * The `objectSet` prop filtered by all active filters, including `HAS_LINK`
+   * and `LINKED_PROPERTY`, or `undefined` when no `objectSet` was supplied.
+   */
+  filteredObjectSet: ObjectSet<Q> | undefined;
+
+  /**
+   * Every active filter in `filterDefinitions` order, each tagged with the
+   * `kind` of its definition.
+   */
+  activeFilters: ReadonlyArray<ActiveFilter<Q>>;
+}
+
+/**
+ * What the user did to the filter state.
+ */
+export type FilterChangeCause =
+  /** A filter's state was set. */
+  | { event: "SET"; filterKey: string; newState: FilterState }
+  /** A filter's state was cleared, e.g. by removing the filter. */
+  | { event: "CLEAR"; filterKey: string }
+  /** Every filter was restored to the state it mounted with. */
+  | { event: "RESET" };
+
+/**
+ * What the user did, plus the filter state it produced.
+ */
+export type FilterChangeEvent<Q extends ObjectTypeDefinition> =
+  FilterChangeSnapshot<Q> & FilterChangeCause;
 
 export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
@@ -91,6 +121,8 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * — use `onEffectiveObjectSet` for those.
    *
    * @param newClause The updated filter clause
+   * @deprecated Use `onFilterChanged`, which reports the clause alongside the
+   * filtered `ObjectSet` and active filters in a single payload.
    */
   onFilterClauseChanged?: (newClause: WhereClause<Q>) => void;
 
@@ -115,6 +147,8 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    *
    * @param definition The filter definition whose state changed
    * @param newState The updated filter state
+   * @deprecated Use `onFilterChanged`, which reports every set / clear / reset
+   * with a single payload keyed by `event`.
    */
   onFilterStateChanged?: (
     definition: FilterDefinitionUnion<Q>,
@@ -122,9 +156,21 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
+   * Called whenever filter state changes — a filter set, a filter cleared, or a
+   * reset — with the resulting clause, filtered `ObjectSet` and active filters
+   * in a single payload.
+   *
+   * @param change What changed and the filter state it produced
+   */
+  onFilterChanged?: (change: FilterChangeEvent<Q>) => void;
+
+  /**
    * Called with the narrowed `ObjectSet` whenever filters change. Requires
    * `objectSet` to be set. `HAS_LINK` and `LINKED_PROPERTY` filters narrow only
    * here, never through the filter clause.
+   *
+   * @deprecated Use `onFilterChanged`, whose `filteredObjectSet` reports the
+   * same narrowed set alongside the clause and active filters.
    */
   onEffectiveObjectSet?: (objectSet: ObjectSet<Q>) => void;
 
@@ -160,7 +206,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * unchanged — not the post-add state. Use `onFilterVisibilityChange`.
    */
   onFilterAdded?: (
-    filterKey: FilterKey<Q>,
+    filterKey: string,
     /** @deprecated Use `onFilterVisibilityChange`. */
     /* eslint-disable-next-line @typescript-eslint/no-deprecated */
     newDefinitions: Array<FilterDefinitionUnion<Q>>,
@@ -172,7 +218,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    *
    * @param filterKey The key of the removed filter
    */
-  onFilterRemoved?: (filterKey: FilterKey<Q>) => void;
+  onFilterRemoved?: (filterKey: string) => void;
 
   /**
    * Called when filter visibility or ordering changes, i.e. when filters are
@@ -187,7 +233,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    */
   onFilterVisibilityChange?: (
     newStates: Array<{
-      filterKey: FilterKey<Q>;
+      filterKey: string;
       isVisible: boolean;
     }>,
   ) => void;

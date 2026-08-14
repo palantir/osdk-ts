@@ -146,6 +146,7 @@ const meta: Meta<EmployeeFilterListProps> = {
     showActiveFilterCount: false,
     onFilterClauseChanged: fn(),
     onFilterStateChanged: fn(),
+    onFilterChanged: fn(),
     onFilterAdded: fn(),
     onFilterRemoved: fn(),
     onFilterVisibilityChange: fn(),
