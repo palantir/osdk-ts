@@ -14,6 +14,11 @@ import {
 - **`PdfViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the PDF contents, and renders the viewer.
 - **`BasePdfViewer`** — Lower-level component that accepts the PDF source directly as a URL string, `ArrayBuffer`, `Uint8Array`, or `Blob`. Use this when you already have the PDF source.
 
+`src` follows the convention shared by every viewer in this package: it names the
+binary source to render from, in whatever forms that renderer supports.
+`BasePdfViewer` supports all of them, so it is the reference for `src`. Viewers
+whose input is already-decoded text or a parsed object take `content` instead.
+
 ## Usage
 
 ### With OSDK Media
