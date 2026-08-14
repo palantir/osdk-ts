@@ -1,0 +1,1 @@
+import{r as n}from"./iframe-C9HB86if.js";import{b as c,c as r}from"./useBaseUiId-ClGI3kD_.js";const a=n.createContext({disabled:!1});function i(){return n.useContext(a)}function x(t,s){const e=n.useRef(t),o=c(s);r(()=>{e.current!==t&&o(e.current)},[t,o]),r(()=>{e.current=t},[t])}export{i as a,x as u};
