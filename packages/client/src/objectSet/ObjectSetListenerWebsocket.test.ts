@@ -34,7 +34,7 @@ import {
 import ImportedWebSocket from "isomorphic-ws";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
-import type { MockedClass, MockedFunction, MockedObject } from "vitest";
+import type { MockedObject } from "vitest";
 import {
   afterEach,
   beforeAll,
@@ -55,6 +55,12 @@ import {
   constructWebsocketUrl,
   ObjectSetListenerWebsocket,
 } from "./ObjectSetListenerWebsocket.js";
+import {
+  createMockWebSocketConstructor,
+  type MockedWebSocket,
+  sendToClient,
+  setWebSocketState,
+} from "./MockWebSocket.js";
 
 // it needs to be hoisted because its referenced from our mocked WebSocket
 // which must be hoisted to work
@@ -577,21 +583,6 @@ describe("ObjectSetListenerWebsocket", () => {
   });
 });
 
-interface RawWebSocketPlus extends Pick<
-  ImportedWebSocket,
-  "addEventListener" | "removeEventListener"
-> {
-  _eventEmitter: EventTarget;
-  readyState: 0 | 1 | 2 | 3;
-  send: MockedFunction<ImportedWebSocket["send"]>;
-  close: MockedFunction<ImportedWebSocket["close"]>;
-}
-
-interface MockedWebSocket
-  extends
-    MockedClass<typeof ImportedWebSocket>,
-    MockedObject<RawWebSocketPlus> {}
-
 type MockedListener = MockedObject<
   Required<ObjectSetSubscription.Listener<Employee, PropertyKeys<Employee>>>
 >;
@@ -712,58 +703,6 @@ async function expectWebSocketConstructed(): Promise<MockedWebSocket> {
   return ws;
 }
 
-function createMockWebSocketConstructor(
-  OriginalWebSocket: WebSocket,
-  logger: Logger,
-): MockedWebSocket {
-  let i = 0;
-  const ret = vi.fn((..._args: any[]): MockedWebSocket => {
-    const webSocketInst = i++;
-    logger.debug("WebSocket constructor called");
-    const eventEmitter = new EventTarget();
-
-    return {
-      addEventListener: vi.fn(
-        eventEmitter.addEventListener.bind(eventEmitter),
-      ) as any,
-      removeEventListener: vi.fn(
-        eventEmitter.removeEventListener.bind(eventEmitter),
-      ) as any,
-
-      send: vi.fn((a, _b: any) => {
-        logger.debug(
-          { message: JSON.parse(a.toString()), webSocketInst },
-          "send() called",
-        );
-      }),
-      close: vi.fn(),
-      _eventEmitter: eventEmitter,
-      readyState: OriginalWebSocket.CONNECTING,
-    } satisfies RawWebSocketPlus as any as MockedWebSocket;
-    // ^ we only implement some things but the type system wants to think its the full deal,
-    // thus the satisfies plus the cast
-  }) as any as MockedWebSocket;
-
-  Object.assign(ret, {
-    OPEN: OriginalWebSocket.OPEN,
-    CLOSED: OriginalWebSocket.CLOSED,
-    CLOSING: OriginalWebSocket.CLOSING,
-    CONNECTING: OriginalWebSocket.CONNECTING,
-  });
-
-  return ret;
-}
-
-function setWebSocketState(ws: MockedWebSocket, readyState: "open" | "close") {
-  const newState =
-    readyState === "open" ? ImportedWebSocket.OPEN : ImportedWebSocket.CLOSED;
-
-  if (newState === ws.readyState) return;
-
-  ws.readyState = newState;
-  ws._eventEmitter.dispatchEvent(new Event(readyState, {}));
-}
-
 function addLoggerToApiServer(apiServer: SetupServer, logger: Logger) {
   const z = (
     name: string,
@@ -794,15 +733,3 @@ const SubscribeMessage = z.object({
     }),
   ),
 });
-
-class MessageEvent extends Event {
-  data: string;
-  constructor(data: any) {
-    super("message");
-    this.data = JSON.stringify(data);
-  }
-}
-
-function sendToClient<T>(ws: MockedWebSocket, t: T) {
-  ws._eventEmitter.dispatchEvent(new MessageEvent(t));
-}

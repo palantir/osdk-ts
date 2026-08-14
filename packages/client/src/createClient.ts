@@ -43,6 +43,7 @@ import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__linkSubscriptions,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet,
   transformAndWait,
 } from "@osdk/api/unstable";
@@ -165,6 +166,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       | QueryDefinition<any>
       | Experiment<"2.0.8">
       | Experiment<"2.1.0">
+      | Experiment<"2.17.0">
       | Experiment<"2.8.0">
       | Experiment<"2.19.0">,
   >(
@@ -180,6 +182,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
           : T extends
                 | Experiment<"2.0.8">
                 | Experiment<"2.1.0">
+                | Experiment<"2.17.0">
                 | Experiment<"2.8.0">
                 | Experiment<"2.19.0">
             ? { invoke: ExperimentFns<T> }
@@ -220,6 +223,20 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 objs,
                 linkTypes,
               );
+            },
+          } as any;
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__linkSubscriptions.name:
+          return {
+            subscribeToLinks: (args: any) => {
+              const pendingSubscription = import(
+                "./objectSet/LinkSubscriptionWebsocket.js"
+              ).then(({ LinkSubscriptionWebsocket }) =>
+                new LinkSubscriptionWebsocket(clientCtx, args).subscribe()
+              );
+              return {
+                unsubscribe: async () =>
+                  (await pendingSubscription).unsubscribe(),
+              };
             },
           } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid.name:
