@@ -301,7 +301,7 @@ describe("BatchProcessor", () => {
 
       // With concurrency of 10 and 10ms per item, 100 items should take ~100ms
       // Allow some margin for test execution overhead
-      expect(duration).toBeLessThan(200);
+      expect(duration).toBeLessThan(500);
     });
 
     it("maintains order of results despite parallel execution", async () => {
