@@ -22,8 +22,17 @@ import {
   MIN_FOUNDRY_CLI_VERSION,
 } from "../utils/foundry-cli.js";
 import { installFoundryCli } from "./download.js";
+import { readGitRemoteUrl } from "./gitRemote.js";
 
 export const postinstall = async (): Promise<void> => {
+  const remote = await readGitRemoteUrl();
+  if (
+    remote === "git@github.com:palantir/osdk-ts.git" ||
+    remote === "https://github.com/palantir/osdk-ts.git"
+  ) {
+    consola.info(`✅ In osdk-ts repo, skipping installation.`);
+    return;
+  }
   const result = await checkFoundryCliVersion();
   switch (result.type) {
     case "installed":
