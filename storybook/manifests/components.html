@@ -1072,7 +1072,7 @@ const meta: Meta&lt;BaseEmailViewerProps&gt; = {
   component: BaseEmailViewer,
   tags: [&quot;beta&quot;],
   args: {
-    email: SAMPLE_EMAIL,
+    content: SAMPLE_EMAIL,
   },
   render: (args: BaseEmailViewerProps) =&gt; (
     &lt;div style={{ height: &quot;500px&quot; }}&gt;
@@ -1083,8 +1083,8 @@ const meta: Meta&lt;BaseEmailViewerProps&gt; = {
     controls: { expanded: true },
   },
   argTypes: {
-    email: {
-      description: &quot;Parsed email data&quot;,
+    content: {
+      description: &quot;The parsed email to render&quot;,
       control: false,
     },
     className: {
@@ -1123,7 +1123,7 @@ export const HtmlEmail: Story = {
       source: {
         code: `import { BaseEmailViewer } from &quot;@osdk/react-components/experimental/email-viewer&quot;;
 
-&lt;BaseEmailViewer email={parsedEmail} /&gt;`,
+&lt;BaseEmailViewer content={parsedEmail} /&gt;`,
       },
     },
   },
@@ -1131,7 +1131,7 @@ export const HtmlEmail: Story = {
 
 export const PlainTextEmail: Story = {
   args: {
-    email: SAMPLE_TEXT_EMAIL,
+    content: SAMPLE_TEXT_EMAIL,
   },
 };
 </code></pre></div>
@@ -1167,7 +1167,7 @@ export const PlainTextEmail: Story = {
               
               
               <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;EmailViewer email={SAMPLE_EMAIL} media={createMockEmailMedia(SAMPLE_EML_CONTENT)} /&gt;
+    &lt;EmailViewer content={SAMPLE_EMAIL} media={createMockEmailMedia(SAMPLE_EML_CONTENT)} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -1178,7 +1178,7 @@ export const PlainTextEmail: Story = {
               
               
               <pre><code>const HtmlEmail = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;BaseEmailViewer email={SAMPLE_EMAIL} /&gt;
+    &lt;BaseEmailViewer content={SAMPLE_EMAIL} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -1189,7 +1189,7 @@ export const PlainTextEmail: Story = {
               
               
               <pre><code>const PlainTextEmail = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;BaseEmailViewer email={SAMPLE_TEXT_EMAIL} /&gt;
+    &lt;BaseEmailViewer content={SAMPLE_TEXT_EMAIL} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
         </div>
@@ -4947,7 +4947,7 @@ const meta: Meta&lt;BaseSpreadsheetViewerProps&gt; = {
   component: BaseSpreadsheetViewer,
   tags: [&quot;beta&quot;],
   args: {
-    spreadsheet: SAMPLE_SPREADSHEET,
+    content: SAMPLE_SPREADSHEET,
   },
   render: (args: BaseSpreadsheetViewerProps) =&gt; (
     &lt;div style={{ height: &quot;500px&quot; }}&gt;
@@ -4958,8 +4958,8 @@ const meta: Meta&lt;BaseSpreadsheetViewerProps&gt; = {
     controls: { expanded: true },
   },
   argTypes: {
-    spreadsheet: {
-      description: &quot;Parsed spreadsheet data&quot;,
+    content: {
+      description: &quot;The parsed spreadsheet to render&quot;,
       control: false,
     },
     className: {
@@ -4998,7 +4998,7 @@ export const WithSpreadsheet: Story = {
       source: {
         code: `import { BaseSpreadsheetViewer } from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
 
-&lt;BaseSpreadsheetViewer spreadsheet={parsedSpreadsheet} /&gt;`,
+&lt;BaseSpreadsheetViewer content={parsedSpreadsheet} /&gt;`,
       },
     },
   },
@@ -5006,7 +5006,7 @@ export const WithSpreadsheet: Story = {
 
 export const SingleSheet: Story = {
   args: {
-    spreadsheet: {
+    content: {
       sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
     },
   },
@@ -5076,7 +5076,7 @@ export const WithRealFile: StoryObj&lt;SpreadsheetViewerProps&gt; = {
               
               
               <pre><code>const WithSpreadsheet = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;BaseSpreadsheetViewer spreadsheet={SAMPLE_SPREADSHEET} /&gt;
+    &lt;BaseSpreadsheetViewer content={SAMPLE_SPREADSHEET} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -5088,7 +5088,7 @@ export const WithRealFile: StoryObj&lt;SpreadsheetViewerProps&gt; = {
               
               <pre><code>const SingleSheet = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
     &lt;BaseSpreadsheetViewer
-        spreadsheet={{
+        content={{
           sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
         }} /&gt;
 &lt;/div&gt;;</code></pre>
@@ -6158,7 +6158,7 @@ const meta: Meta&lt;BaseTiffViewerProps&gt; = {
   component: BaseTiffViewer,
   tags: [&quot;beta&quot;],
   args: {
-    content: sampleTiffBytes,
+    src: sampleTiffBytes,
   },
   render: (args: BaseTiffViewerProps) =&gt; (
     &lt;div style={{ height: &quot;400px&quot; }}&gt;
@@ -6171,7 +6171,7 @@ const meta: Meta&lt;BaseTiffViewerProps&gt; = {
     },
   },
   argTypes: {
-    content: {
+    src: {
       description: &quot;TIFF bytes to render&quot;,
       control: false,
     },
@@ -6192,7 +6192,7 @@ export const WithContent: Story = {
       source: {
         code: `import { BaseTiffViewer } from &quot;@osdk/react-components/experimental/tiff-renderer&quot;;
 
-&lt;BaseTiffViewer content={tiffBytes} /&gt;`,
+&lt;BaseTiffViewer src={tiffBytes} /&gt;`,
       },
     },
   },
@@ -6207,7 +6207,7 @@ export const WithErrorCallback: Story = {
       source: {
         code: `import { BaseTiffViewer } from &quot;@osdk/react-components/experimental/tiff-renderer&quot;;
 
-&lt;BaseTiffViewer content={tiffBytes} onError={() =&gt; console.error(&quot;TIFF render failed&quot;)} /&gt;`,
+&lt;BaseTiffViewer src={tiffBytes} onError={() =&gt; console.error(&quot;TIFF render failed&quot;)} /&gt;`,
       },
     },
   },
@@ -6245,7 +6245,7 @@ export const WithErrorCallback: Story = {
               
               
               <pre><code>const WithContent = () =&gt; &lt;div style={{ height: &quot;400px&quot; }}&gt;
-    &lt;BaseTiffViewer content={sampleTiffBytes} /&gt;
+    &lt;BaseTiffViewer src={sampleTiffBytes} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -6256,7 +6256,7 @@ export const WithErrorCallback: Story = {
               
               
               <pre><code>const WithErrorCallback = () =&gt; &lt;div style={{ height: &quot;400px&quot; }}&gt;
-    &lt;BaseTiffViewer content={sampleTiffBytes} onError={fn()} /&gt;
+    &lt;BaseTiffViewer src={sampleTiffBytes} onError={fn()} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
         </div>
@@ -22376,7 +22376,7 @@ const meta: Meta&lt;BaseEmailViewerProps&gt; = {
   component: BaseEmailViewer,
   tags: [&quot;beta&quot;],
   args: {
-    email: SAMPLE_EMAIL,
+    content: SAMPLE_EMAIL,
   },
   render: (args: BaseEmailViewerProps) =&gt; (
     &lt;div style={{ height: &quot;500px&quot; }}&gt;
@@ -22387,8 +22387,8 @@ const meta: Meta&lt;BaseEmailViewerProps&gt; = {
     controls: { expanded: true },
   },
   argTypes: {
-    email: {
-      description: &quot;Parsed email data&quot;,
+    content: {
+      description: &quot;The parsed email to render&quot;,
       control: false,
     },
     className: {
@@ -22427,7 +22427,7 @@ export const HtmlEmail: Story = {
       source: {
         code: `import { BaseEmailViewer } from &quot;@osdk/react-components/experimental/email-viewer&quot;;
 
-&lt;BaseEmailViewer email={parsedEmail} /&gt;`,
+&lt;BaseEmailViewer content={parsedEmail} /&gt;`,
       },
     },
   },
@@ -22435,7 +22435,7 @@ export const HtmlEmail: Story = {
 
 export const PlainTextEmail: Story = {
   args: {
-    email: SAMPLE_TEXT_EMAIL,
+    content: SAMPLE_TEXT_EMAIL,
   },
 };
 </code></pre></div>
@@ -22471,7 +22471,7 @@ export const PlainTextEmail: Story = {
               
               
               <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;EmailViewer email={SAMPLE_EMAIL} media={createMockEmailMedia(SAMPLE_EML_CONTENT)} /&gt;
+    &lt;EmailViewer content={SAMPLE_EMAIL} media={createMockEmailMedia(SAMPLE_EML_CONTENT)} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -22482,7 +22482,7 @@ export const PlainTextEmail: Story = {
               
               
               <pre><code>const HtmlEmail = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;BaseEmailViewer email={SAMPLE_EMAIL} /&gt;
+    &lt;BaseEmailViewer content={SAMPLE_EMAIL} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -22493,7 +22493,7 @@ export const PlainTextEmail: Story = {
               
               
               <pre><code>const PlainTextEmail = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;BaseEmailViewer email={SAMPLE_TEXT_EMAIL} /&gt;
+    &lt;BaseEmailViewer content={SAMPLE_TEXT_EMAIL} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
         </div>
@@ -26251,7 +26251,7 @@ const meta: Meta&lt;BaseSpreadsheetViewerProps&gt; = {
   component: BaseSpreadsheetViewer,
   tags: [&quot;beta&quot;],
   args: {
-    spreadsheet: SAMPLE_SPREADSHEET,
+    content: SAMPLE_SPREADSHEET,
   },
   render: (args: BaseSpreadsheetViewerProps) =&gt; (
     &lt;div style={{ height: &quot;500px&quot; }}&gt;
@@ -26262,8 +26262,8 @@ const meta: Meta&lt;BaseSpreadsheetViewerProps&gt; = {
     controls: { expanded: true },
   },
   argTypes: {
-    spreadsheet: {
-      description: &quot;Parsed spreadsheet data&quot;,
+    content: {
+      description: &quot;The parsed spreadsheet to render&quot;,
       control: false,
     },
     className: {
@@ -26302,7 +26302,7 @@ export const WithSpreadsheet: Story = {
       source: {
         code: `import { BaseSpreadsheetViewer } from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
 
-&lt;BaseSpreadsheetViewer spreadsheet={parsedSpreadsheet} /&gt;`,
+&lt;BaseSpreadsheetViewer content={parsedSpreadsheet} /&gt;`,
       },
     },
   },
@@ -26310,7 +26310,7 @@ export const WithSpreadsheet: Story = {
 
 export const SingleSheet: Story = {
   args: {
-    spreadsheet: {
+    content: {
       sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
     },
   },
@@ -26380,7 +26380,7 @@ export const WithRealFile: StoryObj&lt;SpreadsheetViewerProps&gt; = {
               
               
               <pre><code>const WithSpreadsheet = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;BaseSpreadsheetViewer spreadsheet={SAMPLE_SPREADSHEET} /&gt;
+    &lt;BaseSpreadsheetViewer content={SAMPLE_SPREADSHEET} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -26392,7 +26392,7 @@ export const WithRealFile: StoryObj&lt;SpreadsheetViewerProps&gt; = {
               
               <pre><code>const SingleSheet = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
     &lt;BaseSpreadsheetViewer
-        spreadsheet={{
+        content={{
           sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
         }} /&gt;
 &lt;/div&gt;;</code></pre>
@@ -27462,7 +27462,7 @@ const meta: Meta&lt;BaseTiffViewerProps&gt; = {
   component: BaseTiffViewer,
   tags: [&quot;beta&quot;],
   args: {
-    content: sampleTiffBytes,
+    src: sampleTiffBytes,
   },
   render: (args: BaseTiffViewerProps) =&gt; (
     &lt;div style={{ height: &quot;400px&quot; }}&gt;
@@ -27475,7 +27475,7 @@ const meta: Meta&lt;BaseTiffViewerProps&gt; = {
     },
   },
   argTypes: {
-    content: {
+    src: {
       description: &quot;TIFF bytes to render&quot;,
       control: false,
     },
@@ -27496,7 +27496,7 @@ export const WithContent: Story = {
       source: {
         code: `import { BaseTiffViewer } from &quot;@osdk/react-components/experimental/tiff-renderer&quot;;
 
-&lt;BaseTiffViewer content={tiffBytes} /&gt;`,
+&lt;BaseTiffViewer src={tiffBytes} /&gt;`,
       },
     },
   },
@@ -27511,7 +27511,7 @@ export const WithErrorCallback: Story = {
       source: {
         code: `import { BaseTiffViewer } from &quot;@osdk/react-components/experimental/tiff-renderer&quot;;
 
-&lt;BaseTiffViewer content={tiffBytes} onError={() =&gt; console.error(&quot;TIFF render failed&quot;)} /&gt;`,
+&lt;BaseTiffViewer src={tiffBytes} onError={() =&gt; console.error(&quot;TIFF render failed&quot;)} /&gt;`,
       },
     },
   },
@@ -27549,7 +27549,7 @@ export const WithErrorCallback: Story = {
               
               
               <pre><code>const WithContent = () =&gt; &lt;div style={{ height: &quot;400px&quot; }}&gt;
-    &lt;BaseTiffViewer content={sampleTiffBytes} /&gt;
+    &lt;BaseTiffViewer src={sampleTiffBytes} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -27560,7 +27560,7 @@ export const WithErrorCallback: Story = {
               
               
               <pre><code>const WithErrorCallback = () =&gt; &lt;div style={{ height: &quot;400px&quot; }}&gt;
-    &lt;BaseTiffViewer content={sampleTiffBytes} onError={fn()} /&gt;
+    &lt;BaseTiffViewer src={sampleTiffBytes} onError={fn()} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
         </div>
