@@ -1,19 +1,29 @@
 import "@radix-ui/themes/styles.css";
 import "./main.css";
 
+{{#if osdkPackage}}
 import { OsdkProvider } from "@osdk/react";
+{{/if}}
 import { FoundryWidget } from "@osdk/widget.client-react";
 import { createRoot } from "react-dom/client";
+{{#if osdkPackage}}
 import { client } from "./client.js";
+{{/if}}
 import MainConfig from "./main.config.js";
 import { Widget } from "./Widget.js";
 
 const root = document.getElementById("root")!;
 
 createRoot(root).render(
+{{#if osdkPackage}}
   <FoundryWidget config={MainConfig} client={client}>
     <OsdkProvider client={client}>
       <Widget />
     </OsdkProvider>
   </FoundryWidget>,
+{{else}}
+  <FoundryWidget config={MainConfig}>
+    <Widget />
+  </FoundryWidget>,
+{{/if}}
 );
