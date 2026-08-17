@@ -19,7 +19,7 @@ import { useOsdkMetadata } from "@osdk/react";
 import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import type { FilterKey, FilterListProps } from "../FilterListApi.js";
+import type { FilterListProps } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { LinkedFilter } from "../types/LinkedFilterTypes.js";
 import {
@@ -164,7 +164,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
           const activeLinkedFilters = getActiveLinkedFilters(definitions, next);
           const currentObjectSet = objectSetRef.current;
           onChanged({
-            filterKey: filterKey as FilterKey<Q>,
+            filterKey,
             newState: state,
             filterClause,
             linkedFilters: activeLinkedFilters,

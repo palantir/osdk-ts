@@ -57,24 +57,11 @@ export type FilterDefinitionUnion<Q extends ObjectTypeDefinition> =
   | StaticValuesFilterDefinition<Q>;
 
 /**
- * Extract the key from a filter definition union
- */
-type ExtractFilterKey<D> = D extends { key: infer K }
-  ? K
-  : D extends { linkName: infer L }
-    ? L
-    : never;
-
-export type FilterKey<Q extends ObjectTypeDefinition> = ExtractFilterKey<
-  FilterDefinitionUnion<Q>
->;
-
-/**
  * Everything that changed when a single filter's state changed, in one payload.
  */
 export interface FilterChangeEvent<Q extends ObjectTypeDefinition> {
   /** Key of the filter the user changed. */
-  filterKey: FilterKey<Q>;
+  filterKey: string;
 
   /** The changed filter's new state. */
   newState: FilterState;
@@ -204,7 +191,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * unchanged — not the post-add state. Use `onFilterVisibilityChange`.
    */
   onFilterAdded?: (
-    filterKey: FilterKey<Q>,
+    filterKey: string,
     /** @deprecated Use `onFilterVisibilityChange`. */
     /* eslint-disable-next-line @typescript-eslint/no-deprecated */
     newDefinitions: Array<FilterDefinitionUnion<Q>>,
@@ -216,7 +203,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    *
    * @param filterKey The key of the removed filter
    */
-  onFilterRemoved?: (filterKey: FilterKey<Q>) => void;
+  onFilterRemoved?: (filterKey: string) => void;
 
   /**
    * Called when filter visibility or ordering changes, i.e. when filters are
@@ -231,7 +218,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    */
   onFilterVisibilityChange?: (
     newStates: Array<{
-      filterKey: FilterKey<Q>;
+      filterKey: string;
       isVisible: boolean;
     }>,
   ) => void;
