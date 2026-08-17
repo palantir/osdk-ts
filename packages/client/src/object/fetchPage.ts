@@ -329,6 +329,10 @@ async function fetchInterfacePage<
       interfaceType.apiName,
     );
     allProperties = ifaceDef ? Object.keys(ifaceDef.properties) : undefined;
+  } else {
+    void prefetchInterfaceMetadata(client, interfaceType.apiName).catch(
+      () => {},
+    );
   }
 
   const selectV2 = buildSelectV2(
@@ -769,4 +773,17 @@ export async function fetchObjectPage<
     nextPageToken: r.nextPageToken,
     totalCount: r.totalCount,
   }) as unknown as Promise<FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS>>;
+}
+
+async function prefetchInterfaceMetadata(
+  client: MinimalClient,
+  interfaceApiName: string,
+): Promise<void> {
+  const def =
+    await client.ontologyProvider.getInterfaceDefinition(interfaceApiName);
+  await Promise.all(
+    def.implementedBy?.map((implementedBy) =>
+      client.ontologyProvider.getObjectDefinition(implementedBy),
+    ) ?? [],
+  );
 }
