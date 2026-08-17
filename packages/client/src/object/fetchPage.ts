@@ -330,6 +330,8 @@ async function fetchInterfacePage<
     );
     allProperties = ifaceDef ? Object.keys(ifaceDef.properties) : undefined;
   } else {
+    // We have empty catches here so that if this call errors before we await later, we won't have an unhandled promise rejection that would crash the process
+    // Swallowing the error is ok because we await the metadata load in the objectFactory later anyways which eventually bubbles up the error to the user
     void client.ontologyProvider
       .getInterfaceDefinition(interfaceType.apiName)
       .then((def) => {
