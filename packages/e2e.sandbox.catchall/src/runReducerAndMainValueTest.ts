@@ -32,7 +32,7 @@ export async function runReducerAndMainValueTest(): Promise<void> {
     await client(
       __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
     ).fetchPageByRid(ReducerTest, [reducerTestObject.data[0].$rid], {
-      $defaultLoadLevel: "applyReducersAndExtractMainValue",
+      $EXPERIMENTAL_defaultLoadLevel: "applyReducersAndExtractMainValue",
       $applyModifiers: { structArray: "applyReducers" },
     })
   ).data[0];

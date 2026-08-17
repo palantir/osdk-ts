@@ -139,7 +139,7 @@ export interface FetchPageArgs<
    *
    * @experimental
    */
-  $defaultLoadLevel?: DEFAULT_LOAD_LEVEL;
+  $EXPERIMENTAL_defaultLoadLevel?: DEFAULT_LOAD_LEVEL;
   /**
    * Ensures paging consistency by freezing the view at the time of query to prevent duplicate or missing items. Setting $snapshot to false ensures that you will always get the latest results.
    * @default false

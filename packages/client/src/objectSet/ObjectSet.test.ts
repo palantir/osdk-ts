@@ -1354,10 +1354,10 @@ describe("ObjectSet", () => {
     });
   });
 
-  describe("$defaultLoadLevel", () => {
-    it("exposes $defaultLoadLevel to client (type)", () => {
+  describe("$EXPERIMENTAL_defaultLoadLevel", () => {
+    it("exposes $EXPERIMENTAL_defaultLoadLevel to client (type)", () => {
       expectTypeOf<FetchPageArgs<Employee>>().toHaveProperty(
-        "$defaultLoadLevel",
+        "$EXPERIMENTAL_defaultLoadLevel",
       );
     });
 
@@ -1372,7 +1372,7 @@ describe("ObjectSet", () => {
     it("sends defaultLoadLevel for fetchObjectPage with an empty selection", async () => {
       const { client, fetchFn } = createMockCaptureClient();
       await fetchPage(client, Employee, {
-        $defaultLoadLevel: "applyReducersAndExtractMainValue",
+        $EXPERIMENTAL_defaultLoadLevel: "applyReducersAndExtractMainValue",
       });
       // No $select => empty selection so the server applies the level to all properties.
       expect(getLastObjectSetRequest(fetchFn)).toMatchObject({
@@ -1385,20 +1385,20 @@ describe("ObjectSet", () => {
     it("maps applyMainValue to the extractMainValue wire discriminant", async () => {
       const { client, fetchFn } = createMockCaptureClient();
       await fetchPage(client, Employee, {
-        $defaultLoadLevel: "applyMainValue",
+        $EXPERIMENTAL_defaultLoadLevel: "applyMainValue",
       });
       expect(getLastObjectSetRequest(fetchFn)).toMatchObject({
         defaultLoadLevel: { type: "extractMainValue" },
       });
     });
 
-    it("accepts $defaultLoadLevel on fetchPageByRid", async () => {
+    it("accepts $EXPERIMENTAL_defaultLoadLevel on fetchPageByRid", async () => {
       const employees = await client(
         __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
       ).fetchPageByRid(
         Employee,
         [stubData.employee1.__rid, stubData.employee2.__rid],
-        { $defaultLoadLevel: "applyReducers" },
+        { $EXPERIMENTAL_defaultLoadLevel: "applyReducers" },
       );
       expect(employees.data[0].$primaryKey).toBe(stubData.employee1.employeeId);
       expectTypeOf(employees.data[0].employeeProfile).toMatchTypeOf<
@@ -1409,12 +1409,12 @@ describe("ObjectSet", () => {
       >();
     });
 
-    it("accepts $defaultLoadLevel on fetchPageByRidNoType", async () => {
+    it("accepts $EXPERIMENTAL_defaultLoadLevel on fetchPageByRidNoType", async () => {
       const employees = await client(
         __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
       ).fetchPageByRidNoType(
         [stubData.employee1.__rid, stubData.employee2.__rid],
-        { $defaultLoadLevel: "applyReducers" },
+        { $EXPERIMENTAL_defaultLoadLevel: "applyReducers" },
       );
       expect(employees.data[0].$primaryKey).toBe(stubData.employee1.employeeId);
     });
@@ -1422,7 +1422,7 @@ describe("ObjectSet", () => {
     it("sends defaultLoadLevel for fetchStaticRidPage", async () => {
       const { client, fetchFn } = createMockCaptureClient();
       await fetchStaticRidPage(client, [stubData.employee1.__rid], {
-        $defaultLoadLevel: "applyReducers",
+        $EXPERIMENTAL_defaultLoadLevel: "applyReducers",
       });
       expect(getLastObjectSetRequest(fetchFn)).toMatchObject({
         objectSet: { type: "static" },

@@ -53,7 +53,7 @@ import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
 /**
  * Builds the wire `defaultLoadLevel` for a request from the experimental
- * `$defaultLoadLevel` arg, or `undefined` when it is not set. Applied to every
+ * `$EXPERIMENTAL_defaultLoadLevel` arg, or `undefined` when it is not set. Applied to every
  * property server-side (best-effort) without listing property IDs.
  */
 function buildDefaultLoadLevel(
@@ -256,7 +256,9 @@ export async function fetchStaticRidPage<
       excludeRid: !args?.$includeRid,
       snapshot: args.$snapshot ?? false,
       loadPropertySecurities: shouldLoadPropertySecurities,
-      defaultLoadLevel: buildDefaultLoadLevel(args.$defaultLoadLevel),
+      defaultLoadLevel: buildDefaultLoadLevel(
+        args.$EXPERIMENTAL_defaultLoadLevel,
+      ),
     } satisfies LoadObjectSetV2MultipleObjectTypesRequest,
     client,
     { type: "object", apiName: "" },
@@ -746,7 +748,9 @@ export async function fetchObjectPage<
       loadPropertySecurities: shouldLoadPropertySecurities,
       excludeRid: !args?.$includeRid,
       snapshot: args.$snapshot ?? false,
-      defaultLoadLevel: buildDefaultLoadLevel(args.$defaultLoadLevel),
+      defaultLoadLevel: buildDefaultLoadLevel(
+        args.$EXPERIMENTAL_defaultLoadLevel,
+      ),
     },
     client,
     objectType,
