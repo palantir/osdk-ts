@@ -36,8 +36,10 @@
   "dependencies": {
     "@arethetypeswrong/cli": "^0.17.4",
     "@osdk/cli.common": "workspace:~",
+    "@osdk/client.unstable": "workspace:~",
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/generator": "workspace:~",
+    "@osdk/generator-converters.ontologyir": "workspace:~",
     "@osdk/shared.client.impl": "workspace:~",
     "consola": "^3.4.2",
     "fast-deep-equal": "^3.1.3",

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-export { cli } from "./cli.js";
-export type { TypescriptGenerateArgs } from "./generate/TypescriptGenerateArgs.js";
-export { oacCommand } from "./oac/oacCommand.js";
-export { typescriptCommand as default } from "./typescriptCommand.js";
+import type { CliCommonArgs } from "@osdk/cli.common";
+import type * as yargs from "yargs";
+
+import { oacGenerateCommand } from "./oacGenerate.js";
+
+export const oacCommand: yargs.CommandModule<CliCommonArgs, CliCommonArgs> = {
+  command: "oac",
+  describe: "Generate from Ontology as Code",
+  builder: (argv) => {
+    return argv.command(oacGenerateCommand).demandCommand();
+  },
+  handler: async (_args) => {},
+};

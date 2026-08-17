@@ -42,3 +42,9 @@ export {
   OntologyIrToFullMetadataConverter,
 } from "./OntologyIrToFullMetadataConverter.js";
 export { toStructFieldRid, toUuid } from "./ridUtils.js";
+export {
+  buildSemanticManifest,
+  type ImportedEntityKind,
+  type ImportedEntityMapping,
+  type SemanticManifest,
+} from "./semanticManifest.js";
