@@ -21,7 +21,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Client } from "../Client.js";
 import { createClient, createClientWithTransaction } from "../createClient.js";
-import { mockFetchResponse } from "../createClient.test.js";
+import { mockInterfaceFetchPageResponse } from "../createClient.test.js";
 import { withScenario } from "./withScenario.js";
 
 describe("withScenario", () => {
@@ -54,15 +54,15 @@ describe("withScenario", () => {
   it("forwards scenarioRid as a query param on fetchPage", async () => {
     const scenario = withScenario(client, "ri.actions..scenario.abc");
     const mock: LoadObjectSetV2MultipleObjectTypesResponse = { data: [] };
-    mockFetchResponse(fetchFunction, mock);
+    mockInterfaceFetchPageResponse(fetchFunction, mock);
 
     await scenario(BarInterface).fetchPage();
 
-    expect(fetchFunction).toHaveBeenCalledTimes(1);
-    const url = new URL(
-      fetchFunction.mock.calls[0][0] as string,
-      "https://mock.com",
+    expect(fetchFunction).toHaveBeenCalledTimes(2);
+    const loadCall = fetchFunction.mock.calls.find(([input]) =>
+      String(input).includes("objectSets/loadObjects"),
     );
+    const url = new URL(loadCall?.[0] as string, "https://mock.com");
     expect(url.searchParams.get("scenarioRid")).toBe(
       "ri.actions..scenario.abc",
     );
