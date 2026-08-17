@@ -292,7 +292,8 @@ function convertOcrLanguageOrScript(item: OcrLanguageOrScript) {
   if ("$language" in item && item.$language != null) {
     return { type: "language" as const, language: item.$language };
   } else {
-    const script = (item as OcrLanguageOrScript & { $script: string }).$script;
+    const script = (item as OcrLanguageOrScript & { $script: OcrScript })
+      .$script;
     return { type: "script" as const, script };
   }
 }
