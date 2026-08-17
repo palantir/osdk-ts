@@ -17,29 +17,63 @@
 // Browser-safe alias runtime for Dev Console applications.
 //
 // Unlike the Node loaders (which read a file from the container filesystem via
-// fs), a browser has no filesystem or process.env. Instead the platform writes
-// the installer's resolved values into the served deployment config file, and
-// this module fetches that file once, caches it, and then serves custom()
-// synchronously. This file must stay free of `fs`/`process` so it can be
-// bundled into a browser app.
+// fs), a browser has no filesystem or process.env. Instead this module fetches a
+// served JSON file once, caches it, and then serves custom() synchronously. This
+// file must stay free of `fs`/`process` so it can be bundled into a browser app.
+//
+// Two files can supply aliases, mirroring how the Node runtime has PUBLISHED and
+// LIVE_PREVIEW modes:
+//
+//   production  .palantir/deployment.config.json  written at install, so it
+//                                                 carries the INSTALLER's values
+//   development public/resources.json             the author's declaration file,
+//                                                 so it carries the DEFAULTS
+//
+// The caller chooses the path (see InitAliasesOptions.path), because only the
+// application knows whether it is running a dev server. We deliberately do NOT
+// fall back from one path to the other: in production BOTH files are served, so
+// a fallback would silently serve the developer's defaults instead of the
+// installer's values.
+//
+// The two files are told apart by the runtime type of their `aliases` field
+// (string vs object), which is unambiguous, so callers only need to pass a path.
 
-import type { Custom, DeploymentConfig } from "./types.js";
+import type {
+  AliasDeclarationsFile,
+  Custom,
+  DeploymentConfig,
+} from "./types.js";
 
 export type { Custom } from "./types.js";
 
 /**
  * Default path to the deployment config file served by Foundry website
  * hosting. Resolved relative to the document base URI so apps served under a
- * subpath still find it.
+ * subpath still find it. Carries the installer's resolved values.
  */
 export const DEFAULT_DEPLOYMENT_CONFIG_PATH =
   ".palantir/deployment.config.json";
 
+/**
+ * Path to the author-maintained declaration file, served from `public/` by the
+ * Vite dev server. Carries the developer's declared defaults, so it is the
+ * right source during local development where there is no installer.
+ */
+export const DEFAULT_DECLARATIONS_PATH = "resources.json";
+
 export interface InitAliasesOptions {
   /**
-   * Path or URL to the deployment config file. Relative paths are resolved
-   * against `document.baseURI`. Defaults to
-   * {@link DEFAULT_DEPLOYMENT_CONFIG_PATH}.
+   * Path or URL to fetch aliases from. Relative paths are resolved against
+   * `document.baseURI`. Defaults to {@link DEFAULT_DEPLOYMENT_CONFIG_PATH}.
+   *
+   * During local development, pass {@link DEFAULT_DECLARATIONS_PATH} instead,
+   * since the deployment config file only exists on an installed site:
+   *
+   * ```ts
+   * await initAliases({
+   *   path: import.meta.env.DEV ? DEFAULT_DECLARATIONS_PATH : undefined,
+   * });
+   * ```
    */
   path?: string;
   /**
@@ -90,8 +124,49 @@ async function loadAliases(options?: InitAliasesOptions): Promise<void> {
     );
   }
 
-  const config = (await response.json()) as DeploymentConfig;
-  cachedCustomAliases = parseAliases(config.aliases);
+  const config = (await response.json()) as
+    | DeploymentConfig
+    | AliasDeclarationsFile;
+  cachedCustomAliases = extractAliases(config, url);
+}
+
+/**
+ * Reads aliases out of either supported file shape. The deployment config packs
+ * resolved values into a stringified JSON object; the declaration file nests
+ * them under `aliases.custom` with packaging metadata alongside each value.
+ */
+function extractAliases(
+  config: DeploymentConfig | AliasDeclarationsFile,
+  url: string,
+): Record<string, string> {
+  const aliases = config.aliases;
+
+  // Apps that declare no aliases simply omit the key.
+  if (aliases == null || aliases === "") {
+    return {};
+  }
+
+  // Production: deployment.config.json stores a stringified JSON object.
+  if (typeof aliases === "string") {
+    return parseResolvedAliases(aliases);
+  }
+
+  // Development: the declaration file nests { custom: { key: { value } } }.
+  const declarations = aliases.custom;
+  if (declarations == null) {
+    return {};
+  }
+  if (typeof declarations !== "object" || Array.isArray(declarations)) {
+    throw new TypeError(
+      `Failed to read aliases from ${url}: 'aliases.custom' must be an object.`,
+    );
+  }
+  return Object.fromEntries(
+    Object.entries(declarations).map(([key, declaration]) => [
+      key,
+      declaration?.value ?? "",
+    ]),
+  );
 }
 
 function resolveUrl(path: string): string {
@@ -101,11 +176,7 @@ function resolveUrl(path: string): string {
   return path;
 }
 
-function parseAliases(raw: string | undefined): Record<string, string> {
-  // Apps with no aliases declared simply omit the key.
-  if (raw == null || raw === "") {
-    return {};
-  }
+function parseResolvedAliases(raw: string): Record<string, string> {
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
