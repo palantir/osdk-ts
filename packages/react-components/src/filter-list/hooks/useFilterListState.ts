@@ -167,7 +167,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
             filterKey,
             newState: state,
             filterClause,
-            linkedFilters: activeLinkedFilters,
+            activeLinkedFilters,
             filteredObjectSet:
               currentObjectSet == null
                 ? undefined

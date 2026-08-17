@@ -388,7 +388,7 @@ import type { FilterChangeEvent } from "@osdk/react-components/experimental/filt
     // event.newState         — that filter's new state
     // event.filterClause     — combined clause for all active filters
     // event.filteredObjectSet — `objectSet` filtered by all active filters
-    // event.linkedFilters    — active linked-property filters
+    // event.activeLinkedFilters — the active `LINKED_PROPERTY` filters
     setFilterClause(event.filterClause);
     persist(event.filterKey, event.newState);
   }}

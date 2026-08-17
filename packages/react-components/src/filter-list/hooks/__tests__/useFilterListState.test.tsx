@@ -556,7 +556,7 @@ describe("useFilterListState", () => {
         newState,
         filterClause: { name: "John" },
         filteredObjectSet: filtered,
-        linkedFilters: [],
+        activeLinkedFilters: [],
       });
     });
 
@@ -656,7 +656,7 @@ describe("useFilterListState", () => {
 
       const event = onFilterChanged.mock.lastCall?.[0];
       expect(event.filterClause).toEqual({});
-      expect(event.linkedFilters).toHaveLength(1);
+      expect(event.activeLinkedFilters).toHaveLength(1);
     });
   });
 

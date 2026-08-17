@@ -70,7 +70,7 @@ export interface FilterChangeEvent<Q extends ObjectTypeDefinition> {
    * The combined clause for all active filters.
    *
    * `LINKED_PROPERTY` filters are not represented in the clause — read
-   * `linkedFilters` or `filteredObjectSet` for those.
+   * `activeLinkedFilters` or `filteredObjectSet` for those.
    */
   filterClause: WhereClause<Q>;
 
@@ -83,8 +83,8 @@ export interface FilterChangeEvent<Q extends ObjectTypeDefinition> {
    */
   filteredObjectSet: ObjectSet<Q> | undefined;
 
-  /** Active linked-property filters; apply with `narrowObjectSet`. */
-  linkedFilters: ReadonlyArray<LinkedFilter<Q>>;
+  /** The active `LINKED_PROPERTY` filters. */
+  activeLinkedFilters: ReadonlyArray<LinkedFilter<Q>>;
 }
 
 export interface FilterListProps<Q extends ObjectTypeDefinition> {
