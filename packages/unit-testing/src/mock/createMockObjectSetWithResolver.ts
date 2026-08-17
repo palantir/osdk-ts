@@ -31,6 +31,12 @@ export type Resolver = (calls: Call[]) => unknown;
 
 export type Stub = { calls: Call[]; value: unknown };
 
+type MockObjectSetDefinition = {
+  calls: Call[];
+};
+
+const mockObjectSetDefinitions = new WeakMap<object, MockObjectSetDefinition>();
+
 export function createMockObjectSetWithResolver<
   Q extends ObjectOrInterfaceDefinition,
 >(objectType: Q, resolver: Resolver, calls: Call[] = []): ObjectSet<Q> {
@@ -43,15 +49,27 @@ export function createMockObjectSetWithResolver<
   const terminal = <T>(method: string, args: unknown): T =>
     resolver([...calls, [method, args]]) as T;
 
-  // All methods should execute synchronously even if marked as async
-  return {
+  const setOperation = (
+    method: "union" | "intersect" | "subtract",
+    objectSets: ReadonlyArray<ObjectSet<Q>>,
+  ): ObjectSet<Q> =>
+    chain(
+      method,
+      objectSets.map((operand) => {
+        const definition = mockObjectSetDefinitions.get(operand);
+        invariant(definition, `${method} only supports mock object sets`);
+        return definition;
+      }),
+    );
+
+  const objectSet = {
     where: (clause: WhereClause<Q>) => chain("where", clause),
-    union: () =>
-      void invariant(false, "union is not supported in mocks") as any,
-    intersect: () =>
-      void invariant(false, "intersect is not supported in mocks") as any,
-    subtract: () =>
-      void invariant(false, "subtract is not supported in mocks") as any,
+    union: (...objectSets: ReadonlyArray<ObjectSet<Q>>) =>
+      setOperation("union", objectSets) as any,
+    intersect: (...objectSets: ReadonlyArray<ObjectSet<Q>>) =>
+      setOperation("intersect", objectSets) as any,
+    subtract: (...objectSets: ReadonlyArray<ObjectSet<Q>>) =>
+      setOperation("subtract", objectSets) as any,
     pivotTo: (link: string) => chain("pivotTo", link) as any,
     narrowToType: (type: ObjectOrInterfaceDefinition) =>
       chain("narrowToType", type) as any,
@@ -110,6 +128,12 @@ export function createMockObjectSetWithResolver<
       def: {} as Q,
     },
   } satisfies ObjectSet<Q>;
+
+  mockObjectSetDefinitions.set(objectSet, {
+    calls,
+  });
+
+  return objectSet;
 }
 
 export function resolveStub(
