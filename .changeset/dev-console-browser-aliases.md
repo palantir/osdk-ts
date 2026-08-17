@@ -2,4 +2,4 @@
 "@osdk/functions": minor
 ---
 
-Add a browser-safe `@osdk/functions/browser-aliases` subpath so Dev Console apps can read resolved custom aliases in the browser. Call `await initAliases()` once at startup to fetch and cache the config, then read values synchronously with `custom("myAlias")`. Pass `path: DEFAULT_DECLARATIONS_PATH` during local development to read the authored defaults from `public/resources.json`, since the installed deployment config only exists on a hosted site.
+Add a browser-safe `@osdk/functions/browser-aliases` subpath so Dev Console apps can read custom aliases in the browser. Call `await initAliases()` once at startup, then read values synchronously with `custom("myAlias")`. It reads the installer's resolved values from the deployment config on a Marketplace-installed site, and falls back to the author's declared defaults in `public/resources.json` when that file is absent (local development, or a site deployed without Marketplace). The fallback triggers only on a 404, so a transient server error surfaces instead of silently substituting defaults for the installer's values.
