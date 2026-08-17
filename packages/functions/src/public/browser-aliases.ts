@@ -18,12 +18,23 @@
 // This subpath is intentionally free of `fs`/`process` so it can be bundled
 // into a browser application. Usage:
 //
-//   import { initAliases, custom } from "@osdk/functions/browser-aliases";
-//   await initAliases();
+//   import {
+//     custom,
+//     DEFAULT_DECLARATIONS_PATH,
+//     initAliases,
+//   } from "@osdk/functions/browser-aliases";
+//
+//   // Prod reads the installer's resolved values; dev reads the authored
+//   // defaults, since the deployment config only exists on an installed site.
+//   await initAliases({
+//     path: import.meta.env.DEV ? DEFAULT_DECLARATIONS_PATH : undefined,
+//   });
+//
 //   const apiBaseUrl = custom("apiBaseUrl");
 
 export {
   custom,
+  DEFAULT_DECLARATIONS_PATH,
   DEFAULT_DEPLOYMENT_CONFIG_PATH,
   initAliases,
   resetAliasesCache,

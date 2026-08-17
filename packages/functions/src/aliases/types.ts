@@ -66,6 +66,9 @@ export enum AliasEnvironment {
  * strings; resolved custom aliases are packed under `aliases` as a stringified
  * JSON object (a `Record<string, string>`) so they cannot collide with the
  * reserved system keys.
+ *
+ * This is the PRODUCTION shape, written at Marketplace install time and
+ * therefore carrying the installer's resolved values.
  */
 export interface DeploymentConfig {
   clientId?: string;
@@ -75,6 +78,21 @@ export interface DeploymentConfig {
   ontologyApiName?: string;
   /** Stringified JSON `Record<string, string>` of resolved custom alias values. */
   aliases?: string;
+}
+
+/**
+ * Shape of the author-maintained declaration file (`public/resources.json`).
+ * This is the DEVELOPMENT shape: there is no installer locally, so the values
+ * here are the developer's declared defaults. `description` and `required` are
+ * consumed at packaging time and are irrelevant to the browser runtime.
+ */
+export interface AliasDeclarationsFile {
+  aliases?: {
+    custom?: Record<
+      string,
+      { value?: string; description?: string; required?: boolean }
+    >;
+  };
 }
 
 // Live preview mode types (resources.json)
