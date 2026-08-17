@@ -9,6 +9,9 @@ on:
       - main
       - release/*
       - next
+      # TEMPORARY: publish snapshots from this branch for stack testing. Revert
+      # this line (and the `always()` on the snapshot job below) before merging.
+      - jzhang/dev-console-aliases
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -50,7 +53,11 @@ jobs:
   snapshot:
     name: Snapshot
     needs: release
-    if: ${{ !failure() && !cancelled() }}
+    # `always()` is required: on a non-release branch the `release` job is
+    # skipped by its own `if`, and a skipped dependency skips this job too
+    # unless the condition forces evaluation. TEMPORARY, revert with the branch
+    # trigger above.
+    if: ${{ always() && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
