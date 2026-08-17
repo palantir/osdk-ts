@@ -263,6 +263,7 @@ export const complexImplementationObjectTypeWithLinkTypes: ObjectTypeFullMetadat
           },
         },
         links: {},
+        actionTypes: {},
       },
     },
     sharedPropertyTypeMapping: {},

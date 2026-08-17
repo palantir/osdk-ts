@@ -404,6 +404,7 @@ const referencingOntology: WireOntologyDefinition = {
             "com.example.dep.spt": "body",
           },
           propertiesV2: {},
+          actionTypes: {},
         },
       },
       linkTypes: [],
