@@ -21,7 +21,7 @@ export interface OacGenerateArgs {
   ir: string;
   outDir: string;
   version: string;
-  packageName?: string;
+  packageName: string;
   packageType: "module";
   clean?: boolean;
   ontologyIdentity: "portable" | "installationSpecific";
@@ -52,6 +52,7 @@ export const oacGenerateCommand: CommandModule<{}, OacGenerateArgs> = {
         packageName: {
           type: "string",
           description: "Name of the package to generate",
+          demandOption: true,
         },
         packageType: {
           default: "module",
@@ -71,7 +72,7 @@ export const oacGenerateCommand: CommandModule<{}, OacGenerateArgs> = {
         importMap: {
           type: "string",
           description:
-            "Path to a JSON import map of { imports: [{ kind, apiName, package }] }",
+            "Path to a YAML import map of { imports: [{ kind, apiName, package }] }",
         },
       } as const)
       .check((args) => {

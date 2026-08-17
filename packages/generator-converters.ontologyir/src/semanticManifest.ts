@@ -15,7 +15,6 @@
  */
 
 import type * as Ontologies from "@osdk/foundry.ontologies";
-import type { OacActionOperation } from "./OntologyIrToFullMetadataConverter.js";
 
 export type ImportedEntityKind =
   | "interface"
@@ -29,15 +28,31 @@ export interface ImportedEntityMapping {
   package: string;
 }
 
+interface SemanticOperation {
+  type: string;
+  target: string;
+}
+
+type InterfaceLinkOperation =
+  | {
+    type: "createInterfaceLink";
+    interfaceTypeApiName: string;
+    interfaceLinkTypeApiName: string;
+  }
+  | {
+    type: "deleteInterfaceLink";
+    interfaceTypeApiName: string;
+    interfaceLinkTypeApiName: string;
+  };
+
 export interface SemanticManifest {
   version: 1;
-  packageName?: string;
+  packageName: string;
   packageVersion: string;
   ontologyIdentity: "portable" | "installationSpecific";
   interfaces: Array<{
     apiName: string;
     extends: string[];
-    implementerCompleteness: "unknown" | "complete";
     properties: Array<{
       apiName: string;
       required: boolean;
@@ -52,62 +67,175 @@ export interface SemanticManifest {
   valueTypes: Array<{
     apiName: string;
     version: string;
+    narrowed: boolean;
   }>;
   actions: Array<{
     apiName: string;
     parameters: string[];
-    operations: ReadonlyArray<OacActionOperation>;
+    operations: SemanticOperation[];
   }>;
   imports: ImportedEntityMapping[];
+  externalPackages: Record<string, string>;
+  exclusions: string[];
+}
+
+function compareText(left: string, right: string): number {
+  return left < right ? -1 : left > right ? 1 : 0;
 }
 
 function compareApiName(
   left: { apiName: string },
   right: { apiName: string },
 ): number {
-  return left.apiName.localeCompare(right.apiName);
+  return compareText(left.apiName, right.apiName);
 }
 
-function implementerCompletenessOf(
-  interfaceType: Ontologies.InterfaceType,
-): "unknown" | "complete" {
-  if (
-    "implementedByCompleteness" in interfaceType
-    && interfaceType.implementedByCompleteness === "complete"
-  ) {
-    return "complete";
-  }
-  return "unknown";
+function compareOperation(
+  left: SemanticOperation,
+  right: SemanticOperation,
+): number {
+  const typeComparison = compareText(left.type, right.type);
+  return typeComparison !== 0
+    ? typeComparison
+    : compareText(left.target, right.target);
 }
 
-function actionOperationsOf(
+function semanticOperations(
   action: Ontologies.ActionTypeV2,
-): ReadonlyArray<OacActionOperation> {
-  if (
-    "oacOperations" in action
-    && Array.isArray(action.oacOperations)
-  ) {
-    return action.oacOperations;
+): SemanticOperation[] {
+  const operations: Array<Ontologies.LogicRule | InterfaceLinkOperation> =
+    action.operations;
+  const result: SemanticOperation[] = [];
+  for (const operation of operations) {
+    switch (operation.type) {
+      case "createObject":
+      case "modifyObject":
+      case "deleteObject":
+        result.push({
+          type: operation.type,
+          target: operation.objectTypeApiName,
+        });
+        break;
+      case "createInterfaceObject":
+      case "modifyInterfaceObject":
+      case "deleteInterfaceObject":
+        result.push({
+          type: operation.type,
+          target: operation.interfaceTypeApiName,
+        });
+        break;
+      case "createLink":
+      case "deleteLink":
+        result.push(
+          {
+            type: operation.type,
+            target:
+              `${operation.aSideObjectTypeApiName}.${operation.linkTypeApiNameAtoB}`,
+          },
+          {
+            type: operation.type,
+            target:
+              `${operation.bSideObjectTypeApiName}.${operation.linkTypeApiNameBtoA}`,
+          },
+        );
+        break;
+      case "applyScenario":
+        for (const target of operation.objectTypeApiNames) {
+          result.push({ type: operation.type, target });
+        }
+        for (const linkGroup of operation.linkTypes) {
+          for (const linkType of linkGroup.linkTypes) {
+            result.push({
+              type: operation.type,
+              target: `${linkGroup.objectTypeApiName}.${linkType}`,
+            });
+          }
+        }
+        break;
+      case "createInterfaceLink":
+      case "deleteInterfaceLink":
+        result.push({
+          type: operation.type,
+          target:
+            `${operation.interfaceTypeApiName}.${operation.interfaceLinkTypeApiName}`,
+        });
+        break;
+    }
   }
-  return [];
+  return result.sort(compareOperation);
+}
+
+function usableFieldType(
+  fieldType: Ontologies.ValueTypeFieldType,
+): "string" | "boolean" | undefined {
+  if (fieldType.type === "string" || fieldType.type === "boolean") {
+    return fieldType.type;
+  }
+  if (fieldType.type === "array" && fieldType.subType != null) {
+    return usableFieldType(fieldType.subType);
+  }
+  return undefined;
+}
+
+function isNarrowed(valueType: Ontologies.OntologyValueType): boolean {
+  const usableType = usableFieldType(valueType.fieldType);
+  if (usableType == null || valueType.constraints.length !== 1) {
+    return false;
+  }
+
+  let constraint = valueType.constraints[0];
+  if (constraint.type === "array" && constraint.valueConstraint) {
+    constraint = constraint.valueConstraint;
+  }
+  if (constraint.type !== "enum" || constraint.options.length === 0) {
+    return false;
+  }
+
+  if (usableType === "string") {
+    return constraint.options.length > 0;
+  }
+
+  return constraint.options.some((value) => value === true || value === false);
 }
 
 export function buildSemanticManifest(
   metadata: Ontologies.OntologyFullMetadata,
   options: {
-    packageName?: string;
+    packageName: string;
     packageVersion: string;
     ontologyIdentity: "portable" | "installationSpecific";
     imports?: ReadonlyArray<ImportedEntityMapping>;
   },
 ): SemanticManifest {
-  const imports = options.imports ?? [];
+  const imports = [...(options.imports ?? [])].sort((left, right) => {
+    const kindComparison = compareText(left.kind, right.kind);
+    if (kindComparison !== 0) {
+      return kindComparison;
+    }
+    const apiNameComparison = compareText(left.apiName, right.apiName);
+    return apiNameComparison !== 0
+      ? apiNameComparison
+      : compareText(left.package, right.package);
+  });
+  const externalPackages = Object.fromEntries(
+    imports.map((entry) => [
+      `${entry.kind}:${entry.apiName}`,
+      entry.package,
+    ]),
+  );
+  const importedInterfaces = new Set(
+    imports.filter((entry) => entry.kind === "interface").map((entry) =>
+      entry.apiName
+    ),
+  );
+
   return {
     version: 1,
-    ...(options.packageName ? { packageName: options.packageName } : {}),
+    packageName: options.packageName,
     packageVersion: options.packageVersion,
     ontologyIdentity: options.ontologyIdentity,
     interfaces: Object.values(metadata.interfaceTypes)
+      .filter((interfaceType) => !importedInterfaces.has(interfaceType.apiName))
       .map((interfaceType) => {
         const properties = interfaceType.allPropertiesV2
             && Object.keys(interfaceType.allPropertiesV2).length > 0
@@ -136,10 +264,7 @@ export function buildSemanticManifest(
         }));
         return {
           apiName: interfaceType.apiName,
-          extends: [...interfaceType.extendsInterfaces].sort((a, b) =>
-            a.localeCompare(b)
-          ),
-          implementerCompleteness: implementerCompletenessOf(interfaceType),
+          extends: [...interfaceType.extendsInterfaces].sort(compareText),
           properties: properties.sort(compareApiName),
           links: links.sort(compareApiName),
         };
@@ -149,25 +274,18 @@ export function buildSemanticManifest(
       .map((valueType) => ({
         apiName: valueType.apiName,
         version: valueType.version,
+        narrowed: isNarrowed(valueType),
       }))
       .sort(compareApiName),
     actions: Object.values(metadata.actionTypes)
-      .map((action) => {
-        return {
-          apiName: action.apiName,
-          parameters: Object.keys(action.parameters).sort((a, b) =>
-            a.localeCompare(b)
-          ),
-          operations: actionOperationsOf(action),
-        };
-      })
+      .map((action) => ({
+        apiName: action.apiName,
+        parameters: Object.keys(action.parameters).sort(compareText),
+        operations: semanticOperations(action),
+      }))
       .sort(compareApiName),
-    imports: [...imports].sort((left, right) => {
-      const kindOrder = left.kind.localeCompare(right.kind);
-      if (kindOrder !== 0) {
-        return kindOrder;
-      }
-      return left.apiName.localeCompare(right.apiName);
-    }),
+    imports,
+    externalPackages,
+    exclusions: [],
   };
 }

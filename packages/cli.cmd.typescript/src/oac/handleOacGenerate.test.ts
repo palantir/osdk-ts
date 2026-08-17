@@ -66,6 +66,7 @@ describe(handleOacGenerate, () => {
         ir: irPath,
         outDir: join(dir, "out"),
         version: "0.0.0-dev",
+        packageName: "@example/item-sdk",
         packageType: "module",
         ontologyIdentity: "portable",
       }),
@@ -93,12 +94,60 @@ describe(handleOacGenerate, () => {
         ir: irPath,
         outDir: join(dir, "out"),
         version: "0.0.0-dev",
+        packageName: "@example/item-sdk",
         packageType: "module",
         ontologyIdentity: "portable",
       }),
     ).rejects.toThrow(
       "IR must be a complete Maker document with ontology, importedOntology, valueTypes, and importedValueTypes",
     );
+  });
+
+  it("reads typed imports from yaml", async () => {
+    const dir = await makeTempDir();
+    const irPath = join(dir, "ir.json");
+    const importMapPath = join(dir, "osdk-projection.yaml");
+    const outDir = join(dir, "out");
+    await writeFile(irPath, JSON.stringify(emptyMakerIr));
+    await writeFile(
+      importMapPath,
+      [
+        "imports:",
+        "  - kind: interface",
+        "    apiName: com.example.TrackedEntity",
+        '    package: "@example/core-sdk"',
+        "  - kind: valueType",
+        "    apiName: headingValue",
+        '    package: "@example/core-sdk"',
+        "",
+      ].join("\n"),
+    );
+
+    await handleOacGenerate({
+      ir: irPath,
+      outDir,
+      version: "0.0.0-dev",
+      packageName: "@example/item-sdk",
+      packageType: "module",
+      ontologyIdentity: "portable",
+      importMap: importMapPath,
+    });
+
+    const manifest = JSON.parse(
+      await readFile(join(outDir, "semantic-manifest.json"), "utf8"),
+    );
+    expect(manifest.imports).toEqual([
+      {
+        kind: "interface",
+        apiName: "com.example.TrackedEntity",
+        package: "@example/core-sdk",
+      },
+      {
+        kind: "valueType",
+        apiName: "headingValue",
+        package: "@example/core-sdk",
+      },
+    ]);
   });
 
   it("writes the same portable tree twice and omits ontology ids", async () => {
@@ -113,7 +162,7 @@ describe(handleOacGenerate, () => {
       ir: irPath,
       outDir: firstOut,
       version: "0.0.0-dev",
-      packageName: "@palantir/defense-ontology-sdk",
+      packageName: "@example/item-sdk",
       packageType: "module",
       ontologyIdentity: "portable",
       clean: true,
@@ -122,7 +171,7 @@ describe(handleOacGenerate, () => {
       ir: irPath,
       outDir: secondOut,
       version: "0.0.0-dev",
-      packageName: "@palantir/defense-ontology-sdk",
+      packageName: "@example/item-sdk",
       packageType: "module",
       ontologyIdentity: "portable",
       clean: true,
@@ -151,9 +200,65 @@ describe(handleOacGenerate, () => {
     expect(firstManifest).toBe(secondManifest);
     expect(JSON.parse(firstManifest)).toMatchObject({
       version: 1,
-      packageName: "@palantir/defense-ontology-sdk",
+      packageName: "@example/item-sdk",
       packageVersion: "0.0.0-dev",
       ontologyIdentity: "portable",
     });
+  });
+
+  it("rejects malformed import map yaml", async () => {
+    const dir = await makeTempDir();
+    const irPath = join(dir, "ir.json");
+    const importMapPath = join(dir, "osdk-projection.yaml");
+    await writeFile(irPath, JSON.stringify(emptyMakerIr));
+    await writeFile(importMapPath, "imports: [");
+
+    await expect(
+      handleOacGenerate({
+        ir: irPath,
+        outDir: join(dir, "out"),
+        version: "0.0.0-dev",
+        packageName: "@example/item-sdk",
+        packageType: "module",
+        ontologyIdentity: "portable",
+        importMap: importMapPath,
+      }),
+    ).rejects.toThrow(
+      "Import map must be valid YAML: { imports: [{ kind, apiName, package }] }",
+    );
+  });
+
+  it("rejects duplicate import keys", async () => {
+    const dir = await makeTempDir();
+    const irPath = join(dir, "ir.json");
+    const importMapPath = join(dir, "osdk-projection.yaml");
+    await writeFile(irPath, JSON.stringify(emptyMakerIr));
+    await writeFile(
+      importMapPath,
+      [
+        "imports:",
+        "  - kind: interface",
+        "    apiName: imported.Parent",
+        '    package: "@example/core-sdk"',
+        "  - kind: interface",
+        "    apiName: imported.Parent",
+        '    package: "@example/other-sdk"',
+        "",
+      ].join("\n"),
+    );
+
+    await expect(
+      handleOacGenerate({
+        ir: irPath,
+        outDir: join(dir, "out"),
+        version: "0.0.0-dev",
+        packageName: "@example/item-sdk",
+        packageType: "module",
+        ontologyIdentity: "portable",
+        importMap: importMapPath,
+      }),
+    ).rejects.toThrow(
+      "Import map must be { imports: [{ kind, apiName, package }] }",
+    );
   });
 });

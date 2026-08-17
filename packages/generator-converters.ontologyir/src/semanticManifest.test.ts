@@ -15,6 +15,7 @@
  */
 
 import type { OntologyIr } from "@osdk/client.unstable";
+import type * as Ontologies from "@osdk/foundry.ontologies";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -30,41 +31,176 @@ function isOntologyIr(value: object): value is OntologyIr {
     && value.importedOntology != null;
 }
 
-describe(buildSemanticManifest, () => {
-  it("records interface-link operations and unknown implementers", () => {
-    const parsed: object = JSON.parse(
-      readFileSync(
-        fileURLToPath(
-          new URL("./__fixtures__/defenseLike/ontology.json", import.meta.url),
-        ),
-        "utf8",
+function envelopeMetadata(): Ontologies.OntologyFullMetadata {
+  const parsed: object = JSON.parse(
+    readFileSync(
+      fileURLToPath(
+        new URL("./__fixtures__/envelope/ontology.json", import.meta.url),
       ),
-    );
-    if (!isOntologyIr(parsed)) {
-      throw new Error("Invalid fixture");
-    }
-    const metadata = OntologyIrToFullMetadataConverter
-      .getFullMetadataFromEnvelope(parsed);
+      "utf8",
+    ),
+  );
+  if (!isOntologyIr(parsed)) {
+    throw new Error("Invalid fixture");
+  }
+  return OntologyIrToFullMetadataConverter.getFullMetadataFromEnvelope(parsed);
+}
 
-    const manifest = buildSemanticManifest(metadata, {
-      packageName: "@palantir/defense-ontology-sdk",
+describe(buildSemanticManifest, () => {
+  it("records interface-link operations from official action operations", () => {
+    const manifest = buildSemanticManifest(envelopeMetadata(), {
+      packageName: "@example/item-sdk",
       packageVersion: "0.0.0-dev",
       ontologyIdentity: "portable",
     });
 
     expect(
-      manifest.interfaces.find((entry) =>
-        entry.apiName === "defense.TrackedAsset"
-      ),
+      manifest.interfaces.find((entry) => entry.apiName === "local.Item"),
     ).toMatchObject({
-      implementerCompleteness: "unknown",
+      apiName: "local.Item",
+      extends: ["imported.Parent"],
     });
     expect(
-      manifest.actions.find((entry) =>
-        entry.apiName === "createTrackedAssetObservation"
-      )?.operations[0],
-    ).toMatchObject({
+      manifest.interfaces.find((entry) => entry.apiName === "local.Item"),
+    ).not.toHaveProperty("implementerCompleteness");
+    expect(
+      manifest.actions.find((entry) => entry.apiName === "createItemLink")
+        ?.operations,
+    ).toContainEqual({
       type: "createInterfaceLink",
+      target: "local.Item.observations",
+    });
+  });
+
+  it("sorts imports and records value-type narrowing", () => {
+    const manifest = buildSemanticManifest(envelopeMetadata(), {
+      packageName: "@example/item-sdk",
+      packageVersion: "0.0.0-dev",
+      ontologyIdentity: "portable",
+      imports: [
+        {
+          kind: "valueType",
+          apiName: "headingValue",
+          package: "@example/core-sdk",
+        },
+        {
+          kind: "interface",
+          apiName: "imported.Parent",
+          package: "@example/core-sdk",
+        },
+      ],
+    });
+
+    expect(manifest.valueTypes).toContainEqual({
+      apiName: "trackQuality",
+      version: "1.0.0",
+      narrowed: true,
+    });
+    expect(manifest.valueTypes).toContainEqual({
+      apiName: "headingValue",
+      version: "1.0.0",
+      narrowed: false,
+    });
+    expect(manifest.externalPackages).toEqual({
+      "interface:imported.Parent": "@example/core-sdk",
+      "valueType:headingValue": "@example/core-sdk",
+    });
+    expect(manifest.interfaces.map((entry) => entry.apiName)).not.toContain(
+      "imported.Parent",
+    );
+    expect(manifest.exclusions).toEqual([]);
+  });
+
+  it("records standard action operations", () => {
+    const metadata = OntologyIrToFullMetadataConverter.getFullMetadataFromIr({
+      actionTypes: {
+        createRestaurant: {
+          actionType: {
+            metadata: {
+              apiName: "createRestaurant",
+              displayMetadata: {
+                applyingMessage: [],
+                description: "Create a restaurant",
+                displayName: "Create restaurant",
+                successMessage: [],
+                typeClasses: [],
+              },
+              formContentOrdering: [],
+              parameterOrdering: [],
+              parameters: {},
+              sections: {},
+              status: { type: "active", active: {} },
+            },
+            actionTypeLogic: {
+              logic: {
+                rules: [{
+                  type: "addObjectRule",
+                  addObjectRule: {
+                    objectTypeId: "Restaurant",
+                    propertyValues: {},
+                    structFieldValues: {},
+                  },
+                }],
+              },
+              validation: {
+                actionTypeLevelValidation: { rules: {} },
+                parameterValidations: {},
+                sectionValidations: {},
+              },
+            },
+          },
+        },
+      },
+      interfaceTypes: {},
+      linkTypes: {},
+      objectTypes: {},
+      sharedPropertyTypes: {},
+    });
+
+    const manifest = buildSemanticManifest(metadata, {
+      packageName: "@example/sdk",
+      packageVersion: "1.0.0",
+      ontologyIdentity: "portable",
+    });
+
+    expect(manifest.actions[0]?.operations).toEqual([
+      { type: "createObject", target: "Restaurant" },
+    ]);
+  });
+
+  it("does not mark null-only boolean enums as narrowed", () => {
+    const metadata = OntologyIrToFullMetadataConverter.getFullMetadataFromIr({
+      actionTypes: {},
+      interfaceTypes: {},
+      linkTypes: {},
+      objectTypes: {},
+      sharedPropertyTypes: {},
+    });
+    const valueType: Ontologies.OntologyValueType = {
+      apiName: "maybeFlag",
+      displayName: "Maybe Flag",
+      rid: "ri.ontology.main.value-type.maybe-flag",
+      fieldType: { type: "boolean" },
+      version: "1.0.0",
+      constraints: [{
+        type: "enum",
+        options: [undefined],
+      }],
+    };
+
+    const manifest = buildSemanticManifest({
+      ...metadata,
+      valueTypes: { maybeFlag: valueType },
+    }, {
+      packageName: "@example/sdk",
+      packageVersion: "1.0.0",
+      ontologyIdentity: "portable",
+    });
+
+    expect(manifest.valueTypes).toContainEqual({
+      apiName: "maybeFlag",
+      version: "1.0.0",
+      narrowed: false,
     });
   });
 });

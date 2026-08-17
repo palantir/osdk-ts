@@ -17,7 +17,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import { ExitProcessError, YargsCheckError } from "@osdk/cli.common";
+import { ExitProcessError } from "@osdk/cli.common";
 import type { OntologyIr } from "@osdk/client.unstable";
 import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import {
@@ -27,63 +27,72 @@ import {
   OntologyIrToFullMetadataConverter,
 } from "@osdk/generator-converters.ontologyir";
 import { consola } from "consola";
+import { parse as parseYaml } from "yaml";
 
 import type { OacGenerateArgs } from "./oacGenerate.js";
 
 const USER_AGENT = `osdk-oac/${process.env.PACKAGE_VERSION ?? "dev"}`;
 
 export async function handleOacGenerate(args: OacGenerateArgs): Promise<void> {
-  const ir = await readMakerIr(args.ir);
-  const imports = args.importMap ? await readImportMap(args.importMap) : [];
-  const metadata =
-    OntologyIrToFullMetadataConverter.getFullMetadataFromEnvelope(ir);
+  try {
+    const ir = await readMakerIr(args.ir);
+    const imports = args.importMap ? await readImportMap(args.importMap) : [];
+    const metadata =
+      OntologyIrToFullMetadataConverter.getFullMetadataFromEnvelope(ir);
 
-  if (args.clean) {
-    await fs.promises.rm(args.outDir, { recursive: true, force: true });
+    if (args.clean) {
+      await fs.promises.rm(args.outDir, { recursive: true, force: true });
+    }
+    await fs.promises.mkdir(args.outDir, { recursive: true });
+
+    const externalObjects = toExternalMap(imports, "object");
+    const externalInterfaces = toExternalMap(imports, "interface");
+    const externalSpts = toExternalMap(imports, "sharedPropertyType");
+
+    await generateClientSdkVersionTwoPointZero(
+      metadata,
+      getUserAgent(args.version),
+      {
+        writeFile: async (filePath, contents) => {
+          await fs.promises.writeFile(filePath, contents);
+        },
+        mkdir: async (dirPath, options) => {
+          await fs.promises.mkdir(dirPath, options);
+        },
+        readdir: async (dirPath) => {
+          return await fs.promises.readdir(dirPath);
+        },
+      },
+      args.outDir,
+      "module",
+      externalObjects,
+      externalInterfaces,
+      externalSpts,
+      false,
+      [],
+      false,
+      args.ontologyIdentity === "portable",
+    );
+
+    const manifest = buildSemanticManifest(metadata, {
+      packageName: args.packageName,
+      packageVersion: args.version,
+      ontologyIdentity: args.ontologyIdentity,
+      imports,
+    });
+    await fs.promises.writeFile(
+      path.join(args.outDir, "semantic-manifest.json"),
+      `${JSON.stringify(manifest, null, 2)}\n`,
+    );
+
+    consola.info("OSDK generated from Maker IR");
+  } catch (err) {
+    if (err instanceof ExitProcessError) {
+      throw err;
+    }
+    const message = err instanceof Error ? err.message : String(err);
+    throw new ExitProcessError(1, message);
   }
-  await fs.promises.mkdir(args.outDir, { recursive: true });
-
-  const externalObjects = toExternalMap(imports, "object");
-  const externalInterfaces = toExternalMap(imports, "interface");
-  const externalSpts = toExternalMap(imports, "sharedPropertyType");
-
-  await generateClientSdkVersionTwoPointZero(
-    metadata,
-    getUserAgent(args.version),
-    {
-      writeFile: async (filePath, contents) => {
-        await fs.promises.writeFile(filePath, contents);
-      },
-      mkdir: async (dirPath, options) => {
-        await fs.promises.mkdir(dirPath, options);
-      },
-      readdir: async (dirPath) => {
-        return await fs.promises.readdir(dirPath);
-      },
-    },
-    args.outDir,
-    "module",
-    externalObjects,
-    externalInterfaces,
-    externalSpts,
-    false,
-    [],
-    false,
-    args.ontologyIdentity === "portable",
-  );
-
-  const manifest = buildSemanticManifest(metadata, {
-    packageName: args.packageName,
-    packageVersion: args.version,
-    ontologyIdentity: args.ontologyIdentity,
-    imports,
-  });
-  await fs.promises.writeFile(
-    path.join(args.outDir, "semantic-manifest.json"),
-    `${JSON.stringify(manifest, null, 2)}\n`,
-  );
-
-  consola.info("OSDK generated from Maker IR");
 }
 
 function getUserAgent(version: string): string {
@@ -111,11 +120,15 @@ async function readMakerIr(irPath: string): Promise<OntologyIr> {
     throw new ExitProcessError(1, `Maker IR file does not exist: ${irPath}`);
   }
 
-  const parsed: unknown = JSON.parse(
-    await fs.promises.readFile(irPath, "utf-8"),
-  );
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(await fs.promises.readFile(irPath, "utf-8"));
+  } catch {
+    throw new ExitProcessError(1, `Maker IR is not valid JSON: ${irPath}`);
+  }
   if (!isOntologyIr(parsed)) {
-    throw new YargsCheckError(
+    throw new ExitProcessError(
+      1,
       "IR must be a complete Maker document with ontology, importedOntology, valueTypes, and importedValueTypes",
     );
   }
@@ -132,11 +145,18 @@ async function readImportMap(
     );
   }
 
-  const parsed: unknown = JSON.parse(
-    await fs.promises.readFile(importMapPath, "utf-8"),
-  );
+  let parsed: unknown;
+  try {
+    parsed = parseYaml(await fs.promises.readFile(importMapPath, "utf8"));
+  } catch {
+    throw new ExitProcessError(
+      1,
+      "Import map must be valid YAML: { imports: [{ kind, apiName, package }] }",
+    );
+  }
   if (!isImportMap(parsed)) {
-    throw new YargsCheckError(
+    throw new ExitProcessError(
+      1,
       "Import map must be { imports: [{ kind, apiName, package }] }",
     );
   }
@@ -201,18 +221,31 @@ function isImportedEntityKind(value: unknown): value is ImportedEntityKind {
   return false;
 }
 
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.length > 0;
+}
+
 function isImportMap(
   value: unknown,
 ): value is { imports: ImportedEntityMapping[] } {
   if (!isRecord(value) || !Array.isArray(value.imports)) {
     return false;
   }
-  return value.imports.every((entry) => {
-    return (
-      isRecord(entry) &&
-      isImportedEntityKind(entry.kind) &&
-      typeof entry.apiName === "string" &&
-      typeof entry.package === "string"
-    );
-  });
+  const seen = new Set<string>();
+  for (const entry of value.imports) {
+    if (
+      !isRecord(entry)
+      || !isImportedEntityKind(entry.kind)
+      || !isNonEmptyString(entry.apiName)
+      || !isNonEmptyString(entry.package)
+    ) {
+      return false;
+    }
+    const key = `${entry.kind}:${entry.apiName}`;
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+  }
+  return true;
 }

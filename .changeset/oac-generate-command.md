@@ -1,6 +1,5 @@
 ---
 "@osdk/cli": minor
-"@osdk/generator": minor
 "@osdk/generator-converters.ontologyir": minor
 ---
 
