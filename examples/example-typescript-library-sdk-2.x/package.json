@@ -23,10 +23,10 @@
     "test:watch": "vitest"
   },
   "devDependencies": {
-    "oxfmt": "^0.53.0",
-    "oxlint": "^1.68.0",
+    "oxfmt": "0.53.0",
+    "oxlint": "1.69.0",
     "typescript": "~5.5.4",
-    "ultracite": "^7.8.2",
+    "ultracite": "7.8.2",
     "vitest": "^4.1.7"
   },
   "files": [
