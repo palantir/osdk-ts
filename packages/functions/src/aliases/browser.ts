@@ -29,14 +29,15 @@
 //   development public/resources.json             the author's declaration file,
 //                                                 so it carries the DEFAULTS
 //
-// The caller chooses the path (see InitAliasesOptions.path), because only the
-// application knows whether it is running a dev server. We deliberately do NOT
-// fall back from one path to the other: in production BOTH files are served, so
-// a fallback would silently serve the developer's defaults instead of the
-// installer's values.
+// Callers do not choose: we try the deployment config and fall back to the
+// declaration file ONLY on a 404. A 404 on a same-origin static path means the
+// file genuinely is not there (local dev, or a site deployed without going
+// through Marketplace). Any other failure throws, because in production BOTH
+// files are served, so falling back on a transient error would silently serve
+// the developer's defaults in place of the installer's values.
 //
 // The two files are told apart by the runtime type of their `aliases` field
-// (string vs object), which is unambiguous, so callers only need to pass a path.
+// (string vs object), which is unambiguous.
 
 import type {
   AliasDeclarationsFile,
@@ -63,17 +64,14 @@ export const DEFAULT_DECLARATIONS_PATH = "resources.json";
 
 export interface InitAliasesOptions {
   /**
-   * Path or URL to fetch aliases from. Relative paths are resolved against
-   * `document.baseURI`. Defaults to {@link DEFAULT_DEPLOYMENT_CONFIG_PATH}.
+   * Escape hatch to force a single specific file. Relative paths are resolved
+   * against `document.baseURI`.
    *
-   * During local development, pass {@link DEFAULT_DECLARATIONS_PATH} instead,
-   * since the deployment config file only exists on an installed site:
-   *
-   * ```ts
-   * await initAliases({
-   *   path: import.meta.env.DEV ? DEFAULT_DECLARATIONS_PATH : undefined,
-   * });
-   * ```
+   * Normal applications should omit this. By default `initAliases()` tries
+   * {@link DEFAULT_DEPLOYMENT_CONFIG_PATH} and falls back to
+   * {@link DEFAULT_DECLARATIONS_PATH} on a 404, which covers local development
+   * and installed sites alike. When this option is set there is no fallback: a
+   * missing file throws.
    */
   path?: string;
   /**
@@ -114,8 +112,57 @@ async function loadAliases(options?: InitAliasesOptions): Promise<void> {
     );
   }
 
-  const url = resolveUrl(options?.path ?? DEFAULT_DEPLOYMENT_CONFIG_PATH);
+  // An explicit path is honored as given: the caller chose that file, so a
+  // missing file is an error rather than a cue to look somewhere else.
+  if (options?.path != null) {
+    const explicit = await fetchAliases(fetchImpl, options.path);
+    if (explicit === undefined) {
+      throw new Error(
+        `Failed to load aliases from ${resolveUrl(options.path)}: 404`,
+      );
+    }
+    cachedCustomAliases = explicit;
+    return;
+  }
+
+  const resolved = await fetchAliases(
+    fetchImpl,
+    DEFAULT_DEPLOYMENT_CONFIG_PATH,
+  );
+  if (resolved !== undefined) {
+    cachedCustomAliases = resolved;
+    return;
+  }
+
+  // The deployment config only exists on a site installed through Marketplace,
+  // so a 404 is expected during local development and for a site deployed
+  // straight from Developer Console. Fall back to the author's declared
+  // defaults. Warn so that a fallback on a real installed site is visible.
+  console.warn(
+    `No alias config at ${resolveUrl(DEFAULT_DEPLOYMENT_CONFIG_PATH)}, ` +
+      `falling back to declared defaults in ${resolveUrl(
+        DEFAULT_DECLARATIONS_PATH,
+      )}. ` +
+      "This is expected during local development.",
+  );
+  cachedCustomAliases =
+    (await fetchAliases(fetchImpl, DEFAULT_DECLARATIONS_PATH)) ?? {};
+}
+
+/**
+ * Fetches and reads one alias file. Returns `undefined` when the file is absent
+ * (404), which callers may treat as a cue to fall back. Any other failure throws,
+ * so a transient server error never silently degrades to the declared defaults.
+ */
+async function fetchAliases(
+  fetchImpl: typeof globalThis.fetch,
+  path: string,
+): Promise<Record<string, string> | undefined> {
+  const url = resolveUrl(path);
   const response = await fetchImpl(url);
+  if (response.status === 404) {
+    return undefined;
+  }
   if (!response.ok) {
     throw new Error(
       `Failed to load aliases from ${url}: ${response.status} ${
@@ -127,7 +174,7 @@ async function loadAliases(options?: InitAliasesOptions): Promise<void> {
   const config = (await response.json()) as
     | DeploymentConfig
     | AliasDeclarationsFile;
-  cachedCustomAliases = extractAliases(config, url);
+  return extractAliases(config, url);
 }
 
 /**
@@ -183,6 +230,7 @@ function parseResolvedAliases(raw: string): Record<string, string> {
   } catch (error) {
     throw new Error(
       `Failed to parse resolved aliases: ${(error as Error).message}`,
+      { cause: error },
     );
   }
   if (typeof parsed !== "object" || parsed == null || Array.isArray(parsed)) {
