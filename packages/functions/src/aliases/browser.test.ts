@@ -16,7 +16,13 @@
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { custom, initAliases, resetAliasesCache } from "./browser.js";
+import {
+  custom,
+  DEFAULT_DECLARATIONS_PATH,
+  DEFAULT_DEPLOYMENT_CONFIG_PATH,
+  initAliases,
+  resetAliasesCache,
+} from "./browser.js";
 
 interface FakeResponseInit {
   ok?: boolean;
@@ -47,6 +53,20 @@ const CONFIG_WITH_ALIASES = {
     apiBaseUrl: "https://api.prod.internal",
     featureXEnabled: "false",
   }),
+};
+
+// The author-maintained declaration file, as served from public/ in dev.
+const DECLARATIONS_FILE = {
+  aliases: {
+    custom: {
+      apiBaseUrl: {
+        value: "https://api.dev.example.com",
+        description: "Base URL for the partner API",
+        required: true,
+      },
+      featureXEnabled: { value: "false" },
+    },
+  },
 };
 
 describe("browser aliases", () => {
@@ -138,6 +158,88 @@ describe("browser aliases", () => {
       await expect(
         initAliases({ fetch: mockFetch({ body: { aliases: "{not json" } }) }),
       ).rejects.toThrow("Failed to parse resolved aliases");
+    });
+
+    it("defaults to the deployment config path", async () => {
+      const fetchImpl = mockFetch({ body: CONFIG_WITH_ALIASES });
+      await initAliases({ fetch: fetchImpl });
+
+      expect(fetchImpl).toHaveBeenCalledTimes(1);
+      expect(String(vi.mocked(fetchImpl).mock.calls[0][0])).toContain(
+        DEFAULT_DEPLOYMENT_CONFIG_PATH,
+      );
+    });
+
+    it("fetches the path it is given", async () => {
+      const fetchImpl = mockFetch({ body: DECLARATIONS_FILE });
+      await initAliases({ fetch: fetchImpl, path: DEFAULT_DECLARATIONS_PATH });
+
+      expect(String(vi.mocked(fetchImpl).mock.calls[0][0])).toContain(
+        DEFAULT_DECLARATIONS_PATH,
+      );
+    });
+  });
+
+  // Dev mode: the declaration file nests values under aliases.custom, so the
+  // loader has to flatten it. Prod and dev are told apart by the runtime type of
+  // `aliases` (string vs object), never by falling back between paths.
+  describe("declaration file (dev) shape", () => {
+    it("flattens declared defaults", async () => {
+      await initAliases({
+        fetch: mockFetch({ body: DECLARATIONS_FILE }),
+        path: DEFAULT_DECLARATIONS_PATH,
+      });
+
+      expect(custom("apiBaseUrl")).toBe("https://api.dev.example.com");
+      expect(custom("featureXEnabled")).toBe("false");
+    });
+
+    it("ignores description and required metadata", async () => {
+      await initAliases({
+        fetch: mockFetch({ body: DECLARATIONS_FILE }),
+        path: DEFAULT_DECLARATIONS_PATH,
+      });
+
+      // Metadata is for packaging, not the browser: only values come through.
+      expect(custom("apiBaseUrl")).not.toContain("Base URL");
+    });
+
+    it("treats an alias with no value as empty rather than throwing", async () => {
+      await initAliases({
+        fetch: mockFetch({
+          body: { aliases: { custom: { needsValue: {} } } },
+        }),
+        path: DEFAULT_DECLARATIONS_PATH,
+      });
+
+      expect(custom("needsValue")).toBe("");
+    });
+
+    it("treats an empty custom block as no aliases", async () => {
+      await initAliases({
+        fetch: mockFetch({ body: { aliases: { custom: {} } } }),
+        path: DEFAULT_DECLARATIONS_PATH,
+      });
+
+      expect(() => custom("anything")).toThrow("Available aliases: []");
+    });
+
+    it("treats a file with no custom block as no aliases", async () => {
+      await initAliases({
+        fetch: mockFetch({ body: { aliases: {} } }),
+        path: DEFAULT_DECLARATIONS_PATH,
+      });
+
+      expect(() => custom("anything")).toThrow("Available aliases: []");
+    });
+
+    it("throws when aliases.custom is not an object", async () => {
+      await expect(
+        initAliases({
+          fetch: mockFetch({ body: { aliases: { custom: ["nope"] } } }),
+          path: DEFAULT_DECLARATIONS_PATH,
+        }),
+      ).rejects.toThrow("'aliases.custom' must be an object");
     });
   });
 });
