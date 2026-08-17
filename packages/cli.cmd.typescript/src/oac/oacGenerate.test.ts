@@ -40,4 +40,27 @@ describe("oac generate", () => {
         .parse()
     ).toThrow("Missing required argument: packageName");
   });
+
+  it("rejects an empty package name", async () => {
+    expect(() =>
+      yargs([
+        "generate",
+        "--ir",
+        "ontology.json",
+        "--outDir",
+        "generated",
+        "--version",
+        "0.0.0-dev",
+        "--packageName",
+        "",
+      ])
+        .version(false)
+        .exitProcess(false)
+        .fail((_message, error) => {
+          throw error;
+        })
+        .command(oacGenerateCommand)
+        .parse()
+    ).toThrow("packageName must not be empty");
+  });
 });
