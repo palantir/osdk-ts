@@ -22,7 +22,7 @@
 // Mirrors the closed enums declared by the platform in `@osdk/foundry.mediasets`
 // (`OcrLanguage`, `OcrScript`, `TranscriptionLanguage`). They are copied rather than re-exported
 // because `@osdk/api` does not depend on any `@osdk/foundry.*` package; see the note in
-// `actions/ActionResults.ts`. The `AssertPlatformParity` aliases at the bottom of
+// `actions/ActionResults.ts`. The `AssertPlatformParity` aliases at the top of
 // `makeMediaTransformation.ts` in `@osdk/client` keep these equal to the generated unions, and are
 // what fails when a platform bump changes a value.
 
