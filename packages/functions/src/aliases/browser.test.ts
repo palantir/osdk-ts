@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   custom,
@@ -44,6 +44,26 @@ function mockFetch(init: FakeResponseInit): typeof globalThis.fetch {
   return vi.fn(() =>
     Promise.resolve(fakeResponse(init)),
   ) as unknown as typeof fetch;
+}
+
+/**
+ * Serves a different response per path, so the 404 fallback can be exercised.
+ * Any path not listed responds 404.
+ */
+function mockFetchByPath(
+  responses: Record<string, FakeResponseInit>,
+): typeof globalThis.fetch {
+  return vi.fn((input: unknown) => {
+    const url = String(input);
+    const match = Object.entries(responses).find(([path]) =>
+      url.endsWith(path),
+    );
+    return Promise.resolve(
+      fakeResponse(
+        match?.[1] ?? { ok: false, status: 404, statusText: "Not Found" },
+      ),
+    );
+  }) as unknown as typeof fetch;
 }
 
 const CONFIG_WITH_ALIASES = {
@@ -140,10 +160,12 @@ describe("browser aliases", () => {
     });
 
     it("throws and allows retry on a non-ok response", async () => {
+      // A 500 rather than a 404: a 404 means "absent" and triggers the fallback,
+      // while a server error is a genuine failure that should surface.
       const failing = mockFetch({
         ok: false,
-        status: 404,
-        statusText: "Not Found",
+        status: 500,
+        statusText: "Internal Server Error",
       });
       await expect(initAliases({ fetch: failing })).rejects.toThrow(
         "Failed to load aliases",
@@ -177,6 +199,74 @@ describe("browser aliases", () => {
       expect(String(vi.mocked(fetchImpl).mock.calls[0][0])).toContain(
         DEFAULT_DECLARATIONS_PATH,
       );
+    });
+
+    it("throws rather than falling back when given an explicit path", async () => {
+      // An explicit path is a deliberate choice, so a missing file is an error.
+      await expect(
+        initAliases({ fetch: mockFetchByPath({}), path: "custom/place.json" }),
+      ).rejects.toThrow("404");
+    });
+  });
+
+  // No environment detection: the deployment config only exists on an installed
+  // site, so a 404 (and only a 404) means "use the author's declared defaults".
+  describe("fallback when the deployment config is absent", () => {
+    let warn: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+      warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      warn.mockRestore();
+    });
+
+    it("uses declared defaults when the deployment config 404s", async () => {
+      await initAliases({
+        fetch: mockFetchByPath({
+          [DEFAULT_DECLARATIONS_PATH]: { body: DECLARATIONS_FILE },
+        }),
+      });
+
+      expect(custom("apiBaseUrl")).toBe("https://api.dev.example.com");
+      expect(warn).toHaveBeenCalledOnce();
+    });
+
+    it("prefers the deployment config when both files exist", async () => {
+      // Both are served in production, so the installer's values must win.
+      await initAliases({
+        fetch: mockFetchByPath({
+          [DEFAULT_DEPLOYMENT_CONFIG_PATH]: { body: CONFIG_WITH_ALIASES },
+          [DEFAULT_DECLARATIONS_PATH]: { body: DECLARATIONS_FILE },
+        }),
+      });
+
+      expect(custom("apiBaseUrl")).toBe("https://api.prod.internal");
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it("throws on a server error instead of degrading to defaults", async () => {
+      // The dangerous case: a transient failure must not silently swap the
+      // installer's values for the developer's defaults.
+      await expect(
+        initAliases({
+          fetch: mockFetchByPath({
+            [DEFAULT_DEPLOYMENT_CONFIG_PATH]: {
+              ok: false,
+              status: 500,
+              statusText: "Internal Server Error",
+            },
+            [DEFAULT_DECLARATIONS_PATH]: { body: DECLARATIONS_FILE },
+          }),
+        }),
+      ).rejects.toThrow("Failed to load aliases");
+    });
+
+    it("treats both files missing as no aliases rather than an error", async () => {
+      await initAliases({ fetch: mockFetchByPath({}) });
+
+      expect(() => custom("anything")).toThrow("Available aliases: []");
     });
   });
 
