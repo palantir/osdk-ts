@@ -330,9 +330,17 @@ async function fetchInterfacePage<
     );
     allProperties = ifaceDef ? Object.keys(ifaceDef.properties) : undefined;
   } else {
-    void prefetchInterfaceMetadata(client, interfaceType.apiName).catch(
-      () => {},
-    );
+    void client.ontologyProvider
+      .getInterfaceDefinition(interfaceType.apiName)
+      .then((def) => {
+        def.implementedBy?.forEach((implementedBy) =>
+          // oxlint-disable-next-line promise/no-nesting
+          client.ontologyProvider
+            .getObjectDefinition(implementedBy)
+            .catch(() => {}),
+        );
+      })
+      .catch(() => {});
   }
 
   const selectV2 = buildSelectV2(
@@ -773,17 +781,4 @@ export async function fetchObjectPage<
     nextPageToken: r.nextPageToken,
     totalCount: r.totalCount,
   }) as unknown as Promise<FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS>>;
-}
-
-async function prefetchInterfaceMetadata(
-  client: MinimalClient,
-  interfaceApiName: string,
-): Promise<void> {
-  const def =
-    await client.ontologyProvider.getInterfaceDefinition(interfaceApiName);
-  await Promise.all(
-    def.implementedBy?.map((implementedBy) =>
-      client.ontologyProvider.getObjectDefinition(implementedBy),
-    ) ?? [],
-  );
 }
