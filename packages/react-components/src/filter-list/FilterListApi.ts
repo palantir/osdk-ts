@@ -88,10 +88,10 @@ export interface FilterChangeEvent<Q extends ObjectTypeDefinition> {
   filterClause: WhereClause<Q>;
 
   /**
-   * The `objectSet` prop narrowed by all active filters, or `undefined` when no
+   * The `objectSet` prop filtered by all active filters, or `undefined` when no
    * `objectSet` was supplied.
    *
-   * A linked filter only narrows the set when its definition has
+   * A linked filter only filters the set when its definition has
    * `reverseLinkName`; linked filters without it are skipped here.
    */
   filteredObjectSet: ObjectSet<Q> | undefined;
@@ -155,7 +155,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
 
   /**
    * Called when a filter's state changes, with the new state, the resulting
-   * clause, the narrowed `ObjectSet` and the active linked filters in a single
+   * clause, the filtered `ObjectSet` and the active linked filters in a single
    * payload.
    *
    * Prefer this over combining `onFilterStateChanged`, `onFilterClauseChanged`

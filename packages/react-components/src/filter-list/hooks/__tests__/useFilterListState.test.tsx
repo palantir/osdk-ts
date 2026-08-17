@@ -525,13 +525,13 @@ describe("useFilterListState", () => {
   });
 
   describe("onFilterChanged", () => {
-    it("reports the changed state, clause, narrowed objectSet and linked filters together", () => {
+    it("reports the changed state, clause, filtered objectSet and linked filters together", () => {
       const onFilterChanged = vi.fn();
-      const narrowed = { _kind: "narrowed" } as unknown as ObjectSet<
+      const filtered = { _kind: "filtered" } as unknown as ObjectSet<
         typeof MockObjectType
       >;
       const objectSet = {
-        where: vi.fn().mockReturnValue(narrowed),
+        where: vi.fn().mockReturnValue(filtered),
       } as unknown as ObjectSet<typeof MockObjectType>;
       const nameDef = createPropertyFilterDef(
         "name",
@@ -555,7 +555,7 @@ describe("useFilterListState", () => {
         filterKey: getFilterKey(nameDef),
         newState,
         filterClause: { name: "John" },
-        filteredObjectSet: narrowed,
+        filteredObjectSet: filtered,
         linkedFilters: [],
       });
     });
