@@ -203,11 +203,6 @@ export type OcrScript =
 /**
  * A language for audio transcription operations.
  *
- * The `"false"` member is a spec artifact. Norwegian's ISO code is written unquoted in
- * `media-item-transformations.yml`, so YAML coerces it and every generated SDK emits `"false"` in
- * that slot. The backend accepts `"NO"`, but this union matches the generated one, so `"NO"` stays
- * unavailable until the spec is quoted upstream and the platform SDK pin moves.
- *
  * @experimental
  */
 export type TranscriptionLanguage =
@@ -275,7 +270,7 @@ export type TranscriptionLanguage =
   | "NE"
   | "NL"
   | "NN"
-  | "false"
+  | "NO"
   | "OC"
   | "PA"
   | "PL"
