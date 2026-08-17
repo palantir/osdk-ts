@@ -24,7 +24,7 @@ import { useDarkTheme } from "./useDarkTheme.js";
 // View the API documentation for your widget set to learn how to use the Ontology SDK.
 {{/if}}
 
-export const Widget: React.FC = () => {
+export function Widget() {
 {{#if osdkPackage}}
   // See Ontology and Platform SDK docs in Developer Console on how to
   // use the client object to access Ontology resources and platform APIs
@@ -70,7 +70,7 @@ export const Widget: React.FC = () => {
                 parameters.state === "not-started" ? (
                   <Skeleton>Hello, world!</Skeleton>
                 ) : (
-                  headerText ?? "{{project}}"
+                  (headerText ?? "{{project}}")
                 )}
               </Heading>
 
@@ -177,4 +177,4 @@ export const Widget: React.FC = () => {
       </Box>
     </Theme>
   );
-};
+}

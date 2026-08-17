@@ -43,4 +43,17 @@ export default defineConfig({
     "unicorn/prefer-node-protocol": "off", // The `node:` protocol on builtin imports; a source rewrite.
     "unicorn/prefer-type-error": "off", // Throwing `Error` vs `TypeError`; intentional.
   },
+
+  overrides: [
+    {
+      // Vitest fixtures take a callback whose second parameter is conventionally
+      // named `use`, so `await use(server)` looks like React's `use` hook being
+      // called in an async function. It is not a hook and these files are not
+      // components.
+      files: ["**/*.fixture.ts"],
+      rules: {
+        "react-hooks/rules-of-hooks": "off",
+      },
+    },
+  ],
 });

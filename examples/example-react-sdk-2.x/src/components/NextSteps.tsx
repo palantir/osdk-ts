@@ -1,5 +1,5 @@
 import { Code, H5, H6, Icon, Link, Text } from "@blueprintjs/core";
-import { type IconName } from "@blueprintjs/icons";
+import type { IconName } from "@blueprintjs/icons";
 import React from "react";
 import css from "./NextSteps.module.css";
 
