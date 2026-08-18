@@ -26,6 +26,7 @@ import type {
 import { Employee, FooInterface, Todo } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/foundry.ontologies";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import pDefer from "p-defer";
 import { describe, expect, expectTypeOf, it, vi } from "vitest";
 
 import { createMinimalClient } from "../createMinimalClient.js";
@@ -627,9 +628,20 @@ describe(fetchPage, () => {
       }
     });
 
-    it("prefetches interface and implementing object metadata before conversion", async () => {
+    it("prefetches implementing object metadata while the interface page loads", async () => {
       const testSetup = startNodeApiServer(new LegacyFauxFoundry());
-      const fetchFn = vi.fn(globalThis.fetch);
+      const interfaceMetadataResponse = pDefer<void>();
+      const fetchPageResponse = pDefer<void>();
+      const fetchFn = vi.fn<typeof globalThis.fetch>(async (input, init) => {
+        const response = await globalThis.fetch(input, init);
+        const url = String(input);
+        if (url.includes("interfaceTypes/FooInterface")) {
+          await interfaceMetadataResponse.promise;
+        } else if (url.includes("objectSets/loadObjects")) {
+          await fetchPageResponse.promise;
+        }
+        return response;
+      });
       const client = createMinimalClient(
         { ontologyRid: testSetup.fauxFoundry.defaultOntologyRid },
         testSetup.fauxFoundry.baseUrl,
@@ -639,31 +651,46 @@ describe(fetchPage, () => {
       );
 
       try {
-        const result = await fetchPage(client, FooInterface, {});
-        const requestUrls = fetchFn.mock.calls.map(([input]) => String(input));
-        const interfaceMetadataRequestIndex = requestUrls.findIndex((url) =>
-          url.includes("interfaceTypes/FooInterface"),
-        );
-        const fetchPageRequestIndex = requestUrls.findIndex((url) =>
-          url.includes("objectSets/loadObjects"),
-        );
-        const interfaceMetadataRequests = fetchFn.mock.calls.filter(([input]) =>
-          String(input).includes("interfaceTypes/FooInterface"),
-        );
-        const employeeMetadataRequests = fetchFn.mock.calls.filter(([input]) =>
-          String(input).includes("objectTypes/Employee/fullMetadata"),
+        let fetchPageSettled = false;
+        const resultPromise = fetchPage(client, FooInterface, {}).finally(
+          () => {
+            fetchPageSettled = true;
+          },
         );
 
-        expect(interfaceMetadataRequestIndex).toBeGreaterThanOrEqual(0);
-        expect(fetchPageRequestIndex).toBeGreaterThan(
-          interfaceMetadataRequestIndex,
-        );
+        await vi.waitFor(() => {
+          expect(
+            fetchFn.mock.calls.filter(([input]) =>
+              String(input).includes("interfaceTypes/FooInterface"),
+            ),
+          ).toHaveLength(1);
+          expect(
+            fetchFn.mock.calls.filter(([input]) =>
+              String(input).includes("objectSets/loadObjects"),
+            ),
+          ).toHaveLength(1);
+        });
+
+        interfaceMetadataResponse.resolve();
+
+        await vi.waitFor(() => {
+          expect(
+            fetchFn.mock.calls.filter(([input]) =>
+              String(input).includes("objectTypes/Employee/fullMetadata"),
+            ),
+          ).toHaveLength(1);
+        });
+
+        expect(fetchPageSettled).toBe(false);
+        fetchPageResponse.resolve();
+
+        const result = await resultPromise;
         expect(result.data).not.toHaveLength(0);
         expect(result.data[0].$apiName).toBe("FooInterface");
         expect(result.data[0].$objectType).toBe("Employee");
-        expect(interfaceMetadataRequests).toHaveLength(1);
-        expect(employeeMetadataRequests).toHaveLength(1);
       } finally {
+        interfaceMetadataResponse.resolve();
+        fetchPageResponse.resolve();
         testSetup.apiServer.close();
       }
     });
