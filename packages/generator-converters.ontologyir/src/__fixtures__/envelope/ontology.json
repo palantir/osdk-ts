@@ -332,7 +332,7 @@
                     "displayName": "Track Quality",
                     "description": "Owned value type"
                   },
-                  "packageNamespace": "defense",
+                  "packageNamespace": "example",
                   "version": "1.0.0"
                 }
               }
@@ -366,7 +366,7 @@
                       "displayName": "Track Quality",
                       "description": "Owned value type"
                     },
-                    "packageNamespace": "defense",
+                    "packageNamespace": "example",
                     "version": "1.0.0"
                   }
                 }
@@ -432,7 +432,7 @@
               "displayName": "Track Quality",
               "description": "Owned value type"
             },
-            "packageNamespace": "defense",
+            "packageNamespace": "example",
             "version": "1.0.0"
           }
         }
@@ -567,7 +567,7 @@
             "description": "Owned value type",
             "displayName": "Track Quality"
           },
-          "packageNamespace": "defense",
+          "packageNamespace": "example",
           "status": {
             "type": "active",
             "active": {}

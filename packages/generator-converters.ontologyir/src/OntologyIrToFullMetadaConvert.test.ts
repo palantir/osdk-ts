@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import type { OntologyIr } from "@osdk/client.unstable";
+import type {
+  BaseType,
+  OntologyIr,
+  OntologyIrValueTypeBlockData,
+  OntologyIrValueTypeBlockDataEntry,
+  OntologyIrValueTypeReferenceWithMetadata,
+  ValueTypeDataConstraint,
+} from "@osdk/client.unstable";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
@@ -41,6 +48,283 @@ function readOntologyIrFixture(url: URL): OntologyIr {
     throw new Error("Invalid Ontology IR fixture");
   }
   return parsed;
+}
+
+type OntologyBlock = OntologyIr["ontology"];
+type ObjectBlock = OntologyBlock["objectTypes"][string];
+type ObjectProperty = ObjectBlock["objectType"]["propertyTypes"][string];
+type LinkBlock = OntologyBlock["linkTypes"][string];
+type OneToManyDefinition = Extract<
+  LinkBlock["linkType"]["definition"],
+  { type: "oneToMany" }
+>["oneToMany"];
+type LinkMetadata = OneToManyDefinition["manyToOneLinkMetadata"];
+type SharedPropertyBlock = OntologyBlock["sharedPropertyTypes"][string];
+type TypedValueTypeVersion = {
+  baseType: BaseType;
+  constraints: ValueTypeDataConstraint[];
+  exampleValues: [];
+  version: string;
+};
+
+function emptyOntologyBlock(): OntologyBlock {
+  return {
+    actionTypes: {},
+    interfaceTypes: {},
+    linkTypes: {},
+    objectTypes: {},
+    sharedPropertyTypes: {},
+  };
+}
+
+function stringProperty(apiName: string): ObjectProperty {
+  return {
+    apiName,
+    displayMetadata: {
+      displayName: apiName,
+      visibility: "NORMAL",
+    },
+    indexedForSearch: true,
+    status: {
+      type: "active",
+      active: {},
+    },
+    type: {
+      type: "string",
+      string: {
+        isLongText: false,
+        supportsExactMatching: true,
+      },
+    },
+    typeClasses: [],
+  };
+}
+
+function linkRidTestObject(
+  apiName: string,
+  foreignKey?: string,
+): ObjectBlock {
+  const propertyTypes: ObjectBlock["objectType"]["propertyTypes"] = {
+    id: stringProperty("id"),
+  };
+  if (foreignKey !== undefined) {
+    propertyTypes[foreignKey] = stringProperty(foreignKey);
+  }
+
+  return {
+    datasources: [],
+    objectType: {
+      allImplementsInterfaces: {},
+      apiName,
+      displayMetadata: {
+        displayName: apiName,
+        icon: {
+          type: "blueprint",
+          blueprint: {
+            color: "#2D72D2",
+            locator: "cube",
+          },
+        },
+        pluralDisplayName: `${apiName}s`,
+        visibility: "NORMAL",
+      },
+      implementsInterfaces2: [],
+      primaryKeys: ["id"],
+      propertyTypes,
+      status: {
+        type: "active",
+        active: {},
+      },
+      titlePropertyTypeRid: "id",
+    },
+  };
+}
+
+function linkMetadata(
+  apiName: string,
+  displayName: string,
+): LinkMetadata {
+  return {
+    apiName,
+    displayMetadata: {
+      displayName,
+      pluralDisplayName: `${displayName}s`,
+      visibility: "NORMAL",
+    },
+    typeClasses: [],
+  };
+}
+
+function valueTypeVersion(
+  version: string,
+  baseType: BaseType,
+  constraints: ValueTypeDataConstraint[] = [],
+): TypedValueTypeVersion {
+  return {
+    baseType,
+    constraints,
+    exampleValues: [],
+    version,
+  };
+}
+
+function integerRangeConstraint(
+  minimumValue: number,
+  maximumValue: number,
+): ValueTypeDataConstraint {
+  return {
+    constraint: {
+      failureMessage: undefined,
+      constraint: {
+        type: "integer",
+        integer: {
+          type: "range",
+          range: {
+            min: minimumValue,
+            max: maximumValue,
+          },
+        },
+      },
+    },
+  };
+}
+
+function valueTypeRegistryFromFixture(
+  source: OntologyIrValueTypeBlockData,
+  versions: ReadonlyArray<TypedValueTypeVersion>,
+): OntologyIrValueTypeBlockData {
+  const sourceEntry = source.valueTypes[0];
+  if (sourceEntry === undefined) {
+    throw new Error("Expected fixture value type");
+  }
+  const entry: OntologyIrValueTypeBlockDataEntry = {
+    ...sourceEntry,
+    versions: [...versions],
+  };
+  return { valueTypes: [entry] };
+}
+
+function requireSharedPropertyBlock(
+  ontology: OntologyBlock,
+  apiName: string,
+): SharedPropertyBlock {
+  const block = ontology.sharedPropertyTypes[apiName];
+  if (block === undefined) {
+    throw new Error(`Expected fixture shared property '${apiName}'`);
+  }
+  return block;
+}
+
+function requireEmbeddedValueType(
+  block: SharedPropertyBlock,
+): OntologyIrValueTypeReferenceWithMetadata {
+  const valueType = block.sharedPropertyType.valueType;
+  if (valueType == null) {
+    throw new Error("Expected fixture embedded value type");
+  }
+  return valueType;
+}
+
+function sharedPropertyWithEmbeddedVersion(
+  source: SharedPropertyBlock,
+  propertyApiName: string,
+  valueType: OntologyIrValueTypeReferenceWithMetadata,
+  version: string,
+): SharedPropertyBlock {
+  return {
+    ...source,
+    sharedPropertyType: {
+      ...source.sharedPropertyType,
+      apiName: propertyApiName,
+      valueType: {
+        ...valueType,
+        version,
+      },
+    },
+  };
+}
+
+function embeddedValueTypeEnvelope(
+  source: OntologyIr,
+  registry: OntologyIrValueTypeBlockData,
+  versions: ReadonlyArray<string>,
+): OntologyIr {
+  const sourceProperty = requireSharedPropertyBlock(
+    source.ontology,
+    "trackQuality",
+  );
+  const sourceValueType = requireEmbeddedValueType(sourceProperty);
+  const sharedPropertyTypes: OntologyBlock["sharedPropertyTypes"] = {};
+  for (const [index, version] of versions.entries()) {
+    const apiName = `embeddedProperty${index}`;
+    sharedPropertyTypes[apiName] = sharedPropertyWithEmbeddedVersion(
+      sourceProperty,
+      apiName,
+      sourceValueType,
+      version,
+    );
+  }
+
+  return {
+    ...source,
+    importedOntology: emptyOntologyBlock(),
+    importedValueTypes: { valueTypes: [] },
+    ontology: {
+      ...emptyOntologyBlock(),
+      sharedPropertyTypes,
+    },
+    valueTypes: registry,
+  };
+}
+
+function linkRidTestIr(): OntologyIr {
+  const link: LinkBlock = {
+    datasources: [],
+    linkType: {
+      definition: {
+        type: "oneToMany",
+        oneToMany: {
+          cardinalityHint: "ONE_TO_MANY",
+          manyToOneLinkMetadata: linkMetadata("a", "A"),
+          objectTypeRidManySide: "B",
+          objectTypeRidOneSide: "A",
+          oneSidePrimaryKeyToManySidePropertyMapping: [
+            {
+              from: {
+                apiName: "id",
+                object: "A",
+              },
+              to: {
+                apiName: "aId",
+                object: "B",
+              },
+            },
+          ],
+          oneToManyLinkMetadata: linkMetadata("bs", "B"),
+        },
+      },
+      id: "AtoB",
+      status: {
+        type: "active",
+        active: {},
+      },
+    },
+  };
+
+  return {
+    importedOntology: emptyOntologyBlock(),
+    importedValueTypes: { valueTypes: [] },
+    ontology: {
+      ...emptyOntologyBlock(),
+      linkTypes: { AtoB: link },
+      objectTypes: {
+        A: linkRidTestObject("A"),
+        B: linkRidTestObject("B", "aId"),
+      },
+    },
+    randomnessKey: "link-rid-test",
+    valueTypes: { valueTypes: [] },
+  };
 }
 
 vi.mock("@foundry/functions-typescript-osdk-discovery", () => ({
@@ -3231,7 +3515,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "apiName": "distributionCenterProposal",
                 "cardinality": "MANY",
                 "displayName": "Distribution Center Proposal",
-                "linkTypeRid": "ri.Dc3DistributionCenterProposal.Dc3DistributionCenterProposalToDistributionRoute.Dc3DistributionRouteAnalysis",
+                "linkTypeRid": "ri.link-type.Dc3DistributionCenterProposalToDistributionRoute",
                 "objectTypeApiName": "Dc3DistributionRouteAnalysis",
                 "status": "ACTIVE",
               },
@@ -3349,7 +3633,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "cardinality": "ONE",
                 "displayName": "Distribution Route Analysis",
                 "foreignKeyPropertyApiName": "restaurant",
-                "linkTypeRid": "ri.Dc3Restaurant.Dc3RestaurantToDistributionRoute.Dc3DistributionRouteAnalysis",
+                "linkTypeRid": "ri.link-type.Dc3RestaurantToDistributionRoute",
                 "objectTypeApiName": "Dc3Restaurant",
                 "status": "ACTIVE",
               },
@@ -3358,7 +3642,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "cardinality": "ONE",
                 "displayName": "Distribution Route Analysis",
                 "foreignKeyPropertyApiName": "distributionProposal",
-                "linkTypeRid": "ri.Dc3DistributionCenterProposal.Dc3DistributionCenterProposalToDistributionRoute.Dc3DistributionRouteAnalysis",
+                "linkTypeRid": "ri.link-type.Dc3DistributionCenterProposalToDistributionRoute",
                 "objectTypeApiName": "Dc3DistributionCenterProposal",
                 "status": "ACTIVE",
               },
@@ -3444,7 +3728,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "apiName": "restaurant",
                 "cardinality": "MANY",
                 "displayName": "Restaurant",
-                "linkTypeRid": "ri.Dc3Restaurant.Dc3RestaurantToDistributionRoute.Dc3DistributionRouteAnalysis",
+                "linkTypeRid": "ri.link-type.Dc3RestaurantToDistributionRoute",
                 "objectTypeApiName": "Dc3DistributionRouteAnalysis",
                 "status": "ACTIVE",
               },
@@ -3703,6 +3987,18 @@ describe(OntologyIrToFullMetadataConverter, () => {
       expect(child.implementedByObjectTypes).toEqual([]);
       expect(child.extendsInterfaces).toContain("imported.Parent");
 
+      const metadataChild = metadata.interfaceTypes["local.Item"];
+      const metadataParent = metadata.interfaceTypes["imported.Parent"];
+      expect(metadataChild.properties.trackQuality.rid).toBe(
+        metadataChild.propertiesV2.trackQuality.rid,
+      );
+      expect(metadataChild.allProperties.heading.rid).toBe(
+        metadataParent.properties.heading.rid,
+      );
+      expect(metadataChild.allPropertiesV2.heading.rid).toBe(
+        metadataParent.propertiesV2.heading.rid,
+      );
+
       const createLink = actionTypes.createItemLink;
       expect(createLink.operations).toContainEqual({
         type: "createInterfaceLink",
@@ -3719,6 +4015,129 @@ describe(OntologyIrToFullMetadataConverter, () => {
         sourceObject: "source",
         targetObject: "target",
       });
+    });
+
+    it("uses one deterministic rid for both sides of a link", () => {
+      const metadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(linkRidTestIr());
+      const aSides = metadata.objectTypes.A?.linkTypes ?? [];
+      const bSides = metadata.objectTypes.B?.linkTypes ?? [];
+
+      expect(aSides).toHaveLength(1);
+      expect(bSides).toHaveLength(1);
+
+      const aSide = aSides[0];
+      const bSide = bSides[0];
+      if (aSide === undefined || bSide === undefined) {
+        throw new Error("Expected A and B to each have one link side");
+      }
+
+      expect(aSide.linkTypeRid).toBe(bSide.linkTypeRid);
+    });
+
+    const interfaceLinkObjectFields: ReadonlyArray<
+      "sourceObjects" | "targetObjects"
+    > = ["sourceObjects", "targetObjects"];
+    it.each(interfaceLinkObjectFields)(
+      "rejects multiple %s in an interface-link rule",
+      field => {
+        const createLink = fixtureIr.ontology.actionTypes.createItemLink;
+        const rule = createLink.actionType.actionTypeLogic.logic.rules[0];
+        if (rule.type !== "addInterfaceLinkRuleV2") {
+          throw new Error("Expected addInterfaceLinkRuleV2");
+        }
+        const references = rule.addInterfaceLinkRuleV2[field];
+        references.push(references[0]);
+
+        try {
+          expect(() =>
+            OntologyIrToFullMetadataConverter.getOsdkActionTypes([createLink])
+          ).toThrow(
+            `Interface-link rule ${field} must reference exactly one existing object`,
+          );
+        } finally {
+          references.pop();
+        }
+      },
+    );
+
+    it("selects the highest semantic value type version", () => {
+      const registry = valueTypeRegistryFromFixture(fixtureIr.valueTypes, [
+        valueTypeVersion("2.0.0", {
+          type: "string",
+          string: {},
+        }),
+        valueTypeVersion(
+          "10.0.0",
+          {
+            type: "integer",
+            integer: {},
+          },
+          [integerRangeConstraint(10, 20)],
+        ),
+        valueTypeVersion("1.0.0", {
+          type: "string",
+          string: {},
+        }),
+      ]);
+
+      const valueTypes = OntologyIrToFullMetadataConverter.getOsdkValueTypes(
+        registry,
+        { valueTypes: [] },
+      );
+
+      expect(valueTypes.trackQuality).toMatchObject({
+        version: "10.0.0",
+        fieldType: { type: "integer" },
+        constraints: [{
+          type: "range",
+          minimumValue: 10,
+          maximumValue: 20,
+        }],
+      });
+    });
+
+    it("keeps the latest registry version for historical property references", () => {
+      const registry = valueTypeRegistryFromFixture(fixtureIr.valueTypes, [
+        valueTypeVersion("1.0.0", {
+          type: "string",
+          string: {},
+        }),
+        valueTypeVersion("2.0.0", {
+          type: "string",
+          string: {},
+        }),
+      ]);
+
+      const metadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(
+          embeddedValueTypeEnvelope(fixtureIr, registry, ["1.0.0"]),
+        );
+
+      expect(metadata.valueTypes.trackQuality).toMatchObject({
+        apiName: "trackQuality",
+        version: "2.0.0",
+        fieldType: { type: "string" },
+      });
+    });
+
+    it("selects the latest embedded-only version independently of traversal order", () => {
+      const emptyRegistry: OntologyIrValueTypeBlockData = { valueTypes: [] };
+      const versions = [["1.0.0", "2.0.0"], ["2.0.0", "1.0.0"]];
+
+      for (const order of versions) {
+        const metadata = OntologyIrToFullMetadataConverter
+          .getFullMetadataFromEnvelope(
+            embeddedValueTypeEnvelope(fixtureIr, emptyRegistry, order),
+          );
+
+        expect(metadata.valueTypes.trackQuality).toMatchObject({
+          apiName: "trackQuality",
+          version: "2.0.0",
+          fieldType: { type: "string" },
+          constraints: [],
+        });
+      }
     });
 
     it("is deterministic across two conversions", () => {

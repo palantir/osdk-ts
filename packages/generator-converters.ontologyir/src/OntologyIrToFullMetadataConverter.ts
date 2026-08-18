@@ -42,6 +42,7 @@ import { accessSync, constants } from "node:fs";
 import { createRequire } from "node:module";
 import * as path from "node:path";
 import { pathToFileURL } from "node:url";
+import { compare as compareSemver, valid as validSemver } from "semver-ts";
 import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
@@ -266,7 +267,11 @@ export class OntologyIrToFullMetadataConverter {
       ir.valueTypes,
       ir.importedValueTypes,
     );
-    collectEmbeddedValueTypes(ontology, valueTypes);
+    collectEmbeddedValueTypes(
+      ontology,
+      valueTypes,
+      new Set(Object.keys(valueTypes)),
+    );
 
     return withDeterministicEnvelopeRids(
       metadata,
@@ -883,8 +888,7 @@ export class OntologyIrToFullMetadataConverter {
               .displayMetadata.displayName,
             cardinality: "MANY",
             objectTypeApiName: linkDef.objectTypeRidB,
-            linkTypeRid:
-              `ri.${linkDef.objectTypeRidA}.${linkType.id}.${linkDef.objectTypeRidB}`,
+            linkTypeRid: `ri.link-type.${linkType.id}`,
             status: linkStatus,
           };
 
@@ -913,8 +917,7 @@ export class OntologyIrToFullMetadataConverter {
           );
 
           const common = {
-            linkTypeRid:
-              `ri.${linkDef.objectTypeRidOneSide}.${linkType.id}.${linkDef.objectTypeRidManySide}`,
+            linkTypeRid: `ri.link-type.${linkType.id}`,
             status: linkStatus,
           };
 
@@ -1613,19 +1616,21 @@ export class OntologyIrToFullMetadataConverter {
     const result: Record<ApiName, Ontologies.OntologyValueType> = {};
 
     for (const entry of entries) {
-      for (const version of entry.versions) {
-        addValueType(result, {
-          apiName: entry.metadata.apiName,
-          displayName: entry.metadata.displayMetadata.displayName,
-          description: entry.metadata.displayMetadata.description,
-          rid:
-            `ri.value-type.${entry.metadata.packageNamespace}.${entry.metadata.apiName}.${version.version}`,
-          status: convertValueTypeStatus(entry.metadata.status.type),
-          version: version.version,
-          fieldType: convertValueTypeFieldType(version.baseType),
-          constraints: version.constraints.map(convertValueTypeConstraint),
-        });
+      const version = latestVersion(entry.versions);
+      if (version === undefined) {
+        continue;
       }
+      addValueType(result, {
+        apiName: entry.metadata.apiName,
+        displayName: entry.metadata.displayMetadata.displayName,
+        description: entry.metadata.displayMetadata.description,
+        rid:
+          `ri.value-type.${entry.metadata.packageNamespace}.${entry.metadata.apiName}.${version.version}`,
+        status: convertValueTypeStatus(entry.metadata.status.type),
+        version: version.version,
+        fieldType: convertValueTypeFieldType(version.baseType),
+        constraints: version.constraints.map(convertValueTypeConstraint),
+      });
     }
 
     return result;
@@ -1819,8 +1824,8 @@ function getAllAncestorInterfaceTypes(
       if (!parent) {
         continue;
       }
-      ancestors.push(parent);
       visitParents(parentApiName);
+      ancestors.push(parent);
     }
   };
 
@@ -1836,16 +1841,29 @@ function mintDeterministicRid(
   return deterministicRid(randomnessKey, kind, ...parts);
 }
 
+function pickOwnMembers<T>(
+  allMembers: Record<ApiName, T>,
+  ownMembers: Record<ApiName, object>,
+): Record<ApiName, T> {
+  const result: Record<ApiName, T> = {};
+  for (const apiName of Object.keys(ownMembers)) {
+    const member = allMembers[apiName];
+    if (member !== undefined) {
+      result[apiName] = member;
+    }
+  }
+  return result;
+}
+
 function mintInterfacePropertyRids(
   properties: Record<ApiName, { rid: string }>,
   randomnessKey: string | undefined,
   interfaceApiName: string,
-  kind: string,
 ): void {
   for (const [propertyApiName, property] of Object.entries(properties)) {
     property.rid = mintDeterministicRid(
       randomnessKey,
-      kind,
+      "interface-property",
       interfaceApiName,
       propertyApiName,
     );
@@ -1879,16 +1897,23 @@ function withDeterministicEnvelopeRids(
       link.linkTypeRid = mintDeterministicRid(
         randomnessKey,
         "link-type",
-        apiName,
-        link.apiName,
+        link.linkTypeRid,
       );
     }
   }
+  const ownResolvedProperties = new Map<
+    ApiName,
+    Record<ApiName, Ontologies.ResolvedInterfacePropertyType>
+  >();
   for (
     const [apiName, interfaceType] of Object.entries(
       metadata.interfaceTypes,
     )
   ) {
+    ownResolvedProperties.set(
+      apiName,
+      pickOwnMembers(interfaceType.allPropertiesV2, interfaceType.propertiesV2),
+    );
     interfaceType.rid = mintDeterministicRid(
       randomnessKey,
       "interface-type",
@@ -1898,25 +1923,17 @@ function withDeterministicEnvelopeRids(
       interfaceType.properties,
       randomnessKey,
       apiName,
-      "interface-property",
     );
-    mintInterfacePropertyRids(
-      interfaceType.allProperties,
-      randomnessKey,
-      apiName,
-      "interface-property",
-    );
+    const resolvedProperties = ownResolvedProperties.get(apiName) ?? {};
     mintInterfacePropertyRids(
       interfaceType.propertiesV2,
       randomnessKey,
       apiName,
-      "interface-property-v2",
     );
     mintInterfacePropertyRids(
-      interfaceType.allPropertiesV2,
+      resolvedProperties,
       randomnessKey,
       apiName,
-      "interface-property-v2",
     );
     for (const [linkApiName, link] of Object.entries(interfaceType.links)) {
       link.rid = mintDeterministicRid(
@@ -1926,14 +1943,29 @@ function withDeterministicEnvelopeRids(
         linkApiName,
       );
     }
-    for (const [linkApiName, link] of Object.entries(interfaceType.allLinks)) {
-      link.rid = mintDeterministicRid(
-        randomnessKey,
-        "interface-link",
-        apiName,
-        linkApiName,
-      );
-    }
+  }
+  for (const interfaceType of Object.values(metadata.interfaceTypes)) {
+    const ancestors = getAllAncestorInterfaceTypes(
+      interfaceType.apiName,
+      metadata.interfaceTypes,
+    );
+    interfaceType.allProperties = Object.assign(
+      {},
+      ...ancestors.map(ancestor => ancestor.properties),
+      interfaceType.properties,
+    );
+    interfaceType.allPropertiesV2 = Object.assign(
+      {},
+      ...ancestors.map(
+        ancestor => ownResolvedProperties.get(ancestor.apiName) ?? {},
+      ),
+      ownResolvedProperties.get(interfaceType.apiName) ?? {},
+    );
+    interfaceType.allLinks = Object.assign(
+      {},
+      ...ancestors.map(ancestor => ancestor.links),
+      interfaceType.links,
+    );
   }
   for (
     const [apiName, property] of Object.entries(
@@ -1992,22 +2024,53 @@ function mergeOntologyBlocks(
   };
 }
 
+function compareVersions(a: string, b: string): number {
+  const validA = validSemver(a);
+  const validB = validSemver(b);
+  if (validA && validB) {
+    return compareSemver(validA, validB);
+  }
+  if (validA) {
+    return 1;
+  }
+  if (validB) {
+    return -1;
+  }
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
+function latestVersion<T extends { version: string }>(
+  versions: ReadonlyArray<T>,
+): T | undefined {
+  let latest: T | undefined;
+  for (const candidate of versions) {
+    if (
+      latest === undefined
+      || compareVersions(candidate.version, latest.version) > 0
+    ) {
+      latest = candidate;
+    }
+  }
+  return latest;
+}
+
 function addValueType(
   valueTypes: Record<ApiName, Ontologies.OntologyValueType>,
   valueType: Ontologies.OntologyValueType,
 ): void {
   const existing = valueTypes[valueType.apiName];
-  if (existing && existing.version !== valueType.version) {
-    throw new Error(
-      `Value type '${valueType.apiName}' has multiple versions: '${existing.version}' and '${valueType.version}'`,
-    );
+  if (
+    existing === undefined
+    || compareVersions(valueType.version, existing.version) >= 0
+  ) {
+    valueTypes[valueType.apiName] = valueType;
   }
-  valueTypes[valueType.apiName] = valueType;
 }
 
 function collectEmbeddedValueTypes(
   ontology: OntologyIrOntologyBlockDataV2,
   valueTypes: Record<ApiName, Ontologies.OntologyValueType>,
+  registryValueTypes: ReadonlySet<ApiName>,
 ): void {
   for (const interfaceBlock of Object.values(ontology.interfaceTypes)) {
     for (
@@ -2018,9 +2081,38 @@ function collectEmbeddedValueTypes(
       if (embedded) {
         addEmbeddedValueType(
           valueTypes,
+          registryValueTypes,
           embedded,
           convertEmbeddedValueTypeFieldType(sharedPropertyType.type),
         );
+      }
+    }
+    for (
+      const property of Object.values(interfaceBlock.interfaceType.propertiesV3)
+    ) {
+      if (property.type === "interfaceDefinedPropertyType") {
+        const defined = property.interfaceDefinedPropertyType;
+        const embedded = defined.constraints.valueType;
+        if (embedded) {
+          addEmbeddedValueType(
+            valueTypes,
+            registryValueTypes,
+            embedded,
+            convertEmbeddedValueTypeFieldType(defined.type),
+          );
+        }
+      } else {
+        const sharedPropertyType = property.sharedPropertyBasedPropertyType
+          .sharedPropertyType;
+        const embedded = sharedPropertyType.valueType;
+        if (embedded) {
+          addEmbeddedValueType(
+            valueTypes,
+            registryValueTypes,
+            embedded,
+            convertEmbeddedValueTypeFieldType(sharedPropertyType.type),
+          );
+        }
       }
     }
   }
@@ -2033,6 +2125,7 @@ function collectEmbeddedValueTypes(
     if (embedded) {
       addEmbeddedValueType(
         valueTypes,
+        registryValueTypes,
         embedded,
         convertEmbeddedValueTypeFieldType(sharedPropertyType.type),
       );
@@ -2047,6 +2140,7 @@ function collectEmbeddedValueTypes(
       if (embedded) {
         addEmbeddedValueType(
           valueTypes,
+          registryValueTypes,
           embedded,
           convertEmbeddedValueTypeFieldType(property.type),
         );
@@ -2057,6 +2151,7 @@ function collectEmbeddedValueTypes(
 
 function addEmbeddedValueType(
   valueTypes: Record<ApiName, Ontologies.OntologyValueType>,
+  registryValueTypes: ReadonlySet<ApiName>,
   embedded: {
     apiName: string;
     displayMetadata: {
@@ -2069,16 +2164,14 @@ function addEmbeddedValueType(
   fieldType: Ontologies.ValueTypeFieldType,
 ): void {
   const existing = valueTypes[embedded.apiName];
-  if (existing) {
-    if (existing.version !== embedded.version) {
-      throw new Error(
-        `Value type '${embedded.apiName}' has multiple versions: '${existing.version}' and '${embedded.version}'`,
-      );
-    }
+  if (
+    registryValueTypes.has(embedded.apiName)
+    || (existing && compareVersions(existing.version, embedded.version) >= 0)
+  ) {
     return;
   }
 
-  addValueType(valueTypes, {
+  valueTypes[embedded.apiName] = {
     apiName: embedded.apiName,
     displayName: embedded.displayMetadata.displayName,
     description: embedded.displayMetadata.description ?? undefined,
@@ -2087,11 +2180,11 @@ function addEmbeddedValueType(
     version: embedded.version,
     fieldType,
     constraints: [],
-  });
+  };
 }
 
 function convertEmbeddedValueTypeFieldType(
-  type: OntologyIrType,
+  type: OntologyIrType | OntologyIrInterfacePropertyTypeType,
 ): Ontologies.ValueTypeFieldType {
   switch (type.type) {
     case "array": {
@@ -2110,8 +2203,18 @@ function convertEmbeddedValueTypeFieldType(
     case "string":
     case "timestamp":
       return { type: type.type };
+    case "struct":
+      return {
+        type: "struct",
+        fields: type.struct.structFields.map(field => ({
+          name: field.apiName,
+          fieldType: convertEmbeddedValueTypeFieldType(field.fieldType),
+        })),
+      };
     default:
-      return { type: "string" };
+      throw new Error(
+        `Unsupported embedded value type field '${type.type}'`,
+      );
   }
 }
 

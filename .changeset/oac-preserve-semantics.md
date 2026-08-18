@@ -1,5 +1,4 @@
 ---
-"@osdk/api": minor
 "@osdk/generator-converters": minor
 "@osdk/generator-converters.ontologyir": minor
 "@osdk/generator-converters.preview": minor

@@ -1429,7 +1429,7 @@ export function firstExistingObjectParameterId(
   field: string,
 ): string {
   const first = references[0];
-  if (first == null || first.type !== "existingObject") {
+  if (references.length !== 1 || first?.type !== "existingObject") {
     throw new Error(
       `Interface-link rule ${field} must reference exactly one existing object`,
     );
