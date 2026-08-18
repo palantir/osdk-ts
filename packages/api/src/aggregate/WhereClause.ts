@@ -226,15 +226,6 @@ export type PropertyWhereClause<T extends ObjectOrInterfaceDefinition> = {
   >;
 };
 
-type MergedPropertyWhereClause<
-  T extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = {},
-> =
-  | PropertyWhereClause<
-      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
-    >
-  | SpecialPropertyWhereClause<T>;
-
 export type WhereClause<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
@@ -242,6 +233,9 @@ export type WhereClause<
   | OrWhereClause<T, RDPs>
   | AndWhereClause<T, RDPs>
   | NotWhereClause<T, RDPs>
+  | SpecialPropertyWhereClause<T>
   | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true
       ? Record<string, never>
-      : MergedPropertyWhereClause<T, RDPs>);
+      : PropertyWhereClause<
+          DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+        >);
