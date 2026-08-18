@@ -171,10 +171,29 @@ async function fetchAliases(
     );
   }
 
+  // A single-page-app host rewrites unknown paths to index.html and answers 200
+  // rather than 404 (the Vite dev server and Foundry website hosting both do
+  // this). An HTML body therefore means "this file is not here", exactly like a
+  // 404, so treat it the same way instead of trying to parse markup as JSON.
+  if (isHtml(response)) {
+    return undefined;
+  }
+
   const config = (await response.json()) as
     | DeploymentConfig
     | AliasDeclarationsFile;
   return extractAliases(config, url);
+}
+
+/**
+ * True when the response body is HTML rather than the JSON we asked for, which
+ * indicates a single-page-app rewrite rather than a real config file. Only the
+ * declared content type is consulted: a response that claims to be JSON but does
+ * not parse is a genuine error and must not be mistaken for an absent file.
+ */
+function isHtml(response: Response): boolean {
+  const contentType = response.headers?.get?.("content-type") ?? "";
+  return contentType.toLowerCase().includes("text/html");
 }
 
 /**
