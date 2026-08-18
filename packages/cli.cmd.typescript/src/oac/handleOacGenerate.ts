@@ -34,16 +34,16 @@ import type { OacGenerateArgs } from "./oacGenerate.js";
 const USER_AGENT = `osdk-oac/${process.env.PACKAGE_VERSION ?? "dev"}`;
 
 export async function handleOacGenerate(args: OacGenerateArgs): Promise<void> {
+  let stagingDir: string | undefined;
   try {
     const ir = await readMakerIr(args.ir);
     const imports = args.importMap ? await readImportMap(args.importMap) : [];
+    validateImports(imports, ir, args.importMap);
     const metadata =
       OntologyIrToFullMetadataConverter.getFullMetadataFromEnvelope(ir);
-
-    if (args.clean) {
-      await fs.promises.rm(args.outDir, { recursive: true, force: true });
-    }
-    await fs.promises.mkdir(args.outDir, { recursive: true });
+    const outDir = protectedOutputDirectory(args.outDir);
+    await fs.promises.mkdir(path.dirname(outDir), { recursive: true });
+    stagingDir = await fs.promises.mkdtemp(`${outDir}.tmp-`);
 
     const externalObjects = toExternalMap(imports, "object");
     const externalInterfaces = toExternalMap(imports, "interface");
@@ -63,8 +63,8 @@ export async function handleOacGenerate(args: OacGenerateArgs): Promise<void> {
           return await fs.promises.readdir(dirPath);
         },
       },
-      args.outDir,
-      "module",
+      stagingDir,
+      args.packageType,
       externalObjects,
       externalInterfaces,
       externalSpts,
@@ -81,10 +81,12 @@ export async function handleOacGenerate(args: OacGenerateArgs): Promise<void> {
       imports,
     });
     await fs.promises.writeFile(
-      path.join(args.outDir, "semantic-manifest.json"),
+      path.join(stagingDir, "semantic-manifest.json"),
       `${JSON.stringify(manifest, null, 2)}\n`,
     );
 
+    await replaceOutputDirectory(stagingDir, outDir, args.clean === true);
+    stagingDir = undefined;
     consola.info("OSDK generated from Maker IR");
   } catch (err) {
     if (err instanceof ExitProcessError) {
@@ -92,6 +94,78 @@ export async function handleOacGenerate(args: OacGenerateArgs): Promise<void> {
     }
     const message = err instanceof Error ? err.message : String(err);
     throw new ExitProcessError(1, message);
+  } finally {
+    if (stagingDir !== undefined) {
+      await fs.promises.rm(stagingDir, { recursive: true, force: true });
+    }
+  }
+}
+
+function protectedOutputDirectory(outDir: string): string {
+  const resolved = path.resolve(outDir);
+  const root = path.parse(resolved).root;
+  const cwd = process.cwd();
+  const relativeCwd = path.relative(resolved, cwd);
+  if (
+    resolved === root ||
+    relativeCwd === "" ||
+    (!relativeCwd.startsWith("..") && !path.isAbsolute(relativeCwd))
+  ) {
+    throw new ExitProcessError(
+      1,
+      `Refusing to generate into protected directory: ${resolved}`,
+    );
+  }
+  return resolved;
+}
+
+async function uniqueBackupPath(outDir: string): Promise<string> {
+  const placeholder = await fs.promises.mkdtemp(`${outDir}.backup-`);
+  await fs.promises.rmdir(placeholder);
+  return placeholder;
+}
+
+async function replaceOutputDirectory(
+  stagingDir: string,
+  outDir: string,
+  clean: boolean,
+): Promise<void> {
+  if (!clean && fs.existsSync(outDir)) {
+    try {
+      await fs.promises.rmdir(outDir);
+    } catch (error) {
+      const code =
+        isRecord(error) && typeof error.code === "string"
+          ? error.code
+          : undefined;
+      if (code === "ENOTEMPTY" || code === "EEXIST") {
+        throw new ExitProcessError(
+          1,
+          `Output directory must be empty unless --clean is used: ${outDir}`,
+        );
+      }
+      throw error;
+    }
+    await fs.promises.rename(stagingDir, outDir);
+    return;
+  }
+
+  const backupDir = await uniqueBackupPath(outDir);
+  let movedExisting = false;
+  if (fs.existsSync(outDir)) {
+    await fs.promises.rename(outDir, backupDir);
+    movedExisting = true;
+  }
+  try {
+    await fs.promises.rename(stagingDir, outDir);
+    if (movedExisting) {
+      await fs.promises.rm(backupDir, { recursive: true, force: true });
+    }
+  } catch (error) {
+    if (movedExisting && !fs.existsSync(outDir)) {
+      await fs.promises.rename(backupDir, outDir);
+    }
+    throw error;
   }
 }
 
@@ -100,6 +174,84 @@ function getUserAgent(version: string): string {
     return "osdk-oac/dev";
   }
   return `${USER_AGENT} typescript-sdk/${version}`;
+}
+
+function validateImports(
+  imports: ReadonlyArray<ImportedEntityMapping>,
+  ir: OntologyIr,
+  importMapPath: string | undefined,
+): void {
+  for (const entry of imports) {
+    if (!hasImportedEntity(ir, entry)) {
+      const source = importMapPath ?? "import map";
+      throw new ExitProcessError(
+        1,
+        `Import '${entry.kind}:${entry.apiName}' from ${source} does not match an imported Maker entity`,
+      );
+    }
+  }
+}
+
+function hasImportedEntity(
+  ir: OntologyIr,
+  entry: ImportedEntityMapping,
+): boolean {
+  switch (entry.kind) {
+    case "interface":
+      return Object.hasOwn(ir.importedOntology.interfaceTypes, entry.apiName);
+    case "object":
+      return Object.hasOwn(ir.importedOntology.objectTypes, entry.apiName);
+    case "sharedPropertyType":
+      return Object.hasOwn(
+        ir.importedOntology.sharedPropertyTypes,
+        entry.apiName,
+      );
+    case "valueType":
+      return (
+        ir.importedValueTypes.valueTypes.some(
+          (valueType) => valueType.metadata.apiName === entry.apiName,
+        ) || importedEmbeddedValueTypes(ir).has(entry.apiName)
+      );
+  }
+}
+
+function importedEmbeddedValueTypes(ir: OntologyIr): Set<string> {
+  const apiNames = new Set<string>();
+  for (const block of Object.values(ir.importedOntology.objectTypes)) {
+    for (const property of Object.values(block.objectType.propertyTypes)) {
+      if (property.valueType) {
+        apiNames.add(property.valueType.apiName);
+      }
+    }
+  }
+  for (const block of Object.values(ir.importedOntology.sharedPropertyTypes)) {
+    if (block.sharedPropertyType.valueType) {
+      apiNames.add(block.sharedPropertyType.valueType.apiName);
+    }
+  }
+  for (const block of Object.values(ir.importedOntology.interfaceTypes)) {
+    for (const property of Object.values(block.interfaceType.propertiesV2)) {
+      if (property.sharedPropertyType.valueType) {
+        apiNames.add(property.sharedPropertyType.valueType.apiName);
+      }
+    }
+    for (const property of Object.values(block.interfaceType.propertiesV3)) {
+      if (property.type === "interfaceDefinedPropertyType") {
+        const valueType =
+          property.interfaceDefinedPropertyType.constraints.valueType;
+        if (valueType) {
+          apiNames.add(valueType.apiName);
+        }
+      } else {
+        const valueType =
+          property.sharedPropertyBasedPropertyType.sharedPropertyType.valueType;
+        if (valueType) {
+          apiNames.add(valueType.apiName);
+        }
+      }
+    }
+  }
+  return apiNames;
 }
 
 function toExternalMap(
@@ -222,7 +374,9 @@ function isImportedEntityKind(value: unknown): value is ImportedEntityKind {
 }
 
 function isNonEmptyString(value: unknown): value is string {
-  return typeof value === "string" && value.length > 0;
+  return (
+    typeof value === "string" && value.length > 0 && value === value.trim()
+  );
 }
 
 function isImportMap(
@@ -234,10 +388,10 @@ function isImportMap(
   const seen = new Set<string>();
   for (const entry of value.imports) {
     if (
-      !isRecord(entry)
-      || !isImportedEntityKind(entry.kind)
-      || !isNonEmptyString(entry.apiName)
-      || !isNonEmptyString(entry.package)
+      !isRecord(entry) ||
+      !isImportedEntityKind(entry.kind) ||
+      !isNonEmptyString(entry.apiName) ||
+      !isNonEmptyString(entry.package)
     ) {
       return false;
     }

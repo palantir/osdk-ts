@@ -76,10 +76,15 @@ export const oacGenerateCommand: CommandModule<{}, OacGenerateArgs> = {
         },
       } as const)
       .check((args) => {
-        if (args.packageName.length === 0) {
+        if (args.packageName.trim().length === 0) {
           throw new YargsCheckError("packageName must not be empty");
         }
-        if (args.version !== "dev" && !isValidSemver(args.version)) {
+        if (
+          args.version !== "dev" &&
+          (args.version !== args.version.trim() ||
+            args.version.startsWith("v") ||
+            !isValidSemver(args.version))
+        ) {
           throw new YargsCheckError(
             "Version must be 'dev' or a valid semver version",
           );

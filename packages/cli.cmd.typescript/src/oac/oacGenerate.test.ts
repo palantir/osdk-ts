@@ -37,11 +37,11 @@ describe("oac generate", () => {
           throw new Error(message);
         })
         .command(oacGenerateCommand)
-        .parse()
+        .parse(),
     ).toThrow("Missing required argument: packageName");
   });
 
-  it("rejects an empty package name", () => {
+  it.each(["", "   "])("rejects package name %j", (packageName) => {
     expect(() =>
       yargs([
         "generate",
@@ -52,7 +52,7 @@ describe("oac generate", () => {
         "--version",
         "0.0.0-dev",
         "--packageName",
-        "",
+        packageName,
       ])
         .version(false)
         .exitProcess(false)
@@ -60,7 +60,33 @@ describe("oac generate", () => {
           throw error;
         })
         .command(oacGenerateCommand)
-        .parse()
+        .parse(),
     ).toThrow("packageName must not be empty");
   });
+
+  it.each([" 1.2.3 ", "v1.2.3"])(
+    "rejects non-canonical version %j",
+    (version) => {
+      expect(() =>
+        yargs([
+          "generate",
+          "--ir",
+          "ontology.json",
+          "--outDir",
+          "generated",
+          "--version",
+          version,
+          "--packageName",
+          "@example/item-sdk",
+        ])
+          .version(false)
+          .exitProcess(false)
+          .fail((_message, error) => {
+            throw error;
+          })
+          .command(oacGenerateCommand)
+          .parse(),
+      ).toThrow("Version must be 'dev' or a valid semver version");
+    },
+  );
 });

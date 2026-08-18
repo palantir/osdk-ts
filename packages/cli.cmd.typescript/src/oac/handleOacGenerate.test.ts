@@ -38,6 +38,52 @@ const emptyMakerIr = {
   randomnessKey: "test-randomness-key",
 };
 
+const importedMakerIr = {
+  ...emptyMakerIr,
+  importedOntology: {
+    ...emptyOntologyBlock,
+    interfaceTypes: {
+      "com.example.TrackedEntity": {
+        interfaceType: {
+          apiName: "com.example.TrackedEntity",
+          actionTypeConstraints: [],
+          displayMetadata: {
+            displayName: "Tracked Entity",
+          },
+          extendsInterfaces: [],
+          extendsInterfacesMetadata: [],
+          links: [],
+          properties: [],
+          propertiesV2: {},
+          propertiesV3: {},
+          searchable: true,
+          status: { type: "active", active: {} },
+        },
+      },
+    },
+  },
+  importedValueTypes: {
+    valueTypes: [
+      {
+        metadata: {
+          apiName: "headingValue",
+          displayMetadata: { displayName: "Heading Value" },
+          packageNamespace: "example",
+          status: { type: "active", active: {} },
+        },
+        versions: [
+          {
+            baseType: { type: "double", double: {} },
+            constraints: [],
+            exampleValues: [],
+            version: "1.0.0",
+          },
+        ],
+      },
+    ],
+  },
+};
+
 const tempDirs: string[] = [];
 
 afterEach(async () => {
@@ -108,7 +154,7 @@ describe(handleOacGenerate, () => {
     const irPath = join(dir, "ir.json");
     const importMapPath = join(dir, "osdk-projection.yaml");
     const outDir = join(dir, "out");
-    await writeFile(irPath, JSON.stringify(emptyMakerIr));
+    await writeFile(irPath, JSON.stringify(importedMakerIr));
     await writeFile(
       importMapPath,
       [
@@ -148,6 +194,53 @@ describe(handleOacGenerate, () => {
         package: "@example/core-sdk",
       },
     ]);
+  });
+
+  it("rejects an import that does not match imported metadata", async () => {
+    const dir = await makeTempDir();
+    const irPath = join(dir, "ir.json");
+    const importMapPath = join(dir, "osdk-projection.yaml");
+    await writeFile(irPath, JSON.stringify(importedMakerIr));
+    await writeFile(
+      importMapPath,
+      [
+        "imports:",
+        "  - kind: interface",
+        "    apiName: com.example.TrackedEntityTypo",
+        '    package: "@example/core-sdk"',
+        "",
+      ].join("\n"),
+    );
+
+    await expect(
+      handleOacGenerate({
+        ir: irPath,
+        outDir: join(dir, "out"),
+        version: "0.0.0-dev",
+        packageName: "@example/item-sdk",
+        packageType: "module",
+        ontologyIdentity: "portable",
+        importMap: importMapPath,
+      }),
+    ).rejects.toThrow("Import 'interface:com.example.TrackedEntityTypo'");
+  });
+
+  it("rejects protected output directories", async () => {
+    const dir = await makeTempDir();
+    const irPath = join(dir, "ir.json");
+    await writeFile(irPath, JSON.stringify(emptyMakerIr));
+
+    await expect(
+      handleOacGenerate({
+        ir: irPath,
+        outDir: process.cwd(),
+        version: "0.0.0-dev",
+        packageName: "@example/item-sdk",
+        packageType: "module",
+        ontologyIdentity: "portable",
+        clean: true,
+      }),
+    ).rejects.toThrow("Refusing to generate into protected directory");
   });
 
   it("writes the same portable tree twice and omits ontology ids", async () => {
