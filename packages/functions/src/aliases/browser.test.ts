@@ -29,16 +29,28 @@ interface FakeResponseInit {
   status?: number;
   statusText?: string;
   body?: unknown;
+  contentType?: string;
 }
 
 function fakeResponse(init: FakeResponseInit): Response {
+  const contentType = init.contentType ?? "application/json";
   return {
     ok: init.ok ?? true,
     status: init.status ?? 200,
     statusText: init.statusText ?? "OK",
-    json: () => Promise.resolve(init.body),
+    headers: {
+      get: (h: string) =>
+        h.toLowerCase() === "content-type" ? contentType : null,
+    },
+    json: () =>
+      init.body === undefined
+        ? Promise.reject(new SyntaxError("Unexpected token '<'"))
+        : Promise.resolve(init.body),
   } as unknown as Response;
 }
+
+/** A single-page-app host answering 200 with index.html for an unknown path. */
+const SPA_FALLBACK: FakeResponseInit = { contentType: "text/html" };
 
 function mockFetch(init: FakeResponseInit): typeof globalThis.fetch {
   return vi.fn(() =>
@@ -267,6 +279,35 @@ describe("browser aliases", () => {
       await initAliases({ fetch: mockFetchByPath({}) });
 
       expect(() => custom("anything")).toThrow("Available aliases: []");
+    });
+
+    // A dev server or static host rewrites unknown paths to index.html and
+    // answers 200, so absence does not always look like a 404.
+    it("falls back when the host serves index.html instead of 404ing", async () => {
+      await initAliases({
+        fetch: mockFetchByPath({
+          [DEFAULT_DEPLOYMENT_CONFIG_PATH]: SPA_FALLBACK,
+          [DEFAULT_DECLARATIONS_PATH]: { body: DECLARATIONS_FILE },
+        }),
+      });
+
+      expect(custom("apiBaseUrl")).toBe("https://api.dev.example.com");
+      expect(warn).toHaveBeenCalledOnce();
+    });
+
+    it("does not mistake malformed JSON for an absent file", async () => {
+      // Declared as JSON but not valid JSON: a real error, not a missing file, so
+      // it must surface rather than silently falling back to defaults.
+      await expect(
+        initAliases({
+          fetch: mockFetchByPath({
+            [DEFAULT_DEPLOYMENT_CONFIG_PATH]: {
+              contentType: "application/json",
+            },
+            [DEFAULT_DECLARATIONS_PATH]: { body: DECLARATIONS_FILE },
+          }),
+        }),
+      ).rejects.toThrow();
     });
   });
 
