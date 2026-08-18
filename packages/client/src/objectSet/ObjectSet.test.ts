@@ -487,6 +487,11 @@ describe("ObjectSet", () => {
     });
   });
 
+  it("allows filtering by $primaryKey and $title on interfaces with no properties", () => {
+    client(BarInterface).where({ $primaryKey: { $eq: "abc" } });
+    client(BarInterface).where({ $title: { $eq: "abc" } });
+  });
+
   it("type checking containsallterm and containsanyterm", () => {
     const ids: ReadonlyArray<number> = [50030, 50031];
     client(Employee).where({
