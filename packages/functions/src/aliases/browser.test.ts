@@ -28,7 +28,10 @@ interface FakeResponseInit {
   ok?: boolean;
   status?: number;
   statusText?: string;
+  /** Served as the response body, JSON-encoded. */
   body?: unknown;
+  /** Raw response body. Takes precedence over `body`. */
+  text?: string;
   contentType?: string;
 }
 
@@ -42,15 +45,20 @@ function fakeResponse(init: FakeResponseInit): Response {
       get: (h: string) =>
         h.toLowerCase() === "content-type" ? contentType : null,
     },
-    json: () =>
-      init.body === undefined
-        ? Promise.reject(new SyntaxError("Unexpected token '<'"))
-        : Promise.resolve(init.body),
+    text: () =>
+      Promise.resolve(
+        init.text ?? (init.body === undefined ? "" : JSON.stringify(init.body)),
+      ),
   } as unknown as Response;
 }
 
+const INDEX_HTML = "<!doctype html>\n<html><body></body></html>";
+
 /** A single-page-app host answering 200 with index.html for an unknown path. */
-const SPA_FALLBACK: FakeResponseInit = { contentType: "text/html" };
+const SPA_FALLBACK: FakeResponseInit = {
+  contentType: "text/html",
+  text: INDEX_HTML,
+};
 
 function mockFetch(init: FakeResponseInit): typeof globalThis.fetch {
   return vi.fn(() =>
@@ -295,19 +303,34 @@ describe("browser aliases", () => {
       expect(warn).toHaveBeenCalledOnce();
     });
 
+    // Foundry website hosting types responses from the file extension and does
+    // not recognize .json, so the rewritten index.html can arrive without an
+    // html content type. Absence must still be detected from the body alone.
+    it("falls back on markup served without an html content type", async () => {
+      await initAliases({
+        fetch: mockFetchByPath({
+          [DEFAULT_DEPLOYMENT_CONFIG_PATH]: {
+            contentType: "application/octet-stream",
+            text: INDEX_HTML,
+          },
+          [DEFAULT_DECLARATIONS_PATH]: { body: DECLARATIONS_FILE },
+        }),
+      });
+
+      expect(custom("apiBaseUrl")).toBe("https://api.dev.example.com");
+    });
+
     it("does not mistake malformed JSON for an absent file", async () => {
-      // Declared as JSON but not valid JSON: a real error, not a missing file, so
-      // it must surface rather than silently falling back to defaults.
+      // Neither markup nor valid JSON: a real error, not a missing file, so it
+      // must surface rather than silently falling back to defaults.
       await expect(
         initAliases({
           fetch: mockFetchByPath({
-            [DEFAULT_DEPLOYMENT_CONFIG_PATH]: {
-              contentType: "application/json",
-            },
+            [DEFAULT_DEPLOYMENT_CONFIG_PATH]: { text: "{ not json" },
             [DEFAULT_DECLARATIONS_PATH]: { body: DECLARATIONS_FILE },
           }),
         }),
-      ).rejects.toThrow();
+      ).rejects.toThrow("not valid JSON");
     });
   });
 

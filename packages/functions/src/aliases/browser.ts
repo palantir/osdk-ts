@@ -30,11 +30,13 @@
 //                                                 so it carries the DEFAULTS
 //
 // Callers do not choose: we try the deployment config and fall back to the
-// declaration file ONLY on a 404. A 404 on a same-origin static path means the
-// file genuinely is not there (local dev, or a site deployed without going
-// through Marketplace). Any other failure throws, because in production BOTH
-// files are served, so falling back on a transient error would silently serve
-// the developer's defaults in place of the installer's values.
+// declaration file only when it is absent. Absence takes two forms, because a
+// single-page-app host rewrites unknown paths to index.html and answers 200
+// rather than 404: either a 404, or a 200 carrying markup. Both mean the file
+// genuinely is not there (local dev, or a site deployed without going through
+// Marketplace). Any other failure throws, because in production BOTH files are
+// served, so falling back on a transient error would silently serve the
+// developer's defaults in place of the installer's values.
 //
 // The two files are told apart by the runtime type of their `aliases` field
 // (string vs object), which is unambiguous.
@@ -150,9 +152,9 @@ async function loadAliases(options?: InitAliasesOptions): Promise<void> {
 }
 
 /**
- * Fetches and reads one alias file. Returns `undefined` when the file is absent
- * (404), which callers may treat as a cue to fall back. Any other failure throws,
- * so a transient server error never silently degrades to the declared defaults.
+ * Fetches and reads one alias file. Returns `undefined` when the file is absent,
+ * which callers may treat as a cue to fall back. Any other failure throws, so a
+ * transient server error never silently degrades to the declared defaults.
  */
 async function fetchAliases(
   fetchImpl: typeof globalThis.fetch,
@@ -171,29 +173,48 @@ async function fetchAliases(
     );
   }
 
+  const body = await response.text();
+
   // A single-page-app host rewrites unknown paths to index.html and answers 200
   // rather than 404 (the Vite dev server and Foundry website hosting both do
-  // this). An HTML body therefore means "this file is not here", exactly like a
-  // 404, so treat it the same way instead of trying to parse markup as JSON.
-  if (isHtml(response)) {
+  // this). Markup where JSON was expected therefore means "this file is not
+  // here", exactly like a 404, so treat it the same way.
+  if (isMarkup(body)) {
     return undefined;
   }
 
-  const config = (await response.json()) as
-    | DeploymentConfig
-    | AliasDeclarationsFile;
-  return extractAliases(config, url);
+  return extractAliases(parseJson(body, url), url);
 }
 
 /**
- * True when the response body is HTML rather than the JSON we asked for, which
- * indicates a single-page-app rewrite rather than a real config file. Only the
- * declared content type is consulted: a response that claims to be JSON but does
- * not parse is a genuine error and must not be mistaken for an absent file.
+ * True when the body is markup rather than the JSON we asked for, which indicates
+ * a single-page-app rewrite rather than a real config file.
+ *
+ * The body is sniffed rather than the declared content type because that type is
+ * not a reliable signal: Foundry website hosting derives it from the file
+ * extension and does not recognize `.json`, so even a real config file can arrive
+ * as `application/octet-stream`. A leading `<` is unambiguous, since valid JSON
+ * can never begin with one.
  */
-function isHtml(response: Response): boolean {
-  const contentType = response.headers?.get?.("content-type") ?? "";
-  return contentType.toLowerCase().includes("text/html");
+function isMarkup(body: string): boolean {
+  return body.trimStart().startsWith("<");
+}
+
+/**
+ * Parses a fetched alias file. A body that is neither markup nor valid JSON is a
+ * genuine error and must surface rather than being mistaken for an absent file.
+ */
+function parseJson(
+  body: string,
+  url: string,
+): DeploymentConfig | AliasDeclarationsFile {
+  try {
+    return JSON.parse(body) as DeploymentConfig | AliasDeclarationsFile;
+  } catch (error) {
+    throw new Error(`Failed to read aliases from ${url}: not valid JSON.`, {
+      cause: error,
+    });
+  }
 }
 
 /**
