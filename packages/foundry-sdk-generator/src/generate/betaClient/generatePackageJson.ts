@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
+import { writeFile } from "node:fs/promises";
+import { join } from "node:path";
+
 import {
   ONTOLOGY_METADATA_DCTS_PATH,
   ONTOLOGY_METADATA_DMTS_PATH,
   ONTOLOGY_METADATA_JSON_PATH,
 } from "@osdk/generator";
-import { writeFile } from "node:fs/promises";
-import { join } from "node:path";
 
 export async function generatePackageJson(options: {
   packageName: string;
   packageVersion: string;
   packagePath: string;
   dependencies?: Array<{ dependencyName: string; dependencyVersion: string }>;
-  peerDependencies?: Array<
-    { dependencyName: string; dependencyVersion: string }
-  >;
+  peerDependencies?: Array<{
+    dependencyName: string;
+    dependencyVersion: string;
+  }>;
   beta: boolean;
   packageRid?: string;
   branch?: string;
   exportOntologyMetadata: boolean;
-}): Promise<
-  {
-    name: string;
-    version: string;
-    dependencies: { [dependencyName: string]: string } | undefined;
-    peerDependencies: { [dependencyName: string]: string } | undefined;
-    type: string;
-  }
-> {
+}): Promise<{
+  name: string;
+  version: string;
+  dependencies: { [dependencyName: string]: string } | undefined;
+  peerDependencies: { [dependencyName: string]: string } | undefined;
+  type: string;
+}> {
   const packageDeps = constructDependencies(options.dependencies);
   const packagePeerDeps = constructDependencies(options.peerDependencies);
 
@@ -72,7 +72,7 @@ export async function generatePackageJson(options: {
       },
       ...(options.exportOntologyMetadata
         ? {
-          "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
+          "./experimental/ontology-metadata": {
             require: {
               types: `./${ONTOLOGY_METADATA_DCTS_PATH}`,
               default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
@@ -99,13 +99,18 @@ export async function generatePackageJson(options: {
 }
 
 function constructDependencies(
-  dependencies: {
-    dependencyName: string;
-    dependencyVersion: string;
-  }[] | undefined,
+  dependencies:
+    | {
+      dependencyName: string;
+      dependencyVersion: string;
+    }[]
+    | undefined,
 ) {
-  return dependencies?.reduce((acc, value) => {
-    acc[value.dependencyName] = value.dependencyVersion;
-    return acc;
-  }, {} as { [dependencyName: string]: string });
+  return dependencies?.reduce(
+    (acc, value) => {
+      acc[value.dependencyName] = value.dependencyVersion;
+      return acc;
+    },
+    {} as { [dependencyName: string]: string },
+  );
 }

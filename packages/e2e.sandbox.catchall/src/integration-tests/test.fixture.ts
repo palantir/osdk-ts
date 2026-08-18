@@ -1,4 +1,4 @@
-import metadata from "@osdk/e2e.generated.catchall/UNSTABLE_DO_NOT_USE/ontology-metadata";
+import metadata from "@osdk/e2e.generated.catchall/experimental/ontology-metadata";
 import type { Ontologies } from "@osdk/foundry";
 import {
   type IntegrationServer,
