@@ -1,5 +1,11 @@
 # @osdk/shared.test.intellisense
 
+## 0.16.0
+
+### Patch Changes
+
+- @osdk/api@2.58.0
+
 ## 0.15.0
 
 ### Patch Changes
