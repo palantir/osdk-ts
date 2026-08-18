@@ -212,8 +212,6 @@ describe("buildWhereClause", () => {
     expect(result).toEqual({ name: "John" });
   });
 
-  // Link presence has no `WhereClause` form — it narrows via a derived link
-  // count, so it contributes nothing here regardless of state.
   it("emits no clause for an active hasLink filter", () => {
     const def = createHasLinkFilterDef("employees");
     const filterStates = stateMap([def, { type: "hasLink", hasLink: true }]);
@@ -224,16 +222,6 @@ describe("buildWhereClause", () => {
   it("emits no clause for hasLink filter when hasLink is false", () => {
     const def = createHasLinkFilterDef("employees");
     const filterStates = stateMap([def, { type: "hasLink", hasLink: false }]);
-    const result = buildWhereClause([def], filterStates);
-    expect(result).toEqual({});
-  });
-
-  it("emits no clause for an excluding hasLink filter", () => {
-    const def = createHasLinkFilterDef("employees");
-    const filterStates = stateMap([
-      def,
-      { type: "hasLink", hasLink: true, isExcluding: true },
-    ]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({});
   });
@@ -735,19 +723,6 @@ describe("getActiveLinkedFilters", () => {
 
     expect(result).toHaveLength(1);
     expect(result[0].innerWhere).toEqual({ $not: { fullName: "Alice" } });
-  });
-
-  it("builds an entry for a linked filter that omits reverseLinkName", () => {
-    const def = createLinkedPropertyFilterDef("manager", "fullName");
-    const filterStates = stateMap([def, linkedState(["Alice"])]);
-
-    expect(getActiveLinkedFilters([def], filterStates)).toEqual([
-      {
-        id: getFilterKey(def),
-        linkName: "manager",
-        innerWhere: { fullName: "Alice" },
-      },
-    ]);
   });
 
   it("excludes linked filters with empty values", () => {

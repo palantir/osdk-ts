@@ -35,16 +35,6 @@
   border-color: #ff9f9f;
 }
 
-.actionFormFilterListReproClause {
-  margin-bottom: 12px;
-  padding: 8px;
-  overflow-x: auto;
-  background: #f4f4f4;
-  border: 1px solid #d8d8d8;
-  border-radius: 4px;
-  font-size: 12px;
-}
-
 .actionFormFilterListReproContent {
   display: grid;
   grid-template-columns: 320px minmax(0, 1fr);

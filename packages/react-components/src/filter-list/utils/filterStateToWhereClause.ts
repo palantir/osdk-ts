@@ -436,8 +436,7 @@ export function buildLinkedInnerWhere<
 }
 
 /**
- * Returns the active HAS_LINK and LINKED_PROPERTY filters as `LinkedFilter<Q>`
- * records, for `narrowObjectSet` to apply as derived link counts.
+ * Returns the active HAS_LINK and LINKED_PROPERTY filters
  */
 export function getActiveLinkedFilters<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,
@@ -480,9 +479,8 @@ export function getActiveLinkedFilters<Q extends ObjectTypeDefinition>(
       result.push({
         id: key,
         linkName: definition.linkName,
-        // "Excluding" keeps the objects that do NOT have the link.
-        ...(state.isExcluding === true ? { isExcluding: true } : {}),
-      } as LinkedFilter<Q>);
+        isExcluding: state.isExcluding,
+      });
       continue;
     }
 

@@ -33,9 +33,7 @@ import type {
 } from "../FilterListItemApi.js";
 
 /**
- * Runtime representation of an active link-traversing filter. `narrowObjectSet`
- * turns each entry into a derived count of matching linked objects and filters
- * on that count, so `innerWhere` is typed against the linked object type.
+ * Runtime representation of an active link-traversing filter
  */
 export type LinkedFilter<Q extends ObjectTypeDefinition> = {
   [L in LinkNames<Q>]: {
@@ -43,13 +41,11 @@ export type LinkedFilter<Q extends ObjectTypeDefinition> = {
     id: string;
     linkName: L;
     /**
-     * Predicate the linked objects must match to be counted. Omitted by
-     * link-presence filters, which count every linked object.
+     * Predicate the linked objects must match to be counted.
      */
     innerWhere?: WhereClause<LinkedType<Q, L>>;
     /**
-     * Keep objects with no matching linked object (count of zero) rather than
-     * at least one.
+     * Keep objects with no matching linked object (count of zero)
      */
     isExcluding?: boolean;
   };

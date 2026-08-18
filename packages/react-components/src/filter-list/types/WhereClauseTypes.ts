@@ -25,11 +25,6 @@ export type OperatorFilter = {
 
 export type PropertyFilter = OperatorFilter | boolean | string | number;
 
-/**
- * One property predicate, or a combinator over other fragments. Property keys
- * are built from runtime values, so a fragment can only be cast to
- * `WhereClause<Q>` — this type checks the operators and structure meanwhile.
- */
 export type WhereClauseFragment =
   | { $and: WhereClauseFragment[] }
   | { $or: WhereClauseFragment[] }
