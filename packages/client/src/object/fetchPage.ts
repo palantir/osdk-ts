@@ -37,6 +37,7 @@ import type {
   LoadObjectSetV2MultipleObjectTypesRequest,
   ObjectSet,
   OntologyObjectV2,
+  PropertyLoadLevel,
   SearchJsonQueryV2,
   SearchOrderByV2,
 } from "@osdk/foundry.ontologies";
@@ -51,29 +52,37 @@ import { extractRdpDefinition } from "../util/extractRdpDefinition.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
 /**
- * Converts a PropertyModifierValue to the corresponding wire format loadLevel type.
+ * Builds the wire `defaultLoadLevel` for a request from the experimental
+ * `$defaultLoadLevel` arg, or `undefined` when it is not set. Applied to every
+ * property server-side (best-effort) without listing property IDs.
  */
-function modifierToLoadLevelType(
+function buildDefaultLoadLevel(
+  defaultLoadLevel: PropertyModifierValue | undefined,
+): PropertyLoadLevel | undefined {
+  return defaultLoadLevel != null
+    ? modifierToLoadLevel(defaultLoadLevel)
+    : undefined;
+}
+
+/**
+ * Converts a PropertyModifierValue to the corresponding wire format loadLevel.
+ */
+function modifierToLoadLevel(
   modifier: PropertyModifierValue,
-): LoadLevelType {
+): PropertyLoadLevel {
   switch (modifier) {
     case "applyMainValue":
-      return "extractMainValue";
+      return { type: "extractMainValue" };
     case "applyReducers":
-      return "applyReducers";
+      return { type: "applyReducers" };
     case "applyReducersAndExtractMainValue":
-      return "applyReducersAndExtractMainValue";
+      return { type: "applyReducersAndExtractMainValue" };
     default: {
       const _exhaustiveCheck: never = modifier;
       throw new Error(`Unknown modifier: ${_exhaustiveCheck}`);
     }
   }
 }
-
-type LoadLevelType =
-  | "extractMainValue"
-  | "applyReducers"
-  | "applyReducersAndExtractMainValue";
 
 interface SelectV2SimpleProperty {
   type: "property";
@@ -83,7 +92,7 @@ interface SelectV2SimpleProperty {
 interface SelectV2PropertyWithLoadLevel {
   type: "propertyWithLoadLevel";
   propertyIdentifier: SelectV2SimpleProperty;
-  loadLevel: { type: LoadLevelType };
+  loadLevel: PropertyLoadLevel;
 }
 
 type SelectV2Entry = SelectV2SimpleProperty | SelectV2PropertyWithLoadLevel;
@@ -111,7 +120,7 @@ export function buildSelectV2(
         entries.push({
           type: "propertyWithLoadLevel",
           propertyIdentifier: { type: "property", apiName: prop },
-          loadLevel: { type: modifierToLoadLevelType(modifiersMap[prop]) },
+          loadLevel: modifierToLoadLevel(modifiersMap[prop]),
         });
       } else {
         entries.push({ type: "property", apiName: prop });
@@ -123,7 +132,7 @@ export function buildSelectV2(
         entries.push({
           type: "propertyWithLoadLevel",
           propertyIdentifier: { type: "property", apiName: prop },
-          loadLevel: { type: modifierToLoadLevelType(modifiersMap[prop]) },
+          loadLevel: modifierToLoadLevel(modifiersMap[prop]),
         });
       } else {
         entries.push({ type: "property", apiName: prop });
@@ -243,10 +252,12 @@ export async function fetchStaticRidPage<
         objects: rids as string[],
       },
       select: (args?.$select as string[] | undefined) ?? [],
+      selectV2: [],
       excludeRid: !args?.$includeRid,
       snapshot: args.$snapshot ?? false,
       loadPropertySecurities: shouldLoadPropertySecurities,
-    } as LoadObjectSetV2MultipleObjectTypesRequest,
+      defaultLoadLevel: buildDefaultLoadLevel(args.$defaultLoadLevel),
+    } satisfies LoadObjectSetV2MultipleObjectTypesRequest,
     client,
     { type: "object", apiName: "" },
   );
@@ -735,6 +746,7 @@ export async function fetchObjectPage<
       loadPropertySecurities: shouldLoadPropertySecurities,
       excludeRid: !args?.$includeRid,
       snapshot: args.$snapshot ?? false,
+      defaultLoadLevel: buildDefaultLoadLevel(args.$defaultLoadLevel),
     },
     client,
     objectType,
