@@ -3,7 +3,7 @@ import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import css from "./CreateTaskDialog.module.css";
 import Dialog from "./Dialog";
-import { IProject } from "./useProjects";
+import type { IProject } from "./useProjects";
 import { useProjectTasks } from "./useProjectTasks";
 
 interface CreateTaskDialogProps {
@@ -19,9 +19,8 @@ function CreateTaskDialog({
   onClose,
   onTaskCreated,
 }: CreateTaskDialogProps) {
-  const { createTask, getRecommendedTaskDescription } = useProjectTasks(
-    project,
-  );
+  const { createTask, getRecommendedTaskDescription } =
+    useProjectTasks(project);
 
   const [name, setName] = useState<string>("New task");
   const [description, setDescription] = useState<string>("");
@@ -104,6 +103,7 @@ function CreateTaskDialog({
                   value={name}
                   onChange={handleChangeTaskName}
                   className={css.input}
+                  aria-label="Task name"
                 />
               </label>
 
@@ -118,6 +118,7 @@ function CreateTaskDialog({
                   onChange={handleChangeTaskDescription}
                   className={css.textArea}
                   rows={2}
+                  aria-label="Task description"
                 />
                 <button
                   disabled={isProcessing}

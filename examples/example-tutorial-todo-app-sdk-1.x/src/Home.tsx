@@ -4,7 +4,7 @@ import CreateTaskButton from "./CreateTaskButton";
 import DeleteProjectButton from "./DeleteProjectButton";
 import css from "./Home.module.css";
 import Layout from "./Layout";
-import { MockProject } from "./mocks";
+import type { MockProject } from "./mocks";
 import ProjectSelect from "./ProjectSelect";
 import TaskList from "./TaskList";
 import useProjects from "./useProjects";
@@ -34,8 +34,8 @@ function Home() {
           </p>
           <p>
             The To Do App is implemented with mock in-memory data.
-            <br />Can you solve how to switch it to use the Ontology SDK
-            instead?
+            <br />
+            Can you solve how to switch it to use the Ontology SDK instead?
           </p>
         </div>
       </div>

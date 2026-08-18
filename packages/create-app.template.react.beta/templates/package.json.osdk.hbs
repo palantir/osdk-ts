@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "format": "prettier --write src/",
-    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
-    "lint:fix": "eslint --report-unused-disable-directives --max-warnings 0 --fix",
+    "fix": "ultracite fix",
+    "format": "oxfmt .",
+    "lint": "ultracite check --report-unused-disable-directives-severity=error",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "preview": "vite preview"
@@ -23,7 +23,8 @@
     "@blueprintjs/icons": "^6.6.0"
   },
   "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^5.0.0",
-    "prettier": "^3.0.0"
+    "oxfmt": "0.53.0",
+    "oxlint": "1.69.0",
+    "ultracite": "7.8.2"
   }
 }

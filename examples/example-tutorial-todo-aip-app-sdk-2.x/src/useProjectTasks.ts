@@ -2,7 +2,8 @@
 import { useCallback } from "react";
 import useSWR from "swr";
 import Mocks from "./mocks";
-import { IProject } from "./useProjects";
+import type { IProject } from "./useProjects";
+
 export interface ITask {
   $apiName: string;
   $primaryKey: string;
@@ -18,7 +19,7 @@ export function useProjectTasks(project: IProject | undefined) {
   const { data, isLoading, isValidating, error, mutate } = useSWR<ITask[]>(
     project != null ? `projects/${project.id}/tasks` : null,
     // Try to implement this with the Ontology SDK!
-    async () => {
+    () => {
       if (project == null) {
         return [];
       }
@@ -62,8 +63,8 @@ export function useProjectTasks(project: IProject | undefined) {
     useCallback(
       async (taskName: string) => {
         // Try to implement this with the Ontology SDK!
-        const recommendedTaskDescription = await Mocks
-          .getRecommendedTaskDescription(taskName);
+        const recommendedTaskDescription =
+          await Mocks.getRecommendedTaskDescription(taskName);
         await mutate();
         return recommendedTaskDescription;
       },

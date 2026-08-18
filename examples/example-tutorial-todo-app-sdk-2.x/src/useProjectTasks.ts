@@ -2,7 +2,8 @@
 import { useCallback } from "react";
 import useSWR from "swr";
 import Mocks from "./mocks";
-import { IProject } from "./useProjects";
+import type { IProject } from "./useProjects";
+
 export interface ITask {
   $apiName: string;
   $primaryKey: string;
@@ -21,7 +22,7 @@ export function useProjectTasks(project: IProject | undefined) {
       if (project == null) {
         return [];
       }
-      return (await Mocks.getProjectTasks(project.$primaryKey));
+      return await Mocks.getProjectTasks(project.$primaryKey);
     },
   );
 

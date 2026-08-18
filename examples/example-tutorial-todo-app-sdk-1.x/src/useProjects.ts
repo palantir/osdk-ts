@@ -1,11 +1,11 @@
 import { useCallback } from "react";
 import useSWR from "swr";
-import Mocks, { MockProject } from "./mocks";
+import Mocks, { type MockProject } from "./mocks";
 
 function useProjects() {
   const { data, isLoading, isValidating, error, mutate } = useSWR<
     MockProject[]
-  >("projects", async () => {
+  >("projects", () => {
     // Try to implement this with the Ontology SDK!
     return Mocks.getProjects();
   });

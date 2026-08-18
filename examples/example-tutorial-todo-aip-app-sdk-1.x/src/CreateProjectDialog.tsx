@@ -65,7 +65,12 @@ function CreateProjectDialog({
       <div className={css.project}>
         <label className={css.label}>
           Project name:{" "}
-          <input type="text" value={name} onChange={handleChangeProjectName} />
+          <input
+            type="text"
+            value={name}
+            onChange={handleChangeProjectName}
+            aria-label="Project name"
+          />
         </label>
       </div>
     </Dialog>

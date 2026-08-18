@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { type ChangeEvent, useCallback, useEffect, useState } from "react";
 import Dialog from "./Dialog";
 import useProjects from "./useProjects";
 
@@ -48,7 +48,13 @@ function CreateProjectDialog({
       ]}
     >
       <label>
-        Project name: <input type="text" value={name} onChange={handleChange} />
+        Project name:{" "}
+        <input
+          type="text"
+          value={name}
+          onChange={handleChange}
+          aria-label="New project name"
+        />
       </label>
     </Dialog>
   );

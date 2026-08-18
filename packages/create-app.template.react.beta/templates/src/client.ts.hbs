@@ -15,12 +15,12 @@ function getMetaTagContent(tagName: string): string {
   if (value == null || value === "") {
     throw new Error(`Meta tag ${tagName} not found or empty`);
   }
-  if (value.match(/%.+%/)) {
+  if (/%.+%/u.test(value)) {
     throw new Error(
       `Meta tag ${tagName} contains placeholder value. Please add ${value.replace(
-        /%/g,
-        ""
-      )} to your .env files`
+        /%/gu,
+        "",
+      )} to your .env files`,
     );
   }
   return value;
@@ -34,11 +34,7 @@ const ontologyRid = getMetaTagContent("osdk-ontologyRid");
 {{/if}}
 
 {{#if scopes}}
-const scopes = [
-  {{#each scopes}}
-  "{{this}}",
-  {{/each}}
-];
+const scopes = [{{#each scopes}}"{{this}}"{{#unless @last}}, {{/unless}}{{/each}}];
 {{/if}}
 
 export const auth: PublicOauthClient = createPublicOauthClient(
@@ -46,7 +42,7 @@ export const auth: PublicOauthClient = createPublicOauthClient(
   foundryUrl,
   redirectUrl,
   {{#if scopes}}
-  { scopes }
+  { scopes },
   {{/if}}
 );
 

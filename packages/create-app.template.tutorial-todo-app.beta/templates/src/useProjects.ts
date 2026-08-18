@@ -2,6 +2,7 @@
 import { useCallback } from "react";
 import useSWR from "swr";
 import Mocks from "./mocks";
+
 export interface IProject {
   $apiName: string;
   $primaryKey: string;
@@ -16,14 +17,14 @@ function useProjects() {
     "projects",
     async () => {
       // Try to implement this with the Ontology SDK!
-      const projectsList: IProject[] = (await Mocks.getProjects()).map((
-        project,
-      ) => ({
-        $apiName: project.$apiName,
-        $primaryKey: project.$primaryKey,
-        id: project.id,
-        name: project.name || "",
-      }));
+      const projectsList: IProject[] = (await Mocks.getProjects()).map(
+        (project) => ({
+          $apiName: project.$apiName,
+          $primaryKey: project.$primaryKey,
+          id: project.id,
+          name: project.name || "",
+        }),
+      );
       return projectsList;
     },
   );

@@ -1,12 +1,12 @@
 import { useCallback } from "react";
 import useSWR from "swr";
-import Mocks, { MockProject, MockTask } from "./mocks";
+import Mocks, { type MockProject, type MockTask } from "./mocks";
 
 export function useProjectTasks(project: MockProject | undefined) {
   const { data, isLoading, isValidating, error, mutate } = useSWR<MockTask[]>(
     project != null ? `projects/${project.id}/tasks` : null,
     // Try to implement this with the Ontology SDK!
-    async () => {
+    () => {
       if (project == null) {
         return [];
       }
@@ -51,8 +51,8 @@ export function useProjectTasks(project: MockProject | undefined) {
     useCallback(
       async (taskName: string) => {
         // Try to implement this with the Ontology SDK!
-        const recommendedTaskDescription = await Mocks
-          .getRecommendedTaskDescription(taskName);
+        const recommendedTaskDescription =
+          await Mocks.getRecommendedTaskDescription(taskName);
         await mutate();
         return recommendedTaskDescription;
       },
@@ -71,5 +71,5 @@ export function useProjectTasks(project: MockProject | undefined) {
 }
 
 function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

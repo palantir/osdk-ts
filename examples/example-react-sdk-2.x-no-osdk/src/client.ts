@@ -8,12 +8,12 @@ function getMetaTagContent(tagName: string): string {
   if (value == null || value === "") {
     throw new Error(`Meta tag ${tagName} not found or empty`);
   }
-  if (value.match(/%.+%/)) {
+  if (/%.+%/u.test(value)) {
     throw new Error(
       `Meta tag ${tagName} contains placeholder value. Please add ${value.replace(
-        /%/g,
-        ""
-      )} to your .env files`
+        /%/gu,
+        "",
+      )} to your .env files`,
     );
   }
   return value;
@@ -23,16 +23,13 @@ const foundryUrl = getMetaTagContent("osdk-foundryUrl");
 const clientId = getMetaTagContent("osdk-clientId");
 const redirectUrl = getMetaTagContent("osdk-redirectUrl");
 
-const scopes = [
-  "api:ontologies-read",
-  "api:ontologies-write",
-];
+const scopes = ["api:ontologies-read", "api:ontologies-write"];
 
 export const auth: PublicOauthClient = createPublicOauthClient(
   clientId,
   foundryUrl,
   redirectUrl,
-  { scopes }
+  { scopes },
 );
 
 /**

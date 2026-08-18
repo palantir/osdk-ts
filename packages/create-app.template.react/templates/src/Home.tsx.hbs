@@ -34,9 +34,7 @@ function Home() {
         <div>
           <h2>Queries ({queryApiNames.length})</h2>
           {queryApiNames.map((queryApiName) => (
-            <pre key={queryApiName}>
-              client.ontology.queries.{queryApiName}
-            </pre>
+            <pre key={queryApiName}>client.ontology.queries.{queryApiName}</pre>
           ))}
         </div>
       </div>

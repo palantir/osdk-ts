@@ -16,7 +16,7 @@ for (const envVar of ENV_VARS) {
       expect(
         env[envVar],
         `${envVar} should not contain placeholder value`,
-      ).not.toMatch(/<.*>/);
+      ).not.toMatch(/<.*>/u);
     },
   );
 }

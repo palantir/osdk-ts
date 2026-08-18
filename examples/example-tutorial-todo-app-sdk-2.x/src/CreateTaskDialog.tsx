@@ -1,6 +1,6 @@
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { type ChangeEvent, useCallback, useEffect, useState } from "react";
 import Dialog from "./Dialog";
-import { IProject } from "./useProjects";
+import type { IProject } from "./useProjects";
 import { useProjectTasks } from "./useProjectTasks";
 
 interface CreateTaskDialogProps {
@@ -44,7 +44,13 @@ function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
       ]}
     >
       <label>
-        Task name: <input type="text" value={name} onChange={handleChange} />
+        Task name:{" "}
+        <input
+          type="text"
+          value={name}
+          onChange={handleChange}
+          aria-label="Task name"
+        />
       </label>
     </Dialog>
   );

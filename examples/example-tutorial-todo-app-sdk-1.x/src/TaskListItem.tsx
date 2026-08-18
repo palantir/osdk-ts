@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { MockTask } from "./mocks";
+import type { MockTask } from "./mocks";
 import css from "./TaskListItem.module.css";
 
 interface TaskListItemProps {
@@ -30,6 +30,7 @@ function TaskListItem({ task, deleteTask }: TaskListItemProps) {
           checked={isDeleting}
           className={css.delete}
           title="Delete task"
+          aria-label="Delete task"
         />
         {task.title}
       </label>

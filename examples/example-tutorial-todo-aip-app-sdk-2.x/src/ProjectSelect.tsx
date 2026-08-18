@@ -1,5 +1,5 @@
-import { ChangeEvent, useCallback } from "react";
-import { IProject } from "./useProjects";
+import { type ChangeEvent, useCallback } from "react";
+import type { IProject } from "./useProjects";
 
 interface ProjectSelectProps {
   project: IProject | undefined;

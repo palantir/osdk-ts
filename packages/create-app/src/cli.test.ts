@@ -264,6 +264,22 @@ describe("--unstableFeatures flag", () => {
     expect(packageJson.devDependencies["@osdk/cli"]).toBe("latest");
     expect(clientTs).toContain('import { $branch } from "@fake/sdk";');
     expect(clientTs).toContain("UNSTABLE_DO_NOT_USE_BRANCH: $branch");
+
+    // The generated example apps never set --unstableFeatures, so this is the
+    // only place the `$branch` import is rendered. Its position is fixed by the
+    // handlebars conditional while its specifier depends on the user's OSDK
+    // package name, so import sorting would reject a freshly scaffolded project
+    // on its own `npm run lint`. Assert the shipped config keeps sorting off.
+    //
+    // This deliberately checks the config rather than running oxlint/oxfmt over
+    // the scaffold: the test matrix includes Node 18 and 20, where oxc's native
+    // bindings are not installed (they require ^20.19.0 || >=22.12.0), and lint
+    // tooling belongs in the Lint job rather than the test matrix.
+    const oxfmtConfig = fs.readFileSync(
+      path.join(process.cwd(), project, "oxfmt.config.ts"),
+      "utf-8",
+    );
+    expect(oxfmtConfig).toContain("sortImports: false");
   });
 
   test("omits Foundry branch support by default", async () => {

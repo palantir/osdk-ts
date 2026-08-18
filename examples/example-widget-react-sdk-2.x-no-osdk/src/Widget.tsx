@@ -14,7 +14,7 @@ import React, { useCallback, useState } from "react";
 import { useWidgetContext } from "./context.js";
 import { useDarkTheme } from "./useDarkTheme.js";
 
-export const Widget: React.FC = () => {
+export function Widget() {
   const { parameters, emitEvent } = useWidgetContext();
   const { headerText, todoItems } = parameters.values;
   const [newTodoItem, setNewTodoItem] = useState("");
@@ -32,7 +32,7 @@ export const Widget: React.FC = () => {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setNewTodoItem(event.target.value);
     },
-    []
+    [],
   );
 
   const isDarkTheme = useDarkTheme();
@@ -48,7 +48,7 @@ export const Widget: React.FC = () => {
                 parameters.state === "not-started" ? (
                   <Skeleton>Hello, world!</Skeleton>
                 ) : (
-                  headerText ?? "example-widget-react-sdk-2.x-no-osdk"
+                  (headerText ?? "example-widget-react-sdk-2.x-no-osdk")
                 )}
               </Heading>
 
@@ -122,4 +122,4 @@ export const Widget: React.FC = () => {
       </Box>
     </Theme>
   );
-};
+}

@@ -18,7 +18,7 @@ import { useDarkTheme } from "./useDarkTheme.js";
 // import { useOsdkClient } from "@osdk/react";
 // View the API documentation for your widget set to learn how to use the Ontology SDK.
 
-export const Widget: React.FC = () => {
+export function Widget() {
   // See Ontology and Platform SDK docs in Developer Console on how to
   // use the client object to access Ontology resources and platform APIs
   // const client = useOsdkClient();
@@ -40,7 +40,7 @@ export const Widget: React.FC = () => {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setNewTodoItem(event.target.value);
     },
-    []
+    [],
   );
 
   const isDarkTheme = useDarkTheme();
@@ -60,7 +60,7 @@ export const Widget: React.FC = () => {
                 parameters.state === "not-started" ? (
                   <Skeleton>Hello, world!</Skeleton>
                 ) : (
-                  headerText ?? "example-widget-react-sdk-2.x"
+                  (headerText ?? "example-widget-react-sdk-2.x")
                 )}
               </Heading>
 
@@ -165,4 +165,4 @@ export const Widget: React.FC = () => {
       </Box>
     </Theme>
   );
-};
+}

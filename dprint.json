@@ -62,6 +62,7 @@
     "packages/e2e.generated.1.1.x/",
     "packages/e2e.generated.catchall/",
     "packages/create-app.template.expo.v2/",
+    "packages/create-app.react.beta.common/",
     "packages/create-app.template.react/",
     "packages/create-app.template.react.beta/",
     "packages/create-app.template.tutorial-todo-aip-app/",
