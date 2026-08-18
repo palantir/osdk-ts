@@ -18,7 +18,6 @@ import type {
   LinkedType,
   LinkNames,
   ObjectTypeDefinition,
-  PossibleWhereClauseFilters,
   WhereClause,
 } from "@osdk/api";
 
@@ -31,24 +30,12 @@ import type {
   LinkedPropertyFilterDefinition,
   LinkedPropertyFilterState,
 } from "../types/LinkedFilterTypes.js";
+import type {
+  PropertyFilter,
+  WhereClauseFragment,
+} from "../types/WhereClauseTypes.js";
 import { NO_VALUE } from "./filterValues.js";
 import { getFilterKey } from "./getFilterKey.js";
-
-/**
- * Exactly one `$operator` key, drawn from the PossibleWhereClauseFilters
- */
-type OperatorFilter = {
-  [K in PossibleWhereClauseFilters]: { [P in K]: unknown };
-}[PossibleWhereClauseFilters];
-
-type PropertyFilter = OperatorFilter | boolean | string | number;
-
-/** One property predicate, or a combinator over other fragments. */
-type WhereClauseFragment =
-  | { $and: WhereClauseFragment[] }
-  | { $or: WhereClauseFragment[] }
-  | { $not: WhereClauseFragment }
-  | { [propertyApiName: string]: PropertyFilter };
 
 interface CompoundFilter {
   __compound: true;
@@ -305,35 +292,10 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         break;
       }
 
-      case "HAS_LINK": {
-        if (state.type !== "hasLink") {
-          if (process.env.NODE_ENV !== "production") {
-            // eslint-disable-next-line no-console
-            console.warn(
-              `[FilterList] State type mismatch for hasLink filter "${definition.linkName}": expected hasLink, got ${state.type}`,
-            );
-          }
-          break;
-        }
-        if (!state.hasLink) {
-          break;
-        }
-        // TODO: Fix this
-        // @ts-expect-error -- delete this push when HAS_LINK moves to pivots.
-        const hasLinkClause: WhereClauseFragment = {
-          [definition.linkName]: { $isNotNull: true },
-        };
-        // "Excluding" keeps objects that do NOT have the link.
-        const clause = state.isExcluding
-          ? { $not: hasLinkClause }
-          : hasLinkClause;
-        clauses.push(clause);
-        break;
-      }
-
+      case "HAS_LINK":
       case "LINKED_PROPERTY":
-        // Handled by getActiveLinkedFilters — can't be expressed as a
-        // WhereClause<Q>.
+        // Both traverse a link, which no `WhereClause` operator can express.
+        // Handled by getActiveLinkedFilters + narrowObjectSet.
         break;
 
       case "KEYWORD_SEARCH": {
@@ -474,7 +436,8 @@ export function buildLinkedInnerWhere<
 }
 
 /**
- * Returns the active LINKED_PROPERTY filters as `LinkedFilter<Q>` records.
+ * Returns the active HAS_LINK and LINKED_PROPERTY filters as `LinkedFilter<Q>`
+ * records, for `narrowObjectSet` to apply as derived link counts.
  */
 export function getActiveLinkedFilters<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,
@@ -486,7 +449,10 @@ export function getActiveLinkedFilters<Q extends ObjectTypeDefinition>(
   }
   const result: Array<LinkedFilter<Q>> = [];
   for (const definition of definitions) {
-    if (definition.type !== "LINKED_PROPERTY") {
+    if (
+      definition.type !== "LINKED_PROPERTY" &&
+      definition.type !== "HAS_LINK"
+    ) {
       continue;
     }
     const key = getFilterKey(definition);
@@ -494,10 +460,33 @@ export function getActiveLinkedFilters<Q extends ObjectTypeDefinition>(
       continue;
     }
     const state = filterStates.get(key);
-    if (!state || state.type !== "linkedProperty") {
+    if (state == null) {
       continue;
     }
-    if (definition.reverseLinkName == null) {
+
+    if (definition.type === "HAS_LINK") {
+      if (state.type !== "hasLink") {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            `[FilterList] State type mismatch for hasLink filter "${definition.linkName}": expected hasLink, got ${state.type}`,
+          );
+        }
+        continue;
+      }
+      if (!state.hasLink) {
+        continue;
+      }
+      result.push({
+        id: key,
+        linkName: definition.linkName,
+        // "Excluding" keeps the objects that do NOT have the link.
+        ...(state.isExcluding === true ? { isExcluding: true } : {}),
+      } as LinkedFilter<Q>);
+      continue;
+    }
+
+    if (state.type !== "linkedProperty") {
       continue;
     }
     const innerWhere = buildLinkedInnerWhere(definition, state);
@@ -505,8 +494,8 @@ export function getActiveLinkedFilters<Q extends ObjectTypeDefinition>(
       continue;
     }
     result.push({
+      id: key,
       linkName: definition.linkName,
-      reverseLinkName: definition.reverseLinkName,
       innerWhere,
     } as LinkedFilter<Q>);
   }

@@ -860,7 +860,7 @@ describe("useFilterListState", () => {
     });
   });
 
-  describe("LINKED_PROPERTY filters without reverseLinkName", () => {
+  describe("LINKED_PROPERTY narrowing", () => {
     function createLinkedState(values: string[]): LinkedPropertyFilterState {
       return {
         type: "linkedProperty",
@@ -868,41 +868,39 @@ describe("useFilterListState", () => {
       };
     }
 
-    it("excludes definitions missing reverseLinkName from linkedFilters", () => {
-      const narrowingDef = createLinkedPropertyFilterDef("manager", "fullName");
-      const uiOnlyDef = createLinkedPropertyFilterDef("office", "city", {
-        reverseLinkName: null,
-      });
+    it("narrows on every active linked filter", () => {
+      const managerDef = createLinkedPropertyFilterDef("manager", "fullName");
+      const officeDef = createLinkedPropertyFilterDef("office", "city");
       const props = createProps({
-        filterDefinitions: [narrowingDef, uiOnlyDef],
+        filterDefinitions: [managerDef, officeDef],
         defaultFilterStates: new Map([
-          [getFilterKey(narrowingDef), createLinkedState(["Alice"])],
-          [getFilterKey(uiOnlyDef), createLinkedState(["Berlin"])],
+          [getFilterKey(managerDef), createLinkedState(["Alice"])],
+          [getFilterKey(officeDef), createLinkedState(["Berlin"])],
         ]),
       });
       const { result } = renderHook(() => useFilterListState(props));
 
-      expect(result.current.linkedFilters).toHaveLength(1);
-      expect(result.current.linkedFilters[0].linkName).toBe("manager");
+      expect(result.current.linkedFilters.map((f) => f.linkName)).toEqual([
+        "manager",
+        "office",
+      ]);
     });
 
-    it("still reports state changes for UI-only linked filters", () => {
-      const uiOnlyDef = createLinkedPropertyFilterDef("office", "city", {
-        reverseLinkName: null,
-      });
+    it("fires onFilterStateChanged for empty linked state but omits it from linkedFilters", () => {
+      const def = createLinkedPropertyFilterDef("office", "city");
       const onFilterStateChanged = vi.fn();
       const props = createProps({
-        filterDefinitions: [uiOnlyDef],
+        filterDefinitions: [def],
         onFilterStateChanged,
       });
       const { result } = renderHook(() => useFilterListState(props));
 
-      const nextState = createLinkedState(["Berlin"]);
+      const nextState = createLinkedState([]);
       act(() => {
-        result.current.setFilterState(getFilterKey(uiOnlyDef), nextState);
+        result.current.setFilterState(getFilterKey(def), nextState);
       });
 
-      expect(onFilterStateChanged).toHaveBeenCalledWith(uiOnlyDef, nextState);
+      expect(onFilterStateChanged).toHaveBeenCalledWith(def, nextState);
       expect(result.current.linkedFilters).toHaveLength(0);
     });
   });

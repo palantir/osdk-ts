@@ -33,15 +33,25 @@ import type {
 } from "../FilterListItemApi.js";
 
 /**
- * Runtime representation of an active linked-property filter. Each entry
- * binds a `linkName` to its `reverseLinkName` and an `innerWhere` typed
- * against the linked object type, so `narrowObjectSet` can pivot type-safely.
+ * Runtime representation of an active link-traversing filter. `narrowObjectSet`
+ * turns each entry into a derived count of matching linked objects and filters
+ * on that count, so `innerWhere` is typed against the linked object type.
  */
 export type LinkedFilter<Q extends ObjectTypeDefinition> = {
   [L in LinkNames<Q>]: {
+    /** Stable identity for the filter; names the derived count property. */
+    id: string;
     linkName: L;
-    reverseLinkName: LinkNames<LinkedType<Q, L>>;
-    innerWhere: WhereClause<LinkedType<Q, L>>;
+    /**
+     * Predicate the linked objects must match to be counted. Omitted by
+     * link-presence filters, which count every linked object.
+     */
+    innerWhere?: WhereClause<LinkedType<Q, L>>;
+    /**
+     * Keep objects with no matching linked object (count of zero) rather than
+     * at least one.
+     */
+    isExcluding?: boolean;
   };
 }[LinkNames<Q>];
 
@@ -69,7 +79,10 @@ export interface LinkedPropertyFilterState<
 
 /**
  * Filter definition for "Has Link" filter
- * Filters objects based on whether they have any linked objects of the specified type
+ * Filters objects based on whether they have any linked objects of the specified
+ * type. Narrows `objectSet` and is emitted via `onEffectiveObjectSet`; link
+ * presence has no filter-clause form, so it never appears in
+ * `onFilterClauseChanged`.
  */
 export interface HasLinkFilterDefinition<
   Q extends ObjectTypeDefinition,
@@ -107,12 +120,7 @@ export interface LinkedPropertyFilterDefinition<
   type: "LINKED_PROPERTY";
   linkName: L;
   /**
-   * Set this to make the filter narrow `objectSet`; the result is emitted
-   * via `onEffectiveObjectSet`. The value names the link on the linked
-   * object type that points back to `Q` (the inverse of `linkName`).
-   *
-   * Leave unset to keep the filter UI-only. It still renders and fires
-   * `onFilterStateChanged`, but FilterList won't narrow on it.
+   * @deprecated Has no effect, remove it.
    */
   reverseLinkName?: LinkNames<LinkedQ>;
   linkedPropertyKey: LinkedK;

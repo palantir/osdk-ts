@@ -14,33 +14,78 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type {
+  DerivedProperty,
+  ObjectSet,
+  ObjectTypeDefinition,
+  WhereClause,
+} from "@osdk/api";
+import type { Mock } from "vitest";
 import { describe, expect, it, vi } from "vitest";
 
 import type { LinkedFilter } from "../../types/LinkedFilterTypes.js";
 import { narrowObjectSet } from "../narrowObjectSet.js";
 
+const EMPTY_CLAUSE = {} as WhereClause<ObjectTypeDefinition>;
+
 function createMockSet(): ObjectSet<ObjectTypeDefinition> {
   const set = {
     where: vi.fn(),
+    withProperties: vi.fn(),
     pivotTo: vi.fn(),
-    intersect: vi.fn(),
   } as unknown as ObjectSet<ObjectTypeDefinition>;
   const chain = (): ObjectSet<ObjectTypeDefinition> => createMockSet();
   vi.mocked(set.where).mockImplementation(chain);
+  vi.mocked(set.withProperties).mockImplementation(chain);
   vi.mocked(set.pivotTo).mockImplementation(chain);
-  vi.mocked(set.intersect).mockImplementation(chain);
   return set;
+}
+
+interface MockBuilder {
+  where: Mock;
+  pivotTo: Mock;
+  aggregate: Mock;
+}
+
+/**
+ * Stand-in for the derived-property builder handed to each count creator. The
+ * real builder only exposes `aggregate` after a pivot; this one is flat, so a
+ * creator's whole chain lands on one set of spies.
+ */
+function createMockBuilder(): MockBuilder {
+  const builder: MockBuilder = {
+    where: vi.fn(),
+    pivotTo: vi.fn(),
+    aggregate: vi.fn(),
+  };
+  builder.where.mockImplementation(() => builder);
+  builder.pivotTo.mockImplementation(() => builder);
+  return builder;
+}
+
+type Creators = Record<
+  string,
+  (builder: MockBuilder) => DerivedProperty.Definition<never, never>
+>;
+
+function derivedProperties(base: ObjectSet<ObjectTypeDefinition>): Creators {
+  expect(base.withProperties).toHaveBeenCalledTimes(1);
+  return vi.mocked(base.withProperties).mock.calls[0][0] as unknown as Creators;
+}
+
+function countClause(base: ObjectSet<ObjectTypeDefinition>): unknown {
+  const withRdps = vi.mocked(base.withProperties).mock.results[0]
+    .value as ObjectSet<ObjectTypeDefinition>;
+  expect(withRdps.where).toHaveBeenCalledTimes(1);
+  return vi.mocked(withRdps.where).mock.calls[0][0];
 }
 
 describe("narrowObjectSet", () => {
   it("returns the base unchanged for an empty where clause and no linked filters", () => {
     const base = createMockSet();
-    expect(
-      narrowObjectSet(base, {} as WhereClause<ObjectTypeDefinition>, []),
-    ).toBe(base);
+    expect(narrowObjectSet(base, EMPTY_CLAUSE, [])).toBe(base);
     expect(base.where).not.toHaveBeenCalled();
-    expect(base.pivotTo).not.toHaveBeenCalled();
+    expect(base.withProperties).not.toHaveBeenCalled();
   });
 
   it("calls .where() exactly once with a non-empty where clause", () => {
@@ -51,61 +96,107 @@ describe("narrowObjectSet", () => {
     narrowObjectSet(base, clause, []);
     expect(base.where).toHaveBeenCalledTimes(1);
     expect(base.where).toHaveBeenCalledWith(clause);
+    expect(base.withProperties).not.toHaveBeenCalled();
   });
 
-  it("expands a linked filter via pivotTo.where.pivotTo + intersect", () => {
-    const base = createMockSet();
-    const linked: LinkedFilter<ObjectTypeDefinition> = {
+  describe("link-presence filters (no innerWhere)", () => {
+    const filter: LinkedFilter<ObjectTypeDefinition> = {
+      id: "hasLink:lead",
       linkName: "lead",
-      reverseLinkName: "peeps",
+    };
+
+    it("keeps objects whose derived link count is above zero", () => {
+      const base = createMockSet();
+      narrowObjectSet(base, EMPTY_CLAUSE, [filter]);
+
+      expect(countClause(base)).toEqual({
+        osdkFilterListLinkCount_hasLink_lead: { $gt: 0 },
+      });
+    });
+
+    it("counts every linked object without filtering them", () => {
+      const base = createMockSet();
+      narrowObjectSet(base, EMPTY_CLAUSE, [filter]);
+
+      const creator =
+        derivedProperties(base)["osdkFilterListLinkCount_hasLink_lead"];
+      const builder = createMockBuilder();
+      creator(builder);
+
+      expect(builder.pivotTo).toHaveBeenCalledWith("lead");
+      expect(builder.where).not.toHaveBeenCalled();
+      expect(builder.aggregate).toHaveBeenCalledWith("$count");
+    });
+
+    it("keeps objects with a count of zero when excluding", () => {
+      const base = createMockSet();
+      narrowObjectSet(base, EMPTY_CLAUSE, [{ ...filter, isExcluding: true }]);
+
+      expect(countClause(base)).toEqual({
+        osdkFilterListLinkCount_hasLink_lead: 0,
+      });
+    });
+  });
+
+  describe("linked-property filters", () => {
+    const filter: LinkedFilter<ObjectTypeDefinition> = {
+      id: "linkedProperty:lead:fullName",
+      linkName: "lead",
       innerWhere: {
         fullName: "Alice",
       } as unknown as WhereClause<ObjectTypeDefinition>,
     };
-    narrowObjectSet(base, {} as WhereClause<ObjectTypeDefinition>, [linked]);
 
-    expect(base.pivotTo).toHaveBeenCalledWith("lead");
-    const pivoted = vi.mocked(base.pivotTo).mock.results[0]
-      .value as ObjectSet<ObjectTypeDefinition>;
-    expect(pivoted.where).toHaveBeenCalledWith({ fullName: "Alice" });
-    const filtered = vi.mocked(pivoted.where).mock.results[0]
-      .value as ObjectSet<ObjectTypeDefinition>;
-    expect(filtered.pivotTo).toHaveBeenCalledWith("peeps");
-    expect(base.intersect).toHaveBeenCalled();
+    it("counts only the linked objects matching innerWhere", () => {
+      const base = createMockSet();
+      narrowObjectSet(base, EMPTY_CLAUSE, [filter]);
+
+      const creator =
+        derivedProperties(base)[
+          "osdkFilterListLinkCount_linkedProperty_lead_fullName"
+        ];
+      const builder = createMockBuilder();
+      creator(builder);
+
+      expect(builder.pivotTo).toHaveBeenCalledWith("lead");
+      expect(builder.where).toHaveBeenCalledWith({ fullName: "Alice" });
+      expect(builder.aggregate).toHaveBeenCalledWith("$count");
+    });
+
+    it("derives the same property name across calls", () => {
+      const first = createMockSet();
+      const second = createMockSet();
+      narrowObjectSet(first, EMPTY_CLAUSE, [filter]);
+      narrowObjectSet(second, EMPTY_CLAUSE, [filter]);
+
+      expect(Object.keys(derivedProperties(first))).toEqual(
+        Object.keys(derivedProperties(second)),
+      );
+    });
   });
 
-  it("composes a where clause with multiple linked filters", () => {
+  it("combines the property where clause with every link count under $and", () => {
     const base = createMockSet();
-    const linked1: LinkedFilter<ObjectTypeDefinition> = {
-      linkName: "lead",
-      reverseLinkName: "peeps",
-      innerWhere: {
-        fullName: "Alice",
-      } as unknown as WhereClause<ObjectTypeDefinition>,
-    };
-    const linked2: LinkedFilter<ObjectTypeDefinition> = {
-      linkName: "manager",
-      reverseLinkName: "reports",
-      innerWhere: {
-        role: "Director",
-      } as unknown as WhereClause<ObjectTypeDefinition>,
-    };
     narrowObjectSet(
       base,
       { active: true } as unknown as WhereClause<ObjectTypeDefinition>,
-      [linked1, linked2],
+      [
+        { id: "a", linkName: "lead" },
+        { id: "b", linkName: "peeps", isExcluding: true },
+      ],
     );
 
-    // First step applies the property where. The first linked filter
-    // pivots from the result of `.where(...)`; the second linked filter
-    // pivots from the result of the first `.intersect(...)`.
-    expect(base.where).toHaveBeenCalledWith({ active: true });
-    const afterWhere = vi.mocked(base.where).mock.results[0]
-      .value as ObjectSet<ObjectTypeDefinition>;
-    expect(afterWhere.pivotTo).toHaveBeenCalledWith("lead");
-    expect(afterWhere.intersect).toHaveBeenCalledTimes(1);
-    const afterFirstIntersect = vi.mocked(afterWhere.intersect).mock.results[0]
-      .value as ObjectSet<ObjectTypeDefinition>;
-    expect(afterFirstIntersect.pivotTo).toHaveBeenCalledWith("manager");
+    expect(base.where).not.toHaveBeenCalled();
+    expect(Object.keys(derivedProperties(base))).toEqual([
+      "osdkFilterListLinkCount_a",
+      "osdkFilterListLinkCount_b",
+    ]);
+    expect(countClause(base)).toEqual({
+      $and: [
+        { active: true },
+        { osdkFilterListLinkCount_a: { $gt: 0 } },
+        { osdkFilterListLinkCount_b: 0 },
+      ],
+    });
   });
 });

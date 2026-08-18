@@ -1852,7 +1852,6 @@ function WithLinkedPropertyFiltersStory(
       {
         type: "LINKED_PROPERTY",
         linkName: "lead",
-        reverseLinkName: "peeps",
         linkedPropertyKey: "department",
         filterComponent: "MULTI_SELECT",
         label: "Manager Department",
@@ -1917,7 +1916,6 @@ const filterDefinitions = [
   {
     type: "LINKED_PROPERTY",
     linkName: "lead",
-    reverseLinkName: "peeps",
     linkedPropertyKey: "department",
     filterComponent: "MULTI_SELECT",
     label: "Manager Department",
@@ -1959,7 +1957,6 @@ const combinedLeadNameFilter: FilterDefinitionUnion<Employee> = {
   type: "LINKED_PROPERTY",
   id: "combined-lead-name",
   linkName: "lead",
-  reverseLinkName: "peeps",
   linkedPropertyKey: "fullName",
   filterComponent: "MULTI_SELECT",
   searchField: false,
@@ -2054,7 +2051,6 @@ const filterDefinitions: FilterDefinitionUnion<Employee>[] = [
     type: "LINKED_PROPERTY",
     id: "combined-lead-name",
     linkName: "lead",
-    reverseLinkName: "peeps",
     linkedPropertyKey: "fullName",
     filterComponent: "MULTI_SELECT",
     searchField: false,
@@ -2583,7 +2579,6 @@ const locationCitySingleSelectFilter: FilterDefinitionUnion<Employee> = {
 const linkedDepartmentMultiSelectFilter: FilterDefinitionUnion<Employee> = {
   type: "LINKED_PROPERTY",
   linkName: "lead",
-  reverseLinkName: "peeps",
   linkedPropertyKey: "department",
   filterComponent: "MULTI_SELECT",
   label: "Manager Department (linked multi)",
@@ -2592,7 +2587,6 @@ const linkedDepartmentMultiSelectFilter: FilterDefinitionUnion<Employee> = {
 const linkedCitySingleSelectFilter: FilterDefinitionUnion<Employee> = {
   type: "LINKED_PROPERTY",
   linkName: "lead",
-  reverseLinkName: "peeps",
   linkedPropertyKey: "locationCity",
   filterComponent: "SINGLE_SELECT",
   label: "Manager City (linked single)",

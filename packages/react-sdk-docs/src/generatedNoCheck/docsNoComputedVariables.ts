@@ -22,7 +22,7 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "reactUseOsdkObjectsFilter": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObjects } from \"@osdk/react\";\n\nfunction Filtered{{objectType}}List() {\n  const { data, isLoading, error } = useOsdkObjects({{objectType}}, {\n    where: {\n      {{titleProperty}}: { $isNotNull: true }\n    }\n  });\n\n  return (\n    <div>\n      {error && <div className=\"error-banner\">Error: {error.message}</div>}\n      {isLoading && !data && <div className=\"skeleton\">Loading...</div>}\n      <ul>\n        {data?.map(obj => (\n          <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObjects } from \"@osdk/react\";\n\nfunction Filtered{{objectType}}List() {\n  const { data, isLoading, error } = useOsdkObjects({{objectType}}, {\n    where: {\n      {{titleProperty}}: { $isNull: false }\n    }\n  });\n\n  return (\n    <div>\n      {error && <div className=\"error-banner\">Error: {error.message}</div>}\n      {isLoading && !data && <div className=\"skeleton\">Loading...</div>}\n      <ul>\n        {data?.map(obj => (\n          <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}"
           }
         ],
         "reactUseOsdkObjectByPrimaryKey": [
@@ -70,7 +70,7 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "searchObjectsGuide": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObjects } from \"@osdk/react\";\n\nfunction Filtered{{objectType}}List() {\n  const { data, isLoading, error } = useOsdkObjects({{objectType}}, {\n    where: {\n      {{titleProperty}}: { $isNotNull: true }\n    }\n  });\n\n  return (\n    <div>\n      {error && <div>Error: {error.message}</div>}\n      {isLoading && !data && <div>Loading...</div>}\n      <ul>\n        {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}\n      </ul>\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObjects } from \"@osdk/react\";\n\nfunction Filtered{{objectType}}List() {\n  const { data, isLoading, error } = useOsdkObjects({{objectType}}, {\n    where: {\n      {{titleProperty}}: { $isNull: false }\n    }\n  });\n\n  return (\n    <div>\n      {error && <div>Error: {error.message}</div>}\n      {isLoading && !data && <div>Loading...</div>}\n      <ul>\n        {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}\n      </ul>\n    </div>\n  );\n}"
           }
         ],
         "loadSingleObjectReference": [

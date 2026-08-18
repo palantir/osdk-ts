@@ -1,4 +1,4 @@
-import type { WhereClause } from "@osdk/api";
+import type { ObjectSet, WhereClause } from "@osdk/api";
 import type {
   ActionDefinition,
   ActionParam,
@@ -94,9 +94,24 @@ const EMPLOYEE_FILTERS: Array<FilterDefinitionUnion<Employee>> = [
     filterComponent: "DATE_RANGE",
     filterState: { type: "DATE_RANGE" },
   },
+  {
+    type: "HAS_LINK",
+    id: "hasManager",
+    linkName: "lead",
+    label: "Has a manager",
+  },
+  {
+    type: "LINKED_PROPERTY",
+    id: "primaryOfficeName",
+    linkName: "primaryOffice",
+    linkedPropertyKey: "name",
+    filterComponent: "LISTOGRAM",
+    label: "Primary office",
+  },
 ];
 
-const EMPLOYEE_COLUMNS: Array<ColumnDefinition<Employee>> = [
+type RDP = { primaryOfficeName: "string" };
+const EMPLOYEE_COLUMNS: Array<ColumnDefinition<Employee, RDP>> = [
   {
     locator: { type: "property", id: "fullName" },
     columnName: "Name",
@@ -126,6 +141,14 @@ const EMPLOYEE_COLUMNS: Array<ColumnDefinition<Employee>> = [
     locator: { type: "property", id: "workerType" },
     columnName: "Worker type",
     width: 160,
+  },
+  {
+    locator: {
+      type: "rdp",
+      id: "primaryOfficeName",
+      creator: (os) => os.pivotTo("primaryOffice").selectProperty("name"),
+    },
+    columnName: "LinkedOffice Name",
   },
 ];
 
@@ -167,6 +190,11 @@ interface StatusMessage {
 export const EmployeeActionFormFilterListReproPage = React.memo(
   function EmployeeActionFormFilterListReproPageFn() {
     const [filterClause, setFilterClause] = useState<WhereClause<Employee>>({});
+    // HAS_LINK and LINKED_PROPERTY narrow by counting linked objects, which has
+    // no `WhereClause` form — the table has to consume the object set
+    // FilterList hands back, not just the clause.
+    const [effectiveObjectSet, setEffectiveObjectSet] =
+      useState<ObjectSet<Employee>>();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [statusMessage, setStatusMessage] = useState<StatusMessage>();
     const employeeObjectSet = useMemo(() => $(Employee), []);
@@ -223,13 +251,13 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
             {statusMessage.text}
           </div>
         )}
-
         <div className="actionFormFilterListReproContent">
           <FilterList
             objectType={Employee}
             objectSet={employeeObjectSet}
             filterDefinitions={EMPLOYEE_FILTERS}
             onFilterClauseChanged={setFilterClause}
+            onEffectiveObjectSet={setEffectiveObjectSet}
             title="Employee filters"
             showActiveFilterCount={true}
             showResetButton={true}
@@ -238,8 +266,8 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
 
           <ObjectTable
             objectType={Employee}
+            objectSet={effectiveObjectSet}
             columnDefinitions={EMPLOYEE_COLUMNS}
-            filter={filterClause}
             defaultOrderBy={DEFAULT_ORDER_BY}
             pageSize={50}
           />

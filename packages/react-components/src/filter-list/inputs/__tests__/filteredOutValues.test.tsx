@@ -214,8 +214,8 @@ describe("STATIC_VALUES filters", () => {
 describe("linked-filter filtered-out rendering (showFilteredOutValues)", () => {
   const linkedFilters: ReadonlyArray<LinkedFilter<typeof MockObjectType>> = [
     {
+      id: "linkedProperty:lead:fullName",
       linkName: "lead",
-      reverseLinkName: "peeps",
       innerWhere: { fullName: "Alice" } as unknown as WhereClause<
         typeof MockObjectType
       >,
@@ -225,15 +225,11 @@ describe("linked-filter filtered-out rendering (showFilteredOutValues)", () => {
   const narrowed = { _kind: "narrowed" } as unknown as ObjectSet<
     typeof MockObjectType
   >;
-  const linkedScope = {
-    where: vi.fn().mockReturnValue({
-      pivotTo: vi.fn().mockReturnValue({ _kind: "linked" }),
-    }),
-  };
   const baseSet = {
     _kind: "base",
-    pivotTo: vi.fn().mockReturnValue(linkedScope),
-    intersect: vi.fn().mockReturnValue(narrowed),
+    withProperties: vi.fn().mockReturnValue({
+      where: vi.fn().mockReturnValue(narrowed),
+    }),
   } as unknown as ObjectSet<typeof MockObjectType>;
 
   const EMPTY = {} as WhereClause<typeof MockObjectType>;
@@ -309,7 +305,6 @@ describe("linked-filter filtered-out rendering (showFilteredOutValues)", () => {
     const linkedListogramDefinition = {
       type: "LINKED_PROPERTY",
       linkName: "manager",
-      reverseLinkName: "peeps",
       linkedPropertyKey: "name" as PropertyKeys<ObjectTypeDefinition>,
       filterComponent: "LISTOGRAM",
       linkedFilterState: { type: "EXACT_MATCH", values: [] },

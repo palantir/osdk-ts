@@ -85,8 +85,8 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * Called whenever the filter clause changes. FilterList owns filter state;
    * this is how you read it out, e.g. to feed an `ObjectTable`'s `filter`.
    *
-   * `LINKED_PROPERTY` filters are not represented in the clause — use
-   * `onEffectiveObjectSet` for those.
+   * `HAS_LINK` and `LINKED_PROPERTY` filters are not represented in the clause
+   * — use `onEffectiveObjectSet` for those.
    *
    * @param newClause The updated filter clause
    */
@@ -121,11 +121,8 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
 
   /**
    * Called with the narrowed `ObjectSet` whenever filters change. Requires
-   * `objectSet` to be set.
-   *
-   * A linked filter only narrows the set when its definition has
-   * `reverseLinkName`. Linked filters without it are skipped here; read their
-   * state from `onFilterStateChanged` instead.
+   * `objectSet` to be set. `HAS_LINK` and `LINKED_PROPERTY` filters narrow only
+   * here, never through the filter clause.
    */
   onEffectiveObjectSet?: (objectSet: ObjectSet<Q>) => void;
 
