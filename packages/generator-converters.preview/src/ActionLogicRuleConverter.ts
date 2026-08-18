@@ -16,7 +16,6 @@
 
 import type {
   ActionTypeBlockDataV2,
-  LinkedObjectReference,
   LogicRule,
   OntologyBlockDataV2,
   OntologyIrActionTypeBlockDataV2,
@@ -29,6 +28,7 @@ import {
   buildBlockDataInterfaceLinkTypeLookup,
   buildBlockDataInterfaceTypeLookup,
   buildBlockDataObjectTypeLookup,
+  firstExistingObjectParameterId,
   resolveBlockDataApiName,
 } from "@osdk/generator-converters.ontologyir";
 
@@ -74,19 +74,6 @@ function resolveApiName(id: string, lookup: ApiNameLookup | undefined): string {
     return id;
   }
   return lookup.byId.get(id) ?? lookup.byHyphenated.get(id) ?? id;
-}
-
-function firstExistingObjectParameterId(
-  refs: LinkedObjectReference[],
-  field: string,
-): string {
-  const first = refs[0];
-  if (!first || first.type !== "existingObject") {
-    throw new Error(
-      `Interface-link rule ${field} must reference exactly one existing object`,
-    );
-  }
-  return first.existingObject;
 }
 
 function getObjectReferenceType(

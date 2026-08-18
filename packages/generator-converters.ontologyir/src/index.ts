@@ -32,6 +32,7 @@ export {
   buildBlockDataInterfaceLinkTypeLookup,
   buildBlockDataInterfaceTypeLookup,
   buildBlockDataObjectTypeLookup,
+  firstExistingObjectParameterId,
   OntologyBlockDataToFullMetadataConverter,
   resolveBlockDataApiName,
 } from "./OntologyBlockDataToFullMetadataConverter.js";

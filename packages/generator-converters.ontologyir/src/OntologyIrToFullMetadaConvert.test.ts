@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { OntologyIr } from "@osdk/client.unstable";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
 import { isInjectedRuntimeInput } from "./convertDataType.js";
@@ -23,6 +25,23 @@ import {
 } from "./OntologyIrToFullMetadataConverter.js";
 
 const discoveredFunctions = vi.hoisted<IDiscoveredFunction[]>(() => []);
+
+function isOntologyIr(value: object): value is OntologyIr {
+  return "ontology" in value
+    && typeof value.ontology === "object"
+    && value.ontology != null
+    && "importedOntology" in value
+    && typeof value.importedOntology === "object"
+    && value.importedOntology != null;
+}
+
+function readOntologyIrFixture(url: URL): OntologyIr {
+  const parsed: object = JSON.parse(readFileSync(fileURLToPath(url), "utf8"));
+  if (!isOntologyIr(parsed)) {
+    throw new Error("Invalid Ontology IR fixture");
+  }
+  return parsed;
+}
 
 vi.mock("@foundry/functions-typescript-osdk-discovery", () => ({
   FunctionDiscoverer: class {
@@ -3637,5 +3656,77 @@ describe(OntologyIrToFullMetadataConverter, () => {
     } finally {
       createProgramSpy.mockRestore();
     }
+  });
+
+  describe("full ontology envelope", () => {
+    const fixtureIr = readOntologyIrFixture(
+      new URL("./__fixtures__/envelope/ontology.json", import.meta.url),
+    );
+
+    it("preserves value types, propertiesV3, unknown implementers, and interface-link operations", () => {
+      const metadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(fixtureIr);
+      const interfaceTypes = OntologyIrToFullMetadataConverter
+        .getOsdkInterfaceTypes([
+          ...Object.values(fixtureIr.importedOntology.interfaceTypes),
+          ...Object.values(fixtureIr.ontology.interfaceTypes),
+        ]);
+      const actionTypes = OntologyIrToFullMetadataConverter.getOsdkActionTypes([
+        ...Object.values(fixtureIr.importedOntology.actionTypes),
+        ...Object.values(fixtureIr.ontology.actionTypes),
+      ]);
+
+      expect(metadata.valueTypes.trackQuality).toMatchObject({
+        apiName: "trackQuality",
+        version: "1.0.0",
+      });
+      expect(metadata.valueTypes.headingValue).toMatchObject({
+        apiName: "headingValue",
+        version: "1.0.0",
+      });
+
+      const child = interfaceTypes["local.Item"];
+      expect(metadata.interfaceTypes["local.Item"]?.rid).toMatch(
+        /^ri\.ontology\.oac\.interface-type\.[0-9a-f]{32}$/,
+      );
+      expect(metadata.sharedPropertyTypes.trackQuality).toMatchObject({
+        valueTypeApiName: "trackQuality",
+      });
+      expect(child.properties.trackQuality).toMatchObject({
+        valueTypeApiName: "trackQuality",
+      });
+      expect(child.propertiesV2.trackQuality).toBeDefined();
+      expect(child.propertiesV2["inline" + "Call" + "sign"]).toMatchObject({
+        type: "interfaceDefinedPropertyType",
+        requireImplementation: true,
+      });
+      expect(child.implementedByObjectTypes).toEqual([]);
+      expect(child.extendsInterfaces).toContain("imported.Parent");
+
+      const createLink = actionTypes.createItemLink;
+      expect(createLink.operations).toContainEqual({
+        type: "createInterfaceLink",
+        interfaceTypeApiName: "local.Item",
+        interfaceLinkTypeApiName: "observations",
+        sourceObject: "source",
+        targetObject: "target",
+      });
+      const deleteLink = actionTypes.deleteItemLink;
+      expect(deleteLink.operations).toContainEqual({
+        type: "deleteInterfaceLink",
+        interfaceTypeApiName: "local.Item",
+        interfaceLinkTypeApiName: "observations",
+        sourceObject: "source",
+        targetObject: "target",
+      });
+    });
+
+    it("is deterministic across two conversions", () => {
+      const a = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(fixtureIr);
+      const b = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(fixtureIr);
+      expect(a).toEqual(b);
+    });
   });
 });

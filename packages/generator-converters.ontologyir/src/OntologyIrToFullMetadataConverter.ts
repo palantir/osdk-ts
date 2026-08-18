@@ -15,8 +15,12 @@
  */
 
 import type {
+  BaseType,
+  DataConstraint,
+  OntologyIr,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionTypeStatus,
+  OntologyIrInterfacePropertyTypeType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrLinkTypeBlockDataV2,
   OntologyIrLinkTypeStatus,
@@ -26,6 +30,8 @@ import type {
   OntologyIrOntologyBlockDataV2,
   OntologyIrSharedPropertyTypeBlockDataV2,
   OntologyIrType,
+  OntologyIrValueTypeBlockData,
+  ValueTypeDataConstraint,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
@@ -40,6 +46,8 @@ import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
 import { convertDataType, isInjectedRuntimeInput } from "./convertDataType.js";
+import { deterministicRid } from "./deterministicRid.js";
+import { firstExistingObjectParameterId } from "./OntologyBlockDataToFullMetadataConverter.js";
 import { toStructFieldRid } from "./ridUtils.js";
 
 // Type definitions for optional function discovery dependencies
@@ -249,6 +257,24 @@ export class OntologyIrToFullMetadataConverter {
   /**
    * Main entry point - converts IR to full metadata
    */
+  static getFullMetadataFromEnvelope(
+    ir: OntologyIr,
+  ): Ontologies.OntologyFullMetadata {
+    const ontology = mergeOntologyBlocks(ir.importedOntology, ir.ontology);
+    const metadata = this.getFullMetadataFromIr(ontology);
+    const valueTypes = this.getOsdkValueTypes(
+      ir.valueTypes,
+      ir.importedValueTypes,
+    );
+    collectEmbeddedValueTypes(ontology, valueTypes);
+
+    return withDeterministicEnvelopeRids(
+      metadata,
+      ir.randomnessKey,
+      valueTypes,
+    );
+  }
+
   static getFullMetadataFromIr(
     ir: OntologyIrOntologyBlockDataV2,
   ): Ontologies.OntologyFullMetadata {
@@ -768,6 +794,9 @@ export class OntologyIrToFullMetadataConverter {
             visibility: visibilityEnum,
             dataType,
             typeClasses: [],
+            ...(prop.valueType
+              ? { valueTypeApiName: prop.valueType.apiName }
+              : {}),
           };
         }
       }
@@ -952,7 +981,9 @@ export class OntologyIrToFullMetadataConverter {
         displayName: metadata.displayMetadata.displayName,
         description: metadata.displayMetadata.description,
         parameters: this.getOsdkActionParameters(action),
-        operations: this.getOsdkActionOperations(action),
+        operations: this.getOsdkActionOperations(
+          action,
+        ) as Ontologies.LogicRule[],
         status: this.convertActionTypeStatus(metadata.status),
       };
 
@@ -967,7 +998,13 @@ export class OntologyIrToFullMetadataConverter {
    */
   static getOsdkActionOperations(
     action: OntologyIrActionTypeBlockDataV2,
-  ): Ontologies.LogicRule[] {
+  ): Array<
+    | Ontologies.LogicRule
+    | Extract<
+      Ontologies.ActionLogicRule,
+      { type: "createInterfaceLink" | "deleteInterfaceLink" }
+    >
+  > {
     return action.actionType.actionTypeLogic.logic.rules.flatMap(irLogic => {
       switch (irLogic.type) {
         case "addInterfaceRule": {
@@ -1074,9 +1111,32 @@ export class OntologyIrToFullMetadataConverter {
             );
           }
         }
-        case "addInterfaceLinkRuleV2":
-        case "deleteInterfaceLinkRule":
-          return [];
+        case "addInterfaceLinkRuleV2": {
+          const rule = irLogic.addInterfaceLinkRuleV2;
+          return {
+            type: "createInterfaceLink",
+            interfaceTypeApiName: rule.interfaceTypeRid,
+            interfaceLinkTypeApiName: rule.interfaceLinkTypeRid,
+            sourceObject: firstExistingObjectParameterId(
+              rule.sourceObjects,
+              "sourceObjects",
+            ),
+            targetObject: firstExistingObjectParameterId(
+              rule.targetObjects,
+              "targetObjects",
+            ),
+          };
+        }
+        case "deleteInterfaceLinkRule": {
+          const rule = irLogic.deleteInterfaceLinkRule;
+          return {
+            type: "deleteInterfaceLink",
+            interfaceTypeApiName: rule.interfaceTypeRid,
+            interfaceLinkTypeApiName: rule.interfaceLinkTypeRid,
+            sourceObject: rule.sourceObject,
+            targetObject: rule.targetObject,
+          };
+        }
         default:
           throw new Error("Unknown logic rule type");
       }
@@ -1312,20 +1372,26 @@ export class OntologyIrToFullMetadataConverter {
             dataType,
             required: false, // Default to false for now - this should come from IR if available
             typeClasses: [],
+            ...(spt.valueType
+              ? { valueTypeApiName: spt.valueType.apiName }
+              : {}),
           };
         }
       }
 
+      const propertiesV2 = this.getOsdkInterfacePropertiesV2(interfaceType);
       const result_interfaceType: Ontologies.InterfaceType = {
         apiName: interfaceType.apiName,
         rid: `ri.interface.${interfaceType.apiName}`,
         properties,
         allProperties: properties, // Same as properties for now
-        propertiesV2: {},
-        allPropertiesV2: {},
+        propertiesV2,
+        allPropertiesV2: this.getResolvedOsdkInterfacePropertiesV2(
+          interfaceType,
+        ),
         extendsInterfaces: interfaceType.extendsInterfaces.map(val => val),
         allExtendsInterfaces: interfaceType.extendsInterfaces.map(val => val), // Same as extendsInterfaces for now
-        implementedByObjectTypes: [], // Empty for now
+        implementedByObjectTypes: [],
         displayName: interfaceType.displayMetadata.displayName,
         description: interfaceType.displayMetadata.description ?? undefined,
         links: this.getOsdkInterfaceLinkTypes(interfaceType.links),
@@ -1333,6 +1399,145 @@ export class OntologyIrToFullMetadataConverter {
       };
 
       result[result_interfaceType.apiName] = result_interfaceType;
+    }
+
+    const availableInterfaceTypes = result;
+    for (const interfaceType of Object.values(result)) {
+      const ancestorInterfaceTypes = getAllAncestorInterfaceTypes(
+        interfaceType.apiName,
+        availableInterfaceTypes,
+      );
+      interfaceType.allExtendsInterfaces = ancestorInterfaceTypes.map(
+        ancestor => ancestor.apiName,
+      );
+      interfaceType.allProperties = Object.assign(
+        {},
+        ...ancestorInterfaceTypes.map(ancestor => ancestor.allProperties),
+        interfaceType.properties,
+      );
+      interfaceType.allPropertiesV2 = Object.assign(
+        {},
+        ...ancestorInterfaceTypes.map(ancestor => ancestor.allPropertiesV2),
+        interfaceType.allPropertiesV2,
+      );
+      interfaceType.allLinks = Object.assign(
+        {},
+        ...ancestorInterfaceTypes.map(ancestor => ancestor.allLinks),
+        interfaceType.links,
+      );
+    }
+
+    return result;
+  }
+
+  static getOsdkInterfacePropertiesV2(
+    interfaceType: OntologyIrInterfaceTypeBlockDataV2["interfaceType"],
+  ): Record<ApiName, Ontologies.InterfacePropertyType> {
+    const propertiesV2: Record<ApiName, Ontologies.InterfacePropertyType> = {};
+
+    for (const property of Object.values(interfaceType.propertiesV3)) {
+      switch (property.type) {
+        case "interfaceDefinedPropertyType": {
+          const defined = property.interfaceDefinedPropertyType;
+          const dataType = this.getOsdkPropertyType(defined.type);
+          if (dataType) {
+            propertiesV2[defined.apiName] = {
+              type: "interfaceDefinedPropertyType",
+              rid: `ri.interface.${interfaceType.apiName}.${defined.apiName}`,
+              apiName: defined.apiName,
+              displayName: defined.displayMetadata.displayName,
+              description: defined.displayMetadata.description ?? undefined,
+              dataType,
+              requireImplementation: defined.constraints.requireImplementation,
+              typeClasses: [],
+              ...(defined.constraints.valueType
+                ? {
+                  valueTypeApiName: defined.constraints.valueType.apiName,
+                }
+                : {}),
+            };
+          }
+          break;
+        }
+        case "sharedPropertyBasedPropertyType": {
+          const shared = property.sharedPropertyBasedPropertyType;
+          const sharedPropertyType = shared.sharedPropertyType;
+          const dataType = this.getOsdkPropertyType(sharedPropertyType.type);
+          if (dataType) {
+            propertiesV2[sharedPropertyType.apiName] = {
+              type: "interfaceSharedPropertyType",
+              rid:
+                `ri.interface.${interfaceType.apiName}.${sharedPropertyType.apiName}`,
+              apiName: sharedPropertyType.apiName,
+              displayName: sharedPropertyType.displayMetadata.displayName,
+              description: sharedPropertyType.displayMetadata.description
+                ?? undefined,
+              dataType,
+              required: shared.requireImplementation,
+              typeClasses: [],
+              ...(sharedPropertyType.valueType
+                ? { valueTypeApiName: sharedPropertyType.valueType.apiName }
+                : {}),
+            };
+          }
+          break;
+        }
+      }
+    }
+
+    return propertiesV2;
+  }
+
+  static getResolvedOsdkInterfacePropertiesV2(
+    interfaceType: OntologyIrInterfaceTypeBlockDataV2["interfaceType"],
+  ): Record<ApiName, Ontologies.ResolvedInterfacePropertyType> {
+    const result: Record<ApiName, Ontologies.ResolvedInterfacePropertyType> =
+      {};
+
+    for (const property of Object.values(interfaceType.propertiesV3)) {
+      switch (property.type) {
+        case "interfaceDefinedPropertyType": {
+          const defined = property.interfaceDefinedPropertyType;
+          const dataType = this.getOsdkPropertyType(defined.type);
+          if (dataType) {
+            result[defined.apiName] = {
+              rid: `ri.interface.${interfaceType.apiName}.${defined.apiName}`,
+              apiName: defined.apiName,
+              displayName: defined.displayMetadata.displayName,
+              description: defined.displayMetadata.description ?? undefined,
+              dataType,
+              requireImplementation: defined.constraints.requireImplementation,
+              ...(defined.constraints.valueType
+                ? {
+                  valueTypeApiName: defined.constraints.valueType.apiName,
+                }
+                : {}),
+            };
+          }
+          break;
+        }
+        case "sharedPropertyBasedPropertyType": {
+          const shared = property.sharedPropertyBasedPropertyType;
+          const sharedPropertyType = shared.sharedPropertyType;
+          const dataType = this.getOsdkPropertyType(sharedPropertyType.type);
+          if (dataType) {
+            result[sharedPropertyType.apiName] = {
+              rid:
+                `ri.interface.${interfaceType.apiName}.${sharedPropertyType.apiName}`,
+              apiName: sharedPropertyType.apiName,
+              displayName: sharedPropertyType.displayMetadata.displayName,
+              description: sharedPropertyType.displayMetadata.description
+                ?? undefined,
+              dataType,
+              requireImplementation: shared.requireImplementation,
+              ...(sharedPropertyType.valueType
+                ? { valueTypeApiName: sharedPropertyType.valueType.apiName }
+                : {}),
+            };
+          }
+          break;
+        }
+      }
     }
 
     return result;
@@ -1400,6 +1605,32 @@ export class OntologyIrToFullMetadataConverter {
   /**
    * Convert shared property types from IR
    */
+  static getOsdkValueTypes(
+    owned: OntologyIrValueTypeBlockData,
+    imported: OntologyIrValueTypeBlockData,
+  ): Record<ApiName, Ontologies.OntologyValueType> {
+    const entries = [...imported.valueTypes, ...owned.valueTypes];
+    const result: Record<ApiName, Ontologies.OntologyValueType> = {};
+
+    for (const entry of entries) {
+      for (const version of entry.versions) {
+        addValueType(result, {
+          apiName: entry.metadata.apiName,
+          displayName: entry.metadata.displayMetadata.displayName,
+          description: entry.metadata.displayMetadata.description,
+          rid:
+            `ri.value-type.${entry.metadata.packageNamespace}.${entry.metadata.apiName}.${version.version}`,
+          status: convertValueTypeStatus(entry.metadata.status.type),
+          version: version.version,
+          fieldType: convertValueTypeFieldType(version.baseType),
+          constraints: version.constraints.map(convertValueTypeConstraint),
+        });
+      }
+    }
+
+    return result;
+  }
+
   static getOsdkSharedPropertyTypes(
     spts: OntologyIrSharedPropertyTypeBlockDataV2[],
   ): Record<ApiName, Ontologies.SharedPropertyType> {
@@ -1416,6 +1647,9 @@ export class OntologyIrToFullMetadataConverter {
             ?? undefined,
           dataType,
           typeClasses: [],
+          ...(spt.sharedPropertyType.valueType
+            ? { valueTypeApiName: spt.sharedPropertyType.valueType.apiName }
+            : {}),
         };
 
         result[sharedPropertyType.apiName] = sharedPropertyType;
@@ -1435,7 +1669,7 @@ export class OntologyIrToFullMetadataConverter {
    * Convert property types from IR to OSDK format
    */
   static getOsdkPropertyType(
-    type: OntologyIrType,
+    type: OntologyIrType | OntologyIrInterfacePropertyTypeType,
   ): Ontologies.ObjectPropertyType | null {
     switch (type.type) {
       case "array": {
@@ -1560,6 +1794,523 @@ export class OntologyIrToFullMetadataConverter {
       default:
         throw new Error(`Unknown link type status: ${status}`);
     }
+  }
+}
+
+function getAllAncestorInterfaceTypes(
+  apiName: ApiName,
+  interfaceTypes: Record<ApiName, Ontologies.InterfaceType>,
+): Ontologies.InterfaceType[] {
+  const ancestors: Ontologies.InterfaceType[] = [];
+  const visited = new Set<ApiName>([apiName]);
+
+  const visitParents = (currentApiName: ApiName): void => {
+    const current = interfaceTypes[currentApiName];
+    if (!current) {
+      return;
+    }
+
+    for (const parentApiName of current.extendsInterfaces) {
+      if (visited.has(parentApiName)) {
+        continue;
+      }
+      visited.add(parentApiName);
+      const parent = interfaceTypes[parentApiName];
+      if (!parent) {
+        continue;
+      }
+      ancestors.push(parent);
+      visitParents(parentApiName);
+    }
+  };
+
+  visitParents(apiName);
+  return ancestors;
+}
+
+function mintDeterministicRid(
+  randomnessKey: string | undefined,
+  kind: string,
+  ...parts: string[]
+): string {
+  return deterministicRid(randomnessKey, kind, ...parts);
+}
+
+function mintInterfacePropertyRids(
+  properties: Record<ApiName, { rid: string }>,
+  randomnessKey: string | undefined,
+  interfaceApiName: string,
+  kind: string,
+): void {
+  for (const [propertyApiName, property] of Object.entries(properties)) {
+    property.rid = mintDeterministicRid(
+      randomnessKey,
+      kind,
+      interfaceApiName,
+      propertyApiName,
+    );
+  }
+}
+
+function withDeterministicEnvelopeRids(
+  metadata: Ontologies.OntologyFullMetadata,
+  randomnessKey: string | undefined,
+  valueTypes: Record<ApiName, Ontologies.OntologyValueType>,
+): Ontologies.OntologyFullMetadata {
+  for (const [apiName, object] of Object.entries(metadata.objectTypes)) {
+    object.objectType.rid = mintDeterministicRid(
+      randomnessKey,
+      "object-type",
+      apiName,
+    );
+    for (
+      const [propertyApiName, property] of Object.entries(
+        object.objectType.properties,
+      )
+    ) {
+      property.rid = mintDeterministicRid(
+        randomnessKey,
+        "object-property",
+        apiName,
+        propertyApiName,
+      );
+    }
+    for (const link of object.linkTypes) {
+      link.linkTypeRid = mintDeterministicRid(
+        randomnessKey,
+        "link-type",
+        apiName,
+        link.apiName,
+      );
+    }
+  }
+  for (
+    const [apiName, interfaceType] of Object.entries(
+      metadata.interfaceTypes,
+    )
+  ) {
+    interfaceType.rid = mintDeterministicRid(
+      randomnessKey,
+      "interface-type",
+      apiName,
+    );
+    mintInterfacePropertyRids(
+      interfaceType.properties,
+      randomnessKey,
+      apiName,
+      "interface-property",
+    );
+    mintInterfacePropertyRids(
+      interfaceType.allProperties,
+      randomnessKey,
+      apiName,
+      "interface-property",
+    );
+    mintInterfacePropertyRids(
+      interfaceType.propertiesV2,
+      randomnessKey,
+      apiName,
+      "interface-property-v2",
+    );
+    mintInterfacePropertyRids(
+      interfaceType.allPropertiesV2,
+      randomnessKey,
+      apiName,
+      "interface-property-v2",
+    );
+    for (const [linkApiName, link] of Object.entries(interfaceType.links)) {
+      link.rid = mintDeterministicRid(
+        randomnessKey,
+        "interface-link",
+        apiName,
+        linkApiName,
+      );
+    }
+    for (const [linkApiName, link] of Object.entries(interfaceType.allLinks)) {
+      link.rid = mintDeterministicRid(
+        randomnessKey,
+        "interface-link",
+        apiName,
+        linkApiName,
+      );
+    }
+  }
+  for (
+    const [apiName, property] of Object.entries(
+      metadata.sharedPropertyTypes,
+    )
+  ) {
+    property.rid = mintDeterministicRid(
+      randomnessKey,
+      "shared-property",
+      apiName,
+    );
+  }
+  for (const [apiName, action] of Object.entries(metadata.actionTypes)) {
+    action.rid = mintDeterministicRid(
+      randomnessKey,
+      "action-type",
+      apiName,
+    );
+  }
+  for (const [apiName, valueType] of Object.entries(valueTypes)) {
+    valueType.rid = mintDeterministicRid(
+      randomnessKey,
+      "value-type",
+      apiName,
+      valueType.version,
+    );
+  }
+
+  return {
+    ...metadata,
+    ontology: {
+      ...metadata.ontology,
+      rid: mintDeterministicRid(
+        randomnessKey,
+        "ontology",
+        metadata.ontology.apiName,
+      ),
+    },
+    valueTypes,
+  };
+}
+
+function mergeOntologyBlocks(
+  imported: OntologyIrOntologyBlockDataV2,
+  owned: OntologyIrOntologyBlockDataV2,
+): OntologyIrOntologyBlockDataV2 {
+  return {
+    actionTypes: { ...imported.actionTypes, ...owned.actionTypes },
+    interfaceTypes: { ...imported.interfaceTypes, ...owned.interfaceTypes },
+    linkTypes: { ...imported.linkTypes, ...owned.linkTypes },
+    objectTypes: { ...imported.objectTypes, ...owned.objectTypes },
+    sharedPropertyTypes: {
+      ...imported.sharedPropertyTypes,
+      ...owned.sharedPropertyTypes,
+    },
+  };
+}
+
+function addValueType(
+  valueTypes: Record<ApiName, Ontologies.OntologyValueType>,
+  valueType: Ontologies.OntologyValueType,
+): void {
+  const existing = valueTypes[valueType.apiName];
+  if (existing && existing.version !== valueType.version) {
+    throw new Error(
+      `Value type '${valueType.apiName}' has multiple versions: '${existing.version}' and '${valueType.version}'`,
+    );
+  }
+  valueTypes[valueType.apiName] = valueType;
+}
+
+function collectEmbeddedValueTypes(
+  ontology: OntologyIrOntologyBlockDataV2,
+  valueTypes: Record<ApiName, Ontologies.OntologyValueType>,
+): void {
+  for (const interfaceBlock of Object.values(ontology.interfaceTypes)) {
+    for (
+      const property of Object.values(interfaceBlock.interfaceType.propertiesV2)
+    ) {
+      const sharedPropertyType = property.sharedPropertyType;
+      const embedded = sharedPropertyType.valueType;
+      if (embedded) {
+        addEmbeddedValueType(
+          valueTypes,
+          embedded,
+          convertEmbeddedValueTypeFieldType(sharedPropertyType.type),
+        );
+      }
+    }
+  }
+
+  for (
+    const sharedPropertyBlock of Object.values(ontology.sharedPropertyTypes)
+  ) {
+    const sharedPropertyType = sharedPropertyBlock.sharedPropertyType;
+    const embedded = sharedPropertyType.valueType;
+    if (embedded) {
+      addEmbeddedValueType(
+        valueTypes,
+        embedded,
+        convertEmbeddedValueTypeFieldType(sharedPropertyType.type),
+      );
+    }
+  }
+
+  for (const objectBlock of Object.values(ontology.objectTypes)) {
+    for (
+      const property of Object.values(objectBlock.objectType.propertyTypes)
+    ) {
+      const embedded = property.valueType;
+      if (embedded) {
+        addEmbeddedValueType(
+          valueTypes,
+          embedded,
+          convertEmbeddedValueTypeFieldType(property.type),
+        );
+      }
+    }
+  }
+}
+
+function addEmbeddedValueType(
+  valueTypes: Record<ApiName, Ontologies.OntologyValueType>,
+  embedded: {
+    apiName: string;
+    displayMetadata: {
+      displayName: string;
+      description?: string | null;
+    };
+    packageNamespace: string;
+    version: string;
+  },
+  fieldType: Ontologies.ValueTypeFieldType,
+): void {
+  const existing = valueTypes[embedded.apiName];
+  if (existing) {
+    if (existing.version !== embedded.version) {
+      throw new Error(
+        `Value type '${embedded.apiName}' has multiple versions: '${existing.version}' and '${embedded.version}'`,
+      );
+    }
+    return;
+  }
+
+  addValueType(valueTypes, {
+    apiName: embedded.apiName,
+    displayName: embedded.displayMetadata.displayName,
+    description: embedded.displayMetadata.description ?? undefined,
+    rid:
+      `ri.value-type.${embedded.packageNamespace}.${embedded.apiName}.${embedded.version}`,
+    version: embedded.version,
+    fieldType,
+    constraints: [],
+  });
+}
+
+function convertEmbeddedValueTypeFieldType(
+  type: OntologyIrType,
+): Ontologies.ValueTypeFieldType {
+  switch (type.type) {
+    case "array": {
+      const subType = convertEmbeddedValueTypeFieldType(type.array.subtype);
+      return { type: "array", subType };
+    }
+    case "boolean":
+    case "byte":
+    case "date":
+    case "decimal":
+    case "double":
+    case "float":
+    case "integer":
+    case "long":
+    case "short":
+    case "string":
+    case "timestamp":
+      return { type: type.type };
+    default:
+      return { type: "string" };
+  }
+}
+
+function convertValueTypeStatus(
+  status: string,
+): Ontologies.ValueTypeStatus | undefined {
+  switch (status) {
+    case "active":
+      return "ACTIVE";
+    case "deprecated":
+      return "DEPRECATED";
+    default:
+      return undefined;
+  }
+}
+
+function convertValueTypeFieldType(
+  baseType: BaseType,
+): Ontologies.ValueTypeFieldType {
+  switch (baseType.type) {
+    case "array":
+      return {
+        type: "array",
+        subType: convertValueTypeFieldType(baseType.array.elementType),
+      };
+    case "boolean":
+    case "binary":
+    case "byte":
+    case "date":
+    case "decimal":
+    case "double":
+    case "float":
+    case "integer":
+    case "long":
+    case "short":
+    case "string":
+    case "timestamp":
+      return { type: baseType.type };
+    case "map":
+      return {
+        type: "map",
+        keyType: convertValueTypeFieldType(baseType.map.keyType),
+        valueType: convertValueTypeFieldType(baseType.map.valueType),
+      };
+    case "optional":
+      return {
+        type: "optional",
+        wrappedType: convertValueTypeFieldType(baseType.optional.wrappedType),
+      };
+    case "referenced":
+      return { type: "reference" };
+    case "struct":
+      return {
+        type: "struct",
+        fields: baseType.struct.fields.map(field => ({
+          name: field.name,
+          fieldType: convertValueTypeFieldType(field.type),
+        })),
+      };
+    case "structV2":
+      return {
+        type: "struct",
+        fields: baseType.structV2.fields.map(field => ({
+          name: field.identifier,
+          fieldType: convertValueTypeFieldType(field.baseType),
+        })),
+      };
+    case "union":
+      return {
+        type: "union",
+        memberTypes: baseType.union.memberTypes.map(convertValueTypeFieldType),
+      };
+  }
+}
+
+function convertValueTypeConstraint(
+  constraint: ValueTypeDataConstraint,
+): Ontologies.ValueTypeConstraint {
+  return convertDataConstraint(constraint.constraint.constraint);
+}
+
+function convertDataConstraint(
+  constraint: DataConstraint,
+): Ontologies.ValueTypeConstraint {
+  switch (constraint.type) {
+    case "array": {
+      const value = constraint.array;
+      return {
+        type: "array",
+        minimumSize: value.size?.minSize,
+        maximumSize: value.size?.maxSize,
+        uniqueValues: value.elementsUnique ?? false,
+        valueConstraint: value.elementsConstraint
+          ? convertDataConstraint(value.elementsConstraint)
+          : undefined,
+      };
+    }
+    case "boolean":
+      return {
+        type: "enum",
+        options: constraint.boolean.allowedValues.map(value => {
+          switch (value) {
+            case "TRUE_VALUE":
+              return true;
+            case "FALSE_VALUE":
+              return false;
+            case "NULL_VALUE":
+              return undefined;
+          }
+        }),
+      };
+    case "binary":
+      return {
+        type: "length",
+        minimumLength: constraint.binary.size.minSize,
+        maximumLength: constraint.binary.size.maxSize,
+      };
+    case "date":
+      return {
+        type: "range",
+        minimumValue: constraint.date.range.min,
+        maximumValue: constraint.date.range.max,
+      };
+    case "decimal":
+      return convertNumericConstraint(constraint.decimal);
+    case "double":
+      return convertNumericConstraint(constraint.double);
+    case "float":
+      return convertNumericConstraint(constraint.float);
+    case "integer":
+      return convertNumericConstraint(constraint.integer);
+    case "long":
+      return convertNumericConstraint(constraint.long);
+    case "short":
+      return convertNumericConstraint(constraint.short);
+    case "string": {
+      switch (constraint.string.type) {
+        case "regex":
+          return {
+            type: "regex",
+            pattern: constraint.string.regex.regexPattern,
+            partialMatch: constraint.string.regex.usePartialMatch ?? false,
+          };
+        case "oneOf":
+          return {
+            type: "enum",
+            options: constraint.string.oneOf.values,
+          };
+        case "length":
+          return {
+            type: "length",
+            minimumLength: constraint.string.length.minSize,
+            maximumLength: constraint.string.length.maxSize,
+          };
+        case "isUuid":
+          return { type: "uuid" };
+        case "isRid":
+          return { type: "rid" };
+      }
+    }
+    case "timestamp":
+      return {
+        type: "range",
+        minimumValue: constraint.timestamp.range.min,
+        maximumValue: constraint.timestamp.range.max,
+      };
+    case "map":
+    case "nullable":
+    case "struct":
+    case "structV2":
+      return {
+        type: "unsupported",
+        unsupportedType: constraint.type,
+        params: {},
+      };
+  }
+}
+
+function convertNumericConstraint(
+  constraint:
+    | Extract<DataConstraint, { type: "decimal" }>["decimal"]
+    | Extract<DataConstraint, { type: "double" }>["double"]
+    | Extract<DataConstraint, { type: "float" }>["float"]
+    | Extract<DataConstraint, { type: "integer" }>["integer"]
+    | Extract<DataConstraint, { type: "long" }>["long"]
+    | Extract<DataConstraint, { type: "short" }>["short"],
+): Ontologies.ValueTypeConstraint {
+  switch (constraint.type) {
+    case "range":
+      return {
+        type: "range",
+        minimumValue: constraint.range.min,
+        maximumValue: constraint.range.max,
+      };
+    case "oneOf":
+      return {
+        type: "enum",
+        options: constraint.oneOf.values,
+      };
   }
 }
 
