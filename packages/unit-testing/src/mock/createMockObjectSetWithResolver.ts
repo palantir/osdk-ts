@@ -65,11 +65,11 @@ export function createMockObjectSetWithResolver<
   const objectSet = {
     where: (clause: WhereClause<Q>) => chain("where", clause),
     union: (...objectSets: ReadonlyArray<ObjectSet<Q>>) =>
-      setOperation("union", objectSets) as any,
+      setOperation("union", objectSets),
     intersect: (...objectSets: ReadonlyArray<ObjectSet<Q>>) =>
-      setOperation("intersect", objectSets) as any,
+      setOperation("intersect", objectSets),
     subtract: (...objectSets: ReadonlyArray<ObjectSet<Q>>) =>
-      setOperation("subtract", objectSets) as any,
+      setOperation("subtract", objectSets),
     pivotTo: (link: string) => chain("pivotTo", link) as any,
     narrowToType: (type: ObjectOrInterfaceDefinition) =>
       chain("narrowToType", type) as any,
