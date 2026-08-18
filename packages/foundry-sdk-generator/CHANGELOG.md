@@ -74,7 +74,7 @@
 
 ### Minor Changes
 
-- 913563f: Generated SDKs now ship the full ontology metadata as a typed `./UNSTABLE_DO_NOT_USE/ontology-metadata` subpath export.
+- 913563f: Generated SDKs now ship the full ontology metadata as a typed `./experimental/ontology-metadata` subpath export.
 
 ### Patch Changes
 

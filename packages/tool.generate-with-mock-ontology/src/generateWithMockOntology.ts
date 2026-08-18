@@ -26,7 +26,7 @@ import { $ } from "execa";
 
 import { safeStat } from "./safeStat.js";
 
-const ONTOLOGY_METADATA_ENTRYPOINT = "./UNSTABLE_DO_NOT_USE/ontology-metadata";
+const ONTOLOGY_METADATA_ENTRYPOINT = "./experimental/ontology-metadata";
 
 export async function generateWithMockOntology(): Promise<void> {
   const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);

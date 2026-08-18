@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
+import { mkdir, readdir, rmdir, writeFile } from "fs/promises";
+
 import type {
   ActionParameterType,
   ObjectPropertyType,
   QueryDataType,
 } from "@osdk/foundry.ontologies";
 import { consola } from "consola";
-import { mkdir, readdir, rmdir, writeFile } from "fs/promises";
 import * as immer from "immer";
 import { beforeEach, describe, expect, it, test, vi } from "vitest";
+
 import { compileThis } from "../util/test/compileThis.js";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
 import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
@@ -40,10 +42,7 @@ function changeValue<T extends Record<K, any>, K extends keyof immer.Draft<T>>(
   }
 }
 
-function changeKey<
-  T extends Record<K, any>,
-  K extends keyof immer.Draft<T>,
->(
+function changeKey<T extends Record<K, any>, K extends keyof immer.Draft<T>>(
   draft: immer.Draft<T>,
   oldInterfaceName: K,
   newInterfaceName: K,
@@ -59,7 +58,7 @@ function changeArrayEntry(
   oldNew: string,
   newName: string,
 ) {
-  const idx = draft.findIndex(a => a === oldNew);
+  const idx = draft.findIndex((a) => a === oldNew);
   if (idx >= 0) {
     draft[idx] = newName;
   }
@@ -77,11 +76,7 @@ function changeEachEntry<T extends object>(
 ) {
   for (const [oldName, newName] of Object.entries(data)) {
     for (const k of Object.keys(wireData)) {
-      changer(
-        wireData[k],
-        oldName,
-        newName,
-      );
+      changer(wireData[k], oldName, newName);
 
       if (changeSelf && k === oldName) {
         wireData[newName] = wireData[k];
@@ -108,13 +103,16 @@ function changeDataType(
   }
 }
 
-function changeNames(ontology: WireOntologyDefinition, newNames: {
-  objects: Record<string, string>;
-  spts: Record<string, string>;
-  interfaces: Record<string, string>;
-  actions: Record<string, string>;
-  queries: Record<string, string>;
-}) {
+function changeNames(
+  ontology: WireOntologyDefinition,
+  newNames: {
+    objects: Record<string, string>;
+    spts: Record<string, string>;
+    interfaces: Record<string, string>;
+    actions: Record<string, string>;
+    queries: Record<string, string>;
+  },
+) {
   return immer.produce(ontology, (draft) => {
     // Handle spt renames
     changeEachEntry(
@@ -154,8 +152,8 @@ function changeNames(ontology: WireOntologyDefinition, newNames: {
       newNames.interfaces,
       (ifaceType, oldIfaceName, newIfaceName) => {
         changeValue(ifaceType, "apiName", oldIfaceName, newIfaceName);
-        ifaceType.extendsInterfaces = ifaceType.allExtendsInterfaces.map(
-          v => v === oldIfaceName ? newIfaceName : v,
+        ifaceType.extendsInterfaces = ifaceType.allExtendsInterfaces.map((v) =>
+          v === oldIfaceName ? newIfaceName : v
         );
         changeEachEntry(
           ifaceType.allProperties,
@@ -179,11 +177,7 @@ function changeNames(ontology: WireOntologyDefinition, newNames: {
           newIfaceName,
         );
 
-        changeKey(
-          objectType.implementsInterfaces2,
-          oldIfaceName,
-          newIfaceName,
-        );
+        changeKey(objectType.implementsInterfaces2, oldIfaceName, newIfaceName);
       },
     );
 
@@ -237,21 +231,21 @@ function changeNames(ontology: WireOntologyDefinition, newNames: {
 }
 
 const referencedOntology = {
-  "ontology": {
-    "apiName": "dep",
-    "rid": "ri.ontology.main.ontology.dep",
-    "displayName": "",
-    "description": "",
+  ontology: {
+    apiName: "dep",
+    rid: "ri.ontology.main.ontology.dep",
+    displayName: "",
+    description: "",
   },
-  "actionTypes": {},
-  "objectTypes": {
+  actionTypes: {},
+  objectTypes: {
     "com.example.dep.Task": {
       implementsInterfaces: [],
       implementsInterfaces2: {},
       sharedPropertyTypeMapping: {},
-      "objectType": {
-        "apiName": "com.example.dep.Task",
-        "primaryKey": "taskId",
+      objectType: {
+        apiName: "com.example.dep.Task",
+        primaryKey: "taskId",
         displayName: "Task",
         pluralDisplayName: "Tasks",
         aliases: [],
@@ -260,37 +254,37 @@ const referencedOntology = {
 
         titleProperty: "taskId",
 
-        "properties": {
-          "taskId": {
-            "dataType": {
-              "type": "string",
+        properties: {
+          taskId: {
+            dataType: {
+              type: "string",
             },
-            "rid": "ridForTaskId",
+            rid: "ridForTaskId",
             typeClasses: [],
           },
-          "body": {
-            "dataType": {
-              "type": "string",
+          body: {
+            dataType: {
+              type: "string",
             },
-            "rid": "ridForBody",
+            rid: "ridForBody",
             typeClasses: [],
           },
-          "shouldBeIgnored": {
-            "dataType": {
-              "type": "futureUnknownType",
+          shouldBeIgnored: {
+            dataType: {
+              type: "futureUnknownType",
             } as unknown as ObjectPropertyType,
-            "rid": "ridForShouldBeIgnored",
+            rid: "ridForShouldBeIgnored",
             typeClasses: [],
           },
         },
-        "status": "ACTIVE",
-        "rid": "ridForTask",
+        status: "ACTIVE",
+        rid: "ridForTask",
       },
-      "linkTypes": [],
+      linkTypes: [],
     },
   },
-  "queryTypes": {},
-  "interfaceTypes": {
+  queryTypes: {},
+  interfaceTypes: {
     "com.example.dep.SomeInterface": {
       apiName: "com.example.dep.SomeInterface",
       rid: "idk2",
@@ -338,7 +332,7 @@ const referencedOntology = {
       allPropertiesV2: {},
     },
   },
-  "sharedPropertyTypes": {
+  sharedPropertyTypes: {
     "com.example.dep.spt": {
       apiName: "com.example.dep.spt",
       dataType: {
@@ -349,7 +343,7 @@ const referencedOntology = {
       typeClasses: [],
     },
   },
-  "branch": {
+  branch: {
     rid: "someRidHere",
   },
   valueTypes: {},
@@ -357,35 +351,35 @@ const referencedOntology = {
 
 const referencingOntology: WireOntologyDefinition = {
   ontology: TodoWireOntology.ontology,
-  "actionTypes": {
-    "setTaskBody": {
-      "apiName": "setTaskBody",
-      "parameters": {
-        "task": {
-          "displayName": "taskBody",
-          "dataType": {
-            "type": "object",
-            "objectApiName": "com.example.dep.Task",
-            "objectTypeApiName": "com.example.dep.Task",
+  actionTypes: {
+    setTaskBody: {
+      apiName: "setTaskBody",
+      parameters: {
+        task: {
+          displayName: "taskBody",
+          dataType: {
+            type: "object",
+            objectApiName: "com.example.dep.Task",
+            objectTypeApiName: "com.example.dep.Task",
           },
-          "required": true,
-          "typeClasses": [],
+          required: true,
+          typeClasses: [],
         },
-        "body": {
-          "displayName": "body",
-          "dataType": {
-            "type": "string",
+        body: {
+          displayName: "body",
+          dataType: {
+            type: "string",
           },
-          "required": true,
-          "typeClasses": [],
+          required: true,
+          typeClasses: [],
         },
       },
-      "status": "ACTIVE",
-      "rid": "ri.a.b.c.d",
-      "operations": [
+      status: "ACTIVE",
+      rid: "ri.a.b.c.d",
+      operations: [
         {
-          "type": "modifyObject",
-          "objectTypeApiName": "com.example.dep.Task",
+          type: "modifyObject",
+          objectTypeApiName: "com.example.dep.Task",
         },
       ],
     },
@@ -395,7 +389,7 @@ const referencingOntology: WireOntologyDefinition = {
   },
   objectTypes: {
     ...referencedOntology.objectTypes,
-    "Thing": {
+    Thing: {
       implementsInterfaces: ["com.example.dep.SomeInterface"],
       implementsInterfaces2: {
         "com.example.dep.SomeInterface": {
@@ -416,18 +410,18 @@ const referencingOntology: WireOntologyDefinition = {
         icon: { type: "blueprint", color: "blue", name: "document" },
         primaryKey: "id",
         properties: {
-          "id": {
+          id: {
             dataType: {
               type: "integer",
             },
             rid: "rid",
             typeClasses: [],
           },
-          "body": {
+          body: {
             dataType: {
               type: "string",
             },
-            "rid": "rid",
+            rid: "rid",
             typeClasses: [],
           },
         },
@@ -437,7 +431,7 @@ const referencingOntology: WireOntologyDefinition = {
       },
       sharedPropertyTypeMapping: {},
     },
-    "UsesForeignSpt": {
+    UsesForeignSpt: {
       implementsInterfaces: [],
       implementsInterfaces2: {},
       linkTypes: [],
@@ -450,14 +444,14 @@ const referencingOntology: WireOntologyDefinition = {
         icon: { type: "blueprint", color: "blue", name: "document" },
         pluralDisplayName: "Uses Foreign Spts",
         properties: {
-          "id": {
+          id: {
             dataType: {
               type: "integer",
             },
             rid: "rid",
             typeClasses: [],
           },
-          "body": {
+          body: {
             dataType: {
               type: "string",
             },
@@ -483,7 +477,7 @@ const referencingOntology: WireOntologyDefinition = {
         objectTypeApiName: "com.example.dep.Task",
       },
       parameters: {
-        "a": {
+        a: {
           dataType: {
             type: "object",
             objectApiName: "com.example.dep.Task",
@@ -501,26 +495,23 @@ const referencingOntology: WireOntologyDefinition = {
   valueTypes: {},
 } satisfies WireOntologyDefinition;
 
-const fooBarTodoWireOntology = changeNames(
-  TodoWireOntology,
-  {
-    objects: { "Todo": "foo.bar.Todo", "Person": "foo.bar.Person" },
-    actions: {
-      markTodoCompleted: "foo.bar.markTodoCompleted",
-      deleteTodos: "foo.bar.deleteTodos",
-    },
-    interfaces: {
-      "SomeInterface": "foo.bar.SomeInterface",
-    },
-    queries: {
-      "getCount": "foo.bar.getCount",
-      "returnsTodo": "foo.bar.returnsTodo",
-    },
-    spts: {
-      "SomeProperty": "foo.bar.SomeProperty",
-    },
+const fooBarTodoWireOntology = changeNames(TodoWireOntology, {
+  objects: { Todo: "foo.bar.Todo", Person: "foo.bar.Person" },
+  actions: {
+    markTodoCompleted: "foo.bar.markTodoCompleted",
+    deleteTodos: "foo.bar.deleteTodos",
   },
-);
+  interfaces: {
+    SomeInterface: "foo.bar.SomeInterface",
+  },
+  queries: {
+    getCount: "foo.bar.getCount",
+    returnsTodo: "foo.bar.returnsTodo",
+  },
+  spts: {
+    SomeProperty: "foo.bar.SomeProperty",
+  },
+});
 
 const BASE_PATH = "/foo";
 
@@ -558,12 +549,11 @@ describe("generator", () => {
       }
 
       // TODO: Certain errors are expected since we can't resolve the static code, but we should fix them.
-      const errors = diagnostics.filter(q => q.code !== 2792);
+      const errors = diagnostics.filter((q) => q.code !== 2792);
       expect(errors).toHaveLength(0);
 
-      expect(
-        tweakedFilesForSnapshotConsistency(helper.getFiles()),
-      ).toMatchInlineSnapshot(`
+      expect(tweakedFilesForSnapshotConsistency(helper.getFiles()))
+        .toMatchInlineSnapshot(`
         {
           "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = 'PLACEHOLDER';
         export const $osdkMetadata = { extraUserAgent: 'typescript-sdk/0.0.0 osdk-cli/0.0.0' };
@@ -1209,12 +1199,14 @@ describe("generator", () => {
     helper.minimalFiles.readdir = vi.fn(async (_path: string) => ["file"]);
 
     await expect(async () => {
-      await expect(generateClientSdkVersionTwoPointZero(
-        TodoWireOntology,
-        "typescript-sdk/0.0.0 osdk-cli/0.0.0",
-        helper.minimalFiles,
-        BASE_PATH,
-      )).rejects.toThrow();
+      await expect(
+        generateClientSdkVersionTwoPointZero(
+          TodoWireOntology,
+          "typescript-sdk/0.0.0 osdk-cli/0.0.0",
+          helper.minimalFiles,
+          BASE_PATH,
+        ),
+      ).rejects.toThrow();
     });
   });
 
@@ -1254,11 +1246,13 @@ describe("generator", () => {
       ),
     ).resolves.toMatchInlineSnapshot(`undefined`);
 
-    expect(helper.getFiles()["/foo/ontology/objects/foo.bar.Todo.ts"])
-      .toBeUndefined();
+    expect(
+      helper.getFiles()["/foo/ontology/objects/foo.bar.Todo.ts"],
+    ).toBeUndefined();
 
-    expect(helper.getFiles()["/foo/ontology/objects/Todo.ts"])
-      .not.toBeUndefined();
+    expect(
+      helper.getFiles()["/foo/ontology/objects/Todo.ts"],
+    ).not.toBeUndefined();
 
     expect(tweakedFilesForSnapshotConsistency(helper.getFiles()))
       .toMatchInlineSnapshot(`
@@ -1926,8 +1920,7 @@ describe("generator", () => {
   test.skip("runs generator locally", async () => {
     try {
       await rmdir(`${__dirname}/generated`, { recursive: true });
-    } catch (e) {
-    }
+    } catch (e) {}
     await mkdir(`${__dirname}/generated`, { recursive: true });
     await generateClientSdkVersionTwoPointZero(
       TodoWireOntology,
@@ -1980,9 +1973,7 @@ describe("generator", () => {
         ),
       ).resolves.toMatchInlineSnapshot(`undefined`);
 
-      expect(helper.getFiles()["/foo/index.ts"]).toContain(
-        "$ontologyRid",
-      );
+      expect(helper.getFiles()["/foo/index.ts"]).toContain("$ontologyRid");
     });
   });
 
@@ -2007,14 +1998,14 @@ describe("generator", () => {
     it("does not write the metadata json when disabled", async () => {
       const files = await generate(false);
 
-      expect(files[`${BASE_PATH}/UNSTABLE_DO_NOT_USE/ontology-metadata.json`])
-        .toBeUndefined();
+      expect(
+        files[`${BASE_PATH}/experimental/ontology-metadata.json`],
+      ).toBeUndefined();
     });
 
     it("writes the raw metadata as pretty printed json when enabled", async () => {
       const files = await generate(true);
-      const json =
-        files[`${BASE_PATH}/UNSTABLE_DO_NOT_USE/ontology-metadata.json`];
+      const json = files[`${BASE_PATH}/experimental/ontology-metadata.json`];
 
       expect(JSON.parse(json)).toEqual(TodoWireOntology);
       expect(json).toContain("\n    \"ontology\": {");
@@ -2023,16 +2014,16 @@ describe("generator", () => {
     it("declares the shim as a default export for esm and export = for cjs", async () => {
       const files = await generate(true);
 
-      expect(files[`${BASE_PATH}/UNSTABLE_DO_NOT_USE/ontology-metadata.d.mts`])
-        .toContain("export default ontologyFullMetadata;");
+      expect(
+        files[`${BASE_PATH}/experimental/ontology-metadata.d.mts`],
+      ).toContain("export default ontologyFullMetadata;");
 
       // .d.ts is the fallback for resolvers that ignore the mts/cts split, so
       // it has to keep the `export =` form.
       for (const ext of ["d.cts", "d.ts"]) {
         expect(
-          files[`${BASE_PATH}/UNSTABLE_DO_NOT_USE/ontology-metadata.${ext}`],
-        )
-          .toContain("export = ontologyFullMetadata;");
+          files[`${BASE_PATH}/experimental/ontology-metadata.${ext}`],
+        ).toContain("export = ontologyFullMetadata;");
       }
     });
   });
@@ -2380,9 +2371,8 @@ describe("generator", () => {
         ["getCount"],
       );
 
-      expect(
-        tweakedFilesForSnapshotConsistency(helper.getFiles()),
-      ).toMatchInlineSnapshot(`
+      expect(tweakedFilesForSnapshotConsistency(helper.getFiles()))
+        .toMatchInlineSnapshot(`
         {
           "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = 'PLACEHOLDER';
         export const $osdkMetadata = { extraUserAgent: 'typescript-sdk/0.0.0 osdk-cli/0.0.0' };
@@ -3007,11 +2997,7 @@ describe("generator", () => {
   });
 });
 
-function tweakedFilesForSnapshotConsistency(
-  files: {
-    [k: string]: string;
-  },
-) {
+function tweakedFilesForSnapshotConsistency(files: { [k: string]: string }) {
   const ret = { ...files };
 
   ret["/foo/OntologyMetadata.ts"] = ret["/foo/OntologyMetadata.ts"].replace(
