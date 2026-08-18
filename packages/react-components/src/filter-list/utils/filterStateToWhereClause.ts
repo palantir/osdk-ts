@@ -18,6 +18,7 @@ import type {
   LinkedType,
   LinkNames,
   ObjectTypeDefinition,
+  PossibleWhereClauseFilters,
   WhereClause,
 } from "@osdk/api";
 
@@ -33,7 +34,21 @@ import type {
 import { NO_VALUE } from "./filterValues.js";
 import { getFilterKey } from "./getFilterKey.js";
 
-type PropertyFilter = Record<string, unknown> | boolean | string | number;
+/**
+ * Exactly one `$operator` key, drawn from the PossibleWhereClauseFilters
+ */
+type OperatorFilter = {
+  [K in PossibleWhereClauseFilters]: { [P in K]: unknown };
+}[PossibleWhereClauseFilters];
+
+type PropertyFilter = OperatorFilter | boolean | string | number;
+
+/** One property predicate, or a combinator over other fragments. */
+type WhereClauseFragment =
+  | { $and: WhereClauseFragment[] }
+  | { $or: WhereClauseFragment[] }
+  | { $not: WhereClauseFragment }
+  | { [propertyApiName: string]: PropertyFilter };
 
 interface CompoundFilter {
   __compound: true;
@@ -219,7 +234,7 @@ export function buildPropertyKeyClause(
   key: string | number | symbol,
   state: FilterState,
   propertyType?: string,
-): Record<string, unknown> | undefined {
+): WhereClauseFragment | undefined {
   const filter = filterStateToPropertyFilter(state, propertyType);
   if (filter === undefined) {
     return undefined;
@@ -229,7 +244,7 @@ export function buildPropertyKeyClause(
     const fieldClauses = filter.conditions.map((c) => ({
       [key]: c,
     }));
-    let rangeClause: Record<string, unknown> =
+    let rangeClause: WhereClauseFragment =
       fieldClauses.length === 1 ? fieldClauses[0] : { $and: fieldClauses };
     if (filter.includeNull) {
       rangeClause = {
@@ -263,7 +278,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
     return {} as WhereClause<Q>;
   }
 
-  const clauses: Array<Record<string, unknown>> = [];
+  const clauses: WhereClauseFragment[] = [];
 
   for (const definition of definitions) {
     const key = getFilterKey(definition);
@@ -303,11 +318,16 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         if (!state.hasLink) {
           break;
         }
-        const hasLinkClause = { [definition.linkName]: { $isNotNull: true } };
+        // TODO: Fix this
+        // @ts-expect-error -- delete this push when HAS_LINK moves to pivots.
+        const hasLinkClause: WhereClauseFragment = {
+          [definition.linkName]: { $isNotNull: true },
+        };
         // "Excluding" keeps objects that do NOT have the link.
-        clauses.push(
-          state.isExcluding ? { $not: hasLinkClause } : hasLinkClause,
-        );
+        const clause = state.isExcluding
+          ? { $not: hasLinkClause }
+          : hasLinkClause;
+        clauses.push(clause);
         break;
       }
 
@@ -363,14 +383,16 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
           break;
         }
 
-        const containsOp =
-          state.operator === "AND" ? "$containsAllTerms" : "$containsAnyTerm";
+        const propertySearches: WhereClauseFragment[] = propertiesToSearch.map(
+          (prop) => ({
+            [prop]:
+              state.operator === "AND"
+                ? { $containsAllTerms: searchTerm }
+                : { $containsAnyTerm: searchTerm },
+          }),
+        );
 
-        const propertySearches = propertiesToSearch.map((prop) => ({
-          [prop]: { [containsOp]: searchTerm },
-        }));
-
-        let searchClause: Record<string, unknown>;
+        let searchClause: WhereClauseFragment;
         if (propertySearches.length === 1) {
           searchClause = propertySearches[0];
         } else {
@@ -393,7 +415,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         // TypeScript narrows state to CustomFilterState
         const customClause = definition.toWhereClause(state);
         if (customClause && Object.keys(customClause).length > 0) {
-          clauses.push(customClause as Record<string, unknown>);
+          clauses.push(customClause as WhereClauseFragment);
         }
         break;
       }
@@ -402,7 +424,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         if (definition.toWhereClause) {
           const staticClause = definition.toWhereClause(state);
           if (staticClause && Object.keys(staticClause).length > 0) {
-            clauses.push(staticClause as Record<string, unknown>);
+            clauses.push(staticClause as WhereClauseFragment);
           }
         } else {
           const clause = buildPropertyKeyClause(definition.key, state);
