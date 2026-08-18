@@ -110,7 +110,7 @@ describe("narrowObjectSet", () => {
       narrowObjectSet(base, EMPTY_CLAUSE, [filter]);
 
       expect(countClause(base)).toEqual({
-        osdkFilterListLinkCount_hasLink_lead: { $gt: 0 },
+        "osdkFilterListLinkCount_hasLink:lead": { $gt: 0 },
       });
     });
 
@@ -119,7 +119,7 @@ describe("narrowObjectSet", () => {
       narrowObjectSet(base, EMPTY_CLAUSE, [filter]);
 
       const creator =
-        derivedProperties(base)["osdkFilterListLinkCount_hasLink_lead"];
+        derivedProperties(base)["osdkFilterListLinkCount_hasLink:lead"];
       const builder = createMockBuilder();
       creator(builder);
 
@@ -133,8 +133,19 @@ describe("narrowObjectSet", () => {
       narrowObjectSet(base, EMPTY_CLAUSE, [{ ...filter, isExcluding: true }]);
 
       expect(countClause(base)).toEqual({
-        osdkFilterListLinkCount_hasLink_lead: 0,
+        "osdkFilterListLinkCount_hasLink:lead": 0,
       });
+    });
+
+    it("preserves the raw filter id in the derived property name", () => {
+      const base = createMockSet();
+      narrowObjectSet(base, EMPTY_CLAUSE, [
+        { id: "office.city-suffix#1", linkName: "office" },
+      ]);
+
+      expect(Object.keys(derivedProperties(base))).toEqual([
+        "osdkFilterListLinkCount_office.city-suffix#1",
+      ]);
     });
   });
 
@@ -153,7 +164,7 @@ describe("narrowObjectSet", () => {
 
       const creator =
         derivedProperties(base)[
-          "osdkFilterListLinkCount_linkedProperty_lead_fullName"
+          "osdkFilterListLinkCount_linkedProperty:lead:fullName"
         ];
       const builder = createMockBuilder();
       creator(builder);

@@ -1,4 +1,4 @@
-import type { ObjectSet, WhereClause } from "@osdk/api";
+import type { ObjectSet } from "@osdk/api";
 import type {
   ActionDefinition,
   ActionParam,
@@ -189,7 +189,6 @@ interface StatusMessage {
 
 export const EmployeeActionFormFilterListReproPage = React.memo(
   function EmployeeActionFormFilterListReproPageFn() {
-    const [filterClause, setFilterClause] = useState<WhereClause<Employee>>({});
     // HAS_LINK and LINKED_PROPERTY narrow by counting linked objects, which has
     // no `WhereClause` form — the table has to consume the object set
     // FilterList hands back, not just the clause.
@@ -256,7 +255,6 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
             objectType={Employee}
             objectSet={employeeObjectSet}
             filterDefinitions={EMPLOYEE_FILTERS}
-            onFilterClauseChanged={setFilterClause}
             onEffectiveObjectSet={setEffectiveObjectSet}
             title="Employee filters"
             showActiveFilterCount={true}

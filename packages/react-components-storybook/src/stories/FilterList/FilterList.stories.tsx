@@ -1882,7 +1882,12 @@ function WithLinkedPropertyFiltersStory(
       </div>
       <div style={FLEX_FILL_STYLE}>
         <strong>Filter Clause (JSON):</strong>
-        <p>Note: LINKED_PROPERTY filter is not applied through where clause</p>
+        <p>
+          Note: HAS_LINK and LINKED_PROPERTY filters do not appear in the
+          clause. They are applied by narrowing the ObjectSet via
+          <code> onEffectiveObjectSet</code> — pass the returned set to your
+          table.
+        </p>
         <pre style={PRE_STYLE}>
           {filterClause
             ? JSON.stringify(filterClause, null, 2)

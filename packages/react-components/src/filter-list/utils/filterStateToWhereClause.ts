@@ -252,8 +252,8 @@ export interface PropertyTypeInfo {
 
 /**
  * Builds a `WhereClause<Q>` from direct (non-link-traversing) filter
- * definitions and current states. LINKED_PROPERTY filters are excluded —
- * use `getActiveLinkedFilters` for those and apply via `narrowObjectSet`.
+ * definitions and current states. HAS_LINK and LINKED_PROPERTY filters are
+ * excluded as they are applied via `narrowObjectSet`.
  */
 export function buildWhereClause<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,

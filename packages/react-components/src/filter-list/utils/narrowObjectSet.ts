@@ -37,7 +37,7 @@ type LinkCountRdps = Record<string, LinkCountDef>;
 const LINK_COUNT_PREFIX = "osdkFilterListLinkCount_";
 
 function linkCountPropertyName(id: string): string {
-  return `${LINK_COUNT_PREFIX}${id.replaceAll(/[^A-Za-z0-9_]/gu, "_")}`;
+  return `${LINK_COUNT_PREFIX}${id}`;
 }
 
 export function narrowObjectSet<Q extends ObjectTypeDefinition>(
@@ -55,6 +55,12 @@ export function narrowObjectSet<Q extends ObjectTypeDefinition>(
     ? [whereClause as WhereClauseFragment]
     : [];
 
+  // Each active HAS_LINK / LINKED_PROPERTY filter attaches a `$count` derived
+  // property to the returned `ObjectSet`. These RDPs are an internal artifact
+  // of the filter — downstream consumers (e.g. `ObjectTable`) do not need to
+  // see them.
+  // If we see an issue with it, we can look into stripping any property whose name begins with
+  // `LINK_COUNT_PREFIX`.
   for (const filter of linkedFilters) {
     const propertyName = linkCountPropertyName(filter.id);
     creators[propertyName] = createLinkCount(filter);

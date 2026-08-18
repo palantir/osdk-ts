@@ -37,8 +37,9 @@ import type {
  */
 export type LinkedFilter<Q extends ObjectTypeDefinition> = {
   [L in LinkNames<Q>]: {
-    /** Stable identity for the filter; names the derived count property. */
+    /** Stable identity for the filter */
     id: string;
+
     linkName: L;
     /**
      * Predicate the linked objects must match to be counted.
