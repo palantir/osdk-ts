@@ -147,7 +147,7 @@ async function readImportMap(
 
   let parsed: unknown;
   try {
-    parsed = parseYaml(await fs.promises.readFile(importMapPath, "utf8"));
+    parsed = parseYaml(await fs.promises.readFile(importMapPath, "utf-8"));
   } catch {
     throw new ExitProcessError(
       1,

@@ -134,7 +134,7 @@ describe(handleOacGenerate, () => {
     });
 
     const manifest = JSON.parse(
-      await readFile(join(outDir, "semantic-manifest.json"), "utf8"),
+      await readFile(join(outDir, "semantic-manifest.json"), "utf-8"),
     );
     expect(manifest.imports).toEqual([
       {

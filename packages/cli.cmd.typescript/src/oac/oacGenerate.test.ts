@@ -20,7 +20,7 @@ import yargs from "yargs";
 import { oacGenerateCommand } from "./oacGenerate.js";
 
 describe("oac generate", () => {
-  it("requires a package name", async () => {
+  it("requires a package name", () => {
     expect(() =>
       yargs([
         "generate",
@@ -41,7 +41,7 @@ describe("oac generate", () => {
     ).toThrow("Missing required argument: packageName");
   });
 
-  it("rejects an empty package name", async () => {
+  it("rejects an empty package name", () => {
     expect(() =>
       yargs([
         "generate",
