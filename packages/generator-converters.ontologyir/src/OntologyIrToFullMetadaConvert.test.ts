@@ -53,8 +53,8 @@ type StringValueTypeConstraint = Extract<
 
 type ValueTypeLocation = "owned" | "imported";
 
-const RANDOMNESS_KEY = "current-v2-envelope";
-const VALUE_TYPE_API_NAME = "trackQuality";
+const RANDOMNESS_KEY = "notional-record-envelope";
+const VALUE_TYPE_API_NAME = "recordState";
 const VALUE_TYPE_VERSION = "10.0.0";
 const VALUE_TYPE_RID = valueTypeRid(VALUE_TYPE_API_NAME, RANDOMNESS_KEY);
 const VALUE_TYPE_VERSION_ID = valueTypeVersionId(VALUE_TYPE_VERSION);
@@ -151,7 +151,7 @@ function valueType(
       baseType: { type: "string", string: {} },
       constraints: [{
         constraint: {
-          constraint: stringOneOfConstraint(["HIGH", "MEDIUM", "LOW"]),
+          constraint: stringOneOfConstraint(["DRAFT", "READY", "ARCHIVED"]),
           failureMessage: undefined,
         },
       }],
@@ -243,10 +243,10 @@ function currentV2Envelope(
   importedValueTypes: ValueTypeBlockData[] = [],
 ): OntologyIrV2 {
   const ancestor = interfaceType("transitive.Ancestor", [], {
-    inheritedQuality: {
+    ancestorLabel: {
       type: "interfaceDefinedPropertyType",
       interfaceDefinedPropertyType: interfaceDefinedProperty(
-        "inheritedQuality",
+        "ancestorLabel",
       ),
     },
   });
@@ -256,15 +256,15 @@ function currentV2Envelope(
     {},
   );
   const child = interfaceType("local.Item", [parent.interfaceType.rid], {
-    inlineQuality: {
+    localLabel: {
       type: "interfaceDefinedPropertyType",
-      interfaceDefinedPropertyType: interfaceDefinedProperty("inlineQuality"),
+      interfaceDefinedPropertyType: interfaceDefinedProperty("localLabel"),
     },
-    trackQuality: {
+    recordState: {
       type: "sharedPropertyBasedPropertyType",
       sharedPropertyBasedPropertyType: {
         requireImplementation: true,
-        sharedPropertyType: sharedProperty("trackQuality"),
+        sharedPropertyType: sharedProperty("recordState"),
       },
     },
   });
@@ -3943,8 +3943,8 @@ describe(OntologyIrToFullMetadataConverter, () => {
       const metadata = OntologyIrToFullMetadataConverter
         .getFullMetadataFromEnvelope(currentV2Envelope());
 
-      expect(metadata.valueTypes.trackQuality).toMatchObject({
-        apiName: "trackQuality",
+      expect(metadata.valueTypes.recordState).toMatchObject({
+        apiName: "recordState",
         fieldType: { type: "string" },
         version: "10.0.0",
       });
@@ -3954,8 +3954,8 @@ describe(OntologyIrToFullMetadataConverter, () => {
       const metadata = OntologyIrToFullMetadataConverter
         .getFullMetadataFromEnvelope(currentV2Envelope("imported"));
 
-      expect(metadata.valueTypes.trackQuality).toMatchObject({
-        apiName: "trackQuality",
+      expect(metadata.valueTypes.recordState).toMatchObject({
+        apiName: "recordState",
         version: "10.0.0",
       });
     });
@@ -3975,7 +3975,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
             ),
           );
 
-        expect(metadata.valueTypes.trackQuality.version).toBe("10.0.0");
+        expect(metadata.valueTypes.recordState.version).toBe("10.0.0");
       }
     });
 
@@ -3989,7 +3989,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
           ),
         );
 
-      expect(metadata.valueTypes.trackQuality.displayName).toBe("Owned");
+      expect(metadata.valueTypes.recordState.displayName).toBe("Owned");
     });
 
     it("preserves value type api names on direct and resolved interface properties", () => {
@@ -3997,13 +3997,13 @@ describe(OntologyIrToFullMetadataConverter, () => {
         .getFullMetadataFromEnvelope(currentV2Envelope());
       const child = metadata.interfaceTypes["local.Item"];
 
-      expect(child.propertiesV2.trackQuality).toMatchObject({
+      expect(child.propertiesV2.recordState).toMatchObject({
         valueTypeApiName: VALUE_TYPE_API_NAME,
       });
-      expect(child.propertiesV2.inlineQuality).toMatchObject({
+      expect(child.propertiesV2.localLabel).toMatchObject({
         valueTypeApiName: VALUE_TYPE_API_NAME,
       });
-      expect(child.allPropertiesV2.inheritedQuality).toMatchObject({
+      expect(child.allPropertiesV2.ancestorLabel).toMatchObject({
         valueTypeApiName: VALUE_TYPE_API_NAME,
       });
     });
@@ -4018,7 +4018,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
         "transitive.Ancestor",
         "imported.Parent",
       ]);
-      expect(child.allPropertiesV2.inheritedQuality).toBeDefined();
+      expect(child.allPropertiesV2.ancestorLabel).toBeDefined();
       expect(child.implementedByObjectTypes).toEqual([]);
     });
 
@@ -4038,7 +4038,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
       expect(
         generated.files.get("generated/ontology/interfaces/Item.ts"),
       ).toContain(
-        "readonly trackQuality: 'HIGH' | 'MEDIUM' | 'LOW' | undefined;",
+        "readonly recordState: 'DRAFT' | 'READY' | 'ARCHIVED' | undefined;",
       );
     });
 

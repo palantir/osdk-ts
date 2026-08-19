@@ -1179,9 +1179,9 @@ describe("Experimental Test Suite", () => {
       await defineOntology(
         "com.external.",
         () => {
-          const quality = defineValueType({
-            apiName: "quality",
-            displayName: "Quality",
+          const recordState = defineValueType({
+            apiName: "recordState",
+            displayName: "Record State",
             type: {
               type: "string",
               constraints: [
@@ -1190,7 +1190,7 @@ describe("Experimental Test Suite", () => {
                     type: "oneOf",
                     oneOf: {
                       useIgnoreCase: false,
-                      values: ["HIGH", "LOW"],
+                      values: ["DRAFT", "ARCHIVED"],
                     },
                   },
                 },
@@ -1201,9 +1201,9 @@ describe("Experimental Test Suite", () => {
           const ancestor = defineInterface({
             apiName: "ancestor",
             properties: {
-              quality: {
+              recordState: {
                 type: "string",
-                valueType: quality,
+                valueType: recordState,
               },
             },
           });
@@ -1235,7 +1235,7 @@ describe("Experimental Test Suite", () => {
       expect(result.ontologyIr.importedValueTypes).toContainEqual(
         expect.objectContaining({
           metadata: expect.objectContaining({
-            apiName: "quality",
+            apiName: "recordState",
           }),
           versions: [
             expect.objectContaining({
@@ -1251,16 +1251,17 @@ describe("Experimental Test Suite", () => {
         );
       expect({
         inheritedProperty:
-          metadata.interfaceTypes["com.consumer.child"].allPropertiesV2.quality,
-        valueType: metadata.valueTypes.quality,
+          metadata.interfaceTypes["com.consumer.child"].allPropertiesV2
+            .recordState,
+        valueType: metadata.valueTypes.recordState,
       }).toMatchObject({
         inheritedProperty: {
-          valueTypeApiName: "quality",
+          valueTypeApiName: "recordState",
         },
         valueType: {
           constraints: [
             {
-              options: ["HIGH", "LOW"],
+              options: ["DRAFT", "ARCHIVED"],
               type: "enum",
             },
           ],
