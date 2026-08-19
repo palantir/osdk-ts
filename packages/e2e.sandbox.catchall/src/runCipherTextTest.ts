@@ -74,9 +74,7 @@ export async function runCipherTextTest(): Promise<void> {
 
   const edits = createEditBatch<
     Edits.Object<CipherTextTest> | Edits.Interface<CipherTextInterface>
-  >(
-    cipherTextOntologyClient,
-  );
+  >(cipherTextOntologyClient);
 
   const existingPk1 = nonNullFilterTestData[0]!.pk;
   const existingPk2 = nullFilterTestData[0]!.pk;
@@ -88,22 +86,28 @@ export async function runCipherTextTest(): Promise<void> {
     },
   });
 
-  edits.update({
-    $apiName: "CipherTextTest",
-    $primaryKey: existingPk1,
-  }, {
-    encrypted: {
-      plaintext: "new-value",
-      strategy: "PREFER_DEFAULT",
+  edits.update(
+    {
+      $apiName: "CipherTextTest",
+      $primaryKey: existingPk1,
     },
-  });
+    {
+      encrypted: {
+        plaintext: "new-value",
+        strategy: "PREFER_DEFAULT",
+      },
+    },
+  );
 
-  edits.update({
-    $apiName: "CipherTextTest",
-    $primaryKey: existingPk2,
-  }, {
-    encrypted: result.encrypted,
-  });
+  edits.update(
+    {
+      $apiName: "CipherTextTest",
+      $primaryKey: existingPk2,
+    },
+    {
+      encrypted: result.encrypted,
+    },
+  );
 
   edits.create(CipherTextInterface, {
     $objectType: "CipherTextTest",
@@ -116,39 +120,39 @@ export async function runCipherTextTest(): Promise<void> {
 
   const getEntryForPk = (pk: string) =>
     editEntries.find(
-      v => (v.type === "createObject" && v.properties.pk === pk
-        || v.type === "updateObject" && v.obj.$primaryKey === pk
-        || v.type === "deleteObject" && v.obj.$primaryKey === pk),
+      (v) =>
+        (v.type === "createObject" && v.properties.pk === pk) ||
+        (v.type === "updateObject" && v.obj.$primaryKey === pk) ||
+        (v.type === "deleteObject" && v.obj.$primaryKey === pk),
     );
 
-  const createEntry = getEntryForPk("new-object-001") as CreateObject<
-    CipherTextTest
-  >;
+  const createEntry = getEntryForPk(
+    "new-object-001",
+  ) as CreateObject<CipherTextTest>;
   invariant(
     (createEntry.properties.encrypted as CreateCipherText).plaintext === "test",
     "Expected created object to have plaintext value 'test'",
   );
 
-  const updatePlaintextEntry = getEntryForPk(existingPk1) as UpdateObject<
-    CipherTextTest
-  >;
+  const updatePlaintextEntry = getEntryForPk(
+    existingPk1,
+  ) as UpdateObject<CipherTextTest>;
   invariant(
-    (updatePlaintextEntry.properties.encrypted as UpdateCipherText).plaintext
-        === "new-value"
-      && (updatePlaintextEntry.properties.encrypted as UpdateCipherText)
-          .strategy === "PREFER_DEFAULT",
+    (updatePlaintextEntry.properties.encrypted as UpdateCipherText)
+      .plaintext === "new-value" &&
+      (updatePlaintextEntry.properties.encrypted as UpdateCipherText)
+        .strategy === "PREFER_DEFAULT",
     "Expected updated object to have correct plaintext value and channel strategy",
   );
 
   const updateCipherTextEntry = getEntryForPk(
     existingPk2,
-  ) as UpdateObject<
-    CipherTextTest
-  >;
+  ) as UpdateObject<CipherTextTest>;
 
   invariant(
-    (updateCipherTextEntry.properties.encrypted as CipherTextValue).ciphertext
-      === (result.encrypted as unknown as { getValue(): string }).getValue(),
+    (updateCipherTextEntry.properties.encrypted as CipherTextValue)
+      .ciphertext ===
+      (result.encrypted as unknown as { getValue(): string }).getValue(),
     "Expected updated object to contain same cipher text string",
   );
 

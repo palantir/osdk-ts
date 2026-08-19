@@ -42,7 +42,7 @@ describe(extractCipherTextValue, () => {
       plaintext: "secret",
     });
     expect(
-      extractCipherTextValue({ plaintext: "secret", strategy: "X" })
+      extractCipherTextValue({ plaintext: "secret", strategy: "X" }),
     ).toEqual({ plaintext: "secret", strategy: "X" });
   });
 
@@ -57,7 +57,7 @@ describe(extractCipherTextValue, () => {
 
   it("normalizes each element of a multiplicity array", () => {
     expect(
-      extractCipherTextValue([existingCipherText, { plaintext: "s" }])
+      extractCipherTextValue([existingCipherText, { plaintext: "s" }]),
     ).toEqual([{ ciphertext: value }, { plaintext: "s" }]);
   });
 });
@@ -71,7 +71,7 @@ describe(toFunctionEditValue, () => {
         secret: existingCipherText,
         secret2: { plaintext: "p" },
         $objectType: "Foo",
-      })
+      }),
     ).toEqual({
       id: 1,
       name: "hi",

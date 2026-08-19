@@ -370,7 +370,7 @@ describe(createEditBatch, () => {
 
     editBatch.update(
       { $apiName: "objectTypeWithAllPropertyTypes", $primaryKey: 1 },
-      { cipherText: existingCipherText }
+      { cipherText: existingCipherText },
     );
 
     editBatch.update(
@@ -380,7 +380,7 @@ describe(createEditBatch, () => {
           plaintext: "secret",
           strategy: "PREFER_EXISTING",
         },
-      }
+      },
     );
 
     expect(editBatch.getEdits()).toEqual([

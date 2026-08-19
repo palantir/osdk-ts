@@ -2030,7 +2030,7 @@ export type PropertyTypeReferenceOrStringConstant = StringConstant | PropertyTyp
 // @public
 export type PropertyValueFormattingRule = PropertyNumberFormattingRule | PropertyTimestampFormattingRule | PropertyDateFormattingRule | PropertyBooleanFormattingRule | PropertyKnownTypeFormattingRule;
 
-// @public (undocumented)
+// @public
 export interface PropertyValueWireToClient {
     	// (undocumented)
     attachment: Attachment;

@@ -51,7 +51,7 @@ export function extractCipherTextValue(value: unknown): unknown {
  * producing the backend wire shape.
  */
 export function toFunctionEditValue(
-  properties: object
+  properties: object,
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(properties)) {
