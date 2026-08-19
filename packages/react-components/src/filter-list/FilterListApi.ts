@@ -78,6 +78,8 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
    * Optional object set to scope aggregation queries. When omitted,
    * aggregations run against the full object type.
+   *
+   * Required for `HAS_LINK` and `LINKED_PROPERTY` filters to work.
    */
   objectSet?: ObjectSet<Q>;
 
