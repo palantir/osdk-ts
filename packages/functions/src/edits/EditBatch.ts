@@ -131,22 +131,25 @@ export type UpdatableObjectOrInterfaceLocators<X extends AnyEdit> =
       ? InterfaceLocator<ID>
       : never;
 
-// Returns the friendly INPUT property type callers pass to `update`, computed
-// from the resolved definition (the outer conditional selects the edit member
-// addressed by the locator; the inner one recovers its concrete definition).
+// Returns the friendly INPUT property type callers pass to `update`. Match the
+// edit by API name and explicitly require an interface locator for interface
+// edits, then compute the input properties from the concrete definition.
 export type UpdatableObjectOrInterfaceLocatorProperties<
   X extends AnyEdit,
   OL extends ObjectLocator<any>,
-> =
-  X extends UpdateObject<ObjectTypeDefinitionForLocator<OL>>
-    ? X extends UpdateObject<infer OTD>
-      ? UpdateObjectInputProps<OTD>
-      : never
-    : X extends UpdateObjectForInterface<InterfaceDefinitionForLocator<OL>>
-      ? X extends UpdateObjectForInterface<infer ID>
-        ? UpdateInterfaceInputProps<ID>
+> = X extends UpdateObject<any> | UpdateObjectForInterface<any>
+  ? OL["$apiName"] extends X["obj"]["$apiName"]
+    ? X["obj"] extends InterfaceLocator<any>
+      ? OL extends { $objectType: unknown }
+        ? X extends UpdateObjectForInterface<infer ID>
+          ? UpdateInterfaceInputProps<ID>
+          : never
         : never
-      : never;
+      : X extends UpdateObject<infer OTD>
+        ? UpdateObjectInputProps<OTD>
+        : never
+    : never
+  : never;
 
 export interface EditBatch<X extends AnyEdit = never> {
   link: <SOL extends AddLinkSources<X>, A extends AddLinkApiNames<X, SOL>>(
