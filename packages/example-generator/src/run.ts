@@ -34,12 +34,18 @@ import { promisify } from "node:util";
 import * as tmp from "tmp";
 import { gitIgnoreFilter } from "./gitIgnoreFilter.js";
 
-/**
- * The template metadata the shared example helpers actually need. Kept to a
- * subset so both the create-app and create-widget `Template` types satisfy it,
- * as they only overlap on the fields used for naming and file lookup.
- */
-type ExampleTemplate = Pick<Template, "id" | "files">;
+type ExampleTemplate =
+  | CreateAppTemplate
+  | CreateWidgetTemplate;
+
+type CreateAppTemplate = { type: "create-app"; template: Template };
+type CreateWidgetTemplate = { type: "create-widget"; template: WidgetTemplate };
+
+const CREATE_APP_TEMPLATES: readonly CreateAppTemplate[] = TEMPLATES.map(
+  template => ({ type: "create-app", template }),
+);
+const CREATE_WIDGET_TEMPLATES: readonly CreateWidgetTemplate[] =
+  WIDGET_TEMPLATES.map(template => ({ type: "create-widget", template }));
 
 interface RunArgs {
   outputDirectory: string;
@@ -59,14 +65,14 @@ export async function run({ outputDirectory, check }: RunArgs): Promise<void> {
 
   const templatesWithSdkVersionWithOsdk = templatesWithSdkVersions(
     [
-      ...TEMPLATES,
-      ...WIDGET_TEMPLATES.filter(t => t.supportsOsdk),
+      ...CREATE_APP_TEMPLATES,
+      ...CREATE_WIDGET_TEMPLATES.filter(t => t.template.supportsOsdk),
     ],
     true,
   );
   const templatesWithSdkVersionWithoutOsdk = [
-    ...templatesWithSdkVersions(TEMPLATES, false),
-    ...templatesWithSdkVersions(WIDGET_TEMPLATES, false),
+    ...templatesWithSdkVersions(CREATE_APP_TEMPLATES, false),
+    ...templatesWithSdkVersions(CREATE_WIDGET_TEMPLATES, false),
   ];
 
   if (check) {
@@ -104,12 +110,12 @@ function createTmpDir(): tmp.DirResult {
   return tmpDir;
 }
 
-function templatesWithSdkVersions<T extends Pick<Template, "files" | "hidden">>(
+function templatesWithSdkVersions<T extends ExampleTemplate>(
   templates: readonly T[],
   isUsingOsdk: boolean = true,
 ) {
   let templatesWithSdkVersions = templates.flatMap((template) =>
-    Object.keys(template.files).map((sdkVersion) =>
+    Object.keys(template.template.files).map((sdkVersion) =>
       [template, sdkVersion as SdkVersion] as const
     )
   );
@@ -118,7 +124,7 @@ function templatesWithSdkVersions<T extends Pick<Template, "files" | "hidden">>(
   if (!isUsingOsdk) {
     templatesWithSdkVersions = templatesWithSdkVersions.filter((
       [template, sdkVersion],
-    ) => !template.hidden && sdkVersion === "2.x");
+    ) => !template.template.hidden && sdkVersion === "2.x");
   }
 
   return templatesWithSdkVersions;
@@ -126,7 +132,7 @@ function templatesWithSdkVersions<T extends Pick<Template, "files" | "hidden">>(
 
 async function generateCreateAppExamples(
   tmpDir: tmp.DirResult,
-  template: Template,
+  exampleTemplate: CreateAppTemplate,
   sdkVersion: SdkVersion,
   osdkArgs?: {
     package: string;
@@ -134,9 +140,10 @@ async function generateCreateAppExamples(
     registryUrl: string;
   },
 ): Promise<void> {
+  const { template } = exampleTemplate;
   process.chdir(tmpDir.name);
   const exampleId = sdkVersionedTemplateExampleId(
-    template,
+    exampleTemplate,
     sdkVersion,
     osdkArgs != null,
   );
@@ -164,7 +171,13 @@ async function generateCreateAppExamples(
     scopes: ["api:ontologies-read", "api:ontologies-write"],
   });
 
-  await mutateFiles(tmpDir, exampleId, template, sdkVersion, osdkArgs != null);
+  await mutateFiles(
+    tmpDir,
+    exampleId,
+    exampleTemplate,
+    sdkVersion,
+    osdkArgs != null,
+  );
 }
 
 async function generateCreateAppExamplesWithOsdk(
@@ -172,7 +185,10 @@ async function generateCreateAppExamplesWithOsdk(
 ): Promise<void> {
   process.chdir(tmpDir.name);
   for (
-    const [template, sdkVersion] of templatesWithSdkVersions(TEMPLATES, true)
+    const [template, sdkVersion] of templatesWithSdkVersions(
+      CREATE_APP_TEMPLATES,
+      true,
+    )
   ) {
     const osdkPackage = sdkVersion === "2.x"
       ? "@osdk/e2e.generated.catchall"
@@ -191,7 +207,7 @@ async function generateCreateAppExamplesWithoutOsdk(
 ): Promise<void> {
   for (
     const [template, sdkVersion] of templatesWithSdkVersions(
-      TEMPLATES,
+      CREATE_APP_TEMPLATES,
       false,
     )
   ) {
@@ -201,14 +217,15 @@ async function generateCreateAppExamplesWithoutOsdk(
 
 async function generateCreateWidgetExample(
   tmpDir: tmp.DirResult,
-  template: WidgetTemplate,
+  exampleTemplate: CreateWidgetTemplate,
   sdkVersion: SdkVersion,
   osdkPackage?: string,
 ): Promise<void> {
+  const { template } = exampleTemplate;
   process.chdir(tmpDir.name);
   const isUsingOsdk = osdkPackage != null;
   const exampleId = sdkVersionedTemplateExampleId(
-    template,
+    exampleTemplate,
     sdkVersion,
     isUsingOsdk,
   );
@@ -230,7 +247,13 @@ async function generateCreateWidgetExample(
       ? "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm"
       : undefined,
   });
-  await mutateFiles(tmpDir, exampleId, template, sdkVersion, isUsingOsdk);
+  await mutateFiles(
+    tmpDir,
+    exampleId,
+    exampleTemplate,
+    sdkVersion,
+    isUsingOsdk,
+  );
 }
 
 async function generateCreateWidgetExamplesWithOsdk(
@@ -238,7 +261,7 @@ async function generateCreateWidgetExamplesWithOsdk(
 ): Promise<void> {
   for (
     const [template, sdkVersion] of templatesWithSdkVersions(
-      WIDGET_TEMPLATES.filter(t => t.supportsOsdk),
+      CREATE_WIDGET_TEMPLATES.filter(t => t.template.supportsOsdk),
     )
   ) {
     const osdkPackage = sdkVersion === "2.x"
@@ -258,7 +281,7 @@ async function generateCreateWidgetExamplesWithoutOsdk(
 ): Promise<void> {
   for (
     const [template, sdkVersion] of templatesWithSdkVersions(
-      WIDGET_TEMPLATES,
+      CREATE_WIDGET_TEMPLATES,
       false,
     )
   ) {
@@ -312,8 +335,10 @@ async function fixMonorepolint(tmpDir: tmp.DirResult): Promise<void> {
   }
   process.chdir(path.dirname(mrlConfig));
   const mrlPathsWithOsdk = [
-    ...templatesWithSdkVersions(TEMPLATES, true),
-    ...templatesWithSdkVersions(WIDGET_TEMPLATES.filter(t => t.supportsOsdk)),
+    ...templatesWithSdkVersions(CREATE_APP_TEMPLATES, true),
+    ...templatesWithSdkVersions(
+      CREATE_WIDGET_TEMPLATES.filter(t => t.template.supportsOsdk),
+    ),
   ].map((
     [template, sdkVersion],
   ) =>
@@ -324,8 +349,8 @@ async function fixMonorepolint(tmpDir: tmp.DirResult): Promise<void> {
     )
   );
   const mrlPathsWithoutOsdk = [
-    ...templatesWithSdkVersions(TEMPLATES, false),
-    ...templatesWithSdkVersions(WIDGET_TEMPLATES, false),
+    ...templatesWithSdkVersions(CREATE_APP_TEMPLATES, false),
+    ...templatesWithSdkVersions(CREATE_WIDGET_TEMPLATES, false),
   ]
     .map((
       [template, sdkVersion],
@@ -541,7 +566,9 @@ const UPDATE_README: Mutator = {
   filePattern: "README.md",
   mutate: (template, _, sdkVersion, isUsingOsdk) => ({
     type: "modify",
-    newContent: readme(template, sdkVersion, isUsingOsdk),
+    newContent: template.type === "create-app"
+      ? appReadme(template, sdkVersion, isUsingOsdk)
+      : widgetReadme(template, isUsingOsdk),
   }),
 };
 
@@ -552,7 +579,7 @@ const MUTATORS: Mutator[] = [
 ];
 
 function templateCanonicalId(template: ExampleTemplate): string {
-  return template.id.replace(/^template-/, "");
+  return template.template.id.replace(/^template-/, "");
 }
 
 function sdkVersionedTemplateCanonicalId(
@@ -576,8 +603,8 @@ function sdkVersionedTemplateExampleId(
   }`;
 }
 
-function readme(
-  template: ExampleTemplate,
+function appReadme(
+  template: CreateAppTemplate,
   sdkVersion: SdkVersion,
   isUsingOsdk: boolean = true,
 ): string {
@@ -593,11 +620,33 @@ To quickly create your own version of this template run the following command an
 npm create @osdk/app@latest -- --template ${templateCanonicalId(template)}${
     // Only surface --sdkVersion when the template offers more than one version;
     // for single-version templates create-app defaults to the only version.
-    Object.keys(template.files).length > 1
+    Object.keys(template.template.files).length > 1
       ? ` --sdkVersion ${sdkVersion}`
       : ""}${!isUsingOsdk ? " --skipOsdk" : ""}
 \`\`\`
 
 Alternatively check out the Developer Console docs for a full guide on creating and deploying frontend applications with the Ontology SDK.
+`;
+}
+
+function widgetReadme(
+  template: CreateWidgetTemplate,
+  isUsingOsdk: boolean = true,
+): string {
+  return `# ${templateExampleId(template)}
+
+This project was generated with [\`@osdk/create-widget\`](https://www.npmjs.com/package/@osdk/create-widget) from the \`${
+    templateCanonicalId(template)
+  }\` template. It is built against a locally generated SDK and a non-existent Foundry stack, so it is intended for reference purposes only.
+
+To quickly create your own version of this template run the following command and answer the prompts based on your Custom Widgets widget set:
+
+\`\`\`
+npm create @osdk/widget@latest -- --template ${templateCanonicalId(template)}${
+    !isUsingOsdk ? " --skipOsdk" : ""
+  }
+\`\`\`
+
+Alternatively check out the Custom Widgets docs for a full guide on creating and deploying widgets.
 `;
 }
