@@ -14,21 +14,4 @@
  * limitations under the License.
  */
 
-import { loadResolvedAliases } from "./loaders.js";
-import type { Dataset } from "./types.js";
-export type { Dataset } from "./types.js";
-
-export function dataset(alias: string): Dataset {
-  const resolvedAliases = loadResolvedAliases();
-
-  if (!(alias in resolvedAliases.datasets)) {
-    const available = Object.keys(resolvedAliases.datasets);
-    throw new Error(
-      `Dataset alias '${alias}' not found. Available aliases: [${available.join(
-        ", ",
-      )}]`,
-    );
-  }
-
-  return resolvedAliases.datasets[alias];
-}
+export * from "./build/cjs/public/node.cjs";

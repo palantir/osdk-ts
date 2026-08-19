@@ -221,8 +221,8 @@ export function loadResolvedAliases(): ResolvedAliases {
     case AliasEnvironment.BROWSER:
       throw new Error(
         "Browser alias environment detected. This filesystem-based loader " +
-          "cannot run in a browser. Import from '@osdk/functions/browser-aliases' " +
-          "and call `await initAliases()` before reading aliases instead.",
+          "cannot run in a browser. Import from '@osdk/aliases' and call " +
+          "`await initAliases()` before reading aliases instead.",
       );
   }
 }

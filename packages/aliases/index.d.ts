@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from "./build/cjs/public/browser-aliases.cjs";
+export * from "./build/cjs/index.cjs";

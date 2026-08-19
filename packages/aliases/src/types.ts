@@ -54,7 +54,7 @@ export enum AliasEnvironment {
   LIVE_PREVIEW = "LIVE_PREVIEW",
   // Dev Console applications run in the browser, where there is no filesystem
   // or process.env. Resolved aliases are fetched from the served deployment
-  // config file instead. Use the "@osdk/functions/browser-aliases" subpath.
+  // config file instead. Use the browser entry point, "@osdk/aliases".
   BROWSER = "BROWSER",
 }
 
@@ -62,7 +62,7 @@ export enum AliasEnvironment {
 
 /**
  * Shape of the deployment config file that Foundry website hosting serves at
- * {@link ../public/browser-aliases}'s default path. It is a flat map of
+ * the browser entry point's default path. It is a flat map of
  * strings; resolved custom aliases are packed under `aliases` as a stringified
  * JSON object (a `Record<string, string>`) so they cannot collide with the
  * reserved system keys.
