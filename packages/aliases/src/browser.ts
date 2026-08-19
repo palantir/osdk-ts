@@ -90,6 +90,9 @@ let inFlight: Promise<void> | undefined;
  * Fetches and caches the resolved aliases for this installation. Call once at
  * application startup and await it before reading any aliases. Repeated calls
  * are deduplicated and become no-ops once the aliases are cached.
+ *
+ * @experimental Exposed only via "@osdk/aliases/experimental". Both custom
+ * aliases and the shape of this API are provisional and may change.
  */
 export async function initAliases(options?: InitAliasesOptions): Promise<void> {
   if (cachedCustomAliases !== undefined) {
@@ -282,6 +285,9 @@ function parseResolvedAliases(raw: string): Record<string, string> {
 /**
  * Returns the resolved value for a custom alias. Aliases must have been loaded
  * via {@link initAliases} first; otherwise this throws.
+ *
+ * @experimental Exposed only via "@osdk/aliases/experimental". Both custom
+ * aliases and the shape of this API are provisional and may change.
  */
 export function custom(alias: string): Custom {
   if (cachedCustomAliases === undefined) {

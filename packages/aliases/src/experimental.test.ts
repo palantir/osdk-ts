@@ -29,7 +29,7 @@ import {
   DEFAULT_DEPLOYMENT_CONFIG_PATH,
   initAliases,
   resetAliasesCache,
-} from "./index.js";
+} from "./public/experimental.js";
 
 const DECLARATIONS = {
   aliases: { custom: { apiBaseUrl: { value: "https://api.example.com" } } },
@@ -46,7 +46,7 @@ function mockFetch(): typeof globalThis.fetch {
     })) as unknown as typeof globalThis.fetch;
 }
 
-describe("browser entry point", () => {
+describe("experimental browser entry point", () => {
   afterEach(() => {
     resetAliasesCache();
   });
