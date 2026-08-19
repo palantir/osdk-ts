@@ -27,7 +27,9 @@ export const FilterList: typeof _FilterList = withOsdkMetrics(
 );
 
 export type {
+  FilterChangeCause,
   FilterChangeEvent,
+  FilterChangeSnapshot,
   FilterDefinitionUnion,
   FilterListProps,
 } from "../../filter-list/FilterListApi.js";
@@ -66,9 +68,9 @@ export type {
   ActiveHasLinkFilter,
   ActiveKeywordSearchFilter,
   ActiveLinkedPropertyFilter,
+  ActiveLinkFilter,
   ActivePropertyFilter,
   ActiveStaticValuesFilter,
 } from "../../filter-list/types/ActiveFilterTypes.js";
 export type { LinkedFilter } from "../../filter-list/types/LinkedFilterTypes.js";
-export { getActiveFilters } from "../../filter-list/utils/getActiveFilters.js";
 export { narrowObjectSet } from "../../filter-list/utils/narrowObjectSet.js";

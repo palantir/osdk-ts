@@ -57,15 +57,9 @@ export type FilterDefinitionUnion<Q extends ObjectTypeDefinition> =
   | StaticValuesFilterDefinition<Q>;
 
 /**
- * Everything that changed when a single filter's state changed, in one payload.
+ * The filter state after a change, in one payload.
  */
-export interface FilterChangeEvent<Q extends ObjectTypeDefinition> {
-  /** Key of the filter the user changed. */
-  filterKey: string;
-
-  /** The changed filter's new state. */
-  newState: FilterState;
-
+export interface FilterChangeSnapshot<Q extends ObjectTypeDefinition> {
   /**
    * The combined clause for all active filters.
    *
@@ -83,11 +77,29 @@ export interface FilterChangeEvent<Q extends ObjectTypeDefinition> {
   /**
    * Every active filter in `filterDefinitions` order, each tagged with the
    * `kind` of its definition. Narrow on `kind` to read the fields for that
-   * kind: `clause` for the clause-producing kinds, `linkName` /`innerWhere` /
+   * kind: `clause` for the clause-producing kinds, `linkName` / `innerWhere` /
    * `isExcluding` for `HAS_LINK` and `LINKED_PROPERTY`.
    */
   activeFilters: ReadonlyArray<ActiveFilter<Q>>;
 }
+
+/**
+ * What the user did to the filter state.
+ */
+export type FilterChangeCause =
+  /** A filter's state was set. */
+  | { cause: "SET"; filterKey: string; newState: FilterState }
+  /** A filter's state was cleared, e.g. by removing the filter. */
+  | { cause: "CLEAR"; filterKey: string }
+  /** Every filter was restored to the state it mounted with. */
+  | { cause: "RESET" };
+
+/**
+ * What the user did, plus the filter state it produced. Narrow on `cause` to
+ * read the fields that only apply to that cause.
+ */
+export type FilterChangeEvent<Q extends ObjectTypeDefinition> =
+  FilterChangeSnapshot<Q> & FilterChangeCause;
 
 export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
@@ -143,14 +155,14 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Called when a filter's state changes, with the new state, the resulting
-   * clause, the filtered `ObjectSet` and the active linked filters in a single
-   * payload.
+   * Called whenever filter state changes — a filter set, a filter cleared, or a
+   * reset — with what the user did and the resulting clause, filtered
+   * `ObjectSet` and active filters in a single payload.
    *
    * Prefer this over combining `onFilterStateChanged`, `onFilterClauseChanged`
    * and `onEffectiveObjectSet`, which each report one slice of the same change.
    *
-   * @param event The changed filter and everything derived from the change
+   * @param event What changed and the filter state it produced
    */
   onFilterChanged?: (event: FilterChangeEvent<Q>) => void;
 

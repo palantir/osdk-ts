@@ -552,6 +552,7 @@ describe("useFilterListState", () => {
 
       expect(onFilterChanged).toHaveBeenCalledTimes(1);
       expect(onFilterChanged).toHaveBeenCalledWith({
+        cause: "SET",
         filterKey: getFilterKey(nameDef),
         newState,
         filterClause: { name: "John" },
@@ -736,6 +737,95 @@ describe("useFilterListState", () => {
       expect(vi.mocked(withCounts.where).mock.calls[0][0]).toEqual({
         [`osdkFilterListLinkCount_${getFilterKey(hasLinkDef)}`]: { $gt: 0 },
       });
+    });
+
+    it("reports a cleared filter with the clause it left behind", () => {
+      const onFilterChanged = vi.fn();
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const idDef = createPropertyFilterDef(
+        "id",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef, idDef],
+        defaultFilterStates: new Map([
+          [getFilterKey(nameDef), createExactMatchState(["John"])],
+          [getFilterKey(idDef), createExactMatchState(["abc"])],
+        ]),
+        onFilterChanged,
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+
+      act(() => {
+        result.current.clearFilterState(getFilterKey(nameDef));
+      });
+
+      expect(onFilterChanged).toHaveBeenCalledTimes(1);
+      expect(onFilterChanged.mock.lastCall?.[0]).toMatchObject({
+        cause: "CLEAR",
+        filterKey: getFilterKey(nameDef),
+        filterClause: { id: "abc" },
+      });
+      expect(onFilterChanged.mock.lastCall?.[0].newState).toBeUndefined();
+      expect(onFilterChanged.mock.lastCall?.[0].activeFilters).toHaveLength(1);
+    });
+
+    it("does not fire when clearing a filter that has no state", () => {
+      const onFilterChanged = vi.fn();
+      const unseededDef = {
+        type: "PROPERTY" as const,
+        key: "name",
+        filterComponent: "LISTOGRAM" as const,
+      };
+      const props = createProps({
+        filterDefinitions: [unseededDef],
+        onFilterChanged,
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+
+      act(() => {
+        result.current.clearFilterState(getFilterKey(unseededDef));
+      });
+
+      expect(onFilterChanged).not.toHaveBeenCalled();
+    });
+
+    it("reports a reset with the restored clause", () => {
+      const onFilterChanged = vi.fn();
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        defaultFilterStates: new Map([
+          [getFilterKey(nameDef), createExactMatchState(["Seed"])],
+        ]),
+        onFilterChanged,
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+
+      act(() => {
+        result.current.setFilterState(
+          getFilterKey(nameDef),
+          createExactMatchState(["John"]),
+        );
+      });
+      act(() => {
+        result.current.reset();
+      });
+
+      expect(onFilterChanged.mock.lastCall?.[0]).toMatchObject({
+        cause: "RESET",
+        filterClause: { name: "Seed" },
+      });
+      expect(onFilterChanged.mock.lastCall?.[0].filterKey).toBeUndefined();
     });
   });
 

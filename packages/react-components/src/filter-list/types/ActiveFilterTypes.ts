@@ -22,21 +22,21 @@ import type {
 } from "@osdk/api";
 
 import type { FilterState } from "../FilterListItemApi.js";
+import type { CustomFilterState } from "./CustomRendererTypes.js";
+import type { KeywordSearchFilterState } from "./KeywordSearchTypes.js";
 import type {
   HasLinkFilterState,
   LinkedPropertyFilterState,
 } from "./LinkedFilterTypes.js";
 
-/**
- * A filter whose state filters through a `WhereClause`.
- */
-export interface ActiveClauseFilter<Q extends ObjectTypeDefinition> {
-  kind: "PROPERTY" | "STATIC_VALUES" | "KEYWORD_SEARCH" | "CUSTOM";
-
+interface ActiveClauseFilterFields<
+  Q extends ObjectTypeDefinition,
+  S extends FilterState,
+> {
   /** `getFilterKey` of the filter's definition. */
   filterKey: string;
 
-  state: FilterState;
+  state: S;
 
   /** The clause this filter alone contributes. */
   clause: WhereClause<Q>;
@@ -45,28 +45,28 @@ export interface ActiveClauseFilter<Q extends ObjectTypeDefinition> {
 /** An active `PROPERTY` filter. */
 export interface ActivePropertyFilter<
   Q extends ObjectTypeDefinition,
-> extends ActiveClauseFilter<Q> {
+> extends ActiveClauseFilterFields<Q, FilterState> {
   kind: "PROPERTY";
 }
 
 /** An active `STATIC_VALUES` filter. */
 export interface ActiveStaticValuesFilter<
   Q extends ObjectTypeDefinition,
-> extends ActiveClauseFilter<Q> {
+> extends ActiveClauseFilterFields<Q, FilterState> {
   kind: "STATIC_VALUES";
 }
 
 /** An active `KEYWORD_SEARCH` filter. */
 export interface ActiveKeywordSearchFilter<
   Q extends ObjectTypeDefinition,
-> extends ActiveClauseFilter<Q> {
+> extends ActiveClauseFilterFields<Q, KeywordSearchFilterState> {
   kind: "KEYWORD_SEARCH";
 }
 
 /** An active `CUSTOM` filter, with the clause its `toWhereClause` returned. */
 export interface ActiveCustomFilter<
   Q extends ObjectTypeDefinition,
-> extends ActiveClauseFilter<Q> {
+> extends ActiveClauseFilterFields<Q, CustomFilterState> {
   kind: "CUSTOM";
 }
 
@@ -113,14 +113,25 @@ export type ActiveLinkedPropertyFilter<Q extends ObjectTypeDefinition> = {
   };
 }[LinkNames<Q>];
 
+/** The active filters that contribute a `clause`. */
+export type ActiveClauseFilter<Q extends ObjectTypeDefinition> =
+  | ActivePropertyFilter<Q>
+  | ActiveStaticValuesFilter<Q>
+  | ActiveKeywordSearchFilter<Q>
+  | ActiveCustomFilter<Q>;
+
+/**
+ * The active filters that traverse a link. These filter by counting matching
+ * linked objects, so they never appear in a `WhereClause`.
+ */
+export type ActiveLinkFilter<Q extends ObjectTypeDefinition> =
+  | ActiveHasLinkFilter<Q>
+  | ActiveLinkedPropertyFilter<Q>;
+
 /**
  * An active filter, tagged with the kind of its definition. Narrow on `kind` to
  * reach the fields specific to that kind.
  */
 export type ActiveFilter<Q extends ObjectTypeDefinition> =
-  | ActivePropertyFilter<Q>
-  | ActiveStaticValuesFilter<Q>
-  | ActiveKeywordSearchFilter<Q>
-  | ActiveCustomFilter<Q>
-  | ActiveHasLinkFilter<Q>
-  | ActiveLinkedPropertyFilter<Q>;
+  | ActiveClauseFilter<Q>
+  | ActiveLinkFilter<Q>;
