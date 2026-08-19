@@ -17,6 +17,8 @@
 import type { DevModeManifest } from "./buildDevModeManifest.js";
 import { getFoundryToken } from "./getFoundryToken.js";
 
+const USER_AGENT = `osdk-widget.vite-plugin/${process.env.PACKAGE_VERSION}`;
+
 export function setWidgetSetManifest(
   foundryUrl: string,
   widgetSetRid: string,
@@ -38,6 +40,7 @@ export function setWidgetSetManifest(
       authorization: `Bearer ${getFoundryToken(viteMode)}`,
       accept: "application/json",
       "content-type": "application/json",
+      "Fetch-User-Agent": USER_AGENT,
     },
   });
 }
@@ -53,6 +56,7 @@ export function enableDevMode(
     headers: {
       authorization: `Bearer ${getFoundryToken(viteMode)}`,
       accept: "application/json",
+      "Fetch-User-Agent": USER_AGENT,
     },
   });
 }
