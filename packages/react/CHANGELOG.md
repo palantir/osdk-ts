@@ -1,5 +1,16 @@
 # @osdkkit/react
 
+## 2.59.0
+
+### Minor Changes
+
+- 8c18f55: `@osdk/aip-core` is now a direct dependency of `@osdk/react` and `@osdk/react-components` instead of an optional peer dependency, so consumers of `AipAgentChat` and `useChat` no longer have to install it themselves. For the same reason, `@osdk/aip-core` now depends on `@osdk/language-models` directly rather than declaring it as a peer.
+
+### Patch Changes
+
+- Updated dependencies [8c18f55]
+  - @osdk/aip-core@0.10.0
+
 ## 2.58.0
 
 ### Minor Changes
