@@ -323,7 +323,7 @@ function DefaultActionFormStory(): React.ReactElement {
   });
 
   return (
-    <div className="osdkFormCard" style={{ marginInline: "auto" }}>
+    <div className="osdkFormCard">
       <ActionForm
         actionDefinition={generatedFieldsActionDefinition}
         onError={handleStoryError}

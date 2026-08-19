@@ -62,16 +62,17 @@ body,
 }
 
 /* Center a docs Canvas preview (opt-in via ComponentDoc's `centerCanvas`).
- * Storybook renders the story inside `.innerZoomElementWrapper > div`, which is
- * block-level and left-aligns narrow, fixed-width demos; making that wrapper a
- * centered flex row is the only hook available without patching the addon.
- * `!important` is required because this file lives in `layer(storybook)` (see
- * .storybook/styles.css) while Storybook's own emotion rule setting
- * `display: block` here is unlayered — unlayered normal declarations beat
- * layered ones no matter how specific. */
-.osdkDocCanvasCentered .docs-story .innerZoomElementWrapper > * {
-  display: flex !important;
-  justify-content: center;
+ * `.root` is the global decorator wrapper from .storybook/preview.tsx, so its
+ * only child is the story's own root element — auto inline margins center that
+ * element whether it is a fixed width (a 320px sidebar) or fluid
+ * (`width: 100%` capped by `max-width`).
+ *
+ * Deliberately NOT flex centering the wrapper: that makes the story a
+ * shrink-to-fit flex item, leaving `width: 100%` with no definite parent to
+ * resolve against, so fluid demos collapse to max-content (a 480px card
+ * measured 236px). Auto margins keep the wrapper chain full width. */
+.osdkDocCanvasCentered .docs-story .root > * {
+  margin-inline: auto;
 }
 
 body {
@@ -135,6 +136,10 @@ body,
 
   max-width: 480px;
   width: 100%;
+  /* Centers the card in the standalone story view, where it is a block child
+   * of a full-width wrapper. No-op inside FormStoryLayout, where the card is a
+   * flex item beside a `flex: 1` output panel and there is no free space. */
+  margin-inline: auto;
   background: var(--osdk-background-primary);
   border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
