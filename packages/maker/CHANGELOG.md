@@ -1,5 +1,39 @@
 # @osdk/maker
 
+## 0.58.0
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+  - @osdk/generator-converters.ontologyir@2.58.0
+  - @osdk/typescript-sdk-docs@0.22.0
+  - @osdk/api@2.58.0
+
+## 0.57.0
+
+### Minor Changes
+
+- b28235f: check for duplicate links
+
+## 0.56.0
+
+### Minor Changes
+
+- cea978e: Add configurable missing descriptions to all entities
+
+## 0.55.0
+
+### Minor Changes
+
+- e9d7ffa: Add struct action parameter validation types and serialization support.
+
+### Patch Changes
+
+- Updated dependencies [8ce066f]
+- Updated dependencies [3bfccdb]
+  - @osdk/generator-converters.ontologyir@2.57.0
+  - @osdk/api@2.57.0
+
 ## 0.54.0
 
 ### Patch Changes

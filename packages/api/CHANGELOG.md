@@ -1,5 +1,15 @@
 # @osdk/api
 
+## 2.58.0
+
+## 2.57.0
+
+## 2.56.0
+
+### Minor Changes
+
+- 342c492: Graduate `Media.fetchFullMetadata` out of beta. It stays optional so existing external implementations of `Media` keep compiling.
+
 ## 2.55.0
 
 ### Minor Changes

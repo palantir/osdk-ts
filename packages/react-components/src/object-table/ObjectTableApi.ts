@@ -15,6 +15,7 @@
  */
 
 import type {
+  BaseWirePropertyTypes,
   CompileTimeMetadata,
   DerivedProperty,
   ObjectOrInterfaceDefinition,
@@ -22,6 +23,7 @@ import type {
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
+  PropertyValueWireToClient,
   QueryDefinition,
   SimplePropertyDef,
   WhereClause,
@@ -29,37 +31,125 @@ import type {
 import type { QueryParameterType } from "@osdk/client/observable";
 import type * as React from "react";
 
-import type { ObjectTableLabels } from "./ObjectTableLabels.js";
 import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
 
 export type { EditFieldConfig } from "./utils/types.js";
 
 export type ColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
   >,
 > =
   | EditableColumnDefinition<Q, RDPs, FunctionColumns>
-  | ReadonlyColumnDefinition<Q, RDPs, FunctionColumns>;
+  | EditableFunctionColumnDefinition<Q, RDPs, FunctionColumns>
+  | ReadonlyColumnDefinition<Q, RDPs, FunctionColumns>
+  | ReadonlyFunctionColumnDefinition<Q, RDPs, FunctionColumns>;
 
-interface SharedColumnDefinition<
+/** A column whose value comes from the row's object. */
+type DerivableValueColumn<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> = {
+  /**
+   * What the column shows — a property, a linked object property (derived
+   * property), or a custom column — and that locator's configuration.
+   */
+  locator:
+    | PropertyColumnLocator<Q>
+    | RdpColumnLocator<Q, RDPs>
+    | CustomColumnLocator;
+} & CellValueOverride<Q, RDPs, FunctionColumns>;
+
+/**
+ * The cell's value and the type it's declared to have.
+ *
+ * `cellValueType` is required whenever `getCellValue` is provided — declaring
+ * the type constrains what `getCellValue` may return, so a column can't
+ * advertise one type and hand the cell a value of another. `cellValueType` may
+ * also be declared on its own to pick the editor without transforming the
+ * value.
+ */
+type CellValueOverride<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> =
+  // Use cellValueType + typed getCellValue together
+  | {
+      [T in BaseWirePropertyTypes]: {
+        /**
+         * The cell value's data type. Constrains what `getCellValue` may
+         * return, and selects the editor for an `editable` column.
+         */
+        cellValueType: T;
+
+        /**
+         * Derives the cell's value from the row's object. Without it the column
+         * reads the property named by `locator.id`.
+         *
+         * Use this to change what the cell's value *is* — what it returns is
+         * the value the table renders, edits, and passes on to `renderCell`.
+         * Use `renderCell` to change only how that value is displayed. The two
+         * can be combined.
+         */
+        getCellValue: (
+          object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+          locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
+        ) => PropertyValueWireToClient[T] | null | undefined;
+      };
+    }[BaseWirePropertyTypes]
+  // Using cellValueType alone.
+  | {
+      [T in BaseWirePropertyTypes]: {
+        cellValueType: T;
+        getCellValue?: never;
+      };
+    }[BaseWirePropertyTypes]
+  // Neither
+  | {
+      cellValueType?: undefined;
+      getCellValue?: never;
+    };
+
+/** A column whose value comes from a function query rather than the row. */
+interface FunctionValueColumn<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
   >,
 > {
-  /**
-   * Defines what the column shows:
-   * an object/interface property, a linked object property (derived property), a function
-   * column, or a custom column — and carries that locator's configuration.
-   */
-  locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>;
+  /** What the column shows, and that locator's configuration. */
+  locator: FunctionColumnLocator<Q, RDPs, FunctionColumns>;
 
+  /** The cell value's data type. */
+  cellValueType?: BaseWirePropertyTypes;
+
+  /**
+   * Use {@link FunctionColumnLocator}'s own `getValue` instead.
+   */
+  getCellValue?: never;
+}
+
+interface SharedColumnDefinition<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> {
   /**
    * @default true
    */
@@ -78,6 +168,11 @@ interface SharedColumnDefinition<
   /**
    * Custom renderer for the cell value.
    *
+   * This changes only how the cell's value is displayed; the value itself is
+   * unchanged. To change the value, use `getCellValue` (and declare its
+   * `cellValueType`) — `renderCell` then receives that value as its third
+   * argument. The two can be combined.
+   *
    * Interaction with `editable` columns:
    * - When `editMode: "manual"` (default), `renderCell` is used while the
    *   table is read-only (Edit Table button visible) and the editable cell
@@ -92,10 +187,14 @@ interface SharedColumnDefinition<
    * `editable` is a predicate, rows it rejects stay read-only and keep
    * rendering `renderCell` under either `editMode` — including `"always"`,
    * where the table is permanently in edit mode.
+   *
+   * @param value - The cell's value, so there's no need to recompute what
+   * `getCellValue` (or the property lookup) already produced.
    */
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
+    value: unknown,
   ) => React.ReactNode;
 
   /**
@@ -116,14 +215,10 @@ interface SharedColumnDefinition<
   renderHeader?: () => React.ReactNode;
 }
 
-interface EditableColumnDefinition<
+interface EditableColumnOptions<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
-> extends SharedColumnDefinition<Q, RDPs, FunctionColumns> {
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> {
   /**
    * `editable` can be a boolean or a predicate that receives the row's object
    * and returns whether the cell is editable
@@ -158,18 +253,57 @@ interface EditableColumnDefinition<
   validateEdit?: (value: unknown) => Promise<string | undefined>;
 }
 
-/**
- * Column definition for a read-only column (default).
- * `editFieldConfig` and `validateEdit` are not available.
- */
-interface ReadonlyColumnDefinition<
+type EditableColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
   >,
-> extends SharedColumnDefinition<Q, RDPs, FunctionColumns> {
+> = SharedColumnDefinition<Q, RDPs, FunctionColumns> &
+  EditableColumnOptions<Q, RDPs> &
+  DerivableValueColumn<Q, RDPs, FunctionColumns>;
+
+/** Editable column backed by a function query. */
+interface EditableFunctionColumnDefinition<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>
+  extends
+    SharedColumnDefinition<Q, RDPs, FunctionColumns>,
+    EditableColumnOptions<Q, RDPs>,
+    FunctionValueColumn<Q, RDPs, FunctionColumns> {}
+
+/**
+ * Column definition for a read-only column (default).
+ * `editFieldConfig` and `validateEdit` are not available.
+ */
+type ReadonlyColumnDefinition<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> = SharedColumnDefinition<Q, RDPs, FunctionColumns> &
+  DerivableValueColumn<Q, RDPs, FunctionColumns> & { editable?: false };
+
+/** Read-only column backed by a function query. */
+interface ReadonlyFunctionColumnDefinition<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>
+  extends
+    SharedColumnDefinition<Q, RDPs, FunctionColumns>,
+    FunctionValueColumn<Q, RDPs, FunctionColumns> {
   editable?: false;
 }
 
@@ -251,7 +385,7 @@ interface FunctionColumnLocatorForKey<
  */
 export type FunctionColumnLocator<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -264,7 +398,7 @@ export type FunctionColumnLocator<
 
 export interface RdpColumnLocator<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   type: "rdp";
   id: keyof RDPs;
@@ -278,7 +412,7 @@ export interface CustomColumnLocator {
 
 export type ColumnDefinitionLocator<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -291,7 +425,7 @@ export type ColumnDefinitionLocator<
 
 export interface ObjectTableProps<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -503,6 +637,16 @@ export interface ObjectTableProps<
   onRowSelectionChanged?: (change: RowSelectionChange<Q, RDPs>) => void;
 
   /**
+   * Called when the set of loaded rows changes — as pages are fetched, when
+   * streamed updates arrive, and after a refetch — with a
+   * {@link LoadedObjectsChange} payload.
+   *
+   * @param change The loaded rows and the total count. See
+   * {@link LoadedObjectsChange}.
+   */
+  onLoadedObjectsChanged?: (change: LoadedObjectsChange<Q, RDPs>) => void;
+
+  /**
    * The primary key of the row to render as visually focused (the
    * "last interacted" row). When provided, focus state is controlled by
    * the caller.
@@ -621,15 +765,6 @@ export interface ObjectTableProps<
   tableRef?: React.Ref<ObjectTableHandle<Q, RDPs>>;
 
   className?: string;
-
-  /**
-   * Overrides for the table's user-facing strings. Provide any subset; unset keys fall
-   * back to the built-in English defaults. Use this to localize the table or
-   * adjust wording. See {@link ObjectTableLabels}.
-   *
-   * @default undefined (built-in English strings)
-   */
-  labels?: Partial<ObjectTableLabels>;
 }
 
 /**
@@ -638,7 +773,7 @@ export interface ObjectTableProps<
  */
 export interface ObjectTableHandle<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
    * Loads every row matching the object set and returns a format-agnostic
@@ -687,7 +822,7 @@ export interface ObjectTableSnapshotOptions {
  */
 export interface ObjectTableSnapshot<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   columns: ObjectTableDataColumn[];
   rows: ObjectTableDataRow<Q, RDPs>[];
@@ -714,7 +849,7 @@ export interface ObjectTableDataColumn {
  */
 export interface ObjectTableDataRow<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /** Row id (the underlying object's `$primaryKey` rendered as a string). */
   id: string;
@@ -729,13 +864,43 @@ export interface ObjectTableDataRow<
 }
 
 /**
+ * Payload for {@link ObjectTableProps.onLoadedObjectsChanged}.
+ */
+export interface LoadedObjectsChange<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> {
+  /**
+   * The rows loaded into the table so far, in display order. Rows on pages
+   * the user hasn't scrolled to yet are absent — compare `loadedObjects.length`
+   * against `totalCount` to tell whether more remain.
+   *
+   * Each row carries the values of its function-backed columns alongside its
+   * properties, so those cells are readable from the payload.
+   */
+  loadedObjects: Osdk.Instance<
+    Q,
+    "$allBaseProperties",
+    PropertyKeys<Q>,
+    RDPs
+  >[];
+
+  /**
+   * Total number of objects matching the underlying object set, as reported
+   * by the API. `undefined` when the API did not provide a count. Encoded as
+   * a string to match the underlying list-payload representation.
+   */
+  totalCount: string | undefined;
+}
+
+/**
  * Payload for {@link ObjectTableProps.onRowSelectionChanged}. Consolidates
  * the loaded row instances, the `isSelectAll` semantic intent, and an
  * `ObjectSet` covering the selection.
  */
 export interface RowSelectionChange<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
    * Loaded row instances currently selected. When `isSelectAll` is true,

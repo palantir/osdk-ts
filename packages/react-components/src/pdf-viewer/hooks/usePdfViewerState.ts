@@ -22,7 +22,11 @@ import {
   PAGE_WIDTH_SCALE_VALUE,
   SCALE_STEP,
 } from "../constants.js";
-import type { PdfDownloadResult, PdfSource, SidebarMode } from "../types.js";
+import type {
+  PdfDownloadResult,
+  PdfSource,
+  SidebarMode,
+} from "../PdfViewerApi.js";
 import { usePdfOutline } from "./usePdfOutline.js";
 import type {
   UsePdfViewerCoreOptions,

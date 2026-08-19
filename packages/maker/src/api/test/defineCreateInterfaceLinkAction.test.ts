@@ -48,6 +48,37 @@ describe("defineCreateInterfaceLinkAction", () => {
     expect(handle.from).toBe(person);
   });
 
+  it("preserves action and parameter descriptions", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      displayName: "Person",
+      properties: {},
+    });
+    const company = defineInterface({
+      apiName: "Company",
+      displayName: "Company",
+      properties: {},
+    });
+    defineInterfaceLinkConstraint({
+      apiName: "employer",
+      from: person,
+      toOne: company,
+    });
+
+    const action = defineCreateInterfaceLinkAction({
+      from: person,
+      interfaceLink: "employer",
+      description: "Assign an employer",
+      sourceParameter: { description: "The employee" },
+      targetParameter: { description: "The employer" },
+    });
+
+    expect(action.description).toBe("Assign an employer");
+    expect(
+      action.parameters?.map((parameter) => parameter.description),
+    ).toEqual(["The employee", "The employer"]);
+  });
+
   it("creates a SINGLE interface-link action derived from the ILC", () => {
     const person = defineInterface({
       apiName: "Person",

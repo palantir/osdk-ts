@@ -39,6 +39,7 @@ import type {
 import type {
   ActionParameter,
   ActionParameterAllowedValues,
+  ActionParameterType,
   ActionParameterValidation,
   ActionType,
   InterfaceType,
@@ -186,6 +187,25 @@ export function convertAction(
     }
     return result;
   };
+  const convertStructFieldValues = <T>(
+    structFieldValues: Record<string, Record<string, T>>,
+  ): Record<string, Record<string, T>> =>
+    Object.fromEntries(
+      Object.entries(structFieldValues).map(
+        ([propertyApiName, fieldValues]) => [
+          propertyApiName,
+          Object.fromEntries(
+            Object.entries(fieldValues).map(([fieldApiName, value]) => [
+              ridGenerator.generateStructFieldRid(
+                propertyApiName,
+                fieldApiName,
+              ),
+              value,
+            ]),
+          ),
+        ],
+      ),
+    );
   return {
     actionType: {
       actionTypeLogic: {
@@ -248,8 +268,30 @@ export function convertAction(
                     rule.addObjectRule.objectTypeId,
                   ),
                   propertyValues: rule.addObjectRule.propertyValues,
-                  structFieldValues: rule.addObjectRule.structFieldValues,
+                  structFieldValues: convertStructFieldValues(
+                    rule.addObjectRule.structFieldValues,
+                  ),
                   logicRuleRid: rule.addObjectRule.logicRuleRid,
+                },
+              };
+            } else if (rule.type === "addOrModifyObjectRuleV2") {
+              return {
+                type: "addOrModifyObjectRuleV2",
+                addOrModifyObjectRuleV2: {
+                  ...rule.addOrModifyObjectRuleV2,
+                  structFieldValues: convertStructFieldValues(
+                    rule.addOrModifyObjectRuleV2.structFieldValues,
+                  ),
+                },
+              };
+            } else if (rule.type === "modifyObjectRule") {
+              return {
+                type: "modifyObjectRule",
+                modifyObjectRule: {
+                  ...rule.modifyObjectRule,
+                  structFieldValues: convertStructFieldValues(
+                    rule.modifyObjectRule.structFieldValues,
+                  ),
                 },
               };
             } else if (rule.type === "addInterfaceLinkRuleV2") {
@@ -666,6 +708,14 @@ export function extractAllowedValues(
   ridGenerator: OntologyRidGenerator,
 ): OntologyIrAllowedParameterValues {
   switch (allowedValues.type) {
+    case "struct":
+      return {
+        type: "struct",
+        struct: {
+          type: "delegateToAllowedStructFieldValues",
+          delegateToAllowedStructFieldValues: {},
+        },
+      };
     case "oneOf":
       return {
         type: "oneOf",
@@ -811,8 +861,20 @@ export function renderHintFromBaseType(
   parameter: ActionParameter,
   validation?: ActionParameterValidation,
 ): ParameterRenderHint {
+  return renderHintFromActionParameterType(
+    parameter.type,
+    validation?.allowedValues ?? parameter.validation.allowedValues,
+    parameter.displayName,
+  );
+}
+
+export function renderHintFromActionParameterType(
+  parameterType: ActionParameterType,
+  allowedValues: ActionParameterAllowedValues | undefined,
+  displayName: string,
+): ParameterRenderHint {
   const type =
-    typeof parameter.type === "string" ? parameter.type : parameter.type.type;
+    typeof parameterType === "string" ? parameterType : parameterType.type;
   switch (type) {
     case "boolean":
     case "booleanList":
@@ -828,8 +890,8 @@ export function renderHintFromBaseType(
       return { type: "numericInput", numericInput: {} };
     case "string":
       if (
-        validation?.allowedValues?.type === "user" ||
-        validation?.allowedValues?.type === "multipassGroup"
+        allowedValues?.type === "user" ||
+        allowedValues?.type === "multipassGroup"
       ) {
         return { type: "userDropdown", userDropdown: {} };
       }
@@ -850,13 +912,13 @@ export function renderHintFromBaseType(
       return { type: "filePicker", filePicker: {} };
     case "marking":
     case "markingList":
-      if (parameter.validation.allowedValues?.type === "mandatoryMarking") {
+      if (allowedValues?.type === "mandatoryMarking") {
         return { type: "mandatoryMarkingPicker", mandatoryMarkingPicker: {} };
-      } else if (parameter.validation.allowedValues?.type === "cbacMarking") {
+      } else if (allowedValues?.type === "cbacMarking") {
         return { type: "cbacMarkingPicker", cbacMarkingPicker: {} };
       } else {
         throw new Error(
-          `The allowed values for "${parameter.displayName}" are not compatible with the base parameter type`,
+          `The allowed values for "${displayName}" are not compatible with the base parameter type`,
         );
       }
     case "timeSeriesReference":
@@ -872,7 +934,7 @@ export function renderHintFromBaseType(
       return { type: "dropdown", dropdown: {} };
     case "struct":
     case "structList":
-      throw new Error("Structs are not supported yet");
+      return { type: "textInput", textInput: {} };
     default:
       throw new Error(`Unknown type ${type}`);
   }

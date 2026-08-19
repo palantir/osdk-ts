@@ -17,7 +17,9 @@
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
 import { generatePackageJson } from "../generatePackageJson.js";
 
 describe("generatePackageJson", () => {
@@ -37,10 +39,12 @@ describe("generatePackageJson", () => {
       packageVersion: "1.2.3",
       packagePath,
       dependencies: [],
-      peerDependencies: [{
-        dependencyName: "@osdk/client",
-        dependencyVersion: "^2.0.0",
-      }],
+      peerDependencies: [
+        {
+          dependencyName: "@osdk/client",
+          dependencyVersion: "^2.0.0",
+        },
+      ],
       beta: true,
       packageRid: "ri.foundry.main.package.dead-beef",
       branch: "master",
@@ -75,14 +79,14 @@ describe("generatePackageJson", () => {
                     "types": "./cjs/index.d.ts",
                     "default": "./cjs/index.js"
                 },
-                "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
+                "./experimental/ontology-metadata": {
                     "require": {
-                        "types": "./UNSTABLE_DO_NOT_USE/ontology-metadata.d.cts",
-                        "default": "./UNSTABLE_DO_NOT_USE/ontology-metadata.json"
+                        "types": "./experimental/ontology-metadata.d.cts",
+                        "default": "./experimental/ontology-metadata.json"
                     },
                     "import": {
-                        "types": "./UNSTABLE_DO_NOT_USE/ontology-metadata.d.mts",
-                        "default": "./UNSTABLE_DO_NOT_USE/ontology-metadata.json"
+                        "types": "./experimental/ontology-metadata.d.mts",
+                        "default": "./experimental/ontology-metadata.json"
                     }
                 }
             },
@@ -101,10 +105,12 @@ describe("generatePackageJson", () => {
       packageVersion: "1.2.3",
       packagePath,
       dependencies: [],
-      peerDependencies: [{
-        dependencyName: "@osdk/client",
-        dependencyVersion: "^2.0.0",
-      }],
+      peerDependencies: [
+        {
+          dependencyName: "@osdk/client",
+          dependencyVersion: "^2.0.0",
+        },
+      ],
       beta: true,
       packageRid: "ri.foundry.main.package.dead-beef",
       branch: "master",
@@ -115,6 +121,6 @@ describe("generatePackageJson", () => {
     // the subpath here would point at files that don't exist.
     const written = await readFile(join(packagePath, "package.json"), "utf-8");
     expect(Object.keys(JSON.parse(written).exports)).toEqual(["."]);
-    expect(written).not.toContain("UNSTABLE_DO_NOT_USE/ontology-metadata");
+    expect(written).not.toContain("experimental/ontology-metadata");
   });
 });

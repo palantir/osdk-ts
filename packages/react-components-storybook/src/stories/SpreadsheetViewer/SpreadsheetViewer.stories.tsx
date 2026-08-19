@@ -20,7 +20,7 @@ import type { Media } from "@osdk/api";
 import type {
   BaseSpreadsheetViewerProps,
   ParsedSpreadsheet,
-  SpreadsheetViewerMediaProps,
+  SpreadsheetViewerProps,
 } from "@osdk/react-components/experimental/spreadsheet-viewer";
 import {
   BaseSpreadsheetViewer,
@@ -164,7 +164,7 @@ const meta: Meta<BaseSpreadsheetViewerProps> = {
   component: BaseSpreadsheetViewer,
   tags: ["beta"],
   args: {
-    spreadsheet: SAMPLE_SPREADSHEET,
+    content: SAMPLE_SPREADSHEET,
   },
   render: (args: BaseSpreadsheetViewerProps) => (
     <div style={{ height: "500px" }}>
@@ -175,8 +175,8 @@ const meta: Meta<BaseSpreadsheetViewerProps> = {
     controls: { expanded: true },
   },
   argTypes: {
-    spreadsheet: {
-      description: "Parsed spreadsheet data",
+    content: {
+      description: "The parsed spreadsheet to render",
       control: false,
     },
     className: {
@@ -189,11 +189,11 @@ const meta: Meta<BaseSpreadsheetViewerProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: StoryObj<SpreadsheetViewerMediaProps> = {
+export const Default: StoryObj<SpreadsheetViewerProps> = {
   args: {
     media: createMockSpreadsheetMedia(),
   },
-  render: (args: SpreadsheetViewerMediaProps) => (
+  render: (args: SpreadsheetViewerProps) => (
     <div style={{ height: "500px" }}>
       <SpreadsheetViewer media={args.media} />
     </div>
@@ -215,7 +215,7 @@ export const WithSpreadsheet: Story = {
       source: {
         code: `import { BaseSpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
 
-<BaseSpreadsheetViewer spreadsheet={parsedSpreadsheet} />`,
+<BaseSpreadsheetViewer content={parsedSpreadsheet} />`,
       },
     },
   },
@@ -223,20 +223,20 @@ export const WithSpreadsheet: Story = {
 
 export const SingleSheet: Story = {
   args: {
-    spreadsheet: {
+    content: {
       sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
     },
   },
 };
 
-export const WithRealFile: StoryObj<SpreadsheetViewerMediaProps> = {
+export const WithRealFile: StoryObj<SpreadsheetViewerProps> = {
   args: {
     media: createMockMediaFromUrl(
       SAMPLE_SPREADSHEET_URL,
       "notional-spreadsheet-example.xlsx",
     ),
   },
-  render: (args: SpreadsheetViewerMediaProps) => (
+  render: (args: SpreadsheetViewerProps) => (
     <div style={{ height: "600px" }}>
       <SpreadsheetViewer media={args.media} />
     </div>

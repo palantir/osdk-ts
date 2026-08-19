@@ -20,7 +20,7 @@ import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { formatTs } from "../util/test/formatTs.js";
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
-const ExpectedOsdkVersion = "2.55.0";
+const ExpectedOsdkVersion = "2.58.0";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 
 export async function generateOntologyMetadataTypeFile(
@@ -55,16 +55,15 @@ export async function generateOntologyMetadataTypeFile(
 }
 
 export const ONTOLOGY_METADATA_JSON_PATH =
-  "UNSTABLE_DO_NOT_USE/ontology-metadata.json";
+  "experimental/ontology-metadata.json";
 
 export const ONTOLOGY_METADATA_DMTS_PATH =
-  "UNSTABLE_DO_NOT_USE/ontology-metadata.d.mts";
+  "experimental/ontology-metadata.d.mts";
 
 export const ONTOLOGY_METADATA_DCTS_PATH =
-  "UNSTABLE_DO_NOT_USE/ontology-metadata.d.cts";
+  "experimental/ontology-metadata.d.cts";
 
-export const ONTOLOGY_METADATA_DTS_PATH =
-  "UNSTABLE_DO_NOT_USE/ontology-metadata.d.ts";
+export const ONTOLOGY_METADATA_DTS_PATH = "experimental/ontology-metadata.d.ts";
 
 function getTypeShim(packageType: "commonjs" | "module") {
   const exportStatement = packageType === "commonjs"

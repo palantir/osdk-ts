@@ -6702,12 +6702,6 @@ describe("Action Types", () => {
         primaryKeyPropertyApiName: "bar",
         properties: {
           bar: { type: "string" },
-          structProp: {
-            type: {
-              type: "struct",
-              structDefinition: { simpleProperty: "string" },
-            },
-          },
           optionalProp: { type: "string" },
         },
       });
@@ -7440,18 +7434,6 @@ describe("Action Types", () => {
                             "column": "optionalProp",
                             "type": "column",
                           },
-                          "structProp": {
-                            "struct": {
-                              "column": "structProp",
-                              "mapping": {
-                                "simpleProperty": {
-                                  "apiName": "simpleProperty",
-                                  "mappings": {},
-                                },
-                              },
-                            },
-                            "type": "struct",
-                          },
                         },
                       },
                       "type": "datasetV2",
@@ -7568,54 +7550,6 @@ describe("Action Types", () => {
                           "name": "SORTABLE",
                         },
                       ],
-                      "valueType": undefined,
-                    },
-                    "structProp": {
-                      "apiName": "structProp",
-                      "baseFormatter": undefined,
-                      "dataConstraints": undefined,
-                      "displayMetadata": {
-                        "description": undefined,
-                        "displayName": "StructProp",
-                        "visibility": "NORMAL",
-                      },
-                      "indexedForSearch": true,
-                      "inlineAction": undefined,
-                      "ruleSetBinding": undefined,
-                      "sharedPropertyTypeApiName": undefined,
-                      "sharedPropertyTypeRid": undefined,
-                      "status": {
-                        "active": {},
-                        "type": "active",
-                      },
-                      "type": {
-                        "struct": {
-                          "mainValue": undefined,
-                          "structFields": [
-                            {
-                              "aliases": [],
-                              "apiName": "simpleProperty",
-                              "displayMetadata": {
-                                "description": undefined,
-                                "displayName": "simpleProperty",
-                              },
-                              "fieldType": {
-                                "string": {
-                                  "analyzerOverride": undefined,
-                                  "enableAsciiFolding": undefined,
-                                  "isLongText": false,
-                                  "supportsEfficientLeadingWildcard": false,
-                                  "supportsExactMatching": true,
-                                },
-                                "type": "string",
-                              },
-                              "typeClasses": [],
-                            },
-                          ],
-                        },
-                        "type": "struct",
-                      },
-                      "typeClasses": [],
                       "valueType": undefined,
                     },
                   },
@@ -11484,8 +11418,8 @@ describe("Action Types", () => {
                     "parameters": {
                       "objectToDeleteParameter": {
                         "displayMetadata": {
-                          "description": "",
-                          "displayName": "Delete object",
+                          "description": "Description",
+                          "displayName": "Chose managers to delete",
                           "typeClasses": [],
                         },
                         "id": "objectToDeleteParameter",

@@ -173,9 +173,7 @@ function readUntypedMetadata(
 
 async function runReadMediaFullMetadataTest(ref: Media): Promise<void> {
   if (ref.fetchFullMetadata == null) {
-    throw new Error(
-      "Media implementation does not expose fetchFullMetadata; backing OSDK build is too old",
-    );
+    throw new Error("Media implementation does not expose fetchFullMetadata");
   }
   const { itemMetadata } = await ref.fetchFullMetadata();
 

@@ -139,7 +139,8 @@ Components in this package favour **minimum configuration**. A consumer should b
 - **Default `enable*` boolean flags to `true`** when the feature is part of the out-of-the-box experience (e.g. `enableOrdering`, `enableColumnPinning`).
 - **Document defaults inline** with `@default` JSDoc tags on every optional prop.
 - **Provide controlled and/or uncontrolled variants** for any stateful feature — implement **at least one** (both encouraged where useful). State the chosen mode(s) explicitly in JSDoc on each prop, e.g. `"Controlled mode only. Caller owns selection state..."` or `"Uncontrolled. Seeds initial sort; component continues to own the state."`. See how `ObjectTable` exposes both `defaultOrderBy` (uncontrolled) and `orderBy` + `onOrderByChanged` (controlled); `useRowSelection.ts` is the canonical both-modes hook implementation — drop the branch you don't support for single-mode features.
-- **Define the API in its own file:** `<Name>Api.ts` co-located with the component, exporting only the OSDK-aware outer-component props plus public sub-types (column definitions, locators, options). Base props live inline in `Base<Name>.tsx`.
+- **Define the API in its own file:** `<Name>Api.ts` co-located with the component, exporting the base props, the OSDK-aware outer-component props, and any public sub-types (column definitions, locators, options).
+- **Name a viewer's primary input `src` or `content`, by form.** `src` is the binary source to render from, in whatever forms the renderer supports (a URL, raw bytes, or both); `content` is the already-decoded payload (text, or a parsed object). Never overload one name across both categories, and never name the prop after the file type. See [`PdfViewerApi.ts`](./src/pdf-viewer/PdfViewerApi.ts) for the reference `src` and [`XmlViewerApi.ts`](./src/xml-viewer/XmlViewerApi.ts) for `content`.
 
 ### Adding a New Component
 

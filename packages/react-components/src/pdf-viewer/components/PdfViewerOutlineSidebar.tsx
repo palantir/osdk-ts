@@ -17,7 +17,7 @@
 import classnames from "classnames";
 import React, { useCallback, useMemo } from "react";
 
-import type { OutlineItem, SidebarMode } from "../types.js";
+import type { OutlineItem, SidebarMode } from "../PdfViewerApi.js";
 import { PdfViewerSidebarHeader } from "./PdfViewerSidebarHeader.js";
 
 import styles from "./PdfViewerOutlineSidebar.module.css";

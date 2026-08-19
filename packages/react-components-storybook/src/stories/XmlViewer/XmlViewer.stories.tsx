@@ -19,7 +19,7 @@
 import type { Media } from "@osdk/api";
 import type {
   BaseXmlViewerProps,
-  XmlViewerMediaProps,
+  XmlViewerProps,
 } from "@osdk/react-components/experimental/xml-viewer";
 import {
   BaseXmlViewer,
@@ -108,11 +108,11 @@ const meta: Meta<BaseXmlViewerProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: StoryObj<XmlViewerMediaProps> = {
+export const Default: StoryObj<XmlViewerProps> = {
   args: {
     media: createMockXmlMedia(SAMPLE_XML),
   },
-  render: (args: XmlViewerMediaProps) => (
+  render: (args: XmlViewerProps) => (
     <div style={{ height: "500px" }}>
       <XmlViewer {...args} />
     </div>

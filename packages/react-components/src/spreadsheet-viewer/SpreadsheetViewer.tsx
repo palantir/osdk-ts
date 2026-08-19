@@ -23,7 +23,7 @@ import { BaseSpreadsheetViewer } from "./BaseSpreadsheetViewer.js";
 import { parseSpreadsheetFromResponse } from "./parseSpreadsheet.js";
 import type {
   ParsedSpreadsheet,
-  SpreadsheetViewerMediaProps,
+  SpreadsheetViewerProps,
 } from "./SpreadsheetViewerApi.js";
 
 import styles from "./BaseSpreadsheetViewer.module.css";
@@ -32,9 +32,9 @@ export function SpreadsheetViewer({
   media,
   className,
   ...spreadsheetViewerProps
-}: SpreadsheetViewerMediaProps): React.ReactElement {
+}: SpreadsheetViewerProps): React.ReactElement {
   const {
-    data: spreadsheet,
+    data: content,
     loading,
     error,
   } = useMediaContents<ParsedSpreadsheet>(
@@ -58,11 +58,8 @@ export function SpreadsheetViewer({
           Failed to load spreadsheet: {error.message}
         </div>
       )}
-      {spreadsheet != null && (
-        <BaseSpreadsheetViewer
-          spreadsheet={spreadsheet}
-          {...spreadsheetViewerProps}
-        />
+      {content != null && (
+        <BaseSpreadsheetViewer content={content} {...spreadsheetViewerProps} />
       )}
     </div>
   );

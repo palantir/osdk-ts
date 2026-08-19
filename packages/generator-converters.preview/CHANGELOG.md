@@ -1,5 +1,43 @@
 # @osdk/generator-converters.preview
 
+## 0.36.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+- 90cce42: Generate ontology metadata under experimental path
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+- Updated dependencies [90cce42]
+  - @osdk/generator@2.58.0
+  - @osdk/generator-converters.ontologyir@2.58.0
+  - @osdk/client.unstable@2.58.0
+
+## 0.35.0
+
+### Patch Changes
+
+- Updated dependencies [8ce066f]
+- Updated dependencies [3bfccdb]
+- Updated dependencies [e9d7ffa]
+  - @osdk/generator-converters.ontologyir@2.57.0
+  - @osdk/client.unstable@2.57.0
+  - @osdk/generator@2.57.0
+
+## 0.34.0
+
+### Minor Changes
+
+- 7b85fa7: Include ontology metadata in generator converter preview
+
+### Patch Changes
+
+- @osdk/client.unstable@2.56.0
+- @osdk/generator-converters.ontologyir@2.56.0
+- @osdk/generator@2.56.0
+
 ## 0.33.0
 
 ### Patch Changes

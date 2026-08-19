@@ -782,6 +782,82 @@ describe("Experimental Test Suite", () => {
     });
   });
 
+  it("writes configurable descriptions to V2 block data", async () => {
+    const result = await defineOntologyV2("com.palantir.", () => {
+      defineImportObject({
+        apiName: "importedEmployee",
+        displayName: "Imported Employee",
+        description: "An employee supplied by another ontology",
+        properties: {
+          id: {
+            type: "string",
+            displayName: "Employee ID",
+            description: "The imported employee identifier",
+          },
+        },
+      });
+
+      const department = defineObject({
+        apiName: "department",
+        displayName: "Department",
+        pluralDisplayName: "Departments",
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+      });
+      const employee = defineObject({
+        apiName: "employee",
+        displayName: "Employee",
+        pluralDisplayName: "Employees",
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: {
+          id: { type: "string" },
+          departmentId: { type: "string" },
+        },
+      });
+
+      defineLink({
+        apiName: "department-employees",
+        description: "Employees belonging to a department",
+        one: {
+          object: department,
+          metadata: { apiName: "department" },
+        },
+        toMany: {
+          object: employee,
+          metadata: { apiName: "employees" },
+        },
+        manyForeignKeyProperty: "departmentId",
+      });
+      defineCreateObjectAction({
+        objectType: employee,
+        description: "Create an employee",
+      });
+    });
+
+    const link = Object.values(result.ontologyIr.ontology.linkTypes)[0];
+    expect(link.linkType.description).toBe(
+      "Employees belonging to a department",
+    );
+
+    const action = Object.values(result.ontologyIr.ontology.actionTypes)[0];
+    expect(action.actionType.metadata.displayMetadata.description).toBe(
+      "Create an employee",
+    );
+
+    const importedObject = Object.values(
+      result.ontologyIr.importedOntology.objectTypes,
+    )[0].objectType;
+    expect(importedObject.displayMetadata.description).toBe(
+      "An employee supplied by another ontology",
+    );
+    expect(
+      Object.values(importedObject.propertyTypes)[0].displayMetadata
+        .description,
+    ).toBe("The imported employee identifier");
+  });
+
   describe("defineOntologyV2 import shapes", () => {
     it("generates input shapes for imported object types", async () => {
       const result = await defineOntologyV2("com.palantir.", () => {
@@ -1093,9 +1169,150 @@ describe("Experimental Test Suite", () => {
         ),
       ).toEqual(apiNamePreset("importedInterface"));
     });
+
+    it("maps imported SPT-backed interface properties using the SPT API name", async () => {
+      const interfaceApiName =
+        "com.palantir.core.ontology.types.sourceSystemMetadata";
+      const sptApiName =
+        "com.palantir.core.ontology.types.sourceSystemMetadataList";
+      const result = await defineOntologyV2("com.palantir.", () => {
+        const spt = importSharedPropertyType({
+          apiName: "sourceSystemMetadataList",
+          packageName: "com.palantir.core.ontology.types",
+          typeHint: "string",
+        });
+        const importedInterface: InterfaceType = {
+          apiName: interfaceApiName,
+          displayMetadata: {
+            displayName: "Source System Metadata",
+          },
+          propertiesV2: {
+            [spt.apiName]: {
+              sharedPropertyType: spt,
+              required: true,
+            },
+          },
+          propertiesV3: {
+            sourceSystemMetadataList: {
+              sharedPropertyType: spt,
+              required: true,
+            },
+          },
+          extendsInterfaces: [],
+          actionTypeConstraints: [],
+          status: { type: "active", active: {} },
+          links: [],
+          __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
+        };
+        importOntologyEntity(importedInterface);
+
+        defineObject({
+          apiName: "country",
+          displayName: "Country",
+          pluralDisplayName: "Countries",
+          titlePropertyApiName: "id",
+          primaryKeyPropertyApiName: "id",
+          properties: {
+            id: { type: "string" },
+            sourceSystemMetadataList: { type: "string" },
+          },
+          implementsInterfaces: [
+            {
+              implements: importedInterface,
+              propertyMapping: [
+                {
+                  interfaceProperty: spt.apiName,
+                  mapsTo: "sourceSystemMetadataList",
+                },
+              ],
+            },
+          ],
+        });
+      });
+
+      const country = Object.values(
+        result.ontologyIr.ontology.objectTypes,
+      ).find(
+        (objectType) =>
+          objectType.objectType.apiName === "com.palantir.country",
+      );
+      const sptRid = Object.keys(
+        result.ontologyIr.importedOntology.sharedPropertyTypes,
+      )[0];
+      expect(
+        Object.keys(country!.objectType.implementsInterfaces2[0].propertiesV2),
+      ).toEqual([
+        sptRid.replace("shared-property-type", "interface-property-type"),
+      ]);
+      expect(country!.objectType.implementsInterfaces2[0].properties).toEqual(
+        {},
+      );
+
+      const interfaceReadableId =
+        ReadableIdGenerator.getForInterface(interfaceApiName);
+      const interfacePropertyReadableId =
+        ReadableIdGenerator.getForSptBackedInterfaceProperty(
+          interfaceApiName,
+          sptApiName,
+        );
+      const interfaceShape = result.shapes.inputShapes.get(interfaceReadableId);
+      const interfacePropertyShape = result.shapes.inputShapes.get(
+        interfacePropertyReadableId,
+      );
+      expect(interfaceShape).toMatchObject({
+        type: "interfaceType",
+        interfaceType: {
+          properties: [expect.any(String)],
+          propertiesV2: [expect.any(String)],
+        },
+      });
+      expect(interfacePropertyShape).toMatchObject({
+        type: "interfacePropertyType",
+        interfacePropertyType: {
+          about: { fallbackTitle: sptApiName },
+          interfaceType: expect.any(String),
+          sharedPropertyType: expect.any(String),
+          requireImplementation: true,
+        },
+      });
+      expect(
+        result.importedInputPresets.get(interfacePropertyReadableId),
+      ).toEqual(apiNamePreset(sptApiName));
+    });
   });
 
   describe("Action Type Constraints", () => {
+    it("includes SPT-backed properties in both interface output reference lists", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        const sharedName = defineSharedPropertyType({
+          apiName: "sharedName",
+          type: "string",
+        });
+        defineInterface({
+          apiName: "sharedPropertyInterface",
+          properties: {
+            sharedName: {
+              sharedPropertyType: sharedName,
+              required: true,
+            },
+          },
+        });
+      });
+
+      const interfaceShape = result.shapes.outputShapes.get(
+        ReadableIdGenerator.getForInterface(
+          "com.palantir.sharedPropertyInterface",
+        ),
+      );
+      expect(interfaceShape).toMatchObject({
+        type: "interfaceType",
+        interfaceType: {
+          properties: [expect.any(String)],
+          propertiesV2: [expect.any(String)],
+        },
+      });
+    });
+
     it("produces output shapes for interface with action type constraints", async () => {
       const result = await defineOntologyV2("com.palantir.", () => {
         const iface = defineInterface({ apiName: "MyInterface" });

@@ -1,6 +1,6 @@
 {
   "name": "@osdk/agents",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -44,6 +44,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "oxlint -c ./oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
     "lint": "oxlint -c ./oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check .",
+    "test": "vitest run --pool=forks",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
@@ -51,14 +52,17 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "peerDependencies": {
+    "@osdk/client": "workspace:^",
     "@osdk/functions": "workspace:^"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.32",
     "@microsoft/api-extractor": "^7.52.11",
+    "@osdk/client": "workspace:~",
     "@osdk/functions": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
+    "@types/node": "^18.19.0",
     "typescript": "~5.5.4"
   },
   "publishConfig": {

@@ -1,5 +1,27 @@
 # @osdk/create-widget
 
+## 3.56.0
+
+### Minor Changes
+
+- 8718d53: create-widget.template.react.v2 can be used with or without an osdk package
+
+### Patch Changes
+
+- @osdk/generator-utils@2.58.0
+
+## 3.55.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.57.0
+
+## 3.54.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.56.0
+
 ## 3.53.0
 
 ### Patch Changes

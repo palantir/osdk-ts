@@ -839,6 +839,8 @@ export type FetchLinksPageResult<
     	nextPageToken?: string
 };
 
+// Warning: (ae-forgotten-export) The symbol "PropertyModifierValue" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
 export interface FetchPageArgs<
 	Q extends ObjectOrInterfaceDefinition,
@@ -850,10 +852,12 @@ export interface FetchPageArgs<
 	RDP_KEYS extends string = never,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {},
 	PROPERTY_SECURITIES extends boolean = false,
-	MODIFIERS extends ApplyModifiersArg<Q> = {}
+	MODIFIERS extends ApplyModifiersArg<Q> = {},
+	DEFAULT_LOAD_LEVEL extends PropertyModifierValue | undefined = PropertyModifierValue
 > extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, PROPERTY_SECURITIES, MODIFIERS> {
     	// (undocumented)
     $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
+    	$EXPERIMENTAL_defaultLoadLevel?: DEFAULT_LOAD_LEVEL;
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -863,6 +867,7 @@ export interface FetchPageArgs<
 }
 
 // Warning: (ae-forgotten-export) The symbol "ExtractOptions" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "SelectedKeysWithDefaultLoadLevel" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ModifiersToSelectStrings_2" needs to be exported by the entry point index.d.ts
 //
 // @public
@@ -874,8 +879,9 @@ export type FetchPageResult<
 	T extends boolean = false,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
 	PROPERTY_SECURITIES extends boolean = false,
-	MODIFIERS extends ApplyModifiersArg<Q> = {}
-> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T, PROPERTY_SECURITIES>, Exclude<PropertyKeys<Q> extends L ? never : L, keyof MODIFIERS> | ModifiersToSelectStrings_2<MODIFIERS>, {}>, ORDER_BY_OPTIONS>>;
+	MODIFIERS extends ApplyModifiersArg<Q> = {},
+	DEFAULT_LOAD_LEVEL extends PropertyModifierValue | undefined = undefined
+> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T, PROPERTY_SECURITIES>, SelectedKeysWithDefaultLoadLevel<Q, L, MODIFIERS, DEFAULT_LOAD_LEVEL> | ModifiersToSelectStrings_2<MODIFIERS>, {}>, ORDER_BY_OPTIONS>>;
 
 // @public (undocumented)
 export type FlipAxis = "HORIZONTAL" | "VERTICAL" | "UNKNOWN";
@@ -1233,8 +1239,7 @@ export type MaybeScore<
 // @public (undocumented)
 export interface Media {
     	fetchContents(): Promise<Response>;
-    	// @beta
-    fetchFullMetadata?(): Promise<MediaFullMetadata>;
+    	fetchFullMetadata?(): Promise<MediaFullMetadata>;
     	fetchMetadata(): Promise<MediaMetadata_2>;
     	getMediaReference(): MediaReference;
     	// (undocumented)
@@ -2458,13 +2463,15 @@ export interface VideoSpecification {
     durationSeconds: number;
 }
 
-// Warning: (ae-forgotten-export) The symbol "MergedPropertyWhereClause" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "SpecialPropertyWhereClause" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "PropertyWhereClause" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "DerivedObjectOrInterfaceDefinition" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type WhereClause<
 	T extends ObjectOrInterfaceDefinition,
 	RDPs extends Record<string, SimplePropertyDef> = {}
-> = OrWhereClause<T, RDPs> | AndWhereClause<T, RDPs> | NotWhereClause<T, RDPs> | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true ? Record<string, never> : MergedPropertyWhereClause<T, RDPs>);
+> = OrWhereClause<T, RDPs> | AndWhereClause<T, RDPs> | NotWhereClause<T, RDPs> | SpecialPropertyWhereClause<T> | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true ? Record<string, never> : PropertyWhereClause<DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>>);
 
 // @public (undocumented)
 export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWirePropertyTypes>;

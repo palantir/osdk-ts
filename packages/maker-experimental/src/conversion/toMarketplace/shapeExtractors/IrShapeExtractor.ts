@@ -213,6 +213,26 @@ function extractInterfaceType(
   ridGenerator: OntologyRidGenerator,
 ): void {
   const interfaceReadableId = getReadableIdForInterface(interfaceType.apiName);
+  // SPT-backed properties must be present in both the legacy SPT reference list
+  // and the modern IPT reference list. Marketplace follows the legacy edge to
+  // resolve the SPT backing an IPT when wiring producer and consumer shapes.
+  const propertiesV3 = Object.values(interfaceType.propertiesV3 ?? {});
+  const sharedPropertyTypes =
+    propertiesV3.length > 0
+      ? propertiesV3.flatMap((property) =>
+          property.type === "sharedPropertyBasedPropertyType"
+            ? [property.sharedPropertyBasedPropertyType.sharedPropertyType]
+            : [],
+        )
+      : Object.values(interfaceType.propertiesV2 ?? {}).length > 0
+        ? Object.values(interfaceType.propertiesV2).map(
+            (property) => property.sharedPropertyType,
+          )
+        : (interfaceType.properties ?? []);
+  const properties = sharedPropertyTypes.map((spt) => {
+    const sptId = knownMarketplaceIdentifiers.sharedPropertyTypes?.[spt.rid];
+    return sptId ?? spt.rid;
+  });
   // Build propertiesV2 from propertiesV3 entries using knownMarketplaceIdentifiers
   const propertiesV2: string[] = [];
   for (const iptRid of Object.keys(interfaceType.propertiesV3 ?? {})) {
@@ -229,10 +249,7 @@ function extractInterfaceType(
       interfaceType.displayMetadata.displayName,
       interfaceType.displayMetadata.description ?? "",
     ),
-    properties: (interfaceType.properties ?? []).map((spt: any) => {
-      const sptId = knownMarketplaceIdentifiers.sharedPropertyTypes?.[spt.rid];
-      return sptId ?? spt.rid;
-    }),
+    properties,
     propertiesV2,
     links: (interfaceType.links ?? []).map((ilt: any) => {
       const iltId = knownMarketplaceIdentifiers.interfaceLinkTypes?.[ilt.rid];
@@ -810,6 +827,13 @@ function getPropertiesForDatasource(datasourceDef: {
   return new Set(propertyMapping ? Object.keys(propertyMapping) : []);
 }
 
+function getMarkingType(type: Type): "CBAC" | "MANDATORY" | undefined {
+  if (type.type === "array") {
+    return getMarkingType(type.array.subtype);
+  }
+  return type.type === "marking" ? type.marking.markingType : undefined;
+}
+
 /**
  * Extract marking shapes from the ontology block data.
  * Port of Java's MarkingShapeExtractor.getMarkingShapes().
@@ -837,11 +861,8 @@ function getMarkingShapes(
     for (const [propertyRid, propertyType] of Object.entries(
       objectType.objectType.propertyTypes,
     )) {
-      if (propertyType.type.type === "marking") {
-        const markingData = (
-          propertyType.type as { marking?: { markingType?: string } }
-        ).marking;
-        const markingType = markingData?.markingType;
+      const markingType = getMarkingType(propertyType.type);
+      if (markingType) {
         const propertyApiName =
           propertyType.apiName ?? propertyType.displayMetadata?.displayName;
         if (propertyApiName) {

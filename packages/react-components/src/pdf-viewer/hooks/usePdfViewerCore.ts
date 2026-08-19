@@ -23,7 +23,7 @@ import type {
 import type { RefObject } from "react";
 import { useCallback, useMemo, useRef, useState } from "react";
 
-import type { PdfSource } from "../types.js";
+import type { PdfSource } from "../PdfViewerApi.js";
 import type { AnnotationPortalTarget } from "./usePdfAnnotationPortals.js";
 import { usePdfAnnotationPortals } from "./usePdfAnnotationPortals.js";
 import { usePdfDocument } from "./usePdfDocument.js";

@@ -91,7 +91,8 @@ export async function cli(
       if (
         destPath === "package.json.hbs" ||
         destPath === "package.json.osdk.hbs" ||
-        destPath === "package.json.psdk.hbs"
+        destPath === "package.json.psdk.hbs" ||
+        destPath === "package.json.no-osdk.hbs"
       ) {
         const packageJson = JSON.parse(body.toString("utf-8"));
         for (const d of [

@@ -17,7 +17,7 @@
 import type { Media } from "@osdk/api";
 import type {
   BaseEmailViewerProps,
-  EmailViewerMediaProps,
+  EmailViewerProps,
   ParsedEmail,
 } from "@osdk/react-components/experimental/email-viewer";
 import {
@@ -99,7 +99,7 @@ const meta: Meta<BaseEmailViewerProps> = {
   component: BaseEmailViewer,
   tags: ["beta"],
   args: {
-    email: SAMPLE_EMAIL,
+    content: SAMPLE_EMAIL,
   },
   render: (args: BaseEmailViewerProps) => (
     <div style={{ height: "500px" }}>
@@ -110,8 +110,8 @@ const meta: Meta<BaseEmailViewerProps> = {
     controls: { expanded: true },
   },
   argTypes: {
-    email: {
-      description: "Parsed email data",
+    content: {
+      description: "The parsed email to render",
       control: false,
     },
     className: {
@@ -124,11 +124,11 @@ const meta: Meta<BaseEmailViewerProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: StoryObj<EmailViewerMediaProps> = {
+export const Default: StoryObj<EmailViewerProps> = {
   args: {
     media: createMockEmailMedia(SAMPLE_EML_CONTENT),
   },
-  render: (args: EmailViewerMediaProps) => (
+  render: (args: EmailViewerProps) => (
     <div style={{ height: "500px" }}>
       <EmailViewer {...args} />
     </div>
@@ -150,7 +150,7 @@ export const HtmlEmail: Story = {
       source: {
         code: `import { BaseEmailViewer } from "@osdk/react-components/experimental/email-viewer";
 
-<BaseEmailViewer email={parsedEmail} />`,
+<BaseEmailViewer content={parsedEmail} />`,
       },
     },
   },
@@ -158,6 +158,6 @@ export const HtmlEmail: Story = {
 
 export const PlainTextEmail: Story = {
   args: {
-    email: SAMPLE_TEXT_EMAIL,
+    content: SAMPLE_TEXT_EMAIL,
   },
 };

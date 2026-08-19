@@ -288,6 +288,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
         ],
         "implementsInterfaces2": {
           "FooInterface": {
+            "actionTypes": {},
             "links": {},
             "properties": {
               "fooSpt": "fullName",
@@ -618,6 +619,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
         ],
         "implementsInterfaces2": {
           "FooInterface": {
+            "actionTypes": {},
             "links": {},
             "properties": {
               "fooSpt": "fullName",
@@ -1112,6 +1114,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
         ],
         "implementsInterfaces2": {
           "FooInterface": {
+            "actionTypes": {},
             "links": {},
             "properties": {
               "fooSpt": "fullName",

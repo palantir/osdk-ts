@@ -24,7 +24,7 @@ import type React from "react";
 import type { ReactNode } from "react";
 
 import type {
-  FilterState as FilterStateType,
+  FilterState,
   PropertyFilterDefinition,
 } from "./FilterListItemApi.js";
 import type { CustomFilterDefinition } from "./types/CustomRendererTypes.js";
@@ -68,24 +68,6 @@ export type FilterKey<Q extends ObjectTypeDefinition> = ExtractFilterKey<
   FilterDefinitionUnion<Q>
 >;
 
-/**
- * Extract the filter state from a filter definition union
- */
-type ExtractFilterState<D> = D extends { filterState: infer S } ? S : never;
-
-export type FilterState<Q extends ObjectTypeDefinition> = ExtractFilterState<
-  FilterDefinitionUnion<Q>
->;
-
-/**
- * Map from filter definition objects to their current state.
- * Uses object identity for keys, ensuring stable lookups across reorders.
- */
-export type FilterStatesMap<Q extends ObjectTypeDefinition> = Map<
-  FilterDefinitionUnion<Q>,
-  FilterStateType
->;
-
 export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
    * The object type definition for the objects being filtered.
@@ -96,19 +78,17 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
    * Optional object set to scope aggregation queries. When omitted,
    * aggregations run against the full object type.
+   *
+   * Required for `HAS_LINK` and `LINKED_PROPERTY` filters to work.
    */
   objectSet?: ObjectSet<Q>;
 
   /**
-   * The current where clause to filter the objectSet.
-   * If provided, the filter clause is controlled.
-   * LINKED_PROPERTY filters are not included; use `onEffectiveObjectSet`.
-   */
-  filterClause?: WhereClause<Q>;
-
-  /**
-   * Called when the filter clause changes.
-   * Required in controlled mode.
+   * Called whenever the filter clause changes. FilterList owns filter state;
+   * this is how you read it out, e.g. to feed an `ObjectTable`'s `filter`.
+   *
+   * `HAS_LINK` and `LINKED_PROPERTY` filters are not represented in the clause
+   * — use `onEffectiveObjectSet` for those.
    *
    * @param newClause The updated filter clause
    */
@@ -138,16 +118,13 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    */
   onFilterStateChanged?: (
     definition: FilterDefinitionUnion<Q>,
-    newState: FilterStateType,
+    newState: FilterState,
   ) => void;
 
   /**
    * Called with the narrowed `ObjectSet` whenever filters change. Requires
-   * `objectSet` to be set.
-   *
-   * A linked filter only narrows the set when its definition has
-   * `reverseLinkName`. Linked filters without it are skipped here; read their
-   * state from `onFilterStateChanged` instead.
+   * `objectSet` to be set. `HAS_LINK` and `LINKED_PROPERTY` filters narrow only
+   * here, never through the filter clause.
    */
   onEffectiveObjectSet?: (objectSet: ObjectSet<Q>) => void;
 
@@ -169,37 +146,42 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    *   the rendered list.
    *
    * @default "uncontrolled"
+   * @deprecated Going away; visibility will always be managed internally.
+   * Seed it with `isVisible` on each `filterDefinitions` entry and observe
+   * changes with `onFilterVisibilityChange`.
    */
   addFilterMode?: "controlled" | "uncontrolled";
 
   /**
-   * Called when a filter is added (shown).
-   *
-   * In uncontrolled mode, this fires when a user selects a hidden filter
-   * from the "Add filter" popover.
+   * Called after a filter is shown from the built-in "Add filter" popover.
    *
    * @param filterKey The key of the added filter
-   * @param newDefinitions The current filter definitions array
+   * @param newDefinitions Deprecated. The `filterDefinitions` you passed in,
+   * unchanged — not the post-add state. Use `onFilterVisibilityChange`.
    */
   onFilterAdded?: (
     filterKey: FilterKey<Q>,
+    /** @deprecated Use `onFilterVisibilityChange`. */
+    /* eslint-disable-next-line @typescript-eslint/no-deprecated */
     newDefinitions: Array<FilterDefinitionUnion<Q>>,
   ) => void;
 
   /**
-   * Called when a filter is removed (hidden).
-   *
-   * In uncontrolled mode, this fires as a notification after the filter
-   * is hidden internally.
+   * Called after a filter's remove button is clicked, once the filter is
+   * hidden and its state cleared.
    *
    * @param filterKey The key of the removed filter
    */
   onFilterRemoved?: (filterKey: FilterKey<Q>) => void;
 
   /**
-   * Called when filter visibility or ordering changes, i.e. when filters
-   * are reordered, or (in uncontrolled mode) added or
-   * removed via the built-in show/remove controls.
+   * Called when filter visibility or ordering changes, i.e. when filters are
+   * reordered, added or removed via the built-in show/remove controls, or
+   * reset.
+   *
+   * Visible filters come first, in display order, followed by the hidden ones.
+   * Persist this array and feed it back as the order and `isVisible` of
+   * `filterDefinitions` to make reordering survive a remount.
    *
    * @param newStates The filters in current display order with their visibility state
    */
@@ -211,29 +193,67 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Enable drag-and-drop reordering of filters.
-   * When true, drag handles are rendered and filters can be reordered.
-   * Reorder state is managed internally; consumers who need to track order
-   * should use controlled filterDefinitions.
+   * Enable drag-and-drop reordering of filters. When `true`, drag handles are
+   * rendered and filters can be reordered.
+   *
+   * Reorder state is managed internally; persist `onFilterVisibilityChange` to
+   * track order across remounts.
+   *
+   * @default false
    */
   enableSorting?: boolean;
 
   /**
-   * Whether the filter list panel is collapsed
+   * Whether the collapse/expand control is available. When `false` the panel is
+   * always expanded, no collapse control is rendered, and `collapsed` /
+   * `defaultCollapsed` are ignored.
+   * @default true
+   */
+  enableCollapse?: boolean;
+
+  /**
+   * Controlled mode. When supplied, this prop is the source of truth for
+   * whether the panel is collapsed and the component keeps no internal state;
+   * re-render with a new value in response to `onCollapsedChange`.
+   *
+   * If both `collapsed` and `defaultCollapsed` are provided, `collapsed` takes
+   * precedence. Ignored when `enableCollapse` is `false`.
    */
   collapsed?: boolean;
 
   /**
-   * Called when the collapsed state changes
+   * Uncontrolled mode. Seeds the panel's internal collapsed state; the
+   * component continues to own the state after mount, so later changes to this
+   * prop are ignored.
+   *
+   * If both `collapsed` and `defaultCollapsed` are provided, `collapsed` takes
+   * precedence. Ignored when `enableCollapse` is `false`.
+   * @default false
+   */
+  defaultCollapsed?: boolean;
+
+  /**
+   * Called whenever the collapsed state changes.
+   *
+   * @param collapsed The new collapsed state
    */
   onCollapsedChange?: (collapsed: boolean) => void;
 
   /**
-   * Initial filter states for hydrating from external storage.
-   * These states are merged over definition defaults on mount.
-   * Use onFilterStateChanged to persist state changes externally.
+   * Seeds filter states from external storage, keyed by `getFilterKey`.
+   * Applied over the per-definition `defaultFilterState` seeds on mount, and
+   * FilterList owns the states from then on. Also the state the reset button
+   * restores to.
+   * Use `onFilterStateChanged` to persist changes back out.
+   *
+   * @default undefined (filters seed from their definitions alone)
    */
-  initialFilterStates?: Map<string, FilterStateType>;
+  defaultFilterStates?: Map<string, FilterState>;
+
+  /**
+   * @deprecated Rename to `defaultFilterStates`.
+   */
+  initialFilterStates?: Map<string, FilterState>;
 
   /**
    * Show reset filters button in header
@@ -256,12 +276,9 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   className?: string;
 
   /**
-   * Custom render function for the "Add filter" button.
-   *
-   * - In uncontrolled mode: customizes the trigger element for the built-in
-   *   add-filter popover. The popover behavior is handled automatically.
-   * - In controlled mode: replaces the entire add-filter button area.
-   *   The consumer is responsible for all add-filter behavior.
+   * Custom render function for the "Add filter" button. Customizes the trigger
+   * element for the built-in add-filter popover; the popover behavior is
+   * handled automatically.
    */
   renderAddFilterButton?: () => React.ReactNode;
 }

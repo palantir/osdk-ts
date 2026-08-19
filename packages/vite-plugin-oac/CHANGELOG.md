@@ -1,5 +1,45 @@
 # @osdk/vite-plugin-oac
 
+## 0.57.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+  - @osdk/faux@0.43.0
+  - @osdk/generator-converters.ontologyir@2.58.0
+  - @osdk/api@2.58.0
+  - @osdk/client.unstable@2.58.0
+  - @osdk/cli@0.83.0
+  - @osdk/maker@0.58.0
+
+## 0.56.0
+
+### Patch Changes
+
+- Updated dependencies [8ce066f]
+- Updated dependencies [3bfccdb]
+- Updated dependencies [e9d7ffa]
+  - @osdk/generator-converters.ontologyir@2.57.0
+  - @osdk/client.unstable@2.57.0
+  - @osdk/maker@0.55.0
+  - @osdk/api@2.57.0
+  - @osdk/faux@0.42.0
+  - @osdk/cli@0.82.0
+
+## 0.55.0
+
+### Patch Changes
+
+- Updated dependencies [342c492]
+  - @osdk/api@2.56.0
+  - @osdk/cli@0.81.0
+  - @osdk/client.unstable@2.56.0
+  - @osdk/generator-converters.ontologyir@2.56.0
+
 ## 0.54.0
 
 ### Patch Changes

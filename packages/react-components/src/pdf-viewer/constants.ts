@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PdfAnnotation } from "./types.js";
+import type { PdfAnnotation } from "./PdfViewerApi.js";
 
 // Default empty values (stable references to avoid re-renders)
 export const EMPTY_ANNOTATION_ARRAY: PdfAnnotation[] = [];

@@ -30,6 +30,7 @@ import { useColumnPinning } from "./hooks/useColumnPinning.js";
 import { useColumnResize } from "./hooks/useColumnResize.js";
 import { useColumnVisibility } from "./hooks/useColumnVisibility.js";
 import { useEditableTable } from "./hooks/useEditableTable.js";
+import { useLoadedObjectsChanged } from "./hooks/useLoadedObjectsChanged.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
 import { useObjectTableSnapshot } from "./hooks/useObjectTableSnapshot.js";
 import type { UseRowSelectionChange } from "./hooks/useRowSelection.js";
@@ -47,7 +48,7 @@ const EMPTY_ARRAY: [] = [];
 
 export function ObjectTable<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -67,6 +68,7 @@ export function ObjectTable<
   onColumnsPinnedChanged,
   onColumnResize,
   onRowSelectionChanged,
+  onLoadedObjectsChanged,
   onColumnHeaderClick,
   renderCellContextMenu,
   selectionMode = "none",
@@ -83,7 +85,6 @@ export function ObjectTable<
   focusedRow,
   onFocusedRowChanged,
   tableRef,
-  labels,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { columnSizing, onColumnSizingChange } = useColumnResize({
@@ -117,6 +118,13 @@ export function ObjectTable<
     dedupeIntervalMs,
     pageSize,
     streamUpdates,
+  });
+
+  useLoadedObjectsChanged<Q, RDPs>({
+    loadedObjects: data,
+    totalCount,
+    isLoading,
+    onLoadedObjectsChanged,
   });
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<
@@ -301,7 +309,6 @@ export function ObjectTable<
         focusedRow == null ? focusedRow : getRowIdFromPrimaryKey<Q>(focusedRow)
       }
       onFocusedRowChanged={onFocusedRowChanged}
-      labels={labels}
     />
   );
 }

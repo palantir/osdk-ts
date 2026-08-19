@@ -229,8 +229,8 @@ src/
         ├── object-table.ts
         ├── filter-list.ts
         ├── pdf-viewer.ts
-        ├── markdown-renderer.ts
-        ├── tiff-renderer.ts
+        ├── markdown-viewer.ts
+        ├── tiff-viewer.ts
         └── action-form.ts
 ```
 

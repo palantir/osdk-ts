@@ -1,5 +1,15 @@
 # @osdk/create-app.template-packager
 
+## 2.58.0
+
+### Minor Changes
+
+- 8718d53: create-widget.template.react.v2 can be used with or without an osdk package
+
+## 2.57.0
+
+## 2.56.0
+
 ## 2.55.0
 
 ## 2.54.0

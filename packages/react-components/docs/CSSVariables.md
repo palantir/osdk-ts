@@ -30,9 +30,10 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [File Picker](#file-picker)
   - [Filter List](#filter-list)
   - [Form](#form)
+  - [Form Section](#form-section)
   - [Input](#input)
   - [Number Input](#number-input)
-  - [Markdown Renderer](#markdown-renderer)
+  - [Markdown Viewer](#markdown-viewer)
   - [Object Set](#object-set)
   - [PDF Viewer](#pdf-viewer)
   - [Radio](#radio)
@@ -1130,6 +1131,64 @@ Styling for form components.
 | `--osdk-form-error-font-size` | `var(--osdk-typography-size-body-small)`   | Error message font size  |
 | `--osdk-form-error-color`     | `var(--osdk-typography-color-danger-rest)` | Error message color      |
 
+### Form Section
+
+Styling for the `FormSection` container, including its header, expandable
+content, and minimal variant.
+
+#### Container
+
+| Variable                            | Default Value                                       | Description                |
+| ----------------------------------- | --------------------------------------------------- | -------------------------- |
+| `--osdk-form-section-border-color`  | `var(--osdk-surface-border-color-default)`          | Container border color     |
+| `--osdk-form-section-border-width`  | `var(--osdk-surface-border-width)`                  | Container border width     |
+| `--osdk-form-section-border-radius` | `var(--osdk-surface-border-radius)`                 | Container corner radius    |
+| `--osdk-form-section-background`    | `var(--osdk-surface-background-color-default-rest)` | Container background color |
+
+#### Header
+
+| Variable                                    | Default Value                               | Description                           |
+| ------------------------------------------- | ------------------------------------------- | ------------------------------------- |
+| `--osdk-form-section-header-padding-block`  | `calc(var(--osdk-surface-spacing) * 2.5)`   | Header block padding                  |
+| `--osdk-form-section-header-padding-inline` | `calc(var(--osdk-surface-spacing) * 2.5)`   | Header inline padding                 |
+| `--osdk-form-section-header-gap`            | `calc(var(--osdk-surface-spacing) * 2)`     | Gap between header items              |
+| `--osdk-form-section-title-gap`             | `calc(var(--osdk-surface-spacing) * 1)`     | Gap between the title and description |
+| `--osdk-form-section-title-font-size`       | `var(--osdk-typography-size-body-medium)`   | Title font size                       |
+| `--osdk-form-section-title-font-weight`     | `var(--osdk-typography-weight-bold)`        | Title font weight                     |
+| `--osdk-form-section-title-color`           | `var(--osdk-typography-color-default-rest)` | Title color                           |
+| `--osdk-form-section-description-font-size` | `var(--osdk-typography-size-body-small)`    | Description font size                 |
+| `--osdk-form-section-description-color`     | `var(--osdk-typography-color-muted)`        | Description color                     |
+
+#### Collapse Trigger
+
+| Variable                                  | Default Value                              | Description                             |
+| ----------------------------------------- | ------------------------------------------ | --------------------------------------- |
+| `--osdk-form-section-trigger-color`       | `var(--osdk-typography-color-muted)`       | Collapse trigger icon color             |
+| `--osdk-form-section-trigger-gap`         | `calc(var(--osdk-surface-spacing) * 2)`    | Gap between the header text and trigger |
+| `--osdk-form-section-transition-duration` | `var(--osdk-emphasis-transition-duration)` | Collapse-chevron transition duration    |
+
+#### Content
+
+| Variable                                     | Default Value                             | Description                  |
+| -------------------------------------------- | ----------------------------------------- | ---------------------------- |
+| `--osdk-form-section-content-padding-block`  | `calc(var(--osdk-surface-spacing) * 2.5)` | Content block padding        |
+| `--osdk-form-section-content-padding-inline` | `calc(var(--osdk-surface-spacing) * 2.5)` | Content inline padding       |
+| `--osdk-form-section-field-gap`              | `var(--osdk-form-fields-gap)`             | Gap between stacked fields   |
+| `--osdk-form-section-grid-column-gap`        | `calc(var(--osdk-surface-spacing) * 4)`   | Gap between fields in a grid |
+
+#### Validation
+
+| Variable                              | Default Value                            | Description                       |
+| ------------------------------------- | ---------------------------------------- | --------------------------------- |
+| `--osdk-form-section-error-color`     | `var(--osdk-form-error-color)`           | Section error indicator color     |
+| `--osdk-form-section-error-font-size` | `var(--osdk-typography-size-body-small)` | Section error indicator font size |
+
+#### Minimal Variant
+
+| Variable                                      | Default Value                            | Description                            |
+| --------------------------------------------- | ---------------------------------------- | -------------------------------------- |
+| `--osdk-form-section-minimal-title-font-size` | `var(--osdk-typography-size-body-large)` | Title font size in the minimal variant |
+
 ### Input
 
 Shared styling for input components. Inputs use `box-shadow` for visual borders (matching Blueprint's `.bp6-input` convention). The border is transparent by default; custom themes can set `--osdk-input-border-color` to add a real CSS border.
@@ -1169,25 +1228,25 @@ Styling for the stepper (increment / decrement button group) beside the number i
 | `--osdk-number-input-stepper-border-color` | `var(--osdk-button-border-color)`                                                                                                    | Stepper border color |
 | `--osdk-number-input-stepper-shadow`       | `0 var(--osdk-number-input-stepper-border-width) var(--osdk-number-input-stepper-border-width) var(--osdk-button-drop-shadow-color)` | Stepper drop shadow  |
 
-### Markdown Renderer
+### Markdown Viewer
 
-Styling for markdown renderer components.
+Styling for markdown viewer components.
 
-| Variable                                             | Default Value                               | Description               |
-| ---------------------------------------------------- | ------------------------------------------- | ------------------------- |
-| `--osdk-markdown-renderer-bg`                        | `var(--osdk-background-primary)`            | Container background      |
-| `--osdk-markdown-renderer-border`                    | `var(--osdk-surface-border)`                | Container border          |
-| `--osdk-markdown-renderer-padding`                   | `calc(var(--osdk-surface-spacing) * 3)`     | Container padding         |
-| `--osdk-markdown-renderer-line-height`               | `1.6`                                       | Content line height       |
-| `--osdk-markdown-renderer-heading-margin-top`        | `1.5em`                                     | Heading top margin        |
-| `--osdk-markdown-renderer-heading-margin-bottom`     | `0.5em`                                     | Heading bottom margin     |
-| `--osdk-markdown-renderer-paragraph-spacing`         | `1em`                                       | Paragraph spacing         |
-| `--osdk-markdown-renderer-code-bg`                   | `var(--osdk-background-secondary)`          | Code block background     |
-| `--osdk-markdown-renderer-code-inline-padding`       | `2px 6px`                                   | Inline code padding       |
-| `--osdk-markdown-renderer-code-inline-border-radius` | `3px`                                       | Inline code border radius |
-| `--osdk-markdown-renderer-blockquote-border`         | `3px solid var(--osdk-intent-primary-rest)` | Blockquote border         |
-| `--osdk-markdown-renderer-link-color`                | `var(--osdk-intent-primary-rest)`           | Link color                |
-| `--osdk-markdown-renderer-table-border`              | `var(--osdk-surface-border-color)`          | Table border color        |
+| Variable                                           | Default Value                               | Description               |
+| -------------------------------------------------- | ------------------------------------------- | ------------------------- |
+| `--osdk-markdown-viewer-bg`                        | `var(--osdk-background-primary)`            | Container background      |
+| `--osdk-markdown-viewer-border`                    | `var(--osdk-surface-border)`                | Container border          |
+| `--osdk-markdown-viewer-padding`                   | `calc(var(--osdk-surface-spacing) * 3)`     | Container padding         |
+| `--osdk-markdown-viewer-line-height`               | `1.6`                                       | Content line height       |
+| `--osdk-markdown-viewer-heading-margin-top`        | `1.5em`                                     | Heading top margin        |
+| `--osdk-markdown-viewer-heading-margin-bottom`     | `0.5em`                                     | Heading bottom margin     |
+| `--osdk-markdown-viewer-paragraph-spacing`         | `1em`                                       | Paragraph spacing         |
+| `--osdk-markdown-viewer-code-bg`                   | `var(--osdk-background-secondary)`          | Code block background     |
+| `--osdk-markdown-viewer-code-inline-padding`       | `2px 6px`                                   | Inline code padding       |
+| `--osdk-markdown-viewer-code-inline-border-radius` | `3px`                                       | Inline code border radius |
+| `--osdk-markdown-viewer-blockquote-border`         | `3px solid var(--osdk-intent-primary-rest)` | Blockquote border         |
+| `--osdk-markdown-viewer-link-color`                | `var(--osdk-intent-primary-rest)`           | Link color                |
+| `--osdk-markdown-viewer-table-border`              | `var(--osdk-surface-border-color)`          | Table border color        |
 
 ### Object Set
 
@@ -1199,6 +1258,7 @@ Styling for object set display components.
 | `--osdk-object-set-min-height`           | `30px`                                       | Minimum height         |
 | `--osdk-object-set-padding`              | `calc(var(--osdk-surface-spacing) * 1.5) 0`  | Object set padding     |
 | `--osdk-object-set-color`                | `var(--osdk-typography-color-default-rest)`  | Text color             |
+| `--osdk-object-set-icon-default-color`   | `var(--bp-palette-blue-4)`                   | Default icon color     |
 | `--osdk-object-set-placeholder-color`    | `var(--osdk-typography-color-muted)`         | Placeholder text color |
 | `--osdk-object-set-font-family`          | `var(--osdk-typography-family-default)`      | Font family            |
 | `--osdk-object-set-font-size`            | `var(--osdk-typography-size-body-medium)`    | Font size              |

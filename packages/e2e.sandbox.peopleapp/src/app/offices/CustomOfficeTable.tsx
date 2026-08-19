@@ -20,7 +20,7 @@ type OfficeRow = Osdk.Instance<
   Office,
   "$allBaseProperties",
   PropertyKeys<Office>,
-  Record<string, never>
+  {}
 >;
 
 const EMPTY_ROWS: OfficeRow[] = [];

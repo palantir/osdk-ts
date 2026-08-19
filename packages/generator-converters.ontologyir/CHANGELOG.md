@@ -1,5 +1,33 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.58.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.58.0
+
+## 2.57.0
+
+### Minor Changes
+
+- 8ce066f: Support map, media reference and inline object literal types on TypeScript function signatures
+- 3bfccdb: Emit struct field rids as valid five-component resource identifiers with a UUID locator
+
+### Patch Changes
+
+- Updated dependencies [e9d7ffa]
+  - @osdk/client.unstable@2.57.0
+
+## 2.56.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.56.0
+
 ## 2.55.0
 
 ### Patch Changes
