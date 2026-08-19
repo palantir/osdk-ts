@@ -823,10 +823,14 @@ describe(useColumnDefs, () => {
         )(mockCellContext);
       }
 
-      expect(customRenderCell).toHaveBeenCalledWith(mockObject, {
-        type: "property",
-        id: "name",
-      });
+      expect(customRenderCell).toHaveBeenCalledWith(
+        mockObject,
+        {
+          type: "property",
+          id: "name",
+        },
+        "John",
+      );
     });
 
     it("aligns predicate-rejected renderCell output with the editor cells beside it", async () => {
