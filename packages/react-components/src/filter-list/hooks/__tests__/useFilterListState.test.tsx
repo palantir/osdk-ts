@@ -556,7 +556,14 @@ describe("useFilterListState", () => {
         newState,
         filterClause: { name: "John" },
         filteredObjectSet: filtered,
-        activeLinkedFilters: [],
+        activeFilters: [
+          {
+            kind: "PROPERTY",
+            filterKey: getFilterKey(nameDef),
+            state: newState,
+            clause: { name: "John" },
+          },
+        ],
       });
     });
 
@@ -656,9 +663,11 @@ describe("useFilterListState", () => {
 
       const event = onFilterChanged.mock.lastCall?.[0];
       expect(event.filterClause).toEqual({});
-      expect(event.activeLinkedFilters).toEqual([
+      expect(event.activeFilters).toEqual([
         {
-          id: getFilterKey(linkedDef),
+          kind: "LINKED_PROPERTY",
+          filterKey: getFilterKey(linkedDef),
+          state: linkedState,
           linkName: "employees",
           innerWhere: { name: "John" },
           isExcluding: false,
@@ -684,9 +693,11 @@ describe("useFilterListState", () => {
 
       const event = onFilterChanged.mock.lastCall?.[0];
       expect(event.filterClause).toEqual({});
-      expect(event.activeLinkedFilters).toEqual([
+      expect(event.activeFilters).toEqual([
         {
-          id: getFilterKey(hasLinkDef),
+          kind: "HAS_LINK",
+          filterKey: getFilterKey(hasLinkDef),
+          state: { type: "hasLink", hasLink: true },
           linkName: "employees",
           isExcluding: false,
         },

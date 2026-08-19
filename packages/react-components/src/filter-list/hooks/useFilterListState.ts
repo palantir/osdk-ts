@@ -28,6 +28,7 @@ import {
   type PropertyTypeInfo,
 } from "../utils/filterStateToWhereClause.js";
 import { filterHasActiveState } from "../utils/filterValues.js";
+import { getActiveFilters } from "../utils/getActiveFilters.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 import { getSeedFilterState } from "../utils/getSeedFilterState.js";
 import { narrowObjectSet } from "../utils/narrowObjectSet.js";
@@ -156,10 +157,11 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
 
         const onChanged = onFilterChangedRef.current;
         if (onChanged) {
+          const propertyTypes = propertyTypesRef.current;
           const filterClause = buildWhereClause(
             definitions,
             next,
-            propertyTypesRef.current,
+            propertyTypes,
           );
           const activeLinkedFilters = getActiveLinkedFilters(definitions, next);
           const currentObjectSet = objectSetRef.current;
@@ -167,7 +169,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
             filterKey,
             newState: state,
             filterClause,
-            activeLinkedFilters,
+            activeFilters: getActiveFilters(definitions, next, propertyTypes),
             filteredObjectSet:
               currentObjectSet == null
                 ? undefined

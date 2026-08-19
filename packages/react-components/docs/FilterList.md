@@ -388,7 +388,7 @@ import type { FilterChangeEvent } from "@osdk/react-components/experimental/filt
     // event.newState         — that filter's new state
     // event.filterClause     — combined clause for all active filters
     // event.filteredObjectSet — `objectSet` filtered by all active filters
-    // event.activeLinkedFilters — the active `HAS_LINK` / `LINKED_PROPERTY` filters
+    // event.activeFilters    — every active filter, tagged by kind
     setFilterClause(event.filterClause);
     persist(event.filterKey, event.newState);
   }}
@@ -396,6 +396,37 @@ import type { FilterChangeEvent } from "@osdk/react-components/experimental/filt
 ```
 
 `filteredObjectSet` is `undefined` when no `objectSet` prop is supplied.
+
+#### Reading `activeFilters`
+
+`activeFilters` lists every filter that is currently filtering, in
+`filterDefinitions` order. Each entry is tagged with the `kind` of its
+definition, so narrowing on `kind` gives you the fields for that kind:
+
+| `kind`                                                          | Extra fields                                                              |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `"PROPERTY"`, `"STATIC_VALUES"`, `"KEYWORD_SEARCH"`, `"CUSTOM"` | `clause` — the clause this filter alone contributes                       |
+| `"HAS_LINK"`                                                    | `linkName`, `isExcluding`                                                 |
+| `"LINKED_PROPERTY"`                                             | `linkName`, `innerWhere` (predicate on the linked objects), `isExcluding` |
+
+Every entry also carries `filterKey` and `state`.
+
+```typescript
+onFilterChanged={(event) => {
+  // Chips for the clause-producing filters
+  const chips = event.activeFilters
+    .filter((filter) => filter.kind !== "HAS_LINK" && filter.kind !== "LINKED_PROPERTY")
+    .map((filter) => ({ key: filter.filterKey, state: filter.state }));
+
+  // Which links the user is filtering through
+  const links = event.activeFilters
+    .filter((filter) => filter.kind === "HAS_LINK" || filter.kind === "LINKED_PROPERTY")
+    .map((filter) => filter.linkName);
+}}
+```
+
+`getActiveFilters(filterDefinitions, filterStates, propertyTypes?)` is exported
+if you need the same list outside the callback, e.g. from your own state.
 
 ### Add/Remove Filters (Uncontrolled Mode)
 

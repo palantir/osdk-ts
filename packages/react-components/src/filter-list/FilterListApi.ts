@@ -27,11 +27,11 @@ import type {
   FilterState,
   PropertyFilterDefinition,
 } from "./FilterListItemApi.js";
+import type { ActiveFilter } from "./types/ActiveFilterTypes.js";
 import type { CustomFilterDefinition } from "./types/CustomRendererTypes.js";
 import type { KeywordSearchFilterDefinition } from "./types/KeywordSearchTypes.js";
 import type {
   HasLinkFilterDefinition,
-  LinkedFilter,
   LinkedPropertyFilterDefinition,
 } from "./types/LinkedFilterTypes.js";
 import type { StaticValuesFilterDefinition } from "./types/StaticValuesTypes.js";
@@ -70,7 +70,7 @@ export interface FilterChangeEvent<Q extends ObjectTypeDefinition> {
    * The combined clause for all active filters.
    *
    * `HAS_LINK` and `LINKED_PROPERTY` filters are not represented in the clause —
-   * read `activeLinkedFilters` or `filteredObjectSet` for those.
+   * read `activeFilters` or `filteredObjectSet` for those.
    */
   filterClause: WhereClause<Q>;
 
@@ -80,8 +80,13 @@ export interface FilterChangeEvent<Q extends ObjectTypeDefinition> {
    */
   filteredObjectSet: ObjectSet<Q> | undefined;
 
-  /** The active `HAS_LINK` and `LINKED_PROPERTY` filters. */
-  activeLinkedFilters: ReadonlyArray<LinkedFilter<Q>>;
+  /**
+   * Every active filter in `filterDefinitions` order, each tagged with the
+   * `kind` of its definition. Narrow on `kind` to read the fields for that
+   * kind: `clause` for the clause-producing kinds, `linkName` /`innerWhere` /
+   * `isExcluding` for `HAS_LINK` and `LINKED_PROPERTY`.
+   */
+  activeFilters: ReadonlyArray<ActiveFilter<Q>>;
 }
 
 export interface FilterListProps<Q extends ObjectTypeDefinition> {
