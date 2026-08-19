@@ -530,9 +530,9 @@ const UPDATE_PACKAGE_JSON: Mutator = {
         `"name": "${
           sdkVersionedTemplateExampleId(template, sdkVersion, false)
         }"`,
-        `"name": "@psdk/examples.${
+        `"name": "@osdk/examples.${
           sdkVersionedTemplateCanonicalId(template, sdkVersion)
-        }"`,
+        }-no-osdk"`,
       ),
   }),
 };
