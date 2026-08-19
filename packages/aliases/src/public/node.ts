@@ -17,7 +17,8 @@
 // Filesystem-backed alias runtime, for code running in Node with a container
 // filesystem (Functions). Reads the aliases file whose path the runtime supplies
 // through an environment variable. This entry point uses `fs` and so cannot be
-// bundled into a browser; browser applications should import "@osdk/aliases".
+// bundled into a browser; browser applications should import
+// "@osdk/aliases/experimental".
 //
 // `@osdk/functions` re-exports this as its `Aliases` namespace, so its public
 // API is unchanged.
