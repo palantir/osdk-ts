@@ -758,6 +758,17 @@ export const PerRowEditableAndFieldConfig: Story = {
           const jobTitle = rowData.jobTitle ?? "";
           return jobTitle === "Senior Product Manager";
         },
+        cellValueType: "string",
+        renderCell: (obj, _, value) => (
+          <span
+            style={{
+              fontStyle: "italic",
+              color: "grey",
+            }}
+          >
+            {value as string}
+          </span>
+        ),
       },
       {
         locator: { type: "property", id: "department" },
