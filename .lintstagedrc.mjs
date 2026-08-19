@@ -39,7 +39,6 @@ const OXC_PACKAGES = [
   "create-app.template.typescript-library.beta",
   "create-app.template.vue",
   "create-app.template.vue.v2",
-  "create-widget.template.minimal-react.v2",
   "create-widget.template.react.v2",
   "typescript-sdk-docs-examples",
 ];

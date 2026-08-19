@@ -46,7 +46,6 @@
     "yargs": "17.7.2"
   },
   "devDependencies": {
-    "@osdk/create-widget.template.minimal-react.v2": "workspace:*",
     "@osdk/create-widget.template.react.v2": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tool.check-bundle": "workspace:~",
