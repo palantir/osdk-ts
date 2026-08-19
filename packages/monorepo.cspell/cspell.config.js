@@ -129,7 +129,14 @@ const cspell = {
     "oauth",
     "css",
   ],
-  words: ["todoapp", "borderless", "overfetching", "envrc", "authless", "Authless"],
+  words: [
+    "todoapp",
+    "borderless",
+    "overfetching",
+    "envrc",
+    "authless",
+    "Authless",
+  ],
   suggestWords: [],
   ignoreWords: [],
   import: [],
@@ -167,10 +174,6 @@ const cspell = {
         "Clooney",
         "Itask",
         "Mobi",
-
-        // Authless client
-        "Authless",
-        "authless",
 
         "DCTS",
         "DMTS",
