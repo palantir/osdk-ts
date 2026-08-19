@@ -51,7 +51,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/language-models": "workspace:~"
+    "@osdk/language-models": "workspace:*"
   },
   "peerDependencies": {
     "@ai-sdk/provider": "^3.0.0",
