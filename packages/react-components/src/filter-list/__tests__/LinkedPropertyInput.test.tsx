@@ -97,7 +97,6 @@ function createDefinition(
   return {
     type: "LINKED_PROPERTY",
     linkName: "primaryOffice",
-    reverseLinkName: "occupants",
     linkedPropertyKey: "name" as PropertyKeys<ObjectTypeDefinition>,
     filterComponent,
     defaultFilterState: { type: "SELECT", selectedValues: [] },
@@ -519,25 +518,28 @@ describe("LinkedPropertyInput", () => {
         $objectSetInternals: { def: MockLinkedObjectType },
         where: vi.fn(),
         pivotTo: vi.fn(),
-        intersect: vi.fn(),
+        withProperties: vi.fn(),
       } as unknown as ObjectSet<ObjectTypeDefinition>;
       vi.mocked(set.where).mockImplementation(() => makeChainable("chained"));
       vi.mocked(set.pivotTo).mockImplementation(() => makeChainable(kind));
-      vi.mocked(set.intersect).mockImplementation(() => makeChainable(kind));
+      vi.mocked(set.withProperties).mockImplementation(() =>
+        makeChainable(kind),
+      );
       return set;
     }
 
     function createDualScopeMock(): ObjectSet<ObjectTypeDefinition> {
       const emptySourcePivoted = makeChainable("emptySource");
       const scopedPivoted = makeChainable("scoped");
-      const intersected = {
-        ...makeChainable("scoped-intersected"),
-      } as ObjectSet<ObjectTypeDefinition>;
-      vi.mocked(intersected.pivotTo).mockImplementation(() => scopedPivoted);
+      // The scoped side is base.withProperties(counts).where(countClause).
+      const scoped = makeChainable("scoped-counts");
+      vi.mocked(scoped.pivotTo).mockImplementation(() => scopedPivoted);
+      const withCounts = makeChainable("with-counts");
+      vi.mocked(withCounts.where).mockImplementation(() => scoped);
 
       const base = makeChainable("base");
       vi.mocked(base.pivotTo).mockImplementation(() => emptySourcePivoted);
-      vi.mocked(base.intersect).mockImplementation(() => intersected);
+      vi.mocked(base.withProperties).mockImplementation(() => withCounts);
       return base;
     }
 
@@ -552,8 +554,8 @@ describe("LinkedPropertyInput", () => {
       const objectSet = createDualScopeMock();
       const linkedFilters: ReadonlyArray<LinkedFilter<ObjectTypeDefinition>> = [
         {
+          id: "linkedProperty:manager:name",
           linkName: "manager",
-          reverseLinkName: "reports",
           innerWhere: {} as WhereClause<ObjectTypeDefinition>,
         },
       ];

@@ -200,10 +200,26 @@ describe("filterValues", () => {
       });
     });
 
-    it("clears hasLink to false", () => {
-      expect(clearFilterState({ type: "hasLink", hasLink: true })).toEqual({
+    it("clears hasLink to hasLink=false, preserving isExcluding", () => {
+      expect(
+        clearFilterState({
+          type: "hasLink",
+          hasLink: true,
+        }),
+      ).toEqual({
         type: "hasLink",
         hasLink: false,
+      });
+      expect(
+        clearFilterState({
+          type: "hasLink",
+          hasLink: true,
+          isExcluding: true,
+        }),
+      ).toEqual({
+        type: "hasLink",
+        hasLink: false,
+        isExcluding: true,
       });
     });
 
@@ -364,7 +380,13 @@ describe("filterValues", () => {
     });
 
     it("flips isExcluding on a hasLink state", () => {
-      expect(toggleIsExcluding({ type: "hasLink", hasLink: true })).toEqual({
+      expect(
+        toggleIsExcluding({
+          type: "hasLink",
+          hasLink: true,
+          isExcluding: false,
+        }),
+      ).toEqual({
         type: "hasLink",
         hasLink: true,
         isExcluding: true,

@@ -52,7 +52,7 @@ versions:
             function Filtered{{objectType}}List() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
                 where: {
-                  {{titleProperty}}: { $isNotNull: true }
+                  {{titleProperty}}: { $isNull: false }
                 }
               });
 
@@ -247,7 +247,7 @@ versions:
             function Filtered{{objectType}}List() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
                 where: {
-                  {{titleProperty}}: { $isNotNull: true }
+                  {{titleProperty}}: { $isNull: false }
                 }
               });
 

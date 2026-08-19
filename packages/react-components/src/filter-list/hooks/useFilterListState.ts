@@ -39,7 +39,7 @@ export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
   clearFilterState: (filterKey: string) => void;
   /** Direct (non-link-traversing) filters combined into a `WhereClause<Q>`. */
   whereClause: WhereClause<Q>;
-  /** Active linked-property records; apply via `narrowObjectSet`. */
+  /** Active HAS_LINK and LINKED_PROPERTY records */
   linkedFilters: ReadonlyArray<LinkedFilter<Q>>;
   /** Per-filter excluding-self where clauses keyed by `getFilterKey`. */
   perFilterWhereClauses: Map<string, WhereClause<Q>>;

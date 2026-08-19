@@ -374,7 +374,6 @@ function createLinkedDefinition(
   return {
     type: "LINKED_PROPERTY",
     linkName: "primaryOffice",
-    reverseLinkName: "occupants",
     linkedPropertyKey: "name" as PropertyKeys<ObjectTypeDefinition>,
     filterComponent,
     linkedFilterState: innerStateType,
