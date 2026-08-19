@@ -656,7 +656,75 @@ describe("useFilterListState", () => {
 
       const event = onFilterChanged.mock.lastCall?.[0];
       expect(event.filterClause).toEqual({});
-      expect(event.activeLinkedFilters).toHaveLength(1);
+      expect(event.activeLinkedFilters).toEqual([
+        {
+          id: getFilterKey(linkedDef),
+          linkName: "employees",
+          innerWhere: { name: "John" },
+          isExcluding: false,
+        },
+      ]);
+    });
+
+    it("reports active HAS_LINK filters", () => {
+      const onFilterChanged = vi.fn();
+      const hasLinkDef = createHasLinkFilterDef("employees");
+      const props = createProps({
+        filterDefinitions: [hasLinkDef],
+        onFilterChanged,
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+
+      act(() => {
+        result.current.setFilterState(getFilterKey(hasLinkDef), {
+          type: "hasLink",
+          hasLink: true,
+        });
+      });
+
+      const event = onFilterChanged.mock.lastCall?.[0];
+      expect(event.filterClause).toEqual({});
+      expect(event.activeLinkedFilters).toEqual([
+        {
+          id: getFilterKey(hasLinkDef),
+          linkName: "employees",
+          isExcluding: false,
+        },
+      ]);
+    });
+
+    it("filters the objectSet by the link count for a linked filter", () => {
+      const onFilterChanged = vi.fn();
+      const filtered = { _kind: "filtered" } as unknown as ObjectSet<
+        typeof MockObjectType
+      >;
+      const withCounts = {
+        where: vi.fn().mockReturnValue(filtered),
+      } as unknown as ObjectSet<typeof MockObjectType>;
+      const objectSet = {
+        withProperties: vi.fn().mockReturnValue(withCounts),
+      } as unknown as ObjectSet<typeof MockObjectType>;
+      const hasLinkDef = createHasLinkFilterDef("employees");
+      const props = createProps({
+        filterDefinitions: [hasLinkDef],
+        objectSet,
+        onFilterChanged,
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+
+      act(() => {
+        result.current.setFilterState(getFilterKey(hasLinkDef), {
+          type: "hasLink",
+          hasLink: true,
+        });
+      });
+
+      expect(onFilterChanged.mock.lastCall?.[0].filteredObjectSet).toBe(
+        filtered,
+      );
+      expect(vi.mocked(withCounts.where).mock.calls[0][0]).toEqual({
+        [`osdkFilterListLinkCount_${getFilterKey(hasLinkDef)}`]: { $gt: 0 },
+      });
     });
   });
 

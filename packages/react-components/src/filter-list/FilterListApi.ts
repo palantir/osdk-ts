@@ -69,21 +69,18 @@ export interface FilterChangeEvent<Q extends ObjectTypeDefinition> {
   /**
    * The combined clause for all active filters.
    *
-   * `LINKED_PROPERTY` filters are not represented in the clause — read
-   * `activeLinkedFilters` or `filteredObjectSet` for those.
+   * `HAS_LINK` and `LINKED_PROPERTY` filters are not represented in the clause —
+   * read `activeLinkedFilters` or `filteredObjectSet` for those.
    */
   filterClause: WhereClause<Q>;
 
   /**
-   * The `objectSet` prop filtered by all active filters, or `undefined` when no
-   * `objectSet` was supplied.
-   *
-   * A linked filter only filters the set when its definition has
-   * `reverseLinkName`; linked filters without it are skipped here.
+   * The `objectSet` prop filtered by all active filters, including `HAS_LINK`
+   * and `LINKED_PROPERTY`, or `undefined` when no `objectSet` was supplied.
    */
   filteredObjectSet: ObjectSet<Q> | undefined;
 
-  /** The active `LINKED_PROPERTY` filters. */
+  /** The active `HAS_LINK` and `LINKED_PROPERTY` filters. */
   activeLinkedFilters: ReadonlyArray<LinkedFilter<Q>>;
 }
 
