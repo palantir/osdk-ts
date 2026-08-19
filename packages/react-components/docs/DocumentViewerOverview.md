@@ -7,7 +7,7 @@ description: A viewer for OSDK Media objects that auto-selects the right rendere
 
 ## Usage
 
-DocumentViewer takes an OSDK `Media` object, detects its MIME type, and renders it with the matching viewer. There is no data-source wiring to configure — pass the `Media` value from an object property and the component handles the rest.
+DocumentViewer takes an OSDK `Media` object, detects its MIME type, and renders it with the matching viewer.
 
 > **Note** — `@my/osdk` is a placeholder for **your generated SDK package** (e.g. `@your-app/sdk`). Replace it with the actual package name in your project.
 
@@ -67,7 +67,7 @@ DocumentViewer exposes its appearance through `--osdk-*` CSS variables, so you c
 
 Each per-format viewer carries its own token group — `--osdk-pdf-viewer-*`, `--osdk-image-viewer-*`, `--osdk-video-viewer-*`, `--osdk-markdown-viewer-*`, `--osdk-spreadsheet-viewer-*`, `--osdk-email-viewer-*`, and `--osdk-xml-viewer-*`. See the [CSS Variables reference](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CSSVariables.md) — in particular the **Document Viewer**, **PDF Viewer**, and **Markdown Viewer** sections — for the full list of tokens and their defaults.
 
-## Other OSDK media viewers
+## Standalone OSDK media viewers
 
 `DocumentViewer` is the entry point most consumers need — it picks the viewer for you. Reach for a standalone viewer when you already know the format, when you want to configure a viewer `DocumentViewer` renders with defaults (markdown, spreadsheet, email, XML), or when your source is not an OSDK `Media` object.
 
@@ -76,20 +76,20 @@ Each format ships two components from its own subpath:
 - **`<Format>Viewer`** — the OSDK-aware component. Takes a `media: Media` prop and handles fetching and decoding.
 - **`Base<Format>Viewer`** — the OSDK-agnostic component. Takes an already-resolved `src` (binary source: URL or bytes) or `content` (decoded payload), so you can drive it from your own data source.
 
-| Viewer      | Import subpath                                           | OSDK-aware          | Base component          | Base input                   | Handles                                               |
-| ----------- | -------------------------------------------------------- | ------------------- | ----------------------- | ---------------------------- | ----------------------------------------------------- |
-| PDF         | `@osdk/react-components/experimental/pdf-viewer`         | `PdfViewer`         | `BasePdfViewer`         | `src: PdfSource`             | `application/pdf`                                     |
-| Image       | `@osdk/react-components/experimental/image-viewer`       | `ImageViewer`       | `BaseImageViewer`       | `src: string`                | PNG, JPEG, GIF, SVG, WebP, BMP                        |
-| TIFF        | `@osdk/react-components/experimental/tiff-renderer`      | `TiffViewer`        | `BaseTiffViewer`        | `src: Uint8Array`            | `image/tiff`, plus `.tif`/`.tiff` file-name detection |
-| Video       | `@osdk/react-components/experimental/video-viewer`       | `VideoViewer`       | `BaseVideoViewer`       | `src: string`                | any `video/*`                                         |
-| Markdown    | `@osdk/react-components/experimental/markdown-renderer`  | `MarkdownViewer`    | `BaseMarkdownViewer`    | `content: string`            | `text/markdown`, `text/x-markdown`                    |
-| Spreadsheet | `@osdk/react-components/experimental/spreadsheet-viewer` | `SpreadsheetViewer` | `BaseSpreadsheetViewer` | `content: ParsedSpreadsheet` | `.xlsx`                                               |
-| Email       | `@osdk/react-components/experimental/email-viewer`       | `EmailViewer`       | `BaseEmailViewer`       | `content: ParsedEmail`       | `message/rfc822`                                      |
-| XML         | `@osdk/react-components/experimental/xml-viewer`         | `XmlViewer`         | `BaseXmlViewer`         | `content: string`            | `application/xml`, `text/xml`                         |
+Import subpaths below are relative to `@osdk/react-components/experimental/`.
+
+| OSDK viewer         | Import subpath       | Base component          | Base input                   | Handles                                               |
+| ------------------- | -------------------- | ----------------------- | ---------------------------- | ----------------------------------------------------- |
+| `PdfViewer`         | `pdf-viewer`         | `BasePdfViewer`         | `src: PdfSource`             | `application/pdf`                                     |
+| `ImageViewer`       | `image-viewer`       | `BaseImageViewer`       | `src: string`                | PNG, JPEG, GIF, SVG, WebP, BMP                        |
+| `TiffViewer`        | `tiff-renderer`      | `BaseTiffViewer`        | `src: Uint8Array`            | `image/tiff`, plus `.tif`/`.tiff` file-name detection |
+| `VideoViewer`       | `video-viewer`       | `BaseVideoViewer`       | `src: string`                | any `video/*`                                         |
+| `MarkdownViewer`    | `markdown-renderer`  | `BaseMarkdownViewer`    | `content: string`            | `text/markdown`, `text/x-markdown`                    |
+| `SpreadsheetViewer` | `spreadsheet-viewer` | `BaseSpreadsheetViewer` | `content: ParsedSpreadsheet` | `.xlsx`                                               |
+| `EmailViewer`       | `email-viewer`       | `BaseEmailViewer`       | `content: ParsedEmail`       | `message/rfc822`                                      |
+| `XmlViewer`         | `xml-viewer`         | `BaseXmlViewer`         | `content: string`            | `application/xml`, `text/xml`                         |
 
 `PdfSource` is `string | ArrayBuffer | Uint8Array | Blob` — a URL or raw bytes.
-
-> **Note** — the markdown and TIFF subpaths are still named `markdown-renderer` and `tiff-renderer` for backwards compatibility. `MarkdownRenderer` and `TiffRenderer` remain exported as aliases of the `Base*` components.
 
 Anything not in the table above — `.doc`/`.docx`, for instance — resolves to `ViewerType.Unsupported`, and `DocumentViewer` renders a fallback message naming the MIME type.
 
@@ -109,7 +109,7 @@ import { BaseXmlViewer } from "@osdk/react-components/experimental/xml-viewer";
 
 ## Advanced
 
-`DocumentViewer` has no base component or headless hooks of its own to compose — it is a dispatcher. Customize the resolved viewer through the pass-through props in the [Props](#props) table (`pdfViewerProps`, `imageViewerProps`, `videoViewerProps`, `tiffViewerProps`), each of which forwards its object (minus the `src`/`content`/`className` props DocumentViewer manages itself) to the matching viewer. For the formats without a pass-through prop, render the [standalone viewer](#other-osdk-media-viewers) instead.
+`DocumentViewer` has no base component or headless hooks of its own to compose — it is a dispatcher. Customize the resolved viewer through the pass-through props in the [Props](#props) table (`pdfViewerProps`, `imageViewerProps`, `videoViewerProps`, `tiffViewerProps`), each of which forwards its object to the matching viewer. For the formats without a pass-through prop, render the [standalone viewer](#standalone-osdk-media-viewers) instead.
 
 `PdfViewer` is the one viewer with a headless tier: the `pdf-viewer` subpath also exports hooks such as `usePdfDocument`, `usePdfOutline`, `usePdfAnnotationsByPage`, and `usePdfViewerSync` for building a custom PDF surface. See the [PdfViewer reference](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/PdfViewer.md).
 
