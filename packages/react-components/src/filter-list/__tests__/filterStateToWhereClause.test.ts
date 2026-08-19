@@ -699,6 +699,7 @@ describe("getActiveLinkedFilters", () => {
         id: getFilterKey(def),
         linkName: "manager",
         innerWhere: { fullName: "Alice" },
+        isExcluding: false,
       },
     ]);
   });
@@ -715,14 +716,22 @@ describe("getActiveLinkedFilters", () => {
     });
   });
 
-  it("wraps innerWhere with $not when isExcluding", () => {
+  it("keeps innerWhere positive and sets isExcluding when isExcluding", () => {
+    // isExcluding hoists to LinkedFilter.isExcluding so the isExcluding state
+    // is handled by narrowObjectSet
     const def = createLinkedPropertyFilterDef("manager", "fullName");
     const filterStates = stateMap([def, linkedState(["Alice"], true)]);
 
     const result = getActiveLinkedFilters([def], filterStates);
 
-    expect(result).toHaveLength(1);
-    expect(result[0].innerWhere).toEqual({ $not: { fullName: "Alice" } });
+    expect(result).toEqual([
+      {
+        id: getFilterKey(def),
+        linkName: "manager",
+        innerWhere: { fullName: "Alice" },
+        isExcluding: true,
+      },
+    ]);
   });
 
   it("excludes linked filters with empty values", () => {
@@ -770,7 +779,7 @@ describe("getActiveLinkedFilters", () => {
       const filterStates = stateMap([def, { type: "hasLink", hasLink: true }]);
 
       expect(getActiveLinkedFilters([def], filterStates)).toEqual([
-        { id: getFilterKey(def), linkName: "peeps" },
+        { id: getFilterKey(def), linkName: "peeps", isExcluding: false },
       ]);
     });
 
@@ -789,6 +798,16 @@ describe("getActiveLinkedFilters", () => {
     it("returns nothing when hasLink is false", () => {
       const def = createHasLinkFilterDef("peeps");
       const filterStates = stateMap([def, { type: "hasLink", hasLink: false }]);
+
+      expect(getActiveLinkedFilters([def], filterStates)).toEqual([]);
+    });
+
+    it("returns nothing when hasLink is false even with isExcluding", () => {
+      const def = createHasLinkFilterDef("peeps");
+      const filterStates = stateMap([
+        def,
+        { type: "hasLink", hasLink: false, isExcluding: true },
+      ]);
 
       expect(getActiveLinkedFilters([def], filterStates)).toEqual([]);
     });

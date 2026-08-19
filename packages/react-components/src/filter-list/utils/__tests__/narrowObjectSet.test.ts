@@ -184,6 +184,23 @@ describe("narrowObjectSet", () => {
         Object.keys(derivedProperties(second)),
       );
     });
+
+    it("when isExcluding=true, filter for count = 0", () => {
+      const base = createMockSet();
+      narrowObjectSet(base, EMPTY_CLAUSE, [{ ...filter, isExcluding: true }]);
+
+      const creator =
+        derivedProperties(base)[
+          "osdkFilterListLinkCount_linkedProperty:lead:fullName"
+        ];
+      const builder = createMockBuilder();
+      creator(builder);
+
+      expect(builder.where).toHaveBeenCalledWith({ fullName: "Alice" });
+      expect(countClause(base)).toEqual({
+        "osdkFilterListLinkCount_linkedProperty:lead:fullName": 0,
+      });
+    });
   });
 
   it("combines the property where clause with every link count under $and", () => {

@@ -55,15 +55,11 @@ export function narrowObjectSet<Q extends ObjectTypeDefinition>(
     ? [whereClause as WhereClauseFragment]
     : [];
 
-  // Each active HAS_LINK / LINKED_PROPERTY filter attaches a `$count` derived
-  // property to the returned `ObjectSet`. These RDPs are an internal artifact
-  // of the filter — downstream consumers (e.g. `ObjectTable`) do not need to
-  // see them.
-  // If we see an issue with it, we can look into stripping any property whose name begins with
-  // `LINK_COUNT_PREFIX`.
   for (const filter of linkedFilters) {
     const propertyName = linkCountPropertyName(filter.id);
     creators[propertyName] = createLinkCount(filter);
+    // Negated linked filter keeps source rows whose match-count is zero,
+    // including rows with no linked object at all (count = 0 either way).
     conditions.push(
       filter.isExcluding === true
         ? { [propertyName]: 0 }

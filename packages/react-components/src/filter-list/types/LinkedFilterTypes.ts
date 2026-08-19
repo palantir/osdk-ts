@@ -46,7 +46,7 @@ export type LinkedFilter<Q extends ObjectTypeDefinition> = {
      */
     innerWhere?: WhereClause<LinkedType<Q, L>>;
     /**
-     * Keep objects with no matching linked object (count of zero)
+     * When true, keep source rows whose match-count is zero.
      */
     isExcluding?: boolean;
   };

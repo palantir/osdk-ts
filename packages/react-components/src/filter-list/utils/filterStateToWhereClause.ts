@@ -425,9 +425,18 @@ export function buildLinkedInnerWhere<
   definition: LinkedPropertyFilterDefinition<Q, L>,
   state: LinkedPropertyFilterState,
 ): WhereClause<LinkedType<Q, L>> | undefined {
+  const inner = state.linkedFilterState;
+  /**
+   * Ignoring the inner state's `isExcluding` here
+   * Excluding state is handled in `narrowObjectSet`
+   */
+  const positiveInner =
+    "isExcluding" in inner && inner.isExcluding
+      ? ({ ...inner, isExcluding: false } as FilterState)
+      : inner;
   const record = buildPropertyKeyClause(
     definition.linkedPropertyKey,
-    state.linkedFilterState,
+    positiveInner,
   );
   if (record === undefined) {
     return undefined;
@@ -479,7 +488,7 @@ export function getActiveLinkedFilters<Q extends ObjectTypeDefinition>(
       result.push({
         id: key,
         linkName: definition.linkName,
-        isExcluding: state.isExcluding,
+        isExcluding: state.isExcluding === true,
       });
       continue;
     }
@@ -491,10 +500,13 @@ export function getActiveLinkedFilters<Q extends ObjectTypeDefinition>(
     if (innerWhere === undefined) {
       continue;
     }
+    const inner = state.linkedFilterState;
+    const isExcluding = "isExcluding" in inner && inner.isExcluding === true;
     result.push({
       id: key,
       linkName: definition.linkName,
       innerWhere,
+      isExcluding,
     } as LinkedFilter<Q>);
   }
   return result;

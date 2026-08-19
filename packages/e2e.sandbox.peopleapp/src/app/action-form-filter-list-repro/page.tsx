@@ -102,20 +102,36 @@ const EMPLOYEE_FILTERS: Array<FilterDefinitionUnion<Employee>> = [
   },
   {
     type: "LINKED_PROPERTY",
-    id: "primaryOfficeName",
+    id: "managerName",
+    linkName: "lead",
+    linkedPropertyKey: "fullName",
+    filterComponent: "MULTI_SELECT",
+    label: "Manager Name",
+  },
+  {
+    type: "LINKED_PROPERTY",
+    id: "officeName",
     linkName: "primaryOffice",
     linkedPropertyKey: "name",
     filterComponent: "LISTOGRAM",
-    label: "Primary office",
+    label: "Office Name",
   },
 ];
 
-type RDP = { primaryOfficeName: "string" };
+type RDP = { primaryOfficeName: "string"; managerName: "string" };
 const EMPLOYEE_COLUMNS: Array<ColumnDefinition<Employee, RDP>> = [
   {
     locator: { type: "property", id: "fullName" },
     columnName: "Name",
     width: 220,
+  },
+  {
+    locator: {
+      type: "rdp",
+      id: "managerName",
+      creator: (os) => os.pivotTo("lead").selectProperty("fullName"),
+    },
+    columnName: "Manager Name",
   },
   {
     locator: { type: "property", id: "department" },
@@ -148,7 +164,7 @@ const EMPLOYEE_COLUMNS: Array<ColumnDefinition<Employee, RDP>> = [
       id: "primaryOfficeName",
       creator: (os) => os.pivotTo("primaryOffice").selectProperty("name"),
     },
-    columnName: "LinkedOffice Name",
+    columnName: "Linked Office Name",
   },
 ];
 
