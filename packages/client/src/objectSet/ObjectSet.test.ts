@@ -52,7 +52,7 @@ import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import { fetchPage } from "../object/fetchPage.js";
+import { fetchPage, fetchStaticRidPage } from "../object/fetchPage.js";
 import {
   createMockCaptureClient,
   getLastObjectSetRequest,
@@ -1356,6 +1356,83 @@ describe("ObjectSet", () => {
       expect(
         getLastObjectSetRequest(fetchFn) as { snapshot: boolean },
       ).not.toHaveProperty("$snapshot");
+    });
+  });
+
+  describe("$EXPERIMENTAL_defaultLoadLevel", () => {
+    it("exposes $EXPERIMENTAL_defaultLoadLevel to client (type)", () => {
+      expectTypeOf<FetchPageArgs<Employee>>().toHaveProperty(
+        "$EXPERIMENTAL_defaultLoadLevel",
+      );
+    });
+
+    it("omits defaultLoadLevel from the wire request body by default", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      await fetchPage(client, Employee, {});
+      expect(getLastObjectSetRequest(fetchFn)).not.toHaveProperty(
+        "defaultLoadLevel",
+      );
+    });
+
+    it("sends defaultLoadLevel for fetchObjectPage with an empty selection", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      await fetchPage(client, Employee, {
+        $EXPERIMENTAL_defaultLoadLevel: "applyReducersAndExtractMainValue",
+      });
+      // No $select => empty selection so the server applies the level to all properties.
+      expect(getLastObjectSetRequest(fetchFn)).toMatchObject({
+        select: [],
+        selectV2: [],
+        defaultLoadLevel: { type: "applyReducersAndExtractMainValue" },
+      });
+    });
+
+    it("maps applyMainValue to the extractMainValue wire discriminant", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      await fetchPage(client, Employee, {
+        $EXPERIMENTAL_defaultLoadLevel: "applyMainValue",
+      });
+      expect(getLastObjectSetRequest(fetchFn)).toMatchObject({
+        defaultLoadLevel: { type: "extractMainValue" },
+      });
+    });
+
+    it("accepts $EXPERIMENTAL_defaultLoadLevel on fetchPageByRid", async () => {
+      const employees = await client(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+      ).fetchPageByRid(
+        Employee,
+        [stubData.employee1.__rid, stubData.employee2.__rid],
+        { $EXPERIMENTAL_defaultLoadLevel: "applyReducers" },
+      );
+      expect(employees.data[0].$primaryKey).toBe(stubData.employee1.employeeId);
+      expectTypeOf(employees.data[0].employeeProfile).toMatchTypeOf<
+        string | undefined
+      >();
+      expectTypeOf(employees.data[0].performanceScores).toMatchTypeOf<
+        number | undefined
+      >();
+    });
+
+    it("accepts $EXPERIMENTAL_defaultLoadLevel on fetchPageByRidNoType", async () => {
+      const employees = await client(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+      ).fetchPageByRidNoType(
+        [stubData.employee1.__rid, stubData.employee2.__rid],
+        { $EXPERIMENTAL_defaultLoadLevel: "applyReducers" },
+      );
+      expect(employees.data[0].$primaryKey).toBe(stubData.employee1.employeeId);
+    });
+
+    it("sends defaultLoadLevel for fetchStaticRidPage", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      await fetchStaticRidPage(client, [stubData.employee1.__rid], {
+        $EXPERIMENTAL_defaultLoadLevel: "applyReducers",
+      });
+      expect(getLastObjectSetRequest(fetchFn)).toMatchObject({
+        objectSet: { type: "static" },
+        defaultLoadLevel: { type: "applyReducers" },
+      });
     });
   });
 
