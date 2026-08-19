@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.59.0
+
+### Minor Changes
+
+- 4ae6d8b: Add experimental `$EXPERIMENTAL_defaultLoadLevel` fetch arg that applies reducers and struct main values to every property without listing property IDs. Wired through the object and static-rid load paths.
+- 1aff7f4: Allow interfaces w/ no properties to filter on pk+title
+
 ## 2.58.0
 
 ## 2.57.0

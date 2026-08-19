@@ -1,5 +1,16 @@
 # @osdk/create-widget
 
+## 3.57.0
+
+### Minor Changes
+
+- b913397: Remove the create-widget minimal-react template which is now replaced by the react template rendered without OSDK. The minimal-react template is still available via CLI selection for compatibility and is simply an alias of the react template rendered without OSDK.
+- 7c4c517: Use minimal react template structure for react template
+
+### Patch Changes
+
+- @osdk/generator-utils@2.59.0
+
 ## 3.56.0
 
 ### Minor Changes

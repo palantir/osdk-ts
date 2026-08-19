@@ -1,5 +1,18 @@
 # @osdk/unit-testing
 
+## 0.23.0
+
+### Minor Changes
+
+- 109b7f1: Add support for stubbing unioned, intersected, and subtracted mock object sets.
+
+### Patch Changes
+
+- Updated dependencies [4ae6d8b]
+- Updated dependencies [1aff7f4]
+  - @osdk/api@2.59.0
+  - @osdk/client@2.59.0
+
 ## 0.22.0
 
 ### Minor Changes
