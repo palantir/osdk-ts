@@ -17,7 +17,6 @@
 import type {
   BaseType,
   DataConstraint,
-  OntologyIr,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionTypeStatus,
   OntologyIrInterfacePropertyTypeType,
@@ -30,7 +29,8 @@ import type {
   OntologyIrOntologyBlockDataV2,
   OntologyIrSharedPropertyTypeBlockDataV2,
   OntologyIrType,
-  OntologyIrValueTypeBlockData,
+  OntologyIrV2,
+  ValueTypeBlockData,
   ValueTypeDataConstraint,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
@@ -38,6 +38,7 @@ import type * as Ontologies from "@osdk/foundry.ontologies";
 import { consola } from "consola";
 import * as fs from "fs";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { accessSync, constants } from "node:fs";
 import { createRequire } from "node:module";
 import * as path from "node:path";
@@ -48,7 +49,10 @@ import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
 import { convertDataType, isInjectedRuntimeInput } from "./convertDataType.js";
 import { deterministicRid } from "./deterministicRid.js";
-import { firstExistingObjectParameterId } from "./OntologyBlockDataToFullMetadataConverter.js";
+import {
+  firstExistingObjectParameterId,
+  OntologyBlockDataToFullMetadataConverter,
+} from "./OntologyBlockDataToFullMetadataConverter.js";
 import { toStructFieldRid } from "./ridUtils.js";
 
 // Type definitions for optional function discovery dependencies
@@ -259,19 +263,27 @@ export class OntologyIrToFullMetadataConverter {
    * Main entry point - converts IR to full metadata
    */
   static getFullMetadataFromEnvelope(
-    ir: OntologyIr,
+    ir: OntologyIrV2,
   ): Ontologies.OntologyFullMetadata {
-    const ontology = mergeOntologyBlocks(ir.importedOntology, ir.ontology);
-    const metadata = this.getFullMetadataFromIr(ontology);
     const valueTypes = this.getOsdkValueTypes(
       ir.valueTypes,
       ir.importedValueTypes,
     );
-    collectEmbeddedValueTypes(
-      ontology,
-      valueTypes,
-      new Set(Object.keys(valueTypes)),
+    const valueTypeApiNames = buildValueTypeApiNameLookup(
+      [...ir.importedValueTypes, ...ir.valueTypes],
+      ir.randomnessKey,
     );
+    const metadata = OntologyBlockDataToFullMetadataConverter
+      .getFullMetadataFromBlockData(
+        mergeOntologyBlocks(
+          ir.transitiveImportedOntology,
+          ir.importedOntology,
+          ir.ontology,
+        ),
+        undefined,
+        undefined,
+        reference => valueTypeApiNames.get(valueTypeReferenceKey(reference)),
+      );
 
     return withDeterministicEnvelopeRids(
       metadata,
@@ -1609,10 +1621,10 @@ export class OntologyIrToFullMetadataConverter {
    * Convert shared property types from IR
    */
   static getOsdkValueTypes(
-    owned: OntologyIrValueTypeBlockData,
-    imported: OntologyIrValueTypeBlockData,
+    owned: ValueTypeBlockData[],
+    imported: ValueTypeBlockData[],
   ): Record<ApiName, Ontologies.OntologyValueType> {
-    const entries = [...imported.valueTypes, ...owned.valueTypes];
+    const entries = [...imported, ...owned];
     const result: Record<ApiName, Ontologies.OntologyValueType> = {};
 
     for (const entry of entries) {
@@ -1624,11 +1636,12 @@ export class OntologyIrToFullMetadataConverter {
         apiName: entry.metadata.apiName,
         displayName: entry.metadata.displayMetadata.displayName,
         description: entry.metadata.displayMetadata.description,
-        rid:
-          `ri.value-type.${entry.metadata.packageNamespace}.${entry.metadata.apiName}.${version.version}`,
+        rid: `ri.value-type.${entry.metadata.apiName}.${version.version}`,
         status: convertValueTypeStatus(entry.metadata.status.type),
         version: version.version,
-        fieldType: convertValueTypeFieldType(version.baseType),
+        fieldType: convertValueTypeFieldType(
+          version.baseType ?? entry.metadata.baseType,
+        ),
         constraints: version.constraints.map(convertValueTypeConstraint),
       });
     }
@@ -2009,19 +2022,125 @@ function withDeterministicEnvelopeRids(
 }
 
 function mergeOntologyBlocks(
-  imported: OntologyIrOntologyBlockDataV2,
-  owned: OntologyIrOntologyBlockDataV2,
-): OntologyIrOntologyBlockDataV2 {
+  transitiveImported: OntologyIrV2["transitiveImportedOntology"],
+  imported: OntologyIrV2["importedOntology"],
+  owned: OntologyIrV2["ontology"],
+): OntologyIrV2["ontology"] {
   return {
-    actionTypes: { ...imported.actionTypes, ...owned.actionTypes },
-    interfaceTypes: { ...imported.interfaceTypes, ...owned.interfaceTypes },
-    linkTypes: { ...imported.linkTypes, ...owned.linkTypes },
-    objectTypes: { ...imported.objectTypes, ...owned.objectTypes },
+    actionTypes: {
+      ...transitiveImported.actionTypes,
+      ...imported.actionTypes,
+      ...owned.actionTypes,
+    },
+    blockOutputCompassLocations: {
+      ...transitiveImported.blockOutputCompassLocations,
+      ...imported.blockOutputCompassLocations,
+      ...owned.blockOutputCompassLocations,
+    },
+    interfaceTypes: {
+      ...transitiveImported.interfaceTypes,
+      ...imported.interfaceTypes,
+      ...owned.interfaceTypes,
+    },
+    knownIdentifiers: mergeKnownIdentifiers(
+      transitiveImported.knownIdentifiers,
+      imported.knownIdentifiers,
+      owned.knownIdentifiers,
+    ),
+    linkTypes: {
+      ...transitiveImported.linkTypes,
+      ...imported.linkTypes,
+      ...owned.linkTypes,
+    },
+    objectTypes: {
+      ...transitiveImported.objectTypes,
+      ...imported.objectTypes,
+      ...owned.objectTypes,
+    },
+    ruleSets: {
+      ...transitiveImported.ruleSets,
+      ...imported.ruleSets,
+      ...owned.ruleSets,
+    },
     sharedPropertyTypes: {
+      ...transitiveImported.sharedPropertyTypes,
       ...imported.sharedPropertyTypes,
       ...owned.sharedPropertyTypes,
     },
   };
+}
+
+function mergeKnownIdentifiers(
+  ...identifiers: OntologyIrV2["ontology"]["knownIdentifiers"][]
+): OntologyIrV2["ontology"]["knownIdentifiers"] {
+  const [first, ...rest] = identifiers;
+  if (first === undefined) {
+    throw new Error("Expected at least one known identifier set");
+  }
+  return rest.reduce((merged, current) => ({
+    ...merged,
+    ...current,
+    valueTypes: mergeValueTypeIdentifiers(
+      merged.valueTypes,
+      current.valueTypes,
+    ),
+  }), first);
+}
+
+function mergeValueTypeIdentifiers(
+  existing: OntologyIrV2["ontology"]["knownIdentifiers"]["valueTypes"],
+  current: OntologyIrV2["ontology"]["knownIdentifiers"]["valueTypes"],
+): OntologyIrV2["ontology"]["knownIdentifiers"]["valueTypes"] {
+  const result = { ...existing };
+  for (const [rid, versions] of Object.entries(current)) {
+    result[rid] = { ...result[rid], ...versions };
+  }
+  return result;
+}
+
+function buildValueTypeApiNameLookup(
+  valueTypes: ValueTypeBlockData[],
+  randomnessKey: string | undefined,
+): Map<string, ApiName> {
+  const result = new Map<string, ApiName>();
+  for (const valueType of valueTypes) {
+    for (const version of valueType.versions) {
+      result.set(
+        valueTypeReferenceKey({
+          rid: makerValueTypeRid(valueType.metadata.apiName, randomnessKey),
+          versionId: makerValueTypeVersionId(version.version),
+        }),
+        valueType.metadata.apiName,
+      );
+    }
+  }
+  return result;
+}
+
+function makerValueTypeRid(
+  apiName: string,
+  randomnessKey: string | undefined,
+): string {
+  const value = randomnessKey === undefined
+    ? apiName
+    : `${apiName}-${randomnessKey}`;
+  return `ri.ontology-metadata.temp.value-type.${
+    createHash("sha256").update(value, "utf8").digest("hex")
+  }`;
+}
+
+function makerValueTypeVersionId(version: string): string {
+  const hash = createHash("md5").update(version, "utf8").digest("hex");
+  return `${hash.slice(0, 8)}-${hash.slice(8, 12)}-${hash.slice(12, 16)}-${
+    hash.slice(16, 20)
+  }-${hash.slice(20)}`;
+}
+
+function valueTypeReferenceKey(reference: {
+  rid: string;
+  versionId: string;
+}): string {
+  return `${reference.rid}\0${reference.versionId}`;
 }
 
 function compareVersions(a: string, b: string): number {
