@@ -47,17 +47,23 @@ body,
 
 /* Three-column reference tables (e.g. Name / Type / Description): keep the
  * leading name and type columns compact and give the trailing description
- * column the most room. Scoped with :has() so two-column tables keep their own
- * sizing. */
-.osdkMarkdownDoc table:has(th:nth-child(3)) :is(th, td):nth-child(1) {
+ * column the most room. Scoped with :has() so two-column tables — and wider
+ * tables, whose columns share the width evenly — keep their own sizing. */
+.osdkMarkdownDoc
+  table:has(th:nth-child(3)):not(:has(th:nth-child(4)))
+  :is(th, td):nth-child(1) {
   width: 20%;
 }
 
-.osdkMarkdownDoc table:has(th:nth-child(3)) :is(th, td):nth-child(2) {
+.osdkMarkdownDoc
+  table:has(th:nth-child(3)):not(:has(th:nth-child(4)))
+  :is(th, td):nth-child(2) {
   width: 25%;
 }
 
-.osdkMarkdownDoc table:has(th:nth-child(3)) :is(th, td):nth-child(3) {
+.osdkMarkdownDoc
+  table:has(th:nth-child(3)):not(:has(th:nth-child(4)))
+  :is(th, td):nth-child(3) {
   width: 55%;
 }
 
