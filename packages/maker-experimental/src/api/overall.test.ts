@@ -1434,6 +1434,82 @@ describe("Experimental Test Suite", () => {
     });
   });
 
+  it("converts direct datasources into marketplace inputs and mappings", async () => {
+    const result = await defineOntologyV2("com.palantir.", () => {
+      defineObject({
+        apiName: "directObject",
+        displayName: "Direct Object",
+        pluralDisplayName: "Direct Objects",
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: {
+          id: { type: "string", displayName: "ID" },
+          count: { type: "integer", displayName: "Count" },
+        },
+        datasources: [{ type: "direct" }],
+      });
+    });
+
+    const apiName = "com.palantir.directObject";
+    const datasourceReadableId = ReadableIdGenerator.getForDataset(apiName);
+    const idColumnReadableId = ReadableIdGenerator.getForDatasetColumn(
+      apiName,
+      "id",
+    );
+
+    expect(result.shapes.inputShapes.get(datasourceReadableId)).toMatchObject({
+      type: "tabularDatasource",
+      tabularDatasource: {
+        supportedTypes: ["DATASET", "RESTRICTED_VIEW", "VIRTUAL_TABLE"],
+      },
+    });
+    expect(result.shapes.inputShapes.get(idColumnReadableId)?.type).toBe(
+      "datasourceColumn",
+    );
+    expect(result.shapes.inputMappings).toContainEqual({
+      input: datasourceReadableId,
+      output: ReadableIdGenerator.getProducedReadableId(datasourceReadableId),
+    });
+    expect(result.shapes.inputMappings).toContainEqual({
+      input: idColumnReadableId,
+      output: ReadableIdGenerator.getProducedReadableId(idColumnReadableId),
+    });
+
+    const objectType = Object.values(result.ontologyIr.ontology.objectTypes)[0];
+    const directDatasource = objectType.datasources.find(
+      ({ datasource }) => datasource.type === "direct",
+    );
+    expect(directDatasource?.datasource).toMatchObject({
+      type: "direct",
+      direct: {
+        directSourceRid: expect.stringMatching(
+          /^ri\.ontology-metadata\.temp\.dataset\./u,
+        ),
+      },
+    });
+    if (directDatasource?.datasource.type !== "direct") {
+      throw new Error("Expected a direct datasource");
+    }
+    const directDatasourceLocator = {
+      type: "dataset" as const,
+      dataset: {
+        rid: directDatasource.datasource.direct.directSourceRid,
+        branch: "master",
+      },
+    };
+    expect(
+      Object.values(result.ontologyIr.ontology.knownIdentifiers.datasources),
+    ).toContainEqual(directDatasourceLocator);
+    expect(
+      Object.values(
+        result.ontologyIr.ontology.knownIdentifiers.datasourceColumns,
+      ),
+    ).toContainEqual({
+      datasource: directDatasourceLocator,
+      name: "id",
+    });
+  });
+
   it("Fails if a derived datasource added after defineObject maps a property not on the object", async () => {
     await expect(
       defineOntologyV2("com.palantir.", () => {

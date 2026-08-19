@@ -196,6 +196,25 @@ export async function getShapes(
   const migrationShapes = getMigrationShape();
   consumeBlockShapes(allBlockShapes, migrationShapes);
 
+  // Direct datasource blocks publish the same shapes under produced-* IDs.
+  // Recommend those outputs for the ontology block's direct datasource inputs.
+  const directDatasourceReadableIds = new Set([
+    ...Array.from(ridGenerator.getDirectDatasourceLocators().entries()).map(
+      ([readableId]) => readableId,
+    ),
+    ...Array.from(ridGenerator.getDirectDatasourceColumnShapes().entries()).map(
+      ([readableId]) => readableId,
+    ),
+  ]);
+  for (const readableId of directDatasourceReadableIds) {
+    if (allBlockShapes.inputShapes.has(readableId)) {
+      allBlockShapes.inputMappings.push({
+        input: readableId,
+        output: ReadableIdGenerator.getProducedReadableId(readableId),
+      });
+    }
+  }
+
   return allBlockShapes;
 }
 

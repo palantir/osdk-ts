@@ -83,6 +83,7 @@ export interface OntologyRidGenerator {
   getInterfacePropertyTypeRids(): BiMap<ReadableId, InterfacePropertyTypeRid>;
   getPropertyTypeRids(): BiMap<ReadableId, PropertyTypeRid>;
   getDatasourceLocators(): BiMap<ReadableId, DatasourceLocator>;
+  getDirectDatasourceLocators(): BiMap<ReadableId, DatasourceLocator>;
   getFilesDatasourceLocators(): BiMap<ReadableId, FilesDatasourceLocator>;
   getGeotimeSeriesIntegrationRids(): BiMap<
     ReadableId,
@@ -90,6 +91,10 @@ export interface OntologyRidGenerator {
   >;
   getTimeSeriesSyncs(): BiMap<ReadableId, TimeSeriesSyncRid>;
   getColumnShapes(): BiMap<ReadableId, ResolvedDatasourceColumnShape>;
+  getDirectDatasourceColumnShapes(): BiMap<
+    ReadableId,
+    ResolvedDatasourceColumnShape
+  >;
   getObjectTypeRids(): BiMap<ReadableId, ObjectTypeRid>;
   getLinkTypeRids(): BiMap<ReadableId, LinkTypeRid>;
   getGroupIds(): BiMap<ReadableId, GroupId>;
@@ -158,6 +163,11 @@ export interface OntologyRidGenerator {
   generateDatasetLocator(
     dataSetName: string,
     columnNames: Set<string>,
+  ): DatasetDatasourceLocator;
+  generateDirectDatasourceLocator(
+    dataSetName: string,
+    columnNames: Set<string>,
+    branchId: string,
   ): DatasetDatasourceLocator;
   generateStreamLocator(
     streamName: string,
@@ -262,6 +272,10 @@ export class ReadableIdGenerator {
     columnName: string,
   ): ReadableId {
     return `dataset-datasource-column-output-${dataSetName}-${columnName}` as ReadableId;
+  }
+
+  static getProducedReadableId(consumedReadableId: ReadableId): ReadableId {
+    return `produced-${consumedReadableId}` as ReadableId;
   }
 
   static getForMediaSetView(mediaSetViewName: string): ReadableId {
@@ -461,12 +475,20 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     ReadableId
   >;
   private readonly datasourceLocators: BiMap<ReadableId, DatasourceLocator>;
+  private readonly directDatasourceLocators: BiMap<
+    ReadableId,
+    DatasourceLocator
+  >;
   private readonly filesDatasourceLocators: BiMap<
     ReadableId,
     FilesDatasourceLocator
   >;
   private readonly timeSeriesSyncs: BiMap<ReadableId, TimeSeriesSyncRid>;
   private readonly columnShapes: BiMap<
+    ReadableId,
+    ResolvedDatasourceColumnShape
+  >;
+  private readonly directDatasourceColumnShapes: BiMap<
     ReadableId,
     ResolvedDatasourceColumnShape
   >;
@@ -499,8 +521,10 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     this.consumedValueTypeReferences = BiMapImpl.create();
     this.producedValueTypeReferences = new Map();
     this.datasourceLocators = BiMapImpl.create();
+    this.directDatasourceLocators = BiMapImpl.create();
     this.filesDatasourceLocators = BiMapImpl.create();
     this.columnShapes = BiMapImpl.create();
+    this.directDatasourceColumnShapes = BiMapImpl.create();
     this.propertyTypeRids = BiMapImpl.create();
     this.timeSeriesSyncs = BiMapImpl.create();
     this.linkTypeRids = BiMapImpl.create();
@@ -593,6 +617,10 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     return this.datasourceLocators;
   }
 
+  getDirectDatasourceLocators(): BiMap<ReadableId, DatasourceLocator> {
+    return this.directDatasourceLocators;
+  }
+
   getFilesDatasourceLocators(): BiMap<ReadableId, FilesDatasourceLocator> {
     return this.filesDatasourceLocators;
   }
@@ -610,6 +638,13 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
   getColumnShapes(): BiMap<ReadableId, ResolvedDatasourceColumnShape> {
     return this.columnShapes;
+  }
+
+  getDirectDatasourceColumnShapes(): BiMap<
+    ReadableId,
+    ResolvedDatasourceColumnShape
+  > {
+    return this.directDatasourceColumnShapes;
   }
 
   getObjectTypeRids(): BiMap<ReadableId, ObjectTypeRid> {
@@ -914,6 +949,34 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
         type: "dataset",
         dataset: { rid: datasetRid, branch: branchId },
       } as DatasourceLocator,
+    );
+
+    return { rid: datasetRid, branchId };
+  }
+
+  generateDirectDatasourceLocator(
+    dataSetName: string,
+    columnNames: Set<string>,
+    branchId: string,
+  ): DatasetDatasourceLocator {
+    const datasetRid = `ri.ontology-metadata.temp.dataset.${this.hashString(
+      dataSetName,
+    )}`;
+    const locator: DatasourceLocator = {
+      type: "dataset",
+      dataset: { rid: datasetRid, branch: branchId },
+    };
+
+    for (const name of columnNames) {
+      this.directDatasourceColumnShapes.put(
+        ReadableIdGenerator.getForDatasetColumn(dataSetName, name),
+        { datasource: locator, name },
+      );
+    }
+
+    this.directDatasourceLocators.put(
+      ReadableIdGenerator.getForDataset(dataSetName),
+      locator,
     );
 
     return { rid: datasetRid, branchId };

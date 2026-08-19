@@ -344,12 +344,13 @@ function buildKnownIdentifiers(
 
   // Datasources: BlockInternalId -> DatasourceLocator
   const backingDatasourceMappings = Object.fromEntries(
-    Array.from(ridGenerator.getDatasourceLocators().entries()).map(
-      ([readableId, locator]) => [
-        ridGenerator.toBlockInternalId(readableId),
-        locator,
-      ],
-    ),
+    [
+      ...ridGenerator.getDatasourceLocators().entries(),
+      ...ridGenerator.getDirectDatasourceLocators().entries(),
+    ].map(([readableId, locator]) => [
+      ridGenerator.toBlockInternalId(readableId),
+      locator,
+    ]),
   );
 
   // Files datasources: BlockInternalId -> FilesDatasourceLocator
@@ -446,12 +447,13 @@ function buildKnownIdentifiers(
 
   // Datasource columns: BlockInternalId -> ResolvedDatasourceColumnShape
   const datasourceColumns = Object.fromEntries(
-    Array.from(ridGenerator.getColumnShapes().entries()).map(
-      ([readableId, shape]) => [
-        ridGenerator.toBlockInternalId(readableId),
-        shape,
-      ],
-    ),
+    [
+      ...ridGenerator.getColumnShapes().entries(),
+      ...ridGenerator.getDirectDatasourceColumnShapes().entries(),
+    ].map(([readableId, shape]) => [
+      ridGenerator.toBlockInternalId(readableId),
+      shape,
+    ]),
   );
 
   // Time series syncs: TimeSeriesSyncRid -> BlockInternalId

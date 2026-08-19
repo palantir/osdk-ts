@@ -125,6 +125,9 @@ export class ObjectTypeShapeExtractor {
     const datasourcesByReadableId = ridGenerator
       .getDatasourceLocators()
       .asMap();
+    const directDatasourcesByReadableId = ridGenerator
+      .getDirectDatasourceLocators()
+      .asMap();
     const filesDatasourcesByReadableId =
       ridGenerator.getFilesDatasourceLocators();
     const geotimeSeriesIntegrationRidByReadableId = new Map<
@@ -141,6 +144,9 @@ export class ObjectTypeShapeExtractor {
     }
 
     const columnShapes = ridGenerator.getColumnShapes().asMap();
+    const directDatasourceColumnShapes = ridGenerator
+      .getDirectDatasourceColumnShapes()
+      .asMap();
 
     // Build object type output shape
     const objectTypeOutputShape: ObjectTypeOutputShape = {
@@ -185,6 +191,7 @@ export class ObjectTypeShapeExtractor {
       const dsShapes = this.getShapesFromDatasource(
         ds,
         datasourcesByReadableId,
+        directDatasourcesByReadableId,
         filesDatasourcesByReadableId,
         geotimeSeriesIntegrationRidByReadableId,
         propertyTypes,
@@ -192,6 +199,7 @@ export class ObjectTypeShapeExtractor {
         propertyOutputShapeMap,
         timeSeriesSyncRidByReadableId,
         columnShapes,
+        directDatasourceColumnShapes,
         ridGenerator,
       );
       for (const [id, shape] of Array.from(dsShapes.entries())) {
@@ -246,6 +254,7 @@ export class ObjectTypeShapeExtractor {
   private getShapesFromDatasource(
     datasource: ObjectTypeDatasource,
     datasourcesByReadableId: Map<ReadableId, DatasourceLocator>,
+    directDatasourcesByReadableId: Map<ReadableId, DatasourceLocator>,
     filesDatasourcesByReadableId: BiMap<ReadableId, FilesDatasourceLocator>,
     geotimeSeriesIntegrationRidByReadableId: Map<
       ReadableId,
@@ -256,6 +265,10 @@ export class ObjectTypeShapeExtractor {
     propertyOutputShapeMap: Map<ReadableId, PropertyOutputShape>,
     timeSeriesSyncRidByReadableId: BiMap<ReadableId, TimeSeriesSyncRid>,
     columnReadableIds: Map<ReadableId, ResolvedDatasourceColumnShape>,
+    directDatasourceColumnReadableIds: Map<
+      ReadableId,
+      ResolvedDatasourceColumnShape
+    >,
     ridGenerator: OntologyRidGenerator,
   ): Map<ReadableId, InputShape> {
     const dsDefinition = datasource.datasource;
@@ -294,7 +307,20 @@ export class ObjectTypeShapeExtractor {
       case "derived":
         return new Map(); // Empty per original
       case "direct":
-        return new Map();
+        return this.getShapesFromDataset(
+          directDatasourcesByReadableId,
+          propertyTypes,
+          propertyReadableIdsByRid,
+          propertyOutputShapeMap,
+          directDatasourceColumnReadableIds,
+          dsDefinition.direct.directSourceRid,
+          "master",
+          this.filterToRelevantColumnMappings(
+            dsDefinition.direct.propertyMapping,
+          ),
+          ridGenerator,
+          ["DATASET", "RESTRICTED_VIEW", "VIRTUAL_TABLE"],
+        );
       case "editsOnly":
         return new Map();
       case "geotimeSeries":
@@ -595,6 +621,10 @@ export class ObjectTypeShapeExtractor {
     branchId: BranchId,
     propertyMapping: Record<ReadableId, PropertyTypeMappingInfo>,
     ridGenerator: OntologyRidGenerator,
+    supportedTypes: TabularDatasourceInputShape["supportedTypes"] = [
+      "DATASET",
+      "RESTRICTED_VIEW",
+    ],
   ): Map<ReadableId, InputShape> {
     const datasourceLocator: DatasourceLocator = {
       type: "dataset",
@@ -640,7 +670,7 @@ export class ObjectTypeShapeExtractor {
 
     const datasourceInputShape: TabularDatasourceInputShape = {
       about: createLocalizedAbout(datasourceReadableId, ""),
-      supportedTypes: ["DATASET", "RESTRICTED_VIEW"],
+      supportedTypes,
       schema: Array.from(columnShapes.keys()).map((id) =>
         ridGenerator.toBlockInternalId(id),
       ),
