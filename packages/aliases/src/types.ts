@@ -52,10 +52,6 @@ export interface ResolvedAliases {
 export enum AliasEnvironment {
   PUBLISHED = "PUBLISHED",
   LIVE_PREVIEW = "LIVE_PREVIEW",
-  // Dev Console applications run in the browser, where there is no filesystem
-  // or process.env. Resolved aliases are fetched from the served deployment
-  // config file instead. Use the browser entry point, "@osdk/aliases".
-  BROWSER = "BROWSER",
 }
 
 // Browser mode types (deployment.config.json)
