@@ -188,7 +188,7 @@ Type parameters: `Q extends ObjectTypeDefinition`, `L extends LinkNames<Q> = Lin
 
 <!-- AUTOGEN:props END -->
 
-Link presence has no filter-clause form, so a `HAS_LINK` filter narrows only through `onEffectiveObjectSet` (it never shows up in `onFilterClauseChanged`). Pass `objectSet` to FilterList and feed the emitted set to whatever renders the rows:
+Link presence has no filter-clause form, so a `HAS_LINK` filter applies only through `onEffectiveObjectSet` (it never shows up in `onFilterClauseChanged`). Pass `objectSet` to FilterList and feed the emitted set to whatever renders the rows:
 
 ```typescript
 {
@@ -229,9 +229,9 @@ Type parameters: `Q extends ObjectTypeDefinition`, `L extends LinkNames<Q>`, `Li
 
 <!-- AUTOGEN:props END -->
 
-#### How LINKED_PROPERTY narrows
+#### How LINKED_PROPERTY filters
 
-Like `HAS_LINK`, a `LINKED_PROPERTY` filter narrows only through `onEffectiveObjectSet` — it never appears in `onFilterClauseChanged`. FilterList derives a count of the linked objects matching the filter (`withProperties({ …: (base) => base.pivotTo(linkName).where(...).aggregate("$count") })`) and keeps the rows whose count is above zero:
+Like `HAS_LINK`, a `LINKED_PROPERTY` filter applies only through `onEffectiveObjectSet` — it never appears in `onFilterClauseChanged`. FilterList derives a count of the linked objects matching the filter (`withProperties({ …: (base) => base.pivotTo(linkName).where(...).aggregate("$count") })`) and keeps the rows whose count is above zero:
 
 ```typescript
 {
@@ -242,7 +242,7 @@ Like `HAS_LINK`, a `LINKED_PROPERTY` filter narrows only through `onEffectiveObj
 }
 ```
 
-`reverseLinkName` is deprecated: narrowing counts linked objects instead of pivoting back to the source type, so no back-link is needed. Definitions that still pass it keep working — the value is ignored.
+`reverseLinkName` is deprecated: filtering counts linked objects instead of pivoting back to the source type, so no back-link is needed. Definitions that still pass it keep working — the value is ignored.
 
 ### Custom Filter Definition
 

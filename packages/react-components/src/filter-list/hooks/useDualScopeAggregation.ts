@@ -31,9 +31,9 @@ export interface UseDualScopeAggregationOptions {
 }
 
 /**
- * Aggregates a property over `scopedObjectSet` (the narrowed scope) and pins
+ * Aggregates a property over `scopedObjectSet` (the filtered scope) and pins
  * any values that exist in `emptySourceObjectSet` (the unfiltered base) but
- * are absent from the narrowed result to count=0, so facets can render
+ * are absent from the filtered result to count=0, so facets can render
  * "filtered-out" rows alongside live counts.
  *
  * When `emptySourceObjectSet` is `undefined`, this falls through to a single
@@ -42,7 +42,7 @@ export interface UseDualScopeAggregationOptions {
  *
  * @param objectType - Object type for the aggregation
  * @param propertyKey - Property to aggregate on
- * @param scopedObjectSet - Set the live counts are computed against (post-narrowing)
+ * @param scopedObjectSet - Set the live counts are computed against (post-filtering)
  * @param emptySourceObjectSet - Unfiltered base set whose values are pinned as
  *   count=0 when absent from the scoped aggregation. Pass `undefined` to skip
  *   the dual-scope behavior.

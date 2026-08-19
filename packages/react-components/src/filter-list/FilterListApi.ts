@@ -163,12 +163,12 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   onFilterListChanged?: (event: FilterChangeEvent<Q>) => void;
 
   /**
-   * Called with the narrowed `ObjectSet` whenever filters change. Requires
-   * `objectSet` to be set. `HAS_LINK` and `LINKED_PROPERTY` filters narrow only
+   * Called with the filtered `ObjectSet` whenever filters change. Requires
+   * `objectSet` to be set. `HAS_LINK` and `LINKED_PROPERTY` filters apply only
    * here, never through the filter clause.
    *
    * @deprecated Use `onFilterListChanged`, whose `snapshot.filteredObjectSet`
-   * reports the same narrowed set alongside the clause.
+   * reports the same filtered set alongside the clause.
    */
   onEffectiveObjectSet?: (objectSet: ObjectSet<Q>) => void;
 
