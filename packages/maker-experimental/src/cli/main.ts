@@ -256,7 +256,7 @@ export default async function main(
 
   // Write ontology.json to the block data directory
   const ontologyJsonPath = path.join(blockDataDir, "ontology.json");
-  const ontologyJson = JSON.stringify(ontologyIr.ontology, null, 2);
+  const ontologyJson = JSON.stringify(ontologyIr, null, 2);
   await fs.promises.writeFile(ontologyJsonPath, ontologyJson);
   consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
 

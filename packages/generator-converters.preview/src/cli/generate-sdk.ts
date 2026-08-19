@@ -33,7 +33,11 @@ import { consola } from "consola";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-import { PreviewOntologyIrConverter } from "../PreviewOntologyIrConverter.js";
+import {
+  convertSdkGenerationInput,
+  isSdkGenerationInput,
+  unwrapSdkGenerationInput,
+} from "./convertSdkGenerationInput.js";
 
 const PYTHON_SDK_PACKAGE_NAME = "ontology_sdk";
 
@@ -42,9 +46,7 @@ const PYTHON_SDK_PACKAGE_NAME = "ontology_sdk";
  * so that Python function discovery can resolve ontology type imports.
  */
 function generatePythonSdk(
-  previewMetadata: ReturnType<
-    typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData
-  >,
+  previewMetadata: ReturnType<typeof convertSdkGenerationInput>,
   pythonBinary: string,
 ): void {
   // Build the Python-compatible metadata: unwrap actionTypes and add globalFunctions
@@ -238,26 +240,17 @@ async function main(): Promise<void> {
   consola.info(`Converting ${inputFile}...`);
 
   const fileContent = await fs.readFile(inputFile, "utf-8");
-  let blockDataJson: unknown;
+  let sdkGenerationInput: unknown;
   try {
-    const parsed = JSON.parse(fileContent);
-    // Handle both wrapped (ontology.objectTypes) and unwrapped (objectTypes) formats
-    blockDataJson = parsed.ontology ?? parsed;
+    sdkGenerationInput = unwrapSdkGenerationInput(JSON.parse(fileContent));
   } catch {
     consola.error(`Failed to parse JSON from ${inputFile}`);
     process.exit(1);
   }
 
-  // Basic structural validation before passing to converter
-  const blockData = blockDataJson as Record<string, unknown>;
-  if (
-    !blockData
-    || typeof blockData !== "object"
-    || !("objectTypes" in blockData)
-    || !("actionTypes" in blockData)
-  ) {
+  if (!isSdkGenerationInput(sdkGenerationInput)) {
     consola.error(
-      `Invalid Ontology structure in ${inputFile}. Expected objectTypes and actionTypes fields.`,
+      `Invalid Ontology structure in ${inputFile}. Expected complete OntologyIrV2 envelope or objectTypes and actionTypes fields.`,
     );
     process.exit(1);
   }
@@ -266,13 +259,10 @@ async function main(): Promise<void> {
     ? JSON.parse(await fs.readFile(argv.importJson, "utf-8"))
     : undefined;
 
-  const previewMetadata = PreviewOntologyIrConverter
-    .getPreviewFullMetadataFromBlockData(
-      blockDataJson as Parameters<
-        typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData
-      >[0],
-      importJson,
-    );
+  const previewMetadata = convertSdkGenerationInput(
+    sdkGenerationInput,
+    importJson,
+  );
 
   // Generate the Python SDK before function discovery so that Python functions
   // that import ontology types (e.g. `from ontology_sdk.ontology.objects import X`)
