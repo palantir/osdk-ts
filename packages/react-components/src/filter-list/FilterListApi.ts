@@ -120,10 +120,10 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Called with the narrowed `ObjectSet` whenever filters change. Requires
+   * Called with the filtered `ObjectSet` whenever filters change. Requires
    * `objectSet` to be set.
    *
-   * A linked filter only narrows the set when its definition has
+   * A linked filter only filters the set when its definition has
    * `reverseLinkName`. Linked filters without it are skipped here; read their
    * state from `onFilterStateChanged` instead.
    */
