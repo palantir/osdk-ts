@@ -1580,6 +1580,9 @@ importers:
 
   examples/example-widget-react-sdk-2.x:
     dependencies:
+      '@blueprintjs/core':
+        specifier: ^6.10.0
+        version: 6.11.3(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@osdk/client':
         specifier: workspace:*
         version: link:../../packages/client
@@ -1595,12 +1598,9 @@ importers:
       '@osdk/widget.client-react':
         specifier: workspace:*
         version: link:../../packages/widget.client-react
-      '@radix-ui/react-icons':
-        specifier: ^1.3.2
-        version: 1.3.2(react@18.3.1)
-      '@radix-ui/themes':
-        specifier: ^3.2.1
-        version: 3.2.1(@types/react-dom@18.3.7(@types/react@18.3.24))(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       react:
         specifier: ^18
         version: 18.3.1
@@ -1668,18 +1668,18 @@ importers:
 
   examples/example-widget-react-sdk-2.x-no-osdk:
     dependencies:
+      '@blueprintjs/core':
+        specifier: ^6.10.0
+        version: 6.11.3(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@osdk/widget.client':
         specifier: workspace:*
         version: link:../../packages/widget.client
       '@osdk/widget.client-react':
         specifier: workspace:*
         version: link:../../packages/widget.client-react
-      '@radix-ui/react-icons':
-        specifier: ^1.3.2
-        version: 1.3.2(react@18.3.1)
-      '@radix-ui/themes':
-        specifier: ^3.2.1
-        version: 3.2.1(@types/react-dom@18.3.7(@types/react@18.3.24))(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       react:
         specifier: ^18
         version: 18.3.1
@@ -3261,12 +3261,12 @@ importers:
 
   packages/create-widget.template.react.v2:
     dependencies:
-      '@radix-ui/react-icons':
-        specifier: ^1.3.2
-        version: 1.3.2(react@18.3.1)
-      '@radix-ui/themes':
-        specifier: ^3.2.1
-        version: 3.2.1(@types/react-dom@18.3.7(@types/react@18.3.24))(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@blueprintjs/core':
+        specifier: ^6.10.0
+        version: 6.11.3(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       react:
         specifier: ^18
         version: 18.3.1

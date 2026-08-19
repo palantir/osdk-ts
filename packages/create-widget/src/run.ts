@@ -94,6 +94,8 @@ export async function run({
 
   const templateContext: TemplateContext = {
     project,
+    foundryUrl,
+    widgetSet,
     osdkPackage,
   };
   const processFiles = function (dir: string) {

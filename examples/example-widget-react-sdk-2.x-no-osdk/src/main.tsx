@@ -1,4 +1,4 @@
-import "@radix-ui/themes/styles.css";
+import "@blueprintjs/core/lib/css/blueprint.css";
 import "./main.css";
 
 import { FoundryWidget } from "@osdk/widget.client-react";

@@ -11,24 +11,19 @@ export default defineConfig({
   description: "An example custom widget implementation",
   type: "workshop",
   parameters: {
-    headerText: {
-      displayName: "Widget title",
+    greetingName: {
+      displayName: "Greeting name",
       type: "string",
     },
-    todoItems: {
-      displayName: "Todo items",
-      type: "array",
-      subType: "string",
+    counterValue: {
+      displayName: "Counter value",
+      type: "number",
     },
   },
   events: {
-    updateHeader: {
-      displayName: "Update header",
-      parameterUpdateIds: ["headerText"],
-    },
-    updateTodoItems: {
-      displayName: "Update todo items",
-      parameterUpdateIds: ["todoItems"],
+    setCounterValue: {
+      displayName: "Set counter value",
+      parameterUpdateIds: ["counterValue"],
     },
   },
 });
