@@ -21,6 +21,7 @@ import { pathToFileURL } from "node:url";
 import type {
   LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
+  OntologyIrV2,
 } from "@osdk/client.unstable";
 import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import {
@@ -63,6 +64,7 @@ export default async function main(
     input: string;
     output: string;
     valueTypesOutput: string;
+    sdkOutput: string;
     apiNamespace: string;
     buildDir: string;
     codegenDir?: string;
@@ -96,6 +98,12 @@ export default async function main(
         describe: "Output file for value types BlockGeneratorResult JSON",
         type: "string",
         default: "build/value_types_block_generator_result.json",
+        coerce: path.resolve,
+      },
+      sdkOutput: {
+        describe: "Output file for the complete SDK generation input",
+        type: "string",
+        default: "build/sdk_input/ontology.json",
         coerce: path.resolve,
       },
       apiNamespace: {
@@ -248,17 +256,11 @@ export default async function main(
     importedLinkTypeIdsByApiName,
   );
 
-  // Create temp directory for block data
-  const blockDataDir = path.join(commandLineOpts.buildDir, "temp_block_data");
-  if (!fs.existsSync(blockDataDir)) {
-    await fs.promises.mkdir(blockDataDir, { recursive: true });
-  }
-
-  // Write ontology.json to the block data directory
-  const ontologyJsonPath = path.join(blockDataDir, "ontology.json");
-  const ontologyJson = JSON.stringify(ontologyIr, null, 2);
-  await fs.promises.writeFile(ontologyJsonPath, ontologyJson);
-  consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
+  const blockDataDir = await writeOntologyArtifacts(
+    ontologyIr,
+    commandLineOpts.buildDir,
+    commandLineOpts.sdkOutput,
+  );
 
   const importedMetadata =
     OntologyBlockDataToFullMetadataConverter.getFullMetadataFromBlockData(
@@ -478,6 +480,37 @@ export default async function main(
       `Value type BlockGeneratorResult written to ${commandLineOpts.valueTypesOutput}`,
     );
   }
+}
+
+export async function writeOntologyArtifacts(
+  ontologyIr: OntologyIrV2,
+  buildDir: string,
+  sdkOutput: string,
+): Promise<string> {
+  const blockDataDir = path.resolve(buildDir, "temp_block_data");
+  const resolvedSdkOutput = path.resolve(sdkOutput);
+  invariant(
+    resolvedSdkOutput !== blockDataDir &&
+      !resolvedSdkOutput.startsWith(`${blockDataDir}${path.sep}`),
+    "sdkOutput must be outside the Marketplace block data directory",
+  );
+  await fs.promises.mkdir(blockDataDir, { recursive: true });
+
+  const ontologyJsonPath = path.join(blockDataDir, "ontology.json");
+  await fs.promises.writeFile(
+    ontologyJsonPath,
+    JSON.stringify(ontologyIr.ontology, null, 2),
+  );
+  consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
+
+  await fs.promises.mkdir(path.dirname(resolvedSdkOutput), { recursive: true });
+  await fs.promises.writeFile(
+    resolvedSdkOutput,
+    JSON.stringify(ontologyIr, null, 2),
+  );
+  consola.info(`Wrote SDK generation input to ${resolvedSdkOutput}`);
+
+  return blockDataDir;
 }
 
 async function loadOntology(

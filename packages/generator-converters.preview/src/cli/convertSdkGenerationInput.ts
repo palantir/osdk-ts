@@ -24,6 +24,21 @@ import {
 
 export type SdkGenerationInput = OntologyBlockDataV2 | OntologyIrV2;
 
+type SdkGenerationActionType =
+  | Ontologies.ActionTypeV2
+  | Ontologies.ActionTypeFullMetadata;
+
+export function normalizeSdkGenerationActionTypes(
+  actionTypes: Record<string, SdkGenerationActionType>,
+): Record<string, Ontologies.ActionTypeV2> {
+  return Object.fromEntries(
+    Object.entries(actionTypes).map(([apiName, action]) => [
+      apiName,
+      "actionType" in action ? action.actionType : action,
+    ]),
+  );
+}
+
 export function unwrapSdkGenerationInput(value: unknown): unknown {
   if (
     typeof value === "object"

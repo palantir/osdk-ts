@@ -36,6 +36,7 @@ import { hideBin } from "yargs/helpers";
 import {
   convertSdkGenerationInput,
   isSdkGenerationInput,
+  normalizeSdkGenerationActionTypes,
   unwrapSdkGenerationInput,
 } from "./convertSdkGenerationInput.js";
 
@@ -49,14 +50,10 @@ function generatePythonSdk(
   previewMetadata: ReturnType<typeof convertSdkGenerationInput>,
   pythonBinary: string,
 ): void {
-  // Build the Python-compatible metadata: unwrap actionTypes and add globalFunctions
   const pythonMetadata = {
     ...previewMetadata,
-    actionTypes: Object.fromEntries(
-      Object.entries(previewMetadata.actionTypes).map(([key, fullMeta]) => [
-        key,
-        fullMeta.actionType,
-      ]),
+    actionTypes: normalizeSdkGenerationActionTypes(
+      previewMetadata.actionTypes,
     ),
     globalFunctions: { queryTypes: {}, valueTypes: {} },
   };
@@ -311,14 +308,10 @@ async function main(): Promise<void> {
     }
   }
 
-  // Convert ActionTypeFullMetadata to ActionTypeV2 for generator compatibility
   const metadata = {
     ...previewMetadata,
-    actionTypes: Object.fromEntries(
-      Object.entries(previewMetadata.actionTypes).map(([key, fullMeta]) => [
-        key,
-        fullMeta.actionType,
-      ]),
+    actionTypes: normalizeSdkGenerationActionTypes(
+      previewMetadata.actionTypes,
     ),
   };
 
