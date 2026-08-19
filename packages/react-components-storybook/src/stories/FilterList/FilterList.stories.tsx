@@ -1883,10 +1883,7 @@ function WithLinkedPropertyFiltersStory(
       <div style={FLEX_FILL_STYLE}>
         <strong>Filter Clause (JSON):</strong>
         <p>
-          Note: HAS_LINK and LINKED_PROPERTY filters do not appear in the
-          clause. They are applied by narrowing the ObjectSet via
-          <code> onEffectiveObjectSet</code> — pass the returned set to your
-          table.
+          Note: HAS_LINK and LINKED_PROPERTY filters do not appear in the clause
         </p>
         <pre style={PRE_STYLE}>
           {filterClause
