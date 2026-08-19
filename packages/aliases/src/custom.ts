@@ -15,20 +15,21 @@
  */
 
 import { loadResolvedAliases } from "./loaders.js";
-import type { Source } from "./types.js";
-export type { Source } from "./types.js";
+import type { Custom } from "./types.js";
 
-export function source(alias: string): Source {
+export type { Custom } from "./types.js";
+
+export function custom(alias: string): Custom {
   const resolvedAliases = loadResolvedAliases();
 
-  if (!(alias in resolvedAliases.sources)) {
-    const available = Object.keys(resolvedAliases.sources);
+  if (!(alias in resolvedAliases.custom)) {
+    const available = Object.keys(resolvedAliases.custom);
     throw new Error(
-      `Source alias '${alias}' not found. Available aliases: [${available.join(
+      `Custom alias '${alias}' not found. Available aliases: [${available.join(
         ", ",
       )}]`,
     );
   }
 
-  return resolvedAliases.sources[alias];
+  return resolvedAliases.custom[alias] as Custom;
 }

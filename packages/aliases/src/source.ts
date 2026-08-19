@@ -15,20 +15,21 @@
  */
 
 import { loadResolvedAliases } from "./loaders.js";
-import type { Model } from "./types.js";
-export type { Model } from "./types.js";
+import type { Source } from "./types.js";
 
-export function model(alias: string): Model {
+export type { Source } from "./types.js";
+
+export function source(alias: string): Source {
   const resolvedAliases = loadResolvedAliases();
 
-  if (!(alias in resolvedAliases.models)) {
-    const available = Object.keys(resolvedAliases.models);
+  if (!(alias in resolvedAliases.sources)) {
+    const available = Object.keys(resolvedAliases.sources);
     throw new Error(
-      `Model alias '${alias}' not found. Available aliases: [${available.join(
+      `Source alias '${alias}' not found. Available aliases: [${available.join(
         ", ",
       )}]`,
     );
   }
 
-  return resolvedAliases.models[alias];
+  return resolvedAliases.sources[alias];
 }

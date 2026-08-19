@@ -15,20 +15,21 @@
  */
 
 import { loadResolvedAliases } from "./loaders.js";
-import type { Custom } from "./types.js";
-export type { Custom } from "./types.js";
+import type { Dataset } from "./types.js";
 
-export function custom(alias: string): Custom {
+export type { Dataset } from "./types.js";
+
+export function dataset(alias: string): Dataset {
   const resolvedAliases = loadResolvedAliases();
 
-  if (!(alias in resolvedAliases.custom)) {
-    const available = Object.keys(resolvedAliases.custom);
+  if (!(alias in resolvedAliases.datasets)) {
+    const available = Object.keys(resolvedAliases.datasets);
     throw new Error(
-      `Custom alias '${alias}' not found. Available aliases: [${available.join(
+      `Dataset alias '${alias}' not found. Available aliases: [${available.join(
         ", ",
       )}]`,
     );
   }
 
-  return resolvedAliases.custom[alias] as Custom;
+  return resolvedAliases.datasets[alias];
 }

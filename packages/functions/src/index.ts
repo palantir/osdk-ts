@@ -34,7 +34,11 @@ export type {
   TwoDimensionalAggregation,
 } from "@osdk/client";
 
-export * as Aliases from "./aliases/index.js";
+// The alias runtime lives in @osdk/aliases so that consumers which are not
+// Functions (Developer Console apps, and later other pro-code surfaces) can use
+// it without depending on this package. Re-exported here so the public
+// `Aliases` namespace of @osdk/functions is unchanged.
+export * as Aliases from "@osdk/aliases/node";
 export { createEditBatch } from "./edits/createEditBatch.js";
 export type { EditBatch } from "./edits/EditBatch.js";
 export type { Edits } from "./edits/types.js";
