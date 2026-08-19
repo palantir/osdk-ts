@@ -426,9 +426,7 @@ definition, so narrowing on `kind` gives you the fields for that kind:
 | `"HAS_LINK"`                                                    | `linkName`, `isExcluding`                                                               |
 | `"LINKED_PROPERTY"`                                             | `linkName`, `innerWhere` (predicate on the linked objects), `innerState`, `isExcluding` |
 
-Every entry also carries `filterKey`, `state`, and `definition` — the
-`filterDefinitions` entry it came from, typed to its kind, so you don't need a
-side table mapping keys back to link names or property keys.
+Every entry also carries `filterKey` and `state`.
 
 ```typescript
 onFilterChanged={(event) => {
@@ -446,8 +444,7 @@ onFilterChanged={(event) => {
 
 `LINKED_PROPERTY` filters wrap the linked property's own input state, so a
 consumer applying its own filtering strategy would otherwise have to know about
-that wrapping. `innerState` is that inner state hoisted onto the entry, and
-`definition.linkedPropertyKey` names the property it applies to:
+that wrapping. `innerState` is that inner state hoisted onto the entry:
 
 ```typescript
 for (const filter of event.activeFilters) {
@@ -455,7 +452,6 @@ for (const filter of event.activeFilters) {
     continue;
   }
   // filter.innerState is the picked value, e.g. { type: "SELECT", selectedValues: [...] }
-  // filter.definition.linkedPropertyKey is the property it applies to
   // filter.innerWhere is the same thing as a clause: { [linkedPropertyKey]: { $in: [...] } }
 }
 ```

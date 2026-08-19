@@ -59,7 +59,6 @@ describe("getActiveFilters", () => {
       {
         kind: "PROPERTY",
         filterKey: getFilterKey(nameDef),
-        definition: nameDef,
         state: exactMatch(["John"]),
         clause: { name: "John" },
       },
@@ -146,7 +145,6 @@ describe("getActiveFilters", () => {
       {
         kind: "HAS_LINK",
         filterKey: getFilterKey(hasLinkDef),
-        definition: hasLinkDef,
         state: { type: "hasLink", hasLink: true },
         linkName: "employees",
         isExcluding: false,
@@ -178,7 +176,6 @@ describe("getActiveFilters", () => {
       {
         kind: "LINKED_PROPERTY",
         filterKey: getFilterKey(linkedDef),
-        definition: linkedDef,
         state,
         innerState: exactMatch(["John"]),
         linkName: "employees",

@@ -78,7 +78,6 @@ export function getActiveFilters<Q extends ObjectTypeDefinition>(
       const common = {
         kind: definition.type,
         filterKey,
-        definition,
         state,
         linkName: linked.linkName,
         isExcluding: linked.isExcluding === true,
@@ -103,7 +102,6 @@ export function getActiveFilters<Q extends ObjectTypeDefinition>(
     result.push({
       kind: definition.type,
       filterKey,
-      definition,
       state,
       clause,
     } as ActiveClauseFilter<Q>);
