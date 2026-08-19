@@ -22,7 +22,10 @@ import type {
   ActiveClauseFilter,
   ActiveFilter,
 } from "../types/ActiveFilterTypes.js";
-import type { LinkedFilter } from "../types/LinkedFilterTypes.js";
+import type {
+  LinkedFilter,
+  LinkedPropertyFilterState,
+} from "../types/LinkedFilterTypes.js";
 import type { PropertyTypeInfo } from "./filterStateToWhereClause.js";
 import {
   buildWhereClause,
@@ -75,6 +78,7 @@ export function getActiveFilters<Q extends ObjectTypeDefinition>(
       const common = {
         kind: definition.type,
         filterKey,
+        definition,
         state,
         linkName: linked.linkName,
         isExcluding: linked.isExcluding === true,
@@ -82,7 +86,12 @@ export function getActiveFilters<Q extends ObjectTypeDefinition>(
       result.push(
         (definition.type === "HAS_LINK"
           ? common
-          : { ...common, innerWhere: linked.innerWhere }) as ActiveFilter<Q>,
+          : {
+              ...common,
+              innerState: (state as LinkedPropertyFilterState)
+                .linkedFilterState,
+              innerWhere: linked.innerWhere,
+            }) as ActiveFilter<Q>,
       );
       continue;
     }
@@ -94,6 +103,7 @@ export function getActiveFilters<Q extends ObjectTypeDefinition>(
     result.push({
       kind: definition.type,
       filterKey,
+      definition,
       state,
       clause,
     } as ActiveClauseFilter<Q>);

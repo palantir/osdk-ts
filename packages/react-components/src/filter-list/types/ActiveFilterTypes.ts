@@ -21,20 +21,36 @@ import type {
   WhereClause,
 } from "@osdk/api";
 
-import type { FilterState } from "../FilterListItemApi.js";
-import type { CustomFilterState } from "./CustomRendererTypes.js";
-import type { KeywordSearchFilterState } from "./KeywordSearchTypes.js";
 import type {
+  FilterState,
+  PropertyFilterDefinition,
+} from "../FilterListItemApi.js";
+import type {
+  CustomFilterDefinition,
+  CustomFilterState,
+} from "./CustomRendererTypes.js";
+import type {
+  KeywordSearchFilterDefinition,
+  KeywordSearchFilterState,
+} from "./KeywordSearchTypes.js";
+import type {
+  HasLinkFilterDefinition,
   HasLinkFilterState,
+  LinkedPropertyFilterDefinition,
   LinkedPropertyFilterState,
 } from "./LinkedFilterTypes.js";
+import type { StaticValuesFilterDefinition } from "./StaticValuesTypes.js";
 
 interface ActiveClauseFilterFields<
   Q extends ObjectTypeDefinition,
   S extends FilterState,
+  D,
 > {
   /** `getFilterKey` of the filter's definition. */
   filterKey: string;
+
+  /** The `filterDefinitions` entry this filter was declared by. */
+  definition: D;
 
   state: S;
 
@@ -45,28 +61,44 @@ interface ActiveClauseFilterFields<
 /** An active `PROPERTY` filter. */
 export interface ActivePropertyFilter<
   Q extends ObjectTypeDefinition,
-> extends ActiveClauseFilterFields<Q, FilterState> {
+> extends ActiveClauseFilterFields<
+  Q,
+  FilterState,
+  PropertyFilterDefinition<Q>
+> {
   kind: "PROPERTY";
 }
 
 /** An active `STATIC_VALUES` filter. */
 export interface ActiveStaticValuesFilter<
   Q extends ObjectTypeDefinition,
-> extends ActiveClauseFilterFields<Q, FilterState> {
+> extends ActiveClauseFilterFields<
+  Q,
+  FilterState,
+  StaticValuesFilterDefinition<Q>
+> {
   kind: "STATIC_VALUES";
 }
 
 /** An active `KEYWORD_SEARCH` filter. */
 export interface ActiveKeywordSearchFilter<
   Q extends ObjectTypeDefinition,
-> extends ActiveClauseFilterFields<Q, KeywordSearchFilterState> {
+> extends ActiveClauseFilterFields<
+  Q,
+  KeywordSearchFilterState,
+  KeywordSearchFilterDefinition<Q>
+> {
   kind: "KEYWORD_SEARCH";
 }
 
 /** An active `CUSTOM` filter, with the clause its `toWhereClause` returned. */
 export interface ActiveCustomFilter<
   Q extends ObjectTypeDefinition,
-> extends ActiveClauseFilterFields<Q, CustomFilterState> {
+> extends ActiveClauseFilterFields<
+  Q,
+  CustomFilterState,
+  CustomFilterDefinition<Q>
+> {
   kind: "CUSTOM";
 }
 
@@ -80,6 +112,9 @@ export type ActiveHasLinkFilter<Q extends ObjectTypeDefinition> = {
 
     /** `getFilterKey` of the filter's definition. */
     filterKey: string;
+
+    /** The `filterDefinitions` entry this filter was declared by. */
+    definition: HasLinkFilterDefinition<Q, L>;
 
     state: HasLinkFilterState;
 
@@ -101,7 +136,16 @@ export type ActiveLinkedPropertyFilter<Q extends ObjectTypeDefinition> = {
     /** `getFilterKey` of the filter's definition. */
     filterKey: string;
 
+    /** The `filterDefinitions` entry this filter was declared by. */
+    definition: LinkedPropertyFilterDefinition<Q, L>;
+
     state: LinkedPropertyFilterState;
+
+    /**
+     * The state of the input rendered for the linked property, i.e. what the
+     * user picked. The same value as `state.linkedFilterState`.
+     */
+    innerState: FilterState;
 
     linkName: L;
 

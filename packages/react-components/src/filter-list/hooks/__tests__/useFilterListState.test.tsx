@@ -561,6 +561,7 @@ describe("useFilterListState", () => {
           {
             kind: "PROPERTY",
             filterKey: getFilterKey(nameDef),
+            definition: nameDef,
             state: newState,
             clause: { name: "John" },
           },
@@ -668,7 +669,9 @@ describe("useFilterListState", () => {
         {
           kind: "LINKED_PROPERTY",
           filterKey: getFilterKey(linkedDef),
+          definition: linkedDef,
           state: linkedState,
+          innerState: createExactMatchState(["John"]),
           linkName: "employees",
           innerWhere: { name: "John" },
           isExcluding: false,
@@ -698,6 +701,7 @@ describe("useFilterListState", () => {
         {
           kind: "HAS_LINK",
           filterKey: getFilterKey(hasLinkDef),
+          definition: hasLinkDef,
           state: { type: "hasLink", hasLink: true },
           linkName: "employees",
           isExcluding: false,
