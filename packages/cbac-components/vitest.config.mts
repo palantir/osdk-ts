@@ -22,18 +22,20 @@ export default defineConfig({
     exclude: [...configDefaults.exclude, "**/build/**/*"],
     environment: "happy-dom",
     setupFiles: ["./src/test/setupPolyfills.ts"],
-    coverage: {
-      include: ["src/**"],
-      // Exclude tests, generated code, and index.ts barrels (no logic).
-      exclude: [
-        "**/*.test.*",
-        "**/__tests__/**",
-        "**/__mocks__/**",
-        "**/generatedNoCheck/**",
-        "**/*.d.ts",
-        "**/index.ts",
-      ],
-    },
+    // Classnames are package-prefixed: test paths repeat across packages.
+    reporters: process.env.CI
+      ? [
+        "default",
+        [
+          "junit",
+          {
+            classnameTemplate: (v) =>
+              v.filepath.split("/packages/").pop() ?? v.filepath,
+          },
+        ],
+      ]
+      : ["default"],
+    outputFile: { junit: "reports/junit.xml" },
     fakeTimers: {
       toFake: ["setTimeout", "clearTimeout", "Date"],
     },
