@@ -12827,7 +12827,6 @@ function WithLinkedPropertyFiltersStory(
       {
         type: &quot;LINKED_PROPERTY&quot;,
         linkName: &quot;lead&quot;,
-        reverseLinkName: &quot;peeps&quot;,
         linkedPropertyKey: &quot;department&quot;,
         filterComponent: &quot;MULTI_SELECT&quot;,
         label: &quot;Manager Department&quot;,
@@ -12858,7 +12857,9 @@ function WithLinkedPropertyFiltersStory(
       &lt;/div&gt;
       &lt;div style={FLEX_FILL_STYLE}&gt;
         &lt;strong&gt;Filter Clause (JSON):&lt;/strong&gt;
-        &lt;p&gt;Note: LINKED_PROPERTY filter is not applied through where clause&lt;/p&gt;
+        &lt;p&gt;
+          Note: HAS_LINK and LINKED_PROPERTY filters do not appear in the clause
+        &lt;/p&gt;
         &lt;pre style={PRE_STYLE}&gt;
           {filterClause
             ? JSON.stringify(filterClause, null, 2)
@@ -12892,7 +12893,6 @@ const filterDefinitions = [
   {
     type: &quot;LINKED_PROPERTY&quot;,
     linkName: &quot;lead&quot;,
-    reverseLinkName: &quot;peeps&quot;,
     linkedPropertyKey: &quot;department&quot;,
     filterComponent: &quot;MULTI_SELECT&quot;,
     label: &quot;Manager Department&quot;,
@@ -12934,7 +12934,6 @@ const combinedLeadNameFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   type: &quot;LINKED_PROPERTY&quot;,
   id: &quot;combined-lead-name&quot;,
   linkName: &quot;lead&quot;,
-  reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;fullName&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
   searchField: false,
@@ -13029,7 +13028,6 @@ const filterDefinitions: FilterDefinitionUnion&lt;Employee&gt;[] = [
     type: &quot;LINKED_PROPERTY&quot;,
     id: &quot;combined-lead-name&quot;,
     linkName: &quot;lead&quot;,
-    reverseLinkName: &quot;peeps&quot;,
     linkedPropertyKey: &quot;fullName&quot;,
     filterComponent: &quot;MULTI_SELECT&quot;,
     searchField: false,
@@ -13558,7 +13556,6 @@ const locationCitySingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
 const linkedDepartmentMultiSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   type: &quot;LINKED_PROPERTY&quot;,
   linkName: &quot;lead&quot;,
-  reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;department&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
   label: &quot;Manager Department (linked multi)&quot;,
@@ -13567,7 +13564,6 @@ const linkedDepartmentMultiSelectFilter: FilterDefinitionUnion&lt;Employee&gt; =
 const linkedCitySingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   type: &quot;LINKED_PROPERTY&quot;,
   linkName: &quot;lead&quot;,
-  reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;locationCity&quot;,
   filterComponent: &quot;SINGLE_SELECT&quot;,
   label: &quot;Manager City (linked single)&quot;,
@@ -31357,7 +31353,6 @@ function WithLinkedPropertyFiltersStory(
       {
         type: &quot;LINKED_PROPERTY&quot;,
         linkName: &quot;lead&quot;,
-        reverseLinkName: &quot;peeps&quot;,
         linkedPropertyKey: &quot;department&quot;,
         filterComponent: &quot;MULTI_SELECT&quot;,
         label: &quot;Manager Department&quot;,
@@ -31388,7 +31383,9 @@ function WithLinkedPropertyFiltersStory(
       &lt;/div&gt;
       &lt;div style={FLEX_FILL_STYLE}&gt;
         &lt;strong&gt;Filter Clause (JSON):&lt;/strong&gt;
-        &lt;p&gt;Note: LINKED_PROPERTY filter is not applied through where clause&lt;/p&gt;
+        &lt;p&gt;
+          Note: HAS_LINK and LINKED_PROPERTY filters do not appear in the clause
+        &lt;/p&gt;
         &lt;pre style={PRE_STYLE}&gt;
           {filterClause
             ? JSON.stringify(filterClause, null, 2)
@@ -31422,7 +31419,6 @@ const filterDefinitions = [
   {
     type: &quot;LINKED_PROPERTY&quot;,
     linkName: &quot;lead&quot;,
-    reverseLinkName: &quot;peeps&quot;,
     linkedPropertyKey: &quot;department&quot;,
     filterComponent: &quot;MULTI_SELECT&quot;,
     label: &quot;Manager Department&quot;,
@@ -31464,7 +31460,6 @@ const combinedLeadNameFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   type: &quot;LINKED_PROPERTY&quot;,
   id: &quot;combined-lead-name&quot;,
   linkName: &quot;lead&quot;,
-  reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;fullName&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
   searchField: false,
@@ -31559,7 +31554,6 @@ const filterDefinitions: FilterDefinitionUnion&lt;Employee&gt;[] = [
     type: &quot;LINKED_PROPERTY&quot;,
     id: &quot;combined-lead-name&quot;,
     linkName: &quot;lead&quot;,
-    reverseLinkName: &quot;peeps&quot;,
     linkedPropertyKey: &quot;fullName&quot;,
     filterComponent: &quot;MULTI_SELECT&quot;,
     searchField: false,
@@ -32088,7 +32082,6 @@ const locationCitySingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
 const linkedDepartmentMultiSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   type: &quot;LINKED_PROPERTY&quot;,
   linkName: &quot;lead&quot;,
-  reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;department&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
   label: &quot;Manager Department (linked multi)&quot;,
@@ -32097,7 +32090,6 @@ const linkedDepartmentMultiSelectFilter: FilterDefinitionUnion&lt;Employee&gt; =
 const linkedCitySingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   type: &quot;LINKED_PROPERTY&quot;,
   linkName: &quot;lead&quot;,
-  reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;locationCity&quot;,
   filterComponent: &quot;SINGLE_SELECT&quot;,
   label: &quot;Manager City (linked single)&quot;,
