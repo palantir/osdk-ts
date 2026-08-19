@@ -173,23 +173,13 @@ interface SharedColumnDefinition<
    * `cellValueType`) — `renderCell` then receives that value as its third
    * argument. The two can be combined.
    *
-   * Interaction with `editable` columns:
-   * - When `editMode: "manual"` (default), `renderCell` is used while the
-   *   table is read-only (Edit Table button visible) and the editable cell
-   *   takes over once the user enters edit mode.
-   * - When `editMode: "always"`, the editable cell always wins on
-   *   `editable: true` columns and `renderCell` is ignored — `editMode:
-   *   "always"` opts the column into a permanently-editable surface, leaving
-   *   no read-only state for `renderCell` to render. Use `editMode: "manual"`
-   *   if you need a custom display alongside editing.
+   *  `renderCell` is used only when the cell is read-only.
+   * When cells are actually editable, the in-built edit component takes over.
    *
-   * The editor only takes over on cells that are actually editable. When
-   * `editable` is a predicate, rows it rejects stay read-only and keep
-   * rendering `renderCell` under either `editMode` — including `"always"`,
-   * where the table is permanently in edit mode.
-   *
-   * @param value - The cell's value, so there's no need to recompute what
-   * `getCellValue` (or the property lookup) already produced.
+   * @param object - The row's object instance.
+   * @param locator - The column locator of this cell.
+   * @param value - The cell's value computed by the given `getCellValue` or the default property lookup.
+   * @returns custom cell renderer component
    */
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,

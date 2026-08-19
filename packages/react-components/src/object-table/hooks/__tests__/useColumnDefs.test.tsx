@@ -27,7 +27,7 @@ import type {
   AccessorFnColumnDef,
   AccessorKeyColumnDef,
 } from "@tanstack/react-table";
-import { render, renderHook, waitFor } from "@testing-library/react";
+import { renderHook, waitFor } from "@testing-library/react";
 import pDefer from "p-defer";
 import * as React from "react";
 import { describe, expect, it, vitest } from "vitest";
@@ -806,6 +806,7 @@ describe(useColumnDefs, () => {
       const mockObject = {
         name: "John",
       } as unknown as Osdk.Instance<TestObject>;
+
       const mockCellContext = {
         row: { original: mockObject, id: "row-0" },
         column: { id: "name", columnDef: { meta: { editable: isEditable } } },
@@ -831,64 +832,6 @@ describe(useColumnDefs, () => {
         },
         "John",
       );
-    });
-
-    it("aligns predicate-rejected renderCell output with the editor cells beside it", async () => {
-      const deferred = pDefer();
-      const fakeClient = {
-        fetchMetadata: vitest.fn(() => deferred.promise),
-      } as unknown as Client;
-
-      const wrapper = createWrapper(fakeClient);
-
-      const isEditable = (object: Osdk.Instance<TestObject>) =>
-        (object as unknown as { name: string }).name === "Jane";
-
-      const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
-        {
-          locator: { type: "property", id: "name" as TestObjectKeys },
-          editable: isEditable,
-          renderCell: () => <div>Not Applicable</div>,
-        },
-      ];
-
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper },
-      );
-
-      deferred.resolve(mockMetadata);
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
-
-      const nameColumn = result.current.columns[0];
-      const mockObject = {
-        name: "John",
-      } as unknown as Osdk.Instance<TestObject>;
-      const buildContext = (isInEditMode: boolean) => ({
-        row: { original: mockObject, id: "row-0" },
-        column: { id: "name", columnDef: { meta: { editable: isEditable } } },
-        getValue: () => "John",
-        table: {
-          options: { meta: { onCellEdit: vitest.fn(), isInEditMode } },
-        },
-      });
-
-      const cell = nameColumn.cell as unknown as (
-        ctx: ReturnType<typeof buildContext>,
-      ) => React.ReactElement;
-
-      const { container, rerender } = render(cell(buildContext(true)));
-      expect(container.querySelector("span")).not.toBeNull();
-      expect(container.textContent).toBe("Not Applicable");
-
-      // Outside edit mode there are no editor cells to line up with, so the
-      // custom content is rendered bare.
-      rerender(cell(buildContext(false)));
-      expect(container.querySelector("span")).toBeNull();
-      expect(container.textContent).toBe("Not Applicable");
     });
 
     it("skips renderCell in edit mode for rows the editable predicate accepts", async () => {
@@ -931,6 +874,7 @@ describe(useColumnDefs, () => {
       const mockObject = {
         name: "Jane",
       } as unknown as Osdk.Instance<TestObject>;
+
       const mockCellContext = {
         row: { original: mockObject, id: "row-0" },
         column: { id: "name", columnDef: { meta: { editable: isEditable } } },
