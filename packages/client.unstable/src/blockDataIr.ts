@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ValueTypeReference } from "./generated/ontology-metadata/api/__components.js";
 import type {
   OntologyBlockDataV2,
   OntologyIrOntologyBlockDataV2,
@@ -28,6 +29,10 @@ export type ObjectTypeFieldApiName = string;
 export type InterfaceLinkTypeApiName = string;
 export type { OntologyIrOntologyBlockDataV2 } from "./generated/ontology-metadata/api/blockdata/index.js";
 
+export type ValueTypeReferencesByApiName = Readonly<
+  Record<string, Readonly<Record<string, ValueTypeReference>>>
+>;
+
 export interface OntologyIr {
   ontology: OntologyIrOntologyBlockDataV2;
   importedOntology: OntologyIrOntologyBlockDataV2;
@@ -41,6 +46,7 @@ export interface OntologyIrV2 {
   importedOntology: OntologyBlockDataV2;
   valueTypes: ValueTypeBlockData[];
   importedValueTypes: ValueTypeBlockData[];
+  valueTypeReferences?: ValueTypeReferencesByApiName;
   transitiveImportedOntology: OntologyBlockDataV2;
   randomnessKey?: string;
 }

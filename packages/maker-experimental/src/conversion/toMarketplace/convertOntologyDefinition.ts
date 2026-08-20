@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { OntologyIrV2 } from "@osdk/client.unstable";
+import type {
+  OntologyIrV2,
+  ValueTypeReference,
+  ValueTypeReferencesByApiName,
+} from "@osdk/client.unstable";
 import type { InterfaceType, OntologyDefinition } from "@osdk/maker";
 import { getImportedTypes } from "@osdk/maker";
 
@@ -92,13 +96,41 @@ export function convertOntologyDefinition(
     transitiveOntology,
     throwawayRidGenerator,
   );
+  const importedValueTypes = convertValueTypeToWireBlockData(
+    importedTypes,
+    ridGenerator,
+  );
+  const ownedValueTypes = convertValueTypeToWireBlockData(
+    ontology,
+    ridGenerator,
+  );
 
   return {
     ontology: mainOntology,
     importedOntology,
     transitiveImportedOntology,
-    valueTypes: convertValueTypeToWireBlockData(ontology),
-    importedValueTypes: convertValueTypeToWireBlockData(importedTypes),
+    valueTypes: ownedValueTypes.valueTypes,
+    importedValueTypes: importedValueTypes.valueTypes,
+    valueTypeReferences: mergeValueTypeReferences(
+      importedValueTypes.valueTypeReferences,
+      ownedValueTypes.valueTypeReferences,
+    ),
     randomnessKey,
   };
+}
+
+function mergeValueTypeReferences(
+  imported: ValueTypeReferencesByApiName,
+  owned: ValueTypeReferencesByApiName,
+): ValueTypeReferencesByApiName {
+  const merged: Record<string, Readonly<Record<string, ValueTypeReference>>> = {
+    ...imported,
+  };
+  for (const [apiName, versions] of Object.entries(owned)) {
+    merged[apiName] = {
+      ...merged[apiName],
+      ...versions,
+    };
+  }
+  return merged;
 }

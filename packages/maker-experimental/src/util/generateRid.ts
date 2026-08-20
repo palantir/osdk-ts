@@ -728,6 +728,15 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     apiName: string,
     version: string,
   ): ValueTypeReference {
+    const readableId = ReadableIdGenerator.getForConsumedValueType(
+      apiName,
+      version,
+    );
+    const existing = this.consumedValueTypeReferences.get(readableId);
+    if (existing !== undefined) {
+      return existing;
+    }
+
     const rid = `ri.ontology-metadata.temp.value-type.${this.hashString(
       apiName,
     )}`;
@@ -746,10 +755,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
       versionId: versionAsUuid,
     } as ValueTypeReference;
 
-    this.consumedValueTypeReferences.put(
-      ReadableIdGenerator.getForConsumedValueType(apiName, version),
-      valueTypeReference,
-    );
+    this.consumedValueTypeReferences.put(readableId, valueTypeReference);
     this.producedValueTypeReferences.set(
       valueTypeReference,
       ReadableIdGenerator.getForProducedValueType(apiName, version),
