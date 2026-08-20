@@ -380,12 +380,17 @@ async function fetchInterfacePage<
     },
   );
 
+  const derivedPropertyTypeByName = await extractRdpDefinition(
+    client,
+    resolvedInterfaceObjectSet,
+  );
+
   return Promise.resolve({
     data: await client.objectFactory(
       client,
       result.data,
       extractedInterfaceTypeApiName,
-      {},
+      derivedPropertyTypeByName,
       shouldLoadPropertySecurities ? result.propertySecurities : undefined,
       !args.$includeRid,
       args.$select,
