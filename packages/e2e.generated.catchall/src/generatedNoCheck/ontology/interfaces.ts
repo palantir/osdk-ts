@@ -1,5 +1,6 @@
 export { Athlete } from './interfaces/Athlete.js';
 export { bus_1 } from './interfaces/bus_1.js';
+export { CipherTextInterface } from './interfaces/CipherTextInterface.js';
 export { CollateralConcernCandidate } from './interfaces/CollateralConcernCandidate.js';
 export { CollateralConcernList } from './interfaces/CollateralConcernList.js';
 export { MwaltherTestIdp } from './interfaces/MwaltherTestIdp.js';

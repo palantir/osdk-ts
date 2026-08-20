@@ -17,6 +17,9 @@
 import type {
   GetClientPropertyValueFromWire,
   GetCreatePropertyValueFromWire,
+  GetCreateWirePropertyValueFromWire,
+  GetUpdatePropertyValueFromWire,
+  GetUpdateWirePropertyValueFromWire,
 } from "./mapping/PropertyValueMapping.js";
 import type { ObjectMetadata } from "./ontology/ObjectTypeDefinition.js";
 
@@ -48,13 +51,36 @@ export type OsdkObjectPropertyTypeNotUndefined<
   T extends ObjectMetadata.Property,
 > = MaybeArray<T, GetClientPropertyValueFromWire<T["type"]>>;
 
-/**
- * @param T - ObjectMetadata.Property in literal form
- * @param STRICTLY_ENFORCE_NULLABLE - S for strict. If false, always `|undefined`
- */
 export type OsdkObjectCreatePropertyType<
   T extends ObjectMetadata.Property,
   STRICTLY_ENFORCE_NULLABLE extends boolean = true,
 > = STRICTLY_ENFORCE_NULLABLE extends false
   ? MaybeArray<T, GetCreatePropertyValueFromWire<T["type"]>> | undefined
   : MaybeNullable<T, MaybeArray<T, GetCreatePropertyValueFromWire<T["type"]>>>;
+
+export type OsdkObjectUpdatePropertyType<
+  T extends ObjectMetadata.Property,
+  STRICTLY_ENFORCE_NULLABLE extends boolean = true,
+> = STRICTLY_ENFORCE_NULLABLE extends false
+  ? MaybeArray<T, GetUpdatePropertyValueFromWire<T["type"]>> | undefined
+  : MaybeNullable<T, MaybeArray<T, GetUpdatePropertyValueFromWire<T["type"]>>>;
+
+export type OsdkObjectCreateWirePropertyType<
+  T extends ObjectMetadata.Property,
+  STRICTLY_ENFORCE_NULLABLE extends boolean = true,
+> = STRICTLY_ENFORCE_NULLABLE extends false
+  ? MaybeArray<T, GetCreateWirePropertyValueFromWire<T["type"]>> | undefined
+  : MaybeNullable<
+      T,
+      MaybeArray<T, GetCreateWirePropertyValueFromWire<T["type"]>>
+    >;
+
+export type OsdkObjectUpdateWirePropertyType<
+  T extends ObjectMetadata.Property,
+  STRICTLY_ENFORCE_NULLABLE extends boolean = true,
+> = STRICTLY_ENFORCE_NULLABLE extends false
+  ? MaybeArray<T, GetUpdateWirePropertyValueFromWire<T["type"]>> | undefined
+  : MaybeNullable<
+      T,
+      MaybeArray<T, GetUpdateWirePropertyValueFromWire<T["type"]>>
+    >;
