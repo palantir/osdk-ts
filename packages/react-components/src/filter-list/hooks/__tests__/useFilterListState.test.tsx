@@ -62,6 +62,7 @@ describe("useFilterListState", () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+    vi.useRealTimers();
   });
 
   it("initializes with empty filter states when no definitions", () => {
@@ -525,6 +526,44 @@ describe("useFilterListState", () => {
   });
 
   describe("onFilterChanged", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    function flushOnFilterChanged() {
+      act(() => void vi.advanceTimersByTime(300));
+    }
+
+    it("waits for typing to stop before reporting the final keyword search", () => {
+      const onFilterChanged = vi.fn();
+      const keywordDef = createKeywordSearchFilterDef(["name"]);
+      const props = createProps({
+        filterDefinitions: [keywordDef],
+        onFilterChanged,
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+
+      act(() => {
+        for (const searchTerm of ["p", "pp", "ppp"]) {
+          result.current.setFilterState(getFilterKey(keywordDef), {
+            type: "keywordSearch",
+            searchTerm,
+            operator: "AND",
+          });
+        }
+      });
+
+      expect(onFilterChanged).not.toHaveBeenCalled();
+
+      flushOnFilterChanged();
+
+      expect(onFilterChanged).toHaveBeenCalledTimes(1);
+      expect(onFilterChanged.mock.lastCall?.[0]).toMatchObject({
+        event: "SET",
+        newState: { searchTerm: "ppp" },
+      });
+    });
+
     it("reports the changed state, clause, filtered objectSet and linked filters together", () => {
       const onFilterChanged = vi.fn();
       const filtered = { _kind: "filtered" } as unknown as ObjectSet<
@@ -549,10 +588,11 @@ describe("useFilterListState", () => {
       act(() => {
         result.current.setFilterState(getFilterKey(nameDef), newState);
       });
+      flushOnFilterChanged();
 
       expect(onFilterChanged).toHaveBeenCalledTimes(1);
       expect(onFilterChanged).toHaveBeenCalledWith({
-        cause: "SET",
+        event: "SET",
         filterKey: getFilterKey(nameDef),
         newState,
         filterClause: { name: "John" },
@@ -605,6 +645,7 @@ describe("useFilterListState", () => {
           createExactMatchState(["John"]),
         );
       });
+      flushOnFilterChanged();
 
       expect(onFilterChanged.mock.lastCall?.[0]).toMatchObject({
         filterClause: { name: "John" },
@@ -639,7 +680,44 @@ describe("useFilterListState", () => {
           createExactMatchState(["abc"]),
         );
       });
+      flushOnFilterChanged();
 
+      expect(onFilterChanged.mock.lastCall?.[0].filterClause).toEqual({
+        $and: [{ name: "John" }, { id: "abc" }],
+      });
+    });
+
+    it("composes synchronous changes in the emitted snapshot", () => {
+      const onFilterChanged = vi.fn();
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const idDef = createPropertyFilterDef(
+        "id",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef, idDef],
+        onFilterChanged,
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+
+      act(() => {
+        result.current.setFilterState(
+          getFilterKey(nameDef),
+          createExactMatchState(["John"]),
+        );
+        result.current.setFilterState(
+          getFilterKey(idDef),
+          createExactMatchState(["abc"]),
+        );
+      });
+      flushOnFilterChanged();
+
+      expect(onFilterChanged).toHaveBeenCalledTimes(1);
       expect(onFilterChanged.mock.lastCall?.[0].filterClause).toEqual({
         $and: [{ name: "John" }, { id: "abc" }],
       });
@@ -661,6 +739,7 @@ describe("useFilterListState", () => {
       act(() => {
         result.current.setFilterState(getFilterKey(linkedDef), linkedState);
       });
+      flushOnFilterChanged();
 
       const event = onFilterChanged.mock.lastCall?.[0];
       expect(event.filterClause).toEqual({});
@@ -692,6 +771,7 @@ describe("useFilterListState", () => {
           hasLink: true,
         });
       });
+      flushOnFilterChanged();
 
       const event = onFilterChanged.mock.lastCall?.[0];
       expect(event.filterClause).toEqual({});
@@ -731,6 +811,7 @@ describe("useFilterListState", () => {
           hasLink: true,
         });
       });
+      flushOnFilterChanged();
 
       expect(onFilterChanged.mock.lastCall?.[0].filteredObjectSet).toBe(
         filtered,
@@ -765,10 +846,11 @@ describe("useFilterListState", () => {
       act(() => {
         result.current.clearFilterState(getFilterKey(nameDef));
       });
+      flushOnFilterChanged();
 
       expect(onFilterChanged).toHaveBeenCalledTimes(1);
       expect(onFilterChanged.mock.lastCall?.[0]).toMatchObject({
-        cause: "CLEAR",
+        event: "CLEAR",
         filterKey: getFilterKey(nameDef),
         filterClause: { id: "abc" },
       });
@@ -792,6 +874,7 @@ describe("useFilterListState", () => {
       act(() => {
         result.current.clearFilterState(getFilterKey(unseededDef));
       });
+      flushOnFilterChanged();
 
       expect(onFilterChanged).not.toHaveBeenCalled();
     });
@@ -821,9 +904,10 @@ describe("useFilterListState", () => {
       act(() => {
         result.current.reset();
       });
+      flushOnFilterChanged();
 
       expect(onFilterChanged.mock.lastCall?.[0]).toMatchObject({
-        cause: "RESET",
+        event: "RESET",
         filterClause: { name: "Seed" },
       });
       expect(onFilterChanged.mock.lastCall?.[0].filterKey).toBeUndefined();

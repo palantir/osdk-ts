@@ -21,11 +21,10 @@ import type { FilterState } from "../FilterListItemApi.js";
 import type {
   ActiveClauseFilter,
   ActiveFilter,
+  ActiveHasLinkFilter,
+  ActiveLinkedPropertyFilter,
 } from "../types/ActiveFilterTypes.js";
-import type {
-  LinkedFilter,
-  LinkedPropertyFilterState,
-} from "../types/LinkedFilterTypes.js";
+import type { LinkedFilter } from "../types/LinkedFilterTypes.js";
 import type { PropertyTypeInfo } from "./filterStateToWhereClause.js";
 import {
   buildWhereClause,
@@ -75,23 +74,36 @@ export function getActiveFilters<Q extends ObjectTypeDefinition>(
       if (linked == null) {
         continue;
       }
-      const common = {
-        kind: definition.type,
-        filterKey,
-        state,
-        linkName: linked.linkName,
-        isExcluding: linked.isExcluding === true,
-      };
-      result.push(
-        (definition.type === "HAS_LINK"
-          ? common
-          : {
-              ...common,
-              innerState: (state as LinkedPropertyFilterState)
-                .linkedFilterState,
-              innerWhere: linked.innerWhere,
-            }) as ActiveFilter<Q>,
-      );
+      if (definition.type === "HAS_LINK") {
+        if (state.type !== "hasLink") {
+          continue;
+        }
+        const activeFilter: ActiveHasLinkFilter<Q> = {
+          kind: "HAS_LINK",
+          filterKey,
+          state,
+          linkName: linked.linkName,
+          isExcluding: linked.isExcluding === true,
+        };
+        result.push(activeFilter);
+      } else {
+        if (
+          state.type !== "linkedProperty" ||
+          linked.innerWhere === undefined
+        ) {
+          continue;
+        }
+        const activeFilter: ActiveLinkedPropertyFilter<Q> = {
+          kind: "LINKED_PROPERTY",
+          filterKey,
+          state,
+          innerState: state.linkedFilterState,
+          linkName: linked.linkName,
+          innerWhere: linked.innerWhere,
+          isExcluding: linked.isExcluding === true,
+        };
+        result.push(activeFilter);
+      }
       continue;
     }
 

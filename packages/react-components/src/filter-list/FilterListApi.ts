@@ -77,8 +77,8 @@ export interface FilterChangeSnapshot<Q extends ObjectTypeDefinition> {
   /**
    * Every active filter in `filterDefinitions` order, each tagged with the
    * `kind` of its definition. Narrow on `kind` to read the fields for that
-   * kind: `clause` for the clause-producing kinds, `linkName` / `innerWhere` /
-   * `isExcluding` for `HAS_LINK` and `LINKED_PROPERTY`.
+   * kind: `clause` for the clause-producing kinds, `linkName` /
+   * `innerWhere` / `isExcluding` for `HAS_LINK` and `LINKED_PROPERTY`.
    */
   activeFilters: ReadonlyArray<ActiveFilter<Q>>;
 }
@@ -88,15 +88,14 @@ export interface FilterChangeSnapshot<Q extends ObjectTypeDefinition> {
  */
 export type FilterChangeCause =
   /** A filter's state was set. */
-  | { cause: "SET"; filterKey: string; newState: FilterState }
+  | { event: "SET"; filterKey: string; newState: FilterState }
   /** A filter's state was cleared, e.g. by removing the filter. */
-  | { cause: "CLEAR"; filterKey: string }
+  | { event: "CLEAR"; filterKey: string }
   /** Every filter was restored to the state it mounted with. */
-  | { cause: "RESET" };
+  | { event: "RESET" };
 
 /**
- * What the user did, plus the filter state it produced. Narrow on `cause` to
- * read the fields that only apply to that cause.
+ * What the user did, plus the filter state it produced.
  */
 export type FilterChangeEvent<Q extends ObjectTypeDefinition> =
   FilterChangeSnapshot<Q> & FilterChangeCause;
@@ -124,6 +123,8 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * — use `onEffectiveObjectSet` for those.
    *
    * @param newClause The updated filter clause
+   * @deprecated Use `onFilterChanged`, which reports the clause alongside the
+   * filtered `ObjectSet` and active filters in a single payload.
    */
   onFilterClauseChanged?: (newClause: WhereClause<Q>) => void;
 
@@ -148,6 +149,8 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    *
    * @param definition The filter definition whose state changed
    * @param newState The updated filter state
+   * @deprecated Use `onFilterChanged`, which reports every set / clear / reset
+   * with a single payload keyed by `event`.
    */
   onFilterStateChanged?: (
     definition: FilterDefinitionUnion<Q>,
@@ -156,20 +159,20 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
 
   /**
    * Called whenever filter state changes — a filter set, a filter cleared, or a
-   * reset — with what the user did and the resulting clause, filtered
-   * `ObjectSet` and active filters in a single payload.
+   * reset — with the resulting clause, filtered `ObjectSet` and active filters
+   * in a single payload.
    *
-   * Prefer this over combining `onFilterStateChanged`, `onFilterClauseChanged`
-   * and `onEffectiveObjectSet`, which each report one slice of the same change.
-   *
-   * @param event What changed and the filter state it produced
+   * @param change What changed and the filter state it produced
    */
-  onFilterChanged?: (event: FilterChangeEvent<Q>) => void;
+  onFilterChanged?: (change: FilterChangeEvent<Q>) => void;
 
   /**
    * Called with the narrowed `ObjectSet` whenever filters change. Requires
    * `objectSet` to be set. `HAS_LINK` and `LINKED_PROPERTY` filters narrow only
    * here, never through the filter clause.
+   *
+   * @deprecated Use `onFilterChanged`, whose `filteredObjectSet` reports the
+   * same narrowed set alongside the clause and active filters.
    */
   onEffectiveObjectSet?: (objectSet: ObjectSet<Q>) => void;
 
