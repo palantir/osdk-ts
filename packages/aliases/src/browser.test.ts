@@ -148,10 +148,6 @@ describe("browser aliases", () => {
       );
     });
 
-    // Two halves of one requirement, run over the same names: an inherited
-    // property is never an alias, and a real alias sharing that name still
-    // resolves. `__proto__` catches the most, since `in` accepts it inherited
-    // and plain property assignment silently drops it.
     const INHERITED_NAMES = [
       "toString",
       "constructor",
@@ -388,9 +384,6 @@ describe("browser aliases", () => {
   // loader has to flatten it. Prod and dev are told apart by the runtime type of
   // `aliases` (string vs object), never by falling back between paths.
   describe("value validation", () => {
-    // The file is served, not written by application code, so nothing upstream
-    // guarantees the values are strings. Without checking, a number would flow
-    // into custom() and violate its declared return type.
     it("rejects a non-string resolved value", async () => {
       await expect(
         initAliases({
@@ -420,8 +413,6 @@ describe("browser aliases", () => {
   });
 
   describe("absence detection", () => {
-    // Treating any leading '<' as absence would let a proxy or auth error page
-    // silently substitute the author's defaults for the installer's values.
     it("does not treat a non-html markup body as absent", async () => {
       await expect(
         initAliases({
