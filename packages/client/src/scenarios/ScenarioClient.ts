@@ -71,6 +71,15 @@ export interface EditedLinksPage<
 }
 
 /**
+ * A page of object identifiers whose edits within a scenario conflict with edits to the scenario's base. Returned by
+ * {@link EXPERIMENTAL_ScenarioClient.getConflictingObjects}. Results contain only `$primaryKey` + `$apiName`.
+ */
+export interface ConflictingObjectsPage<Q extends ObjectTypeDefinition> {
+  data: ObjectIdentifiers<Q>[];
+  nextPageToken?: string;
+}
+
+/**
  * A {@link Client} attached to an ontology scenario. All read and write operations performed via this client are
  * scoped to that scenario. `EXPERIMENTAL_ScenarioClient` is a superset of {@link Client}.
  *
@@ -171,6 +180,30 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
   ): AsyncIterableIterator<
     MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>
   >;
+
+  /**
+   * Get a page of object identifiers whose scenario edits conflict with edits to the scenario's base for the given
+   * object type. Conflict detection may report false positives when object versions change without user-visible data
+   * changes. Results are a point-in-time check, include only objects the caller may view and the backend can resolve,
+   * and may become stale before merge. Use the base client and scenario client to load both object states for review.
+   *
+   * `pageSize` bounds the number of objects examined, not the number of conflicts returned, so a page may contain fewer
+   * results than requested while still returning `nextPageToken`.
+   */
+  getConflictingObjects<Q extends ObjectTypeDefinition>(
+    objectType: Q,
+    options?: { pageSize?: number; pageToken?: string },
+  ): Promise<ConflictingObjectsPage<Q>>;
+
+  /**
+   * Lazily stream identifiers for objects whose scenario edits conflict with edits to the scenario's base. The iterator
+   * follows `nextPageToken` even when a page is short or empty. Results are forwarded in backend order without
+   * client-side deduplication.
+   */
+  conflictingObjectsAsyncIter<Q extends ObjectTypeDefinition>(
+    objectType: Q,
+    options?: { pageSize?: number },
+  ): AsyncIterableIterator<ObjectIdentifiers<Q>>;
 }
 
 export function isScenarioClient(
@@ -384,6 +417,49 @@ export function buildScenarioClient(
     } while (pageToken != null);
   }
 
+  async function getConflictingObjects<Q extends ObjectTypeDefinition>(
+    objectType: Q,
+    options?: { pageSize?: number; pageToken?: string },
+  ): Promise<ConflictingObjectsPage<Q>> {
+    const ontologyRid = await innerCtx.ontologyRid;
+    const response = await OntologyScenarios.listScenarioConflictingObjects(
+      innerCtx,
+      ontologyRid,
+      scenarioRid,
+      objectType.apiName,
+      {
+        pageSize: options?.pageSize,
+        pageToken: options?.pageToken,
+        preview: true,
+      },
+    );
+    const data: ObjectIdentifiers<Q>[] = response.data.map((entry) => ({
+      $apiName: entry.objectTypeApiName as Q["apiName"],
+      $primaryKey: entry.primaryKeyValue as PrimaryKeyType<Q>,
+    }));
+    return {
+      data,
+      nextPageToken: response.nextPageToken,
+    };
+  }
+
+  async function* conflictingObjectsAsyncIter<Q extends ObjectTypeDefinition>(
+    objectType: Q,
+    options?: { pageSize?: number },
+  ): AsyncIterableIterator<ObjectIdentifiers<Q>> {
+    let pageToken: string | undefined;
+    do {
+      const page = await getConflictingObjects(objectType, {
+        pageSize: options?.pageSize,
+        pageToken,
+      });
+      for (const object of page.data) {
+        yield object;
+      }
+      pageToken = page.nextPageToken;
+    } while (pageToken != null);
+  }
+
   return Object.defineProperties(inner, {
     getScenarioReference: {
       value: () => scenarioRid,
@@ -405,6 +481,12 @@ export function buildScenarioClient(
     },
     editedLinksAsyncIter: {
       value: editedLinksAsyncIter,
+    },
+    getConflictingObjects: {
+      value: getConflictingObjects,
+    },
+    conflictingObjectsAsyncIter: {
+      value: conflictingObjectsAsyncIter,
     },
   }) as EXPERIMENTAL_ScenarioClient;
 }
