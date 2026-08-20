@@ -22,13 +22,13 @@
 import { afterEach, describe, expect, it } from "vitest";
 
 import * as browser from "./browser.js";
+import { resetAliasesCache } from "./browser.js";
 import {
   Aliases,
   custom,
   DEFAULT_DECLARATIONS_PATH,
   DEFAULT_DEPLOYMENT_CONFIG_PATH,
   initAliases,
-  resetAliasesCache,
 } from "./public/experimental.js";
 
 const DECLARATIONS = {
@@ -62,7 +62,6 @@ describe("experimental browser entry point", () => {
     // never drift apart.
     expect(Aliases.custom).toBe(custom);
     expect(Aliases.initAliases).toBe(initAliases);
-    expect(Aliases.resetAliasesCache).toBe(resetAliasesCache);
     expect(Aliases.DEFAULT_DECLARATIONS_PATH).toBe(DEFAULT_DECLARATIONS_PATH);
     expect(Aliases.DEFAULT_DEPLOYMENT_CONFIG_PATH).toBe(
       DEFAULT_DEPLOYMENT_CONFIG_PATH,
@@ -76,9 +75,10 @@ describe("experimental browser entry point", () => {
     expect(Aliases).not.toHaveProperty("source");
   });
 
-  it("namespace covers every public member of the module", () => {
-    // Guards against a new export being added to browser.ts but omitted from
-    // the namespace, which would make the two styles inconsistent.
-    expect(Object.keys(Aliases).sort()).toEqual(Object.keys(browser).sort());
+  it("keeps the test-only cache reset out of the public surface", () => {
+    // Tests import it from ../browser.js. Exporting it would make cache
+    // invalidation supported and would race with an in-flight initAliases().
+    expect(Aliases).not.toHaveProperty("resetAliasesCache");
+    expect(browser.resetAliasesCache).toBeTypeOf("function");
   });
 });
