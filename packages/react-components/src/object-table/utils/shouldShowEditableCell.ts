@@ -37,8 +37,8 @@ export function shouldShowEditableCell<TData>(
   isInEditMode: boolean | undefined,
 ): boolean {
   return (
-    isCellEditable(editable, object) &&
     onCellEdit != null &&
-    isInEditMode === true
+    isInEditMode === true &&
+    isCellEditable(editable, object)
   );
 }

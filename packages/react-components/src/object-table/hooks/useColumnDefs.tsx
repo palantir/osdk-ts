@@ -180,23 +180,25 @@ function getColumnsFromColumnDefinitions<
         > = cellContext.row.original;
 
         const meta = cellContext.table.options.meta;
-        const isEditable = shouldShowEditableCell(
-          editable,
-          object,
-          meta?.onCellEdit,
-          meta?.isInEditMode,
-        );
 
-        if (renderCell && !isEditable) {
-          const cell = renderCell(object, locator, cellContext.getValue());
-          // A predicate column mixes editor cells and `renderCell` cells in
-          // the same column, so the read-only ones need the editor's
-          // horizontal padding or they stagger against their neighbors.
-          return meta?.isInEditMode && typeof editable === "function" ? (
-            <NonEditableCellInEditMode>{cell}</NonEditableCellInEditMode>
-          ) : (
-            cell
+        if (renderCell) {
+          const isEditable = shouldShowEditableCell(
+            editable,
+            object,
+            meta?.onCellEdit,
+            meta?.isInEditMode,
           );
+
+          // Only use renderCell when a cell is not editable
+          if (!isEditable) {
+            const cell = renderCell(object, locator, cellContext.getValue());
+            // Apply edit mode styling if the cell renderer is used in edit mode
+            return meta?.isInEditMode ? (
+              <NonEditableCellInEditMode>{cell}</NonEditableCellInEditMode>
+            ) : (
+              cell
+            );
+          }
         }
 
         return renderDefaultCell(cellContext);

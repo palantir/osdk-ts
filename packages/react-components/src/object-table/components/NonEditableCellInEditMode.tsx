@@ -28,5 +28,5 @@ import styles from "../EditableCell.module.css";
 export function NonEditableCellInEditMode({
   children,
 }: React.PropsWithChildren): React.ReactElement {
-  return <span className={styles.nonEditableCellInEditMode}>{children}</span>;
+  return <div className={styles.nonEditableCellInEditMode}>{children}</div>;
 }
