@@ -19,6 +19,7 @@ import type {
   ActionTypeStatus,
   InterfacePropertyTypeType,
   InterfaceTypeBlockDataV2,
+  LinkedObjectReference,
   LinkTypeBlockDataV2,
   LinkTypeStatus,
   MarketplaceInterfaceLinkType,
@@ -67,10 +68,14 @@ export class OntologyBlockDataToFullMetadataConverter {
       blockData.linkTypes,
       objectTypeLookup,
     );
+    const interfaceLinkLookup = buildBlockDataInterfaceLinkTypeLookup(
+      blockData,
+    );
     const actionTypes = this.getOsdkActionTypesFromBlockData(
       blockData,
       objectTypeLookup,
       interfaceTypeLookup,
+      interfaceLinkLookup,
     );
 
     return {
@@ -365,6 +370,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     blockData: OntologyBlockDataV2,
     objectTypeLookup: BlockDataApiNameLookup | undefined,
     interfaceTypeLookup: BlockDataApiNameLookup | undefined,
+    interfaceLinkLookup?: BlockDataApiNameLookup,
   ): Record<ApiName, Ontologies.ActionTypeV2> {
     const result: Record<ApiName, Ontologies.ActionTypeV2> = {};
 
@@ -384,7 +390,8 @@ export class OntologyBlockDataToFullMetadataConverter {
           action,
           objectTypeLookup,
           interfaceTypeLookup,
-        ),
+          interfaceLinkLookup,
+        ) as Ontologies.LogicRule[],
         status: this.convertActionTypeStatusFromBlockData(metadata.status),
       };
 
@@ -398,7 +405,14 @@ export class OntologyBlockDataToFullMetadataConverter {
     action: ActionTypeBlockDataV2,
     objectTypeLookup: BlockDataApiNameLookup | undefined,
     interfaceTypeLookup: BlockDataApiNameLookup | undefined,
-  ): Ontologies.LogicRule[] {
+    interfaceLinkLookup?: BlockDataApiNameLookup,
+  ): Array<
+    | Ontologies.LogicRule
+    | Extract<
+      Ontologies.ActionLogicRule,
+      { type: "createInterfaceLink" | "deleteInterfaceLink" }
+    >
+  > {
     return action.actionType.actionTypeLogic.logic.rules.flatMap(irLogic => {
       switch (irLogic.type) {
         case "addInterfaceRule": {
@@ -523,9 +537,45 @@ export class OntologyBlockDataToFullMetadataConverter {
           }
         }
         case "functionRule":
-        case "addInterfaceLinkRuleV2":
-        case "deleteInterfaceLinkRule":
           return [];
+        case "addInterfaceLinkRuleV2": {
+          const rule = irLogic.addInterfaceLinkRuleV2;
+          return {
+            type: "createInterfaceLink",
+            interfaceTypeApiName: resolveBlockDataApiName(
+              rule.interfaceTypeRid,
+              interfaceTypeLookup,
+            ),
+            interfaceLinkTypeApiName: resolveBlockDataApiName(
+              rule.interfaceLinkTypeRid,
+              interfaceLinkLookup,
+            ),
+            sourceObject: firstExistingObjectParameterId(
+              rule.sourceObjects,
+              "sourceObjects",
+            ),
+            targetObject: firstExistingObjectParameterId(
+              rule.targetObjects,
+              "targetObjects",
+            ),
+          };
+        }
+        case "deleteInterfaceLinkRule": {
+          const rule = irLogic.deleteInterfaceLinkRule;
+          return {
+            type: "deleteInterfaceLink",
+            interfaceTypeApiName: resolveBlockDataApiName(
+              rule.interfaceTypeRid,
+              interfaceTypeLookup,
+            ),
+            interfaceLinkTypeApiName: resolveBlockDataApiName(
+              rule.interfaceLinkTypeRid,
+              interfaceLinkLookup,
+            ),
+            sourceObject: rule.sourceObject,
+            targetObject: rule.targetObject,
+          };
+        }
         default:
           throw new Error("Unknown logic rule type");
       }
@@ -1372,4 +1422,17 @@ export function resolveBlockDataApiName(
     return id;
   }
   return lookup.byRid.get(id) ?? lookup.byHyphenated.get(id) ?? id;
+}
+
+function firstExistingObjectParameterId(
+  references: ReadonlyArray<LinkedObjectReference>,
+  field: string,
+): string {
+  const first = references[0];
+  if (references.length !== 1 || first?.type !== "existingObject") {
+    throw new Error(
+      `Interface-link rule ${field} must reference exactly one existing object`,
+    );
+  }
+  return first.existingObject;
 }

@@ -15,6 +15,7 @@
  */
 
 import type {
+  LinkedObjectReference,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionTypeStatus,
   OntologyIrInterfaceTypeBlockDataV2,
@@ -952,7 +953,9 @@ export class OntologyIrToFullMetadataConverter {
         displayName: metadata.displayMetadata.displayName,
         description: metadata.displayMetadata.description,
         parameters: this.getOsdkActionParameters(action),
-        operations: this.getOsdkActionOperations(action),
+        operations: this.getOsdkActionOperations(
+          action,
+        ) as Ontologies.LogicRule[],
         status: this.convertActionTypeStatus(metadata.status),
       };
 
@@ -967,7 +970,13 @@ export class OntologyIrToFullMetadataConverter {
    */
   static getOsdkActionOperations(
     action: OntologyIrActionTypeBlockDataV2,
-  ): Ontologies.LogicRule[] {
+  ): Array<
+    | Ontologies.LogicRule
+    | Extract<
+      Ontologies.ActionLogicRule,
+      { type: "createInterfaceLink" | "deleteInterfaceLink" }
+    >
+  > {
     return action.actionType.actionTypeLogic.logic.rules.flatMap(irLogic => {
       switch (irLogic.type) {
         case "addInterfaceRule": {
@@ -1074,9 +1083,32 @@ export class OntologyIrToFullMetadataConverter {
             );
           }
         }
-        case "addInterfaceLinkRuleV2":
-        case "deleteInterfaceLinkRule":
-          return [];
+        case "addInterfaceLinkRuleV2": {
+          const rule = irLogic.addInterfaceLinkRuleV2;
+          return {
+            type: "createInterfaceLink",
+            interfaceTypeApiName: rule.interfaceTypeRid,
+            interfaceLinkTypeApiName: rule.interfaceLinkTypeRid,
+            sourceObject: firstExistingObjectParameterId(
+              rule.sourceObjects,
+              "sourceObjects",
+            ),
+            targetObject: firstExistingObjectParameterId(
+              rule.targetObjects,
+              "targetObjects",
+            ),
+          };
+        }
+        case "deleteInterfaceLinkRule": {
+          const rule = irLogic.deleteInterfaceLinkRule;
+          return {
+            type: "deleteInterfaceLink",
+            interfaceTypeApiName: rule.interfaceTypeRid,
+            interfaceLinkTypeApiName: rule.interfaceLinkTypeRid,
+            sourceObject: rule.sourceObject,
+            targetObject: rule.targetObject,
+          };
+        }
         default:
           throw new Error("Unknown logic rule type");
       }
@@ -1593,4 +1625,17 @@ function isParameterRequired(
   return action.actionType.actionTypeLogic.validation
     .parameterValidations[paramKey].defaultValidation.validation.required.type
     === "required";
+}
+
+function firstExistingObjectParameterId(
+  references: ReadonlyArray<LinkedObjectReference>,
+  field: string,
+): string {
+  const first = references[0];
+  if (references.length !== 1 || first?.type !== "existingObject") {
+    throw new Error(
+      `Interface-link rule ${field} must reference exactly one existing object`,
+    );
+  }
+  return first.existingObject;
 }

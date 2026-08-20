@@ -17,6 +17,7 @@
 import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
 import { isInjectedRuntimeInput } from "./convertDataType.js";
+import { OntologyBlockDataToFullMetadataConverter } from "./OntologyBlockDataToFullMetadataConverter.js";
 import {
   type IDiscoveredFunction,
   OntologyIrToFullMetadataConverter,
@@ -3637,5 +3638,294 @@ describe(OntologyIrToFullMetadataConverter, () => {
     } finally {
       createProgramSpy.mockRestore();
     }
+  });
+  describe("interface link action operations", () => {
+    type BlockDataAction = Parameters<
+      typeof OntologyBlockDataToFullMetadataConverter.getOsdkActionOperationsFromBlockData
+    >[0];
+    type CurrentIrAction = Parameters<
+      typeof OntologyIrToFullMetadataConverter.getOsdkActionOperations
+    >[0];
+    type BlockDataRule =
+      BlockDataAction["actionType"]["actionTypeLogic"]["logic"]["rules"][
+        number
+      ];
+    type BlockDataCreateRule = Extract<
+      BlockDataRule,
+      { type: "addInterfaceLinkRuleV2" }
+    >;
+    type BlockDataDeleteRule = Extract<
+      BlockDataRule,
+      { type: "deleteInterfaceLinkRule" }
+    >;
+
+    const createRule: BlockDataCreateRule = {
+      type: "addInterfaceLinkRuleV2",
+      addInterfaceLinkRuleV2: {
+        interfaceTypeRid: "ri.interface.item",
+        interfaceLinkTypeRid: "ri.interface-link.observations",
+        sourceObjects: [{
+          type: "existingObject",
+          existingObject: "source",
+        }],
+        targetObjects: [{
+          type: "existingObject",
+          existingObject: "target",
+        }],
+      },
+    };
+    const deleteRule: BlockDataDeleteRule = {
+      type: "deleteInterfaceLinkRule",
+      deleteInterfaceLinkRule: {
+        interfaceTypeRid: "ri.interface.item",
+        interfaceLinkTypeRid: "ri.interface-link.observations",
+        sourceObject: "source",
+        targetObject: "target",
+      },
+    };
+
+    function interfaceParameters() {
+      return {
+        source: {
+          displayMetadata: {
+            description: "",
+            displayName: "Source",
+            structFields: {},
+            structFieldsV2: [],
+            typeClasses: [],
+          },
+          id: "source",
+          rid: "ri.parameter.source",
+          type: {
+            type: "interfaceReference" as const,
+            interfaceReference: { interfaceTypeRid: "ri.interface.item" },
+          },
+        },
+        target: {
+          displayMetadata: {
+            description: "",
+            displayName: "Target",
+            structFields: {},
+            structFieldsV2: [],
+            typeClasses: [],
+          },
+          id: "target",
+          rid: "ri.parameter.target",
+          type: {
+            type: "interfaceReference" as const,
+            interfaceReference: { interfaceTypeRid: "ri.interface.item" },
+          },
+        },
+      };
+    }
+
+    function requiredInterfaceParameterValidation() {
+      return {
+        conditionalOverrides: [],
+        defaultValidation: {
+          display: {
+            renderHint: { type: "dropdown" as const, dropdown: {} },
+            visibility: { type: "editable" as const, editable: {} },
+          },
+          validation: {
+            allowedValues: {
+              type: "interfaceObjectQuery" as const,
+              interfaceObjectQuery: {
+                type: "interfaceObjectQuery" as const,
+                interfaceObjectQuery: {},
+              },
+            },
+            required: { type: "required" as const, required: {} },
+          },
+        },
+        structFieldValidations: {},
+      };
+    }
+
+    function blockDataAction(
+      rules: BlockDataAction["actionType"]["actionTypeLogic"]["logic"]["rules"],
+    ): BlockDataAction {
+      return {
+        actionType: {
+          actionTypeLogic: {
+            logic: { rules },
+            notifications: [],
+            validation: {
+              actionTypeLevelValidation: { ordering: [], rules: {} },
+              parameterValidations: {
+                source: requiredInterfaceParameterValidation(),
+                target: requiredInterfaceParameterValidation(),
+              },
+              sectionValidations: {},
+            },
+          },
+          metadata: {
+            apiName: "linkItems",
+            displayMetadata: {
+              applyingMessage: [],
+              description: "",
+              displayName: "Link items",
+              successMessage: [],
+              typeClasses: [],
+            },
+            formContentOrdering: [],
+            parameterOrdering: ["source", "target"],
+            parameters: interfaceParameters(),
+            rid: "ri.action.link-items",
+            sections: {},
+            status: { type: "active", active: {} },
+            version: "1.0.0",
+          },
+        },
+        parameterIds: {},
+      };
+    }
+
+    function currentIrAction(
+      rules: CurrentIrAction["actionType"]["actionTypeLogic"]["logic"]["rules"],
+    ): CurrentIrAction {
+      return {
+        actionType: {
+          actionTypeLogic: {
+            logic: { rules },
+            validation: {
+              actionTypeLevelValidation: { rules: {} },
+              parameterValidations: {
+                source: requiredInterfaceParameterValidation(),
+                target: requiredInterfaceParameterValidation(),
+              },
+              sectionValidations: {},
+            },
+          },
+          metadata: {
+            apiName: "linkItems",
+            displayMetadata: {
+              applyingMessage: [],
+              description: "",
+              displayName: "Link items",
+              successMessage: [],
+              typeClasses: [],
+            },
+            formContentOrdering: [],
+            parameterOrdering: ["source", "target"],
+            parameters: interfaceParameters(),
+            sections: {},
+            status: { type: "active", active: {} },
+          },
+        },
+      };
+    }
+
+    const interfaceTypeLookup = {
+      byRid: new Map([["ri.interface.item", "local.Item"]]),
+      byHyphenated: new Map<string, string>(),
+    };
+    const interfaceLinkLookup = {
+      byRid: new Map([[
+        "ri.interface-link.observations",
+        "observations",
+      ]]),
+      byHyphenated: new Map<string, string>(),
+    };
+
+    it("converts block-data create and delete interface link rules", () => {
+      expect(
+        OntologyBlockDataToFullMetadataConverter
+          .getOsdkActionOperationsFromBlockData(
+            blockDataAction([createRule, deleteRule]),
+            undefined,
+            interfaceTypeLookup,
+            interfaceLinkLookup,
+          ),
+      ).toEqual([{
+        type: "createInterfaceLink",
+        interfaceTypeApiName: "local.Item",
+        interfaceLinkTypeApiName: "observations",
+        sourceObject: "source",
+        targetObject: "target",
+      }, {
+        type: "deleteInterfaceLink",
+        interfaceTypeApiName: "local.Item",
+        interfaceLinkTypeApiName: "observations",
+        sourceObject: "source",
+        targetObject: "target",
+      }]);
+    });
+
+    it.each(["sourceObjects", "targetObjects"] as const)(
+      "rejects invalid block-data %s references",
+      field => {
+        for (
+          const references of [
+            [],
+            [
+              createRule.addInterfaceLinkRuleV2[field][0],
+              createRule.addInterfaceLinkRuleV2[field][0],
+            ],
+            [{
+              type: "createdObjectReference" as const,
+              createdObjectReference: "createObjectRule",
+            }],
+          ]
+        ) {
+          const rule = {
+            ...createRule,
+            addInterfaceLinkRuleV2: {
+              ...createRule.addInterfaceLinkRuleV2,
+              [field]: references,
+            },
+          };
+
+          expect(() =>
+            OntologyBlockDataToFullMetadataConverter
+              .getOsdkActionOperationsFromBlockData(
+                blockDataAction([rule]),
+                undefined,
+                interfaceTypeLookup,
+                interfaceLinkLookup,
+              )
+          ).toThrow(
+            `Interface-link rule ${field} must reference exactly one existing object`,
+          );
+        }
+      },
+    );
+
+    it("converts current IR create and delete interface link rules", () => {
+      const currentCreateRule = {
+        ...createRule,
+        addInterfaceLinkRuleV2: {
+          ...createRule.addInterfaceLinkRuleV2,
+          interfaceTypeRid: "local.Item",
+          interfaceLinkTypeRid: "observations",
+        },
+      };
+      const currentDeleteRule = {
+        ...deleteRule,
+        deleteInterfaceLinkRule: {
+          ...deleteRule.deleteInterfaceLinkRule,
+          interfaceTypeRid: "local.Item",
+          interfaceLinkTypeRid: "observations",
+        },
+      };
+
+      expect(
+        OntologyIrToFullMetadataConverter.getOsdkActionOperations(
+          currentIrAction([currentCreateRule, currentDeleteRule]),
+        ),
+      ).toEqual([{
+        type: "createInterfaceLink",
+        interfaceTypeApiName: "local.Item",
+        interfaceLinkTypeApiName: "observations",
+        sourceObject: "source",
+        targetObject: "target",
+      }, {
+        type: "deleteInterfaceLink",
+        interfaceTypeApiName: "local.Item",
+        interfaceLinkTypeApiName: "observations",
+        sourceObject: "source",
+        targetObject: "target",
+      }]);
+    });
   });
 });
