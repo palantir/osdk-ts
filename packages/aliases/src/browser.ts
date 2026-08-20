@@ -21,25 +21,25 @@
 // served JSON file once, caches it, and then serves custom() synchronously. This
 // file must stay free of `fs`/`process` so it can be bundled into a browser app.
 //
-// Two files can supply aliases, mirroring how the Node runtime has PUBLISHED and
-// LIVE_PREVIEW modes:
+// Two files can supply aliases:
 //
 //   production  .palantir/deployment.config.json  written at install, so it
 //                                                 carries the INSTALLER's values
 //   development public/resources.json             the author's declaration file,
 //                                                 so it carries the DEFAULTS
 //
-// Callers do not choose: we try the deployment config and fall back to the
-// declaration file only when it is absent. Absence takes two forms, because a
-// single-page-app host rewrites unknown paths to index.html and answers 200
-// rather than 404: either a 404, or a 200 carrying markup. Both mean the file
-// genuinely is not there (local dev, or a site deployed without going through
-// Marketplace). Any other failure throws, because in production BOTH files are
-// served, so falling back on a transient error would silently serve the
-// developer's defaults in place of the installer's values.
+// Callers do not choose. We try the deployment config and fall back to the
+// declaration file only when it appears absent, which is either a 404 or a 200
+// carrying an HTML document (single-page-app hosts rewrite unknown paths to
+// index.html). Any other failure throws rather than falling back, because in
+// production both files are served, so treating an error as absence would
+// silently serve the author's defaults in place of the installer's values.
+//
+// Absence detection is a heuristic, not a proof: a proxy or authentication page
+// could also arrive as a 200 with an HTML document. See isHtmlDocument.
 //
 // The two files are told apart by the runtime type of their `aliases` field
-// (string vs object), which is unambiguous.
+// (string vs object).
 
 import type {
   AliasDeclarationsFile,
@@ -49,31 +49,18 @@ import type {
 
 export type { Custom } from "./types.js";
 
-/**
- * Default path to the deployment config file served by Foundry website
- * hosting. Resolved relative to the document base URI so apps served under a
- * subpath still find it. Carries the installer's resolved values.
- */
+/** Written at install time, so it carries the installer's resolved values. */
 export const DEFAULT_DEPLOYMENT_CONFIG_PATH =
   ".palantir/deployment.config.json";
 
-/**
- * Path to the author-maintained declaration file, served from `public/` by the
- * Vite dev server. Carries the developer's declared defaults, so it is the
- * right source during local development where there is no installer.
- */
+/** The author's declaration file, so it carries the declared defaults. */
 export const DEFAULT_DECLARATIONS_PATH = "resources.json";
 
 export interface InitAliasesOptions {
   /**
-   * Escape hatch to force a single specific file. Relative paths are resolved
-   * against `document.baseURI`.
-   *
-   * Normal applications should omit this. By default `initAliases()` tries
-   * {@link DEFAULT_DEPLOYMENT_CONFIG_PATH} and falls back to
-   * {@link DEFAULT_DECLARATIONS_PATH} on a 404, which covers local development
-   * and installed sites alike. When this option is set there is no fallback: a
-   * missing file throws.
+   * Escape hatch to force one specific file, relative to `document.baseURI`.
+   * Setting it disables the fallback, so a missing file throws. Normal
+   * applications should omit it.
    */
   path?: string;
   /**
@@ -117,8 +104,7 @@ async function loadAliases(options?: InitAliasesOptions): Promise<void> {
     );
   }
 
-  // An explicit path is honored as given: the caller chose that file, so a
-  // missing file is an error rather than a cue to look somewhere else.
+  // An explicit path is honored as given, so a missing file is an error.
   if (options?.path != null) {
     const explicit = await fetchAliases(fetchImpl, options.path);
     if (explicit === undefined) {
@@ -139,10 +125,8 @@ async function loadAliases(options?: InitAliasesOptions): Promise<void> {
     return;
   }
 
-  // The deployment config only exists on a site installed through Marketplace,
-  // so a 404 is expected during local development and for a site deployed
-  // straight from Developer Console. Fall back to the author's declared
-  // defaults. Warn so that a fallback on a real installed site is visible.
+  // Warn so that a fallback on a real installed site, where the deployment
+  // config should exist, is visible rather than silent.
   console.warn(
     `No alias config at ${resolveUrl(DEFAULT_DEPLOYMENT_CONFIG_PATH)}, ` +
       `falling back to declared defaults in ${resolveUrl(
@@ -154,11 +138,7 @@ async function loadAliases(options?: InitAliasesOptions): Promise<void> {
     (await fetchAliases(fetchImpl, DEFAULT_DECLARATIONS_PATH)) ?? {};
 }
 
-/**
- * Fetches and reads one alias file. Returns `undefined` when the file is absent,
- * which callers may treat as a cue to fall back. Any other failure throws, so a
- * transient server error never silently degrades to the declared defaults.
- */
+/** Returns `undefined` when the file appears absent. Any other failure throws. */
 async function fetchAliases(
   fetchImpl: typeof globalThis.fetch,
   path: string,
@@ -170,19 +150,15 @@ async function fetchAliases(
   }
   if (!response.ok) {
     throw new Error(
-      `Failed to load aliases from ${url}: ${response.status} ${
-        response.statusText
-      }`,
+      `Failed to load aliases from ${url}: ${response.status} ${response.statusText}`,
     );
   }
 
   const body = await response.text();
 
-  // A single-page-app host rewrites unknown paths to index.html and answers 200
-  // rather than 404 (the Vite dev server and Foundry website hosting both do
-  // this). Markup where JSON was expected therefore means "this file is not
-  // here", exactly like a 404, so treat it the same way.
-  if (isMarkup(body)) {
+  // Single-page-app hosts rewrite unknown paths to index.html and answer 200,
+  // so an HTML document is how "not found" usually presents.
+  if (isHtmlDocument(body)) {
     return undefined;
   }
 
@@ -190,23 +166,18 @@ async function fetchAliases(
 }
 
 /**
- * True when the body is markup rather than the JSON we asked for, which indicates
- * a single-page-app rewrite rather than a real config file.
- *
- * The body is sniffed rather than the declared content type because that type is
- * not a reliable signal: Foundry website hosting derives it from the file
- * extension and does not recognize `.json`, so even a real config file can arrive
- * as `application/octet-stream`. A leading `<` is unambiguous, since valid JSON
- * can never begin with one.
+ * A document preamble only, not any body starting with `<`. This result means
+ * "absent", which triggers the fallback, and a proxy or auth page can also be a
+ * 200 with markup; requiring a preamble keeps XML and partial-HTML error bodies
+ * from qualifying. Sniffed rather than read from the content type because
+ * Foundry website hosting derives that from the file extension and does not
+ * recognize `.json`.
  */
-function isMarkup(body: string): boolean {
-  return body.trimStart().startsWith("<");
+function isHtmlDocument(body: string): boolean {
+  const start = body.trimStart().slice(0, 32).toLowerCase();
+  return start.startsWith("<!doctype html") || start.startsWith("<html");
 }
 
-/**
- * Parses a fetched alias file. A body that is neither markup nor valid JSON is a
- * genuine error and must surface rather than being mistaken for an absent file.
- */
 function parseJson(
   body: string,
   url: string,
@@ -220,28 +191,23 @@ function parseJson(
   }
 }
 
-/**
- * Reads aliases out of either supported file shape. The deployment config packs
- * resolved values into a stringified JSON object; the declaration file nests
- * them under `aliases.custom` with packaging metadata alongside each value.
- */
+/** Reads aliases out of either supported file shape. */
 function extractAliases(
   config: DeploymentConfig | AliasDeclarationsFile,
   url: string,
 ): Record<string, string> {
   const aliases = config.aliases;
 
-  // Apps that declare no aliases simply omit the key.
   if (aliases == null || aliases === "") {
     return {};
   }
 
-  // Production: deployment.config.json stores a stringified JSON object.
+  // Production packs resolved values into a stringified JSON object.
   if (typeof aliases === "string") {
     return parseResolvedAliases(aliases);
   }
 
-  // Development: the declaration file nests { custom: { key: { value } } }.
+  // Development nests { custom: { key: { value } } }.
   const declarations = aliases.custom;
   if (declarations == null) {
     return {};
@@ -251,11 +217,13 @@ function extractAliases(
       `Failed to read aliases from ${url}: 'aliases.custom' must be an object.`,
     );
   }
-  return Object.fromEntries(
-    Object.entries(declarations).map(([key, declaration]) => [
-      key,
-      declaration?.value ?? "",
-    ]),
+  return toStringRecord(
+    Object.fromEntries(
+      Object.entries(declarations).map(([key, declaration]) => [
+        key,
+        declaration?.value ?? "",
+      ]),
+    ),
   );
 }
 
@@ -279,7 +247,29 @@ function parseResolvedAliases(raw: string): Record<string, string> {
   if (typeof parsed !== "object" || parsed == null || Array.isArray(parsed)) {
     throw new Error("Resolved aliases must be a JSON object of string values.");
   }
-  return parsed as Record<string, string>;
+  return toStringRecord(parsed as Record<string, unknown>);
+}
+
+/**
+ * Narrows to string values. The file is served rather than written by
+ * application code, so without this a number would reach `custom()` and violate
+ * its declared return type.
+ */
+function toStringRecord(
+  parsed: Record<string, unknown>,
+): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (const [key, value] of Object.entries(parsed)) {
+    if (typeof value !== "string") {
+      throw new TypeError(
+        `Alias '${key}' must be a string, got ${
+          Array.isArray(value) ? "array" : typeof value
+        }.`,
+      );
+    }
+    result[key] = value;
+  }
+  return result;
 }
 
 /**
@@ -296,7 +286,9 @@ export function custom(alias: string): Custom {
         "reading aliases.",
     );
   }
-  if (!(alias in cachedCustomAliases)) {
+  // `hasOwn`, not `in`: `in` matches inherited properties, so `toString` would
+  // resolve to a function and `__proto__` to the prototype.
+  if (!Object.hasOwn(cachedCustomAliases, alias)) {
     const available = Object.keys(cachedCustomAliases);
     throw new Error(
       `Custom alias '${alias}' not found. Available aliases: [${available.join(
@@ -307,10 +299,7 @@ export function custom(alias: string): Custom {
   return cachedCustomAliases[alias] as Custom;
 }
 
-/**
- * Clears the cached aliases. Primarily for tests; production code should not
- * need to reset the cache.
- */
+/** For tests. Deliberately not part of the public entry point. */
 export function resetAliasesCache(): void {
   cachedCustomAliases = undefined;
   inFlight = undefined;
