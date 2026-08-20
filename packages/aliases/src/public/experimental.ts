@@ -15,30 +15,41 @@
  */
 
 // EXPERIMENTAL browser-safe alias runtime, for applications served to a browser
-// such as Developer Console apps. Free of `fs` and `process` so it can be
-// bundled.
+// such as Developer Console apps.
 //
 //   import { Aliases } from "@osdk/aliases/experimental";
 //   await Aliases.initAliases();
 //   const apiBaseUrl = Aliases.custom("apiBaseUrl");
 //
-// This lives behind the "experimental" subpath deliberately: both custom aliases
-// themselves and the shape of this API are provisional, so the import path says
-// so at every call site. Expect it to move to the package root once the design
-// settles, at which point this subpath will be deprecated rather than removed
-// out from under callers.
+// Behind the "experimental" subpath deliberately: both custom aliases and the
+// shape of this API are provisional, so the import path says so at every call
+// site. Expect it to move to the package root once the design settles, with this
+// subpath deprecated rather than removed.
 //
-// Code running in Node with a filesystem (Functions) should import
-// "@osdk/aliases/node" instead, which reads aliases from disk and is not
-// experimental.
+// Code running in Node with a filesystem (Functions) wants "@osdk/aliases/node".
 
-export * as Aliases from "../browser.js";
+import {
+  custom,
+  DEFAULT_DECLARATIONS_PATH,
+  DEFAULT_DEPLOYMENT_CONFIG_PATH,
+  initAliases,
+} from "../browser.js";
+
+// Assembled member by member rather than with `export * as Aliases` so that
+// resetAliasesCache stays out of the supported surface. It exists for tests,
+// which import ../browser.js directly; exporting it would make cache
+// invalidation public and would race with an in-flight initAliases().
+export const Aliases = {
+  custom,
+  initAliases,
+  DEFAULT_DECLARATIONS_PATH,
+  DEFAULT_DEPLOYMENT_CONFIG_PATH,
+} as const;
 
 export {
   custom,
   DEFAULT_DECLARATIONS_PATH,
   DEFAULT_DEPLOYMENT_CONFIG_PATH,
   initAliases,
-  resetAliasesCache,
-} from "../browser.js";
+};
 export type { Custom, InitAliasesOptions } from "../browser.js";

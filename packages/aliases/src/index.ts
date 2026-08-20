@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-// Intentionally empty: this package has no stable API yet.
-//
-// The package root is reserved for the browser alias runtime once its design
-// settles. Until then it lives at "@osdk/aliases/experimental", so that callers
-// see the stability of what they are importing at the import site rather than
-// having to read docs. Promoting it here later is additive for consumers, who
-// keep working off the experimental subpath until it is deprecated.
-//
-// The filesystem runtime, which is not experimental, is at
-// "@osdk/aliases/node".
+// Intentionally empty: this package has no stable API yet. The root is reserved
+// for the browser runtime once its design settles, so that today's callers see
+// the stability of what they import at the import site. Until then, see
+// "@osdk/aliases/experimental" and "@osdk/aliases/node".

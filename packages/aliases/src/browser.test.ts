@@ -147,6 +147,29 @@ describe("browser aliases", () => {
         "Custom alias 'anything' not found. Available aliases: []",
       );
     });
+
+    // `alias in cache` would match inherited properties, so these would resolve
+    // to a function or the prototype object despite the declared return type.
+    it.each(["toString", "constructor", "__proto__", "hasOwnProperty"])(
+      "does not resolve inherited property %s",
+      async (inherited) => {
+        await initAliases({ fetch: mockFetch({ body: CONFIG_WITH_ALIASES }) });
+
+        expect(() => custom(inherited)).toThrow(
+          `Custom alias '${inherited}' not found`,
+        );
+      },
+    );
+
+    it("resolves an alias whose key shadows an inherited property", async () => {
+      // The guard must reject inherited keys without rejecting a real alias that
+      // happens to share the name.
+      await initAliases({
+        fetch: mockFetch({ body: { aliases: '{"toString":"shadowed"}' } }),
+      });
+
+      expect(custom("toString")).toBe("shadowed");
+    });
   });
 
   describe("initAliases", () => {
@@ -337,6 +360,66 @@ describe("browser aliases", () => {
   // Dev mode: the declaration file nests values under aliases.custom, so the
   // loader has to flatten it. Prod and dev are told apart by the runtime type of
   // `aliases` (string vs object), never by falling back between paths.
+  describe("value validation", () => {
+    // The file is served, not written by application code, so nothing upstream
+    // guarantees the values are strings. Without checking, a number would flow
+    // into custom() and violate its declared return type.
+    it("rejects a non-string resolved value", async () => {
+      await expect(
+        initAliases({
+          fetch: mockFetch({ body: { aliases: '{"apiBaseUrl":5}' } }),
+        }),
+      ).rejects.toThrow("Alias 'apiBaseUrl' must be a string, got number");
+    });
+
+    it("rejects a nested object resolved value", async () => {
+      await expect(
+        initAliases({
+          fetch: mockFetch({ body: { aliases: '{"apiBaseUrl":{"a":1}}' } }),
+        }),
+      ).rejects.toThrow("must be a string, got object");
+    });
+
+    it("rejects a non-string declared default", async () => {
+      await expect(
+        initAliases({
+          path: DEFAULT_DECLARATIONS_PATH,
+          fetch: mockFetch({
+            body: { aliases: { custom: { apiBaseUrl: { value: 5 } } } },
+          }),
+        }),
+      ).rejects.toThrow("must be a string, got number");
+    });
+  });
+
+  describe("absence detection", () => {
+    // Treating any leading '<' as absence would let a proxy or auth error page
+    // silently substitute the author's defaults for the installer's values.
+    it("does not treat a non-html markup body as absent", async () => {
+      await expect(
+        initAliases({
+          fetch: mockFetchByPath({
+            [DEFAULT_DEPLOYMENT_CONFIG_PATH]: {
+              text: "<Error><Code>AccessDenied</Code></Error>",
+            },
+            [DEFAULT_DECLARATIONS_PATH]: { body: DECLARATIONS_FILE },
+          }),
+        }),
+      ).rejects.toThrow("not valid JSON");
+    });
+
+    it("treats an html document as absent", async () => {
+      await initAliases({
+        fetch: mockFetchByPath({
+          [DEFAULT_DEPLOYMENT_CONFIG_PATH]: { text: INDEX_HTML },
+          [DEFAULT_DECLARATIONS_PATH]: { body: DECLARATIONS_FILE },
+        }),
+      });
+
+      expect(custom("apiBaseUrl")).toBe("https://api.dev.example.com");
+    });
+  });
+
   describe("declaration file (dev) shape", () => {
     it("flattens declared defaults", async () => {
       await initAliases({
