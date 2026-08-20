@@ -18,10 +18,14 @@ import type {
   ActionTypeBlockDataV2,
   LinkedObjectReference,
   LogicRule,
+  LogicRuleValue,
   OntologyBlockDataV2,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrLogicRule,
+  OntologyIrLogicRuleValue,
   OntologyIrOntologyBlockDataV2,
+  OntologyIrStaticValue,
+  StaticValue,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import {
@@ -35,6 +39,201 @@ import {
 interface ApiNameLookup {
   byId: Map<string, string>;
   byHyphenated: Map<string, string>;
+}
+
+type SourceLogicRuleArgument = LogicRuleValue | OntologyIrLogicRuleValue;
+type SourceStaticValue = StaticValue | OntologyIrStaticValue;
+
+function convertLogicRuleArguments(
+  values: Record<string, SourceLogicRuleArgument>,
+): Record<string, Ontologies.LogicRuleArgument> {
+  const result: Record<string, Ontologies.LogicRuleArgument> = {};
+  for (const [key, value] of Object.entries(values)) {
+    result[key] = convertLogicRuleArgument(value);
+  }
+  return result;
+}
+
+function convertLogicRuleArgument(
+  value: SourceLogicRuleArgument,
+): Ontologies.LogicRuleArgument {
+  switch (value.type) {
+    case "parameterId":
+      return {
+        type: "parameterId",
+        parameterId: value.parameterId,
+      };
+    case "staticValue":
+      return {
+        type: "staticValue",
+        value: convertStaticValue(value.staticValue),
+      };
+    case "objectParameterPropertyValue":
+      return {
+        type: "objectParameterPropertyValue",
+        parameterId: value.objectParameterPropertyValue.parameterId,
+        propertyTypeApiName: value.objectParameterPropertyValue.propertyTypeId,
+      };
+    case "interfaceParameterPropertyValue":
+      return {
+        type: "interfaceParameterPropertyValue",
+        parameterId: value.interfaceParameterPropertyValue.parameterId,
+        sharedPropertyTypeRid:
+          value.interfaceParameterPropertyValue.sharedPropertyTypeRid,
+      };
+    case "currentUser":
+      return { type: "currentUser" };
+    case "currentTime":
+      return { type: "currentTime" };
+    case "uniqueIdentifier":
+      return value.uniqueIdentifier.linkId == null
+        ? { type: "uniqueIdentifier" }
+        : {
+          type: "uniqueIdentifier",
+          linkId: value.uniqueIdentifier.linkId,
+        };
+    case "synchronousWebhookOutput":
+      return {
+        type: "synchronousWebhookOutput",
+        webhookOutputParamName: value.synchronousWebhookOutput,
+      };
+    case "interfaceParameterPropertyValueV2":
+    case "mediaReferenceParameterPropertyValue":
+    case "scheduleRunRid":
+      throw new Error(
+        `Logic rule argument '${value.type}' is not supported by the gateway API`,
+      );
+    default:
+      throw new Error(`Unexpected value: ${JSON.stringify(value)}`);
+  }
+}
+
+/**
+ * The ontology metadata API models static values as tagged unions, while the
+ * gateway API expects the corresponding untagged JSON value.
+ */
+function convertStaticValue(value: SourceStaticValue): Ontologies.DataValue {
+  switch (value.type) {
+    case "boolean":
+      return value.boolean;
+    case "booleanList":
+      return value.booleanList.booleans;
+    case "integer":
+      return value.integer;
+    case "integerList":
+      return value.integerList.integers;
+    case "long":
+      return value.long;
+    case "longList":
+      return value.longList.longs;
+    case "double":
+      return value.double;
+    case "doubleList":
+      return value.doubleList.doubles;
+    case "string":
+      return value.string;
+    case "stringList":
+      return value.stringList.strings;
+    case "decimal":
+      return value.decimal.decimalValue;
+    case "decimalList":
+      return value.decimalList.decimals;
+    case "date":
+      return value.date.dateValue;
+    case "dateList":
+      return value.dateList.dates;
+    case "geohash":
+      return value.geohash.geohash;
+    case "geohashList":
+      return value.geohashList.geohashes;
+    case "geoshape":
+      return value.geoshape.geoshape;
+    case "geoshapeList":
+      return value.geoshapeList.geoshapes;
+    case "timeSeriesReference": {
+      const reference = value.timeSeriesReference.timeSeriesReference;
+      switch (reference.type) {
+        case "seriesId":
+          return reference.seriesId;
+        case "templateRid":
+          return reference.templateRid;
+        case "qualifiedSeriesId":
+          return reference.qualifiedSeriesId;
+        default:
+          throw new Error(`Unexpected value: ${JSON.stringify(value)}`);
+      }
+    }
+    case "timestamp":
+      return value.timestamp;
+    case "timestampList":
+      return value.timestampList.timestamps;
+    case "null":
+      return null;
+    case "objectLocator":
+      return convertObjectPrimaryKey(value.objectLocator.primaryKey);
+    case "objectLocatorList":
+      return value.objectLocatorList.objectLocatorList.map(locator =>
+        convertObjectPrimaryKey(locator.primaryKey)
+      );
+    case "objectType":
+      return value.objectType.objectTypeId;
+    case "attachment":
+      return value.attachment.attachment;
+    case "attachmentList":
+      return value.attachmentList.attachments;
+    case "marking":
+      return value.marking.marking;
+    case "markingList":
+      return value.markingList.markings;
+    case "mediaReference":
+      return {
+        mimeType: value.mediaReference.mimeType,
+        reference: value.mediaReference.mediaReference,
+      };
+    case "mediaReferenceList":
+      return value.mediaReferenceList.mediaReferences.map(mediaReference => ({
+        mimeType: mediaReference.mimeType,
+        reference: mediaReference.mediaReference,
+      }));
+    case "geotimeSeriesReference":
+      return value.geotimeSeriesReference;
+    case "geotimeSeriesReferenceList":
+      return value.geotimeSeriesReferenceList.geotimeSeriesReferences;
+    case "struct":
+      return Object.fromEntries(
+        value.struct.structFields.map(field => [
+          field.structFieldApiName,
+          convertStaticValue(field.structFieldDataValue),
+        ]),
+      );
+    case "structList":
+      return value.structList.structs.map(struct =>
+        Object.fromEntries(
+          struct.structFields.map(field => [
+            field.structFieldApiName,
+            convertStaticValue(field.structFieldDataValue),
+          ]),
+        )
+      );
+    case "scenarioReference":
+      return value.scenarioReference.scenarioRid;
+    default:
+      throw new Error(`Unexpected value: ${JSON.stringify(value)}`);
+  }
+}
+
+function convertObjectPrimaryKey(
+  primaryKey: Extract<SourceStaticValue, { type: "objectLocator" }>[
+    "objectLocator"
+  ]["primaryKey"],
+): Ontologies.DataValue {
+  const convertedEntries = Object.entries(primaryKey).map(([key, value]) => [
+    key,
+    convertStaticValue(value),
+  ]);
+  return convertedEntries.length === 1
+    ? convertedEntries[0][1]
+    : Object.fromEntries(convertedEntries);
 }
 
 function buildObjectTypeLookup(
@@ -175,19 +374,12 @@ function convertSingleRule(
   switch (irRule.type) {
     case "addObjectRule": {
       const r = irRule.addObjectRule;
-      const propertyArguments: Record<
-        Ontologies.PropertyApiName,
-        Ontologies.LogicRuleArgument
-      > = {};
-      for (const [k, v] of Object.entries(r.propertyValues)) {
-        propertyArguments[k] = v as Ontologies.LogicRuleArgument;
-      }
       const result: Ontologies.CreateObjectLogicRule & {
         type: "createObject";
       } = {
         type: "createObject",
         objectTypeApiName: resolveApiName(r.objectTypeId, objectLookup),
-        propertyArguments,
+        propertyArguments: convertLogicRuleArguments(r.propertyValues),
         structPropertyArguments: {},
       };
       return result;
@@ -214,19 +406,12 @@ function convertSingleRule(
       const r = irRule.modifyObjectRule;
       // Validate that the parameter is an objectReference (throws if not)
       getObjectReferenceType(action, r.objectToModify);
-      const modifyPropertyArguments: Record<
-        Ontologies.PropertyApiName,
-        Ontologies.LogicRuleArgument
-      > = {};
-      for (const [k, v] of Object.entries(r.propertyValues)) {
-        modifyPropertyArguments[k] = v as Ontologies.LogicRuleArgument;
-      }
       const result: Ontologies.ModifyObjectLogicRule & {
         type: "modifyObject";
       } = {
         type: "modifyObject",
         objectToModify: r.objectToModify,
-        propertyArguments: modifyPropertyArguments,
+        propertyArguments: convertLogicRuleArguments(r.propertyValues),
         structPropertyArguments: {},
       };
       return result;
@@ -281,10 +466,7 @@ function convertSingleRule(
       } = {
         type: "function",
         functionRid: r.functionRid,
-        functionInputValues: r
-          .functionInputValues as Ontologies.FunctionLogicRule[
-            "functionInputValues"
-          ],
+        functionInputValues: convertLogicRuleArguments(r.functionInputValues),
         functionVersion: r.functionVersion,
       };
       return result;
@@ -353,13 +535,6 @@ function convertBlockDataSingleRule(
   switch (rule.type) {
     case "addObjectRule": {
       const r = rule.addObjectRule;
-      const propertyArguments: Record<
-        Ontologies.PropertyApiName,
-        Ontologies.LogicRuleArgument
-      > = {};
-      for (const [k, v] of Object.entries(r.propertyValues)) {
-        propertyArguments[k] = v as Ontologies.LogicRuleArgument;
-      }
       const result: Ontologies.CreateObjectLogicRule & {
         type: "createObject";
       } = {
@@ -368,7 +543,7 @@ function convertBlockDataSingleRule(
           r.objectTypeId,
           objectLookup,
         ),
-        propertyArguments,
+        propertyArguments: convertLogicRuleArguments(r.propertyValues),
         structPropertyArguments: {},
       };
       return result;
@@ -401,19 +576,12 @@ function convertBlockDataSingleRule(
       const r = rule.modifyObjectRule;
       // Validate that the parameter is an objectReference (throws if not)
       getObjectReferenceTypeFromBlockData(action, r.objectToModify);
-      const modifyPropertyArguments: Record<
-        Ontologies.PropertyApiName,
-        Ontologies.LogicRuleArgument
-      > = {};
-      for (const [k, v] of Object.entries(r.propertyValues)) {
-        modifyPropertyArguments[k] = v as Ontologies.LogicRuleArgument;
-      }
       const result: Ontologies.ModifyObjectLogicRule & {
         type: "modifyObject";
       } = {
         type: "modifyObject",
         objectToModify: r.objectToModify,
-        propertyArguments: modifyPropertyArguments,
+        propertyArguments: convertLogicRuleArguments(r.propertyValues),
         structPropertyArguments: {},
       };
       return result;
@@ -468,10 +636,7 @@ function convertBlockDataSingleRule(
       } = {
         type: "function",
         functionRid: r.functionRid,
-        functionInputValues: r
-          .functionInputValues as Ontologies.FunctionLogicRule[
-            "functionInputValues"
-          ],
+        functionInputValues: convertLogicRuleArguments(r.functionInputValues),
         functionVersion: r.functionVersion,
       };
       return result;
