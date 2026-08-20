@@ -830,7 +830,7 @@ describe(useColumnDefs, () => {
         }
 
         expect(customRenderCell).toHaveBeenCalledTimes(expectedRenderCount);
-        expect(editable).toHaveBeenCalledOnce();
+        expect(editable).toHaveBeenCalledWith(mockObject);
       },
     );
 
