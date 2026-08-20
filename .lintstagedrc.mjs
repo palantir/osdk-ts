@@ -31,6 +31,7 @@ const OXC_PACKAGES = [
   "e2e.generated.1.1.x",
   "create-app.template.expo.v2",
   "create-app.template.react",
+  "create-app.template.react-component-library.beta",
   "create-app.template.react.beta",
   "create-app.template.tutorial-todo-aip-app",
   "create-app.template.tutorial-todo-aip-app.beta",
