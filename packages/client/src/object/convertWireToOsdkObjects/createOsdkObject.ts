@@ -31,6 +31,7 @@ import { MediaReferencePropertyImpl } from "../../createMediaReferenceProperty.j
 import { TimeSeriesPropertyImpl } from "../../createTimeseriesProperty.js";
 import type { DerivedPropertyRuntimeMetadata } from "../../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
+import { toBoundProperty } from "../../ontology/objectTypeAliases.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { hydrateAttachmentFromRidInternal } from "../../public-utils/hydrateAttachmentFromRid.js";
 import { createObjectSpecifierFromPrimaryKey } from "../../util/objectSpecifierUtils.js";
@@ -104,8 +105,11 @@ const basePropDefs = {
   $objectSpecifier: {
     get(this: ObjectHolder) {
       const rawObj = this[UnderlyingOsdkObject];
+      // Built from `rawObj.$apiName` rather than the definition so that an
+      // alias-remapped object type yields a specifier naming the code-facing
+      // type, consistent with `$apiName`/`$objectType`.
       return createObjectSpecifierFromPrimaryKey(
-        this[ObjectDefRef],
+        { type: "object", apiName: rawObj.$apiName },
         rawObj.$primaryKey,
       );
     },
@@ -276,6 +280,10 @@ function createSpecialProperty(
         specialPropertyTypes.has(propDef.type),
     );
   }
+  // These property implementations issue their own follow-up requests, so they
+  // need the wire name. `p` and `objectDef.properties` are in the local
+  // vocabulary; `objectDef.apiName` is already bound.
+  const boundPropertyName = toBoundProperty(objectDef, p as string);
   if (propDef.type === "attachment") {
     if (Array.isArray(rawValue)) {
       return rawValue.map((a) =>
@@ -292,7 +300,7 @@ function createSpecialProperty(
       client,
       objectApiName: objectDef.apiName,
       primaryKey: rawObject[objectDef.primaryKeyApiName as string],
-      propertyName: p as string,
+      propertyName: boundPropertyName,
     });
   }
   if (
@@ -310,7 +318,7 @@ function createSpecialProperty(
       client,
       objectDef.apiName,
       rawObject[objectDef.primaryKeyApiName as string],
-      p as string,
+      boundPropertyName,
     );
   }
 
@@ -319,7 +327,7 @@ function createSpecialProperty(
       client,
       objectDef.apiName,
       rawObject[objectDef.primaryKeyApiName as string],
-      p as string,
+      boundPropertyName,
       (rawValue as ReferenceValue).type === "geotimeSeriesValue"
         ? {
             time: (rawValue as ReferenceValue).timestamp,
@@ -336,7 +344,7 @@ function createSpecialProperty(
       client,
       objectApiName: objectDef.apiName,
       primaryKey: rawObject[objectDef.primaryKeyApiName as string],
-      propertyName: p as string,
+      propertyName: boundPropertyName,
       mediaReference: rawValue as MediaReference,
     });
   }

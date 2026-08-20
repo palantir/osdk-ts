@@ -170,8 +170,10 @@ export type {
 } from "./ontology/ObjectOrInterface.js";
 export type { ObjectSpecifier } from "./ontology/ObjectSpecifier.js";
 export type {
+  ApiNameAlias,
   CompileTimeMetadata,
   ObjectMetadata,
+  ObjectTypeAlias,
   ObjectTypeDefinition,
   PropertyDef,
   VersionBound,

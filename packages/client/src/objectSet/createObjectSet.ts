@@ -53,6 +53,10 @@ import {
   fetchPageWithErrorsInternal,
 } from "../object/fetchPage.js";
 import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
+import {
+  registerObjectTypeAlias,
+  toBoundProperty,
+} from "../ontology/objectTypeAliases.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
@@ -107,6 +111,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   clientCtx: MinimalClient,
   objectSet: WireObjectSet = resolveBaseObjectSetType(objectType),
 ): ObjectSet<Q> {
+  registerObjectTypeAlias(clientCtx, objectType);
+
   // `aggregate<Q, any>` is an instantiation expression; binding it inline as
   // `(aggregate<Q, any>).bind(...)` is valid TS but trips oxfmt's parser, so the
   // instantiation is hoisted to a local (behavior-identical).
@@ -190,7 +196,10 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         objectSet,
         propertyIdentifier: {
           type: "property",
-          apiName: property as PropertyApiName,
+          apiName: toBoundProperty(
+            objectType,
+            property as string,
+          ) as PropertyApiName,
         },
         numNeighbors,
         query: nearestNeighborsQuery,
@@ -394,7 +403,10 @@ async function createWithPk(
     objectSet,
     where: {
       type: "eq",
-      field: objDef.primaryKeyApiName,
+      // Unlike `where()`, this writes the wire filter directly rather than going
+      // through `modernToLegacyWhereClause`, so the alias has to be applied here.
+      // `objDef` has already been translated, so `primaryKeyApiName` is local.
+      field: toBoundProperty(objDef, objDef.primaryKeyApiName as string),
       value: primaryKey,
     },
   };

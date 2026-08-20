@@ -33,6 +33,7 @@ import { legacyToModernSingleAggregationResult } from "../internal/conversions/l
 import { modernToLegacyAggregationClause } from "../internal/conversions/modernToLegacyAggregationClause.js";
 import { modernToLegacyGroupByClause } from "../internal/conversions/modernToLegacyGroupByClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import { toLocalPropertyLookup } from "../ontology/objectTypeAliases.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import type { ArrayElement } from "../util/ArrayElement.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
@@ -49,13 +50,16 @@ export async function aggregate<
 ): Promise<AggregationsResults<Q, AO>> {
   const resolvedObjectSet = resolveBaseObjectSetType(objectType);
   const body: AggregateObjectsRequestV2 = {
-    aggregation: modernToLegacyAggregationClause<AO["$select"]>(req.$select),
+    aggregation: modernToLegacyAggregationClause<AO["$select"]>(
+      req.$select,
+      objectType,
+    ),
     groupBy: [],
     where: undefined,
   };
 
   if (req.$groupBy) {
-    body.groupBy = modernToLegacyGroupByClause(req.$groupBy);
+    body.groupBy = modernToLegacyGroupByClause(req.$groupBy, objectType);
   }
 
   if (clientCtx.flushEdits != null) {
@@ -93,10 +97,21 @@ export async function aggregate<
     } as any;
   }
 
+  // Groups come back keyed by the `field` we sent, so for an alias-remapped
+  // object type they arrive bound and have to be mapped back to local names.
+  const toLocalProperty = toLocalPropertyLookup(objectType);
+
   const ret: AggregationResultsWithGroups<Q, AO["$select"], any> =
     result.data.map((entry) => {
       return {
-        $group: entry.group as any,
+        $group: (toLocalProperty == null
+          ? entry.group
+          : Object.fromEntries(
+              Object.entries(entry.group).map(([boundField, value]) => [
+                toLocalProperty(boundField),
+                value,
+              ]),
+            )) as any,
         ...aggregationToCountResult(entry),
         ...legacyToModernSingleAggregationResult(entry, req.$select),
       };

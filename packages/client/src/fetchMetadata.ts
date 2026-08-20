@@ -26,6 +26,7 @@ import type {
 } from "@osdk/api";
 
 import type { MinimalClient } from "./MinimalClientContext.js";
+import { registerObjectTypeAlias } from "./ontology/objectTypeAliases.js";
 import { InterfaceDefinitions } from "./ontology/OntologyProvider.js";
 
 /** @internal */
@@ -50,9 +51,22 @@ export const fetchMetadataInternal = async <
           : never
 > => {
   if (definition.type === "object") {
+    // The ontology provider translates metadata using the client's alias
+    // registry, which is populated as definitions enter the client. This is one
+    // of those entry points, and it can be the first, so register before
+    // resolving rather than reading a registry nothing has filled in yet.
+    registerObjectTypeAlias(client, definition);
     const { [InterfaceDefinitions]: interfaceDefs, ...objectTypeDef } =
       await client.ontologyProvider.getObjectDefinition(definition.apiName);
-    return objectTypeDef as any;
+    // The provider rekeys `properties` (and friends) into the local vocabulary
+    // but deliberately leaves `apiName` bound, since that is what identifies the
+    // object type on the wire. `fetchMetadata` is user-facing, so report local.
+    const alias = objectTypeDef.alias;
+    return (
+      alias == null
+        ? objectTypeDef
+        : { ...objectTypeDef, apiName: alias.localApiName }
+    ) as any;
   } else if (definition.type === "interface") {
     return client.ontologyProvider.getInterfaceDefinition(
       definition.apiName,
@@ -62,9 +76,15 @@ export const fetchMetadataInternal = async <
       definition.unsanitizedApiName ?? definition.apiName,
     ) as any;
   } else if (definition.type === "query") {
-    return client.ontologyProvider.getQueryDefinition(
+    const queryDef = await client.ontologyProvider.getQueryDefinition(
       definition.apiName,
       definition.isFixedVersion ? definition.version : undefined,
+    );
+    // As above: the server answers under the bound name, but this is user-facing.
+    return (
+      definition.alias == null
+        ? queryDef
+        : { ...queryDef, apiName: definition.alias.localApiName }
     ) as any;
   } else {
     throw new Error("Not implemented for given definition");

@@ -63,6 +63,44 @@
           "rid": "ri.foundry.main.dataset.44444444-4444-4444-4444-444444444444"
         }
       }
+    },
+    "objects": {
+      "Employee": {
+        "id": {
+          "apiName": "com.example.PublishedEmployee"
+        },
+        "properties": {
+          "employeeId": {
+            "id": {
+              "apiName": "employeeId"
+            }
+          },
+          "fullName": {
+            "id": {
+              "apiName": "full_name"
+            }
+          }
+        }
+      },
+      "Office": {
+        "id": {
+          "apiName": "com.example.PublishedOffice"
+        }
+      }
+    },
+    "queries": {
+      "returnsObject": {
+        "id": {
+          "apiName": "com.example.publishedReturnsObject",
+          "version": "1.1.0"
+        }
+      },
+      "queryAcceptsObject": {
+        "id": {
+          "apiName": "com.example.publishedQueryAcceptsObject",
+          "version": "0.11.0"
+        }
+      }
     }
   },
   "version": 1

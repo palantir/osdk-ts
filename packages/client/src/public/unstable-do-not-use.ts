@@ -17,6 +17,9 @@
 export { augment } from "../object/fetchPage.js";
 export { hydrateOsdkObject } from "../object/hydrateOsdkObject.js";
 export { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
+// Needed by @osdk/functions' edit path, which writes object type and property
+// names onto the wire itself rather than going through the object set builders.
+export { createAliasResolver } from "../ontology/objectTypeAliases.js";
 
 export {
   createClientWithSubscriptionConnection,

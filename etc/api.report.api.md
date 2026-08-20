@@ -273,6 +273,12 @@ export type AndWhereClause<
     	$and: WhereClause<T, RDPs>[]
 };
 
+// @public
+export interface ApiNameAlias {
+    	boundApiName: string;
+    	localApiName: string;
+}
+
 // @public (undocumented)
 export type ApplyActionOptions = {
     	$returnEdits?: true
@@ -1499,6 +1505,7 @@ export type ObjectIdentifiers<Q extends ObjectOrInterfaceDefinition> = {
 
 // @public (undocumented)
 export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
+    	alias?: ObjectTypeAlias;
     	// Warning: (ae-forgotten-export) The symbol "Icon" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -1727,10 +1734,16 @@ export type ObjectSpecifier<Q extends ObjectOrInterfaceDefinition> = string & {
     	__apiName: Q["apiName"] | (Q extends InterfaceDefinition ? CompileTimeMetadata<Q> extends InterfaceMetadata ? NonNullable<CompileTimeMetadata<Q>["implementedBy"]>[number] : never : never)
 };
 
+// @public
+export interface ObjectTypeAlias extends ApiNameAlias {
+    	properties?: Record<string, string>;
+}
+
 // @public (undocumented)
 export interface ObjectTypeDefinition {
     	// (undocumented)
     __DefinitionMetadata?: ObjectMetadata & ObjectInterfaceCompileDefinition;
+    	alias?: ObjectTypeAlias;
     	// (undocumented)
     apiName: string;
     	// (undocumented)
@@ -2065,6 +2078,7 @@ export interface QueryDefinition<T = any> {
     //
     // (undocumented)
     __DefinitionMetadata?: QueryCompileTimeMetadata<T> & QueryMetadata;
+    	alias?: ApiNameAlias;
     	// (undocumented)
     apiName: string;
     	// (undocumented)

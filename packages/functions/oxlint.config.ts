@@ -68,5 +68,12 @@ export default defineConfig({
     // --- jsdoc ---
     // Requires a type on `@throws` tags; a doc-comment rewrite.
     "jsdoc/require-throws-type": "off",
+
+    // --- oxc ---
+    // `src/index.ts` and `src/aliases/index.ts` are the package's intentional
+    // public-API barrels (`export * as Aliases` is the documented surface). The
+    // rule counts the static module graph, which here is inflated by `import
+    // type` edges into `@osdk/client` that cost nothing at runtime.
+    "oxc/no-barrel-file": "off",
   },
 });

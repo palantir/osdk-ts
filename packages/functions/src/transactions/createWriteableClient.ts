@@ -15,7 +15,10 @@
  */
 
 import type { Client, createClient } from "@osdk/client";
-import { createClientWithTransaction } from "@osdk/client/unstable-do-not-use";
+import {
+  createAliasResolver,
+  createClientWithTransaction,
+} from "@osdk/client/unstable-do-not-use";
 
 import type {
   AddLinkApiNames,
@@ -57,6 +60,11 @@ export function createWriteableClient<X extends AnyEdit = never>(
     client as WriteableClient<any>, // This cast is safe because we create the writeable client properties below.
   );
 
+  // The edit methods below put object type and property names straight onto the
+  // wire, so they need to turn the code-facing names carried by loaded objects
+  // back into bound ones.
+  const aliases = createAliasResolver(client);
+
   // We use define properties because the client has non-enumerable properties that we want to preserve.
   const writeableClient = Object.defineProperties<Client>(client, {
     link: {
@@ -68,7 +76,7 @@ export function createWriteableClient<X extends AnyEdit = never>(
         if (!Array.isArray(target)) {
           return editRequestManager.postEdit({
             type: "addLink",
-            objectType: source.$apiName,
+            objectType: aliases.objectType(source.$apiName),
             primaryKey: source.$primaryKey,
             linkType: apiName,
             linkedObjectPrimaryKey: target.$primaryKey,
@@ -80,7 +88,7 @@ export function createWriteableClient<X extends AnyEdit = never>(
           promises.push(
             editRequestManager.postEdit({
               type: "addLink",
-              objectType: source.$apiName,
+              objectType: aliases.objectType(source.$apiName),
               primaryKey: source.$primaryKey,
               linkType: apiName,
               linkedObjectPrimaryKey: elem.$primaryKey,
@@ -102,7 +110,7 @@ export function createWriteableClient<X extends AnyEdit = never>(
         if (!Array.isArray(target)) {
           return editRequestManager.postEdit({
             type: "removeLink",
-            objectType: source.$apiName,
+            objectType: aliases.objectType(source.$apiName),
             primaryKey: source.$primaryKey,
             linkType: apiName,
             linkedObjectPrimaryKey: target.$primaryKey,
@@ -113,7 +121,7 @@ export function createWriteableClient<X extends AnyEdit = never>(
           promises.push(
             editRequestManager.postEdit({
               type: "removeLink",
-              objectType: source.$apiName,
+              objectType: aliases.objectType(source.$apiName),
               primaryKey: source.$primaryKey,
               linkType: apiName,
               linkedObjectPrimaryKey: elem.$primaryKey,
@@ -130,10 +138,15 @@ export function createWriteableClient<X extends AnyEdit = never>(
         obj: OTD,
         properties: CreatableObjectOrInterfaceTypeProperties<X, OTD>,
       ): Promise<void> {
+        // `obj` is a definition rather than a loaded object, so its `apiName` is
+        // already the wire name; the resolver is keyed by local name, so look the
+        // properties up under the alias' local name when there is one.
+        const localObjectType = obj.alias?.localApiName ?? obj.apiName;
         const propertyMap: { [propertyName: string]: unknown } = {};
         for (const [key, value] of Object.entries(properties)) {
           if (key.startsWith("$")) continue;
-          propertyMap[key] = toPropertyDataValue(value);
+          propertyMap[aliases.property(localObjectType, key)] =
+            toPropertyDataValue(value);
         }
         return editRequestManager.postEdit({
           type: "addObject",
@@ -147,14 +160,18 @@ export function createWriteableClient<X extends AnyEdit = never>(
         SOL extends UpdatableObjectOrInterfaceLocators<X>,
         OTD extends UpdatableObjectOrInterfaceLocatorProperties<X, SOL>,
       >(locator: SOL, properties: OTD): Promise<void> {
+        // A locator is a loaded object, so `$apiName` is the code-facing name and
+        // the property keys are code-facing too. Both have to be turned back into
+        // wire names.
         const propertyMap: { [propertyName: string]: unknown } = {};
         for (const [key, value] of Object.entries(properties)) {
           if (key.startsWith("$")) continue;
-          propertyMap[key] = toPropertyDataValue(value);
+          propertyMap[aliases.property(locator.$apiName, key)] =
+            toPropertyDataValue(value);
         }
         return editRequestManager.postEdit({
           type: "modifyObject",
-          objectType: locator.$apiName,
+          objectType: aliases.objectType(locator.$apiName),
           primaryKey: locator.$primaryKey,
           properties: propertyMap,
         });
@@ -166,7 +183,7 @@ export function createWriteableClient<X extends AnyEdit = never>(
       ): Promise<void> {
         return editRequestManager.postEdit({
           type: "deleteObject",
-          objectType: obj.$apiName,
+          objectType: aliases.objectType(obj.$apiName),
           primaryKey: obj.$primaryKey,
         });
       },
