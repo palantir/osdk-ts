@@ -19,11 +19,8 @@ import React from "react";
 import styles from "../EditableCell.module.css";
 
 /**
- * Pads a read-only cell so it lines up with the editor cells beside it while
- * the table is in edit mode. Without it, a column that mixes the two — an
- * `editable` predicate that accepts some rows and rejects others — staggers,
- * because `.osdkEditableCell` carries horizontal padding the raw content does
- * not.
+ * Apply edit mode styling to a non-editable cell in edit mode
+ * so it aligns with the other editable cells
  */
 export function NonEditableCellInEditMode({
   children,
