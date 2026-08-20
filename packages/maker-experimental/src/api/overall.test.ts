@@ -19,7 +19,11 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { ActionType, InterfaceType } from "@osdk/maker";
+import type {
+  ActionType,
+  InterfaceType,
+  ValueTypeDefinitionVersion,
+} from "@osdk/maker";
 import {
   addDependency,
   defineCreateObjectAction,
@@ -29,6 +33,7 @@ import {
   defineObject,
   defineOntology,
   defineSharedPropertyType,
+  defineValueType,
   dumpOntologyFullMetadata,
   importOntologyEntity,
   importSharedPropertyType,
@@ -1278,6 +1283,261 @@ describe("Experimental Test Suite", () => {
       expect(
         result.importedInputPresets.get(interfacePropertyReadableId),
       ).toEqual(apiNamePreset(sptApiName));
+    });
+  });
+
+  describe("Value Type references", () => {
+    it("serializes exact references for owned and imported definitions", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        const referencedOwned = defineValueType({
+          apiName: "referencedOwned",
+          displayName: "Referenced Owned",
+          type: { type: "string" },
+          version: "1.0.0",
+        });
+        defineValueType({
+          apiName: "referencedOwned",
+          displayName: "Referenced Owned",
+          type: { type: "string" },
+          version: "1.1.0",
+        });
+        defineValueType({
+          apiName: "unreferencedOwned",
+          displayName: "Unreferenced Owned",
+          type: { type: "string" },
+          version: "2.0.0",
+        });
+
+        const importedValue: ValueTypeDefinitionVersion = {
+          apiName: "importedValue",
+          packageNamespace: "com.external",
+          displayMetadata: {
+            displayName: "Imported Value",
+            description: "",
+          },
+          status: { type: "active", active: {} },
+          version: "3.0.0",
+          baseType: {
+            type: "string",
+            string: {},
+          },
+          constraints: [],
+          exampleValues: [],
+          __type: OntologyEntityTypeEnum.VALUE_TYPE,
+        };
+        importOntologyEntity(importedValue);
+
+        const importedCollision: ValueTypeDefinitionVersion = {
+          apiName: "collision",
+          packageNamespace: "com.external",
+          displayMetadata: {
+            displayName: "Imported Collision",
+            description: "",
+          },
+          status: { type: "active", active: {} },
+          version: "1.0.0",
+          baseType: {
+            type: "string",
+            string: {},
+          },
+          constraints: [],
+          exampleValues: [],
+          __type: OntologyEntityTypeEnum.VALUE_TYPE,
+        };
+        importOntologyEntity(importedCollision);
+        const ownedCollision = defineValueType({
+          apiName: "collision",
+          displayName: "Owned Collision",
+          type: { type: "string" },
+          version: "1.0.0",
+        });
+
+        const sharedReference = defineSharedPropertyType({
+          apiName: "sharedReference",
+          type: "string",
+          valueType: referencedOwned,
+        });
+        defineInterface({
+          apiName: "referencedInterface",
+          properties: {
+            sharedReference: {
+              sharedPropertyType: sharedReference,
+              required: true,
+            },
+          },
+        });
+
+        defineObject({
+          apiName: "employee",
+          displayName: "Employee",
+          pluralDisplayName: "Employees",
+          titlePropertyApiName: "id",
+          primaryKeyPropertyApiName: "id",
+          properties: {
+            id: { type: "string", valueType: referencedOwned },
+            imported: { type: "string", valueType: importedValue },
+            collision: { type: "string", valueType: ownedCollision },
+          },
+        });
+      });
+
+      const references = result.ontologyIr.valueTypeReferences;
+      if (references === undefined) {
+        throw new Error("Expected serialized Value Type references");
+      }
+      expect(Object.keys(references).sort()).toEqual([
+        "collision",
+        "importedValue",
+        "referencedOwned",
+        "unreferencedOwned",
+      ]);
+      expect(references.importedValue["3.0.0"]).toEqual({
+        rid: expect.any(String),
+        versionId: expect.any(String),
+      });
+      expect(references.unreferencedOwned["2.0.0"]).toEqual({
+        rid: expect.any(String),
+        versionId: expect.any(String),
+      });
+      expect(Object.keys(references.referencedOwned).sort()).toEqual([
+        "1.0.0",
+        "1.1.0",
+      ]);
+
+      const employee = Object.values(
+        result.ontologyIr.ontology.objectTypes,
+      ).find(({ objectType }) => {
+        return objectType.apiName === "com.palantir.employee";
+      });
+      if (employee === undefined) {
+        throw new Error("Expected employee object type");
+      }
+      const idProperty = Object.values(employee.objectType.propertyTypes).find(
+        ({ apiName }) => {
+          return apiName === "id";
+        },
+      );
+      if (idProperty === undefined) {
+        throw new Error("Expected employee.id property");
+      }
+      expect(references.referencedOwned["1.0.0"]).toBe(idProperty.valueType);
+      const importedProperty = Object.values(
+        employee.objectType.propertyTypes,
+      ).find(({ apiName }) => {
+        return apiName === "imported";
+      });
+      if (importedProperty === undefined) {
+        throw new Error("Expected employee.imported property");
+      }
+      expect(references.importedValue["3.0.0"]).toBe(
+        importedProperty.valueType,
+      );
+      const collisionProperty = Object.values(
+        employee.objectType.propertyTypes,
+      ).find(({ apiName }) => {
+        return apiName === "collision";
+      });
+      if (collisionProperty === undefined) {
+        throw new Error("Expected employee.collision property");
+      }
+      expect(references.collision["1.0.0"]).toBe(collisionProperty.valueType);
+
+      const convertedSpt = Object.values(
+        result.ontologyIr.ontology.sharedPropertyTypes,
+      ).find(({ sharedPropertyType }) => {
+        return sharedPropertyType.apiName === "com.palantir.sharedReference";
+      });
+      if (convertedSpt === undefined) {
+        throw new Error("Expected sharedReference shared property type");
+      }
+      expect(convertedSpt.sharedPropertyType.valueType).toBe(
+        references.referencedOwned["1.0.0"],
+      );
+
+      const convertedInterface = Object.values(
+        result.ontologyIr.ontology.interfaceTypes,
+      ).find(({ interfaceType }) => {
+        return interfaceType.apiName === "com.palantir.referencedInterface";
+      });
+      if (convertedInterface === undefined) {
+        throw new Error("Expected referencedInterface");
+      }
+      const propertyV2 = Object.values(
+        convertedInterface.interfaceType.propertiesV2,
+      )[0];
+      if (propertyV2 === undefined) {
+        throw new Error("Expected interface propertiesV2 entry");
+      }
+      expect(propertyV2.sharedPropertyType.valueType).toBe(
+        references.referencedOwned["1.0.0"],
+      );
+      const propertyV3 = Object.values(
+        convertedInterface.interfaceType.propertiesV3,
+      )[0];
+      if (propertyV3 === undefined) {
+        throw new Error("Expected interface propertiesV3 entry");
+      }
+      if (propertyV3.type !== "sharedPropertyBasedPropertyType") {
+        throw new Error("Expected shared-property-backed interface property");
+      }
+      expect(
+        propertyV3.sharedPropertyBasedPropertyType.sharedPropertyType.valueType,
+      ).toBe(references.referencedOwned["1.0.0"]);
+
+      expect(
+        result.ontologyIr.valueTypes
+          .map(({ metadata }) => metadata.apiName)
+          .sort(),
+      ).toEqual(["collision", "referencedOwned", "unreferencedOwned"]);
+      expect(
+        result.ontologyIr.importedValueTypes
+          .map(({ metadata }) => metadata.apiName)
+          .sort(),
+      ).toEqual(["collision", "importedValue"]);
+    });
+
+    it("selects Value Type metadata using semantic version precedence", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineValueType({
+          apiName: "releaseState",
+          displayName: "Release State",
+          type: { type: "boolean" },
+          version: "1.0.0-alpha",
+        });
+        defineValueType({
+          apiName: "releaseState",
+          displayName: "Release State",
+          type: { type: "string" },
+          version: "1.0.0",
+        });
+        defineValueType({
+          apiName: "buildState",
+          displayName: "Build State",
+          type: { type: "boolean" },
+          version: "1.0.0+first",
+        });
+        defineValueType({
+          apiName: "buildState",
+          displayName: "Build State",
+          type: { type: "string" },
+          version: "1.0.0+second",
+        });
+      });
+
+      const releaseState = result.ontologyIr.valueTypes.find(
+        ({ metadata }) => metadata.apiName === "releaseState",
+      );
+      const buildState = result.ontologyIr.valueTypes.find(
+        ({ metadata }) => metadata.apiName === "buildState",
+      );
+      expect(releaseState?.metadata.baseType.type).toBe("string");
+      expect(buildState?.metadata.baseType.type).toBe("boolean");
+    });
+
+    it("serializes an empty reference map without Value Types", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {});
+
+      expect(result.ontologyIr.valueTypeReferences).toEqual({});
     });
   });
 

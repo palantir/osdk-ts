@@ -63,6 +63,11 @@ const LEGACY_VALUE_TYPE_REFERENCE = legacyValueTypeReference(
   VALUE_TYPE_VERSION,
   RANDOMNESS_KEY,
 );
+const EXACT_VALUE_TYPE_REFERENCE: ValueTypeReference = {
+  rid: "ri.value-type.exact.track-quality",
+  versionId: "exact-track-quality-version",
+};
+
 function emptyOntologyBlock(): OntologyBlock {
   return {
     actionTypes: {},
@@ -384,7 +389,12 @@ function importedDefinitionsEnvelope(): OntologyIrV2 {
 }
 
 function valueTypeEnvelope(
-  propertyReference: ValueTypeReference = LEGACY_VALUE_TYPE_REFERENCE,
+  propertyReference: ValueTypeReference = EXACT_VALUE_TYPE_REFERENCE,
+  valueTypeReferences: OntologyIrV2["valueTypeReferences"] = {
+    [VALUE_TYPE_API_NAME]: {
+      [VALUE_TYPE_VERSION]: EXACT_VALUE_TYPE_REFERENCE,
+    },
+  },
   ownedValueTypes: ValueTypeBlockData[] = [
     valueType(VALUE_TYPE_API_NAME, ["2.0.0", VALUE_TYPE_VERSION, "1.0.0"]),
   ],
@@ -434,6 +444,7 @@ function valueTypeEnvelope(
       ...emptyOntologyBlock(),
       interfaceTypes: { [ancestor.interfaceType.rid]: ancestor },
     },
+    valueTypeReferences,
     valueTypes: ownedValueTypes,
   };
 }
@@ -4072,14 +4083,14 @@ describe(OntologyIrToFullMetadataConverter, () => {
   });
 
   describe("full ontology V2 Value Types", () => {
-    it("preserves metadata and property api names", () => {
+    it("preserves exact references in metadata and property api names", () => {
       const metadata = OntologyIrToFullMetadataConverter
         .getFullMetadataFromEnvelope(valueTypeEnvelope());
       const child = metadata.interfaceTypes["local.Item"];
 
       expect(metadata.valueTypes.trackQuality).toMatchObject({
         apiName: VALUE_TYPE_API_NAME,
-        rid: LEGACY_VALUE_TYPE_REFERENCE.rid,
+        rid: EXACT_VALUE_TYPE_REFERENCE.rid,
         version: VALUE_TYPE_VERSION,
       });
       expect(child.propertiesV2.trackQuality.valueTypeApiName).toBe(
@@ -4093,15 +4104,22 @@ describe(OntologyIrToFullMetadataConverter, () => {
       );
     });
 
-    it.each([RANDOMNESS_KEY, ""])(
-      "resolves legacy property references with randomness key %s",
-      (randomnessKey) => {
+    it.each([
+      [undefined, RANDOMNESS_KEY],
+      [{}, RANDOMNESS_KEY],
+      [{}, ""],
+    ])(
+      "falls back to legacy references when the reference map is %s",
+      (valueTypeReferences, randomnessKey) => {
         const propertyReference = legacyValueTypeReference(
           VALUE_TYPE_API_NAME,
           VALUE_TYPE_VERSION,
           randomnessKey,
         );
-        const input = valueTypeEnvelope(propertyReference);
+        const input = valueTypeEnvelope(
+          propertyReference,
+          valueTypeReferences,
+        );
         input.randomnessKey = randomnessKey;
         const metadata = OntologyIrToFullMetadataConverter
           .getFullMetadataFromEnvelope(input);
@@ -4110,22 +4128,56 @@ describe(OntologyIrToFullMetadataConverter, () => {
           metadata.interfaceTypes["local.Item"].propertiesV2.trackQuality
             .valueTypeApiName,
         ).toBe(VALUE_TYPE_API_NAME);
-        expect(metadata.valueTypes.trackQuality.rid).toBe(
-          propertyReference.rid,
-        );
       },
     );
 
-    it("selects a stable version over a prerelease", () => {
-      const stableReference = legacyValueTypeReference(
+    it("falls back per missing version in a partial exact-reference map", () => {
+      const missingVersionReference = legacyValueTypeReference(
         VALUE_TYPE_API_NAME,
-        "1.0.0",
+        "2.0.0",
         RANDOMNESS_KEY,
       );
       const metadata = OntologyIrToFullMetadataConverter
         .getFullMetadataFromEnvelope(
           valueTypeEnvelope(
+            missingVersionReference,
+            {
+              [VALUE_TYPE_API_NAME]: {
+                [VALUE_TYPE_VERSION]: EXACT_VALUE_TYPE_REFERENCE,
+              },
+            },
+            [valueType(VALUE_TYPE_API_NAME, ["2.0.0"])],
+          ),
+        );
+
+      expect(metadata.valueTypes.trackQuality.rid).toBe(
+        missingVersionReference.rid,
+      );
+      expect(
+        metadata.interfaceTypes["local.Item"].propertiesV2.trackQuality
+          .valueTypeApiName,
+      ).toBe(VALUE_TYPE_API_NAME);
+    });
+
+    it("selects a stable version over a prerelease", () => {
+      const stableReference: ValueTypeReference = {
+        rid: "ri.value-type.stable",
+        versionId: "stable-version",
+      };
+      const prereleaseReference: ValueTypeReference = {
+        rid: "ri.value-type.prerelease",
+        versionId: "prerelease-version",
+      };
+      const metadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(
+          valueTypeEnvelope(
             stableReference,
+            {
+              [VALUE_TYPE_API_NAME]: {
+                "1.0.0": stableReference,
+                "1.0.0-alpha": prereleaseReference,
+              },
+            },
             [valueType(VALUE_TYPE_API_NAME, ["1.0.0-alpha", "1.0.0"])],
           ),
         );
@@ -4137,21 +4189,47 @@ describe(OntologyIrToFullMetadataConverter, () => {
     });
 
     it("orders prerelease identifiers and build metadata consistently", () => {
-      const stableReference = legacyValueTypeReference(
-        "stableCase",
-        "1.0.0",
-        RANDOMNESS_KEY,
-      );
-      const buildFirstReference = legacyValueTypeReference(
-        "buildCase",
-        "1.0.0+first",
-        RANDOMNESS_KEY,
-      );
+      const stableReference: ValueTypeReference = {
+        rid: "ri.value-type.stable-case",
+        versionId: "stable-case-version",
+      };
+      const uppercaseReference: ValueTypeReference = {
+        rid: "ri.value-type.uppercase-prerelease",
+        versionId: "uppercase-version",
+      };
+      const lowercaseReference: ValueTypeReference = {
+        rid: "ri.value-type.lowercase-prerelease",
+        versionId: "lowercase-version",
+      };
+      const largeNumericReference: ValueTypeReference = {
+        rid: "ri.value-type.large-numeric-prerelease",
+        versionId: "large-numeric-version",
+      };
+      const buildFirstReference: ValueTypeReference = {
+        rid: "ri.value-type.build-first",
+        versionId: "build-first-version",
+      };
+      const buildSecondReference: ValueTypeReference = {
+        rid: "ri.value-type.build-second",
+        versionId: "build-second-version",
+      };
 
       const stableMetadata = OntologyIrToFullMetadataConverter
         .getFullMetadataFromEnvelope(
           valueTypeEnvelope(
             stableReference,
+            {
+              stableCase: {
+                "1.0.0": stableReference,
+                "1.0.0-A": uppercaseReference,
+                "1.0.0-a": lowercaseReference,
+                "1.0.0-999999999999999999999999999999": largeNumericReference,
+              },
+              buildCase: {
+                "1.0.0+first": buildFirstReference,
+                "1.0.0+second": buildSecondReference,
+              },
+            },
             [
               valueType("stableCase", [
                 "1.0.0-A",
@@ -4174,16 +4252,39 @@ describe(OntologyIrToFullMetadataConverter, () => {
       });
     });
 
-    it("uses owned definitions for equal-version duplicates", () => {
-      const reference = legacyValueTypeReference(
-        VALUE_TYPE_API_NAME,
-        VALUE_TYPE_VERSION,
-        RANDOMNESS_KEY,
+    it("resolves legacy property references beside supplied exact references", () => {
+      const metadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(
+          valueTypeEnvelope(LEGACY_VALUE_TYPE_REFERENCE),
+        );
+
+      expect(
+        metadata.interfaceTypes["local.Item"].propertiesV2.trackQuality
+          .valueTypeApiName,
+      ).toBe(VALUE_TYPE_API_NAME);
+      expect(metadata.valueTypes.trackQuality.rid).toBe(
+        EXACT_VALUE_TYPE_REFERENCE.rid,
       );
+    });
+
+    it("uses owned definitions and references for equal-version duplicates", () => {
+      const importedReference: ValueTypeReference = {
+        rid: "ri.value-type.imported",
+        versionId: "imported-version",
+      };
+      const ownedReference: ValueTypeReference = {
+        rid: "ri.value-type.owned",
+        versionId: "owned-version",
+      };
       const metadata = OntologyIrToFullMetadataConverter
         .getFullMetadataFromEnvelope(
           valueTypeEnvelope(
-            reference,
+            ownedReference,
+            {
+              [VALUE_TYPE_API_NAME]: {
+                [VALUE_TYPE_VERSION]: ownedReference,
+              },
+            },
             [valueType(VALUE_TYPE_API_NAME, [VALUE_TYPE_VERSION], "Owned")],
             [
               valueType(
@@ -4197,8 +4298,11 @@ describe(OntologyIrToFullMetadataConverter, () => {
 
       expect(metadata.valueTypes.trackQuality).toMatchObject({
         displayName: "Owned",
-        rid: reference.rid,
+        rid: ownedReference.rid,
       });
+      expect(metadata.valueTypes.trackQuality.rid).not.toBe(
+        importedReference.rid,
+      );
     });
   });
 

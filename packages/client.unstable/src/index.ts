@@ -82,6 +82,7 @@ export type {
   OntologyIr,
   OntologyIrOntologyBlockDataV2,
   OntologyIrV2,
+  ValueTypeReferencesByApiName,
 } from "./blockDataIr.js";
 
 export type {

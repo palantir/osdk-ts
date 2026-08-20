@@ -1665,6 +1665,11 @@ function buildValueTypeApiNameLookup(
         ),
         apiName,
       );
+      const exactReference = ir.valueTypeReferences?.[apiName]
+        ?.[version.version];
+      if (exactReference !== undefined) {
+        result.set(valueTypeReferenceKey(exactReference), apiName);
+      }
     }
   }
   return result;
@@ -1839,7 +1844,9 @@ function convertEnvelopeValueTypes(
     ) {
       continue;
     }
-    const reference = legacyValueTypeReference(
+    const reference = ir.valueTypeReferences?.[valueType.metadata.apiName]?.[
+      version.version
+    ] ?? legacyValueTypeReference(
       valueType.metadata.apiName,
       version.version,
       ir.randomnessKey,

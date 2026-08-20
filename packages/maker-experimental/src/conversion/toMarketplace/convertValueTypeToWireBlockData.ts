@@ -14,32 +14,63 @@
  * limitations under the License.
  */
 
-import type { ValueTypeBlockData } from "@osdk/client.unstable";
+import type {
+  ValueTypeBlockData,
+  ValueTypeReference,
+  ValueTypeReferencesByApiName,
+} from "@osdk/client.unstable";
 import type {
   OntologyDefinition,
   ValueTypeDefinitionVersion,
 } from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
+import { compare as compareSemver, valid as validSemver } from "semver-ts";
+
+import type { OntologyRidGenerator } from "../../util/generateRid.js";
+
+export interface ConvertedValueTypes {
+  valueTypes: ValueTypeBlockData[];
+  valueTypeReferences: ValueTypeReferencesByApiName;
+}
 
 export function convertValueTypeToWireBlockData(
   ontology: OntologyDefinition,
-): ValueTypeBlockData[] {
-  return Object.values(
+  ridGenerator: OntologyRidGenerator,
+): ConvertedValueTypes {
+  const valueTypeReferences: Record<
+    string,
+    Record<string, ValueTypeReference>
+  > = {};
+  const valueTypes = Object.values(
     ontology[OntologyEntityTypeEnum.VALUE_TYPE],
   ).map<ValueTypeBlockData>((definitions) => {
-    const version = getLatestVersion(definitions);
+    const uniqueDefinitions = Array.from(
+      new Map(
+        definitions.map((definition) => [definition.version, definition]),
+      ).values(),
+    );
+    const firstDefinition = uniqueDefinitions[0];
+    if (firstDefinition === undefined) {
+      throw new Error("Value type must have at least one version");
+    }
+    const latestVersion = getLatestVersion(uniqueDefinitions);
+    valueTypeReferences[firstDefinition.apiName] = Object.fromEntries(
+      uniqueDefinitions.map((definition) => [
+        definition.version,
+        ridGenerator.generateRidForValueType(
+          definition.apiName,
+          definition.version,
+        ),
+      ]),
+    );
     return {
       metadata: {
-        apiName: definitions[0].apiName,
-        baseType: version.baseType,
-        displayMetadata: definitions[0].displayMetadata,
-        status: definitions[0].status,
+        apiName: firstDefinition.apiName,
+        baseType: latestVersion.baseType,
+        displayMetadata: firstDefinition.displayMetadata,
+        status: firstDefinition.status,
       },
-      versions: Array.from(
-        new Map(
-          definitions.map((definition) => [definition.version, definition]),
-        ).values(),
-      ).map((definition) => ({
+      versions: uniqueDefinitions.map((definition) => ({
         version: definition.version,
         baseType: definition.baseType,
         constraints: definition.constraints,
@@ -47,6 +78,7 @@ export function convertValueTypeToWireBlockData(
       })),
     };
   });
+  return { valueTypes, valueTypeReferences };
 }
 
 function getLatestVersion(
@@ -63,13 +95,16 @@ function getLatestVersion(
 }
 
 function compareSlsVersions(a: string, b: string): number {
-  const partsA = a.split(".").map(Number);
-  const partsB = b.split(".").map(Number);
-  const maxLen = Math.max(partsA.length, partsB.length);
-  for (let i = 0; i < maxLen; i++) {
-    const segA = partsA[i] ?? 0;
-    const segB = partsB[i] ?? 0;
-    if (segA !== segB) return segA - segB;
+  const validA = validSemver(a);
+  const validB = validSemver(b);
+  if (validA != null && validB != null) {
+    return compareSemver(validA, validB);
   }
-  return 0;
+  if (validA != null) {
+    return 1;
+  }
+  if (validB != null) {
+    return -1;
+  }
+  return a < b ? -1 : a > b ? 1 : 0;
 }
