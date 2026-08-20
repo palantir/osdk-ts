@@ -39,12 +39,19 @@ import {
 // resetAliasesCache stays out of the supported surface. It exists for tests,
 // which import ../browser.js directly; exporting it would make cache
 // invalidation public and would race with an in-flight initAliases().
-export const Aliases = {
+// Explicitly typed: `--isolatedDeclarations` cannot infer a declaration for an
+// object literal built from shorthand properties (TS9016).
+export const Aliases: {
+  readonly custom: typeof custom;
+  readonly initAliases: typeof initAliases;
+  readonly DEFAULT_DECLARATIONS_PATH: typeof DEFAULT_DECLARATIONS_PATH;
+  readonly DEFAULT_DEPLOYMENT_CONFIG_PATH: typeof DEFAULT_DEPLOYMENT_CONFIG_PATH;
+} = {
   custom,
   initAliases,
   DEFAULT_DECLARATIONS_PATH,
   DEFAULT_DEPLOYMENT_CONFIG_PATH,
-} as const;
+};
 
 export {
   custom,

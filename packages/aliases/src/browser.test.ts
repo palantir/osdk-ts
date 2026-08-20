@@ -148,9 +148,19 @@ describe("browser aliases", () => {
       );
     });
 
-    // `alias in cache` would match inherited properties, so these would resolve
-    // to a function or the prototype object despite the declared return type.
-    it.each(["toString", "constructor", "__proto__", "hasOwnProperty"])(
+    // Two halves of one requirement, run over the same names: an inherited
+    // property is never an alias, and a real alias sharing that name still
+    // resolves. `__proto__` catches the most, since `in` accepts it inherited
+    // and plain property assignment silently drops it.
+    const INHERITED_NAMES = [
+      "toString",
+      "constructor",
+      "__proto__",
+      "hasOwnProperty",
+      "valueOf",
+    ];
+
+    it.each(INHERITED_NAMES)(
       "does not resolve inherited property %s",
       async (inherited) => {
         await initAliases({ fetch: mockFetch({ body: CONFIG_WITH_ALIASES }) });
@@ -161,15 +171,32 @@ describe("browser aliases", () => {
       },
     );
 
-    it("resolves an alias whose key shadows an inherited property", async () => {
-      // The guard must reject inherited keys without rejecting a real alias that
-      // happens to share the name.
-      await initAliases({
-        fetch: mockFetch({ body: { aliases: '{"toString":"shadowed"}' } }),
-      });
+    it.each(INHERITED_NAMES)(
+      "resolves a real alias named %s from the deployment config",
+      async (name) => {
+        await initAliases({
+          fetch: mockFetch({
+            body: { aliases: JSON.stringify({ [name]: "real-value" }) },
+          }),
+        });
 
-      expect(custom("toString")).toBe("shadowed");
-    });
+        expect(custom(name)).toBe("real-value");
+      },
+    );
+
+    it.each(INHERITED_NAMES)(
+      "resolves a real alias named %s from the declaration file",
+      async (name) => {
+        await initAliases({
+          path: DEFAULT_DECLARATIONS_PATH,
+          fetch: mockFetch({
+            body: { aliases: { custom: { [name]: { value: "real-value" } } } },
+          }),
+        });
+
+        expect(custom(name)).toBe("real-value");
+      },
+    );
   });
 
   describe("initAliases", () => {
