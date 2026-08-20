@@ -258,7 +258,10 @@ function parseResolvedAliases(raw: string): Record<string, string> {
 function toStringRecord(
   parsed: Record<string, unknown>,
 ): Record<string, string> {
-  const result: Record<string, string> = {};
+  // Null prototype, so assigning a key named `__proto__` creates an own
+  // property. On a normal object that assignment hits the inherited `__proto__`
+  // setter, which ignores a string value, silently dropping the alias.
+  const result = Object.create(null) as Record<string, string>;
   for (const [key, value] of Object.entries(parsed)) {
     if (typeof value !== "string") {
       throw new TypeError(
