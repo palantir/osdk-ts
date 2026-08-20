@@ -66,7 +66,7 @@ const importedMakerIr = {
     valueTypes: [
       {
         metadata: {
-          apiName: "headingValue",
+          apiName: "externalCategory",
           displayMetadata: { displayName: "Heading Value" },
           packageNamespace: "example",
           status: { type: "active", active: {} },
@@ -163,7 +163,7 @@ describe(handleOacGenerate, () => {
         "    apiName: com.example.TrackedEntity",
         '    package: "@example/core-sdk"',
         "  - kind: valueType",
-        "    apiName: headingValue",
+        "    apiName: externalCategory",
         '    package: "@example/core-sdk"',
         "",
       ].join("\n"),
@@ -190,7 +190,7 @@ describe(handleOacGenerate, () => {
       },
       {
         kind: "valueType",
-        apiName: "headingValue",
+        apiName: "externalCategory",
         package: "@example/core-sdk",
       },
     ]);

@@ -80,7 +80,7 @@ describe(buildSemanticManifest, () => {
       imports: [
         {
           kind: "valueType",
-          apiName: "headingValue",
+          apiName: "externalCategory",
           package: "@example/core-sdk",
         },
         {
@@ -92,18 +92,18 @@ describe(buildSemanticManifest, () => {
     });
 
     expect(manifest.valueTypes).toContainEqual({
-      apiName: "trackQuality",
+      apiName: "recordState",
       version: "1.0.0",
       narrowed: true,
     });
     expect(manifest.valueTypes).toContainEqual({
-      apiName: "headingValue",
+      apiName: "externalCategory",
       version: "1.0.0",
       narrowed: false,
     });
     expect(manifest.externalPackages).toEqual({
       "interface:imported.Parent": "@example/core-sdk",
-      "valueType:headingValue": "@example/core-sdk",
+      "valueType:externalCategory": "@example/core-sdk",
     });
     expect(manifest.interfaces.map((entry) => entry.apiName)).not.toContain(
       "imported.Parent",
@@ -177,8 +177,8 @@ describe(buildSemanticManifest, () => {
       sharedPropertyTypes: {},
     });
     const valueType: Ontologies.OntologyValueType = {
-      apiName: "maybeFlag",
-      displayName: "Maybe Flag",
+      apiName: "optionalToggle",
+      displayName: "Optional Toggle",
       rid: "ri.ontology.main.value-type.maybe-flag",
       fieldType: { type: "boolean" },
       version: "1.0.0",
@@ -190,7 +190,7 @@ describe(buildSemanticManifest, () => {
 
     const manifest = buildSemanticManifest({
       ...metadata,
-      valueTypes: { maybeFlag: valueType },
+      valueTypes: { optionalToggle: valueType },
     }, {
       packageName: "@example/sdk",
       packageVersion: "1.0.0",
@@ -198,7 +198,7 @@ describe(buildSemanticManifest, () => {
     });
 
     expect(manifest.valueTypes).toContainEqual({
-      apiName: "maybeFlag",
+      apiName: "optionalToggle",
       version: "1.0.0",
       narrowed: false,
     });
