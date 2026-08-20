@@ -35,12 +35,10 @@ import {
   initAliases,
 } from "../browser.js";
 
-// Assembled member by member rather than with `export * as Aliases` so that
-// resetAliasesCache stays out of the supported surface. It exists for tests,
-// which import ../browser.js directly; exporting it would make cache
-// invalidation public and would race with an in-flight initAliases().
-// Explicitly typed: `--isolatedDeclarations` cannot infer a declaration for an
-// object literal built from shorthand properties (TS9016).
+// Assembled member by member, not `export * as`, to keep the test-only
+// resetAliasesCache out of the supported surface.
+//
+// Explicitly typed: `--isolatedDeclarations` cannot infer this (TS9016).
 export const Aliases: {
   readonly custom: typeof custom;
   readonly initAliases: typeof initAliases;

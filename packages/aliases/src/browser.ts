@@ -14,32 +14,18 @@
  * limitations under the License.
  */
 
-// Browser-safe alias runtime for Dev Console applications.
-//
-// Unlike the Node loaders (which read a file from the container filesystem via
-// fs), a browser has no filesystem or process.env. Instead this module fetches a
-// served JSON file once, caches it, and then serves custom() synchronously. This
-// file must stay free of `fs`/`process` so it can be bundled into a browser app.
+// Browser-safe alias runtime. Must stay free of `fs`/`process` so it can be
+// bundled into a browser app.
 //
 // Two files can supply aliases:
 //
-//   production  .palantir/deployment.config.json  written at install, so it
-//                                                 carries the INSTALLER's values
-//   development public/resources.json             the author's declaration file,
-//                                                 so it carries the DEFAULTS
+//   .palantir/deployment.config.json  the installer's values, written at install
+//   public/resources.json            the author's declared defaults
 //
-// Callers do not choose. We try the deployment config and fall back to the
-// declaration file only when it appears absent, which is either a 404 or a 200
-// carrying an HTML document (single-page-app hosts rewrite unknown paths to
-// index.html). Any other failure throws rather than falling back, because in
-// production both files are served, so treating an error as absence would
-// silently serve the author's defaults in place of the installer's values.
-//
-// Absence detection is a heuristic, not a proof: a proxy or authentication page
-// could also arrive as a 200 with an HTML document. See isHtmlDocument.
-//
-// The two files are told apart by the runtime type of their `aliases` field
-// (string vs object).
+// The deployment config is tried first; the declaration file is used only when it
+// appears absent. Any other failure throws rather than falling back, because on
+// an installed site both files are served, so treating an error as absence would
+// serve the author's defaults in place of the installer's values.
 
 import type {
   AliasDeclarationsFile,

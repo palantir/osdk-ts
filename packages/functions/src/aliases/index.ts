@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-// Compatibility boundary: the alias runtime lives in @osdk/aliases so consumers
-// that are not Functions can read aliases without depending on this package.
+// Compatibility boundary keeping the public `Aliases` namespace of
+// @osdk/functions unchanged now that the runtime lives in @osdk/aliases.
 //
-// A local module with explicit named re-exports, because API Extractor cannot
-// process `export * as ns` from an external package ("fetchAstModuleExportInfo()
-// is not supported for external modules") and rejects a namespace whose target
-// uses `export *` ("The Aliases namespace import includes a star export").
+// Explicit named re-exports rather than `export *`, because API Extractor
+// supports neither a namespace re-export of an external package nor a namespace
+// whose target uses `export *`.
 
 export { custom } from "@osdk/aliases/node";
 export type { Custom } from "@osdk/aliases/node";
