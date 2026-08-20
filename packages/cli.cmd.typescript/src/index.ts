@@ -16,4 +16,5 @@
 
 export { cli } from "./cli.js";
 export type { TypescriptGenerateArgs } from "./generate/TypescriptGenerateArgs.js";
+export { oacCommand } from "./oac/oacCommand.js";
 export { typescriptCommand as default } from "./typescriptCommand.js";
