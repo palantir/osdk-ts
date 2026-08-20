@@ -26,6 +26,7 @@ import type {
   OntologyIrOntologyBlockDataV2,
   OntologyIrSharedPropertyTypeBlockDataV2,
   OntologyIrType,
+  OntologyIrV2,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
@@ -40,6 +41,7 @@ import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
 import { convertDataType, isInjectedRuntimeInput } from "./convertDataType.js";
+import { OntologyBlockDataToFullMetadataConverter } from "./OntologyBlockDataToFullMetadataConverter.js";
 import { toStructFieldRid } from "./ridUtils.js";
 
 // Type definitions for optional function discovery dependencies
@@ -249,6 +251,24 @@ export class OntologyIrToFullMetadataConverter {
   /**
    * Main entry point - converts IR to full metadata
    */
+  static getFullMetadataFromEnvelope(
+    ir: OntologyIrV2,
+  ): Ontologies.OntologyFullMetadata {
+    assertUniqueInterfaceApiNames(
+      ir.transitiveImportedOntology.interfaceTypes,
+      ir.importedOntology.interfaceTypes,
+      ir.ontology.interfaceTypes,
+    );
+    return OntologyBlockDataToFullMetadataConverter
+      .getFullMetadataFromBlockData(
+        mergeOntologyBlocks(
+          ir.transitiveImportedOntology,
+          ir.importedOntology,
+          ir.ontology,
+        ),
+      );
+  }
+
   static getFullMetadataFromIr(
     ir: OntologyIrOntologyBlockDataV2,
   ): Ontologies.OntologyFullMetadata {
@@ -1561,6 +1581,55 @@ export class OntologyIrToFullMetadataConverter {
         throw new Error(`Unknown link type status: ${status}`);
     }
   }
+}
+
+function assertUniqueInterfaceApiNames(
+  ...interfaceMaps: OntologyIrV2["ontology"]["interfaceTypes"][]
+): void {
+  const ridByApiName = new Map<string, string>();
+  const apiNameByRid = new Map<string, string>();
+  for (const interfaces of interfaceMaps) {
+    for (const [rid, { interfaceType }] of Object.entries(interfaces)) {
+      const existingRid = ridByApiName.get(interfaceType.apiName);
+      if (existingRid !== undefined && existingRid !== rid) {
+        throw new Error(
+          `Duplicate interface API name "${interfaceType.apiName}" is associated with multiple RIDs: "${existingRid}", "${rid}"`,
+        );
+      }
+      const existingApiName = apiNameByRid.get(rid);
+      if (
+        existingApiName !== undefined
+        && existingApiName !== interfaceType.apiName
+      ) {
+        throw new Error(
+          `Interface RID "${rid}" is associated with multiple API names: "${existingApiName}", "${interfaceType.apiName}"`,
+        );
+      }
+      ridByApiName.set(interfaceType.apiName, rid);
+      apiNameByRid.set(rid, interfaceType.apiName);
+    }
+  }
+}
+
+function mergeOntologyBlocks(
+  transitiveImported: OntologyIrV2["transitiveImportedOntology"],
+  imported: OntologyIrV2["importedOntology"],
+  owned: OntologyIrV2["ontology"],
+): OntologyIrV2["ontology"] {
+  return {
+    actionTypes: owned.actionTypes,
+    blockOutputCompassLocations: owned.blockOutputCompassLocations,
+    interfaceTypes: {
+      ...transitiveImported.interfaceTypes,
+      ...imported.interfaceTypes,
+      ...owned.interfaceTypes,
+    },
+    knownIdentifiers: owned.knownIdentifiers,
+    linkTypes: owned.linkTypes,
+    objectTypes: owned.objectTypes,
+    ruleSets: owned.ruleSets,
+    sharedPropertyTypes: owned.sharedPropertyTypes,
+  };
 }
 
 function discoverComponentRoot(
