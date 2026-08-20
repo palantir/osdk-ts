@@ -19,7 +19,13 @@ import { useOsdkMetadata } from "@osdk/react";
 import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import type { FilterListProps } from "../FilterListApi.js";
+import { useDebouncedCallback } from "../../shared/hooks/useDebouncedCallback.js";
+import type {
+  FilterChangeCause,
+  FilterChangeEvent,
+  FilterDefinitionUnion,
+  FilterListProps,
+} from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { LinkedFilter } from "../types/LinkedFilterTypes.js";
 import {
@@ -28,10 +34,13 @@ import {
   type PropertyTypeInfo,
 } from "../utils/filterStateToWhereClause.js";
 import { filterHasActiveState } from "../utils/filterValues.js";
+import { getActiveFilters } from "../utils/getActiveFilters.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 import { getSeedFilterState } from "../utils/getSeedFilterState.js";
 import { narrowObjectSet } from "../utils/narrowObjectSet.js";
 import { useStableMapEntries } from "./useStableMapEntries.js";
+
+const ON_FILTER_CHANGED_DEBOUNCE_MS = 300;
 
 export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
   filterStates: Map<string, FilterState>;
@@ -69,6 +78,34 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
   return states;
 }
 
+interface FilterSnapshot<Q extends ObjectTypeDefinition> {
+  whereClause: WhereClause<Q>;
+  linkedFilters: ReadonlyArray<LinkedFilter<Q>>;
+  effectiveObjectSet: ObjectSet<Q> | undefined;
+}
+
+function deriveSnapshot<Q extends ObjectTypeDefinition>(
+  definitions: Array<FilterDefinitionUnion<Q>> | undefined,
+  filterStates: Map<string, FilterState>,
+  propertyTypes: Map<string, PropertyTypeInfo>,
+  objectSet: ObjectSet<Q> | undefined,
+): FilterSnapshot<Q> {
+  const whereClause = buildWhereClause(
+    definitions,
+    filterStates,
+    propertyTypes,
+  );
+  const linkedFilters = getActiveLinkedFilters(definitions, filterStates);
+  return {
+    whereClause,
+    linkedFilters,
+    effectiveObjectSet:
+      objectSet == null
+        ? undefined
+        : narrowObjectSet(objectSet, whereClause, linkedFilters),
+  };
+}
+
 export function useFilterListState<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
 ): UseFilterListStateResult<Q> {
@@ -76,8 +113,12 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     objectType,
     objectSet,
     filterDefinitions,
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat callback still supported
     onFilterStateChanged,
+    onFilterChanged,
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat callback still supported
     onFilterClauseChanged,
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat callback still supported
     onEffectiveObjectSet,
     defaultFilterStates,
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat fallback for the pre-rename prop
@@ -85,12 +126,26 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   } = props;
   const seededFilterStates = defaultFilterStates ?? initialFilterStates;
   const { metadata } = useOsdkMetadata(objectType);
+
+  const onFilterStateChangedRef = useRef(onFilterStateChanged);
+  onFilterStateChangedRef.current = onFilterStateChanged;
   const onFilterClauseChangedRef = useRef(onFilterClauseChanged);
   onFilterClauseChangedRef.current = onFilterClauseChanged;
   const onEffectiveObjectSetRef = useRef(onEffectiveObjectSet);
   onEffectiveObjectSetRef.current = onEffectiveObjectSet;
+  const onFilterChangedRef = useRef(onFilterChanged);
+  onFilterChangedRef.current = onFilterChanged;
   const filterDefinitionsRef = useRef(filterDefinitions);
   filterDefinitionsRef.current = filterDefinitions;
+  const objectSetRef = useRef(objectSet);
+  objectSetRef.current = objectSet;
+
+  const emitFilterChanged = useDebouncedCallback(
+    (change: FilterChangeEvent<Q>) => {
+      onFilterChangedRef.current?.(change);
+    },
+    ON_FILTER_CHANGED_DEBOUNCE_MS,
+  );
 
   const propertyTypes = useMemo(() => {
     const map = new Map<string, PropertyTypeInfo>();
@@ -106,6 +161,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     }
     return map;
   }, [metadata?.properties]);
+  const propertyTypesRef = useRef(propertyTypes);
+  propertyTypesRef.current = propertyTypes;
 
   // Captured once on first render to provide a stable baseline for the reset
   // button's enabled state. `useState`'s lazy initializer pins the value for
@@ -126,52 +183,97 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     () => new Map(initialFilterStatesSnapshot),
   );
 
+  // Back-to-back writes can occur before React commits, so each transition must
+  // build on the latest eagerly computed state rather than the render snapshot.
+  const filterStatesRef = useRef(filterStates);
+  filterStatesRef.current = filterStates;
+
+  const applyChange = useCallback(
+    (
+      transition: (
+        previous: Map<string, FilterState>,
+      ) => Map<string, FilterState> | undefined,
+      event: FilterChangeCause,
+      beforeChanged?: () => void,
+    ) => {
+      const next = transition(filterStatesRef.current);
+      if (next === undefined) {
+        return;
+      }
+      filterStatesRef.current = next;
+      setFilterStates(next);
+      beforeChanged?.();
+
+      if (onFilterChangedRef.current == null) {
+        return;
+      }
+      const snapshot = deriveSnapshot(
+        filterDefinitionsRef.current,
+        next,
+        propertyTypesRef.current,
+        objectSetRef.current,
+      );
+      emitFilterChanged({
+        ...event,
+        filterClause: snapshot.whereClause,
+        activeFilters: getActiveFilters(
+          filterDefinitionsRef.current,
+          next,
+          propertyTypesRef.current,
+        ),
+        filteredObjectSet: snapshot.effectiveObjectSet,
+      });
+    },
+    [emitFilterChanged],
+  );
+
   const setFilterState = useCallback(
     (filterKey: string, state: FilterState) => {
-      setFilterStates((prev) => {
-        const next = new Map(prev);
-        next.set(filterKey, state);
-        return next;
-      });
-
-      const definition = filterDefinitionsRef.current?.find(
-        (d) => getFilterKey(d) === filterKey,
+      applyChange(
+        (previous) => {
+          const next = new Map(previous);
+          next.set(filterKey, state);
+          return next;
+        },
+        { event: "SET", filterKey, newState: state },
+        () => {
+          const definition = filterDefinitionsRef.current?.find(
+            (candidate) => getFilterKey(candidate) === filterKey,
+          );
+          if (definition) {
+            onFilterStateChangedRef.current?.(definition, state);
+          }
+        },
       );
-      if (definition) {
-        onFilterStateChanged?.(definition, state);
-      }
     },
-    [onFilterStateChanged],
+    [applyChange],
   );
 
-  const clearFilterState = useCallback((filterKey: string) => {
-    setFilterStates((prev) => {
-      const next = new Map(prev);
-      next.delete(filterKey);
-      return next;
-    });
-  }, []);
+  const clearFilterState = useCallback(
+    (filterKey: string) => {
+      applyChange(
+        (previous) => {
+          if (!previous.has(filterKey)) {
+            return;
+          }
+          const next = new Map(previous);
+          next.delete(filterKey);
+          return next;
+        },
+        { event: "CLEAR", filterKey },
+      );
+    },
+    [applyChange],
+  );
 
   const reset = useCallback(() => {
-    setFilterStates(new Map(initialFilterStatesSnapshot));
-  }, [initialFilterStatesSnapshot]);
+    applyChange(() => new Map(initialFilterStatesSnapshot), { event: "RESET" });
+  }, [applyChange, initialFilterStatesSnapshot]);
 
-  const whereClause = useMemo(
-    () => buildWhereClause(filterDefinitions, filterStates, propertyTypes),
-    [filterDefinitions, filterStates, propertyTypes],
-  );
-
-  const linkedFilters = useMemo(
-    () => getActiveLinkedFilters(filterDefinitions, filterStates),
-    [filterDefinitions, filterStates],
-  );
-
-  const effectiveObjectSet = useMemo<ObjectSet<Q> | undefined>(
+  const { whereClause, linkedFilters, effectiveObjectSet } = useMemo(
     () =>
-      objectSet == null
-        ? undefined
-        : narrowObjectSet(objectSet, whereClause, linkedFilters),
-    [objectSet, whereClause, linkedFilters],
+      deriveSnapshot(filterDefinitions, filterStates, propertyTypes, objectSet),
+    [filterDefinitions, filterStates, propertyTypes, objectSet],
   );
 
   useEffect(() => {

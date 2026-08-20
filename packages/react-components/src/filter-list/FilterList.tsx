@@ -23,7 +23,6 @@ import type { RenderFilterInput } from "./base/BaseFilterListApi.js";
 import { FilterInput } from "./FilterInput.js";
 import type {
   FilterDefinitionUnion,
-  FilterKey,
   FilterListProps,
 } from "./FilterListApi.js";
 import { useFilterListState } from "./hooks/useFilterListState.js";
@@ -80,15 +79,9 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       if (!onFilterVisibilityChange) {
         return;
       }
-      const states: Array<{ filterKey: FilterKey<Q>; isVisible: boolean }> = [
-        ...visibleKeys.map((key) => ({
-          filterKey: key as FilterKey<Q>,
-          isVisible: true,
-        })),
-        ...hiddenKeys.map((key) => ({
-          filterKey: key as FilterKey<Q>,
-          isVisible: false,
-        })),
+      const states: Array<{ filterKey: string; isVisible: boolean }> = [
+        ...visibleKeys.map((key) => ({ filterKey: key, isVisible: true })),
+        ...hiddenKeys.map((key) => ({ filterKey: key, isVisible: false })),
       ];
       onFilterVisibilityChange(states);
     },

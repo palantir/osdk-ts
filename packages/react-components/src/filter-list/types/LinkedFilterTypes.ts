@@ -37,7 +37,7 @@ import type {
  */
 export type LinkedFilter<Q extends ObjectTypeDefinition> = {
   [L in LinkNames<Q>]: {
-    /** Stable identity for the filter */
+    /** The filter definition's `getFilterKey` value. */
     id: string;
 
     linkName: L;
