@@ -41,6 +41,7 @@ export async function generateClientSdkVersionTwoPointZero(
   forInternalUse: boolean = false,
   fixedVersionQueryTypes: string[] = [],
   exportOntologyMetadata: boolean = false,
+  omitOntologyRid: boolean = false,
 ): Promise<void> {
   const importExt = ".js"; // turns out you can always use the extension
 
@@ -65,6 +66,7 @@ export async function generateClientSdkVersionTwoPointZero(
     outDir,
     forInternalUse,
     fixedVersionQueryTypes,
+    omitOntologyRid,
   };
 
   await generateRootIndexTsFile(ctx);
