@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-import type { OntologyIrV2 } from "@osdk/client.unstable";
+import type {
+  OntologyIrV2,
+  ValueTypeBlockData,
+  ValueTypeDataConstraint,
+  ValueTypeReference,
+} from "@osdk/client.unstable";
 import {
   generateClientSdkVersionTwoPointZero,
   type MinimalFs,
 } from "@osdk/generator";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
 import { isInjectedRuntimeInput } from "./convertDataType.js";
@@ -32,7 +38,31 @@ const discoveredFunctions = vi.hoisted<IDiscoveredFunction[]>(() => []);
 type OntologyBlock = OntologyIrV2["ontology"];
 type ActionBlock = OntologyBlock["actionTypes"][string];
 type InterfaceBlock = OntologyBlock["interfaceTypes"][string];
+type InterfaceType = InterfaceBlock["interfaceType"];
+type InterfaceProperty = InterfaceType["propertiesV3"][string];
+type SharedProperty = Extract<
+  InterfaceProperty,
+  { type: "sharedPropertyBasedPropertyType" }
+>["sharedPropertyBasedPropertyType"]["sharedPropertyType"];
+type InterfaceDefinedProperty = Extract<
+  InterfaceProperty,
+  { type: "interfaceDefinedPropertyType" }
+>["interfaceDefinedPropertyType"];
+type StringValueTypeConstraint = Extract<
+  ValueTypeDataConstraint["constraint"]["constraint"],
+  { type: "string" }
+>;
 
+type ValueTypeLocation = "owned" | "imported";
+
+const RANDOMNESS_KEY = "current-v2-envelope";
+const VALUE_TYPE_API_NAME = "trackQuality";
+const VALUE_TYPE_VERSION = "10.0.0";
+const LEGACY_VALUE_TYPE_REFERENCE = legacyValueTypeReference(
+  VALUE_TYPE_API_NAME,
+  VALUE_TYPE_VERSION,
+  RANDOMNESS_KEY,
+);
 function emptyOntologyBlock(): OntologyBlock {
   return {
     actionTypes: {},
@@ -72,6 +102,130 @@ function emptyOntologyBlock(): OntologyBlock {
     objectTypes: {},
     ruleSets: {},
     sharedPropertyTypes: {},
+  };
+}
+
+function legacyValueTypeReference(
+  apiName: string,
+  version: string,
+  randomnessKey?: string,
+): ValueTypeReference {
+  const ridInput = randomnessKey
+    ? `${apiName}-${randomnessKey}`
+    : apiName;
+  const versionHash = createHash("md5").update(version, "utf8").digest("hex");
+  return {
+    rid: `ri.ontology-metadata.temp.value-type.${
+      createHash("sha256").update(ridInput, "utf8").digest("hex")
+    }`,
+    versionId: `${versionHash.slice(0, 8)}-${
+      versionHash.slice(
+        8,
+        12,
+      )
+    }-${versionHash.slice(12, 16)}-${
+      versionHash.slice(
+        16,
+        20,
+      )
+    }-${versionHash.slice(20)}`,
+  };
+}
+
+function stringOneOfConstraint(
+  values: string[],
+): StringValueTypeConstraint {
+  return {
+    type: "string",
+    string: {
+      type: "oneOf",
+      oneOf: {
+        useIgnoreCase: undefined,
+        values,
+      },
+    },
+  };
+}
+
+function valueType(
+  apiName: string,
+  versions: string[],
+  displayName = `Display ${apiName}`,
+): ValueTypeBlockData {
+  return {
+    metadata: {
+      apiName,
+      baseType: { type: "string", string: {} },
+      displayMetadata: {
+        description: `Description for ${apiName}`,
+        displayName,
+      },
+      status: { type: "active", active: {} },
+    },
+    versions: versions.map((version) => ({
+      baseType: { type: "string", string: {} },
+      constraints: [{
+        constraint: {
+          constraint: stringOneOfConstraint(["HIGH", "MEDIUM", "LOW"]),
+          failureMessage: undefined,
+        },
+      }],
+      exampleValues: [],
+      version,
+    })),
+  };
+}
+
+function sharedProperty(
+  apiName: string,
+  valueTypeReference: ValueTypeReference,
+): SharedProperty {
+  return {
+    aliases: [],
+    apiName,
+    displayMetadata: {
+      displayName: apiName,
+      visibility: "NORMAL",
+    },
+    indexedForSearch: true,
+    rid: `ri.shared-property.${apiName}`,
+    type: {
+      type: "string",
+      string: {
+        isLongText: false,
+        supportsExactMatching: true,
+      },
+    },
+    typeClasses: [],
+    valueType: valueTypeReference,
+  };
+}
+
+function interfaceDefinedProperty(
+  apiName: string,
+  valueTypeReference: ValueTypeReference,
+): InterfaceDefinedProperty {
+  return {
+    apiName,
+    constraints: {
+      indexedForSearch: true,
+      primaryKeyConstraint: "NO_RESTRICTION",
+      requireImplementation: true,
+      typeClasses: [],
+      valueType: valueTypeReference,
+    },
+    displayMetadata: {
+      displayName: apiName,
+      visibility: "NORMAL",
+    },
+    rid: `ri.interface-property.${apiName}`,
+    type: {
+      type: "string",
+      string: {
+        isLongText: false,
+        supportsExactMatching: true,
+      },
+    },
   };
 }
 
@@ -226,6 +380,61 @@ function importedDefinitionsEnvelope(): OntologyIrV2 {
       interfaceTypes: { [ancestor.interfaceType.rid]: ancestor },
     },
     valueTypes: [],
+  };
+}
+
+function valueTypeEnvelope(
+  propertyReference: ValueTypeReference = LEGACY_VALUE_TYPE_REFERENCE,
+  ownedValueTypes: ValueTypeBlockData[] = [
+    valueType(VALUE_TYPE_API_NAME, ["2.0.0", VALUE_TYPE_VERSION, "1.0.0"]),
+  ],
+  importedValueTypes: ValueTypeBlockData[] = [],
+): OntologyIrV2 {
+  const ancestor = interfaceType("transitive.Ancestor", []);
+  ancestor.interfaceType.propertiesV3 = {
+    inheritedQuality: {
+      type: "interfaceDefinedPropertyType",
+      interfaceDefinedPropertyType: interfaceDefinedProperty(
+        "inheritedQuality",
+        propertyReference,
+      ),
+    },
+  };
+  const parent = interfaceType("imported.Parent", [ancestor.interfaceType.rid]);
+  const child = interfaceType("local.Item", [parent.interfaceType.rid]);
+  child.interfaceType.propertiesV3 = {
+    inlineQuality: {
+      type: "interfaceDefinedPropertyType",
+      interfaceDefinedPropertyType: interfaceDefinedProperty(
+        "inlineQuality",
+        propertyReference,
+      ),
+    },
+    trackQuality: {
+      type: "sharedPropertyBasedPropertyType",
+      sharedPropertyBasedPropertyType: {
+        requireImplementation: true,
+        sharedPropertyType: sharedProperty("trackQuality", propertyReference),
+      },
+    },
+  };
+
+  return {
+    importedOntology: {
+      ...emptyOntologyBlock(),
+      interfaceTypes: { [parent.interfaceType.rid]: parent },
+    },
+    importedValueTypes,
+    ontology: {
+      ...emptyOntologyBlock(),
+      interfaceTypes: { [child.interfaceType.rid]: child },
+    },
+    randomnessKey: RANDOMNESS_KEY,
+    transitiveImportedOntology: {
+      ...emptyOntologyBlock(),
+      interfaceTypes: { [ancestor.interfaceType.rid]: ancestor },
+    },
+    valueTypes: ownedValueTypes,
   };
 }
 
@@ -3860,6 +4069,137 @@ describe(OntologyIrToFullMetadataConverter, () => {
     } finally {
       createProgramSpy.mockRestore();
     }
+  });
+
+  describe("full ontology V2 Value Types", () => {
+    it("preserves metadata and property api names", () => {
+      const metadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(valueTypeEnvelope());
+      const child = metadata.interfaceTypes["local.Item"];
+
+      expect(metadata.valueTypes.trackQuality).toMatchObject({
+        apiName: VALUE_TYPE_API_NAME,
+        rid: LEGACY_VALUE_TYPE_REFERENCE.rid,
+        version: VALUE_TYPE_VERSION,
+      });
+      expect(child.propertiesV2.trackQuality.valueTypeApiName).toBe(
+        VALUE_TYPE_API_NAME,
+      );
+      expect(child.propertiesV2.inlineQuality.valueTypeApiName).toBe(
+        VALUE_TYPE_API_NAME,
+      );
+      expect(child.allPropertiesV2.inheritedQuality.valueTypeApiName).toBe(
+        VALUE_TYPE_API_NAME,
+      );
+    });
+
+    it.each([RANDOMNESS_KEY, ""])(
+      "resolves legacy property references with randomness key %s",
+      (randomnessKey) => {
+        const propertyReference = legacyValueTypeReference(
+          VALUE_TYPE_API_NAME,
+          VALUE_TYPE_VERSION,
+          randomnessKey,
+        );
+        const input = valueTypeEnvelope(propertyReference);
+        input.randomnessKey = randomnessKey;
+        const metadata = OntologyIrToFullMetadataConverter
+          .getFullMetadataFromEnvelope(input);
+
+        expect(
+          metadata.interfaceTypes["local.Item"].propertiesV2.trackQuality
+            .valueTypeApiName,
+        ).toBe(VALUE_TYPE_API_NAME);
+        expect(metadata.valueTypes.trackQuality.rid).toBe(
+          propertyReference.rid,
+        );
+      },
+    );
+
+    it("selects a stable version over a prerelease", () => {
+      const stableReference = legacyValueTypeReference(
+        VALUE_TYPE_API_NAME,
+        "1.0.0",
+        RANDOMNESS_KEY,
+      );
+      const metadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(
+          valueTypeEnvelope(
+            stableReference,
+            [valueType(VALUE_TYPE_API_NAME, ["1.0.0-alpha", "1.0.0"])],
+          ),
+        );
+
+      expect(metadata.valueTypes.trackQuality).toMatchObject({
+        rid: stableReference.rid,
+        version: "1.0.0",
+      });
+    });
+
+    it("orders prerelease identifiers and build metadata consistently", () => {
+      const stableReference = legacyValueTypeReference(
+        "stableCase",
+        "1.0.0",
+        RANDOMNESS_KEY,
+      );
+      const buildFirstReference = legacyValueTypeReference(
+        "buildCase",
+        "1.0.0+first",
+        RANDOMNESS_KEY,
+      );
+
+      const stableMetadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(
+          valueTypeEnvelope(
+            stableReference,
+            [
+              valueType("stableCase", [
+                "1.0.0-A",
+                "1.0.0-a",
+                "1.0.0-999999999999999999999999999999",
+                "1.0.0",
+              ]),
+              valueType("buildCase", ["1.0.0+first", "1.0.0+second"]),
+            ],
+          ),
+        );
+
+      expect(stableMetadata.valueTypes.stableCase).toMatchObject({
+        rid: stableReference.rid,
+        version: "1.0.0",
+      });
+      expect(stableMetadata.valueTypes.buildCase).toMatchObject({
+        rid: buildFirstReference.rid,
+        version: "1.0.0+first",
+      });
+    });
+
+    it("uses owned definitions for equal-version duplicates", () => {
+      const reference = legacyValueTypeReference(
+        VALUE_TYPE_API_NAME,
+        VALUE_TYPE_VERSION,
+        RANDOMNESS_KEY,
+      );
+      const metadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(
+          valueTypeEnvelope(
+            reference,
+            [valueType(VALUE_TYPE_API_NAME, [VALUE_TYPE_VERSION], "Owned")],
+            [
+              valueType(
+                VALUE_TYPE_API_NAME,
+                [VALUE_TYPE_VERSION],
+                "Imported",
+              ),
+            ],
+          ),
+        );
+
+      expect(metadata.valueTypes.trackQuality).toMatchObject({
+        displayName: "Owned",
+        rid: reference.rid,
+      });
+    });
   });
 
   describe("full ontology V2 imports", () => {

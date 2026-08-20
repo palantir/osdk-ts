@@ -15,6 +15,8 @@
  */
 
 import type {
+  BaseType,
+  DataConstraint,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionTypeStatus,
   OntologyIrInterfaceTypeBlockDataV2,
@@ -27,16 +29,21 @@ import type {
   OntologyIrSharedPropertyTypeBlockDataV2,
   OntologyIrType,
   OntologyIrV2,
+  ValueTypeBlockData,
+  ValueTypeDataConstraint,
+  ValueTypeReference,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
 import { consola } from "consola";
 import * as fs from "fs";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { accessSync, constants } from "node:fs";
 import { createRequire } from "node:module";
 import * as path from "node:path";
 import { pathToFileURL } from "node:url";
+import { compare as compareSemver, valid as validSemver } from "semver-ts";
 import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
@@ -259,14 +266,14 @@ export class OntologyIrToFullMetadataConverter {
       ir.importedOntology.interfaceTypes,
       ir.ontology.interfaceTypes,
     );
-    return OntologyBlockDataToFullMetadataConverter
-      .getFullMetadataFromBlockData(
-        mergeOntologyBlocks(
-          ir.transitiveImportedOntology,
-          ir.importedOntology,
-          ir.ontology,
-        ),
-      );
+    const blockData = mergeOntologyBlocks(
+      ir.transitiveImportedOntology,
+      ir.importedOntology,
+      ir.ontology,
+    );
+    const metadata = OntologyBlockDataToFullMetadataConverter
+      .getFullMetadataFromBlockData(blockData);
+    return addValueTypeMetadata(metadata, blockData, ir);
   }
 
   static getFullMetadataFromIr(
@@ -1630,6 +1637,449 @@ function mergeOntologyBlocks(
     ruleSets: owned.ruleSets,
     sharedPropertyTypes: owned.sharedPropertyTypes,
   };
+}
+
+function addValueTypeMetadata(
+  metadata: Ontologies.OntologyFullMetadata,
+  blockData: OntologyIrV2["ontology"],
+  ir: OntologyIrV2,
+): Ontologies.OntologyFullMetadata {
+  const apiNameByReference = buildValueTypeApiNameLookup(ir);
+  addPropertyValueTypeApiNames(metadata, blockData, apiNameByReference);
+  return {
+    ...metadata,
+    valueTypes: convertEnvelopeValueTypes(ir),
+  };
+}
+
+function buildValueTypeApiNameLookup(
+  ir: OntologyIrV2,
+): Map<string, ApiName> {
+  const result = new Map<string, ApiName>();
+  for (const valueType of [...ir.importedValueTypes, ...ir.valueTypes]) {
+    const apiName = valueType.metadata.apiName;
+    for (const version of valueType.versions) {
+      result.set(
+        valueTypeReferenceKey(
+          legacyValueTypeReference(apiName, version.version, ir.randomnessKey),
+        ),
+        apiName,
+      );
+    }
+  }
+  return result;
+}
+
+function valueTypeReferenceKey(reference: ValueTypeReference): string {
+  return `${reference.rid}\0${reference.versionId}`;
+}
+
+function legacyValueTypeReference(
+  apiName: string,
+  version: string,
+  randomnessKey: string | undefined,
+): ValueTypeReference {
+  const ridInput = randomnessKey
+    ? `${apiName}-${randomnessKey}`
+    : apiName;
+  const versionHash = createHash("md5").update(version, "utf8").digest("hex");
+  return {
+    rid: `ri.ontology-metadata.temp.value-type.${
+      createHash("sha256").update(ridInput, "utf8").digest("hex")
+    }`,
+    versionId: `${versionHash.slice(0, 8)}-${
+      versionHash.slice(
+        8,
+        12,
+      )
+    }-${versionHash.slice(12, 16)}-${
+      versionHash.slice(
+        16,
+        20,
+      )
+    }-${versionHash.slice(20)}`,
+  };
+}
+
+function resolveValueTypeApiName(
+  reference: ValueTypeReference | null | undefined,
+  apiNameByReference: ReadonlyMap<string, ApiName>,
+): ApiName | undefined {
+  return reference == null
+    ? undefined
+    : apiNameByReference.get(valueTypeReferenceKey(reference));
+}
+
+function addPropertyValueTypeApiNames(
+  metadata: Ontologies.OntologyFullMetadata,
+  blockData: OntologyIrV2["ontology"],
+  apiNameByReference: ReadonlyMap<string, ApiName>,
+): void {
+  for (const objectBlock of Object.values(blockData.objectTypes)) {
+    const objectApiName = objectBlock.objectType.apiName;
+    if (objectApiName == null) {
+      continue;
+    }
+    const output = metadata.objectTypes[objectApiName];
+    if (output === undefined) {
+      continue;
+    }
+    for (
+      const property of Object.values(objectBlock.objectType.propertyTypes)
+    ) {
+      const apiName = resolveValueTypeApiName(
+        property.valueType,
+        apiNameByReference,
+      );
+      const propertyApiName = property.apiName;
+      if (propertyApiName == null) {
+        continue;
+      }
+      const outputProperty = output.objectType.properties[propertyApiName];
+      if (apiName !== undefined && outputProperty !== undefined) {
+        outputProperty.valueTypeApiName = apiName;
+      }
+    }
+  }
+
+  for (
+    const sharedPropertyBlock of Object.values(blockData.sharedPropertyTypes)
+  ) {
+    const property = sharedPropertyBlock.sharedPropertyType;
+    const apiName = resolveValueTypeApiName(
+      property.valueType,
+      apiNameByReference,
+    );
+    const output = metadata.sharedPropertyTypes[property.apiName];
+    if (apiName !== undefined && output !== undefined) {
+      output.valueTypeApiName = apiName;
+    }
+  }
+
+  const referenceByPropertyRid = new Map<string, ValueTypeReference>();
+  for (const interfaceBlock of Object.values(blockData.interfaceTypes)) {
+    const interfaceType = interfaceBlock.interfaceType;
+    for (const property of Object.values(interfaceType.propertiesV2)) {
+      const valueType = property.sharedPropertyType.valueType;
+      if (valueType != null) {
+        referenceByPropertyRid.set(property.sharedPropertyType.rid, valueType);
+      }
+    }
+    for (const property of Object.values(interfaceType.propertiesV3)) {
+      if (property.type === "interfaceDefinedPropertyType") {
+        const valueType = property.interfaceDefinedPropertyType.constraints
+          .valueType;
+        if (valueType != null) {
+          referenceByPropertyRid.set(
+            property.interfaceDefinedPropertyType.rid,
+            valueType,
+          );
+        }
+      } else {
+        const sharedPropertyType = property.sharedPropertyBasedPropertyType
+          .sharedPropertyType;
+        if (sharedPropertyType.valueType != null) {
+          referenceByPropertyRid.set(
+            sharedPropertyType.rid,
+            sharedPropertyType.valueType,
+          );
+        }
+      }
+    }
+  }
+
+  for (const interfaceType of Object.values(metadata.interfaceTypes)) {
+    addInterfacePropertyValueTypeApiNames(
+      interfaceType.properties,
+      referenceByPropertyRid,
+      apiNameByReference,
+    );
+    addInterfacePropertyValueTypeApiNames(
+      interfaceType.propertiesV2,
+      referenceByPropertyRid,
+      apiNameByReference,
+    );
+    addInterfacePropertyValueTypeApiNames(
+      interfaceType.allPropertiesV2,
+      referenceByPropertyRid,
+      apiNameByReference,
+    );
+  }
+}
+
+function addInterfacePropertyValueTypeApiNames(
+  properties: Record<ApiName, { rid: string; valueTypeApiName?: string }>,
+  referenceByPropertyRid: ReadonlyMap<string, ValueTypeReference>,
+  apiNameByReference: ReadonlyMap<string, ApiName>,
+): void {
+  for (const property of Object.values(properties)) {
+    const apiName = resolveValueTypeApiName(
+      referenceByPropertyRid.get(property.rid),
+      apiNameByReference,
+    );
+    if (apiName !== undefined) {
+      property.valueTypeApiName = apiName;
+    }
+  }
+}
+
+function convertEnvelopeValueTypes(
+  ir: OntologyIrV2,
+): Record<ApiName, Ontologies.OntologyValueType> {
+  const result: Record<ApiName, Ontologies.OntologyValueType> = {};
+  for (const valueType of [...ir.importedValueTypes, ...ir.valueTypes]) {
+    const version = latestValueTypeVersion(valueType.versions);
+    if (version === undefined) {
+      continue;
+    }
+    const existing = result[valueType.metadata.apiName];
+    if (
+      existing !== undefined
+      && compareValueTypeVersions(version.version, existing.version) < 0
+    ) {
+      continue;
+    }
+    const reference = legacyValueTypeReference(
+      valueType.metadata.apiName,
+      version.version,
+      ir.randomnessKey,
+    );
+    result[valueType.metadata.apiName] = {
+      apiName: valueType.metadata.apiName,
+      displayName: valueType.metadata.displayMetadata.displayName,
+      description: valueType.metadata.displayMetadata.description ?? undefined,
+      rid: reference.rid,
+      status: convertValueTypeStatus(valueType.metadata.status.type),
+      version: version.version,
+      fieldType: convertValueTypeFieldType(
+        version.baseType ?? valueType.metadata.baseType,
+      ),
+      constraints: version.constraints.map(convertValueTypeConstraint),
+    };
+  }
+  return result;
+}
+
+function latestValueTypeVersion(
+  versions: ValueTypeBlockData["versions"],
+): ValueTypeBlockData["versions"][number] | undefined {
+  let latest: ValueTypeBlockData["versions"][number] | undefined;
+  for (const version of versions) {
+    if (
+      latest === undefined
+      || compareValueTypeVersions(version.version, latest.version) > 0
+    ) {
+      latest = version;
+    }
+  }
+  return latest;
+}
+
+function compareValueTypeVersions(a: string, b: string): number {
+  const validA = validSemver(a);
+  const validB = validSemver(b);
+  if (validA != null && validB != null) {
+    return compareSemver(validA, validB);
+  }
+  if (validA != null) {
+    return 1;
+  }
+  if (validB != null) {
+    return -1;
+  }
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
+function convertValueTypeStatus(
+  status: string,
+): Ontologies.ValueTypeStatus | undefined {
+  switch (status) {
+    case "active":
+      return "ACTIVE";
+    case "deprecated":
+      return "DEPRECATED";
+    default:
+      return undefined;
+  }
+}
+
+function convertValueTypeFieldType(
+  baseType: BaseType,
+): Ontologies.ValueTypeFieldType {
+  switch (baseType.type) {
+    case "array":
+      return {
+        type: "array",
+        subType: convertValueTypeFieldType(baseType.array.elementType),
+      };
+    case "boolean":
+    case "binary":
+    case "byte":
+    case "date":
+    case "decimal":
+    case "double":
+    case "float":
+    case "integer":
+    case "long":
+    case "short":
+    case "string":
+    case "timestamp":
+      return { type: baseType.type };
+    case "map":
+      return {
+        type: "map",
+        keyType: convertValueTypeFieldType(baseType.map.keyType),
+        valueType: convertValueTypeFieldType(baseType.map.valueType),
+      };
+    case "optional":
+      return {
+        type: "optional",
+        wrappedType: convertValueTypeFieldType(baseType.optional.wrappedType),
+      };
+    case "referenced":
+      return { type: "reference" };
+    case "struct":
+      return {
+        type: "struct",
+        fields: baseType.struct.fields.map((field) => ({
+          name: field.name,
+          fieldType: convertValueTypeFieldType(field.type),
+        })),
+      };
+    case "structV2":
+      return {
+        type: "struct",
+        fields: baseType.structV2.fields.map((field) => ({
+          name: field.identifier,
+          fieldType: convertValueTypeFieldType(field.baseType),
+        })),
+      };
+    case "union":
+      return {
+        type: "union",
+        memberTypes: baseType.union.memberTypes.map(convertValueTypeFieldType),
+      };
+  }
+}
+
+function convertValueTypeConstraint(
+  constraint: ValueTypeDataConstraint,
+): Ontologies.ValueTypeConstraint {
+  return convertValueTypeDataConstraint(constraint.constraint.constraint);
+}
+
+function convertValueTypeDataConstraint(
+  constraint: DataConstraint,
+): Ontologies.ValueTypeConstraint {
+  switch (constraint.type) {
+    case "array":
+      return {
+        type: "array",
+        minimumSize: constraint.array.size?.minSize,
+        maximumSize: constraint.array.size?.maxSize,
+        uniqueValues: constraint.array.elementsUnique ?? false,
+        valueConstraint: constraint.array.elementsConstraint === undefined
+          ? undefined
+          : convertValueTypeDataConstraint(
+            constraint.array.elementsConstraint,
+          ),
+      };
+    case "boolean":
+      return {
+        type: "enum",
+        options: constraint.boolean.allowedValues.map((value) => {
+          switch (value) {
+            case "TRUE_VALUE":
+              return true;
+            case "FALSE_VALUE":
+              return false;
+            case "NULL_VALUE":
+              return undefined;
+          }
+        }),
+      };
+    case "binary":
+      return {
+        type: "length",
+        minimumLength: constraint.binary.size.minSize,
+        maximumLength: constraint.binary.size.maxSize,
+      };
+    case "date":
+      return {
+        type: "range",
+        minimumValue: constraint.date.range.min,
+        maximumValue: constraint.date.range.max,
+      };
+    case "decimal":
+      return convertNumericValueTypeConstraint(constraint.decimal);
+    case "double":
+      return convertNumericValueTypeConstraint(constraint.double);
+    case "float":
+      return convertNumericValueTypeConstraint(constraint.float);
+    case "integer":
+      return convertNumericValueTypeConstraint(constraint.integer);
+    case "long":
+      return convertNumericValueTypeConstraint(constraint.long);
+    case "short":
+      return convertNumericValueTypeConstraint(constraint.short);
+    case "string":
+      switch (constraint.string.type) {
+        case "regex":
+          return {
+            type: "regex",
+            pattern: constraint.string.regex.regexPattern,
+            partialMatch: constraint.string.regex.usePartialMatch ?? false,
+          };
+        case "oneOf":
+          return { type: "enum", options: constraint.string.oneOf.values };
+        case "length":
+          return {
+            type: "length",
+            minimumLength: constraint.string.length.minSize,
+            maximumLength: constraint.string.length.maxSize,
+          };
+        case "isUuid":
+          return { type: "uuid" };
+        case "isRid":
+          return { type: "rid" };
+      }
+    case "timestamp":
+      return {
+        type: "range",
+        minimumValue: constraint.timestamp.range.min,
+        maximumValue: constraint.timestamp.range.max,
+      };
+    case "map":
+    case "nullable":
+    case "struct":
+    case "structV2":
+      return {
+        type: "unsupported",
+        unsupportedType: constraint.type,
+        params: {},
+      };
+  }
+}
+
+function convertNumericValueTypeConstraint(
+  constraint:
+    | Extract<DataConstraint, { type: "decimal" }>["decimal"]
+    | Extract<DataConstraint, { type: "double" }>["double"]
+    | Extract<DataConstraint, { type: "float" }>["float"]
+    | Extract<DataConstraint, { type: "integer" }>["integer"]
+    | Extract<DataConstraint, { type: "long" }>["long"]
+    | Extract<DataConstraint, { type: "short" }>["short"],
+): Ontologies.ValueTypeConstraint {
+  switch (constraint.type) {
+    case "range":
+      return {
+        type: "range",
+        minimumValue: constraint.range.min,
+        maximumValue: constraint.range.max,
+      };
+    case "oneOf":
+      return { type: "enum", options: constraint.oneOf.values };
+  }
 }
 
 function discoverComponentRoot(
