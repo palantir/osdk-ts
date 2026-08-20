@@ -806,6 +806,13 @@ function getPropertiesForDatasource(datasourceDef: {
         }
       )?.propertyMapping;
       break;
+    case "direct":
+      propertyMapping = (
+        datasourceDef.direct as {
+          propertyMapping?: Record<string, unknown>;
+        }
+      )?.propertyMapping;
+      break;
     case "restrictedView":
       propertyMapping = (
         datasourceDef.restrictedView as {
