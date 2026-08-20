@@ -54,7 +54,7 @@ export const fetchLinksPage = async <
   // type, which the gateway rejects.
   const normalizedObjectSet = await normalizeInterfaceLinkSearchArounds(
     client,
-    objectSet
+    objectSet,
   );
 
   const result = await OntologyObjectSets.loadLinks(

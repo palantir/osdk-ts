@@ -96,7 +96,7 @@ describe("normalizeInterfaceLinkSearchArounds", () => {
     };
 
     expect(
-      await normalizeInterfaceLinkSearchArounds(mockClientCtx, buggy)
+      await normalizeInterfaceLinkSearchArounds(mockClientCtx, buggy),
     ).toEqual({
       type: "searchAround",
       objectSet: {
@@ -124,7 +124,7 @@ describe("normalizeInterfaceLinkSearchArounds", () => {
 
     const result = await normalizeInterfaceLinkSearchArounds(
       mockClientCtx,
-      allInterfaces
+      allInterfaces,
     );
 
     expect(result).toBe(allInterfaces);
@@ -142,7 +142,7 @@ describe("normalizeInterfaceLinkSearchArounds", () => {
     };
 
     expect(
-      await normalizeInterfaceLinkSearchArounds(mockClientCtx, plain)
+      await normalizeInterfaceLinkSearchArounds(mockClientCtx, plain),
     ).toBe(plain);
   });
 
@@ -176,7 +176,7 @@ describe("normalizeInterfaceLinkSearchArounds", () => {
 
     const result = await normalizeInterfaceLinkSearchArounds(
       mockClientCtx,
-      nested
+      nested,
     );
 
     expect(result).not.toBe(nested);
@@ -212,11 +212,11 @@ describe("normalizeInterfaceLinkSearchArounds", () => {
 
     const result = await normalizeInterfaceLinkSearchArounds(
       mockClientCtx,
-      withRdp
+      withRdp,
     );
 
     expect((result as any).derivedProperties.docCount.objectSet.type).toBe(
-      "searchAround"
+      "searchAround",
     );
   });
 });

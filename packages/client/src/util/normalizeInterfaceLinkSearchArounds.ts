@@ -42,7 +42,7 @@ import { extractObjectOrInterfaceType } from "./extractObjectOrInterfaceType.js"
  */
 export async function normalizeInterfaceLinkSearchArounds(
   clientCtx: MinimalClient,
-  objectSet: ObjectSet
+  objectSet: ObjectSet,
 ): Promise<ObjectSet> {
   switch (objectSet.type) {
     // Leaves: no nested object sets.
@@ -56,7 +56,7 @@ export async function normalizeInterfaceLinkSearchArounds(
     case "interfaceLinkSearchAround": {
       const child = await normalizeInterfaceLinkSearchArounds(
         clientCtx,
-        objectSet.objectSet
+        objectSet.objectSet,
       );
       const sourceDef = await extractObjectOrInterfaceType(clientCtx, child);
 
@@ -87,7 +87,7 @@ export async function normalizeInterfaceLinkSearchArounds(
     case "nearestNeighbors": {
       const child = await normalizeInterfaceLinkSearchArounds(
         clientCtx,
-        objectSet.objectSet
+        objectSet.objectSet,
       );
       return child === objectSet.objectSet
         ? objectSet
@@ -99,11 +99,11 @@ export async function normalizeInterfaceLinkSearchArounds(
     case "withProperties": {
       const child = await normalizeInterfaceLinkSearchArounds(
         clientCtx,
-        objectSet.objectSet
+        objectSet.objectSet,
       );
       const derivedProperties = await normalizeDerivedProperties(
         clientCtx,
-        objectSet.derivedProperties
+        objectSet.derivedProperties,
       );
       return child === objectSet.objectSet &&
         derivedProperties === objectSet.derivedProperties
@@ -117,8 +117,8 @@ export async function normalizeInterfaceLinkSearchArounds(
     case "subtract": {
       const children = await Promise.all(
         objectSet.objectSets.map((os) =>
-          normalizeInterfaceLinkSearchArounds(clientCtx, os)
-        )
+          normalizeInterfaceLinkSearchArounds(clientCtx, os),
+        ),
       );
       return children.every((c, i) => c === objectSet.objectSets[i])
         ? objectSet
@@ -129,7 +129,7 @@ export async function normalizeInterfaceLinkSearchArounds(
       const _: never = objectSet;
       invariant(
         false,
-        `Unsupported object set type when normalizing search arounds: ${(objectSet as ObjectSet).type}`
+        `Unsupported object set type when normalizing search arounds: ${(objectSet as ObjectSet).type}`,
       );
     }
   }
@@ -137,14 +137,14 @@ export async function normalizeInterfaceLinkSearchArounds(
 
 async function normalizeDerivedProperties(
   clientCtx: MinimalClient,
-  derivedProperties: Record<string, DerivedPropertyDefinition>
+  derivedProperties: Record<string, DerivedPropertyDefinition>,
 ): Promise<Record<string, DerivedPropertyDefinition>> {
   const entries = Object.entries(derivedProperties);
   const normalized = await Promise.all(
     entries.map(
       async ([key, definition]) =>
-        [key, await normalizeDerivedProperty(clientCtx, definition)] as const
-    )
+        [key, await normalizeDerivedProperty(clientCtx, definition)] as const,
+    ),
   );
   return normalized.every(([, def], i) => def === entries[i][1])
     ? derivedProperties
@@ -153,7 +153,7 @@ async function normalizeDerivedProperties(
 
 async function normalizeDerivedProperty(
   clientCtx: MinimalClient,
-  definition: DerivedPropertyDefinition
+  definition: DerivedPropertyDefinition,
 ): Promise<DerivedPropertyDefinition> {
   switch (definition.type) {
     case "property":
@@ -162,7 +162,7 @@ async function normalizeDerivedProperty(
     case "selection": {
       const objectSet = await normalizeInterfaceLinkSearchArounds(
         clientCtx,
-        definition.objectSet
+        definition.objectSet,
       );
       return objectSet === definition.objectSet
         ? definition
@@ -174,7 +174,7 @@ async function normalizeDerivedProperty(
     case "negate": {
       const property = await normalizeDerivedProperty(
         clientCtx,
-        definition.property
+        definition.property,
       );
       return property === definition.property
         ? definition
@@ -197,7 +197,9 @@ async function normalizeDerivedProperty(
     case "multiply":
     case "greatest": {
       const properties = await Promise.all(
-        definition.properties.map((p) => normalizeDerivedProperty(clientCtx, p))
+        definition.properties.map((p) =>
+          normalizeDerivedProperty(clientCtx, p),
+        ),
       );
       return properties.every((p, i) => p === definition.properties[i])
         ? definition
@@ -208,7 +210,7 @@ async function normalizeDerivedProperty(
       const _: never = definition;
       invariant(
         false,
-        `Unsupported derived property type when normalizing search arounds: ${(definition as DerivedPropertyDefinition).type}`
+        `Unsupported derived property type when normalizing search arounds: ${(definition as DerivedPropertyDefinition).type}`,
       );
     }
   }

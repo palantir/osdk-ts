@@ -162,7 +162,7 @@ export async function toDataValueQueries(
       if (isObjectSet(value)) {
         return normalizeInterfaceLinkSearchArounds(
           client,
-          getWireObjectSet(value)
+          getWireObjectSet(value),
         );
       }
       break;

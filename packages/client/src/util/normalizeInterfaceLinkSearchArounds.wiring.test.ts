@@ -71,10 +71,10 @@ describe("normalizeInterfaceLinkSearchArounds wiring", () => {
     // other packages snapshot.
     const ctx = client[additionalContext];
     const realGetInterface = ctx.ontologyProvider.getInterfaceDefinition.bind(
-      ctx.ontologyProvider
+      ctx.ontologyProvider,
     );
     (ctx.ontologyProvider as any).getInterfaceDefinition = (
-      apiName: string
+      apiName: string,
     ) => {
       if (apiName === "TaggableEntity") {
         return {
@@ -111,8 +111,8 @@ describe("normalizeInterfaceLinkSearchArounds wiring", () => {
           async ({ request }) => {
             sent = await request.json();
             return { data: [], totalCount: "0" } as any;
-          }
-        )
+          },
+        ),
       );
 
       await buggySetFor(Employee).fetchPage();
@@ -134,8 +134,8 @@ describe("normalizeInterfaceLinkSearchArounds wiring", () => {
               totalCount: "0",
               interfaceToObjectTypeMappings: {},
             } as any;
-          }
-        )
+          },
+        ),
       );
 
       await buggySetFor(FooInterface).fetchPage();
@@ -157,8 +157,8 @@ describe("normalizeInterfaceLinkSearchArounds wiring", () => {
               data: [{ group: {}, metrics: [{ name: "count", value: 0 }] }],
               accuracy: "APPROXIMATE",
             } as any;
-          }
-        )
+          },
+        ),
       );
 
       await buggySetFor(Employee).aggregate({
@@ -178,13 +178,13 @@ describe("normalizeInterfaceLinkSearchArounds wiring", () => {
           async ({ request }) => {
             sent = await request.json();
             return { objectSetRid: "ri.object-set.main.object-set.1" } as any;
-          }
-        )
+          },
+        ),
       );
 
       await createAndFetchTempObjectSetRid(
         client,
-        buggySetFor(Employee) as any
+        buggySetFor(Employee) as any,
       );
 
       expect(sent.objectSet).toEqual(expectedNormalized);
@@ -200,8 +200,8 @@ describe("normalizeInterfaceLinkSearchArounds wiring", () => {
           async ({ request }) => {
             sent = await request.json();
             return { data: [], nextPageToken: undefined } as any;
-          }
-        )
+          },
+        ),
       );
 
       const iter = buggySetFor(Employee).experimental_asyncIterLinks("peeps");

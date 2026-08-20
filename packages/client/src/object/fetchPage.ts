@@ -547,7 +547,7 @@ async function buildAndRemapRequestBody<
   // type. Rewrite those before they reach the wire.
   const objectSet = await normalizeInterfaceLinkSearchArounds(
     client,
-    withArgs.objectSet
+    withArgs.objectSet,
   );
   const requestBody =
     objectSet === withArgs.objectSet ? withArgs : { ...withArgs, objectSet };

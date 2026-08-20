@@ -68,7 +68,7 @@ export async function aggregate<
   // type, which the gateway rejects.
   const normalizedObjectSet = await normalizeInterfaceLinkSearchArounds(
     clientCtx,
-    objectSet
+    objectSet,
   );
 
   const result = await OntologyObjectSets.aggregate(
