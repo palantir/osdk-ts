@@ -64,6 +64,25 @@ interface BooleanActionDef extends ActionDefinition<unknown> {
   };
 }
 
+const REPEATED_STRING_PARAMETERS = {
+  tags: {
+    type: "string",
+    multiplicity: true,
+    nullable: false,
+  },
+} as const satisfies ActionMetadata["parameters"];
+
+interface RepeatedStringActionDef extends ActionDefinition<unknown> {
+  __DefinitionMetadata: {
+    signatures: unknown;
+    parameters: typeof REPEATED_STRING_PARAMETERS;
+    type: "action";
+    apiName: "RepeatedStringAction";
+    status: "ACTIVE";
+    rid: string;
+  };
+}
+
 const TestAction: TestActionDef = {
   type: "action",
   apiName: "TestAction",
@@ -73,6 +92,13 @@ const BooleanAction: BooleanActionDef = {
   type: "action",
   apiName: "BooleanAction",
 } as BooleanActionDef;
+
+// Generated actions expose __DefinitionMetadata only through their static type,
+// so the runtime fixture intentionally contains just the public action identity.
+const RepeatedStringAction: RepeatedStringActionDef = {
+  type: "action",
+  apiName: "RepeatedStringAction",
+} as RepeatedStringActionDef;
 
 const mockApplyAction = vi.fn().mockResolvedValue({
   editedObjectTypes: [],
@@ -106,6 +132,14 @@ const mockMetadata: ActionMetadata = {
   },
   status: "ACTIVE",
   rid: "ri.ontology.main.action-type.test",
+};
+
+const repeatedStringMetadata: ActionMetadata = {
+  type: "action",
+  apiName: "RepeatedStringAction",
+  parameters: REPEATED_STRING_PARAMETERS,
+  status: "ACTIVE",
+  rid: "ri.ontology.main.action-type.repeated-string",
 };
 
 function defaultMockMetadataResult() {
@@ -375,6 +409,54 @@ describe("ActionForm", () => {
         expect(mockApplyAction).toHaveBeenCalledWith(
           expect.objectContaining({ name: "Ada Lovelace" }),
         );
+      });
+    });
+
+    it("stores and submits repeated string dropdown selections as an array", async () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: repeatedStringMetadata,
+      });
+      const customDefs: Array<FormFieldDefinition<RepeatedStringActionDef>> = [
+        {
+          fieldKey: "tags",
+          label: "Tags",
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: {
+            items: ["Engineer", "Manager"],
+            isMultiple: true,
+            isSearchable: true,
+          },
+        },
+      ];
+
+      function ControlledWrapper() {
+        const [formState, setFormState] = useState<{ tags?: string[] }>({});
+
+        return (
+          <ActionForm
+            actionDefinition={RepeatedStringAction}
+            formFieldDefinitions={customDefs}
+            formState={formState}
+            onFormStateChange={setFormState}
+          />
+        );
+      }
+
+      render(<ControlledWrapper />);
+
+      fireEvent.click(screen.getByRole("combobox"));
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Engineer" })).toBeDefined();
+      });
+      fireEvent.click(screen.getByRole("option", { name: "Engineer" }));
+      fireEvent.click(screen.getByRole("option", { name: "Manager" }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await vi.waitFor(() => {
+        expect(mockApplyAction).toHaveBeenCalledWith({
+          tags: ["Engineer", "Manager"],
+        });
       });
     });
   });

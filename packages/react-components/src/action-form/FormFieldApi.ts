@@ -46,7 +46,7 @@ export type FormFieldDefinition<
   ? {
       // Distribute over each field key so a field's key, value type, and allowed
       // components stay correlated when K is the default union of all keys.
-      [C in ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>]: {
+      [C in ValidFormFieldForActionParameter<ActionParameter<Q, K>>]: {
         /**
          * The field's unique key
          */
@@ -118,11 +118,11 @@ export type FormFieldDefinition<
          * Excludes runtime props (value, onChange) which are managed by ActionForm.
          */
         fieldComponentProps: DistributiveOmit<
-          FormFieldPropsByType[C],
+          FormFieldComponentPropsByActionParameter<ActionParameter<Q, K>>[C],
           FormManagedProps<C>
         >;
       };
-    }[ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>]
+    }[ValidFormFieldForActionParameter<ActionParameter<Q, K>>]
   : never;
 
 /**
@@ -156,6 +156,39 @@ export interface FormFieldPropsByType {
   CUSTOM: CustomFieldProps<unknown>;
   UNSUPPORTED: UnsupportedFieldProps;
 }
+
+/**
+ * Maps the components supported by an action parameter to props that preserve
+ * the parameter's value type and, where applicable, the object type referenced
+ * by the parameter.
+ * Components without action-specific props reuse the renderer-facing mapping.
+ */
+type FormFieldComponentPropsByActionParameter<
+  P extends ActionMetadata.Parameter,
+> = {
+  [C in ValidFormFieldForActionParameter<P>]: C extends "DROPDOWN"
+    ? DropdownFieldPropsByActionParameter<P>
+    : C extends "RADIO_BUTTONS"
+      ? RadioButtonsFieldProps<ActionParameterValueType<P>>
+      : C extends "CUSTOM"
+        ? CustomFieldProps<ActionParameterValueType<P>>
+        : C extends "OBJECT_SELECT"
+          ? P["type"] extends ActionMetadata.DataType.Object<infer T>
+            ? ObjectSelectFieldProps<T>
+            : never
+          : C extends "OBJECT_SET"
+            ? P["type"] extends ActionMetadata.DataType.ObjectSet<infer T>
+              ? ObjectSetFieldProps<T>
+              : never
+            : FormFieldPropsByType[C];
+};
+
+type DropdownFieldPropsByActionParameter<P extends ActionMetadata.Parameter> =
+  P extends { multiplicity: true }
+    ? DropdownFieldProps<ActionParameterScalarValueType<P>, true> & {
+        isMultiple: true;
+      }
+    : DropdownFieldProps<ActionParameterScalarValueType<P>>;
 
 /**
  * Dropdown field props with selectable items
@@ -525,29 +558,45 @@ export type FieldKey<Q extends ActionDefinition<unknown>> =
 export type ActionParameters<Q extends ActionDefinition<unknown>> =
   CompileTimeMetadata<Q>["parameters"];
 
+type ActionParameter<
+  Q extends ActionDefinition<unknown>,
+  K extends keyof ActionParameters<Q>,
+> = ActionParameters<Q>[K] extends ActionMetadata.Parameter
+  ? ActionParameters<Q>[K]
+  : never;
+
+type ValidFormFieldForActionParameter<P extends ActionMetadata.Parameter> =
+  P extends { multiplicity: true }
+    ? P["type"] extends "boolean" | "string"
+      ? "CUSTOM" | "DROPDOWN"
+      : "CUSTOM"
+    : ValidFormFieldForPropertyType<P["type"]>;
+
 /**
  * Extracts the value type for a specific parameter
  */
 export type FieldValueType<
   Q extends ActionDefinition<unknown>,
   K extends keyof ActionParameters<Q> = keyof ActionParameters<Q>,
-> =
-  ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.Object<infer T>
+> = ActionParameterValueType<ActionParameter<Q, K>>;
+
+type ActionParameterValueType<P extends ActionMetadata.Parameter> = P extends {
+  multiplicity: true;
+}
+  ? Array<ActionParameterScalarValueType<P>>
+  : ActionParameterScalarValueType<P>;
+
+type ActionParameterScalarValueType<P extends ActionMetadata.Parameter> =
+  P["type"] extends ActionMetadata.DataType.Object<infer T>
     ? ActionParam.ObjectType<T>
-    : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.ObjectSet<
-          infer T
-        >
+    : P["type"] extends ActionMetadata.DataType.ObjectSet<infer T>
       ? ActionParam.ObjectSetType<T>
-      : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.Interface<
-            infer T
-          >
+      : P["type"] extends ActionMetadata.DataType.Interface<infer T>
         ? ActionParam.InterfaceType<T>
-        : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.Struct<
-              infer T
-            >
+        : P["type"] extends ActionMetadata.DataType.Struct<infer T>
           ? ActionParam.StructType<T>
-          : ActionParameters<Q>[K]["type"] extends keyof DataValueClientToWire
-            ? DataValueClientToWire[ActionParameters<Q>[K]["type"]]
+          : P["type"] extends keyof DataValueClientToWire
+            ? DataValueClientToWire[P["type"]]
             : never;
 
 /**
@@ -661,7 +710,7 @@ export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
               : P extends "boolean"
                 ? "RADIO_BUTTONS" | "DROPDOWN" | "SWITCH"
                 : P extends "string"
-                  ? "TEXT_INPUT" | "TEXT_AREA"
+                  ? "TEXT_INPUT" | "TEXT_AREA" | "DROPDOWN" | "RADIO_BUTTONS"
                   : P extends "datetime" | "timestamp"
                     ? "DATETIME_PICKER"
                     : P extends
