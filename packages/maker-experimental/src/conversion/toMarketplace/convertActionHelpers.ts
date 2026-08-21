@@ -617,6 +617,10 @@ function buildActionMetadata(
     },
     description: action.description ?? "",
     displayName: action.displayName,
+    icon: {
+      type: "blueprint" as const,
+      blueprint: action.icon ?? { locator: "edit", color: "#000000" },
+    },
     applyingMessage: [] as Array<{ type: string; message: string }>,
     successMessage: action.submissionMetadata?.successMessage
       ? [

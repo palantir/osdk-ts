@@ -24,7 +24,6 @@ export function propertyTypeTypeToOntologyIrType(
   type: PropertyTypeType,
   ridGenerator: OntologyRidGenerator,
   propertyApiName?: string,
-  includeMainValue?: boolean,
 ): Type {
   switch (true) {
     case typeof type === "object" && type.type === "marking":
@@ -51,7 +50,6 @@ export function propertyTypeTypeToOntologyIrType(
               fieldTypeDefinition,
               ridGenerator,
               propertyApiName,
-              undefined,
             ),
           };
         } else {
@@ -67,7 +65,6 @@ export function propertyTypeTypeToOntologyIrType(
                 fieldTypeDefinition.fieldType,
                 ridGenerator,
                 propertyApiName,
-                undefined,
               ),
               displayMetadata: fieldTypeDefinition.displayMetadata ?? {
                 displayName: key,
@@ -89,7 +86,6 @@ export function propertyTypeTypeToOntologyIrType(
                 fieldTypeDefinition,
                 ridGenerator,
                 propertyApiName,
-                undefined,
               ),
             };
           }
@@ -98,15 +94,25 @@ export function propertyTypeTypeToOntologyIrType(
         structFields.push(field);
       }
 
-      // Build mainValue from the first struct field (matches Java behavior)
-      // Only SPTs get mainValue populated; object property structs have mainValue: null
-      const mainValue = includeMainValue
-        ? structFields[0]
-          ? {
-              type: structFields[0].fieldType,
-              fields: [structFields[0].structFieldRid],
-            }
-          : undefined
+      const mainValue = type.mainValue
+        ? {
+            type: propertyTypeTypeToOntologyIrType(
+              type.mainValue.type,
+              ridGenerator,
+              propertyApiName,
+            ),
+            fields: (Array.isArray(type.mainValue.fields)
+              ? type.mainValue.fields
+              : [type.mainValue.fields]
+            ).map((fieldApiName) =>
+              propertyApiName
+                ? ridGenerator.generateStructFieldRid(
+                    propertyApiName,
+                    fieldApiName,
+                  )
+                : ridGenerator.generateRid(`structfield.${fieldApiName}`),
+            ),
+          }
         : undefined;
 
       return {
