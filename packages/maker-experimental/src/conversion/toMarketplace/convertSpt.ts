@@ -61,12 +61,11 @@ export function convertSpt(
               type,
               ridGenerator,
               apiName,
-              true,
             ),
             reducers: [],
           },
         }
-      : propertyTypeTypeToOntologyIrType(type, ridGenerator, apiName, true),
+      : propertyTypeTypeToOntologyIrType(type, ridGenerator, apiName),
     aliases: aliases ?? [],
     baseFormatter,
     dataConstraints: dataConstraint,
