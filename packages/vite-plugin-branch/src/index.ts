@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { branchPlugin, FOUNDRY_BRANCH_RID_ENV_VAR } from "./branchPlugin.js";
+export { branchPlugin, FOUNDRY_BRANCH_ENV_VAR } from "./branchPlugin.js";
 export type { BranchPluginOptions } from "./branchPlugin.js";

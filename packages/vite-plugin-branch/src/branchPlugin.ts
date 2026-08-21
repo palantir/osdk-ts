@@ -16,16 +16,14 @@
 
 import path from "node:path";
 
-import { getGitBranch } from "@osdk/shared.branch";
+import { getGitBranch, normalizeGitBranch } from "@osdk/shared.branch";
 import { loadEnv, type Plugin } from "vite";
 
-import { resolveBranchToInject } from "./resolveBranchToInject.js";
-
 /**
- * The environment variable a Foundry runtime sets to the branch the application
- * is checked out on. `@osdk/client` reads it to scope every request.
+ * The environment variable used to expose either a Foundry branch RID or a
+ * local git branch name to `@osdk/client`.
  */
-export const FOUNDRY_BRANCH_RID_ENV_VAR: string = "VITE_FOUNDRY_BRANCH_RID";
+export const FOUNDRY_BRANCH_ENV_VAR: string = "VITE_FOUNDRY_BRANCH_RID";
 
 export interface BranchPluginOptions {
   /**
@@ -38,17 +36,12 @@ export interface BranchPluginOptions {
 }
 
 /**
- * Vite plugin that makes local development branch-aware.
+ * Makes the current global Foundry branch available to `@osdk/client` through
+ * `import.meta.env.VITE_FOUNDRY_BRANCH_RID` during local development.
  *
- * On dev server start it sets {@link FOUNDRY_BRANCH_RID_ENV_VAR} to the checked
- * out git branch name, so `@osdk/client` scopes objects, actions, and queries to
- * the matching Foundry branch without the application passing anything to
- * `createClient`. This relies on the git branch name matching the Foundry
- * branch, which holds for a branch checked out with `osdk unstable branch`.
- *
- * Nothing is injected when the variable already has a value, when git reports
- * `main`/`master`/a detached HEAD, or when the directory is not a git
- * repository — in each case the client falls back to the default branch.
+ * An existing environment value takes precedence. Otherwise, the plugin uses
+ * the checked-out git branch, except for `main`, `master`, a detached HEAD, or
+ * a directory outside a git repository, which use the default Foundry branch.
  *
  * @example
  * ```ts
@@ -70,26 +63,26 @@ export function branchPlugin(options: BranchPluginOptions = {}): Plugin {
           ? false
           : path.resolve(root, config.envDir ?? ".");
 
-      const pinnedBranch = loadEnv(mode, envDir, "VITE_")[
-        FOUNDRY_BRANCH_RID_ENV_VAR
+      const configuredBranch = loadEnv(mode, envDir, "VITE_")[
+        FOUNDRY_BRANCH_ENV_VAR
       ];
-
-      injectedBranch = resolveBranchToInject(
-        pinnedBranch,
-        await readGitBranch(root),
-      );
-      if (injectedBranch === undefined) {
+      if (configuredBranch?.trim()) {
         return;
       }
 
-      process.env[FOUNDRY_BRANCH_RID_ENV_VAR] = injectedBranch;
+      injectedBranch = normalizeGitBranch(await readGitBranch(root));
+      if (injectedBranch == null) {
+        return;
+      }
+
+      process.env[FOUNDRY_BRANCH_ENV_VAR] = injectedBranch;
     },
 
     configResolved(config) {
-      if (injectedBranch !== undefined) {
+      if (injectedBranch != null) {
         config.logger.info(
           `[osdk] Using Foundry branch "${injectedBranch}" from the current git ` +
-            `branch. Set ${FOUNDRY_BRANCH_RID_ENV_VAR} to override.`,
+            `branch. Set ${FOUNDRY_BRANCH_ENV_VAR} to override.`,
         );
       }
     },

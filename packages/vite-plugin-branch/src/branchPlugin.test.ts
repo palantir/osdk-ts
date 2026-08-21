@@ -33,7 +33,7 @@ import {
 } from "vite";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { branchPlugin, FOUNDRY_BRANCH_RID_ENV_VAR } from "./branchPlugin.js";
+import { branchPlugin, FOUNDRY_BRANCH_ENV_VAR } from "./branchPlugin.js";
 
 const GIT_BRANCH = "zka/my-branch";
 
@@ -85,7 +85,7 @@ function pluginOn(gitBranch: string | undefined): Plugin {
 }
 
 afterEach(() => {
-  Reflect.deleteProperty(process.env, FOUNDRY_BRANCH_RID_ENV_VAR);
+  Reflect.deleteProperty(process.env, FOUNDRY_BRANCH_ENV_VAR);
   for (const dir of tempDirs.splice(0)) {
     rmSync(dir, { recursive: true, force: true });
   }
@@ -99,37 +99,47 @@ describe(branchPlugin, () => {
   it("injects the current git branch", async () => {
     await runConfigHook(pluginOn(GIT_BRANCH), { root: makeProjectDir() });
 
-    expect(process.env[FOUNDRY_BRANCH_RID_ENV_VAR]).toBe(GIT_BRANCH);
+    expect(process.env[FOUNDRY_BRANCH_ENV_VAR]).toBe(GIT_BRANCH);
   });
 
   it("injects nothing on main", async () => {
     await runConfigHook(pluginOn("main"), { root: makeProjectDir() });
 
-    expect(process.env[FOUNDRY_BRANCH_RID_ENV_VAR]).toBeUndefined();
+    expect(process.env[FOUNDRY_BRANCH_ENV_VAR]).toBeUndefined();
   });
 
   it("injects nothing when the directory is not a repository", async () => {
     await runConfigHook(pluginOn(undefined), { root: makeProjectDir() });
 
-    expect(process.env[FOUNDRY_BRANCH_RID_ENV_VAR]).toBeUndefined();
+    expect(process.env[FOUNDRY_BRANCH_ENV_VAR]).toBeUndefined();
   });
 
   it("does not overwrite a branch pinned in a .env file", async () => {
     const root = makeProjectDir({
-      ".env.development": `${FOUNDRY_BRANCH_RID_ENV_VAR}=ri.foundry.main.branch.pinned\n`,
+      ".env.development": `${FOUNDRY_BRANCH_ENV_VAR}=ri.foundry.main.branch.pinned\n`,
     });
 
     await runConfigHook(pluginOn(GIT_BRANCH), { root });
 
-    expect(process.env[FOUNDRY_BRANCH_RID_ENV_VAR]).toBeUndefined();
+    expect(process.env[FOUNDRY_BRANCH_ENV_VAR]).toBeUndefined();
+  });
+
+  it("treats a blank .env value as unset", async () => {
+    const root = makeProjectDir({
+      ".env.development": `${FOUNDRY_BRANCH_ENV_VAR}=   \n`,
+    });
+
+    await runConfigHook(pluginOn(GIT_BRANCH), { root });
+
+    expect(process.env[FOUNDRY_BRANCH_ENV_VAR]).toBe(GIT_BRANCH);
   });
 
   it("does not overwrite a branch already in process.env", async () => {
-    process.env[FOUNDRY_BRANCH_RID_ENV_VAR] = "ri.foundry.main.branch.from-ci";
+    process.env[FOUNDRY_BRANCH_ENV_VAR] = "ri.foundry.main.branch.from-ci";
 
     await runConfigHook(pluginOn(GIT_BRANCH), { root: makeProjectDir() });
 
-    expect(process.env[FOUNDRY_BRANCH_RID_ENV_VAR]).toBe(
+    expect(process.env[FOUNDRY_BRANCH_ENV_VAR]).toBe(
       "ri.foundry.main.branch.from-ci",
     );
   });
@@ -139,12 +149,12 @@ describe(branchPlugin, () => {
     mkdirSync(path.join(root, "config"));
     writeFileSync(
       path.join(root, "config", ".env.development"),
-      `${FOUNDRY_BRANCH_RID_ENV_VAR}=ri.foundry.main.branch.pinned\n`,
+      `${FOUNDRY_BRANCH_ENV_VAR}=ri.foundry.main.branch.pinned\n`,
     );
 
     await runConfigHook(pluginOn(GIT_BRANCH), { root, envDir: "config" });
 
-    expect(process.env[FOUNDRY_BRANCH_RID_ENV_VAR]).toBeUndefined();
+    expect(process.env[FOUNDRY_BRANCH_ENV_VAR]).toBeUndefined();
   });
 
   it("reports the injected branch through Vite's logger", async () => {
@@ -170,7 +180,7 @@ describe("injection reaches import.meta.env", () => {
     writeFileSync(
       path.join(root, "read.js"),
       [
-        `const KEY = ${JSON.stringify(FOUNDRY_BRANCH_RID_ENV_VAR)};`,
+        `const KEY = ${JSON.stringify(FOUNDRY_BRANCH_ENV_VAR)};`,
         `function getEnv() { return import.meta.env; }`,
         `export const branch = getEnv()?.[KEY];`,
       ].join("\n"),
@@ -187,7 +197,7 @@ describe("injection reaches import.meta.env", () => {
         await server.environments.client.transformRequest("/read.js");
 
       expect(result?.code).toContain(
-        `"${FOUNDRY_BRANCH_RID_ENV_VAR}": "${GIT_BRANCH}"`,
+        `"${FOUNDRY_BRANCH_ENV_VAR}": "${GIT_BRANCH}"`,
       );
     } finally {
       await server.close();

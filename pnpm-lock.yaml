@@ -1800,9 +1800,6 @@ importers:
       '@osdk/foundry-config-json':
         specifier: workspace:*
         version: link:../foundry-config-json
-      '@osdk/shared.branch':
-        specifier: workspace:*
-        version: link:../shared.branch
       '@osdk/shared.net.errors':
         specifier: workspace:*
         version: link:../shared.net.errors
@@ -1861,6 +1858,9 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
+      '@osdk/shared.branch':
+        specifier: workspace:~
+        version: link:../shared.branch
       '@types/archiver':
         specifier: ^6.0.3
         version: 6.0.3
@@ -5715,9 +5715,6 @@ importers:
 
   packages/vite-plugin-branch:
     dependencies:
-      '@osdk/shared.branch':
-        specifier: workspace:~
-        version: link:../shared.branch
       vite:
         specifier: '*'
         version: 6.4.2(@types/node@20.19.13)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.0)
@@ -5725,9 +5722,15 @@ importers:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tool.check-bundle':
+        specifier: workspace:~
+        version: link:../monorepo.tool.check-bundle
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
+      '@osdk/shared.branch':
+        specifier: workspace:~
+        version: link:../shared.branch
       '@types/node':
         specifier: ^20.19.13
         version: 20.19.13
