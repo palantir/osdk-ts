@@ -15,20 +15,21 @@
  */
 
 import { loadResolvedAliases } from "./loaders.js";
-import type { Source } from "./types.js";
-export type { Source } from "./types.js";
+import type { Stream } from "./types.js";
 
-export function source(alias: string): Source {
+export type { Stream } from "./types.js";
+
+export function stream(alias: string): Stream {
   const resolvedAliases = loadResolvedAliases();
 
-  if (!(alias in resolvedAliases.sources)) {
-    const available = Object.keys(resolvedAliases.sources);
+  if (!(alias in resolvedAliases.streams)) {
+    const available = Object.keys(resolvedAliases.streams);
     throw new Error(
-      `Source alias '${alias}' not found. Available aliases: [${available.join(
+      `Stream alias '${alias}' not found. Available aliases: [${available.join(
         ", ",
       )}]`,
     );
   }
 
-  return resolvedAliases.sources[alias];
+  return resolvedAliases.streams[alias];
 }

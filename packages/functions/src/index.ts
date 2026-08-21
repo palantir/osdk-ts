@@ -34,6 +34,7 @@ export type {
   TwoDimensionalAggregation,
 } from "@osdk/client";
 
+// Compatibility facade; see ./aliases/index.ts.
 export * as Aliases from "./aliases/index.js";
 export { createEditBatch } from "./edits/createEditBatch.js";
 export type { EditBatch } from "./edits/EditBatch.js";

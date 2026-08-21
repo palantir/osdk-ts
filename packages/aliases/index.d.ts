@@ -14,21 +14,4 @@
  * limitations under the License.
  */
 
-import { loadResolvedAliases } from "./loaders.js";
-import type { Stream } from "./types.js";
-export type { Stream } from "./types.js";
-
-export function stream(alias: string): Stream {
-  const resolvedAliases = loadResolvedAliases();
-
-  if (!(alias in resolvedAliases.streams)) {
-    const available = Object.keys(resolvedAliases.streams);
-    throw new Error(
-      `Stream alias '${alias}' not found. Available aliases: [${available.join(
-        ", ",
-      )}]`,
-    );
-  }
-
-  return resolvedAliases.streams[alias];
-}
+export * from "./build/cjs/index.cjs";

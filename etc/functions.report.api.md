@@ -8,6 +8,10 @@ import type { ActionDefinition } from '@osdk/client';
 import { Attachment } from '@osdk/client';
 import type { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/client';
+import { Custom } from '@osdk/aliases/node';
+import { custom } from '@osdk/aliases/node';
+import { Dataset } from '@osdk/aliases/node';
+import { dataset } from '@osdk/aliases/node';
 import { Geometry } from 'geojson';
 import { GeometryCollection } from 'geojson';
 import type { GroupId as GroupId_2 } from '@osdk/foundry.core';
@@ -15,7 +19,11 @@ import type { InterfaceDefinition } from '@osdk/client';
 import { LineString } from 'geojson';
 import type { Media } from '@osdk/client';
 import { MediaReference } from '@osdk/client';
+import { Mediaset } from '@osdk/aliases/node';
+import { mediaset } from '@osdk/aliases/node';
 import { MediaUpload } from '@osdk/client';
+import { Model } from '@osdk/aliases/node';
+import { model } from '@osdk/aliases/node';
 import { MultiLineString } from 'geojson';
 import { MultiPoint } from 'geojson';
 import { MultiPolygon } from 'geojson';
@@ -28,6 +36,10 @@ import { Polygon } from 'geojson';
 import type { PropertyKeys } from '@osdk/client';
 import type { QueryDefinition } from '@osdk/client';
 import { Range as Range_2 } from '@osdk/client';
+import { Source } from '@osdk/aliases/node';
+import { source } from '@osdk/aliases/node';
+import { Stream } from '@osdk/aliases/node';
+import { stream } from '@osdk/aliases/node';
 import { ThreeDimensionalAggregation } from '@osdk/client';
 import { TwoDimensionalAggregation } from '@osdk/client';
 import type { UserId as UserId_2 } from '@osdk/foundry.core';
@@ -71,23 +83,6 @@ export type ClassificationMarking<T extends string = string> = T & {
 //
 // @public (undocumented)
 export function createEditBatch<T extends AnyEdit = never>(_client: Client): EditBatch<T>;
-
-// @public (undocumented)
-type Custom = string & {
-    	readonly __brand: "Custom"
-};
-
-// @public (undocumented)
-function custom(alias: string): Custom;
-
-// @public (undocumented)
-interface Dataset {
-    	// (undocumented)
-    rid: string;
-}
-
-// @public (undocumented)
-function dataset(alias: string): Dataset;
 
 // @public (undocumented)
 export type DateISOString<T extends string = string> = T & {
@@ -216,25 +211,7 @@ export type MandatoryMarking<T extends string = string> = T & {
 
 export { MediaReference }
 
-// @public (undocumented)
-interface Mediaset {
-    	// (undocumented)
-    rid: string;
-}
-
-// @public (undocumented)
-function mediaset(alias: string): Mediaset;
-
 export { MediaUpload }
-
-// @public (undocumented)
-interface Model {
-    	// (undocumented)
-    rid: string;
-}
-
-// @public (undocumented)
-function model(alias: string): Model;
 
 export { MultiLineString }
 
@@ -307,24 +284,6 @@ export interface RidLinkTarget {
 export type Short<T extends number = number> = T & {
     	_shortBrand?: void
 };
-
-// @public (undocumented)
-interface Source {
-    	// (undocumented)
-    rid: string;
-}
-
-// @public (undocumented)
-function source(alias: string): Source;
-
-// @public (undocumented)
-interface Stream {
-    	// (undocumented)
-    rid: string;
-}
-
-// @public (undocumented)
-function stream(alias: string): Stream;
 
 export { ThreeDimensionalAggregation }
 

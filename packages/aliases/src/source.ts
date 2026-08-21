@@ -15,20 +15,21 @@
  */
 
 import { loadResolvedAliases } from "./loaders.js";
-import type { Mediaset } from "./types.js";
-export type { Mediaset } from "./types.js";
+import type { Source } from "./types.js";
 
-export function mediaset(alias: string): Mediaset {
+export type { Source } from "./types.js";
+
+export function source(alias: string): Source {
   const resolvedAliases = loadResolvedAliases();
 
-  if (!(alias in resolvedAliases.mediasets)) {
-    const available = Object.keys(resolvedAliases.mediasets);
+  if (!(alias in resolvedAliases.sources)) {
+    const available = Object.keys(resolvedAliases.sources);
     throw new Error(
-      `Mediaset alias '${alias}' not found. Available aliases: [${available.join(
+      `Source alias '${alias}' not found. Available aliases: [${available.join(
         ", ",
       )}]`,
     );
   }
 
-  return resolvedAliases.mediasets[alias];
+  return resolvedAliases.sources[alias];
 }

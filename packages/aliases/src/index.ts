@@ -14,21 +14,7 @@
  * limitations under the License.
  */
 
-import { loadResolvedAliases } from "./loaders.js";
-import type { Model } from "./types.js";
-export type { Model } from "./types.js";
-
-export function model(alias: string): Model {
-  const resolvedAliases = loadResolvedAliases();
-
-  if (!(alias in resolvedAliases.models)) {
-    const available = Object.keys(resolvedAliases.models);
-    throw new Error(
-      `Model alias '${alias}' not found. Available aliases: [${available.join(
-        ", ",
-      )}]`,
-    );
-  }
-
-  return resolvedAliases.models[alias];
-}
+// Intentionally empty: this package has no stable API yet. The root is reserved
+// for the browser runtime once its design settles, so that today's callers see
+// the stability of what they import at the import site. Until then, see
+// "@osdk/aliases/experimental" and "@osdk/aliases/node".
