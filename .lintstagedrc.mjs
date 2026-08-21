@@ -11,6 +11,7 @@ const CSPELL_CMD = "cspell --quiet --no-must-find-files";
  * shared root oxlint.config.ts.
  */
 const OXC_PACKAGES = [
+  "shared.branch",
   "shared.net.errors",
   "shared.client.impl",
   "shared.net.fetch",
@@ -87,6 +88,7 @@ const OXC_NESTED_CONFIG_PACKAGES = {
   "tool.generate-with-mock-ontology":
     "packages/tool.generate-with-mock-ontology/oxlint.config.ts",
   "version-updater": "packages/version-updater/oxlint.config.ts",
+  "vite-plugin-branch": "packages/vite-plugin-branch/oxlint.config.ts",
   "vite-plugin-oac": "packages/vite-plugin-oac/oxlint.config.ts",
   "vite-plugin-superrepo": "packages/vite-plugin-superrepo/oxlint.config.ts",
   "vite-plugin-status-reporter":

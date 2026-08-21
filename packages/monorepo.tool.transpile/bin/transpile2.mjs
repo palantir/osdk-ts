@@ -189,6 +189,7 @@ async function transpileWithTsup(format, target) {
     "@osdk/foundry.functions",
     "@osdk/shared.client",
     "@osdk/shared.client2",
+    "@osdk/shared.branch",
     "oauth4webapi",
     "p-defer",
     // create-app templates (private, must be bundled)

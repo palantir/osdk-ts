@@ -16,10 +16,10 @@
 
 import { promises as fs } from "node:fs";
 
+import { getGitBranch as defaultGetGitBranch } from "@osdk/shared.branch";
 import { consola } from "consola";
 
 import { discoverOsdkPackages } from "../utils/discoverOsdkPackages.mjs";
-import { getGitBranch as defaultGetGitBranch } from "../utils/getGitBranch.js";
 import { resolveBranch } from "../utils/resolveBranch.js";
 import { resolveSdkPackageVersions } from "../utils/resolveSdkPackageVersions.mjs";
 import {

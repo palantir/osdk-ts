@@ -25,6 +25,7 @@
     "**/*.report.api.md",
     // The shared.* packages below are formatted by oxfmt, not dprint (oxc migration, see oxfmt.config.ts)
     "packages/shared.net.errors/",
+    "packages/shared.branch/",
     "packages/shared.client.impl/",
     "packages/shared.net.fetch/",
     "packages/shared.net/",
@@ -81,6 +82,7 @@
     "packages/tool.release/",
     "packages/tool.generate-with-mock-ontology/",
     "packages/version-updater/",
+    "packages/vite-plugin-branch/",
     "packages/vite-plugin-code-workspace-preview/",
     "packages/vite-plugin-oac/",
     "packages/vite-plugin-superrepo/",

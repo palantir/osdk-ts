@@ -14,19 +14,5 @@
  * limitations under the License.
  */
 
-import { normalizeGitBranch } from "@osdk/shared.branch";
-
-/**
- * Resolve the branch context: `argBranchName` wins; else `gitBranchName`, with
- * main/master/detached `HEAD`/empty normalized to `undefined`.
- */
-export function resolveBranch(
-  argBranchName: string | undefined,
-  gitBranchName: string | undefined,
-): string | undefined {
-  const argBranch = argBranchName?.trim();
-  if (argBranch != null && argBranch !== "") {
-    return argBranch;
-  }
-  return normalizeGitBranch(gitBranchName);
-}
+export { getGitBranch } from "./getGitBranch.js";
+export { normalizeGitBranch } from "./normalizeGitBranch.js";
