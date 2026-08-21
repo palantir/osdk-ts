@@ -766,6 +766,74 @@ describe(useColumnDefs, () => {
       expect(customRenderCell).not.toHaveBeenCalled();
     });
 
+    it.each([
+      { isEditable: false, expectedRenderCount: 1 },
+      { isEditable: true, expectedRenderCount: 0 },
+    ])(
+      "renders a custom cell $expectedRenderCount time(s) when editable returns $isEditable",
+      async ({ isEditable, expectedRenderCount }) => {
+        const deferred = pDefer();
+        const fakeClient = {
+          fetchMetadata: vitest.fn(() => deferred.promise),
+        } as unknown as Client;
+
+        const wrapper = createWrapper(fakeClient);
+
+        const customRenderCell = vitest.fn(() => <div>Custom cell</div>);
+
+        const editable = vitest.fn(() => isEditable);
+
+        const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
+          {
+            locator: { type: "property", id: "name" as TestObjectKeys },
+            editable,
+            renderCell: customRenderCell,
+          },
+        ];
+
+        const { result } = renderHook(
+          () => useColumnDefs(TestObjectType, columnDefinitions),
+          { wrapper },
+        );
+
+        deferred.resolve(mockMetadata);
+
+        await waitFor(() => {
+          expect(result.current.loading).toBe(false);
+        });
+
+        const nameColumn = result.current.columns[0];
+        const mockObject: Osdk.Instance<TestObject> = Object.assign(
+          Object.create(null),
+          {
+            $apiName: "TestObject",
+            $objectSpecifier: "TestObject:row-0",
+            $objectType: "TestObject",
+            $primaryKey: "row-0",
+            $title: "Test row",
+          },
+        );
+
+        const mockCellContext = {
+          row: { original: mockObject, id: "row-0" },
+          column: { id: "name", columnDef: { meta: { editable } } },
+          getValue: () => "Value",
+          table: {
+            options: {
+              meta: { onCellEdit: vitest.fn(), isInEditMode: true },
+            },
+          },
+        };
+
+        if (typeof nameColumn.cell === "function") {
+          Reflect.apply(nameColumn.cell, undefined, [mockCellContext]);
+        }
+
+        expect(customRenderCell).toHaveBeenCalledTimes(expectedRenderCount);
+        expect(editable).toHaveBeenCalledWith(mockObject);
+      },
+    );
+
     it("defaults to getValue when renderCell is not provided", async () => {
       const deferred = pDefer();
       const fakeClient = {

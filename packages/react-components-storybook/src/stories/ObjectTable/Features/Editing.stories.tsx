@@ -758,6 +758,17 @@ export const PerRowEditableAndFieldConfig: Story = {
           const jobTitle = rowData.jobTitle ?? "";
           return jobTitle === "Senior Product Manager";
         },
+        cellValueType: "string",
+        renderCell: (_obj, _locator, value) => (
+          <div
+            style={{
+              fontStyle: "italic",
+              color: "grey",
+            }}
+          >
+            {typeof value === "string" ? value : ""}
+          </div>
+        ),
       },
       {
         locator: { type: "property", id: "department" },
@@ -789,10 +800,21 @@ export const PerRowEditableAndFieldConfig: Story = {
   {
     locator: { type: "property", id: "jobTitle" },
     // Only allow editing for Senior Product Manager
-    editable: (rowData) => {
-      const jobTitle = String(rowData.jobTitle ?? "");
+    editable: (rowData: Osdk.Instance<Employee>) => {
+      const jobTitle = rowData.jobTitle ?? "";
       return jobTitle === "Senior Product Manager";
     },
+    cellValueType: "string",
+    renderCell: (_obj, _locator, value) => (
+      <div
+        style={{
+          fontStyle: "italic",
+          color: "grey",
+        }}
+      >
+        {typeof value === "string" ? value : ""}
+      </div>
+    ),
   },
   {
     locator: { type: "property", id: "department" },

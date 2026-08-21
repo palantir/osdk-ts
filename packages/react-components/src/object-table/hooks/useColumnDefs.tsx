@@ -28,8 +28,9 @@ import type {
   AccessorFnColumnDef,
   AccessorKeyColumnDef,
 } from "@tanstack/react-table";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 
+import { NonEditableCellInEditMode } from "../components/NonEditableCellInEditMode.js";
 import { renderDefaultCell } from "../DefaultCellRenderer.js";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
 import { shouldShowEditableCell } from "../utils/shouldShowEditableCell.js";
@@ -179,12 +180,25 @@ function getColumnsFromColumnDefinitions<
         > = cellContext.row.original;
 
         const meta = cellContext.table.options.meta;
-        const isEditable = shouldShowEditableCell<
-          Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
-        >(editable, meta?.onCellEdit, meta?.isInEditMode);
 
-        if (renderCell && !isEditable) {
-          return renderCell(object, locator, cellContext.getValue());
+        if (renderCell) {
+          const isEditable = shouldShowEditableCell(
+            editable,
+            object,
+            meta?.onCellEdit,
+            meta?.isInEditMode,
+          );
+
+          // Only use renderCell when a cell is not editable
+          if (!isEditable) {
+            const cell = renderCell(object, locator, cellContext.getValue());
+            // Apply edit mode styling if the cell renderer is used in edit mode
+            return meta?.isInEditMode ? (
+              <NonEditableCellInEditMode>{cell}</NonEditableCellInEditMode>
+            ) : (
+              cell
+            );
+          }
         }
 
         return renderDefaultCell(cellContext);
