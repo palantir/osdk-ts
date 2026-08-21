@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { normalizeGitBranch } from "@osdk/shared.branch";
+import { defineConfig } from "oxlint";
 
-/**
- * Resolve the branch context: `argBranchName` wins; else `gitBranchName`, with
- * main/master/detached `HEAD`/empty normalized to `undefined`.
- */
-export function resolveBranch(
-  argBranchName: string | undefined,
-  gitBranchName: string | undefined,
-): string | undefined {
-  const argBranch = argBranchName?.trim();
-  if (argBranch != null && argBranch !== "") {
-    return argBranch;
-  }
-  return normalizeGitBranch(gitBranchName);
-}
+import root from "../../oxlint.config.ts";
+
+// Nested oxlint config for @osdk/vite-plugin-branch. It inherits
+// the whole repo ruleset by `extends`-ing the root config.
+//
+// `extends` only carries `rules`/`plugins`/`overrides`, so the root's
+// `ignorePatterns` are re-applied explicitly (otherwise generated/ignored files
+// would start being linted).
+export default defineConfig({
+  extends: [root],
+  ignorePatterns: root.ignorePatterns,
+
+  rules: {},
+});

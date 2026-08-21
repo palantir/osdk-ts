@@ -16,17 +16,14 @@
 
 import { normalizeGitBranch } from "@osdk/shared.branch";
 
-/**
- * Resolve the branch context: `argBranchName` wins; else `gitBranchName`, with
- * main/master/detached `HEAD`/empty normalized to `undefined`.
- */
-export function resolveBranch(
-  argBranchName: string | undefined,
-  gitBranchName: string | undefined,
+export function resolveBranchToInject(
+  pinnedBranch: string | undefined,
+  gitBranch: string | undefined,
 ): string | undefined {
-  const argBranch = argBranchName?.trim();
-  if (argBranch != null && argBranch !== "") {
-    return argBranch;
+  const pinned = pinnedBranch?.trim();
+  if (pinned != null && pinned !== "") {
+    return undefined;
   }
-  return normalizeGitBranch(gitBranchName);
+
+  return normalizeGitBranch(gitBranch);
 }

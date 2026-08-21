@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-import { execa } from "execa";
+const NON_BRANCH: ReadonlySet<string> = new Set(["main", "master", "HEAD"]);
 
 /**
- * The current git branch (`git rev-parse --abbrev-ref HEAD`), or `undefined` if
- * git fails. Detached HEAD returns the literal "HEAD".
+ * The Foundry branch a git branch corresponds to: `branch` trimmed, or
+ * `undefined` if it is blank or names no branch (`main`/`master`/detached HEAD).
  */
-export async function getGitBranch(): Promise<string | undefined> {
-  try {
-    const { stdout } = await execa("git", [
-      "rev-parse",
-      "--abbrev-ref",
-      "HEAD",
-    ]);
-    return stdout.trim();
-  } catch {
+export function normalizeGitBranch(
+  branch: string | undefined,
+): string | undefined {
+  const trimmed = branch?.trim();
+  if (trimmed == null || trimmed === "" || NON_BRANCH.has(trimmed)) {
     return undefined;
   }
+  return trimmed;
 }

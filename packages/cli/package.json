@@ -40,6 +40,7 @@
   "dependencies": {
     "@arethetypeswrong/cli": "0.17.3",
     "@osdk/foundry-config-json": "workspace:*",
+    "@osdk/shared.branch": "workspace:*",
     "@osdk/shared.net.errors": "workspace:*",
     "@osdk/shared.net.fetch": "workspace:*",
     "@osdk/widget.api": "workspace:*",

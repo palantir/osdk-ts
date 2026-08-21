@@ -250,6 +250,7 @@ const archetypeRules = archetypes(standardPackageRules, {
     [
       "@osdk/language-models",
       "@osdk/react-sdk-docs",
+      "@osdk/shared.branch",
       "@osdk/shared.client.impl",
       "@osdk/shared.net.errors",
       "@osdk/shared.net.fetch",
@@ -288,6 +289,7 @@ const archetypeRules = archetypes(standardPackageRules, {
       "@osdk/vite-plugin-superrepo",
       "@osdk/vite-plugin-status-reporter",
       "@osdk/vite-plugin-code-workspace-preview",
+      "@osdk/vite-plugin-branch",
     ],
     {
       ...LIBRARY_RULES,
