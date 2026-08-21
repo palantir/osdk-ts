@@ -136,7 +136,7 @@ describe(handleOacGenerate, () => {
     });
   });
 
-  it("rejects an existing output directory", async () => {
+  it("rejects an existing output directory without clean", async () => {
     const dir = await makeTempDir();
     const irPath = join(dir, "ir.json");
     const outDir = join(dir, "out");
@@ -152,7 +152,51 @@ describe(handleOacGenerate, () => {
         packageType: "module",
         ontologyIdentity: "portable",
       }),
-    ).rejects.toThrow("Output directory already exists");
+    ).rejects.toThrow("Output directory must not exist unless --clean is used");
+  });
+
+  it("replaces an existing output directory with clean", async () => {
+    const dir = await makeTempDir();
+    const irPath = join(dir, "ir.json");
+    const outDir = join(dir, "out");
+    await writeFile(irPath, JSON.stringify(emptyMakerIr));
+    await mkdir(outDir);
+    await writeFile(join(outDir, "stale.txt"), "stale");
+
+    await handleOacGenerate({
+      ir: irPath,
+      outDir,
+      version: "0.0.0-dev",
+      packageName: "@example/item-sdk",
+      packageType: "module",
+      ontologyIdentity: "portable",
+      clean: true,
+    });
+
+    await expect(
+      readFile(join(outDir, "stale.txt"), "utf-8"),
+    ).rejects.toThrow();
+    expect(
+      await readFile(join(outDir, "semantic-manifest.json"), "utf-8"),
+    ).toContain("@example/item-sdk");
+  });
+
+  it("rejects the current working directory", async () => {
+    const dir = await makeTempDir();
+    const irPath = join(dir, "ir.json");
+    await writeFile(irPath, JSON.stringify(emptyMakerIr));
+
+    await expect(
+      handleOacGenerate({
+        ir: irPath,
+        outDir: process.cwd(),
+        version: "0.0.0-dev",
+        packageName: "@example/item-sdk",
+        packageType: "module",
+        ontologyIdentity: "portable",
+        clean: true,
+      }),
+    ).rejects.toThrow("Refusing to generate into protected directory");
   });
 
   it("rejects an import that does not match imported metadata", async () => {

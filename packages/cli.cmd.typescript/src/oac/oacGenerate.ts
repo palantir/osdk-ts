@@ -23,6 +23,7 @@ export interface OacGenerateArgs {
   version: string;
   packageName: string;
   packageType: "module";
+  clean?: boolean;
   ontologyIdentity: "portable" | "installationSpecific";
   importMap?: string;
 }
@@ -56,6 +57,10 @@ export const oacGenerateCommand: CommandModule<{}, OacGenerateArgs> = {
         packageType: {
           default: "module",
           choices: ["module"],
+        },
+        clean: {
+          type: "boolean",
+          description: "Replace an existing output directory",
         },
         ontologyIdentity: {
           type: "string",

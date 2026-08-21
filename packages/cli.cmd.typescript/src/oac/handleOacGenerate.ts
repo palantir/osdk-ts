@@ -40,16 +40,20 @@ interface ImportedEntityMapping {
 }
 
 export async function handleOacGenerate(args: OacGenerateArgs): Promise<void> {
+  let stagingDir: string | undefined;
   try {
     const ir = await readMakerIr(args.ir);
     const imports = args.importMap ? await readImportMap(args.importMap) : [];
     validateImports(imports, ir, args.importMap);
-    if (fs.existsSync(args.outDir)) {
+    const outDir = protectedOutputDirectory(args.outDir);
+    if (fs.existsSync(outDir) && args.clean !== true) {
       throw new ExitProcessError(
         1,
-        `Output directory already exists: ${path.resolve(args.outDir)}`,
+        `Output directory must not exist unless --clean is used: ${outDir}`,
       );
     }
+    await fs.promises.mkdir(path.dirname(outDir), { recursive: true });
+    stagingDir = await fs.promises.mkdtemp(`${outDir}.tmp-`);
 
     const metadata =
       OntologyIrToFullMetadataConverter.getFullMetadataFromEnvelope(ir);
@@ -67,7 +71,7 @@ export async function handleOacGenerate(args: OacGenerateArgs): Promise<void> {
           return await fs.promises.readdir(dirPath);
         },
       },
-      args.outDir,
+      stagingDir,
       args.packageType,
       toExternalMap(imports, "object"),
       toExternalMap(imports, "interface"),
@@ -83,9 +87,11 @@ export async function handleOacGenerate(args: OacGenerateArgs): Promise<void> {
       packageVersion: args.version,
     });
     await fs.promises.writeFile(
-      path.join(args.outDir, "semantic-manifest.json"),
+      path.join(stagingDir, "semantic-manifest.json"),
       `${JSON.stringify(manifest, null, 2)}\n`,
     );
+    await replaceOutputDirectory(stagingDir, outDir);
+    stagingDir = undefined;
     consola.info("OSDK generated from Maker IR");
   } catch (error) {
     if (error instanceof ExitProcessError) {
@@ -93,6 +99,51 @@ export async function handleOacGenerate(args: OacGenerateArgs): Promise<void> {
     }
     const message = error instanceof Error ? error.message : String(error);
     throw new ExitProcessError(1, message);
+  } finally {
+    if (stagingDir !== undefined) {
+      await fs.promises.rm(stagingDir, { recursive: true, force: true });
+    }
+  }
+}
+
+function protectedOutputDirectory(outDir: string): string {
+  const resolved = path.resolve(outDir);
+  const root = path.parse(resolved).root;
+  const relativeCwd = path.relative(resolved, process.cwd());
+  if (
+    resolved === root ||
+    relativeCwd === "" ||
+    (!relativeCwd.startsWith("..") && !path.isAbsolute(relativeCwd))
+  ) {
+    throw new ExitProcessError(
+      1,
+      `Refusing to generate into protected directory: ${resolved}`,
+    );
+  }
+  return resolved;
+}
+
+async function replaceOutputDirectory(
+  stagingDir: string,
+  outDir: string,
+): Promise<void> {
+  const backupDir = `${outDir}.backup`;
+  let movedExisting = false;
+  if (fs.existsSync(outDir)) {
+    await fs.promises.rm(backupDir, { recursive: true, force: true });
+    await fs.promises.rename(outDir, backupDir);
+    movedExisting = true;
+  }
+  try {
+    await fs.promises.rename(stagingDir, outDir);
+    if (movedExisting) {
+      await fs.promises.rm(backupDir, { recursive: true, force: true });
+    }
+  } catch (error) {
+    if (movedExisting && !fs.existsSync(outDir)) {
+      await fs.promises.rename(backupDir, outDir);
+    }
+    throw error;
   }
 }
 
