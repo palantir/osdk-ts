@@ -28,6 +28,7 @@ import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
 import { FormSection } from "./FormSection.js";
+import { buildDefaultValues } from "./utils/buildDefaultValues.js";
 
 import styles from "./BaseForm.module.css";
 
@@ -231,19 +232,6 @@ const FORM_SKELETON = Array.from({ length: SKELETON_FIELD_COUNT }, (_, i) => (
     <SkeletonBar className={styles.osdkFormSkeletonInput} />
   </div>
 ));
-
-function buildDefaultValues(
-  fieldDefinitions: ReadonlyArray<RendererFieldDefinition>,
-): Record<string, unknown> {
-  const values: Record<string, unknown> = {};
-  for (const def of fieldDefinitions) {
-    const props: Record<string, unknown> = def.fieldComponentProps;
-    if ("defaultValue" in props) {
-      values[def.fieldKey] = props.defaultValue;
-    }
-  }
-  return values;
-}
 
 interface ErrorEntry {
   label: string;
