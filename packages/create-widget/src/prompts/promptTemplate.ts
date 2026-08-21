@@ -21,20 +21,13 @@ import type { Template } from "../templates.js";
 
 export async function promptTemplate(parsed: {
   template?: string;
-  beta?: boolean;
 }): Promise<Template> {
-  const useBeta = parsed.beta ?? false;
   let template = TEMPLATES.find(
     (t) => t.id === parsed.template || t.id === `template-${parsed.template}`,
   );
   if (template == null) {
     const availableTemplates = TEMPLATES.filter(
-      (template) =>
-        !template.hidden &&
-        (useBeta
-          ? template.isBeta === true
-          : // isBeta could be null
-            !template.isBeta),
+      (template) => !template.hidden,
     );
 
     if (availableTemplates.length === 0) {

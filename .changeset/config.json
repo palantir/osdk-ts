@@ -35,7 +35,6 @@
   "updateInternalDependencies": "patch",
   "ignore": [
     "@osdk/examples.*",
-    "@psdk/examples.*",
     "@osdk/monorepo.*",
     "@osdk/tests.*",
     "@osdk/version-updater",
