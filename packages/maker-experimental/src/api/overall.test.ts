@@ -19,16 +19,20 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import type { ActionType, InterfaceType } from "@osdk/maker";
 import {
   addDependency,
   defineCreateObjectAction,
   defineInterface,
+  defineDeleteInterfaceObjectAction,
   defineInterfaceActionTypeConstraint,
   defineLink,
+  defineModifyInterfaceObjectAction,
   defineObject,
   defineOntology,
   defineSharedPropertyType,
+  defineValueType,
   dumpOntologyFullMetadata,
   importOntologyEntity,
   importSharedPropertyType,
@@ -1170,6 +1174,170 @@ describe("Experimental Test Suite", () => {
       ).toEqual(apiNamePreset("importedInterface"));
     });
 
+    it("includes value types referenced by transitive imported interfaces", async () => {
+      let parent: InterfaceType | undefined;
+      await defineOntology(
+        "com.external.",
+        () => {
+          const recordState = defineValueType({
+            apiName: "recordState",
+            displayName: "Record State",
+            type: {
+              type: "string",
+              constraints: [
+                {
+                  constraint: {
+                    type: "oneOf",
+                    oneOf: {
+                      useIgnoreCase: false,
+                      values: ["DRAFT", "ARCHIVED"],
+                    },
+                  },
+                },
+              ],
+            },
+            version: "1.0.0",
+          });
+          const ancestor = defineInterface({
+            apiName: "ancestor",
+            properties: {
+              recordState: {
+                type: "string",
+                valueType: recordState,
+              },
+            },
+          });
+          parent = defineInterface({
+            apiName: "parent",
+            extends: ancestor,
+          });
+        },
+        undefined,
+      );
+      const importedParent = parent;
+      if (importedParent === undefined) {
+        throw new Error("Expected parent interface");
+      }
+
+      const result = await defineOntologyV2("com.consumer.", () => {
+        importOntologyEntity(importedParent);
+        defineInterface({
+          apiName: "child",
+          extends: importedParent,
+        });
+      });
+
+      expect(
+        Object.values(
+          result.ontologyIr.transitiveImportedOntology.interfaceTypes,
+        ).map(({ interfaceType }) => interfaceType.apiName),
+      ).toContain("com.external.ancestor");
+      expect(result.ontologyIr.importedValueTypes).toContainEqual(
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            apiName: "recordState",
+          }),
+          versions: [
+            expect.objectContaining({
+              version: "1.0.0",
+            }),
+          ],
+        }),
+      );
+
+      const metadata =
+        OntologyIrToFullMetadataConverter.getFullMetadataFromEnvelope(
+          result.ontologyIr,
+        );
+      expect({
+        inheritedProperty:
+          metadata.interfaceTypes["com.consumer.child"].allPropertiesV2
+            .recordState,
+        valueType: metadata.valueTypes.recordState,
+      }).toMatchObject({
+        inheritedProperty: {
+          valueTypeApiName: "recordState",
+        },
+        valueType: {
+          constraints: [
+            {
+              options: ["DRAFT", "ARCHIVED"],
+              type: "enum",
+            },
+          ],
+          version: "1.0.0",
+        },
+      });
+    });
+
+    it("preserves current interface mappings and action api names", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        const person = defineInterface({
+          apiName: "person",
+          properties: {
+            name: { type: "string" },
+          },
+        });
+        defineObject({
+          apiName: "employee",
+          displayName: "Employee",
+          implementsInterfaces: [
+            {
+              implements: person,
+              propertyMapping: [
+                {
+                  interfaceProperty: "name",
+                  mapsTo: "fullName",
+                },
+              ],
+            },
+          ],
+          pluralDisplayName: "Employees",
+          primaryKeyPropertyApiName: "id",
+          properties: {
+            fullName: { type: "string" },
+            id: { type: "string" },
+          },
+          titlePropertyApiName: "fullName",
+        });
+        defineModifyInterfaceObjectAction({ interfaceType: person });
+        defineDeleteInterfaceObjectAction({ interfaceType: person });
+      });
+
+      const metadata =
+        OntologyIrToFullMetadataConverter.getFullMetadataFromEnvelope(
+          result.ontologyIr,
+        );
+      const employee = metadata.objectTypes["com.palantir.employee"];
+      expect(
+        employee.implementsInterfaces2["com.palantir.person"].propertiesV2,
+      ).toMatchObject({
+        name: {
+          propertyApiName: "fullName",
+          type: "localPropertyImplementation",
+        },
+      });
+      expect(employee.sharedPropertyTypeMapping).toEqual({});
+      expect(
+        Object.values(metadata.actionTypes).map((action) => action.operations),
+      ).toEqual(
+        expect.arrayContaining([
+          [
+            {
+              interfaceTypeApiName: "com.palantir.person",
+              type: "modifyInterfaceObject",
+            },
+          ],
+          [
+            {
+              interfaceTypeApiName: "com.palantir.person",
+              type: "deleteInterfaceObject",
+            },
+          ],
+        ]),
+      );
+    });
+
     it("maps imported SPT-backed interface properties using the SPT API name", async () => {
       const interfaceApiName =
         "com.palantir.core.ontology.types.sourceSystemMetadata";
@@ -1230,21 +1398,34 @@ describe("Experimental Test Suite", () => {
         });
       });
 
+      const metadata =
+        OntologyIrToFullMetadataConverter.getFullMetadataFromEnvelope(
+          result.ontologyIr,
+        );
+      const convertedInterface = metadata.interfaceTypes[interfaceApiName];
+      expect(Object.keys(convertedInterface.properties)).toEqual([sptApiName]);
+      expect(convertedInterface.properties[sptApiName].rid).toBe(
+        convertedInterface.propertiesV2[sptApiName].rid,
+      );
+
       const country = Object.values(
         result.ontologyIr.ontology.objectTypes,
       ).find(
         (objectType) =>
           objectType.objectType.apiName === "com.palantir.country",
       );
+      if (country === undefined) {
+        throw new Error("Expected country object type");
+      }
       const sptRid = Object.keys(
         result.ontologyIr.importedOntology.sharedPropertyTypes,
       )[0];
       expect(
-        Object.keys(country!.objectType.implementsInterfaces2[0].propertiesV2),
+        Object.keys(country.objectType.implementsInterfaces2[0].propertiesV2),
       ).toEqual([
         sptRid.replace("shared-property-type", "interface-property-type"),
       ]);
-      expect(country!.objectType.implementsInterfaces2[0].properties).toEqual(
+      expect(country.objectType.implementsInterfaces2[0].properties).toEqual(
         {},
       );
 

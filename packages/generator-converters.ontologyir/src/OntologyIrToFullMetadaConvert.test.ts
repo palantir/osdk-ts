@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+import type {
+  OntologyIrV2,
+  ValueTypeBlockData,
+  ValueTypeDataConstraint,
+} from "@osdk/client.unstable";
+import {
+  generateClientSdkVersionTwoPointZero,
+  type MinimalFs,
+} from "@osdk/generator";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
 import { isInjectedRuntimeInput } from "./convertDataType.js";
@@ -23,6 +33,295 @@ import {
 } from "./OntologyIrToFullMetadataConverter.js";
 
 const discoveredFunctions = vi.hoisted<IDiscoveredFunction[]>(() => []);
+
+type OntologyBlock = OntologyIrV2["ontology"];
+type InterfaceBlock = OntologyBlock["interfaceTypes"][string];
+type InterfaceType = InterfaceBlock["interfaceType"];
+type InterfaceProperty = InterfaceType["propertiesV3"][string];
+type SharedProperty = Extract<
+  InterfaceProperty,
+  { type: "sharedPropertyBasedPropertyType" }
+>["sharedPropertyBasedPropertyType"]["sharedPropertyType"];
+type InterfaceDefinedProperty = Extract<
+  InterfaceProperty,
+  { type: "interfaceDefinedPropertyType" }
+>["interfaceDefinedPropertyType"];
+type StringValueTypeConstraint = Extract<
+  ValueTypeDataConstraint["constraint"]["constraint"],
+  { type: "string" }
+>;
+
+type ValueTypeLocation = "owned" | "imported";
+
+const RANDOMNESS_KEY = "notional-record-envelope";
+const VALUE_TYPE_API_NAME = "recordState";
+const VALUE_TYPE_VERSION = "10.0.0";
+const VALUE_TYPE_RID = valueTypeRid(VALUE_TYPE_API_NAME, RANDOMNESS_KEY);
+const VALUE_TYPE_VERSION_ID = valueTypeVersionId(VALUE_TYPE_VERSION);
+
+function emptyOntologyBlock(): OntologyBlock {
+  return {
+    actionTypes: {},
+    blockOutputCompassLocations: {},
+    interfaceTypes: {},
+    knownIdentifiers: {
+      actionParameterIds: {},
+      actionParameters: {},
+      actionTypes: {},
+      datasourceColumns: {},
+      datasources: {},
+      filesDatasources: {},
+      functions: {},
+      geotimeSeriesSyncs: {},
+      groupIds: {},
+      interfaceActionTypeConstraints: {},
+      interfaceLinkTypes: {},
+      interfaceParameterConstraints: {},
+      interfacePropertyTypes: {},
+      interfaceTypes: {},
+      linkTypeIds: {},
+      linkTypes: {},
+      markings: {},
+      objectPropertyTypeIdsToRids: {},
+      objectTypeIds: {},
+      objectTypes: {},
+      propertyTypeIds: {},
+      propertyTypes: {},
+      sharedPropertyTypes: {},
+      structFieldRidsToApiNames: {},
+      timeSeriesSyncs: {},
+      valueTypes: {},
+      webhooks: {},
+      workshopModules: {},
+    },
+    linkTypes: {},
+    objectTypes: {},
+    ruleSets: {},
+    sharedPropertyTypes: {},
+  };
+}
+
+function valueTypeRid(apiName: string, randomnessKey?: string): string {
+  const input = randomnessKey === undefined
+    ? apiName
+    : `${apiName}-${randomnessKey}`;
+  return `ri.ontology-metadata.temp.value-type.${
+    createHash("sha256").update(input, "utf8").digest("hex")
+  }`;
+}
+
+function valueTypeVersionId(version: string): string {
+  const hash = createHash("md5").update(version, "utf8").digest("hex");
+  return `${hash.slice(0, 8)}-${hash.slice(8, 12)}-${hash.slice(12, 16)}-${
+    hash.slice(16, 20)
+  }-${hash.slice(20)}`;
+}
+
+function stringOneOfConstraint(
+  values: string[],
+): StringValueTypeConstraint {
+  return {
+    type: "string",
+    string: {
+      type: "oneOf",
+      oneOf: {
+        useIgnoreCase: undefined,
+        values,
+      },
+    },
+  };
+}
+
+function valueType(
+  apiName: string,
+  versions: string[],
+  displayName = `Display ${apiName}`,
+): ValueTypeBlockData {
+  return {
+    metadata: {
+      apiName,
+      baseType: { type: "string", string: {} },
+      displayMetadata: {
+        description: `Description for ${apiName}`,
+        displayName,
+      },
+      status: { type: "active", active: {} },
+    },
+    versions: versions.map(version => ({
+      baseType: { type: "string", string: {} },
+      constraints: [{
+        constraint: {
+          constraint: stringOneOfConstraint(["DRAFT", "READY", "ARCHIVED"]),
+          failureMessage: undefined,
+        },
+      }],
+      exampleValues: [],
+      version,
+    })),
+  };
+}
+
+function sharedProperty(apiName: string): SharedProperty {
+  return {
+    aliases: [],
+    apiName,
+    displayMetadata: {
+      displayName: apiName,
+      visibility: "NORMAL",
+    },
+    indexedForSearch: true,
+    rid: `ri.shared-property.${apiName}`,
+    type: {
+      type: "string",
+      string: {
+        isLongText: false,
+        supportsExactMatching: true,
+      },
+    },
+    typeClasses: [],
+    valueType: {
+      rid: VALUE_TYPE_RID,
+      versionId: VALUE_TYPE_VERSION_ID,
+    },
+  };
+}
+
+function interfaceDefinedProperty(apiName: string): InterfaceDefinedProperty {
+  return {
+    apiName,
+    constraints: {
+      indexedForSearch: true,
+      primaryKeyConstraint: "NO_RESTRICTION",
+      requireImplementation: true,
+      typeClasses: [],
+      valueType: {
+        rid: VALUE_TYPE_RID,
+        versionId: VALUE_TYPE_VERSION_ID,
+      },
+    },
+    displayMetadata: {
+      displayName: apiName,
+      visibility: "NORMAL",
+    },
+    rid: `ri.interface-property.${apiName}`,
+    type: {
+      type: "string",
+      string: {
+        isLongText: false,
+        supportsExactMatching: true,
+      },
+    },
+  };
+}
+
+function interfaceType(
+  apiName: string,
+  extendsInterfaces: string[],
+  propertiesV3: InterfaceType["propertiesV3"],
+): InterfaceBlock {
+  return {
+    interfaceType: {
+      actionTypeConstraints: [],
+      apiName,
+      displayMetadata: { displayName: apiName },
+      extendsInterfaces,
+      links: [],
+      properties: [],
+      propertiesV2: {},
+      propertiesV3,
+      rid: `ri.interface.${apiName}`,
+      status: { type: "active", active: {} },
+    },
+  };
+}
+
+function currentV2Envelope(
+  valueTypeLocation: ValueTypeLocation = "owned",
+  ownedValueTypes: ValueTypeBlockData[] = [
+    valueType(VALUE_TYPE_API_NAME, ["2.0.0", VALUE_TYPE_VERSION, "1.0.0"]),
+  ],
+  importedValueTypes: ValueTypeBlockData[] = [],
+): OntologyIrV2 {
+  const ancestor = interfaceType("transitive.Ancestor", [], {
+    ancestorLabel: {
+      type: "interfaceDefinedPropertyType",
+      interfaceDefinedPropertyType: interfaceDefinedProperty(
+        "ancestorLabel",
+      ),
+    },
+  });
+  const parent = interfaceType(
+    "imported.Parent",
+    [ancestor.interfaceType.rid],
+    {},
+  );
+  const child = interfaceType("local.Item", [parent.interfaceType.rid], {
+    localLabel: {
+      type: "interfaceDefinedPropertyType",
+      interfaceDefinedPropertyType: interfaceDefinedProperty("localLabel"),
+    },
+    recordState: {
+      type: "sharedPropertyBasedPropertyType",
+      sharedPropertyBasedPropertyType: {
+        requireImplementation: true,
+        sharedPropertyType: sharedProperty("recordState"),
+      },
+    },
+  });
+  const registry = valueTypeLocation === "owned"
+    ? { owned: ownedValueTypes, imported: importedValueTypes }
+    : { owned: importedValueTypes, imported: ownedValueTypes };
+
+  return {
+    importedOntology: {
+      ...emptyOntologyBlock(),
+      interfaceTypes: {
+        [parent.interfaceType.rid]: parent,
+      },
+    },
+    importedValueTypes: registry.imported,
+    ontology: {
+      ...emptyOntologyBlock(),
+      interfaceTypes: {
+        [child.interfaceType.rid]: child,
+      },
+      knownIdentifiers: {
+        ...emptyOntologyBlock().knownIdentifiers,
+        valueTypes: {
+          [VALUE_TYPE_RID]: {
+            [VALUE_TYPE_VERSION_ID]: "consumed-value-type-id",
+          },
+        },
+      },
+    },
+    randomnessKey: RANDOMNESS_KEY,
+    transitiveImportedOntology: {
+      ...emptyOntologyBlock(),
+      interfaceTypes: {
+        [ancestor.interfaceType.rid]: ancestor,
+      },
+    },
+    valueTypes: registry.owned,
+  };
+}
+
+function createInMemoryFiles(): {
+  fs: MinimalFs;
+  files: Map<string, string>;
+} {
+  const files = new Map<string, string>();
+  return {
+    files,
+    fs: {
+      mkdir: () => Promise.resolve(),
+      readdir: () => Promise.resolve([]),
+      writeFile: (path, contents) => {
+        files.set(path, contents);
+        return Promise.resolve();
+      },
+    },
+  };
+}
 
 vi.mock("@foundry/functions-typescript-osdk-discovery", () => ({
   FunctionDiscoverer: class {
@@ -3212,7 +3511,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "apiName": "distributionCenterProposal",
                 "cardinality": "MANY",
                 "displayName": "Distribution Center Proposal",
-                "linkTypeRid": "ri.Dc3DistributionCenterProposal.Dc3DistributionCenterProposalToDistributionRoute.Dc3DistributionRouteAnalysis",
+                "linkTypeRid": "ri.link-type.Dc3DistributionCenterProposalToDistributionRoute",
                 "objectTypeApiName": "Dc3DistributionRouteAnalysis",
                 "status": "ACTIVE",
               },
@@ -3330,7 +3629,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "cardinality": "ONE",
                 "displayName": "Distribution Route Analysis",
                 "foreignKeyPropertyApiName": "restaurant",
-                "linkTypeRid": "ri.Dc3Restaurant.Dc3RestaurantToDistributionRoute.Dc3DistributionRouteAnalysis",
+                "linkTypeRid": "ri.link-type.Dc3RestaurantToDistributionRoute",
                 "objectTypeApiName": "Dc3Restaurant",
                 "status": "ACTIVE",
               },
@@ -3339,7 +3638,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "cardinality": "ONE",
                 "displayName": "Distribution Route Analysis",
                 "foreignKeyPropertyApiName": "distributionProposal",
-                "linkTypeRid": "ri.Dc3DistributionCenterProposal.Dc3DistributionCenterProposalToDistributionRoute.Dc3DistributionRouteAnalysis",
+                "linkTypeRid": "ri.link-type.Dc3DistributionCenterProposalToDistributionRoute",
                 "objectTypeApiName": "Dc3DistributionCenterProposal",
                 "status": "ACTIVE",
               },
@@ -3425,7 +3724,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "apiName": "restaurant",
                 "cardinality": "MANY",
                 "displayName": "Restaurant",
-                "linkTypeRid": "ri.Dc3Restaurant.Dc3RestaurantToDistributionRoute.Dc3DistributionRouteAnalysis",
+                "linkTypeRid": "ri.link-type.Dc3RestaurantToDistributionRoute",
                 "objectTypeApiName": "Dc3DistributionRouteAnalysis",
                 "status": "ACTIVE",
               },
@@ -3637,5 +3936,119 @@ describe(OntologyIrToFullMetadataConverter, () => {
     } finally {
       createProgramSpy.mockRestore();
     }
+  });
+
+  describe("full ontology V2 envelope", () => {
+    it("accepts the current V2 envelope and converts owned value types", () => {
+      const metadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(currentV2Envelope());
+
+      expect(metadata.valueTypes.recordState).toMatchObject({
+        apiName: "recordState",
+        fieldType: { type: "string" },
+        version: "10.0.0",
+      });
+    });
+
+    it("converts imported value types", () => {
+      const metadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(currentV2Envelope("imported"));
+
+      expect(metadata.valueTypes.recordState).toMatchObject({
+        apiName: "recordState",
+        version: "10.0.0",
+      });
+    });
+
+    it("selects the highest semantic version independently of array order", () => {
+      for (
+        const versions of [
+          ["2.0.0", "10.0.0", "1.0.0"],
+          ["1.0.0", "10.0.0", "2.0.0"],
+        ]
+      ) {
+        const metadata = OntologyIrToFullMetadataConverter
+          .getFullMetadataFromEnvelope(
+            currentV2Envelope(
+              "owned",
+              [valueType(VALUE_TYPE_API_NAME, versions)],
+            ),
+          );
+
+        expect(metadata.valueTypes.recordState.version).toBe("10.0.0");
+      }
+    });
+
+    it("uses owned definitions for equal-version registry duplicates", () => {
+      const metadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(
+          currentV2Envelope(
+            "owned",
+            [valueType(VALUE_TYPE_API_NAME, [VALUE_TYPE_VERSION], "Owned")],
+            [valueType(VALUE_TYPE_API_NAME, [VALUE_TYPE_VERSION], "Imported")],
+          ),
+        );
+
+      expect(metadata.valueTypes.recordState.displayName).toBe("Owned");
+    });
+
+    it("preserves value type api names on direct and resolved interface properties", () => {
+      const metadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(currentV2Envelope());
+      const child = metadata.interfaceTypes["local.Item"];
+
+      expect(child.propertiesV2.recordState).toMatchObject({
+        valueTypeApiName: VALUE_TYPE_API_NAME,
+      });
+      expect(child.propertiesV2.localLabel).toMatchObject({
+        valueTypeApiName: VALUE_TYPE_API_NAME,
+      });
+      expect(child.allPropertiesV2.ancestorLabel).toMatchObject({
+        valueTypeApiName: VALUE_TYPE_API_NAME,
+      });
+    });
+
+    it("resolves interface inheritance through transitive imports", () => {
+      const metadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(currentV2Envelope());
+      const child = metadata.interfaceTypes["local.Item"];
+
+      expect(child.extendsInterfaces).toEqual(["imported.Parent"]);
+      expect(child.allExtendsInterfaces).toEqual([
+        "transitive.Ancestor",
+        "imported.Parent",
+      ]);
+      expect(child.allPropertiesV2.ancestorLabel).toBeDefined();
+      expect(child.implementedByObjectTypes).toEqual([]);
+    });
+
+    it("generates a literal union from current V2 value type data", async () => {
+      const metadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(currentV2Envelope());
+      const generated = createInMemoryFiles();
+
+      await generateClientSdkVersionTwoPointZero(
+        metadata,
+        "osdk-oac/test",
+        generated.fs,
+        "generated",
+        "module",
+      );
+
+      expect(
+        generated.files.get("generated/ontology/interfaces/Item.ts"),
+      ).toContain(
+        "readonly recordState: 'DRAFT' | 'READY' | 'ARCHIVED' | undefined;",
+      );
+    });
+
+    it("is deterministic across two conversions", () => {
+      const envelope = currentV2Envelope();
+      expect(
+        OntologyIrToFullMetadataConverter.getFullMetadataFromEnvelope(envelope),
+      ).toEqual(
+        OntologyIrToFullMetadataConverter.getFullMetadataFromEnvelope(envelope),
+      );
+    });
   });
 });

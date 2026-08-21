@@ -15,8 +15,16 @@
  */
 
 import type { OntologyIrV2 } from "@osdk/client.unstable";
-import type { InterfaceType, OntologyDefinition } from "@osdk/maker";
-import { getImportedTypes } from "@osdk/maker";
+import type {
+  InterfaceType,
+  OntologyDefinition,
+  ValueTypeDefinitionVersion,
+} from "@osdk/maker";
+import {
+  getImportedTypes,
+  isInterfaceSharedPropertyType,
+  OntologyEntityTypeEnum,
+} from "@osdk/maker";
 
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import { OntologyRidGeneratorImpl } from "../../util/generateRid.js";
@@ -75,13 +83,17 @@ export function convertOntologyDefinition(
       transitiveInterfaces[apiName] = iface;
     }
   }
+  const importedValueTypes = collectImportedValueTypes(
+    importedTypes,
+    fullImportedInterfaces.values(),
+  );
   const transitiveOntology: OntologyDefinition = {
     INTERFACE_TYPE: transitiveInterfaces,
     OBJECT_TYPE: {},
     ACTION_TYPE: {},
     LINK_TYPE: {},
     SHARED_PROPERTY_TYPE: {},
-    VALUE_TYPE: {},
+    VALUE_TYPE: importedValueTypes,
   };
 
   const throwawayRidGenerator = new OntologyRidGeneratorImpl(
@@ -98,7 +110,66 @@ export function convertOntologyDefinition(
     importedOntology,
     transitiveImportedOntology,
     valueTypes: convertValueTypeToWireBlockData(ontology),
-    importedValueTypes: convertValueTypeToWireBlockData(importedTypes),
+    importedValueTypes: convertValueTypeToWireBlockData({
+      ...importedTypes,
+      VALUE_TYPE: importedValueTypes,
+    }),
     randomnessKey,
   };
+}
+
+function collectImportedValueTypes(
+  importedTypes: OntologyDefinition,
+  interfaces: Iterable<InterfaceType>,
+): OntologyDefinition["VALUE_TYPE"] {
+  const result: OntologyDefinition["VALUE_TYPE"] = {};
+  for (const definitions of Object.values(importedTypes.VALUE_TYPE)) {
+    for (const definition of definitions) {
+      addValueType(result, definition);
+    }
+  }
+  for (const iface of interfaces) {
+    for (const property of Object.values(iface.propertiesV3)) {
+      const valueType = isInterfaceSharedPropertyType(property)
+        ? property.sharedPropertyType.valueType
+        : property.valueType;
+      if (isValueTypeDefinitionVersion(valueType)) {
+        addValueType(result, valueType);
+      }
+    }
+    for (const property of Object.values(iface.propertiesV2)) {
+      const valueType = property.sharedPropertyType.valueType;
+      if (isValueTypeDefinitionVersion(valueType)) {
+        addValueType(result, valueType);
+      }
+    }
+  }
+  return result;
+}
+
+function addValueType(
+  valueTypes: OntologyDefinition["VALUE_TYPE"],
+  valueType: ValueTypeDefinitionVersion,
+): void {
+  const definitions = valueTypes[valueType.apiName] ?? [];
+  if (!definitions.some(({ version }) => version === valueType.version)) {
+    definitions.push(valueType);
+    valueTypes[valueType.apiName] = definitions;
+  }
+}
+
+function isValueTypeDefinitionVersion(
+  value: InterfaceType["propertiesV2"][string]["sharedPropertyType"]["valueType"],
+): value is ValueTypeDefinitionVersion {
+  return (
+    value !== undefined &&
+    "__type" in value &&
+    value.__type === OntologyEntityTypeEnum.VALUE_TYPE &&
+    "baseType" in value &&
+    "status" in value &&
+    "constraints" in value &&
+    Array.isArray(value.constraints) &&
+    "exampleValues" in value &&
+    Array.isArray(value.exampleValues)
+  );
 }

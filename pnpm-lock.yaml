@@ -4162,10 +4162,16 @@ importers:
       consola:
         specifier: ^3.4.2
         version: 3.4.2
+      semver-ts:
+        specifier: ^1.0.3
+        version: 1.0.3
       tiny-invariant:
         specifier: ^1.3.3
         version: 1.3.3
     devDependencies:
+      '@osdk/generator':
+        specifier: workspace:~
+        version: link:../generator
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor

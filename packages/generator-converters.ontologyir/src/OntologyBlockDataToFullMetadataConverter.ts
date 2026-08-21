@@ -17,17 +17,23 @@
 import type {
   ActionTypeBlockDataV2,
   ActionTypeStatus,
+  InterfacePropertyTypeImplementation,
   InterfacePropertyTypeType,
   InterfaceTypeBlockDataV2,
+  LinkedObjectReference,
   LinkTypeBlockDataV2,
   LinkTypeStatus,
+  MarketplaceInterfaceDefinedPropertyType,
   MarketplaceInterfaceLinkType,
+  NestedInterfacePropertyTypeImplementation,
   ObjectTypeBlockDataV2,
   ObjectTypeStatus,
   OntologyBlockDataV2,
   OntologyIrStructFieldBaseParameterType,
+  PropertyType,
   SharedPropertyTypeBlockDataV2,
   Type,
+  ValueTypeReference,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
@@ -35,11 +41,21 @@ import invariant from "tiny-invariant";
 import type { ApiName } from "./ApiName.js";
 import { toStructFieldRid } from "./ridUtils.js";
 
+type ValueTypeApiNameResolver = (
+  reference: ValueTypeReference,
+) => ApiName | undefined;
+
+interface PropertyImplementationMetadata {
+  apiName: ApiName;
+  structFieldApiNames: ReadonlyMap<string, ApiName>;
+}
+
 export class OntologyBlockDataToFullMetadataConverter {
   static getFullMetadataFromBlockData(
     blockData: OntologyBlockDataV2,
     importedTypes?: Ontologies.OntologyFullMetadata,
     transitiveImportedBlockData?: OntologyBlockDataV2,
+    resolveValueTypeApiName?: ValueTypeApiNameResolver,
   ): Ontologies.OntologyFullMetadata {
     const objectTypeLookup = buildBlockDataObjectTypeLookup(
       blockData,
@@ -58,19 +74,28 @@ export class OntologyBlockDataToFullMetadataConverter {
       },
       interfaceTypeLookup,
       importedTypes?.interfaceTypes,
+      resolveValueTypeApiName,
     );
     const sharedPropertyTypes = this.getOsdkSharedPropertyTypesFromBlockData(
       blockData.sharedPropertyTypes,
+      resolveValueTypeApiName,
     );
     const objectTypes = this.getOsdkObjectTypesFromBlockData(
       blockData.objectTypes,
       blockData.linkTypes,
       objectTypeLookup,
+      buildInterfacePropertyApiNameLookup(blockData.interfaceTypes),
+      buildSharedPropertyApiNameLookup(blockData.sharedPropertyTypes),
+      resolveValueTypeApiName,
+    );
+    const interfaceLinkLookup = buildBlockDataInterfaceLinkTypeLookup(
+      blockData,
     );
     const actionTypes = this.getOsdkActionTypesFromBlockData(
       blockData,
       objectTypeLookup,
       interfaceTypeLookup,
+      interfaceLinkLookup,
     );
 
     return {
@@ -101,11 +126,25 @@ export class OntologyBlockDataToFullMetadataConverter {
     objects: Record<string, ObjectTypeBlockDataV2>,
     links: Record<string, LinkTypeBlockDataV2>,
     objectTypeLookup: BlockDataApiNameLookup | undefined,
+    interfacePropertyApiNames: ReadonlyMap<
+      string,
+      PropertyImplementationMetadata
+    >,
+    sharedPropertyApiNames: ReadonlyMap<string, ApiName>,
+    resolveValueTypeApiName?: ValueTypeApiNameResolver,
   ): Record<ApiName, Ontologies.ObjectTypeFullMetadata> {
     const result: Record<ApiName, Ontologies.ObjectTypeFullMetadata> = {};
-    const propRidToApiName: Record<string, string> = {};
 
     for (const [rid, fullObject] of Object.entries(objects)) {
+      const objectPropertyMetadata = buildObjectPropertyMetadata(
+        fullObject.objectType.propertyTypes,
+      );
+      const propRidToApiName = Object.fromEntries(
+        [...objectPropertyMetadata].map(([propertyRid, property]) => [
+          propertyRid,
+          property.apiName,
+        ]),
+      );
       const object = fullObject.objectType;
       const icon = object.displayMetadata.icon;
 
@@ -116,11 +155,6 @@ export class OntologyBlockDataToFullMetadataConverter {
       // Ensure we have exactly one primary key
       if (object.primaryKeys.length !== 1) {
         throw new Error("Object must have exactly 1 primary key");
-      }
-
-      // Build a mapping from property RID to apiName for resolving references
-      for (const [propRid, prop] of Object.entries(object.propertyTypes)) {
-        propRidToApiName[propRid] = prop.apiName!;
       }
 
       // Resolve primaryKey and titleProperty from RID to apiName
@@ -171,6 +205,10 @@ export class OntologyBlockDataToFullMetadataConverter {
             visibility: visibilityEnum,
             dataType,
             typeClasses: [],
+            ...valueTypeApiName(
+              prop.valueType,
+              resolveValueTypeApiName,
+            ),
           };
         }
       }
@@ -207,16 +245,50 @@ export class OntologyBlockDataToFullMetadataConverter {
         const propertyMappings: Record<ApiName, ApiName> = {};
 
         for (
-          const [sharedPropKey, propMapping] of Object.entries(ii.properties)
+          const [sharedPropRid, propMapping] of Object.entries(ii.properties)
         ) {
-          const propertyApiName = propMapping.propertyTypeRid;
-          propertyMappings[sharedPropKey] = propertyApiName;
-          sharedPropertyTypeMappings[sharedPropKey] = propertyApiName;
+          const propertyApiName = requirePropertyMetadata(
+            objectPropertyMetadata,
+            propMapping.propertyTypeRid,
+            "object property",
+          ).apiName;
+          const sharedPropertyApiName = sharedPropertyApiNames.get(
+            sharedPropRid,
+          );
+          if (sharedPropertyApiName === undefined) {
+            throw new Error(
+              `Could not resolve shared property '${sharedPropRid}'`,
+            );
+          }
+          propertyMappings[sharedPropertyApiName] = propertyApiName;
+          sharedPropertyTypeMappings[sharedPropertyApiName] = propertyApiName;
+        }
+
+        const propertiesV2: Record<
+          ApiName,
+          Ontologies.InterfacePropertyTypeImplementation
+        > = {};
+        for (
+          const [interfacePropertyRid, implementation] of Object.entries(
+            ii.propertiesV2,
+          )
+        ) {
+          const interfaceProperty = requirePropertyMetadata(
+            interfacePropertyApiNames,
+            interfacePropertyRid,
+            "interface property",
+          );
+          propertiesV2[interfaceProperty.apiName] =
+            convertInterfacePropertyImplementation(
+              interfaceProperty,
+              implementation,
+              objectPropertyMetadata,
+            );
         }
 
         implementsInterfaces2[interfaceApiName] = {
           properties: propertyMappings,
-          propertiesV2: {},
+          propertiesV2,
           links: {},
           actionTypes: {},
         };
@@ -365,6 +437,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     blockData: OntologyBlockDataV2,
     objectTypeLookup: BlockDataApiNameLookup | undefined,
     interfaceTypeLookup: BlockDataApiNameLookup | undefined,
+    interfaceLinkLookup?: BlockDataApiNameLookup,
   ): Record<ApiName, Ontologies.ActionTypeV2> {
     const result: Record<ApiName, Ontologies.ActionTypeV2> = {};
 
@@ -384,7 +457,8 @@ export class OntologyBlockDataToFullMetadataConverter {
           action,
           objectTypeLookup,
           interfaceTypeLookup,
-        ),
+          interfaceLinkLookup,
+        ) as Ontologies.LogicRule[],
         status: this.convertActionTypeStatusFromBlockData(metadata.status),
       };
 
@@ -398,7 +472,14 @@ export class OntologyBlockDataToFullMetadataConverter {
     action: ActionTypeBlockDataV2,
     objectTypeLookup: BlockDataApiNameLookup | undefined,
     interfaceTypeLookup: BlockDataApiNameLookup | undefined,
-  ): Ontologies.LogicRule[] {
+    interfaceLinkLookup?: BlockDataApiNameLookup,
+  ): Array<
+    | Ontologies.LogicRule
+    | Extract<
+      Ontologies.ActionLogicRule,
+      { type: "createInterfaceLink" | "deleteInterfaceLink" }
+    >
+  > {
     return action.actionType.actionTypeLogic.logic.rules.flatMap(irLogic => {
       switch (irLogic.type) {
         case "addInterfaceRule": {
@@ -464,7 +545,7 @@ export class OntologyBlockDataToFullMetadataConverter {
                 type: "deleteInterfaceObject",
                 interfaceTypeApiName: resolveBlockDataApiName(
                   ontologyIrParameter.type.interfaceReference.interfaceTypeRid,
-                  objectTypeLookup,
+                  interfaceTypeLookup,
                 ),
               } satisfies Ontologies.LogicRule;
             }
@@ -500,7 +581,10 @@ export class OntologyBlockDataToFullMetadataConverter {
 
           return {
             type: "modifyInterfaceObject",
-            interfaceTypeApiName,
+            interfaceTypeApiName: resolveBlockDataApiName(
+              interfaceTypeApiName,
+              interfaceTypeLookup,
+            ),
           } satisfies Ontologies.LogicRule;
         }
         case "modifyObjectRule": {
@@ -523,9 +607,45 @@ export class OntologyBlockDataToFullMetadataConverter {
           }
         }
         case "functionRule":
-        case "addInterfaceLinkRuleV2":
-        case "deleteInterfaceLinkRule":
           return [];
+        case "addInterfaceLinkRuleV2": {
+          const rule = irLogic.addInterfaceLinkRuleV2;
+          return {
+            type: "createInterfaceLink",
+            interfaceTypeApiName: resolveBlockDataApiName(
+              rule.interfaceTypeRid,
+              interfaceTypeLookup,
+            ),
+            interfaceLinkTypeApiName: resolveBlockDataApiName(
+              rule.interfaceLinkTypeRid,
+              interfaceLinkLookup,
+            ),
+            sourceObject: firstExistingObjectParameterId(
+              rule.sourceObjects,
+              "sourceObjects",
+            ),
+            targetObject: firstExistingObjectParameterId(
+              rule.targetObjects,
+              "targetObjects",
+            ),
+          };
+        }
+        case "deleteInterfaceLinkRule": {
+          const rule = irLogic.deleteInterfaceLinkRule;
+          return {
+            type: "deleteInterfaceLink",
+            interfaceTypeApiName: resolveBlockDataApiName(
+              rule.interfaceTypeRid,
+              interfaceTypeLookup,
+            ),
+            interfaceLinkTypeApiName: resolveBlockDataApiName(
+              rule.interfaceLinkTypeRid,
+              interfaceLinkLookup,
+            ),
+            sourceObject: rule.sourceObject,
+            targetObject: rule.targetObject,
+          };
+        }
         default:
           throw new Error("Unknown logic rule type");
       }
@@ -775,6 +895,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     interfaceBlockData: Record<string, InterfaceTypeBlockDataV2>,
     interfaceTypeLookup: BlockDataApiNameLookup | undefined,
     importedInterfaceTypes: Record<ApiName, Ontologies.InterfaceType> = {},
+    resolveValueTypeApiName?: ValueTypeApiNameResolver,
   ): Record<ApiName, Ontologies.InterfaceType> {
     const result: Record<ApiName, Ontologies.InterfaceType> = {};
 
@@ -786,13 +907,11 @@ export class OntologyBlockDataToFullMetadataConverter {
         ApiName,
         Ontologies.InterfaceSharedPropertyType
       > = {};
-      for (
-        const [propKey, propValue] of Object.entries(interfaceType.propertiesV2)
-      ) {
+      for (const propValue of Object.values(interfaceType.propertiesV2)) {
         const spt = propValue.sharedPropertyType;
         const dataType = this.getOsdkPropertyTypeFromBlockData(spt.type);
         if (dataType) {
-          properties[propKey] = {
+          properties[spt.apiName] = {
             rid: spt.rid,
             apiName: spt.apiName,
             displayName: spt.displayMetadata.displayName,
@@ -800,6 +919,10 @@ export class OntologyBlockDataToFullMetadataConverter {
             dataType,
             required: false, // Default to false for now - this should come from IR if available
             typeClasses: [],
+            ...valueTypeApiName(
+              spt.valueType,
+              resolveValueTypeApiName,
+            ),
           };
         }
       }
@@ -828,6 +951,10 @@ export class OntologyBlockDataToFullMetadataConverter {
                 description: idp.displayMetadata.description ?? undefined,
                 dataType: idpDataType,
                 requireImplementation: idp.constraints.requireImplementation,
+                ...valueTypeApiName(
+                  idp.constraints.valueType,
+                  resolveValueTypeApiName,
+                ),
               };
               propertiesV2[idp.apiName] = {
                 ...resolved,
@@ -850,6 +977,10 @@ export class OntologyBlockDataToFullMetadataConverter {
                 dataType: sptDataType,
                 requireImplementation: propValue.sharedPropertyBasedPropertyType
                   .requireImplementation,
+                ...valueTypeApiName(
+                  spt.valueType,
+                  resolveValueTypeApiName,
+                ),
               };
               propertiesV2[spt.apiName] = {
                 ...resolved,
@@ -986,6 +1117,7 @@ export class OntologyBlockDataToFullMetadataConverter {
 
   static getOsdkSharedPropertyTypesFromBlockData(
     spts: Record<string, SharedPropertyTypeBlockDataV2>,
+    resolveValueTypeApiName?: ValueTypeApiNameResolver,
   ): Record<ApiName, Ontologies.SharedPropertyType> {
     const result: Record<ApiName, Ontologies.SharedPropertyType> = {};
 
@@ -1003,6 +1135,10 @@ export class OntologyBlockDataToFullMetadataConverter {
             ?? undefined,
           dataType,
           typeClasses: [],
+          ...valueTypeApiName(
+            spt.sharedPropertyType.valueType,
+            resolveValueTypeApiName,
+          ),
         };
 
         result[sharedPropertyType.apiName] = sharedPropertyType;
@@ -1151,6 +1287,237 @@ export class OntologyBlockDataToFullMetadataConverter {
   }
 }
 
+function buildObjectPropertyMetadata(
+  properties: Record<string, PropertyType>,
+): ReadonlyMap<string, PropertyImplementationMetadata> {
+  return new Map(
+    Object.entries(properties).map(([rid, property]) => [
+      rid,
+      propertyImplementationMetadata(property),
+    ]),
+  );
+}
+
+function propertyImplementationMetadata(
+  property: Pick<
+    PropertyType | MarketplaceInterfaceDefinedPropertyType,
+    "apiName" | "type"
+  >,
+): PropertyImplementationMetadata {
+  const apiName = property.apiName;
+  if (apiName == null) {
+    throw new Error("Current property type is missing an API name");
+  }
+  const structFieldApiNames = new Map<string, ApiName>();
+  if (property.type.type === "struct") {
+    for (const field of property.type.struct.structFields) {
+      structFieldApiNames.set(field.structFieldRid, field.apiName);
+    }
+  }
+  return { apiName, structFieldApiNames };
+}
+
+function requirePropertyMetadata(
+  properties: ReadonlyMap<string, PropertyImplementationMetadata>,
+  rid: string,
+  description: string,
+): PropertyImplementationMetadata {
+  const property = properties.get(rid);
+  if (property === undefined) {
+    throw new Error(`Could not resolve ${description} '${rid}'`);
+  }
+  return property;
+}
+
+function requireStructFieldApiName(
+  property: PropertyImplementationMetadata,
+  rid: string,
+  description: string,
+): ApiName {
+  const apiName = property.structFieldApiNames.get(rid);
+  if (apiName === undefined) {
+    throw new Error(`Could not resolve ${description} '${rid}'`);
+  }
+  return apiName;
+}
+
+function buildInterfacePropertyApiNameLookup(
+  interfaces: Record<string, InterfaceTypeBlockDataV2>,
+): ReadonlyMap<string, PropertyImplementationMetadata> {
+  const result = new Map<string, PropertyImplementationMetadata>();
+  for (const { interfaceType } of Object.values(interfaces)) {
+    for (const [rid, property] of Object.entries(interfaceType.propertiesV3)) {
+      const propertyType = property.type === "interfaceDefinedPropertyType"
+        ? property.interfaceDefinedPropertyType
+        : property.sharedPropertyBasedPropertyType.sharedPropertyType;
+      result.set(rid, propertyImplementationMetadata(propertyType));
+    }
+  }
+  return result;
+}
+
+function convertInterfacePropertyImplementation(
+  interfaceProperty: PropertyImplementationMetadata,
+  implementation: InterfacePropertyTypeImplementation,
+  objectProperties: ReadonlyMap<string, PropertyImplementationMetadata>,
+): Ontologies.InterfacePropertyTypeImplementation {
+  switch (implementation.type) {
+    case "propertyTypeRid": {
+      const property = requirePropertyMetadata(
+        objectProperties,
+        implementation.propertyTypeRid,
+        "object property",
+      );
+      return {
+        type: "localPropertyImplementation",
+        propertyApiName: property.apiName,
+      };
+    }
+    case "structField": {
+      const property = requirePropertyMetadata(
+        objectProperties,
+        implementation.structField.propertyTypeRid,
+        "object struct property",
+      );
+      return {
+        type: "structFieldImplementation",
+        structFieldOfProperty: {
+          propertyApiName: property.apiName,
+          structFieldApiName: requireStructFieldApiName(
+            property,
+            implementation.structField.structFieldRid,
+            "object struct field",
+          ),
+        },
+      };
+    }
+    case "structPropertyTypeMapping":
+      return convertStructPropertyImplementation(
+        interfaceProperty,
+        implementation.structPropertyTypeMapping,
+        objectProperties,
+      );
+    case "reducedProperty":
+      return {
+        type: "reducedPropertyImplementation",
+        implementation: convertNestedInterfacePropertyImplementation(
+          interfaceProperty,
+          implementation.reducedProperty.implementation,
+          objectProperties,
+        ),
+      };
+  }
+}
+
+function convertNestedInterfacePropertyImplementation(
+  interfaceProperty: PropertyImplementationMetadata,
+  implementation: NestedInterfacePropertyTypeImplementation,
+  objectProperties: ReadonlyMap<string, PropertyImplementationMetadata>,
+): Ontologies.NestedInterfacePropertyTypeImplementation {
+  switch (implementation.type) {
+    case "propertyTypeRid": {
+      const property = requirePropertyMetadata(
+        objectProperties,
+        implementation.propertyTypeRid,
+        "object property",
+      );
+      return {
+        type: "localPropertyImplementation",
+        propertyApiName: property.apiName,
+      };
+    }
+    case "structField": {
+      const property = requirePropertyMetadata(
+        objectProperties,
+        implementation.structField.propertyTypeRid,
+        "object struct property",
+      );
+      return {
+        type: "structFieldImplementation",
+        structFieldOfProperty: {
+          propertyApiName: property.apiName,
+          structFieldApiName: requireStructFieldApiName(
+            property,
+            implementation.structField.structFieldRid,
+            "object struct field",
+          ),
+        },
+      };
+    }
+    case "structPropertyTypeMapping":
+      return convertStructPropertyImplementation(
+        interfaceProperty,
+        implementation.structPropertyTypeMapping,
+        objectProperties,
+      );
+  }
+}
+
+function convertStructPropertyImplementation(
+  interfaceProperty: PropertyImplementationMetadata,
+  implementation: Extract<
+    InterfacePropertyTypeImplementation,
+    { type: "structPropertyTypeMapping" }
+  >["structPropertyTypeMapping"],
+  objectProperties: ReadonlyMap<string, PropertyImplementationMetadata>,
+): Ontologies.NestedInterfacePropertyTypeImplementation {
+  const property = requirePropertyMetadata(
+    objectProperties,
+    implementation.propertyTypeRid,
+    "object struct property",
+  );
+  const mapping: Ontologies.InterfacePropertyStructImplementationMapping = {};
+  for (
+    const [interfaceFieldRid, objectFieldRid] of Object.entries(
+      implementation.structFieldRidMapping,
+    )
+  ) {
+    mapping[
+      requireStructFieldApiName(
+        interfaceProperty,
+        interfaceFieldRid,
+        "interface struct field",
+      )
+    ] = {
+      type: "structFieldOfProperty",
+      propertyApiName: property.apiName,
+      structFieldApiName: requireStructFieldApiName(
+        property,
+        objectFieldRid,
+        "object struct field",
+      ),
+    };
+  }
+  return { type: "structImplementation", mapping };
+}
+
+function buildSharedPropertyApiNameLookup(
+  properties: Record<string, SharedPropertyTypeBlockDataV2>,
+): ReadonlyMap<string, ApiName> {
+  return new Map(
+    Object.entries(properties).map(([rid, property]) => [
+      rid,
+      property.sharedPropertyType.apiName,
+    ]),
+  );
+}
+
+function valueTypeApiName(
+  reference: ValueTypeReference | null | undefined,
+  resolveValueTypeApiName: ValueTypeApiNameResolver | undefined,
+): { valueTypeApiName?: ApiName } {
+  if (reference == null || resolveValueTypeApiName === undefined) {
+    return {};
+  }
+  const apiName = resolveValueTypeApiName(reference);
+  if (apiName === undefined) {
+    throw new Error(
+      `Could not resolve Value Type '${reference.rid}' version '${reference.versionId}'`,
+    );
+  }
+  return { valueTypeApiName: apiName };
+}
+
 function getAllAncestorInterfaceTypes(
   apiName: ApiName,
   interfaceTypes: Record<ApiName, Ontologies.InterfaceType>,
@@ -1173,8 +1540,8 @@ function getAllAncestorInterfaceTypes(
       if (!parent) {
         continue;
       }
-      ancestors.push(parent);
       visitParents(parentApiName);
+      ancestors.push(parent);
     }
   };
 
@@ -1372,4 +1739,17 @@ export function resolveBlockDataApiName(
     return id;
   }
   return lookup.byRid.get(id) ?? lookup.byHyphenated.get(id) ?? id;
+}
+
+export function firstExistingObjectParameterId(
+  references: ReadonlyArray<LinkedObjectReference>,
+  field: string,
+): string {
+  const first = references[0];
+  if (references.length !== 1 || first?.type !== "existingObject") {
+    throw new Error(
+      `Interface-link rule ${field} must reference exactly one existing object`,
+    );
+  }
+  return first.existingObject;
 }

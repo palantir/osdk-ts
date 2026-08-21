@@ -58,7 +58,7 @@ describe("wireInterfaceTypeV2ToSdkObjectDefinition", () => {
     expect(result.implementedBy).toEqual(["ObjectA", "ObjectC", "ObjectZ"]);
   });
 
-  it("preserves empty arrays", () => {
+  it("preserves empty implementers", () => {
     const result = wireInterfaceTypeV2ToSdkObjectDefinition({
       apiName: "TestInterface",
       rid: "testRid",
@@ -75,7 +75,6 @@ describe("wireInterfaceTypeV2ToSdkObjectDefinition", () => {
       allLinks: {},
     }, true);
 
-    // Empty arrays should remain as empty arrays
     expect(result.implements).toEqual([]);
     expect(result.implementedBy).toEqual([]);
   });

@@ -20,6 +20,7 @@ import type {
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import {
+  buildBlockDataInterfaceLinkTypeLookup,
   buildBlockDataInterfaceTypeLookup,
   buildBlockDataObjectTypeLookup,
   OntologyBlockDataToFullMetadataConverter,
@@ -125,11 +126,15 @@ export class PreviewOntologyIrConverter {
   ): Record<string, Ontologies.ActionTypeFullMetadata> {
     const objectTypeLookup = buildBlockDataObjectTypeLookup(blockdata);
     const interfaceTypeLookup = buildBlockDataInterfaceTypeLookup(blockdata);
+    const interfaceLinkLookup = buildBlockDataInterfaceLinkTypeLookup(
+      blockdata,
+    );
     const baseActionTypes = OntologyBlockDataToFullMetadataConverter
       .getOsdkActionTypesFromBlockData(
         blockdata,
         objectTypeLookup,
         interfaceTypeLookup,
+        interfaceLinkLookup,
       );
 
     // Build a lookup from apiName to the original IR action for logic rules
