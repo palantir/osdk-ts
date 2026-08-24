@@ -15,12 +15,14 @@
  */
 
 import { Input } from "@base-ui/react/input";
+import { Popover } from "@base-ui/react/popover";
 import { Radio } from "@base-ui/react/radio";
 import { RadioGroup } from "@base-ui/react/radio-group";
 import React, { memo, useCallback, useId, useMemo } from "react";
 
 import { Select } from "../../../base-components/select/Select.js";
 import type { RelativeDateBound } from "../../FilterListItemApi.js";
+import { formatRelativeBound } from "../../utils/resolveRelativeDate.js";
 
 import styles from "./RelativeDateBoundInput.module.css";
 
@@ -53,20 +55,25 @@ interface RelativeDateBoundInputProps {
   value: RelativeDateBound | undefined;
   /** Callback when the bound changes. `undefined` means "Indefinitely". */
   onChange: (value: RelativeDateBound | undefined) => void;
-  /** Label for this bound, e.g. "From" or "To". */
-  label: string;
+  /** Placeholder shown when no value is set, e.g. "From" or "To". */
+  placeholder: string;
 }
 
 function RelativeDateBoundInputInner({
   value,
   onChange,
-  label,
+  placeholder,
 }: RelativeDateBoundInputProps): React.ReactElement {
   const labelId = useId();
   const mode: "custom" | "indefinitely" =
     value != null ? "custom" : "indefinitely";
 
   const currentBound = value ?? DEFAULT_BOUND;
+
+  const displayText = useMemo(
+    () => (value != null ? formatRelativeBound(value) : undefined),
+    [value],
+  );
 
   const handleModeChange = useCallback(
     (nextMode: unknown) => {
@@ -123,87 +130,98 @@ function RelativeDateBoundInputInner({
   const isCustom = mode === "custom";
 
   return (
-    <div className={styles.boundRoot}>
-      <span id={labelId} className={styles.boundLabel}>
-        {label}
-      </span>
-      <RadioGroup
-        className={styles.radioGroup}
-        value={mode}
-        onValueChange={handleModeChange}
-        aria-labelledby={labelId}
-      >
-        {/* Custom relative bound */}
-        <div className={styles.radioItem}>
-          <Radio.Root
-            value="custom"
-            className={styles.radioRoot}
-            aria-label={`${label} custom`}
-          >
-            <Radio.Indicator className={styles.radioIndicator} />
-          </Radio.Root>
-          <div className={styles.customRow}>
-            <Input
-              type="number"
-              className={styles.countInput}
-              value={isCustom ? String(currentBound.count) : "0"}
-              onChange={handleCountChange}
-              disabled={!isCustom}
-              min={0}
-              aria-label={`${label} count`}
-            />
-            <Select.Root<RelativeDateUnit>
-              value={currentBound.unit}
-              onValueChange={handleUnitChange}
-              disabled={!isCustom}
+    <Popover.Root>
+      <Popover.Trigger className={styles.trigger}>
+        <span
+          className={styles.triggerText}
+          data-placeholder={displayText == null || undefined}
+        >
+          {displayText ?? placeholder}
+        </span>
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Positioner className={styles.positioner} sideOffset={4}>
+          <Popover.Popup className={styles.popover}>
+            <RadioGroup
+              className={styles.radioGroup}
+              value={mode}
+              onValueChange={handleModeChange}
+              aria-labelledby={labelId}
             >
-              <Select.Trigger placeholder={unitLabel} />
-              <Select.Portal>
-                <Select.Positioner>
-                  <Select.Popup>
-                    {UNIT_OPTIONS.map((opt) => (
-                      <Select.Item key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </Select.Item>
-                    ))}
-                  </Select.Popup>
-                </Select.Positioner>
-              </Select.Portal>
-            </Select.Root>
-            <Select.Root<RelativeDateDirection>
-              value={currentBound.direction}
-              onValueChange={handleDirectionChange}
-              disabled={!isCustom}
-            >
-              <Select.Trigger placeholder={directionLabel} />
-              <Select.Portal>
-                <Select.Positioner>
-                  <Select.Popup>
-                    {DIRECTION_OPTIONS.map((opt) => (
-                      <Select.Item key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </Select.Item>
-                    ))}
-                  </Select.Popup>
-                </Select.Positioner>
-              </Select.Portal>
-            </Select.Root>
-          </div>
-        </div>
+              {/* Custom relative bound */}
+              <div className={styles.radioItem}>
+                <Radio.Root
+                  value="custom"
+                  className={styles.radioRoot}
+                  aria-label={`${placeholder} custom`}
+                >
+                  <Radio.Indicator className={styles.radioIndicator} />
+                </Radio.Root>
+                <div className={styles.customRow}>
+                  <Input
+                    type="number"
+                    className={styles.countInput}
+                    value={isCustom ? String(currentBound.count) : "0"}
+                    onChange={handleCountChange}
+                    disabled={!isCustom}
+                    min={0}
+                    aria-label={`${placeholder} count`}
+                  />
+                  <Select.Root<RelativeDateUnit>
+                    value={currentBound.unit}
+                    onValueChange={handleUnitChange}
+                    disabled={!isCustom}
+                  >
+                    <Select.Trigger placeholder={unitLabel} />
+                    <Select.Portal>
+                      <Select.Positioner>
+                        <Select.Popup>
+                          {UNIT_OPTIONS.map((opt) => (
+                            <Select.Item key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </Select.Item>
+                          ))}
+                        </Select.Popup>
+                      </Select.Positioner>
+                    </Select.Portal>
+                  </Select.Root>
+                  <Select.Root<RelativeDateDirection>
+                    value={currentBound.direction}
+                    onValueChange={handleDirectionChange}
+                    disabled={!isCustom}
+                  >
+                    <Select.Trigger placeholder={directionLabel} />
+                    <Select.Portal>
+                      <Select.Positioner>
+                        <Select.Popup>
+                          {DIRECTION_OPTIONS.map((opt) => (
+                            <Select.Item key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </Select.Item>
+                          ))}
+                        </Select.Popup>
+                      </Select.Positioner>
+                    </Select.Portal>
+                  </Select.Root>
+                </div>
+              </div>
 
-        {/* Indefinitely */}
-        <div className={styles.radioItem}>
-          <Radio.Root
-            value="indefinitely"
-            className={styles.radioRoot}
-            aria-label="Indefinitely"
-          >
-            <Radio.Indicator className={styles.radioIndicator} />
-          </Radio.Root>
-          <span className={styles.radioLabel}>Indefinitely</span>
-        </div>
-      </RadioGroup>
-    </div>
+              {/* Indefinitely */}
+              <div className={styles.radioItem}>
+                <Radio.Root
+                  value="indefinitely"
+                  className={styles.radioRoot}
+                  aria-label="Indefinitely"
+                >
+                  <Radio.Indicator className={styles.radioIndicator} />
+                </Radio.Root>
+                <span className={styles.radioLabel}>Indefinitely</span>
+              </div>
+            </RadioGroup>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
 
@@ -244,12 +262,12 @@ function RelativeDateRangeInputInner({
   return (
     <div className={styles.rangeRoot}>
       <RelativeDateBoundInput
-        label="From"
+        placeholder="From"
         value={relativeMin}
         onChange={handleMinChange}
       />
       <RelativeDateBoundInput
-        label="To"
+        placeholder="To"
         value={relativeMax}
         onChange={handleMaxChange}
       />

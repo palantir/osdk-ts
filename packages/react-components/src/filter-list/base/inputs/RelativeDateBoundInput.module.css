@@ -14,23 +14,86 @@
  * limitations under the License.
  */
 
+/* ---- Range layout (From – To side-by-side) ---- */
+
 .rangeRoot {
   display: flex;
-  flex-direction: column;
-  gap: calc(var(--osdk-surface-spacing) * 3);
+  align-items: flex-end;
+  gap: var(--osdk-filter-range-inputs-gap);
+  min-width: 0;
 }
 
-.boundRoot {
+/* ---- Trigger cell (matches DatePicker input wrapper) ---- */
+
+.trigger {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  border-radius: var(--osdk-datetime-input-border-radius);
+  box-shadow: var(--osdk-datetime-input-shadow);
+  background-color: var(--osdk-datetime-input-bg);
+  cursor: pointer;
+  transition:
+    background-color var(--osdk-datetime-input-transition-duration)
+      var(--osdk-datetime-input-transition-ease),
+    box-shadow var(--osdk-datetime-input-transition-duration)
+      var(--osdk-datetime-input-transition-ease);
+
+  &:hover {
+    background-color: var(--osdk-datetime-input-bg-hover);
+  }
+
+  &:focus-within {
+    box-shadow: var(--osdk-datetime-input-focus-shadow);
+    outline: var(--osdk-input-focus-outline);
+    outline-offset: var(--osdk-input-focus-outline-offset);
+  }
+}
+
+.triggerText {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--osdk-datetime-input-min-height);
+  padding: var(--osdk-datetime-input-padding);
+  border: none;
+  background: transparent;
+  color: var(--osdk-datetime-input-color);
+  font-family: var(--osdk-datetime-input-font-family);
+  font-size: var(--osdk-datetime-input-font-size);
+  line-height: var(--osdk-datetime-input-line-height);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.triggerText[data-placeholder] {
+  color: var(--osdk-datetime-input-placeholder-color);
+}
+
+/* ---- Popover ---- */
+
+.positioner {
+  z-index: var(--osdk-datetime-popover-z-index);
+
+  &[data-anchor-hidden] {
+    visibility: hidden;
+  }
+}
+
+.popover {
+  background: var(--osdk-datetime-popover-bg);
+  color: var(--osdk-typography-color-default-rest);
+  padding: var(--osdk-datetime-popover-padding);
+  box-shadow: var(--osdk-datetime-popover-shadow);
+  border-radius: var(--osdk-surface-border-radius);
   display: flex;
   flex-direction: column;
   gap: var(--osdk-radio-gap);
 }
 
-.boundLabel {
-  font-family: var(--osdk-filter-range-label-font-family);
-  font-size: var(--osdk-filter-range-label-font-size);
-  color: var(--osdk-filter-range-label-color);
-}
+/* ---- Radio options inside popover ---- */
 
 .radioGroup {
   display: flex;
@@ -104,7 +167,6 @@
   display: flex;
   align-items: center;
   gap: calc(var(--osdk-surface-spacing) * 1.5);
-  flex-wrap: wrap;
 }
 
 .countInput {
