@@ -1,5 +1,157 @@
 # @osdk/react-components
 
+## 0.53.0
+
+### Minor Changes
+
+- 8c18f55: `@osdk/aip-core` is now a direct dependency of `@osdk/react` and `@osdk/react-components` instead of an optional peer dependency, so consumers of `AipAgentChat` and `useChat` no longer have to install it themselves. For the same reason, `@osdk/aip-core` now depends on `@osdk/language-models` directly rather than declaring it as a peer.
+- ae47ac3: Fix FilterList's `HAS_LINK` filter, which previously sent an unsupported `$isNotNull` operator and was silently rejected by the server. `HAS_LINK` and `LINKED_PROPERTY` now filter by deriving a `$count` of matching linked objects and no longer use object-set `intersect`.
+
+  Fix `LINKED_PROPERTY` excluding: source rows with no linked object at all are now retained (previously dropped).
+
+  Consumer notes:
+  - `HAS_LINK` and `LINKED_PROPERTY` do not appear in `onFilterClauseChanged` (they cannot be expressed as a `WhereClause`). Wire `onEffectiveObjectSet` and pass the returned `ObjectSet` to the table to see them applied.
+  - `LINKED_PROPERTY` no longer requires `reverseLinkName` — the count-based narrowing does not need the reverse traversal.
+  - Removed bad documentation `$isNotNull` in `useOsdkObjects` snippets.
+
+### Patch Changes
+
+- Updated dependencies [8c18f55]
+  - @osdk/aip-core@0.10.0
+
+## 0.52.0
+
+### Minor Changes
+
+- 401b2d2: `BaseEmailViewer` takes its parsed email as `content`, matching the convention shared by the other viewers.
+
+  Nothing is removed. `email` is still accepted, is `@deprecated`, and `content` wins when both are set.
+
+  ```
+  BaseEmailViewer  email -> content
+  ```
+
+- 805e7d3: FilterList: a `CUSTOM` filter's seed now filters the object set, not just the input.
+
+  `filterState` and `defaultFilterState` are now read as one chain, `defaultFilterState` winning, so renaming preserves the value.
+
+  Also fixes the active filter count for `CUSTOM` filters, which counted any custom state as active. It now counts only when its `toWhereClause` produces a clause, matching what FilterList actually applies — so a seed that filters nothing no longer inflates the count.
+
+- 401b2d2: `BaseSpreadsheetViewer` takes its parsed workbook as `content`, matching the convention shared by the other viewers.
+
+  Nothing is removed. `spreadsheet` is still accepted, is `@deprecated`, and `content` wins when both are set.
+
+  ```
+  BaseSpreadsheetViewer  spreadsheet -> content
+  ```
+
+- 401b2d2: `BaseTiffViewer` accepts `className`, like every other base viewer. It renders a root element in every state to carry it, where before it rendered nothing until decoding finished.
+
+  `TiffViewerProps` is unchanged for consumers: it now inherits `className` from `BaseTiffViewerProps` instead of declaring its own. `DocumentViewer`'s `tiffViewerProps` omits `className`, matching `pdfViewerProps`, `imageViewerProps` and `videoViewerProps`.
+
+- 401b2d2: `BaseTiffViewer` takes its TIFF bytes as `src`, matching the convention shared by the other viewers. `content` is reserved for already-decoded payloads such as text or a parsed object; TIFF bytes are a binary source, so they belong under `src` alongside `BasePdfViewer`.
+
+  Nothing is removed. `content` is still accepted, is `@deprecated`, and `src` wins when both are set.
+
+  ```
+  BaseTiffViewer  content -> src
+  ```
+
+- 47c9c89: Document the convention for a viewer's primary input prop. `src` names the binary source to render from, in whatever forms that renderer supports (a URL, raw bytes, or both); `content` names the already-decoded payload (text, or a parsed object). `BasePdfViewer.src` is the reference for the first, `BaseXmlViewer.content` for the second.
+
+  No API changes. `BaseTiffViewer`, `BaseEmailViewer` and `BaseSpreadsheetViewer` move onto the convention in follow-up changes, each keeping a deprecated alias for its old prop name.
+
+## 0.51.0
+
+### Minor Changes
+
+- 76b378d: FilterList: filter definitions now seed from one optional `defaultFilterState`, matching the `default<Feature>` convention the rest of the library uses for an uncontrolled seed, and the `initialFilterStates` prop is now `defaultFilterStates`.
+
+  `id` and `isVisible` moved onto the shared `FilterDefinitionControls` mix-in. They were already declared on most kinds individually; every kind now accepts both.
+
+  Nothing is removed. Every old field is optional and `@deprecated`, and still honoured as a fallback.
+
+  To migrate:
+  - `PROPERTY`, `STATIC_VALUES`: rename `filterState` to `defaultFilterState`. The seed is now optional, so a `filterState` that only held an empty state (`{ type: "EXACT_MATCH", values: [] }` and friends) can be deleted instead — the filter starts empty either way.
+  - Top level: rename `initialFilterStates` to `defaultFilterStates`.
+  - Delete rather than rename `filterState` on `HAS_LINK` and `KEYWORD_SEARCH`. It has no effect, so renaming it would silently activate filters that were never active.
+  - `CUSTOM`: rename `filterState` to `defaultFilterState` to start filtering the object set.
+
+## 0.50.0
+
+### Minor Changes
+
+- fb4b039: FilterList: `LINKED_PROPERTY` filters no longer need three fields to express one value. `linkedFilterComponent` is now `filterComponent`, and `defaultLinkedFilterState` is now `defaultFilterState`.
+
+  Nothing is removed. Every old field is optional and `@deprecated`, and the renamed pair is still honoured as a fallback.
+
+  To migrate a `LINKED_PROPERTY` definition:
+  - Rename `linkedFilterComponent` to `filterComponent`.
+  - Rename `defaultLinkedFilterState` to `defaultFilterState`.
+  - Delete `linkedFilterState` and `filterState`. Both were required but never read, so renaming them would silently activate filters that were never active.
+
+- 710ee1d: FilterList: support both controlled and uncontrolled collapse. `onCollapsedChange` no longer gates the collapse control — it is now purely an event listener that fires in both modes. Pass `collapsed` for controlled mode or the new `defaultCollapsed` to seed uncontrolled mode; `collapsed` takes precedence when both are given. Previously `collapsed` did nothing unless `onCollapsedChange` was also supplied. The new `enableCollapse` prop defaults to `true`, so existing collapse setups keep working and lists that had no collapse control gain one; pass `enableCollapse={false}` to opt out.
+- 4179237: Revert labels override on ObjectTable in PR 3697
+- f615778: Add `onLoadedObjectsChanged` callback to `ObjectTable`, reporting the loaded rows and the object set's total count
+- a71d606: Normalize viewer component naming so every viewer follows the `<X>Viewer` / `Base<X>Viewer` pattern, and drop the `Media` suffix from the media-wrapper prop types.
+
+  The `experimental/markdown-renderer` and `experimental/tiff-renderer` import paths are unchanged. They get renamed later, when the `experimental/` prefix is dropped, so consumers change import paths once rather than twice.
+
+  The renamed components keep `@deprecated` aliases, so no import of a component needs to change yet. The prop-type renames do not: dropping the `Media` suffix is a clean break across all eight viewers. It cannot be aliased for pdf, where `PdfViewerProps` was reused for a different type, and aliasing seven of eight would be more confusing than none. Deprecated aliases are cleared in one pass once a migration script is available.
+
+  Renamed components, all with deprecated aliases:
+
+  ```
+  MarkdownRenderer     -> BaseMarkdownViewer
+  MarkdownViewerMedia  -> MarkdownViewer
+  TiffRenderer         -> BaseTiffViewer
+  TiffViewerMedia      -> TiffViewer
+  ```
+
+  Renamed prop types, none of which keep an alias:
+
+  ```
+  MarkdownRendererProps        -> BaseMarkdownViewerProps
+  TiffRendererProps            -> BaseTiffViewerProps
+  PdfViewerProps               -> BasePdfViewerProps
+  EmailViewerMediaProps        -> EmailViewerProps
+  ImageViewerMediaProps        -> ImageViewerProps
+  MarkdownViewerMediaProps     -> MarkdownViewerProps
+  PdfViewerMediaProps          -> PdfViewerProps
+  SpreadsheetViewerMediaProps  -> SpreadsheetViewerProps
+  TiffViewerMediaProps         -> TiffViewerProps
+  VideoViewerMediaProps        -> VideoViewerProps
+  XmlViewerMediaProps          -> XmlViewerProps
+  ```
+
+  Note that `PdfViewerProps` appears on both sides: it used to describe `BasePdfViewer` (which takes `src`) and now describes `PdfViewer` (which takes `media`). Pdf is the only viewer affected, because it was the only one whose base props were not already `Base`-prefixed. Code that used `PdfViewerProps` for the base component fails to compile rather than silently changing behavior, since `src` and `media` are not interchangeable, and should move to `BasePdfViewerProps`.
+
+  Renamed props:
+
+  ```
+  DocumentViewer's tiffRendererProps  -> tiffViewerProps
+  usePdfViewerInstance's highlightEnabled -> enableHighlight
+  ```
+
+  Removed props, each of which resolved to `{}` and could never carry a value, because those Base props consist only of the primary input plus `className`, both of which `DocumentViewer` omits when forwarding:
+
+  ```
+  DocumentViewer's markdownViewerProps     -> delete
+  DocumentViewer's spreadsheetViewerProps  -> delete
+  DocumentViewer's emailViewerProps        -> delete
+  DocumentViewer's xmlViewerProps          -> delete
+  ```
+
+  Renamed CSS custom properties, which have no fallback and need updating in any consumer theme:
+
+  ```
+  --osdk-markdown-renderer-*  -> --osdk-markdown-viewer-*
+  ```
+
+  Component names reported to metrics also change from `TiffViewerMedia` and `MarkdownViewerMedia` to `TiffViewer` and `MarkdownViewer`, so dashboards keyed on the old names need updating.
+
+  `PdfViewerInstanceOptions` is now derived from `BasePdfViewerProps` instead of restating it, so the two cannot drift apart. This adds `enableHighlight` (the deprecated `highlightEnabled` still works) and drops `downloadFileName`, which was never implemented by the hooks tier.
+
 ## 0.49.0
 
 ### Minor Changes

@@ -45,7 +45,7 @@ export function convertDatasourceDefinition(
   ridGenerator: OntologyRidGenerator,
 ): ObjectTypeDatasourceDefinition {
   const baseDatasource = objectType.datasources?.find((ds) =>
-    ["dataset", "stream", "restrictedView"].includes(ds.type),
+    ["dataset", "stream", "restrictedView", "direct"].includes(ds.type),
   );
 
   // Helper to get column names from properties
@@ -121,6 +121,33 @@ export function convertDatasourceDefinition(
           datasetRid: derivedDatasetLocator.rid,
           propertyMapping: buildPropertyMapping(
             properties,
+            objectType.apiName,
+            ridGenerator,
+          ),
+        },
+      };
+
+    case "direct":
+      const directDatasourceLocator =
+        ridGenerator.generateDirectDatasourceLocator(
+          objectType.apiName,
+          getColumnNames(properties),
+          "master",
+        );
+
+      return {
+        type: "direct",
+        direct: {
+          directSourceRid: directDatasourceLocator.rid,
+          propertyMapping: buildPropertyMapping(
+            properties,
+            objectType.apiName,
+            ridGenerator,
+          ),
+          propertySecurityGroups: convertPropertySecurityGroups(
+            baseDatasource,
+            properties,
+            objectType.primaryKeyPropertyApiName,
             objectType.apiName,
             ridGenerator,
           ),

@@ -1,5 +1,44 @@
 # @osdk/maker-experimental
 
+## 0.50.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+- Updated dependencies [90cce42]
+  - @osdk/generator-converters.ontologyir@2.58.0
+  - @osdk/generator-converters.preview@0.36.0
+  - @osdk/api@2.58.0
+  - @osdk/client.unstable@2.58.0
+  - @osdk/maker@0.58.0
+
+## 0.49.0
+
+### Minor Changes
+
+- a035a89: Allow empty collections for marking props
+
+### Patch Changes
+
+- Updated dependencies [b28235f]
+  - @osdk/maker@0.57.0
+
+## 0.48.0
+
+### Minor Changes
+
+- cea978e: Add configurable missing descriptions to all entities
+- 240964f: Convert recursive security conditions
+
+### Patch Changes
+
+- Updated dependencies [cea978e]
+  - @osdk/maker@0.56.0
+
 ## 0.47.0
 
 ### Minor Changes

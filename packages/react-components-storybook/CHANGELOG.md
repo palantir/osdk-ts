@@ -1,5 +1,18 @@
 # @osdk/react-components-storybook
 
+## 0.47.0
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+  - @osdk/faux@0.43.0
+
+## 0.46.0
+
+### Minor Changes
+
+- 4179237: Revert labels override on ObjectTable in PR 3697
+
 ## 0.45.0
 
 ### Patch Changes

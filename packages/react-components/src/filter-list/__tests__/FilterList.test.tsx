@@ -52,7 +52,7 @@ describe("FilterList", () => {
       );
 
       // On first render the … shows from the state buildInitialStates seeds
-      // out of `definition.filterState`
+      // out of `definition.defaultFilterState`
       expect(
         screen.getByRole("button", { name: /more actions/iu }),
       ).toBeDefined();

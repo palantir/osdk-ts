@@ -1,4 +1,4 @@
-import type { WhereClause } from "@osdk/api";
+import type { ObjectSet } from "@osdk/api";
 import type {
   ActionDefinition,
   ActionParam,
@@ -94,13 +94,44 @@ const EMPLOYEE_FILTERS: Array<FilterDefinitionUnion<Employee>> = [
     filterComponent: "DATE_RANGE",
     filterState: { type: "DATE_RANGE" },
   },
+  {
+    type: "HAS_LINK",
+    id: "hasManager",
+    linkName: "lead",
+    label: "Has a manager",
+  },
+  {
+    type: "LINKED_PROPERTY",
+    id: "managerName",
+    linkName: "lead",
+    linkedPropertyKey: "fullName",
+    filterComponent: "MULTI_SELECT",
+    label: "Manager Name",
+  },
+  {
+    type: "LINKED_PROPERTY",
+    id: "officeName",
+    linkName: "primaryOffice",
+    linkedPropertyKey: "name",
+    filterComponent: "LISTOGRAM",
+    label: "Office Name",
+  },
 ];
 
-const EMPLOYEE_COLUMNS: Array<ColumnDefinition<Employee>> = [
+type RDP = { primaryOfficeName: "string"; managerName: "string" };
+const EMPLOYEE_COLUMNS: Array<ColumnDefinition<Employee, RDP>> = [
   {
     locator: { type: "property", id: "fullName" },
     columnName: "Name",
     width: 220,
+  },
+  {
+    locator: {
+      type: "rdp",
+      id: "managerName",
+      creator: (os) => os.pivotTo("lead").selectProperty("fullName"),
+    },
+    columnName: "Manager Name",
   },
   {
     locator: { type: "property", id: "department" },
@@ -126,6 +157,14 @@ const EMPLOYEE_COLUMNS: Array<ColumnDefinition<Employee>> = [
     locator: { type: "property", id: "workerType" },
     columnName: "Worker type",
     width: 160,
+  },
+  {
+    locator: {
+      type: "rdp",
+      id: "primaryOfficeName",
+      creator: (os) => os.pivotTo("primaryOffice").selectProperty("name"),
+    },
+    columnName: "Linked Office Name",
   },
 ];
 
@@ -166,7 +205,11 @@ interface StatusMessage {
 
 export const EmployeeActionFormFilterListReproPage = React.memo(
   function EmployeeActionFormFilterListReproPageFn() {
-    const [filterClause, setFilterClause] = useState<WhereClause<Employee>>({});
+    // HAS_LINK and LINKED_PROPERTY narrow by counting linked objects, which has
+    // no `WhereClause` form — the table has to consume the object set
+    // FilterList hands back, not just the clause.
+    const [effectiveObjectSet, setEffectiveObjectSet] =
+      useState<ObjectSet<Employee>>();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [statusMessage, setStatusMessage] = useState<StatusMessage>();
     const employeeObjectSet = useMemo(() => $(Employee), []);
@@ -223,13 +266,12 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
             {statusMessage.text}
           </div>
         )}
-
         <div className="actionFormFilterListReproContent">
           <FilterList
             objectType={Employee}
             objectSet={employeeObjectSet}
             filterDefinitions={EMPLOYEE_FILTERS}
-            onFilterClauseChanged={setFilterClause}
+            onEffectiveObjectSet={setEffectiveObjectSet}
             title="Employee filters"
             showActiveFilterCount={true}
             showResetButton={true}
@@ -238,8 +280,8 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
 
           <ObjectTable
             objectType={Employee}
+            objectSet={effectiveObjectSet}
             columnDefinitions={EMPLOYEE_COLUMNS}
-            filter={filterClause}
             defaultOrderBy={DEFAULT_ORDER_BY}
             pageSize={50}
           />

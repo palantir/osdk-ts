@@ -815,6 +815,7 @@ export class OntologyIrToFullMetadataConverter {
           properties: propertyMappings,
           propertiesV2: {},
           links: {},
+          actionTypes: {},
         };
       }
 

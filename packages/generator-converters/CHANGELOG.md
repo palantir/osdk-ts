@@ -1,5 +1,23 @@
 # @osdk/generator-converters
 
+## 2.59.0
+
+### Patch Changes
+
+- Updated dependencies [4ae6d8b]
+- Updated dependencies [1aff7f4]
+  - @osdk/api@2.59.0
+
+## 2.58.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+
+### Patch Changes
+
+- @osdk/api@2.58.0
+
 ## 2.57.0
 
 ### Patch Changes

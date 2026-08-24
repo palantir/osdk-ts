@@ -17,15 +17,22 @@
 import type { Media } from "@osdk/api";
 
 export interface BaseTiffViewerProps {
-  /** TIFF bytes to render */
-  content: Uint8Array;
+  /** TIFF bytes to render. */
+  // TODO: make this required when `content` is removed.
+  src?: Uint8Array;
+  /** @deprecated Rename to `src`. */
+  content?: Uint8Array;
+  /** Additional CSS class name for the root element
+   * @default undefined */
+  className?: string;
   /** Callback fired when rendering fails */
   onError?: () => void;
 }
 
-export interface TiffViewerProps extends Omit<BaseTiffViewerProps, "content"> {
+export interface TiffViewerProps extends Omit<
+  BaseTiffViewerProps,
+  "src" | "content"
+> {
   /** The Media object to fetch TIFF contents from */
   media: Media;
-  /** Additional CSS class name for the root element */
-  className?: string;
 }

@@ -1,5 +1,30 @@
 # @osdk/unit-testing
 
+## 0.23.0
+
+### Minor Changes
+
+- 109b7f1: Add support for stubbing unioned, intersected, and subtracted mock object sets.
+
+### Patch Changes
+
+- Updated dependencies [4ae6d8b]
+- Updated dependencies [1aff7f4]
+  - @osdk/api@2.59.0
+  - @osdk/client@2.59.0
+
+## 0.22.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+  - @osdk/client@2.58.0
+  - @osdk/api@2.58.0
+
 ## 0.21.0
 
 ### Minor Changes

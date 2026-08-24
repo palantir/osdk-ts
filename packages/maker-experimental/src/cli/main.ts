@@ -43,6 +43,7 @@ import {
   generateBackingDatasetBlockResultForLink,
   getNonEditOnlyProperties,
 } from "./generateBackingDataset.js";
+import { generateDirectDatasourceBlockResult } from "./generateDirectDatasource.js";
 import {
   generateValueTypeBlockResults,
   getValueTypeInternalMappings,
@@ -291,6 +292,18 @@ export default async function main(
     );
   }
 
+  const directDatasourceGeneratorResults = (
+    await Promise.all(
+      Object.values(ontologyIr.ontology.objectTypes).map((objectType) =>
+        generateDirectDatasourceBlockResult(
+          objectType,
+          commandLineOpts.buildDir,
+          commandLineOpts.randomnessKey,
+        ),
+      ),
+    )
+  ).filter((result): result is BlockGeneratorResult => result !== undefined);
+
   // Collect input_mapping_entries for the ontology block
   // These map ontology inputs to datasource block outputs for objects with includeEmptyBackingDatasource
   const ontologyInputMappingEntries: InputMappingEntry[] = shapes.inputMappings;
@@ -457,6 +470,7 @@ export default async function main(
   const blockGeneratorResultJson = JSON.stringify(
     [
       blockGeneratorResult,
+      ...directDatasourceGeneratorResults,
       ...backingDsGeneratorResults,
       ...backingDsLinkGeneratorResults,
       ...valueTypeResults,

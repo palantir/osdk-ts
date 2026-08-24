@@ -32,14 +32,20 @@ export interface ParsedEmail {
 }
 
 export interface BaseEmailViewerProps {
-  /** Parsed email data */
-  email: ParsedEmail;
+  /** The parsed email to render. */
+  // TODO: make this required when `email` is removed.
+  content?: ParsedEmail;
+  /** @deprecated Rename to `content`. */
+  email?: ParsedEmail;
   /** Additional CSS class name for the root element
    * @default undefined */
   className?: string;
 }
 
-export interface EmailViewerProps extends Omit<BaseEmailViewerProps, "email"> {
+export interface EmailViewerProps extends Omit<
+  BaseEmailViewerProps,
+  "content" | "email"
+> {
   /** The Media object to fetch EML contents from */
   media: Media;
 }

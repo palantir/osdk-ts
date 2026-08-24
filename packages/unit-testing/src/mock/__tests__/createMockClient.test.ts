@@ -26,6 +26,8 @@ import { createMockClient } from "../createMockClient.js";
 import { createMockObjectSet } from "../createMockObjectSet.js";
 import { createMockOsdkObject } from "../createMockOsdkObject.js";
 
+const setOperations = ["union", "intersect", "subtract"] as const;
+
 describe("createMockClient", () => {
   describe("fetchPage", () => {
     it("returns stubbed objects", async () => {
@@ -381,6 +383,71 @@ describe("createMockClient", () => {
     });
   });
 
+  describe("set arithmetic", () => {
+    it("matches multiple union operands", async () => {
+      const mockClient = createMockClient();
+      const emp = createMockOsdkObject(Employee, { employeeId: 1 });
+
+      mockClient
+        .when((c) =>
+          c(Employee)
+            .where({ office: { $eq: "NYC" } })
+            .union(
+              c(Employee).where({ office: { $eq: "LA" } }),
+              c(Employee).where({ office: { $eq: "LONDON" } }),
+            )
+            .fetchPage(),
+        )
+        .thenReturnObjects([emp]);
+
+      const result = await mockClient(Employee)
+        .where({ office: { $eq: "NYC" } })
+        .union(
+          mockClient(Employee).where({ office: { $eq: "LA" } }),
+          mockClient(Employee).where({ office: { $eq: "LONDON" } }),
+        )
+        .fetchPage();
+
+      expect(result.data).toEqual([emp]);
+    });
+
+    it("distinguishes object set operands", async () => {
+      const mockClient = createMockClient();
+
+      mockClient
+        .when((c) =>
+          c(Employee)
+            .union(c(Employee).where({ office: { $eq: "NYC" } }))
+            .fetchPage(),
+        )
+        .thenReturnObjects([]);
+
+      await expect(
+        mockClient(Employee)
+          .union(mockClient(Employee).where({ office: { $eq: "LA" } }))
+          .fetchPage(),
+      ).rejects.toThrow();
+    });
+
+    it.each(setOperations)(
+      "matches %s with a standalone mock object set",
+      async (operation) => {
+        const mockClient = createMockClient();
+        const empSet = createMockObjectSet(Employee);
+        const emp = createMockOsdkObject(Employee, { employeeId: 1 });
+
+        mockClient
+          .when((c) => c(Employee)[operation](empSet).fetchPage())
+          .thenReturnObjects([emp]);
+
+        const employeeSet = mockClient(Employee);
+        const result = await employeeSet[operation](empSet).fetchPage();
+
+        expect(result.data).toEqual([emp]);
+      },
+    );
+  });
+
   describe("clearStubs", () => {
     it("removes all stubs", async () => {
       const mockClient = createMockClient();
@@ -645,6 +712,27 @@ describe("createMockClient", () => {
       expect(result.data).toHaveLength(1);
       expect(result.data[0].office).toBe("NYC");
     });
+
+    it.each(setOperations)(
+      "stubs %s + fetchPage on a standalone mock object set",
+      async (operation) => {
+        const mockClient = createMockClient();
+        const empSet = createMockObjectSet(Employee);
+        const emp = createMockOsdkObject(Employee, { employeeId: 1 });
+
+        mockClient
+          .whenObjectSet(empSet, (os) =>
+            os[operation](os.where({ office: { $eq: "NYC" } })).fetchPage(),
+          )
+          .thenReturnObjects([emp]);
+
+        const result = await empSet[operation](
+          empSet.where({ office: { $eq: "NYC" } }),
+        ).fetchPage();
+
+        expect(result.data).toEqual([emp]);
+      },
+    );
 
     it("throws when no stub matches on standalone object set", async () => {
       createMockClient();

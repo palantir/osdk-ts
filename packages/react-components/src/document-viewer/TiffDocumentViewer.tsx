@@ -31,7 +31,9 @@ interface TiffDocumentViewerProps {
   media: Media;
   className: string;
   enableTiffToPdf: boolean;
-  tiffViewerProps?: Partial<Omit<BaseTiffViewerProps, "content">>;
+  tiffViewerProps?: Partial<
+    Omit<BaseTiffViewerProps, "src" | "content" | "className">
+  >;
   pdfViewerProps?: Partial<Omit<BasePdfViewerProps, "src">>;
 }
 

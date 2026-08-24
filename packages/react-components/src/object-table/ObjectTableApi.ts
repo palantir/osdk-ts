@@ -173,18 +173,13 @@ interface SharedColumnDefinition<
    * `cellValueType`) — `renderCell` then receives that value as its third
    * argument. The two can be combined.
    *
-   * Interaction with `editable` columns:
-   * - When `editMode: "manual"` (default), `renderCell` is used while the
-   *   table is read-only (Edit Table button visible) and the editable cell
-   *   takes over once the user enters edit mode.
-   * - When `editMode: "always"`, the editable cell always wins on editable
-   *   columns and `renderCell` is ignored — `editMode: "always"` opts the
-   *   column into a permanently-editable surface, leaving no read-only
-   *   state for `renderCell` to render. Use `editMode: "manual"` if you
-   *   need a custom display alongside editing.
+   *  `renderCell` is used only when the cell is read-only.
+   * When cells are actually editable, the in-built edit component takes over.
    *
-   * @param value - The cell's value, so there's no need to recompute what
-   * `getCellValue` (or the property lookup) already produced.
+   * @param object - The row's object instance.
+   * @param locator - The column locator of this cell.
+   * @param value - The cell's value computed by the given `getCellValue` or the default property lookup.
+   * @returns custom cell renderer component
    */
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
@@ -632,6 +627,16 @@ export interface ObjectTableProps<
   onRowSelectionChanged?: (change: RowSelectionChange<Q, RDPs>) => void;
 
   /**
+   * Called when the set of loaded rows changes — as pages are fetched, when
+   * streamed updates arrive, and after a refetch — with a
+   * {@link LoadedObjectsChange} payload.
+   *
+   * @param change The loaded rows and the total count. See
+   * {@link LoadedObjectsChange}.
+   */
+  onLoadedObjectsChanged?: (change: LoadedObjectsChange<Q, RDPs>) => void;
+
+  /**
    * The primary key of the row to render as visually focused (the
    * "last interacted" row). When provided, focus state is controlled by
    * the caller.
@@ -846,6 +851,36 @@ export interface ObjectTableDataRow<
    * failed surface the thrown `Error` instance as their value.
    */
   getValue: (columnId: string) => unknown;
+}
+
+/**
+ * Payload for {@link ObjectTableProps.onLoadedObjectsChanged}.
+ */
+export interface LoadedObjectsChange<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> {
+  /**
+   * The rows loaded into the table so far, in display order. Rows on pages
+   * the user hasn't scrolled to yet are absent — compare `loadedObjects.length`
+   * against `totalCount` to tell whether more remain.
+   *
+   * Each row carries the values of its function-backed columns alongside its
+   * properties, so those cells are readable from the payload.
+   */
+  loadedObjects: Osdk.Instance<
+    Q,
+    "$allBaseProperties",
+    PropertyKeys<Q>,
+    RDPs
+  >[];
+
+  /**
+   * Total number of objects matching the underlying object set, as reported
+   * by the API. `undefined` when the API did not provide a count. Encoded as
+   * a string to match the underlying list-payload representation.
+   */
+  totalCount: string | undefined;
 }
 
 /**

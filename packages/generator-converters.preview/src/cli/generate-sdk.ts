@@ -401,7 +401,7 @@ async function main(): Promise<void> {
         types: "./dist/index.d.ts",
         import: "./dist/index.js",
       },
-      "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
+      "./experimental/ontology-metadata": {
         import: {
           types: `./${ONTOLOGY_METADATA_DMTS_PATH}`,
           default: `./${ONTOLOGY_METADATA_JSON_PATH}`,

@@ -1,5 +1,21 @@
 # @osdk/integration-testing
 
+## 0.2.0
+
+### Minor Changes
+
+- 54ed99f: Update postinstall script to skip installation when in development osdk-ts repo
+- f3a7fd6: detect JEMMA token
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+- Updated dependencies [90cce42]
+  - @osdk/client@2.58.0
+  - @osdk/generator-converters.preview@0.36.0
+  - @osdk/unit-testing@0.22.0
+  - @osdk/api@2.58.0
+
 ## 0.1.0
 
 ### Minor Changes

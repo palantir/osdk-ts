@@ -32,7 +32,7 @@ import { EmailViewer } from "@osdk/react-components/experimental/email-viewer";
 import { BaseEmailViewer } from "@osdk/react-components/experimental/email-viewer";
 
 <BaseEmailViewer
-  email={{
+  content={{
     subject: "Hello",
     from: { name: "Alice", address: "alice@example.com" },
     to: [{ name: "Bob", address: "bob@example.com" }],
@@ -50,7 +50,8 @@ import { BaseEmailViewer } from "@osdk/react-components/experimental/email-viewe
 
 | Prop        | Type          | Required | Description                           |
 | ----------- | ------------- | -------- | ------------------------------------- |
-| `email`     | `ParsedEmail` | Yes      | Parsed email data                     |
+| `content`   | `ParsedEmail` | No       | The parsed email to render            |
+| `email`     | `ParsedEmail` | No       | **Deprecated** — rename to `content`  |
 | `className` | `string`      | No       | CSS class applied to the root element |
 
 ### EmailViewerProps

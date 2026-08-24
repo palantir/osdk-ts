@@ -17,6 +17,7 @@
 /* cspell:words ifds */
 
 import { Error as ErrorIcon } from "@blueprintjs/icons";
+import classnames from "classnames";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as UTIF from "utif";
 
@@ -121,26 +122,34 @@ const TiffCanvas: React.FunctionComponent<{ imageData: TiffImageData }> =
   });
 
 export const BaseTiffViewer: React.FunctionComponent<BaseTiffViewerProps> =
-  React.memo(({ content, onError }) => {
+  React.memo(({ src, content, className, onError }) => {
     const [result, setResult] = useState<DecodeResult | undefined>(undefined);
     const onErrorRef = useRef(onError);
     onErrorRef.current = onError;
 
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- pre-rename fallback
+    const bytes = src ?? content;
+
     useEffect(() => {
-      const decodeResult = decodeTiff(content);
+      if (bytes == null) {
+        setResult(undefined);
+        return;
+      }
+      const decodeResult = decodeTiff(bytes);
       setResult(decodeResult);
       if (decodeResult.status === "error") {
         onErrorRef.current?.();
       }
-    }, [content]);
+    }, [bytes]);
 
-    if (result == null) {
-      return null;
-    }
+    const rootClassName = classnames(styles.container, className);
 
-    if (result.status === "error") {
-      return <ErrorMessage message={result.message} />;
-    }
-
-    return <TiffCanvas imageData={result.data} />;
+    return (
+      <div className={rootClassName}>
+        {result?.status === "error" && (
+          <ErrorMessage message={result.message} />
+        )}
+        {result?.status === "ok" && <TiffCanvas imageData={result.data} />}
+      </div>
+    );
   });

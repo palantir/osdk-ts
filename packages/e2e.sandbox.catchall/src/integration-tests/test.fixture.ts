@@ -1,4 +1,4 @@
-import metadata from "@osdk/e2e.generated.catchall/UNSTABLE_DO_NOT_USE/ontology-metadata";
+import metadata from "@osdk/e2e.generated.catchall/experimental/ontology-metadata";
 import type { Ontologies } from "@osdk/foundry";
 import {
   type IntegrationServer,
@@ -11,7 +11,7 @@ import {
   type SeedFunction,
   createSeedWithMetadata,
 } from "@osdk/seed-helpers";
-import { test as baseTest, type TestAPI } from "vitest";
+import { test as baseTest } from "vitest";
 
 const filteredObjectTypes = new Set(["Person", "Todo", "Game", "Book"]);
 const filteredInterfaceTypes = new Set(["LibraryItem"]);
@@ -34,35 +34,44 @@ const modifiedMetadata: Ontologies.OntologyFullMetadata = {
   sharedPropertyTypes: {},
 };
 
+export interface IntegrationFixtures {
+  server: IntegrationServer;
+  client: IntegrationClient;
+  seed: SeedClient;
+}
+
 /**
  * This is a fixture that injects server, seed and client to the testing functions contexts.
  * We need to initialize the server and client before the tests can consume them, and this
  * fixture ensures that all of the dependencies are ready before we run the tests.
  */
-export const test = baseTest
-  // eslint-disable no-empty-pattern
-  .extend("server", { scope: "worker" }, async ({}, { onCleanup }) => {
-    const server = await createIntegrationServer({
-      metadata: modifiedMetadata,
-    });
-    onCleanup(async () => await server.stop());
-    await server.start();
-    return server;
-  })
-  .extend(
-    "seed",
+export const test = baseTest.extend<IntegrationFixtures>({
+  server: [
+    // eslint-disable-next-line no-empty-pattern
+    async ({}, use) => {
+      const server = await createIntegrationServer({
+        metadata: modifiedMetadata,
+      });
+      // `stop()` runs even if `start()` throws, so a partially started server
+      // never leaks its subprocess or its `.test-run-*` directory.
+      try {
+        await server.start();
+        await use(server);
+      } finally {
+        await server.stop();
+      }
+    },
     { scope: "worker" },
-    async ({ server }) => await server.getSeedClient(),
-  )
-  .extend(
-    "client",
+  ],
+  seed: [
+    async ({ server }, use) => await use(await server.getSeedClient()),
     { scope: "worker" },
-    async ({ server }) => await server.getClient(),
-  ) as TestAPI<{
-  server: IntegrationServer;
-  client: IntegrationClient;
-  seed: SeedClient;
-}>;
+  ],
+  client: [
+    async ({ server }, use) => await use(await server.getClient()),
+    { scope: "worker" },
+  ],
+});
 
 export const createSeed: <T>(fn: SeedFunction<T>) => {
   output: SeedOutput;

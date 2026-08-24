@@ -29,16 +29,8 @@ type PartialForOptionalProperties<T> = {
 export type SeedProps<T extends ObjectTypeDefinition> =
   PartialForOptionalProperties<CompileTimeMetadata<T>["props"]>;
 
-/**
- * Unique symbol used to brand {@link SeedRef} instances. A branded type prevents
- * manually constructed objects from satisfying the interface.
- */
-declare const SEED_REF_BRAND: unique symbol;
-
 export type SeedRef<Q extends ObjectTypeDefinition> = Readonly<
-  OsdkBase<Q> & {
-    readonly [SEED_REF_BRAND]: Q;
-  } & SeedProps<Q>
+  OsdkBase<Q> & SeedProps<Q>
 >;
 
 /** A link entry in the seed output. */
