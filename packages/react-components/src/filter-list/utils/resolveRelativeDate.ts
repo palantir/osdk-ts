@@ -45,6 +45,9 @@ export function resolveRelativeDateBound(
       break;
   }
 
+  // Relative dates represent whole days — reset time to local midnight.
+  result.setHours(0, 0, 0, 0);
+
   return result;
 }
 

@@ -21,7 +21,21 @@ import {
   resolveRelativeDateBound,
 } from "../utils/resolveRelativeDate.js";
 
-const NOW = new Date("2026-08-15T12:00:00.000Z");
+// Use local midnight so setHours(0,0,0,0) in resolveRelativeDateBound
+// doesn't shift the date. We compare using getFullYear/getMonth/getDate
+// to stay timezone-independent.
+const NOW = new Date(2026, 7, 15); // Aug 15, 2026 local midnight
+
+function expectDate(result: Date, year: number, month: number, day: number) {
+  expect(result.getFullYear()).toBe(year);
+  expect(result.getMonth()).toBe(month);
+  expect(result.getDate()).toBe(day);
+  // Always midnight
+  expect(result.getHours()).toBe(0);
+  expect(result.getMinutes()).toBe(0);
+  expect(result.getSeconds()).toBe(0);
+  expect(result.getMilliseconds()).toBe(0);
+}
 
 describe("resolveRelativeDateBound", () => {
   describe("ago direction", () => {
@@ -30,7 +44,7 @@ describe("resolveRelativeDateBound", () => {
         { count: 7, unit: "days", direction: "ago" },
         NOW,
       );
-      expect(result.toISOString()).toBe("2026-08-08T12:00:00.000Z");
+      expectDate(result, 2026, 7, 8); // Aug 8
     });
 
     it("subtracts weeks", () => {
@@ -38,7 +52,7 @@ describe("resolveRelativeDateBound", () => {
         { count: 2, unit: "weeks", direction: "ago" },
         NOW,
       );
-      expect(result.toISOString()).toBe("2026-08-01T12:00:00.000Z");
+      expectDate(result, 2026, 7, 1); // Aug 1
     });
 
     it("subtracts months", () => {
@@ -46,7 +60,7 @@ describe("resolveRelativeDateBound", () => {
         { count: 3, unit: "months", direction: "ago" },
         NOW,
       );
-      expect(result.toISOString()).toBe("2026-05-15T12:00:00.000Z");
+      expectDate(result, 2026, 4, 15); // May 15
     });
 
     it("subtracts years", () => {
@@ -54,7 +68,7 @@ describe("resolveRelativeDateBound", () => {
         { count: 1, unit: "years", direction: "ago" },
         NOW,
       );
-      expect(result.toISOString()).toBe("2025-08-15T12:00:00.000Z");
+      expectDate(result, 2025, 7, 15); // Aug 15, 2025
     });
   });
 
@@ -64,7 +78,7 @@ describe("resolveRelativeDateBound", () => {
         { count: 5, unit: "days", direction: "fromNow" },
         NOW,
       );
-      expect(result.toISOString()).toBe("2026-08-20T12:00:00.000Z");
+      expectDate(result, 2026, 7, 20); // Aug 20
     });
 
     it("adds weeks", () => {
@@ -72,7 +86,7 @@ describe("resolveRelativeDateBound", () => {
         { count: 1, unit: "weeks", direction: "fromNow" },
         NOW,
       );
-      expect(result.toISOString()).toBe("2026-08-22T12:00:00.000Z");
+      expectDate(result, 2026, 7, 22); // Aug 22
     });
 
     it("adds months", () => {
@@ -80,7 +94,7 @@ describe("resolveRelativeDateBound", () => {
         { count: 2, unit: "months", direction: "fromNow" },
         NOW,
       );
-      expect(result.toISOString()).toBe("2026-10-15T12:00:00.000Z");
+      expectDate(result, 2026, 9, 15); // Oct 15
     });
 
     it("adds years", () => {
@@ -88,20 +102,29 @@ describe("resolveRelativeDateBound", () => {
         { count: 3, unit: "years", direction: "fromNow" },
         NOW,
       );
-      expect(result.toISOString()).toBe("2029-08-15T12:00:00.000Z");
+      expectDate(result, 2029, 7, 15); // Aug 15, 2029
     });
   });
 
-  it("count 0 returns now", () => {
+  it("count 0 returns today at midnight", () => {
     const result = resolveRelativeDateBound(
       { count: 0, unit: "days", direction: "ago" },
       NOW,
     );
-    expect(result.toISOString()).toBe(NOW.toISOString());
+    expectDate(result, 2026, 7, 15);
+  });
+
+  it("always resets time to midnight regardless of input time", () => {
+    const afternoon = new Date(2026, 7, 15, 15, 30, 45, 123);
+    const result = resolveRelativeDateBound(
+      { count: 1, unit: "days", direction: "ago" },
+      afternoon,
+    );
+    expectDate(result, 2026, 7, 14);
   });
 
   it("handles month day clamping (Jan 31 minus 1 month)", () => {
-    const jan31 = new Date("2026-01-31T12:00:00.000Z");
+    const jan31 = new Date(2026, 0, 31); // Jan 31
     const result = resolveRelativeDateBound(
       { count: 1, unit: "months", direction: "ago" },
       jan31,
@@ -109,6 +132,7 @@ describe("resolveRelativeDateBound", () => {
     // Dec 31 — JS setMonth auto-adjusts
     expect(result.getMonth()).toBe(11); // December
     expect(result.getDate()).toBe(31);
+    expect(result.getHours()).toBe(0);
   });
 });
 
