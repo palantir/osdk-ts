@@ -643,6 +643,7 @@ async function applyFetchArgs<
     pageToken?: PageToken;
     pageSize?: PageSize;
     loadPropertySecurities?: boolean;
+    loadOntologyDefinedDerivedProperties?: boolean;
   },
 >(
   args: FetchPageArgs<
@@ -671,6 +672,9 @@ async function applyFetchArgs<
   if (args?.$loadPropertySecurityMetadata) {
     body.loadPropertySecurities = true;
   }
+
+  body.loadOntologyDefinedDerivedProperties =
+    args?.$UNSTABLE_loadOntologyDefinedDerivedProperties ?? true;
 
   const orderBy = args?.$orderBy;
   if (orderBy) {
