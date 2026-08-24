@@ -228,7 +228,9 @@ function convertPropertySecurityGroups(
       groups: [
         {
           properties: propertyRids,
-          rid: ridGenerator.generateRid("defaultObjectSecurityPolicy"),
+          rid: ridGenerator.generatePropertySecurityGroupRid(
+            "defaultObjectSecurityPolicy",
+          ),
           security: {
             type: "granular",
             granular: {
