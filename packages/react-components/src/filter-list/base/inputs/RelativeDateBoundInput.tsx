@@ -77,7 +77,7 @@ function RelativeDateBoundInputInner({
   );
 
   const handleModeChange = useCallback(
-    (nextMode: unknown) => {
+    (nextMode: string) => {
       if (nextMode === "indefinitely") {
         onChange(undefined);
       } else {
@@ -237,8 +237,9 @@ function RelativeDateBoundInputInner({
   );
 }
 
-export const RelativeDateBoundInput: React.NamedExoticComponent<RelativeDateBoundInputProps> =
-  memo(RelativeDateBoundInputInner);
+export const RelativeDateBoundInput = memo(
+  RelativeDateBoundInputInner,
+) as typeof RelativeDateBoundInputInner;
 
 interface RelativeDateRangeInputProps {
   /** Relative definition for the From bound. `undefined` = Indefinitely. */
@@ -290,5 +291,6 @@ function RelativeDateRangeInputInner({
   );
 }
 
-export const RelativeDateRangeInput: React.NamedExoticComponent<RelativeDateRangeInputProps> =
-  memo(RelativeDateRangeInputInner);
+export const RelativeDateRangeInput = memo(
+  RelativeDateRangeInputInner,
+) as typeof RelativeDateRangeInputInner;
