@@ -16,7 +16,7 @@
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
-import React, { memo, useCallback, useEffect, useMemo } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 
 import { DateRangeHistogramInput } from "../base/inputs/DateRangeHistogramInput.js";
 import { NullValueWrapper } from "../base/inputs/NullValueWrapper.js";
@@ -54,33 +54,6 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   const dateRangeState =
     filterState?.type === "DATE_RANGE" ? filterState : undefined;
   const includeNull = filterState?.includeNull;
-
-  // On mount, recompute absolute dates from relative bounds so they are
-  // always anchored to "now". Only fires when the computed dates differ
-  // from what's already stored, preventing an infinite update loop.
-  useEffect(() => {
-    if (dateRangeState?.isRelative !== true) {
-      return;
-    }
-    const minValue = dateRangeState.relativeMin
-      ? resolveRelativeDateBound(dateRangeState.relativeMin)
-      : undefined;
-    const maxValue = dateRangeState.relativeMax
-      ? resolveRelativeDateBound(dateRangeState.relativeMax)
-      : undefined;
-    const minChanged =
-      minValue?.getTime() !== dateRangeState.minValue?.getTime();
-    const maxChanged =
-      maxValue?.getTime() !== dateRangeState.maxValue?.getTime();
-    if (!minChanged && !maxChanged) {
-      return;
-    }
-    onFilterStateChanged({
-      ...dateRangeState,
-      minValue,
-      maxValue,
-    });
-  }, [dateRangeState, onFilterStateChanged]);
 
   const handleNullChange = useCallback(
     (includeNull: boolean) => {
