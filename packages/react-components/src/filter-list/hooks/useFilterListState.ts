@@ -120,6 +120,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     onFilterClauseChanged,
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat callback still supported
     onEffectiveObjectSet,
+    filterStates: controlledFilterStates,
     defaultFilterStates,
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat fallback for the pre-rename prop
     initialFilterStates,
@@ -164,29 +165,92 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   const propertyTypesRef = useRef(propertyTypes);
   propertyTypesRef.current = propertyTypes;
 
-  // Captured once on first render to provide a stable baseline for the reset
-  // button's enabled state. `useState`'s lazy initializer pins the value for
-  // the lifetime of the component (unlike `useMemo`, which React may discard).
-  const [initialFilterStatesSnapshot] = useState<Map<string, FilterState>>(
-    () => {
-      const snapshot = buildInitialStates(filterDefinitions);
-      if (seededFilterStates) {
-        for (const [key, state] of seededFilterStates) {
-          snapshot.set(key, state);
-        }
+  // The baseline the reset button restores to: the states the component was
+  // last handed from outside, whether that was the mount seeds or a later
+  // `filterStates` push.
+  const [baselineFilterStates, setBaselineFilterStates] = useState<
+    Map<string, FilterState>
+  >(() => {
+    if (controlledFilterStates != null) {
+      return new Map(controlledFilterStates);
+    }
+    const snapshot = buildInitialStates(filterDefinitions);
+    if (seededFilterStates) {
+      for (const [key, state] of seededFilterStates) {
+        snapshot.set(key, state);
       }
-      return snapshot;
-    },
-  );
+    }
+    return snapshot;
+  });
 
   const [filterStates, setFilterStates] = useState<Map<string, FilterState>>(
-    () => new Map(initialFilterStatesSnapshot),
+    () => new Map(baselineFilterStates),
   );
 
   // Back-to-back writes can occur before React commits, so each transition must
   // build on the latest eagerly computed state rather than the render snapshot.
   const filterStatesRef = useRef(filterStates);
   filterStatesRef.current = filterStates;
+
+  // Edits land in local state first so typing stays responsive and the consumer
+  // only has to re-render on its own schedule. Adopting a pushed map during
+  // render rather than in an effect keeps the outgoing states from painting for
+  // a frame; the identity check makes it run once per distinct map, and the
+  // deep check ignores a consumer echoing back what it just read out.
+  const lastControlledFilterStatesRef = useRef(controlledFilterStates);
+  const pendingReplaceEmitRef = useRef<Map<string, FilterState> | undefined>(
+    undefined,
+  );
+  if (
+    controlledFilterStates != null &&
+    controlledFilterStates !== lastControlledFilterStatesRef.current
+  ) {
+    lastControlledFilterStatesRef.current = controlledFilterStates;
+    if (!isEqual(controlledFilterStates, filterStatesRef.current)) {
+      const adopted = new Map(controlledFilterStates);
+      filterStatesRef.current = adopted;
+      setFilterStates(adopted);
+      setBaselineFilterStates(adopted);
+      pendingReplaceEmitRef.current = adopted;
+    }
+  }
+
+  const reportChange = useCallback(
+    (next: Map<string, FilterState>, event: FilterChangeCause) => {
+      if (onFilterChangedRef.current == null) {
+        return;
+      }
+      const snapshot = deriveSnapshot(
+        filterDefinitionsRef.current,
+        next,
+        propertyTypesRef.current,
+        objectSetRef.current,
+      );
+      emitFilterChanged({
+        ...event,
+        filterClause: snapshot.whereClause,
+        activeFilters: getActiveFilters(
+          filterDefinitionsRef.current,
+          next,
+          propertyTypesRef.current,
+        ),
+        filteredObjectSet: snapshot.effectiveObjectSet,
+        filterStates: next,
+      });
+    },
+    [emitFilterChanged],
+  );
+
+  // A pushed map supersedes any edit still waiting out the debounce, so the
+  // consumer never gets the outgoing states attributed to the incoming ones.
+  useEffect(() => {
+    const replaced = pendingReplaceEmitRef.current;
+    if (replaced == null) {
+      return;
+    }
+    pendingReplaceEmitRef.current = undefined;
+    reportChange(replaced, { event: "REPLACE" });
+  }, [filterStates, reportChange]);
 
   const applyChange = useCallback(
     (
@@ -201,27 +265,9 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       }
       filterStatesRef.current = next;
       setFilterStates(next);
-
-      if (onFilterChangedRef.current != null) {
-        const snapshot = deriveSnapshot(
-          filterDefinitionsRef.current,
-          next,
-          propertyTypesRef.current,
-          objectSetRef.current,
-        );
-        emitFilterChanged({
-          ...event,
-          filterClause: snapshot.whereClause,
-          activeFilters: getActiveFilters(
-            filterDefinitionsRef.current,
-            next,
-            propertyTypesRef.current,
-          ),
-          filteredObjectSet: snapshot.effectiveObjectSet,
-        });
-      }
+      reportChange(next, event);
     },
-    [emitFilterChanged],
+    [reportChange],
   );
 
   const setFilterState = useCallback(
@@ -262,8 +308,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   );
 
   const reset = useCallback(() => {
-    applyChange(() => new Map(initialFilterStatesSnapshot), { event: "RESET" });
-  }, [applyChange, initialFilterStatesSnapshot]);
+    applyChange(() => new Map(baselineFilterStates), { event: "RESET" });
+  }, [applyChange, baselineFilterStates]);
 
   const { whereClause, linkedFilters, effectiveObjectSet } = useMemo(
     () =>
@@ -337,8 +383,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   }, [filterDefinitions, filterStates]);
 
   const hasChangesFromInitial = useMemo(
-    () => !isEqual(filterStates, initialFilterStatesSnapshot),
-    [filterStates, initialFilterStatesSnapshot],
+    () => !isEqual(filterStates, baselineFilterStates),
+    [filterStates, baselineFilterStates],
   );
 
   return useMemo(

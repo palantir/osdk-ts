@@ -35,6 +35,29 @@
   border-color: #ff9f9f;
 }
 
+.actionFormFilterListReproTabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #c5cbd3;
+}
+
+.actionFormFilterListReproTab {
+  padding: 8px 14px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: #5f6b7c;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.actionFormFilterListReproTabActive {
+  border-bottom-color: #2d72d2;
+  color: #1c2127;
+  font-weight: 600;
+}
+
 .actionFormFilterListReproContent {
   display: grid;
   grid-template-columns: 320px minmax(0, 1fr);

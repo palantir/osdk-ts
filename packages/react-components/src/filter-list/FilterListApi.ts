@@ -79,6 +79,12 @@ export interface FilterChangeSnapshot<Q extends ObjectTypeDefinition> {
    * `kind` of its definition.
    */
   activeFilters: ReadonlyArray<ActiveFilter<Q>>;
+
+  /**
+   * The state of every filter that has one, keyed by `getFilterKey`. Persist
+   * this and pass it back as `filterStates` to restore the filters later.
+   */
+  filterStates: ReadonlyMap<string, FilterState>;
 }
 
 /**
@@ -89,8 +95,10 @@ export type FilterChangeCause =
   | { event: "SET"; filterKey: string; newState: FilterState }
   /** A filter's state was cleared, e.g. by removing the filter. */
   | { event: "CLEAR"; filterKey: string }
-  /** Every filter was restored to the state it mounted with. */
-  | { event: "RESET" };
+  /** Every filter was restored to the state it was last given. */
+  | { event: "RESET" }
+  /** Every filter's state was replaced by a new `filterStates` prop. */
+  | { event: "REPLACE" };
 
 /**
  * What the user did, plus the filter state it produced.
@@ -286,11 +294,30 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   onCollapsedChange?: (collapsed: boolean) => void;
 
   /**
-   * Seeds filter states from external storage, keyed by `getFilterKey`.
-   * Applied over the per-definition `defaultFilterState` seeds on mount, and
-   * FilterList owns the states from then on. Also the state the reset button
-   * restores to.
-   * Use `onFilterStateChanged` to persist changes back out.
+   * Controlled mode. Filter states keyed by `getFilterKey`, replacing whatever
+   * the filters currently hold — on mount, and again every time a different map
+   * is passed. Read changes back out from `onFilterChanged`'s `filterStates`
+   * and pass them in here to restore filters later, e.g. per tab or per saved
+   * view. Also the state the reset button restores to.
+   *
+   * Editing a filter still renders immediately; the map only has to come back
+   * for a change to survive a later push. Takes precedence over
+   * `defaultFilterStates` and over each definition's own `defaultFilterState`,
+   * which are ignored entirely when this is supplied.
+   *
+   * @default undefined (uncontrolled; filters seed from `defaultFilterStates`
+   * and their definitions)
+   */
+  filterStates?: Map<string, FilterState>;
+
+  /**
+   * Uncontrolled mode. Seeds filter states from external storage, keyed by
+   * `getFilterKey`. Applied over the per-definition `defaultFilterState` seeds
+   * on the first render only, and FilterList owns the states from then on. Also
+   * the state the reset button restores to.
+   * Use `onFilterChanged` to persist changes back out.
+   *
+   * Ignored when `filterStates` is supplied.
    *
    * @default undefined (filters seed from their definitions alone)
    */

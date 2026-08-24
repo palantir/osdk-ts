@@ -187,6 +187,379 @@ describe("useFilterListState", () => {
     });
   });
 
+  describe("controlled filterStates", () => {
+    const nameDef = createPropertyFilterDef(
+      "name",
+      "LISTOGRAM",
+      createExactMatchState(["Seed"]),
+    );
+    const filterKey = getFilterKey(nameDef);
+
+    it("mounts from filterStates instead of the definition seed", () => {
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        filterStates: new Map([[filterKey, createExactMatchState(["Pushed"])]]),
+      });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.filterStates.get(filterKey)).toEqual(
+        createExactMatchState(["Pushed"]),
+      );
+    });
+
+    it("ignores the definition seed for keys filterStates omits", () => {
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        filterStates: new Map(),
+      });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.filterStates.size).toBe(0);
+      expect(result.current.whereClause).toEqual({});
+    });
+
+    it("wins over defaultFilterStates", () => {
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        filterStates: new Map([[filterKey, createExactMatchState(["Wins"])]]),
+        defaultFilterStates: new Map([
+          [filterKey, createExactMatchState(["Loses"])],
+        ]),
+      });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.filterStates.get(filterKey)).toEqual(
+        createExactMatchState(["Wins"]),
+      );
+    });
+
+    it("renders an edit without waiting for the consumer to pass it back", () => {
+      const filterStates = new Map([
+        [filterKey, createExactMatchState(["Pushed"])],
+      ]);
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        filterStates,
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["Typed"]),
+        );
+      });
+
+      expect(result.current.filterStates.get(filterKey)).toEqual(
+        createExactMatchState(["Typed"]),
+      );
+      expect(result.current.whereClause).toEqual({ name: "Typed" });
+    });
+
+    it("replaces local edits when a different map is passed", () => {
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        filterStates: new Map([[filterKey, createExactMatchState(["Tab A"])]]),
+      });
+      const { result, rerender } = renderHook(
+        (currentProps: FilterListProps<typeof MockObjectType>) =>
+          useFilterListState(currentProps),
+        { initialProps: props },
+      );
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["Edited"]),
+        );
+      });
+      expect(result.current.whereClause).toEqual({ name: "Edited" });
+
+      rerender(
+        createProps({
+          filterDefinitions: [nameDef],
+          filterStates: new Map([
+            [filterKey, createExactMatchState(["Tab B"])],
+          ]),
+        }),
+      );
+
+      expect(result.current.whereClause).toEqual({ name: "Tab B" });
+    });
+
+    it("keeps local edits when the same map is passed again", () => {
+      const filterStates = new Map([
+        [filterKey, createExactMatchState(["Tab A"])],
+      ]);
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        filterStates,
+      });
+      const { result, rerender } = renderHook(
+        (currentProps: FilterListProps<typeof MockObjectType>) =>
+          useFilterListState(currentProps),
+        { initialProps: props },
+      );
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["Edited"]),
+        );
+      });
+
+      rerender(createProps({ filterDefinitions: [nameDef], filterStates }));
+
+      expect(result.current.whereClause).toEqual({ name: "Edited" });
+    });
+
+    it("keeps local edits when the consumer echoes back an equal map", () => {
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        filterStates: new Map([[filterKey, createExactMatchState(["Tab A"])]]),
+      });
+      const { result, rerender } = renderHook(
+        (currentProps: FilterListProps<typeof MockObjectType>) =>
+          useFilterListState(currentProps),
+        { initialProps: props },
+      );
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["Edited"]),
+        );
+      });
+
+      // A fresh Map carrying the states the consumer just read back out.
+      rerender(
+        createProps({
+          filterDefinitions: [nameDef],
+          filterStates: new Map(result.current.filterStates),
+        }),
+      );
+
+      expect(result.current.whereClause).toEqual({ name: "Edited" });
+    });
+
+    it("reports the full state map on onFilterChanged", () => {
+      vi.useFakeTimers();
+      const onFilterChanged = vi.fn();
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        filterStates: new Map([[filterKey, createExactMatchState(["Tab A"])]]),
+        onFilterChanged,
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["Edited"]),
+        );
+      });
+      act(() => void vi.advanceTimersByTime(300));
+
+      expect(onFilterChanged.mock.lastCall?.[0].filterStates).toEqual(
+        new Map([[filterKey, createExactMatchState(["Edited"])]]),
+      );
+    });
+
+    it("reports a REPLACE with the derived clause when a map is passed in", () => {
+      vi.useFakeTimers();
+      const onFilterChanged = vi.fn();
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        filterStates: new Map([[filterKey, createExactMatchState(["Tab A"])]]),
+        onFilterChanged,
+      });
+      const { rerender } = renderHook(
+        (currentProps: FilterListProps<typeof MockObjectType>) =>
+          useFilterListState(currentProps),
+        { initialProps: props },
+      );
+
+      rerender(
+        createProps({
+          filterDefinitions: [nameDef],
+          filterStates: new Map([
+            [filterKey, createExactMatchState(["Tab B"])],
+          ]),
+          onFilterChanged,
+        }),
+      );
+      act(() => void vi.advanceTimersByTime(300));
+
+      expect(onFilterChanged).toHaveBeenCalledTimes(1);
+      expect(onFilterChanged.mock.lastCall?.[0]).toMatchObject({
+        event: "REPLACE",
+        filterClause: { name: "Tab B" },
+        filterStates: new Map([[filterKey, createExactMatchState(["Tab B"])]]),
+      });
+    });
+
+    it("supersedes an edit still waiting out the debounce", () => {
+      vi.useFakeTimers();
+      const onFilterChanged = vi.fn();
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        filterStates: new Map([[filterKey, createExactMatchState(["Tab A"])]]),
+        onFilterChanged,
+      });
+      const { result, rerender } = renderHook(
+        (currentProps: FilterListProps<typeof MockObjectType>) =>
+          useFilterListState(currentProps),
+        { initialProps: props },
+      );
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["Edited"]),
+        );
+      });
+      rerender(
+        createProps({
+          filterDefinitions: [nameDef],
+          filterStates: new Map([
+            [filterKey, createExactMatchState(["Tab B"])],
+          ]),
+          onFilterChanged,
+        }),
+      );
+      act(() => void vi.advanceTimersByTime(300));
+
+      expect(onFilterChanged).toHaveBeenCalledTimes(1);
+      expect(onFilterChanged.mock.lastCall?.[0]).toMatchObject({
+        event: "REPLACE",
+        filterClause: { name: "Tab B" },
+      });
+    });
+
+    it("does not report a REPLACE when the passed map matches the current states", () => {
+      vi.useFakeTimers();
+      const onFilterChanged = vi.fn();
+      const filterStates = new Map([
+        [filterKey, createExactMatchState(["Tab A"])],
+      ]);
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        filterStates,
+        onFilterChanged,
+      });
+      const { rerender } = renderHook(
+        (currentProps: FilterListProps<typeof MockObjectType>) =>
+          useFilterListState(currentProps),
+        { initialProps: props },
+      );
+
+      rerender(
+        createProps({
+          filterDefinitions: [nameDef],
+          filterStates: new Map(filterStates),
+          onFilterChanged,
+        }),
+      );
+      act(() => void vi.advanceTimersByTime(300));
+
+      expect(onFilterChanged).not.toHaveBeenCalled();
+    });
+
+    it("resets to the most recently passed map, not the mount one", () => {
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        filterStates: new Map([[filterKey, createExactMatchState(["Tab A"])]]),
+      });
+      const { result, rerender } = renderHook(
+        (currentProps: FilterListProps<typeof MockObjectType>) =>
+          useFilterListState(currentProps),
+        { initialProps: props },
+      );
+
+      rerender(
+        createProps({
+          filterDefinitions: [nameDef],
+          filterStates: new Map([
+            [filterKey, createExactMatchState(["Tab B"])],
+          ]),
+        }),
+      );
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["Edited"]),
+        );
+      });
+      expect(result.current.hasChangesFromInitial).toBe(true);
+
+      act(() => {
+        result.current.reset();
+      });
+
+      expect(result.current.whereClause).toEqual({ name: "Tab B" });
+      expect(result.current.hasChangesFromInitial).toBe(false);
+    });
+
+    it("reports no changes right after a map is passed in", () => {
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        filterStates: new Map([[filterKey, createExactMatchState(["Tab A"])]]),
+      });
+      const { result, rerender } = renderHook(
+        (currentProps: FilterListProps<typeof MockObjectType>) =>
+          useFilterListState(currentProps),
+        { initialProps: props },
+      );
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["Edited"]),
+        );
+      });
+      expect(result.current.hasChangesFromInitial).toBe(true);
+
+      rerender(
+        createProps({
+          filterDefinitions: [nameDef],
+          filterStates: new Map([
+            [filterKey, createExactMatchState(["Tab B"])],
+          ]),
+        }),
+      );
+
+      expect(result.current.hasChangesFromInitial).toBe(false);
+    });
+
+    it("falls back to uncontrolled seeding once filterStates goes away", () => {
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        filterStates: new Map([[filterKey, createExactMatchState(["Tab A"])]]),
+      });
+      const { result, rerender } = renderHook(
+        (currentProps: FilterListProps<typeof MockObjectType>) =>
+          useFilterListState(currentProps),
+        { initialProps: props },
+      );
+
+      rerender(createProps({ filterDefinitions: [nameDef] }));
+
+      expect(result.current.whereClause).toEqual({ name: "Tab A" });
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["Edited"]),
+        );
+      });
+
+      expect(result.current.whereClause).toEqual({ name: "Edited" });
+    });
+  });
+
   describe("deprecated seed fields stay honoured", () => {
     it("seeds from the deprecated initialFilterStates prop", () => {
       const nameDef = createPropertyFilterDef(
@@ -605,6 +978,7 @@ describe("useFilterListState", () => {
             filterClause: { name: "John" },
           },
         ],
+        filterStates: new Map([[getFilterKey(nameDef), newState]]),
       });
     });
 
