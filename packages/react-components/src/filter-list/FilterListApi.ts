@@ -64,7 +64,7 @@ export interface FilterChangeSnapshot<Q extends ObjectTypeDefinition> {
    * The combined clause for all active filters.
    *
    * `HAS_LINK` and `LINKED_PROPERTY` filters are not represented in the clause —
-   * read `activeFilters` or `filteredObjectSet` for those.
+   * read `filteredObjectSet` for those.
    */
   filterClause: WhereClause<Q>;
 
@@ -73,12 +73,6 @@ export interface FilterChangeSnapshot<Q extends ObjectTypeDefinition> {
    * and `LINKED_PROPERTY`, or `undefined` when no `objectSet` was supplied.
    */
   filteredObjectSet: ObjectSet<Q> | undefined;
-
-  /**
-   * Every active filter in `filterDefinitions` order, each tagged with the
-   * `kind` of its definition.
-   */
-  activeFilters: ReadonlyArray<ActiveFilter<Q>>;
 }
 
 /**

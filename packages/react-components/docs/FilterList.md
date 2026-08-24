@@ -387,7 +387,6 @@ import type { FilterChangeEvent } from "@osdk/react-components/experimental/filt
     // Always present, whatever the event:
     // change.filterClause      — combined clause for all active filters
     // change.filteredObjectSet — `objectSet` filtered by all active filters
-    // change.activeFilters     — every active filter, tagged by kind
     setFilterClause(change.filterClause);
 
     // `event` says what the user did, and which extra fields you get:
@@ -413,49 +412,6 @@ import type { FilterChangeEvent } from "@osdk/react-components/experimental/filt
 | `"RESET"` | —                       | The reset button restored the mount state                 |
 
 `filteredObjectSet` is `undefined` when no `objectSet` prop is supplied.
-
-#### Reading `activeFilters`
-
-`activeFilters` lists every filter that is currently filtering, in
-`filterDefinitions` order. Each entry is tagged with the `kind` of its
-definition, so narrowing on `kind` gives you the fields for that kind:
-
-| `kind`                                                          | Extra fields                                                          |
-| --------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `"PROPERTY"`, `"STATIC_VALUES"`, `"KEYWORD_SEARCH"`, `"CUSTOM"` | `clause` — the clause this filter alone contributes                   |
-| `"HAS_LINK"`                                                    | `linkName`, `isExcluding`                                             |
-| `"LINKED_PROPERTY"`                                             | `linkName`, `clause` (predicate on the linked objects), `isExcluding` |
-
-Every entry also carries `filterKey` and `state`.
-
-```typescript
-onFilterChanged={(event) => {
-  // Chips for the clause-producing filters
-  const chips = event.activeFilters
-    .filter((filter) => filter.kind !== "HAS_LINK" && filter.kind !== "LINKED_PROPERTY")
-    .map((filter) => ({ key: filter.filterKey, state: filter.state }));
-
-  // Which links the user is filtering through
-  const links = event.activeFilters
-    .filter((filter) => filter.kind === "HAS_LINK" || filter.kind === "LINKED_PROPERTY")
-    .map((filter) => filter.linkName);
-}}
-```
-
-On a `LINKED_PROPERTY` entry, `state` and `clause` describe the linked property,
-not the source object type — the wrapper `FilterList` keeps internally is not
-exposed:
-
-```typescript
-for (const filter of event.activeFilters) {
-  if (filter.kind !== "LINKED_PROPERTY") {
-    continue;
-  }
-  // filter.state is the picked value, e.g. { type: "SELECT", selectedValues: [...] }
-  // filter.clause is the same thing as a clause on the linked object type:
-  // { [linkedPropertyKey]: { $in: [...] } }
-}
-```
 
 ### Add/Remove Filters (Uncontrolled Mode)
 

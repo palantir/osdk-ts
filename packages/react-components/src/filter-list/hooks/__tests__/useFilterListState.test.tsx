@@ -597,14 +597,6 @@ describe("useFilterListState", () => {
         newState,
         filterClause: { name: "John" },
         filteredObjectSet: filtered,
-        activeFilters: [
-          {
-            kind: "PROPERTY",
-            filterKey: getFilterKey(nameDef),
-            state: newState,
-            filterClause: { name: "John" },
-          },
-        ],
       });
     });
 
@@ -743,15 +735,6 @@ describe("useFilterListState", () => {
 
       const event = onFilterChanged.mock.lastCall?.[0];
       expect(event.filterClause).toEqual({});
-      expect(event.activeFilters).toEqual([
-        {
-          kind: "LINKED_PROPERTY",
-          filterKey: getFilterKey(linkedDef),
-          state: linkedState,
-          linkName: "employees",
-          linkedFilterClause: { name: "John" },
-        },
-      ]);
     });
 
     it("reports active HAS_LINK filters", () => {
@@ -773,14 +756,6 @@ describe("useFilterListState", () => {
 
       const event = onFilterChanged.mock.lastCall?.[0];
       expect(event.filterClause).toEqual({});
-      expect(event.activeFilters).toEqual([
-        {
-          kind: "HAS_LINK",
-          filterKey: getFilterKey(hasLinkDef),
-          state: { type: "hasLink", hasLink: true },
-          linkName: "employees",
-        },
-      ]);
     });
 
     it("filters the objectSet by the link count for a linked filter", () => {
@@ -852,7 +827,6 @@ describe("useFilterListState", () => {
         filterClause: { id: "abc" },
       });
       expect(onFilterChanged.mock.lastCall?.[0].newState).toBeUndefined();
-      expect(onFilterChanged.mock.lastCall?.[0].activeFilters).toHaveLength(1);
     });
 
     it("does not fire when clearing a filter that has no state", () => {

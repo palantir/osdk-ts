@@ -34,7 +34,6 @@ import {
   type PropertyTypeInfo,
 } from "../utils/filterStateToWhereClause.js";
 import { filterHasActiveState } from "../utils/filterValues.js";
-import { getActiveFilters } from "../utils/getActiveFilters.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 import { getSeedFilterState } from "../utils/getSeedFilterState.js";
 import { narrowObjectSet } from "../utils/narrowObjectSet.js";
@@ -212,11 +211,6 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
         emitFilterChanged({
           ...event,
           filterClause: snapshot.whereClause,
-          activeFilters: getActiveFilters(
-            filterDefinitionsRef.current,
-            next,
-            propertyTypesRef.current,
-          ),
           filteredObjectSet: snapshot.effectiveObjectSet,
         });
       }
