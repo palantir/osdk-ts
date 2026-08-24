@@ -142,6 +142,7 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
       requests: readySubscriptions.map<ObjectSetStreamSubscribeRequest>(
         ({ objectSet, requestedProperties, requestedReferenceProperties }) => ({
           objectSet,
+          scenarioRid: this.client.scenarioRid,
           propertySet: requestedProperties,
           referenceSet: requestedReferenceProperties,
           objectLoadingResponseOptions: { shouldLoadObjectRids: true },
