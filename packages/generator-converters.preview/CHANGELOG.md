@@ -1,5 +1,11 @@
 # @osdk/generator-converters.preview
 
+## 0.37.0
+
+### Minor Changes
+
+- 2d75a53: Convert action logic-rule arguments to the gateway API representation.
+
 ## 0.36.0
 
 ### Minor Changes

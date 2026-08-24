@@ -1,5 +1,7 @@
 # @osdk/create-widget
 
+## 3.58.0
+
 ## 3.57.0
 
 ### Minor Changes

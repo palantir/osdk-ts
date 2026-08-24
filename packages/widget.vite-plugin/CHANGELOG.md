@@ -1,5 +1,15 @@
 # @osdk/widget.vite-plugin
 
+## 3.58.0
+
+### Minor Changes
+
+- 85cac11: Include the widget Vite plugin version in dev mode request user agents.
+
+### Patch Changes
+
+- @osdk/widget.api@3.58.0
+
 ## 3.57.0
 
 ### Patch Changes
