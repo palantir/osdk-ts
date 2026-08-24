@@ -36,6 +36,7 @@ import type {
 } from "../types/WhereClauseTypes.js";
 import { NO_VALUE } from "./filterValues.js";
 import { getFilterKey } from "./getFilterKey.js";
+import { resolveRelativeDateBound } from "./resolveRelativeDate.js";
 
 interface CompoundFilter {
   __compound: true;
@@ -96,14 +97,25 @@ function filterStateToPropertyFilter(
     case "DATE_RANGE": {
       const conditions: PropertyFilter[] = [];
 
-      if (state.minValue !== undefined) {
+      // When in relative mode, resolve bounds to fresh absolute dates
+      // so the where clause is always anchored to "now".
+      const minDate =
+        state.isRelative && state.relativeMin
+          ? resolveRelativeDateBound(state.relativeMin)
+          : state.minValue;
+      const maxDate =
+        state.isRelative && state.relativeMax
+          ? resolveRelativeDateBound(state.relativeMax)
+          : state.maxValue;
+
+      if (minDate !== undefined) {
         conditions.push({
-          $gte: formatDateValue(state.minValue, propertyType),
+          $gte: formatDateValue(minDate, propertyType),
         });
       }
-      if (state.maxValue !== undefined) {
+      if (maxDate !== undefined) {
         conditions.push({
-          $lte: formatDateValue(state.maxValue, propertyType),
+          $lte: formatDateValue(maxDate, propertyType),
         });
       }
 
