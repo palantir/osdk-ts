@@ -192,6 +192,22 @@ export interface ExactMatchFilterState<
   values: T[];
 }
 
+/**
+ * Describes one bound of a relative date range.
+ *
+ * Combined with a direction this produces an absolute `Date` anchored to "now".
+ * For example `{ count: 7, unit: "days", direction: "ago" }` resolves to 7 days
+ * before the current time.
+ */
+export interface RelativeDateBound {
+  /** Number of units (e.g. 7 for "7 days ago"). */
+  count: number;
+  /** Time unit. */
+  unit: "days" | "weeks" | "months" | "years";
+  /** Direction relative to now. */
+  direction: "ago" | "fromNow";
+}
+
 export interface DateRangeFilterState extends BaseFilterState {
   type: "DATE_RANGE";
   /**
@@ -202,6 +218,29 @@ export interface DateRangeFilterState extends BaseFilterState {
    * The latest date the user can select
    */
   maxValue?: Date;
+
+  /**
+   * When `true`, the filter UI renders in relative-date mode.
+   * The `minValue` / `maxValue` are computed from `relativeMin` /
+   * `relativeMax` and refreshed each time the component mounts.
+   *
+   * @default false
+   */
+  isRelative?: boolean;
+
+  /**
+   * Relative definition for the From (min) bound.
+   * Only meaningful when `isRelative` is `true`.
+   * When absent in relative mode, the From bound is "Indefinitely" (no lower bound).
+   */
+  relativeMin?: RelativeDateBound;
+
+  /**
+   * Relative definition for the To (max) bound.
+   * Only meaningful when `isRelative` is `true`.
+   * When absent in relative mode, the To bound is "Indefinitely" (no upper bound).
+   */
+  relativeMax?: RelativeDateBound;
 }
 
 export interface ContainsTextFilterState extends BaseFilterState {
@@ -264,15 +303,35 @@ export interface DateFormattingProps {
 }
 
 /**
- * Conditionally adds `formatDate` to a property filter definition only for
- * `datetime` / `timestamp` properties. For other property types this field
- * is typed as `never` so attempting to set it is a TypeScript error.
+ * Props specific to `DATE_RANGE` filters on `datetime` / `timestamp`
+ * properties. Controls whether the user can switch to a relative-date
+ * input mode.
+ */
+export interface DateRangeRelativeProps {
+  /**
+   * When `true`, the `DATE_RANGE` filter shows an Absolute / Relative toggle.
+   * In relative mode the user builds each bound with a count, unit, and
+   * direction (e.g. "5 months ago") instead of picking calendar dates.
+   * The resulting `minValue` / `maxValue` are still absolute `Date` objects.
+   *
+   * Has no effect on filter components other than `DATE_RANGE`.
+   *
+   * @default false
+   */
+  enableRelativeMode?: boolean;
+}
+
+/**
+ * Conditionally adds date-specific props to a property filter definition
+ * only for `datetime` / `timestamp` properties. For other property types
+ * these fields are typed as `never` so attempting to set them is a
+ * TypeScript error.
  */
 export type PropertyFilterDateExtras<P extends WirePropertyTypes> = P extends
   | "datetime"
   | "timestamp"
-  ? DateFormattingProps
-  : { formatDate?: never };
+  ? DateFormattingProps & DateRangeRelativeProps
+  : { formatDate?: never; enableRelativeMode?: never };
 
 interface PropertyFilterDefinitionBase<
   Q extends ObjectTypeDefinition,

@@ -1,0 +1,131 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.rangeRoot {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) * 3);
+}
+
+.boundRoot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-radio-gap);
+}
+
+.boundLabel {
+  font-family: var(--osdk-filter-range-label-font-family);
+  font-size: var(--osdk-filter-range-label-font-size);
+  color: var(--osdk-filter-range-label-color);
+}
+
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-radio-gap);
+}
+
+.radioItem {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-radio-item-gap);
+}
+
+.radioRoot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--osdk-radio-size);
+  height: var(--osdk-radio-size);
+  border-radius: 50%;
+  border: var(--osdk-radio-border);
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &[data-unchecked] {
+    background-color: var(--osdk-radio-bg);
+
+    &:hover {
+      background-color: var(--osdk-radio-bg-hover);
+    }
+  }
+
+  &[data-checked] {
+    background-color: var(--osdk-radio-bg-checked);
+
+    &:hover {
+      background-color: var(--osdk-radio-bg-checked-hover);
+    }
+
+    &:active {
+      background-color: var(--osdk-radio-bg-checked-active);
+    }
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: calc(-1 * var(--osdk-focus-visible-outline-offset));
+  }
+}
+
+.radioIndicator {
+  width: var(--osdk-radio-indicator-size);
+  height: var(--osdk-radio-indicator-size);
+  border-radius: 50%;
+  background-color: var(--osdk-radio-indicator-color);
+
+  &[data-unchecked] {
+    display: none;
+  }
+}
+
+.radioLabel {
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-medium);
+  line-height: var(--osdk-typography-line-height-default);
+  color: var(--osdk-typography-color-default-rest);
+  cursor: pointer;
+}
+
+.customRow {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--osdk-surface-spacing) * 1.5);
+  flex-wrap: wrap;
+}
+
+.countInput {
+  width: calc(var(--osdk-surface-spacing) * 12);
+  font-family: var(--osdk-filter-input-font-family);
+  font-size: var(--osdk-filter-input-font-size);
+  padding: var(--osdk-filter-input-padding);
+  border: var(--osdk-filter-input-border);
+  border-radius: var(--osdk-filter-input-border-radius);
+  background: var(--osdk-filter-input-bg);
+  color: var(--osdk-filter-input-color);
+
+  &:focus {
+    border-color: var(--osdk-filter-input-focus-border);
+    outline: var(--osdk-filter-input-focus-outline-width) solid
+      var(--osdk-filter-input-focus-outline-color);
+    outline-offset: var(--osdk-filter-input-focus-outline-offset);
+  }
+
+  &:disabled {
+    opacity: var(--osdk-disabled-opacity);
+    cursor: not-allowed;
+  }
+}

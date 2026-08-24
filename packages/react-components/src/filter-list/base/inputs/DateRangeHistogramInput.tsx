@@ -17,8 +17,11 @@
 import React, { memo, useMemo } from "react";
 
 import { formatDateForInput } from "../../../shared/dateUtils.js";
+import type { RelativeDateBound } from "../../FilterListItemApi.js";
 import { createDateHistogramBuckets } from "./createDateHistogramBuckets.js";
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
+import { RelativeDateRangeInput } from "./RelativeDateBoundInput.js";
+import { RelativeModeToggle } from "./RelativeModeToggle.js";
 
 const defaultDateConfig: RangeInputConfig<Date> = {
   inputType: "date",
@@ -51,11 +54,36 @@ interface DateRangeHistogramInputProps {
    */
   formatDate?: (date: Date) => string;
   clickToFilter?: boolean;
+
+  /**
+   * When `true`, renders an Absolute / Relative toggle above the histogram.
+   * @default false
+   */
+  enableRelativeMode?: boolean;
+  /** Whether the filter is currently in relative mode. */
+  isRelative?: boolean;
+  /** Relative definition for the From bound. `undefined` = Indefinitely. */
+  relativeMin?: RelativeDateBound;
+  /** Relative definition for the To bound. `undefined` = Indefinitely. */
+  relativeMax?: RelativeDateBound;
+  /** Called when the Absolute/Relative toggle changes. */
+  onToggleRelative?: (checked: boolean) => void;
+  /** Called when either relative bound changes. */
+  onRelativeChange?: (
+    relativeMin: RelativeDateBound | undefined,
+    relativeMax: RelativeDateBound | undefined,
+  ) => void;
 }
 
 function DateRangeHistogramInputInner({
   formatDate,
   valueCountPairs,
+  enableRelativeMode,
+  isRelative,
+  relativeMin,
+  relativeMax,
+  onToggleRelative,
+  onRelativeChange,
   ...rest
 }: DateRangeHistogramInputProps): React.ReactElement {
   const config = useMemo<RangeInputConfig<Date>>(
@@ -99,13 +127,32 @@ function DateRangeHistogramInputInner({
     return { buckets, subtitle };
   }, [valueCountPairs, formatDate]);
 
+  const showRelativeUI = enableRelativeMode === true && isRelative === true;
+
   return (
-    <RangeInput
-      {...rest}
-      valueCountPairs={valueCountPairs}
-      config={config}
-      histogramData={histogramData}
-    />
+    <>
+      {enableRelativeMode === true && (
+        <RelativeModeToggle
+          checked={isRelative === true}
+          onCheckedChange={onToggleRelative}
+        />
+      )}
+
+      {showRelativeUI && onRelativeChange ? (
+        <RelativeDateRangeInput
+          relativeMin={relativeMin}
+          relativeMax={relativeMax}
+          onRelativeChange={onRelativeChange}
+        />
+      ) : (
+        <RangeInput
+          {...rest}
+          valueCountPairs={valueCountPairs}
+          config={config}
+          histogramData={histogramData}
+        />
+      )}
+    </>
   );
 }
 

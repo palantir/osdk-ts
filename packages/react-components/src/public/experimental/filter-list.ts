@@ -35,6 +35,7 @@ export type {
   FilterDefinitionControls,
   FilterState,
   PropertyFilterDefinition,
+  RelativeDateBound,
 } from "../../filter-list/FilterListItemApi.js";
 export {
   deserializeFilterStates,
