@@ -81,6 +81,9 @@ function RelativeDateBoundInputInner({
       if (nextMode === "indefinitely") {
         onChange(undefined);
       } else {
+        // Intentional: switching from Indefinitely to Custom resets to
+        // DEFAULT_BOUND. The previous custom value is not preserved because
+        // Indefinitely clears the bound (value becomes undefined).
         onChange(currentBound);
       }
     },

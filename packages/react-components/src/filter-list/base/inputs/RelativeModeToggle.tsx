@@ -22,7 +22,7 @@ import styles from "./shared.module.css";
 
 interface RelativeModeToggleProps {
   checked: boolean;
-  onCheckedChange?: (checked: boolean) => void;
+  onCheckedChange: (checked: boolean) => void;
 }
 
 function RelativeModeToggleInner({

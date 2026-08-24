@@ -19,7 +19,6 @@ import { describe, expect, it } from "vitest";
 import {
   formatRelativeBound,
   resolveRelativeDateBound,
-  resolveRelativeDates,
 } from "../utils/resolveRelativeDate.js";
 
 const NOW = new Date("2026-08-15T12:00:00.000Z");
@@ -110,52 +109,6 @@ describe("resolveRelativeDateBound", () => {
     // Dec 31 — JS setMonth auto-adjusts
     expect(result.getMonth()).toBe(11); // December
     expect(result.getDate()).toBe(31);
-  });
-});
-
-describe("resolveRelativeDates", () => {
-  it("resolves both bounds", () => {
-    const state = {
-      type: "DATE_RANGE" as const,
-      isRelative: true,
-      relativeMin: {
-        count: 30,
-        unit: "days" as const,
-        direction: "ago" as const,
-      },
-      relativeMax: {
-        count: 0,
-        unit: "days" as const,
-        direction: "fromNow" as const,
-      },
-    };
-    const { minValue, maxValue } = resolveRelativeDates(state, NOW);
-    expect(minValue).toBeDefined();
-    expect(maxValue).toBeDefined();
-    expect(minValue!.toISOString()).toBe("2026-07-16T12:00:00.000Z");
-    expect(maxValue!.toISOString()).toBe(NOW.toISOString());
-  });
-
-  it("returns undefined for absent bounds", () => {
-    const state = {
-      type: "DATE_RANGE" as const,
-      isRelative: true,
-      relativeMin: {
-        count: 7,
-        unit: "days" as const,
-        direction: "ago" as const,
-      },
-    };
-    const { minValue, maxValue } = resolveRelativeDates(state, NOW);
-    expect(minValue).toBeDefined();
-    expect(maxValue).toBeUndefined();
-  });
-
-  it("returns both undefined when neither bound is set", () => {
-    const state = { type: "DATE_RANGE" as const, isRelative: true };
-    const { minValue, maxValue } = resolveRelativeDates(state, NOW);
-    expect(minValue).toBeUndefined();
-    expect(maxValue).toBeUndefined();
   });
 });
 

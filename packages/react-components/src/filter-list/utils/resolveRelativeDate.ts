@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  DateRangeFilterState,
-  RelativeDateBound,
-} from "../FilterListItemApi.js";
+import type { RelativeDateBound } from "../FilterListItemApi.js";
 
 /**
  * Resolves a single {@link RelativeDateBound} to an absolute `Date`.
@@ -49,28 +46,6 @@ export function resolveRelativeDateBound(
   }
 
   return result;
-}
-
-/**
- * Resolves both bounds of a {@link DateRangeFilterState} that is in relative
- * mode. Returns `undefined` for each bound that is absent (= "Indefinitely").
- *
- * @param state  The filter state. `relativeMin` / `relativeMax` are read;
- *               `minValue` / `maxValue` are ignored.
- * @param now    Reference point (defaults to `new Date()`).
- */
-export function resolveRelativeDates(
-  state: DateRangeFilterState,
-  now: Date = new Date(),
-): { minValue: Date | undefined; maxValue: Date | undefined } {
-  return {
-    minValue: state.relativeMin
-      ? resolveRelativeDateBound(state.relativeMin, now)
-      : undefined,
-    maxValue: state.relativeMax
-      ? resolveRelativeDateBound(state.relativeMax, now)
-      : undefined,
-  };
 }
 
 /**
