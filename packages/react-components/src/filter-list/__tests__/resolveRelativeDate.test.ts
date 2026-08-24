@@ -133,6 +133,26 @@ describe("resolveRelativeDateBound", () => {
     expectDate(result, 2026, 7, 14);
   });
 
+  it("endOfDay advances to midnight of the next day", () => {
+    const result = resolveRelativeDateBound(
+      { count: 7, unit: "days", direction: "ago" },
+      true,
+      NOW,
+    );
+    // 7 days ago = Aug 8, +1 day for endOfDay = Aug 9 at midnight
+    expectDate(result, 2026, 7, 9);
+  });
+
+  it("endOfDay with count 0 gives tomorrow midnight", () => {
+    const result = resolveRelativeDateBound(
+      { count: 0, unit: "days", direction: "ago" },
+      true,
+      NOW,
+    );
+    // today = Aug 15, +1 day = Aug 16 at midnight
+    expectDate(result, 2026, 7, 16);
+  });
+
   it("handles month day clamping (Jan 31 minus 1 month)", () => {
     const jan31 = new Date(2026, 0, 31); // Jan 31
     const result = resolveRelativeDateBound(
