@@ -442,18 +442,85 @@ export const TiffWithPdfConversion: Story = {
   },
 };
 
+/**
+ * Renders the reported and effective MIME types above the viewer so the story
+ * shows what the override changed, not just its end result. Both values are
+ * read back from the props rather than hardcoded, so editing the
+ * `mimeTypeOverride` control keeps the caption honest.
+ */
+function MimeTypeOverrideDemo({
+  media,
+  mimeTypeOverride,
+  ...rest
+}: DocumentViewerProps) {
+  const reportedMimeType = media.getMediaReference().mimeType;
+  const effectiveMimeType = mimeTypeOverride ?? reportedMimeType;
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+        height: "600px",
+      }}
+    >
+      <dl
+        style={{
+          display: "grid",
+          gridTemplateColumns: "auto 1fr",
+          gap: "4px 12px",
+          margin: 0,
+          padding: "12px",
+          border: "1px solid currentColor",
+          borderRadius: "4px",
+          fontSize: "12px",
+          lineHeight: 1.5,
+          opacity: 0.85,
+        }}
+      >
+        <dt style={{ opacity: 0.7 }}>Reported by media</dt>
+        <dd style={{ margin: 0, fontFamily: "monospace" }}>
+          {reportedMimeType}
+        </dd>
+
+        <dt style={{ opacity: 0.7 }}>mimeTypeOverride</dt>
+        <dd style={{ margin: 0, fontFamily: "monospace" }}>
+          {mimeTypeOverride ?? "(unset)"}
+        </dd>
+
+        <dt style={{ opacity: 0.7 }}>Dispatched on</dt>
+        <dd style={{ margin: 0, fontFamily: "monospace" }}>
+          {effectiveMimeType}
+          {mimeTypeOverride != null ? " (from the override)" : ""}
+        </dd>
+      </dl>
+
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <DocumentViewer
+          media={media}
+          mimeTypeOverride={mimeTypeOverride}
+          {...rest}
+        />
+      </div>
+    </div>
+  );
+}
+
 export const WithMimeTypeOverride: Story = {
   args: {
     media: mockMislabeledMarkdownMedia,
     mimeTypeOverride: "text/markdown",
   },
+  render: (args: DocumentViewerProps) => <MimeTypeOverrideDemo {...args} />,
   parameters: {
     docs: {
       source: {
         code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
 
 // This media item reports "application/octet-stream", which would hit the
-// unsupported-type fallback. The override forces the markdown renderer.
+// unsupported-type fallback. The override makes DocumentViewer dispatch on
+// "text/markdown" instead, so MarkdownViewer handles it.
 <DocumentViewer media={myMedia} mimeTypeOverride="text/markdown" />`,
       },
     },
