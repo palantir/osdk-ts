@@ -181,6 +181,15 @@ const mockUnsupportedMedia = createMockMedia(
   "data.bin",
 );
 
+// Markdown content served under a generic MIME type, which is what
+// mimeTypeOverride exists to correct. Distinct from mockUnsupportedMedia,
+// whose empty body would render as a blank viewer once overridden.
+const mockMislabeledMarkdownMedia = createMockMedia(
+  "application/octet-stream",
+  () => Promise.resolve(new Response(SAMPLE_MARKDOWN)),
+  "notes.dat",
+);
+
 const meta: Meta<DocumentViewerProps> = {
   title: "Components/DocumentViewer",
   component: DocumentViewer,
@@ -435,7 +444,7 @@ export const TiffWithPdfConversion: Story = {
 
 export const WithMimeTypeOverride: Story = {
   args: {
-    media: mockUnsupportedMedia,
+    media: mockMislabeledMarkdownMedia,
     mimeTypeOverride: "text/markdown",
   },
   parameters: {
@@ -443,7 +452,8 @@ export const WithMimeTypeOverride: Story = {
       source: {
         code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
 
-// Override auto-detected MIME type
+// This media item reports "application/octet-stream", which would hit the
+// unsupported-type fallback. The override forces the markdown renderer.
 <DocumentViewer media={myMedia} mimeTypeOverride="text/markdown" />`,
       },
     },

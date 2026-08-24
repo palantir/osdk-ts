@@ -101,8 +101,7 @@ export const WithMatches: Story = {
 
 export const NoResults: Story = {
   args: {
-    // cspell:disable-next-line
-    query: "xyznonexistent",
+    query: "nonexistent",
     totalMatches: 0,
     currentMatchIndex: 0,
   },
