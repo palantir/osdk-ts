@@ -23,13 +23,11 @@ import type {
 import { OntologyEntityTypeEnum } from "@osdk/maker";
 import { consola } from "consola";
 
-import { convertSharedPropertyType } from "./convertSharedPropertyType.js";
 import { mapPropertyType } from "./mapPropertyType.js";
 import { withoutNamespace } from "./utils.js";
 
 export function convertObjectType(
   fullMetadata: Ontologies.ObjectTypeFullMetadata,
-  sharedPropertyTypes: Ontologies.OntologyFullMetadata["sharedPropertyTypes"] = {},
 ): ObjectType {
   const obj = fullMetadata.objectType;
   const properties: Array<ObjectPropertyType> = [];
@@ -53,12 +51,16 @@ export function convertObjectType(
 
     const sharedPropertyTypeApiName =
       sharedPropertyTypeApiNameByPropertyApiName.get(propApiName);
-    const sharedPropertyTypeMetadata = sharedPropertyTypeApiName
-      ? sharedPropertyTypes[sharedPropertyTypeApiName]
-      : undefined;
+    // Imported property shapes only need the SPT API name.
     const sharedPropertyType: SharedPropertyType | undefined =
-      sharedPropertyTypeMetadata
-        ? convertSharedPropertyType(sharedPropertyTypeMetadata)
+      sharedPropertyTypeApiName
+        ? {
+            __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
+            apiName: sharedPropertyTypeApiName,
+            nonNameSpacedApiName: withoutNamespace(sharedPropertyTypeApiName),
+            type: mapped.type,
+            array: mapped.array,
+          }
         : undefined;
 
     const prop: ObjectPropertyType = {
