@@ -9,4 +9,4 @@
 "@osdk/api": patch
 ---
 
-Bump platform SDKs and add loadOntologyDefinedDerivedProperties flag
+Bump platform SDKs and add loadOntologyDefinedDerivedProperties flag, which defaults to true
