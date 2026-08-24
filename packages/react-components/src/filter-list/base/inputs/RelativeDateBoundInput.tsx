@@ -18,6 +18,7 @@ import { Input } from "@base-ui/react/input";
 import { Popover } from "@base-ui/react/popover";
 import { Radio } from "@base-ui/react/radio";
 import { RadioGroup } from "@base-ui/react/radio-group";
+import { CaretDown } from "@blueprintjs/icons";
 import React, { memo, useCallback, useId, useMemo } from "react";
 
 import { Select } from "../../../base-components/select/Select.js";
@@ -132,11 +133,19 @@ function RelativeDateBoundInputInner({
   return (
     <Popover.Root>
       <Popover.Trigger className={styles.trigger}>
-        <span
-          className={styles.triggerText}
-          data-placeholder={displayText == null || undefined}
-        >
-          {displayText ?? placeholder}
+        <div className={styles.triggerValueContainer}>
+          <span
+            className={
+              displayText != null
+                ? styles.triggerValue
+                : styles.triggerPlaceholder
+            }
+          >
+            {displayText ?? placeholder}
+          </span>
+        </div>
+        <span className={styles.triggerIcon}>
+          <CaretDown />
         </span>
       </Popover.Trigger>
       <Popover.Portal>
@@ -266,6 +275,9 @@ function RelativeDateRangeInputInner({
         value={relativeMin}
         onChange={handleMinChange}
       />
+      <span className={styles.separator} aria-hidden="true">
+        –
+      </span>
       <RelativeDateBoundInput
         placeholder="To"
         value={relativeMax}

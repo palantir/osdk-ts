@@ -14,62 +14,157 @@
  * limitations under the License.
  */
 
+/* ---- Trigger (mirrors Select.Trigger styling) ---- */
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--osdk-select-spacing, var(--osdk-surface-spacing));
+  width: 100%;
+  min-height: var(--osdk-select-min-height, 30px);
+  padding: var(
+    --osdk-select-trigger-padding,
+    calc(var(--osdk-surface-spacing) * 1.5)
+      calc(var(--osdk-surface-spacing) * 2.5)
+  );
+  cursor: pointer;
+  border-radius: var(
+    --osdk-select-border-radius,
+    var(--osdk-surface-border-radius)
+  );
+  border: var(--osdk-select-border-width, var(--osdk-surface-border-width))
+    solid
+    var(--osdk-select-border-color, var(--osdk-surface-border-color-default));
+  box-shadow: var(--osdk-button-shadow);
+  background-color: var(
+    --osdk-select-trigger-bg,
+    var(--osdk-button-secondary-bg)
+  );
+  color: var(
+    --osdk-select-trigger-color,
+    var(--osdk-typography-color-default-rest)
+  );
+  font-family: var(
+    --osdk-select-font-family,
+    var(--osdk-typography-family-default)
+  );
+  font-size: var(
+    --osdk-select-font-size,
+    var(--osdk-typography-size-body-medium)
+  );
+  line-height: var(
+    --osdk-select-line-height,
+    var(--osdk-typography-line-height-default)
+  );
+  transition:
+    background-color
+      var(
+        --osdk-select-transition-duration,
+        var(--osdk-emphasis-transition-duration)
+      )
+      var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default)),
+    border-color
+      var(
+        --osdk-select-transition-duration,
+        var(--osdk-emphasis-transition-duration)
+      )
+      var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default));
+
+  &:hover {
+    background-color: var(
+      --osdk-select-trigger-bg-hover,
+      var(--osdk-button-secondary-bg-hover)
+    );
+  }
+
+  &:active {
+    background-color: var(
+      --osdk-select-trigger-bg-active,
+      var(--osdk-button-secondary-bg-active)
+    );
+  }
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-input-focus-outline);
+    outline-offset: var(--osdk-input-focus-outline-offset);
+  }
+
+  &[data-popup-open]:focus-visible {
+    outline: none;
+  }
+
+  &[data-popup-open] {
+    border-color: var(
+      --osdk-select-border-color-active,
+      var(--osdk-intent-primary-rest)
+    );
+  }
+}
+
+.triggerValueContainer {
+  flex: 1;
+  display: grid;
+  min-width: 0;
+
+  & > * {
+    grid-area: 1 / 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.triggerValue {
+  text-align: left;
+}
+
+.triggerPlaceholder {
+  text-align: left;
+  color: var(
+    --osdk-select-placeholder-color,
+    var(--osdk-typography-color-muted)
+  );
+  pointer-events: none;
+}
+
+.triggerIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  color: var(--osdk-select-icon-color, var(--osdk-iconography-color-muted));
+  flex-shrink: 0;
+  transition: transform
+    var(
+      --osdk-select-transition-duration,
+      var(--osdk-emphasis-transition-duration)
+    )
+    var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default));
+
+  [data-popup-open] > & {
+    transform: rotate(180deg);
+  }
+}
+
 /* ---- Range layout (From – To side-by-side) ---- */
 
 .rangeRoot {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: var(--osdk-filter-range-inputs-gap);
   min-width: 0;
 }
 
-/* ---- Trigger cell (matches DatePicker input wrapper) ---- */
-
-.trigger {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  border-radius: var(--osdk-datetime-input-border-radius);
-  box-shadow: var(--osdk-datetime-input-shadow);
-  background-color: var(--osdk-datetime-input-bg);
-  cursor: pointer;
-  transition:
-    background-color var(--osdk-datetime-input-transition-duration)
-      var(--osdk-datetime-input-transition-ease),
-    box-shadow var(--osdk-datetime-input-transition-duration)
-      var(--osdk-datetime-input-transition-ease);
-
-  &:hover {
-    background-color: var(--osdk-datetime-input-bg-hover);
-  }
-
-  &:focus-within {
-    box-shadow: var(--osdk-datetime-input-focus-shadow);
-    outline: var(--osdk-input-focus-outline);
-    outline-offset: var(--osdk-input-focus-outline-offset);
-  }
-}
-
-.triggerText {
-  flex: 1;
-  min-width: 0;
-  min-height: var(--osdk-datetime-input-min-height);
-  padding: var(--osdk-datetime-input-padding);
-  border: none;
-  background: transparent;
-  color: var(--osdk-datetime-input-color);
-  font-family: var(--osdk-datetime-input-font-family);
-  font-size: var(--osdk-datetime-input-font-size);
-  line-height: var(--osdk-datetime-input-line-height);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.triggerText[data-placeholder] {
-  color: var(--osdk-datetime-input-placeholder-color);
+.separator {
+  color: var(--osdk-filter-range-separator-color);
+  font-family: var(--osdk-filter-input-font-family);
+  font-size: var(--osdk-filter-input-font-size);
+  flex-shrink: 0;
 }
 
 /* ---- Popover ---- */
@@ -83,6 +178,7 @@
 }
 
 .popover {
+  width: max-content;
   background: var(--osdk-datetime-popover-bg);
   color: var(--osdk-typography-color-default-rest);
   padding: var(--osdk-datetime-popover-padding);
@@ -167,10 +263,12 @@
   display: flex;
   align-items: center;
   gap: calc(var(--osdk-surface-spacing) * 1.5);
+  flex-wrap: nowrap;
 }
 
 .countInput {
   width: calc(var(--osdk-surface-spacing) * 12);
+  flex-shrink: 0;
   font-family: var(--osdk-filter-input-font-family);
   font-size: var(--osdk-filter-input-font-size);
   padding: var(--osdk-filter-input-padding);
