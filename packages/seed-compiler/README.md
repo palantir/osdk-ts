@@ -60,7 +60,7 @@ seed.link(widget, "sellers", [alice, bob]);
 where `createSeed` is defined once per project as:
 
 ```ts
-import metadata from "@ontology/sdk/UNSTABLE_DO_NOT_USE/ontology-metadata";
+import metadata from "@ontology/sdk/experimental/ontology-metadata";
 import {
   createSeedWithMetadata,
   type SeedFunction,

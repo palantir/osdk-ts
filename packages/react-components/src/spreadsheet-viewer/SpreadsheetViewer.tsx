@@ -34,7 +34,7 @@ export function SpreadsheetViewer({
   ...spreadsheetViewerProps
 }: SpreadsheetViewerProps): React.ReactElement {
   const {
-    data: spreadsheet,
+    data: content,
     loading,
     error,
   } = useMediaContents<ParsedSpreadsheet>(
@@ -58,11 +58,8 @@ export function SpreadsheetViewer({
           Failed to load spreadsheet: {error.message}
         </div>
       )}
-      {spreadsheet != null && (
-        <BaseSpreadsheetViewer
-          spreadsheet={spreadsheet}
-          {...spreadsheetViewerProps}
-        />
+      {content != null && (
+        <BaseSpreadsheetViewer content={content} {...spreadsheetViewerProps} />
       )}
     </div>
   );

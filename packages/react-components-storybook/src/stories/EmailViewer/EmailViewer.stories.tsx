@@ -99,7 +99,7 @@ const meta: Meta<BaseEmailViewerProps> = {
   component: BaseEmailViewer,
   tags: ["beta"],
   args: {
-    email: SAMPLE_EMAIL,
+    content: SAMPLE_EMAIL,
   },
   render: (args: BaseEmailViewerProps) => (
     <div style={{ height: "500px" }}>
@@ -110,8 +110,8 @@ const meta: Meta<BaseEmailViewerProps> = {
     controls: { expanded: true },
   },
   argTypes: {
-    email: {
-      description: "Parsed email data",
+    content: {
+      description: "The parsed email to render",
       control: false,
     },
     className: {
@@ -150,7 +150,7 @@ export const HtmlEmail: Story = {
       source: {
         code: `import { BaseEmailViewer } from "@osdk/react-components/experimental/email-viewer";
 
-<BaseEmailViewer email={parsedEmail} />`,
+<BaseEmailViewer content={parsedEmail} />`,
       },
     },
   },
@@ -158,6 +158,6 @@ export const HtmlEmail: Story = {
 
 export const PlainTextEmail: Story = {
   args: {
-    email: SAMPLE_TEXT_EMAIL,
+    content: SAMPLE_TEXT_EMAIL,
   },
 };

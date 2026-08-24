@@ -1,5 +1,17 @@
 # @osdk/shared.test
 
+## 0.43.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+  - @osdk/generator-converters@2.58.0
+  - @osdk/api@2.58.0
+
 ## 0.42.0
 
 ### Patch Changes

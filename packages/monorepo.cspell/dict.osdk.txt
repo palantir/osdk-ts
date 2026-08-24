@@ -2,6 +2,7 @@ derivedproperties
 dpaquin
 ethana
 forwardslash
+geohashes
 haptics
 listogram
 mediaset

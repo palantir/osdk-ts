@@ -1,5 +1,24 @@
 # @osdk/react-sdk-docs
 
+## 0.17.0
+
+### Minor Changes
+
+- ae47ac3: Fix FilterList's `HAS_LINK` filter, which previously sent an unsupported `$isNotNull` operator and was silently rejected by the server. `HAS_LINK` and `LINKED_PROPERTY` now filter by deriving a `$count` of matching linked objects and no longer use object-set `intersect`.
+
+  Fix `LINKED_PROPERTY` excluding: source rows with no linked object at all are now retained (previously dropped).
+
+  Consumer notes:
+  - `HAS_LINK` and `LINKED_PROPERTY` do not appear in `onFilterClauseChanged` (they cannot be expressed as a `WhereClause`). Wire `onEffectiveObjectSet` and pass the returned `ObjectSet` to the table to see them applied.
+  - `LINKED_PROPERTY` no longer requires `reverseLinkName` — the count-based narrowing does not need the reverse traversal.
+  - Removed bad documentation `$isNotNull` in `useOsdkObjects` snippets.
+
+## 0.16.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+
 ## 0.15.0
 
 ### Minor Changes

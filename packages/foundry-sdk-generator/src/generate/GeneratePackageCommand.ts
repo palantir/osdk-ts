@@ -189,7 +189,7 @@ export class GeneratePackageCommand implements
         boolean: true,
         demandOption: false,
         description:
-          `EXPERIMENTAL: emit the raw ontology metadata as a ./UNSTABLE_DO_NOT_USE/ontology-metadata subpath export. May change or be removed at any time.`,
+          `EXPERIMENTAL: emit the raw ontology metadata as a ./experimental/ontology-metadata subpath export. May change or be removed at any time.`,
         default: false,
       })
       .strict();

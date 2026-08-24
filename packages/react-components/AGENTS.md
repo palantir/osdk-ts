@@ -62,9 +62,9 @@ Components are imported from their individual entry points under `@osdk/react-co
 | **BaseForm**               | OSDK-agnostic base action form — use when supplying explicit field content and submit handling.                                                   |
 | **ColumnConfigDialog**     | Dialog for managing column visibility and drag-and-drop reordering.                                                                               |
 | **PdfViewer**              | PDF viewer for OSDK Media objects with toolbar, search, annotations, sidebar (thumbnails/outline), highlight mode, and form fields.               |
-| **BasePdfViewer**          | OSDK-agnostic base PDF viewer — accepts a URL or ArrayBuffer directly. Use when building custom data fetching on top of the viewer UI.            |
+| **BasePdfViewer**          | OSDK-agnostic base PDF viewer — `src` takes a URL, `ArrayBuffer`, `Uint8Array`, or `Blob`. Use when building custom data fetching on top of it.   |
 | **TiffViewer**             | TIFF viewer for OSDK Media objects — fetches the TIFF contents and renders them onto a canvas.                                                    |
-| **BaseTiffViewer**         | OSDK-agnostic base TIFF viewer — accepts a `Uint8Array` and renders onto a canvas with size validation and error handling.                        |
+| **BaseTiffViewer**         | OSDK-agnostic base TIFF viewer — `src` takes a `Uint8Array`, rendered onto a canvas with size validation and error handling.                      |
 | **MarkdownViewer**         | Markdown viewer for OSDK Media objects — fetches the markdown text and renders it with styled headings, code blocks, tables, and links.           |
 | **BaseMarkdownViewer**     | OSDK-agnostic base markdown viewer — accepts a markdown string directly. Use when building custom data fetching on top of the viewer UI.          |
 | **AipAgentChat**           | Chat surface backed by Foundry LMS via `useChat`. Takes a `PlatformClient` + model API name and renders messages, composer, and streaming.        |

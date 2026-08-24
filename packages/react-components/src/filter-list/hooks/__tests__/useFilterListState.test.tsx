@@ -22,6 +22,7 @@ vi.mock("@osdk/react", () => ({
   useOsdkMetadata: vi.fn(() => ({ loading: false, metadata: undefined })),
 }));
 import {
+  createCustomFilterDef,
   createHasLinkFilterDef,
   createKeywordSearchFilterDef,
   createLinkedPropertyFilterDef,
@@ -90,13 +91,20 @@ describe("useFilterListState", () => {
       );
       const hasLinkDef = createHasLinkFilterDef("primaryOffice");
       const keywordDef = createKeywordSearchFilterDef(["name"]);
+      const customDef = createCustomFilterDef("custom");
       const staticDef = createStaticValuesFilterDef(
         "region",
         "LISTOGRAM",
         ["East"],
         createExactMatchState(["East"]),
       );
-      const definitions = [propertyDef, hasLinkDef, keywordDef, staticDef];
+      const definitions = [
+        propertyDef,
+        hasLinkDef,
+        keywordDef,
+        customDef,
+        staticDef,
+      ];
       const props = createProps({ filterDefinitions: definitions });
 
       const { result } = renderHook(() => useFilterListState(props));
@@ -120,6 +128,61 @@ describe("useFilterListState", () => {
 
       expect(result.current.filterStates.size).toBe(0);
       expect(result.current.activeFilterCount).toBe(0);
+    });
+  });
+
+  describe("activeFilterCount for CUSTOM filters", () => {
+    function customDefWithClause(
+      state: unknown,
+      toWhereClause: (s: { customState: Record<string, unknown> }) => unknown,
+    ) {
+      return {
+        type: "CUSTOM" as const,
+        key: "custom",
+        filterComponent: "CUSTOM" as const,
+        defaultFilterState: state,
+        renderInput: () => null,
+        toWhereClause,
+      } as unknown as FilterDefinitionUnion<typeof MockObjectType>;
+    }
+
+    // A seeded custom filter is only "active" if its own `toWhereClause` turns
+    // that state into a clause — the state itself is opaque to FilterList.
+    it("does not count a seeded filter whose toWhereClause returns undefined", () => {
+      const definition = customDefWithClause(
+        { type: "custom", customState: { value: "all" } },
+        () => undefined,
+      );
+      const props = createProps({ filterDefinitions: [definition] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.filterStates.size).toBe(1);
+      expect(result.current.activeFilterCount).toBe(0);
+    });
+
+    it("does not count a seeded filter whose toWhereClause returns an empty clause", () => {
+      const definition = customDefWithClause(
+        { type: "custom", customState: {} },
+        () => ({}),
+      );
+      const props = createProps({ filterDefinitions: [definition] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.activeFilterCount).toBe(0);
+    });
+
+    it("counts a seeded filter that produces a clause", () => {
+      const definition = customDefWithClause(
+        { type: "custom", customState: { value: "located" } },
+        () => ({ name: { $isNull: false } }),
+      );
+      const props = createProps({ filterDefinitions: [definition] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.activeFilterCount).toBe(1);
     });
   });
 
@@ -797,7 +860,7 @@ describe("useFilterListState", () => {
     });
   });
 
-  describe("LINKED_PROPERTY filters without reverseLinkName", () => {
+  describe("LINKED_PROPERTY narrowing", () => {
     function createLinkedState(values: string[]): LinkedPropertyFilterState {
       return {
         type: "linkedProperty",
@@ -805,41 +868,39 @@ describe("useFilterListState", () => {
       };
     }
 
-    it("excludes definitions missing reverseLinkName from linkedFilters", () => {
-      const narrowingDef = createLinkedPropertyFilterDef("manager", "fullName");
-      const uiOnlyDef = createLinkedPropertyFilterDef("office", "city", {
-        reverseLinkName: null,
-      });
+    it("narrows on every active linked filter", () => {
+      const managerDef = createLinkedPropertyFilterDef("manager", "fullName");
+      const officeDef = createLinkedPropertyFilterDef("office", "city");
       const props = createProps({
-        filterDefinitions: [narrowingDef, uiOnlyDef],
+        filterDefinitions: [managerDef, officeDef],
         defaultFilterStates: new Map([
-          [getFilterKey(narrowingDef), createLinkedState(["Alice"])],
-          [getFilterKey(uiOnlyDef), createLinkedState(["Berlin"])],
+          [getFilterKey(managerDef), createLinkedState(["Alice"])],
+          [getFilterKey(officeDef), createLinkedState(["Berlin"])],
         ]),
       });
       const { result } = renderHook(() => useFilterListState(props));
 
-      expect(result.current.linkedFilters).toHaveLength(1);
-      expect(result.current.linkedFilters[0].linkName).toBe("manager");
+      expect(result.current.linkedFilters.map((f) => f.linkName)).toEqual([
+        "manager",
+        "office",
+      ]);
     });
 
-    it("still reports state changes for UI-only linked filters", () => {
-      const uiOnlyDef = createLinkedPropertyFilterDef("office", "city", {
-        reverseLinkName: null,
-      });
+    it("fires onFilterStateChanged for empty linked state but omits it from linkedFilters", () => {
+      const def = createLinkedPropertyFilterDef("office", "city");
       const onFilterStateChanged = vi.fn();
       const props = createProps({
-        filterDefinitions: [uiOnlyDef],
+        filterDefinitions: [def],
         onFilterStateChanged,
       });
       const { result } = renderHook(() => useFilterListState(props));
 
-      const nextState = createLinkedState(["Berlin"]);
+      const nextState = createLinkedState([]);
       act(() => {
-        result.current.setFilterState(getFilterKey(uiOnlyDef), nextState);
+        result.current.setFilterState(getFilterKey(def), nextState);
       });
 
-      expect(onFilterStateChanged).toHaveBeenCalledWith(uiOnlyDef, nextState);
+      expect(onFilterStateChanged).toHaveBeenCalledWith(def, nextState);
       expect(result.current.linkedFilters).toHaveLength(0);
     });
   });

@@ -75,10 +75,12 @@ function createMockRidGenerator(
     getInterfacePropertyTypeRids: () => new MockBiMap([]) as any,
     getPropertyTypeRids: () => new MockBiMap([]) as any,
     getDatasourceLocators: () => new MockBiMap([]) as any,
+    getDirectDatasourceLocators: () => new MockBiMap([]) as any,
     getFilesDatasourceLocators: () => new MockBiMap([]) as any,
     getGeotimeSeriesIntegrationRids: () => new MockBiMap([]) as any,
     getTimeSeriesSyncs: () => new MockBiMap([]) as any,
     getColumnShapes: () => new MockBiMap([]) as any,
+    getDirectDatasourceColumnShapes: () => new MockBiMap([]) as any,
     getObjectTypeRids: () => new MockBiMap([]) as any,
     getLinkTypeRids: () => new MockBiMap([]) as any,
     getGroupIds: () => new MockBiMap([]) as any,
@@ -125,6 +127,14 @@ function createMockRidGenerator(
     ) => ({
       rid: `dataset.${dataSetName}`,
       branchId: "main",
+    }),
+    generateDirectDatasourceLocator: (
+      dataSetName: string,
+      _columnNames: Set<string>,
+      branchId: string,
+    ) => ({
+      rid: `dataset.${dataSetName}`,
+      branchId,
     }),
     generateStreamLocator: (streamName: string, _columnNames: Set<string>) => ({
       streamLocatorRid: `stream.${streamName}`,

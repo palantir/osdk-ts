@@ -17,14 +17,14 @@
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
     },
-    "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
+    "./experimental/ontology-metadata": {
       "import": {
-        "types": "./build/types/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.d.mts",
-        "default": "./build/esm/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.json"
+        "types": "./build/types/generatedNoCheck/experimental/ontology-metadata.d.mts",
+        "default": "./build/esm/generatedNoCheck/experimental/ontology-metadata.json"
       },
       "require": {
-        "types": "./build/types/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.d.cts",
-        "default": "./build/esm/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.json"
+        "types": "./build/types/generatedNoCheck/experimental/ontology-metadata.d.cts",
+        "default": "./build/esm/generatedNoCheck/experimental/ontology-metadata.json"
       }
     },
     "./*": {

@@ -36,7 +36,7 @@ export function TiffViewer({
   ...baseTiffViewerProps
 }: TiffViewerProps): React.ReactElement {
   const {
-    data: content,
+    data: bytes,
     loading,
     error,
   } = useMediaContents(media, transformToUint8Array);
@@ -55,9 +55,7 @@ export function TiffViewer({
           Failed to load TIFF: {error.message}
         </div>
       )}
-      {content != null && (
-        <BaseTiffViewer content={content} {...baseTiffViewerProps} />
-      )}
+      {bytes != null && <BaseTiffViewer src={bytes} {...baseTiffViewerProps} />}
     </div>
   );
 }

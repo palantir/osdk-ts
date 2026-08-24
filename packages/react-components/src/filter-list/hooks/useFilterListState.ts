@@ -39,7 +39,7 @@ export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
   clearFilterState: (filterKey: string) => void;
   /** Direct (non-link-traversing) filters combined into a `WhereClause<Q>`. */
   whereClause: WhereClause<Q>;
-  /** Active linked-property records; apply via `narrowObjectSet`. */
+  /** Active HAS_LINK and LINKED_PROPERTY records */
   linkedFilters: ReadonlyArray<LinkedFilter<Q>>;
   /** Per-filter excluding-self where clauses keyed by `getFilterKey`. */
   perFilterWhereClauses: Map<string, WhereClause<Q>>;
@@ -215,13 +215,29 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    for (const state of filterStates.values()) {
+    for (const definition of filterDefinitions ?? []) {
+      const state = filterStates.get(getFilterKey(definition));
+      if (state == null) {
+        continue;
+      }
+      // A custom filter's state is opaque, so `filterHasActiveState` can only
+      // say "some state exists". Only its own `toWhereClause` knows whether
+      // that state filters anything, so match what `buildWhereClause` keeps.
+      if (definition.type === "CUSTOM") {
+        if (state.type === "custom") {
+          const clause = definition.toWhereClause(state);
+          if (clause != null && Object.keys(clause).length > 0) {
+            count++;
+          }
+        }
+        continue;
+      }
       if (filterHasActiveState(state)) {
         count++;
       }
     }
     return count;
-  }, [filterStates]);
+  }, [filterDefinitions, filterStates]);
 
   const hasChangesFromInitial = useMemo(
     () => !isEqual(filterStates, initialFilterStatesSnapshot),

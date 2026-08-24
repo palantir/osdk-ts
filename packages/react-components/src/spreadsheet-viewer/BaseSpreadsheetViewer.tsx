@@ -24,6 +24,8 @@ import type {
 
 import styles from "./BaseSpreadsheetViewer.module.css";
 
+const EMPTY_SHEETS: readonly SheetData[] = [];
+
 /**
  * Converts a 0-based column index to a spreadsheet column letter (0=A, 1=B, ..., 25=Z, 26=AA).
  */
@@ -82,20 +84,18 @@ const SheetTable: React.FunctionComponent<{ sheet: SheetData }> = React.memo(
 SheetTable.displayName = "SheetTable";
 
 export function BaseSpreadsheetViewer({
+  content,
   spreadsheet,
   className,
 }: BaseSpreadsheetViewerProps): React.ReactElement {
   const [activeSheetIndex, setActiveSheetIndex] = useState(0);
   const rootClassName = classnames(styles.container, className);
 
-  const safeIndex = Math.min(
-    activeSheetIndex,
-    Math.max(0, spreadsheet.sheets.length - 1),
-  );
-  const activeSheet = useMemo(
-    () => spreadsheet.sheets[safeIndex],
-    [spreadsheet.sheets, safeIndex],
-  );
+  // eslint-disable-next-line @typescript-eslint/no-deprecated -- pre-rename fallback
+  const sheets = (content ?? spreadsheet)?.sheets ?? EMPTY_SHEETS;
+
+  const safeIndex = Math.min(activeSheetIndex, Math.max(0, sheets.length - 1));
+  const activeSheet = useMemo(() => sheets[safeIndex], [sheets, safeIndex]);
 
   const handleTabClick = useCallback((index: number) => {
     setActiveSheetIndex(index);
@@ -108,9 +108,9 @@ export function BaseSpreadsheetViewer({
       ) : (
         <div className={styles.emptySheet}>No sheets</div>
       )}
-      {spreadsheet.sheets.length > 1 && (
+      {sheets.length > 1 && (
         <div className={styles.tabBar}>
-          {spreadsheet.sheets.map((sheet, index) => (
+          {sheets.map((sheet, index) => (
             <button
               key={sheet.name}
               className={classnames(styles.tab, {

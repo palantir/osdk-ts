@@ -1,5 +1,34 @@
 # @osdk/client
 
+## 2.59.0
+
+### Minor Changes
+
+- 4ae6d8b: Add experimental `$EXPERIMENTAL_defaultLoadLevel` fetch arg that applies reducers and struct main values to every property without listing property IDs. Wired through the object and static-rid load paths.
+- 1aff7f4: Allow interfaces w/ no properties to filter on pk+title
+
+### Patch Changes
+
+- Updated dependencies [4ae6d8b]
+- Updated dependencies [1aff7f4]
+  - @osdk/api@2.59.0
+  - @osdk/client.unstable@2.59.0
+  - @osdk/generator-converters@2.59.0
+
+## 2.58.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+  - @osdk/generator-converters@2.58.0
+  - @osdk/api@2.58.0
+  - @osdk/client.unstable@2.58.0
+  - @osdk/shared.test@2.39.0
+
 ## 2.57.0
 
 ### Patch Changes

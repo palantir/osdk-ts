@@ -120,10 +120,7 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
         );
       }
       const customFilterState =
-        filterState?.type === "custom"
-          ? filterState
-          : // eslint-disable-next-line @typescript-eslint/no-deprecated -- pre-rename fallback
-            (definition.filterState ?? EMPTY_CUSTOM_STATE);
+        filterState?.type === "custom" ? filterState : EMPTY_CUSTOM_STATE;
       return (
         <>
           {definition.renderInput({

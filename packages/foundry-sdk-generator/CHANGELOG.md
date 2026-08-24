@@ -1,5 +1,36 @@
 # @osdk/foundry-sdk-generator
 
+## 2.59.0
+
+### Patch Changes
+
+- Updated dependencies [4ae6d8b]
+- Updated dependencies [1aff7f4]
+  - @osdk/api@2.59.0
+  - @osdk/client@2.59.0
+  - @osdk/client.unstable@2.59.0
+  - @osdk/generator-converters@2.59.0
+  - @osdk/generator-utils@2.59.0
+  - @osdk/generator@2.59.0
+
+## 2.58.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+- 90cce42: Generate ontology metadata under experimental path
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+- Updated dependencies [90cce42]
+  - @osdk/client@2.58.0
+  - @osdk/generator@2.58.0
+  - @osdk/generator-converters@2.58.0
+  - @osdk/api@2.58.0
+  - @osdk/client.unstable@2.58.0
+  - @osdk/generator-utils@2.58.0
+
 ## 2.57.0
 
 ### Patch Changes
@@ -74,7 +105,7 @@
 
 ### Minor Changes
 
-- 913563f: Generated SDKs now ship the full ontology metadata as a typed `./UNSTABLE_DO_NOT_USE/ontology-metadata` subpath export.
+- 913563f: Generated SDKs now ship the full ontology metadata as a typed `./experimental/ontology-metadata` subpath export.
 
 ### Patch Changes
 

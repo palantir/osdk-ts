@@ -224,7 +224,7 @@ export function getPackageJsonContents(
       },
       ...(exportOntologyMetadata
         ? {
-          "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
+          "./experimental/ontology-metadata": {
             import: {
               types: `./${ONTOLOGY_METADATA_DMTS_PATH}`,
               default: `./${ONTOLOGY_METADATA_JSON_PATH}`,

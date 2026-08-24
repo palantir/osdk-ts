@@ -1,5 +1,22 @@
 # @osdkkit/react
 
+## 2.59.0
+
+### Minor Changes
+
+- 8c18f55: `@osdk/aip-core` is now a direct dependency of `@osdk/react` and `@osdk/react-components` instead of an optional peer dependency, so consumers of `AipAgentChat` and `useChat` no longer have to install it themselves. For the same reason, `@osdk/aip-core` now depends on `@osdk/language-models` directly rather than declaring it as a peer.
+
+### Patch Changes
+
+- Updated dependencies [8c18f55]
+  - @osdk/aip-core@0.10.0
+
+## 2.58.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+
 ## 2.57.0
 
 ## 2.56.0

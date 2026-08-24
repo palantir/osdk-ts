@@ -212,11 +212,11 @@ describe("buildWhereClause", () => {
     expect(result).toEqual({ name: "John" });
   });
 
-  it("builds $isNotNull for hasLink filter", () => {
+  it("emits no clause for an active hasLink filter", () => {
     const def = createHasLinkFilterDef("employees");
     const filterStates = stateMap([def, { type: "hasLink", hasLink: true }]);
     const result = buildWhereClause([def], filterStates);
-    expect(result).toEqual({ employees: { $isNotNull: true } });
+    expect(result).toEqual({});
   });
 
   it("emits no clause for hasLink filter when hasLink is false", () => {
@@ -224,16 +224,6 @@ describe("buildWhereClause", () => {
     const filterStates = stateMap([def, { type: "hasLink", hasLink: false }]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({});
-  });
-
-  it("negates the hasLink clause when excluding (no link)", () => {
-    const def = createHasLinkFilterDef("employees");
-    const filterStates = stateMap([
-      def,
-      { type: "hasLink", hasLink: true, isExcluding: true },
-    ]);
-    const result = buildWhereClause([def], filterStates);
-    expect(result).toEqual({ $not: { employees: { $isNotNull: true } } });
   });
 
   it("builds $containsAllTerms for keywordSearch filter with AND operator", () => {
@@ -698,7 +688,7 @@ describe("getActiveLinkedFilters", () => {
     expect(getActiveLinkedFilters([def], filterStates)).toEqual([]);
   });
 
-  it("builds an entry for an active linked filter with reverseLinkName", () => {
+  it("builds an entry for an active linked filter", () => {
     const def = createLinkedPropertyFilterDef("manager", "fullName");
     const filterStates = stateMap([def, linkedState(["Alice"])]);
 
@@ -706,9 +696,10 @@ describe("getActiveLinkedFilters", () => {
 
     expect(result).toEqual([
       {
+        id: getFilterKey(def),
         linkName: "manager",
-        reverseLinkName: "reverseLink",
         innerWhere: { fullName: "Alice" },
+        isExcluding: false,
       },
     ]);
   });
@@ -725,23 +716,22 @@ describe("getActiveLinkedFilters", () => {
     });
   });
 
-  it("wraps innerWhere with $not when isExcluding", () => {
+  it("keeps innerWhere positive and sets isExcluding when isExcluding", () => {
+    // isExcluding hoists to LinkedFilter.isExcluding so the isExcluding state
+    // is handled by narrowObjectSet
     const def = createLinkedPropertyFilterDef("manager", "fullName");
     const filterStates = stateMap([def, linkedState(["Alice"], true)]);
 
     const result = getActiveLinkedFilters([def], filterStates);
 
-    expect(result).toHaveLength(1);
-    expect(result[0].innerWhere).toEqual({ $not: { fullName: "Alice" } });
-  });
-
-  it("excludes linked filters without reverseLinkName", () => {
-    const def = createLinkedPropertyFilterDef("manager", "fullName", {
-      reverseLinkName: null,
-    });
-    const filterStates = stateMap([def, linkedState(["Alice"])]);
-
-    expect(getActiveLinkedFilters([def], filterStates)).toEqual([]);
+    expect(result).toEqual([
+      {
+        id: getFilterKey(def),
+        linkName: "manager",
+        innerWhere: { fullName: "Alice" },
+        isExcluding: true,
+      },
+    ]);
   });
 
   it("excludes linked filters with empty values", () => {
@@ -781,5 +771,54 @@ describe("getActiveLinkedFilters", () => {
 
     expect(result).toHaveLength(2);
     expect(result.map((r) => r.linkName)).toEqual(["manager", "office"]);
+  });
+
+  describe("HAS_LINK", () => {
+    it("builds an entry with no innerWhere for an active hasLink filter", () => {
+      const def = createHasLinkFilterDef("peeps");
+      const filterStates = stateMap([def, { type: "hasLink", hasLink: true }]);
+
+      expect(getActiveLinkedFilters([def], filterStates)).toEqual([
+        { id: getFilterKey(def), linkName: "peeps", isExcluding: false },
+      ]);
+    });
+
+    it("marks the entry as excluding", () => {
+      const def = createHasLinkFilterDef("peeps");
+      const filterStates = stateMap([
+        def,
+        { type: "hasLink", hasLink: true, isExcluding: true },
+      ]);
+
+      expect(getActiveLinkedFilters([def], filterStates)).toEqual([
+        { id: getFilterKey(def), linkName: "peeps", isExcluding: true },
+      ]);
+    });
+
+    it("returns nothing when hasLink is false", () => {
+      const def = createHasLinkFilterDef("peeps");
+      const filterStates = stateMap([def, { type: "hasLink", hasLink: false }]);
+
+      expect(getActiveLinkedFilters([def], filterStates)).toEqual([]);
+    });
+
+    it("returns nothing when hasLink is false even with isExcluding", () => {
+      const def = createHasLinkFilterDef("peeps");
+      const filterStates = stateMap([
+        def,
+        { type: "hasLink", hasLink: false, isExcluding: true },
+      ]);
+
+      expect(getActiveLinkedFilters([def], filterStates)).toEqual([]);
+    });
+
+    it("skips a hasLink filter matching excludeFilterKey", () => {
+      const def = createHasLinkFilterDef("peeps");
+      const filterStates = stateMap([def, { type: "hasLink", hasLink: true }]);
+
+      expect(
+        getActiveLinkedFilters([def], filterStates, getFilterKey(def)),
+      ).toEqual([]);
+    });
   });
 });

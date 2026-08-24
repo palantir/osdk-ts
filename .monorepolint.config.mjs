@@ -304,12 +304,7 @@ const archetypeRules = archetypes(standardPackageRules, {
   // off to keep the migration a reformat, not a rewrite.
   .addArchetype(
     "oxc migrated libraries with check-api",
-    [
-      "@osdk/api",
-      "@osdk/functions",
-      "@osdk/agents",
-      "@osdk/unit-testing",
-    ],
+    ["@osdk/api", "@osdk/functions", "@osdk/agents", "@osdk/unit-testing"],
     {
       ...LIBRARY_RULES,
       oxc: true,
@@ -455,18 +450,18 @@ const archetypeRules = archetypes(standardPackageRules, {
     ...LIBRARY_RULES,
     skipAttw: true,
     extraExports: {
-      "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
+      "./experimental/ontology-metadata": {
         import: {
           types:
-            "./build/types/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.d.mts",
+            "./build/types/generatedNoCheck/experimental/ontology-metadata.d.mts",
           default:
-            "./build/esm/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.json",
+            "./build/esm/generatedNoCheck/experimental/ontology-metadata.json",
         },
         require: {
           types:
-            "./build/types/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.d.cts",
+            "./build/types/generatedNoCheck/experimental/ontology-metadata.d.cts",
           default:
-            "./build/esm/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.json",
+            "./build/esm/generatedNoCheck/experimental/ontology-metadata.json",
         },
       },
     },

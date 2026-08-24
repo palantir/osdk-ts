@@ -203,7 +203,6 @@ async function transpileWithTsup(format, target) {
     "@osdk/create-app.template.vue",
     "@osdk/create-app.template.vue.v2",
     // create-widget templates (private, must be bundled)
-    "@osdk/create-widget.template.minimal-react.v2",
     "@osdk/create-widget.template.react.v2",
   ];
 

@@ -1,5 +1,66 @@
 # @osdk/react-components
 
+## 0.53.0
+
+### Minor Changes
+
+- 8c18f55: `@osdk/aip-core` is now a direct dependency of `@osdk/react` and `@osdk/react-components` instead of an optional peer dependency, so consumers of `AipAgentChat` and `useChat` no longer have to install it themselves. For the same reason, `@osdk/aip-core` now depends on `@osdk/language-models` directly rather than declaring it as a peer.
+- ae47ac3: Fix FilterList's `HAS_LINK` filter, which previously sent an unsupported `$isNotNull` operator and was silently rejected by the server. `HAS_LINK` and `LINKED_PROPERTY` now filter by deriving a `$count` of matching linked objects and no longer use object-set `intersect`.
+
+  Fix `LINKED_PROPERTY` excluding: source rows with no linked object at all are now retained (previously dropped).
+
+  Consumer notes:
+  - `HAS_LINK` and `LINKED_PROPERTY` do not appear in `onFilterClauseChanged` (they cannot be expressed as a `WhereClause`). Wire `onEffectiveObjectSet` and pass the returned `ObjectSet` to the table to see them applied.
+  - `LINKED_PROPERTY` no longer requires `reverseLinkName` — the count-based narrowing does not need the reverse traversal.
+  - Removed bad documentation `$isNotNull` in `useOsdkObjects` snippets.
+
+### Patch Changes
+
+- Updated dependencies [8c18f55]
+  - @osdk/aip-core@0.10.0
+
+## 0.52.0
+
+### Minor Changes
+
+- 401b2d2: `BaseEmailViewer` takes its parsed email as `content`, matching the convention shared by the other viewers.
+
+  Nothing is removed. `email` is still accepted, is `@deprecated`, and `content` wins when both are set.
+
+  ```
+  BaseEmailViewer  email -> content
+  ```
+
+- 805e7d3: FilterList: a `CUSTOM` filter's seed now filters the object set, not just the input.
+
+  `filterState` and `defaultFilterState` are now read as one chain, `defaultFilterState` winning, so renaming preserves the value.
+
+  Also fixes the active filter count for `CUSTOM` filters, which counted any custom state as active. It now counts only when its `toWhereClause` produces a clause, matching what FilterList actually applies — so a seed that filters nothing no longer inflates the count.
+
+- 401b2d2: `BaseSpreadsheetViewer` takes its parsed workbook as `content`, matching the convention shared by the other viewers.
+
+  Nothing is removed. `spreadsheet` is still accepted, is `@deprecated`, and `content` wins when both are set.
+
+  ```
+  BaseSpreadsheetViewer  spreadsheet -> content
+  ```
+
+- 401b2d2: `BaseTiffViewer` accepts `className`, like every other base viewer. It renders a root element in every state to carry it, where before it rendered nothing until decoding finished.
+
+  `TiffViewerProps` is unchanged for consumers: it now inherits `className` from `BaseTiffViewerProps` instead of declaring its own. `DocumentViewer`'s `tiffViewerProps` omits `className`, matching `pdfViewerProps`, `imageViewerProps` and `videoViewerProps`.
+
+- 401b2d2: `BaseTiffViewer` takes its TIFF bytes as `src`, matching the convention shared by the other viewers. `content` is reserved for already-decoded payloads such as text or a parsed object; TIFF bytes are a binary source, so they belong under `src` alongside `BasePdfViewer`.
+
+  Nothing is removed. `content` is still accepted, is `@deprecated`, and `src` wins when both are set.
+
+  ```
+  BaseTiffViewer  content -> src
+  ```
+
+- 47c9c89: Document the convention for a viewer's primary input prop. `src` names the binary source to render from, in whatever forms that renderer supports (a URL, raw bytes, or both); `content` names the already-decoded payload (text, or a parsed object). `BasePdfViewer.src` is the reference for the first, `BaseXmlViewer.content` for the second.
+
+  No API changes. `BaseTiffViewer`, `BaseEmailViewer` and `BaseSpreadsheetViewer` move onto the convention in follow-up changes, each keeping a deprecated alias for its old prop name.
+
 ## 0.51.0
 
 ### Minor Changes
