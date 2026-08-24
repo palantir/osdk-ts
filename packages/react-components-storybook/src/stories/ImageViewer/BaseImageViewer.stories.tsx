@@ -101,4 +101,17 @@ export const WithErrorCallback: Story = {
   args: {
     onError: fn(),
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { BaseImageViewer } from "@osdk/react-components/experimental/image-viewer";
+
+<BaseImageViewer
+  src={imageUrl}
+  alt="My image"
+  onError={(error) => reportImageLoadFailure(error)}
+/>`,
+      },
+    },
+  },
 };

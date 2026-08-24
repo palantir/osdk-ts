@@ -57,16 +57,60 @@ const meta: Meta<PdfViewerContentProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `import { PdfViewerContent } from "@osdk/react-components/experimental/pdf-viewer";
+
+// The scrolling page canvas on its own — no toolbar, sidebar, or search.
+// Use it when you want to supply your own chrome around the pages.
+<PdfViewerContent
+  src="/whitepaper.pdf"
+  onPageChange={(page) => setCurrentPage(page)}
+  onScaleChange={(scale) => setScale(scale)}
+/>`,
+      },
+    },
+  },
+};
 
 export const ZoomedIn: Story = {
   args: {
     initialScale: 2,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { PdfViewerContent } from "@osdk/react-components/experimental/pdf-viewer";
+
+// initialScale is uncontrolled — later zooming reports through onScaleChange
+<PdfViewerContent
+  src="/whitepaper.pdf"
+  initialScale={2}
+  onScaleChange={(scale) => setScale(scale)}
+/>`,
+      },
+    },
   },
 };
 
 export const StartOnPage5: Story = {
   args: {
     initialPage: 5,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { PdfViewerContent } from "@osdk/react-components/experimental/pdf-viewer";
+
+// Deep-link into a document by scrolling straight to a page (1-indexed)
+<PdfViewerContent
+  src="/whitepaper.pdf"
+  initialPage={5}
+  onPageChange={(page) => setCurrentPage(page)}
+/>`,
+      },
+    },
   },
 };

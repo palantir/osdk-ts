@@ -86,10 +86,55 @@ const meta: Meta<ThumbnailSidebarStoryProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `import { PdfViewerSidebar, usePdfDocument } from "@osdk/react-components/experimental/pdf-viewer";
+
+function MyThumbnailSidebar({ src }: { src: string }) {
+  const { document, numPages, loading, error } = usePdfDocument(src);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  if (loading) return <div>Loading PDF…</div>;
+  if (error != null) return <div>Error loading PDF: {error.message}</div>;
+  if (document == null) return null;
+
+  return (
+    <PdfViewerSidebar
+      document={document}
+      numPages={numPages}
+      currentPage={currentPage}
+      onPageClick={setCurrentPage}
+      sidebarMode="thumbnails"
+      onSidebarModeChange={() => {}}
+    />
+  );
+}`,
+      },
+    },
+  },
+};
 
 export const ActivePage: Story = {
   args: {
     currentPage: 5,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { PdfViewerSidebar } from "@osdk/react-components/experimental/pdf-viewer";
+
+// currentPage outlines that thumbnail and scrolls it into view
+<PdfViewerSidebar
+  document={document}
+  numPages={numPages}
+  currentPage={5}
+  onPageClick={setCurrentPage}
+  sidebarMode="thumbnails"
+  onSidebarModeChange={() => {}}
+/>`,
+      },
+    },
   },
 };

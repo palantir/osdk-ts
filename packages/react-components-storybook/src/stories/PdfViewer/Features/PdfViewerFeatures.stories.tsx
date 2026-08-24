@@ -349,6 +349,14 @@ export const Loading: StoryObj<BasePdfViewerProps> = {
         }),
       ],
     },
+    docs: {
+      source: {
+        code: `import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+
+// The loading spinner is built in — no isLoading prop to thread through
+<BasePdfViewer src="/slow-to-download.pdf" />`,
+      },
+    },
   },
 };
 
@@ -368,6 +376,14 @@ export const Error: StoryObj<BasePdfViewerProps> = {
           return new Response("Server Error", { status: 500 });
         }),
       ],
+    },
+    docs: {
+      source: {
+        code: `import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+
+// A failed fetch or an unparseable document renders the built-in error state
+<BasePdfViewer src="/does-not-load.pdf" />`,
+      },
     },
   },
 };
@@ -452,6 +468,20 @@ export const WithEmbeddedOutline: Story = {
     media: mockBookmarkedMedia,
     initialSidebarOpen: true,
     sidebarMode: "outline",
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+
+// The outline is read from the PDF's own bookmarks — nothing to pass in
+<PdfViewer
+  media={handbook.pdf}
+  initialSidebarOpen
+  sidebarMode="outline"
+/>`,
+      },
+    },
   },
 };
 

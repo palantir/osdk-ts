@@ -122,4 +122,17 @@ export const WithErrorCallback: Story = {
     },
     onError: fn(),
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { VideoViewer } from "@osdk/react-components/experimental/video-viewer";
+
+// onError fires when fetching the media or decoding the video fails
+<VideoViewer
+  media={myOsdkMedia}
+  onError={(error) => reportPlaybackFailure(error)}
+/>`,
+      },
+    },
+  },
 };

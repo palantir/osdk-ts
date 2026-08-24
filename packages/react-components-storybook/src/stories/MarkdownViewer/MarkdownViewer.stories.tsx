@@ -129,7 +129,18 @@ const meta: Meta<BaseMarkdownViewerProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const WithContent: Story = {};
+export const WithContent: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `import { BaseMarkdownViewer } from "@osdk/react-components/experimental/markdown-renderer";
+
+// Headings, lists, tables, code fences and rules all render from a raw string
+<BaseMarkdownViewer content={markdownString} />`,
+      },
+    },
+  },
+};
 
 export const MinimalContent: Story = {
   args: {

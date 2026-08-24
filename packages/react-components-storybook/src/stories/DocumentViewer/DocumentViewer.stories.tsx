@@ -239,11 +239,31 @@ export const Image: Story = {
       <DocumentViewer {...args} />
     </div>
   ),
+  parameters: {
+    docs: {
+      source: {
+        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
+
+// image/* media renders with the pan and zoom ImageViewer
+<DocumentViewer media={employee.profilePhoto} />`,
+      },
+    },
+  },
 };
 
 export const Markdown: Story = {
   args: {
     media: mockMarkdownMedia,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
+
+// text/markdown media renders with MarkdownViewer
+<DocumentViewer media={project.readme} />`,
+      },
+    },
   },
 };
 
@@ -260,6 +280,14 @@ export const Video: Story = {
     msw: {
       handlers: [http.get("*/example.mp4", () => passthrough())],
     },
+    docs: {
+      source: {
+        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
+
+// video/* media renders with VideoViewer
+<DocumentViewer media={incident.bodyCamFootage} />`,
+      },
+    },
   },
 };
 
@@ -272,17 +300,47 @@ export const UnsupportedType: Story = {
       <DocumentViewer {...args} />
     </div>
   ),
+  parameters: {
+    docs: {
+      source: {
+        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
+
+// MIME types with no matching renderer fall back to a download prompt
+<DocumentViewer media={record.rawAttachment} />`,
+      },
+    },
+  },
 };
 
 export const Email: Story = {
   args: {
     media: mockEmailMedia,
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
+
+// message/rfc822 media renders with EmailViewer
+<DocumentViewer media={thread.originalMessage} />`,
+      },
+    },
+  },
 };
 
 export const Spreadsheet: Story = {
   args: {
     media: mockSpreadsheetMedia,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
+
+// xlsx / xls / csv media renders with SpreadsheetViewer
+<DocumentViewer media={quarter.headcountReport} />`,
+      },
+    },
   },
 };
 
@@ -295,6 +353,16 @@ export const Xml: Story = {
       <DocumentViewer {...args} />
     </div>
   ),
+  parameters: {
+    docs: {
+      source: {
+        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
+
+// application/xml media renders with the collapsible-tree XmlViewer
+<DocumentViewer media={shipment.manifest} />`,
+      },
+    },
+  },
 };
 
 export const Tiff: Story = {
@@ -304,6 +372,15 @@ export const Tiff: Story = {
   parameters: {
     msw: {
       handlers: [http.get("*/multi-page-tiff.tiff", () => passthrough())],
+    },
+    docs: {
+      source: {
+        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
+
+// image/tiff media renders with TiffViewer, which decodes in the browser.
+// See "Tiff With Pdf Conversion" for server-side PDF conversion instead.
+<DocumentViewer media={claim.scannedForm} />`,
+      },
     },
   },
 };
