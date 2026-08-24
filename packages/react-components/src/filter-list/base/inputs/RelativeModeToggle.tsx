@@ -36,7 +36,7 @@ function RelativeModeToggleInner({
         onCheckedChange={onCheckedChange}
         aria-label="Toggle relative date mode"
       />
-      <span className={styles.toggleRowLabel}>Relative</span>
+      <span className={styles.toggleRowLabel}>Relative to today</span>
     </div>
   );
 }
