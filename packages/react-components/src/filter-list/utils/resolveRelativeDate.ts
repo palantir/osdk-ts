@@ -19,12 +19,15 @@ import type { RelativeDateBound } from "../FilterListItemApi.js";
 /**
  * Resolves a single {@link RelativeDateBound} to an absolute `Date`.
  *
- * @param bound  The relative bound to resolve.
- * @param now    Reference point (defaults to `new Date()`). Injectable for
- *               deterministic tests.
+ * @param bound     The relative bound to resolve.
+ * @param endOfDay  When `true`, sets time to 23:59:59.999 (inclusive upper
+ *                  bound). When `false` (default), sets time to 00:00:00.000.
+ * @param now       Reference point (defaults to `new Date()`). Injectable for
+ *                  deterministic tests.
  */
 export function resolveRelativeDateBound(
   bound: RelativeDateBound,
+  endOfDay: boolean = false,
   now: Date = new Date(),
 ): Date {
   const result = new Date(now);
@@ -45,8 +48,11 @@ export function resolveRelativeDateBound(
       break;
   }
 
-  // Relative dates represent whole days — reset time to local midnight.
-  result.setHours(0, 0, 0, 0);
+  if (endOfDay) {
+    result.setHours(23, 59, 59, 999);
+  } else {
+    result.setHours(0, 0, 0, 0);
+  }
 
   return result;
 }

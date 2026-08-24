@@ -42,6 +42,7 @@ describe("resolveRelativeDateBound", () => {
     it("subtracts days", () => {
       const result = resolveRelativeDateBound(
         { count: 7, unit: "days", direction: "ago" },
+        false,
         NOW,
       );
       expectDate(result, 2026, 7, 8); // Aug 8
@@ -50,6 +51,7 @@ describe("resolveRelativeDateBound", () => {
     it("subtracts weeks", () => {
       const result = resolveRelativeDateBound(
         { count: 2, unit: "weeks", direction: "ago" },
+        false,
         NOW,
       );
       expectDate(result, 2026, 7, 1); // Aug 1
@@ -58,6 +60,7 @@ describe("resolveRelativeDateBound", () => {
     it("subtracts months", () => {
       const result = resolveRelativeDateBound(
         { count: 3, unit: "months", direction: "ago" },
+        false,
         NOW,
       );
       expectDate(result, 2026, 4, 15); // May 15
@@ -66,6 +69,7 @@ describe("resolveRelativeDateBound", () => {
     it("subtracts years", () => {
       const result = resolveRelativeDateBound(
         { count: 1, unit: "years", direction: "ago" },
+        false,
         NOW,
       );
       expectDate(result, 2025, 7, 15); // Aug 15, 2025
@@ -76,6 +80,7 @@ describe("resolveRelativeDateBound", () => {
     it("adds days", () => {
       const result = resolveRelativeDateBound(
         { count: 5, unit: "days", direction: "fromNow" },
+        false,
         NOW,
       );
       expectDate(result, 2026, 7, 20); // Aug 20
@@ -84,6 +89,7 @@ describe("resolveRelativeDateBound", () => {
     it("adds weeks", () => {
       const result = resolveRelativeDateBound(
         { count: 1, unit: "weeks", direction: "fromNow" },
+        false,
         NOW,
       );
       expectDate(result, 2026, 7, 22); // Aug 22
@@ -92,6 +98,7 @@ describe("resolveRelativeDateBound", () => {
     it("adds months", () => {
       const result = resolveRelativeDateBound(
         { count: 2, unit: "months", direction: "fromNow" },
+        false,
         NOW,
       );
       expectDate(result, 2026, 9, 15); // Oct 15
@@ -100,6 +107,7 @@ describe("resolveRelativeDateBound", () => {
     it("adds years", () => {
       const result = resolveRelativeDateBound(
         { count: 3, unit: "years", direction: "fromNow" },
+        false,
         NOW,
       );
       expectDate(result, 2029, 7, 15); // Aug 15, 2029
@@ -109,6 +117,7 @@ describe("resolveRelativeDateBound", () => {
   it("count 0 returns today at midnight", () => {
     const result = resolveRelativeDateBound(
       { count: 0, unit: "days", direction: "ago" },
+      false,
       NOW,
     );
     expectDate(result, 2026, 7, 15);
@@ -118,6 +127,7 @@ describe("resolveRelativeDateBound", () => {
     const afternoon = new Date(2026, 7, 15, 15, 30, 45, 123);
     const result = resolveRelativeDateBound(
       { count: 1, unit: "days", direction: "ago" },
+      false,
       afternoon,
     );
     expectDate(result, 2026, 7, 14);
@@ -127,6 +137,7 @@ describe("resolveRelativeDateBound", () => {
     const jan31 = new Date(2026, 0, 31); // Jan 31
     const result = resolveRelativeDateBound(
       { count: 1, unit: "months", direction: "ago" },
+      false,
       jan31,
     );
     // Dec 31 — JS setMonth auto-adjusts

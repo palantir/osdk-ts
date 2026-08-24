@@ -105,7 +105,7 @@ function filterStateToPropertyFilter(
           : state.minValue;
       const maxDate =
         state.isRelative && state.relativeMax
-          ? resolveRelativeDateBound(state.relativeMax)
+          ? resolveRelativeDateBound(state.relativeMax, true)
           : state.maxValue;
 
       if (minDate !== undefined) {
