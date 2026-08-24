@@ -193,10 +193,12 @@ describe("ObjectSetListenerWebsocket", () => {
       expect(listener.onError).not.toHaveBeenCalled();
     });
 
-    it("includes scenario context in subscription requests", async () => {
+    it("includes scenario and branch context in subscription requests", async () => {
+      const branch = "ri.branch.main.branch.123";
       const scenarioRid = "ri.actions.main.scenario.123";
       const scopedClient = new ObjectSetListenerWebsocket({
         ...minimalClient,
+        branch,
         scenarioRid,
       });
 
@@ -217,7 +219,7 @@ describe("ObjectSetListenerWebsocket", () => {
             .find(({ requests }) => requests.length > 0);
           expect(request?.requests).toHaveLength(1);
           expect(request?.requests[0]).toEqual(
-            expect.objectContaining({ scenarioRid }),
+            expect.objectContaining({ branch, scenarioRid }),
           );
         });
       } finally {
