@@ -49,7 +49,10 @@ export function convertInterfaceType(
     if (prop.type === "interfaceSharedPropertyType") {
       const converted = convertSharedPropertyType(prop);
       if (converted) {
-        const entry = { sharedPropertyType: converted, required: true };
+        const entry = {
+          sharedPropertyType: converted,
+          required: prop.required,
+        };
         propertiesV2[prop.apiName] = entry;
         propertiesV3[withoutNamespace(prop.apiName)] = entry;
       }
@@ -85,7 +88,7 @@ export function convertInterfaceType(
     apiName: iface.apiName,
     displayMetadata: {
       displayName: iface.displayName ?? shortName,
-      description: iface.description ?? shortName,
+      description: iface.description ?? "",
     },
     extendsInterfaces,
     links: [],

@@ -15,18 +15,32 @@
  */
 
 import type * as Ontologies from "@osdk/foundry.ontologies";
-import type { ObjectPropertyType, ObjectType } from "@osdk/maker";
+import type {
+  ObjectPropertyType,
+  ObjectType,
+  SharedPropertyType,
+} from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
 import { consola } from "consola";
 
+import { convertSharedPropertyType } from "./convertSharedPropertyType.js";
 import { mapPropertyType } from "./mapPropertyType.js";
 import { withoutNamespace } from "./utils.js";
 
 export function convertObjectType(
   fullMetadata: Ontologies.ObjectTypeFullMetadata,
+  sharedPropertyTypes: Ontologies.OntologyFullMetadata["sharedPropertyTypes"] = {},
 ): ObjectType {
   const obj = fullMetadata.objectType;
   const properties: Array<ObjectPropertyType> = [];
+  const sharedPropertyTypeApiNameByPropertyApiName = new Map(
+    Object.entries(fullMetadata.sharedPropertyTypeMapping).map(
+      ([sharedPropertyTypeApiName, propertyApiName]) => [
+        propertyApiName,
+        sharedPropertyTypeApiName,
+      ],
+    ),
+  );
 
   for (const [propApiName, propV2] of Object.entries(obj.properties)) {
     const mapped = mapPropertyType(propV2.dataType);
@@ -37,10 +51,22 @@ export function convertObjectType(
       continue;
     }
 
+    const sharedPropertyTypeApiName =
+      sharedPropertyTypeApiNameByPropertyApiName.get(propApiName);
+    const sharedPropertyTypeMetadata = sharedPropertyTypeApiName
+      ? sharedPropertyTypes[sharedPropertyTypeApiName]
+      : undefined;
+    const sharedPropertyType: SharedPropertyType | undefined =
+      sharedPropertyTypeMetadata
+        ? convertSharedPropertyType(sharedPropertyTypeMetadata)
+        : undefined;
+
     const prop: ObjectPropertyType = {
       apiName: propApiName,
       displayName: propV2.displayName ?? propApiName,
+      description: propV2.description,
       type: mapped.type,
+      sharedPropertyType,
     };
     if (mapped.array) {
       (prop as ObjectPropertyType & { array?: boolean }).array = true;
