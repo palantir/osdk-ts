@@ -27,7 +27,6 @@ import type {
   FilterState,
   PropertyFilterDefinition,
 } from "./FilterListItemApi.js";
-import type { ActiveFilter } from "./types/ActiveFilterTypes.js";
 import type { CustomFilterDefinition } from "./types/CustomRendererTypes.js";
 import type { KeywordSearchFilterDefinition } from "./types/KeywordSearchTypes.js";
 import type {
@@ -79,6 +78,8 @@ export interface FilterChangeSnapshot<Q extends ObjectTypeDefinition> {
  * What the user did to the filter state.
  */
 export type FilterChangeCause =
+  /** The list mounted, reporting the state it started with. */
+  | { event: "INIT" }
   /** A filter's state was set. */
   | { event: "SET"; filterKey: string; newState: FilterState }
   /** A filter's state was cleared, e.g. by removing the filter. */
@@ -150,9 +151,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Called whenever filter state changes — a filter set, a filter cleared, or a
-   * reset — with the resulting clause, filtered `ObjectSet` and active filters
-   * in a single payload.
+   * Called on filter init and when filter state changes.
    *
    * @param change What changed and the filter state it produced
    */

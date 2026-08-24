@@ -75,7 +75,7 @@ Type parameters: `Q extends ObjectTypeDefinition`
 | `titleIcon`                | `React.ReactNode`                                                              | Optional icon to display next to the title                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `filterDefinitions`        | `Array<FilterDefinitionUnion<Q>>`                                              | The definition for all supported filter items in the list If not supplied, all filterable properties will be available                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `onFilterStateChanged`     | `(definition: FilterDefinitionUnion<Q>, newState: FilterState) => void`        | **Deprecated** — Use `onFilterChanged`, which reports every set / clear / reset with a single payload keyed by `event`. Called when filter state changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `onFilterChanged`          | `(change: FilterChangeEvent<Q>) => void`                                       | Called whenever filter state changes — a filter set, a filter cleared, or a reset — with the resulting clause, filtered `ObjectSet` and active filters in a single payload.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `onFilterChanged`          | `(change: FilterChangeEvent<Q>) => void`                                       | Called whenever filter state changes — a filter set, a filter cleared, or a reset — with the resulting clause, filtered `ObjectSet` and active filters in a single payload.<br /><br />Also fires once on mount with `event: "INIT"`, reporting the state seeded from `defaultFilterStates` and each definition's `defaultFilterState`, so the initial clause and filtered `ObjectSet` arrive without a first interaction.<br /><br />Not debounced — every change is reported. Free-text and range inputs debounce their own keystrokes, so typing reports once per pause.                                                                                |
 | `onEffectiveObjectSet`     | `(objectSet: ObjectSet<Q>) => void`                                            | **Deprecated** — Use `onFilterChanged`, whose `filteredObjectSet` reports the same narrowed set alongside the clause and active filters. Called with the narrowed `ObjectSet` whenever filters change. Requires `objectSet` to be set. `HAS_LINK` and `LINKED_PROPERTY` filters narrow only here, never through the filter clause.                                                                                                                                                                                                                                                                                                                         |
 | `showFilteredOutValues`    | `boolean`                                                                      | When `true`, facets render greyed-out count=0 rows for values present in the unfiltered data but excluded by other active filters. Defaults to `false`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `addFilterMode`            | `"controlled" \| "uncontrolled"`                                               | **Deprecated** — Going away; visibility will always be managed internally. Seed it with `isVisible` on each `filterDefinitions` entry and observe changes with `onFilterVisibilityChange`. Controls how filter visibility (add/remove) is managed.<br /><br />- `"uncontrolled"` (default): FilterList manages visibility internally. An "Add filter" popover is rendered for filters with `isVisible: false`, and each visible filter shows a remove button. - `"controlled"`: The consumer manages which filters are visible via `filterDefinitions`. Filters with `isVisible: false` are excluded from the rendered list. Defaults to `"uncontrolled"`. |
@@ -371,10 +371,11 @@ function EmployeeDashboard() {
 
 ### Reading everything from one callback
 
-`onFilterChanged` reports every filter-state change — a filter set, a filter
-cleared, or a reset — with everything derived from it in a single payload, so you
-don't need to wire up `onFilterStateChanged`, `onFilterClauseChanged` and
-`onEffectiveObjectSet` separately and reconcile their firings:
+`onFilterChanged` reports the state the list mounted with and every change after
+it — a filter set, a filter cleared, or a reset — with everything derived from it
+in a single payload, so you don't need to wire up `onFilterStateChanged`,
+`onFilterClauseChanged` and `onEffectiveObjectSet` separately and reconcile their
+firings:
 
 ```typescript
 import type { FilterChangeEvent } from "@osdk/react-components/experimental/filter-list";
@@ -389,8 +390,10 @@ import type { FilterChangeEvent } from "@osdk/react-components/experimental/filt
     // change.filteredObjectSet — `objectSet` filtered by all active filters
     setFilterClause(change.filterClause);
 
-    // `event` says what the user did, and which extra fields you get:
+    // `event` says what happened, and which extra fields you get:
     switch (change.event) {
+      case "INIT":
+        break;
       case "SET":
         persist(change.filterKey, change.newState);
         break;
@@ -407,11 +410,28 @@ import type { FilterChangeEvent } from "@osdk/react-components/experimental/filt
 
 | `event`   | Extra fields            | Fires when                                                |
 | --------- | ----------------------- | --------------------------------------------------------- |
+| `"INIT"`  | —                       | The list mounted, once, before any interaction            |
 | `"SET"`   | `filterKey`, `newState` | The user changed a filter's value                         |
 | `"CLEAR"` | `filterKey`             | A filter's state was cleared, e.g. the filter was removed |
 | `"RESET"` | —                       | The reset button restored the mount state                 |
 
 `filteredObjectSet` is `undefined` when no `objectSet` prop is supplied.
+
+`"INIT"` reports the state seeded from `defaultFilterStates` and from each
+definition's `defaultFilterState`, so the initial clause and filtered
+`ObjectSet` arrive without waiting for a first interaction. If you only care
+about the current state and not what caused it, ignore `event` — every payload
+carries the full `filterClause` and `filteredObjectSet`:
+
+```typescript
+onFilterChanged={(change) => setFilterClause(change.filterClause)}
+```
+
+Changes are reported as they happen, with no debounce, so an analytics handler
+sees every distinct interaction. Free-text and range inputs debounce their own
+keystrokes, so typing reports once per pause rather than once per character. If
+you need coarser batching than that — one network request per burst, say —
+debounce your own handler.
 
 ### Add/Remove Filters (Uncontrolled Mode)
 
