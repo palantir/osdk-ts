@@ -11,7 +11,11 @@ import type {
   FormFieldDefinition,
 } from "@osdk/react-components/experimental/action-form";
 import { ActionForm } from "@osdk/react-components/experimental/action-form";
-import type { FilterDefinitionUnion } from "@osdk/react-components/experimental/filter-list";
+import type {
+  FilterChangeEvent,
+  FilterDefinitionUnion,
+  FilterState,
+} from "@osdk/react-components/experimental/filter-list";
 import { FilterList } from "@osdk/react-components/experimental/filter-list";
 import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
@@ -20,6 +24,8 @@ import React, { useCallback, useMemo, useState } from "react";
 import { Button } from "../../components/Button.js";
 import { $ } from "../../foundryClient.js";
 import { Employee, modifyEmployee } from "../../generatedNoCheck2/index.js";
+import type { SavedView } from "./SavedViewTabs.js";
+import { SavedViewTabs } from "./SavedViewTabs.js";
 
 import "./page.css";
 
@@ -118,6 +124,29 @@ const EMPLOYEE_FILTERS: Array<FilterDefinitionUnion<Employee>> = [
   },
 ];
 
+type SavedViewId = "everyone" | "engineering" | "contractors";
+
+const SAVED_VIEWS: ReadonlyArray<SavedView<SavedViewId>> = [
+  { id: "everyone", label: "Everyone" },
+  { id: "engineering", label: "Engineering" },
+  { id: "contractors", label: "Contractors" },
+];
+
+// Keyed by `getFilterKey`, which is the `id` on each EMPLOYEE_FILTERS entry.
+// "everyone" starts empty so the table on mount matches the filters on mount.
+const INITIAL_SAVED_FILTER_STATES: Record<
+  SavedViewId,
+  Map<string, FilterState>
+> = {
+  everyone: new Map(),
+  engineering: new Map<string, FilterState>([
+    ["department", { type: "EXACT_MATCH", values: ["Engineering"] }],
+  ]),
+  contractors: new Map<string, FilterState>([
+    ["workerType", { type: "EXACT_MATCH", values: ["Contractor"] }],
+  ]),
+};
+
 type RDP = { primaryOfficeName: "string"; managerName: "string" };
 const EMPLOYEE_COLUMNS: Array<ColumnDefinition<Employee, RDP>> = [
   {
@@ -214,6 +243,22 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
     const [statusMessage, setStatusMessage] = useState<StatusMessage>();
     const employeeObjectSet = useMemo(() => $(Employee), []);
 
+    const [activeViewId, setActiveViewId] = useState<SavedViewId>("everyone");
+    const [savedFilterStates, setSavedFilterStates] = useState(
+      INITIAL_SAVED_FILTER_STATES,
+    );
+
+    const handleFilterChanged = useCallback(
+      (change: FilterChangeEvent<Employee>) => {
+        setEffectiveObjectSet(change.filteredObjectSet);
+        setSavedFilterStates((previous) => ({
+          ...previous,
+          [activeViewId]: new Map(change.filterStates),
+        }));
+      },
+      [activeViewId],
+    );
+
     const openDialog = useCallback(function openDialog() {
       setIsDialogOpen(true);
     }, []);
@@ -248,7 +293,9 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
             </h2>
             <p className="actionFormFilterListReproDescription">
               Filter employees, then update an employee department from the
-              dialog and watch Network calls.
+              dialog and watch Network calls. Each tab keeps its own filters:
+              they are read out of <code>onFilterChanged</code> and passed back
+              in through <code>filterStates</code>.
             </p>
           </div>
           <Button onClick={openDialog}>Open department update form</Button>
@@ -266,12 +313,19 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
             {statusMessage.text}
           </div>
         )}
+        <SavedViewTabs
+          views={SAVED_VIEWS}
+          activeViewId={activeViewId}
+          onSelect={setActiveViewId}
+        />
+
         <div className="actionFormFilterListReproContent">
           <FilterList
             objectType={Employee}
             objectSet={employeeObjectSet}
             filterDefinitions={EMPLOYEE_FILTERS}
-            onEffectiveObjectSet={setEffectiveObjectSet}
+            filterStates={savedFilterStates[activeViewId]}
+            onFilterChanged={handleFilterChanged}
             title="Employee filters"
             showActiveFilterCount={true}
             showResetButton={true}
@@ -280,7 +334,7 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
 
           <ObjectTable
             objectType={Employee}
-            objectSet={effectiveObjectSet}
+            objectSet={effectiveObjectSet ?? employeeObjectSet}
             columnDefinitions={EMPLOYEE_COLUMNS}
             defaultOrderBy={DEFAULT_ORDER_BY}
             pageSize={50}

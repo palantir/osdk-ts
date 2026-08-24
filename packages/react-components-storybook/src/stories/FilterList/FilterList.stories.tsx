@@ -17,6 +17,7 @@
 import type { DerivedProperty, ObjectSet, Osdk, WhereClause } from "@osdk/api";
 import { useOsdkClient } from "@osdk/react";
 import type {
+  FilterChangeEvent,
   FilterDefinitionUnion,
   FilterListProps,
   FilterState,
@@ -28,6 +29,7 @@ import {
 import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { ReactElement } from "react";
 import { useCallback, useMemo, useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
@@ -2750,6 +2752,199 @@ const savedStates = new Map([
     },
   },
   render: (args) => <WithInitialFilterStatesStory {...args} />,
+};
+
+// ---------------------------------------------------------------------------
+// Controlled filter states — one saved view per tab
+// ---------------------------------------------------------------------------
+
+type SavedViewId = "everyone" | "marketing" | "engineering";
+
+const SAVED_VIEWS: ReadonlyArray<{ id: SavedViewId; label: string }> = [
+  { id: "everyone", label: "Everyone" },
+  { id: "marketing", label: "Marketing" },
+  { id: "engineering", label: "Engineering" },
+];
+
+const SAVED_VIEW_FILTER_STATES: Record<
+  SavedViewId,
+  Map<string, FilterState>
+> = {
+  everyone: new Map(),
+  marketing: new Map<string, FilterState>([
+    ["department", { type: "EXACT_MATCH", values: ["Marketing"] }],
+  ]),
+  engineering: new Map<string, FilterState>([
+    ["department", { type: "EXACT_MATCH", values: ["Engineering"] }],
+    [
+      "jobTitle-multi",
+      { type: "SELECT", selectedValues: ["Software Engineer"] },
+    ],
+  ]),
+};
+
+const CONTROLLED_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
+  departmentFilter,
+  jobTitleMultiSelectFilter,
+];
+
+const TAB_ROW_STYLE = {
+  display: "flex",
+  gap: 4,
+  marginBottom: 12,
+  borderBottom: "1px solid #d3d8de",
+} as const;
+
+interface SavedViewTabProps {
+  view: { id: SavedViewId; label: string };
+  isActive: boolean;
+  onSelect: (id: SavedViewId) => void;
+}
+
+function SavedViewTab({
+  view,
+  isActive,
+  onSelect,
+}: SavedViewTabProps): ReactElement {
+  const handleClick = useCallback(() => {
+    onSelect(view.id);
+  }, [onSelect, view.id]);
+
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={isActive}
+      onClick={handleClick}
+      style={{
+        padding: "8px 14px",
+        border: "none",
+        borderBottom: `2px solid ${isActive ? "#2d72d2" : "transparent"}`,
+        background: "none",
+        color: isActive ? "#1c2127" : "#5f6b7c",
+        fontWeight: isActive ? 600 : 400,
+        cursor: "pointer",
+      }}
+    >
+      {view.label}
+    </button>
+  );
+}
+
+function ControlledFilterStatesStory(args: Partial<EmployeeFilterListProps>) {
+  const client = useOsdkClient();
+  const objectSet = useMemo(() => client(Employee), [client]);
+
+  const [activeViewId, setActiveViewId] = useState<SavedViewId>("everyone");
+  const [filterStatesByView, setFilterStatesByView] = useState(
+    SAVED_VIEW_FILTER_STATES,
+  );
+  const [lastChange, setLastChange] = useState<FilterChangeEvent<Employee>>();
+
+  const handleFilterChanged = useCallback(
+    (change: FilterChangeEvent<Employee>) => {
+      setLastChange(change);
+      setFilterStatesByView((previous) => ({
+        ...previous,
+        [activeViewId]: new Map(change.filterStates),
+      }));
+    },
+    [activeViewId],
+  );
+
+  return (
+    <div>
+      <div style={TAB_ROW_STYLE} role="tablist">
+        {SAVED_VIEWS.map((view) => (
+          <SavedViewTab
+            key={view.id}
+            view={view}
+            isActive={view.id === activeViewId}
+            onSelect={setActiveViewId}
+          />
+        ))}
+      </div>
+      <div style={FLEX_ROW_STYLE}>
+        <div style={SIDEBAR_STYLE}>
+          <FilterList
+            {...args}
+            objectType={Employee}
+            objectSet={objectSet}
+            filterDefinitions={CONTROLLED_FILTER_DEFINITIONS}
+            filterStates={filterStatesByView[activeViewId]}
+            onFilterChanged={handleFilterChanged}
+            title="Employee filters"
+            showActiveFilterCount={true}
+            showResetButton={true}
+          />
+        </div>
+        <div style={FLEX_FILL_STYLE}>
+          <h4>Saved filter states per view</h4>
+          <pre style={PRE_STYLE}>
+            {JSON.stringify(
+              Object.fromEntries(
+                SAVED_VIEWS.map((view) => [
+                  view.id,
+                  Object.fromEntries(filterStatesByView[view.id]),
+                ]),
+              ),
+              null,
+              2,
+            )}
+          </pre>
+          <h4>Last onFilterChanged event</h4>
+          <pre style={PRE_STYLE}>{lastChange?.event ?? "(none)"}</pre>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export const ControlledFilterStates: Story = {
+  name: "With Controlled Filter States",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Pass `filterStates` to own the filter state from outside. Each tab " +
+          "keeps its own saved view: changes are read out of " +
+          "`onFilterChanged`'s `filterStates` and passed straight back in, " +
+          "and switching tabs pushes a different map so the filters — and the " +
+          "reset baseline — follow the tab. Editing a filter still renders " +
+          "immediately, so typing stays responsive while the map only has to " +
+          "come back for the change to survive a later push. A push also " +
+          'reports an `onFilterChanged` with `event: "REPLACE"`, carrying ' +
+          "the clause and filtered `ObjectSet` the pushed states produce.",
+      },
+      source: {
+        code: `const [activeViewId, setActiveViewId] = useState("everyone");
+const [filterStatesByView, setFilterStatesByView] = useState({
+  everyone: new Map(),
+  marketing: new Map([["department", { type: "EXACT_MATCH", values: ["Marketing"] }]]),
+  engineering: new Map([["department", { type: "EXACT_MATCH", values: ["Engineering"] }]]),
+});
+
+const handleFilterChanged = useCallback(
+  (change) => {
+    setFilterStatesByView((previous) => ({
+      ...previous,
+      [activeViewId]: new Map(change.filterStates),
+    }));
+  },
+  [activeViewId],
+);
+
+<FilterList
+  objectType={Employee}
+  objectSet={objectSet}
+  filterDefinitions={filterDefinitions}
+  filterStates={filterStatesByView[activeViewId]}
+  onFilterChanged={handleFilterChanged}
+/>`,
+      },
+    },
+  },
+  render: (args) => <ControlledFilterStatesStory {...args} />,
 };
 
 const RESET_GATE_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
