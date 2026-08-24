@@ -35,9 +35,10 @@ type StreamingElement<QD extends QueryDefinition<any>> =
 /**
  * @experimental This feature is experimental and might change in the future.
  *
- * Intended to execute a query as a streaming function, yielding results as
- * they arrive from the server. Streaming query execution is not currently
- * supported in the TypeScript OSDK.
+ * Executes a query as a streaming function, yielding results as they arrive
+ * from the server. Queries whose declared output is an array are delivered in
+ * batches and flattened, so the iterable yields one element at a time rather
+ * than one batch at a time.
  */
 type executeStreamingFunctionFn = <QD extends QueryDefinition<any>>(
   query: QD,
