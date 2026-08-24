@@ -358,6 +358,7 @@ export class ObjectSetListenerWebsocket {
         }) => {
           return {
             objectSet,
+            branch: this.#client.branch,
             scenarioRid: this.#client.scenarioRid,
             propertySet: requestedProperties,
             referenceSet: requestedReferenceProperties,
