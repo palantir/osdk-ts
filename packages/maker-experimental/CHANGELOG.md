@@ -1,5 +1,11 @@
 # @osdk/maker-experimental
 
+## 0.53.0
+
+### Minor Changes
+
+- 32cd3f8: Stop generating input shapes for spt-backed interface props
+
 ## 0.52.0
 
 ### Minor Changes
