@@ -124,14 +124,14 @@ describe(branchPlugin, () => {
     expect(process.env[FOUNDRY_BRANCH_ENV_VAR]).toBeUndefined();
   });
 
-  it("treats a blank .env value as unset", async () => {
+  it("does not overwrite a blank value in a .env file", async () => {
     const root = makeProjectDir({
       ".env.development": `${FOUNDRY_BRANCH_ENV_VAR}=   \n`,
     });
 
     await runConfigHook(pluginOn(GIT_BRANCH), { root });
 
-    expect(process.env[FOUNDRY_BRANCH_ENV_VAR]).toBe(GIT_BRANCH);
+    expect(process.env[FOUNDRY_BRANCH_ENV_VAR]).toBeUndefined();
   });
 
   it("does not overwrite a branch already in process.env", async () => {

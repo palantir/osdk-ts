@@ -66,7 +66,7 @@ export function branchPlugin(options: BranchPluginOptions = {}): Plugin {
       const configuredBranch = loadEnv(mode, envDir, "VITE_")[
         FOUNDRY_BRANCH_ENV_VAR
       ];
-      if (configuredBranch?.trim()) {
+      if (configuredBranch?.trim() != null) {
         return;
       }
 
@@ -81,8 +81,7 @@ export function branchPlugin(options: BranchPluginOptions = {}): Plugin {
     configResolved(config) {
       if (injectedBranch != null) {
         config.logger.info(
-          `[osdk] Using Foundry branch "${injectedBranch}" from the current git ` +
-            `branch. Set ${FOUNDRY_BRANCH_ENV_VAR} to override.`,
+          `Using Foundry branch "${injectedBranch}". Set ${FOUNDRY_BRANCH_ENV_VAR} to override.`,
         );
       }
     },
