@@ -428,8 +428,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/e2e.generated.catchall
       '@osdk/foundry':
-        specifier: latest
-        version: 2.73.0
+        specifier: ^2.75.0
+        version: 2.75.0
       '@osdk/oauth':
         specifier: workspace:*
         version: link:../../packages/oauth
@@ -618,8 +618,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/client
       '@osdk/foundry':
-        specifier: latest
-        version: 2.73.0
+        specifier: ^2.75.0
+        version: 2.75.0
       '@osdk/oauth':
         specifier: workspace:*
         version: link:../../packages/oauth
@@ -881,8 +881,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/e2e.generated.catchall
       '@osdk/foundry':
-        specifier: latest
-        version: 2.73.0
+        specifier: ^2.75.0
+        version: 2.75.0
       '@osdk/oauth':
         specifier: workspace:*
         version: link:../../packages/oauth
@@ -984,8 +984,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/client
       '@osdk/foundry':
-        specifier: latest
-        version: 2.73.0
+        specifier: ^2.75.0
+        version: 2.75.0
       '@osdk/oauth':
         specifier: workspace:*
         version: link:../../packages/oauth
@@ -1428,8 +1428,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/e2e.generated.catchall
       '@osdk/foundry':
-        specifier: latest
-        version: 2.73.0
+        specifier: ^2.75.0
+        version: 2.75.0
       '@osdk/oauth':
         specifier: workspace:*
         version: link:../../packages/oauth
@@ -1465,8 +1465,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/client
       '@osdk/foundry':
-        specifier: latest
-        version: 2.73.0
+        specifier: ^2.75.0
+        version: 2.75.0
       '@osdk/oauth':
         specifier: workspace:*
         version: link:../../packages/oauth
