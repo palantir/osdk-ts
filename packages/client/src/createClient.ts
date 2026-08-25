@@ -166,7 +166,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       | QueryDefinition<any>
       | Experiment<"2.0.8">
       | Experiment<"2.1.0">
-      | Experiment<"2.17.0">
+      | Experiment<"2.59.0">
       | Experiment<"2.8.0">
       | Experiment<"2.19.0">,
   >(
@@ -182,7 +182,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
           : T extends
                 | Experiment<"2.0.8">
                 | Experiment<"2.1.0">
-                | Experiment<"2.17.0">
+                | Experiment<"2.59.0">
                 | Experiment<"2.8.0">
                 | Experiment<"2.19.0">
             ? { invoke: ExperimentFns<T> }

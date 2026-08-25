@@ -74,7 +74,7 @@ describe("LinkSubscriptionWebsocket", () => {
     vi.useRealTimers();
   });
 
-  it("multiplexes subscriptions and routes update batches", async () => {
+  it("uses one WebSocket for multiple subscriptions and sends updates to the correct listener", async () => {
     const linkSubscriptionWebsocket =
       LinkSubscriptionWebsocket.getInstance(minimalClient);
     const unsubscribeLead = linkSubscriptionWebsocket.subscribe({
@@ -93,10 +93,17 @@ describe("LinkSubscriptionWebsocket", () => {
       ],
     });
 
+    // Concurrent subscribes each race to build a connection and the loser is
+    // closed without ever being used, so only one socket goes live. This is
+    // inherited from ObjectSetListenerWebsocket.
     const webSocket = await vi.waitFor((): MockedWebSocket => {
-      expect(MockedWebSocket).toHaveBeenCalledOnce();
+      expect(MockedWebSocket).toHaveBeenCalledTimes(2);
       return MockedWebSocket.mock.results[0].value;
     });
+    const discardedWebSocket = MockedWebSocket.mock.results[1].value;
+    expect(discardedWebSocket.close).toHaveBeenCalledOnce();
+    expect(discardedWebSocket.send).not.toHaveBeenCalled();
+
     expect(String(MockedWebSocket.mock.calls[0][0])).toBe(
       "wss://example.com/base/api/v2/ontologySubscriptions/ontologies/ri.ontology.main.ontology.example/linkTypeSubscriptions",
     );
@@ -176,21 +183,19 @@ describe("LinkSubscriptionWebsocket", () => {
         },
       ],
     });
-    expect(leadListener.onChange).toHaveBeenCalledWith({
-      updates: [
-        {
-          linkType: "lead",
-          source: { $apiName: "Employee", $primaryKey: 1 },
-          state: "ADDED",
-          target: { $apiName: "Employee", $primaryKey: 2 },
-        },
-        {
-          linkType: "lead",
-          source: { $apiName: "Employee", $primaryKey: 2 },
-          state: "REMOVED",
-          target: { $apiName: "Employee", $primaryKey: 1 },
-        },
-      ],
+    // a single batched message fans out into one call per link change
+    expect(leadListener.onChange).toHaveBeenCalledTimes(2);
+    expect(leadListener.onChange).toHaveBeenNthCalledWith(1, {
+      linkType: "lead",
+      source: { $apiName: "Employee", $primaryKey: 1 },
+      state: "ADDED",
+      target: { $apiName: "Employee", $primaryKey: 2 },
+    });
+    expect(leadListener.onChange).toHaveBeenNthCalledWith(2, {
+      linkType: "lead",
+      source: { $apiName: "Employee", $primaryKey: 2 },
+      state: "REMOVED",
+      target: { $apiName: "Employee", $primaryKey: 1 },
     });
     expect(peepsListener.onChange).not.toHaveBeenCalled();
 
@@ -212,15 +217,11 @@ describe("LinkSubscriptionWebsocket", () => {
         },
       ],
     });
-    expect(peepsListener.onChange).toHaveBeenCalledWith({
-      updates: [
-        {
-          linkType: "peeps",
-          source: { $apiName: "Employee", $primaryKey: 3 },
-          state: "ADDED",
-          target: { $apiName: "Employee", $primaryKey: 4 },
-        },
-      ],
+    expect(peepsListener.onChange).toHaveBeenCalledExactlyOnceWith({
+      linkType: "peeps",
+      source: { $apiName: "Employee", $primaryKey: 3 },
+      state: "ADDED",
+      target: { $apiName: "Employee", $primaryKey: 4 },
     });
 
     unsubscribeLead();

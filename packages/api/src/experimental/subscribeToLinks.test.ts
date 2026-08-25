@@ -15,11 +15,12 @@
  */
 
 import { describe, expectTypeOf, it } from "vitest";
+
 import type { ObjectIdentifiers } from "../OsdkBase.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
-import { EmployeeApiTest } from "../test/EmployeeApiTest.js";
+import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 import type { ExperimentFns } from "./Experiment.js";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET__linkSubscriptions } from "./subscribeToLinks.js";
+import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__linkSubscriptions } from "./subscribeToLinks.js";
 
 type SubscribeToLinks = ExperimentFns<
   typeof __EXPERIMENTAL__NOT_SUPPORTED_YET__linkSubscriptions
@@ -32,18 +33,19 @@ describe("subscribeToLinks", () => {
     unsubscribe: () => {},
   });
 
-  it("infers links and updates from the first object", () => {
+  it("infers the object type from the subscribed objects and the link types from links", () => {
     subscribeToLinks({
       links: ["lead", "peeps"],
       listener: {
-        onChange: ({ updates }) => {
-          expectTypeOf(updates[0].linkType).toEqualTypeOf<"lead" | "peeps">();
-          expectTypeOf(updates[0].source).toEqualTypeOf<
+        onChange: (linkUpdate) => {
+          expectTypeOf(linkUpdate.linkType).toEqualTypeOf<"lead" | "peeps">();
+          expectTypeOf(linkUpdate.source).toEqualTypeOf<
             ObjectIdentifiers<EmployeeApiTest>
           >();
-          expectTypeOf(updates[0].target).toEqualTypeOf<
+          expectTypeOf(linkUpdate.target).toEqualTypeOf<
             ObjectIdentifiers<EmployeeApiTest>
           >();
+          expectTypeOf(linkUpdate.state).toEqualTypeOf<"ADDED" | "REMOVED">();
         },
       },
       objects: [employeeOne, employeeTwo],

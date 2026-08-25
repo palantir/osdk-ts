@@ -31,14 +31,6 @@ import {
   WEBSOCKET_IDLE_DISCONNECT_DELAY_MS,
 } from "./websocketUtils.js";
 
-/**
- * The lifecycle of a single subscription multiplexed onto a shared websocket.
- *
- * `preparing` covers everything up to the first successful subscribe response,
- * `expired`/`reconnecting` mean the subscription needs to be re-established (and
- * that the consumer should be told its data is out of date), and `done`/`error`
- * are terminal.
- */
 export type SubscriptionStatus =
   | "done"
   | "error"
@@ -50,14 +42,9 @@ export type SubscriptionStatus =
 export interface BaseSubscription {
   status: SubscriptionStatus;
 
-  /**
-   * Note: this may be a temporary client-generated id until the server replies
-   * with a subscribe response.
-   */
   subscriptionId: string;
 }
 
-/** Every subscribe request envelope is correlated back to its responses by `id`. */
 export interface SubscribeRequests {
   readonly id: string;
 }
@@ -66,45 +53,44 @@ export function isSubscriptionDone(subscription: BaseSubscription): boolean {
   return subscription.status === "done" || subscription.status === "error";
 }
 
-/**
- * Shared websocket plumbing for the ontology subscription endpoints.
- *
- * Owns the single multiplexed connection and everything that is identical
- * across endpoints: connecting (with exponential backoff), resubscribing on
- * open, the keepalive heartbeat, correlating subscribe responses back to their
- * requests, tearing down and cycling the socket, and disconnecting once the last
- * subscription goes away. Subclasses supply the endpoint-specific pieces: how to
- * open a connection, how to serialize a subscribe request, and how to interpret
- * a server message.
- *
- * @internal
- */
+/** @internal */
 export abstract class SubscriptionWebsocket<S extends BaseSubscription, M> {
   protected readonly client: MinimalClient;
   protected readonly logger: Logger | undefined;
 
-  /** Map of requestId to all subscriptions included in that request. */
-  protected readonly pendingSubscriptions = new Map<string, Array<S>>();
+  /**
+   * map of requestId to all active subscriptions at the time of the request
+   */
+  protected pendingSubscriptions = new Map<string, S[]>();
 
-  /** Map of subscriptionId (possibly still temporary) to subscription. */
-  protected readonly subscriptions = new Map<string, S>();
+  /**
+   * Map of subscriptionId to Subscription. Note: the subscriptionId may be
+   * temporary and not the actual subscriptionId from the server.
+   */
+  protected subscriptions = new Map<string, S>();
 
   protected ws: SubscriptionConnection | undefined;
 
   #backoff: ExponentialBackoff;
-  #heartbeatInterval: ReturnType<typeof setInterval> | undefined;
   #isFirstConnection = true;
+  #lastWsConnect = 0;
+  #heartbeatInterval: ReturnType<typeof setInterval> | undefined;
   #maybeDisconnectTimeout: ReturnType<typeof setTimeout> | undefined;
 
   constructor(client: MinimalClient, loggerPrefix: string) {
     this.client = client;
-    this.logger = client.logger?.child({}, { msgPrefix: loggerPrefix });
     this.#backoff = new ExponentialBackoff({
       initialDelayMs: EXPONENTIAL_BACKOFF_INITIAL_DELAY_MS,
-      jitterFactor: EXPONENTIAL_BACKOFF_JITTER_FACTOR,
       maxDelayMs: EXPONENTIAL_BACKOFF_MAX_DELAY_MS,
       multiplier: EXPONENTIAL_BACKOFF_MULTIPLIER,
+      jitterFactor: EXPONENTIAL_BACKOFF_JITTER_FACTOR,
     });
+    this.logger = client.logger?.child(
+      {},
+      {
+        msgPrefix: loggerPrefix,
+      },
+    );
     invariant(
       client.baseUrl.startsWith("https://") ||
         client.baseUrl.startsWith("http://"),
@@ -112,77 +98,56 @@ export abstract class SubscriptionWebsocket<S extends BaseSubscription, M> {
     );
   }
 
-  /** Opens a connection to the endpoint this websocket subscribes against. */
   protected abstract createConnection(): Promise<SubscriptionConnection>;
 
-  /**
-   * Builds the full subscribe envelope. Every subscribe message "overwrites" the
-   * previous one, so the request must always describe every ready subscription.
-   */
   protected abstract createSubscribeRequests(
     requestId: string,
-    readySubscriptions: ReadonlyArray<S>,
+    readySubscriptions: readonly S[],
   ): SubscribeRequests;
 
-  /**
-   * Whether the subscription has everything it needs to be included in a
-   * subscribe request. Concurrent `subscribe()` calls mean some subscriptions
-   * may still be resolving their ontology metadata.
-   */
   protected abstract isSubscriptionReady(subscription: S): boolean;
 
-  protected abstract handleWebsocketMessage(message: M): void;
+  protected abstract handleWebsocketMessage(message: M): void | Promise<void>;
 
-  /** Points the subscription's listener at no-ops so it stops emitting. */
   protected abstract clearListener(subscription: S): void;
+
+  protected onSubscriptionEnded(_subscription: S): void {}
 
   protected sendSubscribeMessage = (): void => {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.debug("sendSubscribeMessage()");
+      this.logger?.debug("#sendSubscribeMessage()");
     }
 
     if (this.ws?.readyState !== WebSocket.OPEN) {
       return;
     }
 
-    const readySubscriptions = [...this.subscriptions.values()].filter(
-      (subscription) => this.isSubscriptionReady(subscription),
+    // If two calls to `.subscribe()` happen at once (or if the connection is reset),
+    // we may have multiple subscriptions that don't have a subscriptionId yet,
+    // so we filter those out.
+    const readySubs = [...this.subscriptions.values()].filter((sub) =>
+      this.isSubscriptionReady(sub),
     );
 
-    // responses come back as an array parallel to the requests, so we need to
-    // remember which subscriptions we sent and in what order
-    const requestId = nextUuid();
-    this.pendingSubscriptions.set(requestId, readySubscriptions);
+    const id = nextUuid();
+    // responses come back as an array of subIds, so we need to know the sources
+    this.pendingSubscriptions.set(id, readySubs);
 
-    const request = this.createSubscribeRequests(requestId, readySubscriptions);
+    // every subscribe message "overwrites" the previous ones that are not
+    // re-included, so we have to reconstitute the entire list of subscriptions
+    const subscribe = this.createSubscribeRequests(id, readySubs);
+
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.debug({ payload: request }, "sending subscribe message");
+      this.logger?.debug({ payload: subscribe }, "sending subscribe message");
     }
-    this.ws.send(JSON.stringify(request));
+    this.ws.send(JSON.stringify(subscribe));
   };
 
-  /**
-   * Registers a new subscription and kicks off the connect/subscribe flow.
-   * Cancels any pending idle disconnect so a subscribe that immediately follows
-   * an unsubscribe reuses the existing connection.
-   */
-  protected addSubscription(subscription: S): void {
-    this.subscriptions.set(subscription.subscriptionId, subscription);
+  protected cancelIdleDisconnect(): void {
     if (this.#maybeDisconnectTimeout != null) {
       clearTimeout(this.#maybeDisconnectTimeout);
       this.#maybeDisconnectTimeout = undefined;
     }
-  }
-
-  /**
-   * Re-keys a subscription from its temporary id to the server-assigned one so
-   * that subsequent messages for it can be routed.
-   */
-  protected adoptSubscriptionId(subscription: S, subscriptionId: string): void {
-    if (subscription.subscriptionId === subscriptionId) return;
-    this.subscriptions.delete(subscription.subscriptionId);
-    subscription.subscriptionId = subscriptionId;
-    this.subscriptions.set(subscriptionId, subscription);
   }
 
   protected endSubscription(
@@ -190,13 +155,17 @@ export abstract class SubscriptionWebsocket<S extends BaseSubscription, M> {
     newStatus: "done" | "error" = "done",
   ): void {
     if (isSubscriptionDone(subscription)) {
+      // if we are already done, we don't need to do anything
       return;
     }
 
     subscription.status = newStatus;
+
+    // make sure listeners do nothing now
     this.clearListener(subscription);
 
     this.subscriptions.delete(subscription.subscriptionId);
+    this.onSubscriptionEnded(subscription);
     this.sendSubscribeMessage();
 
     // If we have no more subscriptions, we can disconnect the websocket
@@ -204,7 +173,7 @@ export abstract class SubscriptionWebsocket<S extends BaseSubscription, M> {
     // For example, when switching between react views, you may unsubscribe
     // in the old view and subscribe in the new view. We don't need to re-establish
     // the websocket connection in that case.
-    if (this.#maybeDisconnectTimeout != null) {
+    if (this.#maybeDisconnectTimeout) {
       // We reset the timeout on every unsubscribe so its always at least 15s from
       // the last time we are empty. E.g.:
       //   - 0s: Subscribe(A)
@@ -224,58 +193,69 @@ export abstract class SubscriptionWebsocket<S extends BaseSubscription, M> {
   }
 
   protected async ensureWebsocket(): Promise<void> {
-    if (this.ws != null) {
-      return;
-    }
+    if (this.ws == null) {
+      // The connection factory (token fetch, url construction) is async, so there could be a
+      // race to create the websocket. Only the first call to reach the construction below will
+      // find a null this.ws; the rest bail out.
+      if (this.ws == null) {
+        // Only apply exponential backoff delay on reconnection attempts, not the first connection
+        if (!this.#isFirstConnection) {
+          const delay = this.#backoff.calculateDelay();
+          if (process.env.NODE_ENV !== "production") {
+            this.logger?.debug(
+              { delay, attempt: this.#backoff.getAttempt() },
+              "Waiting before reconnect",
+            );
+          }
+          await new Promise((resolve) => {
+            setTimeout(resolve, delay);
+          });
+        }
 
-    // Only apply exponential backoff delay on reconnection attempts, not the first connection
-    if (!this.#isFirstConnection) {
-      const delay = this.#backoff.calculateDelay();
-      if (process.env.NODE_ENV !== "production") {
-        this.logger?.debug(
-          { attempt: this.#backoff.getAttempt(), delay },
-          "Waiting before reconnect",
-        );
+        this.#lastWsConnect = Date.now();
+
+        // we again may have lost the race after our minimum backoff time
+        if (this.ws == null) {
+          if (process.env.NODE_ENV !== "production") {
+            this.logger?.debug("Creating websocket");
+          }
+          const connection = await this.createConnection();
+          // awaiting the factory (token/url) is another chance to lose the race
+          if (this.ws == null) {
+            this.ws = connection;
+            this.ws.addEventListener("close", this.#onClose);
+            this.ws.addEventListener("message", this.#onMessage);
+            this.ws.addEventListener("open", this.#onOpen);
+          } else {
+            connection.close();
+          }
+        }
       }
-      await new Promise((resolve) => {
-        setTimeout(resolve, delay);
-      });
+      // Allow await-ing the websocket open event if it isn't open already.
+      // This needs to happen even for callers that didn't just create this.ws
+      if (this.ws!.readyState === WebSocket.CONNECTING) {
+        return awaitWebsocketOpen(this.ws!);
+      }
     }
-
-    // we may have lost the race while backing off
-    if (this.ws != null) {
-      return this.#awaitOpen();
-    }
-
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.debug("Creating websocket");
-    }
-    const connection = await this.createConnection();
-
-    // awaiting the connection factory (token/url) is another chance to lose the race
-    if (this.ws != null) {
-      connection.close();
-    } else {
-      this.ws = connection;
-      this.ws.addEventListener("close", this.#onClose);
-      this.ws.addEventListener("message", this.#onMessage);
-      this.ws.addEventListener("open", this.#onOpen);
-    }
-
-    return this.#awaitOpen();
   }
 
-  protected cycleWebsocket = (): void => {
-    if (this.#heartbeatInterval != null) {
+  protected reconnect(): void {
+    // we don't care about the result of this (we want cycleWebsocket to be fire and forget)
+    // just that it happens
+    void this.ensureWebsocket();
+  }
+
+  protected cycleWebsocket(): void {
+    // Clear heartbeat interval
+    if (this.#heartbeatInterval) {
       clearInterval(this.#heartbeatInterval);
       this.#heartbeatInterval = undefined;
     }
-    this.pendingSubscriptions.clear();
 
-    if (this.ws != null) {
-      this.ws.removeEventListener("close", this.#onClose);
-      this.ws.removeEventListener("message", this.#onMessage);
+    if (this.ws) {
       this.ws.removeEventListener("open", this.#onOpen);
+      this.ws.removeEventListener("message", this.#onMessage);
+      this.ws.removeEventListener("close", this.#onClose);
 
       if (
         this.ws.readyState !== WebSocket.CLOSING &&
@@ -289,40 +269,20 @@ export abstract class SubscriptionWebsocket<S extends BaseSubscription, M> {
     // if we have any listeners that are still depending on us, go ahead and reopen the websocket
     if (this.subscriptions.size > 0) {
       if (process.env.NODE_ENV !== "production") {
-        for (const subscription of this.subscriptions.values()) {
+        for (const s of this.subscriptions.values()) {
           invariant(
-            !isSubscriptionDone(subscription),
+            s.status !== "done" && s.status !== "error",
             "should not have done/error subscriptions still",
           );
         }
       }
 
-      for (const subscription of this.subscriptions.values()) {
-        if (subscription.status === "subscribed") {
-          subscription.status = "reconnecting";
-        }
+      for (const s of this.subscriptions.values()) {
+        if (s.status === "subscribed") s.status = "reconnecting";
       }
 
-      // we don't care about the result of this (we want cycleWebsocket to be fire and forget)
-      // just that it happens
-      void this.ensureWebsocket().catch((error) =>
-        this.handleReconnectError(error),
-      );
+      this.reconnect();
     }
-  };
-
-  /** Called when reconnecting after a socket teardown fails. */
-  protected handleReconnectError(error: unknown): void {
-    this.logger?.error(error, "Error reconnecting websocket");
-  }
-
-  /** Resolves once the websocket is no longer `CONNECTING`. */
-  #awaitOpen(): Promise<void> {
-    const ws = this.ws;
-    if (ws == null || ws.readyState !== WebSocket.CONNECTING) {
-      return Promise.resolve();
-    }
-    return awaitWebsocketOpen(ws);
   }
 
   #onOpen = (): void => {
@@ -334,26 +294,27 @@ export abstract class SubscriptionWebsocket<S extends BaseSubscription, M> {
     this.sendSubscribeMessage();
 
     // Start heartbeat to keep connection alive
-    if (this.#heartbeatInterval != null) {
+    if (this.#heartbeatInterval) {
       clearInterval(this.#heartbeatInterval);
     }
-    this.#heartbeatInterval = setInterval(
-      this.sendSubscribeMessage,
-      WEBSOCKET_HEARTBEAT_INTERVAL_MS,
-    );
+    this.#heartbeatInterval = setInterval(() => {
+      if (this.ws?.readyState === WebSocket.OPEN) {
+        this.sendSubscribeMessage();
+      }
+    }, WEBSOCKET_HEARTBEAT_INTERVAL_MS);
   };
 
-  #onMessage = (message: WebSocket.MessageEvent): void => {
+  #onMessage = async (message: WebSocket.MessageEvent): Promise<void> => {
     const data = JSON.parse(String(message.data)) as M;
     if (process.env.NODE_ENV !== "production") {
       this.logger?.debug({ payload: data }, "received message from ws");
     }
-    this.handleWebsocketMessage(data);
+    await this.handleWebsocketMessage(data);
   };
 
   #onClose = (event: WebSocket.CloseEvent): void => {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.debug({ event }, "Received close event from ws");
+      this.logger?.debug({ event }, "Received close event from ws", event);
     }
     this.cycleWebsocket();
   };
@@ -370,9 +331,9 @@ function awaitWebsocketOpen(ws: SubscriptionConnection): Promise<void> {
       cleanup();
       resolve();
     }
-    function error(event: unknown) {
+    function error(evt: unknown) {
       cleanup();
-      reject(new Error(String(event)));
+      reject(new Error(String(evt)));
     }
     ws.addEventListener("open", open);
     ws.addEventListener("error", error);

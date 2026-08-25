@@ -28,26 +28,16 @@ export namespace LinkSubscription {
     Q extends ObjectTypeDefinition,
     L extends LinkTypeApiNamesFor<Q>,
   > {
-    readonly links: readonly [L, ...ReadonlyArray<NoInfer<L>>];
+    readonly links: ReadonlyArray<L>;
     readonly listener: Listener<NoInfer<Q>, NoInfer<L>>;
-    readonly objects: readonly [
-      Osdk.Instance<Q>,
-      ...ReadonlyArray<Osdk.Instance<NoInfer<Q>>>,
-    ];
-  }
-
-  export interface ChangeEvent<
-    Q extends ObjectTypeDefinition,
-    L extends LinkTypeApiNamesFor<Q>,
-  > {
-    readonly updates: ReadonlyArray<Update<Q, L>>;
+    readonly objects: ReadonlyArray<Osdk.Instance<Q>>;
   }
 
   export interface Listener<
     Q extends ObjectTypeDefinition,
     L extends LinkTypeApiNamesFor<Q>,
   > {
-    readonly onChange?: (event: ChangeEvent<Q, L>) => void;
+    readonly onChange?: (linkUpdate: LinkUpdate<Q, L>) => void;
     readonly onError?: (error: {
       readonly error: unknown;
       readonly subscriptionClosed: boolean;
@@ -56,20 +46,22 @@ export namespace LinkSubscription {
     readonly onSuccessfulSubscription?: () => void;
   }
 
+  export type LinkUpdate<
+    Q extends ObjectTypeDefinition,
+    L extends LinkTypeApiNamesFor<Q>,
+  > =
+    L extends LinkTypeApiNamesFor<Q>
+      ? {
+          readonly linkType: L;
+          readonly source: ObjectIdentifiers<Q>;
+          readonly state: "ADDED" | "REMOVED";
+          readonly target: ObjectIdentifiers<LinkedObjectType<Q, L>>;
+        }
+      : never;
+
   export interface OutOfDateEvent<L extends string> {
     readonly links: ReadonlyArray<L>;
   }
-
-  export type Update<
-    Q extends ObjectTypeDefinition,
-    L extends LinkTypeApiNamesFor<Q>,
-  > = L extends LinkTypeApiNamesFor<Q> ? {
-      readonly linkType: L;
-      readonly source: ObjectIdentifiers<Q>;
-      readonly state: "ADDED" | "REMOVED";
-      readonly target: ObjectIdentifiers<LinkedObjectType<Q, L>>;
-    }
-    : never;
 }
 
 type SubscribeToLinks = <
@@ -80,11 +72,11 @@ type SubscribeToLinks = <
 ) => { readonly unsubscribe: () => void };
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET__linkSubscriptions: Experiment<
-  "2.17.0",
+  "2.59.0",
   "__EXPERIMENTAL__NOT_SUPPORTED_YET__linkSubscriptions",
   { readonly subscribeToLinks: SubscribeToLinks }
 > = {
   name: "__EXPERIMENTAL__NOT_SUPPORTED_YET__linkSubscriptions",
   type: "experiment",
-  version: "2.17.0",
+  version: "2.59.0",
 };

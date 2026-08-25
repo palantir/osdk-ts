@@ -52,15 +52,19 @@ import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
-  constructWebsocketUrl,
-  ObjectSetListenerWebsocket,
-} from "./ObjectSetListenerWebsocket.js";
-import {
-  createMockWebSocketConstructor,
   type MockedWebSocket,
   sendToClient,
   setWebSocketState,
 } from "./MockWebSocket.js";
+import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
+import { constructWebsocketUrl } from "./websocketUtils.js";
+
+// both this and `rootLogger` must be hoisted because they are referenced from
+// the `vi.mock("isomorphic-ws")` factory, which is itself hoisted
+const createMockWebSocketConstructor = await vi.hoisted(
+  async () =>
+    (await import("./MockWebSocket.js")).createMockWebSocketConstructor,
+);
 
 // it needs to be hoisted because its referenced from our mocked WebSocket
 // which must be hoisted to work
