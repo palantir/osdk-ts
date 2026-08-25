@@ -49,6 +49,7 @@ interface Subscription<
   readonly links: ReadonlyArray<L>;
   listener: LinkSubscription.Listener<Q, L>;
   readonly objects: LinkSubscription.Args<Q, L>["objects"];
+  readonly objectType: Q;
   request?: LinkTypeSubscribeRequest;
 }
 
@@ -90,6 +91,7 @@ export class LinkSubscriptionWebsocket extends SubscriptionWebsocket<
       links: args.links,
       listener: args.listener,
       objects: args.objects,
+      objectType: args.objectType,
       status: "preparing",
       subscriptionId: `TMP-${nextUuid()}`,
     };
@@ -194,11 +196,9 @@ export class LinkSubscriptionWebsocket extends SubscriptionWebsocket<
     subscription: Subscription<any, any>,
   ): Promise<void> {
     try {
-      const [firstObject] = subscription.objects;
-      invariant(firstObject != null, "Expected at least one object.");
       const objectDefinition =
         await this.client.ontologyProvider.getObjectDefinition(
-          firstObject.$apiName,
+          subscription.objectType.apiName,
         );
 
       if (isSubscriptionDone(subscription)) return;
@@ -206,9 +206,10 @@ export class LinkSubscriptionWebsocket extends SubscriptionWebsocket<
       subscription.request = {
         linkTypes: [...subscription.links],
         selectedObjects: subscription.objects.map((object) => ({
-          objectType: object.$apiName,
+          objectType: subscription.objectType.apiName,
           primaryKey: {
-            [objectDefinition.primaryKeyApiName]: object.$primaryKey,
+            [objectDefinition.primaryKeyApiName]:
+              typeof object === "object" ? object.$primaryKey : object,
           },
         })),
       };
@@ -293,6 +294,8 @@ export class LinkSubscriptionWebsocket extends SubscriptionWebsocket<
     if (isSubscriptionDone(subscription)) return;
     try {
       subscription.listener.onError?.({ error, subscriptionClosed: true });
+    } catch (onErrorError) {
+      this.logger?.error(onErrorError, "Error in onError callback");
     } finally {
       this.endSubscription(subscription, "error");
     }

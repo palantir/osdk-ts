@@ -18,7 +18,7 @@ import { describe, expectTypeOf, it } from "vitest";
 
 import type { ObjectIdentifiers } from "../OsdkBase.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
-import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
+import { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 import type { ExperimentFns } from "./Experiment.js";
 import type { __EXPERIMENTAL__NOT_SUPPORTED_YET__linkSubscriptions } from "./subscribeToLinks.js";
 
@@ -48,7 +48,8 @@ describe("subscribeToLinks", () => {
           expectTypeOf(linkUpdate.state).toEqualTypeOf<"ADDED" | "REMOVED">();
         },
       },
-      objects: [employeeOne, employeeTwo],
+      objects: [employeeOne, employeeTwo, 3],
+      objectType: EmployeeApiTest,
     });
   });
 });

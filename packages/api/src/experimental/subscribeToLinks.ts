@@ -20,7 +20,7 @@ import type {
 } from "../objectSet/ObjectSetLinks.js";
 import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
 import type { ObjectIdentifiers } from "../OsdkBase.js";
-import type { Osdk } from "../OsdkObjectFrom.js";
+import type { OsdkObjectPrimaryKeyType } from "../OsdkObjectPrimaryKeyType.js";
 import type { Experiment } from "./Experiment.js";
 
 export namespace LinkSubscription {
@@ -30,7 +30,10 @@ export namespace LinkSubscription {
   > {
     readonly links: ReadonlyArray<L>;
     readonly listener: Listener<NoInfer<Q>, NoInfer<L>>;
-    readonly objects: ReadonlyArray<Osdk.Instance<Q>>;
+    readonly objects: ReadonlyArray<
+      ObjectIdentifiers<NoInfer<Q>> | OsdkObjectPrimaryKeyType<NoInfer<Q>>
+    >;
+    readonly objectType: Q;
   }
 
   export interface Listener<

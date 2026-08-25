@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
 import type { LinkSubscription } from "@osdk/api/unstable";
-import type { Employee } from "@osdk/client.test.ontology";
+import { Employee } from "@osdk/client.test.ontology";
 import type { LinkTypeSubscribeRequests } from "@osdk/foundry.ontologies";
 import ImportedWebSocket from "isomorphic-ws";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -50,6 +49,9 @@ describe("LinkSubscriptionWebsocket", () => {
   };
   const peepsListener: LinkSubscription.Listener<Employee, "peeps"> = {
     onChange: vi.fn(),
+    onError: vi.fn(() => {
+      throw new Error("Error callback failed");
+    }),
   };
   const minimalClient = {
     baseUrl: "https://example.com/base/",
@@ -80,17 +82,14 @@ describe("LinkSubscriptionWebsocket", () => {
     const unsubscribeLead = linkSubscriptionWebsocket.subscribe({
       links: ["lead"],
       listener: leadListener,
-      objects: [
-        { $apiName: "Employee", $primaryKey: 1 } as Osdk.Instance<Employee>,
-        { $apiName: "Employee", $primaryKey: 2 } as Osdk.Instance<Employee>,
-      ],
+      objects: [1, { $apiName: "Employee", $primaryKey: 2 }],
+      objectType: Employee,
     });
     const unsubscribePeeps = linkSubscriptionWebsocket.subscribe({
       links: ["peeps"],
       listener: peepsListener,
-      objects: [
-        { $apiName: "Employee", $primaryKey: 3 } as Osdk.Instance<Employee>,
-      ],
+      objects: [3],
+      objectType: Employee,
     });
 
     // Concurrent subscribes each race to build a connection and the loser is
@@ -222,6 +221,18 @@ describe("LinkSubscriptionWebsocket", () => {
       source: { $apiName: "Employee", $primaryKey: 3 },
       state: "ADDED",
       target: { $apiName: "Employee", $primaryKey: 4 },
+    });
+
+    expect(() =>
+      sendToClient(webSocket, {
+        cause: "Subscription failed",
+        id: "peeps-subscription-id",
+        type: "subscriptionClosed",
+      }),
+    ).not.toThrow();
+    expect(peepsListener.onError).toHaveBeenCalledExactlyOnceWith({
+      error: "Subscription failed",
+      subscriptionClosed: true,
     });
 
     unsubscribeLead();
