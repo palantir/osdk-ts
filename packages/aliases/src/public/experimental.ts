@@ -14,47 +14,31 @@
  * limitations under the License.
  */
 
-// EXPERIMENTAL browser-safe alias runtime, for applications served to a browser
-// such as Developer Console apps.
+// Experimental browser-safe aliases for Developer Console apps.
 //
 //   import { Aliases } from "@osdk/aliases/experimental";
-//   await Aliases.initAliases();
-//   const apiBaseUrl = Aliases.custom("apiBaseUrl");
+//   const aliases = await Aliases.load();
+//   const apiBaseUrl = aliases.custom("apiBaseUrl");
 //
-// Behind the "experimental" subpath deliberately: both custom aliases and the
-// shape of this API are provisional, so the import path says so at every call
-// site. Expect it to move to the package root once the design settles, with this
-// subpath deprecated rather than removed.
-//
-// Code running in Node with a filesystem (Functions) wants "@osdk/aliases/node".
+// Functions and other Node runtimes use "@osdk/aliases/node".
 
 import {
-  custom,
   DEFAULT_DECLARATIONS_PATH,
   DEFAULT_DEPLOYMENT_CONFIG_PATH,
-  initAliases,
+  load,
 } from "../browser.js";
 
-// Assembled member by member, not `export * as`, to keep the test-only
-// resetAliasesCache out of the supported surface.
-//
-// Explicitly typed: `--isolatedDeclarations` cannot infer this (TS9016).
+// Explicitly assembled to exclude test helpers. The type annotation is required
+// by `--isolatedDeclarations`.
 export const Aliases: {
-  readonly custom: typeof custom;
-  readonly initAliases: typeof initAliases;
+  readonly load: typeof load;
   readonly DEFAULT_DECLARATIONS_PATH: typeof DEFAULT_DECLARATIONS_PATH;
   readonly DEFAULT_DEPLOYMENT_CONFIG_PATH: typeof DEFAULT_DEPLOYMENT_CONFIG_PATH;
 } = {
-  custom,
-  initAliases,
+  load,
   DEFAULT_DECLARATIONS_PATH,
   DEFAULT_DEPLOYMENT_CONFIG_PATH,
 };
 
-export {
-  custom,
-  DEFAULT_DECLARATIONS_PATH,
-  DEFAULT_DEPLOYMENT_CONFIG_PATH,
-  initAliases,
-};
-export type { Custom, InitAliasesOptions } from "../browser.js";
+export { DEFAULT_DECLARATIONS_PATH, DEFAULT_DEPLOYMENT_CONFIG_PATH, load };
+export type { Custom, LoadAliasesOptions, LoadedAliases } from "../browser.js";
