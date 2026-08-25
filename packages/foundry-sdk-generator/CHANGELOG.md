@@ -1,5 +1,24 @@
 # @osdk/foundry-sdk-generator
 
+## 2.60.0
+
+### Minor Changes
+
+- e879ad7: Bump platform SDKs and add loadOntologyDefinedDerivedProperties flag, which defaults to true
+- bbbeca8: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.75.0`, which reinstates the `streamingExecute` query endpoint as a Server-Sent Events (`text/event-stream`) stream. The experimental `executeStreamingFunction` helper is reimplemented on top of it and no longer throws: it yields each result as it arrives, flattening batched results so array-returning queries emit one element at a time.
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+- Updated dependencies [6cf2be9]
+  - @osdk/generator-converters@2.60.0
+  - @osdk/generator@2.60.0
+  - @osdk/client@2.60.0
+  - @osdk/api@2.60.0
+  - @osdk/client.unstable@2.60.0
+  - @osdk/generator-utils@2.60.0
+
 ## 2.59.0
 
 ### Patch Changes

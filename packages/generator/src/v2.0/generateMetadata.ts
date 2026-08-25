@@ -20,7 +20,7 @@ import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { formatTs } from "../util/test/formatTs.js";
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
-const ExpectedOsdkVersion = "2.59.0";
+const ExpectedOsdkVersion = "2.60.0";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 
 export async function generateOntologyMetadataTypeFile(

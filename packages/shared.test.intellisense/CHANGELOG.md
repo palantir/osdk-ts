@@ -1,5 +1,13 @@
 # @osdk/shared.test.intellisense
 
+## 0.17.0
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+  - @osdk/api@2.60.0
+
 ## 0.16.0
 
 ### Patch Changes

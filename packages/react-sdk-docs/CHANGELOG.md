@@ -1,5 +1,11 @@
 # @osdk/react-sdk-docs
 
+## 0.18.0
+
+### Minor Changes
+
+- bbbeca8: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.75.0`, which reinstates the `streamingExecute` query endpoint as a Server-Sent Events (`text/event-stream`) stream. The experimental `executeStreamingFunction` helper is reimplemented on top of it and no longer throws: it yields each result as it arrives, flattening batched results so array-returning queries emit one element at a time.
+
 ## 0.17.0
 
 ### Minor Changes
