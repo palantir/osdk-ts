@@ -1,5 +1,11 @@
 # @osdk/maker-import
 
+## 0.28.0
+
+### Minor Changes
+
+- 24ba6fa: Emit metadata needed for shape parity
+
 ## 0.27.0
 
 ### Minor Changes

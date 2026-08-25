@@ -1,5 +1,17 @@
 # @osdk/maker-experimental
 
+## 0.51.0
+
+### Minor Changes
+
+- 6fe08e8: direct datasources
+- b68174d: Bug fixes
+
+### Patch Changes
+
+- Updated dependencies [2d75a53]
+  - @osdk/generator-converters.preview@0.37.0
+
 ## 0.50.0
 
 ### Minor Changes
