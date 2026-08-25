@@ -227,6 +227,65 @@ describe("RecommendationUtils", () => {
     });
   });
 
+  it("generates external recs for imported SPT-backed interface properties", async () => {
+    const result = await defineOntologyV2("com.palantir.", () => {
+      const spt = importSharedPropertyType({
+        apiName: "sidc",
+        packageName: "com.external.pkg",
+        typeHint: "string",
+      });
+      const importedInterface: InterfaceType = {
+        apiName: "com.external.pkg.ImportedIface",
+        displayMetadata: {
+          displayName: "Imported Interface",
+        },
+        extendsInterfaces: [],
+        links: [],
+        actionTypeConstraints: [],
+        status: { type: "active", active: {} },
+        propertiesV2: {
+          [spt.apiName]: {
+            sharedPropertyType: spt,
+            required: false,
+          },
+        },
+        propertiesV3: {
+          sidc: {
+            sharedPropertyType: spt,
+            required: false,
+          },
+        },
+        searchable: true,
+        __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
+      };
+      importOntologyEntity(importedInterface);
+
+      defineObject({
+        apiName: "localObj",
+        displayName: "Local Obj",
+        pluralDisplayName: "Local Objs",
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+      });
+    });
+
+    const allMappings = callGetExternalRecommendations(result).flatMap(
+      (recommendation) => recommendation.mappings,
+    );
+    expect(allMappings).toContainEqual({
+      targetInputReadableId:
+        ReadableIdGenerator.getForSptBackedInterfaceProperty(
+          "com.external.pkg.ImportedIface",
+          "com.external.pkg.sidc",
+        ),
+      upstreamOutputReadableId:
+        ReadableIdGenerator.getForSptBackedInterfaceProperty(
+          "com.external.pkg.sidc",
+        ),
+    });
+  });
+
   it("generates external recs for imported action types", async () => {
     const result = await defineOntologyV2("com.palantir.", () => {
       const importedAction: ActionType = {

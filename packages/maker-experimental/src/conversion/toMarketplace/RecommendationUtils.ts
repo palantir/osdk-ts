@@ -105,22 +105,40 @@ function externalRecsForInterfaceProperties(
 
   for (const interfaceBlock of Object.values(importedOntology.interfaceTypes)) {
     const interfaceApiName = interfaceBlock.interfaceType.apiName;
-    const interfaceDefinedProperties = Object.values(
+    const mappings = Object.values(
       interfaceBlock.interfaceType.propertiesV3 ?? {},
-    ).filter((property) => property.type === "interfaceDefinedPropertyType");
+    ).map((property): ReadableIdMappingPair => {
+      if (property.type === "interfaceDefinedPropertyType") {
+        const readableId = ReadableIdGenerator.getForInterfaceProperty(
+          interfaceApiName,
+          property.interfaceDefinedPropertyType.apiName,
+        );
+        return {
+          targetInputReadableId: readableId,
+          upstreamOutputReadableId: readableId,
+        };
+      }
 
-    results.push(
-      ...getExternalRecommendationsForType(
-        interfaceDefinedProperties,
-        (property) => property.interfaceDefinedPropertyType.apiName,
-        (propertyApiName) =>
-          ReadableIdGenerator.getForInterfaceProperty(
+      const sptApiName =
+        property.sharedPropertyBasedPropertyType.sharedPropertyType.apiName;
+      return {
+        targetInputReadableId:
+          ReadableIdGenerator.getForSptBackedInterfaceProperty(
             interfaceApiName,
-            propertyApiName,
+            sptApiName,
           ),
-        getPackage(interfaceApiName),
-      ),
-    );
+        upstreamOutputReadableId:
+          ReadableIdGenerator.getForSptBackedInterfaceProperty(sptApiName),
+      };
+    });
+
+    if (mappings.length > 0) {
+      results.push({
+        upstreamPackageName: getPackage(interfaceApiName),
+        upstreamVersionCompatibility: DEFAULT_VERSION_RANGE,
+        mappings,
+      });
+    }
   }
 
   return results;
