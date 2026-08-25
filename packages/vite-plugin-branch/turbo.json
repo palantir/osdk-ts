@@ -2,7 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "transpileBrowser": {
-      "dependsOn": ["@osdk/shared.branch#transpileEsm"]
+      "dependsOn": ["@osdk/shared.branch#transpileBrowser"]
     },
     "transpileCjs": {
       "dependsOn": [
