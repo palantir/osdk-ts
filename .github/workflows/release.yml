@@ -9,6 +9,7 @@ on:
       - main
       - release/*
       - next
+      - zka/vite-plugin-branch
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
