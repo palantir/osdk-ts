@@ -343,7 +343,7 @@ function convertUserObjectPropertyType(
 ): ObjectPropertyType {
   invariant(
     isValidVector(property.type, property.array),
-    `Invalid vector property '${apiName}': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function`
+    `Invalid vector property '${apiName}': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function`,
   );
   // fill in missing fields to be used by actions
   property.displayName = property.displayName ?? uppercaseFirstLetter(apiName);

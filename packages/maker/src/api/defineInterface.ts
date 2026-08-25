@@ -158,7 +158,7 @@ export function defineInterface(
         // IDP
         invariant(
           isValidVector(propertyBase.type, propertyBase.array),
-          `Invalid vector property '${apiName}': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function`
+          `Invalid vector property '${apiName}': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function`,
         );
         return [apiName, propertyBase];
       }

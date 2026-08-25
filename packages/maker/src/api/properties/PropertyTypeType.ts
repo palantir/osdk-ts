@@ -149,13 +149,13 @@ export function isStruct(
   return typeof type === "object" && type.type === "struct";
 }
 export function isVector(
-  type: PropertyTypeType
+  type: PropertyTypeType,
 ): type is PropertyTypeTypeVector {
   return typeof type === "object" && type.type === "vector";
 }
 export function isValidVector(
   type: PropertyTypeType,
-  array: boolean | undefined
+  array: boolean | undefined,
 ): boolean {
   return (
     !isVector(type) ||

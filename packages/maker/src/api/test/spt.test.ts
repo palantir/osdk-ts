@@ -636,7 +636,7 @@ describe("SPTs", () => {
         },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Invalid vector property 'com.palantir.embedding': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function]`
+      `[Error: Invariant failed: Invalid vector property 'com.palantir.embedding': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function]`,
     );
   });
 

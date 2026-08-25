@@ -82,7 +82,7 @@ export function defineSharedPropertyType(
 
   invariant(
     isValidVector(sptDef.type, sptDef.array),
-    `Invalid vector property '${apiName}': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function`
+    `Invalid vector property '${apiName}': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function`,
   );
 
   const fullSpt: SharedPropertyType = {

@@ -6751,7 +6751,7 @@ describe("Action Types", () => {
           },
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Vectors are not supported as action parameters yet]`
+        `[Error: Vectors are not supported as action parameters yet]`,
       );
     });
 

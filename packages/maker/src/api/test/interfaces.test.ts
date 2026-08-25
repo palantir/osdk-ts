@@ -721,7 +721,7 @@ describe("Interfaces", () => {
         }
       `);
       expect(
-        prop.interfaceDefinedPropertyType.constraints.indexedForSearch
+        prop.interfaceDefinedPropertyType.constraints.indexedForSearch,
       ).toBe(true);
     });
 
@@ -742,7 +742,7 @@ describe("Interfaces", () => {
           },
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Invalid vector property 'embedding': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function]`
+        `[Error: Invariant failed: Invalid vector property 'embedding': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function]`,
       );
     });
 
