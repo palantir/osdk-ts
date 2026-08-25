@@ -1,12 +1,3 @@
-/* Storybook-only contrast overrides for the built-in dark theme. */
-[data-bp-color-scheme="dark"] {
-  --osdk-combobox-placeholder-color: var(--osdk-palette-gray-4);
-  --osdk-combobox-item-color-selected: var(--bp-palette-blue-4);
-  --osdk-select-placeholder-color: var(--osdk-palette-gray-4);
-  --osdk-select-item-color-selected: var(--bp-palette-blue-4);
-  --osdk-form-error-color: var(--bp-palette-red-4);
-}
-
 /* Modern theme - based on e2e.sandbox.peopleapp theme-overrides.css */
 [data-theme="modern"] {
   /* Blueprint palette tokens from peopleapp */

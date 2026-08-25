@@ -381,6 +381,23 @@ describe("DropdownField", () => {
       });
     });
 
+    it("uses a fallback popup label when the placeholder is empty", async () => {
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          isSearchable={true}
+          placeholder=""
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("dialog", { name: "Options" })).toBeDefined();
+      });
+    });
+
     it("hides placeholder when a value is selected", () => {
       render(
         <DropdownField

@@ -43,8 +43,7 @@
   --osdk-form-error-reserved-block-size: calc(
     var(--osdk-form-error-font-size) * var(--osdk-form-error-line-height)
   );
-  /* Small validation text needs the darker danger shade for 4.5:1 contrast. */
-  --osdk-form-error-color: var(--osdk-intent-danger-hover);
+  --osdk-form-error-color: var(--osdk-typography-color-error);
 
   /* Edited tag */
   --osdk-form-edited-tag-bg: var(--osdk-custom-color-gray-2);

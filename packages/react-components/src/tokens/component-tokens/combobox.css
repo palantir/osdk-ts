@@ -8,7 +8,7 @@
   --osdk-combobox-font-family: var(--osdk-typography-family-default);
   --osdk-combobox-font-size: var(--osdk-typography-size-body-medium);
   --osdk-combobox-line-height: var(--osdk-typography-line-height-default);
-  --osdk-combobox-placeholder-color: var(--osdk-typography-color-muted);
+  --osdk-combobox-placeholder-color: var(--osdk-typography-color-placeholder);
   --osdk-combobox-icon-color: var(--osdk-iconography-color-muted);
   --osdk-combobox-transition-duration: var(--osdk-emphasis-transition-duration);
   --osdk-combobox-transition-ease: var(--osdk-emphasis-ease-default);
@@ -44,7 +44,9 @@
 
   /* Items */
   --osdk-combobox-item-color: var(--osdk-typography-color-default-rest);
-  --osdk-combobox-item-color-selected: var(--osdk-intent-primary-rest);
+  --osdk-combobox-item-color-selected: var(
+    --osdk-typography-color-primary-rest
+  );
   --osdk-combobox-item-bg-highlighted: var(
     --osdk-surface-background-color-default-hover
   );

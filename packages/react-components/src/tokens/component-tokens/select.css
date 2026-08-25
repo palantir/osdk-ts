@@ -1,11 +1,49 @@
 :root {
-  /* Select trigger: border is none; visual border comes from box-shadow
-     (--osdk-button-shadow) to match Blueprint's convention */
+  /* Shared */
+  --osdk-select-spacing: var(--osdk-surface-spacing);
+  --osdk-select-min-height: 30px;
+  --osdk-select-border-radius: var(--osdk-surface-border-radius);
+  /* The visual border comes from --osdk-button-shadow to match Blueprint. */
   --osdk-select-border-width: none;
+  --osdk-select-border-color: var(--osdk-surface-border-color-default);
+  --osdk-select-font-family: var(--osdk-typography-family-default);
+  --osdk-select-font-size: var(--osdk-typography-size-body-medium);
+  --osdk-select-line-height: var(--osdk-typography-line-height-default);
+  --osdk-select-transition-duration: var(--osdk-emphasis-transition-duration);
+  --osdk-select-transition-ease: var(--osdk-emphasis-ease-default);
+  --osdk-select-z-index: var(--osdk-surface-z-index-3);
 
-  /* Select popup: cap long dropdowns so they scroll inside the popup instead
+  /* Trigger */
+  --osdk-select-trigger-padding: calc(var(--osdk-surface-spacing) * 1.5)
+    calc(var(--osdk-surface-spacing) * 2.5);
+  --osdk-select-trigger-bg: var(--osdk-button-secondary-bg);
+  --osdk-select-trigger-bg-hover: var(--osdk-button-secondary-bg-hover);
+  --osdk-select-trigger-bg-active: var(--osdk-button-secondary-bg-active);
+  --osdk-select-trigger-color: var(--osdk-typography-color-default-rest);
+  --osdk-select-border-color-active: var(--osdk-intent-primary-rest);
+  --osdk-select-placeholder-color: var(--osdk-typography-color-placeholder);
+  --osdk-select-icon-color: var(--osdk-iconography-color-muted);
+
+  /* Clear button */
+  --osdk-select-clear-color: var(--osdk-iconography-color-muted);
+  --osdk-select-clear-color-hover: var(--osdk-typography-color-default-rest);
+  --osdk-select-clear-bg-hover: var(
+    --osdk-surface-background-color-default-hover
+  );
+
+  /* Popup: cap long dropdowns so they scroll inside the popup instead
      of growing to fill the available viewport/dialog height. The component
      still respects Base UI's `--available-height`, so short viewports can use
      a smaller cap when there is less room around the trigger. */
   --osdk-select-popup-max-height: 320px;
+  --osdk-select-popup-bg: var(--osdk-surface-background-color-default-rest);
+  --osdk-select-popup-shadow: var(--osdk-surface-shadow-2);
+
+  /* Items */
+  --osdk-select-item-color: var(--osdk-typography-color-default-rest);
+  --osdk-select-item-bg-highlighted: var(
+    --osdk-surface-background-color-default-hover
+  );
+  --osdk-select-item-bg-selected: var(--osdk-surface-layer-primary);
+  --osdk-select-item-color-selected: var(--osdk-typography-color-primary-rest);
 }
