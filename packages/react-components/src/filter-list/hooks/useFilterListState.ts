@@ -164,7 +164,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
         propertyTypesRef.current,
         objectSetRef.current,
       );
-      onChange(event, {
+      onChange({
+        ...event,
         filterClause: snapshot.whereClause,
         filteredObjectSet: snapshot.effectiveObjectSet,
       });

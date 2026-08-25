@@ -151,8 +151,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * @param snapshot The filter state the change produced
    */
   onFilterChanged?: (
-    event: FilterChangeEvent,
-    snapshot: FilterChangeSnapshot<Q>,
+    change: FilterChangeEvent & FilterChangeSnapshot<Q>,
   ) => void;
 
   /**

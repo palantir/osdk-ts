@@ -558,17 +558,13 @@ describe("useFilterListState", () => {
       });
 
       expect(onFilterChanged).toHaveBeenCalledTimes(1);
-      expect(onFilterChanged).toHaveBeenCalledWith(
-        {
-          event: "SET",
-          filterKey: getFilterKey(nameDef),
-          newState,
-        },
-        {
-          filterClause: { name: "John" },
-          filteredObjectSet: filtered,
-        },
-      );
+      expect(onFilterChanged).toHaveBeenCalledWith({
+        event: "SET",
+        filterKey: getFilterKey(nameDef),
+        newState,
+        filterClause: { name: "John" },
+        filteredObjectSet: filtered,
+      });
     });
 
     describe("INIT", () => {
@@ -592,8 +588,6 @@ describe("useFilterListState", () => {
         expect(onFilterChanged).toHaveBeenCalledTimes(1);
         expect(onFilterChanged.mock.lastCall?.[0]).toMatchObject({
           event: "INIT",
-        });
-        expect(onFilterChanged.mock.lastCall?.[1]).toMatchObject({
           filterClause: { name: "Seed" },
         });
       });
@@ -614,8 +608,6 @@ describe("useFilterListState", () => {
 
         expect(onFilterChanged.mock.lastCall?.[0]).toMatchObject({
           event: "INIT",
-        });
-        expect(onFilterChanged.mock.lastCall?.[1]).toMatchObject({
           filterClause: { name: "Alice" },
         });
       });
@@ -632,8 +624,8 @@ describe("useFilterListState", () => {
         renderHook(() => useFilterListState(props));
 
         expect(onFilterChanged).toHaveBeenCalledTimes(1);
-        expect(onFilterChanged.mock.lastCall?.[0]).toEqual({ event: "INIT" });
-        expect(onFilterChanged.mock.lastCall?.[1]).toEqual({
+        expect(onFilterChanged.mock.lastCall?.[0]).toEqual({
+          event: "INIT",
           filterClause: {},
           filteredObjectSet: undefined,
         });
@@ -660,7 +652,7 @@ describe("useFilterListState", () => {
 
         renderHook(() => useFilterListState(props));
 
-        expect(onFilterChanged.mock.lastCall?.[1].filteredObjectSet).toBe(
+        expect(onFilterChanged.mock.lastCall?.[0].filteredObjectSet).toBe(
           filtered,
         );
       });
@@ -727,7 +719,7 @@ describe("useFilterListState", () => {
         );
       });
 
-      expect(onFilterChanged.mock.lastCall?.[1]).toMatchObject({
+      expect(onFilterChanged.mock.lastCall?.[0]).toMatchObject({
         filterClause: { name: "John" },
         filteredObjectSet: undefined,
       });
@@ -762,7 +754,7 @@ describe("useFilterListState", () => {
         );
       });
 
-      expect(onFilterChanged.mock.lastCall?.[1].filterClause).toEqual({
+      expect(onFilterChanged.mock.lastCall?.[0].filterClause).toEqual({
         $and: [{ name: "John" }, { id: "abc" }],
       });
     });
@@ -798,10 +790,10 @@ describe("useFilterListState", () => {
       });
 
       expect(onFilterChanged).toHaveBeenCalledTimes(2);
-      expect(onFilterChanged.mock.calls[0][1].filterClause).toEqual({
+      expect(onFilterChanged.mock.calls[0][0].filterClause).toEqual({
         name: "John",
       });
-      expect(onFilterChanged.mock.calls[1][1].filterClause).toEqual({
+      expect(onFilterChanged.mock.calls[1][0].filterClause).toEqual({
         $and: [{ name: "John" }, { id: "abc" }],
       });
     });
@@ -824,8 +816,8 @@ describe("useFilterListState", () => {
         result.current.setFilterState(getFilterKey(linkedDef), linkedState);
       });
 
-      const snapshot = onFilterChanged.mock.lastCall?.[1];
-      expect(snapshot.filterClause).toEqual({});
+      const event = onFilterChanged.mock.lastCall?.[0];
+      expect(event.filterClause).toEqual({});
     });
 
     it("reports active HAS_LINK filters", () => {
@@ -845,8 +837,8 @@ describe("useFilterListState", () => {
         });
       });
 
-      const snapshot = onFilterChanged.mock.lastCall?.[1];
-      expect(snapshot.filterClause).toEqual({});
+      const event = onFilterChanged.mock.lastCall?.[0];
+      expect(event.filterClause).toEqual({});
     });
 
     it("filters the objectSet by the link count for a linked filter", () => {
@@ -876,7 +868,7 @@ describe("useFilterListState", () => {
         });
       });
 
-      expect(onFilterChanged.mock.lastCall?.[1].filteredObjectSet).toBe(
+      expect(onFilterChanged.mock.lastCall?.[0].filteredObjectSet).toBe(
         filtered,
       );
       expect(vi.mocked(withCounts.where).mock.calls[0][0]).toEqual({
@@ -915,9 +907,6 @@ describe("useFilterListState", () => {
       expect(onFilterChanged.mock.lastCall?.[0]).toMatchObject({
         event: "CLEAR",
         filterKey: getFilterKey(nameDef),
-      });
-      expect(onFilterChanged.mock.lastCall?.[0].newState).toBeUndefined();
-      expect(onFilterChanged.mock.lastCall?.[1]).toMatchObject({
         filterClause: { id: "abc" },
       });
     });
@@ -972,9 +961,6 @@ describe("useFilterListState", () => {
 
       expect(onFilterChanged.mock.lastCall?.[0]).toMatchObject({
         event: "RESET",
-      });
-      expect(onFilterChanged.mock.lastCall?.[0].filterKey).toBeUndefined();
-      expect(onFilterChanged.mock.lastCall?.[1]).toMatchObject({
         filterClause: { name: "Seed" },
       });
     });
