@@ -673,8 +673,10 @@ async function applyFetchArgs<
     body.loadPropertySecurities = true;
   }
 
-  body.loadOntologyDefinedDerivedProperties =
-    args?.$UNSTABLE_loadOntologyDefinedDerivedProperties ?? true;
+  if (args?.$UNSTABLE_loadOntologyDefinedDerivedProperties != null) {
+    body.loadOntologyDefinedDerivedProperties =
+      args.$UNSTABLE_loadOntologyDefinedDerivedProperties;
+  }
 
   const orderBy = args?.$orderBy;
   if (orderBy) {
