@@ -1255,29 +1255,29 @@ describe("Experimental Test Suite", () => {
           interfaceApiName,
           sptApiName,
         );
+      const sptReadableId = ReadableIdGenerator.getForSpt(sptApiName);
       const interfaceShape = result.shapes.inputShapes.get(interfaceReadableId);
       const interfacePropertyShape = result.shapes.inputShapes.get(
         interfacePropertyReadableId,
       );
+      const sptShape = result.shapes.inputShapes.get(sptReadableId);
       expect(interfaceShape).toMatchObject({
         type: "interfaceType",
         interfaceType: {
           properties: [expect.any(String)],
-          propertiesV2: [expect.any(String)],
+          propertiesV2: [],
         },
       });
-      expect(interfacePropertyShape).toMatchObject({
-        type: "interfacePropertyType",
-        interfacePropertyType: {
+      expect(interfacePropertyShape).toBeUndefined();
+      expect(sptShape).toMatchObject({
+        type: "sharedPropertyType",
+        sharedPropertyType: {
           about: { fallbackTitle: sptApiName },
-          interfaceType: expect.any(String),
-          sharedPropertyType: expect.any(String),
-          requireImplementation: true,
         },
       });
-      expect(
-        result.importedInputPresets.get(interfacePropertyReadableId),
-      ).toEqual(apiNamePreset(sptApiName));
+      expect(result.importedInputPresets.get(sptReadableId)).toEqual(
+        apiNamePreset(sptApiName),
+      );
     });
   });
 
