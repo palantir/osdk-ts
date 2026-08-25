@@ -20,7 +20,7 @@ import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type {
-  FilterChangeCause,
+  FilterChangeEvent,
   FilterDefinitionUnion,
   FilterListProps,
 } from "../FilterListApi.js";
@@ -153,7 +153,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   propertyTypesRef.current = propertyTypes;
 
   const emitFilterChanged = useCallback(
-    (states: Map<string, FilterState>, cause: FilterChangeCause) => {
+    (states: Map<string, FilterState>, event: FilterChangeEvent) => {
       const onChange = onFilterChangedRef.current;
       if (onChange == null) {
         return;
@@ -164,8 +164,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
         propertyTypesRef.current,
         objectSetRef.current,
       );
-      onChange({
-        ...cause,
+      onChange(event, {
         filterClause: snapshot.whereClause,
         filteredObjectSet: snapshot.effectiveObjectSet,
       });
@@ -202,7 +201,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       transition: (
         previous: Map<string, FilterState>,
       ) => Map<string, FilterState> | undefined,
-      event: FilterChangeCause,
+      event: FilterChangeEvent,
     ) => {
       const next = transition(filterStatesRef.current);
       if (next === undefined) {
