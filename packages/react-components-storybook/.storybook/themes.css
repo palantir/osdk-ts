@@ -1,3 +1,5 @@
+/* light and dark themes are handled in the components by default `*/
+
 /* Modern theme - based on e2e.sandbox.peopleapp theme-overrides.css */
 [data-theme="modern"] {
   /* Blueprint palette tokens from peopleapp */
