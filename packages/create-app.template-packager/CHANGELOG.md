@@ -1,5 +1,7 @@
 # @osdk/create-app.template-packager
 
+## 2.60.0
+
 ## 2.59.0
 
 ### Minor Changes

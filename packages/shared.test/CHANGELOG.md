@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 2.40.0
+
+### Minor Changes
+
+- e879ad7: Bump platform SDKs and add loadOntologyDefinedDerivedProperties flag, which defaults to true
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+  - @osdk/generator-converters@2.60.0
+  - @osdk/api@2.60.0
+
 ## 2.39.0
 
 ### Patch Changes

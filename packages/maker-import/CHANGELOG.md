@@ -1,5 +1,16 @@
 # @osdk/maker-import
 
+## 0.29.0
+
+### Minor Changes
+
+- bbbeca8: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.75.0`, which reinstates the `streamingExecute` query endpoint as a Server-Sent Events (`text/event-stream`) stream. The experimental `executeStreamingFunction` helper is reimplemented on top of it and no longer throws: it yields each result as it arrives, flattening batched results so array-returning queries emit one element at a time.
+
+### Patch Changes
+
+- @osdk/maker@0.59.0
+- @osdk/client.unstable@2.60.0
+
 ## 0.28.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @osdk/react-components-storybook
 
+## 0.48.0
+
+### Minor Changes
+
+- e879ad7: Bump platform SDKs and add loadOntologyDefinedDerivedProperties flag, which defaults to true
+
+### Patch Changes
+
+- Updated dependencies [bbbeca8]
+  - @osdk/faux@0.44.0
+
 ## 0.47.0
 
 ### Patch Changes

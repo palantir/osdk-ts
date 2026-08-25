@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.59.0
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+  - @osdk/generator-converters.ontologyir@2.60.0
+  - @osdk/api@2.60.0
+  - @osdk/typescript-sdk-docs@0.23.0
+
 ## 0.58.0
 
 ### Patch Changes
