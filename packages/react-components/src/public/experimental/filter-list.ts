@@ -60,16 +60,5 @@ export { getFilterKey } from "../../filter-list/utils/getFilterKey.js";
 export { getFilterLabel } from "../../filter-list/utils/getFilterLabel.js";
 export { summarizeFilterValue } from "../../filter-list/utils/summarizeFilterValue.js";
 
-export type {
-  ActiveClauseFilter,
-  ActiveCustomFilter,
-  ActiveFilter,
-  ActiveHasLinkFilter,
-  ActiveKeywordSearchFilter,
-  ActiveLinkedPropertyFilter,
-  ActiveLinkFilter,
-  ActivePropertyFilter,
-  ActiveStaticValuesFilter,
-} from "../../filter-list/types/ActiveFilterTypes.js";
 export type { LinkedFilter } from "../../filter-list/types/LinkedFilterTypes.js";
 export { narrowObjectSet } from "../../filter-list/utils/narrowObjectSet.js";

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-export * from "./ActiveFilterTypes.js";
 export * from "./CustomRendererTypes.js";
 export * from "./KeywordSearchTypes.js";
 export * from "./LinkedFilterTypes.js";

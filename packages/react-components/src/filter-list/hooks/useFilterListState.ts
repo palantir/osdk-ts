@@ -263,9 +263,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
 
   const hasEmittedInit = useRef(false);
   useEffect(() => {
-    // `propertyTypes` is empty until metadata resolves, and a keyword search
-    // over `properties: "all"` builds no clause without it, so the first
-    // payload has to wait for the load to settle either way.
+    // We need to wait until metadata is loaded because we need
+    // metadata to construct the filter clause
     if (hasEmittedInit.current || metadataLoading) {
       return;
     }
