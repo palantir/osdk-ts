@@ -59,11 +59,7 @@ function apiNamePreset(apiName: string) {
 
 describe("Experimental Test Suite", () => {
   beforeEach(async () => {
-    await defineOntology(
-      "com.palantir.",
-      () => {},
-      "/tmp/osdk-maker-experimental/",
-    );
+    await defineOntology("com.palantir.", () => {}, "/tmp/");
   });
 
   describe("Dependencies", () => {

@@ -35,7 +35,7 @@ jobs:
         run: pnpm install
 
       - name: Build dependencies for Storybook
-        run: pnpm exec turbo transpileBrowser --filter='@osdk/react-components-storybook^...'
+        run: pnpm --filter "@osdk/*" transpileBrowser
 
       - name: Build Storybook
         env:
