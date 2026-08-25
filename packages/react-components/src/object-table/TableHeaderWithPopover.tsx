@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Menu } from "@base-ui/react/menu";
+import { Button, Menu, MenuItem, Popover } from "@blueprintjs/core";
 import {
   ChevronDown,
   Pin,
@@ -28,7 +28,10 @@ import type { Header, RowData, Table } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { useCallback, useMemo, useState } from "react";
 
-import { usePortalContainer } from "../shared/PortalContainerContext.js";
+import {
+  resolvePortalContainerElement,
+  usePortalContainer,
+} from "../shared/PortalContainerContext.js";
 import { TableHeaderContent } from "./TableHeaderContent.js";
 import { getSortIcons } from "./utils/getSortIcons.js";
 import type { ColumnOption } from "./utils/types.js";
@@ -49,19 +52,18 @@ function HeaderMenuItem({
   active = false,
 }: HeaderMenuItemProps): React.ReactElement {
   return (
-    <Menu.Item
-      closeOnClick={true}
+    <MenuItem
+      active={active}
       className={classNames(
         styles.osdkCenterContainer,
         styles.osdkContentGap,
         styles.osdkHeaderMenuItem,
         active && styles.osdkHeaderActiveMenuItem,
       )}
+      icon={<Icon className={styles.osdkHeaderIcon} />}
       onClick={onClick}
-    >
-      <Icon className={styles.osdkHeaderIcon} />
-      <span>{label}</span>
-    </Menu.Item>
+      text={label}
+    />
   );
 }
 
@@ -111,7 +113,7 @@ export function TableHeaderWithPopover<TData extends RowData>({
   onOpenMultiSort,
   onColumnHeaderClick,
 }: TableHeaderWithPopoverProps<TData>): React.ReactElement {
-  const portalContainer = usePortalContainer();
+  const portalContainer = resolvePortalContainerElement(usePortalContainer());
   const {
     showSortingItems = false,
     showPinningItems = false,
@@ -203,63 +205,54 @@ export function TableHeaderWithPopover<TData extends RowData>({
     showConfigItem;
 
   return (
-    <>
-      {/* Header menus should not lock drawer/table scrolling; they dismiss like lightweight contextual menus. */}
-      <Menu.Root open={isOpen} onOpenChange={setIsOpen} modal={false}>
-        <div
-          className={classNames(
-            styles.osdkCenterContainer,
-            styles.osdkContentGap,
-            styles.osdkHeaderContainer,
-          )}
-          onContextMenu={handleInteraction}
-        >
-          <div
-            className={classNames(
-              styles.osdkCenterContainer,
-              styles.osdkContentGap,
-              styles.osdkHeaderContentLeft,
-              onColumnHeaderClick && styles.osdkHeaderContentLeftClickable,
+    <div
+      className={classNames(
+        styles.osdkCenterContainer,
+        styles.osdkContentGap,
+        styles.osdkHeaderContainer,
+      )}
+      onContextMenu={handleInteraction}
+    >
+      <div
+        className={classNames(
+          styles.osdkCenterContainer,
+          styles.osdkContentGap,
+          styles.osdkHeaderContentLeft,
+          onColumnHeaderClick && styles.osdkHeaderContentLeftClickable,
+        )}
+        onClick={onColumnHeaderClick ? handleHeaderClick : undefined}
+      >
+        {isColumnPinned && <Pin className={styles.osdkHeaderIcon} />}
+        <TableHeaderContent header={header} />
+      </div>
+      <div
+        className={classNames(
+          styles.osdkCenterContainer,
+          styles.osdkContentGap,
+          styles.osdkHeaderContentRight,
+        )}
+      >
+        {isSorted && (
+          <div className={styles.osdkCenterContainer}>
+            {isSorted === "asc" ? (
+              <SortAscendingIcon className={styles.osdkHeaderIcon} />
+            ) : (
+              <SortDescendingIcon className={styles.osdkHeaderIcon} />
             )}
-            onClick={onColumnHeaderClick ? handleHeaderClick : undefined}
-          >
-            {isColumnPinned && <Pin className={styles.osdkHeaderIcon} />}
-            <TableHeaderContent header={header} />
-          </div>
-          <div
-            className={classNames(
-              styles.osdkCenterContainer,
-              styles.osdkContentGap,
-              styles.osdkHeaderContentRight,
-            )}
-          >
-            {isSorted && (
-              <div className={styles.osdkCenterContainer}>
-                {isSorted === "asc" ? (
-                  <SortAscendingIcon className={styles.osdkHeaderIcon} />
-                ) : (
-                  <SortDescendingIcon className={styles.osdkHeaderIcon} />
-                )}
-                {currentSorting.length > 1 && sortIndex >= 0 && (
-                  <span className={styles.sortIndex}>{sortIndex + 1}</span>
-                )}
-              </div>
-            )}
-            {hasAnyMenuItems && (
-              <Menu.Trigger
-                aria-label={`Open header menu for column with id=${header.column.id}`}
-                className={classNames(
-                  styles.osdkCenterContainer,
-                  styles.osdkHeaderPopoverTrigger,
-                )}
-              >
-                <ChevronDown className={styles.osdkHeaderIcon} />
-              </Menu.Trigger>
+            {currentSorting.length > 1 && sortIndex >= 0 && (
+              <span className={styles.sortIndex}>{sortIndex + 1}</span>
             )}
           </div>
-          <Menu.Portal container={portalContainer}>
-            <Menu.Positioner sideOffset={4}>
-              <Menu.Popup className={styles.osdkHeaderPopup}>
+        )}
+        {hasAnyMenuItems && (
+          <Popover
+            isOpen={isOpen}
+            onInteraction={setIsOpen}
+            placement="bottom-end"
+            portalContainer={portalContainer}
+            popoverClassName={styles.osdkHeaderPopup}
+            content={
+              <Menu>
                 {showPinningItems && !isColumnPinned && (
                   <HeaderMenuItem
                     onClick={handlePinLeft}
@@ -320,11 +313,21 @@ export function TableHeaderWithPopover<TData extends RowData>({
                     label="Configure Columns"
                   />
                 )}
-              </Menu.Popup>
-            </Menu.Positioner>
-          </Menu.Portal>
-        </div>
-      </Menu.Root>
-    </>
+              </Menu>
+            }
+          >
+            <Button
+              aria-label={`Open header menu for column with id=${header.column.id}`}
+              className={classNames(
+                styles.osdkCenterContainer,
+                styles.osdkHeaderPopoverTrigger,
+              )}
+              icon={<ChevronDown className={styles.osdkHeaderIcon} />}
+              variant="minimal"
+            />
+          </Popover>
+        )}
+      </div>
+    </div>
   );
 }

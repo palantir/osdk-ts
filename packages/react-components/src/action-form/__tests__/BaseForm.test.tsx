@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Classes } from "@blueprintjs/core";
 import {
   cleanup,
   fireEvent,
@@ -79,20 +80,20 @@ describe("BaseForm", () => {
         <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />,
       );
 
-      expect(screen.queryByText("Edited")).toBeNull();
+      expect(screen.queryByText("(edited)")).toBeNull();
 
       const nameInput = screen.getByRole("textbox", { name: "name" });
       fireEvent.change(nameInput, { target: { value: "Alice" } });
 
       await waitFor(() => {
-        expect(screen.getByText("Edited")).toBeDefined();
+        expect(screen.getByText("(edited)")).toBeDefined();
       });
-      expect(screen.getByRole("textbox", { name: "name" })).toBeDefined();
+      expect(screen.getByRole("textbox", { name: /^name/u })).toBeDefined();
 
       fireEvent.change(nameInput, { target: { value: "" } });
 
       await waitFor(() => {
-        expect(screen.getByText("Edited")).toBeDefined();
+        expect(screen.getByText("(edited)")).toBeDefined();
       });
     });
 
@@ -225,6 +226,32 @@ describe("BaseForm", () => {
         );
       });
     });
+
+    it("does not pass defaultValue to a controlled Blueprint input", () => {
+      const consoleError = vi.spyOn(console, "error");
+
+      render(
+        <BaseForm
+          formContent={[
+            field(
+              makeDef("name", {
+                fieldComponentProps: { defaultValue: "Default Name" },
+              }),
+            ),
+          ]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      const loggedControlledInputWarning = consoleError.mock.calls.some(
+        (args) =>
+          args.some((arg) =>
+            String(arg).includes("both value and defaultValue props"),
+          ),
+      );
+      consoleError.mockRestore();
+      expect(loggedControlledInputWarning).toBe(false);
+    });
   });
 
   // TODO: expand this test to cover all field types
@@ -249,7 +276,7 @@ describe("BaseForm", () => {
       expect(screen.getByRole("combobox")).toBeDefined();
     });
 
-    it("renders dropdown portals inside the form element", async () => {
+    it("uses Blueprint's default portal when the form ref is not yet available", async () => {
       render(
         <BaseForm
           formContent={[
@@ -270,22 +297,20 @@ describe("BaseForm", () => {
 
       const form = document.querySelector("form");
       await waitFor(() => {
-        expect(
-          within(form!).getByRole("option", { name: "Red" }),
-        ).toBeDefined();
+        expect(screen.getByRole("option", { name: "Red" })).toBeDefined();
       });
+      expect(within(form!).queryByRole("option", { name: "Red" })).toBeNull();
     });
   });
 
   describe("helper text", () => {
-    it("renders helper text when placement is bottom", () => {
+    it("renders helper text through Blueprint FormGroup", () => {
       render(
         <BaseForm
           formContent={[
             field(
               makeDef("name", {
                 helperText: "Enter your full name",
-                helperTextPlacement: "bottom",
               }),
             ),
           ]}
@@ -294,43 +319,6 @@ describe("BaseForm", () => {
       );
 
       expect(screen.getByText("Enter your full name")).toBeDefined();
-    });
-
-    it("renders tooltip trigger when placement is tooltip", () => {
-      render(
-        <BaseForm
-          formContent={[
-            field(
-              makeDef("name", {
-                helperText: "Enter your full name",
-                helperTextPlacement: "tooltip",
-              }),
-            ),
-          ]}
-          onSubmit={vi.fn()}
-        />,
-      );
-
-      expect(screen.getByLabelText("Info about name")).toBeDefined();
-      expect(screen.queryByText("Enter your full name")).toBeNull();
-    });
-
-    it("defaults to tooltip placement when helperTextPlacement is omitted", () => {
-      render(
-        <BaseForm
-          formContent={[
-            field(
-              makeDef("name", {
-                helperText: "Enter your full name",
-              }),
-            ),
-          ]}
-          onSubmit={vi.fn()}
-        />,
-      );
-
-      expect(screen.getByLabelText("Info about name")).toBeDefined();
-      expect(screen.queryByText("Enter your full name")).toBeNull();
     });
 
     it("does not render helper text or icon when helperText is absent", () => {
@@ -370,20 +358,20 @@ describe("BaseForm", () => {
 
       render(<ControlledWrapper />);
 
-      expect(screen.queryByText("Edited")).toBeNull();
+      expect(screen.queryByText("(edited)")).toBeNull();
 
       const nameInput = screen.getByRole("textbox", { name: "name" });
       fireEvent.change(nameInput, { target: { value: "Updated" } });
 
       await waitFor(() => {
-        expect(screen.getByText("Edited")).toBeDefined();
+        expect(screen.getByText("(edited)")).toBeDefined();
       });
-      expect(screen.getByRole("textbox", { name: "name" })).toBeDefined();
+      expect(screen.getByRole("textbox", { name: /^name/u })).toBeDefined();
 
       fireEvent.change(nameInput, { target: { value: "Initial" } });
 
       await waitFor(() => {
-        expect(screen.getByText("Edited")).toBeDefined();
+        expect(screen.getByText("(edited)")).toBeDefined();
       });
     });
 
@@ -756,7 +744,7 @@ describe("BaseForm", () => {
       );
 
       const sectionTitle = screen.getByText("Personal Info");
-      const sectionRoot = sectionTitle.closest("[class*='osdkFormSectionBox']");
+      const sectionRoot = sectionTitle.closest(`.${Classes.SECTION}`);
       expect(sectionRoot).not.toBeNull();
       expect(sectionRoot!.querySelector("input[id='name']")).not.toBeNull();
       expect(sectionRoot!.querySelector("input[id='email']")).not.toBeNull();

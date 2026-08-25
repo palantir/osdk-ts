@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
+import { Classes } from "@blueprintjs/core";
 import React from "react";
-
-import { SkeletonBar } from "../../../base-components/skeleton/SkeletonBar.js";
 
 export function SelectInputSkeleton(): React.ReactElement {
   return (
     <div data-testid="select-input-skeleton">
-      <SkeletonBar
-        width="100%"
-        height="var(--osdk-filter-skeleton-input-height)"
+      <div
+        aria-hidden="true"
+        className={Classes.SKELETON}
+        style={{
+          height: "var(--osdk-filter-skeleton-input-height)",
+          width: "100%",
+        }}
       />
     </div>
   );

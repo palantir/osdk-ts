@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Tab, type TabId, Tabs } from "@blueprintjs/core";
 import classnames from "classnames";
 import React, { useCallback, useMemo, useState } from "react";
 
@@ -97,8 +98,8 @@ export function BaseSpreadsheetViewer({
   const safeIndex = Math.min(activeSheetIndex, Math.max(0, sheets.length - 1));
   const activeSheet = useMemo(() => sheets[safeIndex], [sheets, safeIndex]);
 
-  const handleTabClick = useCallback((index: number) => {
-    setActiveSheetIndex(index);
+  const handleTabChange = useCallback((newTabId: TabId) => {
+    setActiveSheetIndex(Number(newTabId));
   }, []);
 
   return (
@@ -109,20 +110,11 @@ export function BaseSpreadsheetViewer({
         <div className={styles.emptySheet}>No sheets</div>
       )}
       {sheets.length > 1 && (
-        <div className={styles.tabBar}>
+        <Tabs selectedTabId={safeIndex} onChange={handleTabChange}>
           {sheets.map((sheet, index) => (
-            <button
-              key={sheet.name}
-              className={classnames(styles.tab, {
-                [styles.tabActive]: index === safeIndex,
-              })}
-              onClick={() => handleTabClick(index)}
-              type="button"
-            >
-              {sheet.name}
-            </button>
+            <Tab id={index} key={sheet.name} title={sheet.name} />
           ))}
-        </div>
+        </Tabs>
       )}
     </div>
   );

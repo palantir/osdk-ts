@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
+import { Button } from "@blueprintjs/core";
 import React, { memo, type ReactNode, useCallback } from "react";
 
 import { CollapseIcon, ResetIcon } from "./FilterIcons.js";

@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { Popover } from "@base-ui/react/popover";
+import { Button, Classes, Popover } from "@blueprintjs/core";
 import { CaretDown, CaretUp, WarningSign } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
 
-import { ActionButton } from "../../base-components/action-button/ActionButton.js";
-import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
 import {
   type AppliedMarkingGroup,
   backgroundFromColors,
@@ -78,47 +76,43 @@ export function BaseCbacBannerPopover({
   const showSkeleton = isLoading === true && appliedMarkings.length === 0;
 
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger
-        nativeButton={false}
-        render={
-          <div className={styles.bannerTriggerWrapper}>
-            <BaseCbacBanner
-              classificationString={classificationString}
-              textColor={textColor}
-              backgroundColors={backgroundColors}
-              onDismiss={onDismiss}
-              className={className}
-            />
-            <span
-              className={classnames(
-                styles.caretIcon,
-                open && styles.caretIconVisible,
-              )}
-            >
-              {open ? <CaretUp size={12} /> : <CaretDown size={12} />}
-            </span>
-          </div>
-        }
-      />
-      <Popover.Portal>
-        <Popover.Positioner side="bottom" align="center">
-          <Popover.Popup className={styles.popover}>
-            <PopoverContent
-              showSkeleton={showSkeleton}
-              error={error}
-              onRetry={onRetry}
-              pillStyle={pillStyle}
-              classificationString={classificationString}
-              description={description}
-              appliedMarkings={appliedMarkings}
-              warnings={warnings}
-              handleEditClick={handleEditClick}
-            />
-          </Popover.Popup>
-        </Popover.Positioner>
-      </Popover.Portal>
-    </Popover.Root>
+    <Popover
+      isOpen={open}
+      onInteraction={setOpen}
+      placement="bottom"
+      popoverClassName={styles.popover}
+      content={
+        <PopoverContent
+          showSkeleton={showSkeleton}
+          error={error}
+          onRetry={onRetry}
+          pillStyle={pillStyle}
+          classificationString={classificationString}
+          description={description}
+          appliedMarkings={appliedMarkings}
+          warnings={warnings}
+          handleEditClick={handleEditClick}
+        />
+      }
+    >
+      <div className={styles.bannerTriggerWrapper}>
+        <BaseCbacBanner
+          classificationString={classificationString}
+          textColor={textColor}
+          backgroundColors={backgroundColors}
+          onDismiss={onDismiss}
+          className={className}
+        />
+        <span
+          className={classnames(
+            styles.caretIcon,
+            open && styles.caretIconVisible,
+          )}
+        >
+          {open ? <CaretUp size={12} /> : <CaretDown size={12} />}
+        </span>
+      </div>
+    </Popover>
   );
 }
 
@@ -159,11 +153,7 @@ const PopoverContent = React.memo(function PopoverContent({
         {errorMessage.remediation && (
           <p className={styles.errorRemediation}>{errorMessage.remediation}</p>
         )}
-        {onRetry !== undefined && (
-          <ActionButton variant="secondary" onClick={onRetry}>
-            Retry
-          </ActionButton>
-        )}
+        {onRetry !== undefined && <Button onClick={onRetry}>Retry</Button>}
       </div>
     );
   }
@@ -216,13 +206,13 @@ const PopoverContent = React.memo(function PopoverContent({
 
       <hr className={styles.divider} />
 
-      <ActionButton
-        variant="primary"
+      <Button
+        intent="primary"
         className={styles.editButton}
         onClick={handleEditClick}
       >
         {hasMarkings ? "Edit classification" : "Set classification"}
-      </ActionButton>
+      </Button>
     </>
   );
 });
@@ -230,9 +220,11 @@ const PopoverContent = React.memo(function PopoverContent({
 function PopoverSkeleton(): React.ReactElement {
   return (
     <div className={styles.skeletonContainer}>
-      <SkeletonBar className={styles.skeletonPill} />
-      <SkeletonBar className={styles.skeletonLine} />
-      <SkeletonBar className={styles.skeletonLineNarrow} />
+      <div className={classnames(Classes.SKELETON, styles.skeletonPill)} />
+      <div className={classnames(Classes.SKELETON, styles.skeletonLine)} />
+      <div
+        className={classnames(Classes.SKELETON, styles.skeletonLineNarrow)}
+      />
     </div>
   );
 }

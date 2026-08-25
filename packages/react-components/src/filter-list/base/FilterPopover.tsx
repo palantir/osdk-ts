@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Popover } from "@base-ui/react/popover";
+import { Button, Popover } from "@blueprintjs/core";
 import classnames from "classnames";
 import React, { memo, useCallback, useState } from "react";
 
@@ -28,7 +28,7 @@ export interface FilterPopoverProps {
   summary: string;
   isActive: boolean;
   onRemove?: () => void;
-  /** Popup contents — only mounted while the popover is open. */
+  /** Popup contents. Blueprint controls mounting during overlay transitions. */
   children: React.ReactNode;
   className?: string;
   placeholder?: string;
@@ -62,16 +62,22 @@ function FilterPopoverInner({
   );
 
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
-      <span
-        className={classnames(
-          styles.fieldGroup,
-          labelPlacement === "top" && styles.fieldGroupTop,
-          className,
-        )}
+    <span
+      className={classnames(
+        styles.fieldGroup,
+        labelPlacement === "top" && styles.fieldGroupTop,
+        className,
+      )}
+    >
+      <span className={styles.label}>{label}</span>
+      <Popover
+        isOpen={open}
+        onInteraction={setOpen}
+        placement="bottom-start"
+        popoverClassName={styles.popup}
+        content={<div>{children}</div>}
       >
-        <span className={styles.label}>{label}</span>
-        <Popover.Trigger
+        <Button
           className={styles.trigger}
           data-active={isActive ? "true" : undefined}
         >
@@ -83,24 +89,19 @@ function FilterPopoverInner({
           >
             {summaryHasValue ? summary : placeholder}
           </span>
-        </Popover.Trigger>
-        {onRemove && (
-          <button
-            type="button"
-            onClick={handleRemoveClick}
-            className={styles.removeButton}
-            aria-label={`Remove ${label} filter`}
-          >
-            <RemoveIcon />
-          </button>
-        )}
-      </span>
-      <Popover.Portal>
-        <Popover.Positioner sideOffset={4} align="start">
-          <Popover.Popup className={styles.popup}>{children}</Popover.Popup>
-        </Popover.Positioner>
-      </Popover.Portal>
-    </Popover.Root>
+        </Button>
+      </Popover>
+      {onRemove != null ? (
+        <Button
+          type="button"
+          onClick={handleRemoveClick}
+          className={styles.removeButton}
+          aria-label={`Remove ${label} filter`}
+          icon={<RemoveIcon />}
+          variant="minimal"
+        />
+      ) : null}
+    </span>
   );
 }
 

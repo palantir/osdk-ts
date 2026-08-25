@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
+import { Button } from "@blueprintjs/core";
+import { DateInput } from "@blueprintjs/datetime";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 
-import { DatePicker } from "../../../shared/calendar/index.js";
-
 import styles from "./SingleDateInput.module.css";
+
+const SELECT_DATE_INPUT_PROPS = { "aria-label": "Select date" };
 
 interface SingleDateInputProps {
   selectedDate: Date | undefined;
@@ -51,8 +52,8 @@ function SingleDateInputInner({
   }, [onChange]);
 
   const handleChange = useCallback(
-    (value: Date | null) => {
-      onChange(value ?? undefined);
+    (isoDate: string | null) => {
+      onChange(isoDate == null ? undefined : new Date(isoDate));
     },
     [onChange],
   );
@@ -60,14 +61,13 @@ function SingleDateInputInner({
   return (
     <div className={classnames(styles.singleDate, className)} style={style}>
       <div className={styles.dateContainer}>
-        <DatePicker
-          value={selectedDate ?? null}
+        <DateInput
+          value={selectedDate?.toISOString() ?? null}
           onChange={handleChange}
-          min={minDate}
-          max={maxDate}
+          minDate={minDate}
+          maxDate={maxDate}
           placeholder={placeholder}
-          ariaLabel="Select date"
-          modal={false}
+          inputProps={SELECT_DATE_INPUT_PROPS}
           formatDate={formatDate}
         />
         {showClearButton && selectedDate !== undefined && (

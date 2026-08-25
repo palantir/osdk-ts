@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
+import { Checkbox } from "@blueprintjs/core";
 import type { Row, RowData } from "@tanstack/react-table";
 import React, { useCallback } from "react";
-
-import { Checkbox } from "../base-components/checkbox/Checkbox.js";
 
 interface SelectionHeaderCellProps {
   isAllSelected: boolean;
@@ -36,7 +35,7 @@ export function SelectionHeaderCell({
     <Checkbox
       indeterminate={hasSelection && !isAllSelected}
       checked={isAllSelected}
-      onCheckedChange={onToggleAll}
+      onChange={onToggleAll}
       aria-label={checkboxLabel}
     />
   );

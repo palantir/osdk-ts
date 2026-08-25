@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
+// cspell:ignore listoption
+
+import { Button, MenuItem } from "@blueprintjs/core";
+import { Cross } from "@blueprintjs/icons";
+import { type ItemRenderer, Suggest } from "@blueprintjs/select";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 
-import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
 import { createRenderValueFilter } from "./comboboxFilter.js";
-import { OptionLabel } from "./OptionLabel.js";
+import { getOptionLabelText, OptionLabel } from "./OptionLabel.js";
 import { SelectInputSkeleton } from "./SelectInputSkeleton.js";
 import { useStableData } from "./useStableData.js";
 
@@ -58,49 +62,74 @@ function SingleSelectInputInner({
   renderValue,
 }: SingleSelectInputProps): React.ReactElement {
   const collisionBoundary = useFilterListBoundary();
-
-  const handleValueChange = useCallback(
-    (value: string | null) => {
-      onChange(value ?? undefined);
-    },
-    [onChange],
-  );
-
   const stableValues = useStableData(values, isLoading);
-
   const items = useMemo(
     () => stableValues.map(({ value }) => value),
     [stableValues],
   );
-
   const countByValue = useMemo(
     () => new Map(stableValues.map(({ value, count }) => [value, count])),
     [stableValues],
   );
-
-  const comboboxFilter = useMemo(
-    () => (renderValue ? createRenderValueFilter(renderValue) : undefined),
+  const itemPredicate = useMemo(
+    () =>
+      renderValue == null
+        ? defaultItemPredicate
+        : createRenderValueFilter(renderValue),
     [renderValue],
   );
-
-  const renderItem = useCallback(
-    (value: string) => {
+  const renderItem = useCallback<ItemRenderer<string>>(
+    (value, { handleClick, modifiers }) => {
+      if (!modifiers.matchesPredicate) return null;
       return (
-        <Combobox.Item key={value} value={value}>
-          <Combobox.ItemIndicator />
-          <span className={styles.itemLabel}>
-            <OptionLabel value={value} renderValue={renderValue} />
-          </span>
-          {showCounts && (
-            <span className={styles.itemCount}>
-              ({(countByValue.get(value) ?? 0).toLocaleString()})
+        <MenuItem
+          active={modifiers.active}
+          key={value}
+          labelElement={
+            showCounts ? (
+              <span className={styles.itemCount}>
+                ({(countByValue.get(value) ?? 0).toLocaleString()})
+              </span>
+            ) : undefined
+          }
+          onClick={handleClick}
+          roleStructure="listoption"
+          selected={value === selectedValue}
+          text={
+            <span className={styles.itemLabel}>
+              <OptionLabel value={value} renderValue={renderValue} />
             </span>
-          )}
-        </Combobox.Item>
+          }
+        />
       );
     },
-    [countByValue, showCounts, renderValue],
+    [countByValue, renderValue, selectedValue, showCounts],
   );
+  const inputValueRenderer = useCallback(
+    (value: string) => {
+      const rendered = renderValue?.(value);
+      return typeof rendered === "string"
+        ? rendered
+        : getOptionLabelText(value);
+    },
+    [renderValue],
+  );
+  const handleClear = useCallback(
+    (event: React.MouseEvent<HTMLElement>) => {
+      event.stopPropagation();
+      onChange(undefined);
+    },
+    [onChange],
+  );
+  const clearButton =
+    showClearButton && selectedValue !== undefined ? (
+      <Button
+        aria-label="Clear selected value"
+        icon={<Cross />}
+        onClick={handleClear}
+        variant="minimal"
+      />
+    ) : undefined;
 
   const isNoData = !error && stableValues.length === 0;
   const isReloading = isLoading && stableValues.length > 0;
@@ -120,40 +149,41 @@ function SingleSelectInputInner({
           Error loading options: {error.message}
         </div>
       )}
-
       {isNoData && isLoading && <SelectInputSkeleton />}
       {isNoData && !isLoading && (
         <div className={sharedStyles.emptyMessage}>No options available</div>
       )}
 
       {stableValues.length > 0 && (
-        <div className={styles.selectContainer}>
-          <Combobox.Root<string>
-            value={selectedValue ?? null}
-            onValueChange={handleValueChange}
-            items={items}
-            filter={comboboxFilter}
-          >
-            <Combobox.SearchInput
-              placeholder={placeholder}
-              aria-label={ariaLabel}
+        <Suggest<string>
+          fill={true}
+          inputProps={{
+            "aria-label": ariaLabel,
+            placeholder,
+            rightElement: clearButton,
+          }}
+          inputValueRenderer={inputValueRenderer}
+          itemPredicate={itemPredicate}
+          itemRenderer={renderItem}
+          items={items}
+          noResults={
+            <MenuItem
+              disabled={true}
+              roleStructure="listoption"
+              text="No matching options"
             />
-            {showClearButton && selectedValue !== undefined && (
-              <Combobox.Clear className={styles.clearButton} />
-            )}
-            <Combobox.Portal>
-              <Combobox.Positioner collisionBoundary={collisionBoundary}>
-                <Combobox.Popup>
-                  <Combobox.Empty>No matching options</Combobox.Empty>
-                  <Combobox.List>{renderItem}</Combobox.List>
-                </Combobox.Popup>
-              </Combobox.Positioner>
-            </Combobox.Portal>
-          </Combobox.Root>
-        </div>
+          }
+          onItemSelect={onChange}
+          popoverProps={{ boundary: collisionBoundary, minimal: true }}
+          selectedItem={selectedValue ?? null}
+        />
       )}
     </div>
   );
+}
+
+function defaultItemPredicate(query: string, value: string): boolean {
+  return value.toLocaleLowerCase().includes(query.toLocaleLowerCase());
 }
 
 export const SingleSelectInput = memo(

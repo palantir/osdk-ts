@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { DateInputProps } from "@blueprintjs/datetime";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
@@ -98,8 +99,8 @@ export interface DropdownEditConfig<V = unknown> {
 
   /**
    * Whether the dropdown allows searching/filtering.
-   * When true, renders a Combobox with a search input.
-   * When false (default), renders a Select dropdown.
+   * When true, shows Blueprint's query input inside the dropdown.
+   * When false (default), the dropdown is not filterable.
    */
   isSearchable?: boolean;
 
@@ -117,48 +118,13 @@ export interface DropdownEditConfig<V = unknown> {
 /**
  * User-facing configuration for a date picker editor in a table cell.
  *
- * Standalone by design rather than re-exporting `DatePickerProps` so the
- * table API doesn't break when the picker's prop shape changes.
+ * Uses Blueprint's DateInput props directly, excluding values managed by the
+ * editable table.
  */
-export interface DatePickerEditConfig {
-  /**
-   * The earliest date the user can select.
-   */
-  min?: Date;
-
-  /**
-   * The latest date the user can select.
-   */
-  max?: Date;
-
-  /**
-   * Whether to show a time picker alongside the calendar.
-   */
-  showTime?: boolean;
-
-  /**
-   * Whether to close the popover after selecting a date.
-   * @default true when `showTime` is false, false when `showTime` is true
-   */
-  closeOnSelection?: boolean;
-
-  /**
-   * Placeholder text shown when no value is selected.
-   */
-  placeholder?: string;
-
-  /**
-   * Formats a Date for display in the input field when not editing.
-   * Provide a matching `parseDate` if using a custom format.
-   */
-  formatDate?: (date: Date) => string;
-
-  /**
-   * Parses a user-typed string back into a Date.
-   * Must be the inverse of `formatDate`.
-   */
-  parseDate?: (text: string) => Date | undefined;
-}
+export type DatePickerEditConfig = Omit<
+  DateInputProps,
+  "defaultValue" | "disabled" | "onChange" | "value"
+>;
 
 /**
  * Maps each supported editable field component to its user-facing config.

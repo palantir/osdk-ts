@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
-import { Input } from "@base-ui/react/input";
+import { Button, InputGroup } from "@blueprintjs/core";
 import type {
   DraggableAttributes,
   DraggableSyntheticListeners,
@@ -173,14 +172,14 @@ function FilterListItemInner<D>({
 
       {searchOpen && (
         <div className={styles.searchRow}>
-          <Input
+          <InputGroup
             type="text"
             className={styles.searchInput}
             value={searchQuery}
             onChange={handleSearchChange}
             placeholder="Search property values..."
             aria-label="Search property values"
-            ref={searchInputRef}
+            inputRef={searchInputRef}
           />
           {searchQuery && (
             <Button

@@ -14,47 +14,27 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
+// cspell:ignore listoption
+
+import { MenuItem } from "@blueprintjs/core";
+import {
+  type ItemListPredicate,
+  type ItemPredicate,
+  type ItemRenderer,
+  MultiSelect,
+} from "@blueprintjs/select";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 
-import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
-import { getOptionLabelText, OptionLabel } from "./OptionLabel.js";
+import { OptionLabel } from "./OptionLabel.js";
 import { SelectInputSkeleton } from "./SelectInputSkeleton.js";
 
 import sharedStyles from "./shared.module.css";
 import styles from "./TextTagsInput.module.css";
 
 const TAG_SEPARATOR_PATTERN = /[,\n]/u;
-
-interface TagItemProps {
-  tag: string;
-  onRemove: (tag: string) => void;
-}
-
-const TagItem = memo(function TagItem({ tag, onRemove }: TagItemProps) {
-  const handleRemove = useCallback(() => {
-    onRemove(tag);
-  }, [tag, onRemove]);
-
-  const displayLabel = getOptionLabelText(tag);
-
-  return (
-    <span className={sharedStyles.tag}>
-      <OptionLabel value={tag} />
-      <Button
-        type="button"
-        className={sharedStyles.tagRemove}
-        onClick={handleRemove}
-        aria-label={`Remove ${displayLabel}`}
-      >
-        ×
-      </Button>
-    </span>
-  );
-});
 
 interface TextTagsInputProps {
   suggestions: PropertyAggregationValue[];
@@ -84,81 +64,96 @@ function TextTagsInputInner({
   ariaLabel = "Add tag",
 }: TextTagsInputProps): React.ReactElement {
   const collisionBoundary = useFilterListBoundary();
-  const [inputValue, setInputValue] = useState("");
-
-  const filteredSuggestions = useMemo(() => {
-    if (!suggestionLimit) return [];
-    const lowerInput = inputValue.toLowerCase();
-    return suggestions
-      .filter(
-        (s) =>
-          (!inputValue.trim() || s.value.toLowerCase().includes(lowerInput)) &&
-          !tags.includes(s.value),
-      )
-      .slice(0, suggestionLimit);
-  }, [suggestions, inputValue, tags, suggestionLimit]);
-
-  const addTag = useCallback(
-    (tag: string) => {
-      const trimmedTag = tag.trim();
-      if (trimmedTag && !tags.includes(trimmedTag)) {
-        onChange([...tags, trimmedTag]);
-      }
-      setInputValue("");
-    },
-    [tags, onChange],
+  const [query, setQuery] = useState("");
+  const items = useMemo(
+    () => suggestions.map(({ value }) => value),
+    [suggestions],
   );
-
-  const removeTag = useCallback(
-    (tag: string) => {
-      onChange(tags.filter((t) => t !== tag));
-    },
-    [tags, onChange],
+  const countByValue = useMemo(
+    () => new Map(suggestions.map(({ value, count }) => [value, count])),
+    [suggestions],
   );
-
-  const handleValueChange = useCallback(
-    (newTags: string[] | null) => {
-      onChange(newTags ?? []);
+  const selectedSet = useMemo(() => new Set(tags), [tags]);
+  const itemPredicate = useCallback<ItemPredicate<string>>(
+    (nextQuery, value, _index, exactMatch) => {
+      if (selectedSet.has(value)) return false;
+      return exactMatch
+        ? value.toLocaleLowerCase() === nextQuery.toLocaleLowerCase()
+        : value.toLocaleLowerCase().includes(nextQuery.toLocaleLowerCase());
     },
-    [onChange],
+    [selectedSet],
   );
-
-  const handleInputValueChange = useCallback((value: string) => {
-    setInputValue(value);
-  }, []);
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Enter" && inputValue.trim()) {
-        if (filteredSuggestions.length > 0) {
-          return;
-        }
-        e.preventDefault();
-        if (allowCustomTags) {
-          addTag(inputValue);
-        }
-      } else if (e.key === "Backspace" && !inputValue && tags.length > 0) {
-        removeTag(tags[tags.length - 1]);
-      }
-    },
-    [inputValue, tags, addTag, removeTag, allowCustomTags, filteredSuggestions],
+  const itemListPredicate = useCallback<ItemListPredicate<string>>(
+    (nextQuery, nextItems) =>
+      nextItems
+        .filter((value) => itemPredicate(nextQuery, value))
+        .slice(0, suggestionLimit),
+    [itemPredicate, suggestionLimit],
   );
-
-  const handlePaste = useCallback(
-    (e: React.ClipboardEvent<HTMLInputElement>) => {
-      const pastedText = e.clipboardData.getData("text");
-      if (TAG_SEPARATOR_PATTERN.test(pastedText)) {
-        e.preventDefault();
-        const newTags = pastedText
-          .split(TAG_SEPARATOR_PATTERN)
-          .map((t) => t.trim())
-          .filter((t) => t && !tags.includes(t));
-        if (newTags.length > 0) {
-          onChange([...tags, ...newTags]);
-        }
-      }
+  const addTags = useCallback(
+    (nextTags: readonly string[]) => {
+      const additions = nextTags
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0 && !selectedSet.has(tag));
+      if (additions.length > 0) onChange([...tags, ...new Set(additions)]);
+      setQuery("");
     },
-    [tags, onChange],
+    [onChange, selectedSet, tags],
+  );
+  const handleItemSelect = useCallback(
+    (tag: string) => addTags([tag]),
+    [addTags],
+  );
+  const handleItemsPaste = useCallback(
+    (nextTags: string[]) => addTags(nextTags),
+    [addTags],
+  );
+  const handleRemove = useCallback(
+    (tag: string) => onChange(tags.filter((value) => value !== tag)),
+    [onChange, tags],
+  );
+  const createTagsFromQuery = useCallback(
+    (nextQuery: string) =>
+      nextQuery.split(TAG_SEPARATOR_PATTERN).map((tag) => tag.trim()),
+    [],
+  );
+  const renderCreateTag = useCallback(
+    (
+      nextQuery: string,
+      active: boolean,
+      handleClick: React.MouseEventHandler<HTMLElement>,
+    ) => (
+      <MenuItem
+        active={active}
+        icon="add"
+        onClick={handleClick}
+        roleStructure="listoption"
+        shouldDismissPopover={false}
+        text={`Add "${nextQuery}"`}
+      />
+    ),
+    [],
+  );
+  const renderItem = useCallback<ItemRenderer<string>>(
+    (value, { handleClick, modifiers }) => {
+      if (!modifiers.matchesPredicate) return null;
+      return (
+        <MenuItem
+          active={modifiers.active}
+          key={value}
+          label={`(${(countByValue.get(value) ?? 0).toLocaleString()})`}
+          onClick={handleClick}
+          roleStructure="listoption"
+          shouldDismissPopover={false}
+          text={<OptionLabel value={value} />}
+        />
+      );
+    },
+    [countByValue],
+  );
+  const renderTag = useCallback(
+    (tag: string) => <OptionLabel value={tag} />,
+    [],
   );
 
   return (
@@ -177,53 +172,34 @@ function TextTagsInputInner({
         </div>
       )}
 
-      <Combobox.Root<string, true>
-        multiple={true}
-        value={tags}
-        onValueChange={handleValueChange}
-        inputValue={inputValue}
-        onInputValueChange={handleInputValueChange}
-      >
-        {tags.length > 0 && (
-          <div className={sharedStyles.tagContainer}>
-            {tags.map((tag) => (
-              <TagItem key={tag} tag={tag} onRemove={removeTag} />
-            ))}
-          </div>
-        )}
-
-        <Combobox.SearchInput
-          className={styles.input}
-          placeholder={tags.length > 0 ? "" : placeholder}
-          onKeyDown={handleKeyDown}
-          onPaste={handlePaste}
-          aria-label={ariaLabel}
-        />
-
-        <Combobox.Portal>
-          <Combobox.Positioner collisionBoundary={collisionBoundary}>
-            <Combobox.Popup>
-              {filteredSuggestions.length === 0 ? (
-                allowCustomTags && inputValue.trim() ? (
-                  <Combobox.Empty>
-                    Press Enter to add "{inputValue}"
-                  </Combobox.Empty>
-                ) : (
-                  <Combobox.Empty>
-                    {suggestionLimit ? "No suggestions" : "Type to add a tag"}
-                  </Combobox.Empty>
-                )
-              ) : (
-                filteredSuggestions.map(({ value, count }) => (
-                  <Combobox.Item key={value} value={value}>
-                    <OptionLabel value={value} /> ({count.toLocaleString()})
-                  </Combobox.Item>
-                ))
-              )}
-            </Combobox.Popup>
-          </Combobox.Positioner>
-        </Combobox.Portal>
-      </Combobox.Root>
+      <MultiSelect<string>
+        createNewItemFromQuery={
+          allowCustomTags ? createTagsFromQuery : undefined
+        }
+        createNewItemRenderer={allowCustomTags ? renderCreateTag : undefined}
+        fill={true}
+        itemListPredicate={itemListPredicate}
+        itemPredicate={itemPredicate}
+        itemRenderer={renderItem}
+        items={items}
+        noResults={
+          <MenuItem
+            disabled={true}
+            roleStructure="listoption"
+            text={suggestionLimit ? "No suggestions" : "Type to add a tag"}
+          />
+        }
+        onItemSelect={handleItemSelect}
+        onItemsPaste={handleItemsPaste}
+        onQueryChange={setQuery}
+        onRemove={handleRemove}
+        placeholder={placeholder}
+        popoverProps={{ boundary: collisionBoundary, minimal: true }}
+        query={query}
+        selectedItems={tags}
+        tagInputProps={{ inputProps: { "aria-label": ariaLabel } }}
+        tagRenderer={renderTag}
+      />
 
       {!error && suggestions.length === 0 && isLoading && !!suggestionLimit && (
         <SelectInputSkeleton />

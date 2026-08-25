@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
-import { Input } from "@base-ui/react/input";
+import { Button, InputGroup } from "@blueprintjs/core";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 
@@ -99,7 +98,7 @@ function TimelineInputInner({
       </div>
 
       <div className={styles.brush}>
-        <Input
+        <InputGroup
           type="date"
           className={styles.input}
           value={formatDateForInput(startDate)}
@@ -109,7 +108,7 @@ function TimelineInputInner({
           aria-label="Start date"
         />
         <span>—</span>
-        <Input
+        <InputGroup
           type="date"
           className={styles.input}
           value={formatDateForInput(endDate)}

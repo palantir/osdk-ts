@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tooltip } from "@base-ui/react/tooltip";
+import { Tooltip } from "@blueprintjs/core";
 import { InfoSign } from "@blueprintjs/icons";
 import React from "react";
 
@@ -92,25 +92,15 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
           {categoryName}
         </h3>
         {categoryDescription != null && categoryDescription.length > 0 && (
-          <Tooltip.Root>
-            <Tooltip.Trigger
-              render={
-                <span
-                  className={styles.infoIcon}
-                  aria-label="Category description"
-                >
-                  <InfoSign size={12} />
-                </span>
-              }
-            />
-            <Tooltip.Portal>
-              <Tooltip.Positioner side="top" sideOffset={4}>
-                <Tooltip.Popup className={styles.infoTooltip}>
-                  {categoryDescription}
-                </Tooltip.Popup>
-              </Tooltip.Positioner>
-            </Tooltip.Portal>
-          </Tooltip.Root>
+          <Tooltip
+            content={categoryDescription}
+            placement="top"
+            popoverClassName={styles.infoTooltip}
+          >
+            <span className={styles.infoIcon} aria-label="Category description">
+              <InfoSign size={12} />
+            </span>
+          </Tooltip>
         )}
       </div>
       <div className={styles.markingGrid}>

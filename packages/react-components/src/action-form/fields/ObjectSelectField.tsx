@@ -66,8 +66,8 @@ const ObjectSelectInner: React.NamedExoticComponent<
   portalContainer,
   disabled,
 }): React.ReactElement {
-  // Tracks the user's search text. Cleared on selection so the selected
-  // label (managed by base-ui) doesn't trigger a server-side search.
+  // Tracks the user's search text. Clear it on selection so the next Blueprint
+  // popover opens with the complete server-backed result set.
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
 

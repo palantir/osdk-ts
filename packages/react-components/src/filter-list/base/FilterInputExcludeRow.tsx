@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
+import { Button } from "@blueprintjs/core";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 

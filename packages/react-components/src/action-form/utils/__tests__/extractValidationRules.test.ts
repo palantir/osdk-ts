@@ -136,7 +136,7 @@ describe("extractValidationRules", () => {
       const minDate = new Date(2024, 0, 1);
       const validate = getValidateFns({
         fieldComponent: "DATETIME_PICKER",
-        fieldComponentProps: { min: minDate },
+        fieldComponentProps: { minDate },
       });
       const earlyDate = new Date(2023, 11, 31);
       const lateDate = new Date(2024, 5, 1);
@@ -150,7 +150,7 @@ describe("extractValidationRules", () => {
       const maxDate = new Date(2025, 11, 31);
       const validate = getValidateFns({
         fieldComponent: "DATETIME_PICKER",
-        fieldComponentProps: { max: maxDate },
+        fieldComponentProps: { maxDate },
       });
       const lateDate = new Date(2026, 0, 1);
       const earlyDate = new Date(2025, 5, 1);
@@ -158,40 +158,6 @@ describe("extractValidationRules", () => {
         `Must be at most ${maxDate.toLocaleDateString()}`,
       );
       expect(validate.max(earlyDate)).toBe(true);
-    });
-  });
-
-  describe("FILE_PICKER", () => {
-    it("adds maxSize validate function for single file", () => {
-      const validate = getValidateFns({
-        fieldComponent: "FILE_PICKER",
-        fieldComponentProps: { maxSize: 1024 },
-      });
-      const smallFile = new File(["a"], "small.txt");
-      Object.defineProperty(smallFile, "size", { value: 512 });
-      const bigFile = new File(["a"], "big.txt");
-      Object.defineProperty(bigFile, "size", { value: 2048 });
-
-      expect(validate.maxSize(smallFile)).toBe(true);
-      expect(validate.maxSize(bigFile)).toBe(
-        "File must be smaller than 1.0 KB",
-      );
-    });
-
-    it("adds maxSize validate function for file array", () => {
-      const validate = getValidateFns({
-        fieldComponent: "FILE_PICKER",
-        fieldComponentProps: { maxSize: 1024 },
-      });
-      const smallFile = new File(["a"], "small.txt");
-      Object.defineProperty(smallFile, "size", { value: 512 });
-      const bigFile = new File(["a"], "big.txt");
-      Object.defineProperty(bigFile, "size", { value: 2048 });
-
-      expect(validate.maxSize([smallFile])).toBe(true);
-      expect(validate.maxSize([smallFile, bigFile])).toBe(
-        "File must be smaller than 1.0 KB",
-      );
     });
   });
 

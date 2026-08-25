@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
+import { Button, Classes } from "@blueprintjs/core";
 import { Cross } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
 
-import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
 import { backgroundFromColors } from "../utils/cbacPickerUtils.js";
 
 import styles from "./BaseCbacBanner.module.css";
@@ -111,7 +110,7 @@ function BannerSkeleton({
 }): React.ReactElement {
   return (
     <div className={classnames(styles.bannerRow, className)} aria-hidden="true">
-      <SkeletonBar className={styles.skeletonBanner} />
+      <div className={classnames(Classes.SKELETON, styles.skeletonBanner)} />
     </div>
   );
 }

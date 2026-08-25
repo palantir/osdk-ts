@@ -78,39 +78,25 @@ export function extractValidationRules(
       break;
     }
     case "DATETIME_PICKER": {
-      const { min, max } = fieldDef.fieldComponentProps;
-      if (min != null) {
-        const msg = getMessage(fieldDef, { type: "min", min });
+      const { minDate, maxDate } = fieldDef.fieldComponentProps;
+      if (minDate != null) {
+        const msg = getMessage(fieldDef, { type: "min", min: minDate });
         validateFns.min = (value) =>
-          value instanceof Date && value.getTime() < min.getTime() ? msg : true;
+          value instanceof Date && value.getTime() < minDate.getTime()
+            ? msg
+            : true;
       }
-      if (max != null) {
-        const msg = getMessage(fieldDef, { type: "max", max });
+      if (maxDate != null) {
+        const msg = getMessage(fieldDef, { type: "max", max: maxDate });
         validateFns.max = (value) =>
-          value instanceof Date && value.getTime() > max.getTime() ? msg : true;
+          value instanceof Date && value.getTime() > maxDate.getTime()
+            ? msg
+            : true;
       }
       break;
     }
-    case "FILE_PICKER": {
-      const { maxSize } = fieldDef.fieldComponentProps;
-      if (maxSize != null) {
-        const msg = getMessage(fieldDef, { type: "maxSize", maxSize });
-        validateFns.maxSize = (value) => {
-          if (value instanceof File) {
-            return value.size > maxSize ? msg : true;
-          }
-          if (Array.isArray(value)) {
-            const oversized = value.some(
-              (f: unknown) => f instanceof File && f.size > maxSize,
-            );
-            return oversized ? msg : true;
-          }
-          return true;
-        };
-      }
-      break;
-    }
-    // DROPDOWN, RADIO_BUTTONS, CUSTOM, OBJECT_SET, UNSUPPORTED: only `required` applies
+    // FILE_PICKER, DROPDOWN, RADIO_BUTTONS, CUSTOM, OBJECT_SET, UNSUPPORTED:
+    // only `required` applies.
     default:
       break;
   }
@@ -152,8 +138,6 @@ function getDefaultMessage(error: ValidationError): string {
       return `Must be at least ${error.minLength} characters`;
     case "maxLength":
       return `Must be at most ${error.maxLength} characters`;
-    case "maxSize":
-      return `File must be smaller than ${formatBytes(error.maxSize)}`;
     case "validate":
       return error.message;
   }
@@ -164,14 +148,4 @@ function formatConstraint(value: number | Date): string {
     return value.toLocaleDateString();
   }
   return String(value);
-}
-
-function formatBytes(bytes: number): string {
-  if (bytes < 1024) {
-    return `${bytes} B`;
-  }
-  if (bytes < 1024 * 1024) {
-    return `${(bytes / 1024).toFixed(1)} KB`;
-  }
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
-import { Input } from "@base-ui/react/input";
+import { Button, InputGroup } from "@blueprintjs/core";
 import {
   ChevronLeft,
   ChevronRight,
@@ -160,7 +159,7 @@ export function PdfViewerToolbar({
         >
           <ChevronLeft size={16} />
         </Button>
-        <Input
+        <InputGroup
           className={styles.pageInput}
           type="text"
           value={pageInputValue}

@@ -20,16 +20,6 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { DateRangeHistogramInput } from "../DateRangeHistogramInput.js";
 
-// Replace the lazy single-date calendar with a synchronous import so the
-// popover renders in happy-dom without resolving React.lazy.
-vi.mock("../../../../shared/calendar/LazyDateCalendar.js", async () => {
-  const { default: DateCalendar } = await vi.importActual<
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    typeof import("../../../../shared/calendar/DateCalendar.js")
-  >("../../../../shared/calendar/DateCalendar.js");
-  return { LazyDateCalendar: DateCalendar };
-});
-
 afterEach(cleanup);
 
 const buckets = [
@@ -86,53 +76,6 @@ describe("DateRangeHistogramInput", () => {
 
       expect(toInput.getAttribute("aria-expanded")).toBe("true");
       expect(fromInput.getAttribute("aria-expanded")).toBe("false");
-    });
-  });
-
-  describe("Today and Clear actions", () => {
-    it("renders Today and Clear in the From popover", () => {
-      renderInput();
-      fireEvent.focus(screen.getByLabelText("From"));
-
-      expect(screen.getByRole("button", { name: "Today" })).toBeDefined();
-      expect(screen.getByRole("button", { name: "Clear" })).toBeDefined();
-    });
-
-    it("renders Today and Clear in the To popover", () => {
-      renderInput();
-      fireEvent.focus(screen.getByLabelText("To"));
-
-      expect(screen.getByRole("button", { name: "Today" })).toBeDefined();
-      expect(screen.getByRole("button", { name: "Clear" })).toBeDefined();
-    });
-
-    it("Clear in From input resets only minValue", () => {
-      const onChange = vi.fn();
-      const min = new Date(2024, 0, 15);
-      const max = new Date(2024, 5, 30);
-      renderInput({ minValue: min, maxValue: max, onChange });
-      fireEvent.focus(screen.getByLabelText("From"));
-      fireEvent.click(screen.getByRole("button", { name: "Clear" }));
-
-      expect(onChange).toHaveBeenCalledWith(undefined, max);
-    });
-
-    it("Today in From input sets minValue to today's date", () => {
-      const onChange = vi.fn();
-      renderInput({ onChange });
-      fireEvent.focus(screen.getByLabelText("From"));
-      fireEvent.click(screen.getByRole("button", { name: "Today" }));
-
-      expect(onChange).toHaveBeenCalledTimes(1);
-      const [picked, otherBoundary] = onChange.mock.calls[0];
-      if (!(picked instanceof Date)) {
-        throw new Error("expected picked to be a Date");
-      }
-      const today = new Date();
-      expect(picked.getFullYear()).toBe(today.getFullYear());
-      expect(picked.getMonth()).toBe(today.getMonth());
-      expect(picked.getDate()).toBe(today.getDate());
-      expect(otherBoundary).toBeUndefined();
     });
   });
 

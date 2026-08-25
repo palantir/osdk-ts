@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
+import { Button } from "@blueprintjs/core";
 import { DragHandleVertical, SmallCross, Trash } from "@blueprintjs/icons";
 import {
   closestCenter,
@@ -33,8 +33,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import classNames from "classnames";
-import type { RefObject } from "react";
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import styles from "./DraggableList.module.css";
 
@@ -153,18 +152,11 @@ export function DraggableList<T extends DraggableItem>({
     [items, onReorder],
   );
 
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useKeyboardEvents(containerRef);
-
   // TODO: Revert when @types/react is fixed
   const DndContext = BaseDndContext as any;
 
   return (
-    <div
-      ref={containerRef}
-      className={classNames(styles.draggableListContainer, className)}
-    >
+    <div className={classNames(styles.draggableListContainer, className)}>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -188,48 +180,3 @@ export function DraggableList<T extends DraggableItem>({
     </div>
   );
 }
-
-const useKeyboardEvents = (containerRef: RefObject<HTMLDivElement>) => {
-  // Base UI's DialogPopup calls stopPropagation on arrow key events, which
-  // prevents them from reaching @dnd-kit's document-level KeyboardSensor
-  // listener. We use a native capture-phase listener to intercept arrow keys
-  // before the dialog can swallow them, and re-dispatch them on the document
-  // so @dnd-kit can process keyboard-driven reordering.
-  useEffect(() => {
-    const el = containerRef.current;
-    if (el == null) {
-      return;
-    }
-
-    const ARROW_KEYS = new Set([
-      "ArrowUp",
-      "ArrowDown",
-      "ArrowLeft",
-      "ArrowRight",
-    ]);
-
-    function handleCapture(event: KeyboardEvent) {
-      if (!ARROW_KEYS.has(event.key)) {
-        return;
-      }
-
-      // Only intercept when a drag is active (an item has [data-dragging="true"])
-      if (el!.querySelector('[data-dragging="true"]') == null) {
-        return;
-      }
-
-      event.stopPropagation();
-
-      document.dispatchEvent(
-        new KeyboardEvent("keydown", {
-          key: event.key,
-          code: event.code,
-          bubbles: true,
-        }),
-      );
-    }
-
-    el.addEventListener("keydown", handleCapture, true);
-    return () => el.removeEventListener("keydown", handleCapture, true);
-  }, [containerRef]);
-};

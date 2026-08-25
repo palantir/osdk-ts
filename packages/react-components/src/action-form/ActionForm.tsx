@@ -32,6 +32,12 @@ import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.j
 const EMPTY_FIELD_DEFINITIONS: ReadonlyArray<RendererFieldDefinition> = [];
 const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
 
+interface UncheckedFieldDefinition {
+  defaultValue?: unknown;
+  fieldKey: string;
+  fieldComponentProps: object;
+}
+
 export const ActionForm: <Q extends ActionDefinition<unknown>>(
   props: ActionFormProps<Q>,
 ) => React.ReactElement = typedReactMemo(function ActionFormFn<
@@ -73,10 +79,12 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
       if (formFieldDefinitions == null) {
         return null;
       }
-      // RendererFieldDefinition is a discriminated union keyed by fieldComponent.
-      // TypeScript can't verify that the spread preserves the fieldComponent ↔
-      // fieldComponentProps pairing, but FormFieldDefinition guarantees it.
-      return formFieldDefinitions.map((def) => {
+      // Erase the deeply nested generic Blueprint prop types while copying the
+      // definitions. FormFieldDefinition already checked each definition at the
+      // public API boundary.
+      const definitions =
+        formFieldDefinitions as unknown as ReadonlyArray<UncheckedFieldDefinition>;
+      return definitions.map((def) => {
         const { defaultValue, ...fieldDefinition } = def;
         return {
           ...fieldDefinition,

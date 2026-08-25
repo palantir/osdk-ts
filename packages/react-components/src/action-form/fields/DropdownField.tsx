@@ -14,49 +14,35 @@
  * limitations under the License.
  */
 
-import { CaretDown, Cross, SmallCross, Tick } from "@blueprintjs/icons";
-import React, { useCallback, useState } from "react";
+// cspell:ignore listoption
 
-import { Combobox } from "../../base-components/combobox/Combobox.js";
-import { Select } from "../../base-components/select/Select.js";
-import { PortalDismissLayer } from "../../shared/PortalDismissLayer.js";
+import { Button, Menu, MenuItem } from "@blueprintjs/core";
+import { CaretDown } from "@blueprintjs/icons";
+import {
+  type ItemListRenderer,
+  type ItemRenderer,
+  MultiSelect,
+  Select,
+} from "@blueprintjs/select";
+import React, { useCallback } from "react";
+
+import { resolvePortalContainerElement } from "../../shared/PortalContainerContext.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
 
-import comboboxStyles from "../../base-components/combobox/Combobox.module.css";
-import selectStyles from "../../base-components/select/Select.module.css";
-import dropdownStyles from "./DropdownField.module.css";
-
 const EMPTY_ARRAY: [] = [];
+const NO_RESULTS = (
+  <MenuItem disabled={true} roleStructure="listoption" text="No results" />
+);
 
-/**
- * SelectDropdown is only used for single-select (the multi-select path
- * always routes to ComboboxDropdown). We keep the `Multiple` generic so
- * the spread from DropdownField type-checks, but SelectDropdown never
- * reads `isMultiple`.
- */
-interface InnerSelectProps<V, Multiple extends boolean> extends Omit<
-  DropdownFieldProps<V, Multiple>,
-  "isSearchable"
-> {
+interface ResolvedDropdownProps<
+  V,
+  Multiple extends boolean,
+> extends DropdownFieldProps<V, Multiple> {
   itemToStringLabel: (item: V) => string;
   renderItemLabel: (item: V) => React.ReactNode;
   getKey: (item: V) => string;
-  portalRef?: React.Ref<HTMLDivElement>;
-  query?: string;
-  onQueryChange?: (query: string) => void;
   onBlur?: () => void;
-  modal?: boolean;
-}
-
-interface InnerComboboxProps<
-  V,
-  Multiple extends boolean,
-> extends InnerSelectProps<V, Multiple> {
-  isSearchable: boolean;
-  disableClientSideFiltering?: boolean;
-  popupStatus?: React.ReactNode;
-  trailingItem?: DropdownFieldProps<V, Multiple>["trailingItem"];
 }
 
 export const DropdownField: <V, Multiple extends boolean = false>(
@@ -65,73 +51,35 @@ export const DropdownField: <V, Multiple extends boolean = false>(
   V,
   Multiple extends boolean = false,
 >({
-  isSearchable = false,
-  isMultiple,
   itemToStringLabel,
   renderItemLabel,
   itemToKey,
-  value,
-  query,
-  onQueryChange,
-  disableClientSideFiltering,
-  popupStatus,
-  trailingItem,
-  modal = true,
-  ...rest
+  ...props
 }: DropdownFieldProps<V, Multiple> & {
   onBlur?: () => void;
 }): React.ReactElement {
-  // Ensure always controlled from first render: multi-select needs [],
-  // single-select needs null. Passing undefined switches Base UI from
-  // uncontrolled to controlled and triggers a warning.
-  const normalizedValue = (value ??
-    (isMultiple ? EMPTY_ARRAY : null)) as typeof value;
-
   const resolvedItemToStringLabel =
     itemToStringLabel ?? defaultItemToStringLabel;
-
   const resolvedRenderItemLabel = renderItemLabel ?? resolvedItemToStringLabel;
-
   const getKey = useCallback(
     (item: V) => itemToKey?.(item) ?? resolvedItemToStringLabel(item),
     [itemToKey, resolvedItemToStringLabel],
   );
+  const resolvedProps: ResolvedDropdownProps<V, Multiple> = {
+    ...props,
+    getKey,
+    itemToStringLabel: resolvedItemToStringLabel,
+    renderItemLabel: resolvedRenderItemLabel,
+  };
 
-  // Multi-select always uses Combobox for the chip-based UI because it looks better
-  if (isSearchable || isMultiple) {
-    return (
-      <ComboboxDropdown
-        {...rest}
-        isMultiple={isMultiple}
-        value={normalizedValue}
-        itemToStringLabel={resolvedItemToStringLabel}
-        renderItemLabel={resolvedRenderItemLabel}
-        getKey={getKey}
-        isSearchable={isSearchable}
-        query={query}
-        onQueryChange={onQueryChange}
-        disableClientSideFiltering={disableClientSideFiltering}
-        popupStatus={popupStatus}
-        trailingItem={trailingItem}
-        modal={modal}
-      />
-    );
-  }
-
-  // TODO: Support trailingItem
-  return (
-    <SelectDropdown
-      {...rest}
-      value={normalizedValue}
-      itemToStringLabel={resolvedItemToStringLabel}
-      renderItemLabel={resolvedRenderItemLabel}
-      getKey={getKey}
-      modal={modal}
-    />
+  return props.isMultiple ? (
+    <MultipleDropdown {...resolvedProps} />
+  ) : (
+    <SingleDropdown {...resolvedProps} />
   );
 });
 
-const SelectDropdown = typedReactMemo(function SelectDropdownFn<
+const SingleDropdown = typedReactMemo(function SingleDropdownFn<
   V,
   Multiple extends boolean,
 >({
@@ -143,346 +91,257 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   renderItemLabel,
   getKey,
   isItemEqual,
-  placeholder,
-  portalRef,
-  portalContainer,
-  onBlur,
-  modal = true,
-  disabled,
-}: InnerSelectProps<V, Multiple>): React.ReactElement {
-  const [open, setOpen] = useState(false);
-  const isOpen = !disabled && open;
-
-  const hasValue = value != null;
-
-  const renderSingleSelectedItemLabel = useCallback(
-    (selectedValue: V | null) =>
-      selectedValue == null ? null : renderItemLabel(selectedValue),
-    [renderItemLabel],
-  );
-
-  const handleOpenChange = useCallback(
-    (nextOpen: boolean) => {
-      if (disabled) {
-        return;
-      }
-      setOpen(nextOpen);
-      // Mark the field as touched when the popover closes so RHF validates.
-      // Opening the popover does not trigger validation.
-      if (!nextOpen) {
-        onBlur?.();
-      }
-    },
-    [disabled, onBlur],
-  );
-
-  const handleClear = useCallback(() => {
-    // SelectDropdown is always single-select, so cleared value is null.
-    (onChange as ((v: V | null) => void) | undefined)?.(null);
-    handleOpenChange(false);
-  }, [onChange, handleOpenChange]);
-
-  const handleDismiss = useCallback(() => {
-    handleOpenChange(false);
-  }, [handleOpenChange]);
-
-  return (
-    <div>
-      <Select.Root
-        value={value}
-        onValueChange={onChange}
-        open={isOpen}
-        onOpenChange={handleOpenChange}
-        isItemEqualToValue={isItemEqual}
-        itemToStringLabel={itemToStringLabel}
-        modal={modal}
-        disabled={disabled}
-      >
-        <Select.Trigger id={id} placeholder={placeholder} disabled={disabled}>
-          <div className={selectStyles.osdkSelectValueContainer}>
-            <Select.Value>{renderSingleSelectedItemLabel}</Select.Value>
-            {placeholder != null && (
-              <span className={selectStyles.osdkSelectPlaceholder}>
-                {placeholder}
-              </span>
-            )}
-          </div>
-          {hasValue && (
-            <span
-              role="button"
-              aria-label="Clear"
-              className={selectStyles.osdkSelectClear}
-              aria-disabled={disabled || undefined}
-              onMouseDown={disabled ? undefined : preventTriggerOpen}
-              onClick={disabled ? undefined : handleClear}
-            >
-              <SmallCross />
-            </span>
-          )}
-          <span className={selectStyles.osdkSelectIcon}>
-            <CaretDown />
-          </span>
-        </Select.Trigger>
-        <Select.Portal ref={portalRef} container={portalContainer}>
-          {isOpen && modal && (
-            <PortalDismissLayer
-              className={dropdownStyles.osdkSelectDismissLayer}
-              onDismiss={handleDismiss}
-            />
-          )}
-          <Select.Positioner>
-            <Select.Popup>
-              {items.map((item) => {
-                const itemLabel = itemToStringLabel(item);
-                return (
-                  <Select.Item
-                    key={getKey(item)}
-                    value={item}
-                    label={itemLabel}
-                    aria-label={itemLabel}
-                  >
-                    {renderItemLabel(item)}
-                  </Select.Item>
-                );
-              })}
-            </Select.Popup>
-          </Select.Positioner>
-        </Select.Portal>
-      </Select.Root>
-    </div>
-  );
-});
-
-const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
-  V,
-  Multiple extends boolean,
->({
-  id,
-  value,
-  onChange,
-  items,
-  itemToStringLabel,
-  renderItemLabel,
-  getKey,
-  isItemEqual,
-  isMultiple,
-  isSearchable,
-  placeholder,
+  isSearchable = false,
+  placeholder = "Select…",
   portalRef,
   portalContainer,
   query,
   onQueryChange,
-  disableClientSideFiltering,
+  disableClientSideFiltering = false,
   popupStatus,
   trailingItem,
   onBlur,
   modal = true,
   disabled,
-}: InnerComboboxProps<V, Multiple>): React.ReactElement {
-  const [open, setOpen] = useState(false);
-  const isOpen = !disabled && open;
+}: ResolvedDropdownProps<V, Multiple>): React.ReactElement {
+  // The parent routes all multiple selections to MultipleDropdown. TypeScript
+  // cannot narrow a conditional type from that runtime branch.
+  const selectedItem = (value ?? null) as V | null;
 
-  const hasValue = isMultiple
-    ? Array.isArray(value) && value.length > 0
-    : value != null;
-
-  const renderSingleSelectedItemLabel = useCallback(
-    (selectedValue: V | null) =>
-      selectedValue == null ? null : renderItemLabel(selectedValue),
-    [renderItemLabel],
+  const isSelected = useCallback(
+    (item: V) =>
+      selectedItem != null &&
+      (isItemEqual?.(item, selectedItem) ?? item === selectedItem),
+    [isItemEqual, selectedItem],
   );
-
-  const handleOpenChange = useCallback(
-    (nextOpen: boolean) => {
-      setOpen(nextOpen);
-      if (!nextOpen) {
-        onBlur?.();
-      }
-    },
-    [onBlur],
-  );
-
-  // Mark the field as touched on every value change so RHF revalidates
-  // immediately — especially important for multi-select where the popup
-  // stays open after toggling an item.
-  const handleValueChange: typeof onChange = useCallback(
-    (...args: Parameters<NonNullable<typeof onChange>>) => {
-      onChange?.(...args);
-      // Multi-select: popover stays open, so fire onBlur directly.
-      // Single-select: popover closes on selection, handleOpenChange(false)
-      // already fires onBlur.
-      if (isMultiple) {
-        onBlur?.();
-      }
-    },
-    [onChange, onBlur, isMultiple],
-  );
-
-  const handleClear = useCallback(() => {
-    // TypeScript can't narrow the conditional type `Multiple extends true ? V[] : V`
-    // at runtime, so we cast through the known parameter type at this single call site.
-    const cleared = isMultiple ? (EMPTY_ARRAY as V[]) : null;
-    (handleValueChange as (v: V[] | V | null) => void)(cleared);
-    // Single-select: close after clearing. Multi-select: keep open for continued selection.
-    if (!isMultiple) {
-      handleOpenChange(false);
-    }
-  }, [isMultiple, handleValueChange, handleOpenChange]);
-
-  const handleRemoveItem = useCallback(
-    (itemToRemove: V) => {
-      if (!isMultiple || !Array.isArray(value)) {
-        return;
-      }
-      const next = value.filter((v) =>
-        isItemEqual != null
-          ? !isItemEqual(v, itemToRemove)
-          : v !== itemToRemove,
-      );
-      (handleValueChange as (v: V[] | V | null) => void)(next);
-    },
-    [isMultiple, value, handleValueChange, isItemEqual],
-  );
-
-  const handleDismiss = useCallback(() => {
-    handleOpenChange(false);
-  }, [handleOpenChange]);
-
-  const renderItem = useCallback(
-    (item: V) => {
-      const itemLabel = itemToStringLabel(item);
+  const itemRenderer = useCallback<ItemRenderer<V>>(
+    (item, { handleClick, modifiers }) => {
+      if (!modifiers.matchesPredicate) return null;
       return (
-        <Combobox.Item key={getKey(item)} value={item} aria-label={itemLabel}>
-          {isMultiple && (
-            <Combobox.ItemIndicator>
-              <Tick />
-            </Combobox.ItemIndicator>
-          )}
-          {renderItemLabel(item)}
-        </Combobox.Item>
+        <MenuItem
+          active={modifiers.active}
+          key={getKey(item)}
+          onClick={handleClick}
+          roleStructure="listoption"
+          selected={isSelected(item)}
+          text={renderItemLabel(item)}
+        />
       );
     },
-    [getKey, isMultiple, itemToStringLabel, renderItemLabel],
+    [getKey, isSelected, renderItemLabel],
+  );
+  const itemPredicate = useCallback(
+    (nextQuery: string, item: V) =>
+      disableClientSideFiltering ||
+      itemToStringLabel(item)
+        .toLocaleLowerCase()
+        .includes(nextQuery.toLocaleLowerCase()),
+    [disableClientSideFiltering, itemToStringLabel],
+  );
+  const itemListRenderer = useDropdownItemListRenderer<V>(
+    popupStatus,
+    trailingItem,
+  );
+  const handleItemSelect = useCallback(
+    (item: V) => {
+      // SingleDropdown is only reached when isMultiple is false.
+      (onChange as ((nextValue: V) => void) | undefined)?.(item);
+      onBlur?.();
+    },
+    [onBlur, onChange],
   );
 
   return (
-    <div>
-      <Combobox.Root
-        value={value}
-        onValueChange={handleValueChange}
-        open={isOpen}
-        onOpenChange={handleOpenChange}
-        multiple={isMultiple}
-        itemToStringLabel={itemToStringLabel}
-        isItemEqualToValue={isItemEqual}
-        items={items}
-        inputValue={query}
-        onInputValueChange={onQueryChange}
-        filter={disableClientSideFiltering ? null : undefined}
+    <Select<V>
+      disabled={disabled}
+      filterable={isSearchable}
+      fill={true}
+      itemListRenderer={itemListRenderer}
+      itemPredicate={itemPredicate}
+      itemRenderer={itemRenderer}
+      items={items}
+      itemsEqual={isItemEqual}
+      noResults={NO_RESULTS}
+      onItemSelect={handleItemSelect}
+      onQueryChange={onQueryChange}
+      placeholder="Search…"
+      popoverProps={{
+        hasBackdrop: modal,
+        minimal: true,
+        portalContainer: resolvePortalContainerElement(portalContainer),
+        popoverRef: portalRef,
+      }}
+      query={query}
+      resetOnClose={true}
+    >
+      <Button
+        alignText="start"
         disabled={disabled}
-      >
-        <Combobox.Trigger
-          id={id}
-          disabled={disabled}
-          className={
-            isMultiple ? comboboxStyles.osdkComboboxTriggerMulti : undefined
-          }
-        >
-          <div className={comboboxStyles.osdkComboboxValueContainer}>
-            {isMultiple && Array.isArray(value) && value.length > 0 ? (
-              <div className={comboboxStyles.osdkComboboxTriggerChips}>
-                {value.map((item: V) => (
-                  <span
-                    key={getKey(item)}
-                    className={comboboxStyles.osdkComboboxTriggerChip}
-                  >
-                    {renderItemLabel(item)}
-                    <span
-                      role="button"
-                      aria-label={`Remove ${itemToStringLabel(item)}`}
-                      className={comboboxStyles.osdkComboboxTriggerChipRemove}
-                      aria-disabled={disabled || undefined}
-                      onMouseDown={disabled ? undefined : preventTriggerOpen}
-                      onClick={
-                        disabled ? undefined : () => handleRemoveItem(item)
-                      }
-                    >
-                      <Cross size={12} />
-                    </span>
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <>
-                <Combobox.Value>{renderSingleSelectedItemLabel}</Combobox.Value>
-                {!hasValue && placeholder != null && (
-                  <span className={comboboxStyles.osdkComboboxPlaceholder}>
-                    {placeholder}
-                  </span>
-                )}
-              </>
-            )}
-          </div>
-          {hasValue && (
-            <span
-              role="button"
-              aria-label="Clear"
-              className={comboboxStyles.osdkComboboxClear}
-              aria-disabled={disabled || undefined}
-              onMouseDown={disabled ? undefined : preventTriggerOpen}
-              onClick={disabled ? undefined : handleClear}
-            >
-              <SmallCross />
-            </span>
-          )}
-          <Combobox.Icon>
-            <CaretDown />
-          </Combobox.Icon>
-        </Combobox.Trigger>
-        <Combobox.Portal ref={portalRef} container={portalContainer}>
-          {isOpen && modal && (
-            <PortalDismissLayer
-              className={dropdownStyles.osdkComboboxDismissLayer}
-              onDismiss={handleDismiss}
-            />
-          )}
-          <Combobox.Positioner>
-            <Combobox.Popup>
-              {isSearchable && (
-                <div className={comboboxStyles.osdkComboboxPopupSearchInput}>
-                  <Combobox.SearchInput placeholder="Search…" />
-                </div>
-              )}
-              {popupStatus}
-              {/* Hide "No results" when popupStatus provides its own message (e.g. "Searching…") */}
-              {popupStatus == null && (
-                <Combobox.Empty>No results</Combobox.Empty>
-              )}
-              <Combobox.List>
-                <Combobox.Collection>{renderItem}</Combobox.Collection>
-                {trailingItem}
-              </Combobox.List>
-            </Combobox.Popup>
-          </Combobox.Positioner>
-        </Combobox.Portal>
-      </Combobox.Root>
-    </div>
+        endIcon={<CaretDown />}
+        fill={true}
+        id={id}
+        text={
+          selectedItem == null ? placeholder : renderItemLabel(selectedItem)
+        }
+      />
+    </Select>
   );
 });
 
-// Prevent the clear/remove click from bubbling into the trigger
-// and toggling the dropdown open/closed.
-function preventTriggerOpen(e: React.MouseEvent): void {
-  e.stopPropagation();
-  e.preventDefault();
+const MultipleDropdown = typedReactMemo(function MultipleDropdownFn<
+  V,
+  Multiple extends boolean,
+>({
+  id,
+  value,
+  onChange,
+  items,
+  itemToStringLabel,
+  renderItemLabel,
+  getKey,
+  isItemEqual,
+  isSearchable = false,
+  placeholder = "Select…",
+  portalRef,
+  portalContainer,
+  query,
+  onQueryChange,
+  disableClientSideFiltering = false,
+  popupStatus,
+  trailingItem,
+  onBlur,
+  modal = true,
+  disabled,
+}: ResolvedDropdownProps<V, Multiple>): React.ReactElement {
+  const selectedItems = Array.isArray(value) ? value : EMPTY_ARRAY;
+  const isSelected = useCallback(
+    (item: V) =>
+      selectedItems.some(
+        (selectedItem) =>
+          isItemEqual?.(item, selectedItem) ?? item === selectedItem,
+      ),
+    [isItemEqual, selectedItems],
+  );
+  const emitChange = useCallback(
+    (nextValue: V[]) => {
+      // MultipleDropdown is only reached when isMultiple is true.
+      (onChange as ((nextValue: V[]) => void) | undefined)?.(nextValue);
+      onBlur?.();
+    },
+    [onBlur, onChange],
+  );
+  const handleItemSelect = useCallback(
+    (item: V) => {
+      emitChange(
+        isSelected(item)
+          ? selectedItems.filter(
+              (selectedItem) =>
+                !(isItemEqual?.(item, selectedItem) ?? item === selectedItem),
+            )
+          : [...selectedItems, item],
+      );
+    },
+    [emitChange, isItemEqual, isSelected, selectedItems],
+  );
+  const handleRemove = useCallback(
+    (item: V) => {
+      emitChange(
+        selectedItems.filter(
+          (selectedItem) =>
+            !(isItemEqual?.(item, selectedItem) ?? item === selectedItem),
+        ),
+      );
+    },
+    [emitChange, isItemEqual, selectedItems],
+  );
+  const handleClear = useCallback(() => emitChange([]), [emitChange]);
+  const itemRenderer = useCallback<ItemRenderer<V>>(
+    (item, { handleClick, modifiers }) => {
+      if (!modifiers.matchesPredicate) return null;
+      return (
+        <MenuItem
+          active={modifiers.active}
+          key={getKey(item)}
+          onClick={handleClick}
+          roleStructure="listoption"
+          selected={isSelected(item)}
+          shouldDismissPopover={false}
+          text={renderItemLabel(item)}
+        />
+      );
+    },
+    [getKey, isSelected, renderItemLabel],
+  );
+  const itemPredicate = useCallback(
+    (nextQuery: string, item: V) =>
+      disableClientSideFiltering ||
+      itemToStringLabel(item)
+        .toLocaleLowerCase()
+        .includes(nextQuery.toLocaleLowerCase()),
+    [disableClientSideFiltering, itemToStringLabel],
+  );
+  const itemListRenderer = useDropdownItemListRenderer<V>(
+    popupStatus,
+    trailingItem,
+  );
+
+  return (
+    <MultiSelect<V>
+      disabled={disabled}
+      fill={true}
+      itemListRenderer={itemListRenderer}
+      itemPredicate={itemPredicate}
+      itemRenderer={itemRenderer}
+      items={items}
+      itemsEqual={isItemEqual}
+      noResults={NO_RESULTS}
+      onClear={handleClear}
+      onItemSelect={handleItemSelect}
+      onQueryChange={onQueryChange}
+      onRemove={handleRemove}
+      placeholder={placeholder}
+      popoverProps={{
+        hasBackdrop: modal,
+        minimal: true,
+        portalContainer: resolvePortalContainerElement(portalContainer),
+        popoverRef: portalRef,
+      }}
+      query={query}
+      selectedItems={selectedItems}
+      tagInputProps={{
+        inputProps: { "aria-label": placeholder, id, readOnly: !isSearchable },
+      }}
+      tagRenderer={renderItemLabel}
+    />
+  );
+});
+
+function useDropdownItemListRenderer<V>(
+  popupStatus: React.ReactNode,
+  trailingItem: React.ReactNode,
+): ItemListRenderer<V> | undefined {
+  const itemListRenderer = useCallback<ItemListRenderer<V>>(
+    ({ filteredItems, itemsParentRef, menuProps, renderItem }) => {
+      const renderedItems = filteredItems.map(renderItem).filter(Boolean);
+      return (
+        <div>
+          {popupStatus}
+          <Menu role="listbox" {...menuProps} ulRef={itemsParentRef}>
+            {renderedItems.length > 0 ? renderedItems : NO_RESULTS}
+          </Menu>
+          {trailingItem}
+        </div>
+      );
+    },
+    [popupStatus, trailingItem],
+  );
+  return popupStatus == null && trailingItem == null
+    ? undefined
+    : itemListRenderer;
 }
 
 function defaultItemToStringLabel<V>(item: V): string {
-  if (item == null || typeof item !== "object") {
-    return String(item);
-  }
-  if ("label" in item && item.label != null && typeof item.label === "string") {
-    return item.label;
-  }
+  if (item == null || typeof item !== "object") return String(item);
+  if ("label" in item && typeof item.label === "string") return item.label;
   return String(item);
 }

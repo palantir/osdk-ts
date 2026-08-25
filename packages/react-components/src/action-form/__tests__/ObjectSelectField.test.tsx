@@ -310,7 +310,9 @@ describe("ObjectSelectField", () => {
     mockLoadedState();
     renderObjectSelect({ disabled: true });
 
-    const trigger = screen.getByRole("combobox") as HTMLButtonElement;
+    const trigger = screen.getByRole("button", {
+      name: "Search…",
+    }) as HTMLButtonElement;
     expect(trigger.disabled).toBe(true);
     fireEvent.click(trigger);
     fireEvent.keyDown(trigger, { key: "ArrowDown" });
@@ -384,15 +386,11 @@ function renderObjectSelect(
 }
 
 function getPopup(): Element | null {
-  return document.querySelector("[class*='osdkComboboxPopup']");
+  return document.querySelector("[role='listbox']");
 }
 
 async function openCombobox(): Promise<void> {
-  const input = screen.getByRole("combobox");
-  fireEvent.focus(input);
-  fireEvent.keyDown(input, { key: "ArrowDown" });
-  // In virtualized mode, items may not have role="option" in HappyDOM
-  // (no layout engine), so wait for the popup container instead.
+  fireEvent.click(screen.getByRole("button", { name: "Search…" }));
   await vi.waitFor(() => {
     expect(getPopup()).not.toBeNull();
   });

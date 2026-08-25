@@ -298,8 +298,8 @@ function BaseTableInner<TData extends RowData>({
     );
 
   // Use pointerdown instead of click to detect outside interactions.
-  // base-ui's Select renders a full-screen backdrop that intercepts
-  // pointerdown to close the popup. By the time the click event fires,
+  // Blueprint's modal Select popover renders a full-screen backdrop that
+  // intercepts pointerdown to close the popup. By the time click fires,
   // the backdrop is unmounted and event.target falls through to <body>,
   // which would incorrectly trigger the outside-click handler.
   // At pointerdown time the backdrop is still in the DOM, so

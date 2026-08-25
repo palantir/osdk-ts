@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Input } from "@base-ui/react/input";
+import { InputGroup } from "@blueprintjs/core";
 import { Error } from "@blueprintjs/icons";
 import classNames from "classnames";
 import React from "react";
@@ -47,7 +47,7 @@ function TextInputCellFieldInner({
         [styles.osdkEditedInput]: isEdited,
       })}
     >
-      <Input
+      <InputGroup
         type={inputType}
         value={inputValue}
         className={styles.osdkEditableInput}

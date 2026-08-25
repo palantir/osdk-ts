@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Button, InputGroup } from "@blueprintjs/core";
 import { ChevronDown, ChevronUp, Cross } from "@blueprintjs/icons";
 import React, { useCallback } from "react";
 
@@ -39,9 +40,7 @@ export function PdfViewerSearchBar({
   onClose,
 }: PdfViewerSearchBarProps): React.ReactElement {
   const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      onQueryChange(e.target.value);
-    },
+    (nextQuery: string) => onQueryChange(nextQuery),
     [onQueryChange],
   );
 
@@ -71,45 +70,41 @@ export function PdfViewerSearchBar({
 
   return (
     <div className={styles.searchBar}>
-      <input
+      <InputGroup
         autoFocus={true}
-        className={styles.searchInput}
-        type="text"
-        value={query}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
-        placeholder="Find in document..."
         aria-label="Search in PDF"
+        className={styles.searchInput}
+        onKeyDown={handleKeyDown}
+        onValueChange={handleInputChange}
+        placeholder="Find in document..."
+        value={query}
       />
       {matchDisplay.length > 0 && (
         <span className={styles.matchCount}>{matchDisplay}</span>
       )}
-      <button
-        className={styles.navButton}
-        onClick={onPrev}
-        disabled={totalMatches === 0}
+      <Button
         aria-label="Previous match"
-        type="button"
-      >
-        <ChevronUp size={16} />
-      </button>
-      <button
-        className={styles.navButton}
-        onClick={onNext}
         disabled={totalMatches === 0}
+        icon={<ChevronUp size={16} />}
+        onClick={onPrev}
+        size="small"
+        variant="minimal"
+      />
+      <Button
         aria-label="Next match"
-        type="button"
-      >
-        <ChevronDown size={16} />
-      </button>
-      <button
-        className={styles.closeButton}
-        onClick={onClose}
+        disabled={totalMatches === 0}
+        icon={<ChevronDown size={16} />}
+        onClick={onNext}
+        size="small"
+        variant="minimal"
+      />
+      <Button
         aria-label="Close search"
-        type="button"
-      >
-        <Cross size={16} />
-      </button>
+        icon={<Cross size={16} />}
+        onClick={onClose}
+        size="small"
+        variant="minimal"
+      />
     </div>
   );
 }

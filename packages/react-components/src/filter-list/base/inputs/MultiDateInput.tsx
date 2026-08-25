@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
+import { Button } from "@blueprintjs/core";
+import { DateInput } from "@blueprintjs/datetime";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 
-import { DatePicker } from "../../../shared/calendar/index.js";
 import {
   formatDateForDisplay,
   formatDateForInput,
@@ -26,6 +26,8 @@ import {
 
 import styles from "./MultiDateInput.module.css";
 import sharedStyles from "./shared.module.css";
+
+const ADD_DATE_INPUT_PROPS = { "aria-label": "Add date" };
 
 interface MultiDateInputProps {
   selectedDates: Date[];
@@ -53,8 +55,9 @@ function MultiDateInputInner({
   formatDate,
 }: MultiDateInputProps): React.ReactElement {
   const addDate = useCallback(
-    (date: Date | null) => {
-      if (date == null) return;
+    (isoDate: string | null) => {
+      if (isoDate == null) return;
+      const date = new Date(isoDate);
       const dateStr = formatDateForInput(date);
       const exists = selectedDates.some(
         (d) => formatDateForInput(d) === dateStr,
@@ -105,13 +108,12 @@ function MultiDateInputInner({
       )}
 
       <div className={styles.calendarContainer}>
-        <DatePicker
+        <DateInput
           value={null}
           onChange={addDate}
-          min={minDate}
-          max={maxDate}
-          ariaLabel="Add date"
-          modal={false}
+          minDate={minDate}
+          maxDate={maxDate}
+          inputProps={ADD_DATE_INPUT_PROPS}
           formatDate={formatDate}
         />
       </div>

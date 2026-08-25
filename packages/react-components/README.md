@@ -42,7 +42,7 @@ The following peer dependencies are required:
 npm install react react-dom classnames @osdk/react @osdk/client @osdk/api
 ```
 
-- `react`, `@types/react`, `react-dom` - React 17, 18, or 19
+- `react`, `@types/react`, `react-dom` - React 18 or 19
 - `classnames` - Utility for conditionally joining CSS class names
 - `@osdk/react`, `@osdk/api`, `@osdk/client` - The packages required for data-handling
 
@@ -108,16 +108,6 @@ To add your own brand overrides on top:
 
 @import "@osdk/react-components/styles.css" layer(osdk.styles);
 @import "./user-brand.css" layer(user.brand);
-```
-
-#### Portal isolation (required)
-
-Add `isolation: isolate` to your app's root element. This is required for Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
-
-```css
-#root {
-  isolation: isolate;
-}
 ```
 
 ## Components
@@ -213,17 +203,13 @@ The codebase is organized to support the 2-layer architecture:
 
 ```
 src/
-├── base-components/         # Reusable UI primitives (internal use only)
-│   ├── select/
-│   ├── checkbox/
-│   ├── dialog/
-│   └── ...
 ├── object-table/           # OSDK component folder
 │   ├── ObjectTable.tsx     # OSDK data layer component
 │   ├── Table.tsx           # Base component (exported as BaseTable)
 │   ├── hooks/              # React hooks for table functionality
 │   ├── utils/              # Helper utilities and types
 │   └── components/         # Supporting React components
+├── shared/                 # OSDK-specific shared behavior
 └── public/
     └── experimental/       # Public API exports (one file per component)
         ├── object-table.ts
@@ -238,11 +224,11 @@ src/
 
 - **OSDK Components**: Exported through individual entry points under `experimental/` (e.g., `experimental/object-table`, `experimental/filter-list`)
 - **Base Components**: Select base components are exported for advanced use cases (e.g., `BaseTable`, `BaseFilterList`)
-- **UI Primitives**: The `base-components/` folder contains internal UI primitives that are **NOT exported**
+- **UI Primitives**: Use Blueprint components directly instead of adding OSDK wrappers
 
 ### Why Not Export UI Primitives?
 
-This package focuses on complex, Ontology-aware components with built-in data fetching. For simple UI components (buttons, inputs, dialogs), users should use established component libraries like Blueprint.js or their preferred design system. This approach:
+This package focuses on complex, Ontology-aware components with built-in data fetching. For simple UI components (buttons, inputs, dialogs), users should use Blueprint directly. This approach:
 
 - Keeps the package focused on its core value proposition
 - Avoids duplicating well-solved UI problems

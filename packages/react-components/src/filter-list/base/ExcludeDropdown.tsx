@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { Menu } from "@base-ui/react/menu";
+import { Button, Menu, MenuItem, Popover } from "@blueprintjs/core";
 import React, { memo, useCallback } from "react";
 
 import { CheckIcon, ChevronDownIcon, ExcludeIcon } from "./FilterIcons.js";
-import { useFilterListBoundary } from "./FilterListBoundaryContext.js";
 
 import styles from "./ExcludeDropdown.module.css";
 
@@ -31,7 +30,6 @@ function ExcludeDropdownInner({
   isExcluding,
   onToggleExclude,
 }: ExcludeDropdownProps): React.ReactElement {
-  const collisionBoundary = useFilterListBoundary();
   const label = isExcluding ? "Excluding" : "Keeping";
 
   const handleSelectKeeping = useCallback(() => {
@@ -48,45 +46,35 @@ function ExcludeDropdownInner({
 
   return (
     <div className={styles.excludeDropdownContainer}>
-      <Menu.Root>
-        <Menu.Trigger
+      <Popover
+        placement="bottom-start"
+        content={
+          <Menu>
+            <MenuItem
+              icon={!isExcluding ? <CheckIcon /> : undefined}
+              onClick={handleSelectKeeping}
+              text="Keeping"
+            />
+            <MenuItem
+              icon={isExcluding ? <CheckIcon /> : undefined}
+              onClick={handleSelectExcluding}
+              text="Excluding"
+            />
+          </Menu>
+        }
+      >
+        <Button
           className={styles.trigger}
           aria-label={label}
           data-excluding={isExcluding || undefined}
+          icon={isExcluding ? <ExcludeIcon /> : undefined}
+          rightIcon={<ChevronDownIcon />}
+          text={label}
+          variant="minimal"
         >
-          {isExcluding && <ExcludeIcon />}
-          <span className={styles.triggerLabel}>{label}</span>
-          <ChevronDownIcon />
-        </Menu.Trigger>
-        <Menu.Portal>
-          <Menu.Positioner
-            className={styles.positioner}
-            sideOffset={4}
-            collisionBoundary={collisionBoundary}
-          >
-            <Menu.Popup className={styles.popup}>
-              <Menu.Item
-                className={styles.menuItem}
-                onClick={handleSelectKeeping}
-              >
-                <span className={styles.menuItemCheck}>
-                  {!isExcluding && <CheckIcon />}
-                </span>
-                Keeping
-              </Menu.Item>
-              <Menu.Item
-                className={styles.menuItem}
-                onClick={handleSelectExcluding}
-              >
-                <span className={styles.menuItemCheck}>
-                  {isExcluding && <CheckIcon />}
-                </span>
-                Excluding
-              </Menu.Item>
-            </Menu.Popup>
-          </Menu.Positioner>
-        </Menu.Portal>
-      </Menu.Root>
+          {label}
+        </Button>
+      </Popover>
     </div>
   );
 }

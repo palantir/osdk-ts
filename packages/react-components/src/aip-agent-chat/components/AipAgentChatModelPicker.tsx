@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { HTMLSelect } from "@blueprintjs/core";
 import classNames from "classnames";
 import * as React from "react";
 
@@ -28,7 +29,7 @@ export interface AipAgentChatModelPickerProps {
 }
 
 /**
- * Native-select model picker rendered in the composer footer when the
+ * Model picker rendered in the composer footer when the
  * OSDK wrapper is given an `availableModels` list. Operates on Foundry
  * LMS model API names. Renders a read-only label when exactly one model
  * is available so the active model stays visible without offering a
@@ -61,18 +62,13 @@ export function AipAgentChatModelPicker({
   }
 
   return (
-    <select
+    <HTMLSelect
       aria-label="Active model"
-      className={classNames(styles.modelPicker, className)}
+      className={className}
       disabled={disabled}
       onChange={handleChange}
+      options={models}
       value={activeModel}
-    >
-      {models.map((modelName) => (
-        <option key={modelName} value={modelName}>
-          {modelName}
-        </option>
-      ))}
-    </select>
+    />
   );
 }

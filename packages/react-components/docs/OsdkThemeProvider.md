@@ -218,7 +218,7 @@ export function DashboardEmbed() {
 }
 ```
 
-Trade-off: portals from `@base-ui/react` / Blueprint render in a portal container that is **not** a descendant of `scopeRef`, so dropdowns and tooltips opened from inside the scoped subtree will follow the document-level theme, not the scoped one. Use the default (`<html>`) target unless you specifically need per-region theming.
+Trade-off: Blueprint portals render in a portal container that is **not** a descendant of `scopeRef`, so dropdowns and tooltips opened from inside the scoped subtree will follow the document-level theme, not the scoped one. Use the default (`<html>`) target unless you specifically need per-region theming.
 
 ## Branching on the resolved theme in JS
 

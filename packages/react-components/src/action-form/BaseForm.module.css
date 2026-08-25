@@ -63,8 +63,8 @@
   cursor: help;
 }
 
-/* Replaces Tooltip.Trigger's default <button> with a <span> to avoid
-   nested buttons. inline-flex keeps a real layout box for tooltip anchoring. */
+/* Wrapping the button avoids making the disabled button itself the tooltip
+   target. inline-flex keeps a real layout box for tooltip anchoring. */
 .osdkTooltipTriggerWrapper {
   display: inline-flex;
 }

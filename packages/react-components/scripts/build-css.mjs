@@ -96,9 +96,19 @@ async function buildTokenCss() {
   return result.css;
 }
 
+async function buildBlueprintCss() {
+  const blueprintEntry = path.join(srcDir, "blueprint.css");
+  const content = await fs.readFile(blueprintEntry, "utf-8");
+  const result = await postcss([postcssImport()]).process(content, {
+    from: blueprintEntry,
+  });
+  return result.css;
+}
+
 async function processCssModules() {
   // Build token CSS from src/tokens.css (resolves all @import chains)
   const tokenCss = await buildTokenCss();
+  const blueprintCss = await buildBlueprintCss();
 
   // Process component CSS modules
   const cssFiles = await findCssModules(buildDir);
@@ -131,7 +141,9 @@ export default styles;
   }
 
   // Write combined styles.css with CSS layers
-  const combinedCss = `/* @osdk/react-components - Combined styles with design tokens */
+  const combinedCss = `/* @osdk/react-components - Blueprint and component styles */
+
+${blueprintCss}
 
 @layer osdk.tokens, osdk.components;
 

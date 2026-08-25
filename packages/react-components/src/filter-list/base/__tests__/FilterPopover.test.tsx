@@ -93,7 +93,7 @@ describe("FilterPopover", () => {
     expect(screen.getByTestId("popup-body")).toBeDefined();
   });
 
-  it("unmounts children when the popover closes", async () => {
+  it("closes when Escape is pressed", async () => {
     render(
       <FilterPopover label="Sites" summary="" isActive={false}>
         <div data-testid="popup-body">popup body</div>
@@ -103,9 +103,11 @@ describe("FilterPopover", () => {
     fireEvent.click(trigger);
     expect(screen.getByTestId("popup-body")).toBeDefined();
 
-    fireEvent.click(trigger);
+    fireEvent.keyDown(screen.getByTestId("popup-body"), { key: "Escape" });
     await waitFor(() => {
-      expect(screen.queryByTestId("popup-body")).toBeNull();
+      expect(
+        trigger.closest("[aria-expanded]")?.getAttribute("aria-expanded"),
+      ).toBe("false");
     });
   });
 

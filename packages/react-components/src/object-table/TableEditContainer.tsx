@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { Button } from "@blueprintjs/core";
 import { Error } from "@blueprintjs/icons";
 import type { RowData } from "@tanstack/react-table";
 import React, { type ReactElement, useCallback, useState } from "react";
 
-import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import type { EditableConfig } from "./utils/types.js";
 
 import styles from "./TableEditContainer.module.css";
@@ -100,23 +100,21 @@ export function TableEditContainer<TData extends RowData>({
       )}
       <div className={styles.editButtons}>
         {!isInEditMode && canToggleEditMode && (
-          <ActionButton variant="primary" onClick={handleEnterEditMode}>
+          <Button intent="primary" onClick={handleEnterEditMode}>
             Edit Table
-          </ActionButton>
+          </Button>
         )}
         {isInEditMode && canToggleEditMode && (
-          <ActionButton variant="secondary" onClick={handleCancelEdits}>
-            Cancel
-          </ActionButton>
+          <Button onClick={handleCancelEdits}>Cancel</Button>
         )}
         {isInEditMode && !!onSubmitEdits && (
-          <ActionButton
-            variant="primary"
+          <Button
+            intent="primary"
             onClick={handleSubmitEdits}
             disabled={!hasEdits || isSubmitting || hasValidationError}
           >
             Submit Edits
-          </ActionButton>
+          </Button>
         )}
       </div>
     </div>

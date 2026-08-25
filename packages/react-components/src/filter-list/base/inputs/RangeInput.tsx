@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
-import { Input } from "@base-ui/react/input";
+import { Button, InputGroup, type InputGroupProps } from "@blueprintjs/core";
+import { DateInput } from "@blueprintjs/datetime";
 import classnames from "classnames";
 import { debounce } from "lodash-es";
 import React, {
@@ -28,7 +28,6 @@ import React, {
   useState,
 } from "react";
 
-import { DatePicker } from "../../../shared/calendar/index.js";
 import {
   createHistogramBuckets,
   getMaxBucketCount,
@@ -133,7 +132,7 @@ export interface RangeInputConfig<T> {
   maxLabel: string;
   formatTooltip: (min: T, max: T, count: number) => string;
   formatPlaceholder?: (value: T) => string;
-  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+  inputProps?: Omit<InputGroupProps, "onChange" | "type" | "value">;
   /**
    * For `inputType === "date"`: forwarded to each `DatePicker` (From/To)
    * so the histogram From/To inputs render the consumer-provided display
@@ -941,22 +940,37 @@ function DateRangeInputs({
   minLabel,
   maxLabel,
 }: DateRangeInputsProps): React.ReactElement {
+  const minInputProps = useMemo(() => ({ "aria-label": minLabel }), [minLabel]);
+  const maxInputProps = useMemo(() => ({ "aria-label": maxLabel }), [maxLabel]);
+  const handleMinChange = useCallback(
+    (isoDate: string | null) => {
+      onMinChange(isoDate == null ? null : new Date(isoDate));
+    },
+    [onMinChange],
+  );
+  const handleMaxChange = useCallback(
+    (isoDate: string | null) => {
+      onMaxChange(isoDate == null ? null : new Date(isoDate));
+    },
+    [onMaxChange],
+  );
+
   return (
     <div className={styles.rangeInputs}>
-      <DatePicker
-        value={minValue ?? null}
-        onChange={onMinChange}
-        max={maxValue}
+      <DateInput
+        value={minValue?.toISOString() ?? null}
+        onChange={handleMinChange}
+        maxDate={maxValue}
         placeholder={minLabel}
-        ariaLabel={minLabel}
+        inputProps={minInputProps}
         formatDate={formatDate}
       />
-      <DatePicker
-        value={maxValue ?? null}
-        onChange={onMaxChange}
-        min={minValue}
+      <DateInput
+        value={maxValue?.toISOString() ?? null}
+        onChange={handleMaxChange}
+        minDate={minValue}
         placeholder={maxLabel}
-        ariaLabel={maxLabel}
+        inputProps={maxInputProps}
         formatDate={formatDate}
       />
     </div>
@@ -968,7 +982,7 @@ interface RangeBoundInputProps {
   value: string;
   onChange: (next: string) => void;
   placeholder: string | undefined;
-  inputProps: React.InputHTMLAttributes<HTMLInputElement> | undefined;
+  inputProps: Omit<InputGroupProps, "onChange" | "type" | "value"> | undefined;
   ariaLabel: string;
 }
 
@@ -987,15 +1001,15 @@ function RangeBoundInput({
     [onChange],
   );
   return (
-    <Input
+    <InputGroup
+      {...inputProps}
       id={id}
       type="number"
       className={styles.input}
-      value={value}
+      value={String(value)}
       onChange={handleNativeChange}
       placeholder={placeholder}
       aria-label={ariaLabel}
-      {...inputProps}
     />
   );
 }

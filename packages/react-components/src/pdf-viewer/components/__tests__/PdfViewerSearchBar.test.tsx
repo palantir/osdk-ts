@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Classes } from "@blueprintjs/core";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -35,6 +36,19 @@ afterEach(() => {
 });
 
 describe("PdfViewerSearchBar", () => {
+  it("uses Blueprint input and button controls", () => {
+    render(<PdfViewerSearchBar {...defaultProps} />);
+
+    expect(
+      screen.getByLabelText("Search in PDF").classList.contains(Classes.INPUT),
+    ).toBe(true);
+    expect(
+      screen
+        .getByLabelText("Previous match")
+        .classList.contains(Classes.BUTTON),
+    ).toBe(true);
+  });
+
   it("should render search input", () => {
     render(<PdfViewerSearchBar {...defaultProps} />);
 

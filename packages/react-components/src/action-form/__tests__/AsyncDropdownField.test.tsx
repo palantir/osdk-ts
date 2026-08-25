@@ -77,19 +77,14 @@ function renderAsyncDropdown(
 }
 
 async function openCombobox(): Promise<void> {
-  const input = screen.getByRole("combobox");
-  fireEvent.focus(input);
-  fireEvent.keyDown(input, { key: "ArrowDown" });
-  // In virtualized mode, items render inside VirtualizedItemList and may
-  // not immediately have role="option" in HappyDOM (no layout engine),
-  // so check for the popup container instead.
+  fireEvent.click(screen.getByRole("button", { name: "Select…" }));
   await vi.waitFor(() => {
     expect(getPopup()).not.toBeNull();
   });
 }
 
 function getPopup(): Element | null {
-  return document.querySelector("[class*='osdkComboboxPopup']");
+  return document.querySelector("[role=listbox]");
 }
 
 describe("AsyncDropdownField", () => {
@@ -119,9 +114,7 @@ describe("AsyncDropdownField", () => {
         />,
       );
 
-      const input = screen.getByRole("combobox");
-      fireEvent.focus(input);
-      fireEvent.keyDown(input, { key: "ArrowDown" });
+      fireEvent.click(screen.getByRole("button", { name: "Select…" }));
       await vi.waitFor(() => {
         expect(getPopup()).not.toBeNull();
       });
@@ -164,7 +157,7 @@ describe("AsyncDropdownField", () => {
       await openCombobox();
 
       await vi.waitFor(() => {
-        expect(getPopup()?.textContent).toContain("Searching");
+        expect(screen.getByText("Searching…")).toBeDefined();
       });
     });
 
@@ -173,7 +166,7 @@ describe("AsyncDropdownField", () => {
       await openCombobox();
 
       await vi.waitFor(() => {
-        expect(getPopup()?.textContent).toContain("Loading");
+        expect(screen.getByText("Loading…")).toBeDefined();
       });
     });
 
@@ -194,7 +187,9 @@ describe("AsyncDropdownField", () => {
       await openCombobox();
 
       await vi.waitFor(() => {
-        expect(getPopup()?.textContent).toContain("Connection refused");
+        expect(screen.getByRole("alert").textContent).toBe(
+          "Connection refused",
+        );
       });
     });
 

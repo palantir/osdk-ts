@@ -22,14 +22,6 @@ import { MultiDateInput } from "../MultiDateInput.js";
 import { SingleDateInput } from "../SingleDateInput.js";
 import { TimelineInput } from "../TimelineInput.js";
 
-vi.mock("../../../../shared/calendar/LazyDateCalendar.js", async () => {
-  const { default: DateCalendar } = await vi.importActual<
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    typeof import("../../../../shared/calendar/DateCalendar.js")
-  >("../../../../shared/calendar/DateCalendar.js");
-  return { LazyDateCalendar: DateCalendar };
-});
-
 afterEach(cleanup);
 
 const slashFormat = (d: Date): string =>

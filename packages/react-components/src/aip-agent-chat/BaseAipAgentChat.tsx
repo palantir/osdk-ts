@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
+import { Button, Callout, Intent } from "@blueprintjs/core";
 import type { UIMessage } from "@osdk/aip-core";
 import type { ChatStatus } from "@osdk/react/experimental/aip";
 import classNames from "classnames";
 import * as React from "react";
 
-import { ActionButton } from "../base-components/action-button/ActionButton.js";
-import { Callout } from "../base-components/callout/Callout.js";
 import { AipAgentChatComposer } from "./components/AipAgentChatComposer.js";
 import { AipAgentChatMessageList } from "./components/AipAgentChatMessageList.js";
 
@@ -109,17 +108,14 @@ export const BaseAipAgentChat: React.NamedExoticComponent<BaseAipAgentChatProps>
       <div className={classNames(styles.chat, className)}>
         {error != null && (
           <Callout
-            actions={
-              <ActionButton onClick={onClearError} type="button">
-                Dismiss
-              </ActionButton>
-            }
-            intent="error"
-            title="Something went wrong"
+            intent={Intent.DANGER}
+            role="alert"
+            title="Chat request failed"
           >
             {error.message.length > 0
               ? error.message
               : "An unknown error occurred. Try again, or dismiss to keep the conversation."}
+            <Button onClick={onClearError} type="button" text="Dismiss" />
           </Callout>
         )}
         <AipAgentChatMessageList

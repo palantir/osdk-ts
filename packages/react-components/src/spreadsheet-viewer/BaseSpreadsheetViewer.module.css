@@ -74,47 +74,6 @@
   min-width: var(--osdk-spreadsheet-viewer-col-min-width);
 }
 
-/* Sheet tabs bar */
-.tabBar {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--osdk-spreadsheet-viewer-tab-gap);
-  border-top: var(--osdk-spreadsheet-viewer-tab-border);
-  background-color: var(--osdk-spreadsheet-viewer-tab-bg);
-  flex-shrink: 0;
-  overflow-x: auto;
-  padding: var(--osdk-spreadsheet-viewer-tab-bar-padding)
-    var(--osdk-spreadsheet-viewer-tab-bar-padding) 0;
-}
-
-.tab {
-  padding: var(--osdk-spreadsheet-viewer-tab-padding);
-  border: var(--osdk-spreadsheet-viewer-tab-border);
-  border-bottom: none;
-  border-radius: var(--osdk-spreadsheet-viewer-tab-border-radius)
-    var(--osdk-spreadsheet-viewer-tab-border-radius) 0 0;
-  background-color: var(--osdk-spreadsheet-viewer-tab-bg);
-  font-family: var(--osdk-typography-family-default);
-  font-size: var(--osdk-typography-size-body-x-small);
-  color: var(--osdk-typography-color-muted);
-  cursor: pointer;
-  white-space: nowrap;
-  position: relative;
-  top: 1px;
-}
-
-.tab:hover {
-  background-color: var(--osdk-spreadsheet-viewer-tab-hover-bg);
-  color: var(--osdk-typography-color-default-rest);
-}
-
-.tabActive {
-  background-color: var(--osdk-spreadsheet-viewer-tab-active-bg);
-  color: var(--osdk-typography-color-default-rest);
-  font-weight: var(--osdk-typography-weight-bold);
-  border-bottom: 1px solid var(--osdk-spreadsheet-viewer-tab-active-bg);
-}
-
 .emptySheet {
   display: flex;
   align-items: center;

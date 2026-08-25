@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
+import { Classes, Icon as BlueprintIcon } from "@blueprintjs/core";
 import { type IconName, IconSize } from "@blueprintjs/icons";
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import { useObjectSet, useOsdkMetadata } from "@osdk/react";
 import classnames from "classnames";
 import React from "react";
 
-import {
-  BlueprintIcon,
-  type Icon,
-} from "../../base-components/icon/BlueprintIcon.js";
-import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { ObjectSetFieldProps } from "../FormFieldApi.js";
 
 import styles from "./ObjectSetField.module.css";
 
-const DEFAULT_OBJECT_ICON: Icon = {
+interface ObjectSetIcon {
+  name: IconName;
+  color?: string;
+}
+
+const DEFAULT_OBJECT_ICON: ObjectSetIcon = {
   name: "cube",
   color: "var(--osdk-object-set-icon-default-color)",
 };
@@ -113,7 +114,7 @@ const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
         </>
       ) : (
         <>
-          <BlueprintIcon icon={icon} size={ICON_SIZE} />
+          <BlueprintIcon color={icon.color} icon={icon.name} size={ICON_SIZE} />
           <ObjectSetLabel
             displayName={displayName}
             totalCount={totalCount}
@@ -158,11 +159,17 @@ const ObjectSetLabel = React.memo(function ObjectSetLabelFn({
 });
 
 const OBJECT_SET_ICON_SKELETON = (
-  <SkeletonBar className={styles.osdkObjectSetIconSkeleton} />
+  <div
+    aria-hidden="true"
+    className={classnames(Classes.SKELETON, styles.osdkObjectSetIconSkeleton)}
+  />
 );
 
 const OBJECT_SET_LABEL_SKELETON = (
-  <SkeletonBar className={styles.osdkObjectSetLabelSkeleton} />
+  <div
+    aria-hidden="true"
+    className={classnames(Classes.SKELETON, styles.osdkObjectSetLabelSkeleton)}
+  />
 );
 
 function formatCount(count: string | undefined): string {
@@ -173,6 +180,9 @@ function formatCount(count: string | undefined): string {
   return Number.isNaN(num) ? count : num.toLocaleString();
 }
 
-function toComponentIcon(apiIcon: { name: string; color: string }): Icon {
+function toComponentIcon(apiIcon: {
+  name: string;
+  color: string;
+}): ObjectSetIcon {
   return { name: apiIcon.name as IconName, color: apiIcon.color };
 }

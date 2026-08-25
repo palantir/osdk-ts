@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
+import { Button, Tooltip } from "@blueprintjs/core";
 import React from "react";
-
-import { ActionButton } from "../../base-components/action-button/ActionButton.js";
-import { Tooltip } from "../../base-components/tooltip/index.js";
 
 import styles from "./CbacPickerDialogFooter.module.css";
 
@@ -35,36 +33,18 @@ export function CbacPickerDialogFooter({
   const isSubmitDisabled = submitDisabledReason != null;
 
   const submitButton = (
-    <ActionButton
-      variant="primary"
-      onClick={onConfirm}
-      disabled={isSubmitDisabled}
-    >
+    <Button intent="primary" onClick={onConfirm} disabled={isSubmitDisabled}>
       Set classification
-    </ActionButton>
+    </Button>
   );
 
   return (
     <>
-      <ActionButton variant="secondary" onClick={onCancel}>
-        Cancel
-      </ActionButton>
+      <Button onClick={onCancel}>Cancel</Button>
       {isSubmitDisabled ? (
-        <Tooltip.Root>
-          <Tooltip.Trigger
-            render={<span className={styles.tooltipTriggerWrapper} />}
-          >
-            {submitButton}
-          </Tooltip.Trigger>
-          <Tooltip.Portal>
-            <Tooltip.Positioner side="top">
-              <Tooltip.Popup>
-                {submitDisabledReason}
-                <Tooltip.Arrow />
-              </Tooltip.Popup>
-            </Tooltip.Positioner>
-          </Tooltip.Portal>
-        </Tooltip.Root>
+        <Tooltip content={submitDisabledReason} placement="top">
+          <span className={styles.tooltipTriggerWrapper}>{submitButton}</span>
+        </Tooltip>
       ) : (
         submitButton
       )}

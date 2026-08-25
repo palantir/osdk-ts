@@ -16,7 +16,15 @@
 
 import React, { createContext, useContext } from "react";
 
-import type { PortalContainer } from "./PortalDismissLayer.js";
+/**
+ * Element that receives a portal — accepts an HTMLElement, ShadowRoot, a
+ * ref to either, or `null` for default body attachment.
+ */
+export type PortalContainer =
+  | HTMLElement
+  | ShadowRoot
+  | null
+  | React.RefObject<HTMLElement | ShadowRoot | null>;
 
 const PortalContainerContext = createContext<PortalContainer | undefined>(
   undefined,
@@ -40,4 +48,14 @@ export function PortalContainerProvider({
 
 export function usePortalContainer(): PortalContainer | undefined {
   return useContext(PortalContainerContext);
+}
+
+export function resolvePortalContainerElement(
+  container: PortalContainer | undefined,
+): HTMLElement | undefined {
+  if (container == null || typeof HTMLElement === "undefined") {
+    return undefined;
+  }
+  const resolved = "current" in container ? container.current : container;
+  return resolved instanceof HTMLElement ? resolved : undefined;
 }

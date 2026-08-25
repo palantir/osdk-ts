@@ -179,7 +179,7 @@ describe("EditableCell", () => {
 
       const trueOption = screen.getByRole("option", { name: "true" });
       fireEvent.mouseMove(trueOption);
-      fireEvent.click(trueOption);
+      fireEvent.click(screen.getByText("true"));
 
       await waitFor(() => {
         expect(onCellEdit).toHaveBeenCalledWith(
@@ -291,12 +291,9 @@ describe("EditableCell", () => {
         expect(screen.getByRole("option", { name: "false" })).toBeDefined();
       });
 
-      // base-ui Select ignores clicks on items that aren't the highlighted
-      // (activeIndex) item. With mouse, real users hover first; in jsdom
-      // we synthesize that with fireEvent.mouseMove to update activeIndex.
       const falseOption = screen.getByRole("option", { name: "false" });
       fireEvent.mouseMove(falseOption);
-      fireEvent.click(falseOption);
+      fireEvent.click(screen.getByText("false"));
 
       await waitFor(() => {
         expect(onCellEdit).toHaveBeenCalledWith(

@@ -14,30 +14,28 @@
  * limitations under the License.
  */
 
+// cspell:ignore listoption
+
+import { InputGroup, MenuItem } from "@blueprintjs/core";
+import {
+  type ItemRenderer,
+  MultiSelect,
+  QueryList,
+  type QueryListRendererProps,
+} from "@blueprintjs/select";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 
-import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
 import { createRenderValueFilter } from "./comboboxFilter.js";
-import { MultiSelectDropdownLayout } from "./MultiSelectDropdownLayout.js";
-import { MultiSelectInlineLayout } from "./MultiSelectInlineLayout.js";
-import { getOptionLabelText, OptionLabel } from "./OptionLabel.js";
+import { OptionLabel } from "./OptionLabel.js";
 import { SelectInputSkeleton } from "./SelectInputSkeleton.js";
 import { useStableData } from "./useStableData.js";
 
 import styles from "./MultiSelectInput.module.css";
 import sharedStyles from "./shared.module.css";
 
-/**
- * Layout for the value list:
- * - `"dropdown"` (default): chips inline + portaled Combobox popup. Use when
- *   the input drives its own surface (e.g. standalone in a row).
- * - `"inline"`: search input + always-visible value list rendered in flow.
- *   Use when wrapping the input in your own popover so the values are
- *   immediately visible without an extra inner trigger.
- */
 export type MultiSelectInputLayout = "dropdown" | "inline";
 
 interface MultiSelectInputProps {
@@ -72,79 +70,108 @@ function MultiSelectInputInner({
   layout = "dropdown",
 }: MultiSelectInputProps): React.ReactElement {
   const collisionBoundary = useFilterListBoundary();
-
-  const handleValueChange = useCallback(
-    (newValues: string[] | null) => {
-      onChange(newValues ?? []);
-    },
-    [onChange],
-  );
-
   const stableValues = useStableData(values, isLoading);
-
   const items = useMemo(
     () => stableValues.map(({ value }) => value),
     [stableValues],
   );
-
   const countByValue = useMemo(
     () => new Map(stableValues.map(({ value, count }) => [value, count])),
     [stableValues],
   );
-
   const selectedSet = useMemo(() => new Set(selectedValues), [selectedValues]);
-
-  const comboboxFilter = useMemo(
-    () => (renderValue ? createRenderValueFilter(renderValue) : undefined),
+  const itemPredicate = useMemo(
+    () =>
+      renderValue == null
+        ? defaultItemPredicate
+        : createRenderValueFilter(renderValue),
     [renderValue],
   );
-
-  const renderItem = useCallback(
+  const handleItemSelect = useCallback(
     (value: string) => {
+      onChange(
+        selectedSet.has(value)
+          ? selectedValues.filter((selectedValue) => selectedValue !== value)
+          : [...selectedValues, value],
+      );
+    },
+    [onChange, selectedSet, selectedValues],
+  );
+  const handleRemove = useCallback(
+    (value: string) => {
+      onChange(
+        selectedValues.filter((selectedValue) => selectedValue !== value),
+      );
+    },
+    [onChange, selectedValues],
+  );
+  const handleClear = useCallback(() => onChange([]), [onChange]);
+  const renderItem = useCallback<ItemRenderer<string>>(
+    (value, { handleClick, modifiers }) => {
+      if (!modifiers.matchesPredicate) return null;
       const count = countByValue.get(value) ?? 0;
       const isFilteredOut =
         showFilteredOutValues && count === 0 && !selectedSet.has(value);
       return (
-        <Combobox.Item
-          key={value}
-          value={value}
+        <MenuItem
+          active={modifiers.active}
           className={isFilteredOut ? styles.filteredOutItem : undefined}
-        >
-          <Combobox.ItemIndicator />
-          <span className={styles.itemLabel}>
-            <OptionLabel value={value} renderValue={renderValue} />
-          </span>
-          {showCounts && (
-            <span className={styles.itemCount}>({count.toLocaleString()})</span>
-          )}
-        </Combobox.Item>
+          key={value}
+          labelElement={
+            showCounts ? (
+              <span className={styles.itemCount}>
+                ({count.toLocaleString()})
+              </span>
+            ) : undefined
+          }
+          onClick={handleClick}
+          roleStructure="listoption"
+          selected={selectedSet.has(value)}
+          shouldDismissPopover={false}
+          text={
+            <span className={styles.itemLabel}>
+              <OptionLabel value={value} renderValue={renderValue} />
+            </span>
+          }
+        />
       );
     },
-    [countByValue, selectedSet, showCounts, showFilteredOutValues, renderValue],
+    [countByValue, renderValue, selectedSet, showCounts, showFilteredOutValues],
   );
-
-  const renderChips = useCallback(
-    (selectedItems: string[]) => (
-      <>
-        {selectedItems.map((value) => {
-          return (
-            <Combobox.Chip key={value} aria-label={getOptionLabelText(value)}>
-              <OptionLabel value={value} renderValue={renderValue} />
-              <Combobox.ChipRemove />
-            </Combobox.Chip>
-          );
-        })}
-        <Combobox.Input
-          placeholder={selectedItems.length > 0 ? "" : placeholder}
+  const renderTag = useCallback(
+    (value: string) => <OptionLabel value={value} renderValue={renderValue} />,
+    [renderValue],
+  );
+  const renderInlineList = useCallback(
+    (queryListProps: QueryListRendererProps<string>) => (
+      <div>
+        <InputGroup
+          aria-activedescendant={queryListProps.activeItemId}
+          aria-controls={queryListProps.listId}
           aria-label={ariaLabel}
+          className={styles.inlineInput}
+          onChange={queryListProps.handleQueryChange}
+          onKeyDown={queryListProps.handleKeyDown}
+          onKeyUp={queryListProps.handleKeyUp}
+          placeholder={placeholder}
+          role="combobox"
+          value={queryListProps.query}
         />
-      </>
+        {queryListProps.itemList}
+      </div>
     ),
-    [placeholder, ariaLabel, renderValue],
+    [ariaLabel, placeholder],
   );
 
   const isNoData = !error && stableValues.length === 0;
   const isReloading = isLoading && stableValues.length > 0;
+  const noResults = (
+    <MenuItem
+      disabled={true}
+      roleStructure="listoption"
+      text="No matching options"
+    />
+  );
 
   return (
     <div
@@ -161,37 +188,44 @@ function MultiSelectInputInner({
           Error loading options: {error.message}
         </div>
       )}
-
       {isNoData && isLoading && <SelectInputSkeleton />}
       {isNoData && !isLoading && (
         <div className={sharedStyles.emptyMessage}>No options available</div>
       )}
 
-      {stableValues.length > 0 && (
-        <Combobox.Root<string, true>
-          multiple={true}
-          value={selectedValues}
-          onValueChange={handleValueChange}
+      {stableValues.length > 0 && layout === "inline" && (
+        <QueryList<string>
+          itemPredicate={itemPredicate}
+          itemRenderer={renderItem}
           items={items}
-          filter={comboboxFilter}
-        >
-          {layout === "inline" ? (
-            <MultiSelectInlineLayout
-              placeholder={placeholder}
-              ariaLabel={ariaLabel}
-              renderItem={renderItem}
-            />
-          ) : (
-            <MultiSelectDropdownLayout
-              renderChips={renderChips}
-              renderItem={renderItem}
-              collisionBoundary={collisionBoundary}
-            />
-          )}
-        </Combobox.Root>
+          noResults={noResults}
+          onItemSelect={handleItemSelect}
+          renderer={renderInlineList}
+        />
+      )}
+      {stableValues.length > 0 && layout === "dropdown" && (
+        <MultiSelect<string>
+          fill={true}
+          itemPredicate={itemPredicate}
+          itemRenderer={renderItem}
+          items={items}
+          noResults={noResults}
+          onClear={handleClear}
+          onItemSelect={handleItemSelect}
+          onRemove={handleRemove}
+          placeholder={placeholder}
+          popoverProps={{ boundary: collisionBoundary, minimal: true }}
+          selectedItems={selectedValues}
+          tagInputProps={{ inputProps: { "aria-label": ariaLabel } }}
+          tagRenderer={renderTag}
+        />
       )}
     </div>
   );
+}
+
+function defaultItemPredicate(query: string, value: string): boolean {
+  return value.toLocaleLowerCase().includes(query.toLocaleLowerCase());
 }
 
 export const MultiSelectInput = memo(

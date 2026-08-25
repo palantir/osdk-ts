@@ -15,6 +15,17 @@
  */
 
 import type {
+  FileInputProps,
+  InputGroupProps,
+  NumericInputProps,
+  SwitchProps,
+  TextAreaProps,
+} from "@blueprintjs/core";
+import type {
+  DateInputProps,
+  DateRangeInputProps,
+} from "@blueprintjs/datetime";
+import type {
   ActionDefinition,
   ActionMetadata,
   ActionParam,
@@ -26,11 +37,7 @@ import type {
 } from "@osdk/api";
 import type React from "react";
 
-import type {
-  DatePickerProps,
-  DateRangePickerProps,
-} from "../shared/calendar/index.js";
-import type { PortalContainer } from "../shared/PortalDismissLayer.js";
+import type { PortalContainer } from "../shared/PortalContainerContext.js";
 
 export type { PortalContainer };
 
@@ -75,17 +82,9 @@ export type FormFieldDefinition<
         /**
          * Additional information to display on this field.
          * Accepts plain text or rich content (e.g. JSX with links or formatting).
-         * Rendered as a tooltip icon next to the label by default, or below the
-         * label when helperTextPlacement is "bottom".
+         * Rendered below the field by Blueprint FormGroup.
          */
         helperText?: React.ReactNode;
-
-        /**
-         * The placement of the helper text either below the field or in a tooltip
-         *
-         * @default "tooltip"
-         */
-        helperTextPlacement?: "bottom" | "tooltip";
 
         /**
          * Whether the field is disabled
@@ -135,24 +134,23 @@ export type ValidationError =
   | { type: "max"; max: number | Date }
   | { type: "minLength"; minLength: number }
   | { type: "maxLength"; maxLength: number }
-  | { type: "maxSize"; maxSize: number }
   | { type: "validate"; message: string };
 
 /**
  * Maps field types to their corresponding props
  */
 export interface FormFieldPropsByType {
-  DATE_RANGE_INPUT: DateRangePickerProps;
-  DATETIME_PICKER: DatePickerProps;
+  DATE_RANGE_INPUT: DateRangeInputProps;
+  DATETIME_PICKER: DateInputProps;
   DROPDOWN: DropdownFieldProps<unknown, boolean>;
-  FILE_PICKER: FilePickerProps;
-  NUMBER_INPUT: NumberInputFieldProps;
+  FILE_PICKER: FileInputProps;
+  NUMBER_INPUT: NumericInputProps;
   OBJECT_SELECT: ObjectSelectFieldProps<ObjectTypeDefinition>;
   OBJECT_SET: ObjectSetFieldProps<ObjectTypeDefinition>;
   RADIO_BUTTONS: RadioButtonsFieldProps<unknown>;
-  SWITCH: SwitchFieldProps;
-  TEXT_AREA: TextAreaFieldProps;
-  TEXT_INPUT: TextInputFieldProps;
+  SWITCH: SwitchProps;
+  TEXT_AREA: TextAreaProps;
+  TEXT_INPUT: InputGroupProps;
   CUSTOM: CustomFieldProps<unknown>;
   UNSUPPORTED: UnsupportedFieldProps;
 }
@@ -195,8 +193,8 @@ export interface DropdownFieldProps<
 
   /**
    * Whether the dropdown allows searching/filtering.
-   * When true, renders a Combobox with a search input.
-   * When false (default), renders a Select dropdown.
+   * When true, shows Blueprint's query input inside the dropdown.
+   * When false (default), the dropdown is not filterable.
    */
   isSearchable?: boolean;
 
@@ -256,110 +254,13 @@ export interface DropdownFieldProps<
   trailingItem?: React.ReactNode;
 
   /**
-   * Whether the dropdown locks page scroll and renders a full-viewport
-   * dismiss layer when open. Set to `false` when the dropdown is not
-   * inside a `<label>` to allow normal page scrolling.
+   * Whether the Blueprint popover renders a backdrop and locks page scroll.
+   * Set to `false` when the dropdown is not inside a `<label>` to allow
+   * normal page scrolling.
    *
    * @default true
    */
   modal?: boolean;
-}
-
-export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
-  /**
-   * Whether multiple files can be selected
-   */
-  isMulti?: boolean;
-
-  /**
-   * Accepted file types (e.g., "image/*", ".pdf")
-   */
-  accept?: string | string[];
-
-  /**
-   * Maximum file size in bytes
-   */
-  maxSize?: number;
-
-  /**
-   * The text displayed when no file is selected.
-   *
-   * @default "No file chosen"
-   */
-  text?: string;
-
-  /**
-   * The text displayed on the browse button.
-   *
-   * @default "Browse"
-   */
-  buttonText?: string;
-}
-
-/**
- * Text area field props
- */
-export interface TextAreaFieldProps
-  extends
-    BaseFormFieldProps<string>,
-    Pick<
-      React.TextareaHTMLAttributes<HTMLTextAreaElement>,
-      | "rows"
-      | "wrap"
-      /**
-       * If provided, this will be added to the field validation
-       */
-      | "minLength"
-      /**
-       * If provided, this will be added to the field validation
-       */
-      | "maxLength"
-    > {
-  placeholder?: string;
-}
-
-export interface TextInputFieldProps
-  extends
-    BaseFormFieldProps<string>,
-    Pick<
-      React.InputHTMLAttributes<HTMLInputElement>,
-      /**
-       * If provided, this will be added to the field validation
-       */
-      | "minLength"
-      /**
-       * If provided, this will be added to the field validation
-       */
-      | "maxLength"
-    > {
-  placeholder?: string;
-}
-
-/**
- * Number input field props
- */
-export interface NumberInputFieldProps extends BaseFormFieldProps<number> {
-  /**
-   * Minimum allowed value.
-   */
-  min?: number;
-
-  /**
-   * Maximum allowed value.
-   */
-  max?: number;
-
-  /**
-   * Step increment for the input. Used by the stepper buttons and ArrowUp/ArrowDown keyboard stepping.
-   *
-   * @default 1
-   */
-  step?: number;
-
-  /**
-   * Placeholder text shown when the input is empty.
-   */
-  placeholder?: string;
 }
 
 /**
@@ -383,11 +284,6 @@ export interface RadioButtonsFieldProps<V> extends BaseFormFieldProps<V> {
    */
   orientation?: "horizontal" | "vertical";
 }
-
-/**
- * Switch field props for boolean values.
- */
-export type SwitchFieldProps = BaseFormFieldProps<boolean>;
 
 /**
  * Option interface for radio button options
@@ -606,10 +502,23 @@ export type FieldType =
  * externally. Read-only fields (no onChange, e.g. ObjectSetField) keep value in
  * fieldComponentProps so it bypasses form state cloning.
  */
-type FormManagedProps<K extends FieldComponent> =
-  "onChange" extends keyof FormFieldPropsByType[K]
-    ? "value" | "onChange" | "disabled"
-    : "onChange" | "disabled";
+interface FormManagedPropsByType {
+  DATE_RANGE_INPUT: "disabled" | "onChange" | "value";
+  DATETIME_PICKER: "disabled" | "onChange" | "value";
+  DROPDOWN: "disabled" | "onChange" | "value";
+  FILE_PICKER: "disabled" | "hasSelection" | "onChange" | "onInputChange";
+  NUMBER_INPUT: "disabled" | "onValueChange" | "value";
+  OBJECT_SELECT: "disabled" | "onChange" | "value";
+  OBJECT_SET: "disabled" | "onChange";
+  RADIO_BUTTONS: "disabled" | "onChange" | "value";
+  SWITCH: "checked" | "disabled" | "onChange";
+  TEXT_AREA: "disabled" | "onChange" | "value";
+  TEXT_INPUT: "disabled" | "onChange" | "value";
+  CUSTOM: "disabled" | "onChange" | "value";
+  UNSUPPORTED: "disabled" | "onChange";
+}
+
+type FormManagedProps<K extends FieldComponent> = FormManagedPropsByType[K];
 
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
   ? Omit<T, Extract<keyof T, K>>
@@ -632,7 +541,6 @@ export type RendererFieldDefinition = {
     isRequired?: boolean;
     placeholder?: string;
     helperText?: React.ReactNode;
-    helperTextPlacement?: "bottom" | "tooltip";
     disabled?: boolean;
     validate?: (value: unknown) => Promise<string | undefined>;
     onValidationError?: (error: ValidationError) => string | undefined;

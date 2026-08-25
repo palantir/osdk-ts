@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { Classes } from "@blueprintjs/core";
+import classNames from "classnames";
 import React from "react";
-
-import { SkeletonBar } from "../../../base-components/skeleton/SkeletonBar.js";
 
 import styles from "./ListogramSkeleton.module.css";
 
@@ -31,18 +31,29 @@ export function ListogramSkeleton(): React.ReactElement {
     <div className={styles.container}>
       {SKELETON_ROWS.map((row, index) => (
         <div key={index} className={styles.row}>
-          <SkeletonBar
-            height="var(--osdk-filter-skeleton-text-height)"
-            maxWidth={row.textWidth}
-            className={styles.flexBar}
+          <div
+            aria-hidden="true"
+            className={classNames(Classes.SKELETON, styles.flexBar)}
+            style={{
+              height: "var(--osdk-filter-skeleton-text-height)",
+              maxWidth: row.textWidth,
+            }}
           />
-          <SkeletonBar
-            width="var(--osdk-filter-listogram-bar-width)"
-            height="var(--osdk-filter-listogram-bar-height)"
+          <div
+            aria-hidden="true"
+            className={Classes.SKELETON}
+            style={{
+              height: "var(--osdk-filter-listogram-bar-height)",
+              width: "var(--osdk-filter-listogram-bar-width)",
+            }}
           />
-          <SkeletonBar
-            width="var(--osdk-filter-skeleton-count-width)"
-            height="var(--osdk-filter-skeleton-text-height)"
+          <div
+            aria-hidden="true"
+            className={Classes.SKELETON}
+            style={{
+              height: "var(--osdk-filter-skeleton-text-height)",
+              width: "var(--osdk-filter-skeleton-count-width)",
+            }}
           />
         </div>
       ))}

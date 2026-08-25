@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { Classes } from "@blueprintjs/core";
+import classNames from "classnames";
 import React, { useMemo } from "react";
 
-import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
 import { useInfiniteScroll } from "../../shared/hooks/useInfiniteScroll.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
@@ -79,7 +80,7 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
     if (isLoading && itemCount === 0) {
       return <div className={styles.osdkAsyncDropdownStatus}>Loading…</div>;
     }
-    // "No results" is handled by Combobox.Empty inside DropdownField
+    // Blueprint Select renders the "No results" item inside DropdownField.
     return null;
   }, [fetchError, isSearching, isLoading, itemCount]);
 
@@ -114,7 +115,13 @@ function InfiniteScrollSentinel({
 }): React.ReactElement {
   return (
     <div ref={infiniteScrollRef} role="presentation">
-      <SkeletonBar className={styles.osdkAsyncDropdownSkeleton} />
+      <div
+        aria-hidden="true"
+        className={classNames(
+          Classes.SKELETON,
+          styles.osdkAsyncDropdownSkeleton,
+        )}
+      />
     </div>
   );
 }

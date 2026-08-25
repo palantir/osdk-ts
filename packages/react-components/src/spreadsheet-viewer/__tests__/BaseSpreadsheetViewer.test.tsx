@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { cleanup, render, screen } from "@testing-library/react";
+import { Classes } from "@blueprintjs/core";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { BaseSpreadsheetViewer } from "../BaseSpreadsheetViewer.js";
@@ -53,8 +54,21 @@ describe("BaseSpreadsheetViewer", () => {
 
   it("should render a tab per sheet when there is more than one", () => {
     render(<BaseSpreadsheetViewer content={TWO_SHEETS} />);
-    expect(screen.getByRole("button", { name: "Revenue" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Costs" })).toBeTruthy();
+    expect(
+      screen
+        .getByRole("tab", { name: "Revenue" })
+        .classList.contains(Classes.TAB),
+    ).toBe(true);
+    expect(screen.getByRole("tab", { name: "Costs" })).toBeTruthy();
+  });
+
+  it("should display the selected Blueprint tab's sheet", () => {
+    render(<BaseSpreadsheetViewer content={TWO_SHEETS} />);
+
+    fireEvent.click(screen.getByRole("tab", { name: "Costs" }));
+
+    expect(screen.getByText("Hosting")).toBeTruthy();
+    expect(screen.queryByText("Platform")).toBeNull();
   });
 
   it("should render from the deprecated spreadsheet prop", () => {
@@ -72,7 +86,7 @@ describe("BaseSpreadsheetViewer", () => {
       />,
     );
     expect(screen.getByText("Total")).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Costs" })).toBeNull();
+    expect(screen.queryByRole("tab", { name: "Costs" })).toBeNull();
   });
 
   it("should render the empty state when neither prop is set", () => {

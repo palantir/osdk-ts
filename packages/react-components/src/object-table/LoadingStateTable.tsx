@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { Classes } from "@blueprintjs/core";
 import type { HeaderGroup, RowData, Table } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
 import { LoadingRow } from "./LoadingRow.js";
 import { TableHeader } from "./TableHeader.js";
 import {
@@ -106,8 +106,10 @@ export function LoadingStateTable<TData extends RowData>({
                   className={headerStyles.osdkTableHeaderCell}
                   style={{ width }}
                 >
-                  <SkeletonBar
+                  <div
+                    aria-hidden="true"
                     className={classNames(
+                      Classes.SKELETON,
                       headerStyles.osdkLoadingHeaderCell,
                       loadingStyles.osdkCellSkeleton,
                     )}

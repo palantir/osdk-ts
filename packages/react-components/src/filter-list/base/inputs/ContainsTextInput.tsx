@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
-import { Input } from "@base-ui/react/input";
+import { Button, InputGroup } from "@blueprintjs/core";
 import { Cross, Search } from "@blueprintjs/icons";
 import classnames from "classnames";
 import { debounce } from "lodash-es";
@@ -103,7 +102,7 @@ function ContainsTextInputInner({
             <Search />
           </span>
         )}
-        <Input
+        <InputGroup
           type="text"
           className={styles.input}
           value={localValue}

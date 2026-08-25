@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
+import { Intent } from "@blueprintjs/core";
+import { DateInput } from "@blueprintjs/datetime";
 import { Error } from "@blueprintjs/icons";
 import classNames from "classnames";
 import React, { useCallback, useMemo } from "react";
 
-import { DatePicker } from "../../shared/calendar/index.js";
 import { formatDateForInput } from "../../shared/dateUtils.js";
-import { useRegisterPortal } from "../utils/PortalTracker.js";
+import {
+  resolvePortalContainerElement,
+  usePortalContainer,
+} from "../../shared/PortalContainerContext.js";
 import type { DatePickerEditConfig } from "../utils/types.js";
 
 import styles from "../EditableCell.module.css";
@@ -53,22 +57,41 @@ function DatePickerCellFieldInner({
   onChange,
   dataType,
 }: DatePickerCellFieldProps): React.ReactElement {
-  const portalRef = useRegisterPortal();
+  const portalContainer = resolvePortalContainerElement(usePortalContainer());
 
   const dateValue = useMemo(() => parseDateValue(inputValue), [inputValue]);
-  const showTime = fieldComponentProps?.showTime ?? dataType === "timestamp";
+  const { inputProps, popoverProps, ...dateInputProps } =
+    fieldComponentProps ?? {};
+  const timePrecision =
+    dateInputProps.timePrecision ??
+    (dataType === "timestamp" ? "minute" : undefined);
+  const resolvedInputProps = useMemo(
+    () => ({
+      ...inputProps,
+      intent: hasValidationError ? Intent.DANGER : inputProps?.intent,
+      "aria-invalid": hasValidationError || undefined,
+    }),
+    [hasValidationError, inputProps],
+  );
+  const resolvedPopoverProps = useMemo(
+    () => ({
+      ...popoverProps,
+      portalContainer: popoverProps?.portalContainer ?? portalContainer,
+    }),
+    [popoverProps, portalContainer],
+  );
 
   const handleChange = useCallback(
-    (newValue: Date | null) => {
-      if (newValue == null) {
+    (isoDate: string | null) => {
+      if (isoDate == null) {
         onChange(null);
         return;
       }
       onChange(
-        showTime ? newValue.toISOString() : formatDateForInput(newValue),
+        timePrecision != null ? isoDate : formatDateForInput(new Date(isoDate)),
       );
     },
-    [onChange, showTime],
+    [onChange, timePrecision],
   );
 
   return (
@@ -78,13 +101,13 @@ function DatePickerCellFieldInner({
         [styles.osdkEditedInput]: isEdited,
       })}
     >
-      <DatePicker
-        {...fieldComponentProps}
-        showTime={showTime}
-        value={dateValue}
+      <DateInput
+        {...dateInputProps}
+        timePrecision={timePrecision}
+        value={dateValue?.toISOString() ?? null}
         onChange={handleChange}
-        portalRef={portalRef}
-        modal={false}
+        inputProps={resolvedInputProps}
+        popoverProps={resolvedPopoverProps}
       />
       {hasValidationError && (
         <span className={styles.errorIconWrapper}>

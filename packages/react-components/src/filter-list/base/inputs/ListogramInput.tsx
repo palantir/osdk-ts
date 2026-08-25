@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
+import { Button, Checkbox } from "@blueprintjs/core";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 
-import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { filterValuesBySearch, isNoValue } from "../../utils/filterValues.js";
 import { formatCompactCount } from "./formatCompactCount.js";
@@ -175,8 +174,7 @@ function ListogramInputInner({
                   <Checkbox
                     checked={selectedSet.has(value)}
                     // eslint-disable-next-line react/jsx-no-bind
-                    onCheckedChange={() => toggleValue(value)}
-                    isExcluding={isExcluding}
+                    onChange={() => toggleValue(value)}
                   />
                 </span>
                 <span

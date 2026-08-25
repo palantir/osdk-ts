@@ -17,14 +17,14 @@
 import type { ReactNode } from "react";
 
 /**
- * Build a Combobox `filter` function that searches by `renderValue(item)` when
+ * Build a Blueprint `itemPredicate` that searches by `renderValue(item)` when
  * it returns a string, and falls back to the raw item value when it returns
  * non-string JSX. Comparison is case-insensitive.
  */
 export function createRenderValueFilter(
   renderValue: (value: string) => ReactNode,
-): (itemValue: string, query: string) => boolean {
-  return (itemValue, query) => {
+): (query: string, itemValue: string) => boolean {
+  return (query, itemValue) => {
     const rendered = renderValue(itemValue);
     const searchText = typeof rendered === "string" ? rendered : itemValue;
     return searchText.toLowerCase().includes(query.toLowerCase());

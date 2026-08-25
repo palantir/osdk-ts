@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Tooltip } from "@blueprintjs/core";
 import { Error } from "@blueprintjs/icons";
 import type { RowData } from "@tanstack/react-table";
 import React, {
@@ -24,7 +25,6 @@ import React, {
   useState,
 } from "react";
 
-import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { DatePickerCellField } from "./components/DatePickerCellField.js";
 import { DropdownCellField } from "./components/DropdownCellField.js";
 import { TextInputCellField } from "./components/TextInputCellField.js";
@@ -332,27 +332,20 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   };
 
   return (
-    <Tooltip.Provider>
-      <Tooltip.Root disabled={!hasValidationError}>
-        <Tooltip.Trigger
-          className={styles.osdkEditableCellTrigger}
-          render={<span className={styles.osdkTooltipTriggerWrapper} />}
-        >
-          {renderFieldInput()}
-        </Tooltip.Trigger>
-        <Tooltip.Portal>
-          <Tooltip.Positioner sideOffset={4} side={"bottom"}>
-            <Tooltip.Popup>
-              <div className={styles.validationError}>
-                <Error className={styles.errorIcon} />
-                {validationError}
-              </div>
-              <Tooltip.Arrow />
-            </Tooltip.Popup>
-          </Tooltip.Positioner>
-        </Tooltip.Portal>
-      </Tooltip.Root>
-    </Tooltip.Provider>
+    <Tooltip
+      disabled={!hasValidationError}
+      placement="bottom"
+      content={
+        <div className={styles.validationError}>
+          <Error className={styles.errorIcon} />
+          {validationError}
+        </div>
+      }
+    >
+      <span className={styles.osdkEditableCellTrigger}>
+        {renderFieldInput()}
+      </span>
+    </Tooltip>
   );
 }
 

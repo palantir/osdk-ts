@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-import React, { memo } from "react";
+import { Button, MenuItem } from "@blueprintjs/core";
+import {
+  Select,
+  type ItemPredicate,
+  type ItemRenderer,
+} from "@blueprintjs/select";
+import React, { memo, useCallback, useMemo } from "react";
 
-import { SearchableMenu } from "../../base-components/searchable-menu/SearchableMenu.js";
+import {
+  resolvePortalContainerElement,
+  usePortalContainer,
+} from "../../shared/PortalContainerContext.js";
 import { useFilterListBoundary } from "./FilterListBoundaryContext.js";
 
 import styles from "./AddFilterPopover.module.css";
@@ -32,23 +41,60 @@ interface AddFilterPopoverProps {
   renderTrigger?: () => React.ReactNode;
 }
 
+const FILTER_SELECT_INPUT_PROPS = { placeholder: "Search filters" };
+const NO_MATCHING_FILTERS = (
+  <MenuItem disabled={true} text="No matching filters" />
+);
+
+const filterHiddenDefinition: ItemPredicate<HiddenFilterItem> = (query, item) =>
+  item.label.toLowerCase().includes(query.toLowerCase().trim());
+
+const renderHiddenDefinition: ItemRenderer<HiddenFilterItem> = (
+  item,
+  { handleClick, modifiers },
+) => {
+  if (!modifiers.matchesPredicate) return null;
+  return (
+    <MenuItem
+      active={modifiers.active}
+      key={item.key}
+      onClick={handleClick}
+      text={item.label}
+    />
+  );
+};
+
 function AddFilterPopoverInner({
   hiddenDefinitions,
   onShowFilter,
   renderTrigger,
 }: AddFilterPopoverProps): React.ReactElement {
   const collisionBoundary = useFilterListBoundary();
+  const portalContainer = resolvePortalContainerElement(usePortalContainer());
+  const popoverProps = useMemo(
+    () => ({ boundary: collisionBoundary, portalContainer }),
+    [collisionBoundary, portalContainer],
+  );
+  const handleItemSelect = useCallback(
+    (item: HiddenFilterItem) => onShowFilter(item.key),
+    [onShowFilter],
+  );
 
   return (
-    <SearchableMenu
+    <Select<HiddenFilterItem>
       items={hiddenDefinitions}
-      onItemSelected={onShowFilter}
-      trigger={renderTrigger != null ? renderTrigger() : "+ Add filter"}
-      triggerClassName={renderTrigger == null ? styles.trigger : undefined}
-      searchPlaceholder="Search filters"
-      emptyMessage="No matching filters"
-      collisionBoundary={collisionBoundary}
-    />
+      itemPredicate={filterHiddenDefinition}
+      itemRenderer={renderHiddenDefinition}
+      onItemSelect={handleItemSelect}
+      inputProps={FILTER_SELECT_INPUT_PROPS}
+      noResults={NO_MATCHING_FILTERS}
+      popoverProps={popoverProps}
+    >
+      <Button
+        className={renderTrigger == null ? styles.trigger : undefined}
+        text={renderTrigger != null ? renderTrigger() : "+ Add filter"}
+      />
+    </Select>
   );
 }
 

@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
+import { Classes } from "@blueprintjs/core";
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { SwitchField } from "../fields/SwitchField.js";
+import { AipAgentChatModelPicker } from "../AipAgentChatModelPicker.js";
 
 afterEach(cleanup);
 
-describe("SwitchField", () => {
-  it("marks the switch disabled", () => {
-    const onChange = vi.fn();
+describe("AipAgentChatModelPicker", () => {
+  it("uses Blueprint HTMLSelect when multiple models are available", () => {
     render(
-      <SwitchField
-        value={false}
-        onChange={onChange}
-        label="Enabled"
-        disabled={true}
+      <AipAgentChatModelPicker
+        models={["model-a", "model-b"]}
+        activeModel="model-a"
+        onModelChange={vi.fn()}
       />,
     );
 
-    const toggle = screen.getByRole("switch", { name: "Enabled" });
-    expect(toggle.getAttribute("aria-disabled")).toBe("true");
+    expect(
+      screen.getByLabelText("Active model").closest(`.${Classes.HTML_SELECT}`),
+    ).not.toBeNull();
   });
 });

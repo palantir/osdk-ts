@@ -40,10 +40,10 @@ If a skill ever conflicts with this file or `CONTRIBUTING.md`, those win — fla
 
 ### Reuse before writing
 
-- **Reuse from `src/base-components/` first.** This folder contains shared internal UI primitives (`action-button/`, `checkbox/`, `combobox/`, `dialog/`, `draggable-list/`, `icon/`, `search-bar/`, `searchable-menu/`, `select/`, `skeleton/`, `switch/`, `tooltip/`). Check this folder before writing a new UI primitive — reusing avoids visual / behavioral drift
-- **Public primitives barrel: `src/public/primitives.ts`.** Enumerates primitives that are intentionally re-exported (`ActionButton`, `Dialog`, `SkeletonBar`, `Tooltip`, etc.). Anything in `src/base-components/` not re-exported through `primitives.ts` stays internal-only
-- **NEVER export UI primitives from a component folder.** Anything in `src/base-components/` is internal. If a primitive is reusable across components, move it into `src/base-components/` so the next component can pick it up
-- **Prefer `@base-ui/react` over primitive HTML for interactive elements.** When you need a button, dialog, menu, popover, tooltip, select, switch, or similar interactive primitive, reach for the `@base-ui/react` component (it's a workspace dependency) rather than a raw `<button>`, `<div role="dialog">`, etc. Base-ui handles accessibility, keyboard, and focus correctly. Plain semantic HTML (`<div>`, `<section>`, `<span>`, `<a>`) is fine for non-interactive layout
+- **Use Blueprint components directly.** Before adding a local component, check `@blueprintjs/core`, `@blueprintjs/datetime`, and `@blueprintjs/select`. Do not wrap a Blueprint component only to rename its props or restyle it; retain an adapter only when it owns OSDK domain behavior or data fetching
+- **Keep `src/base-components/` for behavior Blueprint does not provide.** Shared domain components such as drag-and-drop lists may live here, but Blueprint-equivalent primitives do not
+- **Do not re-export Blueprint primitives.** Consumers should import them from Blueprint so their API, types, and documentation remain authoritative
+- **Prefer Blueprint over primitive HTML for interactive elements.** Blueprint handles accessibility, keyboard, focus, intent, and theme behavior. Plain semantic HTML (`<div>`, `<section>`, `<span>`, `<a>`) is fine for non-interactive layout
 - **Prefer Blueprint icons (`@blueprintjs/icons`) for iconography.** Use Blueprint's icon set rather than inlining SVGs, importing from another icon library, or hand-rolling glyphs. Verify the icon name exists at the chosen export path before committing — typos surface at runtime, not build time
 
 ## API Design

@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { Collapsible } from "@base-ui/react/collapsible";
-import { CaretDown } from "@blueprintjs/icons";
+import { Intent, Section, SectionCard, Tag } from "@blueprintjs/core";
 import classNames from "classnames";
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 
 import type { FormSectionDefinition } from "./ActionFormApi.js";
 
@@ -44,91 +43,42 @@ export const FormSection: React.NamedExoticComponent<FormSectionProps> = memo(
       style = "box",
     } = definition;
 
-    const isMinimal = style === "minimal";
-
-    if (isMinimal) {
-      return (
-        <MinimalSection title={title} description={description}>
-          {children}
-        </MinimalSection>
-      );
-    }
-
     const contentClassName = classNames(
       columnCount === 2
         ? styles.osdkFormSectionGrid
         : styles.osdkFormSectionContent,
-      styles.osdkFormSectionDivider,
+    );
+    const collapseProps = useMemo(
+      () => ({
+        defaultIsOpen: !collapsedByDefault,
+        // Keep registered form controls mounted so collapsing a section does
+        // not discard React Hook Form state.
+        keepChildrenMounted: true,
+      }),
+      [collapsedByDefault],
     );
 
     if (!showTitleBar) {
-      return (
-        <div className={styles.osdkFormSectionBox}>
-          <div className={contentClassName}>{children}</div>
-        </div>
-      );
+      return <SectionCard className={contentClassName}>{children}</SectionCard>;
     }
 
     return (
-      <Collapsible.Root
-        // Inverted: Base UI uses "open" semantics, our API uses "collapsed" semantics
-        defaultOpen={!collapsedByDefault}
-        className={styles.osdkFormSectionBox}
+      <Section
+        title={title}
+        subtitle={description}
+        collapsible={style !== "minimal"}
+        collapseProps={collapseProps}
+        compact={style === "minimal"}
+        rightElement={
+          errorCount > 0 ? (
+            <Tag intent={Intent.DANGER} minimal={true} role="status">
+              {errorCount === 1 ? "1 error" : `${errorCount} errors`}
+            </Tag>
+          ) : undefined
+        }
       >
-        <div className={styles.osdkFormSectionHeader}>
-          <div className={styles.osdkFormSectionTitleArea}>
-            <span className={styles.osdkFormSectionTitle}>{title}</span>
-            {description != null && (
-              <span className={styles.osdkFormSectionDescription}>
-                {description}
-              </span>
-            )}
-          </div>
-          <Collapsible.Trigger
-            className={styles.osdkFormSectionTrigger}
-            aria-label={title}
-          >
-            {errorCount > 0 && (
-              <span className={styles.osdkFormSectionErrorBadge} role="status">
-                {errorCount === 1 ? "1 error" : `${errorCount} errors`}
-              </span>
-            )}
-            <span className={styles.osdkFormSectionChevron}>
-              <CaretDown size={16} />
-            </span>
-          </Collapsible.Trigger>
-        </div>
-        {/* keepMounted: RHF needs fields in the DOM even when collapsed for validation */}
-        <Collapsible.Panel keepMounted={true}>
-          <div className={contentClassName}>{children}</div>
-        </Collapsible.Panel>
-      </Collapsible.Root>
+        <SectionCard className={contentClassName}>{children}</SectionCard>
+      </Section>
     );
   },
 );
-
-interface MinimalSectionProps {
-  title: string;
-  description: string | undefined;
-  children: React.ReactNode;
-}
-
-const MinimalSection = memo(function MinimalSectionFn({
-  title,
-  description,
-  children,
-}: MinimalSectionProps): React.ReactElement {
-  return (
-    <div>
-      <div className={styles.osdkFormSectionMinimalHeader}>
-        <div className={styles.osdkFormSectionMinimalTitle}>{title}</div>
-        {description != null && (
-          <div className={styles.osdkFormSectionMinimalDescription}>
-            {description}
-          </div>
-        )}
-      </div>
-      <div className={styles.osdkFormSectionMinimalContent}>{children}</div>
-    </div>
-  );
-});

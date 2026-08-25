@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+import { Dialog, DialogBody, DialogFooter } from "@blueprintjs/core";
 import React from "react";
 
-import { Dialog } from "../../base-components/dialog/Dialog.js";
+import {
+  resolvePortalContainerElement,
+  usePortalContainer,
+} from "../../shared/PortalContainerContext.js";
 import { BaseCbacPicker } from "./BaseCbacPicker.js";
 import type { BaseCbacPickerProps } from "./BaseCbacPicker.js";
 import { CbacPickerDialogFooter } from "./CbacPickerDialogFooter.js";
@@ -39,6 +43,7 @@ export function BaseCbacPickerDialog({
   submitDisabledReason,
   ...pickerProps
 }: BaseCbacPickerDialogProps): React.ReactElement {
+  const portalContainer = resolvePortalContainerElement(usePortalContainer());
   const handleOpenChange = React.useCallback(
     (open: boolean) => {
       if (!open) {
@@ -52,20 +57,25 @@ export function BaseCbacPickerDialog({
   return (
     <Dialog
       isOpen={isOpen}
-      onOpenChange={handleOpenChange}
+      onClose={() => handleOpenChange(false)}
       title={title}
-      footer={
-        <CbacPickerDialogFooter
-          onCancel={onCancel}
-          onConfirm={onConfirm}
-          submitDisabledReason={submitDisabledReason}
-        />
-      }
-      disablePointerDismissal={true}
+      canOutsideClickClose={false}
+      portalContainer={portalContainer}
     >
-      <BaseCbacPicker
-        {...pickerProps}
-        showInfoBanner={pickerProps.showInfoBanner ?? true}
+      <DialogBody>
+        <BaseCbacPicker
+          {...pickerProps}
+          showInfoBanner={pickerProps.showInfoBanner ?? true}
+        />
+      </DialogBody>
+      <DialogFooter
+        actions={
+          <CbacPickerDialogFooter
+            onCancel={onCancel}
+            onConfirm={onConfirm}
+            submitDisabledReason={submitDisabledReason}
+          />
+        }
       />
     </Dialog>
   );

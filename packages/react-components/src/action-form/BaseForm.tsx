@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
+import { Button, Classes, Tooltip } from "@blueprintjs/core";
 import { Error as ErrorIcon } from "@blueprintjs/icons";
 import classNames from "classnames";
 import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { ActionButton } from "../base-components/action-button/ActionButton.js";
-import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
-import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { useAsyncAction } from "../shared/hooks/useAsyncAction.js";
 import type { BaseFormProps, FormContentItem } from "./ActionFormApi.js";
 import { FieldBridge } from "./fields/FieldBridge.js";
@@ -227,8 +225,14 @@ const SKELETON_FIELD_COUNT = 3;
 // Mimics the label + input layout of real form fields.
 const FORM_SKELETON = Array.from({ length: SKELETON_FIELD_COUNT }, (_, i) => (
   <div key={i} className={styles.osdkFormSkeletonField}>
-    <SkeletonBar className={styles.osdkFormSkeletonLabel} />
-    <SkeletonBar className={styles.osdkFormSkeletonInput} />
+    <div
+      aria-hidden="true"
+      className={classNames(Classes.SKELETON, styles.osdkFormSkeletonLabel)}
+    />
+    <div
+      aria-hidden="true"
+      className={classNames(Classes.SKELETON, styles.osdkFormSkeletonInput)}
+    />
   </div>
 ));
 
@@ -269,14 +273,15 @@ const SubmitButton = memo(function SubmitButtonFn({
 }: SubmitButtonProps): React.ReactElement {
   const buttonLabel = isPending ? "Submitting\u2026" : buttonText;
   const button = (
-    <ActionButton
+    <Button
       type="button"
-      variant={buttonVariant}
+      intent={buttonVariant === "primary" ? "primary" : undefined}
       disabled={isSubmitDisabled || isPending}
+      loading={isPending}
       onClick={onClick}
     >
       {buttonLabel}
-    </ActionButton>
+    </Button>
   );
 
   if (errorMessage == null) {
@@ -284,21 +289,9 @@ const SubmitButton = memo(function SubmitButtonFn({
   }
 
   return (
-    <Tooltip.Root defaultOpen={true}>
-      <Tooltip.Trigger
-        render={<span className={styles.osdkTooltipTriggerWrapper} />}
-      >
-        {button}
-      </Tooltip.Trigger>
-      <Tooltip.Portal>
-        <Tooltip.Positioner>
-          <Tooltip.Popup>
-            <Tooltip.Arrow />
-            {errorMessage}
-          </Tooltip.Popup>
-        </Tooltip.Positioner>
-      </Tooltip.Portal>
-    </Tooltip.Root>
+    <Tooltip content={errorMessage} defaultIsOpen={true}>
+      <span className={styles.osdkTooltipTriggerWrapper}>{button}</span>
+    </Tooltip>
   );
 });
 
@@ -317,27 +310,21 @@ function ErrorIndicator({
   const count = errorEntries.length;
 
   return (
-    <Tooltip.Root>
-      <Tooltip.Trigger>
-        <span className={styles.osdkFormErrorIndicator}>
-          <ErrorIcon size={14} />
-          {count === 1 ? "1 issue" : `${count} issues`}
-        </span>
-      </Tooltip.Trigger>
-      <Tooltip.Portal>
-        <Tooltip.Positioner>
-          <Tooltip.Popup>
-            <Tooltip.Arrow />
-            <ul className={styles.osdkFormErrorList}>
-              {errorEntries.map((entry) => (
-                <li key={entry.label}>
-                  <strong>{entry.label}:</strong> {entry.message}
-                </li>
-              ))}
-            </ul>
-          </Tooltip.Popup>
-        </Tooltip.Positioner>
-      </Tooltip.Portal>
-    </Tooltip.Root>
+    <Tooltip
+      content={
+        <ul className={styles.osdkFormErrorList}>
+          {errorEntries.map((entry) => (
+            <li key={entry.label}>
+              <strong>{entry.label}:</strong> {entry.message}
+            </li>
+          ))}
+        </ul>
+      }
+    >
+      <span className={styles.osdkFormErrorIndicator}>
+        <ErrorIcon size={14} />
+        {count === 1 ? "1 issue" : `${count} issues`}
+      </span>
+    </Tooltip>
   );
 }

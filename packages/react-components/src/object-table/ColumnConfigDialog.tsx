@@ -14,18 +14,27 @@
  * limitations under the License.
  */
 
-import { Collapsible } from "@base-ui/react/collapsible";
-import { CaretDown, Cog, SmallInfoSign } from "@blueprintjs/icons";
+import {
+  Button,
+  Checkbox,
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  InputGroup,
+  Section,
+  SectionCard,
+} from "@blueprintjs/core";
+import { Cog, Search, SmallInfoSign } from "@blueprintjs/icons";
 import { arrayMove } from "@dnd-kit/sortable";
 import type { ColumnOrderState, VisibilityState } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import { ActionButton } from "../base-components/action-button/ActionButton.js";
-import { Checkbox } from "../base-components/checkbox/Checkbox.js";
-import { Dialog } from "../base-components/dialog/Dialog.js";
 import { DraggableList } from "../base-components/draggable-list/DraggableList.js";
-import { SearchBar } from "../base-components/search-bar/SearchBar.js";
+import {
+  resolvePortalContainerElement,
+  usePortalContainer,
+} from "../shared/PortalContainerContext.js";
 import type { ColumnOption } from "./utils/types.js";
 
 import styles from "./ColumnConfigDialog.module.css";
@@ -62,6 +71,7 @@ export function ColumnConfigDialog({
   onApply,
   isValidConfig,
 }: ColumnConfigDialogProps): React.ReactElement | null {
+  const portalContainer = resolvePortalContainerElement(usePortalContainer());
   const [visibleColumns, setVisibleColumns] = useState<ColumnItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -173,14 +183,14 @@ export function ColumnConfigDialog({
   const footer = useMemo(
     () => (
       <>
-        <ActionButton onClick={onClose}>Cancel</ActionButton>
-        <ActionButton
-          variant="primary"
+        <Button onClick={onClose}>Cancel</Button>
+        <Button
+          intent="primary"
           onClick={handleApply}
           disabled={isApplyDisabled}
         >
           Apply
-        </ActionButton>
+        </Button>
       </>
     ),
     [onClose, handleApply, isApplyDisabled],
@@ -189,26 +199,29 @@ export function ColumnConfigDialog({
   return (
     <Dialog
       isOpen={isOpen}
-      onOpenChange={onClose}
+      onClose={onClose}
       title={DialogTitle}
-      footer={footer}
       className={styles.columnConfigDialog}
+      portalContainer={portalContainer}
     >
-      <div className={styles.dialogLayout}>
-        <VisibleColumnsList
-          columns={visibleColumns}
-          onReorder={handleReorderColumns}
-          onRemove={handleRemoveColumn}
-        />
-        <AvailableColumnsList
-          visibleColumns={visibleColumns}
-          searchQuery={searchQuery}
-          onSearchChange={handleSearchChange}
-          onToggleColumn={handleToggleColumn}
-          onSelectAll={handleSelectAll}
-          filteredColumns={filteredAvailableColumns}
-        />
-      </div>
+      <DialogBody>
+        <div className={styles.dialogLayout}>
+          <VisibleColumnsList
+            columns={visibleColumns}
+            onReorder={handleReorderColumns}
+            onRemove={handleRemoveColumn}
+          />
+          <AvailableColumnsList
+            visibleColumns={visibleColumns}
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            onToggleColumn={handleToggleColumn}
+            onSelectAll={handleSelectAll}
+            filteredColumns={filteredAvailableColumns}
+          />
+        </div>
+      </DialogBody>
+      <DialogFooter actions={footer} />
     </Dialog>
   );
 }
@@ -301,32 +314,32 @@ function AvailableColumnsList({
       <div className={classNames(styles.sectionHeader, styles.sectionTitle)}>
         Add or Remove Columns
       </div>
-      <SearchBar
+      <InputGroup
         value={searchQuery}
         onChange={onSearchChange}
         placeholder="Search..."
         aria-label="Search available columns"
         className={styles.searchContainer}
+        leftIcon={<Search />}
       />
-      <Collapsible.Root defaultOpen={true} className={styles.propertiesList}>
-        <div className={styles.categoryHeader}>
-          <label className={styles.selectAllLabel}>
-            <Checkbox
-              checked={allFilteredSelected}
-              indeterminate={someFilteredSelected && !allFilteredSelected}
-              onCheckedChange={handleSelectAllClick}
-              className={styles.checkbox}
-            />
-            All Columns
-          </label>
-          <Collapsible.Trigger className={styles.categoryTrigger}>
-            <span className={styles.categoryCount}>
-              {selectedCount}/{totalCount}
-            </span>
-            <CaretDown className={styles.caretIcon} />
-          </Collapsible.Trigger>
-        </div>
-        <Collapsible.Panel className={styles.propertyList}>
+      <Section
+        collapsible={true}
+        className={styles.propertiesList}
+        title="Available columns"
+        rightElement={
+          <span className={styles.categoryCount}>
+            {selectedCount}/{totalCount}
+          </span>
+        }
+      >
+        <SectionCard className={styles.propertyList}>
+          <Checkbox
+            checked={allFilteredSelected}
+            indeterminate={someFilteredSelected && !allFilteredSelected}
+            onChange={handleSelectAllClick}
+            className={styles.checkbox}
+            label="All Columns"
+          />
           {filteredColumns.length === 0 ? (
             <div className={styles.emptyState}>No matching columns found</div>
           ) : (
@@ -339,8 +352,8 @@ function AvailableColumnsList({
               />
             ))
           )}
-        </Collapsible.Panel>
-      </Collapsible.Root>
+        </SectionCard>
+      </Section>
     </div>
   );
 }
@@ -364,14 +377,14 @@ function PropertyItem({
 
   return (
     <div className={styles.propertyItem}>
-      <label className={styles.propertyLabel}>
-        <Checkbox
-          checked={isSelected}
-          onCheckedChange={handleClick}
-          className={styles.checkbox}
-        />
-        <span className={styles.propertyName}>{column.label}</span>
-      </label>
+      <Checkbox
+        checked={isSelected}
+        onChange={handleClick}
+        className={styles.checkbox}
+        labelElement={
+          <span className={styles.propertyName}>{column.label}</span>
+        }
+      />
       {showInfoIcon && <SmallInfoSign className={styles.infoIcon} />}
     </div>
   );

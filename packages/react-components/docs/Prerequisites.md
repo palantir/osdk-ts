@@ -54,18 +54,6 @@ All component packages require an `OsdkProvider` wrapping your app. Without it, 
 
 ## CSS setup
 
-### IMPORTANT: Portal isolation (required)
-
-Components use [Base UI](https://base-ui.com) portals, which require stacking context isolation:
-
-```css
-.root {
-  isolation: isolate;
-}
-```
-
-Apply this to your root element. See the [Base UI docs](https://base-ui.com/react/overview/quick-start#portals) for details.
-
 ### Layers
 
 Import the component styles into a CSS [`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) in your application's entry CSS file (e.g., `index.css`). Using a layer keeps the cascade predictable: later layers always win when styles conflict, regardless of selector specificity, so your own styles and theme overrides take precedence over the defaults.

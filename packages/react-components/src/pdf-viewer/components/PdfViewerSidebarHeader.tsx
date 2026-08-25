@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { Toggle } from "@base-ui/react/toggle";
-import { ToggleGroup } from "@base-ui/react/toggle-group";
+import { SegmentedControl } from "@blueprintjs/core";
 import { GridView, Properties } from "@blueprintjs/icons";
-import React, { useCallback } from "react";
+import React from "react";
 
 import type { SidebarMode } from "../PdfViewerApi.js";
 
@@ -28,48 +27,33 @@ export interface PdfViewerSidebarHeaderProps {
   onSidebarModeChange: (mode: SidebarMode) => void;
 }
 
-const SIDEBAR_MODE_VALUE = Object.freeze(["thumbnails"]) as readonly string[];
-const OUTLINE_MODE_VALUE = Object.freeze(["outline"]) as readonly string[];
+const SIDEBAR_OPTIONS = [
+  {
+    value: "thumbnails",
+    label: "Page thumbnails",
+    icon: <GridView size={16} />,
+  },
+  {
+    value: "outline",
+    label: "Document outline",
+    icon: <Properties size={16} />,
+  },
+];
 
 export function PdfViewerSidebarHeader({
   sidebarMode,
   onSidebarModeChange,
 }: PdfViewerSidebarHeaderProps): React.ReactElement {
-  const value =
-    sidebarMode === "thumbnails" ? SIDEBAR_MODE_VALUE : OUTLINE_MODE_VALUE;
-
-  const handleValueChange = useCallback(
-    (newValue: string[]) => {
-      if (newValue.length > 0) {
-        onSidebarModeChange(newValue[0] as SidebarMode);
-      }
-    },
-    [onSidebarModeChange],
-  );
-
   return (
     <div className={styles.sidebarHeader}>
-      <ToggleGroup
-        value={value}
-        onValueChange={handleValueChange}
+      <SegmentedControl
+        value={sidebarMode}
+        onValueChange={(newValue) =>
+          onSidebarModeChange(newValue as SidebarMode)
+        }
+        options={SIDEBAR_OPTIONS}
         className={styles.toggleGroup}
-      >
-        <Toggle
-          value="thumbnails"
-          className={styles.modeButton}
-          aria-label="Page thumbnails"
-        >
-          <GridView size={16} />
-        </Toggle>
-
-        <Toggle
-          value="outline"
-          className={styles.modeButton}
-          aria-label="Document outline"
-        >
-          <Properties size={16} />
-        </Toggle>
-      </ToggleGroup>
+      />
     </div>
   );
 }

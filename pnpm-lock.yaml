@@ -4782,12 +4782,18 @@ importers:
 
   packages/react-components:
     dependencies:
-      '@base-ui/react':
-        specifier: '>=1.0.0 <1.4.0'
-        version: 1.0.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@blueprintjs/core':
+        specifier: ^6.18.0
+        version: 6.18.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@blueprintjs/datetime':
+        specifier: ^6.2.4
+        version: 6.2.4(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@blueprintjs/icons':
-        specifier: ^6.7.0
-        version: 6.8.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^6.13.0
+        version: 6.13.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@blueprintjs/select':
+        specifier: ^6.3.4
+        version: 6.3.4(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -4821,15 +4827,15 @@ importers:
       lodash-es:
         specifier: ^4.17.21
         version: 4.18.1
+      normalize.css:
+        specifier: ^8.0.1
+        version: 8.0.1
       pdfjs-dist:
         specifier: ~4.8.69
         version: 4.8.69
       postal-mime:
         specifier: ^2.7.4
         version: 2.7.4
-      react-day-picker:
-        specifier: ^8.10.0
-        version: 8.10.1(date-fns@2.30.0)(react@18.3.1)
       react-hook-form:
         specifier: ^7.54.0
         version: 7.71.2(react@18.3.1)
@@ -7056,12 +7062,53 @@ packages:
       '@types/react':
         optional: true
 
+  '@blueprintjs/core@6.18.0':
+    resolution: {integrity: sha512-EQVKWl/RFrPHfD42Bcicvxqwjwh+OnNSroXOdmnJZC+FP1xlcawOjTl38ewgJEaCZ6txcqiw/CGAft7/8zJ4RQ==}
+    hasBin: true
+    peerDependencies:
+      '@types/react': ^18.3.24
+      react: 18 || 19
+      react-dom: 18 || 19
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  '@blueprintjs/datetime@6.2.4':
+    resolution: {integrity: sha512-utU161Jh48UZ9iZeL2NdYycwWtGcjGfCePyU8qCsZHFgf1oWIBHLy/X9oJke4xDOk1Al6R687c4uoNOH2/txDg==}
+    peerDependencies:
+      '@types/react': ^18.3.24
+      react: 18 || 19
+      react-dom: 18 || 19
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  '@blueprintjs/icons@6.13.0':
+    resolution: {integrity: sha512-wEQgADFPwufKiKeF/L5K21bKgouuIbIdYPvMPFv2tt7reSuCEftX0dZpga+21JY4KvEJIz+xtVJoqMmXBesiwQ==}
+    peerDependencies:
+      '@types/react': ^18.3.24
+      react: 18 || 19
+      react-dom: 18 || 19
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
   '@blueprintjs/icons@6.8.0':
     resolution: {integrity: sha512-a281z8VTNesqVunBO2OigrPFxMRWHpYc84fN+xWbdN5hCiqQNv8ha6sqxeXHUsaTdnemiTH07thiZ8u8Uhfj4A==}
     peerDependencies:
       '@types/react': ^18.3.24
       react: '18'
       react-dom: '18'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  '@blueprintjs/select@6.3.4':
+    resolution: {integrity: sha512-vJa6MrXgPyQt4PRc9Z6c1vaHAKJMI1zloVph5eKOfv7YjSb1WlbH/bFWKunANxqSlncfug6FfaHkIRh7UYZ1Wg==}
+    peerDependencies:
+      '@types/react': ^18.3.24
+      react: 18 || 19
+      react-dom: 18 || 19
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -19019,6 +19066,12 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
 
+  react-innertext@1.1.5:
+    resolution: {integrity: sha512-PWAqdqhxhHIv80dT9znP2KvS+hfkbRovFp4zFYHFFlOoQLRiawIic81gKb3U1wEyJZgMwgs3JoLtwryASRWP3Q==}
+    peerDependencies:
+      '@types/react': ^18.3.24
+      react: '>=0.0.0 <=99'
+
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -23259,9 +23312,63 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.3.24
 
+  '@blueprintjs/core@6.18.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@blueprintjs/colors': 5.1.16
+      '@blueprintjs/icons': 6.13.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@floating-ui/react': 0.27.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@popperjs/core': 2.11.8
+      classnames: 2.5.1
+      normalize.css: 8.0.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-popper: 2.3.0(@popperjs/core@2.11.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-transition-group: 4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      tslib: 2.6.3
+    optionalDependencies:
+      '@types/react': 18.3.24
+
+  '@blueprintjs/datetime@6.2.4(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@blueprintjs/core': 6.18.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@blueprintjs/icons': 6.13.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@blueprintjs/select': 6.3.4(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      classnames: 2.5.1
+      date-fns: 2.30.0
+      date-fns-tz: 2.0.1(date-fns@2.30.0)
+      react: 18.3.1
+      react-day-picker: 8.10.1(date-fns@2.30.0)(react@18.3.1)
+      react-dom: 18.3.1(react@18.3.1)
+      react-innertext: 1.1.5(@types/react@18.3.24)(react@18.3.1)
+      tslib: 2.6.3
+    optionalDependencies:
+      '@types/react': 18.3.24
+
+  '@blueprintjs/icons@6.13.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      change-case: 4.1.2
+      classnames: 2.5.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      tslib: 2.6.3
+    optionalDependencies:
+      '@types/react': 18.3.24
+
   '@blueprintjs/icons@6.8.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       change-case: 4.1.2
+      classnames: 2.5.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      tslib: 2.6.3
+    optionalDependencies:
+      '@types/react': 18.3.24
+
+  '@blueprintjs/select@6.3.4(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@blueprintjs/colors': 5.1.16
+      '@blueprintjs/core': 6.18.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@blueprintjs/icons': 6.13.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       classnames: 2.5.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -39074,6 +39181,11 @@ snapshots:
 
   react-hook-form@7.71.2(react@18.3.1):
     dependencies:
+      react: 18.3.1
+
+  react-innertext@1.1.5(@types/react@18.3.24)(react@18.3.1):
+    dependencies:
+      '@types/react': 18.3.24
       react: 18.3.1
 
   react-is@16.13.1: {}

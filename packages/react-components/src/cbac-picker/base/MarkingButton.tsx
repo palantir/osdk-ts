@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
-import { Tooltip } from "@base-ui/react/tooltip";
+import { Button, Tooltip } from "@blueprintjs/core";
 import classnames from "classnames";
 import React from "react";
 
@@ -100,19 +99,19 @@ export const MarkingButton: React.MemoExoticComponent<
   }
 
   return (
-    <Tooltip.Root>
-      <Tooltip.Trigger render={button} />
-      <Tooltip.Portal>
-        <Tooltip.Positioner sideOffset={8}>
-          <Tooltip.Popup className={styles.tooltip}>
-            <p className={styles.tooltipTitle}>{label}</p>
-            {hasDescription && (
-              <p className={styles.tooltipDescription}>{description}</p>
-            )}
-            {hint != null && <p className={styles.tooltipHint}>{hint}</p>}
-          </Tooltip.Popup>
-        </Tooltip.Positioner>
-      </Tooltip.Portal>
-    </Tooltip.Root>
+    <Tooltip
+      popoverClassName={styles.tooltip}
+      content={
+        <>
+          <p className={styles.tooltipTitle}>{label}</p>
+          {hasDescription ? (
+            <p className={styles.tooltipDescription}>{description}</p>
+          ) : null}
+          {hint != null ? <p className={styles.tooltipHint}>{hint}</p> : null}
+        </>
+      }
+    >
+      {button}
+    </Tooltip>
   );
 });

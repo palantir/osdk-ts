@@ -14,33 +14,37 @@
  * limitations under the License.
  */
 
+import {
+  FileInput,
+  FormGroup,
+  InputGroup,
+  Intent,
+  NumericInput,
+  RadioGroup,
+  Switch,
+  TextArea,
+} from "@blueprintjs/core";
+import {
+  DateInput,
+  DateRangeInput,
+  type DateRange,
+} from "@blueprintjs/datetime";
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import React, { memo } from "react";
 
-import {
-  DatePicker,
-  type DateRange,
-  DateRangePicker,
-  EMPTY_RANGE,
-} from "../../shared/calendar/index.js";
-import { FormField } from "../FormField.js";
+import { resolvePortalContainerElement } from "../../shared/PortalContainerContext.js";
 import {
   type PortalContainer,
   type RendererFieldDefinition,
 } from "../FormFieldApi.js";
 import { CustomField } from "./CustomField.js";
 import { DropdownField } from "./DropdownField.js";
-import { FilePickerField } from "./FilePickerField.js";
-import { NumberInputField } from "./NumberInputField.js";
 import { ObjectSelectField } from "./ObjectSelectField.js";
 import { ObjectSetField } from "./ObjectSetField.js";
-import { RadioButtonsField } from "./RadioButtonsField.js";
-import { SwitchField } from "./SwitchField.js";
-import { TextAreaField } from "./TextAreaField.js";
-import { TextInputField } from "./TextInputField.js";
 
 const UNSUPPORTED_FIELD_MESSAGE =
   "Unsupported field type. Use a CUSTOM field instead";
+const EMPTY_DATE_RANGE: DateRange = [null, null];
 
 export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
@@ -65,18 +69,24 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
     error,
     portalContainer,
   }: FormFieldRendererProps): React.ReactElement {
-    const { label, isRequired, helperText, helperTextPlacement } =
-      fieldDefinition;
+    const { label, isRequired, helperText } = fieldDefinition;
+    const labelInfo = getLabelInfo(isRequired === true, isEdited);
+    const helperContent = (
+      <>
+        {helperText}
+        {error != null ? <div role="alert">{error}</div> : null}
+      </>
+    );
 
     return (
-      <FormField
+      <FormGroup
         label={label}
-        isRequired={isRequired}
-        fieldKey={fieldDefinition.fieldKey}
-        helperText={helperText}
-        helperTextPlacement={helperTextPlacement}
-        isEdited={isEdited}
-        error={error}
+        labelFor={fieldDefinition.fieldKey}
+        labelInfo={labelInfo}
+        helperText={
+          helperText != null || error != null ? helperContent : undefined
+        }
+        intent={error != null ? Intent.DANGER : Intent.NONE}
         onBlur={onBlur}
       >
         {renderFieldComponent(
@@ -87,7 +97,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
           portalContainer,
           onFieldBlur,
         )}
-      </FormField>
+      </FormGroup>
     );
   },
 );
@@ -104,51 +114,62 @@ function renderFieldComponent(
   switch (fieldDefinition.fieldComponent) {
     case "DATE_RANGE_INPUT":
       return (
-        <DateRangePicker
-          id={fieldDefinition.fieldKey}
+        <DateRangeInput
           value={coerceToDateRange(value)}
           onChange={onChange}
-          placeholderStart={fieldDefinition.placeholder}
           {...fieldDefinition.fieldComponentProps}
           disabled={disabled}
-          portalContainer={resolvePortalContainer(
-            fieldDefinition.fieldComponentProps,
-            portalContainer,
-          )}
+          startInputProps={{
+            id: fieldDefinition.fieldKey,
+            placeholder: fieldDefinition.placeholder,
+            ...fieldDefinition.fieldComponentProps.startInputProps,
+          }}
+          popoverProps={{
+            ...fieldDefinition.fieldComponentProps.popoverProps,
+            portalContainer: resolvePortalContainerElement(
+              fieldDefinition.fieldComponentProps.popoverProps
+                ?.portalContainer ?? portalContainer,
+            ),
+          }}
         />
       );
-    case "TEXT_INPUT":
+    case "TEXT_INPUT": {
+      const { defaultValue: _defaultValue, ...inputProps } =
+        fieldDefinition.fieldComponentProps;
       return (
-        <TextInputField
+        <InputGroup
           id={fieldDefinition.fieldKey}
           value={value != null ? String(value) : ""}
-          onChange={onChange}
+          onValueChange={onChange}
           placeholder={fieldDefinition.placeholder}
-          error={error}
-          {...fieldDefinition.fieldComponentProps}
+          {...inputProps}
           disabled={disabled}
+          intent={error != null ? Intent.DANGER : Intent.NONE}
+          aria-invalid={error != null || undefined}
         />
       );
+    }
     case "UNSUPPORTED":
       return (
-        <TextInputField
+        <InputGroup
           {...fieldDefinition.fieldComponentProps}
           id={fieldDefinition.fieldKey}
           value={UNSUPPORTED_FIELD_MESSAGE}
-          error={error}
           disabled={true}
+          aria-invalid={error != null || undefined}
         />
       );
     case "TEXT_AREA":
       return (
-        <TextAreaField
+        <TextArea
           id={fieldDefinition.fieldKey}
           value={value != null ? String(value) : ""}
-          onChange={onChange}
+          onChange={(event) => onChange(event.currentTarget.value)}
           placeholder={fieldDefinition.placeholder}
-          error={error}
           {...fieldDefinition.fieldComponentProps}
           disabled={disabled}
+          intent={error != null ? Intent.DANGER : Intent.NONE}
+          aria-invalid={error != null || undefined}
         />
       );
     case "DROPDOWN": {
@@ -171,42 +192,66 @@ function renderFieldComponent(
     }
     case "DATETIME_PICKER":
       return (
-        <DatePicker
-          id={fieldDefinition.fieldKey}
+        <DateInput
           placeholder={fieldDefinition.placeholder}
-          // TODO: Use coerceFieldValue
-          value={value instanceof Date ? value : null}
-          onChange={onChange}
-          error={error}
+          value={value instanceof Date ? value.toISOString() : null}
+          onChange={(newValue) =>
+            onChange(newValue == null ? null : new Date(newValue))
+          }
           {...fieldDefinition.fieldComponentProps}
           disabled={disabled}
-          portalContainer={resolvePortalContainer(
-            fieldDefinition.fieldComponentProps,
-            portalContainer,
-          )}
+          inputProps={{
+            ...fieldDefinition.fieldComponentProps.inputProps,
+            id: fieldDefinition.fieldKey,
+            intent: error != null ? Intent.DANGER : Intent.NONE,
+            "aria-invalid": error != null || undefined,
+          }}
+          popoverProps={{
+            ...fieldDefinition.fieldComponentProps.popoverProps,
+            portalContainer: resolvePortalContainerElement(
+              fieldDefinition.fieldComponentProps.popoverProps
+                ?.portalContainer ?? portalContainer,
+            ),
+          }}
         />
       );
     case "RADIO_BUTTONS":
       return (
-        <RadioButtonsField
+        <RadioGroup
           id={fieldDefinition.fieldKey}
-          value={value}
-          onChange={onChange}
-          error={error}
-          {...fieldDefinition.fieldComponentProps}
+          options={fieldDefinition.fieldComponentProps.options.map(
+            (option, index) => ({
+              label: option.label,
+              value: index,
+            }),
+          )}
+          selectedValue={fieldDefinition.fieldComponentProps.options.findIndex(
+            (option) => option.value === value,
+          )}
+          onChange={(event) => {
+            const selectedIndex = Number(event.currentTarget.value);
+            onChange(
+              fieldDefinition.fieldComponentProps.options[selectedIndex]?.value,
+            );
+          }}
+          inline={
+            fieldDefinition.fieldComponentProps.orientation === "horizontal"
+          }
           disabled={disabled}
+          aria-invalid={error != null || undefined}
         />
       );
     case "SWITCH":
       return (
-        <SwitchField
-          id={fieldDefinition.fieldKey}
-          label={fieldDefinition.label}
-          value={!!value}
-          onChange={onChange}
-          error={error}
+        <Switch
           {...fieldDefinition.fieldComponentProps}
+          role="switch"
+          aria-checked={!!value}
+          id={fieldDefinition.fieldKey}
+          checked={!!value}
+          onChange={(event) => onChange(event.currentTarget.checked)}
           disabled={disabled}
+          aria-invalid={error != null || undefined}
         />
       );
     case "CUSTOM":
@@ -220,30 +265,50 @@ function renderFieldComponent(
           disabled={disabled}
         />
       );
-    case "NUMBER_INPUT":
-      // TODO: Use coerceFieldValue
+    case "NUMBER_INPUT": {
       return (
-        <NumberInputField
+        <NumericInput
+          {...fieldDefinition.fieldComponentProps}
           id={fieldDefinition.fieldKey}
-          value={typeof value === "number" ? value : null}
-          onChange={onChange}
+          value={typeof value === "number" ? value : ""}
+          onValueChange={(valueAsNumber, valueAsString) =>
+            onChange(valueAsString === "" ? null : valueAsNumber)
+          }
           placeholder={fieldDefinition.placeholder}
-          error={error}
-          {...fieldDefinition.fieldComponentProps}
           disabled={disabled}
+          intent={error != null ? Intent.DANGER : Intent.NONE}
+          aria-invalid={error != null || undefined}
         />
       );
-    case "FILE_PICKER":
+    }
+    case "FILE_PICKER": {
+      const { inputProps, text, ...fileInputProps } =
+        fieldDefinition.fieldComponentProps;
+      const fileValue = coerceToFileValue(value);
       return (
-        <FilePickerField
-          id={fieldDefinition.fieldKey}
-          value={coerceToFileValue(value)}
-          onChange={onChange}
-          error={error}
-          {...fieldDefinition.fieldComponentProps}
+        <FileInput
+          {...fileInputProps}
+          text={getFileInputText(fileValue) ?? text}
+          hasSelection={fileValue != null}
+          onInputChange={(event) => {
+            const files = event.currentTarget.files;
+            if (files == null || files.length === 0) {
+              onChange(null);
+            } else if (inputProps?.multiple === true) {
+              onChange(Array.from(files));
+            } else {
+              onChange(files[0] ?? null);
+            }
+          }}
           disabled={disabled}
+          inputProps={{
+            ...inputProps,
+            id: fieldDefinition.fieldKey,
+            "aria-invalid": error != null || undefined,
+          }}
         />
       );
+    }
     case "OBJECT_SELECT":
       return (
         <ObjectSelectField
@@ -285,10 +350,9 @@ function resolvePortalContainer(
 }
 
 function coerceToDateRange(value: unknown): DateRange {
-  if (!Array.isArray(value) || value.length !== 2) return EMPTY_RANGE;
+  if (!Array.isArray(value) || value.length !== 2) return EMPTY_DATE_RANGE;
   const start = value[0] instanceof Date ? value[0] : null;
   const end = value[1] instanceof Date ? value[1] : null;
-  if (start == null && end == null) return EMPTY_RANGE;
   return [start, end];
 }
 
@@ -305,6 +369,25 @@ function coerceToFileValue(value: unknown): File | File[] | null {
     return value;
   }
   return null;
+}
+
+function getFileInputText(value: File | File[] | null): string | undefined {
+  if (value == null) {
+    return undefined;
+  }
+  return Array.isArray(value)
+    ? value.map((file) => file.name).join(", ")
+    : value.name;
+}
+
+function getLabelInfo(
+  isRequired: boolean,
+  isEdited: boolean,
+): string | undefined {
+  if (isRequired && isEdited) return "(required · edited)";
+  if (isRequired) return "(required)";
+  if (isEdited) return "(edited)";
+  return undefined;
 }
 
 /** Narrows the untyped form value to an OsdkObject by checking for $primaryKey. */

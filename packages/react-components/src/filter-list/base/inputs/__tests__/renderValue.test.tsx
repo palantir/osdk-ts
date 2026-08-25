@@ -267,15 +267,14 @@ describe("MultiSelectInput renderValue (ReactNode)", () => {
 });
 
 describe("createRenderValueFilter", () => {
-  // Covers the search-fallback behavior shared by MultiSelectInput and
-  // SingleSelectInput's `comboboxFilter`. Dropdown items live in a Combobox
-  // portal that jsdom can't mount, so the filter is tested directly.
+  // Covers the Blueprint search predicate shared by MultiSelectInput and
+  // SingleSelectInput.
 
   it("matches against the rendered string when renderValue returns a string", () => {
     const filter = createRenderValueFilter((value) => LABELS[value] ?? value);
 
-    expect(filter("abc-123", "alice")).toBe(true);
-    expect(filter("def-456", "alice")).toBe(false);
+    expect(filter("alice", "abc-123")).toBe(true);
+    expect(filter("alice", "def-456")).toBe(false);
   });
 
   it("falls back to the raw value when renderValue returns JSX", () => {
@@ -283,15 +282,13 @@ describe("createRenderValueFilter", () => {
       <a href={`/user/${value}`}>{LABELS[value] ?? value}</a>
     ));
 
-    expect(filter("abc-123", "abc")).toBe(true);
-    expect(filter("abc-123", "alice")).toBe(false);
+    expect(filter("abc", "abc-123")).toBe(true);
+    expect(filter("alice", "abc-123")).toBe(false);
   });
 });
 
 describe("SingleSelectInput renderValue", () => {
-  // SingleSelectInput renders dropdown items inside a Combobox portal
-  // which only mounts when opened — not testable in jsdom without
-  // full browser event sequences. Filter behavior (including the
+  // Filter behavior (including the
   // ReactNode fallback) is covered by the `createRenderValueFilter`
   // tests above. These tests verify the component accepts the prop
   // and renders without errors.

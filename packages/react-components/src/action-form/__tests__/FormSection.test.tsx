@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Classes } from "@blueprintjs/core";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
@@ -59,14 +60,17 @@ describe("FormSection", () => {
       // Content is visible initially
       expect(screen.getByTestId("child-field")).toBeDefined();
 
-      // Click the collapse trigger
-      const trigger = screen.getByRole("button", { name: /test section/iu });
-      fireEvent.click(trigger);
+      const header = screen
+        .getByText("Test Section")
+        .closest(`.${Classes.SECTION_HEADER}`);
+      expect(header).not.toBeNull();
+      fireEvent.click(header!);
 
-      // Content should be hidden (panel closed)
       expect(
-        screen.getByTestId("child-field").closest("[hidden]"),
-      ).not.toBeNull();
+        header
+          ?.closest(`.${Classes.SECTION}`)
+          ?.classList.contains(Classes.SECTION_COLLAPSED),
+      ).toBe(true);
     });
 
     it("starts collapsed when collapsedByDefault is true", () => {
@@ -81,8 +85,11 @@ describe("FormSection", () => {
 
       // Content should be hidden initially
       expect(
-        screen.getByTestId("child-field").closest("[hidden]"),
-      ).not.toBeNull();
+        screen
+          .getByTestId("child-field")
+          .closest("[aria-hidden]")
+          ?.getAttribute("aria-hidden"),
+      ).toBe("true");
     });
 
     it("expands when trigger is clicked on a collapsed section", () => {
@@ -97,15 +104,23 @@ describe("FormSection", () => {
 
       // Initially collapsed
       expect(
-        screen.getByTestId("child-field").closest("[hidden]"),
-      ).not.toBeNull();
+        screen
+          .getByTestId("child-field")
+          .closest("[aria-hidden]")
+          ?.getAttribute("aria-hidden"),
+      ).toBe("true");
 
       // Click to expand
-      const trigger = screen.getByRole("button", { name: /test section/iu });
+      const trigger = screen.getByRole("button", { name: "expand section" });
       fireEvent.click(trigger);
 
       // Now visible
-      expect(screen.getByTestId("child-field").closest("[hidden]")).toBeNull();
+      expect(
+        screen
+          .getByTestId("child-field")
+          .closest("[aria-hidden]")
+          ?.getAttribute("aria-hidden"),
+      ).toBe("false");
     });
 
     it("renders description when provided", () => {

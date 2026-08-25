@@ -14,16 +14,28 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
+import {
+  Button,
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  MenuItem,
+} from "@blueprintjs/core";
 import { Add, CaretDown, Cog } from "@blueprintjs/icons";
+import {
+  Select,
+  type ItemPredicate,
+  type ItemRenderer,
+} from "@blueprintjs/select";
 import { arrayMove } from "@dnd-kit/sortable";
 import type { SortingState } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import { ActionButton } from "../base-components/action-button/ActionButton.js";
-import { Dialog } from "../base-components/dialog/Dialog.js";
-import { SearchableMenu } from "../base-components/searchable-menu/SearchableMenu.js";
+import {
+  resolvePortalContainerElement,
+  usePortalContainer,
+} from "../shared/PortalContainerContext.js";
 import { type SortableItem, SortableItemsList } from "./SortableItemsList.js";
 import { getSortIcons } from "./utils/getSortIcons.js";
 import type { ColumnOption } from "./utils/types.js";
@@ -33,6 +45,29 @@ import styles from "./MultiColumnSortDialog.module.css";
 export interface SortColumnItem extends ColumnOption {
   direction: "asc" | "desc";
 }
+
+const COLUMN_SELECT_INPUT_PROPS = { placeholder: "Search columns" };
+const NO_MATCHING_COLUMNS = (
+  <MenuItem disabled={true} text="No matching columns" />
+);
+
+const filterColumnOption: ItemPredicate<ColumnOption> = (query, column) =>
+  column.name.toLowerCase().includes(query.toLowerCase().trim());
+
+const renderColumnOption: ItemRenderer<ColumnOption> = (
+  column,
+  { handleClick, modifiers },
+) => {
+  if (!modifiers.matchesPredicate) return null;
+  return (
+    <MenuItem
+      active={modifiers.active}
+      key={column.id}
+      onClick={handleClick}
+      text={column.name}
+    />
+  );
+};
 
 export interface MultiColumnSortDialogProps {
   isOpen: boolean;
@@ -49,6 +84,11 @@ export function MultiColumnSortDialog({
   currentSorting,
   columnOptions,
 }: MultiColumnSortDialogProps): React.ReactElement {
+  const portalContainer = resolvePortalContainerElement(usePortalContainer());
+  const selectPopoverProps = useMemo(
+    () => ({ portalContainer }),
+    [portalContainer],
+  );
   const [selectedSortColumns, setSelectedSortColumns] = useState<
     SortColumnItem[]
   >([]);
@@ -116,21 +156,6 @@ export function MultiColumnSortDialog({
     [columnOptions, selectedSortColumns],
   );
 
-  const searchableMenuItems = useMemo(
-    () => availableColumns.map((col) => ({ key: col.id, label: col.name })),
-    [availableColumns],
-  );
-
-  const handleMenuItemSelected = useCallback(
-    (key: string) => {
-      const column = availableColumns.find((col) => col.id === key);
-      if (column) {
-        handleAddColumn(column);
-      }
-    },
-    [availableColumns, handleAddColumn],
-  );
-
   const sortableItems: SortableItem[] = useMemo(() => {
     return selectedSortColumns.map((item) => {
       const { asc: SortAscendingIcon, desc: SortDescendingIcon } = getSortIcons(
@@ -166,10 +191,10 @@ export function MultiColumnSortDialog({
   const footer = useMemo(
     () => (
       <>
-        <ActionButton onClick={onClose}>Cancel</ActionButton>
-        <ActionButton variant="primary" onClick={handleApply}>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button intent="primary" onClick={handleApply}>
           Apply
-        </ActionButton>
+        </Button>
       </>
     ),
     [handleApply, onClose],
@@ -178,33 +203,38 @@ export function MultiColumnSortDialog({
   return (
     <Dialog
       isOpen={isOpen}
-      onOpenChange={onClose}
+      onClose={onClose}
       title={DialogTitle}
-      footer={footer}
+      portalContainer={portalContainer}
     >
-      <div className={styles.sortColumnsList}>
-        <SortableItemsList
-          items={sortableItems}
-          onReorder={handleReorderSortColumns}
-          onRemove={handleRemoveSortColumn}
-          className={styles.sortableList}
-        />
-        <SearchableMenu
-          items={searchableMenuItems}
-          onItemSelected={handleMenuItemSelected}
-          trigger={
-            <>
-              <Add className={styles.addIcon} />
-              <span className={styles.addColumnText}>Add Column to Sort</span>
-              <CaretDown />
-            </>
-          }
-          triggerClassName={styles.addColumnButton}
-          disabled={availableColumns.length === 0}
-          searchPlaceholder="Search columns"
-          emptyMessage="No matching columns"
-        />
-      </div>
+      <DialogBody>
+        <div className={styles.sortColumnsList}>
+          <SortableItemsList
+            items={sortableItems}
+            onReorder={handleReorderSortColumns}
+            onRemove={handleRemoveSortColumn}
+            className={styles.sortableList}
+          />
+          <Select<ColumnOption>
+            items={availableColumns}
+            itemPredicate={filterColumnOption}
+            itemRenderer={renderColumnOption}
+            onItemSelect={handleAddColumn}
+            inputProps={COLUMN_SELECT_INPUT_PROPS}
+            noResults={NO_MATCHING_COLUMNS}
+            popoverProps={selectPopoverProps}
+          >
+            <Button
+              className={styles.addColumnButton}
+              disabled={availableColumns.length === 0}
+              icon={<Add className={styles.addIcon} />}
+              rightIcon={<CaretDown />}
+              text="Add Column to Sort"
+            />
+          </Select>
+        </div>
+      </DialogBody>
+      <DialogFooter actions={footer} />
     </Dialog>
   );
 }

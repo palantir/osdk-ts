@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { Checkbox } from "@blueprintjs/core";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 
-import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
 import { formatCompactCount } from "./formatCompactCount.js";
 import { NoValueLabel } from "./NoValueLabel.js";
 
@@ -60,10 +60,11 @@ function NullValueWrapperInner({
         data-checked={includeNull}
         data-loading={isLoading}
       >
-        <label className={styles.nullLabel}>
-          <Checkbox checked={includeNull} onCheckedChange={handleToggle} />
-          <NoValueLabel className={styles.noValueLabel} />
-        </label>
+        <Checkbox
+          checked={includeNull}
+          onChange={handleToggle}
+          labelElement={<NoValueLabel className={styles.noValueLabel} />}
+        />
         {showNullCount && !error && (
           <span className={styles.count} title={nullCount.toLocaleString()}>
             {formatCompactCount(nullCount)}

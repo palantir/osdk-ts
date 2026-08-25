@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { Input } from "@base-ui/react/input";
+import { Button, TextArea } from "@blueprintjs/core";
 import classNames from "classnames";
 import * as React from "react";
-
-import { ActionButton } from "../../base-components/action-button/ActionButton.js";
 
 import styles from "../AipAgentChat.module.css";
 
@@ -82,40 +80,39 @@ export function AipAgentChatComposer({
     [handleSend, isInFlight],
   );
 
-  // Attach the keydown handler in the `render` prop so it can be typed against
-  // the actual rendered <textarea> element rather than base-ui's HTMLInputElement.
-  const renderTextarea = React.useCallback(
-    (props: React.ComponentPropsWithRef<"textarea">) => (
-      <textarea {...props} onKeyDown={handleKeyDown} rows={3} />
-    ),
-    [handleKeyDown],
+  const handleChange = React.useCallback(
+    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setDraft(event.currentTarget.value);
+    },
+    [],
   );
 
   return (
     <div className={classNames(styles.composer, className)}>
       <div className={styles.inputWrapper}>
-        <Input
+        <TextArea
           aria-label="Message input"
           className={styles.textarea}
-          onValueChange={setDraft}
+          onKeyDown={handleKeyDown}
+          onChange={handleChange}
           placeholder={placeholder}
+          rows={3}
           value={draft}
-          render={renderTextarea}
         />
         <div className={styles.inputActions}>
           {isInFlight && onStop != null ? (
-            <ActionButton onClick={onStop} type="button">
+            <Button onClick={onStop} type="button">
               Stop
-            </ActionButton>
+            </Button>
           ) : (
-            <ActionButton
+            <Button
               disabled={!canSend}
               onClick={handleSend}
               type="button"
-              variant="primary"
+              intent="primary"
             >
               Send
-            </ActionButton>
+            </Button>
           )}
         </div>
       </div>

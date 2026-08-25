@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
+import { Switch } from "@blueprintjs/core";
 import classnames from "classnames";
 import React, { memo } from "react";
-
-import { Switch } from "../../../base-components/switch/Switch.js";
 
 import styles from "./ToggleInput.module.css";
 
@@ -40,10 +39,13 @@ function ToggleInputInner({
 
   return (
     <div className={rootClassName} style={style} data-enabled={enabled}>
-      <label className={styles.toggleLabel}>
-        <Switch checked={enabled} onCheckedChange={onChange} />
-        {label && <span className={styles.labelText}>{label}</span>}
-      </label>
+      <Switch
+        role="switch"
+        aria-checked={enabled}
+        checked={enabled}
+        onChange={(event) => onChange(event.currentTarget.checked)}
+        label={label}
+      />
     </div>
   );
 }

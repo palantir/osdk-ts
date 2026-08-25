@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
-import { Popover } from "@base-ui/react/popover";
+import { Button, Popover } from "@blueprintjs/core";
 import classnames from "classnames";
 import React from "react";
 
@@ -44,36 +43,35 @@ export function OverflowButton({
   const [open, setOpen] = React.useState(false);
 
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger
-        render={
-          <Button
-            className={classnames(
-              styles.moreButton,
-              hasActiveOverflow && styles.moreButtonActive,
-            )}
-          >
-            +{overflowMarkings.length} more
-          </Button>
-        }
-      />
-      <Popover.Portal>
-        <Popover.Positioner side="bottom" align="start">
-          <Popover.Popup className={styles.overflowList}>
-            {overflowMarkings.map((marking) => (
-              <OverflowItem
-                key={marking.id}
-                id={marking.id}
-                label={marking.label}
-                description={marking.description}
-                selectionState={marking.selectionState}
-                disabled={marking.disabled}
-                onToggle={onMarkingToggle}
-              />
-            ))}
-          </Popover.Popup>
-        </Popover.Positioner>
-      </Popover.Portal>
-    </Popover.Root>
+    <Popover
+      isOpen={open}
+      onInteraction={setOpen}
+      placement="bottom-start"
+      popoverClassName={styles.overflowList}
+      content={
+        <div>
+          {overflowMarkings.map((marking) => (
+            <OverflowItem
+              key={marking.id}
+              id={marking.id}
+              label={marking.label}
+              description={marking.description}
+              selectionState={marking.selectionState}
+              disabled={marking.disabled}
+              onToggle={onMarkingToggle}
+            />
+          ))}
+        </div>
+      }
+    >
+      <Button
+        className={classnames(
+          styles.moreButton,
+          hasActiveOverflow && styles.moreButtonActive,
+        )}
+      >
+        +{overflowMarkings.length} more
+      </Button>
+    </Popover>
   );
 }

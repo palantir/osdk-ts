@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
-import { Tooltip } from "@base-ui/react/tooltip";
+import { Button, Tooltip } from "@blueprintjs/core";
 import classnames from "classnames";
 import React from "react";
 
@@ -82,20 +81,21 @@ export const OverflowItem: React.MemoExoticComponent<
   }
 
   return (
-    <Tooltip.Root>
-      <Tooltip.Trigger render={button} />
-      <Tooltip.Portal>
-        <Tooltip.Positioner side="right" sideOffset={4}>
-          <Tooltip.Popup className={styles.tooltip}>
-            {hasDescription && (
-              <p className={styles.tooltipDescription}>{description}</p>
-            )}
-            {tooltipText != null && (
-              <p className={styles.tooltipHint}>{tooltipText}</p>
-            )}
-          </Tooltip.Popup>
-        </Tooltip.Positioner>
-      </Tooltip.Portal>
-    </Tooltip.Root>
+    <Tooltip
+      placement="right"
+      popoverClassName={styles.tooltip}
+      content={
+        <>
+          {hasDescription ? (
+            <p className={styles.tooltipDescription}>{description}</p>
+          ) : null}
+          {tooltipText != null ? (
+            <p className={styles.tooltipHint}>{tooltipText}</p>
+          ) : null}
+        </>
+      }
+    >
+      {button}
+    </Tooltip>
   );
 });
