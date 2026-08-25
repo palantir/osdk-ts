@@ -19,16 +19,15 @@
 // breaking change for consumers, and that should fail a test rather than pass
 // review unnoticed.
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import * as browser from "./browser.js";
 import { resetAliasesCache } from "./browser.js";
 import {
   Aliases,
-  custom,
   DEFAULT_DECLARATIONS_PATH,
   DEFAULT_DEPLOYMENT_CONFIG_PATH,
-  initAliases,
+  load,
 } from "./public/experimental.js";
 
 const DECLARATIONS = {
@@ -36,14 +35,15 @@ const DECLARATIONS = {
 };
 
 function mockFetch(): typeof globalThis.fetch {
-  return (() =>
+  return vi.fn(() =>
     Promise.resolve({
       ok: true,
       status: 200,
       statusText: "OK",
       headers: { get: () => "application/json" },
       text: () => Promise.resolve(JSON.stringify(DECLARATIONS)),
-    })) as unknown as typeof globalThis.fetch;
+    }),
+  ) as unknown as typeof globalThis.fetch;
 }
 
 describe("experimental browser entry point", () => {
@@ -52,16 +52,33 @@ describe("experimental browser entry point", () => {
   });
 
   it("exposes the Aliases namespace", async () => {
-    await Aliases.initAliases({ path: "resources.json", fetch: mockFetch() });
+    const aliases = await Aliases.load({
+      path: "resources.json",
+      fetch: mockFetch(),
+    });
 
-    expect(Aliases.custom("apiBaseUrl")).toBe("https://api.example.com");
+    expect(aliases.custom("apiBaseUrl")).toBe("https://api.example.com");
+  });
+
+  it("caches concurrent and repeated loads", async () => {
+    const fetchImpl = mockFetch();
+    const options = { path: "resources.json", fetch: fetchImpl };
+
+    const [first, second] = await Promise.all([
+      Aliases.load(options),
+      Aliases.load(options),
+    ]);
+    const third = await Aliases.load(options);
+
+    expect(first).toBe(second);
+    expect(first).toBe(third);
+    expect(fetchImpl).toHaveBeenCalledOnce();
   });
 
   it("exposes the same members as named exports", () => {
     // Same function identities, not merely same names, so the two styles can
     // never drift apart.
-    expect(Aliases.custom).toBe(custom);
-    expect(Aliases.initAliases).toBe(initAliases);
+    expect(Aliases.load).toBe(load);
     expect(Aliases.DEFAULT_DECLARATIONS_PATH).toBe(DEFAULT_DECLARATIONS_PATH);
     expect(Aliases.DEFAULT_DEPLOYMENT_CONFIG_PATH).toBe(
       DEFAULT_DEPLOYMENT_CONFIG_PATH,
@@ -73,6 +90,7 @@ describe("experimental browser entry point", () => {
     // into a browser bundle.
     expect(Aliases).not.toHaveProperty("dataset");
     expect(Aliases).not.toHaveProperty("source");
+    expect(Aliases).not.toHaveProperty("custom");
   });
 
   it("keeps the test-only cache reset out of the public surface", () => {

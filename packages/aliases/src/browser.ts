@@ -42,7 +42,7 @@ export const DEFAULT_DEPLOYMENT_CONFIG_PATH =
 /** The author's declaration file, so it carries the declared defaults. */
 export const DEFAULT_DECLARATIONS_PATH = "resources.json";
 
-export interface InitAliasesOptions {
+export interface LoadAliasesOptions {
   /**
    * Escape hatch to force one specific file, relative to `document.baseURI`.
    * Setting it disables the fallback, so a missing file throws. Normal
@@ -56,18 +56,36 @@ export interface InitAliasesOptions {
   fetch?: typeof globalThis.fetch;
 }
 
+/** Aliases loaded for this application. */
+export interface LoadedAliases {
+  /** Returns a resolved custom alias. */
+  custom(alias: string): Custom;
+}
+
 let cachedCustomAliases: Record<string, string> | undefined;
 let inFlight: Promise<void> | undefined;
 
+const loadedAliases: LoadedAliases = Object.freeze({ custom });
+
 /**
- * Fetches and caches the resolved aliases for this installation. Call once at
- * application startup and await it before reading any aliases. Repeated calls
- * are deduplicated and become no-ops once the aliases are cached.
+ * Loads and caches the aliases for this installation, then returns a
+ * synchronous reader. Repeated and concurrent calls share the same load.
  *
  * @experimental Exposed only via "@osdk/aliases/experimental". Both custom
  * aliases and the shape of this API are provisional and may change.
  */
-export async function initAliases(options?: InitAliasesOptions): Promise<void> {
+export async function load(
+  options?: LoadAliasesOptions,
+): Promise<LoadedAliases> {
+  await initAliases(options);
+  return loadedAliases;
+}
+
+/**
+ * Populates the alias cache. Concurrent calls share a request, and failed
+ * requests may be retried.
+ */
+export async function initAliases(options?: LoadAliasesOptions): Promise<void> {
   if (cachedCustomAliases !== undefined) {
     return;
   }
@@ -81,12 +99,12 @@ export async function initAliases(options?: InitAliasesOptions): Promise<void> {
   await inFlight;
 }
 
-async function loadAliases(options?: InitAliasesOptions): Promise<void> {
+async function loadAliases(options?: LoadAliasesOptions): Promise<void> {
   const fetchImpl = options?.fetch ?? globalThis.fetch;
   if (typeof fetchImpl !== "function") {
     throw new TypeError(
       "No fetch implementation available to load aliases. Pass one via " +
-        "initAliases({ fetch }).",
+        "Aliases.load({ fetch }).",
     );
   }
 
