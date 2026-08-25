@@ -86,3 +86,8 @@
     --osdk-surface-background-color-default-rest
   );
 }
+
+[data-bp-color-scheme="dark"],
+.bp6-dark {
+  --osdk-combobox-chip-color: var(--osdk-palette-gray-4);
+}
