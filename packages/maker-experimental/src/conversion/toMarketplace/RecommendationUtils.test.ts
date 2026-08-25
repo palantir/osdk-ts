@@ -42,7 +42,11 @@ function callGetExternalRecommendations(
 
 describe("RecommendationUtils", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, "/tmp/");
+    await defineOntology(
+      "com.palantir.",
+      () => {},
+      "/tmp/osdk-maker-experimental/",
+    );
   });
 
   it("returns empty array when no imported entities", async () => {
