@@ -363,9 +363,96 @@ Styling for checkbox components.
 
 Styling for combobox components.
 
-| Variable                           | Default Value | Description          |
-| ---------------------------------- | ------------- | -------------------- |
-| `--osdk-combobox-popup-max-height` | `320px`       | Popup maximum height |
+#### Shared
+
+| Variable                                | Default Value                                        | Description                  |
+| --------------------------------------- | ---------------------------------------------------- | ---------------------------- |
+| `--osdk-combobox-spacing`               | `var(--osdk-surface-spacing)`                        | Base spacing                 |
+| `--osdk-combobox-min-height`            | `30px`                                               | Minimum height               |
+| `--osdk-combobox-border-radius`         | `var(--osdk-surface-border-radius)`                  | Border radius                |
+| `--osdk-combobox-border-width`          | `var(--osdk-surface-border-width)`                   | Border width                 |
+| `--osdk-combobox-border-color`          | `var(--osdk-surface-border-color-default)`           | Border color                 |
+| `--osdk-combobox-font-family`           | `var(--osdk-typography-family-default)`              | Font family                  |
+| `--osdk-combobox-font-size`             | `var(--osdk-typography-size-body-medium)`            | Font size                    |
+| `--osdk-combobox-line-height`           | `var(--osdk-typography-line-height-default)`         | Line height                  |
+| `--osdk-combobox-placeholder-color`     | `var(--osdk-typography-color-muted)`                 | Placeholder text color       |
+| `--osdk-combobox-icon-color`            | `var(--osdk-iconography-color-muted)`                | Icon color                   |
+| `--osdk-combobox-transition-duration`   | `var(--osdk-emphasis-transition-duration)`           | Transition duration          |
+| `--osdk-combobox-transition-ease`       | `var(--osdk-emphasis-ease-default)`                  | Transition easing            |
+| `--osdk-combobox-z-index`               | `var(--osdk-surface-z-index-3)`                      | Popup stacking order         |
+
+#### Trigger
+
+| Variable                                       | Default Value                                                                            | Description                      |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------- |
+| `--osdk-combobox-trigger-spacing`              | `var(--osdk-surface-spacing)`                                                            | Spacing between trigger contents |
+| `--osdk-combobox-trigger-min-height`           | `30px`                                                                                   | Trigger minimum height           |
+| `--osdk-combobox-trigger-padding`              | `calc(var(--osdk-surface-spacing) * 1.5) calc(var(--osdk-surface-spacing) * 2.5)`         | Trigger padding                  |
+| `--osdk-combobox-trigger-border-radius`        | `var(--osdk-surface-border-radius)`                                                      | Trigger border radius            |
+| `--osdk-combobox-trigger-border-width`         | `var(--osdk-surface-border-width)`                                                       | Trigger border width             |
+| `--osdk-combobox-trigger-border-color`         | `var(--osdk-surface-border-color-default)`                                               | Trigger border color             |
+| `--osdk-combobox-trigger-border-color-active`  | `var(--osdk-intent-primary-rest)`                                                        | Open trigger border color        |
+| `--osdk-combobox-trigger-bg`                   | `var(--osdk-button-secondary-bg)`                                                        | Trigger background               |
+| `--osdk-combobox-trigger-bg-hover`             | `var(--osdk-button-secondary-bg-hover)`                                                  | Trigger hover background         |
+| `--osdk-combobox-trigger-bg-active`            | `var(--osdk-button-secondary-bg-active)`                                                 | Trigger active background        |
+| `--osdk-combobox-trigger-color`                | `var(--osdk-typography-color-default-rest)`                                              | Trigger text color               |
+
+#### Input
+
+| Variable                              | Default Value                                                                    | Description        |
+| ------------------------------------- | -------------------------------------------------------------------------------- | ------------------ |
+| `--osdk-combobox-input-padding`       | `calc(var(--osdk-surface-spacing) * 1.5) calc(var(--osdk-surface-spacing) * 2)`   | Input padding      |
+| `--osdk-combobox-input-bg`            | `var(--osdk-surface-background-color-default-rest)`                              | Input background   |
+| `--osdk-combobox-input-color`         | `var(--osdk-typography-color-default-rest)`                                      | Input text color   |
+| `--osdk-combobox-focus-border-color`  | `var(--osdk-intent-primary-rest)`                                                | Focus border color |
+
+#### Popup
+
+| Variable                           | Default Value                                               | Description          |
+| ---------------------------------- | ----------------------------------------------------------- | -------------------- |
+| `--osdk-combobox-popup-max-height` | `320px`                                                     | Popup maximum height |
+| `--osdk-combobox-popup-bg`         | `var(--osdk-surface-background-color-default-rest)`         | Popup background     |
+| `--osdk-combobox-popup-shadow`     | `var(--osdk-surface-shadow-2)`                              | Popup shadow         |
+
+#### Items
+
+| Variable                                     | Default Value                                         | Description                 |
+| -------------------------------------------- | ----------------------------------------------------- | --------------------------- |
+| `--osdk-combobox-item-color`                 | `var(--osdk-typography-color-default-rest)`           | Item text color             |
+| `--osdk-combobox-item-color-selected`        | `var(--osdk-intent-primary-rest)`                     | Selected item text color    |
+| `--osdk-combobox-item-bg-highlighted`        | `var(--osdk-surface-background-color-default-hover)`  | Highlighted item background |
+| `--osdk-combobox-item-bg-selected`           | `var(--osdk-surface-layer-primary)`                   | Selected item background    |
+| `--osdk-combobox-empty-color`                | `var(--osdk-typography-color-muted)`                  | Empty-state text color      |
+
+#### Chips
+
+| Variable                                      | Default Value                               | Description                    |
+| --------------------------------------------- | ------------------------------------------- | ------------------------------ |
+| `--osdk-combobox-chip-bg`                     | `var(--osdk-custom-color-gray-4)`           | Chip background                |
+| `--osdk-combobox-chip-color`                  | `var(--osdk-typography-color-default-rest)` | Chip text color                |
+| `--osdk-combobox-chip-font-size`              | `var(--osdk-typography-size-body-small)`    | Chip font size                 |
+| `--osdk-combobox-chip-remove-color`           | `var(--osdk-iconography-color-muted)`       | Chip remove button color       |
+| `--osdk-combobox-chip-remove-color-hover`     | `var(--osdk-typography-color-default-rest)` | Chip remove button hover color |
+
+#### Clear Button
+
+| Variable                                  | Default Value                                         | Description                   |
+| ----------------------------------------- | ----------------------------------------------------- | ----------------------------- |
+| `--osdk-combobox-clear-color`             | `var(--osdk-iconography-color-muted)`                 | Clear button color            |
+| `--osdk-combobox-clear-color-hover`       | `var(--osdk-typography-color-default-rest)`           | Clear button hover color      |
+| `--osdk-combobox-clear-bg-hover`          | `var(--osdk-surface-background-color-default-hover)`  | Clear button hover background |
+
+#### Checkbox
+
+| Variable                                           | Default Value                                         | Description                    |
+| -------------------------------------------------- | ----------------------------------------------------- | ------------------------------ |
+| `--osdk-combobox-checkbox-border-radius`           | `var(--osdk-surface-border-radius)`                   | Checkbox border radius         |
+| `--osdk-combobox-checkbox-border-width`            | `var(--osdk-surface-border-width)`                    | Checkbox border width          |
+| `--osdk-combobox-checkbox-border-color`            | `var(--osdk-surface-border-color-default)`            | Checkbox border color          |
+| `--osdk-combobox-checkbox-bg`                      | `var(--osdk-surface-background-color-default-rest)`   | Checkbox background            |
+| `--osdk-combobox-checkbox-bg-checked`              | `var(--osdk-intent-primary-rest)`                     | Checked checkbox background    |
+| `--osdk-combobox-checkbox-border-color-checked`    | `var(--osdk-intent-primary-rest)`                     | Checked checkbox border color  |
+| `--osdk-combobox-checkbox-color-checked`           | `var(--osdk-surface-background-color-default-rest)`   | Checkmark color                |
 
 ### CBAC Picker
 

@@ -1,7 +1,7 @@
 :root {
   /* Shared */
   --osdk-combobox-spacing: var(--osdk-surface-spacing);
-  --osdk-combobox-min-height: var(--osdk-input-min-height);
+  --osdk-combobox-min-height: 30px;
   --osdk-combobox-border-radius: var(--osdk-surface-border-radius);
   --osdk-combobox-border-width: var(--osdk-surface-border-width);
   --osdk-combobox-border-color: var(--osdk-surface-border-color-default);
@@ -16,7 +16,7 @@
 
   /* Trigger */
   --osdk-combobox-trigger-spacing: var(--osdk-surface-spacing);
-  --osdk-combobox-trigger-min-height: var(--osdk-input-min-height);
+  --osdk-combobox-trigger-min-height: 30px;
   --osdk-combobox-trigger-padding: calc(var(--osdk-surface-spacing) * 1.5)
     calc(var(--osdk-surface-spacing) * 2.5);
   --osdk-combobox-trigger-border-radius: var(--osdk-surface-border-radius);
