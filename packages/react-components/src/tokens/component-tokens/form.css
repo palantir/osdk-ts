@@ -29,6 +29,7 @@
   /* Info popup (tooltip-styled popup for helper text) */
   --osdk-form-info-popup-padding: var(--osdk-tooltip-padding);
   --osdk-form-info-popup-bg: var(--osdk-tooltip-bg);
+  --osdk-form-info-popup-color: var(--osdk-tooltip-color);
   --osdk-form-info-popup-shadow: var(--osdk-tooltip-shadow);
   --osdk-form-info-popup-max-width: var(--osdk-tooltip-max-width);
   --osdk-form-info-popup-font-size: var(--osdk-tooltip-font-size);
@@ -42,7 +43,8 @@
   --osdk-form-error-reserved-block-size: calc(
     var(--osdk-form-error-font-size) * var(--osdk-form-error-line-height)
   );
-  --osdk-form-error-color: var(--osdk-typography-color-danger-rest);
+  /* Small validation text needs the darker danger shade for 4.5:1 contrast. */
+  --osdk-form-error-color: var(--osdk-intent-danger-hover);
 
   /* Edited tag */
   --osdk-form-edited-tag-bg: var(--osdk-custom-color-gray-2);

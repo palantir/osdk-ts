@@ -862,7 +862,7 @@ describe("DatePicker", () => {
 
       // Find the end-of-popover focus sentinel inside the dialog.
       const endSentinel = dialog.querySelector(
-        "[aria-label='End of date picker dialog']",
+        '[data-osdk-date-picker-focus-boundary="end"]',
       ) as HTMLElement;
 
       // Simulate Tab reaching the sentinel from inside the popover.
@@ -886,7 +886,7 @@ describe("DatePicker", () => {
 
       const dialog = screen.getByRole("dialog");
       const endSentinel = dialog.querySelector(
-        "[aria-label='End of date picker dialog']",
+        '[data-osdk-date-picker-focus-boundary="end"]',
       ) as HTMLElement;
 
       // Tab reaches end boundary → popover closes, focus returns to input

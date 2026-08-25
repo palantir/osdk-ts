@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
@@ -86,6 +86,25 @@ describe("FormField", () => {
   });
 
   describe("tooltip helper text", () => {
+    it("labels the helper text dialog", () => {
+      render(
+        <FormField
+          fieldKey="name"
+          label="Name"
+          helperText="Enter your full name"
+          helperTextPlacement="tooltip"
+        >
+          <input id="name" />
+        </FormField>,
+      );
+
+      fireEvent.click(screen.getByLabelText("Info about Name"));
+
+      expect(
+        screen.getByRole("dialog", { name: "Info about Name" }),
+      ).toBeDefined();
+    });
+
     it("shows tooltip icon when placement is tooltip", () => {
       render(
         <FormField

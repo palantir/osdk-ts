@@ -479,7 +479,7 @@ describe("DateRangePicker", () => {
 
       const dialog = screen.getByRole("dialog");
       const endSentinel = dialog.querySelector(
-        "[aria-label='End of date range picker dialog']",
+        '[data-osdk-date-picker-focus-boundary="end"]',
       ) as HTMLElement;
 
       // Simulate Tab reaching the sentinel from inside the popover.
@@ -503,7 +503,7 @@ describe("DateRangePicker", () => {
 
       const dialog = screen.getByRole("dialog");
       const endSentinel = dialog.querySelector(
-        "[aria-label='End of date range picker dialog']",
+        '[data-osdk-date-picker-focus-boundary="end"]',
       ) as HTMLElement;
 
       fireEvent.focus(endSentinel, { relatedTarget: dialog });

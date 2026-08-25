@@ -447,7 +447,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
             />
           )}
           <Combobox.Positioner>
-            <Combobox.Popup>
+            <Combobox.Popup aria-label={placeholder ?? "Options"}>
               {isSearchable && (
                 <div className={comboboxStyles.osdkComboboxPopupSearchInput}>
                   <Combobox.SearchInput placeholder="Search…" />
