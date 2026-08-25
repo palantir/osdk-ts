@@ -11,7 +11,6 @@ const CSPELL_CMD = "cspell --quiet --no-must-find-files";
  * shared root oxlint.config.ts.
  */
 const OXC_PACKAGES = [
-  "shared.branch",
   "shared.net.errors",
   "shared.client.impl",
   "shared.net.fetch",

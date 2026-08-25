@@ -194,7 +194,6 @@ const archetypeRules = archetypes(standardPackageRules, {
       // 1-file src). The shipped scaffolding under each package's templates/ dir is
       // ignored by oxlint + oxfmt and migrates separately.
       "@osdk/create-app.react.beta.common",
-      "@osdk/shared.branch",
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",
     ],
@@ -289,19 +288,10 @@ const archetypeRules = archetypes(standardPackageRules, {
       "@osdk/vite-plugin-superrepo",
       "@osdk/vite-plugin-status-reporter",
       "@osdk/vite-plugin-code-workspace-preview",
+      "@osdk/vite-plugin-branch",
     ],
     {
       ...LIBRARY_RULES,
-      oxc: true,
-      oxcConfig: "./oxlint.config.ts",
-    },
-  )
-  .addArchetype(
-    "bundled oxc migrated vite plugins with carve-outs",
-    ["@osdk/vite-plugin-branch"],
-    {
-      ...LIBRARY_RULES,
-      output: { browser: "bundle", cjs: "bundle", esm: "bundle" },
       oxc: true,
       oxcConfig: "./oxlint.config.ts",
     },

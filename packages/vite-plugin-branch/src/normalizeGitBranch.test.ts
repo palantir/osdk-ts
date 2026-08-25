@@ -18,7 +18,7 @@ import { describe, expect, it } from "vitest";
 
 import { normalizeGitBranch } from "./normalizeGitBranch.js";
 
-describe("normalizeGitBranch", () => {
+describe(normalizeGitBranch, () => {
   it("returns the branch when on a feature branch", () => {
     expect(normalizeGitBranch("my-feature")).toBe("my-feature");
     expect(normalizeGitBranch("zka/my-branch")).toBe("zka/my-branch");

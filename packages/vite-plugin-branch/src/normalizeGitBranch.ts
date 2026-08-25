@@ -16,10 +16,6 @@
 
 const NON_BRANCH: ReadonlySet<string> = new Set(["main", "master", "HEAD"]);
 
-/**
- * The Foundry branch a git branch corresponds to: `branch` trimmed, or
- * `undefined` if it is blank or names no branch (`main`/`master`/detached HEAD).
- */
 export function normalizeGitBranch(
   branch: string | undefined,
 ): string | undefined {

@@ -61,7 +61,6 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tool.check-bundle": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/shared.branch": "workspace:~",
     "@types/archiver": "^6.0.3",
     "@types/ngeohash": "^0.6.8",
     "@types/node": "^18.19.124",

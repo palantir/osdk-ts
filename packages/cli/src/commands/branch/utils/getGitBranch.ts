@@ -14,5 +14,16 @@
  * limitations under the License.
  */
 
-export { getGitBranch } from "./getGitBranch.js";
-export { normalizeGitBranch } from "./normalizeGitBranch.js";
+import { execa } from "execa";
+
+/** The current git branch, or `undefined` if git fails. */
+export async function getGitBranch(cwd?: string): Promise<string | undefined> {
+  try {
+    const { stdout } = await execa("git", ["branch", "--show-current"], {
+      cwd,
+    });
+    return stdout.trim();
+  } catch {
+    return undefined;
+  }
+}

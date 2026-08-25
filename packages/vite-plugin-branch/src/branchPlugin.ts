@@ -16,8 +16,10 @@
 
 import path from "node:path";
 
-import { getGitBranch, normalizeGitBranch } from "@osdk/shared.branch";
 import { loadEnv, type Plugin } from "vite";
+
+import { getGitBranch } from "./getGitBranch.js";
+import { normalizeGitBranch } from "./normalizeGitBranch.js";
 
 /**
  * The environment variable used to expose either a Foundry branch RID or a

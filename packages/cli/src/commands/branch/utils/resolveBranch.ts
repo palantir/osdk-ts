@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import { normalizeGitBranch } from "@osdk/shared.branch";
+const NON_BRANCH: ReadonlySet<string> = new Set(["main", "master", "HEAD"]);
+
+function normalizeGitBranch(branch: string | undefined): string | undefined {
+  const trimmed = branch?.trim();
+  if (trimmed == null || trimmed === "" || NON_BRANCH.has(trimmed)) {
+    return undefined;
+  }
+  return trimmed;
+}
 
 /**
  * Resolve the branch context: `argBranchName` wins; else `gitBranchName`, with
