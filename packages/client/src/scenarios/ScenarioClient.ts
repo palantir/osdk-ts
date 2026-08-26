@@ -198,6 +198,13 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
   /**
    * Stream object identifiers for the objects whose scenario edits conflict with edits to the scenario's base for the
    * given object type. Pages are fetched lazily.
+   *
+   * @example
+   * ```ts
+   * for await (const obj of scenario.conflictingObjectsAsyncIter(Doctor, { pageSize: 500 })) {
+   *   // obj.$primaryKey identifies an object with a conflicting scenario edit
+   * }
+   * ```
    */
   conflictingObjectsAsyncIter<Q extends ObjectTypeDefinition>(
     objectType: Q,
