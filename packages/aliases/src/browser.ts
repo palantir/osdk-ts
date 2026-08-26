@@ -90,12 +90,15 @@ async function loadAliases(options?: InitAliasesOptions): Promise<void> {
   // Marketplace-installed apps use installer values from
   // `.palantir/deployment.config.json`. Local development and apps deployed
   // without Marketplace fall back to author defaults in `resources.json`.
-  const resolved = await fetchAliases(
+  const deploymentConfig = await fetchJson(
     fetchImpl,
     DEFAULT_DEPLOYMENT_CONFIG_PATH,
   );
-  if (resolved !== undefined) {
-    cachedCustomAliases = resolved;
+  if (deploymentConfig !== undefined) {
+    cachedCustomAliases = extractDeploymentAliases(
+      deploymentConfig.value,
+      deploymentConfig.url,
+    );
     return;
   }
 
@@ -106,15 +109,23 @@ async function loadAliases(options?: InitAliasesOptions): Promise<void> {
       )}. ` +
       "This is expected during local development.",
   );
+  const declarations = await fetchJson(fetchImpl, DEFAULT_DECLARATIONS_PATH);
   cachedCustomAliases =
-    (await fetchAliases(fetchImpl, DEFAULT_DECLARATIONS_PATH)) ?? {};
+    declarations === undefined
+      ? {}
+      : extractDeclaredAliases(declarations.value, declarations.url);
+}
+
+interface FetchedJson {
+  value: unknown;
+  url: string;
 }
 
 /** Returns `undefined` when the file appears absent. Any other failure throws. */
-async function fetchAliases(
+async function fetchJson(
   fetchImpl: typeof globalThis.fetch,
   path: string,
-): Promise<Record<string, string> | undefined> {
+): Promise<FetchedJson | undefined> {
   const url = resolveUrl(path);
   const response = await fetchImpl(url);
   if (response.status === 404) {
@@ -134,7 +145,7 @@ async function fetchAliases(
     return undefined;
   }
 
-  return extractAliases(parseJson(body, url), url);
+  return { value: parseJson(body, url), url };
 }
 
 /**
@@ -156,40 +167,38 @@ function parseJson(body: string, url: string): unknown {
   }
 }
 
-/**
- * Converts either supported file shape into `{ aliasName: resolvedValue }`.
- *
- * `{ aliases: "{\"apiBaseUrl\":\"https://prod.example.com\"}" }`
- * becomes `{ apiBaseUrl: "https://prod.example.com" }`.
- *
- * `{ aliases: { custom: { apiBaseUrl: { value: "https://dev.example.com" } } } }`
- * becomes `{ apiBaseUrl: "https://dev.example.com" }`.
- */
-function extractAliases(config: unknown, url: string): Record<string, string> {
-  if (!isJsonObject(config)) {
-    throw new TypeError(
-      `Failed to read aliases from ${url}: expected a JSON object.`,
-    );
-  }
-  const aliases = config.aliases;
-
-  if (aliases == null || aliases === "") {
+/** Converts `{ aliases: "{\"key\":\"value\"}" }` into `{ key: "value" }`. */
+function extractDeploymentAliases(
+  config: unknown,
+  url: string,
+): Record<string, string> {
+  const aliases = getAliasesField(config, url);
+  if (aliases == null) {
     return {};
   }
-
-  // Production packs resolved values into a stringified JSON object.
-  if (typeof aliases === "string") {
-    return parseResolvedAliases(aliases);
+  if (typeof aliases !== "string") {
+    throw new TypeError(
+      `Failed to read aliases from ${url}: 'aliases' must be a string in deployment config.`,
+    );
   }
+  return parseResolvedAliases(aliases);
+}
 
+/** Converts `{ aliases: { custom: { key: { value: "value" } } } }` into `{ key: "value" }`. */
+function extractDeclaredAliases(
+  config: unknown,
+  url: string,
+): Record<string, string> {
+  const aliases = getAliasesField(config, url);
+  if (aliases == null) {
+    return {};
+  }
   if (!isJsonObject(aliases)) {
     throw new TypeError(
-      `Failed to read aliases from ${url}: 'aliases' must be a string in ` +
-        "deployment config or an object in resources.json.",
+      `Failed to read aliases from ${url}: 'aliases' must be an object in resources.json.`,
     );
   }
 
-  // Development nests { custom: { key: { value } } }.
   const declarations = aliases.custom;
   if (declarations == null) {
     return {};
@@ -214,6 +223,15 @@ function extractAliases(config: unknown, url: string): Record<string, string> {
       }),
     ),
   );
+}
+
+function getAliasesField(config: unknown, url: string): unknown {
+  if (!isJsonObject(config)) {
+    throw new TypeError(
+      `Failed to read aliases from ${url}: expected a JSON object.`,
+    );
+  }
+  return config.aliases;
 }
 
 function isJsonObject(value: unknown): value is Record<string, unknown> {
