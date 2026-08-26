@@ -16,16 +16,13 @@
 
 import type { Logger } from "@osdk/api";
 import ImportedWebSocket from "isomorphic-ws";
-import type {
-  MockedClass,
-  MockedFunction,
-  MockedObject,
-} from "vitest";
+import type { MockedClass, MockedFunction, MockedObject } from "vitest";
 import { vi } from "vitest";
 
-interface RawWebSocketPlus
-  extends Pick<ImportedWebSocket, "addEventListener" | "removeEventListener">
-{
+interface RawWebSocketPlus extends Pick<
+  ImportedWebSocket,
+  "addEventListener" | "removeEventListener"
+> {
   readonly _eventEmitter: EventTarget;
   readonly close: MockedFunction<ImportedWebSocket["close"]>;
   readyState: 0 | 1 | 2 | 3;
@@ -33,9 +30,9 @@ interface RawWebSocketPlus
 }
 
 export interface MockedWebSocket
-  extends MockedClass<typeof ImportedWebSocket>, MockedObject<RawWebSocketPlus>
-{
-}
+  extends
+    MockedClass<typeof ImportedWebSocket>,
+    MockedObject<RawWebSocketPlus> {}
 
 export function createMockWebSocketConstructor(
   OriginalWebSocket: typeof ImportedWebSocket,
@@ -89,9 +86,8 @@ export function setWebSocketState(
   webSocket: MockedWebSocket,
   readyState: "close" | "open",
 ): void {
-  const newState = readyState === "open"
-    ? ImportedWebSocket.OPEN
-    : ImportedWebSocket.CLOSED;
+  const newState =
+    readyState === "open" ? ImportedWebSocket.OPEN : ImportedWebSocket.CLOSED;
 
   if (newState === webSocket.readyState) return;
 
