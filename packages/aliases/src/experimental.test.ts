@@ -52,17 +52,14 @@ describe("experimental browser entry point", () => {
   });
 
   it("exposes the Aliases namespace", async () => {
-    const aliases = await Aliases.load({
-      path: "resources.json",
-      fetch: mockFetch(),
-    });
+    const aliases = await Aliases.load({ fetch: mockFetch() });
 
     expect(aliases.custom("apiBaseUrl")).toBe("https://api.example.com");
   });
 
   it("caches concurrent and repeated loads", async () => {
     const fetchImpl = mockFetch();
-    const options = { path: "resources.json", fetch: fetchImpl };
+    const options = { fetch: fetchImpl };
 
     const [first, second] = await Promise.all([
       Aliases.load(options),
