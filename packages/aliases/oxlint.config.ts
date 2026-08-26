@@ -42,6 +42,10 @@ export default defineConfig({
     // and the test deliberately uses `node:fs` separately from the mocked `fs`.
     "unicorn/prefer-node-protocol": "off",
 
+    // --- import ---
+    // Keep the moved runtime files byte-for-byte identical to their source.
+    "import/newline-after-import": "off",
+
     // --- node ---
     // `require(...)` inside `vi.hoisted(...)`, which must not be a static import.
     "node/global-require": "off",

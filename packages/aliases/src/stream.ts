@@ -16,7 +16,6 @@
 
 import { loadResolvedAliases } from "./loaders.js";
 import type { Stream } from "./types.js";
-
 export type { Stream } from "./types.js";
 
 export function stream(alias: string): Stream {

@@ -16,7 +16,6 @@
 
 import { loadResolvedAliases } from "./loaders.js";
 import type { Dataset } from "./types.js";
-
 export type { Dataset } from "./types.js";
 
 export function dataset(alias: string): Dataset {

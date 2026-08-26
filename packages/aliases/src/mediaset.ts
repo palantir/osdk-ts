@@ -16,7 +16,6 @@
 
 import { loadResolvedAliases } from "./loaders.js";
 import type { Mediaset } from "./types.js";
-
 export type { Mediaset } from "./types.js";
 
 export function mediaset(alias: string): Mediaset {

@@ -16,7 +16,6 @@
 
 import { loadResolvedAliases } from "./loaders.js";
 import type { Model } from "./types.js";
-
 export type { Model } from "./types.js";
 
 export function model(alias: string): Model {

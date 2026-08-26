@@ -16,7 +16,6 @@
 
 import { loadResolvedAliases } from "./loaders.js";
 import type { Custom } from "./types.js";
-
 export type { Custom } from "./types.js";
 
 export function custom(alias: string): Custom {
