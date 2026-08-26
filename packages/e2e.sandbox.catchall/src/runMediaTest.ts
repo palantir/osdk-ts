@@ -306,7 +306,7 @@ const ocrTransformation: MediaTransformation = {
       $ocr: {
         $parameters: {
           $outputFormat: { $text: {} },
-          $languages: [{ $language: "EN" }],
+          $languages: [{ $language: "ENG" }],
         },
       },
     },
@@ -333,7 +333,7 @@ const extractDocText: MediaTransformation = {
         $config: {
           $format: "MARKDOWN",
           $mode: "AUTO",
-          $languages: [{ $language: "EN" }],
+          $languages: [{ $language: "ENG" }],
         },
       },
     },

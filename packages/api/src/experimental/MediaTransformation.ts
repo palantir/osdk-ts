@@ -15,6 +15,13 @@
  */
 
 import type { Just } from "../aggregate/Just.js";
+import type {
+  OcrLanguage,
+  OcrScript,
+  TranscriptionLanguage,
+} from "./MediaTransformationLanguages.js";
+
+export type { OcrLanguage, OcrScript, TranscriptionLanguage };
 
 // ─── Top-level transformation ─────────────────────────────────────────────────
 
@@ -224,8 +231,8 @@ export type OcrOutputFormat = OcrOutputFormat.$hocr | OcrOutputFormat.$text;
  * @experimental
  */
 export interface OcrLanguageOrScriptOptions {
-  $language: string;
-  $script: string;
+  $language: OcrLanguage;
+  $script: OcrScript;
 }
 
 export namespace OcrLanguageOrScript {
@@ -255,7 +262,7 @@ export interface OcrParameters {
  * @experimental
  */
 export interface LayoutAwareExtractionParameters {
-  $languages: Array<string>;
+  $languages: Array<OcrLanguage>;
 }
 
 /**
@@ -568,7 +575,7 @@ export type VideoToAudioOperation = VideoToAudioOperation.$extractAudio;
  */
 export interface AudioToTextOperationOptions {
   $transcribe: {
-    $language?: string;
+    $language?: TranscriptionLanguage;
     $diarize?: boolean;
     $outputFormat?: TranscribeOutputFormat;
     $performanceMode?: "MORE_ECONOMICAL" | "MORE_PERFORMANT";
