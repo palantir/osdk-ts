@@ -77,15 +77,25 @@ export interface FilterChangeSnapshot<Q extends ObjectTypeDefinition> {
 /**
  * What the user did to the filter state.
  */
-export type FilterChangeEvent =
-  /** The list mounted, reporting the state it started with. */
-  | { event: "INIT" }
-  /** A filter's state was set. */
-  | { event: "SET"; filterKey: string; newState: FilterState }
-  /** A filter's state was cleared, e.g. by removing the filter. */
-  | { event: "CLEAR"; filterKey: string }
+export type FilterChangeReason =
+  /** A filter's state was set — selected values changed, include/exclude mode toggled, or filter cleared. */
+  | { type: "FILTER_STATE_CHANGED"; filterKey: string; newState: FilterState }
+  /** A filter was removed from the list. */
+  | { type: "FILTER_REMOVED"; filterKey: string }
   /** Every filter was restored to the state it mounted with. */
-  | { event: "RESET" };
+  | { type: "FILTER_LIST_RESET" }
+  /** The list mounted, reporting the state it started with. */
+  | { type: "FILTER_LIST_INITIALIZED" };
+
+/**
+ * The payload delivered to `onFilterListChanged`.
+ */
+export interface FilterChangeEvent<Q extends ObjectTypeDefinition> {
+  /** The filter state the change produced. */
+  snapshot: FilterChangeSnapshot<Q>;
+  /** What changed. */
+  reason: FilterChangeReason;
+}
 
 export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
@@ -110,7 +120,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * — use `onEffectiveObjectSet` for those.
    *
    * @param newClause The updated filter clause
-   * @deprecated Use `onFilterChanged`, whose `snapshot` reports the clause
+   * @deprecated Use `onFilterListChanged`, whose `snapshot` reports the clause
    * alongside the filtered `ObjectSet`.
    */
   onFilterClauseChanged?: (newClause: WhereClause<Q>) => void;
@@ -136,7 +146,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    *
    * @param definition The filter definition whose state changed
    * @param newState The updated filter state
-   * @deprecated Use `onFilterChanged`, which reports every set / clear / reset
+   * @deprecated Use `onFilterListChanged`, which reports every set / clear / reset
    * with an `event` describing what changed.
    */
   onFilterStateChanged?: (
@@ -147,19 +157,17 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
    * Called on filter init and when filter state changes.
    *
-   * @param event What changed
-   * @param snapshot The filter state the change produced
+   * @param event `snapshot` carries the filter state the change produced;
+   * `reason` carries what changed.
    */
-  onFilterChanged?: (
-    change: FilterChangeEvent & FilterChangeSnapshot<Q>,
-  ) => void;
+  onFilterListChanged?: (event: FilterChangeEvent<Q>) => void;
 
   /**
    * Called with the narrowed `ObjectSet` whenever filters change. Requires
    * `objectSet` to be set. `HAS_LINK` and `LINKED_PROPERTY` filters narrow only
    * here, never through the filter clause.
    *
-   * @deprecated Use `onFilterChanged`, whose `snapshot.filteredObjectSet`
+   * @deprecated Use `onFilterListChanged`, whose `snapshot.filteredObjectSet`
    * reports the same narrowed set alongside the clause.
    */
   onEffectiveObjectSet?: (objectSet: ObjectSet<Q>) => void;

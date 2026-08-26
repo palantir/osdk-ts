@@ -20,7 +20,7 @@ import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type {
-  FilterChangeEvent,
+  FilterChangeReason,
   FilterDefinitionUnion,
   FilterListProps,
 } from "../FilterListApi.js";
@@ -110,7 +110,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     filterDefinitions,
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat callback still supported
     onFilterStateChanged,
-    onFilterChanged,
+    onFilterListChanged,
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat callback still supported
     onFilterClauseChanged,
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat callback still supported
@@ -128,8 +128,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   onFilterClauseChangedRef.current = onFilterClauseChanged;
   const onEffectiveObjectSetRef = useRef(onEffectiveObjectSet);
   onEffectiveObjectSetRef.current = onEffectiveObjectSet;
-  const onFilterChangedRef = useRef(onFilterChanged);
-  onFilterChangedRef.current = onFilterChanged;
+  const onFilterListChangedRef = useRef(onFilterListChanged);
+  onFilterListChangedRef.current = onFilterListChanged;
   const filterDefinitionsRef = useRef(filterDefinitions);
   filterDefinitionsRef.current = filterDefinitions;
   const objectSetRef = useRef(objectSet);
@@ -152,9 +152,9 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   const propertyTypesRef = useRef(propertyTypes);
   propertyTypesRef.current = propertyTypes;
 
-  const emitFilterChanged = useCallback(
-    (states: Map<string, FilterState>, event: FilterChangeEvent) => {
-      const onChange = onFilterChangedRef.current;
+  const emitFilterListChanged = useCallback(
+    (states: Map<string, FilterState>, reason: FilterChangeReason) => {
+      const onChange = onFilterListChangedRef.current;
       if (onChange == null) {
         return;
       }
@@ -165,9 +165,11 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
         objectSetRef.current,
       );
       onChange({
-        ...event,
-        filterClause: snapshot.whereClause,
-        filteredObjectSet: snapshot.effectiveObjectSet,
+        snapshot: {
+          filterClause: snapshot.whereClause,
+          filteredObjectSet: snapshot.effectiveObjectSet,
+        },
+        reason,
       });
     },
     [],
@@ -202,7 +204,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       transition: (
         previous: Map<string, FilterState>,
       ) => Map<string, FilterState> | undefined,
-      event: FilterChangeEvent,
+      reason: FilterChangeReason,
     ) => {
       const next = transition(filterStatesRef.current);
       if (next === undefined) {
@@ -210,9 +212,9 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       }
       filterStatesRef.current = next;
       setFilterStates(next);
-      emitFilterChanged(next, event);
+      emitFilterListChanged(next, reason);
     },
-    [emitFilterChanged],
+    [emitFilterListChanged],
   );
 
   const setFilterState = useCallback(
@@ -229,7 +231,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
           next.set(filterKey, state);
           return next;
         },
-        { event: "SET", filterKey, newState: state },
+        { type: "FILTER_STATE_CHANGED", filterKey, newState: state },
       );
     },
     [applyChange],
@@ -246,14 +248,16 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
           next.delete(filterKey);
           return next;
         },
-        { event: "CLEAR", filterKey },
+        { type: "FILTER_REMOVED", filterKey },
       );
     },
     [applyChange],
   );
 
   const reset = useCallback(() => {
-    applyChange(() => new Map(initialFilterStatesSnapshot), { event: "RESET" });
+    applyChange(() => new Map(initialFilterStatesSnapshot), {
+      type: "FILTER_LIST_RESET",
+    });
   }, [applyChange, initialFilterStatesSnapshot]);
 
   const { whereClause, linkedFilters, effectiveObjectSet } = useMemo(
@@ -270,8 +274,10 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       return;
     }
     hasEmittedInit.current = true;
-    emitFilterChanged(filterStatesRef.current, { event: "INIT" });
-  }, [metadataLoading, emitFilterChanged]);
+    emitFilterListChanged(filterStatesRef.current, {
+      type: "FILTER_LIST_INITIALIZED",
+    });
+  }, [metadataLoading, emitFilterListChanged]);
 
   useEffect(() => {
     onFilterClauseChangedRef.current?.(whereClause);

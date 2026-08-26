@@ -11,7 +11,10 @@ import type {
   FormFieldDefinition,
 } from "@osdk/react-components/experimental/action-form";
 import { ActionForm } from "@osdk/react-components/experimental/action-form";
-import type { FilterDefinitionUnion } from "@osdk/react-components/experimental/filter-list";
+import type {
+  FilterChangeEvent,
+  FilterDefinitionUnion,
+} from "@osdk/react-components/experimental/filter-list";
 import { FilterList } from "@osdk/react-components/experimental/filter-list";
 import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
@@ -20,6 +23,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { Button } from "../../components/Button.js";
 import { $ } from "../../foundryClient.js";
 import { Employee, modifyEmployee } from "../../generatedNoCheck2/index.js";
+import { useFilterStatesContext } from "../filterStatesContext.js";
 
 import "./page.css";
 
@@ -213,6 +217,32 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [statusMessage, setStatusMessage] = useState<StatusMessage>();
     const employeeObjectSet = useMemo(() => $(Employee), []);
+    const {
+      filterStates,
+      setFilterState,
+      clearFilterState,
+      resetFilterStates,
+    } = useFilterStatesContext();
+
+    const handleFilterListChanged = useCallback(
+      (event: FilterChangeEvent<Employee>) => {
+        setEffectiveObjectSet(event.snapshot.filteredObjectSet);
+        switch (event.reason.type) {
+          case "FILTER_STATE_CHANGED":
+            setFilterState(event.reason.filterKey, event.reason.newState);
+            break;
+          case "FILTER_REMOVED":
+            clearFilterState(event.reason.filterKey);
+            break;
+          case "FILTER_LIST_RESET":
+            resetFilterStates();
+            break;
+          case "FILTER_LIST_INITIALIZED":
+            break;
+        }
+      },
+      [setFilterState, clearFilterState, resetFilterStates],
+    );
 
     const openDialog = useCallback(function openDialog() {
       setIsDialogOpen(true);
@@ -271,7 +301,8 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
             objectType={Employee}
             objectSet={employeeObjectSet}
             filterDefinitions={EMPLOYEE_FILTERS}
-            onEffectiveObjectSet={setEffectiveObjectSet}
+            defaultFilterStates={filterStates}
+            onFilterListChanged={handleFilterListChanged}
             title="Employee filters"
             showActiveFilterCount={true}
             showResetButton={true}
