@@ -49,23 +49,22 @@ function mockFetch(): typeof globalThis.fetch {
 describe("experimental browser entry point", () => {
   afterEach(() => {
     resetAliasesCache();
+    vi.unstubAllGlobals();
   });
 
   it("exposes the Aliases namespace", async () => {
-    const aliases = await Aliases.load({ fetch: mockFetch() });
+    vi.stubGlobal("fetch", mockFetch());
+    const aliases = await Aliases.load();
 
     expect(aliases.custom("apiBaseUrl")).toBe("https://api.example.com");
   });
 
   it("caches concurrent and repeated loads", async () => {
     const fetchImpl = mockFetch();
-    const options = { fetch: fetchImpl };
+    vi.stubGlobal("fetch", fetchImpl);
 
-    const [first, second] = await Promise.all([
-      Aliases.load(options),
-      Aliases.load(options),
-    ]);
-    const third = await Aliases.load(options);
+    const [first, second] = await Promise.all([Aliases.load(), Aliases.load()]);
+    const third = await Aliases.load();
 
     expect(first).toBe(second);
     expect(first).toBe(third);

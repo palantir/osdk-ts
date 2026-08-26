@@ -41,4 +41,4 @@ export const Aliases: {
 };
 
 export { DEFAULT_DECLARATIONS_PATH, DEFAULT_DEPLOYMENT_CONFIG_PATH, load };
-export type { Custom, LoadAliasesOptions, LoadedAliases } from "../browser.js";
+export type { Custom, LoadedAliases } from "../browser.js";
