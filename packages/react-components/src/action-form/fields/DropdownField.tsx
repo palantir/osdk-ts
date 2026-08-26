@@ -167,6 +167,7 @@ const SingleDropdown = typedReactMemo(function SingleDropdownFn<
       placeholder="Search…"
       popoverProps={{
         hasBackdrop: modal,
+        matchTargetWidth: true,
         minimal: true,
         portalContainer: resolvePortalContainerElement(portalContainer),
         popoverRef: portalRef,
@@ -302,6 +303,7 @@ const MultipleDropdown = typedReactMemo(function MultipleDropdownFn<
       placeholder={placeholder}
       popoverProps={{
         hasBackdrop: modal,
+        matchTargetWidth: true,
         minimal: true,
         portalContainer: resolvePortalContainerElement(portalContainer),
         popoverRef: portalRef,

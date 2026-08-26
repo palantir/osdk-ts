@@ -88,6 +88,7 @@ export const MarkingButton: React.MemoExoticComponent<
       aria-pressed={
         selectionState === "SELECTED" || selectionState === "IMPLIED"
       }
+      size="small"
       title={showTooltip ? undefined : label}
     >
       {getDisplayLabel(label, selectionState)}

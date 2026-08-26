@@ -252,9 +252,10 @@ return (
       "combobox",
     );
     await userEvent.click(departmentCombobox);
-    await userEvent.click(
-      await screen.findByRole("option", { name: "Engineering" }),
-    );
+    const engineeringOption = await screen.findByRole("option", {
+      name: "Engineering",
+    });
+    await userEvent.click(within(engineeringOption).getByText("Engineering"));
     await waitFor(() =>
       expect(args.onCellValueChanged).toHaveBeenCalledWith(
         expect.objectContaining({

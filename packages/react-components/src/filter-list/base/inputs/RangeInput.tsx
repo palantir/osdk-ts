@@ -17,6 +17,7 @@
 import { Button, InputGroup, type InputGroupProps } from "@blueprintjs/core";
 import { DateInput } from "@blueprintjs/datetime";
 import classnames from "classnames";
+import { enUS } from "date-fns/locale";
 import { debounce } from "lodash-es";
 import React, {
   memo,
@@ -964,6 +965,7 @@ function DateRangeInputs({
         placeholder={minLabel}
         inputProps={minInputProps}
         formatDate={formatDate}
+        locale={enUS}
       />
       <DateInput
         value={maxValue?.toISOString() ?? null}
@@ -972,6 +974,7 @@ function DateRangeInputs({
         placeholder={maxLabel}
         inputProps={maxInputProps}
         formatDate={formatDate}
+        locale={enUS}
       />
     </div>
   );

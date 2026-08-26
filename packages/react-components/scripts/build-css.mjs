@@ -102,7 +102,8 @@ async function buildBlueprintCss() {
   const result = await postcss([postcssImport()]).process(content, {
     from: blueprintEntry,
   });
-  return result.css;
+  result.root.walkAtRules("charset", (rule) => rule.remove());
+  return result.root.toString();
 }
 
 async function processCssModules() {

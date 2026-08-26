@@ -69,6 +69,7 @@ export function OverflowButton({
           styles.moreButton,
           hasActiveOverflow && styles.moreButtonActive,
         )}
+        size="small"
       >
         +{overflowMarkings.length} more
       </Button>

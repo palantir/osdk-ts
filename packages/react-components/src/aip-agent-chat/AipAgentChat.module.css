@@ -128,8 +128,7 @@
   border-color: var(--osdk-emphasis-focus-color);
 }
 
-.textarea {
-  background: transparent;
+.composer .inputWrapper .textarea {
   border: none;
   color: var(--osdk-typography-color-default-rest);
   font-family: inherit;

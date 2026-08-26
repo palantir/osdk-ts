@@ -66,6 +66,12 @@ action bar, or preservation of edited wall-clock time across date changes.
 single-day ranges and time precision, but its focus order, invalid-range drafts,
 close-on-selection behavior, and time controls differ from the deleted editor.
 
+Blueprint's default string locale triggers a runtime dynamic import. Vite cannot
+resolve that variable import reliably, so the ActionForm, FilterList, and
+ObjectTable date adapters pass the `enUS` date-fns locale object by default.
+Applications can still provide another locale object, but passing a locale code
+reintroduces the bundler-dependent loader.
+
 ### Files
 
 Blueprint `FileInput` styles a native file input but does not own a controlled
@@ -85,6 +91,11 @@ must compose Blueprint `Popover` themselves.
 
 The edited and required markers now use `FormGroup.labelInfo`, so their text,
 spacing, and casing follow Blueprint rather than the deleted OSDK field chrome.
+
+Blueprint's loading `Button` hides its visible text with `visibility: hidden`,
+which removes that text from the accessible name and leaves the spinner's
+generic "loading" label. The form submit adapter must set an explicit
+`aria-label` to preserve "Submitting…" for assistive technology.
 
 ### Selection
 
@@ -129,6 +140,10 @@ Those values cannot be changed at runtime without selector overrides or a
 custom Blueprint Sass build. This is the main blocker to making Blueprint the
 only visual layer for a runtime-themeable OSDK component library.
 
+Blueprint `TextArea` has no minimal or unframed variant. Compound controls such
+as the chat composer must override its inset border so the outer composition can
+own a single focus surface.
+
 ### Packaging
 
 `styles.css` now includes the complete Normalize, Core, Datetime, and Select
@@ -167,11 +182,22 @@ not provide component-level style entry points or deduplicate host styles.
 8. **Offer smaller and layer-safe CSS entry points.** Let libraries include the
    Core, Datetime, and Select rules they use without duplicating a host
    application's Blueprint CSS, and document the supported cascade-layer order.
+9. **Make locale loading bundler-safe.** Export locale-object helpers or replace
+   the variable dynamic import so `DateInput` and `DateRangeInput` do not emit a
+   runtime error under Vite when given a locale code.
+10. **Add an unframed text input variant.** Let `InputGroup` and `TextArea`
+    participate in compound controls without requiring consumers to override
+    the built-in background, radius, and inset border.
+11. **Preserve loading button names.** Keep the button's action-specific
+    accessible name when its visible text is hidden for the loading spinner.
 
-## Screenshot limitation
+## Visual verification
 
-No representative before/after screenshots are checked in. The migration began
-without a frozen pre-migration Storybook capture, so a like-for-like visual diff
-cannot be produced from this working tree alone. Visual conclusions above are based
-on component/CSS replacement and must be verified in Storybook before treating
-this experiment as a release candidate.
+Representative Storybook states were compared manually against the branch's
+`main` base for ActionForm, FilterList, ObjectTable, CbacPicker, AipAgentChat,
+and the PDF viewer search bar. Avoidable regressions found during that pass were
+fixed: form controls now fill their field, listogram rows retain their compact
+horizontal layout, compact CBAC markings use Blueprint's small size, and the
+chat composer keeps one visual border. The before/after screenshots are local QA
+artifacts and are not checked in. Blueprint-specific typography, required-state
+labels, control geometry, and focus styling remain intentional differences.

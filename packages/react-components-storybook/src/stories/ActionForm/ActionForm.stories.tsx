@@ -23,7 +23,14 @@ import type {
 import { ActionForm } from "@osdk/react-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useCallback, useState } from "react";
-import { expect, fn, userEvent, waitFor, within } from "storybook/test";
+import {
+  expect,
+  fireEvent,
+  fn,
+  userEvent,
+  waitFor,
+  within,
+} from "storybook/test";
 
 import {
   generatedFieldsStoryAction,
@@ -594,12 +601,15 @@ export const SlowCustomSubmit: Story = {
     });
 
     await userEvent.type(fullNameInput, "Katherine Johnson");
-    await userEvent.click(submitButton);
+    fireEvent.click(submitButton);
 
     await waitFor(() => expect(slowSubmitSpy).toHaveBeenCalled());
     await expect(
       await canvas.findByRole("button", { name: /submitting/iu }),
     ).toBeDisabled();
+    await waitFor(() =>
+      expect(canvas.getByRole("button", { name: /^submit$/iu })).toBeEnabled(),
+    );
   },
   parameters: {
     docs: {

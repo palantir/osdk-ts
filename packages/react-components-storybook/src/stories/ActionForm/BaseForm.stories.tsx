@@ -110,7 +110,7 @@ const formContent: ReadonlyArray<FormContentItem> = [
     fieldComponentProps: {
       min: 0,
       max: 1000,
-      step: 1,
+      stepSize: 1,
       placeholder: "0",
     },
   }),
@@ -147,7 +147,7 @@ const formContent: ReadonlyArray<FormContentItem> = [
     fieldComponent: "FILE_PICKER",
     label: "Document",
     fieldComponentProps: {
-      accept: ".pdf,.doc,.docx",
+      inputProps: { accept: ".pdf,.doc,.docx" },
     },
   }),
   field({
@@ -325,7 +325,7 @@ const formContent = [
     fieldComponent: "NUMBER_INPUT",
     label: "Quantity",
     isRequired: true,
-    fieldComponentProps: { min: 0, max: 1000, step: 1 },
+    fieldComponentProps: { min: 0, max: 1000, stepSize: 1 },
   },
   {
     fieldKey: "priority",
@@ -357,7 +357,7 @@ const formContent = [
     fieldKey: "document",
     fieldComponent: "FILE_PICKER",
     label: "Document",
-    fieldComponentProps: { accept: ".pdf,.doc,.docx" },
+    fieldComponentProps: { inputProps: { accept: ".pdf,.doc,.docx" } },
   },
   {
     fieldKey: "completion",
@@ -595,7 +595,7 @@ function DisabledFieldsStory(): React.ReactElement {
         fieldComponentProps: {
           min: 0,
           max: 1000,
-          step: 1,
+          stepSize: 1,
           placeholder: "0",
         },
       }),
@@ -646,7 +646,7 @@ function DisabledFieldsStory(): React.ReactElement {
         label: "Scheduled At",
         disabled: true,
         fieldComponentProps: {
-          showTime: true,
+          timePrecision: "minute",
           placeholder: "Select date and time",
         },
       }),
@@ -656,8 +656,8 @@ function DisabledFieldsStory(): React.ReactElement {
         label: "Vacation Dates",
         disabled: true,
         fieldComponentProps: {
-          placeholderStart: "Start date",
-          placeholderEnd: "End date",
+          startInputProps: { placeholder: "Start date" },
+          endInputProps: { placeholder: "End date" },
         },
       }),
       field({
@@ -666,7 +666,7 @@ function DisabledFieldsStory(): React.ReactElement {
         label: "Document",
         disabled: true,
         fieldComponentProps: {
-          accept: ".pdf,.doc,.docx",
+          inputProps: { accept: ".pdf,.doc,.docx" },
         },
       }),
       field({
@@ -914,7 +914,7 @@ const validationFormContent: ReadonlyArray<FormContentItem> = [
     fieldComponentProps: {
       min: 0,
       max: 100,
-      step: 1,
+      stepSize: 1,
       placeholder: "0-100",
     },
   }),
@@ -923,8 +923,8 @@ const validationFormContent: ReadonlyArray<FormContentItem> = [
     fieldComponent: "DATETIME_PICKER",
     label: "Start Date",
     fieldComponentProps: {
-      min: new Date(2024, 0, 1),
-      max: new Date(2026, 11, 31),
+      minDate: new Date(2024, 0, 1),
+      maxDate: new Date(2026, 11, 31),
       placeholder: "2024-2026 only",
     },
   }),
@@ -932,9 +932,13 @@ const validationFormContent: ReadonlyArray<FormContentItem> = [
     fieldKey: "document",
     fieldComponent: "FILE_PICKER",
     label: "Document",
-    fieldComponentProps: {
-      maxSize: 1048576,
-    },
+    validate: (value) =>
+      Promise.resolve(
+        value instanceof File && value.size > 1048576
+          ? "File must be 1 MB or smaller"
+          : undefined,
+      ),
+    fieldComponentProps: {},
   }),
 ];
 
@@ -971,15 +975,19 @@ export const WithValidation: Story = {
     fieldComponent: "DATETIME_PICKER",
     label: "Start Date",
     fieldComponentProps: {
-      min: new Date(2024, 0, 1),
-      max: new Date(2026, 11, 31),
+      minDate: new Date(2024, 0, 1),
+      maxDate: new Date(2026, 11, 31),
     },
   },
   {
     fieldKey: "document",
     fieldComponent: "FILE_PICKER",
     label: "Document",
-    fieldComponentProps: { maxSize: 1048576 },
+    validate: async (value) =>
+      value instanceof File && value.size > 1048576
+        ? "File must be 1 MB or smaller"
+        : undefined,
+    fieldComponentProps: {},
   },
 ];
 
@@ -1409,7 +1417,7 @@ const dateTimeFormContent: ReadonlyArray<FormContentItem> = [
     fieldComponent: "DATETIME_PICKER",
     label: "Scheduled At (date + time)",
     fieldComponentProps: {
-      showTime: true,
+      timePrecision: "minute",
       placeholder: "Select date and time",
     },
   }),
@@ -1437,7 +1445,7 @@ export const WithDateTimePicker: Story = {
     fieldComponent: "DATETIME_PICKER",
     label: "Scheduled At (date + time)",
     fieldComponentProps: {
-      showTime: true,
+      timePrecision: "minute",
       placeholder: "Select date and time",
     },
   },
@@ -1451,8 +1459,8 @@ export const WithDateTimePicker: Story = {
   },
 ];
 
-// showTime: true adds a time picker alongside the date calendar.
-// Without showTime, only the date is selectable.
+// timePrecision adds a time picker alongside the date calendar.
+// Without timePrecision, only the date is selectable.
 <BaseForm
   formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
@@ -1468,7 +1476,7 @@ const blueprintDialogFormContent: ReadonlyArray<FormContentItem> = [
     fieldComponent: "DATETIME_PICKER",
     label: "Scheduled At",
     fieldComponentProps: {
-      showTime: true,
+      timePrecision: "minute",
       placeholder: "Select date and time",
     },
   }),
@@ -1485,9 +1493,9 @@ const blueprintDialogFormContent: ReadonlyArray<FormContentItem> = [
     fieldComponent: "DATE_RANGE_INPUT",
     label: "Meeting Window",
     fieldComponentProps: {
-      showTime: true,
-      placeholderStart: "Start",
-      placeholderEnd: "End",
+      timePrecision: "minute",
+      startInputProps: { placeholder: "Start" },
+      endInputProps: { placeholder: "End" },
     },
   }),
   field({
@@ -1629,7 +1637,7 @@ const scrollableDialogFormContent: ReadonlyArray<FormContentItem> = [
     fieldKey: "document",
     fieldComponent: "FILE_PICKER",
     label: "Resume",
-    fieldComponentProps: { accept: ".pdf,.doc,.docx" },
+    fieldComponentProps: { inputProps: { accept: ".pdf,.doc,.docx" } },
   }),
   field({
     fieldKey: "notes",
@@ -1694,8 +1702,8 @@ const dateRangeFormContent: ReadonlyArray<FormContentItem> = [
     fieldComponent: "DATE_RANGE_INPUT",
     label: "Vacation Dates (date only)",
     fieldComponentProps: {
-      placeholderStart: "Start date",
-      placeholderEnd: "End date",
+      startInputProps: { placeholder: "Start date" },
+      endInputProps: { placeholder: "End date" },
     },
   }),
   field({
@@ -1703,9 +1711,9 @@ const dateRangeFormContent: ReadonlyArray<FormContentItem> = [
     fieldComponent: "DATE_RANGE_INPUT",
     label: "Meeting Window (date + time)",
     fieldComponentProps: {
-      showTime: true,
-      placeholderStart: "Start",
-      placeholderEnd: "End",
+      timePrecision: "minute",
+      startInputProps: { placeholder: "Start" },
+      endInputProps: { placeholder: "End" },
     },
   }),
 ];
@@ -1724,8 +1732,8 @@ export const WithDateRangePicker: Story = {
     fieldComponent: "DATE_RANGE_INPUT",
     label: "Vacation Dates (date only)",
     fieldComponentProps: {
-      placeholderStart: "Start date",
-      placeholderEnd: "End date",
+      startInputProps: { placeholder: "Start date" },
+      endInputProps: { placeholder: "End date" },
     },
   },
   {
@@ -1733,15 +1741,15 @@ export const WithDateRangePicker: Story = {
     fieldComponent: "DATE_RANGE_INPUT",
     label: "Meeting Window (date + time)",
     fieldComponentProps: {
-      showTime: true,
-      placeholderStart: "Start",
-      placeholderEnd: "End",
+      timePrecision: "minute",
+      startInputProps: { placeholder: "Start" },
+      endInputProps: { placeholder: "End" },
     },
   },
 ];
 
 // DATE_RANGE_INPUT renders two inputs (start/end) with
-// a shared calendar popover. showTime adds time pickers.
+// a shared calendar popover. timePrecision adds time pickers.
 <BaseForm
   formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
@@ -1756,10 +1764,18 @@ const multiFilePickerFormContent: ReadonlyArray<FormContentItem> = [
     fieldKey: "attachments",
     fieldComponent: "FILE_PICKER",
     label: "Attachments",
+    validate: (value) =>
+      Promise.resolve(
+        Array.isArray(value) &&
+          value.some((file) => file instanceof File && file.size > 5242880)
+          ? "Each file must be 5 MB or smaller"
+          : undefined,
+      ),
     fieldComponentProps: {
-      isMulti: true,
-      accept: [".pdf", ".png", ".jpg"],
-      maxSize: 5242880,
+      inputProps: {
+        multiple: true,
+        accept: ".pdf,.png,.jpg",
+      },
       text: "No files selected",
       buttonText: "Choose Files",
     },
@@ -1769,7 +1785,7 @@ const multiFilePickerFormContent: ReadonlyArray<FormContentItem> = [
     fieldComponent: "FILE_PICKER",
     label: "Cover Image (single file)",
     fieldComponentProps: {
-      accept: ".png,.jpg",
+      inputProps: { accept: ".png,.jpg" },
       text: "No file chosen",
     },
   }),
@@ -1788,10 +1804,16 @@ export const WithMultiFilePicker: Story = {
     fieldKey: "attachments",
     fieldComponent: "FILE_PICKER",
     label: "Attachments",
+    validate: async (value) =>
+      Array.isArray(value)
+        && value.some(file => file instanceof File && file.size > 5242880)
+        ? "Each file must be 5 MB or smaller"
+        : undefined,
     fieldComponentProps: {
-      isMulti: true,
-      accept: [".pdf", ".png", ".jpg"],
-      maxSize: 5242880,     // 5 MB
+      inputProps: {
+        multiple: true,
+        accept: ".pdf,.png,.jpg",
+      },
       text: "No files selected",
       buttonText: "Choose Files",
     },
@@ -1801,14 +1823,13 @@ export const WithMultiFilePicker: Story = {
     fieldComponent: "FILE_PICKER",
     label: "Cover Image (single file)",
     fieldComponentProps: {
-      accept: ".png,.jpg",
+      inputProps: { accept: ".png,.jpg" },
     },
   },
 ];
 
-// isMulti: true allows selecting multiple files.
-// maxSize validates individual file sizes (in bytes).
-// accept filters file types in the browser file dialog.
+// Blueprint FileInput forwards native file options through inputProps.
+// Use the field's validate callback for file-size constraints.
 <BaseForm
   formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
@@ -1832,7 +1853,6 @@ const helperTextFormContent: ReadonlyArray<FormContentItem> = [
         </a>
       </span>
     ),
-    helperTextPlacement: "tooltip",
     fieldComponentProps: {
       placeholder: "you@example.com",
     },
@@ -1846,7 +1866,6 @@ const helperTextFormContent: ReadonlyArray<FormContentItem> = [
         Write a short bio. <strong>Markdown</strong> is supported.
       </span>
     ),
-    helperTextPlacement: "bottom",
     fieldComponentProps: {
       placeholder: "Tell us about yourself",
       rows: 3,
@@ -1857,7 +1876,6 @@ const helperTextFormContent: ReadonlyArray<FormContentItem> = [
     fieldComponent: "DROPDOWN",
     label: "Department",
     helperText: "Select the department you belong to",
-    helperTextPlacement: "tooltip",
     fieldComponentProps: {
       items: DEPARTMENT_ITEMS,
       placeholder: "Select department",
@@ -1885,7 +1903,6 @@ export const WithHelperText: Story = {
         <a href="#privacy">Privacy policy</a>
       </span>
     ),
-    helperTextPlacement: "tooltip",
     fieldComponentProps: { placeholder: "you@example.com" },
   },
   {
@@ -1897,7 +1914,6 @@ export const WithHelperText: Story = {
         Write a short bio. <strong>Markdown</strong> is supported.
       </span>
     ),
-    helperTextPlacement: "bottom",
     fieldComponentProps: { placeholder: "Tell us about yourself", rows: 3 },
   },
   {
@@ -1905,7 +1921,6 @@ export const WithHelperText: Story = {
     fieldComponent: "DROPDOWN",
     label: "Department",
     helperText: "Select the department you belong to",
-    helperTextPlacement: "tooltip",
     fieldComponentProps: {
       items: ["Engineering", "Marketing", "Sales"],
       placeholder: "Select department",
@@ -1915,8 +1930,7 @@ export const WithHelperText: Story = {
 
 // helperText accepts React.ReactNode — plain strings, JSX with links,
 // bold text, or any valid React node.
-// "tooltip" (default) shows an info icon next to the label.
-// "bottom" renders the text below the label, above the input.
+// Blueprint FormGroup renders helper text below the input.
 <BaseForm
   formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
@@ -1944,7 +1958,7 @@ const defaultValueFormContent: ReadonlyArray<FormContentItem> = [
     fieldComponentProps: {
       min: 0,
       max: 1000,
-      step: 1,
+      stepSize: 1,
       defaultValue: 42,
     },
   }),
@@ -1983,7 +1997,7 @@ export const WithDefaultValues: Story = {
     fieldComponent: "NUMBER_INPUT",
     label: "Quantity",
     fieldComponentProps: {
-      min: 0, max: 1000, step: 1,
+      min: 0, max: 1000, stepSize: 1,
       defaultValue: 42,
     },
   },

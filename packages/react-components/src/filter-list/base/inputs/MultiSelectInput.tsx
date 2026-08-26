@@ -214,7 +214,11 @@ function MultiSelectInputInner({
           onItemSelect={handleItemSelect}
           onRemove={handleRemove}
           placeholder={placeholder}
-          popoverProps={{ boundary: collisionBoundary, minimal: true }}
+          popoverProps={{
+            boundary: collisionBoundary,
+            matchTargetWidth: true,
+            minimal: true,
+          }}
           selectedItems={selectedValues}
           tagInputProps={{ inputProps: { "aria-label": ariaLabel } }}
           tagRenderer={renderTag}

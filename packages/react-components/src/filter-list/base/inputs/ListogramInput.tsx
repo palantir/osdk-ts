@@ -146,12 +146,16 @@ function ListogramInputInner({
             return (
               <Button
                 key={value}
+                alignText="left"
                 className={styles.row}
                 data-empty={isEmpty || undefined}
                 data-filtered-out={isFilteredOut || undefined}
                 // eslint-disable-next-line react/jsx-no-bind
                 onClick={() => toggleValue(value)}
                 aria-pressed={selectedSet.has(value)}
+                fill={true}
+                size="small"
+                variant="minimal"
                 style={
                   perRowColor || percentage > 0
                     ? ({
@@ -167,38 +171,43 @@ function ListogramInputInner({
                     : undefined
                 }
               >
-                <span
-                  className={styles.checkbox}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Checkbox
-                    checked={selectedSet.has(value)}
-                    // eslint-disable-next-line react/jsx-no-bind
-                    onChange={() => toggleValue(value)}
-                  />
-                </span>
-                <span
-                  className={styles.label}
-                  data-excluding={
-                    (isExcluding && selectedSet.has(value)) || undefined
-                  }
-                >
-                  <OptionLabel
-                    value={value}
-                    renderValue={renderValue}
-                    className={styles.noValueLabel}
-                  />
-                </span>
-                {showCount && displayMode !== "minimal" && (
-                  <span className={styles.count} title={count.toLocaleString()}>
-                    {formatCompactCount(count)}
+                <span className={styles.rowContent}>
+                  <span
+                    className={styles.checkbox}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Checkbox
+                      checked={selectedSet.has(value)}
+                      // eslint-disable-next-line react/jsx-no-bind
+                      onChange={() => toggleValue(value)}
+                    />
                   </span>
-                )}
-                {displayMode === "full" && (
-                  <span className={styles.bar}>
-                    <span className={styles.barFill} />
+                  <span
+                    className={styles.label}
+                    data-excluding={
+                      (isExcluding && selectedSet.has(value)) || undefined
+                    }
+                  >
+                    <OptionLabel
+                      value={value}
+                      renderValue={renderValue}
+                      className={styles.noValueLabel}
+                    />
                   </span>
-                )}
+                  {showCount && displayMode !== "minimal" && (
+                    <span
+                      className={styles.count}
+                      title={count.toLocaleString()}
+                    >
+                      {formatCompactCount(count)}
+                    </span>
+                  )}
+                  {displayMode === "full" && (
+                    <span className={styles.bar}>
+                      <span className={styles.barFill} />
+                    </span>
+                  )}
+                </span>
               </Button>
             );
           })}
@@ -206,9 +215,13 @@ function ListogramInputInner({
           {hasMore && (
             <Button
               type="button"
+              alignText="left"
               className={styles.viewAllButton}
               aria-expanded={isExpanded}
+              fill={true}
               onClick={toggleExpanded}
+              size="small"
+              variant="minimal"
             >
               {isExpanded ? "View less" : `View all (${filteredValues.length})`}
             </Button>

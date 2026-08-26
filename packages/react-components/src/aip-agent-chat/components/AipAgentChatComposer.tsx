@@ -20,6 +20,12 @@ import * as React from "react";
 
 import styles from "../AipAgentChat.module.css";
 
+const COMPOSER_TEXTAREA_STYLE: React.CSSProperties = {
+  background: "transparent",
+  borderRadius: 0,
+  boxShadow: "none",
+};
+
 export interface AipAgentChatComposerProps {
   isInFlight: boolean;
   onSendMessage: (text: string) => void;
@@ -97,6 +103,7 @@ export function AipAgentChatComposer({
           onChange={handleChange}
           placeholder={placeholder}
           rows={3}
+          style={COMPOSER_TEXTAREA_STYLE}
           value={draft}
         />
         <div className={styles.inputActions}>

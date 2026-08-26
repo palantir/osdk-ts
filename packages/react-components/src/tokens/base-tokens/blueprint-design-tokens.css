@@ -4,7 +4,6 @@
  * If you need to update these tokens, copy from the upstream source.
  * Original: https://github.com/palantir/blueprint/blob/develop/packages/core/lib/css/blueprint-design-tokens.css
  */
-@charset "UTF-8";
 :root {
   --bp-emphasis-transition-duration: 100ms;
   --bp-emphasis-ease-default: cubic-bezier(0.4, 1, 0.75, 0.9);

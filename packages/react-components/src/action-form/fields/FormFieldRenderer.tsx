@@ -30,6 +30,7 @@ import {
   type DateRange,
 } from "@blueprintjs/datetime";
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
+import { enUS } from "date-fns/locale";
 import React, { memo } from "react";
 
 import { resolvePortalContainerElement } from "../../shared/PortalContainerContext.js";
@@ -119,6 +120,8 @@ function renderFieldComponent(
           onChange={onChange}
           {...fieldDefinition.fieldComponentProps}
           disabled={disabled}
+          fill={fieldDefinition.fieldComponentProps.fill ?? true}
+          locale={fieldDefinition.fieldComponentProps.locale ?? enUS}
           startInputProps={{
             id: fieldDefinition.fieldKey,
             placeholder: fieldDefinition.placeholder,
@@ -126,6 +129,9 @@ function renderFieldComponent(
           }}
           popoverProps={{
             ...fieldDefinition.fieldComponentProps.popoverProps,
+            placement:
+              fieldDefinition.fieldComponentProps.popoverProps?.placement ??
+              "bottom-start",
             portalContainer: resolvePortalContainerElement(
               fieldDefinition.fieldComponentProps.popoverProps
                 ?.portalContainer ?? portalContainer,
@@ -168,6 +174,7 @@ function renderFieldComponent(
           placeholder={fieldDefinition.placeholder}
           {...fieldDefinition.fieldComponentProps}
           disabled={disabled}
+          fill={fieldDefinition.fieldComponentProps.fill ?? true}
           intent={error != null ? Intent.DANGER : Intent.NONE}
           aria-invalid={error != null || undefined}
         />
@@ -200,6 +207,14 @@ function renderFieldComponent(
           }
           {...fieldDefinition.fieldComponentProps}
           disabled={disabled}
+          fill={fieldDefinition.fieldComponentProps.fill ?? true}
+          locale={fieldDefinition.fieldComponentProps.locale ?? enUS}
+          showTimezoneSelect={
+            fieldDefinition.fieldComponentProps.showTimezoneSelect ?? false
+          }
+          showActionsBar={
+            fieldDefinition.fieldComponentProps.showActionsBar ?? true
+          }
           inputProps={{
             ...fieldDefinition.fieldComponentProps.inputProps,
             id: fieldDefinition.fieldKey,
@@ -208,6 +223,9 @@ function renderFieldComponent(
           }}
           popoverProps={{
             ...fieldDefinition.fieldComponentProps.popoverProps,
+            placement:
+              fieldDefinition.fieldComponentProps.popoverProps?.placement ??
+              "bottom-start",
             portalContainer: resolvePortalContainerElement(
               fieldDefinition.fieldComponentProps.popoverProps
                 ?.portalContainer ?? portalContainer,
@@ -274,8 +292,12 @@ function renderFieldComponent(
           onValueChange={(valueAsNumber, valueAsString) =>
             onChange(valueAsString === "" ? null : valueAsNumber)
           }
-          placeholder={fieldDefinition.placeholder}
+          placeholder={
+            fieldDefinition.placeholder ??
+            fieldDefinition.fieldComponentProps.placeholder
+          }
           disabled={disabled}
+          fill={fieldDefinition.fieldComponentProps.fill ?? true}
           intent={error != null ? Intent.DANGER : Intent.NONE}
           aria-invalid={error != null || undefined}
         />
@@ -288,7 +310,7 @@ function renderFieldComponent(
       return (
         <FileInput
           {...fileInputProps}
-          text={getFileInputText(fileValue) ?? text}
+          text={getFileInputText(fileValue) ?? text ?? "No file chosen"}
           hasSelection={fileValue != null}
           onInputChange={(event) => {
             const files = event.currentTarget.files;
@@ -301,6 +323,7 @@ function renderFieldComponent(
             }
           }}
           disabled={disabled}
+          fill={fileInputProps.fill ?? true}
           inputProps={{
             ...inputProps,
             id: fieldDefinition.fieldKey,

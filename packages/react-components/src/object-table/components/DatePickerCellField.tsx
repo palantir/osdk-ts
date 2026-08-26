@@ -18,6 +18,7 @@ import { Intent } from "@blueprintjs/core";
 import { DateInput } from "@blueprintjs/datetime";
 import { Error } from "@blueprintjs/icons";
 import classNames from "classnames";
+import { enUS } from "date-fns/locale";
 import React, { useCallback, useMemo } from "react";
 
 import { formatDateForInput } from "../../shared/dateUtils.js";
@@ -103,6 +104,8 @@ function DatePickerCellFieldInner({
     >
       <DateInput
         {...dateInputProps}
+        locale={dateInputProps.locale ?? enUS}
+        showActionsBar={dateInputProps.showActionsBar ?? true}
         timePrecision={timePrecision}
         value={dateValue?.toISOString() ?? null}
         onChange={handleChange}

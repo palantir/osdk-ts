@@ -17,6 +17,7 @@
 import { Button } from "@blueprintjs/core";
 import { DateInput } from "@blueprintjs/datetime";
 import classnames from "classnames";
+import { enUS } from "date-fns/locale";
 import React, { memo, useCallback } from "react";
 
 import {
@@ -115,6 +116,7 @@ function MultiDateInputInner({
           maxDate={maxDate}
           inputProps={ADD_DATE_INPUT_PROPS}
           formatDate={formatDate}
+          locale={enUS}
         />
       </div>
     </div>

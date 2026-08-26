@@ -174,7 +174,11 @@ function SingleSelectInputInner({
             />
           }
           onItemSelect={onChange}
-          popoverProps={{ boundary: collisionBoundary, minimal: true }}
+          popoverProps={{
+            boundary: collisionBoundary,
+            matchTargetWidth: true,
+            minimal: true,
+          }}
           selectedItem={selectedValue ?? null}
         />
       )}

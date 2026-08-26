@@ -62,6 +62,7 @@ export const OverflowItem: React.MemoExoticComponent<
 
   const button = (
     <Button
+      alignText="left"
       className={classnames(
         styles.overflowItem,
         (isSelected || implied) && styles.overflowItemSelected,
@@ -71,6 +72,9 @@ export const OverflowItem: React.MemoExoticComponent<
       disabled={showTooltip ? undefined : isItemDisabled}
       aria-disabled={showTooltip ? isItemDisabled : undefined}
       aria-pressed={isSelected || implied}
+      fill={true}
+      size="small"
+      variant="minimal"
     >
       {getDisplayLabel(label, selectionState)}
     </Button>

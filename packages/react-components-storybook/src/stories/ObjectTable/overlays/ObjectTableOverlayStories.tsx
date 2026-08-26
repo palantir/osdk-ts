@@ -17,7 +17,6 @@
 import { Button, Dialog as BlueprintDialog, Drawer } from "@blueprintjs/core";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type { ObjectTableProps } from "@osdk/react-components/experimental/object-table";
-import { Dialog as BaseUIDialog } from "@osdk/react-components/primitives";
 import React, { memo, useCallback, useState } from "react";
 
 import type { Employee } from "../../../types/Employee.js";
@@ -113,40 +112,6 @@ export const ObjectTableInBlueprintDialog = memo(
             <HeaderMenuOverlayContent tableProps={tableProps} />
           </div>
         </BlueprintDialog>
-      </>
-    );
-  },
-);
-
-export const ObjectTableInBaseUIDialog = memo(
-  function ObjectTableInBaseUIDialogFn({
-    tableProps,
-  }: ObjectTableOverlayStoryProps): React.ReactElement {
-    const [isOpen, setIsOpen] = useState(true);
-
-    const handleOpen = useCallback(() => {
-      setIsOpen(true);
-    }, []);
-
-    const handleOpenChange = useCallback((open: boolean) => {
-      setIsOpen(open);
-    }, []);
-
-    return (
-      <>
-        <Button
-          className={styles.reopenButton}
-          onClick={handleOpen}
-          text="Open Base UI dialog"
-        />
-        <BaseUIDialog
-          className={styles.baseUiDialog}
-          isOpen={isOpen}
-          onOpenChange={handleOpenChange}
-          title="ObjectTable in Base UI Dialog"
-        >
-          <HeaderMenuOverlayContent tableProps={tableProps} />
-        </BaseUIDialog>
       </>
     );
   },

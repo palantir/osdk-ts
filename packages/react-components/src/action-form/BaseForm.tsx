@@ -275,6 +275,7 @@ const SubmitButton = memo(function SubmitButtonFn({
   const button = (
     <Button
       type="button"
+      aria-label={buttonLabel}
       intent={buttonVariant === "primary" ? "primary" : undefined}
       disabled={isSubmitDisabled || isPending}
       loading={isPending}

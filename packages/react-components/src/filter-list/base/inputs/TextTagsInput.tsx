@@ -194,7 +194,11 @@ function TextTagsInputInner({
         onQueryChange={setQuery}
         onRemove={handleRemove}
         placeholder={placeholder}
-        popoverProps={{ boundary: collisionBoundary, minimal: true }}
+        popoverProps={{
+          boundary: collisionBoundary,
+          matchTargetWidth: true,
+          minimal: true,
+        }}
         query={query}
         selectedItems={tags}
         tagInputProps={{ inputProps: { "aria-label": ariaLabel } }}

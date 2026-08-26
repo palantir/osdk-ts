@@ -17,6 +17,7 @@
 import { Button } from "@blueprintjs/core";
 import { DateInput } from "@blueprintjs/datetime";
 import classnames from "classnames";
+import { enUS } from "date-fns/locale";
 import React, { memo, useCallback } from "react";
 
 import styles from "./SingleDateInput.module.css";
@@ -69,6 +70,7 @@ function SingleDateInputInner({
           placeholder={placeholder}
           inputProps={SELECT_DATE_INPUT_PROPS}
           formatDate={formatDate}
+          locale={enUS}
         />
         {showClearButton && selectedDate !== undefined && (
           <Button

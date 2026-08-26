@@ -36,11 +36,6 @@
   padding-inline: calc(var(--osdk-surface-spacing) * 4);
 }
 
-.baseUiDialog {
-  inline-size: min(1120px, calc(100vw - calc(var(--osdk-surface-spacing) * 8)));
-  block-size: min(760px, calc(100vh - calc(var(--osdk-surface-spacing) * 8)));
-}
-
 .shell {
   display: flex;
   flex-direction: column;
