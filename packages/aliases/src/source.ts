@@ -16,7 +16,6 @@
 
 import { loadResolvedAliases } from "./loaders.js";
 import type { Source } from "./types.js";
-
 export type { Source } from "./types.js";
 
 export function source(alias: string): Source {
