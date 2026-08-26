@@ -42,11 +42,8 @@ export const DEFAULT_DEPLOYMENT_CONFIG_PATH =
 /** The author's declaration file, so it carries the declared defaults. */
 export const DEFAULT_DECLARATIONS_PATH = "resources.json";
 
-export interface LoadAliasesOptions {
-  /**
-   * Custom fetch implementation. Defaults to the global `fetch`. Useful for
-   * testing or non-standard hosting.
-   */
+interface InitAliasesOptions {
+  /** Test seam; not exposed by the public browser entry point. */
   fetch?: typeof globalThis.fetch;
 }
 
@@ -68,10 +65,8 @@ const loadedAliases: LoadedAliases = Object.freeze({ custom });
  * @experimental Exposed only via "@osdk/aliases/experimental". Both custom
  * aliases and the shape of this API are provisional and may change.
  */
-export async function load(
-  options?: LoadAliasesOptions,
-): Promise<LoadedAliases> {
-  await initAliases(options);
+export async function load(): Promise<LoadedAliases> {
+  await initAliases();
   return loadedAliases;
 }
 
@@ -79,7 +74,7 @@ export async function load(
  * Populates the alias cache. Concurrent calls share a request, and failed
  * requests may be retried.
  */
-export async function initAliases(options?: LoadAliasesOptions): Promise<void> {
+export async function initAliases(options?: InitAliasesOptions): Promise<void> {
   if (cachedCustomAliases !== undefined) {
     return;
   }
@@ -93,14 +88,8 @@ export async function initAliases(options?: LoadAliasesOptions): Promise<void> {
   await inFlight;
 }
 
-async function loadAliases(options?: LoadAliasesOptions): Promise<void> {
+async function loadAliases(options?: InitAliasesOptions): Promise<void> {
   const fetchImpl = options?.fetch ?? globalThis.fetch;
-  if (typeof fetchImpl !== "function") {
-    throw new TypeError(
-      "No fetch implementation available to load aliases. Pass one via " +
-        "Aliases.load({ fetch }).",
-    );
-  }
 
   // Prefer installer values from `.palantir/deployment.config.json`; fall back
   // to author defaults in `resources.json` only when it is absent.
