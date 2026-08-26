@@ -89,6 +89,9 @@ function mockFetchByPath(
 const CONFIG_WITH_ALIASES = {
   clientId: "client-123",
   foundryUrl: "https://foundry.example.com",
+  redirectUrl: "https://app.example.com/auth/callback",
+  ontologyRid: "ri.ontology.main.ontology.example",
+  ontologyApiName: "example-ontology",
   aliases: JSON.stringify({
     apiBaseUrl: "https://api.prod.internal",
     featureXEnabled: "false",
@@ -260,6 +263,12 @@ describe("browser aliases", () => {
         DEFAULT_DEPLOYMENT_CONFIG_PATH,
       );
     });
+
+    it("ignores unrelated deployment config fields", async () => {
+      await initAliases({ fetch: mockFetch({ body: CONFIG_WITH_ALIASES }) });
+
+      expect(custom("apiBaseUrl")).toBe("https://api.prod.internal");
+    });
   });
 
   // No environment detection: the deployment config only exists on an installed
@@ -427,6 +436,23 @@ describe("browser aliases", () => {
   });
 
   describe("declaration file (dev) shape", () => {
+    it.each([null, [], "not an object"])(
+      "rejects a non-object file: %j",
+      async (body) => {
+        await expect(
+          initAliases({ fetch: mockFetch({ body }) }),
+        ).rejects.toThrow("expected a JSON object");
+      },
+    );
+
+    it("throws when aliases is not an object", async () => {
+      await expect(
+        initAliases({ fetch: mockFetch({ body: { aliases: [] } }) }),
+      ).rejects.toThrow(
+        "'aliases' must be a string in deployment config or an object in resources.json",
+      );
+    });
+
     it("flattens declared defaults", async () => {
       await initAliases({
         fetch: mockFetchByPath({
@@ -493,6 +519,29 @@ describe("browser aliases", () => {
           }),
         }),
       ).rejects.toThrow("'aliases.custom' must be an object");
+    });
+
+    it.each([null, [], "not an object"])(
+      "rejects a non-object declaration: %j",
+      async (declaration) => {
+        await expect(
+          initAliases({
+            fetch: mockFetch({
+              body: { aliases: { custom: { apiBaseUrl: declaration } } },
+            }),
+          }),
+        ).rejects.toThrow("declaration must be an object");
+      },
+    );
+
+    it("rejects a null declared value", async () => {
+      await expect(
+        initAliases({
+          fetch: mockFetch({
+            body: { aliases: { custom: { apiBaseUrl: { value: null } } } },
+          }),
+        }),
+      ).rejects.toThrow("Alias 'apiBaseUrl' must be a string, got object");
     });
   });
 });

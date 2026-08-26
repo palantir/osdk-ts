@@ -57,21 +57,11 @@ export enum AliasEnvironment {
 // Browser mode types (deployment.config.json)
 
 /**
- * Shape of the deployment config file that Foundry website hosting serves at
- * the browser entry point's default path. It is a flat map of
- * strings; resolved custom aliases are packed under `aliases` as a stringified
- * JSON object (a `Record<string, string>`) so they cannot collide with the
- * reserved system keys.
- *
- * This is the PRODUCTION shape, written at Marketplace install time and
- * therefore carrying the installer's resolved values.
+ * The part of the Marketplace deployment config used by the alias loader. The
+ * full file also contains fields such as `clientId`, `foundryUrl`, and
+ * `ontologyRid`, which this package ignores.
  */
 export interface DeploymentConfig {
-  clientId?: string;
-  redirectUrl?: string;
-  foundryUrl?: string;
-  ontologyRid?: string;
-  ontologyApiName?: string;
   /** Stringified JSON `Record<string, string>` of resolved custom alias values. */
   aliases?: string;
 }
