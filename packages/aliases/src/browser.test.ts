@@ -141,7 +141,7 @@ describe("browser aliases", () => {
       );
     });
 
-    it("treats a config with no aliases key as empty", async () => {
+    it("treats deployment config with no aliases key as empty", async () => {
       await initAliases({
         fetch: mockFetch({ body: { clientId: "client-123" } }),
       });
@@ -252,6 +252,18 @@ describe("browser aliases", () => {
       await expect(
         initAliases({ fetch: mockFetch({ body: { aliases: "{not json" } }) }),
       ).rejects.toThrow("Failed to parse resolved aliases");
+    });
+
+    it("rejects an empty aliases string", async () => {
+      await expect(
+        initAliases({ fetch: mockFetch({ body: { aliases: "" } }) }),
+      ).rejects.toThrow("Failed to parse resolved aliases");
+    });
+
+    it("rejects the resources.json shape in deployment config", async () => {
+      await expect(
+        initAliases({ fetch: mockFetch({ body: DECLARATIONS_FILE }) }),
+      ).rejects.toThrow("'aliases' must be a string in deployment config");
     });
 
     it("defaults to the deployment config path", async () => {
@@ -436,6 +448,16 @@ describe("browser aliases", () => {
   });
 
   describe("declaration file (dev) shape", () => {
+    it("treats resources.json with no aliases key as empty", async () => {
+      await initAliases({
+        fetch: mockFetchByPath({
+          [DEFAULT_DECLARATIONS_PATH]: { body: {} },
+        }),
+      });
+
+      expect(() => custom("anything")).toThrow("Available aliases: []");
+    });
+
     it.each([null, [], "not an object"])(
       "rejects a non-object file: %j",
       async (body) => {
@@ -447,10 +469,22 @@ describe("browser aliases", () => {
 
     it("throws when aliases is not an object", async () => {
       await expect(
-        initAliases({ fetch: mockFetch({ body: { aliases: [] } }) }),
-      ).rejects.toThrow(
-        "'aliases' must be a string in deployment config or an object in resources.json",
-      );
+        initAliases({
+          fetch: mockFetchByPath({
+            [DEFAULT_DECLARATIONS_PATH]: { body: { aliases: [] } },
+          }),
+        }),
+      ).rejects.toThrow("'aliases' must be an object in resources.json");
+    });
+
+    it("rejects the deployment config shape in resources.json", async () => {
+      await expect(
+        initAliases({
+          fetch: mockFetchByPath({
+            [DEFAULT_DECLARATIONS_PATH]: { body: CONFIG_WITH_ALIASES },
+          }),
+        }),
+      ).rejects.toThrow("'aliases' must be an object in resources.json");
     });
 
     it("flattens declared defaults", async () => {
@@ -526,8 +560,10 @@ describe("browser aliases", () => {
       async (declaration) => {
         await expect(
           initAliases({
-            fetch: mockFetch({
-              body: { aliases: { custom: { apiBaseUrl: declaration } } },
+            fetch: mockFetchByPath({
+              [DEFAULT_DECLARATIONS_PATH]: {
+                body: { aliases: { custom: { apiBaseUrl: declaration } } },
+              },
             }),
           }),
         ).rejects.toThrow("declaration must be an object");
@@ -537,8 +573,12 @@ describe("browser aliases", () => {
     it("rejects a null declared value", async () => {
       await expect(
         initAliases({
-          fetch: mockFetch({
-            body: { aliases: { custom: { apiBaseUrl: { value: null } } } },
+          fetch: mockFetchByPath({
+            [DEFAULT_DECLARATIONS_PATH]: {
+              body: {
+                aliases: { custom: { apiBaseUrl: { value: null } } },
+              },
+            },
           }),
         }),
       ).rejects.toThrow("Alias 'apiBaseUrl' must be a string, got object");

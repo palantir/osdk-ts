@@ -30,8 +30,8 @@ import {
   load,
 } from "./public/experimental.js";
 
-const DECLARATIONS = {
-  aliases: { custom: { apiBaseUrl: { value: "https://api.example.com" } } },
+const DEPLOYMENT_CONFIG = {
+  aliases: JSON.stringify({ apiBaseUrl: "https://api.example.com" }),
 };
 
 function mockFetch(): typeof globalThis.fetch {
@@ -41,7 +41,7 @@ function mockFetch(): typeof globalThis.fetch {
       status: 200,
       statusText: "OK",
       headers: { get: () => "application/json" },
-      text: () => Promise.resolve(JSON.stringify(DECLARATIONS)),
+      text: () => Promise.resolve(JSON.stringify(DEPLOYMENT_CONFIG)),
     }),
   ) as unknown as typeof globalThis.fetch;
 }
