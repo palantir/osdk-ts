@@ -19,7 +19,11 @@ import { useOsdkMetadata } from "@osdk/react";
 import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import type { FilterListProps } from "../FilterListApi.js";
+import type {
+  FilterChangeReason,
+  FilterDefinitionUnion,
+  FilterListProps,
+} from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { LinkedFilter } from "../types/LinkedFilterTypes.js";
 import {
@@ -69,6 +73,34 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
   return states;
 }
 
+interface FilterSnapshot<Q extends ObjectTypeDefinition> {
+  whereClause: WhereClause<Q>;
+  linkedFilters: ReadonlyArray<LinkedFilter<Q>>;
+  effectiveObjectSet: ObjectSet<Q> | undefined;
+}
+
+function deriveSnapshot<Q extends ObjectTypeDefinition>(
+  definitions: Array<FilterDefinitionUnion<Q>> | undefined,
+  filterStates: Map<string, FilterState>,
+  propertyTypes: Map<string, PropertyTypeInfo>,
+  objectSet: ObjectSet<Q> | undefined,
+): FilterSnapshot<Q> {
+  const whereClause = buildWhereClause(
+    definitions,
+    filterStates,
+    propertyTypes,
+  );
+  const linkedFilters = getActiveLinkedFilters(definitions, filterStates);
+  return {
+    whereClause,
+    linkedFilters,
+    effectiveObjectSet:
+      objectSet == null
+        ? undefined
+        : narrowObjectSet(objectSet, whereClause, linkedFilters),
+  };
+}
+
 export function useFilterListState<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
 ): UseFilterListStateResult<Q> {
@@ -76,21 +108,32 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     objectType,
     objectSet,
     filterDefinitions,
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat callback still supported
     onFilterStateChanged,
+    onFilterListChanged,
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat callback still supported
     onFilterClauseChanged,
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat callback still supported
     onEffectiveObjectSet,
     defaultFilterStates,
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat fallback for the pre-rename prop
     initialFilterStates,
   } = props;
   const seededFilterStates = defaultFilterStates ?? initialFilterStates;
-  const { metadata } = useOsdkMetadata(objectType);
+  const { metadata, loading: metadataLoading } = useOsdkMetadata(objectType);
+
+  const onFilterStateChangedRef = useRef(onFilterStateChanged);
+  onFilterStateChangedRef.current = onFilterStateChanged;
   const onFilterClauseChangedRef = useRef(onFilterClauseChanged);
   onFilterClauseChangedRef.current = onFilterClauseChanged;
   const onEffectiveObjectSetRef = useRef(onEffectiveObjectSet);
   onEffectiveObjectSetRef.current = onEffectiveObjectSet;
+  const onFilterListChangedRef = useRef(onFilterListChanged);
+  onFilterListChangedRef.current = onFilterListChanged;
   const filterDefinitionsRef = useRef(filterDefinitions);
   filterDefinitionsRef.current = filterDefinitions;
+  const objectSetRef = useRef(objectSet);
+  objectSetRef.current = objectSet;
 
   const propertyTypes = useMemo(() => {
     const map = new Map<string, PropertyTypeInfo>();
@@ -106,6 +149,31 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     }
     return map;
   }, [metadata?.properties]);
+  const propertyTypesRef = useRef(propertyTypes);
+  propertyTypesRef.current = propertyTypes;
+
+  const emitFilterListChanged = useCallback(
+    (states: Map<string, FilterState>, reason: FilterChangeReason) => {
+      const onChange = onFilterListChangedRef.current;
+      if (onChange == null) {
+        return;
+      }
+      const snapshot = deriveSnapshot(
+        filterDefinitionsRef.current,
+        states,
+        propertyTypesRef.current,
+        objectSetRef.current,
+      );
+      onChange({
+        snapshot: {
+          filterClause: snapshot.whereClause,
+          filteredObjectSet: snapshot.effectiveObjectSet,
+        },
+        reason,
+      });
+    },
+    [],
+  );
 
   // Captured once on first render to provide a stable baseline for the reset
   // button's enabled state. `useState`'s lazy initializer pins the value for
@@ -126,53 +194,90 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     () => new Map(initialFilterStatesSnapshot),
   );
 
+  // Back-to-back writes can occur before React commits, so each transition must
+  // build on the latest eagerly computed state rather than the render snapshot.
+  const filterStatesRef = useRef(filterStates);
+  filterStatesRef.current = filterStates;
+
+  const applyChange = useCallback(
+    (
+      transition: (
+        previous: Map<string, FilterState>,
+      ) => Map<string, FilterState> | undefined,
+      reason: FilterChangeReason,
+    ) => {
+      const next = transition(filterStatesRef.current);
+      if (next === undefined) {
+        return;
+      }
+      filterStatesRef.current = next;
+      setFilterStates(next);
+      emitFilterListChanged(next, reason);
+    },
+    [emitFilterListChanged],
+  );
+
   const setFilterState = useCallback(
     (filterKey: string, state: FilterState) => {
-      setFilterStates((prev) => {
-        const next = new Map(prev);
-        next.set(filterKey, state);
-        return next;
-      });
-
       const definition = filterDefinitionsRef.current?.find(
-        (d) => getFilterKey(d) === filterKey,
+        (candidate) => getFilterKey(candidate) === filterKey,
       );
       if (definition) {
-        onFilterStateChanged?.(definition, state);
+        onFilterStateChangedRef.current?.(definition, state);
       }
+      applyChange(
+        (previous) => {
+          const next = new Map(previous);
+          next.set(filterKey, state);
+          return next;
+        },
+        { type: "FILTER_STATE_CHANGED", filterKey, newState: state },
+      );
     },
-    [onFilterStateChanged],
+    [applyChange],
   );
 
-  const clearFilterState = useCallback((filterKey: string) => {
-    setFilterStates((prev) => {
-      const next = new Map(prev);
-      next.delete(filterKey);
-      return next;
-    });
-  }, []);
+  const clearFilterState = useCallback(
+    (filterKey: string) => {
+      applyChange(
+        (previous) => {
+          if (!previous.has(filterKey)) {
+            return;
+          }
+          const next = new Map(previous);
+          next.delete(filterKey);
+          return next;
+        },
+        { type: "FILTER_REMOVED", filterKey },
+      );
+    },
+    [applyChange],
+  );
 
   const reset = useCallback(() => {
-    setFilterStates(new Map(initialFilterStatesSnapshot));
-  }, [initialFilterStatesSnapshot]);
+    applyChange(() => new Map(initialFilterStatesSnapshot), {
+      type: "FILTER_LIST_RESET",
+    });
+  }, [applyChange, initialFilterStatesSnapshot]);
 
-  const whereClause = useMemo(
-    () => buildWhereClause(filterDefinitions, filterStates, propertyTypes),
-    [filterDefinitions, filterStates, propertyTypes],
-  );
-
-  const linkedFilters = useMemo(
-    () => getActiveLinkedFilters(filterDefinitions, filterStates),
-    [filterDefinitions, filterStates],
-  );
-
-  const effectiveObjectSet = useMemo<ObjectSet<Q> | undefined>(
+  const { whereClause, linkedFilters, effectiveObjectSet } = useMemo(
     () =>
-      objectSet == null
-        ? undefined
-        : narrowObjectSet(objectSet, whereClause, linkedFilters),
-    [objectSet, whereClause, linkedFilters],
+      deriveSnapshot(filterDefinitions, filterStates, propertyTypes, objectSet),
+    [filterDefinitions, filterStates, propertyTypes, objectSet],
   );
+
+  const hasEmittedInit = useRef(false);
+  useEffect(() => {
+    // We need to wait until metadata is loaded because we need
+    // metadata to construct the filter clause
+    if (hasEmittedInit.current || metadataLoading) {
+      return;
+    }
+    hasEmittedInit.current = true;
+    emitFilterListChanged(filterStatesRef.current, {
+      type: "FILTER_LIST_INITIALIZED",
+    });
+  }, [metadataLoading, emitFilterListChanged]);
 
   useEffect(() => {
     onFilterClauseChangedRef.current?.(whereClause);

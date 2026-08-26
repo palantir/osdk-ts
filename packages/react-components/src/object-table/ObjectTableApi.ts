@@ -479,7 +479,6 @@ export interface ObjectTableProps<
 
   /**
    * The current where clause to filter the objects in the table.
-   * If provided, the filter is controlled.
    */
   filter?: WhereClause<Q, RDPs>;
 

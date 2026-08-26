@@ -27,6 +27,9 @@ export const FilterList: typeof _FilterList = withOsdkMetrics(
 );
 
 export type {
+  FilterChangeEvent,
+  FilterChangeReason,
+  FilterChangeSnapshot,
   FilterDefinitionUnion,
   FilterListProps,
 } from "../../filter-list/FilterListApi.js";
