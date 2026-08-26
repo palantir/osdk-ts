@@ -184,7 +184,7 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
   /**
    * Get a page of object identifiers whose scenario edits conflict with edits to the scenario's base for the given
    * object type. Conflict detection may report false positives when object versions change without user-visible data
-   * changes. Results are a point-in-time check, include only objects the caller may view and the backend can resolve,
+   * changes. Results are a point-in-time check, and include only objects the caller may view and the backend can resolve,
    * and may become stale before merge. Use the base client and scenario client to load both object states for review.
    *
    * `pageSize` bounds the number of objects examined, not the number of conflicts returned, so a page may contain fewer
@@ -196,9 +196,8 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
   ): Promise<ConflictingObjectsPage<Q>>;
 
   /**
-   * Lazily stream identifiers for objects whose scenario edits conflict with edits to the scenario's base. The iterator
-   * follows `nextPageToken` even when a page is short or empty. Results are forwarded in backend order without
-   * client-side deduplication.
+   * Stream object identifiers for the objects whose scenario edits conflict with edits to the scenario's base for the
+   * given object type. Pages are fetched lazily.
    */
   conflictingObjectsAsyncIter<Q extends ObjectTypeDefinition>(
     objectType: Q,
