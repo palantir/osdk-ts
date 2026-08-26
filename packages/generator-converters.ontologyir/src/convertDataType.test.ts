@@ -145,6 +145,39 @@ describe(convertDataType, () => {
     });
   });
 
+  it("converts a union recursively", () => {
+    expect(
+      convert({
+        type: "union",
+        union: { allowedTypes: [STRING, INTEGER] },
+      } as IDataType),
+    ).toEqual({
+      type: "union",
+      unionTypes: [{ type: "string" }, { type: "integer" }],
+    });
+  });
+
+  it("converts a two dimensional aggregation", () => {
+    expect(
+      convert({
+        type: "twoDimensionalAggregation",
+        twoDimensionalAggregation: {
+          bucketType: {
+            keyType: {
+              type: "range",
+              range: { type: "integer", integer: {} },
+            },
+            valueType: { type: "double", double: {} },
+          },
+        },
+      } as IDataType),
+    ).toEqual({
+      type: "twoDimensionalAggregation",
+      keyType: { type: "range", subType: { type: "integer" } },
+      valueType: { type: "double" },
+    });
+  });
+
   it("still reports genuinely unsupported data types", () => {
     expect(() => convert({ type: "vector" } as unknown as IDataType)).toThrow(
       "Unsupported data type: vector",

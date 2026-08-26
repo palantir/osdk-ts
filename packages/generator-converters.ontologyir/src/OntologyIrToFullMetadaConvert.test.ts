@@ -3638,4 +3638,31 @@ describe(OntologyIrToFullMetadataConverter, () => {
       createProgramSpy.mockRestore();
     }
   });
+
+  it("preserves void TypeScript function outputs", async () => {
+    const createProgramSpy = vi.spyOn(
+      OntologyIrToFullMetadataConverter,
+      "createProgram",
+    ).mockReturnValue({} as never);
+    discoveredFunctions.splice(0, discoveredFunctions.length, {
+      locator: {
+        type: "typescript",
+        typescript: { functionName: "voidFunction" },
+      },
+      inputs: [],
+      output: { type: "void", void: {} },
+      customTypes: {},
+    });
+
+    try {
+      const queryTypes = await OntologyIrToFullMetadataConverter
+        .discoverTypeScriptFunctions(
+          fileURLToPath(new URL(".", import.meta.url)),
+        );
+
+      expect(queryTypes[0].output).toEqual({ type: "void" });
+    } finally {
+      createProgramSpy.mockRestore();
+    }
+  });
 });
