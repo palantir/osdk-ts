@@ -33,8 +33,8 @@ describe("subscribeToLinks", () => {
     unsubscribe: () => {},
   });
 
-  it("infers the object type from the subscribed objects and the link types from links", () => {
-    subscribeToLinks({
+  it("infers subscription types from the object type and links", () => {
+    subscribeToLinks(EmployeeApiTest, {
       links: ["lead", "peeps"],
       listener: {
         onChange: (linkUpdate) => {
@@ -49,7 +49,6 @@ describe("subscribeToLinks", () => {
         },
       },
       objects: [employeeOne, employeeTwo, 3],
-      objectType: EmployeeApiTest,
     });
   });
 });

@@ -33,7 +33,6 @@ export namespace LinkSubscription {
     readonly objects: ReadonlyArray<
       ObjectIdentifiers<NoInfer<Q>> | OsdkObjectPrimaryKeyType<NoInfer<Q>>
     >;
-    readonly objectType: Q;
   }
 
   export interface Listener<
@@ -71,6 +70,7 @@ type SubscribeToLinks = <
   const Q extends ObjectTypeDefinition,
   const L extends LinkTypeApiNamesFor<NoInfer<Q>>,
 >(
+  objectType: Q,
   args: LinkSubscription.Args<Q, L>,
 ) => { readonly unsubscribe: () => void };
 

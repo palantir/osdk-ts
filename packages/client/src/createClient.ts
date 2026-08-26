@@ -18,6 +18,7 @@ import type {
   ActionDefinition,
   FetchPageArgs,
   InterfaceDefinition,
+  LinkTypeApiNamesFor,
   Logger,
   Media,
   NullabilityAdherence,
@@ -34,6 +35,7 @@ import type {
 import type {
   Experiment,
   ExperimentFns,
+  LinkSubscription,
   MediaTransformation,
   MinimalObjectSet,
   TransformOptions,
@@ -227,11 +229,18 @@ export function createClientFromContext(clientCtx: MinimalClient) {
           } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__linkSubscriptions.name:
           return {
-            subscribeToLinks: (args: any) => {
+            subscribeToLinks: (
+              objectType: ObjectTypeDefinition,
+              args: LinkSubscription.Args<
+                ObjectTypeDefinition,
+                LinkTypeApiNamesFor<ObjectTypeDefinition>
+              >,
+            ) => {
               const pendingSubscription =
                 import("./objectSet/LinkSubscriptionWebsocket.js").then(
                   ({ LinkSubscriptionWebsocket }) =>
                     LinkSubscriptionWebsocket.getInstance(clientCtx).subscribe(
+                      objectType,
                       args,
                     ),
                 );

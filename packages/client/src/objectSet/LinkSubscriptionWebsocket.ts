@@ -76,6 +76,7 @@ export class LinkSubscriptionWebsocket extends SubscriptionWebsocket<
   }
 
   subscribe<Q extends ObjectTypeDefinition, L extends LinkTypeApiNamesFor<Q>>(
+    objectType: Q,
     args: LinkSubscription.Args<Q, L>,
   ): () => void {
     invariant(
@@ -91,7 +92,7 @@ export class LinkSubscriptionWebsocket extends SubscriptionWebsocket<
       links: args.links,
       listener: args.listener,
       objects: args.objects,
-      objectType: args.objectType,
+      objectType,
       status: "preparing",
       subscriptionId: `TMP-${nextUuid()}`,
     };

@@ -79,17 +79,15 @@ describe("LinkSubscriptionWebsocket", () => {
   it("uses one WebSocket for multiple subscriptions and sends updates to the correct listener", async () => {
     const linkSubscriptionWebsocket =
       LinkSubscriptionWebsocket.getInstance(minimalClient);
-    const unsubscribeLead = linkSubscriptionWebsocket.subscribe({
+    const unsubscribeLead = linkSubscriptionWebsocket.subscribe(Employee, {
       links: ["lead"],
       listener: leadListener,
       objects: [1, { $apiName: "Employee", $primaryKey: 2 }],
-      objectType: Employee,
     });
-    const unsubscribePeeps = linkSubscriptionWebsocket.subscribe({
+    const unsubscribePeeps = linkSubscriptionWebsocket.subscribe(Employee, {
       links: ["peeps"],
       listener: peepsListener,
       objects: [3],
-      objectType: Employee,
     });
 
     // Concurrent subscribes each race to build a connection and the loser is
