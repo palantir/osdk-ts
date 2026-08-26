@@ -113,6 +113,36 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   objectSet?: ObjectSet<Q>;
 
   /**
+   * The definition for all supported filter items in the list
+   * If not supplied, all filterable properties will be available
+   */
+  filterDefinitions?: Array<FilterDefinitionUnion<Q>>;
+
+  /**
+   * Seeds filter states from external storage, keyed by `getFilterKey`.
+   * Applied over the per-definition `defaultFilterState` seeds on mount, and
+   * FilterList owns the states from then on. Also the state the reset button
+   * restores to.
+   * Use `onFilterStateChanged` to persist changes back out.
+   *
+   * @default undefined (filters seed from their definitions alone)
+   */
+  defaultFilterStates?: Map<string, FilterState>;
+
+  /**
+   * @deprecated Rename to `defaultFilterStates`.
+   */
+  initialFilterStates?: Map<string, FilterState>;
+
+  /**
+   * Called on filter init and when filter state changes.
+   *
+   * @param event `snapshot` carries the filter state the change produced;
+   * `reason` carries what changed.
+   */
+  onFilterListChanged?: (event: FilterChangeEvent<Q>) => void;
+
+  /**
    * Called whenever the filter clause changes. FilterList owns filter state;
    * this is how you read it out, e.g. to feed an `ObjectTable`'s `filter`.
    *
@@ -124,22 +154,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * alongside the filtered `ObjectSet`.
    */
   onFilterClauseChanged?: (newClause: WhereClause<Q>) => void;
-
-  /**
-   * Optional title to display in the filter list header
-   */
-  title?: ReactNode;
-
-  /**
-   * Optional icon to display next to the title
-   */
-  titleIcon?: React.ReactNode;
-
-  /**
-   * The definition for all supported filter items in the list
-   * If not supplied, all filterable properties will be available
-   */
-  filterDefinitions?: Array<FilterDefinitionUnion<Q>>;
 
   /**
    * Called when filter state changes
@@ -155,14 +169,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Called on filter init and when filter state changes.
-   *
-   * @param event `snapshot` carries the filter state the change produced;
-   * `reason` carries what changed.
-   */
-  onFilterListChanged?: (event: FilterChangeEvent<Q>) => void;
-
-  /**
    * Called with the filtered `ObjectSet` whenever filters change. Requires
    * `objectSet` to be set. `HAS_LINK` and `LINKED_PROPERTY` filters apply only
    * here, never through the filter clause.
@@ -171,13 +177,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * reports the same filtered set alongside the clause.
    */
   onEffectiveObjectSet?: (objectSet: ObjectSet<Q>) => void;
-
-  /**
-   * When `true`, facets render greyed-out count=0 rows for values present in
-   * the unfiltered data but excluded by other active filters.
-   * @default false
-   */
-  showFilteredOutValues?: boolean;
 
   /**
    * Controls how filter visibility (add/remove) is managed.
@@ -195,6 +194,13 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * changes with `onFilterVisibilityChange`.
    */
   addFilterMode?: "controlled" | "uncontrolled";
+
+  /**
+   * Custom render function for the "Add filter" button. Customizes the trigger
+   * element for the built-in add-filter popover; the popover behavior is
+   * handled automatically.
+   */
+  renderAddFilterButton?: () => React.ReactNode;
 
   /**
    * Called after a filter is shown from the built-in "Add filter" popover.
@@ -219,6 +225,17 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   onFilterRemoved?: (filterKey: string) => void;
 
   /**
+   * Enable drag-and-drop reordering of filters. When `true`, drag handles are
+   * rendered and filters can be reordered.
+   *
+   * Reorder state is managed internally; persist `onFilterVisibilityChange` to
+   * track order across remounts.
+   *
+   * @default false
+   */
+  enableSorting?: boolean;
+
+  /**
    * Called when filter visibility or ordering changes, i.e. when filters are
    * reordered, added or removed via the built-in show/remove controls, or
    * reset.
@@ -235,17 +252,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
       isVisible: boolean;
     }>,
   ) => void;
-
-  /**
-   * Enable drag-and-drop reordering of filters. When `true`, drag handles are
-   * rendered and filters can be reordered.
-   *
-   * Reorder state is managed internally; persist `onFilterVisibilityChange` to
-   * track order across remounts.
-   *
-   * @default false
-   */
-  enableSorting?: boolean;
 
   /**
    * Whether the collapse/expand control is available. When `false` the panel is
@@ -284,22 +290,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   onCollapsedChange?: (collapsed: boolean) => void;
 
   /**
-   * Seeds filter states from external storage, keyed by `getFilterKey`.
-   * Applied over the per-definition `defaultFilterState` seeds on mount, and
-   * FilterList owns the states from then on. Also the state the reset button
-   * restores to.
-   * Use `onFilterStateChanged` to persist changes back out.
-   *
-   * @default undefined (filters seed from their definitions alone)
-   */
-  defaultFilterStates?: Map<string, FilterState>;
-
-  /**
-   * @deprecated Rename to `defaultFilterStates`.
-   */
-  initialFilterStates?: Map<string, FilterState>;
-
-  /**
    * Show reset filters button in header
    */
   showResetButton?: boolean;
@@ -310,19 +300,29 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   onReset?: () => void;
 
   /**
+   * Optional title to display in the filter list header
+   */
+  title?: ReactNode;
+
+  /**
+   * Optional icon to display next to the title
+   */
+  titleIcon?: React.ReactNode;
+
+  /**
    * Show count of active filters in header
    */
   showActiveFilterCount?: boolean;
 
   /**
+   * When `true`, facets render greyed-out count=0 rows for values present in
+   * the unfiltered data but excluded by other active filters.
+   * @default false
+   */
+  showFilteredOutValues?: boolean;
+
+  /**
    * Additional CSS class name
    */
   className?: string;
-
-  /**
-   * Custom render function for the "Add filter" button. Customizes the trigger
-   * element for the built-in add-filter popover; the popover behavior is
-   * handled automatically.
-   */
-  renderAddFilterButton?: () => React.ReactNode;
 }
