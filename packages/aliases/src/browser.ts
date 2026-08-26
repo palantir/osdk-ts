@@ -27,11 +27,7 @@
 // an installed site both files are served, so treating an error as absence would
 // serve the author's defaults in place of the installer's values.
 
-import type {
-  AliasDeclarationsFile,
-  Custom,
-  DeploymentConfig,
-} from "./types.js";
+import type { Custom } from "./types.js";
 
 export type { Custom } from "./types.js";
 
@@ -91,8 +87,9 @@ export async function initAliases(options?: InitAliasesOptions): Promise<void> {
 async function loadAliases(options?: InitAliasesOptions): Promise<void> {
   const fetchImpl = options?.fetch ?? globalThis.fetch;
 
-  // Prefer installer values from `.palantir/deployment.config.json`; fall back
-  // to author defaults in `resources.json` only when it is absent.
+  // Marketplace-installed apps use installer values from
+  // `.palantir/deployment.config.json`. Local development and apps deployed
+  // without Marketplace fall back to author defaults in `resources.json`.
   const resolved = await fetchAliases(
     fetchImpl,
     DEFAULT_DEPLOYMENT_CONFIG_PATH,
@@ -141,24 +138,17 @@ async function fetchAliases(
 }
 
 /**
- * A document preamble only, not any body starting with `<`. This result means
- * "absent", which triggers the fallback, and a proxy or auth page can also be a
- * 200 with markup; requiring a preamble keeps XML and partial-HTML error bodies
- * from qualifying. Sniffed rather than read from the content type because
- * Foundry website hosting derives that from the file extension and does not
- * recognize `.json`.
+ * Detects SPA fallback pages returned for missing files. Inspect the body because
+ * Foundry website hosting does not reliably serve `.json` with an HTML type.
  */
 function isHtmlDocument(body: string): boolean {
   const start = body.trimStart().slice(0, 32).toLowerCase();
   return start.startsWith("<!doctype html") || start.startsWith("<html");
 }
 
-function parseJson(
-  body: string,
-  url: string,
-): DeploymentConfig | AliasDeclarationsFile {
+function parseJson(body: string, url: string): unknown {
   try {
-    return JSON.parse(body) as DeploymentConfig | AliasDeclarationsFile;
+    return JSON.parse(body) as unknown;
   } catch (error) {
     throw new Error(`Failed to read aliases from ${url}: not valid JSON.`, {
       cause: error,
@@ -166,11 +156,21 @@ function parseJson(
   }
 }
 
-/** Reads aliases out of either supported file shape. */
-function extractAliases(
-  config: DeploymentConfig | AliasDeclarationsFile,
-  url: string,
-): Record<string, string> {
+/**
+ * Converts either supported file shape into `{ aliasName: resolvedValue }`.
+ *
+ * `{ aliases: "{\"apiBaseUrl\":\"https://prod.example.com\"}" }`
+ * becomes `{ apiBaseUrl: "https://prod.example.com" }`.
+ *
+ * `{ aliases: { custom: { apiBaseUrl: { value: "https://dev.example.com" } } } }`
+ * becomes `{ apiBaseUrl: "https://dev.example.com" }`.
+ */
+function extractAliases(config: unknown, url: string): Record<string, string> {
+  if (!isJsonObject(config)) {
+    throw new TypeError(
+      `Failed to read aliases from ${url}: expected a JSON object.`,
+    );
+  }
   const aliases = config.aliases;
 
   if (aliases == null || aliases === "") {
@@ -182,24 +182,42 @@ function extractAliases(
     return parseResolvedAliases(aliases);
   }
 
+  if (!isJsonObject(aliases)) {
+    throw new TypeError(
+      `Failed to read aliases from ${url}: 'aliases' must be a string in ` +
+        "deployment config or an object in resources.json.",
+    );
+  }
+
   // Development nests { custom: { key: { value } } }.
   const declarations = aliases.custom;
   if (declarations == null) {
     return {};
   }
-  if (typeof declarations !== "object" || Array.isArray(declarations)) {
+  if (!isJsonObject(declarations)) {
     throw new TypeError(
       `Failed to read aliases from ${url}: 'aliases.custom' must be an object.`,
     );
   }
   return toStringRecord(
     Object.fromEntries(
-      Object.entries(declarations).map(([key, declaration]) => [
-        key,
-        declaration?.value ?? "",
-      ]),
+      Object.entries(declarations).map(([key, declaration]) => {
+        if (!isJsonObject(declaration)) {
+          throw new TypeError(
+            `Failed to read alias '${key}' from ${url}: declaration must be an object.`,
+          );
+        }
+        return [
+          key,
+          Object.hasOwn(declaration, "value") ? declaration.value : "",
+        ];
+      }),
     ),
   );
+}
+
+function isJsonObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value != null && !Array.isArray(value);
 }
 
 function resolveUrl(path: string): string {
@@ -226,9 +244,9 @@ function parseResolvedAliases(raw: string): Record<string, string> {
 }
 
 /**
- * Narrows to string values. The file is served rather than written by
- * application code, so without this a number would reach `custom()` and violate
- * its declared return type.
+ * Validates values loaded from JSON before treating them as strings. TypeScript
+ * types do not validate runtime data, so without this check `custom()` could
+ * return a number or object despite declaring a string return type.
  */
 function toStringRecord(
   parsed: Record<string, unknown>,
@@ -264,8 +282,8 @@ export function custom(alias: string): Custom {
         "reading aliases.",
     );
   }
-  // `hasOwn`, not `in`: `in` matches inherited properties, so `toString` would
-  // resolve to a function and `__proto__` to the prototype.
+  // Only accept names explicitly defined in the alias file. JavaScript objects
+  // may also expose built-in names such as `toString` and `__proto__`.
   if (!Object.hasOwn(cachedCustomAliases, alias)) {
     const available = Object.keys(cachedCustomAliases);
     throw new Error(
