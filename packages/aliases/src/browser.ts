@@ -44,12 +44,6 @@ export const DEFAULT_DECLARATIONS_PATH = "resources.json";
 
 export interface LoadAliasesOptions {
   /**
-   * Escape hatch to force one specific file, relative to `document.baseURI`.
-   * Setting it disables the fallback, so a missing file throws. Normal
-   * applications should omit it.
-   */
-  path?: string;
-  /**
    * Custom fetch implementation. Defaults to the global `fetch`. Useful for
    * testing or non-standard hosting.
    */
@@ -108,18 +102,8 @@ async function loadAliases(options?: LoadAliasesOptions): Promise<void> {
     );
   }
 
-  // An explicit path is honored as given, so a missing file is an error.
-  if (options?.path != null) {
-    const explicit = await fetchAliases(fetchImpl, options.path);
-    if (explicit === undefined) {
-      throw new Error(
-        `Failed to load aliases from ${resolveUrl(options.path)}: 404`,
-      );
-    }
-    cachedCustomAliases = explicit;
-    return;
-  }
-
+  // Prefer installer values from `.palantir/deployment.config.json`; fall back
+  // to author defaults in `resources.json` only when it is absent.
   const resolved = await fetchAliases(
     fetchImpl,
     DEFAULT_DEPLOYMENT_CONFIG_PATH,
@@ -129,8 +113,6 @@ async function loadAliases(options?: LoadAliasesOptions): Promise<void> {
     return;
   }
 
-  // Warn so that a fallback on a real installed site, where the deployment
-  // config should exist, is visible rather than silent.
   console.warn(
     `No alias config at ${resolveUrl(DEFAULT_DEPLOYMENT_CONFIG_PATH)}, ` +
       `falling back to declared defaults in ${resolveUrl(

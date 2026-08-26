@@ -184,9 +184,12 @@ describe("browser aliases", () => {
       "resolves a real alias named %s from the declaration file",
       async (name) => {
         await initAliases({
-          path: DEFAULT_DECLARATIONS_PATH,
-          fetch: mockFetch({
-            body: { aliases: { custom: { [name]: { value: "real-value" } } } },
+          fetch: mockFetchByPath({
+            [DEFAULT_DECLARATIONS_PATH]: {
+              body: {
+                aliases: { custom: { [name]: { value: "real-value" } } },
+              },
+            },
           }),
         });
 
@@ -256,22 +259,6 @@ describe("browser aliases", () => {
       expect(String(vi.mocked(fetchImpl).mock.calls[0][0])).toContain(
         DEFAULT_DEPLOYMENT_CONFIG_PATH,
       );
-    });
-
-    it("fetches the path it is given", async () => {
-      const fetchImpl = mockFetch({ body: DECLARATIONS_FILE });
-      await initAliases({ fetch: fetchImpl, path: DEFAULT_DECLARATIONS_PATH });
-
-      expect(String(vi.mocked(fetchImpl).mock.calls[0][0])).toContain(
-        DEFAULT_DECLARATIONS_PATH,
-      );
-    });
-
-    it("throws rather than falling back when given an explicit path", async () => {
-      // An explicit path is a deliberate choice, so a missing file is an error.
-      await expect(
-        initAliases({ fetch: mockFetchByPath({}), path: "custom/place.json" }),
-      ).rejects.toThrow("404");
     });
   });
 
@@ -403,9 +390,10 @@ describe("browser aliases", () => {
     it("rejects a non-string declared default", async () => {
       await expect(
         initAliases({
-          path: DEFAULT_DECLARATIONS_PATH,
-          fetch: mockFetch({
-            body: { aliases: { custom: { apiBaseUrl: { value: 5 } } } },
+          fetch: mockFetchByPath({
+            [DEFAULT_DECLARATIONS_PATH]: {
+              body: { aliases: { custom: { apiBaseUrl: { value: 5 } } } },
+            },
           }),
         }),
       ).rejects.toThrow("must be a string, got number");
@@ -441,8 +429,9 @@ describe("browser aliases", () => {
   describe("declaration file (dev) shape", () => {
     it("flattens declared defaults", async () => {
       await initAliases({
-        fetch: mockFetch({ body: DECLARATIONS_FILE }),
-        path: DEFAULT_DECLARATIONS_PATH,
+        fetch: mockFetchByPath({
+          [DEFAULT_DECLARATIONS_PATH]: { body: DECLARATIONS_FILE },
+        }),
       });
 
       expect(custom("apiBaseUrl")).toBe("https://api.dev.example.com");
@@ -451,8 +440,9 @@ describe("browser aliases", () => {
 
     it("ignores description and required metadata", async () => {
       await initAliases({
-        fetch: mockFetch({ body: DECLARATIONS_FILE }),
-        path: DEFAULT_DECLARATIONS_PATH,
+        fetch: mockFetchByPath({
+          [DEFAULT_DECLARATIONS_PATH]: { body: DECLARATIONS_FILE },
+        }),
       });
 
       // Metadata is for packaging, not the browser: only values come through.
@@ -461,10 +451,11 @@ describe("browser aliases", () => {
 
     it("treats an alias with no value as empty rather than throwing", async () => {
       await initAliases({
-        fetch: mockFetch({
-          body: { aliases: { custom: { needsValue: {} } } },
+        fetch: mockFetchByPath({
+          [DEFAULT_DECLARATIONS_PATH]: {
+            body: { aliases: { custom: { needsValue: {} } } },
+          },
         }),
-        path: DEFAULT_DECLARATIONS_PATH,
       });
 
       expect(custom("needsValue")).toBe("");
@@ -472,8 +463,11 @@ describe("browser aliases", () => {
 
     it("treats an empty custom block as no aliases", async () => {
       await initAliases({
-        fetch: mockFetch({ body: { aliases: { custom: {} } } }),
-        path: DEFAULT_DECLARATIONS_PATH,
+        fetch: mockFetchByPath({
+          [DEFAULT_DECLARATIONS_PATH]: {
+            body: { aliases: { custom: {} } },
+          },
+        }),
       });
 
       expect(() => custom("anything")).toThrow("Available aliases: []");
@@ -481,8 +475,9 @@ describe("browser aliases", () => {
 
     it("treats a file with no custom block as no aliases", async () => {
       await initAliases({
-        fetch: mockFetch({ body: { aliases: {} } }),
-        path: DEFAULT_DECLARATIONS_PATH,
+        fetch: mockFetchByPath({
+          [DEFAULT_DECLARATIONS_PATH]: { body: { aliases: {} } },
+        }),
       });
 
       expect(() => custom("anything")).toThrow("Available aliases: []");
@@ -491,8 +486,11 @@ describe("browser aliases", () => {
     it("throws when aliases.custom is not an object", async () => {
       await expect(
         initAliases({
-          fetch: mockFetch({ body: { aliases: { custom: ["nope"] } } }),
-          path: DEFAULT_DECLARATIONS_PATH,
+          fetch: mockFetchByPath({
+            [DEFAULT_DECLARATIONS_PATH]: {
+              body: { aliases: { custom: ["nope"] } },
+            },
+          }),
         }),
       ).rejects.toThrow("'aliases.custom' must be an object");
     });
