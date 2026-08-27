@@ -256,7 +256,10 @@ export function buildScenarioClient(
     ctx.tokenProvider,
     {
       logger: ctx.logger,
-      UNSTABLE_DO_NOT_USE_BRANCH: ctx.branch,
+      // `?? null` so the scenario client inherits the parent's already-resolved
+      // branch rather than re-resolving from the environment. A parent that
+      // resolved to no branch must stay on the default branch here too.
+      UNSTABLE_DO_NOT_USE_BRANCH: ctx.branch ?? null,
     },
     ctx.fetch,
   );
