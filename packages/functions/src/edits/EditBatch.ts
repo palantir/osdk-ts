@@ -23,15 +23,19 @@ import type {
 import type {
   AddLink,
   AnyEdit,
+  CreateInterfaceInputProps,
   CreateObject,
   CreateObjectForInterface,
+  CreateObjectInputProps,
   DeleteObject,
   DeleteObjectForInterface,
   InterfaceLocator,
   ObjectLocator,
   RemoveLink,
+  UpdateInterfaceInputProps,
   UpdateObject,
   UpdateObjectForInterface,
+  UpdateObjectInputProps,
 } from "./types.js";
 
 // Helper type for literal "apiName" values without resorting to expensive type inference.
@@ -94,17 +98,20 @@ export type CreatableObjectOrInterfaceTypes<X extends AnyEdit> =
       ? ID
       : never;
 
+// Returns the friendly INPUT property type callers pass to `create`, computed
+// from the resolved definition. This is distinct from the edit's stored
+// `properties` (the wire type returned by `getEdits()`).
 export type CreatableObjectOrInterfaceTypeProperties<
   X extends AnyEdit,
   OI extends ObjectTypeDefinition | InterfaceDefinition,
 > =
   X extends CreateObject<infer OTD>
     ? OTD extends OI
-      ? X["properties"]
+      ? CreateObjectInputProps<OTD>
       : never
     : X extends CreateObjectForInterface<infer ID>
       ? ID extends OI
-        ? X["properties"]
+        ? CreateInterfaceInputProps<ID>
         : never
       : never;
 
@@ -124,6 +131,9 @@ export type UpdatableObjectOrInterfaceLocators<X extends AnyEdit> =
       ? InterfaceLocator<ID>
       : never;
 
+// Returns the friendly INPUT property type callers pass to `update`. Match the
+// edit by API name and explicitly require an interface locator for interface
+// edits, then compute the input properties from the concrete definition.
 export type UpdatableObjectOrInterfaceLocatorProperties<
   X extends AnyEdit,
   OL extends ObjectLocator<any>,
@@ -131,9 +141,13 @@ export type UpdatableObjectOrInterfaceLocatorProperties<
   ? OL["$apiName"] extends X["obj"]["$apiName"]
     ? X["obj"] extends InterfaceLocator<any>
       ? OL extends { $objectType: unknown }
-        ? X["properties"]
+        ? X extends UpdateObjectForInterface<infer ID>
+          ? UpdateInterfaceInputProps<ID>
+          : never
         : never
-      : X["properties"]
+      : X extends UpdateObject<infer OTD>
+        ? UpdateObjectInputProps<OTD>
+        : never
     : never
   : never;
 
