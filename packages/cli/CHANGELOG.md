@@ -1,5 +1,15 @@
 # @osdk/cli
 
+## 0.87.0
+
+### Minor Changes
+
+- d592d46: Move @arethetypeswrong/cli to devDependencies so installing the CLI no longer pulls in a check-only tool
+
+### Patch Changes
+
+- @osdk/widget.api@3.60.0
+
 ## 0.86.0
 
 ### Patch Changes

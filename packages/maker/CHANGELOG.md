@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.60.0
+
+### Minor Changes
+
+- c742209: Sanitize underscores in link api names
+
+### Patch Changes
+
+- Updated dependencies [bdf45fa]
+- Updated dependencies [34cb7e0]
+  - @osdk/api@2.61.0
+  - @osdk/generator-converters.ontologyir@2.61.0
+
 ## 0.59.0
 
 ### Patch Changes

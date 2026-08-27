@@ -1,5 +1,13 @@
 # @osdk/maker-import
 
+## 0.30.0
+
+### Patch Changes
+
+- Updated dependencies [c742209]
+  - @osdk/maker@0.60.0
+  - @osdk/client.unstable@2.61.0
+
 ## 0.29.0
 
 ### Minor Changes

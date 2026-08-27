@@ -1,5 +1,11 @@
 # @osdk/create-app.template.vue.v2
 
+## 2.61.0
+
+### Minor Changes
+
+- d055f3f: Templates depend on @osdk/foundry with caret range
+
 ## 2.60.0
 
 ## 2.59.0
