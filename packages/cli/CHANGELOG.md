@@ -1,5 +1,15 @@
 # @osdk/cli
 
+## 0.88.0
+
+### Minor Changes
+
+- dc46b5d: Add branch-aware local development and update CLI branch detection.
+
+### Patch Changes
+
+- @osdk/widget.api@3.61.0
+
 ## 0.87.0
 
 ### Minor Changes
