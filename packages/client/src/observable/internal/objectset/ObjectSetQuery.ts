@@ -419,9 +419,13 @@ export class ObjectSetQuery extends BaseListQuery<
           changes.deleted,
           batch.optimisticWrite,
           (obj) => this.#getObjectCacheKey(obj),
-          (key) => {
+          (obj) => {
+            const key = this.#peekObjectCacheKey(obj);
+            if (key == null) {
+              return undefined;
+            }
             const value = batch.read(key)?.value;
-            return value != null && typeof value === "object";
+            return value != null && typeof value === "object" ? key : undefined;
           },
         );
 
@@ -503,6 +507,18 @@ export class ObjectSetQuery extends BaseListQuery<
     );
   }
 
+  #peekObjectCacheKey(obj: {
+    $objectType: string;
+    $primaryKey: string | number;
+  }): ObjectCacheKey | undefined {
+    return this.cacheKeys.peek<ObjectCacheKey>(
+      "object",
+      obj.$objectType,
+      obj.$primaryKey,
+      this.rdpConfig ?? undefined,
+    );
+  }
+
   // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
   // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   invalidateObjectType = async (
@@ -550,22 +566,24 @@ function reconcileListChanges(
   deleted: ReadonlySet<CacheKey>,
   isOptimistic: boolean,
   getObjectCacheKey: (obj: ObjectHolder | InterfaceHolder) => ObjectCacheKey,
-  hasCachedObject: (key: ObjectCacheKey) => boolean,
+  getCachedObjectKey: (
+    obj: ObjectHolder | InterfaceHolder,
+  ) => ObjectCacheKey | undefined,
 ): { newList: ObjectCacheKey[]; needsRevalidation: boolean } {
   const objectsToInsert = new Set<ObjectHolder | InterfaceHolder>();
   const keysToRemove = new Set<CacheKey>(deleted);
 
   let needsRevalidation = false;
   const addIfAvailable = (obj: ObjectHolder | InterfaceHolder): void => {
-    const key = getObjectCacheKey(obj);
+    const key = getCachedObjectKey(obj);
+    if (key == null) {
+      needsRevalidation = true;
+      return;
+    }
     if (existingKeys.has(key)) {
       return;
     }
-    if (hasCachedObject(key)) {
-      objectsToInsert.add(obj);
-    } else {
-      needsRevalidation = true;
-    }
+    objectsToInsert.add(obj);
   };
 
   for (const obj of addedDefiniteMatches) {

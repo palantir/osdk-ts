@@ -23,6 +23,7 @@ import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { createChangedObjects } from "../Changes.js";
+import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { createOptimisticId } from "../OptimisticId.js";
 import { Store } from "../Store.js";
 
@@ -84,17 +85,32 @@ describe("ObjectSetQuery cache reconciliation", () => {
     "keeps an RDP query loading when a sibling %s an unavailable cache variant",
     (_change, isNew) => {
       const query = getRdpQuery();
+      const employee = createEmployee();
       store.batch({}, (batch) =>
         query.writeToStore({ data: [] }, "loading", batch),
       );
       const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
 
-      query.maybeUpdateAndRevalidate(
-        createChanges(createEmployee(), isNew),
-        undefined,
-      );
+      expect(
+        store.cacheKeys.peek<ObjectCacheKey>(
+          "object",
+          Employee.apiName,
+          employee.$primaryKey,
+          query.rdpConfig,
+        ),
+      ).toBeUndefined();
+
+      query.maybeUpdateAndRevalidate(createChanges(employee, isNew), undefined);
 
       expect(revalidate).toHaveBeenCalledWith(true);
+      expect(
+        store.cacheKeys.peek<ObjectCacheKey>(
+          "object",
+          Employee.apiName,
+          employee.$primaryKey,
+          query.rdpConfig,
+        ),
+      ).toBeUndefined();
       expect(store.getValue(query.cacheKey)).toMatchObject({
         status: "loading",
         value: { data: [] },
