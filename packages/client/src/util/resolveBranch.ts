@@ -25,32 +25,8 @@
 export const FOUNDRY_BRANCH_RID_ENV_VAR: string = "VITE_FOUNDRY_BRANCH_RID";
 
 /**
- * Reads `import.meta.env` defensively.
- *
- * `import.meta.env` is read as a whole here, and never as a direct member
- * access (`import.meta.env.SOME_VAR`), because this file is published in three
- * shapes and only this form is safe in all of them:
- *
- * - `build/esm` and `build/browser` are per-file Babel transpiler, so
- *   `import.meta` survives verbatim and the consuming application's bundler
- *   substitutes it. Vite in lines an object literal at build time and prepends an
- *   `import.meta.env = {...}` assignment to the pre-bundled dependency in dev.
- *   Both substitute the whole expression, so reading it as a whole works.
- * - `build/cjs` is bundled by esbuild, which cannot represent `import.meta` in
- *   CJS and replaces it with `{}`. Reading `.env` off that yields `undefined`
- *   (safe), whereas `import.meta.env.SOME_VAR` would throw a `TypeError`.
- * - Plain Node ESM has a real `import.meta` with no `env` property, which again
- *   yields `undefined`.
- *
- * So branch detection is only active in bundled applications that define
- * `import.meta.env` (notably Vite). Elsewhere it degrades to "no branch" rather
- * than failing, and callers can always pass the branch explicitly.
- *
- * The value is fixed when the bundler runs, not when this function is called:
- * Vite substitutes a snapshot of the environment taken at build time or at dev
- * server startup. Mutating `process.env` afterwards has no effect, which is why
- * {@link resolveBranch} takes the environment as an injectable parameter rather
- * than being tested by stubbing the ambient environment.
+ * Reads the whole `import.meta.env` object so builds without it safely return
+ * `undefined`. A direct member access would fail in the CommonJS build.
  */
 function getImportMetaEnv(): Record<string, string | undefined> | undefined {
   return (
@@ -59,8 +35,8 @@ function getImportMetaEnv(): Record<string, string | undefined> | undefined {
 }
 
 /**
- * Treats a blank value as absent, so an unpopulated environment variable or
- * template placeholder does not produce an empty `branch` query parameter.
+ * Trims branch values and treats blanks as absent to avoid sending an empty
+ * `branch` query parameter.
  */
 function normalizeBranch(
   branch: string | null | undefined,
