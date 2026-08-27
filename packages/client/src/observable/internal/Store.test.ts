@@ -3200,15 +3200,14 @@ describe(Store, () => {
 
         await vi.waitFor(
           () => {
-            expect(sub.next).toHaveBeenCalled();
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                status: "loaded",
+                resolvedList: [],
+              }),
+            );
           },
           { timeout: 5000 },
-        );
-
-        expect(sub.next).toHaveBeenLastCalledWith(
-          expect.objectContaining({
-            resolvedList: [],
-          }),
         );
       });
     });
