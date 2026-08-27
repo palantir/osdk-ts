@@ -14,6 +14,7 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [Emphasis Tokens](#emphasis-tokens)
   - [Palette Tokens](#palette-tokens)
 - [Semantic Color Tokens](#semantic-color-tokens)
+  - [Typography Colors](#typography-colors)
   - [Background Colors](#background-colors)
   - [Custom Colors](#custom-colors)
 - [OSDK Component Tokens](#osdk-component-tokens)
@@ -107,7 +108,6 @@ Control text appearance.
 | ------------------------------------------ | ---------------------------------------- | ---------------------------- |
 | `--osdk-typography-family-default`         | `--bp-typography-family-default`         | Default font family          |
 | `--osdk-typography-color-muted`            | `--bp-typography-color-muted`            | Muted/subtle text color      |
-| `--osdk-typography-color-placeholder`      | `--bp-typography-color-muted`            | Theme-aware placeholder text |
 | `--osdk-typography-color-default-rest`     | `--bp-typography-color-default-rest`     | Default text color           |
 | `--osdk-typography-color-default-hover`    | `--bp-typography-color-default-hover`    | Default hover text color     |
 | `--osdk-typography-color-default-active`   | `--bp-typography-color-default-active`   | Default active text color    |
@@ -200,6 +200,12 @@ Raw color palette tokens.
 ## Semantic Color Tokens
 
 Semantic tokens that abstract palette usage for better maintainability.
+
+### Typography Colors
+
+| Variable                              | Default Value                                 | Description                  |
+| ------------------------------------- | --------------------------------------------- | ---------------------------- |
+| `--osdk-typography-color-placeholder` | `var(--osdk-typography-color-muted)`          | Theme-aware placeholder text |
 
 ### Background Colors
 
