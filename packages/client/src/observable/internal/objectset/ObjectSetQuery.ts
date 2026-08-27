@@ -405,17 +405,11 @@ export class ObjectSetQuery extends BaseListQuery<
       effectiveWhere,
     );
 
-    const status =
-      optimisticId ||
-      addedMatches.uncertain.size > 0 ||
-      modifiedMatches.uncertain.size > 0
-        ? "loading"
-        : "loaded";
-
     const { retVal: needsRevalidation } = this.store.batch(
       { optimisticId, changes },
       (batch) => {
-        const existingKeys = new Set(batch.read(this.cacheKey)?.value?.data);
+        const existingEntry = batch.read(this.cacheKey);
+        const existingKeys = new Set(existingEntry?.value?.data);
 
         const { newList, needsRevalidation } = reconcileListChanges(
           existingKeys,
@@ -425,9 +419,22 @@ export class ObjectSetQuery extends BaseListQuery<
           changes.deleted,
           batch.optimisticWrite,
           (obj) => this.#getObjectCacheKey(obj),
+          (key) => {
+            const value = batch.read(key)?.value;
+            return value != null && typeof value === "object";
+          },
         );
 
-        const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
+        const status =
+          (this.pendingFetch != null && existingEntry?.status === "loading") ||
+          needsRevalidation ||
+          optimisticId ||
+          addedMatches.uncertain.size > 0 ||
+          modifiedMatches.uncertain.size > 0
+            ? "loading"
+            : "loaded";
+
+        const existingTotalCount = existingEntry?.value?.totalCount;
         this._updateList(
           newList,
           status,
@@ -440,7 +447,7 @@ export class ObjectSetQuery extends BaseListQuery<
       },
     );
 
-    if (needsRevalidation) {
+    if (needsRevalidation && !optimisticId) {
       return this.revalidate(true);
     }
     return undefined;
@@ -543,18 +550,30 @@ function reconcileListChanges(
   deleted: ReadonlySet<CacheKey>,
   isOptimistic: boolean,
   getObjectCacheKey: (obj: ObjectHolder | InterfaceHolder) => ObjectCacheKey,
+  hasCachedObject: (key: ObjectCacheKey) => boolean,
 ): { newList: ObjectCacheKey[]; needsRevalidation: boolean } {
-  const objectsToInsert = new Set<ObjectHolder | InterfaceHolder>(
-    addedDefiniteMatches,
-  );
+  const objectsToInsert = new Set<ObjectHolder | InterfaceHolder>();
   const keysToRemove = new Set<CacheKey>(deleted);
 
   let needsRevalidation = false;
+  const addIfAvailable = (obj: ObjectHolder | InterfaceHolder): void => {
+    const key = getObjectCacheKey(obj);
+    if (existingKeys.has(key)) {
+      return;
+    }
+    if (hasCachedObject(key)) {
+      objectsToInsert.add(obj);
+    } else {
+      needsRevalidation = true;
+    }
+  };
+
+  for (const obj of addedDefiniteMatches) {
+    addIfAvailable(obj);
+  }
   for (const obj of modifiedObjects) {
     if (modifiedMatches.definite.has(obj)) {
-      if (!existingKeys.has(getObjectCacheKey(obj))) {
-        objectsToInsert.add(obj);
-      }
+      addIfAvailable(obj);
     } else if (!isOptimistic) {
       keysToRemove.add(getObjectCacheKey(obj));
       if (modifiedMatches.uncertain.has(obj)) {
