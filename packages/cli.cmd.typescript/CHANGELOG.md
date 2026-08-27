@@ -1,5 +1,16 @@
 # @osdk/cli.cmd.typescript
 
+## 0.87.0
+
+### Minor Changes
+
+- d592d46: Move @arethetypeswrong/cli to devDependencies so installing the CLI no longer pulls in a check-only tool
+
+### Patch Changes
+
+- @osdk/generator@2.61.0
+- @osdk/cli.common@0.87.0
+
 ## 0.86.0
 
 ### Patch Changes
