@@ -14,16 +14,5 @@
  * limitations under the License.
  */
 
-import { execa } from "execa";
-
-/** The current git branch, or `undefined` if git fails. */
-export async function getGitBranch(cwd?: string): Promise<string | undefined> {
-  try {
-    const { stdout } = await execa("git", ["branch", "--show-current"], {
-      cwd,
-    });
-    return stdout.trim();
-  } catch {
-    return undefined;
-  }
-}
+export { branchPlugin, FOUNDRY_BRANCH_ENV_VAR } from "./branchPlugin.js";
+export type { BranchPluginOptions } from "./branchPlugin.js";

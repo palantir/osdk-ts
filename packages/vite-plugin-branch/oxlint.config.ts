@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-import { execa } from "execa";
+import { defineConfig } from "oxlint";
 
-/** The current git branch, or `undefined` if git fails. */
-export async function getGitBranch(cwd?: string): Promise<string | undefined> {
-  try {
-    const { stdout } = await execa("git", ["branch", "--show-current"], {
-      cwd,
-    });
-    return stdout.trim();
-  } catch {
-    return undefined;
-  }
-}
+import root from "../../oxlint.config.ts";
+
+// Nested oxlint config for @osdk/vite-plugin-branch. It inherits
+// the whole repo ruleset by `extends`-ing the root config.
+//
+// `extends` only carries `rules`/`plugins`/`overrides`, so the root's
+// `ignorePatterns` are re-applied explicitly (otherwise generated/ignored files
+// would start being linted).
+export default defineConfig({
+  extends: [root],
+  ignorePatterns: root.ignorePatterns,
+
+  rules: {},
+});

@@ -16,25 +16,12 @@
 
 const NON_BRANCH: ReadonlySet<string> = new Set(["main", "master", "HEAD"]);
 
-function normalizeGitBranch(branch: string | undefined): string | undefined {
+export function normalizeGitBranch(
+  branch: string | undefined,
+): string | undefined {
   const trimmed = branch?.trim();
   if (trimmed == null || trimmed === "" || NON_BRANCH.has(trimmed)) {
     return undefined;
   }
   return trimmed;
-}
-
-/**
- * Resolve the branch context: `argBranchName` wins; else `gitBranchName`, with
- * main/master/detached `HEAD`/empty normalized to `undefined`.
- */
-export function resolveBranch(
-  argBranchName: string | undefined,
-  gitBranchName: string | undefined,
-): string | undefined {
-  const argBranch = argBranchName?.trim();
-  if (argBranch != null && argBranch !== "") {
-    return argBranch;
-  }
-  return normalizeGitBranch(gitBranchName);
 }

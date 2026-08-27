@@ -87,6 +87,7 @@ const OXC_NESTED_CONFIG_PACKAGES = {
   "tool.generate-with-mock-ontology":
     "packages/tool.generate-with-mock-ontology/oxlint.config.ts",
   "version-updater": "packages/version-updater/oxlint.config.ts",
+  "vite-plugin-branch": "packages/vite-plugin-branch/oxlint.config.ts",
   "vite-plugin-oac": "packages/vite-plugin-oac/oxlint.config.ts",
   "vite-plugin-superrepo": "packages/vite-plugin-superrepo/oxlint.config.ts",
   "vite-plugin-status-reporter":

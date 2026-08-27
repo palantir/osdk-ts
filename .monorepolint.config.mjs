@@ -288,6 +288,7 @@ const archetypeRules = archetypes(standardPackageRules, {
       "@osdk/vite-plugin-superrepo",
       "@osdk/vite-plugin-status-reporter",
       "@osdk/vite-plugin-code-workspace-preview",
+      "@osdk/vite-plugin-branch",
     ],
     {
       ...LIBRARY_RULES,
