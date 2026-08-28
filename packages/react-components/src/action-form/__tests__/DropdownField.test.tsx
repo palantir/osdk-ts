@@ -362,6 +362,25 @@ describe("DropdownField", () => {
       expect(screen.getByText("Pick one…")).toBeDefined();
     });
 
+    it("labels the popup with the field placeholder", async () => {
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          isSearchable={true}
+          placeholder="Choose an object"
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(
+          screen.getByRole("dialog", { name: "Choose an object" }),
+        ).toBeDefined();
+      });
+    });
+
     it("hides placeholder when a value is selected", () => {
       render(
         <DropdownField

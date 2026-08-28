@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Classes } from "@blueprintjs/core";
 import type { Decorator } from "@storybook/react-vite";
 import { useEffect, useMemo } from "react";
 
@@ -122,12 +123,17 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
       const root = document.documentElement;
       if (brandTheme.colorMode === "dark") {
         root.setAttribute("data-bp-color-scheme", "dark");
+        // Blueprint component styles still use this class in addition to its
+        // design-token attribute, including dialogs portaled to document.body.
+        root.classList.add(Classes.DARK);
       } else {
         root.removeAttribute("data-bp-color-scheme");
+        root.classList.remove(Classes.DARK);
       }
 
       return () => {
         root.removeAttribute("data-bp-color-scheme");
+        root.classList.remove(Classes.DARK);
       };
     },
     [brandTheme.colorMode],

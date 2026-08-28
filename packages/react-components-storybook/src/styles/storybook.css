@@ -211,6 +211,5 @@ body,
 }
 
 .osdkRichDropdownDescription {
-  color: var(--osdk-typography-color-muted);
   font-size: var(--osdk-typography-size-body-small);
 }

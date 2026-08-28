@@ -14,6 +14,7 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [Emphasis Tokens](#emphasis-tokens)
   - [Palette Tokens](#palette-tokens)
 - [Semantic Color Tokens](#semantic-color-tokens)
+  - [Typography Colors](#typography-colors)
   - [Background Colors](#background-colors)
   - [Custom Colors](#custom-colors)
 - [OSDK Component Tokens](#osdk-component-tokens)
@@ -111,6 +112,7 @@ Control text appearance.
 | `--osdk-typography-color-default-hover`    | `--bp-typography-color-default-hover`    | Default hover text color     |
 | `--osdk-typography-color-default-active`   | `--bp-typography-color-default-active`   | Default active text color    |
 | `--osdk-typography-color-default-disabled` | `--bp-typography-color-default-disabled` | Default disabled text color  |
+| `--osdk-typography-color-primary-rest`     | `--bp-typography-color-primary-rest`     | Theme-aware primary text     |
 | `--osdk-typography-color-danger-rest`      | `--bp-typography-color-danger-rest`      | Danger text color            |
 | `--osdk-typography-color-danger-active`    | `--bp-typography-color-danger-active`    | Danger active text color     |
 | `--osdk-typography-size-body-x-small`      | `--bp-typography-size-body-x-small`      | Extra-small body text size   |
@@ -180,9 +182,11 @@ Raw color palette tokens.
 
 | Variable                      | Maps to Blueprint Token     | Description  |
 | ----------------------------- | --------------------------- | ------------ |
+| `--osdk-palette-blue-4`       | `--bp-palette-blue-4`       | Blue 4       |
 | `--osdk-palette-gray-1`       | `--bp-palette-gray-1`       | Gray 1       |
 | `--osdk-palette-gray-2`       | `--bp-palette-gray-2`       | Gray 2       |
 | `--osdk-palette-gray-4`       | `--bp-palette-gray-4`       | Gray 4       |
+| `--osdk-palette-red-4`        | `--bp-palette-red-4`        | Red 4        |
 | `--osdk-palette-dark-gray-2`  | `--bp-palette-dark-gray-2`  | Dark gray 2  |
 | `--osdk-palette-dark-gray-3`  | `--bp-palette-dark-gray-3`  | Dark gray 3  |
 | `--osdk-palette-light-gray-1` | `--bp-palette-light-gray-1` | Light gray 1 |
@@ -195,6 +199,13 @@ Raw color palette tokens.
 ## Semantic Color Tokens
 
 Semantic tokens that abstract palette usage for better maintainability.
+
+### Typography Colors
+
+| Variable                              | Default Value                             | Description                  |
+| ------------------------------------- | ----------------------------------------- | ---------------------------- |
+| `--osdk-typography-color-error`       | `var(--bp-typography-color-danger-hover)` | Theme-aware error text       |
+| `--osdk-typography-color-placeholder` | `var(--osdk-typography-color-muted)`      | Theme-aware placeholder text |
 
 ### Background Colors
 
@@ -363,9 +374,96 @@ Styling for checkbox components.
 
 Styling for combobox components.
 
-| Variable                           | Default Value | Description          |
-| ---------------------------------- | ------------- | -------------------- |
-| `--osdk-combobox-popup-max-height` | `320px`       | Popup maximum height |
+#### Shared
+
+| Variable                              | Default Value                                | Description            |
+| ------------------------------------- | -------------------------------------------- | ---------------------- |
+| `--osdk-combobox-spacing`             | `var(--osdk-surface-spacing)`                | Base spacing           |
+| `--osdk-combobox-min-height`          | `30px`                                       | Minimum height         |
+| `--osdk-combobox-border-radius`       | `var(--osdk-surface-border-radius)`          | Border radius          |
+| `--osdk-combobox-border-width`        | `var(--osdk-surface-border-width)`           | Border width           |
+| `--osdk-combobox-border-color`        | `var(--osdk-surface-border-color-default)`   | Border color           |
+| `--osdk-combobox-font-family`         | `var(--osdk-typography-family-default)`      | Font family            |
+| `--osdk-combobox-font-size`           | `var(--osdk-typography-size-body-medium)`    | Font size              |
+| `--osdk-combobox-line-height`         | `var(--osdk-typography-line-height-default)` | Line height            |
+| `--osdk-combobox-placeholder-color`   | `var(--osdk-typography-color-placeholder)`   | Placeholder text color |
+| `--osdk-combobox-icon-color`          | `var(--osdk-iconography-color-muted)`        | Icon color             |
+| `--osdk-combobox-transition-duration` | `var(--osdk-emphasis-transition-duration)`   | Transition duration    |
+| `--osdk-combobox-transition-ease`     | `var(--osdk-emphasis-ease-default)`          | Transition easing      |
+| `--osdk-combobox-z-index`             | `var(--osdk-surface-z-index-3)`              | Popup stacking order   |
+
+#### Trigger
+
+| Variable                                      | Default Value                                                                     | Description                      |
+| --------------------------------------------- | --------------------------------------------------------------------------------- | -------------------------------- |
+| `--osdk-combobox-trigger-spacing`             | `var(--osdk-surface-spacing)`                                                     | Spacing between trigger contents |
+| `--osdk-combobox-trigger-min-height`          | `30px`                                                                            | Trigger minimum height           |
+| `--osdk-combobox-trigger-padding`             | `calc(var(--osdk-surface-spacing) * 1.5) calc(var(--osdk-surface-spacing) * 2.5)` | Trigger padding                  |
+| `--osdk-combobox-trigger-border-radius`       | `var(--osdk-surface-border-radius)`                                               | Trigger border radius            |
+| `--osdk-combobox-trigger-border-width`        | `var(--osdk-surface-border-width)`                                                | Trigger border width             |
+| `--osdk-combobox-trigger-border-color`        | `var(--osdk-surface-border-color-default)`                                        | Trigger border color             |
+| `--osdk-combobox-trigger-border-color-active` | `var(--osdk-intent-primary-rest)`                                                 | Open trigger border color        |
+| `--osdk-combobox-trigger-bg`                  | `var(--osdk-button-secondary-bg)`                                                 | Trigger background               |
+| `--osdk-combobox-trigger-bg-hover`            | `var(--osdk-button-secondary-bg-hover)`                                           | Trigger hover background         |
+| `--osdk-combobox-trigger-bg-active`           | `var(--osdk-button-secondary-bg-active)`                                          | Trigger active background        |
+| `--osdk-combobox-trigger-color`               | `var(--osdk-button-secondary-color)`                                              | Trigger text color               |
+
+#### Input
+
+| Variable                             | Default Value                                                                   | Description        |
+| ------------------------------------ | ------------------------------------------------------------------------------- | ------------------ |
+| `--osdk-combobox-input-padding`      | `calc(var(--osdk-surface-spacing) * 1.5) calc(var(--osdk-surface-spacing) * 2)` | Input padding      |
+| `--osdk-combobox-input-bg`           | `var(--osdk-surface-background-color-default-rest)`                             | Input background   |
+| `--osdk-combobox-input-color`        | `var(--osdk-typography-color-default-rest)`                                     | Input text color   |
+| `--osdk-combobox-focus-border-color` | `var(--osdk-intent-primary-rest)`                                               | Focus border color |
+
+#### Popup
+
+| Variable                           | Default Value                                       | Description          |
+| ---------------------------------- | --------------------------------------------------- | -------------------- |
+| `--osdk-combobox-popup-max-height` | `320px`                                             | Popup maximum height |
+| `--osdk-combobox-popup-bg`         | `var(--osdk-surface-background-color-default-rest)` | Popup background     |
+| `--osdk-combobox-popup-shadow`     | `var(--osdk-surface-shadow-2)`                      | Popup shadow         |
+
+#### Items
+
+| Variable                              | Default Value                                        | Description                 |
+| ------------------------------------- | ---------------------------------------------------- | --------------------------- |
+| `--osdk-combobox-item-color`          | `var(--osdk-typography-color-default-rest)`          | Item text color             |
+| `--osdk-combobox-item-color-selected` | `var(--osdk-typography-color-primary-rest)`          | Selected item text color    |
+| `--osdk-combobox-item-bg-highlighted` | `var(--osdk-surface-background-color-default-hover)` | Highlighted item background |
+| `--osdk-combobox-item-bg-selected`    | `var(--osdk-surface-layer-primary)`                  | Selected item background    |
+| `--osdk-combobox-empty-color`         | `var(--osdk-typography-color-muted)`                 | Empty-state text color      |
+
+#### Chips
+
+| Variable                                  | Default Value                               | Description                    |
+| ----------------------------------------- | ------------------------------------------- | ------------------------------ |
+| `--osdk-combobox-chip-bg`                 | `var(--osdk-custom-color-gray-4)`           | Chip background                |
+| `--osdk-combobox-chip-color`              | `var(--osdk-typography-color-default-rest)` | Chip text color                |
+| `--osdk-combobox-chip-font-size`          | `var(--osdk-typography-size-body-small)`    | Chip font size                 |
+| `--osdk-combobox-chip-remove-color`       | `var(--osdk-iconography-color-muted)`       | Chip remove button color       |
+| `--osdk-combobox-chip-remove-color-hover` | `var(--osdk-typography-color-default-rest)` | Chip remove button hover color |
+
+#### Clear Button
+
+| Variable                            | Default Value                                        | Description                   |
+| ----------------------------------- | ---------------------------------------------------- | ----------------------------- |
+| `--osdk-combobox-clear-color`       | `var(--osdk-iconography-color-muted)`                | Clear button color            |
+| `--osdk-combobox-clear-color-hover` | `var(--osdk-typography-color-default-rest)`          | Clear button hover color      |
+| `--osdk-combobox-clear-bg-hover`    | `var(--osdk-surface-background-color-default-hover)` | Clear button hover background |
+
+#### Checkbox
+
+| Variable                                        | Default Value                                       | Description                   |
+| ----------------------------------------------- | --------------------------------------------------- | ----------------------------- |
+| `--osdk-combobox-checkbox-border-radius`        | `var(--osdk-surface-border-radius)`                 | Checkbox border radius        |
+| `--osdk-combobox-checkbox-border-width`         | `var(--osdk-surface-border-width)`                  | Checkbox border width         |
+| `--osdk-combobox-checkbox-border-color`         | `var(--osdk-surface-border-color-default)`          | Checkbox border color         |
+| `--osdk-combobox-checkbox-bg`                   | `var(--osdk-surface-background-color-default-rest)` | Checkbox background           |
+| `--osdk-combobox-checkbox-bg-checked`           | `var(--osdk-intent-primary-rest)`                   | Checked checkbox background   |
+| `--osdk-combobox-checkbox-border-color-checked` | `var(--osdk-intent-primary-rest)`                   | Checked checkbox border color |
+| `--osdk-combobox-checkbox-color-checked`        | `var(--osdk-surface-background-color-default-rest)` | Checkmark color               |
 
 ### CBAC Picker
 
@@ -1123,13 +1221,24 @@ Styling for form components.
 | `--osdk-form-label-color`       | `var(--osdk-typography-color-default-rest)` | Label text color             |
 | `--osdk-form-field-gap`         | `var(--osdk-surface-spacing)`               | Gap between items in a field |
 
+#### Helper popup
+
+| Variable                           | Default Value                   | Description                |
+| ---------------------------------- | ------------------------------- | -------------------------- |
+| `--osdk-form-info-popup-padding`   | `var(--osdk-tooltip-padding)`   | Helper popup padding       |
+| `--osdk-form-info-popup-bg`        | `var(--osdk-tooltip-bg)`        | Helper popup background    |
+| `--osdk-form-info-popup-color`     | `var(--osdk-tooltip-color)`     | Helper popup text color    |
+| `--osdk-form-info-popup-shadow`    | `var(--osdk-tooltip-shadow)`    | Helper popup shadow        |
+| `--osdk-form-info-popup-max-width` | `var(--osdk-tooltip-max-width)` | Helper popup maximum width |
+| `--osdk-form-info-popup-font-size` | `var(--osdk-tooltip-font-size)` | Helper popup font size     |
+
 #### Validation
 
-| Variable                      | Default Value                              | Description              |
-| ----------------------------- | ------------------------------------------ | ------------------------ |
-| `--osdk-form-required-color`  | `var(--osdk-intent-danger-rest)`           | Required indicator color |
-| `--osdk-form-error-font-size` | `var(--osdk-typography-size-body-small)`   | Error message font size  |
-| `--osdk-form-error-color`     | `var(--osdk-typography-color-danger-rest)` | Error message color      |
+| Variable                      | Default Value                            | Description              |
+| ----------------------------- | ---------------------------------------- | ------------------------ |
+| `--osdk-form-required-color`  | `var(--osdk-intent-danger-rest)`         | Required indicator color |
+| `--osdk-form-error-font-size` | `var(--osdk-typography-size-body-small)` | Error message font size  |
+| `--osdk-form-error-color`     | `var(--osdk-typography-color-error)`     | Error message color      |
 
 ### Form Section
 
@@ -1343,10 +1452,59 @@ Styling for radio button components.
 
 Styling for select components. The select trigger uses `box-shadow` (via `--osdk-button-shadow`) for its visual border, matching Blueprint's convention.
 
-| Variable                         | Default Value | Description          |
-| -------------------------------- | ------------- | -------------------- |
-| `--osdk-select-border-width`     | `none`        | Trigger border       |
-| `--osdk-select-popup-max-height` | `320px`       | Popup maximum height |
+#### Shared
+
+| Variable                            | Default Value                                | Description          |
+| ----------------------------------- | -------------------------------------------- | -------------------- |
+| `--osdk-select-spacing`             | `var(--osdk-surface-spacing)`                | Base spacing         |
+| `--osdk-select-min-height`          | `30px`                                       | Minimum height       |
+| `--osdk-select-border-radius`       | `var(--osdk-surface-border-radius)`          | Border radius        |
+| `--osdk-select-border-width`        | `none`                                       | Border width         |
+| `--osdk-select-border-color`        | `var(--osdk-surface-border-color-default)`   | Border color         |
+| `--osdk-select-font-family`         | `var(--osdk-typography-family-default)`      | Font family          |
+| `--osdk-select-font-size`           | `var(--osdk-typography-size-body-medium)`    | Font size            |
+| `--osdk-select-line-height`         | `var(--osdk-typography-line-height-default)` | Line height          |
+| `--osdk-select-transition-duration` | `var(--osdk-emphasis-transition-duration)`   | Transition duration  |
+| `--osdk-select-transition-ease`     | `var(--osdk-emphasis-ease-default)`          | Transition easing    |
+| `--osdk-select-z-index`             | `var(--osdk-surface-z-index-3)`              | Popup stacking order |
+
+#### Trigger
+
+| Variable                            | Default Value                                                                     | Description               |
+| ----------------------------------- | --------------------------------------------------------------------------------- | ------------------------- |
+| `--osdk-select-trigger-padding`     | `calc(var(--osdk-surface-spacing) * 1.5) calc(var(--osdk-surface-spacing) * 2.5)` | Trigger padding           |
+| `--osdk-select-trigger-bg`          | `var(--osdk-button-secondary-bg)`                                                 | Trigger background        |
+| `--osdk-select-trigger-bg-hover`    | `var(--osdk-button-secondary-bg-hover)`                                           | Trigger hover background  |
+| `--osdk-select-trigger-bg-active`   | `var(--osdk-button-secondary-bg-active)`                                          | Trigger active background |
+| `--osdk-select-trigger-color`       | `var(--osdk-button-secondary-color)`                                              | Trigger text color        |
+| `--osdk-select-border-color-active` | `var(--osdk-intent-primary-rest)`                                                 | Open trigger border color |
+| `--osdk-select-placeholder-color`   | `var(--osdk-typography-color-placeholder)`                                        | Placeholder text color    |
+| `--osdk-select-icon-color`          | `var(--osdk-iconography-color-muted)`                                             | Trigger icon color        |
+
+#### Clear button
+
+| Variable                          | Default Value                                        | Description                   |
+| --------------------------------- | ---------------------------------------------------- | ----------------------------- |
+| `--osdk-select-clear-color`       | `var(--osdk-iconography-color-muted)`                | Clear button color            |
+| `--osdk-select-clear-color-hover` | `var(--osdk-typography-color-default-rest)`          | Clear button hover color      |
+| `--osdk-select-clear-bg-hover`    | `var(--osdk-surface-background-color-default-hover)` | Clear button hover background |
+
+#### Popup
+
+| Variable                         | Default Value                                       | Description          |
+| -------------------------------- | --------------------------------------------------- | -------------------- |
+| `--osdk-select-popup-max-height` | `320px`                                             | Popup maximum height |
+| `--osdk-select-popup-bg`         | `var(--osdk-surface-background-color-default-rest)` | Popup background     |
+| `--osdk-select-popup-shadow`     | `var(--osdk-surface-shadow-2)`                      | Popup shadow         |
+
+#### Items
+
+| Variable                            | Default Value                                        | Description                 |
+| ----------------------------------- | ---------------------------------------------------- | --------------------------- |
+| `--osdk-select-item-color`          | `var(--osdk-typography-color-default-rest)`          | Item text color             |
+| `--osdk-select-item-bg-highlighted` | `var(--osdk-surface-background-color-default-hover)` | Highlighted item background |
+| `--osdk-select-item-bg-selected`    | `var(--osdk-surface-layer-primary)`                  | Selected item background    |
+| `--osdk-select-item-color-selected` | `var(--osdk-typography-color-primary-rest)`          | Selected item text color    |
 
 ### Switch
 

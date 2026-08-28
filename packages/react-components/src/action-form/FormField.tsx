@@ -103,19 +103,23 @@ interface InfoTipProps {
 // content like links that need focus management and keyboard navigation.
 // See https://base-ui.com/react/components/tooltip#infotips
 function InfoTip({ label, children }: InfoTipProps): React.ReactElement {
+  const ariaLabel = label != null ? `Info about ${label}` : "More information";
   return (
     <Popover.Root>
       <Popover.Trigger
         render={<span className={styles.osdkFormFieldInfoIcon} />}
         nativeButton={false}
         openOnHover={true}
-        aria-label={label != null ? `Info about ${label}` : "More information"}
+        aria-label={ariaLabel}
       >
         <InfoSign size={12} />
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner sideOffset={4}>
-          <Popover.Popup className={styles.osdkFormFieldInfoPopup}>
+          <Popover.Popup
+            aria-label={ariaLabel}
+            className={styles.osdkFormFieldInfoPopup}
+          >
             {children}
           </Popover.Popup>
         </Popover.Positioner>
