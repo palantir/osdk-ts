@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.62.0
+
+### Minor Changes
+
+- 3742aad: Preserve nullability for value type props
+
+### Patch Changes
+
+- Updated dependencies [08ba782]
+  - @osdk/api@2.63.0
+  - @osdk/generator-converters.ontologyir@2.63.0
+
 ## 0.61.0
 
 ### Patch Changes

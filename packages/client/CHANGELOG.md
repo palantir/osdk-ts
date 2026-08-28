@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.63.0
+
+### Minor Changes
+
+- 08ba782: cipherText object edits now accept distinct, ergonomic create and update inputs — `{ plaintext }` for create, `{ plaintext, strategy? }` for update, or an existing `CipherText` to reuse — and `getEdits()` emits the backend wire shape (`{ plaintext }` or `{ ciphertext }`, the reused ciphertext's encrypted envelope).
+
+### Patch Changes
+
+- Updated dependencies [08ba782]
+  - @osdk/api@2.63.0
+  - @osdk/generator-converters@2.63.0
+  - @osdk/shared.test@2.43.0
+  - @osdk/client.unstable@2.63.0
+
 ## 2.62.0
 
 ### Minor Changes

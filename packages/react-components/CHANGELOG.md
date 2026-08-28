@@ -1,5 +1,12 @@
 # @osdk/react-components
 
+## 0.56.0
+
+### Minor Changes
+
+- fca4dd1: Improve ActionForm accessibility and dark-mode contrast for dropdowns, date pickers, helper text, and validation states.
+- 685e192: Add a `FilterListOverview.md` one-pager.
+
 ## 0.55.0
 
 ### Minor Changes
