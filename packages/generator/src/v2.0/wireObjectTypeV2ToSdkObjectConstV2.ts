@@ -23,10 +23,7 @@ import type {
   ValueTypeApiName,
   ValueTypeConstraint,
 } from "@osdk/foundry.ontologies";
-import {
-  GeneratorError,
-  wireObjectTypeFullMetadataToSdkObjectMetadata,
-} from "@osdk/generator-converters";
+import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
 import consola from "consola";
 import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
@@ -455,68 +452,79 @@ function getPropTypeOrValueTypeEnum(
     JSON.stringify(propertyDefinition.type)
   }]`;
   if (
-    !(propertyDefinition.type === "string"
-      || propertyDefinition.type === "boolean")
+    !isLiteralNarrowablePropertyType(propertyDefinition.type)
     || !propertyDefinition.valueTypeApiName
   ) {
     return defaultPropString;
   }
   const valueType = valueTypeMetadata[propertyDefinition.valueTypeApiName];
-  if (valueType == null || valueType.constraints.length === 0) {
+  if (valueType == null) {
     return defaultPropString;
   }
-  if (valueType.constraints.length !== 1) {
-    throw new GeneratorError(
-      "Expected exactly one constraint for value type",
-      { valueTypeApiName: propertyDefinition.valueTypeApiName },
-      { constraintCount: valueType.constraints.length },
-    );
-  }
 
-  let shouldWrapWithParentheses = false;
-  let constraint = valueType.constraints[0];
-  if (constraint.type === "array" && constraint.valueConstraint) {
-    constraint = constraint.valueConstraint;
-    shouldWrapWithParentheses = true;
-  }
-
-  const maybeEnumString = maybeGetEnumString(
-    propertyDefinition,
-    constraint,
+  const maybeEnumString = findRepresentableEnum(
+    valueType.constraints,
+    propertyDefinition.type,
   );
 
-  return maybeEnumString
-    ? (
-      shouldWrapWithParentheses ? `(${maybeEnumString})` : maybeEnumString
-    )
-    : defaultPropString;
+  return maybeEnumString == null
+    ? defaultPropString
+    : propertyDefinition.multiplicity
+    ? `(${maybeEnumString})`
+    : maybeEnumString;
 }
 
-function maybeGetEnumString(
-  propertyDefinition: ObjectMetadata.Property,
-  constraint: ValueTypeConstraint,
-) {
-  if (constraint.type !== "enum" || constraint.options.length === 0) {
-    return undefined;
-  }
-  if (propertyDefinition.type === "string") {
-    return stringUnionFrom(constraint.options.map(x => String(x)));
-  }
-  if (propertyDefinition.type === "boolean") {
-    return constraint.options.map(value => {
-      if (value === true) {
-        return true;
-      } else if (value === false) {
-        return false;
-      } else if (value == null) {
-        // Always infer nullability from the property definition
-        return undefined;
-      } else {
-        consola.warn(`Unexpected boolean value in enum: ${value}. Ignoring.`);
-      }
-    }).filter(value => value != null).join(
-      " | ",
-    );
+type LiteralNarrowablePropertyType = "string" | "boolean" | "integer" | "short";
+
+function isLiteralNarrowablePropertyType(
+  type: ObjectMetadata.Property["type"],
+): type is LiteralNarrowablePropertyType {
+  return type === "string" || type === "boolean" || type === "integer"
+    || type === "short";
+}
+
+function findRepresentableEnum(
+  constraints: readonly ValueTypeConstraint[],
+  propertyType: LiteralNarrowablePropertyType,
+): string | undefined {
+  for (const constraint of constraints) {
+    const candidate = constraint.type === "array"
+      ? constraint.valueConstraint
+      : constraint;
+    if (candidate?.type !== "enum") {
+      continue;
+    }
+
+    const literalUnion = enumLiteralUnion(candidate.options, propertyType);
+    if (literalUnion != null) {
+      return literalUnion;
+    }
   }
   return undefined;
+}
+
+function enumLiteralUnion(
+  options: Extract<ValueTypeConstraint, { type: "enum" }>["options"],
+  propertyType: LiteralNarrowablePropertyType,
+): string | undefined {
+  const literals = options.flatMap((value): string[] => {
+    if (propertyType === "string" && typeof value === "string") {
+      return [JSON.stringify(value)];
+    }
+    if (propertyType === "boolean" && typeof value === "boolean") {
+      return [String(value)];
+    }
+    if (
+      (propertyType === "integer" || propertyType === "short")
+      && typeof value === "number"
+      && Number.isInteger(value)
+      && (propertyType !== "integer"
+        || (value >= -2_147_483_648 && value <= 2_147_483_647))
+      && (propertyType !== "short" || (value >= -32_768 && value <= 32_767))
+    ) {
+      return [Object.is(value, -0) ? "0" : String(value)];
+    }
+    return [];
+  });
+  return literals.length === 0 ? undefined : [...new Set(literals)].join(" | ");
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import typescript from "@osdk/cli.cmd.typescript";
+import typescript, { oacCommand } from "@osdk/cli.cmd.typescript";
 import type { CliCommonArgs } from "@osdk/cli.common";
 import { ExitProcessError, getYargsBase } from "@osdk/cli.common";
 import { consola } from "consola";
@@ -37,6 +37,7 @@ export async function cli(
     return await base
       .command(site)
       .command(widgetSet)
+      .command(oacCommand)
       .command({
         command: "unstable",
         aliases: ["experimental"],

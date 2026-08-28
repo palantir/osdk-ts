@@ -1888,12 +1888,18 @@ importers:
       '@osdk/cli.common':
         specifier: workspace:~
         version: link:../cli.common
+      '@osdk/client.unstable':
+        specifier: workspace:~
+        version: link:../client.unstable
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
         version: 2.73.0
       '@osdk/generator':
         specifier: workspace:~
         version: link:../generator
+      '@osdk/generator-converters.ontologyir':
+        specifier: workspace:~
+        version: link:../generator-converters.ontologyir
       '@osdk/shared.client.impl':
         specifier: workspace:~
         version: link:../shared.client.impl
@@ -1907,6 +1913,9 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0
       tslib:
+        specifier: ^2.8.1
+        version: 2.8.1
+      yaml:
         specifier: ^2.8.1
         version: 2.8.1
       yargs:

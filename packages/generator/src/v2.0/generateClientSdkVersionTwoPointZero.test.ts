@@ -1897,6 +1897,184 @@ describe("generator", () => {
       `);
   });
 
+  describe("Value Type literal narrowing", () => {
+    async function generateProps(
+      properties: WireOntologyDefinition["objectTypes"][string]["objectType"][
+        "properties"
+      ],
+      valueTypes: WireOntologyDefinition["valueTypes"],
+    ): Promise<string> {
+      const objectType = {
+        ...TodoWireOntology.objectTypes.Todo,
+        implementsInterfaces: [],
+        implementsInterfaces2: {},
+        linkTypes: [],
+        objectType: {
+          ...TodoWireOntology.objectTypes.Todo.objectType,
+          properties,
+          primaryKey: "id",
+          titleProperty: "id",
+        },
+      };
+      await generateClientSdkVersionTwoPointZero(
+        {
+          ...TodoWireOntology,
+          actionTypes: {},
+          interfaceTypes: {},
+          objectTypes: { Todo: objectType },
+          queryTypes: {},
+          sharedPropertyTypes: {},
+          valueTypes,
+        },
+        "",
+        helper.minimalFiles,
+        BASE_PATH,
+      );
+      return helper.getFiles()[`${BASE_PATH}/ontology/objects/Todo.ts`];
+    }
+
+    it("uses the first representable enum across multiple constraints", async () => {
+      const generated = await generateProps({
+        id: {
+          dataType: { type: "string" },
+          rid: "rid",
+          typeClasses: [],
+          valueTypeApiName: "multiConstraint",
+        },
+      }, {
+        multiConstraint: {
+          apiName: "multiConstraint",
+          displayName: "Multi constraint",
+          rid: "ridForMultiConstraint",
+          version: "1.0.0",
+          fieldType: { type: "string" },
+          constraints: [
+            { type: "regex", pattern: "[a-z]+", partialMatch: false },
+            { type: "enum", options: [undefined, 7, "alpha", "beta"] },
+            { type: "enum", options: ["ignored"] },
+          ],
+        },
+      });
+
+      expect(generated).toContain("readonly id: 'alpha' | 'beta';");
+    });
+
+    it("narrows boolean, integer, and short enums while keeping other numerics broad", async () => {
+      const valueType = (
+        apiName: string,
+        fieldType:
+          | "boolean"
+          | "integer"
+          | "short"
+          | "long"
+          | "decimal"
+          | "float"
+          | "double",
+        options: Array<string | number | boolean | null | undefined>,
+      ) => ({
+        apiName,
+        displayName: apiName,
+        rid: `ridFor${apiName}`,
+        version: "1.0.0",
+        fieldType: { type: fieldType },
+        constraints: [{ type: "enum" as const, options }],
+      });
+      const property = (
+        type:
+          | "boolean"
+          | "integer"
+          | "short"
+          | "long"
+          | "decimal"
+          | "float"
+          | "double",
+        valueTypeApiName: string,
+      ) => ({
+        dataType: { type },
+        rid: `ridFor${valueTypeApiName}Property`,
+        typeClasses: [],
+        valueTypeApiName,
+      });
+      const generated = await generateProps({
+        id: property("integer", "integerEnum"),
+        booleanValue: property("boolean", "booleanEnum"),
+        shortValue: property("short", "shortEnum"),
+        longValue: property("long", "longEnum"),
+        decimalValue: property("decimal", "decimalEnum"),
+        floatValue: property("float", "floatEnum"),
+        doubleValue: property("double", "doubleEnum"),
+      }, {
+        booleanEnum: valueType("booleanEnum", "boolean", [
+          true,
+          null,
+          "true",
+          false,
+        ]),
+        integerEnum: valueType("integerEnum", "integer", [1, 2.5, "3", 4]),
+        shortEnum: valueType("shortEnum", "short", [-32_768, 32_768, 7]),
+        longEnum: valueType("longEnum", "long", [1, 2]),
+        decimalEnum: valueType("decimalEnum", "decimal", ["1.0", "2.0"]),
+        floatEnum: valueType("floatEnum", "float", [1, 2]),
+        doubleEnum: valueType("doubleEnum", "double", [1, 2]),
+      });
+
+      expect(generated).toContain(
+        "readonly booleanValue: true | false | undefined;",
+      );
+      expect(generated).toContain("readonly id: 1 | 4;");
+      expect(generated).toContain(
+        "readonly shortValue: -32768 | 7 | undefined;",
+      );
+      expect(generated).toContain(
+        "readonly longValue: $PropType['long'] | undefined;",
+      );
+      expect(generated).toContain(
+        "readonly decimalValue: $PropType['decimal'] | undefined;",
+      );
+      expect(generated).toContain(
+        "readonly floatValue: $PropType['float'] | undefined;",
+      );
+      expect(generated).toContain(
+        "readonly doubleValue: $PropType['double'] | undefined;",
+      );
+    });
+
+    it("parenthesizes narrowed unions only for multiplicity", async () => {
+      const generated = await generateProps({
+        id: {
+          dataType: { type: "string" },
+          rid: "idRid",
+          typeClasses: [],
+          valueTypeApiName: "stringEnum",
+        },
+        values: {
+          dataType: {
+            type: "array",
+            subType: { type: "string" },
+            reducers: [],
+          },
+          rid: "valuesRid",
+          typeClasses: [],
+          valueTypeApiName: "stringEnum",
+        },
+      }, {
+        stringEnum: {
+          apiName: "stringEnum",
+          displayName: "String enum",
+          rid: "stringEnumRid",
+          version: "1.0.0",
+          fieldType: { type: "string" },
+          constraints: [{ type: "enum", options: ["a", "b"] }],
+        },
+      });
+
+      expect(generated).toContain("readonly id: 'a' | 'b';");
+      expect(generated).toContain(
+        "readonly values: ('a' | 'b')[] | undefined;",
+      );
+    });
+  });
+
   it("guards against empty objects", async () => {
     await generateClientSdkVersionTwoPointZero(
       {
@@ -1975,6 +2153,34 @@ describe("generator", () => {
       ).resolves.toMatchInlineSnapshot(`undefined`);
 
       expect(helper.getFiles()["/foo/index.ts"]).toContain("$ontologyRid");
+    });
+
+    it("omits the ontology and branch identities for portable SDKs", async () => {
+      const BASE_PATH = "/foo";
+
+      await generateClientSdkVersionTwoPointZero(
+        TodoWireOntology,
+        "",
+        helper.minimalFiles,
+        BASE_PATH,
+        "module",
+        new Map(),
+        new Map(),
+        new Map(),
+        false,
+        [],
+        false,
+        true,
+      );
+
+      expect(helper.getFiles()["/foo/index.ts"]).not.toContain("$ontologyRid");
+      expect(helper.getFiles()["/foo/index.ts"]).not.toContain("$branch");
+      expect(helper.getFiles()["/foo/OntologyMetadata.ts"]).not.toContain(
+        "$ontologyRid",
+      );
+      expect(helper.getFiles()["/foo/OntologyMetadata.ts"]).not.toContain(
+        "$branch",
+      );
     });
   });
 
