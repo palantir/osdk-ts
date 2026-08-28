@@ -6707,7 +6707,7 @@ describe("Action Types", () => {
             type: {
               type: "vector",
               dimension: 768,
-              supportsSearchWith: ["COSINE_SIMILARITY"],
+              supportsSearchWith: "COSINE_SIMILARITY",
             },
           },
         },
@@ -6737,7 +6737,7 @@ describe("Action Types", () => {
             type: {
               type: "vector",
               dimension: 768,
-              supportsSearchWith: ["COSINE_SIMILARITY"],
+              supportsSearchWith: "COSINE_SIMILARITY",
             },
           },
         },

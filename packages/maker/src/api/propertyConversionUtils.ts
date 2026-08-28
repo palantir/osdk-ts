@@ -62,10 +62,6 @@ export function validateVectorProperty(
     Number.isInteger(type.dimension) && type.dimension >= 1,
     `Vector property '${apiName}' must have an integer 'dimension' of at least 1, but got ${type.dimension}`,
   );
-  invariant(
-    type.supportsSearchWith.length === 1,
-    `Vector property '${apiName}' must specify exactly one 'supportsSearchWith' function`,
-  );
 }
 
 export function shouldBeIndexedForSearch(type: PropertyTypeType): boolean {

@@ -600,7 +600,7 @@ describe("SPTs", () => {
       type: {
         type: "vector",
         dimension: 768,
-        supportsSearchWith: ["COSINE_SIMILARITY"],
+        supportsSearchWith: "COSINE_SIMILARITY",
       },
     });
 
@@ -631,7 +631,7 @@ describe("SPTs", () => {
       type: {
         type: "vector",
         dimension: 768,
-        supportsSearchWith: ["COSINE_SIMILARITY"],
+        supportsSearchWith: "COSINE_SIMILARITY",
       },
     });
 

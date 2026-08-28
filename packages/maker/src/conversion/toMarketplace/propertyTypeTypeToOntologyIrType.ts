@@ -115,7 +115,7 @@ export function propertyTypeTypeToOntologyIrType(
         type: "vector",
         vector: {
           dimension: type.dimension,
-          supportsSearchWith: type.supportsSearchWith,
+          supportsSearchWith: [type.supportsSearchWith],
           embeddingModel: type.embeddingModel,
           quantization: type.quantization,
         },

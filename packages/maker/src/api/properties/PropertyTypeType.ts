@@ -94,8 +94,8 @@ export type PropertyTypeTypeVector = {
   type: "vector";
   /** The dimensionality of the vector (must be at least 1). */
   dimension: number;
-  /** The similarity function(s) supported for vector search. Must specify exactly one. */
-  supportsSearchWith: VectorSimilarityFunction[];
+  /** The similarity function this vector supports for vector search. */
+  supportsSearchWith: VectorSimilarityFunction;
   embeddingModel?: EmbeddingModel;
   quantization?: Quantization;
 };

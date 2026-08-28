@@ -695,7 +695,7 @@ describe("Interfaces", () => {
             type: {
               type: "vector",
               dimension: 768,
-              supportsSearchWith: ["COSINE_SIMILARITY"],
+              supportsSearchWith: "COSINE_SIMILARITY",
             },
           },
         },
@@ -734,7 +734,7 @@ describe("Interfaces", () => {
             type: {
               type: "vector",
               dimension: 768,
-              supportsSearchWith: ["COSINE_SIMILARITY"],
+              supportsSearchWith: "COSINE_SIMILARITY",
             },
             array: true,
           },

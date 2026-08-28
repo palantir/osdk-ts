@@ -28,7 +28,7 @@ import type { PropertyTypeTypeVector } from "../properties/PropertyTypeType.js";
 const VECTOR: PropertyTypeTypeVector = {
   type: "vector",
   dimension: 768,
-  supportsSearchWith: ["COSINE_SIMILARITY"],
+  supportsSearchWith: "COSINE_SIMILARITY",
 };
 
 describe("Object Types", () => {
@@ -697,7 +697,7 @@ describe("Object Types", () => {
           type: {
             type: "vector",
             dimension: 1536,
-            supportsSearchWith: ["COSINE_SIMILARITY"],
+            supportsSearchWith: "COSINE_SIMILARITY",
             embeddingModel: {
               type: "text",
               text: { type: "lms", lms: "OPENAI_TEXT_EMBEDDING_ADA_002" },
@@ -766,29 +766,6 @@ describe("Object Types", () => {
 
     expect(() => dumpOntologyFullMetadata()).toThrowErrorMatchingInlineSnapshot(
       `[Error: Invariant failed: Vector property 'com.palantir.embedding' must have an integer 'dimension' of at least 1, but got 0]`,
-    );
-  });
-
-  it("Fails on a vector property with more than one similarity function", () => {
-    defineObject({
-      titlePropertyApiName: "bar",
-      displayName: "Foo",
-      pluralDisplayName: "Foo",
-      apiName: "foo",
-      primaryKeyPropertyApiName: "bar",
-      properties: {
-        bar: { type: "string" },
-        embedding: {
-          type: {
-            ...VECTOR,
-            supportsSearchWith: ["COSINE_SIMILARITY", "DOT_PRODUCT"],
-          },
-        },
-      },
-    });
-
-    expect(() => dumpOntologyFullMetadata()).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Vector property 'com.palantir.embedding' must specify exactly one 'supportsSearchWith' function]`,
     );
   });
 
