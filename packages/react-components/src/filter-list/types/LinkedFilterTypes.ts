@@ -77,7 +77,7 @@ export interface LinkedPropertyFilterState<
 /**
  * Filter definition for "Has Link" filter
  * Filters objects based on whether they have any linked objects of the specified
- * type. Narrows `objectSet` and is emitted via `onEffectiveObjectSet`; link
+ * type. Filters `objectSet` and is emitted via `onEffectiveObjectSet`; link
  * presence has no filter-clause form, so it never appears in
  * `onFilterClauseChanged`.
  */
