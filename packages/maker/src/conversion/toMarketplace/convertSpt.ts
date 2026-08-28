@@ -17,7 +17,10 @@
 import type { OntologyIrSharedPropertyType } from "@osdk/client.unstable";
 
 import type { SharedPropertyType } from "../../api/properties/SharedPropertyType.js";
-import { shouldBeIndexedForSearch } from "../../api/propertyConversionUtils.js";
+import {
+  shouldBeIndexedForSearch,
+  validateVectorProperty,
+} from "../../api/propertyConversionUtils.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
 import { convertReducers } from "./convertReducers.js";
 import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIrType.js";
@@ -40,6 +43,7 @@ export function convertSpt({
   const dataConstraint:
     | OntologyIrSharedPropertyType["dataConstraints"]
     | undefined = convertNullabilityToDataConstraint({ type, nullability });
+  validateVectorProperty(apiName, type, array);
   return {
     apiName,
     displayMetadata: {

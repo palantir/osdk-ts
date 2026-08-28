@@ -36,11 +36,7 @@ import {
 import { type InterfaceType } from "./interface/InterfaceType.js";
 import { mapSimplifiedStatusToInterfaceTypeStatus } from "./interface/mapSimplifiedStatusToInterfaceTypeStatus.js";
 import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
-import {
-  isExotic,
-  isPropertyTypeType,
-  isValidVector,
-} from "./properties/PropertyTypeType.js";
+import { isExotic, isPropertyTypeType } from "./properties/PropertyTypeType.js";
 import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
 
 export type SimplifiedInterfaceTypeStatus =
@@ -156,10 +152,6 @@ export function defineInterface(
         ];
       } else {
         // IDP
-        invariant(
-          isValidVector(propertyBase.type, propertyBase.array),
-          `Invalid vector property '${apiName}': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function`,
-        );
         return [apiName, propertyBase];
       }
     }),

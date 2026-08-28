@@ -726,23 +726,25 @@ describe("Interfaces", () => {
     });
 
     it("doesn't let you make a vector IDP an array", () => {
-      expect(() => {
-        defineInterface({
-          apiName: "bar",
-          displayName: "Bar",
-          properties: {
-            embedding: {
-              type: {
-                type: "vector",
-                dimension: 768,
-                supportsSearchWith: ["COSINE_SIMILARITY"],
-              },
-              array: true,
+      defineInterface({
+        apiName: "bar",
+        displayName: "Bar",
+        properties: {
+          embedding: {
+            type: {
+              type: "vector",
+              dimension: 768,
+              supportsSearchWith: ["COSINE_SIMILARITY"],
             },
+            array: true,
           },
-        });
-      }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Invalid vector property 'embedding': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function]`,
+        },
+      });
+
+      expect(() =>
+        dumpOntologyFullMetadata(),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Vector property 'embedding' cannot be an array]`,
       );
     });
 

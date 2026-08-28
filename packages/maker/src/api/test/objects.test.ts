@@ -25,6 +25,12 @@ import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
 import type { PropertyTypeTypeVector } from "../properties/PropertyTypeType.js";
 
+const VECTOR: PropertyTypeTypeVector = {
+  type: "vector",
+  dimension: 768,
+  supportsSearchWith: ["COSINE_SIMILARITY"],
+};
+
 describe("Object Types", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, "/tmp/");
@@ -727,32 +733,63 @@ describe("Object Types", () => {
     expect(embedding.indexedForSearch).toBe(true);
   });
 
-  it("Fails on invalid vector properties", () => {
-    const vector: PropertyTypeTypeVector = {
-      type: "vector",
-      dimension: 768,
-      supportsSearchWith: ["COSINE_SIMILARITY"],
-    };
-    const expectInvalid = (type: PropertyTypeTypeVector, array?: boolean) =>
-      expect(() =>
-        defineObject({
-          titlePropertyApiName: "bar",
-          displayName: "Foo",
-          pluralDisplayName: "Foo",
-          apiName: "foo",
-          primaryKeyPropertyApiName: "bar",
-          properties: { bar: { type: "string" }, embedding: { type, array } },
-        }),
-      ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Invalid vector property 'embedding': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function]`,
-      );
-
-    expectInvalid(vector, true);
-    expectInvalid({ ...vector, dimension: 0 });
-    expectInvalid({
-      ...vector,
-      supportsSearchWith: ["COSINE_SIMILARITY", "DOT_PRODUCT"],
+  it("Fails on a vector property declared as an array", () => {
+    defineObject({
+      titlePropertyApiName: "bar",
+      displayName: "Foo",
+      pluralDisplayName: "Foo",
+      apiName: "foo",
+      primaryKeyPropertyApiName: "bar",
+      properties: {
+        bar: { type: "string" },
+        embedding: { type: VECTOR, array: true },
+      },
     });
+
+    expect(() => dumpOntologyFullMetadata()).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Vector property 'com.palantir.embedding' cannot be an array]`,
+    );
+  });
+
+  it("Fails on a vector property with a non-positive dimension", () => {
+    defineObject({
+      titlePropertyApiName: "bar",
+      displayName: "Foo",
+      pluralDisplayName: "Foo",
+      apiName: "foo",
+      primaryKeyPropertyApiName: "bar",
+      properties: {
+        bar: { type: "string" },
+        embedding: { type: { ...VECTOR, dimension: 0 } },
+      },
+    });
+
+    expect(() => dumpOntologyFullMetadata()).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Vector property 'com.palantir.embedding' must have an integer 'dimension' of at least 1, but got 0]`,
+    );
+  });
+
+  it("Fails on a vector property with more than one similarity function", () => {
+    defineObject({
+      titlePropertyApiName: "bar",
+      displayName: "Foo",
+      pluralDisplayName: "Foo",
+      apiName: "foo",
+      primaryKeyPropertyApiName: "bar",
+      properties: {
+        bar: { type: "string" },
+        embedding: {
+          type: {
+            ...VECTOR,
+            supportsSearchWith: ["COSINE_SIMILARITY", "DOT_PRODUCT"],
+          },
+        },
+      },
+    });
+
+    expect(() => dumpOntologyFullMetadata()).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Vector property 'com.palantir.embedding' must specify exactly one 'supportsSearchWith' function]`,
+    );
   });
 
   it("Explicit datasource definitions are properly defined", () => {

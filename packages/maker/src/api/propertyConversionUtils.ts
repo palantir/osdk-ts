@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import invariant from "tiny-invariant";
+
 import type { TypeClass } from "./common/TypeClass.js";
 import type { PropertyTypeType } from "./properties/PropertyTypeType.js";
+import { isVector } from "./properties/PropertyTypeType.js";
 
 export const defaultTypeClasses: TypeClass[] = [
   {
@@ -44,6 +47,25 @@ export function hasRenderHints(typeClasses: TypeClass[] | undefined): boolean {
 
 export function getPropertyTypeName(type: PropertyTypeType): string {
   return typeof type === "object" ? type.type : type;
+}
+
+export function validateVectorProperty(
+  apiName: string,
+  type: PropertyTypeType,
+  array: boolean | undefined,
+): void {
+  if (!isVector(type)) {
+    return;
+  }
+  invariant(!array, `Vector property '${apiName}' cannot be an array`);
+  invariant(
+    Number.isInteger(type.dimension) && type.dimension >= 1,
+    `Vector property '${apiName}' must have an integer 'dimension' of at least 1, but got ${type.dimension}`,
+  );
+  invariant(
+    type.supportsSearchWith.length === 1,
+    `Vector property '${apiName}' must specify exactly one 'supportsSearchWith' function`,
+  );
 }
 
 export function shouldBeIndexedForSearch(type: PropertyTypeType): boolean {

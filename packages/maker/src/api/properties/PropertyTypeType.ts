@@ -153,18 +153,6 @@ export function isVector(
 ): type is PropertyTypeTypeVector {
   return typeof type === "object" && type.type === "vector";
 }
-export function isValidVector(
-  type: PropertyTypeType,
-  array: boolean | undefined,
-): boolean {
-  return (
-    !isVector(type) ||
-    (!array &&
-      Number.isInteger(type.dimension) &&
-      type.dimension >= 1 &&
-      type.supportsSearchWith.length === 1)
-  );
-}
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 

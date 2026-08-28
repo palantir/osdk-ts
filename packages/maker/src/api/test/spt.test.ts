@@ -625,18 +625,18 @@ describe("SPTs", () => {
   });
 
   it("doesn't let you make a vector SPT an array", () => {
-    expect(() => {
-      defineSharedPropertyType({
-        apiName: "embedding",
-        array: true,
-        type: {
-          type: "vector",
-          dimension: 768,
-          supportsSearchWith: ["COSINE_SIMILARITY"],
-        },
-      });
-    }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Invalid vector property 'com.palantir.embedding': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function]`,
+    defineSharedPropertyType({
+      apiName: "embedding",
+      array: true,
+      type: {
+        type: "vector",
+        dimension: 768,
+        supportsSearchWith: ["COSINE_SIMILARITY"],
+      },
+    });
+
+    expect(() => dumpOntologyFullMetadata()).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Vector property 'com.palantir.embedding' cannot be an array]`,
     );
   });
 

@@ -25,6 +25,7 @@ import {
   hasRenderHints,
   shouldBeIndexedForSearch,
   shouldNotHaveRenderHints,
+  validateVectorProperty,
 } from "../../api/propertyConversionUtils.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
 import { convertReducers } from "./convertReducers.js";
@@ -43,6 +44,7 @@ export function convertObjectPropertyType(
       property.type,
     )}' should not have render hints`,
   );
+  validateVectorProperty(apiName, property.type, property.array);
   const output: OntologyIrPropertyType = {
     apiName: property.apiName,
     sharedPropertyTypeApiName: property.sharedPropertyType?.apiName,
