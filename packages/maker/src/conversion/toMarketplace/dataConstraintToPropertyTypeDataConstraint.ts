@@ -33,36 +33,62 @@ import type {
 
 import { convertDataConstraintToDataConstraints } from "./convertDataConstraintToDataConstraints.js";
 
+function convertNestedArrayElementConstraint(
+  constraint: DataConstraint,
+): PropertyTypeDataConstraints {
+  try {
+    return dataConstraintToPropertyTypeDataConstraint(constraint);
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    throw new Error(
+      `Unsupported nested array element constraint (${constraint.type}): ${detail}`,
+      { cause: error },
+    );
+  }
+}
+
 export function dataConstraintToPropertyTypeDataConstraint(
   dc: DataConstraint,
 ): PropertyTypeDataConstraints {
   switch (dc.type) {
     case "array":
-      return { ...dc } as PropertyTypeDataConstraints_array;
+      return {
+        type: "array",
+        array: {
+          size: dc.array.size,
+          elementsUnique: dc.array.elementsUnique,
+          elementsConstraint:
+            dc.array.elementsConstraint === undefined
+              ? undefined
+              : convertNestedArrayElementConstraint(
+                  dc.array.elementsConstraint,
+                ),
+        },
+      } satisfies PropertyTypeDataConstraints_array;
 
     case "boolean":
-      return { ...dc } as PropertyTypeDataConstraints_boolean;
+      return { ...dc } satisfies PropertyTypeDataConstraints_boolean;
 
     case "binary":
       throw new Error("Binary type constraints are not supported");
 
     case "date":
-      return { ...dc } as PropertyTypeDataConstraints_date;
+      return { ...dc } satisfies PropertyTypeDataConstraints_date;
 
     case "decimal":
-      return { ...dc } as PropertyTypeDataConstraints_decimal;
+      return { ...dc } satisfies PropertyTypeDataConstraints_decimal;
 
     case "double":
-      return { ...dc } as PropertyTypeDataConstraints_double;
+      return { ...dc } satisfies PropertyTypeDataConstraints_double;
 
     case "float":
-      return { ...dc } as PropertyTypeDataConstraints_float;
+      return { ...dc } satisfies PropertyTypeDataConstraints_float;
 
     case "integer":
-      return { ...dc } as PropertyTypeDataConstraints_integer;
+      return { ...dc } satisfies PropertyTypeDataConstraints_integer;
 
     case "long":
-      return { ...dc } as PropertyTypeDataConstraints_long;
+      return { ...dc } satisfies PropertyTypeDataConstraints_long;
 
     case "map":
       throw new Error("Map type constraints are not supported");
@@ -71,10 +97,10 @@ export function dataConstraintToPropertyTypeDataConstraint(
       throw new Error("Nullable constraints are not supported");
 
     case "short":
-      return { ...dc } as PropertyTypeDataConstraints_short;
+      return { ...dc } satisfies PropertyTypeDataConstraints_short;
 
     case "string":
-      return { ...dc } as PropertyTypeDataConstraints_string;
+      return { ...dc } satisfies PropertyTypeDataConstraints_string;
 
     case "struct":
       return {
@@ -89,15 +115,19 @@ export function dataConstraintToPropertyTypeDataConstraint(
             ),
           ),
         },
-      } as PropertyTypeDataConstraints_struct;
+      } satisfies PropertyTypeDataConstraints_struct;
 
     case "structV2":
       throw new Error("StructV2 constraints are not supported");
 
     case "timestamp":
-      return { ...dc } as PropertyTypeDataConstraints_timestamp;
+      return { ...dc } satisfies PropertyTypeDataConstraints_timestamp;
 
-    default:
-      throw new Error(`Unknown DataConstraint type: ${(dc as any).type}`);
+    default: {
+      const exhaustiveCheck: never = dc;
+      throw new Error(
+        `Unknown DataConstraint type: ${String(exhaustiveCheck)}`,
+      );
+    }
   }
 }

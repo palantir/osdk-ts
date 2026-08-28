@@ -219,21 +219,63 @@ describe(buildSemanticManifest, () => {
     }]);
   });
 
-  it("rejects value types that generation cannot narrow", () => {
-    const invalidValueType: Ontologies.OntologyValueType = {
+  it("finds a representable enum without throwing for multiple constraints", () => {
+    const multiConstraint: Ontologies.OntologyValueType = {
       ...itemCode,
       constraints: [
-        { type: "enum", options: ["alpha"] },
-        { type: "enum", options: ["beta"] },
+        { type: "regex", pattern: "[a-z]+", partialMatch: false },
+        { type: "enum", options: [undefined, 7, "alpha"] },
+        { type: "enum", options: ["ignored"] },
       ],
     };
 
-    expect(() =>
-      buildSemanticManifest(
-        metadata({}, { invalidValueType }, {}),
-        { packageName: "@example/item-sdk", packageVersion: "1.2.3" },
-      )
-    ).toThrowError("Expected exactly one constraint for value type itemCode");
+    const manifest = buildSemanticManifest(
+      metadata({}, { multiConstraint }, {}),
+      { packageName: "@example/item-sdk", packageVersion: "1.2.3" },
+    );
+
+    expect(manifest.valueTypes).toEqual([{
+      apiName: "itemCode",
+      version: "2.0.0",
+      narrowed: true,
+    }]);
+  });
+
+  it("mirrors numeric narrowing supported by generation", () => {
+    const valueType = (
+      apiName: string,
+      fieldType: "integer" | "short" | "long" | "decimal" | "float" | "double",
+      options: Array<string | number | undefined>,
+    ): Ontologies.OntologyValueType => ({
+      apiName,
+      displayName: apiName,
+      rid: `ri.value-type.main.value-type.${apiName}`,
+      fieldType: { type: fieldType },
+      version: "1.0.0",
+      constraints: [{ type: "enum", options }],
+    });
+    const valueTypes = {
+      integer: valueType("integer", "integer", [1, 2.5, "3"]),
+      short: valueType("short", "short", [32_768, 7]),
+      long: valueType("long", "long", [1]),
+      decimal: valueType("decimal", "decimal", ["1.0"]),
+      float: valueType("float", "float", [1]),
+      double: valueType("double", "double", [1]),
+    };
+
+    const manifest = buildSemanticManifest(
+      metadata({}, valueTypes, {}),
+      { packageName: "@example/item-sdk", packageVersion: "1.2.3" },
+    );
+
+    expect(manifest.valueTypes).toEqual([
+      { apiName: "decimal", version: "1.0.0", narrowed: false },
+      { apiName: "double", version: "1.0.0", narrowed: false },
+      { apiName: "float", version: "1.0.0", narrowed: false },
+      { apiName: "integer", version: "1.0.0", narrowed: true },
+      { apiName: "long", version: "1.0.0", narrowed: false },
+      { apiName: "short", version: "1.0.0", narrowed: true },
+    ]);
   });
 
   it("records transitive interface extensions", () => {

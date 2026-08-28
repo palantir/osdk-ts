@@ -148,8 +148,11 @@ function actionOperations(
 
 function usableFieldType(
   fieldType: Ontologies.ValueTypeFieldType,
-): "string" | "boolean" | undefined {
-  if (fieldType.type === "string" || fieldType.type === "boolean") {
+): "string" | "boolean" | "integer" | "short" | undefined {
+  if (
+    fieldType.type === "string" || fieldType.type === "boolean"
+    || fieldType.type === "integer" || fieldType.type === "short"
+  ) {
     return fieldType.type;
   }
   if (fieldType.type === "array" && fieldType.subType != null) {
@@ -158,29 +161,37 @@ function usableFieldType(
   return undefined;
 }
 
+function isRepresentableEnum(
+  constraint: Ontologies.ValueTypeConstraint,
+  fieldType: "string" | "boolean" | "integer" | "short",
+): boolean {
+  const candidate = constraint.type === "array"
+    ? constraint.valueConstraint
+    : constraint;
+  if (candidate?.type !== "enum") {
+    return false;
+  }
+
+  return candidate.options.some((value) => {
+    if (fieldType === "string") {
+      return typeof value === "string";
+    }
+    if (fieldType === "boolean") {
+      return typeof value === "boolean";
+    }
+    return typeof value === "number" && Number.isInteger(value)
+      && (fieldType !== "integer"
+        || (value >= -2_147_483_648 && value <= 2_147_483_647))
+      && (fieldType !== "short" || (value >= -32_768 && value <= 32_767));
+  });
+}
+
 function isNarrowed(valueType: Ontologies.OntologyValueType): boolean {
   const fieldType = usableFieldType(valueType.fieldType);
-  if (fieldType == null || valueType.constraints.length === 0) {
-    return false;
-  }
-  if (valueType.constraints.length !== 1) {
-    throw new Error(
-      `Expected exactly one constraint for value type ${valueType.apiName}`,
+  return fieldType != null
+    && valueType.constraints.some((constraint) =>
+      isRepresentableEnum(constraint, fieldType)
     );
-  }
-
-  let constraint = valueType.constraints[0];
-  if (constraint.type === "array" && constraint.valueConstraint != null) {
-    constraint = constraint.valueConstraint;
-  }
-  if (constraint.type !== "enum" || constraint.options.length === 0) {
-    return false;
-  }
-
-  if (fieldType === "string") {
-    return constraint.options.some((value) => typeof value === "string");
-  }
-  return constraint.options.some((value) => value === true || value === false);
 }
 
 export function buildSemanticManifest(
