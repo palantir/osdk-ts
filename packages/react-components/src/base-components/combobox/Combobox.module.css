@@ -422,7 +422,7 @@
 .osdkComboboxTriggerChips {
   display: flex;
   flex-wrap: wrap;
-  gap: calc(var(--osdk-combobox-spacing) * 1);
+  gap: var(--osdk-combobox-spacing);
   grid-area: 1 / 1;
   align-items: center;
 }
@@ -430,9 +430,8 @@
 .osdkComboboxTriggerChip {
   display: inline-flex;
   align-items: center;
-  gap: calc(var(--osdk-combobox-spacing) * 1);
-  padding: calc(var(--osdk-combobox-spacing) * 1)
-    calc(var(--osdk-combobox-spacing) * 1.5);
+  gap: var(--osdk-combobox-spacing);
+  padding: var(--osdk-combobox-spacing) calc(var(--osdk-combobox-spacing) * 1.5);
   border-radius: var(--osdk-combobox-border-radius);
   background-color: var(--osdk-combobox-chip-bg);
   font-size: var(--osdk-combobox-chip-font-size);

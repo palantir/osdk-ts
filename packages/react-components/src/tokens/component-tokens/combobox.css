@@ -28,7 +28,7 @@
   --osdk-combobox-trigger-bg: var(--osdk-button-secondary-bg);
   --osdk-combobox-trigger-bg-hover: var(--osdk-button-secondary-bg-hover);
   --osdk-combobox-trigger-bg-active: var(--osdk-button-secondary-bg-active);
-  --osdk-combobox-trigger-color: var(--osdk-typography-color-default-rest);
+  --osdk-combobox-trigger-color: var(--osdk-button-secondary-color);
 
   /* Input */
   --osdk-combobox-input-padding: calc(var(--osdk-surface-spacing) * 1.5)

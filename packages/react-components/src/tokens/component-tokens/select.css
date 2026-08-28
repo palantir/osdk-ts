@@ -19,7 +19,7 @@
   --osdk-select-trigger-bg: var(--osdk-button-secondary-bg);
   --osdk-select-trigger-bg-hover: var(--osdk-button-secondary-bg-hover);
   --osdk-select-trigger-bg-active: var(--osdk-button-secondary-bg-active);
-  --osdk-select-trigger-color: var(--osdk-typography-color-default-rest);
+  --osdk-select-trigger-color: var(--osdk-button-secondary-color);
   --osdk-select-border-color-active: var(--osdk-intent-primary-rest);
   --osdk-select-placeholder-color: var(--osdk-typography-color-placeholder);
   --osdk-select-icon-color: var(--osdk-iconography-color-muted);

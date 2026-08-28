@@ -112,7 +112,6 @@ Control text appearance.
 | `--osdk-typography-color-default-hover`    | `--bp-typography-color-default-hover`    | Default hover text color     |
 | `--osdk-typography-color-default-active`   | `--bp-typography-color-default-active`   | Default active text color    |
 | `--osdk-typography-color-default-disabled` | `--bp-typography-color-default-disabled` | Default disabled text color  |
-| `--osdk-typography-color-error`            | `--bp-typography-color-danger-hover`     | Theme-aware error text       |
 | `--osdk-typography-color-primary-rest`     | `--bp-typography-color-primary-rest`     | Theme-aware primary text     |
 | `--osdk-typography-color-danger-rest`      | `--bp-typography-color-danger-rest`      | Danger text color            |
 | `--osdk-typography-color-danger-active`    | `--bp-typography-color-danger-active`    | Danger active text color     |
@@ -203,9 +202,10 @@ Semantic tokens that abstract palette usage for better maintainability.
 
 ### Typography Colors
 
-| Variable                              | Default Value                                 | Description                  |
-| ------------------------------------- | --------------------------------------------- | ---------------------------- |
-| `--osdk-typography-color-placeholder` | `var(--osdk-typography-color-muted)`          | Theme-aware placeholder text |
+| Variable                              | Default Value                             | Description                  |
+| ------------------------------------- | ----------------------------------------- | ---------------------------- |
+| `--osdk-typography-color-error`       | `var(--bp-typography-color-danger-hover)` | Theme-aware error text       |
+| `--osdk-typography-color-placeholder` | `var(--osdk-typography-color-muted)`      | Theme-aware placeholder text |
 
 ### Background Colors
 
@@ -406,7 +406,7 @@ Styling for combobox components.
 | `--osdk-combobox-trigger-bg`                  | `var(--osdk-button-secondary-bg)`                                                 | Trigger background               |
 | `--osdk-combobox-trigger-bg-hover`            | `var(--osdk-button-secondary-bg-hover)`                                           | Trigger hover background         |
 | `--osdk-combobox-trigger-bg-active`           | `var(--osdk-button-secondary-bg-active)`                                          | Trigger active background        |
-| `--osdk-combobox-trigger-color`               | `var(--osdk-typography-color-default-rest)`                                       | Trigger text color               |
+| `--osdk-combobox-trigger-color`               | `var(--osdk-button-secondary-color)`                                              | Trigger text color               |
 
 #### Input
 
@@ -1476,7 +1476,7 @@ Styling for select components. The select trigger uses `box-shadow` (via `--osdk
 | `--osdk-select-trigger-bg`          | `var(--osdk-button-secondary-bg)`                                                 | Trigger background        |
 | `--osdk-select-trigger-bg-hover`    | `var(--osdk-button-secondary-bg-hover)`                                           | Trigger hover background  |
 | `--osdk-select-trigger-bg-active`   | `var(--osdk-button-secondary-bg-active)`                                          | Trigger active background |
-| `--osdk-select-trigger-color`       | `var(--osdk-typography-color-default-rest)`                                       | Trigger text color        |
+| `--osdk-select-trigger-color`       | `var(--osdk-button-secondary-color)`                                              | Trigger text color        |
 | `--osdk-select-border-color-active` | `var(--osdk-intent-primary-rest)`                                                 | Open trigger border color |
 | `--osdk-select-placeholder-color`   | `var(--osdk-typography-color-placeholder)`                                        | Placeholder text color    |
 | `--osdk-select-icon-color`          | `var(--osdk-iconography-color-muted)`                                             | Trigger icon color        |
