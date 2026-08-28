@@ -29,6 +29,7 @@ import {
   defineObject,
   defineOntology,
   defineSharedPropertyType,
+  defineValueType,
   dumpOntologyFullMetadata,
   importOntologyEntity,
   importSharedPropertyType,
@@ -856,6 +857,51 @@ describe("Experimental Test Suite", () => {
       Object.values(importedObject.propertyTypes)[0].displayMetadata
         .description,
     ).toBe("The imported employee identifier");
+  });
+
+  it("preserves required nullability for value-typed object properties", async () => {
+    const result = await defineOntologyV2("com.palantir.", () => {
+      const classification = defineValueType({
+        apiName: "classification",
+        displayName: "Classification",
+        type: { type: "string" },
+        version: "1.0.0",
+      });
+
+      defineObject({
+        apiName: "classifiedObject",
+        displayName: "Classified Object",
+        pluralDisplayName: "Classified Objects",
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: {
+          id: { type: "string" },
+          classification: {
+            type: "string",
+            valueType: classification,
+            nullability: {
+              noNulls: true,
+              noEmptyCollections: true,
+            },
+          },
+        },
+      });
+    });
+
+    const objectType = Object.values(result.ontologyIr.ontology.objectTypes)[0]
+      .objectType;
+    const classification = Object.values(objectType.propertyTypes).find(
+      (property) => property.apiName === "classification",
+    );
+
+    expect(classification?.dataConstraints).toEqual({
+      propertyTypeConstraints: [],
+      nullability: undefined,
+      nullabilityV2: {
+        noNulls: true,
+        noEmptyCollections: true,
+      },
+    });
   });
 
   describe("defineOntologyV2 import shapes", () => {
