@@ -79,7 +79,10 @@ export function convertObjectPropertyType(
     status: convertObjectStatus(property.status),
     inlineAction: undefined,
     dataConstraints: property.valueType
-      ? convertValueTypeDataConstraints(property.valueType.constraints)
+      ? convertValueTypeDataConstraints(
+          property,
+          property.valueType.constraints,
+        )
       : convertNullabilityToDataConstraint(property),
     sharedPropertyTypeRid: property.sharedPropertyType?.apiName,
     valueType: property.valueType
