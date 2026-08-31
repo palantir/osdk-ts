@@ -399,7 +399,7 @@ export default async function main(
     if (shapes.inputShapes.has(inputReadableId)) {
       ontologyInputMappingEntries.push({
         input: inputReadableId,
-        output: ReadableIdGenerator.getForMediaSetOutput(mediaSetName),
+        output: ReadableIdGenerator.getForMediaSetViewOutput(mediaSetName),
       });
     }
   }

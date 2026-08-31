@@ -50,7 +50,8 @@ describe("generateBackingMediaSetBlockResult", () => {
     expect(result.input_mapping_entries).toEqual([]);
 
     const outputReadableId =
-      ReadableIdGenerator.getForMediaSetOutput(mediaSetName);
+      ReadableIdGenerator.getForMediaSetViewOutput(mediaSetName);
+    expect(outputReadableId).toBe(`media-set-view-output-${mediaSetName}`);
     const output = result.outputs[outputReadableId];
     expect(output?.type).toBe("filesDatasource");
     if (output?.type !== "filesDatasource") {

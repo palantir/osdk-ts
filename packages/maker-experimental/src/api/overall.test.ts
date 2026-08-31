@@ -64,7 +64,7 @@ describe("Experimental Test Suite", () => {
   });
 
   describe("Empty backing Media Sets", () => {
-    it("collects opted-in properties and requires the Media Set during reconciliation", async () => {
+    it("collects opted-in properties without changing existing input metadata", async () => {
       const result = await defineOntologyV2("com.palantir.", () => {
         defineObject({
           apiName: "Document",
@@ -89,11 +89,9 @@ describe("Experimental Test Suite", () => {
       expect(result.shapes.inputShapes.get(inputReadableId)?.type).toBe(
         "filesDatasource",
       );
-      expect(result.shapes.inputShapeMetadata.get(inputReadableId)).toEqual({
-        isOptional: false,
-        isAccessedInReconcile: true,
-        reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
-      });
+      expect(
+        result.shapes.inputShapeMetadata.get(inputReadableId),
+      ).toBeUndefined();
     });
   });
 

@@ -40,7 +40,7 @@ export async function generateBackingMediaSetBlockResult(
 ): Promise<BlockGeneratorResult> {
   const blockIdentifier = `${mediaSetName}-backing-media-set`;
   const outputReadableId =
-    ReadableIdGenerator.getForMediaSetOutput(mediaSetName);
+    ReadableIdGenerator.getForMediaSetViewOutput(mediaSetName);
   const compassReadableId = `${blockIdentifier}-compass-resource` as ReadableId;
   const outputBlockShapeId = toBlockShapeId(outputReadableId, randomnessKey);
   const compassBlockShapeId = toBlockShapeId(compassReadableId, randomnessKey);
