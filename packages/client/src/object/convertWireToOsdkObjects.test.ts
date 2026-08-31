@@ -33,11 +33,7 @@ import type {
   PropertySecurities,
 } from "@osdk/foundry.ontologies";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
-import {
-  LegacyFauxFoundry,
-  startNodeApiServer,
-  stubData,
-} from "@osdk/shared.test";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 
 import { additionalContext, type Client } from "../Client.js";
@@ -705,54 +701,6 @@ describe("convertWireToOsdkObjects", () => {
     );
 
     expect(result.length).toBe(1);
-  });
-
-  it("materializes complex interface implementations from response mappings", async () => {
-    const objectDef = await client[
-      additionalContext
-    ].ontologyProvider.getObjectDefinition("ComplexImplementationObject");
-    const legacyObjectDef = {
-      ...objectDef,
-      interfaceImplementations: undefined,
-    };
-    const propertiesV2 =
-      stubData.complexImplementationObjectTypeWithLinkTypes
-        .implementsInterfaces2!.ComplexImplementationInterface.propertiesV2!;
-
-    const [result] = await convertWireToOsdkObjects(
-      client[additionalContext],
-      [
-        {
-          __apiName: "ComplexImplementationObject",
-          __primaryKey: "k1",
-          id: "k1",
-          localValue: "hello",
-          nestedStruct: { label: "nested-label", count: 7 },
-          multiStruct: { alpha: "a-val", beta: 42, gamma: "ignored" },
-          arrayValue: [1, 2, 3],
-        },
-      ],
-      "ComplexImplementationInterface",
-      {},
-      undefined,
-      false,
-      undefined,
-      false,
-      {},
-      {
-        ComplexImplementationInterface: {
-          ComplexImplementationObject: propertiesV2,
-        },
-      },
-      { ComplexImplementationObject: legacyObjectDef },
-    );
-
-    expect(result).toMatchObject({
-      iLocal: "hello",
-      iStructField: "nested-label",
-      iStruct: { theAlpha: "a-val", theBeta: 42 },
-      iReduced: [1, 2, 3],
-    });
   });
 
   describe("$metadata", () => {

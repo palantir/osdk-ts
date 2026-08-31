@@ -20,6 +20,7 @@ import type {
   ObjectMetadata,
 } from "@osdk/api";
 import type {
+  InterfacePropertyLocalPropertyImplementation,
   InterfaceToObjectTypeMappings,
   InterfaceToObjectTypeMappingsV2,
   InterfaceTypeApiName,
@@ -133,9 +134,15 @@ export async function convertWireToOsdkObjects(
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
   fixObjectPropertiesInPlace(objects, forceRemoveRid);
 
-  const isInterfaceScoped =
-    Object.keys(interfaceToObjectTypeMappingsV2).length > 0 ||
-    Object.keys(interfaceToObjectTypeMappings).length > 0;
+  // prefer V2 mappings if non-empty, otherwise fall back to V1
+  const effectiveMappings =
+    Object.keys(interfaceToObjectTypeMappingsV2).length > 0
+      ? convertInterfaceToObjectTypeMappingsV2ToV1(
+          interfaceToObjectTypeMappingsV2,
+        )
+      : interfaceToObjectTypeMappings;
+
+  const isInterfaceScoped = Object.keys(effectiveMappings).length > 0;
   const ret = [];
   for (const rawObj of objects) {
     // If caller supplied object definitions, use them exclusively instead of
@@ -149,47 +156,24 @@ export async function convertWireToOsdkObjects(
     ) as FetchedObjectTypeDefinition;
     invariant(objectDef, `Missing definition for '${rawObj.$apiName}'`);
 
-    const interfaceToObjMappingV2 = interfaceApiName
-      ? interfaceToObjectTypeMappingsV2[
-          interfaceApiName as InterfaceTypeApiName
-        ]?.[rawObj.$apiName]
-      : undefined;
-    const interfaceToObjMapping = interfaceApiName
-      ? interfaceToObjectTypeMappings[
-          interfaceApiName as InterfaceTypeApiName
-        ]?.[rawObj.$apiName]
-      : undefined;
+    const interfaceToObjMapping =
+      interfaceApiName && isInterfaceScoped
+        ? effectiveMappings[interfaceApiName as InterfaceTypeApiName][
+            rawObj.$apiName
+          ]
+        : undefined;
 
     const ifaceSelected =
-      interfaceApiName && interfaceToObjMappingV2
+      interfaceApiName && interfaceToObjMapping
         ? selectedProps
-          ? getReferencedObjectProperties(
-              interfaceToObjMappingV2,
-              selectedProps,
-            )
+          ? Object.keys(interfaceToObjMapping).filter((val) => {
+              selectedProps?.includes(interfaceToObjMapping[val]);
+            })
           : [
-              ...getReferencedObjectProperties(interfaceToObjMappingV2),
+              ...Object.values(interfaceToObjMapping),
               objectDef.primaryKeyApiName,
             ]
-        : interfaceApiName && interfaceToObjMapping
-          ? selectedProps
-            ? Object.keys(interfaceToObjMapping).filter((val) => {
-                selectedProps.includes(interfaceToObjMapping[val]);
-              })
-            : [
-                ...Object.values(interfaceToObjMapping),
-                objectDef.primaryKeyApiName,
-              ]
-          : undefined;
-
-    const objectDefWithResponseImplementations =
-      interfaceApiName && interfaceToObjMappingV2
-        ? addResponseInterfaceImplementations(
-            objectDef,
-            interfaceApiName,
-            interfaceToObjMappingV2,
-          )
-        : objectDef;
+        : undefined;
 
     // default value for when we are checking an object
     let objProps;
@@ -215,7 +199,7 @@ export async function convertWireToOsdkObjects(
 
     let osdkObject: ObjectHolder | InterfaceHolder = createOsdkObject(
       client,
-      objectDefWithResponseImplementations,
+      objectDef,
       rawObj,
       derivedPropertyTypeByName,
       propertySecurities,
@@ -315,127 +299,36 @@ function fixObjectPropertiesInPlace(
 }
 
 /**
- * Returns every local object property required to materialize the selected
- * interface properties from a V2 response mapping.
+ * Converts interfaceToObjectTypeMappingsV2 format to the V1 format.
+ * V2 format: { interfaceProp: { type: "localPropertyImplementation", propertyApiName: "objectProp" } }
+ * V1 format: { interfaceProp: "objectProp" }
  */
-function getReferencedObjectProperties(
-  mappings: InterfaceToObjectTypeMappingsV2[string],
-  selectedProps?: ReadonlyArray<string>,
-): string[] {
-  const referencedProperties = new Set<string>();
-  for (const [interfaceProp, implementation] of Object.entries(mappings)) {
-    if (selectedProps != null && !selectedProps.includes(interfaceProp))
-      continue;
-    addReferencedObjectProperties(referencedProperties, implementation);
-  }
-  return [...referencedProperties];
-}
-
-type WireInterfacePropertyImplementation =
-  InterfaceToObjectTypeMappingsV2[string][string];
-
-function addReferencedObjectProperties(
-  properties: Set<string>,
-  implementation: WireInterfacePropertyImplementation,
-): void {
-  switch (implementation.type) {
-    case "localPropertyImplementation":
-      properties.add(implementation.propertyApiName);
-      break;
-    case "structFieldImplementation":
-      properties.add(implementation.structFieldOfProperty.propertyApiName);
-      break;
-    case "structImplementation":
-      for (const entry of Object.values(implementation.mapping)) {
-        properties.add(entry.propertyApiName);
-      }
-      break;
-    case "reducedPropertyImplementation":
-      addReferencedObjectProperties(properties, implementation.implementation);
-      break;
-  }
-}
-
-function addResponseInterfaceImplementations(
-  objectDef: FetchedObjectTypeDefinition,
-  interfaceApiName: string,
-  mappings: InterfaceToObjectTypeMappingsV2[string],
-): FetchedObjectTypeDefinition {
-  const responseImplementations = Object.fromEntries(
-    Object.entries(mappings).map(([interfaceProp, implementation]) => [
-      interfaceProp,
-      convertResponseInterfaceImplementation(implementation),
-    ]),
+function convertInterfaceToObjectTypeMappingsV2ToV1(
+  mappingsV2: Record<InterfaceTypeApiName, InterfaceToObjectTypeMappingsV2>,
+): Record<InterfaceTypeApiName, InterfaceToObjectTypeMappings> {
+  return Object.fromEntries(
+    Object.entries(mappingsV2).map(
+      ([interfaceApiName, objectTypeMappingsV2]) => [
+        interfaceApiName,
+        Object.fromEntries(
+          Object.entries(objectTypeMappingsV2).map(
+            ([objectTypeName, propertyMappings]) => [
+              objectTypeName,
+              Object.fromEntries(
+                Object.entries(propertyMappings)
+                  .filter(
+                    ([, impl]) => impl.type === "localPropertyImplementation",
+                  )
+                  .map(([interfaceProp, impl]) => [
+                    interfaceProp,
+                    (impl as InterfacePropertyLocalPropertyImplementation)
+                      .propertyApiName,
+                  ]),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
   );
-  return {
-    ...objectDef,
-    interfaceImplementations: {
-      ...objectDef.interfaceImplementations,
-      [interfaceApiName]: {
-        ...objectDef.interfaceImplementations?.[interfaceApiName],
-        ...responseImplementations,
-      },
-    },
-  };
-}
-
-function convertResponseInterfaceImplementation(
-  implementation: WireInterfacePropertyImplementation,
-): ObjectMetadata.InterfacePropertyImplementation {
-  switch (implementation.type) {
-    case "localPropertyImplementation":
-      return {
-        type: "localProperty",
-        propertyApiName: implementation.propertyApiName,
-      };
-    case "structFieldImplementation":
-      return {
-        type: "structField",
-        propertyApiName: implementation.structFieldOfProperty.propertyApiName,
-        structFieldApiName:
-          implementation.structFieldOfProperty.structFieldApiName,
-      };
-    case "structImplementation":
-      return {
-        type: "struct",
-        mapping: Object.fromEntries(
-          Object.entries(implementation.mapping).map(([fieldName, entry]) => [
-            fieldName,
-            entry.type === "structFieldOfProperty"
-              ? {
-                  type: "structFieldOfProperty" as const,
-                  propertyApiName: entry.propertyApiName,
-                  structFieldApiName: entry.structFieldApiName,
-                }
-              : {
-                  type: "property" as const,
-                  propertyApiName: entry.propertyApiName,
-                },
-          ]),
-        ),
-      };
-    case "reducedPropertyImplementation":
-      return {
-        type: "reduced",
-        implementation: convertNestedResponseInterfaceImplementation(
-          implementation.implementation,
-        ),
-      };
-  }
-}
-
-type WireNestedInterfacePropertyImplementation = Extract<
-  WireInterfacePropertyImplementation,
-  { type: "reducedPropertyImplementation" }
->["implementation"];
-
-function convertNestedResponseInterfaceImplementation(
-  implementation: WireNestedInterfacePropertyImplementation,
-): Exclude<
-  ObjectMetadata.InterfacePropertyImplementation,
-  ObjectMetadata.InterfacePropertyReducedImplementation
-> {
-  const converted = convertResponseInterfaceImplementation(implementation);
-  invariant(converted.type !== "reduced");
-  return converted;
 }
