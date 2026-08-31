@@ -55,4 +55,6 @@ export interface ObjectPropertyTypeInner {
   nullability?: Nullability;
   status?: ObjectTypeStatus;
   editOnly?: boolean;
+  /** Creates an empty multimodal Media Set to back this media reference when the ontology is installed. */
+  includeEmptyBackingMediaSet?: boolean;
 }

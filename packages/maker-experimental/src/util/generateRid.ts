@@ -282,6 +282,10 @@ export class ReadableIdGenerator {
     return `media-set-view-${mediaSetViewName}` as ReadableId;
   }
 
+  static getForMediaSetViewOutput(mediaSetViewName: string): ReadableId {
+    return `media-set-view-output-${mediaSetViewName}` as ReadableId;
+  }
+
   static getForRestrictedView(restrictedViewName: string): ReadableId {
     return `restricted-view-datasource-${restrictedViewName}` as ReadableId;
   }

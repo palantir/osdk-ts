@@ -43,6 +43,7 @@ import {
   generateBackingDatasetBlockResultForLink,
   getNonEditOnlyProperties,
 } from "./generateBackingDataset.js";
+import { generateBackingMediaSetBlockResult } from "./generateBackingMediaSet.js";
 import { generateDirectDatasourceBlockResult } from "./generateDirectDatasource.js";
 import {
   generateValueTypeBlockResults,
@@ -239,6 +240,7 @@ export default async function main(
     importedInputPresets,
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
+    backingMediaSetNames,
   } = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
@@ -391,6 +393,17 @@ export default async function main(
     }
   }
 
+  for (const mediaSetName of backingMediaSetNames) {
+    const inputReadableId =
+      ReadableIdGenerator.getForMediaSetView(mediaSetName);
+    if (shapes.inputShapes.has(inputReadableId)) {
+      ontologyInputMappingEntries.push({
+        input: inputReadableId,
+        output: ReadableIdGenerator.getForMediaSetViewOutput(mediaSetName),
+      });
+    }
+  }
+
   ontologyInputMappingEntries.push(
     ...getValueTypeInternalMappings(ontologyIr.valueTypes, shapes.inputShapes),
   );
@@ -445,6 +458,19 @@ export default async function main(
       .filter((p): p is Promise<BlockGeneratorResult> => p !== undefined),
   );
 
+  const backingMediaSetGeneratorResults = await Promise.all(
+    backingMediaSetNames.map((mediaSetName) => {
+      consola.info(
+        `Generating backing Media Set BlockGeneratorResult for ${mediaSetName}...`,
+      );
+      return generateBackingMediaSetBlockResult(
+        mediaSetName,
+        commandLineOpts.buildDir,
+        commandLineOpts.randomnessKey,
+      );
+    }),
+  );
+
   // Create BlockGeneratorResult
   const blockGeneratorResult: BlockGeneratorResult = {
     block_identifier: "ontology",
@@ -473,6 +499,7 @@ export default async function main(
       ...directDatasourceGeneratorResults,
       ...backingDsGeneratorResults,
       ...backingDsLinkGeneratorResults,
+      ...backingMediaSetGeneratorResults,
       ...valueTypeResults,
     ],
     null,

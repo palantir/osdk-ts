@@ -44,6 +44,7 @@ export interface OntologyV2Result {
   importedInputPresets: Map<ReadableId, InputPreset>;
   backingDatasourceApiNames: string[];
   backingDatasourceLinkApiNames: string[];
+  backingMediaSetNames: string[];
 }
 
 export interface FunctionsIr {
@@ -132,6 +133,18 @@ export async function defineOntologyV2(
     })
     .map(([apiName]) => apiName);
 
+  const backingMediaSetNames = Object.values(
+    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
+  ).flatMap((ontologyEntity) => {
+    const objectType = ontologyEntity as ObjectType;
+    return (objectType.properties ?? [])
+      .filter(
+        ({ includeEmptyBackingMediaSet }) =>
+          includeEmptyBackingMediaSet === true,
+      )
+      .map(({ apiName }) => `${objectType.apiName}.${apiName}`);
+  });
+
   if (outputDir) {
     writeStaticObjects(outputDir);
   }
@@ -145,5 +158,6 @@ export async function defineOntologyV2(
     importedInputPresets: importedShapes.inputPresets,
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
+    backingMediaSetNames,
   };
 }

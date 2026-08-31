@@ -478,6 +478,7 @@ export class ObjectTypeShapeExtractor {
           mediaSet: {
             pathPolicy: { type: "any", any: {} as Void },
             mediaSchema: { type: "any", any: {} as Void },
+            mediaSchemaTypeV2: { type: "any", any: {} },
           },
         },
       ],
