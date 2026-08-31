@@ -63,6 +63,40 @@ describe("Experimental Test Suite", () => {
     await defineOntology("com.palantir.", () => {}, "/tmp/");
   });
 
+  describe("Empty backing Media Sets", () => {
+    it("collects opted-in properties and requires the Media Set during reconciliation", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineObject({
+          apiName: "Document",
+          displayName: "Document",
+          pluralDisplayName: "Documents",
+          titlePropertyApiName: "id",
+          primaryKeyPropertyApiName: "id",
+          properties: {
+            id: { type: "string" },
+            file: {
+              type: "mediaReference",
+              includeEmptyBackingMediaSet: true,
+            },
+          },
+        });
+      });
+
+      const mediaSetName = "com.palantir.Document.file";
+      const inputReadableId =
+        ReadableIdGenerator.getForMediaSetView(mediaSetName);
+      expect(result.backingMediaSetNames).toEqual([mediaSetName]);
+      expect(result.shapes.inputShapes.get(inputReadableId)?.type).toBe(
+        "filesDatasource",
+      );
+      expect(result.shapes.inputShapeMetadata.get(inputReadableId)).toEqual({
+        isOptional: false,
+        isAccessedInReconcile: true,
+        reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+      });
+    });
+  });
+
   describe("Dependencies", () => {
     it("writes dependencies to the configured file", async () => {
       const outputDir = fs.mkdtempSync(

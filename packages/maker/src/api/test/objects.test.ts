@@ -29,6 +29,46 @@ describe("Object Types", () => {
     await defineOntology("com.palantir.", () => {}, "/tmp/");
   });
 
+  it("allows an empty backing Media Set for a media reference property", () => {
+    const object = defineObject({
+      titlePropertyApiName: "id",
+      displayName: "Document",
+      pluralDisplayName: "Documents",
+      apiName: "Document",
+      primaryKeyPropertyApiName: "id",
+      properties: {
+        id: { type: "string" },
+        file: {
+          type: "mediaReference",
+          includeEmptyBackingMediaSet: true,
+        },
+      },
+    });
+
+    expect(object.properties?.file.includeEmptyBackingMediaSet).toBe(true);
+  });
+
+  it("rejects an empty backing Media Set for other property types", () => {
+    expect(() =>
+      defineObject({
+        titlePropertyApiName: "id",
+        displayName: "Document",
+        pluralDisplayName: "Documents",
+        apiName: "Document",
+        primaryKeyPropertyApiName: "id",
+        properties: {
+          id: { type: "string" },
+          fileName: {
+            type: "string",
+            includeEmptyBackingMediaSet: true,
+          },
+        },
+      }),
+    ).toThrowError(
+      "Property fileName on object Document can only use includeEmptyBackingMediaSet when its type is mediaReference",
+    );
+  });
+
   it("Fails if the api name is invalid", () => {
     expect(() => {
       defineObject({

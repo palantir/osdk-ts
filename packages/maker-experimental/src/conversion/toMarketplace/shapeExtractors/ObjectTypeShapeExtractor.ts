@@ -204,6 +204,18 @@ export class ObjectTypeShapeExtractor {
       );
       for (const [id, shape] of Array.from(dsShapes.entries())) {
         blockShapes.inputShapes.set(id, shape);
+        if (
+          shape.type === "filesDatasource" &&
+          shape.filesDatasource.supportedTypes?.some(
+            ({ type }) => type === "mediaSet",
+          )
+        ) {
+          blockShapes.inputShapeMetadata.set(id, {
+            isOptional: false,
+            isAccessedInReconcile: true,
+            reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+          });
+        }
       }
     }
 
@@ -478,6 +490,7 @@ export class ObjectTypeShapeExtractor {
           mediaSet: {
             pathPolicy: { type: "any", any: {} as Void },
             mediaSchema: { type: "any", any: {} as Void },
+            mediaSchemaTypeV2: { type: "any", any: {} },
           },
         },
       ],
