@@ -19,7 +19,11 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { ActionType, InterfaceType } from "@osdk/maker";
+import type {
+  ActionType,
+  InterfaceType,
+  PropertyTypeTypeVector,
+} from "@osdk/maker";
 import {
   addDependency,
   defineCreateObjectAction,
@@ -35,6 +39,7 @@ import {
   importSharedPropertyType,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
+import invariant from "tiny-invariant";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { ReadableIdGenerator } from "../util/generateRid.js";
@@ -1617,5 +1622,121 @@ describe("Experimental Test Suite", () => {
     ).rejects.toThrow(
       /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/u,
     );
+  });
+
+  describe("Vector properties", () => {
+    const vector: PropertyTypeTypeVector = {
+      type: "vector",
+      dimension: 1536,
+      supportsSearchWith: "COSINE_SIMILARITY",
+      embeddingModel: {
+        type: "text",
+        text: { type: "lms", lms: "OPENAI_TEXT_EMBEDDING_ADA_002" },
+      },
+      quantization: "BYTE",
+    };
+
+    const expectedIr = {
+      type: "vector",
+      vector: {
+        dimension: 1536,
+        supportsSearchWith: ["COSINE_SIMILARITY"],
+        embeddingModel: {
+          type: "text",
+          text: { type: "lms", lms: "OPENAI_TEXT_EMBEDDING_ADA_002" },
+        },
+        quantization: "BYTE",
+      },
+    };
+
+    it("converts a vector object property", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineObject({
+          apiName: "foo",
+          displayName: "Foo",
+          pluralDisplayName: "Foos",
+          titlePropertyApiName: "bar",
+          primaryKeyPropertyApiName: "bar",
+          properties: {
+            bar: { type: "string" },
+            embedding: { type: vector },
+          },
+        });
+      });
+
+      const objectType = Object.values(
+        result.ontologyIr.ontology.objectTypes,
+      )[0].objectType;
+      const embedding = Object.values(objectType.propertyTypes).find(
+        (p) => p.apiName === "embedding",
+      )!;
+      expect(embedding.type).toEqual(expectedIr);
+      expect(embedding.indexedForSearch).toBe(true);
+    });
+
+    it("converts a vector shared property type", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineSharedPropertyType({ apiName: "embedding", type: vector });
+      });
+
+      const spt = Object.values(
+        result.ontologyIr.ontology.sharedPropertyTypes,
+      )[0].sharedPropertyType;
+      expect(spt.type).toEqual(expectedIr);
+      expect(spt.indexedForSearch).toBe(true);
+    });
+
+    it("converts a vector interface-defined property", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineInterface({
+          apiName: "bar",
+          displayName: "Bar",
+          properties: { embedding: { type: vector } },
+        });
+      });
+
+      const interfaceType = Object.values(
+        result.ontologyIr.ontology.interfaceTypes,
+      )[0].interfaceType;
+      const prop = Object.values(interfaceType.propertiesV3)[0];
+      invariant(prop.type === "interfaceDefinedPropertyType");
+      expect(prop.interfaceDefinedPropertyType.type).toEqual(expectedIr);
+      expect(
+        prop.interfaceDefinedPropertyType.constraints.indexedForSearch,
+      ).toBe(true);
+    });
+
+    it("rejects a vector object property declared as an array", async () => {
+      await expect(
+        defineOntologyV2("com.palantir.", () => {
+          defineObject({
+            apiName: "foo",
+            displayName: "Foo",
+            pluralDisplayName: "Foos",
+            titlePropertyApiName: "bar",
+            primaryKeyPropertyApiName: "bar",
+            properties: {
+              bar: { type: "string" },
+              embedding: { type: vector, array: true },
+            },
+          });
+        }),
+      ).rejects.toThrow(
+        "Vector property 'com.palantir.embedding' cannot be an array",
+      );
+    });
+
+    it("rejects a vector shared property type with a non-positive dimension", async () => {
+      await expect(
+        defineOntologyV2("com.palantir.", () => {
+          defineSharedPropertyType({
+            apiName: "embedding",
+            type: { ...vector, dimension: 0 },
+          });
+        }),
+      ).rejects.toThrow(
+        "Vector property 'com.palantir.embedding' must have an integer 'dimension' of at least 1, but got 0",
+      );
+    });
   });
 });

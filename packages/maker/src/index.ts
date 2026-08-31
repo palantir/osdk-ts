@@ -120,7 +120,10 @@ export type {
 export type { ObjectTypeDefinition } from "./api/object/ObjectTypeDefinition.js";
 export type { SecurityConditionDefinition } from "./api/object/SecurityCondition.js";
 export type { Nullability } from "./api/properties/Nullability.js";
-export type { PropertyTypeType } from "./api/properties/PropertyTypeType.js";
+export type {
+  PropertyTypeType,
+  PropertyTypeTypeVector,
+} from "./api/properties/PropertyTypeType.js";
 export { isExotic } from "./api/properties/PropertyTypeType.js";
 export type { SharedPropertyType } from "./api/properties/SharedPropertyType.js";
 export {
@@ -129,6 +132,7 @@ export {
   hasRenderHints,
   shouldBeIndexedForSearch,
   shouldNotHaveRenderHints,
+  validateVectorProperty,
 } from "./api/propertyConversionUtils.js";
 export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";

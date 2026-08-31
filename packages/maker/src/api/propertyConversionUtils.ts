@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import invariant from "tiny-invariant";
+
 import type { TypeClass } from "./common/TypeClass.js";
 import type { PropertyTypeType } from "./properties/PropertyTypeType.js";
+import { isVector } from "./properties/PropertyTypeType.js";
 
 export const defaultTypeClasses: TypeClass[] = [
   {
@@ -27,9 +30,13 @@ export const defaultTypeClasses: TypeClass[] = [
 
 // ExperimentalTimeDependentV1 and Attachment types should be included here once supported
 export function shouldNotHaveRenderHints(type: PropertyTypeType): boolean {
-  return ["struct", "mediaReference", "geotimeSeries", "attachment"].includes(
-    getPropertyTypeName(type),
-  );
+  return [
+    "struct",
+    "mediaReference",
+    "geotimeSeries",
+    "attachment",
+    "vector",
+  ].includes(getPropertyTypeName(type));
 }
 
 export function hasRenderHints(typeClasses: TypeClass[] | undefined): boolean {
@@ -40,6 +47,21 @@ export function hasRenderHints(typeClasses: TypeClass[] | undefined): boolean {
 
 export function getPropertyTypeName(type: PropertyTypeType): string {
   return typeof type === "object" ? type.type : type;
+}
+
+export function validateVectorProperty(
+  apiName: string,
+  type: PropertyTypeType,
+  array: boolean | undefined,
+): void {
+  if (!isVector(type)) {
+    return;
+  }
+  invariant(!array, `Vector property '${apiName}' cannot be an array`);
+  invariant(
+    Number.isInteger(type.dimension) && type.dimension >= 1,
+    `Vector property '${apiName}' must have an integer 'dimension' of at least 1, but got ${type.dimension}`,
+  );
 }
 
 export function shouldBeIndexedForSearch(type: PropertyTypeType): boolean {

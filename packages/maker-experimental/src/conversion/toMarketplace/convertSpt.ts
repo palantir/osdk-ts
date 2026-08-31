@@ -19,6 +19,7 @@ import type {
   SharedPropertyType as SharedPropertyTypeWire,
 } from "@osdk/client.unstable";
 import type { SharedPropertyType } from "@osdk/maker";
+import { shouldBeIndexedForSearch, validateVectorProperty } from "@osdk/maker";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
@@ -44,6 +45,7 @@ export function convertSpt(
   const dataConstraint:
     | OntologyIrSharedPropertyType["dataConstraints"]
     | undefined = convertNullabilityToDataConstraint({ type, nullability });
+  validateVectorProperty(apiName, type, array);
   return {
     apiName,
     // TODO: Generate proper RID based on apiName
@@ -70,7 +72,7 @@ export function convertSpt(
     baseFormatter,
     dataConstraints: dataConstraint,
     gothamMapping,
-    indexedForSearch: true,
+    indexedForSearch: shouldBeIndexedForSearch(type),
     typeClasses: typeClasses ?? [],
     valueType:
       valueType === undefined

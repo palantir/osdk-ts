@@ -686,6 +686,68 @@ describe("Interfaces", () => {
       `);
     });
 
+    it("Vector IDPs", () => {
+      defineInterface({
+        apiName: "bar",
+        displayName: "Bar",
+        properties: {
+          embedding: {
+            type: {
+              type: "vector",
+              dimension: 768,
+              supportsSearchWith: "COSINE_SIMILARITY",
+            },
+          },
+        },
+      });
+
+      const prop =
+        dumpOntologyFullMetadata().ontology.interfaceTypes["com.palantir.bar"]
+          .interfaceType.propertiesV3["embedding"];
+      if (prop.type !== "interfaceDefinedPropertyType") {
+        throw new Error("expected interfaceDefinedPropertyType");
+      }
+      expect(prop.interfaceDefinedPropertyType.type).toMatchInlineSnapshot(`
+        {
+          "type": "vector",
+          "vector": {
+            "dimension": 768,
+            "embeddingModel": undefined,
+            "quantization": undefined,
+            "supportsSearchWith": [
+              "COSINE_SIMILARITY",
+            ],
+          },
+        }
+      `);
+      expect(
+        prop.interfaceDefinedPropertyType.constraints.indexedForSearch,
+      ).toBe(true);
+    });
+
+    it("doesn't let you make a vector IDP an array", () => {
+      defineInterface({
+        apiName: "bar",
+        displayName: "Bar",
+        properties: {
+          embedding: {
+            type: {
+              type: "vector",
+              dimension: 768,
+              supportsSearchWith: "COSINE_SIMILARITY",
+            },
+            array: true,
+          },
+        },
+      });
+
+      expect(() =>
+        dumpOntologyFullMetadata(),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Vector property 'embedding' cannot be an array]`,
+      );
+    });
+
     it("Complex interface properties", () => {
       const spt = defineSharedPropertyType({
         apiName: "spt",
