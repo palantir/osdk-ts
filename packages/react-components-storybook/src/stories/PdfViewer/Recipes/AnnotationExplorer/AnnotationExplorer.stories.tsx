@@ -397,18 +397,7 @@ export const AnnotationExplorer: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { useCallback, useMemo, useState } from "react";
-import {
-  PdfViewerAnnotationLayer,
-  PdfViewerProvider,
-  PdfViewerSearchBar,
-  PdfViewerToolbar,
-  usePdfViewerContext,
-  usePdfViewerInstance,
-} from "@osdk/react-components/experimental/pdf-viewer";
-import type { PdfAnnotation, PdfCustomAnnotation } from "@osdk/react-components/experimental/pdf-viewer";
-
-// Stable reference — a fresh [] each render would re-trigger the viewer
+        code: `// Stable reference — a fresh [] each render would re-trigger the viewer
 const EMPTY_ANNOTATIONS: PdfAnnotation[] = [];
 
 // Composing the viewer by hand, instead of using BasePdfViewer, is what lets

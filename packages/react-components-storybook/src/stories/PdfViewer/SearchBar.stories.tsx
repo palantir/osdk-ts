@@ -56,9 +56,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewerSearchBar } from "@osdk/react-components/experimental/pdf-viewer";
-
-// Fully controlled — you own the query and run the search yourself
+        code: `// Fully controlled — you own the query and run the search yourself
 <PdfViewerSearchBar
   query=""
   totalMatches={0}
@@ -82,9 +80,7 @@ export const WithMatches: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewerSearchBar } from "@osdk/react-components/experimental/pdf-viewer";
-
-// currentMatchIndex is 0-indexed; the bar displays it as "4 of 12"
+        code: `// currentMatchIndex is 0-indexed; the bar displays it as "4 of 12"
 <PdfViewerSearchBar
   query="trace"
   totalMatches={12}
@@ -108,9 +104,7 @@ export const NoResults: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewerSearchBar } from "@osdk/react-components/experimental/pdf-viewer";
-
-// A non-empty query with zero matches shows the no-results state and
+        code: `// A non-empty query with zero matches shows the no-results state and
 // disables the next/prev buttons
 <PdfViewerSearchBar
   query="nonexistent"

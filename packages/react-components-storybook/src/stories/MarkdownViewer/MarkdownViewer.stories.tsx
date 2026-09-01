@@ -133,9 +133,7 @@ export const WithContent: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseMarkdownViewer } from "@osdk/react-components/experimental/markdown-renderer";
-
-// Headings, lists, tables, code fences and rules all render from a raw string
+        code: `// Headings, lists, tables, code fences and rules all render from a raw string
 <BaseMarkdownViewer content={markdownString} />`,
       },
     },
@@ -154,9 +152,7 @@ export const MinimalContent: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseMarkdownViewer } from "@osdk/react-components/experimental/markdown-renderer";
-
-<BaseMarkdownViewer content="# Hello World\\n\\nA simple paragraph with **bold** and *italic*." />`,
+        code: `<BaseMarkdownViewer content="# Hello World\\n\\nA simple paragraph with **bold** and *italic*." />`,
       },
     },
   },

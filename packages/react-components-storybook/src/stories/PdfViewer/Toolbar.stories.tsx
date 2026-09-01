@@ -72,9 +72,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewerToolbar } from "@osdk/react-components/experimental/pdf-viewer";
-
-// Fully controlled — every button is a callback you wire to your own state
+        code: `// Fully controlled — every button is a callback you wire to your own state
 <PdfViewerToolbar
   currentPage={1}
   numPages={14}
@@ -104,9 +102,7 @@ export const WithDownload: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewerToolbar } from "@osdk/react-components/experimental/pdf-viewer";
-
-// The download button is hidden unless enableDownload is set
+        code: `// The download button is hidden unless enableDownload is set
 <PdfViewerToolbar
   currentPage={1}
   numPages={14}
@@ -130,9 +126,7 @@ export const MidDocument: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewerToolbar } from "@osdk/react-components/experimental/pdf-viewer";
-
-// Mid-document state: page input filled, zoom above 100%, sidebar toggle active
+        code: `// Mid-document state: page input filled, zoom above 100%, sidebar toggle active
 <PdfViewerToolbar
   currentPage={7}
   numPages={14}

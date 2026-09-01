@@ -231,9 +231,7 @@ export const Pdf: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-
-<DocumentViewer media={employee.trainingMaterial} />`,
+        code: `<DocumentViewer media={employee.trainingMaterial} />`,
       },
     },
   },
@@ -251,9 +249,7 @@ export const Image: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-
-// image/* media renders with the pan and zoom ImageViewer
+        code: `// image/* media renders with the pan and zoom ImageViewer
 <DocumentViewer media={employee.profilePhoto} />`,
       },
     },
@@ -267,9 +263,7 @@ export const Markdown: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-
-// text/markdown media renders with MarkdownViewer
+        code: `// text/markdown media renders with MarkdownViewer
 <DocumentViewer media={project.readme} />`,
       },
     },
@@ -291,9 +285,7 @@ export const Video: Story = {
     },
     docs: {
       source: {
-        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-
-// video/* media renders with VideoViewer
+        code: `// video/* media renders with VideoViewer
 <DocumentViewer media={incident.bodyCamFootage} />`,
       },
     },
@@ -312,9 +304,7 @@ export const UnsupportedType: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-
-// MIME types with no matching renderer fall back to a download prompt
+        code: `// MIME types with no matching renderer fall back to a download prompt
 <DocumentViewer media={record.rawAttachment} />`,
       },
     },
@@ -328,9 +318,7 @@ export const Email: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-
-// message/rfc822 media renders with EmailViewer
+        code: `// message/rfc822 media renders with EmailViewer
 <DocumentViewer media={thread.originalMessage} />`,
       },
     },
@@ -344,9 +332,7 @@ export const Spreadsheet: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-
-// xlsx / xls / csv media renders with SpreadsheetViewer
+        code: `// xlsx / xls / csv media renders with SpreadsheetViewer
 <DocumentViewer media={quarter.headcountReport} />`,
       },
     },
@@ -365,9 +351,7 @@ export const Xml: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-
-// application/xml media renders with the collapsible-tree XmlViewer
+        code: `// application/xml media renders with the collapsible-tree XmlViewer
 <DocumentViewer media={shipment.manifest} />`,
       },
     },
@@ -384,9 +368,7 @@ export const Tiff: Story = {
     },
     docs: {
       source: {
-        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-
-// image/tiff media renders with TiffViewer, which decodes in the browser.
+        code: `// image/tiff media renders with TiffViewer, which decodes in the browser.
 // See "Tiff With Pdf Conversion" for server-side PDF conversion instead.
 <DocumentViewer media={claim.scannedForm} />`,
       },
@@ -432,9 +414,7 @@ export const TiffWithPdfConversion: Story = {
     },
     docs: {
       source: {
-        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-
-// Multi-page TIFFs are detected and converted to PDF via MIO transform API
+        code: `// Multi-page TIFFs are detected and converted to PDF via MIO transform API
 // Falls back to TiffViewer if transform fails or for single-page TIFFs
 <DocumentViewer media={myMedia} enableTiffToPdf fileName="scan.tiff" />`,
       },
@@ -516,9 +496,7 @@ export const WithMimeTypeOverride: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-
-// This media item reports "application/octet-stream", which would hit the
+        code: `// This media item reports "application/octet-stream", which would hit the
 // unsupported-type fallback. The override makes DocumentViewer dispatch on
 // "text/markdown" instead, so MarkdownViewer handles it.
 <DocumentViewer media={myMedia} mimeTypeOverride="text/markdown" />`,
@@ -538,9 +516,7 @@ export const WithPdfViewerProps: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-
-<DocumentViewer
+        code: `<DocumentViewer
   media={myMedia}
   pdfViewerProps={{
     initialSidebarOpen: true,

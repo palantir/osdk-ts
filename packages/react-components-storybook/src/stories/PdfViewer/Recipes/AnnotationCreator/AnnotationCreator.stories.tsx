@@ -330,11 +330,7 @@ export const AnnotationCreator: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { useCallback, useEffect, useRef, useState } from "react";
-import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
-import type { PdfAnnotation, PdfRect, PdfViewerHandle } from "@osdk/react-components/experimental/pdf-viewer";
-
-const HIGHLIGHT_COLOR = "#fff066";
+        code: `const HIGHLIGHT_COLOR = "#fff066";
 
 // Browser rects are viewport-relative with a top-left origin; PDF rects are
 // page-relative with a bottom-left origin. Both need dividing by the zoom

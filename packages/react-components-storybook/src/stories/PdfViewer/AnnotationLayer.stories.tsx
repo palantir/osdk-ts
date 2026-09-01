@@ -111,9 +111,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewerAnnotationLayer } from "@osdk/react-components/experimental/pdf-viewer";
-
-// Absolutely positioned over a rendered page. transform is pdf.js's
+        code: `// Absolutely positioned over a rendered page. transform is pdf.js's
 // viewport.transform, which converts PDF coordinates to CSS pixels.
 <PdfViewerAnnotationLayer
   annotations={[
@@ -162,9 +160,7 @@ export const HighlightsOnly: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewerAnnotationLayer } from "@osdk/react-components/experimental/pdf-viewer";
-
-// Per-annotation color overrides the default highlight fill
+        code: `// Per-annotation color overrides the default highlight fill
 <PdfViewerAnnotationLayer
   annotations={[
     { id: "h1", type: "highlight", page: 1, rect: { x: 50, y: 700, width: 300, height: 20 }, label: "First highlight" },
@@ -188,9 +184,7 @@ export const ZoomedIn: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewerAnnotationLayer } from "@osdk/react-components/experimental/pdf-viewer";
-
-// scale and transform must move together, otherwise annotations drift off the
+        code: `// scale and transform must move together, otherwise annotations drift off the
 // page as the user zooms
 <PdfViewerAnnotationLayer
   annotations={annotations}

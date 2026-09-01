@@ -133,10 +133,7 @@ export const CustomAnnotation: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import type { PdfAnnotationRenderProps } from "@osdk/react-components/experimental/pdf-viewer";
-import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
-
-function TooltipAnnotation({ annotation }: PdfAnnotationRenderProps) {
+        code: `function TooltipAnnotation({ annotation }: PdfAnnotationRenderProps) {
   return (
     <div style={{ background: "rgba(59, 130, 246, 0.9)", borderRadius: 6, color: "#fff", padding: "4px 8px" }}>
       {annotation.label ?? "Note"}

@@ -90,9 +90,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { VideoViewer } from "@osdk/react-components/experimental/video-viewer";
-
-<VideoViewer media={myOsdkMedia} />`,
+        code: `<VideoViewer media={myOsdkMedia} />`,
       },
     },
   },
@@ -125,9 +123,7 @@ export const WithErrorCallback: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { VideoViewer } from "@osdk/react-components/experimental/video-viewer";
-
-// onError fires when fetching the media or decoding the video fails
+        code: `// onError fires when fetching the media or decoding the video fails
 <VideoViewer
   media={myOsdkMedia}
   onError={(error) => reportPlaybackFailure(error)}

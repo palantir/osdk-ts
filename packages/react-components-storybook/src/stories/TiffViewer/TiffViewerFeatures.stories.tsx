@@ -133,9 +133,7 @@ export const WithContent: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-renderer";
-
-<BaseTiffViewer src={tiffBytes} />`,
+        code: `<BaseTiffViewer src={tiffBytes} />`,
       },
     },
   },
@@ -148,9 +146,7 @@ export const WithErrorCallback: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-renderer";
-
-<BaseTiffViewer src={tiffBytes} onError={() => console.error("TIFF render failed")} />`,
+        code: `<BaseTiffViewer src={tiffBytes} onError={() => console.error("TIFF render failed")} />`,
       },
     },
   },

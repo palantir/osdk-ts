@@ -61,9 +61,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewerContent } from "@osdk/react-components/experimental/pdf-viewer";
-
-// The scrolling page canvas on its own — no toolbar, sidebar, or search.
+        code: `// The scrolling page canvas on its own — no toolbar, sidebar, or search.
 // Use it when you want to supply your own chrome around the pages.
 <PdfViewerContent
   src="/whitepaper.pdf"
@@ -82,9 +80,7 @@ export const ZoomedIn: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewerContent } from "@osdk/react-components/experimental/pdf-viewer";
-
-// initialScale is uncontrolled — later zooming reports through onScaleChange
+        code: `// initialScale is uncontrolled — later zooming reports through onScaleChange
 <PdfViewerContent
   src="/whitepaper.pdf"
   initialScale={2}
@@ -102,9 +98,7 @@ export const StartOnPage5: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewerContent } from "@osdk/react-components/experimental/pdf-viewer";
-
-// Deep-link into a document by scrolling straight to a page (1-indexed)
+        code: `// Deep-link into a document by scrolling straight to a page (1-indexed)
 <PdfViewerContent
   src="/whitepaper.pdf"
   initialPage={5}

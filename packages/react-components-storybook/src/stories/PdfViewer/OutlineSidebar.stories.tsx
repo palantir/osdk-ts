@@ -113,9 +113,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewerOutlineSidebar } from "@osdk/react-components/experimental/pdf-viewer";
-
-// depth drives indentation; bold and italic mirror the PDF's own bookmark styling
+        code: `// depth drives indentation; bold and italic mirror the PDF's own bookmark styling
 <PdfViewerOutlineSidebar
   outlineItems={[
     { title: "Introduction", depth: 0, pageNumber: 1, bold: true, italic: false },
@@ -139,9 +137,7 @@ export const ActiveSection: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewerOutlineSidebar } from "@osdk/react-components/experimental/pdf-viewer";
-
-// currentPage highlights the deepest entry at or before that page
+        code: `// currentPage highlights the deepest entry at or before that page
 <PdfViewerOutlineSidebar
   outlineItems={outlineItems}
   currentPage={6}
@@ -161,9 +157,7 @@ export const Empty: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewerOutlineSidebar } from "@osdk/react-components/experimental/pdf-viewer";
-
-// PDFs without bookmarks render an empty state rather than a blank panel
+        code: `// PDFs without bookmarks render an empty state rather than a blank panel
 <PdfViewerOutlineSidebar
   outlineItems={[]}
   currentPage={1}

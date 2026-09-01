@@ -90,9 +90,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewerSidebar, usePdfDocument } from "@osdk/react-components/experimental/pdf-viewer";
-
-function MyThumbnailSidebar({ src }: { src: string }) {
+        code: `function MyThumbnailSidebar({ src }: { src: string }) {
   const { document, numPages, loading, error } = usePdfDocument(src);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -123,9 +121,7 @@ export const ActivePage: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewerSidebar } from "@osdk/react-components/experimental/pdf-viewer";
-
-// currentPage outlines that thumbnail and scrolls it into view
+        code: `// currentPage outlines that thumbnail and scrolls it into view
 <PdfViewerSidebar
   document={document}
   numPages={numPages}

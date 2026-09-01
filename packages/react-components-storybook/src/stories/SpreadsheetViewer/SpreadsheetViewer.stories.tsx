@@ -201,9 +201,7 @@ export const Default: StoryObj<SpreadsheetViewerProps> = {
   parameters: {
     docs: {
       source: {
-        code: `import { SpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
-
-<SpreadsheetViewer media={myOsdkMedia} />`,
+        code: `<SpreadsheetViewer media={myOsdkMedia} />`,
       },
     },
   },
@@ -213,9 +211,7 @@ export const WithSpreadsheet: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseSpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
-
-<BaseSpreadsheetViewer content={parsedSpreadsheet} />`,
+        code: `<BaseSpreadsheetViewer content={parsedSpreadsheet} />`,
       },
     },
   },
@@ -230,9 +226,7 @@ export const SingleSheet: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseSpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
-
-// With one sheet the tab bar is hidden
+        code: `// With one sheet the tab bar is hidden
 <BaseSpreadsheetViewer
   content={{
     sheets: [
@@ -271,9 +265,7 @@ export const WithRealFile: StoryObj<SpreadsheetViewerProps> = {
     },
     docs: {
       source: {
-        code: `import { SpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
-
-// SpreadsheetViewer fetches and parses the xlsx workbook itself, so a real
+        code: `// SpreadsheetViewer fetches and parses the xlsx workbook itself, so a real
 // multi-sheet file needs no extra wiring
 <SpreadsheetViewer media={quarter.headcountReport} />`,
       },
