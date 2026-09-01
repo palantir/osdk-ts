@@ -42,6 +42,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@date-fns/utc": "^2.1.1",
     "@osdk/api": "workspace:~",
     "@osdk/foundry.admin": "catalog:foundry-platform-typescript",
     "@osdk/foundry.core": "catalog:foundry-platform-typescript",

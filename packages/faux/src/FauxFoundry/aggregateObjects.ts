@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { UTCDate } from "@date-fns/utc";
 import type {
   AggregateObjectsResponseV2,
   AggregationGroupByV2,
@@ -41,7 +42,7 @@ interface GroupBucket {
   objects: BaseServerObject[];
 }
 
-const DURATION_START_FNS: Record<string, (date: Date) => Date> = {
+const DURATION_START_FNS: Record<string, (date: UTCDate) => Date> = {
   SECONDS: startOfSecond,
   MINUTES: startOfMinute,
   HOURS: startOfHour,
@@ -256,7 +257,7 @@ function computeDurationBucketStart(date: Date, unit: string): string {
   if (fn == null) {
     throw new Error(`FauxFoundry: unsupported duration unit: ${unit}`);
   }
-  return fn(date).toISOString();
+  return fn(new UTCDate(date)).toISOString();
 }
 
 function numericAgg(

@@ -97,7 +97,7 @@ function formatPropertyValue(
         rule.type === "timestamp" ? rule.displayTimezone : undefined,
         objectData,
         options.locale ?? getBrowserLocale(),
-        options.timezoneId,
+        rule.type === "date" ? "UTC" : options.timezoneId,
       );
     default:
       return undefined;

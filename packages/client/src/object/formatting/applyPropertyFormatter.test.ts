@@ -27,6 +27,10 @@ describe("getFormattedValue", () => {
   const EN_US = { locale: "en-US" };
   const DE_DE = { locale: "de-DE" };
   const FR_FR = { locale: "fr-FR" };
+  const EN_US_LOS_ANGELES = {
+    locale: "en-US",
+    timezoneId: "America/Los_Angeles",
+  };
   const EN_US_TOKYO = { locale: "en-US", timezoneId: "Asia/Tokyo" };
 
   // Single object definition with properties for testing
@@ -659,6 +663,19 @@ describe("getFormattedValue", () => {
         );
 
       expect(formatted).toBe("Mi., 15. Jan. 2025");
+    });
+
+    it("does not shift a date to the previous day in a negative UTC offset", () => {
+      const obj = getObject({
+        createdDate: "2025-01-15T00:00:00.000Z",
+      });
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "createdDate",
+          EN_US_LOS_ANGELES,
+        );
+
+      expect(formatted).toBe("Wed, Jan 15, 2025");
     });
 
     it("formats timestamp with static timezone (America/New_York)", () => {
