@@ -50,3 +50,26 @@ export function getInterfacePropertyTypeType(
     ? interfacePropertyType.sharedPropertyType.type
     : interfacePropertyType.type;
 }
+
+/**
+ * Whether implementing object types must provide this property.
+ */
+export function isInterfacePropertyRequired(
+  interfacePropertyType: InterfacePropertyType,
+): boolean {
+  return isInterfaceSharedPropertyType(interfacePropertyType)
+    ? interfacePropertyType.required
+    : (interfacePropertyType.required ?? true);
+}
+
+/**
+ * The name a property is keyed by on the wire.
+ */
+export function interfacePropertyWireApiName(
+  interfacePropertyType: InterfacePropertyType,
+  authoredApiName: string,
+): string {
+  return isInterfaceSharedPropertyType(interfacePropertyType)
+    ? interfacePropertyType.sharedPropertyType.apiName
+    : authoredApiName;
+}
