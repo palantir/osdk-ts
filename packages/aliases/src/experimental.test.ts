@@ -25,13 +25,14 @@ import * as browser from "./browser.js";
 import { resetAliasesCache } from "./browser.js";
 import {
   Aliases,
-  DEFAULT_DECLARATIONS_PATH,
-  DEFAULT_DEPLOYMENT_CONFIG_PATH,
+  DEFAULT_RESOURCES_PATH,
   load,
 } from "./public/experimental.js";
 
-const DEPLOYMENT_CONFIG = {
-  aliases: JSON.stringify({ apiBaseUrl: "https://api.example.com" }),
+const RESOURCES_JSON = {
+  aliases: {
+    custom: { apiBaseUrl: { value: "https://api.example.com" } },
+  },
 };
 
 function mockFetch(): typeof globalThis.fetch {
@@ -41,7 +42,7 @@ function mockFetch(): typeof globalThis.fetch {
       status: 200,
       statusText: "OK",
       headers: { get: () => "application/json" },
-      text: () => Promise.resolve(JSON.stringify(DEPLOYMENT_CONFIG)),
+      text: () => Promise.resolve(JSON.stringify(RESOURCES_JSON)),
     }),
   ) as unknown as typeof globalThis.fetch;
 }
@@ -75,10 +76,7 @@ describe("experimental browser entry point", () => {
     // Same function identities, not merely same names, so the two styles can
     // never drift apart.
     expect(Aliases.load).toBe(load);
-    expect(Aliases.DEFAULT_DECLARATIONS_PATH).toBe(DEFAULT_DECLARATIONS_PATH);
-    expect(Aliases.DEFAULT_DEPLOYMENT_CONFIG_PATH).toBe(
-      DEFAULT_DEPLOYMENT_CONFIG_PATH,
-    );
+    expect(Aliases.DEFAULT_RESOURCES_PATH).toBe(DEFAULT_RESOURCES_PATH);
   });
 
   it("does not re-export the filesystem loaders", () => {

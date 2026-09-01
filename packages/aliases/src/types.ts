@@ -54,25 +54,11 @@ export enum AliasEnvironment {
   LIVE_PREVIEW = "LIVE_PREVIEW",
 }
 
-// Browser mode types (deployment.config.json)
-
 /**
- * The part of the Marketplace deployment config used by the alias loader. The
- * full file also contains fields such as `clientId`, `foundryUrl`, and
- * `ontologyRid`, which this package ignores.
+ * Custom aliases in root `resources.json`. Values are author defaults locally
+ * and installer-resolved values on a Marketplace-installed site.
  */
-export interface DeploymentConfig {
-  /** Stringified JSON `Record<string, string>` of resolved custom alias values. */
-  aliases?: string;
-}
-
-/**
- * Shape of the author-maintained declaration file (`public/resources.json`).
- * This is the DEVELOPMENT shape: there is no installer locally, so the values
- * here are the developer's declared defaults. `description` and `required` are
- * consumed at packaging time and are irrelevant to the browser runtime.
- */
-export interface AliasDeclarationsFile {
+export interface CustomAliasResources {
   aliases?: {
     custom?: Record<
       string,
