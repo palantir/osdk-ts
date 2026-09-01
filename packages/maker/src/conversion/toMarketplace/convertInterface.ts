@@ -23,15 +23,15 @@ import { convertSpt } from "./convertSpt.js";
 export function convertInterface(
   interfaceType: InterfaceType,
 ): OntologyIrMarketplaceInterfaceType {
-  const {
-    __type,
-    // schema migrations travel in their own block data section rather than on the interface type
-    // directly, so we explicitly exclude it from "other"
-    schemaMigrations: _schemaMigrations,
-    ...other
-  } = interfaceType;
+  const { __type, schemaMigrations, ...other } = interfaceType;
   return {
     ...other,
+    // schema migrations travel in their own block data section rather than on the interface type
+    // directly; we only use the declared object to determine if the IT is opted in,
+    // but exclude the migrations themselves from the IT definition
+    ...(schemaMigrations !== undefined
+      ? { schemaMigrationsEnabled: true }
+      : {}),
     propertiesV2: Object.fromEntries(
       Object.values(interfaceType.propertiesV2).map((spt) => [
         spt.sharedPropertyType.apiName,

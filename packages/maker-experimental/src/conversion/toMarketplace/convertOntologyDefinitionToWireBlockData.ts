@@ -45,6 +45,7 @@ import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
 import { convertAction } from "./convertActionHelpers.js";
 import { convertInterface } from "./convertInterface.js";
+import { convertInterfaceSchemaMigrations } from "./convertInterfaceSchemaMigrations.js";
 import { convertLink } from "./convertLink.js";
 import { convertObject } from "./convertObject.js";
 import { convertSpt } from "./convertSpt.js";
@@ -142,6 +143,10 @@ export function convertOntologyDefinitionToWireBlockData(
         ridGenerator.generateRidForInterface(apiName),
         {
           interfaceType: convertInterface(interfaceType, ridGenerator),
+          schemaMigrations: convertInterfaceSchemaMigrations(
+            interfaceType,
+            ridGenerator,
+          ),
         },
       ];
     }),
