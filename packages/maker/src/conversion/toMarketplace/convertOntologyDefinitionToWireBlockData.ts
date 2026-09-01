@@ -41,6 +41,7 @@ import {
   convertAction,
 } from "../../api/defineOntology.js";
 import { convertInterface } from "./convertInterface.js";
+import { convertInterfaceSchemaMigrations } from "./convertInterfaceSchemaMigrations.js";
 import { convertLink } from "./convertLink.js";
 import { convertObject } from "./convertObject.js";
 import { convertSpt } from "./convertSpt.js";
@@ -119,6 +120,7 @@ export function convertOntologyDefinitionToWireBlockData(
           apiName,
           {
             interfaceType: convertInterface(interfaceType),
+            schemaMigrations: convertInterfaceSchemaMigrations(interfaceType),
           },
         ];
       }),
