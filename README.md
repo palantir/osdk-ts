@@ -157,7 +157,7 @@ tests, generated code, and `index.ts` barrel files.
 2. `gh auth login` to authenticate with github.com
 3. `pnpm install`
 4. `GH_HOST=github.com ./scripts/createReleasePr.sh`
-5. Once your release PR has been merged, run `./scripts/tag-release.sh [COMMIT_SHA]` to tag your release.
+5. Once your release PR has been merged and CI has finished for the commit, run `GH_HOST=github.com ./scripts/tag-release.sh [COMMIT_SHA]` to tag your release. Note that `COMMIT_SHA` needs to be the full SHA.
 
 ### Troubleshooting
 
