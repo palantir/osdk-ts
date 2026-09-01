@@ -1,5 +1,11 @@
 # @osdk/functions
 
+## 1.22.0
+
+### Minor Changes
+
+- 311ff2a: Added support for inheriting function scope authorization from the caller
+
 ## 1.21.0
 
 ### Minor Changes
