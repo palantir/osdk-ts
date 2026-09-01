@@ -195,6 +195,7 @@ describe("Miscellaneous Tests", () => {
                     "type": "active",
                   },
                 },
+                "schemaMigrations": [],
               },
             },
             "linkTypes": {},
@@ -371,6 +372,7 @@ describe("Miscellaneous Tests", () => {
                     "type": "active",
                   },
                 },
+                "schemaMigrations": [],
               },
             },
             "linkTypes": {},
@@ -1121,6 +1123,7 @@ describe("Miscellaneous Tests", () => {
                     "type": "active",
                   },
                 },
+                "schemaMigrations": [],
               },
               "com.palantir.parentInterface": {
                 "interfaceType": {
@@ -1230,6 +1233,7 @@ describe("Miscellaneous Tests", () => {
                     "type": "active",
                   },
                 },
+                "schemaMigrations": [],
               },
             },
             "linkTypes": {},

@@ -142,6 +142,8 @@ export function convertOntologyDefinitionToWireBlockData(
         ridGenerator.generateRidForInterface(apiName),
         {
           interfaceType: convertInterface(interfaceType, ridGenerator),
+          // Cannot yet author interface type schema migrations.
+          schemaMigrations: [],
         },
       ];
     }),

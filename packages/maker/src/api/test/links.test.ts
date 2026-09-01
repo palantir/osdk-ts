@@ -2154,6 +2154,7 @@ describe("Link Types", () => {
                   "type": "active",
                 },
               },
+              "schemaMigrations": [],
             },
             "com.palantir.B": {
               "interfaceType": {
@@ -2184,6 +2185,7 @@ describe("Link Types", () => {
                   "type": "active",
                 },
               },
+              "schemaMigrations": [],
             },
           },
           "linkTypes": {},
@@ -2276,6 +2278,7 @@ describe("Link Types", () => {
                   "type": "active",
                 },
               },
+              "schemaMigrations": [],
             },
             "com.palantir.B": {
               "interfaceType": {
@@ -2306,6 +2309,7 @@ describe("Link Types", () => {
                   "type": "active",
                 },
               },
+              "schemaMigrations": [],
             },
           },
           "linkTypes": {},
