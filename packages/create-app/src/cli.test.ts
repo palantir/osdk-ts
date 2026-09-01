@@ -214,13 +214,17 @@ async function runTest({
 }
 
 describe("--unstableFeatures flag", () => {
-  const argsFor = (project: string, extra: string[]): string[] => [
+  const argsFor = (
+    project: string,
+    extra: string[],
+    template = "template-react",
+  ): string[] => [
     "npx",
     "@osdk/create-app",
     project,
     "--overwrite",
     "--template",
-    "template-react",
+    template,
     "--foundryUrl",
     "https://example.palantirfoundry.com",
     "--applicationUrl",
@@ -247,33 +251,66 @@ describe("--unstableFeatures flag", () => {
   const readProject = (project: string) => {
     const root = path.join(process.cwd(), project);
     const pkgPath = path.join(root, "package.json");
-    const clientPath = path.join(root, "src", "client.ts");
+    const viteConfigPath = path.join(root, "vite.config.ts");
     return {
       packageJson: JSON.parse(fs.readFileSync(pkgPath, "utf-8")),
-      clientTs: fs.readFileSync(clientPath, "utf-8"),
+      viteConfigTs: fs.readFileSync(viteConfigPath, "utf-8"),
     };
   };
 
   test("wires Foundry branch support when enabled", async () => {
     const project = "expected-unstable-on";
     await cli(argsFor(project, ["--unstableFeatures", "true"]));
-    const { packageJson, clientTs } = readProject(project);
+    const { packageJson, viteConfigTs } = readProject(project);
 
     const postinstall = "./node_modules/.bin/osdk unstable branch sync";
     expect(packageJson.scripts.postinstall).toBe(postinstall);
     expect(packageJson.devDependencies["@osdk/cli"]).toBe("latest");
-    expect(clientTs).toContain('import { $branch } from "@fake/sdk";');
-    expect(clientTs).toContain("UNSTABLE_DO_NOT_USE_BRANCH: $branch");
+    expect(packageJson.dependencies["@osdk/vite-plugin-branch"]).toBe(
+      `^${createAppVersion}`,
+    );
+    expect(viteConfigTs).toContain(
+      'import { branchPlugin } from "@osdk/vite-plugin-branch";',
+    );
+    expect(viteConfigTs).toContain("plugins: [react(), branchPlugin()]");
   });
 
   test("omits Foundry branch support by default", async () => {
     const project = "expected-unstable-off";
     await cli(argsFor(project, []));
-    const { packageJson, clientTs } = readProject(project);
+    const { packageJson, viteConfigTs } = readProject(project);
 
     expect(packageJson.scripts.postinstall).toBeUndefined();
     expect(packageJson.devDependencies?.["@osdk/cli"]).toBeUndefined();
-    expect(clientTs).not.toContain("UNSTABLE_DO_NOT_USE_BRANCH");
-    expect(clientTs).not.toContain("$branch");
+    expect(
+      packageJson.dependencies["@osdk/vite-plugin-branch"],
+    ).toBeUndefined();
+    expect(viteConfigTs).not.toContain("branchPlugin");
+  });
+
+  test("passes the generated branch explicitly for Expo", async () => {
+    const project = "expected-unstable-expo";
+    await cli(
+      argsFor(project, ["--unstableFeatures", "true"], "template-expo"),
+    );
+
+    const root = path.join(process.cwd(), project);
+    const packageJson = JSON.parse(
+      fs.readFileSync(path.join(root, "package.json"), "utf-8"),
+    );
+    const clientTs = fs.readFileSync(
+      path.join(root, "foundry", "client.ts"),
+      "utf-8",
+    );
+
+    expect(packageJson.scripts.postinstall).toBe(
+      "./node_modules/.bin/osdk unstable branch sync",
+    );
+    expect(packageJson.devDependencies["@osdk/cli"]).toBe("latest");
+    expect(
+      packageJson.dependencies["@osdk/vite-plugin-branch"],
+    ).toBeUndefined();
+    expect(clientTs).toContain('import { $branch } from "@fake/sdk";');
+    expect(clientTs).toContain("UNSTABLE_DO_NOT_USE_BRANCH: $branch");
   });
 });
