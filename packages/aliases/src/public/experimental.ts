@@ -22,23 +22,17 @@
 //
 // Functions and other Node runtimes use "@osdk/aliases/node".
 
-import {
-  DEFAULT_DECLARATIONS_PATH,
-  DEFAULT_DEPLOYMENT_CONFIG_PATH,
-  load,
-} from "../browser.js";
+import { DEFAULT_RESOURCES_PATH, load } from "../browser.js";
 
 // Explicitly assembled to exclude test helpers. The type annotation is required
 // by `--isolatedDeclarations`.
 export const Aliases: {
   readonly load: typeof load;
-  readonly DEFAULT_DECLARATIONS_PATH: typeof DEFAULT_DECLARATIONS_PATH;
-  readonly DEFAULT_DEPLOYMENT_CONFIG_PATH: typeof DEFAULT_DEPLOYMENT_CONFIG_PATH;
+  readonly DEFAULT_RESOURCES_PATH: typeof DEFAULT_RESOURCES_PATH;
 } = {
   load,
-  DEFAULT_DECLARATIONS_PATH,
-  DEFAULT_DEPLOYMENT_CONFIG_PATH,
+  DEFAULT_RESOURCES_PATH,
 };
 
-export { DEFAULT_DECLARATIONS_PATH, DEFAULT_DEPLOYMENT_CONFIG_PATH, load };
+export { DEFAULT_RESOURCES_PATH, load };
 export type { Custom, LoadedAliases } from "../browser.js";

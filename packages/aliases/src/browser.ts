@@ -16,27 +16,13 @@
 
 // Browser-safe alias runtime. Must stay free of `fs`/`process` so it can be
 // bundled into a browser app.
-//
-// Two files can supply aliases:
-//
-//   .palantir/deployment.config.json  the installer's values, written at install
-//   public/resources.json            the author's declared defaults
-//
-// The deployment config is tried first; the declaration file is used only when it
-// appears absent. Any other failure throws rather than falling back, because on
-// an installed site both files are served, so treating an error as absence would
-// serve the author's defaults in place of the installer's values.
 
 import type { Custom } from "./types.js";
 
 export type { Custom } from "./types.js";
 
-/** Written at install time, so it carries the installer's resolved values. */
-export const DEFAULT_DEPLOYMENT_CONFIG_PATH =
-  ".palantir/deployment.config.json";
-
-/** The author's declaration file, so it carries the declared defaults. */
-export const DEFAULT_DECLARATIONS_PATH = "resources.json";
+/** Author defaults locally; installer-resolved values on an installed site. */
+export const DEFAULT_RESOURCES_PATH = "resources.json";
 
 interface InitAliasesOptions {
   /** Test seam; not exposed by the public browser entry point. */
@@ -86,34 +72,11 @@ export async function initAliases(options?: InitAliasesOptions): Promise<void> {
 
 async function loadAliases(options?: InitAliasesOptions): Promise<void> {
   const fetchImpl = options?.fetch ?? globalThis.fetch;
-
-  // Marketplace-installed apps use installer values from
-  // `.palantir/deployment.config.json`. Local development and apps deployed
-  // without Marketplace fall back to author defaults in `resources.json`.
-  const deploymentConfig = await fetchJson(
-    fetchImpl,
-    DEFAULT_DEPLOYMENT_CONFIG_PATH,
-  );
-  if (deploymentConfig !== undefined) {
-    cachedCustomAliases = extractDeploymentAliases(
-      deploymentConfig.value,
-      deploymentConfig.url,
-    );
-    return;
-  }
-
-  console.warn(
-    `No alias config at ${resolveUrl(DEFAULT_DEPLOYMENT_CONFIG_PATH)}, ` +
-      `falling back to declared defaults in ${resolveUrl(
-        DEFAULT_DECLARATIONS_PATH,
-      )}. ` +
-      "This is expected during local development.",
-  );
-  const declarations = await fetchJson(fetchImpl, DEFAULT_DECLARATIONS_PATH);
+  const declarations = await fetchJson(fetchImpl, DEFAULT_RESOURCES_PATH);
   cachedCustomAliases =
     declarations === undefined
       ? {}
-      : extractDeclaredAliases(declarations.value, declarations.url);
+      : extractCustomAliases(declarations.value, declarations.url);
 }
 
 interface FetchedJson {
@@ -167,25 +130,8 @@ function parseJson(body: string, url: string): unknown {
   }
 }
 
-/** Converts `{ aliases: "{\"key\":\"value\"}" }` into `{ key: "value" }`. */
-function extractDeploymentAliases(
-  config: unknown,
-  url: string,
-): Record<string, string> {
-  const aliases = getAliasesField(config, url);
-  if (aliases == null) {
-    return {};
-  }
-  if (typeof aliases !== "string") {
-    throw new TypeError(
-      `Failed to read aliases from ${url}: 'aliases' must be a string in deployment config.`,
-    );
-  }
-  return parseResolvedAliases(aliases);
-}
-
 /** Converts `{ aliases: { custom: { key: { value: "value" } } } }` into `{ key: "value" }`. */
-function extractDeclaredAliases(
+function extractCustomAliases(
   config: unknown,
   url: string,
 ): Record<string, string> {
@@ -243,22 +189,6 @@ function resolveUrl(path: string): string {
     return new URL(path, document.baseURI).toString();
   }
   return path;
-}
-
-function parseResolvedAliases(raw: string): Record<string, string> {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch (error) {
-    throw new Error(
-      `Failed to parse resolved aliases: ${(error as Error).message}`,
-      { cause: error },
-    );
-  }
-  if (typeof parsed !== "object" || parsed == null || Array.isArray(parsed)) {
-    throw new Error("Resolved aliases must be a JSON object of string values.");
-  }
-  return toStringRecord(parsed as Record<string, unknown>);
 }
 
 /**
