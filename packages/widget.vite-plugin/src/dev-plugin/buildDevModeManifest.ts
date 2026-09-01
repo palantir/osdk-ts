@@ -29,6 +29,9 @@ import { extractWidgetConfig } from "../common/extractWidgetConfig.js";
 import type { FoundryWidgetPluginOptions } from "../index.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
 
+export const DEV_MODE_MANIFEST_FILE_LOCATION =
+  ".palantir/widgets-dev-mode.config.json";
+
 export interface DevModeManifest {
   manifestVersion: "1.0.0";
   devSettings: {
