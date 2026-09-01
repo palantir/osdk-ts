@@ -127,6 +127,8 @@ import type {
 } from "../entitymetadata/provenance/__components.js";
 import type { RuleSet as _api_formatting_RuleSet } from "../formatting/__components.js";
 import type {
+  InterfaceTypeSchemaTransition as _api_schemamigrations_InterfaceTypeSchemaTransition,
+  OntologyIrInterfaceTypeSchemaTransition as _api_schemamigrations_OntologyIrInterfaceTypeSchemaTransition,
   OntologyIrSchemaTransition as _api_schemamigrations_OntologyIrSchemaTransition,
   SchemaTransition as _api_schemamigrations_SchemaTransition,
 } from "../schemamigrations/__components.js";
@@ -212,6 +214,7 @@ export type GeotimeSeriesIntegrationName = string;
 export type InstallLocationBlockShapeId = BlockShapeId;
 export interface InterfaceTypeBlockDataV2 {
   interfaceType: MarketplaceInterfaceType;
+  schemaMigrations: Array<_api_schemamigrations_InterfaceTypeSchemaTransition>;
 }
 export interface InterfaceTypePermissionInformation {
   restrictionStatus: InterfaceTypeRestrictionStatus;
@@ -428,6 +431,7 @@ export interface MarketplaceInterfaceType {
     MarketplaceInterfacePropertyType
   >;
   rid: _api_InterfaceTypeRid;
+  schemaMigrationsEnabled?: boolean | null | undefined;
   searchable?: boolean | null | undefined;
   status: MarketplaceInterfaceTypeStatus;
 }
@@ -570,6 +574,7 @@ export interface OntologyIrBlockPermissionInformation {
 }
 export interface OntologyIrInterfaceTypeBlockDataV2 {
   interfaceType: OntologyIrMarketplaceInterfaceType;
+  schemaMigrations: Array<_api_schemamigrations_OntologyIrInterfaceTypeSchemaTransition>;
 }
 export interface OntologyIrKnownMarketplaceIdentifiers {
   actionParameterIds: Record<
@@ -725,6 +730,7 @@ export interface OntologyIrMarketplaceInterfaceType {
     _api_InterfacePropertyTypeApiName,
     OntologyIrMarketplaceInterfacePropertyType
   >;
+  schemaMigrationsEnabled?: boolean | null | undefined;
   searchable?: boolean | null | undefined;
   status: OntologyIrMarketplaceInterfaceTypeStatus;
 }

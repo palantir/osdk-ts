@@ -438,6 +438,7 @@ describe("Object Types", () => {
                 "type": "active",
               },
             },
+            "schemaMigrations": [],
           },
         },
         "linkTypes": {},

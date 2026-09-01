@@ -17,10 +17,10 @@
 import type {
   DatasourceMigrationTarget as _api_DatasourceMigrationTarget,
   DatasourceRid as _api_DatasourceRid,
+  InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName,
   InterfacePropertyTypeRid as _api_InterfacePropertyTypeRid,
   InterfacePropertyTypeRidOrIdInRequest as _api_InterfacePropertyTypeRidOrIdInRequest,
   InterfaceTypeRid as _api_InterfaceTypeRid,
-  InterfaceTypeSchemaMigrationRid as _api_InterfaceTypeSchemaMigrationRid,
   ObjectTypeApiName as _api_ObjectTypeApiName,
   ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
   ObjectTypeRid as _api_ObjectTypeRid,
@@ -188,13 +188,6 @@ export interface InterfaceTypeAddRequiredPropertyMigration {
 export interface InterfaceTypeAddRequiredPropertyMigrationModification {
   property: _api_InterfacePropertyTypeRidOrIdInRequest;
 }
-/**
- * An InterfaceTypeSchemaMigrationInstruction with a unique identifier.
- */
-export interface InterfaceTypeSchemaMigration {
-  instruction: InterfaceTypeSchemaMigrationInstruction;
-  rid: _api_InterfaceTypeSchemaMigrationRid;
-}
 export interface InterfaceTypeSchemaMigrationInstruction_addRequiredProperty {
   type: "addRequiredProperty";
   addRequiredProperty: InterfaceTypeAddRequiredPropertyMigration;
@@ -223,12 +216,16 @@ export interface InterfaceTypeSchemaMigrationModification {
  */
 export interface InterfaceTypeSchemaTransition {
   description?: string | null | undefined;
-  gracePeriod?: GracePeriod | null | undefined;
-  migrations: Array<InterfaceTypeSchemaMigration>;
-  source: _api_SchemaVersion;
-  target: _api_SchemaVersion;
+  gracePeriod: GracePeriod;
+  id: InterfaceTypeSchemaTransitionId;
+  migrations: Array<InterfaceTypeSchemaMigrationInstruction>;
   title?: string | null | undefined;
 }
+/**
+ * A unique, immutable identifier for an Interface Type schema transition.
+ */
+export type InterfaceTypeSchemaTransitionId = string;
+
 export interface InterfaceTypeSchemaTransitionModification_newVersion {
   type: "newVersion";
   newVersion: NewVersionInterfaceTypeSchemaTransitionModification;
@@ -408,6 +405,32 @@ export interface OntologyIrInitializePatchesMigration {
   initializationSource: OntologyIrInitializationSource;
   primaryKeyRenames: OntologyIrPrimaryKeyRenames;
   propertyRenames: Array<OntologyIrRenamePropertyMigration>;
+}
+/**
+ * Migration to add a required property to an interface
+ */
+export interface OntologyIrInterfaceTypeAddRequiredPropertyMigration {
+  propertyTypeRid: _api_InterfacePropertyTypeApiName;
+}
+export interface OntologyIrInterfaceTypeSchemaMigrationInstruction_addRequiredProperty {
+  type: "addRequiredProperty";
+  addRequiredProperty: OntologyIrInterfaceTypeAddRequiredPropertyMigration;
+}
+/**
+ * Instruction on how to transition from one InterfaceType version to another.
+ */
+export type OntologyIrInterfaceTypeSchemaMigrationInstruction =
+  OntologyIrInterfaceTypeSchemaMigrationInstruction_addRequiredProperty;
+
+/**
+ * Instructions on how to transition from one InterfaceType schema version to another.
+ */
+export interface OntologyIrInterfaceTypeSchemaTransition {
+  description?: string | null | undefined;
+  gracePeriod: GracePeriod;
+  id: InterfaceTypeSchemaTransitionId;
+  migrations: Array<OntologyIrInterfaceTypeSchemaMigrationInstruction>;
+  title?: string | null | undefined;
 }
 /**
  * Update the edits resolution strategy of an object type from latest timestamp to edits always win.
