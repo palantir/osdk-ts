@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background -->
+    <rect width="400" height="300" fill="#f0f0f0"/>
+    
+    <!-- Mountains -->
+    <path d="M0 300 L150 100 L200 180 L300 50 L400 300 Z" fill="#a8d5e5"/>
+    
+    <!-- Sun -->
+    <circle cx="320" cy="80" r="40" fill="#ffd700"/>
+    
+    <!-- Trees -->
+    <path d="M50 300 L80 200 L110 300 Z" fill="#2e8b57"/>
+    <path d="M70 300 L100 180 L130 300 Z" fill="#3cb371"/>
+    <path d="M90 300 L120 220 L150 300 Z" fill="#2e8b57"/>
+    
+    <!-- Cloud -->
+    <circle cx="100" cy="80" r="20" fill="white"/>
+    <circle cx="120" cy="80" r="25" fill="white"/>
+    <circle cx="140" cy="80" r="20" fill="white"/>
+    
+    <!-- Text -->
+    <text x="200" y="150" font-family="Arial" font-size="24" text-anchor="middle" fill="#333">
+        Mock Image
+    </text>
+</svg>
