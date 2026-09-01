@@ -36,7 +36,10 @@ import {
 } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
 import type { BlockShapes, ReadableId } from "../util/generateRid.js";
-import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
+import {
+  OntologyRidGeneratorImpl,
+  ReadableIdGenerator,
+} from "../util/generateRid.js";
 
 export interface OntologyV2Result {
   ontologyIr: OntologyIrV2;
@@ -144,6 +147,17 @@ export async function defineOntologyV2(
       )
       .map(({ apiName }) => `${objectType.apiName}.${apiName}`);
   });
+
+  for (const mediaSetName of backingMediaSetNames) {
+    shapes.inputShapeMetadata.set(
+      ReadableIdGenerator.getForMediaSetView(mediaSetName),
+      {
+        isOptional: false,
+        isAccessedInReconcile: true,
+        reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+      },
+    );
+  }
 
   if (outputDir) {
     writeStaticObjects(outputDir);
