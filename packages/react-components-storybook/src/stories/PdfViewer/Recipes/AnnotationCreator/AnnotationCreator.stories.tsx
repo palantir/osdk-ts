@@ -351,53 +351,61 @@ function MyAnnotationCreator({ src }: { src: string }) {
   const [annotationModeActive, setAnnotationModeActive] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<PdfViewerHandle>(null);
+  
+  // Listen for text selection when annotation mode is active
+  useEffect(
+    function captureTextSelection() {
+      if (!annotationModeActive) return;
+      const container = containerRef.current;
+      if (container == null) return;
 
-  useEffect(() => {
-    if (!annotationModeActive) return;
-    const container = containerRef.current;
-    if (container == null) return;
+      function handleMouseUp() {
+        const selection = window.getSelection();
+        if (selection == null || selection.isCollapsed) return;
 
-    function handleMouseUp() {
-      const selection = window.getSelection();
-      if (selection == null || selection.isCollapsed) return;
+        const selectedText = selection.toString().trim();
+        if (selectedText === "") return;
 
-      const selectedText = selection.toString().trim();
-      if (selectedText === "") return;
+        const range = selection.getRangeAt(0);
+        // pdf.js renders each page as .page[data-page-number]
+        const pageEl = range.startContainer.parentElement?.closest(".page[data-page-number]");
+        if (pageEl == null) return;
 
-      const range = selection.getRangeAt(0);
-      // pdf.js renders each page as .page[data-page-number]
-      const pageEl = range.startContainer.parentElement?.closest(".page[data-page-number]");
-      if (pageEl == null) return;
+        // pdf.js publishes the current zoom as a CSS variable on the page
+        const scale = parseFloat(getComputedStyle(pageEl).getPropertyValue("--scale-factor")) || 1;
+        const pageHeight = pageEl.clientHeight / scale;
+        const pageRect = pageEl.getBoundingClientRect();
 
-      // pdf.js publishes the current zoom as a CSS variable on the page
-      const scale = parseFloat(getComputedStyle(pageEl).getPropertyValue("--scale-factor")) || 1;
-      const pageHeight = pageEl.clientHeight / scale;
-      const pageRect = pageEl.getBoundingClientRect();
+        // A selection spanning multiple lines produces one rect per line
+        const rects = Array.from(range.getClientRects())
+          .filter((r) => r.width > 0 && r.height > 0)
+          .map((r) => domRectToPdfRect(r, pageRect, pageHeight, scale));
+        if (rects.length === 0) return;
 
-      // A selection spanning multiple lines produces one rect per line
-      const rects = Array.from(range.getClientRects())
-        .filter((r) => r.width > 0 && r.height > 0)
-        .map((r) => domRectToPdfRect(r, pageRect, pageHeight, scale));
-      if (rects.length === 0) return;
+        setAnnotations((prev) => [...prev, {
+          id: crypto.randomUUID(),
+          type: "highlight",
+          page: Number(pageEl.getAttribute("data-page-number")),
+          rect: rects[0],
+          rects,
+          color: HIGHLIGHT_COLOR,
+          label: selectedText,
+        }]);
+        selection.removeAllRanges();
+      }
 
-      setAnnotations((prev) => [...prev, {
-        id: crypto.randomUUID(),
-        type: "highlight",
-        page: Number(pageEl.getAttribute("data-page-number")),
-        rect: rects[0],
-        rects,
-        color: HIGHLIGHT_COLOR,
-        label: selectedText,
-      }]);
-      selection.removeAllRanges();
-    }
-
-    container.addEventListener("mouseup", handleMouseUp);
-    return () => container.removeEventListener("mouseup", handleMouseUp);
+      container.addEventListener("mouseup", handleMouseUp);
+      return () => container.removeEventListener("mouseup", handleMouseUp);
   }, [annotationModeActive]);
 
   const deleteAnnotation = useCallback((id: string) => {
     setAnnotations((prev) => prev.filter((a) => a.id !== id));
+  }, []);
+  const toggleAnnotationMode = useCallback(() => {
+    setAnnotationModeActive((prev) => !prev);
+  }, []);
+  const handleAnnotationClick = useCallback((page: number) => {
+    viewerRef.current?.scrollToPage(page);
   }, []);
 
   return (
@@ -408,9 +416,9 @@ function MyAnnotationCreator({ src }: { src: string }) {
       <MySidebar
         annotations={annotations}
         annotationModeActive={annotationModeActive}
-        onToggleMode={() => setAnnotationModeActive((prev) => !prev)}
+        onToggleMode={toggleAnnotationMode}
         // The imperative handle drives navigation from outside the viewer
-        onAnnotationClick={(page) => viewerRef.current?.scrollToPage(page)}
+        onAnnotationClick={handleAnnotationClick}
         onDelete={deleteAnnotation}
       />
     </div>
