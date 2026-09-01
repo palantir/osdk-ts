@@ -141,6 +141,10 @@ export const CustomAnnotation: Story = {
   );
 }
 
+const handleAnnotationClick = useCallback((annotation: PdfAnnotation) => {
+  console.log("Clicked:", annotation.id);
+}, []);
+
 <BasePdfViewer
   src={pdfUrl}
   annotations={[
@@ -150,10 +154,10 @@ export const CustomAnnotation: Story = {
       page: 1,
       rect: { x: 55, y: 400, width: 120, height: 28 },
       label: "Key finding",
-      render: (props) => <TooltipAnnotation {...props} />,
+      render: TooltipAnnotation,
     },
   ]}
-  onAnnotationClick={(annotation) => console.log("Clicked:", annotation.id)}
+  onAnnotationClick={handleAnnotationClick}
 />`,
       },
     },

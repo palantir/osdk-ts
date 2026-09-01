@@ -105,7 +105,7 @@ export const WithErrorCallback: Story = {
         code: `<BaseImageViewer
   src={imageUrl}
   alt="My image"
-  onError={(error) => reportImageLoadFailure(error)}
+  onError={reportImageLoadFailure}
 />`,
       },
     },

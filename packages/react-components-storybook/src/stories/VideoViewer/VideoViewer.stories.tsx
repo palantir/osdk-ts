@@ -126,7 +126,7 @@ export const WithErrorCallback: Story = {
         code: `// onError fires when fetching the media or decoding the video fails
 <VideoViewer
   media={myOsdkMedia}
-  onError={(error) => reportPlaybackFailure(error)}
+  onError={reportPlaybackFailure}
 />`,
       },
     },

@@ -473,14 +473,23 @@ function AnnotationSidebarItem({ annotation, isHovered, onHover }) {
   // Reaching the viewer through context rather than a ref keeps the sidebar
   // decoupled from where the viewer is mounted
   const { scrollToPage } = usePdfViewerContext();
+  const handleClick = useCallback(() => {
+    scrollToPage(annotation.page);
+  }, [annotation.page, scrollToPage]);
+  const handleMouseEnter = useCallback(() => {
+    onHover(annotation.id);
+  }, [annotation.id, onHover]);
+  const handleMouseLeave = useCallback(() => {
+    onHover(null);
+  }, [onHover]);
 
   return (
     <div
       role="button"
       tabIndex={0}
-      onClick={() => scrollToPage(annotation.page)}
-      onMouseEnter={() => onHover(annotation.id)}
-      onMouseLeave={() => onHover(null)}
+      onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       style={{ backgroundColor: isHovered ? "#e3f2fd" : "transparent" }}
     >
       <div>{annotation.label ?? annotation.id}</div>

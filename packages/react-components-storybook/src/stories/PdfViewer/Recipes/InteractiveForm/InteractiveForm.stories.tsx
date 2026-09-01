@@ -353,11 +353,14 @@ export const InteractiveForm: Story = {
 
 const [formData, setFormData] = useState<Record<string, PdfFormFieldValue>>();
 const [formValues, setFormValues] = useState<Record<string, PdfFormFieldValue>>({});
+const handleFormChange = useCallback((field: string, value: PdfFormFieldValue) => {
+  setFormValues((previousValues) => ({ ...previousValues, [field]: value }));
+}, []);
 
 <BasePdfViewer
   src="/interactive-form.pdf"
   formData={formData}
-  onFormChange={(field, value) => setFormValues(prev => ({ ...prev, [field]: value }))}
+  onFormChange={handleFormChange}
 />`,
       },
     },

@@ -93,6 +93,7 @@ export const Default: Story = {
         code: `function MyThumbnailSidebar({ src }: { src: string }) {
   const { document, numPages, loading, error } = usePdfDocument(src);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sidebarMode, setSidebarMode] = useState<PdfViewerSidebarMode>("thumbnails");
 
   if (loading) return <div>Loading PDF…</div>;
   if (error != null) return <div>Error loading PDF: {error.message}</div>;
@@ -104,8 +105,8 @@ export const Default: Story = {
       numPages={numPages}
       currentPage={currentPage}
       onPageClick={setCurrentPage}
-      sidebarMode="thumbnails"
-      onSidebarModeChange={() => {}}
+      sidebarMode={sidebarMode}
+      onSidebarModeChange={setSidebarMode}
     />
   );
 }`,
@@ -128,7 +129,7 @@ export const ActivePage: Story = {
   currentPage={5}
   onPageClick={setCurrentPage}
   sidebarMode="thumbnails"
-  onSidebarModeChange={() => {}}
+  onSidebarModeChange={setSidebarMode}
 />`,
       },
     },

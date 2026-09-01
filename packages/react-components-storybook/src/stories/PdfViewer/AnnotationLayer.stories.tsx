@@ -123,7 +123,7 @@ export const Default: Story = {
   pageHeight={792}
   scale={1}
   transform={[1, 0, 0, -1, 0, 792]}
-  onAnnotationClick={(annotation) => handleAnnotationClick(annotation)}
+  onAnnotationClick={handleAnnotationClick}
 />`,
       },
     },
@@ -170,7 +170,7 @@ export const HighlightsOnly: Story = {
   pageHeight={792}
   scale={1}
   transform={[1, 0, 0, -1, 0, 792]}
-  onAnnotationClick={(annotation) => handleAnnotationClick(annotation)}
+  onAnnotationClick={handleAnnotationClick}
 />`,
       },
     },
@@ -191,7 +191,7 @@ export const ZoomedIn: Story = {
   pageHeight={792}
   scale={2}
   transform={[2, 0, 0, -2, 0, 792 * 2]}
-  onAnnotationClick={(annotation) => handleAnnotationClick(annotation)}
+  onAnnotationClick={handleAnnotationClick}
 />`,
       },
     },

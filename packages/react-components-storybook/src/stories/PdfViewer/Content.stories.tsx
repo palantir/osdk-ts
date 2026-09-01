@@ -65,8 +65,8 @@ export const Default: Story = {
 // Use it when you want to supply your own chrome around the pages.
 <PdfViewerContent
   src="/whitepaper.pdf"
-  onPageChange={(page) => setCurrentPage(page)}
-  onScaleChange={(scale) => setScale(scale)}
+  onPageChange={setCurrentPage}
+  onScaleChange={setScale}
 />`,
       },
     },
@@ -84,7 +84,7 @@ export const ZoomedIn: Story = {
 <PdfViewerContent
   src="/whitepaper.pdf"
   initialScale={2}
-  onScaleChange={(scale) => setScale(scale)}
+  onScaleChange={setScale}
 />`,
       },
     },
@@ -102,7 +102,7 @@ export const StartOnPage5: Story = {
 <PdfViewerContent
   src="/whitepaper.pdf"
   initialPage={5}
-  onPageChange={(page) => setCurrentPage(page)}
+  onPageChange={setCurrentPage}
 />`,
       },
     },

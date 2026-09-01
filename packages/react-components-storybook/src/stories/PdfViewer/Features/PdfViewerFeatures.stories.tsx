@@ -243,7 +243,7 @@ export const WithAnnotations: Story = {
     { id: "c1", type: "comment", page: 1, rect: { x: 538, y: 400, width: 24, height: 24 }, label: "Review this" },
     { id: "p1", type: "pin", page: 1, rect: { x: 44, y: 446, width: 16, height: 16 }, label: "Pin" },
   ]}
-  onAnnotationClick={(annotation) => handleAnnotationClick(annotation)}
+  onAnnotationClick={handleAnnotationClick}
 />`,
       },
     },
@@ -473,10 +473,24 @@ export const InteractiveForm: StoryObj<BasePdfViewerProps> = {
   parameters: {
     docs: {
       source: {
-        code: `<BasePdfViewer
+        code: `const handleFormChange = useCallback(
+  (fieldName: string, value: PdfFormFieldValue) => {
+    console.log(fieldName, value);
+  },
+  [],
+);
+
+const handleFormSubmit = useCallback(
+  (data: Record<string, PdfFormFieldValue>) => {
+    console.log("Form submitted:", data);
+  },
+  [],
+);
+
+<BasePdfViewer
   src="https://example.com/interactive-form.pdf"
-  onFormChange={(fieldName, value) => console.log(fieldName, value)}
-  onFormSubmit={(data) => console.log("Form submitted:", data)}
+  onFormChange={handleFormChange}
+  onFormSubmit={handleFormSubmit}
 />`,
       },
     },

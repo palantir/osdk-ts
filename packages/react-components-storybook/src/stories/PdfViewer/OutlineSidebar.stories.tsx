@@ -113,7 +113,11 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `// depth drives indentation; bold and italic mirror the PDF's own bookmark styling
+        code: `const handleItemClick = useCallback((item: PdfOutlineItem) => {
+  goToPage(item.pageNumber);
+}, [goToPage]);
+
+// depth drives indentation; bold and italic mirror the PDF's own bookmark styling
 <PdfViewerOutlineSidebar
   outlineItems={[
     { title: "Introduction", depth: 0, pageNumber: 1, bold: true, italic: false },
@@ -121,7 +125,7 @@ export const Default: Story = {
     { title: "Data Flow", depth: 2, pageNumber: 7, bold: false, italic: true },
   ]}
   currentPage={1}
-  onItemClick={(item) => goToPage(item.pageNumber)}
+  onItemClick={handleItemClick}
   sidebarMode="outline"
   onSidebarModeChange={setSidebarMode}
 />`,
@@ -137,11 +141,15 @@ export const ActiveSection: Story = {
   parameters: {
     docs: {
       source: {
-        code: `// currentPage highlights the deepest entry at or before that page
+        code: `const handleItemClick = useCallback((item: PdfOutlineItem) => {
+  goToPage(item.pageNumber);
+}, [goToPage]);
+
+// currentPage highlights the deepest entry at or before that page
 <PdfViewerOutlineSidebar
   outlineItems={outlineItems}
   currentPage={6}
-  onItemClick={(item) => goToPage(item.pageNumber)}
+  onItemClick={handleItemClick}
   sidebarMode="outline"
   onSidebarModeChange={setSidebarMode}
 />`,
@@ -157,11 +165,15 @@ export const Empty: Story = {
   parameters: {
     docs: {
       source: {
-        code: `// PDFs without bookmarks render an empty state rather than a blank panel
+        code: `const handleItemClick = useCallback((item: PdfOutlineItem) => {
+  goToPage(item.pageNumber);
+}, [goToPage]);
+
+// PDFs without bookmarks render an empty state rather than a blank panel
 <PdfViewerOutlineSidebar
   outlineItems={[]}
   currentPage={1}
-  onItemClick={(item) => goToPage(item.pageNumber)}
+  onItemClick={handleItemClick}
   sidebarMode="outline"
   onSidebarModeChange={setSidebarMode}
 />`,

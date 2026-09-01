@@ -146,7 +146,11 @@ export const WithErrorCallback: Story = {
   parameters: {
     docs: {
       source: {
-        code: `<BaseTiffViewer src={tiffBytes} onError={() => console.error("TIFF render failed")} />`,
+        code: `const handleError = useCallback(() => {
+  console.error("TIFF render failed");
+}, []);
+
+<BaseTiffViewer src={tiffBytes} onError={handleError} />`,
       },
     },
   },
