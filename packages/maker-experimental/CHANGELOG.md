@@ -1,5 +1,18 @@
 # @osdk/maker-experimental
 
+## 0.57.0
+
+### Minor Changes
+
+- ab7c384: Add opt-in generation of empty backing Media Sets for media reference properties.
+- d316359: Add vector property support
+
+### Patch Changes
+
+- Updated dependencies [ab7c384]
+- Updated dependencies [d316359]
+  - @osdk/maker@0.63.0
+
 ## 0.56.0
 
 ### Minor Changes

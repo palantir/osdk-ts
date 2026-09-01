@@ -1,5 +1,13 @@
 # @osdk/maker-import
 
+## 0.33.0
+
+### Patch Changes
+
+- Updated dependencies [ab7c384]
+- Updated dependencies [d316359]
+  - @osdk/maker@0.63.0
+
 ## 0.32.0
 
 ### Patch Changes
