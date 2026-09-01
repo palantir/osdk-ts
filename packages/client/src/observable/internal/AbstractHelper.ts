@@ -102,6 +102,16 @@ export abstract class AbstractHelper<
     } else {
       this.store.cacheKeys.retain(query.cacheKey);
     }
+    // For queries that support views (list-like queries), wrap with ListQueryView
+    // to handle per-subscriber view data such as pageSize
+    const listOptions = options as ListObserveOptions;
+    const view = supportsViews<PAYLOAD & BaseListPayloadShape>(query)
+      ? new ListQueryView<PAYLOAD & BaseListPayloadShape>(
+          query,
+          listOptions.pageSize ?? 100,
+          listOptions.autoFetchMore,
+        )
+      : undefined;
 
     if (options.mode !== "offline") {
       query.revalidate(options.mode === "force").catch((e: unknown) => {
@@ -118,20 +128,8 @@ export abstract class AbstractHelper<
       });
     }
 
-    // For queries that support views (list-like queries), wrap with ListQueryView
-    // to handle per-subscriber view data such as pageSize
-    const listOptions = options as ListObserveOptions;
-    const useView =
-      supportsViews<PAYLOAD & BaseListPayloadShape>(query) &&
-      (listOptions.pageSize !== undefined ||
-        listOptions.autoFetchMore !== undefined);
-
-    const sub = useView
-      ? new ListQueryView<PAYLOAD & BaseListPayloadShape>(
-          query,
-          listOptions.pageSize ?? 100,
-          listOptions.autoFetchMore,
-        ).subscribe(subFn as Observer<PAYLOAD & BaseListPayloadShape>)
+    const sub = view
+      ? view.subscribe(subFn as Observer<PAYLOAD & BaseListPayloadShape>)
       : query.subscribe(subFn);
 
     const querySub = new QuerySubscription(query, sub);
