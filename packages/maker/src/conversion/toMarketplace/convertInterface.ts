@@ -23,7 +23,13 @@ import { convertSpt } from "./convertSpt.js";
 export function convertInterface(
   interfaceType: InterfaceType,
 ): OntologyIrMarketplaceInterfaceType {
-  const { __type, ...other } = interfaceType;
+  // schema migrations travel in their own block data section rather than on the interface type
+  // directly, so we explicitly exclude it from "other"
+  const {
+    __type,
+    schemaMigrations: _schemaMigrations,
+    ...other
+  } = interfaceType;
   return {
     ...other,
     propertiesV2: Object.fromEntries(

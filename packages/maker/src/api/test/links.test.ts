@@ -2122,6 +2122,7 @@ describe("Link Types", () => {
                     "permission": undefined,
                     "propertiesV2": {},
                     "propertiesV3": {},
+                    "schemaMigrations": undefined,
                     "searchable": true,
                     "status": {
                       "active": {},
@@ -2244,6 +2245,7 @@ describe("Link Types", () => {
                     "permission": undefined,
                     "propertiesV2": {},
                     "propertiesV3": {},
+                    "schemaMigrations": undefined,
                     "searchable": true,
                     "status": {
                       "active": {},

@@ -32,6 +32,9 @@ export function convertInterface(
     __type,
     status,
     linkedInterfaces: _linkedInterfaces,
+    // schema migrations travel in their own block data section rather than on the interface type
+    // directly, so we explicitly exclude it from "other"
+    schemaMigrations: _schemaMigrations,
     ...other
   } = interfaceType;
   // Normalize deprecated deadline format to match Java (strip .000 milliseconds)

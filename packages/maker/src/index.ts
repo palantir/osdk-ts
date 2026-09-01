@@ -104,6 +104,12 @@ export {
   isInterfacePropertyRequired,
   isInterfaceSharedPropertyType,
 } from "./api/interface/InterfacePropertyType.js";
+export type {
+  InterfaceSchemaGracePeriod,
+  InterfaceSchemaMigrationInstruction,
+  InterfaceSchemaMigrations,
+  InterfaceSchemaTransition,
+} from "./api/interface/InterfaceSchemaMigrations.js";
 export type { InterfaceType } from "./api/interface/InterfaceType.js";
 export type {
   LinkType,
