@@ -397,8 +397,141 @@ export const AnnotationExplorer: Story = {
   parameters: {
     docs: {
       source: {
-        code: `// Annotation Explorer: sidebar lists all annotations
-// Hover to reveal on PDF, click to navigate to page`,
+        code: `import { useCallback, useMemo, useState } from "react";
+import {
+  PdfViewerAnnotationLayer,
+  PdfViewerProvider,
+  PdfViewerSearchBar,
+  PdfViewerToolbar,
+  usePdfViewerContext,
+  usePdfViewerInstance,
+} from "@osdk/react-components/experimental/pdf-viewer";
+import type { PdfAnnotation, PdfCustomAnnotation } from "@osdk/react-components/experimental/pdf-viewer";
+
+// Stable reference — a fresh [] each render would re-trigger the viewer
+const EMPTY_ANNOTATIONS: PdfAnnotation[] = [];
+
+// Composing the viewer by hand, instead of using BasePdfViewer, is what lets
+// the sidebar live outside the scroll container while still driving it.
+function ConnectedPdfView() {
+  const ctx = usePdfViewerContext();
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+      <PdfViewerToolbar
+        currentPage={ctx.currentPage}
+        numPages={ctx.numPages}
+        scale={ctx.scale}
+        autoSize={ctx.autoSize}
+        sidebarOpen={ctx.sidebarOpen}
+        onPageChange={ctx.scrollToPage}
+        onZoomIn={ctx.zoomIn}
+        onZoomOut={ctx.zoomOut}
+        onAutoSizeToggle={ctx.toggleAutoSize}
+        onSearchOpen={ctx.search.openSearch}
+        onSidebarToggle={ctx.toggleSidebar}
+        onRotateLeft={ctx.rotateLeft}
+        onRotateRight={ctx.rotateRight}
+      />
+      {ctx.search.isSearchOpen && (
+        <PdfViewerSearchBar
+          query={ctx.search.query}
+          totalMatches={ctx.search.totalMatches}
+          currentMatchIndex={ctx.search.currentMatchIndex}
+          onQueryChange={ctx.search.setQuery}
+          onNext={ctx.search.nextMatch}
+          onPrev={ctx.search.prevMatch}
+          onClose={ctx.search.closeSearch}
+        />
+      )}
+      <div style={{ position: "relative", flex: 1, overflow: "auto" }}>
+        <div ref={ctx.containerRef} style={{ height: "100%" }}>
+          <div ref={ctx.viewerRef} className="pdfViewer" />
+          {/* One absolutely positioned layer per rendered page. portalTargets
+              carries the geometry and transform each page currently needs. */}
+          {ctx.portalTargets.map((target) => {
+            const pageAnnotations = ctx.annotationsByPage[target.pageNumber] ?? EMPTY_ANNOTATIONS;
+            if (pageAnnotations.length === 0) return null;
+            return (
+              <div
+                key={target.pageNumber}
+                style={{
+                  position: "absolute",
+                  left: target.left,
+                  top: target.top,
+                  width: target.width,
+                  height: target.height,
+                  pointerEvents: "none",
+                }}
+              >
+                <PdfViewerAnnotationLayer
+                  annotations={pageAnnotations}
+                  pageHeight={target.pageHeight}
+                  scale={target.scale}
+                  transform={target.transform}
+                  onAnnotationClick={ctx.onAnnotationClick}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AnnotationSidebarItem({ annotation, isHovered, onHover }) {
+  // Reaching the viewer through context rather than a ref keeps the sidebar
+  // decoupled from where the viewer is mounted
+  const { scrollToPage } = usePdfViewerContext();
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => scrollToPage(annotation.page)}
+      onMouseEnter={() => onHover(annotation.id)}
+      onMouseLeave={() => onHover(null)}
+      style={{ backgroundColor: isHovered ? "#e3f2fd" : "transparent" }}
+    >
+      <div>{annotation.label ?? annotation.id}</div>
+      <div>Page {annotation.page}</div>
+    </div>
+  );
+}
+
+function MyAnnotationExplorer({ src, allAnnotations }: { src: string; allAnnotations: PdfCustomAnnotation[] }) {
+  const [hoveredAnnotationId, setHoveredAnnotationId] = useState<string | null>(null);
+
+  // The sidebar always lists every annotation, but only the hovered one is
+  // handed to the viewer — so the page stays clean until you point at an entry
+  const visibleAnnotations = useMemo(() => {
+    if (hoveredAnnotationId == null) return EMPTY_ANNOTATIONS;
+    return allAnnotations.filter((a) => a.id === hoveredAnnotationId);
+  }, [hoveredAnnotationId, allAnnotations]);
+
+  const viewer = usePdfViewerInstance({ src, annotations: visibleAnnotations });
+
+  const handleHover = useCallback((id: string | null) => setHoveredAnnotationId(id), []);
+
+  return (
+    <PdfViewerProvider value={viewer}>
+      <div style={{ display: "flex", height: "600px" }}>
+        <ConnectedPdfView />
+        <div style={{ width: 260, overflowY: "auto" }}>
+          {allAnnotations.map((annotation) => (
+            <AnnotationSidebarItem
+              key={annotation.id}
+              annotation={annotation}
+              isHovered={annotation.id === hoveredAnnotationId}
+              onHover={handleHover}
+            />
+          ))}
+        </div>
+      </div>
+    </PdfViewerProvider>
+  );
+}`,
       },
     },
   },
