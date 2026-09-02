@@ -335,7 +335,7 @@ export const Loading: StoryObj<BasePdfViewerProps> = {
     },
     docs: {
       source: {
-        code: `// The loading spinner is built in — no isLoading prop to thread through
+        code: `// Loading state handling is built-in
 <BasePdfViewer src="/slow-to-download.pdf" />`,
       },
     },
@@ -448,7 +448,7 @@ export const WithEmbeddedOutline: Story = {
   parameters: {
     docs: {
       source: {
-        code: `// The outline is read from the PDF's own bookmarks — nothing to pass in
+        code: `// The outline content is auto-generated from the PDF's own bookmarks
 <PdfViewer
   media={handbook.pdf}
   initialSidebarOpen

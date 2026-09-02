@@ -107,7 +107,8 @@ No checkpoint in this step — implement straight through.
    - **[Feature]** Base layer first; OSDK wrapper only if data plumbing changes. Apply `CLAUDE.md` "OSDK Component Architecture", "Reuse before writing", and "CSS Styling".
 3. **Re-run the file's tests.** Step 1's failing test must now pass; nothing adjacent should regress. This pass is a **precondition for Step 3** — don't move on until it's green.
 4. **Touch peripheral surfaces only where the change actually breaks them.** A typo fix doesn't need a story update; a new prop usually needs one. Skip if untouched:
-   - Storybook story
+   - Storybook story — every added or updated story must define
+     `parameters.docs.source.code` explicitly in the story definition
    - peopleapp wiring (only if observable against real Foundry data)
    - `docs/<Name>.md` (only if usage examples or props changed)
    - `docs/CSSVariables.md` (only if new CSS variables were added)

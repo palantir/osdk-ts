@@ -61,8 +61,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `// The scrolling page canvas on its own — no toolbar, sidebar, or search.
-// Use it when you want to supply your own chrome around the pages.
+        code: `
 <PdfViewerContent
   src="/whitepaper.pdf"
   onPageChange={setCurrentPage}
@@ -80,7 +79,7 @@ export const ZoomedIn: Story = {
   parameters: {
     docs: {
       source: {
-        code: `// initialScale is uncontrolled — later zooming reports through onScaleChange
+        code: `
 <PdfViewerContent
   src="/whitepaper.pdf"
   initialScale={2}
@@ -98,7 +97,7 @@ export const StartOnPage5: Story = {
   parameters: {
     docs: {
       source: {
-        code: `// Deep-link into a document by scrolling straight to a page (1-indexed)
+        code: `
 <PdfViewerContent
   src="/whitepaper.pdf"
   initialPage={5}
