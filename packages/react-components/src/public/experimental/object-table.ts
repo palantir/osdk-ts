@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/** @deprecated Import from `@osdk/react-components/object-table` instead. */
+
 // ObjectTable that loads and displays data for a given objectSet
 import { ObjectTable as _ObjectTable } from "../../object-table/ObjectTable.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";

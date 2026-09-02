@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+
 export { BaseFilterList } from "../../filter-list/base/BaseFilterList.js";
 export type {
   BaseFilterListProps,

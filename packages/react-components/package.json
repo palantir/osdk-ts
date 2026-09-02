@@ -16,6 +16,24 @@
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
     },
+    "./action-form": {
+      "browser": "./build/browser/public/action-form.js",
+      "import": {
+        "types": "./build/types/public/action-form.d.ts",
+        "default": "./build/esm/public/action-form.js"
+      },
+      "require": "./build/cjs/public/action-form.cjs",
+      "default": "./build/browser/public/action-form.js"
+    },
+    "./document-viewer": {
+      "browser": "./build/browser/public/document-viewer.js",
+      "import": {
+        "types": "./build/types/public/document-viewer.d.ts",
+        "default": "./build/esm/public/document-viewer.js"
+      },
+      "require": "./build/cjs/public/document-viewer.cjs",
+      "default": "./build/browser/public/document-viewer.js"
+    },
     "./experimental": {
       "browser": "./build/browser/public/experimental.js",
       "import": {
@@ -24,6 +42,24 @@
       },
       "require": "./build/cjs/public/experimental.cjs",
       "default": "./build/browser/public/experimental.js"
+    },
+    "./filter-list": {
+      "browser": "./build/browser/public/filter-list.js",
+      "import": {
+        "types": "./build/types/public/filter-list.d.ts",
+        "default": "./build/esm/public/filter-list.js"
+      },
+      "require": "./build/cjs/public/filter-list.cjs",
+      "default": "./build/browser/public/filter-list.js"
+    },
+    "./object-table": {
+      "browser": "./build/browser/public/object-table.js",
+      "import": {
+        "types": "./build/types/public/object-table.d.ts",
+        "default": "./build/esm/public/object-table.js"
+      },
+      "require": "./build/cjs/public/object-table.cjs",
+      "default": "./build/browser/public/object-table.js"
     },
     "./primitives": {
       "browser": "./build/browser/public/primitives.js",

@@ -1,0 +1,5 @@
+---
+"@osdk/react-components": minor
+---
+
+Add stable export paths for ObjectTable, FilterList, ActionForm, and DocumentViewer.

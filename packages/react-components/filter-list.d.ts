@@ -14,14 +14,4 @@
  * limitations under the License.
  */
 
-/** @deprecated Import from `@osdk/react-components/document-viewer` instead. */
-
-// DocumentViewer
-import { DocumentViewer as _DocumentViewer } from "../../document-viewer/DocumentViewer.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const DocumentViewer: typeof _DocumentViewer = withOsdkMetrics(
-  _DocumentViewer,
-  "DocumentViewer",
-);
-export type { DocumentViewerProps } from "../../document-viewer/DocumentViewerApi.js";
-export { ViewerType } from "../../document-viewer/DocumentViewerApi.js";
+export * from "./build/types/public/filter-list.js";
