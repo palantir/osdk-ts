@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.64.0
+
+### Minor Changes
+
+- 6adfde4: Support object set subscriptions through clients scoped to ontology scenarios.
+- 06cd3ea: Materialize array-valued struct interface implementations as arrays
+
+### Patch Changes
+
+- @osdk/api@2.64.0
+- @osdk/client.unstable@2.64.0
+- @osdk/generator-converters@2.64.0
+- @osdk/shared.test@2.44.0
+
 ## 2.63.0
 
 ### Minor Changes
