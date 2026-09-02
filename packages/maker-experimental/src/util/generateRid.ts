@@ -378,6 +378,13 @@ export class ReadableIdGenerator {
     return `interface-action-type-constraint-${interfaceApiName}-${constraintApiName}` as ReadableId;
   }
 
+  static getForInterfaceSchemaTransition(
+    interfaceApiName: string,
+    transitionId: string,
+  ): ReadableId {
+    return `interface-schema-transition-${interfaceApiName}-${transitionId}` as ReadableId;
+  }
+
   static getForInterfaceParameterConstraint(
     interfaceApiName: string,
     constraintApiName: string,

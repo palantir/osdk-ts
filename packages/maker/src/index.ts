@@ -101,6 +101,7 @@ export type {
   InterfacePropertyType,
 } from "./api/interface/InterfacePropertyType.js";
 export {
+  interfacePropertyWireApiName,
   isInterfacePropertyRequired,
   isInterfaceSharedPropertyType,
 } from "./api/interface/InterfacePropertyType.js";

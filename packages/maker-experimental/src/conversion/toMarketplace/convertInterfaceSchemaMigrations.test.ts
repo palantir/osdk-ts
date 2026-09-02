@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { InterfaceTypeBlockDataV2 } from "@osdk/client.unstable";
+import type {
+  InterfaceTypeBlockDataV2,
+  InterfaceTypeSchemaTransition,
+} from "@osdk/client.unstable";
 import type { InterfaceSchemaTransition } from "@osdk/maker";
 import {
   defineInterface,
@@ -28,16 +31,28 @@ import { defineOntologyV2 } from "../../api/defineOntologyV2.js";
 
 const DEADLINE = "2026-01-31T12:34:56Z";
 
+async function convertOntology(body: () => void) {
+  const result = await defineOntologyV2("com.palantir.", body);
+  return result.ontologyIr.ontology;
+}
+
 async function convertInterfaces(
   body: () => void,
 ): Promise<InterfaceTypeBlockDataV2> {
-  const result = await defineOntologyV2("com.palantir.", body);
-  const blocks = Object.values(result.ontologyIr.ontology.interfaceTypes);
+  const blocks = Object.values((await convertOntology(body)).interfaceTypes);
   invariant(
     blocks.length === 1,
     `expected one interface, got ${blocks.length}`,
   );
   return blocks[0];
+}
+
+function transitionsOf(
+  block: InterfaceTypeBlockDataV2,
+): Record<string, InterfaceTypeSchemaTransition> {
+  const { schemaMigrations } = block;
+  invariant(schemaMigrations != null, "expected schema migrations");
+  return schemaMigrations.schemaTransitions;
 }
 
 function transition(
@@ -57,12 +72,12 @@ describe("interface type schema migrations", () => {
     await defineOntology("com.palantir.", () => {}, "/tmp/");
   });
 
-  it("emits an empty migration list when not opted in", async () => {
+  it("omits the migration block when not opted in", async () => {
     const block = await convertInterfaces(() => {
       defineInterface({ apiName: "Foo" });
     });
 
-    expect(block.schemaMigrations).toEqual([]);
+    expect(block.schemaMigrations).toBeUndefined();
     expect(block.interfaceType).not.toHaveProperty("schemaMigrationsEnabled");
   });
 
@@ -75,7 +90,56 @@ describe("interface type schema migrations", () => {
     });
 
     expect(block.interfaceType.schemaMigrationsEnabled).toBe(true);
-    expect(block.schemaMigrations).toEqual([]);
+    expect(block.schemaMigrations).toEqual({
+      interfacePropertyTypeRidsToApiNames: {},
+      schemaTransitions: {},
+    });
+  });
+
+  it("records each transition in the block's known identifiers", async () => {
+    const ontology = await convertOntology(() => {
+      defineInterface({
+        apiName: "Foo",
+        properties: {
+          optional: { required: false, type: "string" },
+          other: { required: false, type: "string" },
+        },
+        schemaMigrations: {
+          transitions: [
+            transition({ id: "t1" }),
+            transition({
+              id: "t2",
+              instructions: [
+                { type: "addRequiredProperty", property: "other" },
+              ],
+            }),
+          ],
+        },
+      });
+    });
+
+    const [interfaceRid] = Object.keys(ontology.interfaceTypes);
+    const { interfaceTypeSchemaTransitions } = ontology.knownIdentifiers;
+
+    expect(Object.keys(interfaceTypeSchemaTransitions)).toEqual([interfaceRid]);
+    expect(interfaceTypeSchemaTransitions[interfaceRid]).toEqual({
+      t1: expect.any(String),
+      t2: expect.any(String),
+    });
+    // Each transition gets its own block internal id
+    expect(
+      new Set(Object.values(interfaceTypeSchemaTransitions[interfaceRid])),
+    ).toHaveLength(2);
+  });
+
+  it("records no known identifiers for an interface without migrations", async () => {
+    const ontology = await convertOntology(() => {
+      defineInterface({ apiName: "Foo" });
+    });
+
+    expect(ontology.knownIdentifiers.interfaceTypeSchemaTransitions).toEqual(
+      {},
+    );
   });
 
   it("translates an afterInstall transition to daysAfterActivation", async () => {
@@ -97,8 +161,8 @@ describe("interface type schema migrations", () => {
     });
 
     expect(block.interfaceType.schemaMigrationsEnabled).toBe(true);
-    expect(block.schemaMigrations).toEqual([
-      {
+    expect(transitionsOf(block)).toEqual({
+      "add-owner": {
         id: "add-owner",
         title: "Require owner",
         description: "some description",
@@ -110,7 +174,7 @@ describe("interface type schema migrations", () => {
           },
         ],
       },
-    ]);
+    });
   });
 
   it("translates a deadline transition", async () => {
@@ -128,7 +192,7 @@ describe("interface type schema migrations", () => {
       });
     });
 
-    expect(block.schemaMigrations[0].gracePeriod).toEqual({
+    expect(transitionsOf(block).t1.gracePeriod).toEqual({
       type: "deadline",
       deadline: DEADLINE,
     });
@@ -152,7 +216,7 @@ describe("interface type schema migrations", () => {
       });
     });
 
-    expect(block.schemaMigrations[0].gracePeriod).toEqual({
+    expect(transitionsOf(block).t1.gracePeriod).toEqual({
       type: "deadline",
       deadline: "2026-01-31T12:34:56Z",
     });
@@ -167,7 +231,7 @@ describe("interface type schema migrations", () => {
       });
     });
 
-    const [migration] = block.schemaMigrations[0].migrations;
+    const [migration] = transitionsOf(block).t1.migrations;
     invariant(migration.type === "addRequiredProperty");
     const { propertyTypeRid } = migration.addRequiredProperty;
 
@@ -175,6 +239,9 @@ describe("interface type schema migrations", () => {
       type: "interfaceDefinedPropertyType",
       interfaceDefinedPropertyType: { apiName: "optional" },
     });
+    expect(block.schemaMigrations?.interfacePropertyTypeRidsToApiNames).toEqual(
+      { [propertyTypeRid]: "optional" },
+    );
   });
 
   it("targets an SPT-backed property by its published rid", async () => {
@@ -198,7 +265,7 @@ describe("interface type schema migrations", () => {
       });
     });
 
-    const [migration] = block.schemaMigrations[0].migrations;
+    const [migration] = transitionsOf(block).t1.migrations;
     invariant(migration.type === "addRequiredProperty");
     const { propertyTypeRid } = migration.addRequiredProperty;
 
@@ -208,5 +275,8 @@ describe("interface type schema migrations", () => {
         sharedPropertyType: { apiName: "com.palantir.ownerSpt" },
       },
     });
+    expect(block.schemaMigrations?.interfacePropertyTypeRidsToApiNames).toEqual(
+      { [propertyTypeRid]: "com.palantir.ownerSpt" },
+    );
   });
 });

@@ -116,11 +116,13 @@ export function convertOntologyDefinitionToWireBlockData(
       Object.entries(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE]).map<
         [string, OntologyIrInterfaceTypeBlockDataV2]
       >(([apiName, interfaceType]) => {
+        const schemaMigrations =
+          convertInterfaceSchemaMigrations(interfaceType);
         return [
           apiName,
           {
             interfaceType: convertInterface(interfaceType),
-            schemaMigrations: convertInterfaceSchemaMigrations(interfaceType),
+            ...(schemaMigrations !== undefined ? { schemaMigrations } : {}),
           },
         ];
       }),
