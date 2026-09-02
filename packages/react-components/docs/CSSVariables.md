@@ -1869,4 +1869,5 @@ To customize dark-mode tokens beyond the defaults, declare your overrides in a h
 
 ### Tokens flipped in dark mode
 
-The package overrides only `--osdk-*` tokens in dark mode. `--bp-*` tokens flip independently via Blueprint's own dark block. Tokens with identical light/dark values (primary/danger/success intents, sizes, weights, spacing, focus width) are not overridden. See `src/tokens/base-tokens/dark.css` for the full list.
+The package maps OSDK aliases to Blueprint next tokens. Blueprint's dark block
+changes the same `--bp-*` tokens, so no OSDK-specific dark overrides are needed.
