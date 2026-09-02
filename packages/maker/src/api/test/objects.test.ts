@@ -87,7 +87,7 @@ describe("Object Types", () => {
         properties: { bar: { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Invalid API name foo_with_underscores. API names must match the regex /^[a-zA-Z][a-zA-Z0-9]{0,99}$/u.]`,
+      `[Error: Invariant failed: Invalid API name foo_with_underscores. API names must match the regex /^(?=.{1,100}$)[a-zA-Z][a-zA-Z0-9]*(?:\\.[a-zA-Z0-9]+)*$/u.]`,
     );
   });
   it("Fails if any property reference does not exist", () => {
