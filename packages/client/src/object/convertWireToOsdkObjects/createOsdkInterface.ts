@@ -19,6 +19,7 @@ import type {
   ObjectMetadata,
   PropertySecurity,
 } from "@osdk/api";
+import invariant from "tiny-invariant";
 
 import { extractNamespace } from "../../internal/conversions/extractNamespace.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
@@ -38,36 +39,95 @@ type PropertySecuritiesMap = {
 function extractValueByImplementation(
   underlying: Record<string, unknown>,
   impl: ObjectMetadata.InterfacePropertyImplementation,
+  multiplicity: boolean,
 ): unknown {
   switch (impl.type) {
     case "localProperty":
       return underlying[impl.propertyApiName];
     case "structField": {
-      const struct = underlying[impl.propertyApiName] as
-        | Record<string, unknown>
-        | null
-        | undefined;
-      return struct == null ? undefined : struct[impl.structFieldApiName];
-    }
-    case "struct":
-      return Object.fromEntries(
-        Object.entries(impl.mapping).map(([fieldName, entry]) => {
-          if (entry.type === "structFieldOfProperty") {
-            const struct = underlying[entry.propertyApiName] as
-              | Record<string, unknown>
-              | null
-              | undefined;
-            return [
-              fieldName,
-              struct == null ? undefined : struct[entry.structFieldApiName],
-            ];
-          }
-          return [fieldName, underlying[entry.propertyApiName]];
-        }),
+      const struct = underlying[impl.propertyApiName];
+      if (struct == null) return undefined;
+      return getStructField(
+        struct,
+        impl.propertyApiName,
+        impl.structFieldApiName,
       );
+    }
+    case "struct": {
+      const fieldMappings = Object.entries(impl.mapping);
+      if (!multiplicity) {
+        return Object.fromEntries(
+          fieldMappings.map(([fieldName, fieldMapping]) => [
+            fieldName,
+            extractStructFieldValue(
+              underlying[fieldMapping.propertyApiName],
+              fieldMapping,
+            ),
+          ]),
+        );
+      }
+
+      const propertyApiName = fieldMappings[0]?.[1].propertyApiName;
+      invariant(
+        propertyApiName != null,
+        "Expected struct implementation to map at least one field",
+      );
+      invariant(
+        fieldMappings.every(
+          ([, fieldMapping]) =>
+            fieldMapping.propertyApiName === propertyApiName,
+        ),
+        "Expected array struct implementation fields to use the same backing property",
+      );
+      const property = underlying[propertyApiName];
+      if (property == null) return undefined;
+      invariant(
+        Array.isArray(property),
+        `Expected '${propertyApiName}' to be an array`,
+      );
+      return property.map((value) =>
+        Object.fromEntries(
+          fieldMappings.map(([fieldName, fieldMapping]) => [
+            fieldName,
+            extractStructFieldValue(value, fieldMapping),
+          ]),
+        ),
+      );
+    }
     case "reduced":
-      return extractValueByImplementation(underlying, impl.implementation);
+      return extractValueByImplementation(
+        underlying,
+        impl.implementation,
+        false,
+      );
   }
+}
+
+function extractStructFieldValue(
+  value: unknown,
+  fieldMapping: ObjectMetadata.InterfacePropertyStructImplementation["mapping"][string],
+): unknown {
+  return fieldMapping.type === "structFieldOfProperty"
+    ? getStructField(
+        value,
+        fieldMapping.propertyApiName,
+        fieldMapping.structFieldApiName,
+      )
+    : value;
+}
+
+function getStructField(
+  value: unknown,
+  propertyApiName: string,
+  structFieldApiName: string,
+): unknown {
+  if (value == null) return undefined;
+  invariant(isStruct(value), `Expected '${propertyApiName}' to be a struct`);
+  return value[structFieldApiName];
+}
+
+function isStruct(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value != null && !Array.isArray(value);
 }
 
 /** @internal */
@@ -77,6 +137,7 @@ export function createOsdkInterface<Q extends FetchedObjectTypeDefinition>(
 ): InterfaceHolder {
   const [objApiNamespace] = extractNamespace(interfaceDef.apiName);
   const objDef = underlying[ObjectDefRef];
+  const underlyingProperties = underlying as unknown as Record<string, unknown>;
 
   return Object.freeze(
     Object.defineProperties(
@@ -155,8 +216,9 @@ export function createOsdkInterface<Q extends FetchedObjectTypeDefinition>(
 
             if (impl != null) {
               const value = extractValueByImplementation(
-                underlying as unknown as Record<string, unknown>,
+                underlyingProperties,
                 impl,
+                interfaceDef.properties[p].multiplicity === true,
               );
               return [
                 exposedName,

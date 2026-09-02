@@ -91,6 +91,37 @@ export const complexImplementationObjectType: ObjectTypeV2 = {
       rid: "rid",
       typeClasses: [],
     },
+    multiStructArray: {
+      dataType: {
+        type: "array",
+        subType: {
+          type: "struct",
+          structFieldTypes: [
+            {
+              apiName: "alpha",
+              dataType: { type: "string" },
+              rid: "ri.struct.array.alpha",
+              typeClasses: [],
+            },
+            {
+              apiName: "beta",
+              dataType: { type: "integer" },
+              rid: "ri.struct.array.beta",
+              typeClasses: [],
+            },
+            {
+              apiName: "gamma",
+              dataType: { type: "string" },
+              rid: "ri.struct.array.gamma",
+              typeClasses: [],
+            },
+          ],
+        },
+        reducers: [],
+      },
+      rid: "rid",
+      typeClasses: [],
+    },
     arrayValue: {
       dataType: {
         type: "array",
@@ -161,6 +192,35 @@ export const ComplexImplementationInterface: InterfaceType = {
       requireImplementation: true,
       typeClasses: [],
     },
+    iStructArray: {
+      type: "interfaceDefinedPropertyType",
+      rid: "ri.interfacePropertyType.main.iStructArray",
+      apiName: "iStructArray",
+      displayName: "i Struct Array",
+      dataType: {
+        type: "array",
+        subType: {
+          type: "struct",
+          structFieldTypes: [
+            {
+              apiName: "theAlpha",
+              dataType: { type: "string" },
+              rid: "ri.iface.array.struct.theAlpha",
+              typeClasses: [],
+            },
+            {
+              apiName: "theBeta",
+              dataType: { type: "integer" },
+              rid: "ri.iface.array.struct.theBeta",
+              typeClasses: [],
+            },
+          ],
+        },
+        reducers: [],
+      },
+      requireImplementation: true,
+      typeClasses: [],
+    },
     iReduced: {
       type: "interfaceDefinedPropertyType",
       rid: "ri.interfacePropertyType.main.iReduced",
@@ -209,6 +269,33 @@ export const ComplexImplementationInterface: InterfaceType = {
       },
       requireImplementation: true,
     },
+    iStructArray: {
+      rid: "ri.interfacePropertyType.main.iStructArray",
+      apiName: "iStructArray",
+      displayName: "i Struct Array",
+      dataType: {
+        type: "array",
+        subType: {
+          type: "struct",
+          structFieldTypes: [
+            {
+              apiName: "theAlpha",
+              dataType: { type: "string" },
+              rid: "ri.iface.array.struct.theAlpha",
+              typeClasses: [],
+            },
+            {
+              apiName: "theBeta",
+              dataType: { type: "integer" },
+              rid: "ri.iface.array.struct.theBeta",
+              typeClasses: [],
+            },
+          ],
+        },
+        reducers: [],
+      },
+      requireImplementation: true,
+    },
     iReduced: {
       rid: "ri.interfacePropertyType.main.iReduced",
       apiName: "iReduced",
@@ -250,6 +337,21 @@ export const complexImplementationObjectTypeWithLinkTypes: ObjectTypeFullMetadat
               theBeta: {
                 type: "structFieldOfProperty",
                 propertyApiName: "multiStruct",
+                structFieldApiName: "beta",
+              },
+            },
+          },
+          iStructArray: {
+            type: "structImplementation",
+            mapping: {
+              theAlpha: {
+                type: "structFieldOfProperty",
+                propertyApiName: "multiStructArray",
+                structFieldApiName: "alpha",
+              },
+              theBeta: {
+                type: "structFieldOfProperty",
+                propertyApiName: "multiStructArray",
                 structFieldApiName: "beta",
               },
             },
