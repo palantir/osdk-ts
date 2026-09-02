@@ -19,7 +19,6 @@ import type {
   OntologyIrInterfaceTypeSchemaMigrationInstruction,
   OntologyIrInterfaceTypeSchemaTransition,
 } from "@osdk/client.unstable";
-import invariant from "tiny-invariant";
 
 import {
   type InterfacePropertyType,
@@ -83,11 +82,6 @@ function convertInstruction(
   switch (instruction.type) {
     case "addRequiredProperty": {
       const { property: propertyApiName } = instruction;
-      invariant(
-        Object.hasOwn(propertiesV3, propertyApiName),
-        `Schema migration instruction ${instruction.type} references property "${propertyApiName}", which the interface does not declare.`,
-      );
-
       return {
         type: "addRequiredProperty",
         addRequiredProperty: {

@@ -24,7 +24,6 @@ import type {
   InterfaceType,
 } from "@osdk/maker";
 import { convertInterfaceSchemaGracePeriod } from "@osdk/maker";
-import invariant from "tiny-invariant";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { interfacePropertyWireRid } from "./convertInterfacePropertyType.js";
@@ -63,11 +62,6 @@ function convertInstruction(
   switch (instruction.type) {
     case "addRequiredProperty": {
       const { property: propertyApiName } = instruction;
-      invariant(
-        Object.hasOwn(propertiesV3, propertyApiName),
-        `Schema migration instruction ${instruction.type} references property "${propertyApiName}", which the interface does not declare.`,
-      );
-
       return {
         type: "addRequiredProperty",
         addRequiredProperty: {
