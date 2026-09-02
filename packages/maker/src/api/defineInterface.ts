@@ -33,8 +33,10 @@ import {
   type InterfacePropertyType,
   isInterfaceSharedPropertyType,
 } from "./interface/InterfacePropertyType.js";
+import type { InterfaceSchemaMigrations } from "./interface/InterfaceSchemaMigrations.js";
 import { type InterfaceType } from "./interface/InterfaceType.js";
 import { mapSimplifiedStatusToInterfaceTypeStatus } from "./interface/mapSimplifiedStatusToInterfaceTypeStatus.js";
+import { validateInterfaceSchemaMigrations } from "./interface/validateInterfaceSchemaMigrations.js";
 import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
 import { isExotic, isPropertyTypeType } from "./properties/PropertyTypeType.js";
 import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
@@ -61,6 +63,7 @@ export type InterfaceTypeDefinition = {
   extends?: InterfaceType | InterfaceType[];
   searchable?: boolean;
   permission?: EntityPermission;
+  schemaMigrations?: InterfaceSchemaMigrations;
 };
 
 export function defineInterface(
@@ -201,8 +204,20 @@ export function defineInterface(
     propertiesV3,
     permission: interfaceDef.permission,
     searchable: interfaceDef.searchable ?? true,
+    schemaMigrations:
+      interfaceDef.schemaMigrations !== undefined
+        ? structuredClone(interfaceDef.schemaMigrations)
+        : undefined,
     __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
   };
+
+  if (interfaceDef.schemaMigrations !== undefined) {
+    validateInterfaceSchemaMigrations(
+      apiName,
+      interfaceDef.schemaMigrations,
+      propertiesV3,
+    );
+  }
 
   updateOntology(fullInterface);
   return fullInterface;
