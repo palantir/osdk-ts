@@ -143,7 +143,7 @@ Implementation continues on the same branch as Step 1. No new branch.
 5. **Documentation** (`CONTRIBUTING.md` step 9):
    - Add `docs/<Name>.md` with usage and a minimal example
    - If you added CSS variables, update `docs/CSSVariables.md`
-   - Add a one-line entry to the components table in `AGENTS.md` and `README.md`
+   - Add a one-line entry to the components table in `README.md`
    - **Register with Docusaurus.** Add `"<Name>"` to the `@osdk/react-components` category in `docs/sidebarsReactComponents.ts` at the repo root — without this the doc ships in the package but does not appear on the public docs site
 
 6. **No checkpoint here — auto-proceed to Step 3.** Status update only ("Implementation done across N files; running Storybook verification next.") so the user knows what's happening, then immediately start Step 3.

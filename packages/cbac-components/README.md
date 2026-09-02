@@ -84,10 +84,34 @@ If using CSS layers with `@osdk/react-components`:
 
 ## Components
 
-| Component          | Description                                                                   | Documentation                 |
-| ------------------ | ----------------------------------------------------------------------------- | ----------------------------- |
-| `CbacPicker`       | Inline marking picker with selection, restrictions, and classification banner | [Guide](./docs/CbacPicker.md) |
-| `CbacPickerDialog` | Dialog wrapper for the picker with confirm/cancel and validation              | [Guide](./docs/CbacPicker.md) |
+All components import from `@osdk/cbac-components/experimental`.
+
+| Component                | Description                                                                                                              | Documentation                 |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `CbacPicker`             | Inline CBAC marking picker with OSDK data fetching, selection state, restriction enforcement, and classification banner. | [Guide](./docs/CbacPicker.md) |
+| `CbacPickerDialog`       | Dialog wrapper for CbacPicker with confirm/cancel actions and validation.                                                | [Guide](./docs/CbacPicker.md) |
+| `BaseCbacPicker`         | OSDK-agnostic base picker — use when building custom data fetching on top of the picker UI.                              | [Guide](./docs/CbacPicker.md) |
+| `BaseCbacBanner`         | OSDK-agnostic classification banner display with customizable colors and text.                                           | [Guide](./docs/CbacPicker.md) |
+| `BaseCbacPickerDialog`   | OSDK-agnostic dialog wrapper for BaseCbacPicker with confirm/cancel actions.                                             | [Guide](./docs/CbacPicker.md) |
+
+### Utilities
+
+| Export                    | Description                                                                          |
+| ------------------------- | -------------------------------------------------------------------------------------- |
+| `toggleMarking`           | Toggle a marking in a selection, respecting category type (CONJUNCTIVE/DISJUNCTIVE). |
+| `computeMarkingStates`    | Compute the state (SELECTED, IMPLIED, DISALLOWED, etc.) for each marking.            |
+| `groupMarkingsByCategory` | Organize markings into groups by their category.                                     |
+
+### Types
+
+| Type                    | Description                                                                      |
+| ----------------------- | ---------------------------------------------------------------------------------- |
+| `MarkingSelectionState` | Union: "NONE" \| "SELECTED" \| "IMPLIED" \| "DISALLOWED" \| "IMPLIED_DISALLOWED" |
+| `CbacBannerData`        | Classification string, text color, background colors, marking IDs.               |
+| `PickerMarkingCategory` | Category metadata (id, name, description, type).                                 |
+| `PickerMarking`         | Marking metadata (id, categoryId, name, description).                            |
+| `CategoryMarkingGroup`  | Pairing of a category with its markings.                                         |
+| `RequiredMarkingGroup`  | Group of marking names that must be selected together.                           |
 
 ## Component Architecture
 
@@ -118,6 +142,10 @@ function ClassificationForm() {
   return <CbacPicker initialMarkingIds={markingIds} onChange={setMarkingIds} />;
 }
 ```
+
+## Contributing
+
+This package is frozen — new work belongs in [`@osdk/react-components`](https://github.com/palantir/osdk-ts/tree/main/packages/react-components). If you must change something here, see [`AGENTS.md`](https://github.com/palantir/osdk-ts/blob/main/packages/cbac-components/AGENTS.md) for the engineering rules that apply.
 
 ## License
 

@@ -142,7 +142,7 @@
     "access": "public"
   },
   "files": [
-    "AGENTS.md",
+    "README.md",
     "docs",
     "experimental",
     "build/cjs",

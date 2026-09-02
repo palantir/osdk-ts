@@ -1,97 +1,285 @@
-# @osdk/react-components
+# @osdk/react-components — development guide
 
-Pre-built, Ontology-aware React components. Pass in OSDK entities and they handle data loading, caching, and state management automatically. Requires `@osdk/react` (see the `@osdk/react` package's `AGENTS.md` for hooks and provider setup).
+This documentation provides guidance for developing in `@osdk/react-components`. Consumer-facing setup, component catalog, and usage docs live in [`README.md`](./README.md); the full contribution process lives in [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
-## Installing
+## Workflow skills
 
-**Default: `pnpm add @osdk/react-components@latest @osdk/react@latest`** — use prereleases only if you specifically need an unreleased feature. Everything below is for when you are NOT on the latest stable.
+When the user asks to **add, create, or scaffold a new component**, invoke the `add-new-component` skill. It walks through API-first PR, MVP feature checklist, and verification loop on top of `CONTRIBUTING.md`. Do not improvise the workflow — follow the skill.
 
-Requires `@osdk/react` AND `@osdk/client` AND `@osdk/api` together. Versions must line up tighter than the declared peer ranges. Both `@osdk/react-components` and `@osdk/react` import from the unstable `@osdk/client` surface, which moves between releases without deprecation.
+When the user asks to **fix a bug, add a feature to an existing component, or otherwise change a component already shipped in this package**, invoke the `contribute` skill. It adds a failing-test-first gate for bug fixes (TDD), an API-change checkpoint when the diff touches public props, and a verification loop. Do not improvise — follow the skill.
 
-- **Stable `@osdk/react-components`** → latest stable `@osdk/react`, `@osdk/client`, and `@osdk/api`.
-- **Prerelease `@osdk/react-components`** → MUST use matching prerelease versions of all three peers. Mismatches will break at build time.
+If a skill ever conflicts with this file or `CONTRIBUTING.md`, those win — flag the conflict.
 
-To find the exact compatible peer versions:
+## TypeScript Best Practices
 
-1. Open `node_modules/@osdk/react-components/CHANGELOG.md`
-2. Find the heading matching your installed `@osdk/react-components` version
-3. If that entry has an `Updated dependencies` section, install the exact versions it lists for `@osdk/react`, `@osdk/client`, and `@osdk/api`
-4. If it does NOT, walk backwards to the most recent prior entry that does, and use those versions
+- NEVER use `any` without asking the user first. If you think you need `any`, you probably don't understand the problem
+- Projects are ESM/TypeScript - look for `.ts`/`.tsx` files, not `.js`
+- To check compilation: `pnpm turbo typecheck --filter=@osdk/react-components` (NEVER `pnpm --dir <path> turbo` — `--dir` breaks Turbo)
 
-**Worked example** — installed `@osdk/react-components@0.2.0-beta.26`:
+## React Best Practices
 
-- Entry lists `@osdk/client@2.8.0-beta.29`, `@osdk/api@2.8.0-beta.29`, `@osdk/react@0.10.0-beta.14`
-- Run: `pnpm add @osdk/client@2.8.0-beta.29 @osdk/api@2.8.0-beta.29 @osdk/react@0.10.0-beta.14`
+- Always put new components in their own file and create separate components instead of inline functions
+- NEVER conditionally call React hooks
+- ALWAYS keep components rendering during loading/error states. Don't use early returns like `if (isLoading) return <LoadingMessage />`. Show loading/error indicators while rendering existing data to prevent UI flashing
+- ALWAYS memoize non-primitive values passed to component props with useCallback or useMemo
+- ALWAYS combine classnames with the `classnames` utility. NEVER use string literal class names
+- NEVER use empty arrays `[]` or empty objects `{}` directly in component bodies as they create new references on every render, causing infinite re-renders. Always extract them as constants outside the component or memoize them. For example, instead of `const defaultValue = []`, use `const EMPTY_ARRAY: [] = []` outside the component or `const defaultValue = useMemo(() => [], [])`
 
-See `@osdk/react`'s `AGENTS.md` for optional peers (`@osdk/foundry.admin`, `@osdk/foundry.core`) used by the admin hooks.
+## OSDK Component Architecture
 
-## Install-time errors
+- The outermost component (e.g. `ObjectTable`) handles data fetching from Foundry using `@osdk/react` hooks. ALWAYS use a hook from `@osdk/react` for network requests — never `fetch`, `axios`, or other HTTP clients directly
+- The base component (`Base<Name>`) contains all interactions and styling and is OSDK-agnostic. The outer component processes OSDK data and passes primitives to the base component. This lets users build on the base component with their own data fetching
+- Component interactions live in a hook (e.g. `useBase<Name>State`) so the same logic can later be exported as a headless component without rewriting. Treat Base as `<headless-hook> + <markup>` from day one
+- For complex components, split into a building blocks tier: sub-components and hooks under `components/` and `hooks/` subfolders (e.g. `PdfViewerToolbar`, `PdfViewerSidebar`, `usePdfViewerState`)
 
-| Error                                                                                                                           | Cause                                                                                                             | Fix                                                                                                                                                  |
-| ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `"<name>" is not exported by @osdk/client/.../observable.js` (or `@osdk/client/.../unstable-do-not-use.js`, or `@osdk/api/...`) | `@osdk/client` or `@osdk/api` or `@osdk/react` version mismatches what `@osdk/react-components` was built against | Do NOT delete the import or downgrade silently. Follow the CHANGELOG recipe in `## Installing` and pin all three peers to the exact versions listed. |
-| `"<name>" is not exported by @osdk/react/...`                                                                                   | `@osdk/react` version mismatches what `@osdk/react-components` was built against                                  | Do NOT delete the import or downgrade silently. Follow the CHANGELOG recipe in `## Installing` and pin `@osdk/react` to the exact version listed.    |
-| `Rollup failed to resolve import "@osdk/foundry.admin"` (or `@osdk/foundry.core`)                                               | Transitive import from `@osdk/react/platform-apis` without the optional peers                                     | Install `@osdk/foundry.admin` + `@osdk/foundry.core`, OR avoid surfaces that use the admin hooks.                                                    |
-| pnpm/npm peer warning about `@osdk/client` or `@osdk/react` range                                                               | Declared peer ranges are broad; prerelease coupling is tighter                                                    | Follow the CHANGELOG recipe; pin to exact versions.                                                                                                  |
+### Why `@osdk/react` hooks
 
-## Components
+`@osdk/react` hooks share a single client and observable cache across every component on the page. This provides:
 
-Components are imported from their individual entry points under `@osdk/react-components/experimental/`:
+- **Consistent state across components.** All mutations through `useOsdkAction` (and other `@osdk/react` mutations) automatically propagate to every component reading that data. Users see the latest writes immediately, with no stale rows or inconsistencies
+- **Coalesced network requests.** Multiple components asking for the same objects automatically share a single request, eliminating duplicate traffic and improving load time
+- **Automatic reactivity to invalidations.** When any component invalidates a query, all components reading that data re-render automatically without manual refetch logic or remounting
 
-- `@osdk/react-components/experimental/object-table` — ObjectTable, BaseTable, ColumnConfigDialog
-- `@osdk/react-components/experimental/filter-list` — FilterList, BaseFilterList
-- `@osdk/react-components/experimental/action-form` — ActionForm, BaseForm, and form field definitions
-- `@osdk/react-components/experimental/pdf-viewer` — PdfViewer, BasePdfViewer, and building blocks/hooks
-- `@osdk/react-components/experimental/tiff-renderer` — TiffViewer, BaseTiffViewer
-- `@osdk/react-components/experimental/markdown-renderer` — MarkdownViewer, BaseMarkdownViewer
-- `@osdk/react-components/experimental/aip-agent-chat` — AipAgentChat, BaseAipAgentChat
-- `@osdk/react-components/experimental/document-viewer` — DocumentViewer
-- `@osdk/react-components/experimental/email-viewer` — EmailViewer, BaseEmailViewer
-- `@osdk/react-components/experimental/spreadsheet-viewer` — SpreadsheetViewer, BaseSpreadsheetViewer
-- `@osdk/react-components/experimental/image-viewer` — ImageViewer, BaseImageViewer
-- `@osdk/react-components/experimental/video-viewer` — VideoViewer, BaseVideoViewer
-- `@osdk/react-components/experimental/xml-viewer` — XmlViewer, BaseXmlViewer
+### Reuse before writing
 
-| Component                  | Description                                                                                                                                       |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **ObjectTable**            | Table for displaying OSDK object sets with sorting, filtering, inline editing, column pinning/resizing, row selection, and infinite scroll.       |
-| **BaseTable**              | OSDK-agnostic base table — use when building custom data fetching on top of the table UI.                                                         |
-| **FilterList**             | Aggregation-based filter UI for object sets with draggable reordering.                                                                            |
-| **BaseFilterList**         | OSDK-agnostic base filter list — use for custom filter implementations.                                                                           |
-| **ActionForm**             | Form for applying OSDK actions with generated or custom field definitions.                                                                        |
-| **BaseForm**               | OSDK-agnostic base action form — use when supplying explicit field content and submit handling.                                                   |
-| **ColumnConfigDialog**     | Dialog for managing column visibility and drag-and-drop reordering.                                                                               |
-| **PdfViewer**              | PDF viewer for OSDK Media objects with toolbar, search, annotations, sidebar (thumbnails/outline), highlight mode, and form fields.               |
-| **BasePdfViewer**          | OSDK-agnostic base PDF viewer — `src` takes a URL, `ArrayBuffer`, `Uint8Array`, or `Blob`. Use when building custom data fetching on top of it.   |
-| **TiffViewer**             | TIFF viewer for OSDK Media objects — fetches the TIFF contents and renders them onto a canvas.                                                    |
-| **BaseTiffViewer**         | OSDK-agnostic base TIFF viewer — `src` takes a `Uint8Array`, rendered onto a canvas with size validation and error handling.                      |
-| **MarkdownViewer**         | Markdown viewer for OSDK Media objects — fetches the markdown text and renders it with styled headings, code blocks, tables, and links.           |
-| **BaseMarkdownViewer**     | OSDK-agnostic base markdown viewer — accepts a markdown string directly. Use when building custom data fetching on top of the viewer UI.          |
-| **AipAgentChat**           | Chat surface backed by Foundry LMS via `useChat`. Takes a `PlatformClient` + model API name and renders messages, composer, and streaming.        |
-| **BaseAipAgentChat**       | OSDK-agnostic base chat — accepts `messages`/`status`/`onSendMessage` directly. Use for custom chat-state plumbing.                               |
-| **DocumentViewer**         | Unified media viewer that auto-detects file type (PDF, TIFF, image, video, spreadsheet, email, markdown, XML) and renders the appropriate viewer. |
-| **EmailViewer**            | Email viewer — parses and renders `.eml` files with headers, HTML body (sandboxed iframe), and plain text fallback.                               |
-| **SpreadsheetViewer**      | Spreadsheet viewer — parses and renders `.xlsx` spreadsheets with sheet tabs and column/row headers.                                              |
-| **ImageViewer**            | Image viewer — renders images (PNG, JPEG, GIF, SVG, WebP, BMP) with object-fit contain.                                                           |
-| **VideoViewer**            | Video viewer — renders video with native browser controls.                                                                                        |
-| **XmlViewer**              | XML viewer — renders XML content with syntax preservation.                                                                                        |
-| **CbacPicker**             | Picker for classification-based access control (CBAC) markings — disjunctive/conjunctive categories, restriction enforcement, banner.             |
-| **CbacPickerDialog**       | Dialog wrapper for `CbacPicker` with confirm/cancel actions and validation.                                                                       |
-| **CbacBanner**             | OSDK-aware classification banner that resolves a marking-set into a colored banner.                                                               |
-| **BaseCbacPicker**         | OSDK-agnostic base CBAC picker — use when building custom data fetching on top of the picker UI.                                                  |
-| **BaseCbacBanner**         | OSDK-agnostic classification banner display with customizable colors and text.                                                                    |
-| **BaseCbacPickerDialog**   | OSDK-agnostic dialog wrapper for `BaseCbacPicker`.                                                                                                |
-| **MaxClassificationField** | Field that lets users constrain the maximum classification allowed for a marking selection.                                                       |
+- **Reuse from `src/base-components/` first.** This folder contains shared internal UI primitives (`action-button/`, `checkbox/`, `combobox/`, `dialog/`, `draggable-list/`, `icon/`, `search-bar/`, `searchable-menu/`, `select/`, `skeleton/`, `switch/`, `tooltip/`). Check this folder before writing a new UI primitive — reusing avoids visual / behavioral drift
+- **Public primitives barrel: `src/public/primitives.ts`.** Enumerates primitives that are intentionally re-exported (`ActionButton`, `Dialog`, `SkeletonBar`, `Tooltip`, etc.). Anything in `src/base-components/` not re-exported through `primitives.ts` stays internal-only
+- **NEVER export UI primitives from a component folder.** Anything in `src/base-components/` is internal. If a primitive is reusable across components, move it into `src/base-components/` so the next component can pick it up
+- **Prefer `@base-ui/react` over primitive HTML for interactive elements.** When you need a button, dialog, menu, popover, tooltip, select, switch, or similar interactive primitive, reach for the `@base-ui/react` component (it's a workspace dependency) rather than a raw `<button>`, `<div role="dialog">`, etc. Base-ui handles accessibility, keyboard, and focus correctly. Plain semantic HTML (`<div>`, `<section>`, `<span>`, `<a>`) is fine for non-interactive layout
+- **Prefer Blueprint icons (`@blueprintjs/icons`) for iconography.** Use Blueprint's icon set rather than inlining SVGs, importing from another icon library, or hand-rolling glyphs. Verify the icon name exists at the chosen export path before committing — typos surface at runtime, not build time
 
-## Documentation
+## API Design
 
-Before using any component, read the relevant doc from this package:
+These rules apply whenever a component's public API changes — new component, new feature, or bug fix that touches props.
 
-- **Setup & installation**: Read [README.md](./README.md) for provider, CSS layers, and peer dependencies
-- **ObjectTable**: Read [docs/ObjectTable.md](./docs/ObjectTable.md) for props, column definitions, examples, theming, troubleshooting, and hooks to build custom tables
-- **ActionForm**: Read [docs/ActionForm.md](./docs/ActionForm.md) for generated fields, title behavior, custom field definitions, switch fields, and date/time behavior
-- **PdfViewer**: Read [docs/PdfViewer.md](./docs/PdfViewer.md) for props, annotations, building blocks, hooks, examples, and theming
-- **TiffViewer**: Read [docs/TiffViewer.md](./docs/TiffViewer.md) for props and usage
-- **MarkdownViewer**: Read [docs/MarkdownViewer.md](./docs/MarkdownViewer.md) for props, examples, and theming
-- **FilterList**: Read [docs/FilterList.md](./docs/FilterList.md) for props, examples, and usage
-- **CbacPicker**: Read [docs/CbacPicker.md](./docs/CbacPicker.md) for props, examples, base components, and troubleshooting
+### Controlled and/or uncontrolled
+
+Every feature that holds state the user can change (selection, sort, filter, expansion, edit-in-progress, active tab, etc.) must expose **at least one** of the following modes. Implementing both is encouraged when the feature benefits from it, but only one is required.
+
+- **Controlled** — caller passes `<feature>` (e.g. `selectedRows`, `orderBy`, `filter`). The prop is the source of truth; caller re-renders with new values via the `on<Feature>Changed` callback
+- **Uncontrolled** — caller passes `default<Feature>` (e.g. `defaultOrderBy`, `defaultSelectedRows`) or nothing. The component maintains internal state seeded from the default (or a sensible empty value like `[]`, `{}`, `null`) and `on<Feature>Changed` still fires so callers can observe
+
+**State the chosen mode(s) clearly in JSDoc** on each new prop. Example:
+
+```ts
+/**
+ * Controlled mode only. Caller owns selection state; component does not
+ * maintain internal selection. Pair with `onRowSelectionChanged` to observe changes.
+ */
+selectedRows?: RowSelectionState;
+```
+
+```ts
+/**
+ * Uncontrolled mode. Seeds the component's internal sort state; component
+ * continues to own the state after mount. `onOrderByChanged` still fires.
+ * @default undefined (no initial sort)
+ */
+defaultOrderBy?: OrderBy;
+```
+
+**Naming**: `<feature>` (controlled), `default<Feature>` (uncontrolled seed), `on<Feature>Changed` (callback). Match `ObjectTableApi.ts` exactly: `selectedRows` / `onRowSelectionChanged`, `orderBy` / `defaultOrderBy` / `onOrderByChanged`.
+
+**Canonical implementation** (both modes): see `src/object-table/hooks/useRowSelection.ts` — `rowSelectionState` is computed from `selectedRows` when controlled, falls back to `internalRowSelection` (a `useState({})`) otherwise; `onRowSelectionChanged` fires in both modes. Use this pattern when implementing both modes; for single-mode features, drop the branch you don't support.
+
+### Render override slots
+
+Expose `render*` slots (e.g. `renderHeader`, `renderProperty`, `renderRow`) where consumers may legitimately want to deviate from default rendering. Default rendering must remain feature-complete with no overrides supplied. Don't add slots speculatively — add them where the surface is obviously customisable (header, individual cell/property, empty state). When in doubt, don't add — every slot is API surface we have to maintain.
+
+### Event listeners on top of default behavior
+
+For every state change with a built-in default behavior (sort, filter, select, edit, navigate, load), expose a non-controlling `on*` listener so consumers can layer extra handling — analytics, scroll-to-top, telemetry, side effects — without replacing the default. The default still runs whether or not the listener is provided. **Distinct from controlled-mode `on*Changed` handlers, which DO take over the state.**
+
+### Other API rules
+
+- **Aim for one required prop.** Most "required" inputs can be derived (e.g. column definitions from `objectType`) or defaulted
+- **`enable*` boolean flags default to `true`** when the feature is part of the out-of-the-box experience
+- **Document defaults inline** with `@default` JSDoc on every optional prop. Use `@param` / `@returns` for callbacks
+- **Define the API in its own file**: `<Name>Api.ts` co-located with the component, exporting the base props, the OSDK-aware outer-component props, and any public sub-types
+- **Name a viewer's primary input `src` or `content`, by form.** `src` is the binary source to render from, in whatever forms that renderer supports — a URL, raw bytes, or both. `content` is the already-decoded payload — text, or a parsed object. Never overload one name across both categories, and never name the prop after the file type (`email`, `spreadsheet`); that does not generalise to the next viewer. `BasePdfViewer` is the reference for `src` — `src: PdfSource = string | ArrayBuffer | Uint8Array | Blob`, a renderer that supports every source form; `BaseXmlViewer` is the reference for `content`.
+- **JSDoc on public API describes the contract, not the implementation.** Write what the caller passes, gets back, and can rely on. Do not name internal helpers, hooks, fields, or libraries; do not explain how the component computes the result or which internal branch a value ends up in. These leak into the generated props tables in `docs/`, tie published docs to internals that are free to change, and go stale silently. Put the "how" in a code comment at the implementation site instead.
+
+  ```ts
+  // Bad — describes internals, and every claim breaks if the implementation moves
+  /**
+   * Picks the editor. Property columns read it from ontology metadata; custom
+   * and derived columns have none, so without it they fall through to
+   * `renderDefaultCell`'s text input and commit strings.
+   */
+  cellValueType?: BaseWirePropertyTypes;
+
+  // Good — the caller-visible contract
+  /** The cell value's data type. */
+  cellValueType?: BaseWirePropertyTypes;
+  ```
+
+## CSS Styling
+
+- **Read `src/tokens/base-tokens/base.css` first** to discover the real `--osdk-*` token names available in the package. The file is authoritative — do not assume token names
+- **Use `--bp` design tokens first.** Any `--bp` token used must be mapped from an `--osdk` token in `base.css`
+- **NEVER hardcode colors or pixel values.** Every visual property goes through a CSS variable
+- **If a value has no analog in `base.css`, do not inline it.** Flag it as a follow-up for a separate token-addition change. Inlining bypasses theming and accumulates as drift
+- **Use CSS modules** (`<Name>.module.css`) for component-scoped styles
+- **Define a CSS variable for every property a consumer may want to customize.** Defaults for your component's own `--osdk-<name>-*` tokens go in `src/tokens/component-tokens/<name>.css` — never in a `.module.css` or a `.tsx`. Document new variables in `docs/CSSVariables.md`
+- **Exception — nested-primitive scoping.** A `.module.css` MAY assign to a token owned by _another_ primitive, scoped to a local class, to restyle that primitive where your component embeds it (e.g. `.osdkEditableCellDropdown { --osdk-select-trigger-bg: var(--osdk-table-cell-input-bg); }`). That's a cascade override, not a new public token, so it stays in the module. Feed it from one of your own tokens where one exists. See CONTRIBUTING.md "Styling Guidelines"
+- **Never let `var(--osdk-x, <fallback>)` substitute for declaring the token** — with one exception: a token whose default is a CSS-wide keyword (`inherit`/`initial`/`unset`) _cannot_ be declared, because `--osdk-x: inherit` at `:root` resolves guaranteed-invalid and makes `var(--osdk-x)` compute to the property's initial value. Keep those defaults in the fallback and comment the token file. See `--osdk-table-cell-bg` in `component-tokens/table.css`
+- **Respect CSS layers** — see `README.md` "CSS Setup" for layer order and how brand overrides plug in
+
+## Testing
+
+- **One test file per source file.** Before writing, glob for an existing `<X>.test.tsx`; if it exists, append nested `describe` blocks. **NEVER split** into `<X>.<feature>.test.tsx`
+- Test files live in `__tests__/` directories alongside the code they test
+- **Test the Base layer independently of OSDK** — keeps tests fast and focused
+- **Test the OSDK wrapper separately** for data transformation and hook-usage behavior
+- **If no mock pattern exists** for the OSDK data shape, scaffold OSDK-wrapper tests with `it.todo("<behaviour>")` rather than fabricating mocks. Fabricated mocks drift from real shapes and create false-positive coverage
+
+## Storybook
+
+- Stories live in `packages/react-components-storybook/src/stories/<Name>/<Name>.stories.tsx`
+- **Tier placement is via `title:`, not folder path.** New components belong under the `Beta/` category:
+
+  ```ts
+  const meta: Meta<typeof MyComponent> = {
+    title: "Beta/<Name>", // or "Beta/<Parent>/<Subfeature>"
+    component: MyComponent,
+  };
+  ```
+
+  The `beta` tag (and resulting tag badge) is injected automatically by the indexer in `.storybook/main.ts` for any title starting with `Beta/` — do **not** add `tags: ["beta"]` manually.
+
+  Produces URLs like `beta-myname--default`, matching `beta-baseform--default`, `beta-objecttable-building-blocks-basetable--default`
+
+- **OSDK-aware components must accept mocked data via props in stories.** Storybook runs without a Foundry stack, so the OSDK wrapper cannot fetch real data there. Either expose a `data` / `objects` / `value` prop the story can populate, or render the `Base<Name>` component directly. Use the MSW addon for stories that exercise hook-level fetch paths
+
+## Metrics
+
+Every OSDK component (the outermost data-fetching layer, **not** the Base component) must register a user agent string so network requests carry a `Fetch-User-Agent` header identifying which component initiated them. `withOsdkMetrics` calls `useRegisterUserAgent` internally, producing `osdk-react-components/<version>/MyComponent`.
+
+- Wrap OSDK components with `withOsdkMetrics` at the **export barrel** (`src/public/experimental/<name>.ts`), NOT inside the component body:
+
+  ```ts
+  // src/public/experimental/<name>.ts
+  import { MyComponent as _MyComponent } from "../../<name>/<Name>.js";
+  import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
+  export const MyComponent: typeof _MyComponent = withOsdkMetrics(
+    _MyComponent,
+    "MyComponent",
+  );
+  ```
+
+- Add the `typeof _Component` annotation so `--isolatedDeclarations` is satisfied
+- **Do NOT** wrap Base components
+- **Do NOT** call `useRegisterUserAgent` directly inside the component body
+
+## Project Management
+
+- This project uses pnpm. DO NOT use npm
+- Monorepo: run tests from individual packages, not root
+
+## Security
+
+- NEVER disable gpg signing unless explicitly requested
+
+## Code Maintenance
+
+- Do not fix diagnostic warnings in old code
+
+## CBAC components
+
+The CBAC (classification-based access control) picker lives at `src/cbac-picker/` and is exported through `src/public/experimental/cbac-picker.ts` under the `@osdk/react-components/experimental/cbac-picker` subpath. It was merged in from the legacy `@osdk/cbac-components` package — see `docs/CbacPicker.md` for usage. The legacy package still exists on disk for reference but is no longer the source of truth.
+
+## Common pitfalls
+
+- **NEVER `pnpm --dir <path> turbo` or `cd <path> && pnpm turbo`** — the `--dir` flag breaks Turbo (pnpm interprets the path as the command). Always `pnpm turbo <task> --filter=@osdk/react-components`. For non-turbo commands (vitest, lint), `pnpm --dir packages/react-components <cmd>` is fine
+- **If `pnpm turbo check` fails on lint**, run `pnpm --dir packages/react-components fix-lint` then re-check
+- **Format scoped to changed files only**: `git ls-files --modified --others --exclude-standard | xargs npx dprint fmt`. The pre-commit hook rejects unformatted code, but bare `npx dprint fmt` reformats the entire repo and produces a noisy diff
+- **Do NOT skip `transpileAllDeps`.** This package depends on transpiled output of other monorepo packages; skipping leads to "missing export" errors that look like real bugs:
+  ```sh
+  pnpm --filter @osdk/react-components transpileAllDeps
+  ```
+
+## Folder Structure
+
+The codebase is organized to support the 2-layer architecture:
+
+```
+src/
+├── base-components/         # Reusable UI primitives (internal use only)
+│   ├── select/
+│   ├── checkbox/
+│   ├── dialog/
+│   └── ...
+├── object-table/           # OSDK component folder
+│   ├── ObjectTable.tsx     # OSDK data layer component
+│   ├── Table.tsx           # Base component (exported as BaseTable)
+│   ├── hooks/              # React hooks for table functionality
+│   ├── utils/              # Helper utilities and types
+│   └── components/         # Supporting React components
+└── public/
+    └── experimental/       # Public API exports (one file per component)
+        ├── object-table.ts
+        ├── filter-list.ts
+        ├── pdf-viewer.ts
+        ├── markdown-viewer.ts
+        ├── tiff-viewer.ts
+        └── action-form.ts
+```
+
+## Implementation order for a new component
+
+1. Start with the Base component focusing on interactions and styling
+2. Create the OSDK wrapper that handles data fetching and type conversion
+3. Keep the Base component API simple using primitive types
+4. For complex components, consider a building blocks tier with sub-components and hooks
+5. Document all layers for users who want to customize
+6. Register a user agent for metrics — see "Metrics" above
+
+## Development Workflow
+
+1. In `packages/react-components`, run `pnpm install` to install the dependencies
+2. Run `pnpm transpileAllDeps` to transpile all dependencies in this repo
+3. To run tests, run `pnpm test`
+
+### Running the Example People App
+
+The examples live in `packages/e2e.sandbox.peopleapp`:
+
+1. Create a `.env.local` file based on `.env.local.sample` in `packages/e2e.sandbox.peopleapp`
+2. Transpile all dependencies of peopleapp:
+
+   ```sh
+   pnpm --filter @osdk/e2e.sandbox.peopleapp transpileAllDeps
+   ```
+
+3. Run the people app:
+
+   ```sh
+   pnpm --filter @osdk/e2e.sandbox.peopleapp dev
+   ```
+
+## Props reference tables (auto-generated)
+
+Per-component **props reference tables in `docs/*.md` are generated from the component's props interface**, so they never drift from the source. The generator (`scripts/gen-props.mjs`) reads the named TypeScript interface (or type alias), turns each property into a `Name | Type | Description` row, and writes it between markers. JSDoc on each prop becomes the description — the main comment, `@default`, `@deprecated`, inline `{@link}`, and required/optional are all reflected. If the props type is generic, its type parameters and their constraints (e.g. `Q extends ActionDefinition<unknown>`) are listed above the table so bare `Q`-style types stay meaningful.
+
+Regenerate after changing any documented prop or its JSDoc:
+
+```sh
+pnpm --filter @osdk/react-components gen-props
+```
+
+Commit the regenerated docs alongside your change. CI enforces freshness: the `check-gen-props` task (part of `pnpm turbo check`) runs `gen-props --check` and fails if a committed table is stale (or was hand-edited inside the markers).
+
+**To enable a generated table for a new component**, drop a marker block into its doc where the table should appear, naming the source file (relative to the package root) and the props interface:
+
+```md
+## Props
+
+<!-- AUTOGEN:props START src=src/my-component/MyComponentApi.ts interface=MyComponentProps -->
+<!-- AUTOGEN:props END -->
+```
+
+Then run `gen-props` to fill it in (the generator normalizes the marker and inserts the table). It resolves both `interface` and `type` declarations, following `extends` clauses, intersections (`A & B`), controlled/uncontrolled unions, and `Pick`/`Omit`. References are resolved first in the marker's `src` file, then by following named imports into other files — so a base shared across files (e.g. `FilterDefinitionControls`) still contributes its members. Only bare/external imports (e.g. `@osdk/api`) are left unresolved.
+
+The same marker works for any object-shaped type referenced from the props, not just the top-level props interface — add a block pointing at `interface=ColumnDefinition` (or `PropertyFilterDefinition`, `ObjectSetOptions`, …) to document a config sub-type. A discriminated union of differently-shaped variants (e.g. the column locator union, `FilterDefinitionUnion`) and distributive/conditional/mapped types (e.g. `FormFieldDefinition`, `EditFieldConfig`) resolve to no members; the generator errors rather than emit a misleading merged table, so document each concrete variant with its own block (e.g. one per `FilterDefinitionUnion` member, or `DropdownEditConfig` / `DatePickerEditConfig` for `EditFieldConfig`).
+
+Because the description column comes entirely from JSDoc, **write a JSDoc comment (with `@default` where relevant) on every prop.** Props with no JSDoc render with a blank description — that blank cell is your signal to document them, not a reason to hand-edit the table.

@@ -9,6 +9,8 @@ Built on top of [@osdk/react](https://github.com/palantir/osdk-ts/tree/main/pack
 ## Table of Contents
 
 - [Installation](#installation)
+  - [Matching peer versions](#matching-peer-versions)
+  - [Install-time errors](#install-time-errors)
 - [Setup](#setup)
   - [App Setup](#app-setup)
   - [CSS Setup](#css-setup)
@@ -16,19 +18,18 @@ Built on top of [@osdk/react](https://github.com/palantir/osdk-ts/tree/main/pack
 - [Component Architecture](#component-architecture)
   - [Core layers](#core-layers-all-components)
   - [Building blocks](#building-blocks-select-components)
-- [Folder Structure](#folder-structure)
+  - [Export Strategy](#export-strategy)
 - [Custom Styling](#custom-styling)
 - [Example Usage](#example-usage)
-- [Contributing](#contributing)
-- [Development Workflow](#development-workflow)
 - [Documentation](#documentation)
+- [Contributing](#contributing)
 - [Why this package?](#why-this-package)
 - [What this package is (and isn't)](#what-this-package-is-and-isnt)
 - [License](#license)
 
 ## Installation
 
-Run the command to install:
+**Default: `pnpm add @osdk/react-components@latest @osdk/react@latest`** — use prereleases only if you specifically need an unreleased feature.
 
 ```sh
 npm install @osdk/react-components
@@ -50,6 +51,36 @@ npm install react react-dom classnames @osdk/react @osdk/client @osdk/api
 
 - A configured OSDK client
 - An OsdkProvider wrapping your application
+
+### Matching peer versions
+
+`@osdk/react`, `@osdk/client`, and `@osdk/api` must be installed together, and the versions must line up tighter than the declared peer ranges. Both `@osdk/react-components` and `@osdk/react` import from the unstable `@osdk/client` surface, which moves between releases without deprecation.
+
+- **Stable `@osdk/react-components`** → latest stable `@osdk/react`, `@osdk/client`, and `@osdk/api`.
+- **Prerelease `@osdk/react-components`** → MUST use matching prerelease versions of all three peers. Mismatches will break at build time.
+
+To find the exact compatible peer versions:
+
+1. Open `node_modules/@osdk/react-components/CHANGELOG.md`
+2. Find the heading matching your installed `@osdk/react-components` version
+3. If that entry has an `Updated dependencies` section, install the exact versions it lists for `@osdk/react`, `@osdk/client`, and `@osdk/api`
+4. If it does NOT, walk backwards to the most recent prior entry that does, and use those versions
+
+**Worked example** — installed `@osdk/react-components@0.2.0-beta.26`:
+
+- Entry lists `@osdk/client@2.8.0-beta.29`, `@osdk/api@2.8.0-beta.29`, `@osdk/react@0.10.0-beta.14`
+- Run: `pnpm add @osdk/client@2.8.0-beta.29 @osdk/api@2.8.0-beta.29 @osdk/react@0.10.0-beta.14`
+
+See [@osdk/react's README](https://github.com/palantir/osdk-ts/blob/main/packages/react/README.md) for optional peers (`@osdk/foundry.admin`, `@osdk/foundry.core`) used by the admin hooks.
+
+### Install-time errors
+
+| Error                                                                                                                          | Cause                                                                                                            | Fix                                                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `"<name>" is not exported by @osdk/client/.../observable.js` (or `@osdk/client/.../unstable-do-not-use.js`, or `@osdk/api/...`) | `@osdk/client` or `@osdk/api` or `@osdk/react` version mismatches what `@osdk/react-components` was built against | Do NOT delete the import or downgrade silently. Follow the CHANGELOG recipe in [Matching peer versions](#matching-peer-versions) and pin all three peers to the exact versions listed. |
+| `"<name>" is not exported by @osdk/react/...`                                                                                  | `@osdk/react` version mismatches what `@osdk/react-components` was built against                                 | Do NOT delete the import or downgrade silently. Follow the CHANGELOG recipe and pin `@osdk/react` to the exact version listed.                       |
+| `Rollup failed to resolve import "@osdk/foundry.admin"` (or `@osdk/foundry.core`)                                              | Transitive import from `@osdk/react/platform-apis` without the optional peers                                    | Install `@osdk/foundry.admin` + `@osdk/foundry.core`, OR avoid surfaces that use the admin hooks.                                                   |
+| pnpm/npm peer warning about `@osdk/client` or `@osdk/react` range                                                              | Declared peer ranges are broad; prerelease coupling is tighter                                                   | Follow the CHANGELOG recipe; pin to exact versions.                                                                                                 |
 
 ## Setup
 
@@ -124,22 +155,53 @@ Add `isolation: isolate` to your app's root element. This is required for Base U
 
 > **Note:** This package is under active development. Not all components listed below are available yet.
 
-The components that this package will provide are:
+Components are imported from their individual entry points under `@osdk/react-components/experimental/`:
 
-| Component           | Description                                                                                     | Documentation                                                                                              |
-| ------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `ObjectTable`       | Displays an Object Set as a sortable, paginated table with inline editing support               | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ObjectTable.md)       |
-| `PdfViewer`         | Renders PDF documents with annotations, search, sidebar navigation, and zoom                    | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/PdfViewer.md)         |
-| `FilterList`        | Visualize a high-level summary of objects data to allow users to filter that data.              | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/FilterList.md)        |
-| `ActionForm`        | Auto-generated form for executing Ontology Actions                                              | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ActionForm.md)        |
-| `AipAgentChat`      | Chat surface backed by Foundry LMS via `useChat` — takes a `PlatformClient` and model API name. | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/AipAgentChat.md)      |
-| `DocumentViewer`    | Unified media viewer that auto-detects file type and renders the appropriate viewer             | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/DocumentViewer.md)    |
-| `EmailViewer`       | Parses and renders EML files with headers and sandboxed HTML body                               | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/EmailViewer.md)       |
-| `SpreadsheetViewer` | Renders spreadsheets (.xlsx) with sheet tabs and column/row headers                             | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/SpreadsheetViewer.md) |
-| `ImageViewer`       | Renders images (PNG, JPEG, GIF, SVG, WebP, BMP)                                                 | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ImageViewer.md)       |
-| `VideoViewer`       | Renders video with native browser controls                                                      | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/VideoViewer.md)       |
-| `XmlViewer`         | Renders XML content with syntax preservation                                                    | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/XmlViewer.md)         |
-| `CbacPicker`        | Picker for classification-based access control (CBAC) markings with banner display              | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CbacPicker.md)        |
+- `@osdk/react-components/experimental/object-table` — ObjectTable, BaseTable, ColumnConfigDialog
+- `@osdk/react-components/experimental/filter-list` — FilterList, BaseFilterList
+- `@osdk/react-components/experimental/action-form` — ActionForm, BaseForm, and form field definitions
+- `@osdk/react-components/experimental/pdf-viewer` — PdfViewer, BasePdfViewer, and building blocks/hooks
+- `@osdk/react-components/experimental/tiff-renderer` — TiffViewer, BaseTiffViewer
+- `@osdk/react-components/experimental/markdown-renderer` — MarkdownViewer, BaseMarkdownViewer
+- `@osdk/react-components/experimental/aip-agent-chat` — AipAgentChat, BaseAipAgentChat
+- `@osdk/react-components/experimental/document-viewer` — DocumentViewer
+- `@osdk/react-components/experimental/email-viewer` — EmailViewer, BaseEmailViewer
+- `@osdk/react-components/experimental/spreadsheet-viewer` — SpreadsheetViewer, BaseSpreadsheetViewer
+- `@osdk/react-components/experimental/image-viewer` — ImageViewer, BaseImageViewer
+- `@osdk/react-components/experimental/video-viewer` — VideoViewer, BaseVideoViewer
+- `@osdk/react-components/experimental/xml-viewer` — XmlViewer, BaseXmlViewer
+- `@osdk/react-components/experimental/cbac-picker` — CbacPicker, CbacPickerDialog, CbacBanner, and their base components
+
+| Component                  | Description                                                                                                                                       | Documentation                                                                                              |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **ObjectTable**            | Table for displaying OSDK object sets with sorting, filtering, inline editing, column pinning/resizing, row selection, and infinite scroll.       | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ObjectTable.md)       |
+| **BaseTable**              | OSDK-agnostic base table — use when building custom data fetching on top of the table UI.                                                         | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ObjectTable.md)       |
+| **ColumnConfigDialog**     | Dialog for managing column visibility and drag-and-drop reordering.                                                                               | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ObjectTable.md)       |
+| **FilterList**             | Aggregation-based filter UI for object sets with draggable reordering.                                                                            | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/FilterList.md)        |
+| **BaseFilterList**         | OSDK-agnostic base filter list — use for custom filter implementations.                                                                           | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/FilterList.md)        |
+| **ActionForm**             | Form for applying OSDK actions with generated or custom field definitions.                                                                        | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ActionForm.md)        |
+| **BaseForm**               | OSDK-agnostic base action form — use when supplying explicit field content and submit handling.                                                   | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ActionForm.md)        |
+| **PdfViewer**              | PDF viewer for OSDK Media objects with toolbar, search, annotations, sidebar (thumbnails/outline), highlight mode, and form fields.               | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/PdfViewer.md)         |
+| **BasePdfViewer**          | OSDK-agnostic base PDF viewer — `src` takes a URL, `ArrayBuffer`, `Uint8Array`, or `Blob`. Use when building custom data fetching on top of it.   | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/PdfViewer.md)         |
+| **TiffViewer**             | TIFF viewer for OSDK Media objects — fetches the TIFF contents and renders them onto a canvas.                                                    | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/TiffViewer.md)        |
+| **BaseTiffViewer**         | OSDK-agnostic base TIFF viewer — `src` takes a `Uint8Array`, rendered onto a canvas with size validation and error handling.                      | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/TiffViewer.md)        |
+| **MarkdownViewer**         | Markdown viewer for OSDK Media objects — fetches the markdown text and renders it with styled headings, code blocks, tables, and links.           | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/MarkdownViewer.md)    |
+| **BaseMarkdownViewer**     | OSDK-agnostic base markdown viewer — accepts a markdown string directly. Use when building custom data fetching on top of the viewer UI.          | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/MarkdownViewer.md)    |
+| **AipAgentChat**           | Chat surface backed by Foundry LMS via `useChat`. Takes a `PlatformClient` + model API name and renders messages, composer, and streaming.        | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/AipAgentChat.md)      |
+| **BaseAipAgentChat**       | OSDK-agnostic base chat — accepts `messages`/`status`/`onSendMessage` directly. Use for custom chat-state plumbing.                               | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/AipAgentChat.md)      |
+| **DocumentViewer**         | Unified media viewer that auto-detects file type (PDF, TIFF, image, video, spreadsheet, email, markdown, XML) and renders the appropriate viewer. | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/DocumentViewer.md)    |
+| **EmailViewer**            | Email viewer — parses and renders `.eml` files with headers, HTML body (sandboxed iframe), and plain text fallback.                               | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/EmailViewer.md)       |
+| **SpreadsheetViewer**      | Spreadsheet viewer — parses and renders `.xlsx` spreadsheets with sheet tabs and column/row headers.                                              | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/SpreadsheetViewer.md) |
+| **ImageViewer**            | Image viewer — renders images (PNG, JPEG, GIF, SVG, WebP, BMP) with object-fit contain.                                                           | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ImageViewer.md)       |
+| **VideoViewer**            | Video viewer — renders video with native browser controls.                                                                                        | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/VideoViewer.md)       |
+| **XmlViewer**              | XML viewer — renders XML content with syntax preservation.                                                                                        | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/XmlViewer.md)         |
+| **CbacPicker**             | Picker for classification-based access control (CBAC) markings — disjunctive/conjunctive categories, restriction enforcement, banner.             | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CbacPicker.md)        |
+| **CbacPickerDialog**       | Dialog wrapper for `CbacPicker` with confirm/cancel actions and validation.                                                                       | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CbacPicker.md)        |
+| **CbacBanner**             | OSDK-aware classification banner that resolves a marking-set into a colored banner.                                                               | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CbacPicker.md)        |
+| **BaseCbacPicker**         | OSDK-agnostic base CBAC picker — use when building custom data fetching on top of the picker UI.                                                  | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CbacPicker.md)        |
+| **BaseCbacBanner**         | OSDK-agnostic classification banner display with customizable colors and text.                                                                    | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CbacPicker.md)        |
+| **BaseCbacPickerDialog**   | OSDK-agnostic dialog wrapper for `BaseCbacPicker`.                                                                                                | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CbacPicker.md)        |
+| **MaxClassificationField** | Field that lets users constrain the maximum classification allowed for a marking selection.                                                       | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CbacPicker.md)        |
 
 ## Component Architecture
 
@@ -196,51 +258,13 @@ See the [PdfViewer guide](https://github.com/palantir/osdk-ts/blob/main/packages
 - **Reusability**: Base components can be exported and used independently
 - **Testing**: Base components can be tested without OSDK dependencies
 
-### Implementation Guidelines
-
-When building new components:
-
-1. Start with the Base component focusing on interactions and styling
-2. Create the OSDK wrapper that handles data fetching and type conversion
-3. Keep the Base component API simple using primitive types
-4. For complex components, consider a building blocks tier with sub-components and hooks
-5. Document all layers for users who want to customize
-6. **Register a user agent for metrics** — wrap every OSDK component with `withOsdkMetrics` at the export barrel (see [Metrics](#metrics) below)
-
-## Folder Structure
-
-The codebase is organized to support the 2-layer architecture:
-
-```
-src/
-├── base-components/         # Reusable UI primitives (internal use only)
-│   ├── select/
-│   ├── checkbox/
-│   ├── dialog/
-│   └── ...
-├── object-table/           # OSDK component folder
-│   ├── ObjectTable.tsx     # OSDK data layer component
-│   ├── Table.tsx           # Base component (exported as BaseTable)
-│   ├── hooks/              # React hooks for table functionality
-│   ├── utils/              # Helper utilities and types
-│   └── components/         # Supporting React components
-└── public/
-    └── experimental/       # Public API exports (one file per component)
-        ├── object-table.ts
-        ├── filter-list.ts
-        ├── pdf-viewer.ts
-        ├── markdown-viewer.ts
-        ├── tiff-viewer.ts
-        └── action-form.ts
-```
-
 ### Export Strategy
 
 - **OSDK Components**: Exported through individual entry points under `experimental/` (e.g., `experimental/object-table`, `experimental/filter-list`)
 - **Base Components**: Select base components are exported for advanced use cases (e.g., `BaseTable`, `BaseFilterList`)
-- **UI Primitives**: The `base-components/` folder contains internal UI primitives that are **NOT exported**
+- **UI Primitives**: Internal UI primitives (buttons, inputs, dialogs) are **NOT exported**
 
-### Why Not Export UI Primitives?
+#### Why Not Export UI Primitives?
 
 This package focuses on complex, Ontology-aware components with built-in data fetching. For simple UI components (buttons, inputs, dialogs), users should use established component libraries like Blueprint.js or their preferred design system. This approach:
 
@@ -248,31 +272,6 @@ This package focuses on complex, Ontology-aware components with built-in data fe
 - Avoids duplicating well-solved UI problems
 - Reduces maintenance burden
 - Encourages consistent use of existing design systems
-
-## Metrics
-
-Every OSDK component (the outermost data-fetching layer, **not** the Base component) must register a user agent string so that network requests include a `Fetch-User-Agent` header identifying which component initiated them. This enables usage tracking and debugging.
-
-This is handled automatically by the `withOsdkMetrics` HOC. Wrap your component at the **export barrel** (`public/experimental/*.ts`), not inside the component body:
-
-```ts
-// public/experimental/my-component.ts
-import { MyComponent as _MyComponent } from "../../my-component/MyComponent.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const MyComponent: typeof _MyComponent = withOsdkMetrics(
-  _MyComponent,
-  "MyComponent",
-);
-```
-
-`withOsdkMetrics` calls `useRegisterUserAgent` internally, producing a user agent string like `osdk-react-components/<version>/MyComponent`.
-
-**Checklist for new components:**
-
-- [ ] Wrap the OSDK component with `withOsdkMetrics` in the export barrel
-- [ ] Add `typeof _Component` annotation to satisfy `--isolatedDeclarations`
-- [ ] Do **not** wrap Base components — only the OSDK wrapper needs it
-- [ ] Do **not** call `useRegisterUserAgent` directly inside the component body
 
 ## Custom Styling
 
@@ -295,69 +294,27 @@ function EmployeeDirectory() {
 }
 ```
 
-## Contributing
-
-Looking to contribute to the codebase? Read the [contribution guidelines](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/CONTRIBUTING.md).
-
-If you use [Claude Code](https://claude.com/claude-code), this package ships two skills that wrap `CONTRIBUTING.md`:
-
-- Run `/add-new-component` (or describe the component you want to add) — the [`add-new-component` skill](../../.claude/skills/add-new-component/SKILL.md) walks you through the API-first PR, MVP checklist, and verification loop.
-- Run `/contribute` (or describe the bug to fix / feature to add on an existing component) — the [`contribute` skill](../../.claude/skills/contribute/SKILL.md) adds a failing-test-first gate for bugs, an API-change checkpoint when the diff touches public props, and a verification loop.
-
-## Development Workflow
-
-1. In packages/react-components, run `pnpm install` to install the dependencies.
-2. Run `pnpm transpileAllDeps` to transpile all dependencies in this repo.
-3. To run tests, run `pnpm test`
-
-### Running the Example People App
-
-The examples are added to `packages/e2e.sandbox.peopleapp`, so we need to run the example app.
-
-#### Steps:
-
-1. Create a .env.local file based on `.env.local.sample` in packages/e2e.sandbox.peopleapp:
-
-2. Transpile all dependencies of peopleapp
-
-```
-pnpm --filter @osdk/e2e.sandbox.peopleapp transpileAllDeps
-```
-
-4. Run the people app
-
-```
-pnpm --filter @osdk/e2e.sandbox.peopleapp dev
-```
-
 ## Documentation
 
-### Props reference tables (auto-generated)
+Before using any component, read the relevant guide:
 
-Per-component **props reference tables in `docs/*.md` are generated from the component's props interface**, so they never drift from the source. The generator (`scripts/gen-props.mjs`) reads the named TypeScript interface (or type alias), turns each property into a `Name | Type | Description` row, and writes it between markers. JSDoc on each prop becomes the description — the main comment, `@default`, `@deprecated`, inline `{@link}`, and required/optional are all reflected. If the props type is generic, its type parameters and their constraints (e.g. `Q extends ActionDefinition<unknown>`) are listed above the table so bare `Q`-style types stay meaningful.
+- **ObjectTable**: [docs/ObjectTable.md](./docs/ObjectTable.md) — props, column definitions, examples, theming, troubleshooting, and hooks to build custom tables
+- **ActionForm**: [docs/ActionForm.md](./docs/ActionForm.md) — generated fields, title behavior, custom field definitions, switch fields, and date/time behavior
+- **PdfViewer**: [docs/PdfViewer.md](./docs/PdfViewer.md) — props, annotations, building blocks, hooks, examples, and theming
+- **TiffViewer**: [docs/TiffViewer.md](./docs/TiffViewer.md) — props and usage
+- **MarkdownViewer**: [docs/MarkdownViewer.md](./docs/MarkdownViewer.md) — props, examples, and theming
+- **FilterList**: [docs/FilterList.md](./docs/FilterList.md) — props, examples, and usage
+- **CbacPicker**: [docs/CbacPicker.md](./docs/CbacPicker.md) — props, examples, base components, and troubleshooting
+- **CSS variables**: [docs/CSSVariables.md](./docs/CSSVariables.md) — every themeable token
 
-Regenerate after changing any documented prop or its JSDoc:
+## Contributing
 
-```sh
-pnpm --filter @osdk/react-components gen-props
-```
+Looking to contribute to the codebase? Read the [contribution guidelines](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/CONTRIBUTING.md), then [`AGENTS.md`](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/AGENTS.md) for the engineering rules this package enforces (architecture, API design, styling, testing, Storybook, metrics) and its development workflow.
 
-Commit the regenerated docs alongside your change. CI enforces freshness: the `check-gen-props` task (part of `pnpm turbo check`) runs `gen-props --check` and fails if a committed table is stale (or was hand-edited inside the markers).
+If you use an agentic coding tool, this package ships two skills that wrap `CONTRIBUTING.md`:
 
-**To enable a generated table for a new component**, drop a marker block into its doc where the table should appear, naming the source file (relative to the package root) and the props interface:
-
-```md
-## Props
-
-<!-- AUTOGEN:props START src=src/my-component/MyComponentApi.ts interface=MyComponentProps -->
-<!-- AUTOGEN:props END -->
-```
-
-Then run `gen-props` to fill it in (the generator normalizes the marker and inserts the table). It resolves both `interface` and `type` declarations, following `extends` clauses, intersections (`A & B`), controlled/uncontrolled unions, and `Pick`/`Omit`. References are resolved first in the marker's `src` file, then by following named imports into other files — so a base shared across files (e.g. `FilterDefinitionControls`) still contributes its members. Only bare/external imports (e.g. `@osdk/api`) are left unresolved.
-
-The same marker works for any object-shaped type referenced from the props, not just the top-level props interface — add a block pointing at `interface=ColumnDefinition` (or `PropertyFilterDefinition`, `ObjectSetOptions`, …) to document a config sub-type. A discriminated union of differently-shaped variants (e.g. the column locator union, `FilterDefinitionUnion`) and distributive/conditional/mapped types (e.g. `FormFieldDefinition`, `EditFieldConfig`) resolve to no members; the generator errors rather than emit a misleading merged table, so document each concrete variant with its own block (e.g. one per `FilterDefinitionUnion` member, or `DropdownEditConfig` / `DatePickerEditConfig` for `EditFieldConfig`).
-
-Because the description column comes entirely from JSDoc, **write a JSDoc comment (with `@default` where relevant) on every prop.** Props with no JSDoc render with a blank description — that blank cell is your signal to document them, not a reason to hand-edit the table.
+- Run `/add-new-component` (or describe the component you want to add) — the [`add-new-component` skill](../../.agents/skills/add-new-component/SKILL.md) walks you through the API-first PR, MVP checklist, and verification loop.
+- Run `/contribute` (or describe the bug to fix / feature to add on an existing component) — the [`contribute` skill](../../.agents/skills/contribute/SKILL.md) adds a failing-test-first gate for bugs, an API-change checkpoint when the diff touches public props, and a verification loop.
 
 ## Why this package?
 

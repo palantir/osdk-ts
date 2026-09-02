@@ -1,43 +1,47 @@
-# @osdk/cbac-components
+> **DEPRECATED / RELOCATED**: The CBAC components have been merged into [`@osdk/react-components`](../react-components). The canonical source now lives at `packages/react-components/src/cbac-picker/` and is exported from `@osdk/react-components/experimental/cbac-picker`. This package is kept for legacy reference only — **do not develop new features here**. New work belongs in `@osdk/react-components` (see its `AGENTS.md` and `CONTRIBUTING.md`).
 
-> **DEPRECATED / RELOCATED**: The CBAC components have been merged into [`@osdk/react-components`](../react-components) and are now exported from `@osdk/react-components/experimental/cbac-picker`. This package is kept for legacy reference only and is no longer the source of truth. **New consumers should import from `@osdk/react-components`.** See [`../react-components/docs/CbacPicker.md`](../react-components/docs/CbacPicker.md) and [`../react-components/AGENTS.md`](../react-components/AGENTS.md) for usage guidance.
+# @osdk/cbac-components — development guide
 
-React components for [classification-based access control (CBAC)](https://www.palantir.com/docs/foundry/security/classification-based-access-controls/). CBAC markings control who can access data — users select markings from categories (disjunctive = pick one, conjunctive = pick many) and the server computes restrictions (implied, disallowed, required markings) and resolves a classification banner. Pass in marking IDs and these components handle all of that automatically. Requires `@osdk/react` (see the `@osdk/react` package's `AGENTS.md` for hooks and provider setup).
+This documentation provides guidance for developing in `@osdk/cbac-components`. Consumer-facing setup and usage docs live in [`README.md`](./README.md).
 
-## Components
+## TypeScript Best Practices
 
-All components import from `@osdk/cbac-components/experimental`.
+- NEVER use `any` without asking the user first. If you think you need `any`, you probably don't understand the problem
+- Projects are ESM/TypeScript - look for `.ts`/`.tsx` files, not `.js`
+- To check compilation: `cd packages/the-package && pnpm turbo typecheck`
 
-| Component                | Description                                                                                                              |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| **CbacPicker**           | Inline CBAC marking picker with OSDK data fetching, selection state, restriction enforcement, and classification banner. |
-| **CbacPickerDialog**     | Dialog wrapper for CbacPicker with confirm/cancel actions and validation.                                                |
-| **BaseCbacPicker**       | OSDK-agnostic base picker — use when building custom data fetching on top of the picker UI.                              |
-| **BaseCbacBanner**       | OSDK-agnostic classification banner display with customizable colors and text.                                           |
-| **BaseCbacPickerDialog** | OSDK-agnostic dialog wrapper for BaseCbacPicker with confirm/cancel actions.                                             |
+## React Best Practices
 
-## Utilities
+- Always put new components in their own file and create separate components instead of inline functions
+- NEVER conditionally call React hooks
+- ALWAYS keep components rendering during loading/error states. Don't use early returns like `if (isLoading) return <LoadingMessage />`. Show loading/error indicators while rendering existing data to prevent UI flashing
+- ALWAYS memoize non-primitive values passed to component props with useCallback or useMemo
+- ALWAYS combine classnames with the classnames function. NEVER use string literal.
+- NEVER use empty arrays `[]` or empty objects `{}` directly in component bodies as they create new references on every render, causing infinite re-renders. Always extract them as constants outside the component or memoize them. For example, instead of `const defaultValue = []`, use `const EMPTY_ARRAY: [] = []` outside the component or `const defaultValue = useMemo(() => [], [])`.
 
-| Export                    | Description                                                                          |
-| ------------------------- | ------------------------------------------------------------------------------------ |
-| `toggleMarking`           | Toggle a marking in a selection, respecting category type (CONJUNCTIVE/DISJUNCTIVE). |
-| `computeMarkingStates`    | Compute the state (SELECTED, IMPLIED, DISALLOWED, etc.) for each marking.            |
-| `groupMarkingsByCategory` | Organize markings into groups by their category.                                     |
+## OSDK Component Architecture
 
-## Types
+- The outermost component, e.g. CbacPicker, should handle data fetching using @osdk/react hooks.
+- The base component should contain all component interactions and styling. Ideally, it should be an OSDK-agnostic component. The outer component should process OSDK data and pass to the base component. This will enable users to build on top of the base component with their own data fetching.
 
-| Type                    | Description                                                                      |
-| ----------------------- | -------------------------------------------------------------------------------- |
-| `MarkingSelectionState` | Union: "NONE" \| "SELECTED" \| "IMPLIED" \| "DISALLOWED" \| "IMPLIED_DISALLOWED" |
-| `CbacBannerData`        | Classification string, text color, background colors, marking IDs.               |
-| `PickerMarkingCategory` | Category metadata (id, name, description, type).                                 |
-| `PickerMarking`         | Marking metadata (id, categoryId, name, description).                            |
-| `CategoryMarkingGroup`  | Pairing of a category with its markings.                                         |
-| `RequiredMarkingGroup`  | Group of marking names that must be selected together.                           |
+## CSS Styling Best Practices
 
-## Documentation
+- Do not hardcode CSS colors and pixel values.
+- ALWAYS use CSS variables to enable theming.
+- ALWAYS try to use --bp tokens first before using any hardcoded value. The --bp tokens used should always be mapped from a --osdk token.
 
-Before using any component, read the relevant doc from this package:
+## Project Management
 
-- **Setup & installation**: Read [README.md](./README.md) for provider, CSS, and peer dependencies
-- **CbacPicker**: Read [docs/CbacPicker.md](./docs/CbacPicker.md) for props, examples, base components, and troubleshooting
+- This project uses pnpm. DO NOT use npm
+
+## Security Best Practices
+
+- NEVER disable gpg signing unless explicitly requested
+
+## Repository Best Practices
+
+- Monorepo: run tests from individual packages, not root
+
+## Code Maintenance Best Practices
+
+- Do not fix diagnostic warnings in old code
