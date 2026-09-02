@@ -94,9 +94,7 @@ describe("Experimental Test Suite", () => {
       expect(result.shapes.inputShapes.get(inputReadableId)?.type).toBe(
         "filesDatasource",
       );
-      expect(
-        result.shapes.inputShapeMetadata.get(inputReadableId),
-      ).toEqual({
+      expect(result.shapes.inputShapeMetadata.get(inputReadableId)).toEqual({
         isOptional: false,
         isAccessedInReconcile: true,
         reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
