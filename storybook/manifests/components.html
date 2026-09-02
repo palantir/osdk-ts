@@ -1109,9 +1109,7 @@ export const Default: StoryObj&lt;EmailViewerProps&gt; = {
   parameters: {
     docs: {
       source: {
-        code: `import { EmailViewer } from &quot;@osdk/react-components/experimental/email-viewer&quot;;
-
-&lt;EmailViewer media={myOsdkMedia} /&gt;`,
+        code: `&lt;EmailViewer media={myOsdkMedia} /&gt;`,
       },
     },
   },
@@ -1121,9 +1119,7 @@ export const HtmlEmail: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseEmailViewer } from &quot;@osdk/react-components/experimental/email-viewer&quot;;
-
-&lt;BaseEmailViewer content={parsedEmail} /&gt;`,
+        code: `&lt;BaseEmailViewer content={parsedEmail} /&gt;`,
       },
     },
   },
@@ -1132,6 +1128,24 @@ export const HtmlEmail: Story = {
 export const PlainTextEmail: Story = {
   args: {
     content: SAMPLE_TEXT_EMAIL,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// A ParsedEmail with no html part renders its text body as preformatted text
+&lt;BaseEmailViewer
+  content={{
+    subject: &quot;Meeting Notes&quot;,
+    from: { name: &quot;Bob Smith&quot;, address: &quot;bob@example.com&quot; },
+    to: [{ name: &quot;Alice Johnson&quot;, address: &quot;alice@example.com&quot; }],
+    cc: [],
+    date: &quot;2026-03-16T09:00:00Z&quot;,
+    html: undefined,
+    text: &quot;Hi Alice,\\n\\nHere are the meeting notes from today.\\n\\nThanks,\\nBob&quot;,
+  }}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
@@ -4010,9 +4024,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseImageViewer } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
-
-&lt;BaseImageViewer src={imageUrl} alt=&quot;My image&quot; /&gt;`,
+        code: `&lt;BaseImageViewer src={imageUrl} alt=&quot;My image&quot; /&gt;`,
       },
     },
   },
@@ -4021,6 +4033,17 @@ export const Default: Story = {
 export const WithErrorCallback: Story = {
   args: {
     onError: fn(),
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;BaseImageViewer
+  src={imageUrl}
+  alt=&quot;My image&quot;
+  onError={reportImageLoadFailure}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
@@ -4248,7 +4271,16 @@ const meta: Meta&lt;BaseMarkdownViewerProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const WithContent: Story = {};
+export const WithContent: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `// Headings, lists, tables, code fences and rules all render from a raw string
+&lt;BaseMarkdownViewer content={markdownString} /&gt;`,
+      },
+    },
+  },
+};
 
 export const MinimalContent: Story = {
   args: {
@@ -4262,9 +4294,7 @@ export const MinimalContent: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseMarkdownViewer } from &quot;@osdk/react-components/experimental/markdown-renderer&quot;;
-
-&lt;BaseMarkdownViewer content=&quot;# Hello World\\n\\nA simple paragraph with **bold** and *italic*.&quot; /&gt;`,
+        code: `&lt;BaseMarkdownViewer content=&quot;# Hello World\\n\\nA simple paragraph with **bold** and *italic*.&quot; /&gt;`,
       },
     },
   },
@@ -4695,7 +4725,100 @@ export const AnnotationCreator: Story = {
   parameters: {
     docs: {
       source: {
-        code: `// Select text to create annotations, view and manage them in the sidebar`,
+        code: `const HIGHLIGHT_COLOR = &quot;#fff066&quot;;
+
+// Browser rects are viewport-relative with a top-left origin; PDF rects are
+// page-relative with a bottom-left origin. Both need dividing by the zoom
+// scale to get back to unscaled PDF units.
+function domRectToPdfRect(clientRect, pageRect, pageHeight, scale): PdfRect {
+  const topInPdfUnits = (clientRect.top - pageRect.top) / scale;
+  const height = clientRect.height / scale;
+  return {
+    x: (clientRect.left - pageRect.left) / scale,
+    y: pageHeight - topInPdfUnits - height,
+    width: clientRect.width / scale,
+    height,
+  };
+}
+
+function MyAnnotationCreator({ src }: { src: string }) {
+  const [annotations, setAnnotations] = useState&lt;PdfAnnotation[]&gt;([]);
+  const [annotationModeActive, setAnnotationModeActive] = useState(false);
+  const containerRef = useRef&lt;HTMLDivElement&gt;(null);
+  const viewerRef = useRef&lt;PdfViewerHandle&gt;(null);
+  
+  // Listen for text selection when annotation mode is active
+  useEffect(
+    function captureTextSelection() {
+      if (!annotationModeActive) return;
+      const container = containerRef.current;
+      if (container == null) return;
+
+      function handleMouseUp() {
+        const selection = window.getSelection();
+        if (selection == null || selection.isCollapsed) return;
+
+        const selectedText = selection.toString().trim();
+        if (selectedText === &quot;&quot;) return;
+
+        const range = selection.getRangeAt(0);
+        // pdf.js renders each page as .page[data-page-number]
+        const pageEl = range.startContainer.parentElement?.closest(&quot;.page[data-page-number]&quot;);
+        if (pageEl == null) return;
+
+        // pdf.js publishes the current zoom as a CSS variable on the page
+        const scale = parseFloat(getComputedStyle(pageEl).getPropertyValue(&quot;--scale-factor&quot;)) || 1;
+        const pageHeight = pageEl.clientHeight / scale;
+        const pageRect = pageEl.getBoundingClientRect();
+
+        // A selection spanning multiple lines produces one rect per line
+        const rects = Array.from(range.getClientRects())
+          .filter((r) =&gt; r.width &gt; 0 &amp;&amp; r.height &gt; 0)
+          .map((r) =&gt; domRectToPdfRect(r, pageRect, pageHeight, scale));
+        if (rects.length === 0) return;
+
+        setAnnotations((prev) =&gt; [...prev, {
+          id: crypto.randomUUID(),
+          type: &quot;highlight&quot;,
+          page: Number(pageEl.getAttribute(&quot;data-page-number&quot;)),
+          rect: rects[0],
+          rects,
+          color: HIGHLIGHT_COLOR,
+          label: selectedText,
+        }]);
+        selection.removeAllRanges();
+      }
+
+      container.addEventListener(&quot;mouseup&quot;, handleMouseUp);
+      return () =&gt; container.removeEventListener(&quot;mouseup&quot;, handleMouseUp);
+  }, [annotationModeActive]);
+
+  const deleteAnnotation = useCallback((id: string) =&gt; {
+    setAnnotations((prev) =&gt; prev.filter((a) =&gt; a.id !== id));
+  }, []);
+  const toggleAnnotationMode = useCallback(() =&gt; {
+    setAnnotationModeActive((prev) =&gt; !prev);
+  }, []);
+  const handleAnnotationClick = useCallback((page: number) =&gt; {
+    viewerRef.current?.scrollToPage(page);
+  }, []);
+
+  return (
+    &lt;div style={{ display: &quot;flex&quot;, height: &quot;600px&quot; }}&gt;
+      &lt;div ref={containerRef} style={{ flex: 1, minWidth: 0 }}&gt;
+        &lt;BasePdfViewer ref={viewerRef} src={src} annotations={annotations} /&gt;
+      &lt;/div&gt;
+      &lt;MySidebar
+        annotations={annotations}
+        annotationModeActive={annotationModeActive}
+        onToggleMode={toggleAnnotationMode}
+        // The imperative handle drives navigation from outside the viewer
+        onAnnotationClick={handleAnnotationClick}
+        onDelete={deleteAnnotation}
+      /&gt;
+    &lt;/div&gt;
+  );
+}`,
       },
     },
   },
@@ -4984,9 +5107,7 @@ export const Default: StoryObj&lt;SpreadsheetViewerProps&gt; = {
   parameters: {
     docs: {
       source: {
-        code: `import { SpreadsheetViewer } from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
-
-&lt;SpreadsheetViewer media={myOsdkMedia} /&gt;`,
+        code: `&lt;SpreadsheetViewer media={myOsdkMedia} /&gt;`,
       },
     },
   },
@@ -4996,9 +5117,7 @@ export const WithSpreadsheet: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseSpreadsheetViewer } from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
-
-&lt;BaseSpreadsheetViewer content={parsedSpreadsheet} /&gt;`,
+        code: `&lt;BaseSpreadsheetViewer content={parsedSpreadsheet} /&gt;`,
       },
     },
   },
@@ -5008,6 +5127,26 @@ export const SingleSheet: Story = {
   args: {
     content: {
       sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// With one sheet the tab bar is hidden
+&lt;BaseSpreadsheetViewer
+  content={{
+    sheets: [
+      {
+        name: &quot;Employees&quot;,
+        rows: [
+          [&quot;Name&quot;, &quot;Department&quot;, &quot;Salary&quot;],
+          [&quot;Alice Johnson&quot;, &quot;Engineering&quot;, &quot;$145,000&quot;],
+        ],
+      },
+    ],
+  }}
+/&gt;`,
+      },
     },
   },
 };
@@ -5029,6 +5168,13 @@ export const WithRealFile: StoryObj&lt;SpreadsheetViewerProps&gt; = {
       handlers: [
         http.get(&quot;*/notional-spreadsheet-example.xlsx&quot;, () =&gt; passthrough()),
       ],
+    },
+    docs: {
+      source: {
+        code: `// SpreadsheetViewer fetches and parses the xlsx workbook itself, so a real
+// multi-sheet file needs no extra wiring
+&lt;SpreadsheetViewer media={quarter.headcountReport} /&gt;`,
+      },
     },
   },
 };
@@ -6190,9 +6336,7 @@ export const WithContent: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseTiffViewer } from &quot;@osdk/react-components/experimental/tiff-renderer&quot;;
-
-&lt;BaseTiffViewer src={tiffBytes} /&gt;`,
+        code: `&lt;BaseTiffViewer src={tiffBytes} /&gt;`,
       },
     },
   },
@@ -6205,9 +6349,11 @@ export const WithErrorCallback: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseTiffViewer } from &quot;@osdk/react-components/experimental/tiff-renderer&quot;;
+        code: `const handleError = useCallback(() =&gt; {
+  console.error(&quot;TIFF render failed&quot;);
+}, []);
 
-&lt;BaseTiffViewer src={tiffBytes} onError={() =&gt; console.error(&quot;TIFF render failed&quot;)} /&gt;`,
+&lt;BaseTiffViewer src={tiffBytes} onError={handleError} /&gt;`,
       },
     },
   },
@@ -6428,9 +6574,7 @@ export const Default: StoryObj&lt;XmlViewerProps&gt; = {
   parameters: {
     docs: {
       source: {
-        code: `import { XmlViewer } from &quot;@osdk/react-components/experimental/xml-viewer&quot;;
-
-&lt;XmlViewer media={myOsdkMedia} /&gt;`,
+        code: `&lt;XmlViewer media={myOsdkMedia} /&gt;`,
       },
     },
   },
@@ -6440,9 +6584,7 @@ export const WithContent: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseXmlViewer } from &quot;@osdk/react-components/experimental/xml-viewer&quot;;
-
-&lt;BaseXmlViewer content={xmlString} /&gt;`,
+        code: `&lt;BaseXmlViewer content={xmlString} /&gt;`,
       },
     },
   },
@@ -9390,13 +9532,13 @@ import { ObjectTable } from "@osdk/react-components-storybook";</code></pre>
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;DocumentViewer&quot; component.
-  182 | );
-  183 |
-&gt; 184 | const meta: Meta&lt;DocumentViewerProps&gt; = {
+  191 | );
+  192 |
+&gt; 193 | const meta: Meta&lt;DocumentViewerProps&gt; = {
       | ^
-  185 |   title: &quot;Components/DocumentViewer&quot;,
-  186 |   component: DocumentViewer,
-  187 |   tags: [&quot;beta&quot;],
+  194 |   title: &quot;Components/DocumentViewer&quot;,
+  195 |   component: DocumentViewer,
+  196 |   tags: [&quot;beta&quot;],
 
 ./src/stories/DocumentViewer/DocumentViewer.stories.tsx:
 /*
@@ -9582,6 +9724,15 @@ const mockUnsupportedMedia = createMockMedia(
   &quot;data.bin&quot;,
 );
 
+// Markdown content served under a generic MIME type, which is what
+// mimeTypeOverride exists to correct. Distinct from mockUnsupportedMedia,
+// whose empty body would render as a blank viewer once overridden.
+const mockMislabeledMarkdownMedia = createMockMedia(
+  &quot;application/octet-stream&quot;,
+  () =&gt; Promise.resolve(new Response(SAMPLE_MARKDOWN)),
+  &quot;notes.dat&quot;,
+);
+
 const meta: Meta&lt;DocumentViewerProps&gt; = {
   title: &quot;Components/DocumentViewer&quot;,
   component: DocumentViewer,
@@ -9623,9 +9774,7 @@ export const Pdf: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from &quot;@osdk/react-components/experimental/document-viewer&quot;;
-
-&lt;DocumentViewer media={employee.trainingMaterial} /&gt;`,
+        code: `&lt;DocumentViewer media={employee.trainingMaterial} /&gt;`,
       },
     },
   },
@@ -9640,11 +9789,27 @@ export const Image: Story = {
       &lt;DocumentViewer {...args} /&gt;
     &lt;/div&gt;
   ),
+  parameters: {
+    docs: {
+      source: {
+        code: `// image/* media renders with the pan and zoom ImageViewer
+&lt;DocumentViewer media={employee.profilePhoto} /&gt;`,
+      },
+    },
+  },
 };
 
 export const Markdown: Story = {
   args: {
     media: mockMarkdownMedia,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// text/markdown media renders with MarkdownViewer
+&lt;DocumentViewer media={project.readme} /&gt;`,
+      },
+    },
   },
 };
 
@@ -9661,6 +9826,12 @@ export const Video: Story = {
     msw: {
       handlers: [http.get(&quot;*/example.mp4&quot;, () =&gt; passthrough())],
     },
+    docs: {
+      source: {
+        code: `// video/* media renders with VideoViewer
+&lt;DocumentViewer media={incident.bodyCamFootage} /&gt;`,
+      },
+    },
   },
 };
 
@@ -9673,17 +9844,41 @@ export const UnsupportedType: Story = {
       &lt;DocumentViewer {...args} /&gt;
     &lt;/div&gt;
   ),
+  parameters: {
+    docs: {
+      source: {
+        code: `// MIME types with no matching renderer fall back to a download prompt
+&lt;DocumentViewer media={record.rawAttachment} /&gt;`,
+      },
+    },
+  },
 };
 
 export const Email: Story = {
   args: {
     media: mockEmailMedia,
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `// message/rfc822 media renders with EmailViewer
+&lt;DocumentViewer media={thread.originalMessage} /&gt;`,
+      },
+    },
+  },
 };
 
 export const Spreadsheet: Story = {
   args: {
     media: mockSpreadsheetMedia,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// xlsx / xls / csv media renders with SpreadsheetViewer
+&lt;DocumentViewer media={quarter.headcountReport} /&gt;`,
+      },
+    },
   },
 };
 
@@ -9696,6 +9891,14 @@ export const Xml: Story = {
       &lt;DocumentViewer {...args} /&gt;
     &lt;/div&gt;
   ),
+  parameters: {
+    docs: {
+      source: {
+        code: `// application/xml media renders with the collapsible-tree XmlViewer
+&lt;DocumentViewer media={shipment.manifest} /&gt;`,
+      },
+    },
+  },
 };
 
 export const Tiff: Story = {
@@ -9705,6 +9908,13 @@ export const Tiff: Story = {
   parameters: {
     msw: {
       handlers: [http.get(&quot;*/multi-page-tiff.tiff&quot;, () =&gt; passthrough())],
+    },
+    docs: {
+      source: {
+        code: `// image/tiff media renders with TiffViewer, which decodes in the browser.
+// See &quot;Tiff With Pdf Conversion&quot; for server-side PDF conversion instead.
+&lt;DocumentViewer media={claim.scannedForm} /&gt;`,
+      },
     },
   },
 };
@@ -9747,9 +9957,7 @@ export const TiffWithPdfConversion: Story = {
     },
     docs: {
       source: {
-        code: `import { DocumentViewer } from &quot;@osdk/react-components/experimental/document-viewer&quot;;
-
-// Multi-page TIFFs are detected and converted to PDF via MIO transform API
+        code: `// Multi-page TIFFs are detected and converted to PDF via MIO transform API
 // Falls back to TiffViewer if transform fails or for single-page TIFFs
 &lt;DocumentViewer media={myMedia} enableTiffToPdf fileName=&quot;scan.tiff&quot; /&gt;`,
       },
@@ -9757,17 +9965,83 @@ export const TiffWithPdfConversion: Story = {
   },
 };
 
+/**
+ * Renders the reported and effective MIME types above the viewer so the story
+ * shows what the override changed, not just its end result. Both values are
+ * read back from the props rather than hardcoded, so editing the
+ * `mimeTypeOverride` control keeps the caption honest.
+ */
+function MimeTypeOverrideDemo({
+  media,
+  mimeTypeOverride,
+  ...rest
+}: DocumentViewerProps) {
+  const reportedMimeType = media.getMediaReference().mimeType;
+  const effectiveMimeType = mimeTypeOverride ?? reportedMimeType;
+
+  return (
+    &lt;div
+      style={{
+        display: &quot;flex&quot;,
+        flexDirection: &quot;column&quot;,
+        gap: &quot;8px&quot;,
+        height: &quot;600px&quot;,
+      }}
+    &gt;
+      &lt;dl
+        style={{
+          display: &quot;grid&quot;,
+          gridTemplateColumns: &quot;auto 1fr&quot;,
+          gap: &quot;4px 12px&quot;,
+          margin: 0,
+          padding: &quot;12px&quot;,
+          border: &quot;1px solid currentColor&quot;,
+          borderRadius: &quot;4px&quot;,
+          fontSize: &quot;12px&quot;,
+          lineHeight: 1.5,
+          opacity: 0.85,
+        }}
+      &gt;
+        &lt;dt style={{ opacity: 0.7 }}&gt;Reported by media&lt;/dt&gt;
+        &lt;dd style={{ margin: 0, fontFamily: &quot;monospace&quot; }}&gt;
+          {reportedMimeType}
+        &lt;/dd&gt;
+
+        &lt;dt style={{ opacity: 0.7 }}&gt;mimeTypeOverride&lt;/dt&gt;
+        &lt;dd style={{ margin: 0, fontFamily: &quot;monospace&quot; }}&gt;
+          {mimeTypeOverride ?? &quot;(unset)&quot;}
+        &lt;/dd&gt;
+
+        &lt;dt style={{ opacity: 0.7 }}&gt;Dispatched on&lt;/dt&gt;
+        &lt;dd style={{ margin: 0, fontFamily: &quot;monospace&quot; }}&gt;
+          {effectiveMimeType}
+          {mimeTypeOverride != null ? &quot; (from the override)&quot; : &quot;&quot;}
+        &lt;/dd&gt;
+      &lt;/dl&gt;
+
+      &lt;div style={{ flex: 1, minHeight: 0 }}&gt;
+        &lt;DocumentViewer
+          media={media}
+          mimeTypeOverride={mimeTypeOverride}
+          {...rest}
+        /&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
 export const WithMimeTypeOverride: Story = {
   args: {
-    media: mockUnsupportedMedia,
+    media: mockMislabeledMarkdownMedia,
     mimeTypeOverride: &quot;text/markdown&quot;,
   },
+  render: (args: DocumentViewerProps) =&gt; &lt;MimeTypeOverrideDemo {...args} /&gt;,
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from &quot;@osdk/react-components/experimental/document-viewer&quot;;
-
-// Override auto-detected MIME type
+        code: `// This media item reports &quot;application/octet-stream&quot;, which would hit the
+// unsupported-type fallback. The override makes DocumentViewer dispatch on
+// &quot;text/markdown&quot; instead, so MarkdownViewer handles it.
 &lt;DocumentViewer media={myMedia} mimeTypeOverride=&quot;text/markdown&quot; /&gt;`,
       },
     },
@@ -9785,9 +10059,7 @@ export const WithPdfViewerProps: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from &quot;@osdk/react-components/experimental/document-viewer&quot;;
-
-&lt;DocumentViewer
+        code: `&lt;DocumentViewer
   media={myMedia}
   pdfViewerProps={{
     initialSidebarOpen: true,
@@ -9940,9 +10212,7 @@ export const WithPdfViewerProps: Story = {
               </div>
               
               
-              <pre><code>const WithMimeTypeOverride = () =&gt; &lt;div style={{ height: &quot;600px&quot;, width: &quot;100%&quot; }}&gt;
-    &lt;DocumentViewer media={mockUnsupportedMedia} mimeTypeOverride=&quot;text/markdown&quot; /&gt;
-&lt;/div&gt;;</code></pre>
+              <pre><code>const WithMimeTypeOverride = () =&gt; &lt;MimeTypeOverrideDemo media={mockMislabeledMarkdownMedia} mimeTypeOverride=&quot;text/markdown&quot; /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -15447,9 +15717,7 @@ export const Default: StoryObj&lt;ImageViewerProps&gt; = {
   parameters: {
     docs: {
       source: {
-        code: `import { ImageViewer } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
-
-&lt;ImageViewer media={myOsdkMedia} alt=&quot;My image&quot; /&gt;`,
+        code: `&lt;ImageViewer media={myOsdkMedia} alt=&quot;My image&quot; /&gt;`,
       },
     },
   },
@@ -17603,9 +17871,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-// Access media from an OSDK object&#39;s media reference property
+        code: `// Access media from an OSDK object&#39;s media reference property
 const employee = useOsdkObject(Employee, employeePk);
 &lt;PdfViewer media={employee.employeeDocuments} /&gt;`,
       },
@@ -17861,9 +18127,7 @@ export const WithPdfUrl: StoryObj&lt;BasePdfViewerProps&gt; = {
   parameters: {
     docs: {
       source: {
-        code: `import { BasePdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-&lt;BasePdfViewer src=&quot;/compressed.tracemonkey-pldi-09.pdf&quot; /&gt;`,
+        code: `&lt;BasePdfViewer src=&quot;/compressed.tracemonkey-pldi-09.pdf&quot; /&gt;`,
       },
     },
   },
@@ -17902,9 +18166,7 @@ export const WithBlob: StoryObj&lt;BasePdfViewerProps&gt; = {
   parameters: {
     docs: {
       source: {
-        code: `import { BasePdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-// src also accepts in-memory bytes: Blob, ArrayBuffer, or Uint8Array
+        code: `// src also accepts in-memory bytes: Blob, ArrayBuffer, or Uint8Array
 const blob = await (await fetch(&quot;/compressed.tracemonkey-pldi-09.pdf&quot;)).blob();
 
 &lt;BasePdfViewer src={blob} /&gt;`,
@@ -17949,9 +18211,7 @@ export const WithAnnotations: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-&lt;PdfViewer
+        code: `&lt;PdfViewer
   media={myMediaObject}
   annotations={[
     { id: &quot;h1&quot;, type: &quot;highlight&quot;, page: 1, rect: { x: 55, y: 696, width: 480, height: 24 }, label: &quot;Title highlight&quot; },
@@ -17959,7 +18219,7 @@ export const WithAnnotations: Story = {
     { id: &quot;c1&quot;, type: &quot;comment&quot;, page: 1, rect: { x: 538, y: 400, width: 24, height: 24 }, label: &quot;Review this&quot; },
     { id: &quot;p1&quot;, type: &quot;pin&quot;, page: 1, rect: { x: 44, y: 446, width: 16, height: 16 }, label: &quot;Pin&quot; },
   ]}
-  onAnnotationClick={(annotation) =&gt; handleAnnotationClick(annotation)}
+  onAnnotationClick={handleAnnotationClick}
 /&gt;`,
       },
     },
@@ -17973,9 +18233,7 @@ export const WithSidebar: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-&lt;PdfViewer media={myMediaObject} initialSidebarOpen /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} initialSidebarOpen /&gt;`,
       },
     },
   },
@@ -17988,9 +18246,7 @@ export const CustomScale: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-&lt;PdfViewer media={myMediaObject} initialScale={1.5} /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} initialScale={1.5} /&gt;`,
       },
     },
   },
@@ -18003,9 +18259,7 @@ export const WithAutoSize: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-&lt;PdfViewer media={myMediaObject} initialAutoSize /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} initialAutoSize /&gt;`,
       },
     },
   },
@@ -18018,9 +18272,7 @@ export const WithDownload: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-&lt;PdfViewer media={myMediaObject} enableDownload /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} enableDownload /&gt;`,
       },
     },
   },
@@ -18034,9 +18286,7 @@ export const WithOutlineSidebar: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-&lt;PdfViewer media={myMediaObject} initialSidebarOpen sidebarMode=&quot;outline&quot; /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} initialSidebarOpen sidebarMode=&quot;outline&quot; /&gt;`,
       },
     },
   },
@@ -18059,6 +18309,12 @@ export const Loading: StoryObj&lt;BasePdfViewerProps&gt; = {
         }),
       ],
     },
+    docs: {
+      source: {
+        code: `// Loading state handling is built-in
+&lt;BasePdfViewer src=&quot;/slow-to-download.pdf&quot; /&gt;`,
+      },
+    },
   },
 };
 
@@ -18078,6 +18334,12 @@ export const Error: StoryObj&lt;BasePdfViewerProps&gt; = {
           return new Response(&quot;Server Error&quot;, { status: 500 });
         }),
       ],
+    },
+    docs: {
+      source: {
+        code: `// A failed fetch or an unparseable document renders the built-in error state
+&lt;BasePdfViewer src=&quot;/does-not-load.pdf&quot; /&gt;`,
+      },
     },
   },
 };
@@ -18118,11 +18380,7 @@ export const WithHighlightMode: StoryObj&lt;BasePdfViewerProps&gt; = {
   parameters: {
     docs: {
       source: {
-        code: `import { useState, useCallback } from &quot;react&quot;;
-import { BasePdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import type { PdfAnnotation, PdfTextHighlightEvent } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-function MyPdfViewer({ src }: { src: string }) {
+        code: `function MyPdfViewer({ src }: { src: string }) {
   const [annotations, setAnnotations] = useState&lt;PdfAnnotation[]&gt;([]);
 
   const handleTextHighlight = useCallback((event: PdfTextHighlightEvent) =&gt; {
@@ -18163,6 +18421,18 @@ export const WithEmbeddedOutline: Story = {
     initialSidebarOpen: true,
     sidebarMode: &quot;outline&quot;,
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `// The outline content is auto-generated from the PDF&#39;s own bookmarks
+&lt;PdfViewer
+  media={handbook.pdf}
+  initialSidebarOpen
+  sidebarMode=&quot;outline&quot;
+/&gt;`,
+      },
+    },
+  },
 };
 
 export const InteractiveForm: StoryObj&lt;BasePdfViewerProps&gt; = {
@@ -18179,12 +18449,24 @@ export const InteractiveForm: StoryObj&lt;BasePdfViewerProps&gt; = {
   parameters: {
     docs: {
       source: {
-        code: `import { BasePdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+        code: `const handleFormChange = useCallback(
+  (fieldName: string, value: PdfFormFieldValue) =&gt; {
+    console.log(fieldName, value);
+  },
+  [],
+);
+
+const handleFormSubmit = useCallback(
+  (data: Record&lt;string, PdfFormFieldValue&gt;) =&gt; {
+    console.log(&quot;Form submitted:&quot;, data);
+  },
+  [],
+);
 
 &lt;BasePdfViewer
   src=&quot;https://example.com/interactive-form.pdf&quot;
-  onFormChange={(fieldName, value) =&gt; console.log(fieldName, value)}
-  onFormSubmit={(data) =&gt; console.log(&quot;Form submitted:&quot;, data)}
+  onFormChange={handleFormChange}
+  onFormSubmit={handleFormSubmit}
 /&gt;`,
       },
     },
@@ -18545,7 +18827,28 @@ const meta: Meta&lt;PdfViewerAnnotationLayerProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `// Absolutely positioned over a rendered page. transform is pdf.js&#39;s
+// viewport.transform, which converts PDF coordinates to CSS pixels.
+&lt;PdfViewerAnnotationLayer
+  annotations={[
+    { id: &quot;h1&quot;, type: &quot;highlight&quot;, page: 1, rect: { x: 50, y: 700, width: 300, height: 20 }, label: &quot;Highlighted text&quot; },
+    { id: &quot;u1&quot;, type: &quot;underline&quot;, page: 1, rect: { x: 50, y: 650, width: 200, height: 2 } },
+    { id: &quot;c1&quot;, type: &quot;comment&quot;, page: 1, rect: { x: 400, y: 600, width: 24, height: 24 }, label: &quot;Review this section&quot; },
+    { id: &quot;p1&quot;, type: &quot;pin&quot;, page: 1, rect: { x: 300, y: 500, width: 16, height: 16 }, label: &quot;Pin marker&quot; },
+  ]}
+  pageHeight={792}
+  scale={1}
+  transform={[1, 0, 0, -1, 0, 792]}
+  onAnnotationClick={handleAnnotationClick}
+/&gt;`,
+      },
+    },
+  },
+};
 
 export const HighlightsOnly: Story = {
   args: {
@@ -18574,11 +18877,44 @@ export const HighlightsOnly: Story = {
       },
     ],
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `// Per-annotation color overrides the default highlight fill
+&lt;PdfViewerAnnotationLayer
+  annotations={[
+    { id: &quot;h1&quot;, type: &quot;highlight&quot;, page: 1, rect: { x: 50, y: 700, width: 300, height: 20 }, label: &quot;First highlight&quot; },
+    { id: &quot;h2&quot;, type: &quot;highlight&quot;, page: 1, rect: { x: 50, y: 650, width: 250, height: 20 }, label: &quot;Second highlight&quot; },
+    { id: &quot;h3&quot;, type: &quot;highlight&quot;, page: 1, rect: { x: 50, y: 600, width: 350, height: 20 }, label: &quot;Third highlight&quot;, color: &quot;#4caf50&quot; },
+  ]}
+  pageHeight={792}
+  scale={1}
+  transform={[1, 0, 0, -1, 0, 792]}
+  onAnnotationClick={handleAnnotationClick}
+/&gt;`,
+      },
+    },
+  },
 };
 
 export const ZoomedIn: Story = {
   args: {
     scale: 2,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// scale and transform must move together, otherwise annotations drift off the
+// page as the user zooms
+&lt;PdfViewerAnnotationLayer
+  annotations={annotations}
+  pageHeight={792}
+  scale={2}
+  transform={[2, 0, 0, -2, 0, 792 * 2]}
+  onAnnotationClick={handleAnnotationClick}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
@@ -18828,17 +19164,54 @@ const meta: Meta&lt;PdfViewerContentProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `
+&lt;PdfViewerContent
+  src=&quot;/whitepaper.pdf&quot;
+  onPageChange={setCurrentPage}
+  onScaleChange={setScale}
+/&gt;`,
+      },
+    },
+  },
+};
 
 export const ZoomedIn: Story = {
   args: {
     initialScale: 2,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+&lt;PdfViewerContent
+  src=&quot;/whitepaper.pdf&quot;
+  initialScale={2}
+  onScaleChange={setScale}
+/&gt;`,
+      },
+    },
   },
 };
 
 export const StartOnPage5: Story = {
   args: {
     initialPage: 5,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+&lt;PdfViewerContent
+  src=&quot;/whitepaper.pdf&quot;
+  initialPage={5}
+  onPageChange={setCurrentPage}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
@@ -19065,17 +19438,76 @@ const meta: Meta&lt;PdfViewerOutlineSidebarProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const handleItemClick = useCallback((item: PdfOutlineItem) =&gt; {
+  goToPage(item.pageNumber);
+}, [goToPage]);
+
+// depth drives indentation; bold and italic mirror the PDF&#39;s own bookmark styling
+&lt;PdfViewerOutlineSidebar
+  outlineItems={[
+    { title: &quot;Introduction&quot;, depth: 0, pageNumber: 1, bold: true, italic: false },
+    { title: &quot;Background&quot;, depth: 1, pageNumber: 2, bold: false, italic: false },
+    { title: &quot;Data Flow&quot;, depth: 2, pageNumber: 7, bold: false, italic: true },
+  ]}
+  currentPage={1}
+  onItemClick={handleItemClick}
+  sidebarMode=&quot;outline&quot;
+  onSidebarModeChange={setSidebarMode}
+/&gt;`,
+      },
+    },
+  },
+};
 
 export const ActiveSection: Story = {
   args: {
     currentPage: 6,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const handleItemClick = useCallback((item: PdfOutlineItem) =&gt; {
+  goToPage(item.pageNumber);
+}, [goToPage]);
+
+// currentPage highlights the deepest entry at or before that page
+&lt;PdfViewerOutlineSidebar
+  outlineItems={outlineItems}
+  currentPage={6}
+  onItemClick={handleItemClick}
+  sidebarMode=&quot;outline&quot;
+  onSidebarModeChange={setSidebarMode}
+/&gt;`,
+      },
+    },
   },
 };
 
 export const Empty: Story = {
   args: {
     outlineItems: [],
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const handleItemClick = useCallback((item: PdfOutlineItem) =&gt; {
+  goToPage(item.pageNumber);
+}, [goToPage]);
+
+// PDFs without bookmarks render an empty state rather than a blank panel
+&lt;PdfViewerOutlineSidebar
+  outlineItems={[]}
+  currentPage={1}
+  onItemClick={handleItemClick}
+  sidebarMode=&quot;outline&quot;
+  onSidebarModeChange={setSidebarMode}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
@@ -19252,7 +19684,24 @@ const meta: Meta&lt;PdfViewerSearchBarProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `// Fully controlled — you own the query and run the search yourself
+&lt;PdfViewerSearchBar
+  query=&quot;&quot;
+  totalMatches={0}
+  currentMatchIndex={0}
+  onQueryChange={setQuery}
+  onNext={goToNextMatch}
+  onPrev={goToPrevMatch}
+  onClose={closeSearch}
+/&gt;`,
+      },
+    },
+  },
+};
 
 export const WithMatches: Story = {
   args: {
@@ -19260,14 +19709,46 @@ export const WithMatches: Story = {
     totalMatches: 12,
     currentMatchIndex: 3,
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `// currentMatchIndex is 0-indexed; the bar displays it as &quot;4 of 12&quot;
+&lt;PdfViewerSearchBar
+  query=&quot;trace&quot;
+  totalMatches={12}
+  currentMatchIndex={3}
+  onQueryChange={setQuery}
+  onNext={goToNextMatch}
+  onPrev={goToPrevMatch}
+  onClose={closeSearch}
+/&gt;`,
+      },
+    },
+  },
 };
 
 export const NoResults: Story = {
   args: {
-    // cspell:disable-next-line
-    query: &quot;xyznonexistent&quot;,
+    query: &quot;nonexistent&quot;,
     totalMatches: 0,
     currentMatchIndex: 0,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// A non-empty query with zero matches shows the no-results state and
+// disables the next/prev buttons
+&lt;PdfViewerSearchBar
+  query=&quot;nonexistent&quot;
+  totalMatches={0}
+  currentMatchIndex={0}
+  onQueryChange={setQuery}
+  onNext={goToNextMatch}
+  onPrev={goToPrevMatch}
+  onClose={closeSearch}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
@@ -19335,7 +19816,7 @@ export const NoResults: Story = {
               
               
               <pre><code>const NoResults = () =&gt; &lt;PdfViewerSearchBar
-    query=&quot;xyznonexistent&quot;
+    query=&quot;nonexistent&quot;
     totalMatches={0}
     currentMatchIndex={0}
     onQueryChange={fn()}
@@ -19460,11 +19941,51 @@ const meta: Meta&lt;PdfViewerToolbarProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `// Fully controlled — every button is a callback you wire to your own state
+&lt;PdfViewerToolbar
+  currentPage={1}
+  numPages={14}
+  scale={1}
+  autoSize={false}
+  sidebarOpen={false}
+  enableDownload={false}
+  onPageChange={setCurrentPage}
+  onZoomIn={zoomIn}
+  onZoomOut={zoomOut}
+  onAutoSizeToggle={toggleAutoSize}
+  onSearchOpen={openSearch}
+  onSidebarToggle={toggleSidebar}
+  onDownload={downloadPdf}
+  onRotateLeft={rotateLeft}
+  onRotateRight={rotateRight}
+/&gt;`,
+      },
+    },
+  },
+};
 
 export const WithDownload: Story = {
   args: {
     enableDownload: true,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// The download button is hidden unless enableDownload is set
+&lt;PdfViewerToolbar
+  currentPage={1}
+  numPages={14}
+  scale={1}
+  enableDownload
+  onDownload={downloadPdf}
+  {...otherHandlers}
+/&gt;`,
+      },
+    },
   },
 };
 
@@ -19474,6 +19995,22 @@ export const MidDocument: Story = {
     numPages: 14,
     scale: 1.5,
     sidebarOpen: true,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// Mid-document state: page input filled, zoom above 100%, sidebar toggle active
+&lt;PdfViewerToolbar
+  currentPage={7}
+  numPages={14}
+  scale={1.5}
+  sidebarOpen
+  onPageChange={setCurrentPage}
+  onSidebarToggle={toggleSidebar}
+  {...otherHandlers}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
@@ -20653,11 +21190,53 @@ const meta: Meta&lt;ThumbnailSidebarStoryProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `function MyThumbnailSidebar({ src }: { src: string }) {
+  const { document, numPages, loading, error } = usePdfDocument(src);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sidebarMode, setSidebarMode] = useState&lt;PdfViewerSidebarMode&gt;(&quot;thumbnails&quot;);
+
+  if (loading) return &lt;div&gt;Loading PDF…&lt;/div&gt;;
+  if (error != null) return &lt;div&gt;Error loading PDF: {error.message}&lt;/div&gt;;
+  if (document == null) return null;
+
+  return (
+    &lt;PdfViewerSidebar
+      document={document}
+      numPages={numPages}
+      currentPage={currentPage}
+      onPageClick={setCurrentPage}
+      sidebarMode={sidebarMode}
+      onSidebarModeChange={setSidebarMode}
+    /&gt;
+  );
+}`,
+      },
+    },
+  },
+};
 
 export const ActivePage: Story = {
   args: {
     currentPage: 5,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// currentPage outlines that thumbnail and scrolls it into view
+&lt;PdfViewerSidebar
+  document={document}
+  numPages={numPages}
+  currentPage={5}
+  onPageClick={setCurrentPage}
+  sidebarMode=&quot;thumbnails&quot;
+  onSidebarModeChange={setSidebarMode}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
@@ -21904,9 +22483,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { VideoViewer } from &quot;@osdk/react-components/experimental/video-viewer&quot;;
-
-&lt;VideoViewer media={myOsdkMedia} /&gt;`,
+        code: `&lt;VideoViewer media={myOsdkMedia} /&gt;`,
       },
     },
   },
@@ -21935,6 +22512,17 @@ export const WithErrorCallback: Story = {
       }),
     },
     onError: fn(),
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// onError fires when fetching the media or decoding the video fails
+&lt;VideoViewer
+  media={myOsdkMedia}
+  onError={reportPlaybackFailure}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
@@ -22611,9 +23199,7 @@ export const Default: StoryObj&lt;EmailViewerProps&gt; = {
   parameters: {
     docs: {
       source: {
-        code: `import { EmailViewer } from &quot;@osdk/react-components/experimental/email-viewer&quot;;
-
-&lt;EmailViewer media={myOsdkMedia} /&gt;`,
+        code: `&lt;EmailViewer media={myOsdkMedia} /&gt;`,
       },
     },
   },
@@ -22623,9 +23209,7 @@ export const HtmlEmail: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseEmailViewer } from &quot;@osdk/react-components/experimental/email-viewer&quot;;
-
-&lt;BaseEmailViewer content={parsedEmail} /&gt;`,
+        code: `&lt;BaseEmailViewer content={parsedEmail} /&gt;`,
       },
     },
   },
@@ -22634,6 +23218,24 @@ export const HtmlEmail: Story = {
 export const PlainTextEmail: Story = {
   args: {
     content: SAMPLE_TEXT_EMAIL,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// A ParsedEmail with no html part renders its text body as preformatted text
+&lt;BaseEmailViewer
+  content={{
+    subject: &quot;Meeting Notes&quot;,
+    from: { name: &quot;Bob Smith&quot;, address: &quot;bob@example.com&quot; },
+    to: [{ name: &quot;Alice Johnson&quot;, address: &quot;alice@example.com&quot; }],
+    cc: [],
+    date: &quot;2026-03-16T09:00:00Z&quot;,
+    html: undefined,
+    text: &quot;Hi Alice,\\n\\nHere are the meeting notes from today.\\n\\nThanks,\\nBob&quot;,
+  }}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
@@ -25512,9 +26114,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseImageViewer } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
-
-&lt;BaseImageViewer src={imageUrl} alt=&quot;My image&quot; /&gt;`,
+        code: `&lt;BaseImageViewer src={imageUrl} alt=&quot;My image&quot; /&gt;`,
       },
     },
   },
@@ -25523,6 +26123,17 @@ export const Default: Story = {
 export const WithErrorCallback: Story = {
   args: {
     onError: fn(),
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;BaseImageViewer
+  src={imageUrl}
+  alt=&quot;My image&quot;
+  onError={reportImageLoadFailure}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
@@ -25750,7 +26361,16 @@ const meta: Meta&lt;BaseMarkdownViewerProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const WithContent: Story = {};
+export const WithContent: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `// Headings, lists, tables, code fences and rules all render from a raw string
+&lt;BaseMarkdownViewer content={markdownString} /&gt;`,
+      },
+    },
+  },
+};
 
 export const MinimalContent: Story = {
   args: {
@@ -25764,9 +26384,7 @@ export const MinimalContent: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseMarkdownViewer } from &quot;@osdk/react-components/experimental/markdown-renderer&quot;;
-
-&lt;BaseMarkdownViewer content=&quot;# Hello World\\n\\nA simple paragraph with **bold** and *italic*.&quot; /&gt;`,
+        code: `&lt;BaseMarkdownViewer content=&quot;# Hello World\\n\\nA simple paragraph with **bold** and *italic*.&quot; /&gt;`,
       },
     },
   },
@@ -26197,7 +26815,100 @@ export const AnnotationCreator: Story = {
   parameters: {
     docs: {
       source: {
-        code: `// Select text to create annotations, view and manage them in the sidebar`,
+        code: `const HIGHLIGHT_COLOR = &quot;#fff066&quot;;
+
+// Browser rects are viewport-relative with a top-left origin; PDF rects are
+// page-relative with a bottom-left origin. Both need dividing by the zoom
+// scale to get back to unscaled PDF units.
+function domRectToPdfRect(clientRect, pageRect, pageHeight, scale): PdfRect {
+  const topInPdfUnits = (clientRect.top - pageRect.top) / scale;
+  const height = clientRect.height / scale;
+  return {
+    x: (clientRect.left - pageRect.left) / scale,
+    y: pageHeight - topInPdfUnits - height,
+    width: clientRect.width / scale,
+    height,
+  };
+}
+
+function MyAnnotationCreator({ src }: { src: string }) {
+  const [annotations, setAnnotations] = useState&lt;PdfAnnotation[]&gt;([]);
+  const [annotationModeActive, setAnnotationModeActive] = useState(false);
+  const containerRef = useRef&lt;HTMLDivElement&gt;(null);
+  const viewerRef = useRef&lt;PdfViewerHandle&gt;(null);
+  
+  // Listen for text selection when annotation mode is active
+  useEffect(
+    function captureTextSelection() {
+      if (!annotationModeActive) return;
+      const container = containerRef.current;
+      if (container == null) return;
+
+      function handleMouseUp() {
+        const selection = window.getSelection();
+        if (selection == null || selection.isCollapsed) return;
+
+        const selectedText = selection.toString().trim();
+        if (selectedText === &quot;&quot;) return;
+
+        const range = selection.getRangeAt(0);
+        // pdf.js renders each page as .page[data-page-number]
+        const pageEl = range.startContainer.parentElement?.closest(&quot;.page[data-page-number]&quot;);
+        if (pageEl == null) return;
+
+        // pdf.js publishes the current zoom as a CSS variable on the page
+        const scale = parseFloat(getComputedStyle(pageEl).getPropertyValue(&quot;--scale-factor&quot;)) || 1;
+        const pageHeight = pageEl.clientHeight / scale;
+        const pageRect = pageEl.getBoundingClientRect();
+
+        // A selection spanning multiple lines produces one rect per line
+        const rects = Array.from(range.getClientRects())
+          .filter((r) =&gt; r.width &gt; 0 &amp;&amp; r.height &gt; 0)
+          .map((r) =&gt; domRectToPdfRect(r, pageRect, pageHeight, scale));
+        if (rects.length === 0) return;
+
+        setAnnotations((prev) =&gt; [...prev, {
+          id: crypto.randomUUID(),
+          type: &quot;highlight&quot;,
+          page: Number(pageEl.getAttribute(&quot;data-page-number&quot;)),
+          rect: rects[0],
+          rects,
+          color: HIGHLIGHT_COLOR,
+          label: selectedText,
+        }]);
+        selection.removeAllRanges();
+      }
+
+      container.addEventListener(&quot;mouseup&quot;, handleMouseUp);
+      return () =&gt; container.removeEventListener(&quot;mouseup&quot;, handleMouseUp);
+  }, [annotationModeActive]);
+
+  const deleteAnnotation = useCallback((id: string) =&gt; {
+    setAnnotations((prev) =&gt; prev.filter((a) =&gt; a.id !== id));
+  }, []);
+  const toggleAnnotationMode = useCallback(() =&gt; {
+    setAnnotationModeActive((prev) =&gt; !prev);
+  }, []);
+  const handleAnnotationClick = useCallback((page: number) =&gt; {
+    viewerRef.current?.scrollToPage(page);
+  }, []);
+
+  return (
+    &lt;div style={{ display: &quot;flex&quot;, height: &quot;600px&quot; }}&gt;
+      &lt;div ref={containerRef} style={{ flex: 1, minWidth: 0 }}&gt;
+        &lt;BasePdfViewer ref={viewerRef} src={src} annotations={annotations} /&gt;
+      &lt;/div&gt;
+      &lt;MySidebar
+        annotations={annotations}
+        annotationModeActive={annotationModeActive}
+        onToggleMode={toggleAnnotationMode}
+        // The imperative handle drives navigation from outside the viewer
+        onAnnotationClick={handleAnnotationClick}
+        onDelete={deleteAnnotation}
+      /&gt;
+    &lt;/div&gt;
+  );
+}`,
       },
     },
   },
@@ -26486,9 +27197,7 @@ export const Default: StoryObj&lt;SpreadsheetViewerProps&gt; = {
   parameters: {
     docs: {
       source: {
-        code: `import { SpreadsheetViewer } from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
-
-&lt;SpreadsheetViewer media={myOsdkMedia} /&gt;`,
+        code: `&lt;SpreadsheetViewer media={myOsdkMedia} /&gt;`,
       },
     },
   },
@@ -26498,9 +27207,7 @@ export const WithSpreadsheet: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseSpreadsheetViewer } from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
-
-&lt;BaseSpreadsheetViewer content={parsedSpreadsheet} /&gt;`,
+        code: `&lt;BaseSpreadsheetViewer content={parsedSpreadsheet} /&gt;`,
       },
     },
   },
@@ -26510,6 +27217,26 @@ export const SingleSheet: Story = {
   args: {
     content: {
       sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// With one sheet the tab bar is hidden
+&lt;BaseSpreadsheetViewer
+  content={{
+    sheets: [
+      {
+        name: &quot;Employees&quot;,
+        rows: [
+          [&quot;Name&quot;, &quot;Department&quot;, &quot;Salary&quot;],
+          [&quot;Alice Johnson&quot;, &quot;Engineering&quot;, &quot;$145,000&quot;],
+        ],
+      },
+    ],
+  }}
+/&gt;`,
+      },
     },
   },
 };
@@ -26531,6 +27258,13 @@ export const WithRealFile: StoryObj&lt;SpreadsheetViewerProps&gt; = {
       handlers: [
         http.get(&quot;*/notional-spreadsheet-example.xlsx&quot;, () =&gt; passthrough()),
       ],
+    },
+    docs: {
+      source: {
+        code: `// SpreadsheetViewer fetches and parses the xlsx workbook itself, so a real
+// multi-sheet file needs no extra wiring
+&lt;SpreadsheetViewer media={quarter.headcountReport} /&gt;`,
+      },
     },
   },
 };
@@ -27692,9 +28426,7 @@ export const WithContent: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseTiffViewer } from &quot;@osdk/react-components/experimental/tiff-renderer&quot;;
-
-&lt;BaseTiffViewer src={tiffBytes} /&gt;`,
+        code: `&lt;BaseTiffViewer src={tiffBytes} /&gt;`,
       },
     },
   },
@@ -27707,9 +28439,11 @@ export const WithErrorCallback: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseTiffViewer } from &quot;@osdk/react-components/experimental/tiff-renderer&quot;;
+        code: `const handleError = useCallback(() =&gt; {
+  console.error(&quot;TIFF render failed&quot;);
+}, []);
 
-&lt;BaseTiffViewer src={tiffBytes} onError={() =&gt; console.error(&quot;TIFF render failed&quot;)} /&gt;`,
+&lt;BaseTiffViewer src={tiffBytes} onError={handleError} /&gt;`,
       },
     },
   },
@@ -27930,9 +28664,7 @@ export const Default: StoryObj&lt;XmlViewerProps&gt; = {
   parameters: {
     docs: {
       source: {
-        code: `import { XmlViewer } from &quot;@osdk/react-components/experimental/xml-viewer&quot;;
-
-&lt;XmlViewer media={myOsdkMedia} /&gt;`,
+        code: `&lt;XmlViewer media={myOsdkMedia} /&gt;`,
       },
     },
   },
@@ -27942,9 +28674,7 @@ export const WithContent: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseXmlViewer } from &quot;@osdk/react-components/experimental/xml-viewer&quot;;
-
-&lt;BaseXmlViewer content={xmlString} /&gt;`,
+        code: `&lt;BaseXmlViewer content={xmlString} /&gt;`,
       },
     },
   },
@@ -29289,13 +30019,13 @@ export const Default: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;DocumentViewer&quot; component.
-  182 | );
-  183 |
-&gt; 184 | const meta: Meta&lt;DocumentViewerProps&gt; = {
+  191 | );
+  192 |
+&gt; 193 | const meta: Meta&lt;DocumentViewerProps&gt; = {
       | ^
-  185 |   title: &quot;Components/DocumentViewer&quot;,
-  186 |   component: DocumentViewer,
-  187 |   tags: [&quot;beta&quot;],
+  194 |   title: &quot;Components/DocumentViewer&quot;,
+  195 |   component: DocumentViewer,
+  196 |   tags: [&quot;beta&quot;],
 
 ./src/stories/DocumentViewer/DocumentViewer.stories.tsx:
 /*
@@ -29481,6 +30211,15 @@ const mockUnsupportedMedia = createMockMedia(
   &quot;data.bin&quot;,
 );
 
+// Markdown content served under a generic MIME type, which is what
+// mimeTypeOverride exists to correct. Distinct from mockUnsupportedMedia,
+// whose empty body would render as a blank viewer once overridden.
+const mockMislabeledMarkdownMedia = createMockMedia(
+  &quot;application/octet-stream&quot;,
+  () =&gt; Promise.resolve(new Response(SAMPLE_MARKDOWN)),
+  &quot;notes.dat&quot;,
+);
+
 const meta: Meta&lt;DocumentViewerProps&gt; = {
   title: &quot;Components/DocumentViewer&quot;,
   component: DocumentViewer,
@@ -29522,9 +30261,7 @@ export const Pdf: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from &quot;@osdk/react-components/experimental/document-viewer&quot;;
-
-&lt;DocumentViewer media={employee.trainingMaterial} /&gt;`,
+        code: `&lt;DocumentViewer media={employee.trainingMaterial} /&gt;`,
       },
     },
   },
@@ -29539,11 +30276,27 @@ export const Image: Story = {
       &lt;DocumentViewer {...args} /&gt;
     &lt;/div&gt;
   ),
+  parameters: {
+    docs: {
+      source: {
+        code: `// image/* media renders with the pan and zoom ImageViewer
+&lt;DocumentViewer media={employee.profilePhoto} /&gt;`,
+      },
+    },
+  },
 };
 
 export const Markdown: Story = {
   args: {
     media: mockMarkdownMedia,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// text/markdown media renders with MarkdownViewer
+&lt;DocumentViewer media={project.readme} /&gt;`,
+      },
+    },
   },
 };
 
@@ -29560,6 +30313,12 @@ export const Video: Story = {
     msw: {
       handlers: [http.get(&quot;*/example.mp4&quot;, () =&gt; passthrough())],
     },
+    docs: {
+      source: {
+        code: `// video/* media renders with VideoViewer
+&lt;DocumentViewer media={incident.bodyCamFootage} /&gt;`,
+      },
+    },
   },
 };
 
@@ -29572,17 +30331,41 @@ export const UnsupportedType: Story = {
       &lt;DocumentViewer {...args} /&gt;
     &lt;/div&gt;
   ),
+  parameters: {
+    docs: {
+      source: {
+        code: `// MIME types with no matching renderer fall back to a download prompt
+&lt;DocumentViewer media={record.rawAttachment} /&gt;`,
+      },
+    },
+  },
 };
 
 export const Email: Story = {
   args: {
     media: mockEmailMedia,
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `// message/rfc822 media renders with EmailViewer
+&lt;DocumentViewer media={thread.originalMessage} /&gt;`,
+      },
+    },
+  },
 };
 
 export const Spreadsheet: Story = {
   args: {
     media: mockSpreadsheetMedia,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// xlsx / xls / csv media renders with SpreadsheetViewer
+&lt;DocumentViewer media={quarter.headcountReport} /&gt;`,
+      },
+    },
   },
 };
 
@@ -29595,6 +30378,14 @@ export const Xml: Story = {
       &lt;DocumentViewer {...args} /&gt;
     &lt;/div&gt;
   ),
+  parameters: {
+    docs: {
+      source: {
+        code: `// application/xml media renders with the collapsible-tree XmlViewer
+&lt;DocumentViewer media={shipment.manifest} /&gt;`,
+      },
+    },
+  },
 };
 
 export const Tiff: Story = {
@@ -29604,6 +30395,13 @@ export const Tiff: Story = {
   parameters: {
     msw: {
       handlers: [http.get(&quot;*/multi-page-tiff.tiff&quot;, () =&gt; passthrough())],
+    },
+    docs: {
+      source: {
+        code: `// image/tiff media renders with TiffViewer, which decodes in the browser.
+// See &quot;Tiff With Pdf Conversion&quot; for server-side PDF conversion instead.
+&lt;DocumentViewer media={claim.scannedForm} /&gt;`,
+      },
     },
   },
 };
@@ -29646,9 +30444,7 @@ export const TiffWithPdfConversion: Story = {
     },
     docs: {
       source: {
-        code: `import { DocumentViewer } from &quot;@osdk/react-components/experimental/document-viewer&quot;;
-
-// Multi-page TIFFs are detected and converted to PDF via MIO transform API
+        code: `// Multi-page TIFFs are detected and converted to PDF via MIO transform API
 // Falls back to TiffViewer if transform fails or for single-page TIFFs
 &lt;DocumentViewer media={myMedia} enableTiffToPdf fileName=&quot;scan.tiff&quot; /&gt;`,
       },
@@ -29656,17 +30452,83 @@ export const TiffWithPdfConversion: Story = {
   },
 };
 
+/**
+ * Renders the reported and effective MIME types above the viewer so the story
+ * shows what the override changed, not just its end result. Both values are
+ * read back from the props rather than hardcoded, so editing the
+ * `mimeTypeOverride` control keeps the caption honest.
+ */
+function MimeTypeOverrideDemo({
+  media,
+  mimeTypeOverride,
+  ...rest
+}: DocumentViewerProps) {
+  const reportedMimeType = media.getMediaReference().mimeType;
+  const effectiveMimeType = mimeTypeOverride ?? reportedMimeType;
+
+  return (
+    &lt;div
+      style={{
+        display: &quot;flex&quot;,
+        flexDirection: &quot;column&quot;,
+        gap: &quot;8px&quot;,
+        height: &quot;600px&quot;,
+      }}
+    &gt;
+      &lt;dl
+        style={{
+          display: &quot;grid&quot;,
+          gridTemplateColumns: &quot;auto 1fr&quot;,
+          gap: &quot;4px 12px&quot;,
+          margin: 0,
+          padding: &quot;12px&quot;,
+          border: &quot;1px solid currentColor&quot;,
+          borderRadius: &quot;4px&quot;,
+          fontSize: &quot;12px&quot;,
+          lineHeight: 1.5,
+          opacity: 0.85,
+        }}
+      &gt;
+        &lt;dt style={{ opacity: 0.7 }}&gt;Reported by media&lt;/dt&gt;
+        &lt;dd style={{ margin: 0, fontFamily: &quot;monospace&quot; }}&gt;
+          {reportedMimeType}
+        &lt;/dd&gt;
+
+        &lt;dt style={{ opacity: 0.7 }}&gt;mimeTypeOverride&lt;/dt&gt;
+        &lt;dd style={{ margin: 0, fontFamily: &quot;monospace&quot; }}&gt;
+          {mimeTypeOverride ?? &quot;(unset)&quot;}
+        &lt;/dd&gt;
+
+        &lt;dt style={{ opacity: 0.7 }}&gt;Dispatched on&lt;/dt&gt;
+        &lt;dd style={{ margin: 0, fontFamily: &quot;monospace&quot; }}&gt;
+          {effectiveMimeType}
+          {mimeTypeOverride != null ? &quot; (from the override)&quot; : &quot;&quot;}
+        &lt;/dd&gt;
+      &lt;/dl&gt;
+
+      &lt;div style={{ flex: 1, minHeight: 0 }}&gt;
+        &lt;DocumentViewer
+          media={media}
+          mimeTypeOverride={mimeTypeOverride}
+          {...rest}
+        /&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
 export const WithMimeTypeOverride: Story = {
   args: {
-    media: mockUnsupportedMedia,
+    media: mockMislabeledMarkdownMedia,
     mimeTypeOverride: &quot;text/markdown&quot;,
   },
+  render: (args: DocumentViewerProps) =&gt; &lt;MimeTypeOverrideDemo {...args} /&gt;,
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from &quot;@osdk/react-components/experimental/document-viewer&quot;;
-
-// Override auto-detected MIME type
+        code: `// This media item reports &quot;application/octet-stream&quot;, which would hit the
+// unsupported-type fallback. The override makes DocumentViewer dispatch on
+// &quot;text/markdown&quot; instead, so MarkdownViewer handles it.
 &lt;DocumentViewer media={myMedia} mimeTypeOverride=&quot;text/markdown&quot; /&gt;`,
       },
     },
@@ -29684,9 +30546,7 @@ export const WithPdfViewerProps: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from &quot;@osdk/react-components/experimental/document-viewer&quot;;
-
-&lt;DocumentViewer
+        code: `&lt;DocumentViewer
   media={myMedia}
   pdfViewerProps={{
     initialSidebarOpen: true,
@@ -29839,9 +30699,7 @@ export const WithPdfViewerProps: Story = {
               </div>
               
               
-              <pre><code>const WithMimeTypeOverride = () =&gt; &lt;div style={{ height: &quot;600px&quot;, width: &quot;100%&quot; }}&gt;
-    &lt;DocumentViewer media={mockUnsupportedMedia} mimeTypeOverride=&quot;text/markdown&quot; /&gt;
-&lt;/div&gt;;</code></pre>
+              <pre><code>const WithMimeTypeOverride = () =&gt; &lt;MimeTypeOverrideDemo media={mockMislabeledMarkdownMedia} mimeTypeOverride=&quot;text/markdown&quot; /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -34153,9 +35011,7 @@ export const Default: StoryObj&lt;ImageViewerProps&gt; = {
   parameters: {
     docs: {
       source: {
-        code: `import { ImageViewer } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
-
-&lt;ImageViewer media={myOsdkMedia} alt=&quot;My image&quot; /&gt;`,
+        code: `&lt;ImageViewer media={myOsdkMedia} alt=&quot;My image&quot; /&gt;`,
       },
     },
   },
@@ -35251,9 +36107,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-// Access media from an OSDK object&#39;s media reference property
+        code: `// Access media from an OSDK object&#39;s media reference property
 const employee = useOsdkObject(Employee, employeePk);
 &lt;PdfViewer media={employee.employeeDocuments} /&gt;`,
       },
@@ -35509,9 +36363,7 @@ export const WithPdfUrl: StoryObj&lt;BasePdfViewerProps&gt; = {
   parameters: {
     docs: {
       source: {
-        code: `import { BasePdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-&lt;BasePdfViewer src=&quot;/compressed.tracemonkey-pldi-09.pdf&quot; /&gt;`,
+        code: `&lt;BasePdfViewer src=&quot;/compressed.tracemonkey-pldi-09.pdf&quot; /&gt;`,
       },
     },
   },
@@ -35550,9 +36402,7 @@ export const WithBlob: StoryObj&lt;BasePdfViewerProps&gt; = {
   parameters: {
     docs: {
       source: {
-        code: `import { BasePdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-// src also accepts in-memory bytes: Blob, ArrayBuffer, or Uint8Array
+        code: `// src also accepts in-memory bytes: Blob, ArrayBuffer, or Uint8Array
 const blob = await (await fetch(&quot;/compressed.tracemonkey-pldi-09.pdf&quot;)).blob();
 
 &lt;BasePdfViewer src={blob} /&gt;`,
@@ -35597,9 +36447,7 @@ export const WithAnnotations: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-&lt;PdfViewer
+        code: `&lt;PdfViewer
   media={myMediaObject}
   annotations={[
     { id: &quot;h1&quot;, type: &quot;highlight&quot;, page: 1, rect: { x: 55, y: 696, width: 480, height: 24 }, label: &quot;Title highlight&quot; },
@@ -35607,7 +36455,7 @@ export const WithAnnotations: Story = {
     { id: &quot;c1&quot;, type: &quot;comment&quot;, page: 1, rect: { x: 538, y: 400, width: 24, height: 24 }, label: &quot;Review this&quot; },
     { id: &quot;p1&quot;, type: &quot;pin&quot;, page: 1, rect: { x: 44, y: 446, width: 16, height: 16 }, label: &quot;Pin&quot; },
   ]}
-  onAnnotationClick={(annotation) =&gt; handleAnnotationClick(annotation)}
+  onAnnotationClick={handleAnnotationClick}
 /&gt;`,
       },
     },
@@ -35621,9 +36469,7 @@ export const WithSidebar: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-&lt;PdfViewer media={myMediaObject} initialSidebarOpen /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} initialSidebarOpen /&gt;`,
       },
     },
   },
@@ -35636,9 +36482,7 @@ export const CustomScale: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-&lt;PdfViewer media={myMediaObject} initialScale={1.5} /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} initialScale={1.5} /&gt;`,
       },
     },
   },
@@ -35651,9 +36495,7 @@ export const WithAutoSize: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-&lt;PdfViewer media={myMediaObject} initialAutoSize /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} initialAutoSize /&gt;`,
       },
     },
   },
@@ -35666,9 +36508,7 @@ export const WithDownload: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-&lt;PdfViewer media={myMediaObject} enableDownload /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} enableDownload /&gt;`,
       },
     },
   },
@@ -35682,9 +36522,7 @@ export const WithOutlineSidebar: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-&lt;PdfViewer media={myMediaObject} initialSidebarOpen sidebarMode=&quot;outline&quot; /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} initialSidebarOpen sidebarMode=&quot;outline&quot; /&gt;`,
       },
     },
   },
@@ -35707,6 +36545,12 @@ export const Loading: StoryObj&lt;BasePdfViewerProps&gt; = {
         }),
       ],
     },
+    docs: {
+      source: {
+        code: `// Loading state handling is built-in
+&lt;BasePdfViewer src=&quot;/slow-to-download.pdf&quot; /&gt;`,
+      },
+    },
   },
 };
 
@@ -35726,6 +36570,12 @@ export const Error: StoryObj&lt;BasePdfViewerProps&gt; = {
           return new Response(&quot;Server Error&quot;, { status: 500 });
         }),
       ],
+    },
+    docs: {
+      source: {
+        code: `// A failed fetch or an unparseable document renders the built-in error state
+&lt;BasePdfViewer src=&quot;/does-not-load.pdf&quot; /&gt;`,
+      },
     },
   },
 };
@@ -35766,11 +36616,7 @@ export const WithHighlightMode: StoryObj&lt;BasePdfViewerProps&gt; = {
   parameters: {
     docs: {
       source: {
-        code: `import { useState, useCallback } from &quot;react&quot;;
-import { BasePdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import type { PdfAnnotation, PdfTextHighlightEvent } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-function MyPdfViewer({ src }: { src: string }) {
+        code: `function MyPdfViewer({ src }: { src: string }) {
   const [annotations, setAnnotations] = useState&lt;PdfAnnotation[]&gt;([]);
 
   const handleTextHighlight = useCallback((event: PdfTextHighlightEvent) =&gt; {
@@ -35811,6 +36657,18 @@ export const WithEmbeddedOutline: Story = {
     initialSidebarOpen: true,
     sidebarMode: &quot;outline&quot;,
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `// The outline content is auto-generated from the PDF&#39;s own bookmarks
+&lt;PdfViewer
+  media={handbook.pdf}
+  initialSidebarOpen
+  sidebarMode=&quot;outline&quot;
+/&gt;`,
+      },
+    },
+  },
 };
 
 export const InteractiveForm: StoryObj&lt;BasePdfViewerProps&gt; = {
@@ -35827,12 +36685,24 @@ export const InteractiveForm: StoryObj&lt;BasePdfViewerProps&gt; = {
   parameters: {
     docs: {
       source: {
-        code: `import { BasePdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+        code: `const handleFormChange = useCallback(
+  (fieldName: string, value: PdfFormFieldValue) =&gt; {
+    console.log(fieldName, value);
+  },
+  [],
+);
+
+const handleFormSubmit = useCallback(
+  (data: Record&lt;string, PdfFormFieldValue&gt;) =&gt; {
+    console.log(&quot;Form submitted:&quot;, data);
+  },
+  [],
+);
 
 &lt;BasePdfViewer
   src=&quot;https://example.com/interactive-form.pdf&quot;
-  onFormChange={(fieldName, value) =&gt; console.log(fieldName, value)}
-  onFormSubmit={(data) =&gt; console.log(&quot;Form submitted:&quot;, data)}
+  onFormChange={handleFormChange}
+  onFormSubmit={handleFormSubmit}
 /&gt;`,
       },
     },
@@ -36193,7 +37063,28 @@ const meta: Meta&lt;PdfViewerAnnotationLayerProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `// Absolutely positioned over a rendered page. transform is pdf.js&#39;s
+// viewport.transform, which converts PDF coordinates to CSS pixels.
+&lt;PdfViewerAnnotationLayer
+  annotations={[
+    { id: &quot;h1&quot;, type: &quot;highlight&quot;, page: 1, rect: { x: 50, y: 700, width: 300, height: 20 }, label: &quot;Highlighted text&quot; },
+    { id: &quot;u1&quot;, type: &quot;underline&quot;, page: 1, rect: { x: 50, y: 650, width: 200, height: 2 } },
+    { id: &quot;c1&quot;, type: &quot;comment&quot;, page: 1, rect: { x: 400, y: 600, width: 24, height: 24 }, label: &quot;Review this section&quot; },
+    { id: &quot;p1&quot;, type: &quot;pin&quot;, page: 1, rect: { x: 300, y: 500, width: 16, height: 16 }, label: &quot;Pin marker&quot; },
+  ]}
+  pageHeight={792}
+  scale={1}
+  transform={[1, 0, 0, -1, 0, 792]}
+  onAnnotationClick={handleAnnotationClick}
+/&gt;`,
+      },
+    },
+  },
+};
 
 export const HighlightsOnly: Story = {
   args: {
@@ -36222,11 +37113,44 @@ export const HighlightsOnly: Story = {
       },
     ],
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `// Per-annotation color overrides the default highlight fill
+&lt;PdfViewerAnnotationLayer
+  annotations={[
+    { id: &quot;h1&quot;, type: &quot;highlight&quot;, page: 1, rect: { x: 50, y: 700, width: 300, height: 20 }, label: &quot;First highlight&quot; },
+    { id: &quot;h2&quot;, type: &quot;highlight&quot;, page: 1, rect: { x: 50, y: 650, width: 250, height: 20 }, label: &quot;Second highlight&quot; },
+    { id: &quot;h3&quot;, type: &quot;highlight&quot;, page: 1, rect: { x: 50, y: 600, width: 350, height: 20 }, label: &quot;Third highlight&quot;, color: &quot;#4caf50&quot; },
+  ]}
+  pageHeight={792}
+  scale={1}
+  transform={[1, 0, 0, -1, 0, 792]}
+  onAnnotationClick={handleAnnotationClick}
+/&gt;`,
+      },
+    },
+  },
 };
 
 export const ZoomedIn: Story = {
   args: {
     scale: 2,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// scale and transform must move together, otherwise annotations drift off the
+// page as the user zooms
+&lt;PdfViewerAnnotationLayer
+  annotations={annotations}
+  pageHeight={792}
+  scale={2}
+  transform={[2, 0, 0, -2, 0, 792 * 2]}
+  onAnnotationClick={handleAnnotationClick}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
@@ -36476,17 +37400,54 @@ const meta: Meta&lt;PdfViewerContentProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `
+&lt;PdfViewerContent
+  src=&quot;/whitepaper.pdf&quot;
+  onPageChange={setCurrentPage}
+  onScaleChange={setScale}
+/&gt;`,
+      },
+    },
+  },
+};
 
 export const ZoomedIn: Story = {
   args: {
     initialScale: 2,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+&lt;PdfViewerContent
+  src=&quot;/whitepaper.pdf&quot;
+  initialScale={2}
+  onScaleChange={setScale}
+/&gt;`,
+      },
+    },
   },
 };
 
 export const StartOnPage5: Story = {
   args: {
     initialPage: 5,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+&lt;PdfViewerContent
+  src=&quot;/whitepaper.pdf&quot;
+  initialPage={5}
+  onPageChange={setCurrentPage}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
@@ -36713,17 +37674,76 @@ const meta: Meta&lt;PdfViewerOutlineSidebarProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const handleItemClick = useCallback((item: PdfOutlineItem) =&gt; {
+  goToPage(item.pageNumber);
+}, [goToPage]);
+
+// depth drives indentation; bold and italic mirror the PDF&#39;s own bookmark styling
+&lt;PdfViewerOutlineSidebar
+  outlineItems={[
+    { title: &quot;Introduction&quot;, depth: 0, pageNumber: 1, bold: true, italic: false },
+    { title: &quot;Background&quot;, depth: 1, pageNumber: 2, bold: false, italic: false },
+    { title: &quot;Data Flow&quot;, depth: 2, pageNumber: 7, bold: false, italic: true },
+  ]}
+  currentPage={1}
+  onItemClick={handleItemClick}
+  sidebarMode=&quot;outline&quot;
+  onSidebarModeChange={setSidebarMode}
+/&gt;`,
+      },
+    },
+  },
+};
 
 export const ActiveSection: Story = {
   args: {
     currentPage: 6,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const handleItemClick = useCallback((item: PdfOutlineItem) =&gt; {
+  goToPage(item.pageNumber);
+}, [goToPage]);
+
+// currentPage highlights the deepest entry at or before that page
+&lt;PdfViewerOutlineSidebar
+  outlineItems={outlineItems}
+  currentPage={6}
+  onItemClick={handleItemClick}
+  sidebarMode=&quot;outline&quot;
+  onSidebarModeChange={setSidebarMode}
+/&gt;`,
+      },
+    },
   },
 };
 
 export const Empty: Story = {
   args: {
     outlineItems: [],
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const handleItemClick = useCallback((item: PdfOutlineItem) =&gt; {
+  goToPage(item.pageNumber);
+}, [goToPage]);
+
+// PDFs without bookmarks render an empty state rather than a blank panel
+&lt;PdfViewerOutlineSidebar
+  outlineItems={[]}
+  currentPage={1}
+  onItemClick={handleItemClick}
+  sidebarMode=&quot;outline&quot;
+  onSidebarModeChange={setSidebarMode}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
@@ -36900,7 +37920,24 @@ const meta: Meta&lt;PdfViewerSearchBarProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `// Fully controlled — you own the query and run the search yourself
+&lt;PdfViewerSearchBar
+  query=&quot;&quot;
+  totalMatches={0}
+  currentMatchIndex={0}
+  onQueryChange={setQuery}
+  onNext={goToNextMatch}
+  onPrev={goToPrevMatch}
+  onClose={closeSearch}
+/&gt;`,
+      },
+    },
+  },
+};
 
 export const WithMatches: Story = {
   args: {
@@ -36908,14 +37945,46 @@ export const WithMatches: Story = {
     totalMatches: 12,
     currentMatchIndex: 3,
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `// currentMatchIndex is 0-indexed; the bar displays it as &quot;4 of 12&quot;
+&lt;PdfViewerSearchBar
+  query=&quot;trace&quot;
+  totalMatches={12}
+  currentMatchIndex={3}
+  onQueryChange={setQuery}
+  onNext={goToNextMatch}
+  onPrev={goToPrevMatch}
+  onClose={closeSearch}
+/&gt;`,
+      },
+    },
+  },
 };
 
 export const NoResults: Story = {
   args: {
-    // cspell:disable-next-line
-    query: &quot;xyznonexistent&quot;,
+    query: &quot;nonexistent&quot;,
     totalMatches: 0,
     currentMatchIndex: 0,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// A non-empty query with zero matches shows the no-results state and
+// disables the next/prev buttons
+&lt;PdfViewerSearchBar
+  query=&quot;nonexistent&quot;
+  totalMatches={0}
+  currentMatchIndex={0}
+  onQueryChange={setQuery}
+  onNext={goToNextMatch}
+  onPrev={goToPrevMatch}
+  onClose={closeSearch}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
@@ -36983,7 +38052,7 @@ export const NoResults: Story = {
               
               
               <pre><code>const NoResults = () =&gt; &lt;PdfViewerSearchBar
-    query=&quot;xyznonexistent&quot;
+    query=&quot;nonexistent&quot;
     totalMatches={0}
     currentMatchIndex={0}
     onQueryChange={fn()}
@@ -37108,11 +38177,51 @@ const meta: Meta&lt;PdfViewerToolbarProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `// Fully controlled — every button is a callback you wire to your own state
+&lt;PdfViewerToolbar
+  currentPage={1}
+  numPages={14}
+  scale={1}
+  autoSize={false}
+  sidebarOpen={false}
+  enableDownload={false}
+  onPageChange={setCurrentPage}
+  onZoomIn={zoomIn}
+  onZoomOut={zoomOut}
+  onAutoSizeToggle={toggleAutoSize}
+  onSearchOpen={openSearch}
+  onSidebarToggle={toggleSidebar}
+  onDownload={downloadPdf}
+  onRotateLeft={rotateLeft}
+  onRotateRight={rotateRight}
+/&gt;`,
+      },
+    },
+  },
+};
 
 export const WithDownload: Story = {
   args: {
     enableDownload: true,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// The download button is hidden unless enableDownload is set
+&lt;PdfViewerToolbar
+  currentPage={1}
+  numPages={14}
+  scale={1}
+  enableDownload
+  onDownload={downloadPdf}
+  {...otherHandlers}
+/&gt;`,
+      },
+    },
   },
 };
 
@@ -37122,6 +38231,22 @@ export const MidDocument: Story = {
     numPages: 14,
     scale: 1.5,
     sidebarOpen: true,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// Mid-document state: page input filled, zoom above 100%, sidebar toggle active
+&lt;PdfViewerToolbar
+  currentPage={7}
+  numPages={14}
+  scale={1.5}
+  sidebarOpen
+  onPageChange={setCurrentPage}
+  onSidebarToggle={toggleSidebar}
+  {...otherHandlers}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
@@ -37356,11 +38481,53 @@ const meta: Meta&lt;ThumbnailSidebarStoryProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `function MyThumbnailSidebar({ src }: { src: string }) {
+  const { document, numPages, loading, error } = usePdfDocument(src);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sidebarMode, setSidebarMode] = useState&lt;PdfViewerSidebarMode&gt;(&quot;thumbnails&quot;);
+
+  if (loading) return &lt;div&gt;Loading PDF…&lt;/div&gt;;
+  if (error != null) return &lt;div&gt;Error loading PDF: {error.message}&lt;/div&gt;;
+  if (document == null) return null;
+
+  return (
+    &lt;PdfViewerSidebar
+      document={document}
+      numPages={numPages}
+      currentPage={currentPage}
+      onPageClick={setCurrentPage}
+      sidebarMode={sidebarMode}
+      onSidebarModeChange={setSidebarMode}
+    /&gt;
+  );
+}`,
+      },
+    },
+  },
+};
 
 export const ActivePage: Story = {
   args: {
     currentPage: 5,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// currentPage outlines that thumbnail and scrolls it into view
+&lt;PdfViewerSidebar
+  document={document}
+  numPages={numPages}
+  currentPage={5}
+  onPageClick={setCurrentPage}
+  sidebarMode=&quot;thumbnails&quot;
+  onSidebarModeChange={setSidebarMode}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
@@ -38607,9 +39774,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { VideoViewer } from &quot;@osdk/react-components/experimental/video-viewer&quot;;
-
-&lt;VideoViewer media={myOsdkMedia} /&gt;`,
+        code: `&lt;VideoViewer media={myOsdkMedia} /&gt;`,
       },
     },
   },
@@ -38638,6 +39803,17 @@ export const WithErrorCallback: Story = {
       }),
     },
     onError: fn(),
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// onError fires when fetching the media or decoding the video fails
+&lt;VideoViewer
+  media={myOsdkMedia}
+  onError={reportPlaybackFailure}
+/&gt;`,
+      },
+    },
   },
 };
 </code></pre></div>
