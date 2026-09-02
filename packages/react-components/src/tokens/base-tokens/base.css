@@ -8,8 +8,8 @@
   --osdk-surface-border-radius: var(--bp-surface-border-radius);
   --osdk-surface-layer-primary: var(--bp-surface-layer-primary-rest);
   --osdk-surface-border-width: var(--bp-surface-border-width);
-  --osdk-surface-border-color-default: var(--bp-surface-divider-color-default);
-  --osdk-surface-border-color-strong: var(--bp-surface-divider-color-strong);
+  --osdk-surface-border-color-default: var(--bp-surface-border-color-neutral);
+  --osdk-surface-border-color-strong: var(--bp-surface-border-color-neutral);
   --osdk-surface-background-color-default-rest: var(
     --bp-surface-background-color-base-rest
   );
@@ -33,20 +33,24 @@
   --osdk-typography-family-default: var(--bp-typography-family-body);
   --osdk-typography-color-muted: var(--bp-typography-color-intent-neutral);
   --osdk-typography-color-default-rest: var(--bp-typography-color-base);
-  --osdk-typography-color-default-hover: var(--bp-intent-neutral-900);
-  --osdk-typography-color-default-active: var(--bp-intent-neutral-800);
-  --osdk-typography-color-default-disabled: var(--bp-intent-neutral-300);
+  --osdk-typography-color-default-hover: var(--bp-typography-color-base);
+  --osdk-typography-color-default-active: var(--bp-typography-color-base);
+  --osdk-typography-color-default-disabled: var(
+    --bp-typography-color-intent-neutral
+  );
   --osdk-typography-color-primary-rest: var(
     --bp-typography-color-intent-primary
   );
   --osdk-typography-color-danger-rest: var(--bp-typography-color-intent-danger);
-  --osdk-typography-color-danger-active: var(--bp-intent-danger-700);
-  --osdk-typography-size-body-x-small: var(--bp-typography-size-xs);
+  --osdk-typography-color-danger-active: var(
+    --bp-typography-color-intent-danger
+  );
+  --osdk-typography-size-body-x-small: var(--bp-typography-size-2xs);
   --osdk-typography-size-body-small: var(--bp-typography-size-sm);
-  --osdk-typography-size-body-medium: var(--bp-typography-size-lg);
-  --osdk-typography-size-body-large: var(--bp-typography-size-2xl);
-  --osdk-typography-line-height-default: var(
-    --bp-typography-line-height-running-factor
+  --osdk-typography-size-body-medium: var(--bp-typography-size-md);
+  --osdk-typography-size-body-large: var(--bp-typography-size-xl);
+  --osdk-typography-line-height-default: calc(
+    var(--bp-typography-line-height-running-factor) * 1.164
   );
   --osdk-typography-weight-default: var(--bp-typography-weight-default);
   --osdk-typography-weight-bold: var(--bp-typography-weight-strong);
@@ -90,36 +94,40 @@
   --osdk-palette-dark-gray-3: var(--bp-palette-grey-700);
   --osdk-palette-light-gray-1: var(--bp-palette-grey-200);
   --osdk-palette-light-gray-3: var(--bp-palette-grey-100);
-  --osdk-palette-light-gray-4: var(--bp-palette-white-900);
-  --osdk-palette-light-gray-5: var(--bp-palette-white-1000);
+  --osdk-palette-light-gray-4: var(--bp-palette-grey-100);
+  --osdk-palette-light-gray-5: var(--bp-palette-grey-100);
   --osdk-palette-white: var(--bp-palette-white-1000);
   --osdk-palette-black: var(--bp-palette-black-1000);
   --osdk-typography-color-error: var(--bp-typography-color-intent-danger);
-  --osdk-typography-color-placeholder: var(--bp-intent-neutral-400);
+  --osdk-typography-color-placeholder: var(
+    --bp-typography-color-intent-neutral
+  );
   --osdk-background-primary: var(--bp-surface-background-color-base-rest);
-  --osdk-background-secondary: var(--bp-surface-layer-neutral-rest);
-  --osdk-background-tertiary: var(--bp-surface-layer-neutral-hover);
-  --osdk-background-skeleton-from: var(--bp-surface-layer-neutral-rest);
-  --osdk-background-skeleton-to: var(--bp-surface-layer-neutral-active);
-  --osdk-background-backdrop: var(--bp-palette-black-500);
-  --osdk-custom-color-gray-1: var(--bp-surface-layer-neutral-rest);
-  --osdk-custom-color-gray-2: var(--bp-surface-layer-neutral-hover);
-  --osdk-custom-color-gray-3: var(--bp-surface-layer-neutral-hover);
-  --osdk-custom-color-gray-4: var(--bp-surface-layer-neutral-active);
-  --osdk-custom-color-light-gray-1: var(--bp-palette-white-600);
-  --osdk-custom-color-light-gray-2: var(--bp-palette-white-500);
-  --osdk-custom-color-primary-1: var(--bp-surface-layer-primary-active);
+  --osdk-background-secondary: var(--bp-surface-layer-color-neutral-rest);
+  --osdk-background-tertiary: var(--bp-surface-layer-color-neutral-hover);
+  --osdk-background-skeleton-from: var(--bp-surface-layer-color-neutral-rest);
+  --osdk-background-skeleton-to: var(--bp-surface-layer-color-neutral-active);
+  --osdk-background-backdrop: oklch(
+    from var(--bp-surface-background-color-neutral-active) l c h / 0.5
+  );
+  --osdk-custom-color-gray-1: var(--bp-surface-layer-color-neutral-rest);
+  --osdk-custom-color-gray-2: var(--bp-surface-layer-color-neutral-hover);
+  --osdk-custom-color-gray-3: var(--bp-surface-layer-color-neutral-hover);
+  --osdk-custom-color-gray-4: var(--bp-surface-layer-color-neutral-active);
+  --osdk-custom-color-light-gray-1: var(--bp-surface-layer-color-neutral-hover);
+  --osdk-custom-color-light-gray-2: var(--bp-surface-layer-color-neutral-rest);
+  --osdk-custom-color-primary-1: var(--bp-surface-layer-color-primary-active);
   --osdk-focus-outline: var(--bp-emphasis-focus-width) solid
     var(--bp-emphasis-focus-color);
   --osdk-focus-visible-outline-offset: var(--bp-emphasis-focus-offset);
   --osdk-surface-border: var(--bp-surface-border-width) solid
-    var(--bp-surface-divider-color-default);
+    var(--bp-surface-border-color-neutral);
   --osdk-drag-handle-color: var(--bp-typography-color-intent-neutral);
   --osdk-drag-handle-color-hover: var(--bp-typography-color-base);
   --osdk-drag-handle-cursor: grab;
   --osdk-drag-handle-cursor-active: grabbing;
   --osdk-iconography-size-small: var(--bp-typography-size-2xl);
-  --osdk-iconography-color-muted: var(--bp-intent-neutral-500);
+  --osdk-iconography-color-muted: var(--bp-typography-color-intent-neutral);
   font-family: var(--bp-typography-family-body);
   color: var(--bp-typography-color-base);
   font-size: var(--bp-typography-size-lg);
