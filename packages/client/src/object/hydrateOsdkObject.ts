@@ -55,10 +55,6 @@ export async function hydrateOsdkObject(
     /* derivedPropertyTypeByName */ {},
     propertySecurities,
     /* forceRemoveRid */ undefined,
-    /* selectedProps */ undefined,
-    /* strictNonNull */ undefined,
-    /* interfaceToObjectTypeMappings */ undefined,
-    /* interfaceToObjectTypeMappingsV2 */ undefined,
     objectDefsByApiName,
   ) as unknown as Promise<Array<Osdk.Instance<any>>>;
 }

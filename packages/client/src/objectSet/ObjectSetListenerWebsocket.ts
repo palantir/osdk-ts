@@ -358,9 +358,6 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
           {},
           undefined,
           false,
-          undefined,
-          false,
-          await this.#fetchInterfaceMapping(o.objectType, sub.interfaceApiName),
         );
         const singleOsdkObject = osdkObjectArray[0] ?? undefined;
         return singleOsdkObject != null
@@ -399,12 +396,6 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
           {},
           undefined,
           false,
-          undefined,
-          false,
-          await this.#fetchInterfaceMapping(
-            o.object.__apiName,
-            sub.interfaceApiName,
-          ),
         )) as Array<Osdk.Instance<any>>;
         const singleOsdkObject = osdkObjectArray[0] ?? undefined;
 
@@ -436,21 +427,6 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
       }
     }
   };
-
-  async #fetchInterfaceMapping(
-    objectTypeApiName: string,
-    interfaceApiName: string | undefined,
-  ): Promise<Record<string, Record<string, Record<string, string>>>> {
-    if (interfaceApiName == null) return {};
-    const interfaceMap = (
-      await this.client.ontologyProvider.getObjectDefinition(objectTypeApiName)
-    ).interfaceMap;
-    return {
-      [interfaceApiName]: {
-        [objectTypeApiName]: interfaceMap[interfaceApiName],
-      },
-    };
-  }
 
   #handleMessage_refreshObjectSet = (payload: RefreshObjectSet) => {
     const sub = this.subscriptions.get(payload.id);
