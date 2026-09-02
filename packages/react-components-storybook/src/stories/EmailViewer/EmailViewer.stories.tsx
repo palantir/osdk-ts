@@ -136,9 +136,7 @@ export const Default: StoryObj<EmailViewerProps> = {
   parameters: {
     docs: {
       source: {
-        code: `import { EmailViewer } from "@osdk/react-components/experimental/email-viewer";
-
-<EmailViewer media={myOsdkMedia} />`,
+        code: `<EmailViewer media={myOsdkMedia} />`,
       },
     },
   },
@@ -148,9 +146,7 @@ export const HtmlEmail: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseEmailViewer } from "@osdk/react-components/experimental/email-viewer";
-
-<BaseEmailViewer content={parsedEmail} />`,
+        code: `<BaseEmailViewer content={parsedEmail} />`,
       },
     },
   },
@@ -159,5 +155,23 @@ export const HtmlEmail: Story = {
 export const PlainTextEmail: Story = {
   args: {
     content: SAMPLE_TEXT_EMAIL,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// A ParsedEmail with no html part renders its text body as preformatted text
+<BaseEmailViewer
+  content={{
+    subject: "Meeting Notes",
+    from: { name: "Bob Smith", address: "bob@example.com" },
+    to: [{ name: "Alice Johnson", address: "alice@example.com" }],
+    cc: [],
+    date: "2026-03-16T09:00:00Z",
+    html: undefined,
+    text: "Hi Alice,\\n\\nHere are the meeting notes from today.\\n\\nThanks,\\nBob",
+  }}
+/>`,
+      },
+    },
   },
 };

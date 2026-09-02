@@ -133,16 +133,17 @@ export const CustomAnnotation: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import type { PdfAnnotationRenderProps } from "@osdk/react-components/experimental/pdf-viewer";
-import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
-
-function TooltipAnnotation({ annotation }: PdfAnnotationRenderProps) {
+        code: `function TooltipAnnotation({ annotation }: PdfAnnotationRenderProps) {
   return (
     <div style={{ background: "rgba(59, 130, 246, 0.9)", borderRadius: 6, color: "#fff", padding: "4px 8px" }}>
       {annotation.label ?? "Note"}
     </div>
   );
 }
+
+const handleAnnotationClick = useCallback((annotation: PdfAnnotation) => {
+  console.log("Clicked:", annotation.id);
+}, []);
 
 <BasePdfViewer
   src={pdfUrl}
@@ -153,10 +154,10 @@ function TooltipAnnotation({ annotation }: PdfAnnotationRenderProps) {
       page: 1,
       rect: { x: 55, y: 400, width: 120, height: 28 },
       label: "Key finding",
-      render: (props) => <TooltipAnnotation {...props} />,
+      render: TooltipAnnotation,
     },
   ]}
-  onAnnotationClick={(annotation) => console.log("Clicked:", annotation.id)}
+  onAnnotationClick={handleAnnotationClick}
 />`,
       },
     },

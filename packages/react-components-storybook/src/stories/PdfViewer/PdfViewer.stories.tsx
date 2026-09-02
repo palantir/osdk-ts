@@ -54,9 +54,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
-
-// Access media from an OSDK object's media reference property
+        code: `// Access media from an OSDK object's media reference property
 const employee = useOsdkObject(Employee, employeePk);
 <PdfViewer media={employee.employeeDocuments} />`,
       },

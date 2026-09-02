@@ -113,9 +113,7 @@ export const Default: StoryObj<ImageViewerProps> = {
   parameters: {
     docs: {
       source: {
-        code: `import { ImageViewer } from "@osdk/react-components/experimental/image-viewer";
-
-<ImageViewer media={myOsdkMedia} alt="My image" />`,
+        code: `<ImageViewer media={myOsdkMedia} alt="My image" />`,
       },
     },
   },

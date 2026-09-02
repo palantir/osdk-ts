@@ -68,11 +68,51 @@ const meta: Meta<PdfViewerToolbarProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `// Fully controlled — every button is a callback you wire to your own state
+<PdfViewerToolbar
+  currentPage={1}
+  numPages={14}
+  scale={1}
+  autoSize={false}
+  sidebarOpen={false}
+  enableDownload={false}
+  onPageChange={setCurrentPage}
+  onZoomIn={zoomIn}
+  onZoomOut={zoomOut}
+  onAutoSizeToggle={toggleAutoSize}
+  onSearchOpen={openSearch}
+  onSidebarToggle={toggleSidebar}
+  onDownload={downloadPdf}
+  onRotateLeft={rotateLeft}
+  onRotateRight={rotateRight}
+/>`,
+      },
+    },
+  },
+};
 
 export const WithDownload: Story = {
   args: {
     enableDownload: true,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// The download button is hidden unless enableDownload is set
+<PdfViewerToolbar
+  currentPage={1}
+  numPages={14}
+  scale={1}
+  enableDownload
+  onDownload={downloadPdf}
+  {...otherHandlers}
+/>`,
+      },
+    },
   },
 };
 
@@ -82,5 +122,21 @@ export const MidDocument: Story = {
     numPages: 14,
     scale: 1.5,
     sidebarOpen: true,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// Mid-document state: page input filled, zoom above 100%, sidebar toggle active
+<PdfViewerToolbar
+  currentPage={7}
+  numPages={14}
+  scale={1.5}
+  sidebarOpen
+  onPageChange={setCurrentPage}
+  onSidebarToggle={toggleSidebar}
+  {...otherHandlers}
+/>`,
+      },
+    },
   },
 };

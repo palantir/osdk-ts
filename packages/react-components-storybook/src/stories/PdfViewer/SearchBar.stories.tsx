@@ -52,7 +52,24 @@ const meta: Meta<PdfViewerSearchBarProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `// Fully controlled — you own the query and run the search yourself
+<PdfViewerSearchBar
+  query=""
+  totalMatches={0}
+  currentMatchIndex={0}
+  onQueryChange={setQuery}
+  onNext={goToNextMatch}
+  onPrev={goToPrevMatch}
+  onClose={closeSearch}
+/>`,
+      },
+    },
+  },
+};
 
 export const WithMatches: Story = {
   args: {
@@ -60,13 +77,45 @@ export const WithMatches: Story = {
     totalMatches: 12,
     currentMatchIndex: 3,
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `// currentMatchIndex is 0-indexed; the bar displays it as "4 of 12"
+<PdfViewerSearchBar
+  query="trace"
+  totalMatches={12}
+  currentMatchIndex={3}
+  onQueryChange={setQuery}
+  onNext={goToNextMatch}
+  onPrev={goToPrevMatch}
+  onClose={closeSearch}
+/>`,
+      },
+    },
+  },
 };
 
 export const NoResults: Story = {
   args: {
-    // cspell:disable-next-line
-    query: "xyznonexistent",
+    query: "nonexistent",
     totalMatches: 0,
     currentMatchIndex: 0,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// A non-empty query with zero matches shows the no-results state and
+// disables the next/prev buttons
+<PdfViewerSearchBar
+  query="nonexistent"
+  totalMatches={0}
+  currentMatchIndex={0}
+  onQueryChange={setQuery}
+  onNext={goToNextMatch}
+  onPrev={goToPrevMatch}
+  onClose={closeSearch}
+/>`,
+      },
+    },
   },
 };

@@ -350,16 +350,17 @@ export const InteractiveForm: Story = {
         code: `// This story demonstrates using formData and onFormChange
 // to build a sidebar that tracks form values and loads presets.
 // Uses pdf-lib to download the filled PDF.
-import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
-import { PDFDocument } from "pdf-lib";
 
 const [formData, setFormData] = useState<Record<string, PdfFormFieldValue>>();
 const [formValues, setFormValues] = useState<Record<string, PdfFormFieldValue>>({});
+const handleFormChange = useCallback((field: string, value: PdfFormFieldValue) => {
+  setFormValues((previousValues) => ({ ...previousValues, [field]: value }));
+}, []);
 
 <BasePdfViewer
   src="/interactive-form.pdf"
   formData={formData}
-  onFormChange={(field, value) => setFormValues(prev => ({ ...prev, [field]: value }))}
+  onFormChange={handleFormChange}
 />`,
       },
     },

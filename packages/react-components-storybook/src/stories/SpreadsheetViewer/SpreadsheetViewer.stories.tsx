@@ -201,9 +201,7 @@ export const Default: StoryObj<SpreadsheetViewerProps> = {
   parameters: {
     docs: {
       source: {
-        code: `import { SpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
-
-<SpreadsheetViewer media={myOsdkMedia} />`,
+        code: `<SpreadsheetViewer media={myOsdkMedia} />`,
       },
     },
   },
@@ -213,9 +211,7 @@ export const WithSpreadsheet: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseSpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
-
-<BaseSpreadsheetViewer content={parsedSpreadsheet} />`,
+        code: `<BaseSpreadsheetViewer content={parsedSpreadsheet} />`,
       },
     },
   },
@@ -225,6 +221,26 @@ export const SingleSheet: Story = {
   args: {
     content: {
       sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// With one sheet the tab bar is hidden
+<BaseSpreadsheetViewer
+  content={{
+    sheets: [
+      {
+        name: "Employees",
+        rows: [
+          ["Name", "Department", "Salary"],
+          ["Alice Johnson", "Engineering", "$145,000"],
+        ],
+      },
+    ],
+  }}
+/>`,
+      },
     },
   },
 };
@@ -246,6 +262,13 @@ export const WithRealFile: StoryObj<SpreadsheetViewerProps> = {
       handlers: [
         http.get("*/notional-spreadsheet-example.xlsx", () => passthrough()),
       ],
+    },
+    docs: {
+      source: {
+        code: `// SpreadsheetViewer fetches and parses the xlsx workbook itself, so a real
+// multi-sheet file needs no extra wiring
+<SpreadsheetViewer media={quarter.headcountReport} />`,
+      },
     },
   },
 };
