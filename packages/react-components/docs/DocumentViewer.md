@@ -26,7 +26,7 @@ import { DocumentViewer } from "@osdk/react-components/experimental/document-vie
 <DocumentViewer
   media={myMedia}
   pdfViewerProps={{
-    initialSidebarOpen: true,
+    defaultSidebarOpen: true,
     enableDownload: true,
   }}
   imageViewerProps={{

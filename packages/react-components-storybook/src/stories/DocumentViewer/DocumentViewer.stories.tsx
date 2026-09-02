@@ -509,7 +509,7 @@ export const WithPdfViewerProps: Story = {
   args: {
     media: mockPdfMedia,
     pdfViewerProps: {
-      initialSidebarOpen: true,
+      defaultSidebarOpen: true,
       enableDownload: true,
     },
   },
@@ -519,7 +519,7 @@ export const WithPdfViewerProps: Story = {
         code: `<DocumentViewer
   media={myMedia}
   pdfViewerProps={{
-    initialSidebarOpen: true,
+    defaultSidebarOpen: true,
     enableDownload: true,
   }}
 />`,

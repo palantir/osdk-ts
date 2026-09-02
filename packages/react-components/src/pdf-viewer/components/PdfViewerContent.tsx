@@ -40,9 +40,13 @@ export interface PdfViewerContentProps {
   annotations?: PdfAnnotation[];
   /** Callback fired when an annotation is clicked */
   onAnnotationClick?: (annotation: PdfAnnotation) => void;
-  /** Initial page number (1-indexed, default 1) */
+  /** Uncontrolled. Seeds the page number (1-indexed). @default 1 */
+  defaultPage?: number;
+  /** @deprecated Rename to `defaultPage`. */
   initialPage?: number;
-  /** Initial zoom scale (default 1.0) */
+  /** Uncontrolled. Seeds the zoom scale. @default 1.0 */
+  defaultScale?: number;
+  /** @deprecated Rename to `defaultScale`. */
   initialScale?: number;
   /** Callback fired when the current page changes during scrolling */
   onPageChange?: (page: number) => void;
@@ -60,15 +64,23 @@ export function PdfViewerContent({
   src,
   annotations = EMPTY_ANNOTATION_ARRAY,
   onAnnotationClick,
-  initialPage = 1,
-  initialScale = 1.0,
+  defaultPage,
+  initialPage,
+  defaultScale,
+  initialScale,
   onPageChange: onPageChangeProp,
   onScaleChange: onScaleChangeProp,
   formData,
   onFormChange,
   className,
 }: PdfViewerContentProps): React.ReactElement {
-  const viewer = usePdfViewerCore({ src, initialPage, initialScale });
+  const viewer = usePdfViewerCore({
+    src,
+    defaultPage,
+    initialPage,
+    defaultScale,
+    initialScale,
+  });
   const annotationsByPage = usePdfAnnotationsByPage(annotations);
 
   usePdfFormFields({

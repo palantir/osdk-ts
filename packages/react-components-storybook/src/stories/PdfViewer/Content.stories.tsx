@@ -43,11 +43,11 @@ const meta: Meta<PdfViewerContentProps> = {
       description: "PDF source — URL string, ArrayBuffer, Uint8Array, or Blob",
       control: false,
     },
-    initialPage: {
+    defaultPage: {
       description: "Initial page number (1-indexed)",
       control: { type: "number", min: 1 },
     },
-    initialScale: {
+    defaultScale: {
       description: "Initial zoom scale",
       control: { type: "number", min: 0.25, max: 5, step: 0.25 },
     },
@@ -74,7 +74,7 @@ export const Default: Story = {
 
 export const ZoomedIn: Story = {
   args: {
-    initialScale: 2,
+    defaultScale: 2,
   },
   parameters: {
     docs: {
@@ -92,7 +92,7 @@ export const ZoomedIn: Story = {
 
 export const StartOnPage5: Story = {
   args: {
-    initialPage: 5,
+    defaultPage: 5,
   },
   parameters: {
     docs: {

@@ -186,19 +186,27 @@ export interface BasePdfViewerProps {
    * @returns void
    */
   onHighlightDelete?: (event: PdfTextHighlightEvent) => void;
-  /** Initial page number (1-indexed, default 1) */
+  /** Uncontrolled. Seeds the page number (1-indexed). @default 1 */
+  defaultPage?: number;
+  /** @deprecated Rename to `defaultPage`. */
   initialPage?: number;
-  /** Initial zoom scale (default 1.0) */
+  /** Uncontrolled. Seeds the zoom scale. @default 1.0 */
+  defaultScale?: number;
+  /** @deprecated Rename to `defaultScale`. */
   initialScale?: number;
   /**
-   * Whether auto-size (fit to width) is initially enabled.
+   * Uncontrolled. Seeds whether auto-size (fit to width) is enabled.
    * When enabled, the PDF scales to fit the container width and
    * re-fits automatically on resize. Manual zoom disables auto-size.
-   * Takes precedence over {@link initialScale} when enabled.
+   * Takes precedence over {@link defaultScale} when enabled.
    * @default false
    */
+  defaultAutoSize?: boolean;
+  /** @deprecated Rename to `defaultAutoSize`. */
   initialAutoSize?: boolean;
-  /** Whether the sidebar is initially open (default false) */
+  /** Uncontrolled. Seeds whether the sidebar is open. @default false */
+  defaultSidebarOpen?: boolean;
+  /** @deprecated Rename to `defaultSidebarOpen`. */
   initialSidebarOpen?: boolean;
   /**
    * Whether the download button is shown in the toolbar.

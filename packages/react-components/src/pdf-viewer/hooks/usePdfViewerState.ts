@@ -37,7 +37,9 @@ import type { UsePdfViewerSearchResult } from "./usePdfViewerSearch.js";
 import { usePdfViewerSearch } from "./usePdfViewerSearch.js";
 
 export interface UsePdfViewerStateOptions extends UsePdfViewerCoreOptions {
-  /** Whether the sidebar is initially open (default false) */
+  /** Uncontrolled. Seeds whether the sidebar is open. @default false */
+  defaultSidebarOpen?: boolean;
+  /** @deprecated Rename to `defaultSidebarOpen`. */
   initialSidebarOpen?: boolean;
   /** Which sidebar panel to show (default "thumbnails") */
   sidebarMode?: SidebarMode;
@@ -81,22 +83,31 @@ export interface UsePdfViewerStateResult extends UsePdfViewerCoreResult {
 
 export function usePdfViewerState({
   src,
+  defaultPage,
   initialPage,
+  defaultScale,
   initialScale,
+  defaultAutoSize,
   initialAutoSize,
-  initialSidebarOpen = false,
+  defaultSidebarOpen,
+  initialSidebarOpen,
   sidebarMode: sidebarModeProp = "thumbnails",
   onDownload,
 }: UsePdfViewerStateOptions): UsePdfViewerStateResult {
   const core = usePdfViewerCore({
     src,
+    defaultPage,
     initialPage,
+    defaultScale,
     initialScale,
+    defaultAutoSize,
     initialAutoSize,
   });
 
   const [rotation, setRotation] = useState(0);
-  const [sidebarOpen, setSidebarOpen] = useState(initialSidebarOpen);
+  const [sidebarOpen, setSidebarOpen] = useState(
+    defaultSidebarOpen ?? initialSidebarOpen ?? false,
+  );
   const [sidebarMode, setSidebarMode] = useState<SidebarMode>(sidebarModeProp);
 
   const search = usePdfViewerSearch(
