@@ -108,7 +108,9 @@ No checkpoint in this step — implement straight through.
 3. **Re-run the file's tests.** Step 1's failing test must now pass; nothing adjacent should regress. This pass is a **precondition for Step 3** — don't move on until it's green.
 4. **Touch peripheral surfaces only where the change actually breaks them.** A typo fix doesn't need a story update; a new prop usually needs one. Skip if untouched:
    - Storybook story — every added or updated story must define
-     `parameters.docs.source.code` explicitly in the story definition
+     `parameters.docs.source.code` explicitly in the story definition. The
+     generated source can expose bundled component names such as `<z>` instead
+     of the public component name.
    - peopleapp wiring (only if observable against real Foundry data)
    - `docs/<Name>.md` (only if usage examples or props changed)
    - `docs/CSSVariables.md` (only if new CSS variables were added)
