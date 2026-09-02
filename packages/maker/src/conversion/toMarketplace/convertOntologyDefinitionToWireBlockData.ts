@@ -119,8 +119,6 @@ export function convertOntologyDefinitionToWireBlockData(
           apiName,
           {
             interfaceType: convertInterface(interfaceType),
-            // Cannot yet author interface type schema migrations.
-            schemaMigrations: [],
           },
         ];
       }),
