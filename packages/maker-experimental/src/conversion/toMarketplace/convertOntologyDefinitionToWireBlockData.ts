@@ -325,18 +325,20 @@ function buildKnownIdentifiers(
   const interfaceSchemaTransitionMappings = Object.fromEntries(
     Object.entries(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE])
       .filter(([_, interfaceType]) => interfaceType.schemaMigrations != null)
-      .map(([apiName, interfaceType]) => [
+      .map<[string, Record<string, string>]>(([apiName, interfaceType]) => [
         ridGenerator.generateRidForInterface(apiName),
         Object.fromEntries(
-          interfaceType.schemaMigrations!.transitions.map((transition) => [
-            transition.id,
-            ridGenerator.toBlockInternalId(
-              ReadableIdGenerator.getForInterfaceSchemaTransition(
-                apiName,
-                transition.id,
+          interfaceType.schemaMigrations!.transitions.map<[string, string]>(
+            (transition) => [
+              transition.id,
+              ridGenerator.toBlockInternalId(
+                ReadableIdGenerator.getForInterfaceSchemaTransition(
+                  apiName,
+                  transition.id,
+                ),
               ),
-            ),
-          ]),
+            ],
+          ),
         ),
       ]),
   );
