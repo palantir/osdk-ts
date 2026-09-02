@@ -40,9 +40,6 @@ export function convertInterfaceSchemaMigrations(
     return undefined;
   }
 
-  // Migrations target properties by rid; this lets the installer resolve those rids back to
-  // the API names the interface publishes them under, which for an SPT-backed property is
-  // the shared property type's namespaced API name rather than the interface-local one.
   const interfacePropertyTypeRidsToApiNames: Record<string, string> = {};
   const schemaTransitions = Object.fromEntries(
     schemaMigrations.transitions.map(
