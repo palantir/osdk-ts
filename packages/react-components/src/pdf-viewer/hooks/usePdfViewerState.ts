@@ -90,7 +90,8 @@ export function usePdfViewerState({
   defaultAutoSize,
   initialAutoSize,
   defaultSidebarOpen,
-  initialSidebarOpen,
+  // TODO: Move this default to defaultSidebarOpen when initialSidebarOpen is removed.
+  initialSidebarOpen = false,
   sidebarMode: sidebarModeProp = "thumbnails",
   onDownload,
 }: UsePdfViewerStateOptions): UsePdfViewerStateResult {
@@ -106,7 +107,7 @@ export function usePdfViewerState({
 
   const [rotation, setRotation] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(
-    defaultSidebarOpen ?? initialSidebarOpen ?? false,
+    defaultSidebarOpen ?? initialSidebarOpen,
   );
   const [sidebarMode, setSidebarMode] = useState<SidebarMode>(sidebarModeProp);
 

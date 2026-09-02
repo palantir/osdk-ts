@@ -91,15 +91,16 @@ export interface UsePdfViewerCoreResult {
 export function usePdfViewerCore({
   src,
   defaultPage,
-  initialPage,
+  // TODO: Move these defaults to the default* props when the initial* aliases are removed.
+  initialPage = 1,
   defaultScale,
-  initialScale,
+  initialScale = 1.0,
   defaultAutoSize,
-  initialAutoSize,
+  initialAutoSize = false,
 }: UsePdfViewerCoreOptions): UsePdfViewerCoreResult {
-  const seededPage = defaultPage ?? initialPage ?? 1;
-  const seededScale = defaultScale ?? initialScale ?? 1.0;
-  const seededAutoSize = defaultAutoSize ?? initialAutoSize ?? false;
+  const seededPage = defaultPage ?? initialPage;
+  const seededScale = defaultScale ?? initialScale;
+  const seededAutoSize = defaultAutoSize ?? initialAutoSize;
   const { document, numPages, loading, error } = usePdfDocument(src);
   const [scale, setScale] = useState(seededScale);
   const [currentPage, setCurrentPage] = useState(seededPage);
