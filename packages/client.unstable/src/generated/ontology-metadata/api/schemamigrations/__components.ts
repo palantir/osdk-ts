@@ -88,10 +88,10 @@ export interface CastStructFieldMigrationModification {
   target: _api_StructPropertyFieldType;
 }
 /**
- * Delete existing InterfaceType transition from given source schema version.
+ * Delete an existing InterfaceType schema transition by ID.
  */
-export interface DeleteInterfaceTypeTransitionModification {
-  source: _api_SchemaVersion;
+export interface DeleteInterfaceTypeSchemaTransitionModification {
+  id: InterfaceTypeSchemaTransitionId;
 }
 /**
  * Delete existing transition from given source schema version.
@@ -130,6 +130,12 @@ export interface EditsWinToLatestTimestamp {
   datasourceRid: _api_DatasourceRid;
   timestampPropertyRid: _api_PropertyTypeRid;
   timestampValue: any;
+}
+/**
+ * Finalize an InterfaceType schema transition after enforcement has completed.
+ */
+export interface FinalizeInterfaceTypeSchemaTransitionModification {
+  id: InterfaceTypeSchemaTransitionId;
 }
 export interface GracePeriod_daysAfterActivation {
   type: "daysAfterActivation";
@@ -233,7 +239,12 @@ export interface InterfaceTypeSchemaTransitionModification_newVersion {
 
 export interface InterfaceTypeSchemaTransitionModification_delete {
   type: "delete";
-  delete: DeleteInterfaceTypeTransitionModification;
+  delete: DeleteInterfaceTypeSchemaTransitionModification;
+}
+
+export interface InterfaceTypeSchemaTransitionModification_finalize {
+  type: "finalize";
+  finalize: FinalizeInterfaceTypeSchemaTransitionModification;
 }
 /**
  * Type to represent an InterfaceType schema transition modification. Either to delete or create a new SchemaTransition where
@@ -242,7 +253,8 @@ export interface InterfaceTypeSchemaTransitionModification_delete {
  */
 export type InterfaceTypeSchemaTransitionModification =
   | InterfaceTypeSchemaTransitionModification_newVersion
-  | InterfaceTypeSchemaTransitionModification_delete;
+  | InterfaceTypeSchemaTransitionModification_delete
+  | InterfaceTypeSchemaTransitionModification_finalize;
 
 /**
  * The transitions for a given InterfaceType defined up to the requested ontology version.
@@ -288,9 +300,9 @@ export type LoadSchemaMigrationsPagingToken = string;
  */
 export interface NewVersionInterfaceTypeSchemaTransitionModification {
   description?: string | null | undefined;
-  gracePeriod?: GracePeriod | null | undefined;
+  gracePeriod: GracePeriod;
+  id: InterfaceTypeSchemaTransitionId;
   migrations: Array<InterfaceTypeSchemaMigrationInstructionModification>;
-  source: SourceSchemaVersion;
   title?: string | null | undefined;
 }
 /**
