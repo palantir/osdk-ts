@@ -346,7 +346,7 @@ const archetypeRules = archetypes(standardPackageRules, {
       react: true,
       oxc: true,
       cssExport: ["styles.css"],
-      extraPublishFiles: ["AGENTS.md", "docs"],
+      extraPublishFiles: ["README.md", "docs"],
       setupFiles: ["./src/test/setupPolyfills.ts"],
     },
   )
@@ -358,7 +358,7 @@ const archetypeRules = archetypes(standardPackageRules, {
     ...LIBRARY_RULES,
     react: true,
     oxc: true,
-    extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
+    extraPublishFiles: ["README.md", "docs", "experimental"],
     customTsconfigExcludes: ["./src/intellisense.test.helpers/**"],
   })
   // ESM-only React package with CSS exports migrated to the oxc toolchain. Same
@@ -569,7 +569,7 @@ const archetypeRules = archetypes(standardPackageRules, {
       oxc: true,
       oxcConfig: "./oxlint.config.ts",
       cssExport: ["styles.css"],
-      extraPublishFiles: ["AGENTS.md", "docs"],
+      extraPublishFiles: ["README.md", "docs"],
       attwExcludeEntrypoints: [
         "./experimental/action-form",
         "./experimental/aip-agent-chat",

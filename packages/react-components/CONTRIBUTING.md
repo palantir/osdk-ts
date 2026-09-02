@@ -38,7 +38,7 @@ If you use [Claude Code](https://claude.com/claude-code), this package ships opi
 
 If a skill ever conflicts with this document, this document wins — flag the conflict.
 
-**Skill sources:** repo-root `.claude/skills/add-new-component/SKILL.md` and `.claude/skills/contribute/SKILL.md` if you want to read or refine them.
+**Skill sources:** repo-root `.agents/skills/add-new-component/SKILL.md` and `.agents/skills/contribute/SKILL.md` if you want to read or refine them.
 
 ## Development Setup
 
@@ -156,7 +156,7 @@ Components in this package favour **minimum configuration**. A consumer should b
    - Add `docs/<Name>.md` with usage and a minimal example, matching the structure of existing per-component docs
    - **Add an auto-generated props table.** Drop a `<!-- AUTOGEN:props START src=... interface=... -->` / `END` marker block into the doc and run `pnpm --filter @osdk/react-components gen-props`. See [Props reference tables (auto-generated)](./README.md#props-reference-tables-auto-generated) in the README. Don't hand-author the props table
    - If you added CSS variables, update `docs/CSSVariables.md`
-   - Add a one-line entry to the components table in `AGENTS.md` and `README.md`
+   - Add a one-line entry to the components table in `README.md`
    - **Register the new doc with Docusaurus.** Add `"<Name>"` to the `@osdk/react-components` category in [`docs/sidebarsReactComponents.ts`](../../docs/sidebarsReactComponents.ts) (repo root).
 10. **Update Storybook** with examples of the new component (see [Storybook](#storybook) below).
 11. **Add a live example in `@osdk/e2e.sandbox.peopleapp`.** Wire it into the sandbox's existing routing/navigation against real Foundry types (`Employee`, `Office`, etc.) so reviewers can exercise the component end-to-end against a real Foundry instance. Treat the peopleapp example as part of the MVP definition of done; do not defer to a follow-up PR.

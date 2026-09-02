@@ -8,7 +8,7 @@ user-invocable: true
 
 Operational playbook for scaffolding a new component in `packages/react-components`. Use whenever a user asks to add a new OSDK-aware component to the package.
 
-This skill is a **companion** to [`packages/react-components/CONTRIBUTING.md`](../../../packages/react-components/CONTRIBUTING.md) and [`packages/react-components/CLAUDE.md`](../../../packages/react-components/CLAUDE.md). Those documents are the canonical source of truth for engineering rules, API design, styling, testing, Storybook conventions, and metrics. This skill **does not restate them** — it cites them and layers AI-driven structure on top:
+This skill is a **companion** to [`packages/react-components/CONTRIBUTING.md`](../../../packages/react-components/CONTRIBUTING.md) and [`packages/react-components/AGENTS.md`](../../../packages/react-components/AGENTS.md). Those documents are the canonical source of truth for engineering rules, API design, styling, testing, Storybook conventions, and metrics. This skill **does not restate them** — it cites them and layers AI-driven structure on top:
 
 1. An **API-first design checkpoint** — agree on the type contract before implementation begins (deep modules: small interface, hidden complexity). Once approved, continue on the same branch.
 2. A **user-supplied MVP checklist** that defines "done" before code is written.
@@ -17,7 +17,7 @@ This skill is a **companion** to [`packages/react-components/CONTRIBUTING.md`](.
 5. A **verification loop** that exercises the MVP checklist in a real browser and backports findings as code fixes and tests. The agent runs this **automatically** after Step 2 — it does not stop and wait for the user to ask.
 6. A **review fan-out** before pushing — invoke the official `review` and `security-review` skills in parallel and consolidate findings into one edit pass.
 
-If this skill conflicts with `CONTRIBUTING.md` or `CLAUDE.md`, **those win** — flag the conflict to the user.
+If this skill conflicts with `CONTRIBUTING.md` or `AGENTS.md`, **those win** — flag the conflict to the user.
 
 ## Git policy
 
@@ -34,7 +34,7 @@ Ask the user, in order. Do not skip.
    - **Inline pasted code** (TS/TSX block in the conversation)
    - **Screenshot path** (visual reference only, no source)
 
-   Treat the reference as the **feature/behavior inventory**, not as an API template — references tend to be over-configured, and the goal is the opposite (`CLAUDE.md` "API Design").
+   Treat the reference as the **feature/behavior inventory**, not as an API template — references tend to be over-configured, and the goal is the opposite (`AGENTS.md` "API Design").
 3. **Figma URL or reference screenshot** (optional but strongly preferred). If a Figma URL is provided, use **figma-mcp** to read it.
 4. **Demo URL for the reference** (optional). If the reference already runs somewhere — Storybook deployment, staging app, localhost — ask for the URL. Reference analysis will visit it via `playwright-cli` to capture appearance and interaction. No demo is fine; analysis falls back to source-only.
 5. **MVP feature list.** Spell out what "MVP" means for this component (e.g. _"when `objectType` is passed, data renders in the table"_). This is the checklist Step 3 verifies against.
@@ -98,7 +98,7 @@ The API is the contract. Get user approval on the proposed surface before writin
    - Outer-component props interface (`<Name>Props`) only — base props live inline in `Base<Name>.tsx`
    - Public sub-types co-located in this file (column definitions, locators, options)
    - JSDoc on every prop with `@default` for defaulted optional props
-3. **Follow `CONTRIBUTING.md` "API Design" and `CLAUDE.md` "API Design".**
+3. **Follow `CONTRIBUTING.md` "API Design" and `AGENTS.md` "API Design".**
 4. **Apply the step-down rule to the file:** the outer-component props interface (`<Name>Props`) goes at the top; types it references appear in declining order of abstraction below. JSDoc reads as a top-down narrative. Use `interface`/`type` ordering or named exports to satisfy declaration order without reordering by abstraction level.
 5. **Checkpoint — API approval (named checkpoint #1).** Present the proposed surface via `AskUserQuestion` with two or three named alternatives where there is a real design choice (granularity, controlled-vs-uncontrolled scope, render-slot placement). **Use the `preview` field on each option to render the candidate TypeScript interface inline** — lets the user compare full prop shapes side-by-side in one tool call. Iterate until the user picks one. The API and implementation ship together in a single PR at the end of Step 4; if preflight #1 produced a justification for the component belonging in this package, keep that note for the eventual PR description.
 6. **Proceed to Step 2 on the same branch.**
@@ -123,13 +123,13 @@ Implementation continues on the same branch as Step 1. No new branch.
      utils/                    # Helpers and types
      __tests__/                # Vitest tests
    ```
-3. **Build `Base<Name>` first.** All out-of-the-box features (default event handlers, sort/filter wiring, keyboard navigation) belong here — the OSDK wrapper only wires data in. Apply `CLAUDE.md` "OSDK Component Architecture", "Reuse before writing", and "CSS Styling".
+3. **Build `Base<Name>` first.** All out-of-the-box features (default event handlers, sort/filter wiring, keyboard navigation) belong here — the OSDK wrapper only wires data in. Apply `AGENTS.md` "OSDK Component Architecture", "Reuse before writing", and "CSS Styling".
 
 4. **Parallelization point — fan out remaining work in a single message with four `general-purpose` Agent calls:**
 
-   - **Sub-agent A** — OSDK wrapper (`<Name>.tsx`) + experimental export (`src/public/experimental/<name>.ts`) + `withOsdkMetrics` wrap. Apply `CLAUDE.md` "OSDK Component Architecture" and "Metrics"
-   - **Sub-agent B** — Storybook story (`packages/react-components-storybook/src/stories/<Name>/<Name>.stories.tsx`). Apply `CLAUDE.md` "Storybook" and `CONTRIBUTING.md` "Storybook"
-   - **Sub-agent C** — Tests in `__tests__/`. Apply `CLAUDE.md` "Testing"
+   - **Sub-agent A** — OSDK wrapper (`<Name>.tsx`) + experimental export (`src/public/experimental/<name>.ts`) + `withOsdkMetrics` wrap. Apply `AGENTS.md` "OSDK Component Architecture" and "Metrics"
+   - **Sub-agent B** — Storybook story (`packages/react-components-storybook/src/stories/<Name>/<Name>.stories.tsx`). Apply `AGENTS.md` "Storybook" and `CONTRIBUTING.md` "Storybook"
+   - **Sub-agent C** — Tests in `__tests__/`. Apply `AGENTS.md` "Testing"
    - **Sub-agent D** — Live peopleapp example in [`packages/e2e.sandbox.peopleapp/`](../../../packages/e2e.sandbox.peopleapp/README.md), wired into the sandbox's existing routing/navigation against real `Employee` / `Office` types. **Sub-agent D uses the OSDK component (`<Name>.tsx`), not Base** — the example showcases real Foundry data fetching
 
    Each sub-agent receives: path to `<Name>Api.ts`, path to `Base<Name>.tsx`, token-mapping decisions, the user's MVP feature checklist. Sub-agent D additionally receives the path to `packages/e2e.sandbox.peopleapp/` and ontology types available.
@@ -143,7 +143,7 @@ Implementation continues on the same branch as Step 1. No new branch.
 5. **Documentation** (`CONTRIBUTING.md` step 9):
    - Add `docs/<Name>.md` with usage and a minimal example
    - If you added CSS variables, update `docs/CSSVariables.md`
-   - Add a one-line entry to the components table in `AGENTS.md` and `README.md`
+   - Add a one-line entry to the components table in `README.md`
    - **Register with Docusaurus.** Add `"<Name>"` to the `@osdk/react-components` category in `docs/sidebarsReactComponents.ts` at the repo root — without this the doc ships in the package but does not appear on the public docs site
 
 6. **No checkpoint here — auto-proceed to Step 3.** Status update only ("Implementation done across N files; running Storybook verification next.") so the user knows what's happening, then immediately start Step 3.
@@ -188,13 +188,13 @@ The **Git policy** at the top of this skill applies — every git/gh write is a 
    ```sh
    pnpm turbo check --filter=@osdk/react-components
    ```
-4. **Add a changeset** (`CONTRIBUTING.md` "Changesets" + repo-root [`CLAUDE.md`](../../../CLAUDE.md) "Changesets"). `minor` for a new component. One changeset per branch — `ls .changeset/` first.
-5. **Format only changed files** (repo-root `CLAUDE.md` "Formatting"):
+4. **Add a changeset** (`CONTRIBUTING.md` "Changesets" + repo-root [`AGENTS.md`](../../../AGENTS.md) "Changesets"). `minor` for a new component. One changeset per branch — `ls .changeset/` first.
+5. **Format only changed files** (repo-root `AGENTS.md` "Formatting"):
    ```sh
    git ls-files --modified --others --exclude-standard | xargs npx dprint fmt
    ```
    Do **not** run bare `npx dprint fmt` — without a path it reformats the entire repo.
-6. **Cross-package transpile** (repo-root `CLAUDE.md` "Pre-Push Verification"):
+6. **Cross-package transpile** (repo-root `AGENTS.md` "Pre-Push Verification"):
    ```sh
    pnpm turbo transpile
    ```

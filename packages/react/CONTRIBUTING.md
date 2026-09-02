@@ -37,7 +37,7 @@ If you use [Claude Code](https://claude.com/claude-code), this package is covere
 
 If the skill ever conflicts with this document, this document wins — flag the conflict.
 
-**Skill source:** repo-root `.claude/skills/contribute/SKILL.md` if you want to read or refine it.
+**Skill source:** repo-root `.agents/skills/contribute/SKILL.md` if you want to read or refine it.
 
 ## Development Setup
 

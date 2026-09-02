@@ -1,6 +1,6 @@
 ---
 name: contribute
-description: Streamlined workflow for fixing a bug or adding a feature to an existing component or hook in @osdk/react or @osdk/react-components. Use when the user says "fix a bug", "fix <X>", "patch <X>", "add a feature to <X>", "extend <X>", or otherwise wants to change behavior, API, or visuals of code already shipped from one of these two packages. Layers a repro/regression-test gate (bug fixes), an API-change checkpoint (features that touch the public surface), and a verification loop on top of each package's CONTRIBUTING.md and CLAUDE.md.
+description: Streamlined workflow for fixing a bug or adding a feature to an existing component or hook in @osdk/react or @osdk/react-components. Use when the user says "fix a bug", "fix <X>", "patch <X>", "add a feature to <X>", "extend <X>", or otherwise wants to change behavior, API, or visuals of code already shipped from one of these two packages. Layers a repro/regression-test gate (bug fixes), an API-change checkpoint (features that touch the public surface), and a verification loop on top of each package's CONTRIBUTING.md and AGENTS.md.
 user-invocable: true
 ---
 
@@ -8,7 +8,7 @@ user-invocable: true
 
 Lightweight playbook for **bug fixes** and **feature additions to existing components or hooks** in `packages/react` and `packages/react-components`. If preflight discovers the target is greenfield, `/contribute` hands off to `add-new-component` (for `@osdk/react-components`) or continues here on the feature path (for `@osdk/react` hooks) — see Step 0.
 
-**Source of truth:** `packages/react-components/CONTRIBUTING.md`, `packages/react/CONTRIBUTING.md`, `packages/react-components/CLAUDE.md`, `packages/react/AGENTS.md`, and the repo-root `CLAUDE.md`. This skill does **not** restate them — if anything here conflicts, those win and you should flag it.
+**Source of truth:** `packages/react-components/CONTRIBUTING.md`, `packages/react/CONTRIBUTING.md`, `packages/react-components/AGENTS.md`, `packages/react/AGENTS.md`, and the repo-root `AGENTS.md`. This skill does **not** restate them — if anything here conflicts, those win and you should flag it.
 
 ## What to expect
 
@@ -60,7 +60,7 @@ Approval before implementation. One checkpoint per path.
 
 Before drafting the test or the API, read the package's contribution docs (you can skim if you've read them recently this session, but don't skip):
 
-- `@osdk/react-components` → `packages/react-components/CONTRIBUTING.md` and `packages/react-components/CLAUDE.md`
+- `@osdk/react-components` → `packages/react-components/CONTRIBUTING.md` and `packages/react-components/AGENTS.md`
 - `@osdk/react` → `packages/react/CONTRIBUTING.md` and `packages/react/AGENTS.md`
 
 Those are the source of truth for architecture, API design, testing, and styling rules. The rest of this step assumes you've read them — it tells you _what to do_ in this skill, not _what the rules are_.
@@ -87,7 +87,7 @@ If preflight flagged no API impact, skip to Step 2. The change is internal.
 
 If the surface changes:
 
-- **`@osdk/react-components`** — open `<Name>Api.ts` and follow `CONTRIBUTING.md` "API Design" and `CLAUDE.md` "API Design".
+- **`@osdk/react-components`** — open `<Name>Api.ts` and follow `CONTRIBUTING.md` "API Design" and `AGENTS.md` "API Design".
 - **`@osdk/react`** — the hook signature _is_ the API. Follow `packages/react/CONTRIBUTING.md` and `AGENTS.md`. Reusable OSDK-aware hooks belong in `@osdk/react`; component-internal hooks stay in `hooks/`.
 
 **Checkpoint — API approval.** Present the surface delta via `AskUserQuestion`, with the new/changed interface in the `preview` field. Offer 2–3 named alternatives where a real design choice exists (controlled-vs-uncontrolled scope, slot placement, naming).
@@ -103,8 +103,8 @@ No checkpoint in this step — implement straight through.
    pnpm --filter @osdk/react transpileAllDeps
    ```
 2. **Make the focused change.**
-   - **[Bug fix]** smallest diff that turns the failing test green. No surrounding cleanup — a bug fix doesn't need it (repo-root `CLAUDE.md` "Doing tasks").
-   - **[Feature]** Base layer first; OSDK wrapper only if data plumbing changes. Apply `CLAUDE.md` "OSDK Component Architecture", "Reuse before writing", and "CSS Styling".
+   - **[Bug fix]** smallest diff that turns the failing test green. No surrounding cleanup — a bug fix doesn't need it (repo-root `AGENTS.md` "Doing tasks").
+   - **[Feature]** Base layer first; OSDK wrapper only if data plumbing changes. Apply `AGENTS.md` "OSDK Component Architecture", "Reuse before writing", and "CSS Styling".
 3. **Re-run the file's tests.** Step 1's failing test must now pass; nothing adjacent should regress. This pass is a **precondition for Step 3** — don't move on until it's green.
 4. **Touch peripheral surfaces only where the change actually breaks them.** A typo fix doesn't need a story update; a new prop usually needs one. Skip if untouched:
    - Storybook story
@@ -157,7 +157,7 @@ Run in order. Stop and fix if anything fails. **Git policy applies** — every g
    ```
    If lint fails: `pnpm --dir <package> fix-lint`, then re-check.
 
-2. **Add a changeset** (repo-root `CLAUDE.md` "Changesets"):
+2. **Add a changeset** (repo-root `AGENTS.md` "Changesets"):
    - **[Bug fix]** → `patch`.
    - **[Feature]** → `minor`.
    - **Breaking API change** → `major` (rare for `experimental/` exports). Surface the rationale to the user first.

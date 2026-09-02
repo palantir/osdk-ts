@@ -248,7 +248,7 @@
     "access": "public"
   },
   "files": [
-    "AGENTS.md",
+    "README.md",
     "docs",
     "build/cjs",
     "build/esm",
