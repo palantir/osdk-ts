@@ -152,8 +152,8 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
     );
   }
   invariant(
-    /^[a-z0-9]+(-[a-z0-9]+)*$/u.test(actionDef.apiName),
-    `Action type apiName "${actionDef.apiName}" must be alphanumeric, lowercase, and kebab-case`,
+    /^[a-z0-9]+(?:[-.][a-z0-9]+)*$/u.test(actionDef.apiName),
+    `Action type apiName "${actionDef.apiName}" must contain lowercase alphanumeric segments separated by hyphens or dots`,
   );
 
   const parameterIdsSet = new Set(parameterIds);
