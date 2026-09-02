@@ -15,13 +15,7 @@
  */
 
 /** @deprecated Import from `@osdk/react-components/document-viewer` instead. */
+export { DocumentViewer, ViewerType } from "../document-viewer.js";
 
-// DocumentViewer
-import { DocumentViewer as _DocumentViewer } from "../../document-viewer/DocumentViewer.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const DocumentViewer: typeof _DocumentViewer = withOsdkMetrics(
-  _DocumentViewer,
-  "DocumentViewer",
-);
-export type { DocumentViewerProps } from "../../document-viewer/DocumentViewerApi.js";
-export { ViewerType } from "../../document-viewer/DocumentViewerApi.js";
+/** @deprecated Import from `@osdk/react-components/document-viewer` instead. */
+export type { DocumentViewerProps } from "../document-viewer.js";

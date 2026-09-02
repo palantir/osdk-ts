@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,149 +15,80 @@
  */
 
 /** @deprecated Import from `@osdk/react-components/object-table` instead. */
+export {
+  BaseTable,
+  ColumnConfigDialog,
+  LoadingCell,
+  LoadingCellContent,
+  MultiColumnSortDialog,
+  ObjectTable,
+  useCellContextMenu,
+  useColumnDefs,
+  useColumnPinning,
+  useColumnResize,
+  useColumnVisibility,
+  useEditableTable,
+  useFocusedRow,
+  useFunctionColumnsData,
+  useLoadedObjectsChanged,
+  useObjectTableData,
+  useObjectTableSnapshot,
+  useRowSelection,
+  useSelectionColumn,
+  useTableSorting,
+} from "../object-table.js";
 
-// ObjectTable that loads and displays data for a given objectSet
-import { ObjectTable as _ObjectTable } from "../../object-table/ObjectTable.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const ObjectTable: typeof _ObjectTable = withOsdkMetrics(
-  _ObjectTable,
-  "ObjectTable",
-);
+/** @deprecated Import from `@osdk/react-components/object-table` instead. */
 export type {
+  AsyncCellData,
+  BaseTableProps,
+  CellEditInfo,
+  ColumnConfigDialogProps,
+  ColumnConfigOptions,
   ColumnDefinition,
   ColumnDefinitionLocator,
   CustomColumnLocator,
+  EditableConfig,
   EditFieldConfig,
+  EditModeState,
+  FunctionColumnData,
   FunctionColumnLocator,
   LoadedObjectsChange,
+  MultiColumnSortDialogProps,
+  ObjectSetOptions,
   ObjectTableDataColumn,
   ObjectTableDataRow,
   ObjectTableHandle,
   ObjectTableProps,
   ObjectTableSnapshot,
   ObjectTableSnapshotOptions,
+  OrderBy,
+  PopoverPosition,
   PropertyColumnLocator,
   RdpColumnLocator,
-} from "../../object-table/ObjectTableApi.js";
-export type { CellEditInfo } from "../../object-table/utils/types.js";
-
-// BaseTable that does not handle data fetching
-export type { BaseTableProps } from "../../object-table/Table.js";
-export { BaseTable } from "../../object-table/Table.js";
-
-export { ColumnConfigDialog } from "../../object-table/ColumnConfigDialog.js";
-export type {
-  ColumnConfigDialogProps,
-  ColumnConfigOptions,
-} from "../../object-table/ColumnConfigDialog.js";
-
-export { MultiColumnSortDialog } from "../../object-table/MultiColumnSortDialog.js";
-export type {
-  MultiColumnSortDialogProps,
-  SortColumnItem,
-} from "../../object-table/MultiColumnSortDialog.js";
-
-// Loading cell components for custom column renderers.
-// Use `LoadingCell` when rendering a full `<td>` element (e.g. in a custom row renderer).
-// Use `LoadingCellContent` when rendering just the skeleton content inside an existing cell.
-export {
-  LoadingCell,
-  LoadingCellContent,
-} from "../../object-table/LoadingCell.js";
-
-/* --------------------- Headless hooks --------------------- */
-
-// Data loading (OSDK-aware)
-export {
-  type FunctionColumnData,
-  useFunctionColumnsData,
-  type UseFunctionColumnsDataProps,
-} from "../../object-table/hooks/useFunctionColumnsData.js";
-export {
-  useObjectTableData,
-  type UseObjectTableDataProps,
-  type UseObjectTableDataResult,
-} from "../../object-table/hooks/useObjectTableData.js";
-
-// Column definitions
-export {
-  useColumnDefs,
-  type UseColumnDefsResult,
-} from "../../object-table/hooks/useColumnDefs.js";
-export {
-  useSelectionColumn,
-  type UseSelectionColumnProps,
-} from "../../object-table/hooks/useSelectionColumn.js";
-
-// Column state
-export {
-  useColumnPinning,
-  type UseColumnPinningProps,
-  type UseColumnPinningResult,
-} from "../../object-table/hooks/useColumnPinning.js";
-export {
-  useColumnResize,
-  type UseColumnResizeProps,
-  type UseColumnResizeResult,
-} from "../../object-table/hooks/useColumnResize.js";
-export {
-  useColumnVisibility,
-  type UseColumnVisibilityProps,
-  type UseColumnVisibilityResult,
-} from "../../object-table/hooks/useColumnVisibility.js";
-
-// Row state
-export {
-  useFocusedRow,
-  type UseFocusedRowProps,
-  type UseFocusedRowResult,
-} from "../../object-table/hooks/useFocusedRow.js";
-export {
-  useLoadedObjectsChanged,
-  type UseLoadedObjectsChangedProps,
-} from "../../object-table/hooks/useLoadedObjectsChanged.js";
-export {
-  useRowSelection,
-  type UseRowSelectionChange,
-  type UseRowSelectionProps,
-  type UseRowSelectionResult,
-} from "../../object-table/hooks/useRowSelection.js";
-
-// Sorting
-export {
-  useTableSorting,
-  type UseTableSortingProps,
-  type UseTableSortingResult,
-} from "../../object-table/hooks/useTableSorting.js";
-
-// Editing
-export {
-  useEditableTable,
-  type UseEditableTableProps,
-} from "../../object-table/hooks/useEditableTable.js";
-
-// Snapshot / export
-export {
-  useObjectTableSnapshot,
-  type UseObjectTableSnapshotProps,
-} from "../../object-table/hooks/useObjectTableSnapshot.js";
-
-// Cell context menu
-export {
-  useCellContextMenu,
-  type UseCellContextMenuProps,
-  type UseCellContextMenuResult,
-} from "../../object-table/hooks/useCellContextMenu.js";
-
-// Supporting types referenced by the hook signatures above
-export type { PopoverPosition } from "../../object-table/hooks/useCellContextMenu.js";
-export type {
-  ObjectSetOptions,
   RowSelectionChange,
-} from "../../object-table/ObjectTableApi.js";
-export type { AsyncCellData } from "../../object-table/utils/AsyncCellData.js";
-export type {
-  EditableConfig,
-  EditModeState,
-  OrderBy,
-} from "../../object-table/utils/types.js";
+  SortColumnItem,
+  UseCellContextMenuProps,
+  UseCellContextMenuResult,
+  UseColumnDefsResult,
+  UseColumnPinningProps,
+  UseColumnPinningResult,
+  UseColumnResizeProps,
+  UseColumnResizeResult,
+  UseColumnVisibilityProps,
+  UseColumnVisibilityResult,
+  UseEditableTableProps,
+  UseFocusedRowProps,
+  UseFocusedRowResult,
+  UseFunctionColumnsDataProps,
+  UseLoadedObjectsChangedProps,
+  UseObjectTableDataProps,
+  UseObjectTableDataResult,
+  UseObjectTableSnapshotProps,
+  UseRowSelectionChange,
+  UseRowSelectionProps,
+  UseRowSelectionResult,
+  UseSelectionColumnProps,
+  UseTableSortingProps,
+  UseTableSortingResult,
+} from "../object-table.js";

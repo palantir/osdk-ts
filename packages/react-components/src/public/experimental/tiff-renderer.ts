@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,38 +14,17 @@
  * limitations under the License.
  */
 
-// This subpath keeps its `tiff-renderer` name for now even though the
-// components it exports are named `TiffViewer`. It gets renamed when the
-// `experimental/` prefix is dropped, so consumers change import paths once
-// rather than twice.
+/** @deprecated Import from `@osdk/react-components/tiff-viewer` instead. */
+export {
+  BaseTiffViewer,
+  TiffRenderer,
+  TiffViewer,
+  TiffViewerMedia,
+} from "../tiff-viewer.js";
 
-import { BaseTiffViewer as _BaseTiffViewer } from "../../images/tiff-viewer/BaseTiffViewer.js";
-import { TiffViewer as _TiffViewer } from "../../images/tiff-viewer/TiffViewer.js";
-import type { BaseTiffViewerProps as _BaseTiffViewerProps } from "../../images/tiff-viewer/TiffViewerApi.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-
-// BaseTiffViewer
-export { BaseTiffViewer } from "../../images/tiff-viewer/BaseTiffViewer.js";
+/** @deprecated Import from `@osdk/react-components/tiff-viewer` instead. */
 export type {
   BaseTiffViewerProps,
+  TiffRendererProps,
   TiffViewerProps,
-} from "../../images/tiff-viewer/TiffViewerApi.js";
-
-// TiffViewer (Media wrapper)
-export const TiffViewer: typeof _TiffViewer = withOsdkMetrics(
-  _TiffViewer,
-  "TiffViewer",
-);
-
-// Deprecated `Renderer` aliases of the same values, cleared in a later pass.
-// `TiffViewerMediaProps` has none: the `Media` drop is a uniform break because
-// pdf's old name was reused for a different type.
-
-/** @deprecated Use `BaseTiffViewer` instead. */
-export const TiffRenderer: typeof _BaseTiffViewer = _BaseTiffViewer;
-
-/** @deprecated Use `BaseTiffViewerProps` instead. */
-export type TiffRendererProps = _BaseTiffViewerProps;
-
-/** @deprecated Use `TiffViewer` instead. */
-export const TiffViewerMedia: typeof TiffViewer = TiffViewer;
+} from "../tiff-viewer.js";

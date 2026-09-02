@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,32 +15,25 @@
  */
 
 /** @deprecated Import from `@osdk/react-components/action-form` instead. */
+export { ActionForm, BaseForm } from "../action-form.js";
 
-import { ActionForm as _ActionForm } from "../../action-form/ActionForm.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const ActionForm: typeof _ActionForm = withOsdkMetrics(
-  _ActionForm,
-  "ActionForm",
-);
+/** @deprecated Import from `@osdk/react-components/action-form` instead. */
 export type {
   ActionFormProps,
-  BaseFormProps,
-  FormContentItem,
-  FormError,
-  FormSectionDefinition,
-  FormState,
-} from "../../action-form/ActionFormApi.js";
-export { BaseForm } from "../../action-form/BaseForm.js";
-export type {
   ActionParameters,
   BaseFormFieldProps,
+  BaseFormProps,
   CustomFieldProps,
   DropdownFieldProps,
   FieldComponent,
   FieldValueType,
   FilePickerProps,
+  FormContentItem,
+  FormError,
   FormFieldDefinition,
   FormFieldPropsByType,
+  FormSectionDefinition,
+  FormState,
   NumberInputFieldProps,
   ObjectSelectFieldProps,
   ObjectSetFieldProps,
@@ -52,4 +45,4 @@ export type {
   TextInputFieldProps,
   UnsupportedFieldProps,
   ValidationError,
-} from "../../action-form/FormFieldApi.js";
+} from "../action-form.js";

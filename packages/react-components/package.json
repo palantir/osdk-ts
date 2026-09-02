@@ -52,6 +52,15 @@
       "require": "./build/cjs/public/filter-list.cjs",
       "default": "./build/browser/public/filter-list.js"
     },
+    "./markdown-viewer": {
+      "browser": "./build/browser/public/markdown-viewer.js",
+      "import": {
+        "types": "./build/types/public/markdown-viewer.d.ts",
+        "default": "./build/esm/public/markdown-viewer.js"
+      },
+      "require": "./build/cjs/public/markdown-viewer.cjs",
+      "default": "./build/browser/public/markdown-viewer.js"
+    },
     "./object-table": {
       "browser": "./build/browser/public/object-table.js",
       "import": {
@@ -69,6 +78,15 @@
       },
       "require": "./build/cjs/public/primitives.cjs",
       "default": "./build/browser/public/primitives.js"
+    },
+    "./tiff-viewer": {
+      "browser": "./build/browser/public/tiff-viewer.js",
+      "import": {
+        "types": "./build/types/public/tiff-viewer.d.ts",
+        "default": "./build/esm/public/tiff-viewer.js"
+      },
+      "require": "./build/cjs/public/tiff-viewer.cjs",
+      "default": "./build/browser/public/tiff-viewer.js"
     },
     "./experimental/action-form": {
       "browser": "./build/browser/public/experimental/action-form.js",

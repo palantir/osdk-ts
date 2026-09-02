@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,40 @@
  * limitations under the License.
  */
 
-export * from "./experimental/action-form.js";
+import { ActionForm as _ActionForm } from "../action-form/ActionForm.js";
+import { withOsdkMetrics } from "../util/withOsdkMetrics.js";
+export const ActionForm: typeof _ActionForm = withOsdkMetrics(
+  _ActionForm,
+  "ActionForm",
+);
+export type {
+  ActionFormProps,
+  BaseFormProps,
+  FormContentItem,
+  FormError,
+  FormSectionDefinition,
+  FormState,
+} from "../action-form/ActionFormApi.js";
+export { BaseForm } from "../action-form/BaseForm.js";
+export type {
+  ActionParameters,
+  BaseFormFieldProps,
+  CustomFieldProps,
+  DropdownFieldProps,
+  FieldComponent,
+  FieldValueType,
+  FilePickerProps,
+  FormFieldDefinition,
+  FormFieldPropsByType,
+  NumberInputFieldProps,
+  ObjectSelectFieldProps,
+  ObjectSetFieldProps,
+  Option,
+  PortalContainer,
+  RadioButtonsFieldProps,
+  RendererFieldDefinition,
+  TextAreaFieldProps,
+  TextInputFieldProps,
+  UnsupportedFieldProps,
+  ValidationError,
+} from "../action-form/FormFieldApi.js";

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,53 +15,37 @@
  */
 
 /** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export {
+  BaseFilterList,
+  deserializeFilterStates,
+  filterHasActiveState,
+  FilterInput,
+  FilterList,
+  FilterPopover,
+  getFilterKey,
+  getFilterLabel,
+  narrowObjectSet,
+  NO_VALUE,
+  serializeFilterStates,
+  summarizeFilterValue,
+  useFilterListState,
+} from "../filter-list.js";
 
-export { BaseFilterList } from "../../filter-list/base/BaseFilterList.js";
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
 export type {
   BaseFilterListProps,
-  RenderFilterInput,
-} from "../../filter-list/base/BaseFilterListApi.js";
-import { FilterList as _FilterList } from "../../filter-list/FilterList.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const FilterList: typeof _FilterList = withOsdkMetrics(
-  _FilterList,
-  "FilterList",
-);
-
-export type {
   FilterChangeEvent,
   FilterChangeReason,
   FilterChangeSnapshot,
-  FilterDefinitionUnion,
-  FilterListProps,
-} from "../../filter-list/FilterListApi.js";
-export type {
   FilterComponentType,
   FilterDefinitionControls,
+  FilterDefinitionUnion,
+  FilterInputProps,
+  FilterListProps,
+  FilterPopoverProps,
   FilterState,
+  LinkedFilter,
   PropertyFilterDefinition,
-} from "../../filter-list/FilterListItemApi.js";
-export {
-  deserializeFilterStates,
-  serializeFilterStates,
-} from "../../filter-list/utils/filterStateSerialization.js";
-
-export { FilterPopover } from "../../filter-list/base/FilterPopover.js";
-export type { FilterPopoverProps } from "../../filter-list/base/FilterPopover.js";
-
-export { FilterInput } from "../../filter-list/FilterInput.js";
-export type { FilterInputProps } from "../../filter-list/FilterInput.js";
-
-export { useFilterListState } from "../../filter-list/hooks/useFilterListState.js";
-export type { UseFilterListStateResult } from "../../filter-list/hooks/useFilterListState.js";
-
-export {
-  filterHasActiveState,
-  NO_VALUE,
-} from "../../filter-list/utils/filterValues.js";
-export { getFilterKey } from "../../filter-list/utils/getFilterKey.js";
-export { getFilterLabel } from "../../filter-list/utils/getFilterLabel.js";
-export { summarizeFilterValue } from "../../filter-list/utils/summarizeFilterValue.js";
-
-export type { LinkedFilter } from "../../filter-list/types/LinkedFilterTypes.js";
-export { narrowObjectSet } from "../../filter-list/utils/narrowObjectSet.js";
+  RenderFilterInput,
+  UseFilterListStateResult,
+} from "../filter-list.js";
