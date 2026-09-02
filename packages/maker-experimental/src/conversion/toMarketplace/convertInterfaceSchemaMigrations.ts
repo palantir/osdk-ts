@@ -15,15 +15,18 @@
  */
 
 import type {
+  InterfaceTypeSchemaMigrationBlockData,
   InterfaceTypeSchemaMigrationInstruction,
   InterfaceTypeSchemaTransition,
 } from "@osdk/client.unstable";
 import type {
-  InterfacePropertyType,
   InterfaceSchemaMigrationInstruction,
   InterfaceType,
 } from "@osdk/maker";
-import { convertInterfaceSchemaGracePeriod } from "@osdk/maker";
+import {
+  convertInterfaceSchemaGracePeriod,
+  interfacePropertyWireApiName,
+} from "@osdk/maker";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { interfacePropertyWireRid } from "./convertInterfacePropertyType.js";
@@ -31,49 +34,58 @@ import { interfacePropertyWireRid } from "./convertInterfacePropertyType.js";
 export function convertInterfaceSchemaMigrations(
   interfaceType: InterfaceType,
   ridGenerator: OntologyRidGenerator,
-): InterfaceTypeSchemaTransition[] {
+): InterfaceTypeSchemaMigrationBlockData | undefined {
   const { schemaMigrations, propertiesV3 } = interfaceType;
   if (schemaMigrations === undefined) {
-    return [];
+    return undefined;
   }
 
-  return schemaMigrations.transitions.map((transition) => ({
-    id: transition.id,
-    title: transition.title,
-    description: transition.description,
-    gracePeriod: convertInterfaceSchemaGracePeriod(transition.gracePeriod),
-    migrations: transition.instructions.map((instruction) =>
-      convertInstruction(
-        instruction,
-        interfaceType.apiName,
-        propertiesV3,
-        ridGenerator,
-      ),
+  // Migrations target properties by rid; this lets the installer resolve those rids back to
+  // the API names the interface publishes them under, which for an SPT-backed property is
+  // the shared property type's namespaced API name rather than the interface-local one.
+  const interfacePropertyTypeRidsToApiNames: Record<string, string> = {};
+  const schemaTransitions = Object.fromEntries(
+    schemaMigrations.transitions.map(
+      (transition): [string, InterfaceTypeSchemaTransition] => [
+        transition.id,
+        {
+          id: transition.id,
+          title: transition.title,
+          description: transition.description,
+          gracePeriod: convertInterfaceSchemaGracePeriod(
+            transition.gracePeriod,
+          ),
+          migrations: transition.instructions.map((instruction) => {
+            const { property: propertyApiName } = instruction;
+            const property = propertiesV3[propertyApiName];
+            const propertyTypeRid = interfacePropertyWireRid(
+              property,
+              propertyApiName,
+              interfaceType.apiName,
+              ridGenerator,
+            );
+            interfacePropertyTypeRidsToApiNames[propertyTypeRid] =
+              interfacePropertyWireApiName(property, propertyApiName);
+            return convertInstruction(instruction, propertyTypeRid);
+          }),
+        },
+      ],
     ),
-  }));
+  );
+
+  return { interfacePropertyTypeRidsToApiNames, schemaTransitions };
 }
 
 function convertInstruction(
   instruction: InterfaceSchemaMigrationInstruction,
-  interfaceApiName: string,
-  propertiesV3: Record<string, InterfacePropertyType>,
-  ridGenerator: OntologyRidGenerator,
+  propertyTypeRid: string,
 ): InterfaceTypeSchemaMigrationInstruction {
   switch (instruction.type) {
-    case "addRequiredProperty": {
-      const { property: propertyApiName } = instruction;
+    case "addRequiredProperty":
       return {
         type: "addRequiredProperty",
-        addRequiredProperty: {
-          propertyTypeRid: interfacePropertyWireRid(
-            propertiesV3[propertyApiName],
-            propertyApiName,
-            interfaceApiName,
-            ridGenerator,
-          ),
-        },
+        addRequiredProperty: { propertyTypeRid },
       };
-    }
     default:
       // TODO: add a never exhaustiveness check once there's more than one instruction type
       throw new Error(
