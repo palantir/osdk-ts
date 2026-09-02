@@ -33,15 +33,15 @@ import { usePdfViewerSync } from "./usePdfViewerSync.js";
 export interface UsePdfViewerCoreOptions {
   /** PDF source — URL string, ArrayBuffer, Uint8Array, or Blob */
   src: PdfSource;
-  /** Uncontrolled. Seeds the page number (1-indexed). @default 1 */
+  /** Initial page number (1-indexed, default 1) */
   defaultPage?: number;
   /** @deprecated Rename to `defaultPage`. */
   initialPage?: number;
-  /** Uncontrolled. Seeds the zoom scale. @default 1.0 */
+  /** Initial zoom scale (default 1.0) */
   defaultScale?: number;
   /** @deprecated Rename to `defaultScale`. */
   initialScale?: number;
-  /** Uncontrolled. Seeds whether auto-size is enabled. @default false */
+  /** Whether auto-size (fit to width) is initially enabled (default false) */
   defaultAutoSize?: boolean;
   /** @deprecated Rename to `defaultAutoSize`. */
   initialAutoSize?: boolean;

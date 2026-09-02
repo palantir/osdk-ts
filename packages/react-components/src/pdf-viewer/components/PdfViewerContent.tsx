@@ -40,11 +40,11 @@ export interface PdfViewerContentProps {
   annotations?: PdfAnnotation[];
   /** Callback fired when an annotation is clicked */
   onAnnotationClick?: (annotation: PdfAnnotation) => void;
-  /** Uncontrolled. Seeds the page number (1-indexed). @default 1 */
+  /** Initial page number (1-indexed, default 1) */
   defaultPage?: number;
   /** @deprecated Rename to `defaultPage`. */
   initialPage?: number;
-  /** Uncontrolled. Seeds the zoom scale. @default 1.0 */
+  /** Initial zoom scale (default 1.0) */
   defaultScale?: number;
   /** @deprecated Rename to `defaultScale`. */
   initialScale?: number;

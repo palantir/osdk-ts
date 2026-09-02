@@ -37,7 +37,7 @@ import type { UsePdfViewerSearchResult } from "./usePdfViewerSearch.js";
 import { usePdfViewerSearch } from "./usePdfViewerSearch.js";
 
 export interface UsePdfViewerStateOptions extends UsePdfViewerCoreOptions {
-  /** Uncontrolled. Seeds whether the sidebar is open. @default false */
+  /** Whether the sidebar is initially open (default false) */
   defaultSidebarOpen?: boolean;
   /** @deprecated Rename to `defaultSidebarOpen`. */
   initialSidebarOpen?: boolean;
