@@ -1,5 +1,11 @@
 # @osdk/create-app.template.vue.v2
 
+## 2.64.0
+
+### Minor Changes
+
+- e3855b2: Add new branch-aware changes to unstable features
+
 ## 2.63.0
 
 ## 2.62.0

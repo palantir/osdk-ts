@@ -1,5 +1,19 @@
 # @osdk/maker-experimental
 
+## 0.58.0
+
+### Minor Changes
+
+- 1fe5887: Require generated backing Media Sets to exist before ontology reconciliation.
+
+### Patch Changes
+
+- @osdk/api@2.64.0
+- @osdk/client.unstable@2.64.0
+- @osdk/generator-converters.ontologyir@2.64.0
+- @osdk/maker@0.64.0
+- @osdk/generator-converters.preview@0.42.0
+
 ## 0.57.0
 
 ### Minor Changes

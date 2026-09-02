@@ -1,5 +1,15 @@
 # @osdk/react-components-storybook
 
+## 0.52.0
+
+### Minor Changes
+
+- 0391250: Organize ActionForm stories and update code panel
+
+### Patch Changes
+
+- @osdk/faux@0.48.0
+
 ## 0.51.0
 
 ### Patch Changes
