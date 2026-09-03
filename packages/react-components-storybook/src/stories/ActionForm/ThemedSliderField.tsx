@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { BaseFormFieldProps } from "@osdk/react-components/experimental";
+import type { BaseFormFieldProps } from "@osdk/react-components/action-form";
 import React, { memo, useCallback } from "react";
 
 import styles from "./ThemedSliderField.module.css";

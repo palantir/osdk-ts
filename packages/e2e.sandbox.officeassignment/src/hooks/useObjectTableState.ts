@@ -19,7 +19,7 @@ import type {
   PropertyKeys,
   SimplePropertyDef,
 } from "@osdk/api";
-import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
+import type { ColumnDefinition } from "@osdk/react-components/object-table";
 import React from "react";
 
 import type { PinDirection } from "../types/table.js";

@@ -15,8 +15,8 @@
  */
 
 import { useOsdkObject } from "@osdk/react";
-import type { PdfViewerProps } from "@osdk/react-components/experimental/pdf-viewer";
-import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+import type { PdfViewerProps } from "@osdk/react-components/pdf-viewer";
+import { PdfViewer } from "@osdk/react-components/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { MEDIA_EMPLOYEE_PK } from "../../mocks/fauxFoundry.js";

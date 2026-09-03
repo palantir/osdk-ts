@@ -34,6 +34,15 @@
       "require": "./build/cjs/public/document-viewer.cjs",
       "default": "./build/browser/public/document-viewer.js"
     },
+    "./email-viewer": {
+      "browser": "./build/browser/public/email-viewer.js",
+      "import": {
+        "types": "./build/types/public/email-viewer.d.ts",
+        "default": "./build/esm/public/email-viewer.js"
+      },
+      "require": "./build/cjs/public/email-viewer.cjs",
+      "default": "./build/browser/public/email-viewer.js"
+    },
     "./experimental": {
       "browser": "./build/browser/public/experimental.js",
       "import": {
@@ -51,6 +60,15 @@
       },
       "require": "./build/cjs/public/filter-list.cjs",
       "default": "./build/browser/public/filter-list.js"
+    },
+    "./image-viewer": {
+      "browser": "./build/browser/public/image-viewer.js",
+      "import": {
+        "types": "./build/types/public/image-viewer.d.ts",
+        "default": "./build/esm/public/image-viewer.js"
+      },
+      "require": "./build/cjs/public/image-viewer.cjs",
+      "default": "./build/browser/public/image-viewer.js"
     },
     "./markdown-viewer": {
       "browser": "./build/browser/public/markdown-viewer.js",
@@ -70,6 +88,15 @@
       "require": "./build/cjs/public/object-table.cjs",
       "default": "./build/browser/public/object-table.js"
     },
+    "./pdf-viewer": {
+      "browser": "./build/browser/public/pdf-viewer.js",
+      "import": {
+        "types": "./build/types/public/pdf-viewer.d.ts",
+        "default": "./build/esm/public/pdf-viewer.js"
+      },
+      "require": "./build/cjs/public/pdf-viewer.cjs",
+      "default": "./build/browser/public/pdf-viewer.js"
+    },
     "./primitives": {
       "browser": "./build/browser/public/primitives.js",
       "import": {
@@ -79,6 +106,15 @@
       "require": "./build/cjs/public/primitives.cjs",
       "default": "./build/browser/public/primitives.js"
     },
+    "./spreadsheet-viewer": {
+      "browser": "./build/browser/public/spreadsheet-viewer.js",
+      "import": {
+        "types": "./build/types/public/spreadsheet-viewer.d.ts",
+        "default": "./build/esm/public/spreadsheet-viewer.js"
+      },
+      "require": "./build/cjs/public/spreadsheet-viewer.cjs",
+      "default": "./build/browser/public/spreadsheet-viewer.js"
+    },
     "./tiff-viewer": {
       "browser": "./build/browser/public/tiff-viewer.js",
       "import": {
@@ -87,6 +123,24 @@
       },
       "require": "./build/cjs/public/tiff-viewer.cjs",
       "default": "./build/browser/public/tiff-viewer.js"
+    },
+    "./video-viewer": {
+      "browser": "./build/browser/public/video-viewer.js",
+      "import": {
+        "types": "./build/types/public/video-viewer.d.ts",
+        "default": "./build/esm/public/video-viewer.js"
+      },
+      "require": "./build/cjs/public/video-viewer.cjs",
+      "default": "./build/browser/public/video-viewer.js"
+    },
+    "./xml-viewer": {
+      "browser": "./build/browser/public/xml-viewer.js",
+      "import": {
+        "types": "./build/types/public/xml-viewer.d.ts",
+        "default": "./build/esm/public/xml-viewer.js"
+      },
+      "require": "./build/cjs/public/xml-viewer.cjs",
+      "default": "./build/browser/public/xml-viewer.js"
     },
     "./experimental/action-form": {
       "browser": "./build/browser/public/experimental/action-form.js",

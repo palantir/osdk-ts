@@ -8,7 +8,7 @@ A React component for rendering common image formats. Provides both an OSDK Medi
 import {
   BaseImageViewer,
   ImageViewer,
-} from "@osdk/react-components/experimental/image-viewer";
+} from "@osdk/react-components/image-viewer";
 ```
 
 - **`ImageViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the image contents, and renders via a native `<img>` element.
@@ -19,7 +19,7 @@ import {
 ### With OSDK Media
 
 ```tsx
-import { ImageViewer } from "@osdk/react-components/experimental/image-viewer";
+import { ImageViewer } from "@osdk/react-components/image-viewer";
 
 <ImageViewer media={product.photo} alt="Product photo" />;
 ```
@@ -27,7 +27,7 @@ import { ImageViewer } from "@osdk/react-components/experimental/image-viewer";
 ### With a URL
 
 ```tsx
-import { BaseImageViewer } from "@osdk/react-components/experimental/image-viewer";
+import { BaseImageViewer } from "@osdk/react-components/image-viewer";
 
 <BaseImageViewer src="https://example.com/photo.png" alt="Example" />;
 ```

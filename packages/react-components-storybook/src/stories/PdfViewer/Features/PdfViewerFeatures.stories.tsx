@@ -21,11 +21,11 @@ import type {
   BasePdfViewerProps,
   PdfTextHighlightEvent,
   PdfViewerProps,
-} from "@osdk/react-components/experimental/pdf-viewer";
+} from "@osdk/react-components/pdf-viewer";
 import {
   BasePdfViewer,
   PdfViewer,
-} from "@osdk/react-components/experimental/pdf-viewer";
+} from "@osdk/react-components/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http } from "msw";
 import { useEffect, useState } from "react";

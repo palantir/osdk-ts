@@ -1,15 +1,15 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
 import { useOsdkClient } from "@osdk/react";
-import type {
-  ColumnDefinition,
-  ObjectTableHandle,
-} from "@osdk/react-components/experimental/object-table";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import {
   type OsdkThemeMode,
   OsdkThemeProvider,
   useOsdkTheme,
 } from "@osdk/react-components/experimental/theme";
+import type {
+  ColumnDefinition,
+  ObjectTableHandle,
+} from "@osdk/react-components/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import React, { useCallback, useRef } from "react";
 
 import { Button } from "../../components/Button.js";

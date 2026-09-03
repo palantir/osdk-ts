@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-// BaseImageViewer
-export { BaseImageViewer } from "../../images/image-viewer/BaseImageViewer.js";
+/** @deprecated Import from `@osdk/react-components/image-viewer` instead. */
+export { BaseImageViewer, ImageViewer } from "../image-viewer.js";
+
+/** @deprecated Import from `@osdk/react-components/image-viewer` instead. */
 export type {
   BaseImageViewerProps,
   ImageViewerProps,
-} from "../../images/image-viewer/ImageViewerApi.js";
-
-// ImageViewer (Media wrapper)
-import { ImageViewer as _ImageViewer } from "../../images/image-viewer/ImageViewer.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const ImageViewer: typeof _ImageViewer = withOsdkMetrics(
-  _ImageViewer,
-  "ImageViewer",
-);
+} from "../image-viewer.js";

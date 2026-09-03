@@ -236,7 +236,7 @@ src/
 
 ### Export Strategy
 
-- **OSDK Components**: Exported through individual entry points under `experimental/` (e.g., `experimental/object-table`, `experimental/filter-list`)
+- **OSDK Components**: Exported through individual entry points (e.g., `object-table`, `filter-list`); components not yet promoted remain under `experimental/`
 - **Base Components**: Select base components are exported for advanced use cases (e.g., `BaseTable`, `BaseFilterList`)
 - **UI Primitives**: The `base-components/` folder contains internal UI primitives that are **NOT exported**
 
@@ -283,7 +283,7 @@ See the [CSS Variables Reference](https://github.com/palantir/osdk-ts/blob/main/
 ### Object Table
 
 ```ts
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import { Employee } from "@your-osdk-package";
 
 function EmployeeDirectory() {

@@ -17,8 +17,8 @@
 /* cspell:words tracemonkey pldi openxmlformats officedocument spreadsheetml */
 
 import type { Media } from "@osdk/api";
-import type { DocumentViewerProps } from "@osdk/react-components/experimental/document-viewer";
-import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
+import type { DocumentViewerProps } from "@osdk/react-components/document-viewer";
+import { DocumentViewer } from "@osdk/react-components/document-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { http, HttpResponse, passthrough } from "msw";
 import { utils, write } from "xlsx-republish";

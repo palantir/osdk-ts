@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-// BaseSpreadsheetViewer
-export { BaseSpreadsheetViewer } from "../../spreadsheet-viewer/BaseSpreadsheetViewer.js";
+/** @deprecated Import from `@osdk/react-components/spreadsheet-viewer` instead. */
+export {
+  BaseSpreadsheetViewer,
+  SpreadsheetViewer,
+} from "../spreadsheet-viewer.js";
+
+/** @deprecated Import from `@osdk/react-components/spreadsheet-viewer` instead. */
 export type {
   BaseSpreadsheetViewerProps,
   ParsedSpreadsheet,
   SheetData,
   SpreadsheetViewerProps,
-} from "../../spreadsheet-viewer/SpreadsheetViewerApi.js";
-
-// SpreadsheetViewer (Media wrapper)
-import { SpreadsheetViewer as _SpreadsheetViewer } from "../../spreadsheet-viewer/SpreadsheetViewer.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const SpreadsheetViewer: typeof _SpreadsheetViewer = withOsdkMetrics(
-  _SpreadsheetViewer,
-  "SpreadsheetViewer",
-);
+} from "../spreadsheet-viewer.js";

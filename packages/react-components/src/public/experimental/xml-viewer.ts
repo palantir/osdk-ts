@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-// BaseXmlViewer
-export { BaseXmlViewer } from "../../xml-viewer/BaseXmlViewer.js";
-export type {
-  BaseXmlViewerProps,
-  XmlViewerProps,
-} from "../../xml-viewer/XmlViewerApi.js";
+/** @deprecated Import from `@osdk/react-components/xml-viewer` instead. */
+export { BaseXmlViewer, XmlViewer } from "../xml-viewer.js";
 
-// XmlViewer (Media wrapper)
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-import { XmlViewer as _XmlViewer } from "../../xml-viewer/XmlViewer.js";
-export const XmlViewer: typeof _XmlViewer = withOsdkMetrics(
-  _XmlViewer,
-  "XmlViewer",
-);
+/** @deprecated Import from `@osdk/react-components/xml-viewer` instead. */
+export type { BaseXmlViewerProps, XmlViewerProps } from "../xml-viewer.js";

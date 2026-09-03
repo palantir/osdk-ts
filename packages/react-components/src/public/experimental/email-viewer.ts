@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-// BaseEmailViewer
-export { BaseEmailViewer } from "../../email-viewer/BaseEmailViewer.js";
+/** @deprecated Import from `@osdk/react-components/email-viewer` instead. */
+export { BaseEmailViewer, EmailViewer } from "../email-viewer.js";
+
+/** @deprecated Import from `@osdk/react-components/email-viewer` instead. */
 export type {
   BaseEmailViewerProps,
   EmailAddress,
   EmailViewerProps,
   ParsedEmail,
-} from "../../email-viewer/EmailViewerApi.js";
-
-// EmailViewer (Media wrapper)
-import { EmailViewer as _EmailViewer } from "../../email-viewer/EmailViewer.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const EmailViewer: typeof _EmailViewer = withOsdkMetrics(
-  _EmailViewer,
-  "EmailViewer",
-);
+} from "../email-viewer.js";

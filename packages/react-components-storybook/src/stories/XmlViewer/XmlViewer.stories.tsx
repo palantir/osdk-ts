@@ -20,11 +20,11 @@ import type { Media } from "@osdk/api";
 import type {
   BaseXmlViewerProps,
   XmlViewerProps,
-} from "@osdk/react-components/experimental/xml-viewer";
+} from "@osdk/react-components/xml-viewer";
 import {
   BaseXmlViewer,
   XmlViewer,
-} from "@osdk/react-components/experimental/xml-viewer";
+} from "@osdk/react-components/xml-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const SAMPLE_XML = `<?xml version="1.0" encoding="UTF-8"?>

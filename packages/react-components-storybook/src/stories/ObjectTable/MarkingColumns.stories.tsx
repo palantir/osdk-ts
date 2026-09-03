@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import type { ObjectTableProps } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
+import type { ObjectTableProps } from "@osdk/react-components/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";

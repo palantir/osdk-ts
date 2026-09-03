@@ -3,7 +3,7 @@ title: ActionForm
 description: An OSDK-aware form for running ontology actions. Renders fields from an action definition, validates input client-side, and submits with the action's applyAction.
 ---
 
-> **Beta** — exported from `@osdk/react-components/experimental`.
+> **Beta** — exported from `@osdk/react-components/action-form`.
 
 ## Usage
 
@@ -13,7 +13,7 @@ ActionForm fetches its own action metadata. Wrap your app in `OsdkProvider` and 
 
 ```tsx
 import { updateEmployee } from "@my/osdk";
-import { ActionForm } from "@osdk/react-components/experimental";
+import { ActionForm } from "@osdk/react-components/action-form";
 
 function UpdateEmployeeForm() {
   return <ActionForm actionDefinition={updateEmployee} />;
@@ -69,7 +69,7 @@ See the [**Form**](./CSSVariables.md#form) and [**Input**](./CSSVariables.md#inp
 
 ## Advanced
 
-`ActionForm` is the OSDK-aware component most consumers should use. For cases where you need to bring your own data or action metadata, the package also exports the OSDK-agnostic base component, available from `@osdk/react-components/experimental`.
+`ActionForm` is the OSDK-aware component most consumers should use. For cases where you need to bring your own data or action metadata, the package also exports the OSDK-agnostic base component, available from `@osdk/react-components/action-form`.
 
 ### BaseForm
 

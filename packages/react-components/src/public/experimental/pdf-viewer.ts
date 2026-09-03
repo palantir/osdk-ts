@@ -14,11 +14,38 @@
  * limitations under the License.
  */
 
-// BasePdfViewer
-export { BasePdfViewer } from "../../pdf-viewer/BasePdfViewer.js";
+/** @deprecated Import from `@osdk/react-components/pdf-viewer` instead. */
+export {
+  BasePdfViewer,
+  PdfViewer,
+  PdfViewerAnnotationLayer,
+  PdfViewerContent,
+  PdfViewerOutlineSidebar,
+  PdfViewerProvider,
+  PdfViewerSearchBar,
+  PdfViewerSidebar,
+  PdfViewerToolbar,
+  usePdfAnnotationPortals,
+  usePdfAnnotationsByPage,
+  usePdfDocument,
+  usePdfFormFields,
+  usePdfHighlightMode,
+  usePdfOutline,
+  usePdfViewer,
+  usePdfViewerContext,
+  usePdfViewerCore,
+  usePdfViewerInstance,
+  usePdfViewerSearch,
+  usePdfViewerState,
+  usePdfViewerSync,
+} from "../pdf-viewer.js";
+
+/** @deprecated Import from `@osdk/react-components/pdf-viewer` instead. */
 export type {
+  AnnotationPortalTarget,
   AnnotationType,
   BasePdfViewerProps,
+  OutlineItem,
   PdfAnnotation,
   PdfAnnotationRenderProps,
   PdfCustomAnnotation,
@@ -27,93 +54,25 @@ export type {
   PdfRect,
   PdfSource,
   PdfTextHighlightEvent,
-  SidebarMode,
-} from "../../pdf-viewer/PdfViewerApi.js";
-
-// PdfViewer building blocks
-export {
-  PdfViewerAnnotationLayer,
-  type PdfViewerAnnotationLayerProps,
-} from "../../pdf-viewer/components/PdfViewerAnnotationLayer.js";
-export {
-  PdfViewerContent,
-  type PdfViewerContentProps,
-} from "../../pdf-viewer/components/PdfViewerContent.js";
-export {
-  PdfViewerOutlineSidebar,
-  type PdfViewerOutlineSidebarProps,
-} from "../../pdf-viewer/components/PdfViewerOutlineSidebar.js";
-export {
-  PdfViewerSearchBar,
-  type PdfViewerSearchBarProps,
-} from "../../pdf-viewer/components/PdfViewerSearchBar.js";
-export {
-  PdfViewerSidebar,
-  type PdfViewerSidebarProps,
-} from "../../pdf-viewer/components/PdfViewerSidebar.js";
-export {
-  PdfViewerToolbar,
-  type PdfViewerToolbarProps,
-} from "../../pdf-viewer/components/PdfViewerToolbar.js";
-
-// PdfViewer hooks — primitive
-export {
-  type AnnotationPortalTarget,
-  usePdfAnnotationPortals,
-} from "../../pdf-viewer/hooks/usePdfAnnotationPortals.js";
-export { usePdfAnnotationsByPage } from "../../pdf-viewer/hooks/usePdfAnnotationsByPage.js";
-export { usePdfDocument } from "../../pdf-viewer/hooks/usePdfDocument.js";
-export {
-  usePdfFormFields,
-  type UsePdfFormFieldsOptions,
-  type UsePdfFormFieldsResult,
-} from "../../pdf-viewer/hooks/usePdfFormFields.js";
-export {
-  usePdfHighlightMode,
-  type UsePdfHighlightModeOptions,
-  type UsePdfHighlightModeResult,
-} from "../../pdf-viewer/hooks/usePdfHighlightMode.js";
-export { usePdfOutline } from "../../pdf-viewer/hooks/usePdfOutline.js";
-export {
-  usePdfViewer,
-  type UsePdfViewerResult,
-} from "../../pdf-viewer/hooks/usePdfViewer.js";
-export {
-  usePdfViewerSearch,
-  type UsePdfViewerSearchResult,
-} from "../../pdf-viewer/hooks/usePdfViewerSearch.js";
-export { usePdfViewerSync } from "../../pdf-viewer/hooks/usePdfViewerSync.js";
-export { type OutlineItem } from "../../pdf-viewer/PdfViewerApi.js";
-
-// PdfViewer context
-export type {
+  PdfViewerAnnotationLayerProps,
+  PdfViewerContentProps,
+  PdfViewerContextValue,
   PdfViewerHandle,
   PdfViewerInstanceOptions,
-} from "../../pdf-viewer/PdfViewerApi.js";
-export {
-  type PdfViewerContextValue,
-  PdfViewerProvider,
-  usePdfViewerContext,
-  usePdfViewerInstance,
-} from "../../pdf-viewer/PdfViewerContext.js";
-
-// PdfViewer hooks — composition
-export {
-  usePdfViewerCore,
-  type UsePdfViewerCoreOptions,
-  type UsePdfViewerCoreResult,
-} from "../../pdf-viewer/hooks/usePdfViewerCore.js";
-export {
-  usePdfViewerState,
-  type UsePdfViewerStateOptions,
-  type UsePdfViewerStateResult,
-} from "../../pdf-viewer/hooks/usePdfViewerState.js";
-
-// PdfViewer (Media wrapper)
-import { PdfViewer as _PdfViewer } from "../../pdf-viewer/PdfViewer.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const PdfViewer: typeof _PdfViewer = withOsdkMetrics(
-  _PdfViewer,
-  "PdfViewer",
-);
-export type { PdfViewerProps } from "../../pdf-viewer/PdfViewerApi.js";
+  PdfViewerOutlineSidebarProps,
+  PdfViewerProps,
+  PdfViewerSearchBarProps,
+  PdfViewerSidebarProps,
+  PdfViewerToolbarProps,
+  SidebarMode,
+  UsePdfFormFieldsOptions,
+  UsePdfFormFieldsResult,
+  UsePdfHighlightModeOptions,
+  UsePdfHighlightModeResult,
+  UsePdfViewerCoreOptions,
+  UsePdfViewerCoreResult,
+  UsePdfViewerResult,
+  UsePdfViewerSearchResult,
+  UsePdfViewerStateOptions,
+  UsePdfViewerStateResult,
+} from "../pdf-viewer.js";

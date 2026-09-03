@@ -15,8 +15,8 @@
  */
 
 import type { Media } from "@osdk/api";
-import type { ImageViewerProps } from "@osdk/react-components/experimental/image-viewer";
-import { ImageViewer } from "@osdk/react-components/experimental/image-viewer";
+import type { ImageViewerProps } from "@osdk/react-components/image-viewer";
+import { ImageViewer } from "@osdk/react-components/image-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 /**

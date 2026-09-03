@@ -3,7 +3,7 @@ title: DocumentViewer
 description: A viewer for OSDK Media objects that auto-selects the right renderer by MIME type — PDF, TIFF, images, video, markdown, spreadsheets, email, and XML — plus the individual media viewers it dispatches to.
 ---
 
-> **Beta** — exported from `@osdk/react-components/experimental/document-viewer`.
+> **Beta** — exported from `@osdk/react-components/document-viewer`.
 
 ## Usage
 
@@ -12,7 +12,7 @@ DocumentViewer takes an OSDK `Media` object, detects its MIME type, and renders 
 > **Note** — `@my/osdk` is a placeholder for **your generated SDK package** (e.g. `@your-app/sdk`). Replace it with the actual package name in your project.
 
 ```tsx
-import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
+import { DocumentViewer } from "@osdk/react-components/document-viewer";
 
 function TrainingMaterial({ employee }) {
   return <DocumentViewer media={employee.trainingMaterial} />;
@@ -95,14 +95,14 @@ Anything not in the table above — `.doc`/`.docx`, for instance — resolves to
 
 ```tsx
 // Standalone: you know the format, and want to configure it
-import { SpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
+import { SpreadsheetViewer } from "@osdk/react-components/spreadsheet-viewer";
 
 <SpreadsheetViewer media={report.attachment} />;
 ```
 
 ```tsx
 // Base: your source is not an OSDK Media object
-import { BaseXmlViewer } from "@osdk/react-components/experimental/xml-viewer";
+import { BaseXmlViewer } from "@osdk/react-components/xml-viewer";
 
 <BaseXmlViewer content={xmlString} />;
 ```
