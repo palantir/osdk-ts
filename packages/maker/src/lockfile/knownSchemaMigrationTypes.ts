@@ -23,7 +23,7 @@ import type {
  * Which schema migration discriminants this version of maker understands.
  *
  * Only reading a persisted lockfile needs these. A lockfile can have been written by a newer maker
- * than the one now reading it, so parsing has to ask whether it recognises a discriminant before
+ * than the one now reading it, so parsing has to ask whether it recognizes a discriminant before
  * trusting it — a question that never arises for an authored definition, where the type system has
  * already settled it.
  */
