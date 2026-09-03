@@ -31,6 +31,7 @@ import type {
   ParameterRenderHint,
   SectionId,
 } from "@osdk/client.unstable";
+import { consola } from "consola";
 
 import { convertActionParameters } from "../conversion/toMarketplace/convertActionParameters.js";
 import { convertActionSections } from "../conversion/toMarketplace/convertActionSections.js";
@@ -98,6 +99,8 @@ export async function defineOntology(
   snippetPackageName?: string,
   snippetFileOutputDir?: string,
   randomnessKey?: string,
+  /** Runs once the ontology is fully registered, but before anything is written to disk. */
+  beforeWrite?: (ontology: OntologyDefinition) => void | Promise<void>,
 ): Promise<OntologyIr> {
   namespace = ns;
   dependencies = {};
@@ -120,13 +123,11 @@ export async function defineOntology(
   try {
     await body();
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(
-      "Unexpected error while processing the body of the ontology",
-      e,
-    );
+    // The CLI entrypoint prints what is thrown; this only adds where it came from, under -v.
+    consola.debug("Unexpected error while processing the body of the ontology");
     throw e;
   }
+  await beforeWrite?.(ontologyDefinition);
   if (outputDir) {
     writeStaticObjects(outputDir);
   }
