@@ -55,7 +55,7 @@ export function validateInterfaceSchemaMigrations(
   );
 
   const seenIds = new Set<string>();
-  // What each claim (see `getClaims`) is already spoken for by, across ALL transitions.
+  // Which transition owns a claim, to prevent conflicting migrations.
   const claimedBy = new Map<
     string,
     { transitionId: string; description: string }
@@ -167,27 +167,24 @@ function validateGracePeriod(
 }
 
 /** Everything an instruction needs to validate itself against the interface declaring it. */
-interface InstructionContext {
-  apiName: string;
-  transitionId: string;
-  propertiesV3: Record<string, InterfacePropertyType>;
-}
+interface InstructionContext {}
 
 function validateInstruction(
+  interfaceApiName: string,
+  transitionId: string,
   instruction: InterfaceSchemaMigrationInstruction,
-  context: InstructionContext,
+  propertiesV3: Record<string, InterfacePropertyType>,
 ): void {
-  const { apiName, transitionId, propertiesV3 } = context;
   switch (instruction.type) {
     case "addRequiredProperty": {
       const { property: propertyApiName } = instruction;
       invariant(
         Object.hasOwn(propertiesV3, propertyApiName),
-        `Schema migration transition "${transitionId}" on interface ${apiName} references property "${propertyApiName}" via ${instruction.type}, but interface ${apiName} does not declare that property. Properties inherited from an extended interface must be migrated by a transition on the interface that declares them.`,
+        `Schema migration transition "${transitionId}" on interface ${interfaceApiName} references property "${propertyApiName}" via ${instruction.type}, but interface ${interfaceApiName} does not declare that property. Properties inherited from an extended interface must be migrated by a transition on the interface that declares them.`,
       );
       invariant(
         !isInterfacePropertyRequired(propertiesV3[propertyApiName]),
-        `Schema migration transition "${transitionId}" on interface ${apiName} targets property "${propertyApiName}" via ${instruction.type}, but that property is required. Only properties declared required: false may be targeted.`,
+        `Schema migration transition "${transitionId}" on interface ${interfaceApiName} targets property "${propertyApiName}" via ${instruction.type}, but that property is required. Only properties declared required: false may be targeted.`,
       );
       return;
     }

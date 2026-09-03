@@ -53,12 +53,12 @@ export function convertInterfaceSchemaMigrations(
             transition.gracePeriod,
           ),
           migrations: transition.instructions.map((instruction) => {
-            const { migration, referencedApiNames } = convertInstruction(
-              instruction,
-              propertiesV3,
-            );
-            for (const apiName of referencedApiNames) {
-              interfacePropertyTypeRidsToApiNames[apiName] = apiName;
+            const { migration, referencedPropertyApiNames } =
+              convertInstruction(instruction, propertiesV3);
+            for (const propertyApiName of referencedPropertyApiNames) {
+              // For ontology-ir, this carries an API name, not a rid, despite its name
+              interfacePropertyTypeRidsToApiNames[propertyApiName] =
+                propertyApiName;
             }
             return migration;
           }),
@@ -99,7 +99,7 @@ export function convertInterfaceSchemaGracePeriod(
 /** A converted instruction, alongside the property api names it came out referencing. */
 interface ConvertedInstruction {
   migration: OntologyIrInterfaceTypeSchemaMigrationInstruction;
-  referencedApiNames: readonly string[];
+  referencedPropertyApiNames: readonly string[];
 }
 
 function convertInstruction(
@@ -118,7 +118,7 @@ function convertInstruction(
           // For ontology-ir, this carries an API name, not a rid, despite its name
           addRequiredProperty: { propertyTypeRid: propertyApiName },
         },
-        referencedApiNames: [propertyApiName],
+        referencedPropertyApiNames: [propertyApiName],
       };
     }
     default:
