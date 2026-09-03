@@ -23,10 +23,28 @@ export async function loadQueryMetadata(
   client: MinimalClient,
   queryTypeApiNameAndVersion: string,
 ): Promise<QueryMetadata> {
-  const [apiName, version] = queryTypeApiNameAndVersion.split(":");
-  const r = await QueryTypes.get(client, await client.ontologyRid, apiName, {
+  const separatorIndex = queryTypeApiNameAndVersion.lastIndexOf(":");
+  const apiName =
+    separatorIndex === -1
+      ? queryTypeApiNameAndVersion
+      : queryTypeApiNameAndVersion.slice(0, separatorIndex);
+  const version =
+    separatorIndex === -1
+      ? undefined
+      : queryTypeApiNameAndVersion.slice(separatorIndex + 1);
+
+  // `branch` is part of the API Gateway contract but has not yet been
+  // published in @osdk/foundry.ontologies.
+  const queryParameters = {
     version,
-  });
+    branch: client.branch,
+  } as Parameters<typeof QueryTypes.get>[3] & { branch?: string };
+  const r = await QueryTypes.get(
+    client,
+    await client.ontologyRid,
+    apiName,
+    queryParameters,
+  );
 
   const { wireQueryTypeV2ToSdkQueryMetadata } =
     await import("@osdk/generator-converters");

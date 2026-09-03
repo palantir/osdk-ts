@@ -1990,7 +1990,7 @@ describe("generator", () => {
         new Map(),
         new Map(),
         false,
-        [],
+        new Map(),
         exportOntologyMetadata,
       );
       return helper.getFiles();
@@ -2369,7 +2369,7 @@ describe("generator", () => {
         new Map(),
         new Map(),
         false,
-        ["getCount"],
+        new Map([["getCount", "1.x"]]),
       );
 
       expect(tweakedFilesForSnapshotConsistency(helper.getFiles()))
@@ -2683,14 +2683,14 @@ describe("generator", () => {
           };
           apiName: 'getCount';
           type: 'query';
-          version: '1.1.0';
+          version: '1.x';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const getCount: getCount = {
           apiName: 'getCount',
           type: 'query',
-          version: '1.1.0',
+          version: '1.x',
           isFixedVersion: true,
           osdkMetadata: $osdkMetadata,
         };
