@@ -108,6 +108,43 @@ describe("applyTransition", () => {
   });
 });
 
+describe("schemasAgreeOn", () => {
+  const schema = (
+    properties: LockedInterfaceSchema["properties"],
+  ): LockedInterfaceSchema => ({ properties });
+
+  it("agrees on a property both schemas record identically", () => {
+    expect(schemasAgreeOn(previousSchema, previousSchema, ["lastName"])).toBe(
+      true,
+    );
+  });
+
+  it("disagrees on a property the two schemas record differently", () => {
+    expect(
+      schemasAgreeOn(previousSchema, sourceSchema({ required: true }), [
+        "lastName",
+      ]),
+    ).toBe(false);
+  });
+
+  // The case a removing instruction produces: its strict application deletes the property, and the
+  // source that finalized it does not declare it either. Demanding presence would report that
+  // agreement as a mismatch.
+  it("agrees on a property absent from both schemas", () => {
+    expect(schemasAgreeOn(schema({}), schema({}), ["lastName"])).toBe(true);
+  });
+
+  it("disagrees on a property present in only one schema", () => {
+    const present = schema({ lastName: { type: "string", required: false } });
+    expect(schemasAgreeOn(present, schema({}), ["lastName"])).toBe(false);
+    expect(schemasAgreeOn(schema({}), present, ["lastName"])).toBe(false);
+  });
+
+  it("never agrees when asked about no properties at all", () => {
+    expect(schemasAgreeOn(previousSchema, previousSchema, [])).toBe(false);
+  });
+});
+
 // The disambiguation table from the RFC: which of the two applications reproduces the new source
 // schema tells us what the author meant by removing the transition.
 describe("deletion vs finalization disambiguation", () => {

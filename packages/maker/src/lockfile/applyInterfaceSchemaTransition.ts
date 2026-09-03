@@ -40,6 +40,9 @@ export type ApplyMode = "lenient" | "strict";
  * Spelled out structurally rather than as a `Partial` of the lockfile's property type so that
  * describing an instruction stays independent of how it happens to be persisted. The fields line
  * up, so applying an edit is a spread.
+ *
+ * Every edit patches a property that already exists. Creating or removing one is deliberately not
+ * representable until an instruction needs it — see {@link applyEdits}.
  */
 interface PropertyEdit {
   type?: PropertyTypeType;
@@ -104,9 +107,11 @@ export interface AppliedTransition {
  * property is absent.
  *
  * Every instruction so far patches properties that already exist, so that precondition lives in
- * this shared fold. An instruction that *creates* a property would need {@link PropertyEdit} to
- * distinguish creation from patching, and the check belongs with that distinction rather than with
- * the identity of the instruction that asked for it.
+ * this shared fold. An instruction that *creates* or *removes* a property — an out-of-place rename
+ * does both — would need {@link PropertyEdit} to tell those apart from patching, and the check
+ * belongs with that distinction rather than with the identity of the instruction that asked for
+ * it. {@link schemasAgreeOn} already compares an absent property correctly, so this fold and the
+ * edit type are all that stand in the way.
  */
 function applyEdits(
   schema: LockedInterfaceSchema,
@@ -169,8 +174,12 @@ export function transitionTargetProperties(
 }
 
 /**
- * Whether two schemas agree on the named properties. A property missing from either side counts
- * as a disagreement, so a removed property never masquerades as a successful application.
+ * Whether two schemas agree on the named properties, comparing the whole state of each name:
+ * absent from both sides agrees, and present on only one side does not.
+ *
+ * Stated over states rather than over values so that an instruction which *removes* a property can
+ * be compared like any other. Demanding presence instead would read that removal as a
+ * disagreement, and so report a legal finalization of such an instruction as an illegal change.
  *
  * An empty list is `false`, not vacuously `true`: naming no properties means the schemas were
  * never compared, and the sole caller reads `true` as "this transition was applied". An
@@ -185,9 +194,7 @@ export function schemasAgreeOn(
   if (propertyApiNames.length === 0) {
     return false;
   }
-  return propertyApiNames.every(
-    (apiName) =>
-      a.properties[apiName] !== undefined &&
-      isDeepStrictEqual(a.properties[apiName], b.properties[apiName]),
+  return propertyApiNames.every((apiName) =>
+    isDeepStrictEqual(a.properties[apiName], b.properties[apiName]),
   );
 }
