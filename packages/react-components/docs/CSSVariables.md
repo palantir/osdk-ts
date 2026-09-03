@@ -96,7 +96,6 @@ Control layout, spacing, shadows, and z-index layering.
 | `--osdk-surface-background-color-default-active` | `--bp-surface-background-color-default-active` | Active state background for surfaces       |
 | `--osdk-surface-background-color-danger-rest`    | `--bp-surface-background-color-danger-rest`    | Danger rest state background               |
 | `--osdk-surface-background-color-danger-hover`   | `--bp-surface-background-color-danger-hover`   | Danger hover state background              |
-| `--osdk-surface-background-color-danger-active`  | `--bp-surface-background-color-danger-active`  | Danger active state background             |
 | `--osdk-surface-spacing`                         | `--bp-surface-spacing`                         | Base spacing unit (4px)                    |
 | `--osdk-surface-shadow-2`                        | `--bp-surface-shadow-2`                        | Shadow for tooltips and popovers           |
 
@@ -104,24 +103,20 @@ Control layout, spacing, shadows, and z-index layering.
 
 Control text appearance.
 
-| Variable                                   | Maps to Blueprint Token                  | Description                  |
-| ------------------------------------------ | ---------------------------------------- | ---------------------------- |
-| `--osdk-typography-family-default`         | `--bp-typography-family-default`         | Default font family          |
-| `--osdk-typography-color-muted`            | `--bp-typography-color-muted`            | Muted/subtle text color      |
-| `--osdk-typography-color-default-rest`     | `--bp-typography-color-default-rest`     | Default text color           |
-| `--osdk-typography-color-default-hover`    | `--bp-typography-color-default-hover`    | Default hover text color     |
-| `--osdk-typography-color-default-active`   | `--bp-typography-color-default-active`   | Default active text color    |
-| `--osdk-typography-color-default-disabled` | `--bp-typography-color-default-disabled` | Default disabled text color  |
-| `--osdk-typography-color-primary-rest`     | `--bp-typography-color-primary-rest`     | Theme-aware primary text     |
-| `--osdk-typography-color-danger-rest`      | `--bp-typography-color-danger-rest`      | Danger text color            |
-| `--osdk-typography-color-danger-active`    | `--bp-typography-color-danger-active`    | Danger active text color     |
-| `--osdk-typography-size-body-x-small`      | `--bp-typography-size-body-x-small`      | Extra-small body text size   |
-| `--osdk-typography-size-body-small`        | `--bp-typography-size-body-small`        | Small body text size         |
-| `--osdk-typography-size-body-medium`       | `--bp-typography-size-body-medium`       | Medium body text size (13px) |
-| `--osdk-typography-size-body-large`        | `--bp-typography-size-body-large`        | Large body text size         |
-| `--osdk-typography-line-height-default`    | `--bp-typography-line-height-default`    | Default line height          |
-| `--osdk-typography-weight-default`         | `--bp-typography-weight-default`         | Default font weight          |
-| `--osdk-typography-weight-bold`            | `--bp-typography-weight-bold`            | Bold font weight             |
+| Variable                                | Maps to Blueprint Token               | Description                  |
+| --------------------------------------- | ------------------------------------- | ---------------------------- |
+| `--osdk-typography-family-default`      | `--bp-typography-family-default`      | Default font family          |
+| `--osdk-typography-color-muted`         | `--bp-typography-color-muted`         | Muted/subtle text color      |
+| `--osdk-typography-color-default-rest`  | `--bp-typography-color-default-rest`  | Default text color           |
+| `--osdk-typography-color-primary-rest`  | `--bp-typography-color-primary-rest`  | Theme-aware primary text     |
+| `--osdk-typography-color-danger-rest`   | `--bp-typography-color-danger-rest`   | Danger text color            |
+| `--osdk-typography-size-body-x-small`   | `--bp-typography-size-body-x-small`   | Extra-small body text size   |
+| `--osdk-typography-size-body-small`     | `--bp-typography-size-body-small`     | Small body text size         |
+| `--osdk-typography-size-body-medium`    | `--bp-typography-size-body-medium`    | Medium body text size (13px) |
+| `--osdk-typography-size-body-large`     | `--bp-typography-size-body-large`     | Large body text size         |
+| `--osdk-typography-line-height-default` | `--bp-typography-line-height-default` | Default line height          |
+| `--osdk-typography-weight-default`      | `--bp-typography-weight-default`      | Default font weight          |
+| `--osdk-typography-weight-bold`         | `--bp-typography-weight-bold`         | Bold font weight             |
 
 ### Intent Tokens
 
@@ -129,30 +124,23 @@ Semantic colors for interactive elements and states.
 
 | Variable                           | Maps to Blueprint Token          | Description                       |
 | ---------------------------------- | -------------------------------- | --------------------------------- |
-| `--osdk-intent-default-rest`       | `--bp-intent-default-rest`       | Default rest state                |
-| `--osdk-intent-default-hover`      | `--bp-intent-default-hover`      | Default hover state               |
-| `--osdk-intent-default-active`     | `--bp-intent-default-active`     | Default active/pressed state      |
-| `--osdk-intent-default-disabled`   | `--bp-intent-default-disabled`   | Default disabled state            |
-| `--osdk-intent-default-foreground` | `--bp-intent-default-foreground` | Text color on default backgrounds |
-| `--osdk-intent-primary-rest`       | `--bp-intent-primary-rest`       | Primary rest state                |
-| `--osdk-intent-primary-hover`      | `--bp-intent-primary-hover`      | Primary hover state               |
-| `--osdk-intent-primary-active`     | `--bp-intent-primary-active`     | Primary active/pressed state      |
-| `--osdk-intent-primary-disabled`   | `--bp-intent-primary-disabled`   | Primary disabled state            |
+| `--osdk-intent-default-rest`       | `--bp-intent-neutral-500`        | Default rest state                |
+| `--osdk-intent-default-hover`      | `--bp-intent-neutral-600`        | Default hover state               |
+| `--osdk-intent-default-active`     | `--bp-intent-neutral-700`        | Default active/pressed state      |
+| `--osdk-intent-primary-rest`       | `--bp-intent-primary-500`        | Primary rest state                |
+| `--osdk-intent-primary-hover`      | `--bp-intent-primary-600`        | Primary hover state               |
+| `--osdk-intent-primary-active`     | `--bp-intent-primary-700`        | Primary active/pressed state      |
 | `--osdk-intent-primary-foreground` | `--bp-intent-primary-foreground` | Text color on primary backgrounds |
-| `--osdk-intent-success-rest`       | `--bp-intent-success-rest`       | Success rest state                |
-| `--osdk-intent-success-hover`      | `--bp-intent-success-hover`      | Success hover state               |
-| `--osdk-intent-success-active`     | `--bp-intent-success-active`     | Success active/pressed state      |
-| `--osdk-intent-success-disabled`   | `--bp-intent-success-disabled`   | Success disabled state            |
+| `--osdk-intent-success-rest`       | `--bp-intent-success-500`        | Success rest state                |
+| `--osdk-intent-success-hover`      | `--bp-intent-success-600`        | Success hover state               |
+| `--osdk-intent-success-active`     | `--bp-intent-success-700`        | Success active/pressed state      |
 | `--osdk-intent-success-foreground` | `--bp-intent-success-foreground` | Text color on success backgrounds |
-| `--osdk-intent-warning-rest`       | `--bp-intent-warning-rest`       | Warning rest state                |
-| `--osdk-intent-warning-hover`      | `--bp-intent-warning-hover`      | Warning hover state               |
-| `--osdk-intent-warning-active`     | `--bp-intent-warning-active`     | Warning active/pressed state      |
-| `--osdk-intent-warning-disabled`   | `--bp-intent-warning-disabled`   | Warning disabled state            |
-| `--osdk-intent-warning-foreground` | `--bp-intent-warning-foreground` | Text color on warning backgrounds |
-| `--osdk-intent-danger-rest`        | `--bp-intent-danger-rest`        | Danger rest state                 |
-| `--osdk-intent-danger-hover`       | `--bp-intent-danger-hover`       | Danger hover state                |
-| `--osdk-intent-danger-active`      | `--bp-intent-danger-active`      | Danger active/pressed state       |
-| `--osdk-intent-danger-disabled`    | `--bp-intent-danger-disabled`    | Danger disabled state             |
+| `--osdk-intent-warning-rest`       | `--bp-intent-warning-500`        | Warning rest state                |
+| `--osdk-intent-warning-hover`      | `--bp-intent-warning-600`        | Warning hover state               |
+| `--osdk-intent-warning-active`     | `--bp-intent-warning-700`        | Warning active/pressed state      |
+| `--osdk-intent-danger-rest`        | `--bp-intent-danger-500`         | Danger rest state                 |
+| `--osdk-intent-danger-hover`       | `--bp-intent-danger-600`         | Danger hover state                |
+| `--osdk-intent-danger-active`      | `--bp-intent-danger-700`         | Danger active/pressed state       |
 | `--osdk-intent-danger-foreground`  | `--bp-intent-danger-foreground`  | Text color on danger backgrounds  |
 
 ### Iconography Tokens
@@ -182,15 +170,9 @@ Raw color palette tokens.
 
 | Variable                      | Maps to Blueprint Token     | Description  |
 | ----------------------------- | --------------------------- | ------------ |
-| `--osdk-palette-blue-4`       | `--bp-palette-blue-4`       | Blue 4       |
 | `--osdk-palette-gray-1`       | `--bp-palette-gray-1`       | Gray 1       |
 | `--osdk-palette-gray-2`       | `--bp-palette-gray-2`       | Gray 2       |
 | `--osdk-palette-gray-4`       | `--bp-palette-gray-4`       | Gray 4       |
-| `--osdk-palette-red-4`        | `--bp-palette-red-4`        | Red 4        |
-| `--osdk-palette-dark-gray-2`  | `--bp-palette-dark-gray-2`  | Dark gray 2  |
-| `--osdk-palette-dark-gray-3`  | `--bp-palette-dark-gray-3`  | Dark gray 3  |
-| `--osdk-palette-light-gray-1` | `--bp-palette-light-gray-1` | Light gray 1 |
-| `--osdk-palette-light-gray-3` | `--bp-palette-light-gray-3` | Light gray 3 |
 | `--osdk-palette-light-gray-4` | `--bp-palette-light-gray-4` | Light gray 4 |
 | `--osdk-palette-light-gray-5` | `--bp-palette-light-gray-5` | Light gray 5 |
 | `--osdk-palette-white`        | `--bp-palette-white`        | White        |
@@ -228,7 +210,6 @@ These tokens are pre-calculated colors with opacity for specific UI effects.
 | `--osdk-custom-color-gray-2`       | `color-mix(in srgb, var(--osdk-palette-gray-1) 8%, transparent)`        | Gray at 8% opacity           |
 | `--osdk-custom-color-gray-3`       | `color-mix(in srgb, var(--osdk-palette-gray-1) 10%, transparent)`       | Gray at 10% opacity          |
 | `--osdk-custom-color-gray-4`       | `color-mix(in srgb, var(--osdk-palette-gray-1) 20%, transparent)`       | Gray at 20% opacity          |
-| `--osdk-custom-color-light-gray-1` | `color-mix(in srgb, var(--osdk-palette-light-gray-1) 60%, transparent)` | Light gray at 60% opacity    |
 | `--osdk-custom-color-light-gray-2` | `color-mix(in srgb, var(--osdk-palette-light-gray-5) 50%, transparent)` | Light gray at 50% opacity    |
 | `--osdk-custom-color-primary-1`    | `color-mix(in srgb, var(--osdk-intent-primary-rest) 50%, transparent)`  | Primary color at 50% opacity |
 
