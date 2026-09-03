@@ -46,17 +46,17 @@ describe("parseLockfile", () => {
 
   const wellFormed = withInterface({
     schema: { properties: { lastName: property } },
-    migrations: { active: [transition] },
+    transitions: [transition],
   });
 
   it("returns a well-formed lockfile unchanged", () => {
     expect(parse(wellFormed)).toStrictEqual(wellFormed);
   });
 
-  it("accepts an interface with no properties and no migrations", () => {
+  it("accepts an interface with no properties and no transitions", () => {
     const empty = withInterface({
       schema: { properties: {} },
-      migrations: { active: [] },
+      transitions: [],
     });
     expect(parse(empty)).toStrictEqual(empty);
   });
@@ -95,9 +95,9 @@ describe("parseLockfile", () => {
   });
 
   it.each([
-    ["missing", { migrations: { active: [] } }],
-    ["null", { schema: { properties: null }, migrations: { active: [] } }],
-    ["not under `schema`", { properties: {}, migrations: { active: [] } }],
+    ["missing", { transitions: [] }],
+    ["null", { schema: { properties: null }, transitions: [] }],
+    ["not under `schema`", { properties: {}, transitions: [] }],
   ])("rejects `schema.properties` being %s", (_name, entry) => {
     expect(() => parse(withInterface(entry))).toThrowError(
       /lock\.json: interface Person is missing `schema\.properties`/u,
@@ -106,10 +106,10 @@ describe("parseLockfile", () => {
 
   it.each([
     ["missing", { schema: { properties: {} } }],
-    ["not an array", { schema: { properties: {} }, migrations: { active: 1 } }],
-  ])("rejects `migrations.active` being %s", (_name, entry) => {
+    ["not an array", { schema: { properties: {} }, transitions: 1 }],
+  ])("rejects `transitions` being %s", (_name, entry) => {
     expect(() => parse(withInterface(entry))).toThrowError(
-      /lock\.json: interface Person is missing `migrations\.active`/u,
+      /lock\.json: interface Person is missing `transitions`/u,
     );
   });
 
@@ -117,7 +117,7 @@ describe("parseLockfile", () => {
   function withProperty(broken: unknown) {
     return withInterface({
       schema: { properties: { lastName: broken } },
-      migrations: { active: [] },
+      transitions: [],
     });
   }
 
@@ -145,7 +145,7 @@ describe("parseLockfile", () => {
   function withTransition(overrides: Record<string, unknown>) {
     return withInterface({
       schema: { properties: { lastName: property } },
-      migrations: { active: [{ ...transition, ...overrides }] },
+      transitions: [{ ...transition, ...overrides }],
     });
   }
 

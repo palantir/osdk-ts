@@ -164,10 +164,10 @@ function validateInterface(
   )) {
     validateProperty(where, property, locked);
   }
-  if (!Array.isArray(interfaceType.migrations?.active)) {
-    throw new Error(`${where} is missing \`migrations.active\`.`);
+  if (!Array.isArray(interfaceType.transitions)) {
+    throw new Error(`${where} is missing \`transitions\`.`);
   }
-  for (const transition of interfaceType.migrations.active) {
+  for (const transition of interfaceType.transitions) {
     validateTransition(where, transition, lockfilePath);
   }
 }
