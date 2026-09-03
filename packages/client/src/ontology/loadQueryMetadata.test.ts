@@ -49,7 +49,7 @@ it("loads a version range on the client's branch", async () => {
     {
       branch: "ri.branch.main.branch.sdk-branch",
       version: "1.x",
-    }
+    },
   );
   expect(metadata).toEqual({
     apiName: "getEmployees",
