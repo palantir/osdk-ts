@@ -8,16 +8,16 @@
   --osdk-surface-border-radius: var(--bp-surface-border-radius);
   --osdk-surface-layer-primary: var(--bp-surface-layer-primary-rest);
   --osdk-surface-border-width: var(--bp-surface-border-width);
-  --osdk-surface-border-color-default: var(--bp-surface-border-color-neutral);
-  --osdk-surface-border-color-strong: var(--bp-surface-border-color-neutral);
+  --osdk-surface-border-color-default: var(--bp-surface-divider-color-default);
+  --osdk-surface-border-color-strong: var(--bp-surface-divider-color-strong);
   --osdk-surface-background-color-default-rest: var(
     --bp-surface-background-color-base-rest
   );
   --osdk-surface-background-color-default-hover: var(
-    --bp-surface-background-color-base-hover
+    --bp-surface-layer-color-neutral-hover
   );
   --osdk-surface-background-color-default-active: var(
-    --bp-surface-background-color-base-active
+    --bp-surface-layer-color-neutral-active
   );
   --osdk-surface-background-color-danger-rest: var(
     --bp-surface-background-color-danger-rest
@@ -54,30 +54,46 @@
   );
   --osdk-typography-weight-default: var(--bp-typography-weight-default);
   --osdk-typography-weight-bold: var(--bp-typography-weight-strong);
-  --osdk-intent-default-rest: var(--bp-intent-neutral-500);
-  --osdk-intent-default-hover: var(--bp-intent-neutral-600);
-  --osdk-intent-default-active: var(--bp-intent-neutral-700);
-  --osdk-intent-default-disabled: var(--bp-intent-neutral-300);
+  --osdk-intent-default-rest: var(--bp-surface-background-color-neutral-rest);
+  --osdk-intent-default-hover: var(--bp-surface-background-color-neutral-hover);
+  --osdk-intent-default-active: var(
+    --bp-surface-background-color-neutral-active
+  );
+  --osdk-intent-default-disabled: var(
+    --bp-surface-background-color-neutral-rest
+  );
   --osdk-intent-default-foreground: var(--bp-intent-neutral-foreground);
-  --osdk-intent-primary-rest: var(--bp-intent-primary-500);
-  --osdk-intent-primary-hover: var(--bp-intent-primary-600);
-  --osdk-intent-primary-active: var(--bp-intent-primary-700);
-  --osdk-intent-primary-disabled: var(--bp-intent-primary-300);
+  --osdk-intent-primary-rest: var(--bp-surface-background-color-primary-rest);
+  --osdk-intent-primary-hover: var(--bp-surface-background-color-primary-hover);
+  --osdk-intent-primary-active: var(
+    --bp-surface-background-color-primary-active
+  );
+  --osdk-intent-primary-disabled: var(
+    --bp-surface-background-color-primary-rest
+  );
   --osdk-intent-primary-foreground: var(--bp-intent-primary-foreground);
-  --osdk-intent-success-rest: var(--bp-intent-success-500);
-  --osdk-intent-success-hover: var(--bp-intent-success-600);
-  --osdk-intent-success-active: var(--bp-intent-success-700);
-  --osdk-intent-success-disabled: var(--bp-intent-success-300);
+  --osdk-intent-success-rest: var(--bp-surface-background-color-success-rest);
+  --osdk-intent-success-hover: var(--bp-surface-background-color-success-hover);
+  --osdk-intent-success-active: var(
+    --bp-surface-background-color-success-active
+  );
+  --osdk-intent-success-disabled: var(
+    --bp-surface-background-color-success-rest
+  );
   --osdk-intent-success-foreground: var(--bp-intent-success-foreground);
-  --osdk-intent-warning-rest: var(--bp-intent-warning-500);
-  --osdk-intent-warning-hover: var(--bp-intent-warning-600);
-  --osdk-intent-warning-active: var(--bp-intent-warning-700);
-  --osdk-intent-warning-disabled: var(--bp-intent-warning-300);
+  --osdk-intent-warning-rest: var(--bp-surface-background-color-warning-rest);
+  --osdk-intent-warning-hover: var(--bp-surface-background-color-warning-hover);
+  --osdk-intent-warning-active: var(
+    --bp-surface-background-color-warning-active
+  );
+  --osdk-intent-warning-disabled: var(
+    --bp-surface-background-color-warning-rest
+  );
   --osdk-intent-warning-foreground: var(--bp-intent-warning-foreground);
-  --osdk-intent-danger-rest: var(--bp-intent-danger-500);
-  --osdk-intent-danger-hover: var(--bp-intent-danger-600);
-  --osdk-intent-danger-active: var(--bp-intent-danger-700);
-  --osdk-intent-danger-disabled: var(--bp-intent-danger-300);
+  --osdk-intent-danger-rest: var(--bp-surface-background-color-danger-rest);
+  --osdk-intent-danger-hover: var(--bp-surface-background-color-danger-hover);
+  --osdk-intent-danger-active: var(--bp-surface-background-color-danger-active);
+  --osdk-intent-danger-disabled: var(--bp-surface-background-color-danger-rest);
   --osdk-intent-danger-foreground: var(--bp-intent-danger-foreground);
   --osdk-emphasis-focus-width: var(--bp-emphasis-focus-width);
   --osdk-emphasis-focus-color: var(--bp-emphasis-focus-color);
@@ -107,9 +123,7 @@
   --osdk-background-tertiary: var(--bp-surface-layer-color-neutral-hover);
   --osdk-background-skeleton-from: var(--bp-surface-layer-color-neutral-rest);
   --osdk-background-skeleton-to: var(--bp-surface-layer-color-neutral-active);
-  --osdk-background-backdrop: oklch(
-    from var(--bp-surface-background-color-neutral-active) l c h / 0.5
-  );
+  --osdk-background-backdrop: var(--bp-palette-black-500);
   --osdk-custom-color-gray-1: var(--bp-surface-layer-color-neutral-rest);
   --osdk-custom-color-gray-2: var(--bp-surface-layer-color-neutral-hover);
   --osdk-custom-color-gray-3: var(--bp-surface-layer-color-neutral-hover);
@@ -121,7 +135,7 @@
     var(--bp-emphasis-focus-color);
   --osdk-focus-visible-outline-offset: var(--bp-emphasis-focus-offset);
   --osdk-surface-border: var(--bp-surface-border-width) solid
-    var(--bp-surface-border-color-neutral);
+    var(--bp-surface-divider-color-default);
   --osdk-drag-handle-color: var(--bp-typography-color-intent-neutral);
   --osdk-drag-handle-color-hover: var(--bp-typography-color-base);
   --osdk-drag-handle-cursor: grab;
