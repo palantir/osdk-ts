@@ -21,7 +21,10 @@ import type {
   OntologyIrInterfaceTypeSchemaTransition,
 } from "@osdk/client.unstable";
 
-import { interfacePropertyWireApiName } from "../../api/interface/InterfacePropertyType.js";
+import {
+  type InterfacePropertyType,
+  interfacePropertyWireApiName,
+} from "../../api/interface/InterfacePropertyType.js";
 import type {
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
@@ -50,13 +53,14 @@ export function convertInterfaceSchemaMigrations(
             transition.gracePeriod,
           ),
           migrations: transition.instructions.map((instruction) => {
-            const propertyApiName = interfacePropertyWireApiName(
-              propertiesV3[instruction.property],
-              instruction.property,
+            const { migration, referencedApiNames } = convertInstruction(
+              instruction,
+              propertiesV3,
             );
-            interfacePropertyTypeRidsToApiNames[propertyApiName] =
-              propertyApiName;
-            return convertInstruction(instruction, propertyApiName);
+            for (const apiName of referencedApiNames) {
+              interfacePropertyTypeRidsToApiNames[apiName] = apiName;
+            }
+            return migration;
           }),
         },
       ],
@@ -92,19 +96,37 @@ export function convertInterfaceSchemaGracePeriod(
   }
 }
 
+/**
+ * A converted instruction, alongside the property api names it came out referencing.
+ *
+ * The block data carries a side map of every property its migrations mention, and the emitter is
+ * what knows which those are: reporting them back is the only way the map cannot end up describing
+ * a set of properties different from the one the emitted migrations actually name.
+ */
+interface ConvertedInstruction {
+  migration: OntologyIrInterfaceTypeSchemaMigrationInstruction;
+  referencedApiNames: readonly string[];
+}
+
 function convertInstruction(
   instruction: InterfaceSchemaMigrationInstruction,
-  propertyApiName: string,
-): OntologyIrInterfaceTypeSchemaMigrationInstruction {
+  propertiesV3: Record<string, InterfacePropertyType>,
+): ConvertedInstruction {
   switch (instruction.type) {
-    case "addRequiredProperty":
+    case "addRequiredProperty": {
+      const propertyApiName = interfacePropertyWireApiName(
+        propertiesV3[instruction.property],
+        instruction.property,
+      );
       return {
-        type: "addRequiredProperty",
-        addRequiredProperty: {
+        migration: {
+          type: "addRequiredProperty",
           // For ontology-ir, this carries an API name, not a rid, despite its name
-          propertyTypeRid: propertyApiName,
+          addRequiredProperty: { propertyTypeRid: propertyApiName },
         },
+        referencedApiNames: [propertyApiName],
       };
+    }
     default:
       // TODO: add a never exhaustiveness check once there's more than one instruction type
       throw new Error(

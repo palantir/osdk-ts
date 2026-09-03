@@ -204,7 +204,7 @@ describe("Interface schema migrations", () => {
           transition({ id: "t2", instructions: [instruction] }),
         ]),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t2" on interface com.palantir.Foo repeats the instruction addRequiredProperty for property "optional0", which transition "t1" already declares.]`,
+        `[Error: Invariant failed: Schema migration transition "t2" on interface com.palantir.Foo repeats the instruction addRequiredProperty("optional0"), which transition "t1" already declares.]`,
       );
     });
 
