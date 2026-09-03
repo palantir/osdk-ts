@@ -67,6 +67,7 @@ const startDateFilter: FilterDefinitionUnion<Employee> = {
   label: "Start Date",
   filterComponent: "DATE_RANGE",
   clickToFilter: true,
+  enableRelativeMode: true,
   formatDate: (date) =>
     date.toLocaleDateString("en-US", {
       day: "numeric",
@@ -108,6 +109,44 @@ const sharedFilterDefinitions: FilterDefinitionUnion<Employee>[] = [
   jobTitleMultiSelectFilter,
   employeeNumberFilter,
   locationCityFilter,
+];
+
+// -- Relative date filter story definitions --
+
+const relativeDateFilterDefinitions: Array<FilterDefinitionUnion<Employee>> = [
+  {
+    type: "PROPERTY",
+    id: "start-date-absolute",
+    key: "firstFullTimeStartDate",
+    label: "Absolute Only",
+    filterComponent: "DATE_RANGE",
+  },
+  {
+    type: "PROPERTY",
+    id: "start-date-relative",
+    key: "firstFullTimeStartDate",
+    label: "Relative Enabled",
+    filterComponent: "DATE_RANGE",
+    enableRelativeMode: true,
+  },
+  {
+    type: "PROPERTY",
+    id: "start-date-relative-default",
+    key: "firstFullTimeStartDate",
+    label: "Relative with Defaults",
+    filterComponent: "DATE_RANGE",
+    enableRelativeMode: true,
+    defaultFilterState: {
+      type: "DATE_RANGE",
+      isRelative: true,
+      relativeMin: { count: 30, unit: "years", direction: "ago" },
+      relativeMax: {
+        count: 0,
+        unit: "days",
+        direction: "fromNow",
+      },
+    },
+  },
 ];
 
 const SIDEBAR_STYLE = { width: 320, height: 600 } as const;
@@ -2925,4 +2964,58 @@ export const WithResetButtonNonEmptyInitial: Story = {
     },
   },
   render: (args) => <WithResetButtonNonEmptyInitialStory {...args} />,
+};
+
+// ---------------------------------------------------------------------------
+// Relative Date Filter
+// ---------------------------------------------------------------------------
+
+function RelativeDateFilterStory(args: Partial<EmployeeFilterListProps>) {
+  const [filterClause, setFilterClause] = useState<
+    WhereClause<Employee> | undefined
+  >(undefined);
+
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause<Employee>) => {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
+  return (
+    <div style={FLEX_ROW_STYLE}>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={relativeDateFilterDefinitions}
+          {...args}
+          onFilterClauseChanged={handleFilterClauseChanged}
+        />
+      </div>
+      <div style={FLEX_FILL_STYLE}>
+        <strong>Filter Clause (JSON):</strong>
+        <pre style={PRE_STYLE}>
+          {filterClause
+            ? JSON.stringify(filterClause, null, 2)
+            : "(no active filters)"}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+export const RelativeDateFilter: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "One FilterList with three DATE_RANGE filters on the same property (using unique ids): " +
+          "absolute only, relative enabled (empty), and relative with default bounds (30 days ago – Today). " +
+          "The combined where clause JSON is shown on the right.",
+      },
+    },
+  },
+  render: (args) => <RelativeDateFilterStory {...args} />,
 };
