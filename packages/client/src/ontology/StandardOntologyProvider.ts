@@ -37,12 +37,12 @@ import {
 export interface OntologyCachingOptions {}
 
 export const createStandardOntologyProviderFactory: (
-  opts: OntologyCachingOptions
+  opts: OntologyCachingOptions,
 ) => OntologyProviderFactory = (client) => {
   return (client) => {
     async function loadObject(
       client: MinimalClient,
-      key: string
+      key: string,
     ): Promise<FetchedObjectTypeDefinition> {
       const objectDef = await loadFullObjectMetadata(client, key);
 
@@ -54,9 +54,9 @@ export const createStandardOntologyProviderFactory: (
         (
           await Promise.all<InterfaceMetadata>(
             objectDef.implements?.map((i) => ret.getInterfaceDefinition(i)) ??
-              []
+              [],
           )
-        ).map((i) => [i.apiName, { def: i, handler: undefined }])
+        ).map((i) => [i.apiName, { def: i, handler: undefined }]),
       );
 
       const fullObjectDef = {
@@ -71,6 +71,8 @@ export const createStandardOntologyProviderFactory: (
       return deepFreeze(await loadInterfaceMetadata(client, key));
     }
 
+    // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     async function loadQuery(client: MinimalClient, key: string) {
       return loadQueryMetadata(client, key);
     }
@@ -86,11 +88,11 @@ export const createStandardOntologyProviderFactory: (
       fn: (
         client: MinimalClient,
         key: string,
-        skipCache?: boolean
-      ) => Promise<N>
+        skipCache?: boolean,
+      ) => Promise<N>,
     ) {
       const cache = createAsyncClientCache<string, N>((client, key) =>
-        fn(client, key, false)
+        fn(client, key, false),
       );
       return async (apiName: string) => {
         return await cache.get(client, apiName);
@@ -102,13 +104,13 @@ export const createStandardOntologyProviderFactory: (
       fn: (
         client: MinimalClient,
         key: string,
-        skipCache?: boolean
-      ) => Promise<QueryMetadata>
+        skipCache?: boolean,
+      ) => Promise<QueryMetadata>,
     ) {
       const queryCache = createAsyncClientCache<string, QueryMetadata>(
         (client, key) => {
           return fn(client, key);
-        }
+        },
       );
       return async (apiName: string, version?: string) => {
         const key = version ? `${apiName}:${version}` : apiName;

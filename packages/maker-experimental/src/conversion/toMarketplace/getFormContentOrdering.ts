@@ -19,13 +19,13 @@ import type { ActionType } from "@osdk/maker";
 
 export function getFormContentOrdering(
   action: ActionType,
-  parameterOrdering: string[]
+  parameterOrdering: string[],
 ): OntologyIrFormContent[] {
   if (!action.sections) return [];
   const parametersToSection = Object.fromEntries(
     Object.entries(action.sections).flatMap(([sectionId, section]) =>
-      section.parameters.map((param) => [param, sectionId])
-    )
+      section.parameters.map((param) => [param, sectionId]),
+    ),
   );
   const seenIds = new Set<string>();
   const formContentOrdering: OntologyIrFormContent[] = [];

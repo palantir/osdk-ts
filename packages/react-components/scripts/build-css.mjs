@@ -32,6 +32,8 @@ const srcDir = path.join(__dirname, "..", "src");
 async function findCssModules(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
   const files = await Promise.all(
+    // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     entries.map(async (entry) => {
       const fullPath = path.join(dir, entry.name);
       if (entry.isDirectory()) {
@@ -40,7 +42,7 @@ async function findCssModules(dir) {
         return fullPath;
       }
       return null;
-    })
+    }),
   );
   return files.flat().filter(Boolean);
 }
@@ -48,6 +50,8 @@ async function findCssModules(dir) {
 async function findJsFiles(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
   const files = await Promise.all(
+    // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     entries.map(async (entry) => {
       const fullPath = path.join(dir, entry.name);
       if (entry.isDirectory()) {
@@ -60,7 +64,7 @@ async function findJsFiles(dir) {
         return fullPath;
       }
       return null;
-    })
+    }),
   );
   return files.flat().filter(Boolean);
 }
@@ -74,7 +78,7 @@ async function rewriteCssImports() {
     // Replace CSS module imports to point to .js files
     const updatedContent = content.replaceAll(
       /from\s+["']([^"']+\.module\.css)["']/gu,
-      'from "$1.js"'
+      'from "$1.js"',
     );
 
     if (content !== updatedContent) {

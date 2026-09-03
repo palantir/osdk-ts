@@ -74,7 +74,7 @@ function readPackageCss(specifier) {
     throw new Error(
       `build-css: cannot resolve "${specifier}". ` +
         `Did you run \`pnpm install\`?`,
-      { cause: e }
+      { cause: e },
     );
   }
   return fs.readFile(resolved, "utf-8");
@@ -118,7 +118,7 @@ async function rewriteForShadow(css) {
         root.walkAtRules("charset", (rule) => rule.remove());
         root.walkRules((rule) => {
           rule.selectors = rule.selectors.map((selector) =>
-            selector.replace(/^(:root|html|body)(?=$|[\s>+~])/u, ":host")
+            selector.replace(/^(:root|html|body)(?=$|[\s>+~])/u, ":host"),
           );
         });
       },
@@ -145,8 +145,8 @@ async function rewriteScssImports() {
 async function cleanStaleScssProxies(currentScssSrcPaths) {
   const expectedProxyPaths = new Set(
     currentScssSrcPaths.map((scssPath) =>
-      path.join(buildDir, `${path.relative(srcDir, scssPath)}.js`)
-    )
+      path.join(buildDir, `${path.relative(srcDir, scssPath)}.js`),
+    ),
   );
   const allJsFiles = await findFilesByExt(buildDir, ".module.scss.js");
   for (const jsFile of allJsFiles) {
@@ -181,10 +181,10 @@ async function main() {
   }
 
   const blueprintCoreCss = await readPackageCss(
-    "@blueprintjs/core/lib/css/blueprint.css"
+    "@blueprintjs/core/lib/css/blueprint.css",
   );
   const blueprintIconsCss = await readPackageCss(
-    "@blueprintjs/icons/lib/css/blueprint-icons.css"
+    "@blueprintjs/icons/lib/css/blueprint-icons.css",
   );
 
   // Global, document-scoped bundle preserved for the legacy `./styles.css`
@@ -208,7 +208,7 @@ async function main() {
       "/* @blueprintjs/icons */",
       blueprintIconsCss,
       combinedModuleCss,
-    ].join("\n\n")
+    ].join("\n\n"),
   );
   const shadowCss = [
     "/* @osdk/react-devtools - Shadow-scoped styles */",
@@ -223,7 +223,7 @@ async function main() {
     throw new Error(
       "build-css: shadow bundle has no `:host { --bp-* }` block; the " +
         ":root -> :host rewrite likely failed to match Blueprint's token " +
-        "selectors. Check rewriteForShadow against the installed Blueprint."
+        "selectors. Check rewriteForShadow against the installed Blueprint.",
     );
   }
 
@@ -232,7 +232,7 @@ async function main() {
   await fs.writeFile(
     path.join(buildDir, "styles.js"),
     buildRuntimeInjectionSource(shadowCss),
-    "utf-8"
+    "utf-8",
   );
 
   await rewriteScssImports();
@@ -240,7 +240,7 @@ async function main() {
   console.log(
     `build-css: wrote styles.css (${combinedCss.length} chars), ` +
       `styles.js (${shadowCss.length} chars, shadow-scoped), ` +
-      `and ${scssFiles.length} SCSS-module proxies`
+      `and ${scssFiles.length} SCSS-module proxies`,
   );
 }
 

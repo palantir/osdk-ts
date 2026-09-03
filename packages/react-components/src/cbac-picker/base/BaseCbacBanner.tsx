@@ -19,6 +19,7 @@ import { Cross } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
 
+import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
 import { backgroundFromColors } from "../utils/cbacPickerUtils.js";
 
 import styles from "./BaseCbacBanner.module.css";
@@ -30,6 +31,7 @@ export interface BaseCbacBannerProps {
   onClick?: () => void;
   onDismiss?: () => void;
   className?: string;
+  isLoading?: boolean;
 }
 
 export function BaseCbacBanner({
@@ -39,6 +41,7 @@ export function BaseCbacBanner({
   onClick,
   onDismiss,
   className,
+  isLoading = false,
 }: BaseCbacBannerProps): React.ReactElement {
   const bannerStyle = React.useMemo(
     (): React.CSSProperties =>
@@ -46,7 +49,7 @@ export function BaseCbacBanner({
         "--osdk-cbac-banner-bg": backgroundFromColors(backgroundColors),
         "--osdk-cbac-banner-color": textColor,
       }) as React.CSSProperties,
-    [textColor, backgroundColors]
+    [textColor, backgroundColors],
   );
 
   const handleDismiss = React.useCallback(
@@ -54,8 +57,12 @@ export function BaseCbacBanner({
       e.stopPropagation();
       onDismiss?.();
     },
-    [onDismiss]
+    [onDismiss],
   );
+
+  if (isLoading) {
+    return <BannerSkeleton className={className} />;
+  }
 
   const dismissButton =
     onDismiss != null ? (
@@ -93,6 +100,18 @@ export function BaseCbacBanner({
     >
       <span className={styles.banner}>{classificationString}</span>
       {dismissButton}
+    </div>
+  );
+}
+
+function BannerSkeleton({
+  className,
+}: {
+  className?: string;
+}): React.ReactElement {
+  return (
+    <div className={classnames(styles.bannerRow, className)} aria-hidden="true">
+      <SkeletonBar className={styles.skeletonBanner} />
     </div>
   );
 }

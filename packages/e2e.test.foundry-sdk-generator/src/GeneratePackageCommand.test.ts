@@ -32,13 +32,18 @@ describe("Generate Package Command", () => {
         "build",
         "codegen",
         scope,
-        "osdk"
+        "osdk",
       );
       const packagePath = path.join(generatedPath, "package.json");
 
       const packageJson = JSON.parse(await fs.readFile(packagePath, "utf-8"));
 
-      const scriptsExport = packageJson["exports"]?.["."]?.["script"];
+      expect(packageJson.osdk).toEqual({
+        packageRid: "ri.third-party-applications.main.sdk-package.123",
+        branch: "ri.ontologies.main.sdk-ontology.123",
+      });
+
+      const scriptsExport = packageJson.exports?.["."]?.script;
       expect(scriptsExport).toEqual({
         types: "./dist/bundle/index.d.mts",
         default: "./dist/bundle/index.mjs",
@@ -50,9 +55,9 @@ describe("Generate Package Command", () => {
 
       const contents = await fs.readFile(
         path.join(generatedPath, "esm", "index.js"),
-        "utf-8"
+        "utf-8",
       );
       expect(contents).not.toContain("Object.defineProperty(exports,");
-    }
+    },
   );
 });

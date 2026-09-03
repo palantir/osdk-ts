@@ -131,6 +131,51 @@ export type ApplyModifiersArg<Q extends ObjectOrInterfaceDefinition> = {
     | "applyReducersAndExtractMainValue";
 };
 
+/**
+ * The modifier a default load level resolves to for a single property.
+ *
+ * A default load level is best-effort: it only applies to properties that
+ * actually support it, and `applyReducersAndExtractMainValue` degrades to the
+ * half of itself that a property supports. Properties that support neither
+ * resolve to `never`.
+ */
+export type ResolveDefaultLoadLevelForProp<
+  Q extends ObjectOrInterfaceDefinition,
+  K extends PropertyKeys<Q>,
+  D extends PropertyModifierValue,
+> = D extends "applyMainValue"
+  ? K extends PropsWithMainValue<Q>
+    ? "applyMainValue"
+    : never
+  : D extends "applyReducers"
+    ? K extends PropsWithReducers<Q>
+      ? "applyReducers"
+      : never
+    : K extends PropsWithBoth<Q>
+      ? "applyReducersAndExtractMainValue"
+      : K extends PropsWithMainValue<Q>
+        ? "applyMainValue"
+        : K extends PropsWithReducers<Q>
+          ? "applyReducers"
+          : never;
+
+/**
+ * Turns a union of property keys into the `prop:modifier` select strings that
+ * `Osdk.Instance` understands, given a default load level. Keys the load level
+ * does not apply to are passed through unchanged.
+ */
+export type ApplyDefaultLoadLevelToKeys<
+  Q extends ObjectOrInterfaceDefinition,
+  K extends PropertyKeys<Q>,
+  D extends PropertyModifierValue | undefined,
+> = [D] extends [PropertyModifierValue]
+  ? K extends unknown
+    ? [ResolveDefaultLoadLevelForProp<Q, K, D>] extends [never]
+      ? K
+      : `${K & string}:${ResolveDefaultLoadLevelForProp<Q, K, D>}`
+    : never
+  : K;
+
 export type ApplyModifiersToProps<
   Q extends ObjectOrInterfaceDefinition,
   MODIFIERS extends Record<string, PropertyModifierValue>,

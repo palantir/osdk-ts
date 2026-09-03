@@ -71,11 +71,12 @@ export function createMockClient(): MockClient {
     resolveStub(
       stubs.filter((s) => s.objectType === objectType),
       calls,
-      `No stub for request\n`
+      `No stub for request\n`,
     );
 
   const resolveQuery = (queryApiName: string, params: unknown): unknown => {
-    for (const stub of queryStubs) {
+    for (let i = queryStubs.length - 1; i >= 0; i--) {
+      const stub = queryStubs[i];
       if (stub.queryApiName !== queryApiName) continue;
       if (deepEqual(stub.params, params)) {
         if (stub.error !== undefined) {
@@ -105,12 +106,12 @@ export function createMockClient(): MockClient {
     }
 
     return createMockObjectSetWithResolver(def, (calls) =>
-      resolve(def.apiName, calls)
+      resolve(def.apiName, calls),
     );
   }) as MockClient;
 
   mockClient.when = <T>(
-    callback: StubPatternCallback<T>
+    callback: StubPatternCallback<T>,
   ): StubBuilderFor<T> => {
     let captured: { objectType: string; calls: Call[] } | undefined;
 
@@ -137,7 +138,7 @@ export function createMockClient(): MockClient {
 
   mockClient.whenObjectSet = <Q extends ObjectOrInterfaceDefinition, T>(
     objectSet: ObjectSet<Q>,
-    callback: ObjectSetStubCallback<Q, T>
+    callback: ObjectSetStubCallback<Q, T>,
   ): StubBuilderFor<T> => {
     let capturedCalls: Call[] | undefined;
 
@@ -146,7 +147,7 @@ export function createMockClient(): MockClient {
       (calls) => {
         capturedCalls = calls;
         return { data: [], nextPageToken: undefined };
-      }
+      },
     );
 
     void callback(capturingProxy);
@@ -168,7 +169,7 @@ export function createMockClient(): MockClient {
 
   mockClient.whenQuery = <Q extends QueryDefinition>(
     query: Q,
-    params?: QueryParamsFromDef<Q>
+    params?: QueryParamsFromDef<Q>,
   ): QueryStubBuilder<QueryReturnTypeFromDef<Q>> => {
     return {
       thenReturn: (result: QueryReturnTypeFromDef<Q>) => {
@@ -193,6 +194,7 @@ export function createMockClient(): MockClient {
     queryStubs.length = 0;
   };
 
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   mockClient.fetchMetadata = async () => {
     invariant(false, "fetchMetadata is not supported in mocks");
   };
@@ -204,7 +206,8 @@ export function createMockClient(): MockClient {
   Object.defineProperty(mockClient, SYMBOL_CLIENT_CONTEXT, {
     value: createPlatformClient(
       "https://mock.invalid/",
-      async () => "mock-token"
+      // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
+      async () => "mock-token",
     ),
     enumerable: false,
   });

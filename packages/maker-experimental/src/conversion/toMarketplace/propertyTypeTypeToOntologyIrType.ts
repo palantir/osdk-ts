@@ -24,7 +24,6 @@ export function propertyTypeTypeToOntologyIrType(
   type: PropertyTypeType,
   ridGenerator: OntologyRidGenerator,
   propertyApiName?: string,
-  includeMainValue?: boolean
 ): Type {
   switch (true) {
     case typeof type === "object" && type.type === "marking":
@@ -50,7 +49,7 @@ export function propertyTypeTypeToOntologyIrType(
             fieldType: propertyTypeTypeToOntologyIrType(
               fieldTypeDefinition,
               ridGenerator,
-              propertyApiName
+              propertyApiName,
             ),
           };
         } else {
@@ -65,7 +64,7 @@ export function propertyTypeTypeToOntologyIrType(
               fieldType: propertyTypeTypeToOntologyIrType(
                 fieldTypeDefinition.fieldType,
                 ridGenerator,
-                propertyApiName
+                propertyApiName,
               ),
               displayMetadata: fieldTypeDefinition.displayMetadata ?? {
                 displayName: key,
@@ -86,7 +85,7 @@ export function propertyTypeTypeToOntologyIrType(
               fieldType: propertyTypeTypeToOntologyIrType(
                 fieldTypeDefinition,
                 ridGenerator,
-                propertyApiName
+                propertyApiName,
               ),
             };
           }
@@ -95,15 +94,25 @@ export function propertyTypeTypeToOntologyIrType(
         structFields.push(field);
       }
 
-      // Build mainValue from the first struct field (matches Java behavior)
-      // Only SPTs get mainValue populated; object property structs have mainValue: null
-      const mainValue = includeMainValue
-        ? structFields[0]
-          ? {
-              type: structFields[0].fieldType,
-              fields: [structFields[0].structFieldRid],
-            }
-          : undefined
+      const mainValue = type.mainValue
+        ? {
+            type: propertyTypeTypeToOntologyIrType(
+              type.mainValue.type,
+              ridGenerator,
+              propertyApiName,
+            ),
+            fields: (Array.isArray(type.mainValue.fields)
+              ? type.mainValue.fields
+              : [type.mainValue.fields]
+            ).map((fieldApiName) =>
+              propertyApiName
+                ? ridGenerator.generateStructFieldRid(
+                    propertyApiName,
+                    fieldApiName,
+                  )
+                : ridGenerator.generateRid(`structfield.${fieldApiName}`),
+            ),
+          }
         : undefined;
 
       return {
@@ -131,6 +140,17 @@ export function propertyTypeTypeToOntologyIrType(
         decimal: {
           precision: type.precision,
           scale: type.scale,
+        },
+      };
+
+    case typeof type === "object" && type.type === "vector":
+      return {
+        type: "vector",
+        vector: {
+          dimension: type.dimension,
+          supportsSearchWith: [type.supportsSearchWith],
+          embeddingModel: type.embeddingModel,
+          quantization: type.quantization,
         },
       };
 

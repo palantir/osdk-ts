@@ -210,22 +210,23 @@ export function FormPage() {
   >(undefined);
 
   const handleSubmit = useCallback(
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     async (formState: Record<string, unknown>) => {
       setSubmittedState(formState);
     },
-    []
+    [],
   );
 
   const employeeObjectSet = useMemo(
     () => $(Employee) as ObjectSet<ObjectTypeDefinition>,
-    []
+    [],
   );
   const marketingEmployees = useMemo(
     () =>
       $(Employee).where({
         department: "Marketing",
       }) as ObjectSet<ObjectTypeDefinition>,
-    []
+    [],
   );
 
   const allFormContent = useMemo(
@@ -250,7 +251,7 @@ export function FormPage() {
         },
       }),
     ],
-    [employeeObjectSet, marketingEmployees]
+    [employeeObjectSet, marketingEmployees],
   );
 
   return (

@@ -57,9 +57,6 @@ export async function typeChecks(client: Client): Promise<void> {
         string: "exact",
         stringArray: "exact",
       },
-      $orderBy: {
-        group: "string",
-      },
     });
   }
 

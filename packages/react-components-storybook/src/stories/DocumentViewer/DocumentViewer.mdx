@@ -14,9 +14,11 @@
  * limitations under the License.
  */}
 
-import { Meta, Markdown } from "@storybook/addon-docs/blocks";
-import documentViewerDocs from "@docs/DocumentViewer.md?raw";
+import { Meta } from "@storybook/addon-docs/blocks";
+import documentViewerDocs from "@docs/DocumentViewerOverview.md?raw";
+import { ComponentDoc } from "../../util/ComponentDoc.js";
+import * as DocumentViewerStories from "./DocumentViewer.stories";
 
-<Meta title="Components/DocumentViewer/Docs" tags={["beta"]}/>
+<Meta title="Components/DocumentViewer/Docs" tags={["beta"]} />
 
-<Markdown>{documentViewerDocs}</Markdown>
+<ComponentDoc raw={documentViewerDocs} canvasOf={DocumentViewerStories.Pdf} />

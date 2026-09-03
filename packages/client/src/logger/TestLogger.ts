@@ -39,18 +39,18 @@ const colors = {
 export class TestLogger extends BaseLogger implements Logger {
   constructor(
     bindings: Record<string, any> = {},
-    options: { level?: string; msgPrefix?: string } = {}
+    options: { level?: string; msgPrefix?: string } = {},
   ) {
     super(
       bindings,
       { ...options, level: options.level ?? "error" },
-      TestLogger
+      TestLogger,
     );
   }
 
   protected createLogMethod(
     name: "trace" | "debug" | "info" | "warn" | "error" | "fatal",
-    bindings: Record<string, any>
+    bindings: Record<string, any>,
   ): Logger.LogFn {
     const msgs: string[] = [colors[name][1](name)];
 
@@ -64,7 +64,7 @@ export class TestLogger extends BaseLogger implements Logger {
 
     // eslint-disable-next-line no-console
     return vi.fn<Logger.LogFn>(
-      console[name === "fatal" ? "error" : name].bind(console, msgs.join(" "))
+      console[name === "fatal" ? "error" : name].bind(console, msgs.join(" ")),
     ) as Logger.LogFn;
   }
 }

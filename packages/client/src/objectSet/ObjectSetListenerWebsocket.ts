@@ -15,7 +15,6 @@
  */
 
 import type {
-  Logger,
   ObjectOrInterfaceDefinition,
   ObjectSetSubscription,
   Osdk,
@@ -36,15 +35,15 @@ import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
 
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
-import { ExponentialBackoff } from "../util/exponentialBackoff.js";
+import type { SubscriptionConnection } from "../SubscriptionConnection.js";
+import type { BaseSubscription } from "./SubscriptionWebsocket.js";
+import {
+  isSubscriptionDone,
+  SubscriptionWebsocket,
+} from "./SubscriptionWebsocket.js";
+import { constructWebsocketUrl, nextUuid } from "./websocketUtils.js";
 
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
-const EXPONENTIAL_BACKOFF_INITIAL_DELAY_MS = 1000;
-const EXPONENTIAL_BACKOFF_MAX_DELAY_MS = 60000;
-const EXPONENTIAL_BACKOFF_MULTIPLIER = 2;
-const EXPONENTIAL_BACKOFF_JITTER_FACTOR = 0.3;
-const WEBSOCKET_IDLE_DISCONNECT_DELAY_MS = 15000;
-const WEBSOCKET_HEARTBEAT_INTERVAL_MS = 45 * 1000;
 
 /** Noop function to reduce conditional checks */
 function doNothing() {}
@@ -70,108 +69,98 @@ function fillOutListener<
 interface Subscription<
   Q extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<Q>,
-> {
+> extends BaseSubscription {
   listener: Required<ObjectSetSubscription.Listener<Q, P>>;
   requestedProperties: Array<P>;
   requestedReferenceProperties: Array<P>;
   objectSet: ObjectSet;
 
-  subscriptionId: string;
   isReady?: boolean;
-  status:
-    | "preparing"
-    | "subscribed"
-    | "done"
-    | "expired"
-    | "error"
-    | "reconnecting";
 
   interfaceApiName?: string;
   primaryKeyPropertyName?: string;
   loadRids: boolean;
 }
 
-function isReady<
-  Q extends ObjectOrInterfaceDefinition,
-  P extends PropertyKeys<Q>,
->(
-  sub: Subscription<Q, P>
-): sub is Subscription<Q, P> & { temporaryObjectSetId: string } {
-  return sub.isReady != null;
-}
-
-function subscriptionIsDone(sub: Subscription<any, any>) {
-  return sub.status === "done" || sub.status === "error";
-}
-
 /** @internal */
-export class ObjectSetListenerWebsocket {
+export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
+  Subscription<any, any>,
+  StreamMessage
+> {
   static #instances = new WeakMap<ClientCacheKey, ObjectSetListenerWebsocket>();
   readonly MINIMUM_RECONNECT_DELAY_MS: number;
 
   // FIXME
   static getInstance(client: MinimalClient): ObjectSetListenerWebsocket {
     let instance = ObjectSetListenerWebsocket.#instances.get(
-      client.clientCacheKey
+      client.clientCacheKey,
     );
     if (instance == null) {
       instance = new ObjectSetListenerWebsocket(client);
       ObjectSetListenerWebsocket.#instances.set(
         client.clientCacheKey,
-        instance
+        instance,
       );
     }
     return instance;
   }
 
-  #ws: WebSocket | undefined;
-  #lastWsConnect = 0;
-  #client: MinimalClient;
-  #backoff: ExponentialBackoff;
-  #isFirstConnection = true;
-
-  #logger?: Logger;
-
-  /**
-   * map of requestId to all active subscriptions at the time of the request
-   */
-  #pendingSubscriptions = new Map<string, Subscription<any, any>[]>();
-
-  /**
-   * Map of subscriptionId to Subscription. Note: the subscriptionId may be
-   * temporary and not the actual subscriptionId from the server.
-   */
-  #subscriptions = new Map<string, Subscription<any, any>>();
-
   #endedSubscriptions = new Set<string>();
-
-  #maybeDisconnectTimeout: ReturnType<typeof setTimeout> | undefined;
-  #heartbeatInterval: ReturnType<typeof setInterval> | undefined;
 
   // DO NOT CONSTRUCT DIRECTLY. ONLY EXPOSED AS A TESTING SEAM
   constructor(
     client: MinimalClient,
-    { minimumReconnectDelayMs = MINIMUM_RECONNECT_DELAY_MS } = {}
+    { minimumReconnectDelayMs = MINIMUM_RECONNECT_DELAY_MS } = {},
   ) {
+    super(client, "<OSW> ");
     this.MINIMUM_RECONNECT_DELAY_MS = minimumReconnectDelayMs;
-    this.#client = client;
-    this.#backoff = new ExponentialBackoff({
-      initialDelayMs: EXPONENTIAL_BACKOFF_INITIAL_DELAY_MS,
-      maxDelayMs: EXPONENTIAL_BACKOFF_MAX_DELAY_MS,
-      multiplier: EXPONENTIAL_BACKOFF_MULTIPLIER,
-      jitterFactor: EXPONENTIAL_BACKOFF_JITTER_FACTOR,
-    });
-    this.#logger = client.logger?.child(
-      {},
-      {
-        msgPrefix: "<OSW> ",
-      }
+  }
+
+  /**
+   * Default connection factory: constructs a real `WebSocket`, resolving the URL and bearer
+   * token from the client. Used when the client provides no `createSubscriptionConnection`.
+   */
+  protected override async createConnection(): Promise<SubscriptionConnection> {
+    const factory = this.client.createSubscriptionConnection;
+    if (factory != null) {
+      return factory();
+    }
+    const url = constructWebsocketUrl(
+      this.client.baseUrl,
+      await this.client.ontologyRid,
     );
-    invariant(
-      client.baseUrl.startsWith("https://") ||
-        client.baseUrl.startsWith("http://"),
-      "Stack must be a URL"
-    );
+    const token = await this.client.tokenProvider();
+    return new WebSocket(url, [`Bearer-${token}`]);
+  }
+
+  protected override createSubscribeRequests(
+    requestId: string,
+    readySubscriptions: ReadonlyArray<Subscription<any, any>>,
+  ): ObjectSetStreamSubscribeRequests {
+    return {
+      id: requestId,
+      requests: readySubscriptions.map<ObjectSetStreamSubscribeRequest>(
+        ({ objectSet, requestedProperties, requestedReferenceProperties }) => ({
+          objectSet,
+          scenarioRid: this.client.scenarioRid,
+          propertySet: requestedProperties,
+          referenceSet: requestedReferenceProperties,
+          objectLoadingResponseOptions: { shouldLoadObjectRids: true },
+        }),
+      ),
+    };
+  }
+
+  protected override isSubscriptionReady(sub: Subscription<any, any>): boolean {
+    return sub.isReady != null;
+  }
+
+  protected override clearListener(sub: Subscription<any, any>): void {
+    sub.listener = fillOutListener({});
+  }
+
+  protected override onSubscriptionEnded(sub: Subscription<any, any>): void {
+    this.#endedSubscriptions.add(sub.subscriptionId);
   }
 
   async subscribe<
@@ -182,15 +171,15 @@ export class ObjectSetListenerWebsocket {
     objectSet: ObjectSet,
     listener: ObjectSetSubscription.Listener<Q, P>,
     properties: Array<P> = [],
-    shouldLoadRids: boolean = false
+    shouldLoadRids: boolean = false,
   ): Promise<() => void> {
     const objOrInterfaceDef =
       objectType.type === "object"
-        ? await this.#client.ontologyProvider.getObjectDefinition(
-            objectType.apiName
+        ? await this.client.ontologyProvider.getObjectDefinition(
+            objectType.apiName,
           )
-        : await this.#client.ontologyProvider.getInterfaceDefinition(
-            objectType.apiName
+        : await this.client.ontologyProvider.getInterfaceDefinition(
+            objectType.apiName,
           );
 
     let objectProperties: Array<P> = [];
@@ -203,13 +192,13 @@ export class ObjectSetListenerWebsocket {
     objectProperties = properties.filter(
       (p) =>
         p in objOrInterfaceDef.properties &&
-        objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference"
+        objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference",
     );
 
     referenceProperties = properties.filter(
       (p) =>
         p in objOrInterfaceDef.properties &&
-        objOrInterfaceDef.properties[p].type === "geotimeSeriesReference"
+        objOrInterfaceDef.properties[p].type === "geotimeSeriesReference",
     );
 
     const sub: Subscription<Q, P> = {
@@ -232,14 +221,14 @@ export class ObjectSetListenerWebsocket {
       loadRids: shouldLoadRids,
     };
 
-    this.#subscriptions.set(sub.subscriptionId, sub);
+    this.subscriptions.set(sub.subscriptionId, sub);
 
     // actually prepares the subscription, ensures the ws is ready, and sends
     // a subscribe message. We don't want to block on this.
     void this.#initiateSubscribe(sub);
 
     return () => {
-      this.#unsubscribe(sub);
+      this.endSubscription(sub);
     };
   }
 
@@ -257,7 +246,7 @@ export class ObjectSetListenerWebsocket {
       ObjectOrInterfaceDefinition,
       never
     >,
-    shouldLoadRids: boolean = false
+    shouldLoadRids: boolean = false,
   ): () => void {
     const sub: Subscription<ObjectOrInterfaceDefinition, never> = {
       listener: fillOutListener(listener),
@@ -271,12 +260,12 @@ export class ObjectSetListenerWebsocket {
       loadRids: shouldLoadRids,
     };
 
-    this.#subscriptions.set(sub.subscriptionId, sub);
+    this.subscriptions.set(sub.subscriptionId, sub);
 
     void this.#initiateSubscribe(sub);
 
     return () => {
-      this.#unsubscribe(sub);
+      this.endSubscription(sub);
     };
   }
 
@@ -291,205 +280,31 @@ export class ObjectSetListenerWebsocket {
    */
   async #initiateSubscribe(sub: Subscription<any, any>) {
     if (process.env.NODE_ENV !== "production") {
-      this.#logger?.debug("#initiateSubscribe()");
+      this.logger?.debug("#initiateSubscribe()");
     }
 
     try {
-      await this.#ensureWebsocket();
+      await this.ensureWebsocket();
 
       // the consumer may have already unsubscribed before we are ready to request a subscription
       // so we have to acquire the pendingSubscription after the await.
-      if (subscriptionIsDone(sub)) {
+      if (isSubscriptionDone(sub)) {
         return;
       }
       sub.isReady = true;
       // if we aren't open, then this happens after we #onConnect
-      if (this.#ws?.readyState === WebSocket.OPEN) {
-        this.#sendSubscribeMessage();
+      if (this.ws?.readyState === WebSocket.OPEN) {
+        this.sendSubscribeMessage();
       }
     } catch (error) {
-      this.#logger?.error(error, "Error in #initiateSubscribe");
+      this.logger?.error(error, "Error in #initiateSubscribe");
       this.#tryCatchOnError(sub, true, error);
     }
   }
 
-  #sendSubscribeMessage() {
-    if (process.env.NODE_ENV !== "production") {
-      this.#logger?.debug("#sendSubscribeMessage()");
-    }
-
-    if (this.#ws?.readyState !== WebSocket.OPEN) {
-      return;
-    }
-
-    // If two calls to `.subscribe()` happen at once (or if the connection is reset),
-    // we may have multiple subscriptions that don't have a subscriptionId yet,
-    // so we filter those out.
-    const readySubs = [...this.#subscriptions.values()].filter(isReady);
-
-    const id = nextUuid();
-    // responses come back as an array of subIds, so we need to know the sources
-    this.#pendingSubscriptions.set(id, readySubs);
-
-    // every subscribe message "overwrites" the previous ones that are not
-    // re-included, so we have to reconstitute the entire list of subscriptions
-    const subscribe: ObjectSetStreamSubscribeRequests = {
-      id,
-      requests: readySubs.map<ObjectSetStreamSubscribeRequest>(
-        ({
-          objectSet,
-          requestedProperties,
-          requestedReferenceProperties,
-          interfaceApiName,
-        }) => {
-          return {
-            objectSet,
-            propertySet: requestedProperties,
-            referenceSet: requestedReferenceProperties,
-            objectLoadingResponseOptions: { shouldLoadObjectRids: true },
-          };
-        }
-      ),
-    };
-
-    if (process.env.NODE_ENV !== "production") {
-      this.#logger?.debug({ payload: subscribe }, "sending subscribe message");
-    }
-    this.#ws.send(JSON.stringify(subscribe));
-  }
-
-  #unsubscribe<Q extends ObjectOrInterfaceDefinition>(
-    sub: Subscription<Q, any>,
-    newStatus: "done" | "error" = "done"
-  ) {
-    if (subscriptionIsDone(sub)) {
-      // if we are already done, we don't need to do anything
-      return;
-    }
-
-    sub.status = newStatus;
-
-    // make sure listeners do nothing now
-    sub.listener = fillOutListener<Q, any>({});
-
-    this.#subscriptions.delete(sub.subscriptionId);
-    this.#endedSubscriptions.add(sub.subscriptionId);
-    this.#sendSubscribeMessage();
-
-    // If we have no more subscriptions, we can disconnect the websocket
-    // however we should wait a bit to see if we get any more subscriptions.
-    // For example, when switching between react views, you may unsubscribe
-    // in the old view and subscribe in the new view. We don't need to re-establish
-    // the websocket connection in that case.
-    if (this.#maybeDisconnectTimeout) {
-      // We reset the timeout on every unsubscribe so its always at least 15s from
-      // the last time we are empty. E.g.:
-      //   - 0s: Subscribe(A)
-      //   - 10s: Unsubscribe(A)
-      //   - 11s: Subscribe(B)
-      //   - 20s: Unsubscribe(B)
-      // If we do not clear out the timeout we would disconnect at 25s but that would only be
-      // 5s after the last subscription was removed instead of at 35s for the desired 15s.
-      clearTimeout(this.#maybeDisconnectTimeout);
-    }
-    this.#maybeDisconnectTimeout = setTimeout(() => {
-      this.#maybeDisconnectTimeout = undefined;
-      if (this.#subscriptions.size === 0) {
-        this.#cycleWebsocket();
-      }
-    }, WEBSOCKET_IDLE_DISCONNECT_DELAY_MS);
-  }
-
-  async #ensureWebsocket() {
-    if (this.#ws == null) {
-      const { baseUrl, tokenProvider } = this.#client;
-      const url = constructWebsocketUrl(
-        baseUrl,
-        await this.#client.ontologyRid
-      );
-
-      const token = await tokenProvider();
-
-      // tokenProvider is async, there could potentially be a race to create the websocket.
-      // Only the first call to reach here will find a null this.#ws, the rest will bail out
-      if (this.#ws == null) {
-        // Only apply exponential backoff delay on reconnection attempts, not the first connection
-        if (!this.#isFirstConnection) {
-          const delay = this.#backoff.calculateDelay();
-          if (process.env.NODE_ENV !== "production") {
-            this.#logger?.debug(
-              { delay, attempt: this.#backoff.getAttempt() },
-              "Waiting before reconnect"
-            );
-          }
-          await new Promise((resolve) => {
-            setTimeout(resolve, delay);
-          });
-        }
-
-        this.#lastWsConnect = Date.now();
-
-        // we again may have lost the race after our minimum backoff time
-        if (this.#ws == null) {
-          if (process.env.NODE_ENV !== "production") {
-            this.#logger?.debug("Creating websocket");
-          }
-          this.#ws = new WebSocket(url, [`Bearer-${token}`]);
-          this.#ws.addEventListener("close", this.#onClose);
-          this.#ws.addEventListener("message", this.#onMessage);
-          this.#ws.addEventListener("open", this.#onOpen);
-        }
-      }
-      // Allow await-ing the websocket open event if it isn't open already.
-      // This needs to happen even for callers that didn't just create this.#ws
-      if (this.#ws.readyState === WebSocket.CONNECTING) {
-        const ws = this.#ws;
-        return new Promise<void>((resolve, reject) => {
-          function cleanup() {
-            ws.removeEventListener("open", open);
-            ws.removeEventListener("error", error);
-            ws.removeEventListener("close", cleanup);
-          }
-          function open() {
-            cleanup();
-            resolve();
-          }
-          function error(evt: unknown) {
-            cleanup();
-            reject(new Error(String(evt)));
-          }
-          ws.addEventListener("open", open);
-          ws.addEventListener("error", error);
-          ws.addEventListener("close", cleanup);
-        });
-      }
-    }
-  }
-
-  #onOpen = () => {
-    // Mark that we've successfully connected at least once
-    this.#isFirstConnection = false;
-    // Reset backoff on successful connection
-    this.#backoff.reset();
-    // resubscribe all of the listeners
-    this.#sendSubscribeMessage();
-
-    // Start heartbeat to keep connection alive
-    if (this.#heartbeatInterval) {
-      clearInterval(this.#heartbeatInterval);
-    }
-    this.#heartbeatInterval = setInterval(() => {
-      if (this.#ws?.readyState === WebSocket.OPEN) {
-        this.#sendSubscribeMessage();
-      }
-    }, WEBSOCKET_HEARTBEAT_INTERVAL_MS);
-  };
-
-  #onMessage = async (message: WebSocket.MessageEvent): Promise<void> => {
-    const data = JSON.parse(String(message.data)) as StreamMessage;
-    if (process.env.NODE_ENV !== "production") {
-      this.#logger?.debug({ payload: data }, "received message from ws");
-    }
+  protected override async handleWebsocketMessage(
+    data: StreamMessage,
+  ): Promise<void> {
     switch (data.type) {
       case "objectSetChanged":
         await this.#handleMessage_objectSetChanged(data);
@@ -512,22 +327,22 @@ export class ObjectSetListenerWebsocket {
         const _: never = data;
         invariant(false, "Unexpected message type");
     }
-  };
+  }
 
   #handleMessage_objectSetChanged = async (payload: ObjectSetUpdates) => {
-    const sub = this.#subscriptions.get(payload.id);
+    const sub = this.subscriptions.get(payload.id);
     if (sub == null) return;
 
     const objectUpdates = payload.updates.filter(
-      (update) => update.type === "object"
+      (update) => update.type === "object",
     );
     const referenceUpdates = payload.updates.filter(
-      (update) => update.type === "reference"
+      (update) => update.type === "reference",
     );
     const osdkObjectsWithReferenceUpdates = await Promise.all(
       referenceUpdates.map(async (o) => {
-        const osdkObjectArray = await this.#client.objectFactory(
-          this.#client,
+        const osdkObjectArray = await this.client.objectFactory(
+          this.client,
           [
             {
               __apiName: o.objectType,
@@ -545,7 +360,7 @@ export class ObjectSetListenerWebsocket {
           false,
           undefined,
           false,
-          await this.#fetchInterfaceMapping(o.objectType, sub.interfaceApiName)
+          await this.#fetchInterfaceMapping(o.objectType, sub.interfaceApiName),
         );
         const singleOsdkObject = osdkObjectArray[0] ?? undefined;
         return singleOsdkObject != null
@@ -554,7 +369,7 @@ export class ObjectSetListenerWebsocket {
               state: "ADDED_OR_UPDATED" as ObjectState,
             }
           : undefined;
-      })
+      }),
     );
 
     for (const update of osdkObjectsWithReferenceUpdates) {
@@ -562,7 +377,7 @@ export class ObjectSetListenerWebsocket {
         try {
           sub.listener.onChange?.(update);
         } catch (error) {
-          this.#logger?.error(error, "Error in onChange callback");
+          this.logger?.error(error, "Error in onChange callback");
           this.#tryCatchOnError(sub, false, error);
         }
       }
@@ -571,14 +386,14 @@ export class ObjectSetListenerWebsocket {
     const osdkObjects = await Promise.all(
       objectUpdates.map(async (o) => {
         const keysToDelete = Object.keys(o.object).filter((key) =>
-          sub.requestedReferenceProperties.includes(key)
+          sub.requestedReferenceProperties.includes(key),
         );
         for (const key of keysToDelete) {
           delete o.object[key];
         }
 
-        const osdkObjectArray = (await this.#client.objectFactory(
-          this.#client,
+        const osdkObjectArray = (await this.client.objectFactory(
+          this.client,
           [o.object],
           sub.interfaceApiName,
           {},
@@ -588,8 +403,8 @@ export class ObjectSetListenerWebsocket {
           false,
           await this.#fetchInterfaceMapping(
             o.object.__apiName,
-            sub.interfaceApiName
-          )
+            sub.interfaceApiName,
+          ),
         )) as Array<Osdk.Instance<any>>;
         const singleOsdkObject = osdkObjectArray[0] ?? undefined;
 
@@ -607,7 +422,7 @@ export class ObjectSetListenerWebsocket {
                 rid,
               }
           : undefined;
-      })
+      }),
     );
 
     for (const osdkObject of osdkObjects) {
@@ -615,7 +430,7 @@ export class ObjectSetListenerWebsocket {
         try {
           sub.listener.onChange?.(osdkObject);
         } catch (error) {
-          this.#logger?.error(error, "Error in onChange callback");
+          this.logger?.error(error, "Error in onChange callback");
           this.#tryCatchOnError(sub, false, error);
         }
       }
@@ -624,11 +439,11 @@ export class ObjectSetListenerWebsocket {
 
   async #fetchInterfaceMapping(
     objectTypeApiName: string,
-    interfaceApiName: string | undefined
+    interfaceApiName: string | undefined,
   ): Promise<Record<string, Record<string, Record<string, string>>>> {
     if (interfaceApiName == null) return {};
     const interfaceMap = (
-      await this.#client.ontologyProvider.getObjectDefinition(objectTypeApiName)
+      await this.client.ontologyProvider.getObjectDefinition(objectTypeApiName)
     ).interfaceMap;
     return {
       [interfaceApiName]: {
@@ -638,24 +453,24 @@ export class ObjectSetListenerWebsocket {
   }
 
   #handleMessage_refreshObjectSet = (payload: RefreshObjectSet) => {
-    const sub = this.#subscriptions.get(payload.id);
+    const sub = this.subscriptions.get(payload.id);
     invariant(sub, `Expected subscription id ${payload.id}`);
     try {
       sub.listener.onOutOfDate();
     } catch (error) {
-      this.#logger?.error(error, "Error in onOutOfDate callback");
+      this.logger?.error(error, "Error in onOutOfDate callback");
       this.#tryCatchOnError(sub, false, error);
     }
   };
 
   #handleMessage_subscribeResponses = (
-    payload: ObjectSetSubscribeResponses
+    payload: ObjectSetSubscribeResponses,
   ) => {
     const { id, responses } = payload;
 
-    const subs = this.#pendingSubscriptions.get(id);
+    const subs = this.pendingSubscriptions.get(id);
     invariant(subs, `should have a pending subscription for ${id}`);
-    this.#pendingSubscriptions.delete(id);
+    this.pendingSubscriptions.delete(id);
 
     for (let i = 0; i < responses.length; i++) {
       const sub = subs[i];
@@ -664,12 +479,12 @@ export class ObjectSetListenerWebsocket {
       switch (response.type) {
         case "error":
           this.#tryCatchOnError(sub, true, response.errors);
-          this.#unsubscribe(sub, "error");
+          this.endSubscription(sub, "error");
           break;
 
         case "qos":
           // the server has requested that we tear down our websocket and reconnect to help load balance
-          this.#cycleWebsocket();
+          this.cycleWebsocket();
           break;
 
         case "success":
@@ -678,22 +493,22 @@ export class ObjectSetListenerWebsocket {
             sub.status === "expired" || sub.status === "reconnecting";
 
           if (process.env.NODE_ENV !== "production") {
-            this.#logger?.debug({ shouldFireOutOfDate }, "success");
+            this.logger?.debug({ shouldFireOutOfDate }, "success");
           }
           sub.status = "subscribed";
           if (sub.subscriptionId !== response.id) {
             // might be the temporary one
-            this.#subscriptions.delete(sub.subscriptionId);
+            this.subscriptions.delete(sub.subscriptionId);
             sub.subscriptionId = response.id;
-            this.#subscriptions.set(sub.subscriptionId, sub); // future messages come by this subId
+            this.subscriptions.set(sub.subscriptionId, sub); // future messages come by this subId
           }
           try {
             if (shouldFireOutOfDate) sub.listener.onOutOfDate();
             else sub.listener.onSuccessfulSubscription();
           } catch (error) {
-            this.#logger?.error(
+            this.logger?.error(
               error,
-              "Error in onOutOfDate or onSuccessfulSubscription callback"
+              "Error in onOutOfDate or onSuccessfulSubscription callback",
             );
             this.#tryCatchOnError(sub, false, error);
           }
@@ -705,66 +520,17 @@ export class ObjectSetListenerWebsocket {
   };
 
   #handleMessage_subscriptionClosed(payload: SubscriptionClosed) {
-    const sub = this.#subscriptions.get(payload.id);
+    const sub = this.subscriptions.get(payload.id);
     if (sub == null && this.#endedSubscriptions.has(payload.id)) return;
     invariant(sub, `Expected subscription id ${payload.id}`);
     this.#tryCatchOnError(sub, true, payload.cause);
-    this.#unsubscribe(sub, "error");
+    this.endSubscription(sub, "error");
   }
-
-  #onClose = (event: WebSocket.CloseEvent) => {
-    if (process.env.NODE_ENV !== "production") {
-      this.#logger?.debug({ event }, "Received close event from ws", event);
-    }
-    this.#cycleWebsocket();
-  };
-
-  #cycleWebsocket = () => {
-    // Clear heartbeat interval
-    if (this.#heartbeatInterval) {
-      clearInterval(this.#heartbeatInterval);
-      this.#heartbeatInterval = undefined;
-    }
-
-    if (this.#ws) {
-      this.#ws.removeEventListener("open", this.#onOpen);
-      this.#ws.removeEventListener("message", this.#onMessage);
-      this.#ws.removeEventListener("close", this.#onClose);
-
-      if (
-        this.#ws.readyState !== WebSocket.CLOSING &&
-        this.#ws.readyState !== WebSocket.CLOSED
-      ) {
-        this.#ws.close();
-      }
-      this.#ws = undefined;
-    }
-
-    // if we have any listeners that are still depending on us, go ahead and reopen the websocket
-    if (this.#subscriptions.size > 0) {
-      if (process.env.NODE_ENV !== "production") {
-        for (const s of this.#subscriptions.values()) {
-          invariant(
-            s.status !== "done" && s.status !== "error",
-            "should not have done/error subscriptions still"
-          );
-        }
-      }
-
-      for (const s of this.#subscriptions.values()) {
-        if (s.status === "subscribed") s.status = "reconnecting";
-      }
-
-      // we don't care about the result of this (we want cycleWebsocket to be fire and forget)
-      // just that it happens
-      void this.#ensureWebsocket();
-    }
-  };
 
   #tryCatchOnError = (
     sub: Subscription<any, any>,
     subscriptionClosed: boolean,
-    error: any
+    error: any,
   ) => {
     try {
       sub.listener.onError({ subscriptionClosed, error });
@@ -772,40 +538,21 @@ export class ObjectSetListenerWebsocket {
       // eslint-disable-next-line no-console
       console.error(
         `Error encountered in an onError callback for an OSDK subscription`,
-        onErrorError
+        onErrorError,
       );
       // eslint-disable-next-line no-console
       console.error(
         `This onError call was triggered by an error in another callback`,
-        error
+        error,
       );
       // eslint-disable-next-line no-console
       console.error(`The subscription has been closed.`, error);
 
       if (!subscriptionClosed) {
-        this.#logger?.error(error, "Error in onError callback");
-        this.#unsubscribe(sub, "error");
+        this.logger?.error(error, "Error in onError callback");
+        this.endSubscription(sub, "error");
         this.#tryCatchOnError(sub, true, onErrorError);
       }
     }
   };
-}
-
-/** @internal */
-export function constructWebsocketUrl(baseUrl: string, ontologyRid: string) {
-  const base = new URL(baseUrl);
-  const url = new URL(
-    `api/v2/ontologySubscriptions/ontologies/${ontologyRid}/streamSubscriptions`,
-    base
-  );
-  url.protocol = url.protocol.replace("https", "wss");
-  return url;
-}
-
-let uuidCounter = 0;
-
-function nextUuid() {
-  return `00000000-0000-0000-0000-${(uuidCounter++)
-    .toString()
-    .padStart(12, "0")}`;
 }

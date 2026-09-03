@@ -40,7 +40,7 @@ import {
 function makePropertyType(
   apiName: string,
   type: Type,
-  rid: string
+  rid: string,
 ): PropertyType {
   return {
     apiName,
@@ -72,7 +72,7 @@ function createObjectTypeBlockData(
   overrides: {
     apiName?: string;
     properties?: Array<{ apiName: string; type: Type; editOnly?: boolean }>;
-  } = {}
+  } = {},
 ): ObjectTypeBlockDataV2 {
   const apiName = overrides.apiName ?? "TestObject";
   const props = overrides.properties ?? [
@@ -168,12 +168,16 @@ describe("propertyTypeToSchemaType", () => {
     expect(propertyTypeToSchemaType({ type: "integer" })).toBe("INTEGER");
   });
 
+  it("maps vector types to arrays", () => {
+    expect(propertyTypeToSchemaType({ type: "vector" })).toBe("ARRAY");
+  });
+
   it("throws on unsupported property types", () => {
     expect(() => propertyTypeToSchemaType("unknownType")).toThrow(
-      /Unsupported property type "unknownType".*empty backing datasource/u
+      /Unsupported property type "unknownType".*empty backing datasource/u,
     );
     expect(() => propertyTypeToSchemaType({ type: "geopoint" })).toThrow(
-      /Unsupported property type "geopoint".*empty backing datasource/u
+      /Unsupported property type "geopoint".*empty backing datasource/u,
     );
   });
 });
@@ -183,12 +187,20 @@ const DECIMAL_PROPERTY_TYPE: Type = {
   decimal: { precision: 10, scale: 2 },
 };
 
+const VECTOR_PROPERTY_TYPE: Type = {
+  type: "vector",
+  vector: {
+    dimension: 2,
+    supportsSearchWith: ["COSINE_SIMILARITY"],
+  },
+};
+
 function makeArrayType(subtype: Type): Type {
   return { type: "array", array: { reducers: [], subtype } };
 }
 
 function makeStructType(
-  fields: Array<{ apiName: string; fieldType: Type }>
+  fields: Array<{ apiName: string; fieldType: Type }>,
 ): Type {
   return {
     type: "struct",
@@ -236,7 +248,7 @@ describe("typeToFieldSchema", () => {
   it("describes array elements via arraySubtype with a null name", () => {
     const schema = typeToFieldSchema(
       makeArrayType(STRING_PROPERTY_TYPE),
-      "tags"
+      "tags",
     );
     expect(schema.type).toBe("ARRAY");
     expect(schema.subSchemas).toBeNull();
@@ -255,13 +267,20 @@ describe("typeToFieldSchema", () => {
     });
   });
 
+  it("describes vectors as arrays of floats", () => {
+    const schema = typeToFieldSchema(VECTOR_PROPERTY_TYPE, "embedding");
+    expect(schema.type).toBe("ARRAY");
+    expect(schema.arraySubtype?.type).toBe("FLOAT");
+    expect(schema.arraySubtype?.name).toBeNull();
+  });
+
   it("describes struct fields via named subSchemas", () => {
     const schema = typeToFieldSchema(
       makeStructType([
         { apiName: "a", fieldType: STRING_PROPERTY_TYPE },
         { apiName: "b", fieldType: INTEGER_PROPERTY_TYPE },
       ]),
-      "info"
+      "info",
     );
     expect(schema.type).toBe("STRUCT");
     expect(schema.arraySubtype).toBeNull();
@@ -277,7 +296,7 @@ describe("typeToFieldSchema", () => {
       makeStructType([
         { apiName: "items", fieldType: makeArrayType(INTEGER_PROPERTY_TYPE) },
       ]),
-      "info"
+      "info",
     );
     const itemsField = structOfArray.subSchemas?.[0];
     expect(itemsField?.name).toBe("items");
@@ -288,9 +307,9 @@ describe("typeToFieldSchema", () => {
     // array whose element is a struct: element name is null, inner fields keep names
     const arrayOfStruct = typeToFieldSchema(
       makeArrayType(
-        makeStructType([{ apiName: "x", fieldType: STRING_PROPERTY_TYPE }])
+        makeStructType([{ apiName: "x", fieldType: STRING_PROPERTY_TYPE }]),
       ),
-      "rows"
+      "rows",
     );
     expect(arrayOfStruct.arraySubtype?.name).toBeNull();
     expect(arrayOfStruct.arraySubtype?.type).toBe("STRUCT");
@@ -325,7 +344,7 @@ describe("generateBackingDatasetBlockResult", () => {
 
   beforeEach(async () => {
     buildDir = await fs.promises.mkdtemp(
-      path.join(os.tmpdir(), "backing-ds-test-")
+      path.join(os.tmpdir(), "backing-ds-test-"),
     );
   });
 
@@ -352,22 +371,22 @@ describe("generateBackingDatasetBlockResult", () => {
     >;
     const dsShape = dsOutput.tabularDatasource as Record<string, unknown>;
     expect((dsShape.about as Record<string, unknown>).fallbackTitle).toBe(
-      "TestObject-backing-ds"
+      "TestObject-backing-ds",
     );
     expect(dsShape.type).toBe("DATASET");
     expect(
-      (dsShape.buildRequirements as Record<string, unknown>).isBuildable
+      (dsShape.buildRequirements as Record<string, unknown>).isBuildable,
     ).toBe(false);
     expect(dsShape.schema).toHaveLength(2);
 
     // datasourceColumn outputs
     const idColKey = ReadableIdGenerator.getForDatasetColumnOutput(
       "TestObject",
-      "id"
+      "id",
     );
     const countColKey = ReadableIdGenerator.getForDatasetColumnOutput(
       "TestObject",
-      "count"
+      "count",
     );
     expect(result.outputs[idColKey]).toBeDefined();
     expect(result.outputs[idColKey].type).toBe("datasourceColumn");
@@ -376,7 +395,7 @@ describe("generateBackingDatasetBlockResult", () => {
       unknown
     >;
     expect(
-      (idCol.datasourceColumn as Record<string, unknown>).about
+      (idCol.datasourceColumn as Record<string, unknown>).about,
     ).toHaveProperty("fallbackTitle", "id");
     expect(result.outputs[countColKey]).toBeDefined();
     expect(result.outputs[countColKey].type).toBe("datasourceColumn");
@@ -385,7 +404,7 @@ describe("generateBackingDatasetBlockResult", () => {
       unknown
     >;
     expect(
-      (countCol.datasourceColumn as Record<string, unknown>).about
+      (countCol.datasourceColumn as Record<string, unknown>).about,
     ).toHaveProperty("fallbackTitle", "count");
 
     // compassResource input
@@ -404,8 +423,8 @@ describe("generateBackingDatasetBlockResult", () => {
     const schema = JSON.parse(
       await fs.promises.readFile(
         path.join(result.block_data_directory, "schema.json"),
-        "utf-8"
-      )
+        "utf-8",
+      ),
     );
     expect(schema.fieldSchemaList).toHaveLength(2);
     expect(schema.fieldSchemaList[0].name).toBe("id");
@@ -413,15 +432,15 @@ describe("generateBackingDatasetBlockResult", () => {
     expect(schema.fieldSchemaList[1].name).toBe("count");
     expect(schema.fieldSchemaList[1].type).toBe("INTEGER");
     expect(schema.dataFrameReaderClass).toBe(
-      "com.palantir.foundry.spark.input.ParquetDataFrameReader"
+      "com.palantir.foundry.spark.input.ParquetDataFrameReader",
     );
 
     // block-data.json
     const blockDataContents = JSON.parse(
       await fs.promises.readFile(
         path.join(result.block_data_directory, "block-data.json"),
-        "utf-8"
-      )
+        "utf-8",
+      ),
     );
     expect(blockDataContents.type).toBe("v1");
     expect(blockDataContents.v1.hasSchema).toBe(true);
@@ -432,13 +451,13 @@ describe("generateBackingDatasetBlockResult", () => {
     // VERSION
     const version = await fs.promises.readFile(
       path.join(result.block_data_directory, "VERSION"),
-      "utf-8"
+      "utf-8",
     );
     expect(version).toBe('"1"');
 
     // files.zip
     const zipBuffer = await fs.promises.readFile(
-      path.join(result.block_data_directory, "files.zip")
+      path.join(result.block_data_directory, "files.zip"),
     );
     expect(zipBuffer.length).toBe(22);
     expect(zipBuffer[0]).toBe(0x50);
@@ -462,7 +481,7 @@ describe("generateBackingDatasetBlockResult", () => {
     expect(Object.keys(result.outputs)).toHaveLength(3);
     const secretKey = ReadableIdGenerator.getForDatasetColumnOutput(
       "TestObject",
-      "secret"
+      "secret",
     );
     expect(result.outputs[secretKey]).toBeUndefined();
 
@@ -470,12 +489,12 @@ describe("generateBackingDatasetBlockResult", () => {
     const schema = JSON.parse(
       await fs.promises.readFile(
         path.join(result.block_data_directory, "schema.json"),
-        "utf-8"
-      )
+        "utf-8",
+      ),
     );
     expect(schema.fieldSchemaList).toHaveLength(2);
     expect(schema.fieldSchemaList.map((f: { name: string }) => f.name)).toEqual(
-      ["id", "count"]
+      ["id", "count"],
     );
   });
 });
@@ -489,7 +508,7 @@ function createLinkTypeBlockData(
     pkRidB?: string;
     columnA?: string;
     columnB?: string;
-  } = {}
+  } = {},
 ): LinkTypeBlockDataV2 {
   const objectTypeRidA =
     overrides.objectTypeRidA ?? "ri.ontology-metadata.temp.object-type.ObjA";
@@ -556,7 +575,7 @@ function createObjectTypesForLink(
     pkRidB?: string;
     pkTypeA?: Type;
     pkTypeB?: Type;
-  } = {}
+  } = {},
 ): Record<string, ObjectTypeBlockDataV2> {
   const objectTypeRidA =
     overrides.objectTypeRidA ?? "ri.ontology-metadata.temp.object-type.ObjA";
@@ -596,7 +615,7 @@ describe("generateBackingDatasetBlockResultForLink", () => {
 
   beforeEach(async () => {
     buildDir = await fs.promises.mkdtemp(
-      path.join(os.tmpdir(), "link-backing-ds-test-")
+      path.join(os.tmpdir(), "link-backing-ds-test-"),
     );
   });
 
@@ -613,7 +632,7 @@ describe("generateBackingDatasetBlockResultForLink", () => {
       linkBlockData,
       linkApiName,
       objectTypes,
-      buildDir
+      buildDir,
     );
 
     // Block metadata
@@ -631,11 +650,11 @@ describe("generateBackingDatasetBlockResultForLink", () => {
     // datasourceColumn outputs (2 columns)
     const colAKey = ReadableIdGenerator.getForDatasetColumnOutput(
       datasetName,
-      "fooId"
+      "fooId",
     );
     const colBKey = ReadableIdGenerator.getForDatasetColumnOutput(
       datasetName,
-      "barId"
+      "barId",
     );
     expect(result.outputs[colAKey]).toBeDefined();
     expect(result.outputs[colAKey].type).toBe("datasourceColumn");
@@ -655,8 +674,8 @@ describe("generateBackingDatasetBlockResultForLink", () => {
     const schema = JSON.parse(
       await fs.promises.readFile(
         path.join(result.block_data_directory, "schema.json"),
-        "utf-8"
-      )
+        "utf-8",
+      ),
     );
     expect(schema.fieldSchemaList).toHaveLength(2);
     expect(schema.fieldSchemaList[0].name).toBe("fooId");
@@ -668,8 +687,8 @@ describe("generateBackingDatasetBlockResultForLink", () => {
     const blockDataContents = JSON.parse(
       await fs.promises.readFile(
         path.join(result.block_data_directory, "block-data.json"),
-        "utf-8"
-      )
+        "utf-8",
+      ),
     );
     expect(blockDataContents.type).toBe("v1");
     expect(blockDataContents.v1.hasSchema).toBe(true);
@@ -680,13 +699,13 @@ describe("generateBackingDatasetBlockResultForLink", () => {
     // VERSION
     const version = await fs.promises.readFile(
       path.join(result.block_data_directory, "VERSION"),
-      "utf-8"
+      "utf-8",
     );
     expect(version).toBe('"1"');
 
     // files.zip
     const zipBuffer = await fs.promises.readFile(
-      path.join(result.block_data_directory, "files.zip")
+      path.join(result.block_data_directory, "files.zip"),
     );
     expect(zipBuffer.length).toBe(22);
   });
@@ -703,18 +722,18 @@ describe("generateBackingDatasetBlockResultForLink", () => {
       linkBlockData,
       linkApiName,
       objectTypes,
-      buildDir
+      buildDir,
     );
 
     const datasetName = `link.${linkApiName}`;
 
     const colAKey = ReadableIdGenerator.getForDatasetColumnOutput(
       datasetName,
-      "id_from"
+      "id_from",
     );
     const colBKey = ReadableIdGenerator.getForDatasetColumnOutput(
       datasetName,
-      "id_to"
+      "id_to",
     );
     expect(result.outputs[colAKey]).toBeDefined();
     expect(result.outputs[colBKey]).toBeDefined();
@@ -722,8 +741,8 @@ describe("generateBackingDatasetBlockResultForLink", () => {
     const schema = JSON.parse(
       await fs.promises.readFile(
         path.join(result.block_data_directory, "schema.json"),
-        "utf-8"
-      )
+        "utf-8",
+      ),
     );
     expect(schema.fieldSchemaList[0].name).toBe("id_from");
     expect(schema.fieldSchemaList[1].name).toBe("id_to");
@@ -741,14 +760,14 @@ describe("generateBackingDatasetBlockResultForLink", () => {
       linkBlockData,
       linkApiName,
       objectTypes,
-      buildDir
+      buildDir,
     );
 
     const schema = JSON.parse(
       await fs.promises.readFile(
         path.join(result.block_data_directory, "schema.json"),
-        "utf-8"
-      )
+        "utf-8",
+      ),
     );
     expect(schema.fieldSchemaList[0].type).toBe("STRING");
     expect(schema.fieldSchemaList[1].type).toBe("INTEGER");

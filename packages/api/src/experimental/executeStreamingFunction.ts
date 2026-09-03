@@ -36,8 +36,9 @@ type StreamingElement<QD extends QueryDefinition<any>> =
  * @experimental This feature is experimental and might change in the future.
  *
  * Executes a query as a streaming function, yielding results as they arrive
- * from the server over an NDJSON stream. For queries that return arrays, the
- * stream yields the element type — batches are flattened automatically.
+ * from the server. Queries whose declared output is an array are delivered in
+ * batches and flattened, so the iterable yields one element at a time rather
+ * than one batch at a time.
  */
 type executeStreamingFunctionFn = <QD extends QueryDefinition<any>>(
   query: QD,

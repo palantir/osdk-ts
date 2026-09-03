@@ -16,14 +16,10 @@
 
 import type { Media } from "@osdk/api";
 
-import type { BaseEmailViewerProps } from "../email-viewer/EmailViewerApi.js";
-import type { BaseExcelViewerProps } from "../excel-viewer/ExcelViewerApi.js";
 import type { BaseImageViewerProps } from "../images/image-viewer/ImageViewerApi.js";
-import type { TiffRendererProps } from "../images/tiff-renderer/types.js";
-import type { MarkdownRendererProps } from "../markdown-renderer/MarkdownRenderer.js";
-import type { PdfViewerProps } from "../pdf-viewer/types.js";
+import type { BaseTiffViewerProps } from "../images/tiff-viewer/TiffViewerApi.js";
+import type { BasePdfViewerProps } from "../pdf-viewer/PdfViewerApi.js";
 import type { BaseVideoViewerProps } from "../video-viewer/VideoViewerApi.js";
-import type { BaseXmlViewerProps } from "../xml-viewer/XmlViewerApi.js";
 
 export enum ViewerType {
   Pdf = "pdf",
@@ -31,7 +27,7 @@ export enum ViewerType {
   Image = "image",
   Video = "video",
   Markdown = "markdown",
-  Excel = "excel",
+  Spreadsheet = "spreadsheet",
   Email = "email",
   Xml = "xml",
   Unsupported = "unsupported",
@@ -48,32 +44,24 @@ export interface DocumentViewerProps {
   mimeTypeOverride?: string;
   /** Props forwarded to BasePdfViewer when rendering PDF
    * @default undefined */
-  pdfViewerProps?: Partial<Omit<PdfViewerProps, "src" | "className">>;
+  pdfViewerProps?: Partial<Omit<BasePdfViewerProps, "src" | "className">>;
   /** Props forwarded to BaseImageViewer when rendering images
    * @default undefined */
   imageViewerProps?: Partial<Omit<BaseImageViewerProps, "src" | "className">>;
   /** Props forwarded to BaseVideoViewer when rendering video
    * @default undefined */
   videoViewerProps?: Partial<Omit<BaseVideoViewerProps, "src" | "className">>;
-  /** Props forwarded to TiffRenderer when rendering TIFF
+  /** Props forwarded to BaseTiffViewer when rendering TIFF
    * @default undefined */
-  tiffRendererProps?: Partial<Omit<TiffRendererProps, "content" | "className">>;
-  /** Props forwarded to MarkdownRenderer when rendering markdown
-   * @default undefined */
-  markdownRendererProps?: Partial<
-    Omit<MarkdownRendererProps, "content" | "className">
+  tiffViewerProps?: Partial<
+    Omit<BaseTiffViewerProps, "src" | "content" | "className">
   >;
-  /** Props forwarded to BaseExcelViewer when rendering Excel
+  /** Alias for `tiffViewerProps`, which takes precedence when set to a non-nullish value.
+   * @deprecated Use `tiffViewerProps` instead.
    * @default undefined */
-  excelViewerProps?: Partial<
-    Omit<BaseExcelViewerProps, "spreadsheet" | "className">
+  tiffRendererProps?: Partial<
+    Omit<BaseTiffViewerProps, "src" | "content" | "className">
   >;
-  /** Props forwarded to BaseEmailViewer when rendering EML
-   * @default undefined */
-  emailViewerProps?: Partial<Omit<BaseEmailViewerProps, "email" | "className">>;
-  /** Props forwarded to BaseXmlViewer when rendering XML
-   * @default undefined */
-  xmlViewerProps?: Partial<Omit<BaseXmlViewerProps, "content" | "className">>;
   /** File name hint for MIME type detection (e.g. "scan.tif"). Used to detect
    *  TIFF files when the MIME type is ambiguous (e.g. application/octet-stream).
    * @default undefined */

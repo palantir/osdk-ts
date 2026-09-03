@@ -76,7 +76,7 @@ export class SpecificLinkQuery extends BaseListQuery<
   #resolveToObjectType: boolean;
 
   protected override createPayload(
-    params: CollectionConnectableParams
+    params: CollectionConnectableParams,
   ): SpecificLinkPayload {
     return {
       ...super.createPayload(params),
@@ -97,7 +97,7 @@ export class SpecificLinkQuery extends BaseListQuery<
     store: Store,
     subject: Subject<SubjectPayload<SpecificLinkCacheKey>>,
     cacheKey: SpecificLinkCacheKey,
-    opts: ObserveLinks.Options<ObjectOrInterfaceDefinition, string>
+    opts: ObserveLinks.Options<ObjectOrInterfaceDefinition, string>,
   ) {
     super(
       store,
@@ -111,9 +111,9 @@ export class SpecificLinkQuery extends BaseListQuery<
               msgPrefix: `SpecificLinkQuery<${cacheKey.otherKeys
                 .map((x) => JSON.stringify(x))
                 .join(", ")}>`,
-            }
+            },
           )
-        : undefined
+        : undefined,
     );
 
     // Extract the necessary parameters from the cache key
@@ -150,7 +150,7 @@ export class SpecificLinkQuery extends BaseListQuery<
    * Implements fetchPageData from the BaseCollectionQuery template method pattern
    */
   protected async fetchPageData(
-    signal: AbortSignal | undefined
+    signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
     const client = this.store.client;
     const ontologyProvider = client[additionalContext].ontologyProvider;
@@ -168,12 +168,12 @@ export class SpecificLinkQuery extends BaseListQuery<
     ) {
       if (isInterface) {
         const interfaceMetadata = await ontologyProvider.getInterfaceDefinition(
-          this.#sourceApiName
+          this.#sourceApiName,
         );
         const linkDef = interfaceMetadata.links?.[this.#linkName];
         if (!linkDef) {
           throw new Error(
-            `Missing link definition for link '${this.#linkName}' on interface '${this.#sourceApiName}'`
+            `Missing link definition for link '${this.#linkName}' on interface '${this.#sourceApiName}'`,
           );
         }
         target = {
@@ -182,12 +182,12 @@ export class SpecificLinkQuery extends BaseListQuery<
         };
       } else {
         const objectMetadata = await ontologyProvider.getObjectDefinition(
-          this.#sourceApiName
+          this.#sourceApiName,
         );
         const linkDef = objectMetadata.links?.[this.#linkName];
         if (!linkDef?.targetType) {
           throw new Error(
-            `Missing link definition or targetType for link '${this.#linkName}' on object type '${this.#sourceApiName}'`
+            `Missing link definition or targetType for link '${this.#linkName}' on object type '${this.#sourceApiName}'`,
           );
         }
         // Object link defs always target an object type.
@@ -198,7 +198,7 @@ export class SpecificLinkQuery extends BaseListQuery<
     if (target && hasOrderBy) {
       this.sortingStrategy = new OrderBySortingStrategy(
         target.apiName,
-        this.#orderBy
+        this.#orderBy,
       );
     }
 
@@ -206,7 +206,7 @@ export class SpecificLinkQuery extends BaseListQuery<
 
     if (isInterface) {
       const objectMetadata = await ontologyProvider.getObjectDefinition(
-        this.#sourceUnderlyingObjectType
+        this.#sourceUnderlyingObjectType,
       );
 
       const interfaceSet = client({
@@ -226,7 +226,7 @@ export class SpecificLinkQuery extends BaseListQuery<
       linkQuery = filteredSource.pivotTo(this.#linkName);
     } else {
       const objectMetadata = await ontologyProvider.getObjectDefinition(
-        this.#sourceApiName
+        this.#sourceApiName,
       );
 
       const sourceSet = client({
@@ -297,7 +297,7 @@ export class SpecificLinkQuery extends BaseListQuery<
    */
   deleteFromStore(
     status: Status,
-    batch: BatchContext
+    batch: BatchContext,
   ): Entry<SpecificLinkCacheKey> | undefined {
     const entry = batch.read(this.cacheKey);
 
@@ -330,9 +330,11 @@ export class SpecificLinkQuery extends BaseListQuery<
   /**
    * Implements Query.maybeUpdateAndRevalidate to handle cache invalidation
    */
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   maybeUpdateAndRevalidate = async (
     changes: Changes,
-    _optimisticId: OptimisticId | undefined
+    _optimisticId: OptimisticId | undefined,
   ): Promise<void> => {
     if (changes.modified.has(this.cacheKey)) {
       return this.revalidate(true);
@@ -343,7 +345,7 @@ export class SpecificLinkQuery extends BaseListQuery<
 
   invalidateObjectType = (
     objectType: string,
-    changes: Changes | undefined
+    changes: Changes | undefined,
   ): Promise<void> => {
     // We need to invalidate links in multiple cases:
     // 1. When the source object type matches the apiName (direct invalidation)
@@ -382,7 +384,7 @@ export class SpecificLinkQuery extends BaseListQuery<
             interfaceMetadata.links?.[this.#linkName]?.targetTypeApiName;
         } else {
           const objectMetadata = await ontologyProvider.getObjectDefinition(
-            this.#sourceApiName
+            this.#sourceApiName,
           );
           // Object link def's `targetType` is the target API name; it can be
           // either an object type or an interface name.
@@ -410,7 +412,7 @@ export class SpecificLinkQuery extends BaseListQuery<
         if (process.env.NODE_ENV !== "production") {
           this.logger?.error(
             "Failed to resolve metadata during invalidation",
-            e
+            e,
           );
         }
         changes?.modified.add(this.cacheKey);
@@ -424,7 +426,7 @@ export class SpecificLinkQuery extends BaseListQuery<
  * Type guard to check if a cache key is a SpecificLinkCacheKey
  */
 export function isSpecificLinkCacheKey(
-  key: CacheKey
+  key: CacheKey,
 ): key is SpecificLinkCacheKey {
   return key.type === "specificLink";
 }

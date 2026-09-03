@@ -1,5 +1,132 @@
 # @osdk/shared.test
 
+## 0.48.0
+
+### Patch Changes
+
+- @osdk/api@2.64.0
+- @osdk/generator-converters@2.64.0
+
+## 0.47.0
+
+### Patch Changes
+
+- Updated dependencies [08ba782]
+  - @osdk/api@2.63.0
+  - @osdk/generator-converters@2.63.0
+
+## 0.46.0
+
+### Patch Changes
+
+- @osdk/api@2.62.0
+- @osdk/generator-converters@2.62.0
+
+## 0.45.0
+
+### Patch Changes
+
+- Updated dependencies [bdf45fa]
+- Updated dependencies [34cb7e0]
+  - @osdk/api@2.61.0
+  - @osdk/generator-converters@2.61.0
+
+## 0.44.0
+
+### Minor Changes
+
+- bbbeca8: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.75.0`, which reinstates the `streamingExecute` query endpoint as a Server-Sent Events (`text/event-stream`) stream. The experimental `executeStreamingFunction` helper is reimplemented on top of it and no longer throws: it yields each result as it arrives, flattening batched results so array-returning queries emit one element at a time.
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+  - @osdk/generator-converters@2.60.0
+  - @osdk/api@2.60.0
+
+## 0.43.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+  - @osdk/generator-converters@2.58.0
+  - @osdk/api@2.58.0
+
+## 0.42.0
+
+### Patch Changes
+
+- @osdk/api@2.57.0
+- @osdk/generator-converters@2.57.0
+
+## 0.41.0
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+  - @osdk/generator-converters@2.55.0
+
+## 0.40.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/generator-converters@2.53.0
+  - @osdk/api@2.53.0
+
+## 0.39.0
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/generator-converters@2.52.0
+
+## 0.38.0
+
+### Patch Changes
+
+- @osdk/api@2.48.0
+- @osdk/generator-converters@2.48.0
+
+## 0.37.0
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+- @osdk/generator-converters@2.47.0
+
+## 0.36.0
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+- @osdk/generator-converters@2.46.0
+
+## 0.35.0
+
+### Minor Changes
+
+- db2bfa2: Add ability to pass null for struct action parameters.
+
+### Patch Changes
+
+- Updated dependencies [db2bfa2]
+  - @osdk/api@2.45.0
+  - @osdk/generator-converters@2.45.0
+
 ## 0.34.0
 
 ### Minor Changes

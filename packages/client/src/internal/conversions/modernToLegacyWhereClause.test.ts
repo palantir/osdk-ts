@@ -57,7 +57,7 @@ describe(modernToLegacyWhereClause, () => {
               { prop2: { innerProp1: { $eq: "myProp" } } },
             ],
           },
-          T
+          T,
         );
 
         expect(r).toMatchInlineSnapshot(`
@@ -112,7 +112,7 @@ describe(modernToLegacyWhereClause, () => {
             foo: 6,
             "c.prop2": { innerProp1: { $eq: "myProp" } },
           },
-          T
+          T,
         );
 
         expect(r).toMatchInlineSnapshot(`
@@ -172,7 +172,7 @@ describe(modernToLegacyWhereClause, () => {
             "a.foo": 6,
             "c.prop2": { innerProp1: { $eq: "myProp" } },
           },
-          T
+          T,
         );
 
         expect(r).toMatchInlineSnapshot(`
@@ -228,8 +228,8 @@ describe(modernToLegacyWhereClause, () => {
             {
               "b.prop": 5,
             },
-            T
-          )
+            T,
+          ),
         ).toMatchInlineSnapshot(`
           {
             "field": "b.prop",
@@ -262,7 +262,7 @@ describe(modernToLegacyWhereClause, () => {
           {
             prop: 5,
           },
-          T
+          T,
         );
 
         expect(r).toMatchInlineSnapshot(`
@@ -278,7 +278,7 @@ describe(modernToLegacyWhereClause, () => {
 
   describe("single checks", () => {
     describe("$within", () => {
-      it("properly generates bbox shortcut", async () => {
+      it("properly generates bbox shortcut", () => {
         expect(
           modernToLegacyWhereClause<ObjAllProps>(
             {
@@ -286,8 +286,8 @@ describe(modernToLegacyWhereClause, () => {
                 $within: [-5, 5, -10, 10],
               },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
           {
             "field": "geoPoint",
@@ -312,7 +312,7 @@ describe(modernToLegacyWhereClause, () => {
         `);
       });
 
-      it("properly generates bbox long form", async () => {
+      it("properly generates bbox long form", () => {
         expect(
           modernToLegacyWhereClause<ObjAllProps>(
             {
@@ -322,8 +322,8 @@ describe(modernToLegacyWhereClause, () => {
                 },
               },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
           {
             "field": "geoPoint",
@@ -348,7 +348,7 @@ describe(modernToLegacyWhereClause, () => {
         `);
       });
 
-      it("properly generates within radius", async () => {
+      it("properly generates within radius", () => {
         expect(
           modernToLegacyWhereClause<ObjAllProps>(
             {
@@ -356,8 +356,8 @@ describe(modernToLegacyWhereClause, () => {
                 $within: { $distance: [5, "km"], $of: [-5, 5] },
               },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
         {
           "field": "geoPoint",
@@ -379,7 +379,7 @@ describe(modernToLegacyWhereClause, () => {
       `);
       });
 
-      it("properly generates within radius of geopoint", async () => {
+      it("properly generates within radius of geopoint", () => {
         // suppose you loaded an object with a geopoint field
         // and you want to find all objects within 5 km of that point
         const pointAsGeoJsonPoint: Point = {
@@ -393,8 +393,8 @@ describe(modernToLegacyWhereClause, () => {
                 $within: { $distance: [5, "km"], $of: pointAsGeoJsonPoint },
               },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
         {
           "field": "geoPoint",
@@ -416,7 +416,7 @@ describe(modernToLegacyWhereClause, () => {
       `);
       });
 
-      it("properly generates within polygon", async () => {
+      it("properly generates within polygon", () => {
         expect(
           modernToLegacyWhereClause<ObjAllProps>(
             {
@@ -432,8 +432,8 @@ describe(modernToLegacyWhereClause, () => {
                 },
               },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
           {
             "field": "geoPoint",
@@ -461,7 +461,7 @@ describe(modernToLegacyWhereClause, () => {
         `);
       });
 
-      it("properly generates within polygon geojson", async () => {
+      it("properly generates within polygon geojson", () => {
         expect(
           modernToLegacyWhereClause<ObjAllProps>(
             {
@@ -478,8 +478,8 @@ describe(modernToLegacyWhereClause, () => {
                 },
               },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
           {
             "field": "geoPoint",
@@ -506,7 +506,7 @@ describe(modernToLegacyWhereClause, () => {
           }
         `);
       });
-      it("check types", async () => {
+      it("check types", () => {
         expectType<WhereClause<ObjAllProps>>({
           geoPoint: {
             $within: [-5, 5, -10, 10],
@@ -582,7 +582,7 @@ describe(modernToLegacyWhereClause, () => {
         });
       });
       describe("$intersects", () => {
-        it("properly generates bbox shortcut", async () => {
+        it("properly generates bbox shortcut", () => {
           expect(
             modernToLegacyWhereClause<ObjAllProps>(
               {
@@ -590,8 +590,8 @@ describe(modernToLegacyWhereClause, () => {
                   $intersects: [-5, 5, -10, 10],
                 },
               },
-              objectTypeWithAllPropertyTypes
-            )
+              objectTypeWithAllPropertyTypes,
+            ),
           ).toMatchInlineSnapshot(`
         {
           "field": "geoShape",
@@ -615,7 +615,7 @@ describe(modernToLegacyWhereClause, () => {
         }
       `);
         });
-        it("properly generates bbox long form", async () => {
+        it("properly generates bbox long form", () => {
           expect(
             modernToLegacyWhereClause<ObjAllProps>(
               {
@@ -625,8 +625,8 @@ describe(modernToLegacyWhereClause, () => {
                   },
                 },
               },
-              objectTypeWithAllPropertyTypes
-            )
+              objectTypeWithAllPropertyTypes,
+            ),
           ).toMatchInlineSnapshot(`
           {
             "field": "geoShape",
@@ -651,7 +651,7 @@ describe(modernToLegacyWhereClause, () => {
         `);
         });
 
-        it("properly generates intersects polygon", async () => {
+        it("properly generates intersects polygon", () => {
           expect(
             modernToLegacyWhereClause<ObjAllProps>(
               {
@@ -667,8 +667,8 @@ describe(modernToLegacyWhereClause, () => {
                   },
                 },
               },
-              objectTypeWithAllPropertyTypes
-            )
+              objectTypeWithAllPropertyTypes,
+            ),
           ).toMatchInlineSnapshot(`
             {
               "field": "geoShape",
@@ -696,7 +696,7 @@ describe(modernToLegacyWhereClause, () => {
           `);
         });
 
-        it("properly generates within polygon geojson", async () => {
+        it("properly generates within polygon geojson", () => {
           expect(
             modernToLegacyWhereClause<ObjAllProps>(
               {
@@ -713,8 +713,8 @@ describe(modernToLegacyWhereClause, () => {
                   },
                 },
               },
-              objectTypeWithAllPropertyTypes
-            )
+              objectTypeWithAllPropertyTypes,
+            ),
           ).toMatchInlineSnapshot(`
             {
               "field": "geoShape",
@@ -749,8 +749,8 @@ describe(modernToLegacyWhereClause, () => {
             {
               integer: { $ne: 5 },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
         {
           "type": "not",
@@ -770,8 +770,8 @@ describe(modernToLegacyWhereClause, () => {
                 $containsAllTerms: { term: "test", fuzzySearch: true },
               },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
         {
           "field": "string",
@@ -788,8 +788,8 @@ describe(modernToLegacyWhereClause, () => {
                 $containsAllTerms: { term: "test", fuzzySearch: false },
               },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
         {
           "field": "string",
@@ -804,8 +804,8 @@ describe(modernToLegacyWhereClause, () => {
             {
               string: { $containsAllTerms: { term: "test" } },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
         {
           "field": "string",
@@ -822,8 +822,8 @@ describe(modernToLegacyWhereClause, () => {
             {
               string: { $containsAllTerms: "test" },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
         {
           "field": "string",
@@ -839,8 +839,8 @@ describe(modernToLegacyWhereClause, () => {
             {
               string: { $containsAnyTerm: { term: "test", fuzzySearch: true } },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
         {
           "field": "string",
@@ -857,8 +857,8 @@ describe(modernToLegacyWhereClause, () => {
                 $containsAnyTerm: { term: "test", fuzzySearch: false },
               },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
         {
           "field": "string",
@@ -873,8 +873,8 @@ describe(modernToLegacyWhereClause, () => {
             {
               string: { $containsAnyTerm: { term: "test" } },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
         {
           "field": "string",
@@ -891,8 +891,8 @@ describe(modernToLegacyWhereClause, () => {
             {
               string: { $containsAnyTerm: "test" },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
         {
           "field": "string",
@@ -914,8 +914,8 @@ describe(modernToLegacyWhereClause, () => {
                 },
               },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
         {
           "field": "string",
@@ -940,8 +940,8 @@ describe(modernToLegacyWhereClause, () => {
                 },
               },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
         {
           "field": "string",
@@ -974,8 +974,8 @@ describe(modernToLegacyWhereClause, () => {
                 },
               },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
           {
             "field": "string",
@@ -1021,8 +1021,8 @@ describe(modernToLegacyWhereClause, () => {
                 },
               },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
           {
             "field": "string",
@@ -1053,8 +1053,8 @@ describe(modernToLegacyWhereClause, () => {
             {
               address: { state: { $eq: "NJ" } },
             },
-            BgaoNflPlayer
-          )
+            BgaoNflPlayer,
+          ),
         ).toMatchInlineSnapshot(`
           {
             "field": undefined,
@@ -1076,8 +1076,8 @@ describe(modernToLegacyWhereClause, () => {
                 { address: { city: { $containsAnyTerm: "N" } } },
               ],
             },
-            BgaoNflPlayer
-          )
+            BgaoNflPlayer,
+          ),
         ).toMatchInlineSnapshot(`
         {
           "type": "and",
@@ -1116,8 +1116,8 @@ describe(modernToLegacyWhereClause, () => {
                 { gamesPlayed: { $gt: 5 } },
               ],
             },
-            BgaoNflPlayer
-          )
+            BgaoNflPlayer,
+          ),
         ).toMatchInlineSnapshot(`
       {
         "type": "or",
@@ -1171,8 +1171,8 @@ describe(modernToLegacyWhereClause, () => {
                 },
               ],
             },
-            BgaoNflPlayer
-          )
+            BgaoNflPlayer,
+          ),
         ).toMatchInlineSnapshot(`
             {
               "type": "and",
@@ -1223,8 +1223,8 @@ describe(modernToLegacyWhereClause, () => {
             {
               integerArray: { $contains: { $lt: 5 } },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
           {
             "field": "integerArray",
@@ -1238,8 +1238,8 @@ describe(modernToLegacyWhereClause, () => {
             {
               stringArray: { $contains: { $startsWith: "test" } },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
           {
             "field": "stringArray",
@@ -1253,8 +1253,8 @@ describe(modernToLegacyWhereClause, () => {
             {
               booleanArray: { $contains: { $eq: true } },
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
           {
             "field": "booleanArray",
@@ -1273,8 +1273,8 @@ describe(modernToLegacyWhereClause, () => {
                 { integerArray: { $contains: { $lt: 10 } } },
               ],
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
           {
             "type": "and",
@@ -1303,8 +1303,8 @@ describe(modernToLegacyWhereClause, () => {
               decimal: 5,
               integer: 10,
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
         {
           "type": "and",
@@ -1337,8 +1337,8 @@ describe(modernToLegacyWhereClause, () => {
                 },
               ],
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
           {
             "type": "and",
@@ -1371,8 +1371,8 @@ describe(modernToLegacyWhereClause, () => {
                 },
               ],
             },
-            objectTypeWithAllPropertyTypes
-          )
+            objectTypeWithAllPropertyTypes,
+          ),
         ).toMatchInlineSnapshot(`
             {
               "type": "or",
@@ -1403,7 +1403,7 @@ describe(modernToLegacyWhereClause, () => {
 
       const result = modernToLegacyWhereClause(
         whereClause,
-        objectTypeWithAllPropertyTypes
+        objectTypeWithAllPropertyTypes,
       );
 
       expect(result).toMatchInlineSnapshot(`
@@ -1441,7 +1441,7 @@ describe(modernToLegacyWhereClause, () => {
 
       const result = modernToLegacyWhereClause(
         whereClause,
-        objectTypeWithAllPropertyTypes
+        objectTypeWithAllPropertyTypes,
       );
 
       expect(result).toMatchInlineSnapshot(`
@@ -1516,7 +1516,7 @@ describe(modernToLegacyWhereClause, () => {
       const result = modernToLegacyWhereClause(
         whereClause,
         mockObjectType,
-        rdpNames
+        rdpNames,
       );
 
       expect(result).toMatchInlineSnapshot(`
@@ -1561,7 +1561,7 @@ describe(modernToLegacyWhereClause, () => {
       const result = modernToLegacyWhereClause(
         whereClause,
         mockObjectType,
-        rdpNames
+        rdpNames,
       );
 
       expect(result).toMatchInlineSnapshot(`
@@ -1605,7 +1605,7 @@ describe(modernToLegacyWhereClause, () => {
       const result = modernToLegacyWhereClause(
         whereClause,
         mockObjectType,
-        rdpNames
+        rdpNames,
       );
 
       // The actual structure flattens the nested $and differently
@@ -1691,7 +1691,7 @@ describe(modernToLegacyWhereClause, () => {
     it("should handle $title with explicit $eq filter", () => {
       const result = modernToLegacyWhereClause<typeof mockObjectType>(
         { $title: { $eq: "John" } },
-        mockObjectType
+        mockObjectType,
       );
 
       expect(result).toMatchInlineSnapshot(`
@@ -1709,7 +1709,7 @@ describe(modernToLegacyWhereClause, () => {
     it("should handle $title with shorthand string value", () => {
       const result = modernToLegacyWhereClause<typeof mockObjectType>(
         { $title: "John" },
-        mockObjectType
+        mockObjectType,
       );
 
       expect(result).toMatchInlineSnapshot(`
@@ -1727,7 +1727,7 @@ describe(modernToLegacyWhereClause, () => {
     it("should handle $primaryKey with $eq filter", () => {
       const result = modernToLegacyWhereClause<typeof mockObjectType>(
         { $primaryKey: { $eq: 42 } },
-        mockObjectType
+        mockObjectType,
       );
 
       expect(result).toMatchInlineSnapshot(`
@@ -1745,7 +1745,7 @@ describe(modernToLegacyWhereClause, () => {
     it("should handle $primaryKey with $gt filter", () => {
       const result = modernToLegacyWhereClause<typeof mockObjectType>(
         { $primaryKey: { $gt: 100 } },
-        mockObjectType
+        mockObjectType,
       );
 
       expect(result).toMatchInlineSnapshot(`
@@ -1763,7 +1763,7 @@ describe(modernToLegacyWhereClause, () => {
     it("should handle $title combined with regular property", () => {
       const result = modernToLegacyWhereClause<typeof mockObjectType>(
         { $title: { $eq: "John" }, department: "Engineering" },
-        mockObjectType
+        mockObjectType,
       );
 
       expect(result).toMatchInlineSnapshot(`
@@ -1796,7 +1796,7 @@ describe(modernToLegacyWhereClause, () => {
             { $primaryKey: { $gt: 10 } },
           ],
         },
-        mockObjectType
+        mockObjectType,
       );
 
       expect(result).toMatchInlineSnapshot(`
@@ -1827,7 +1827,7 @@ describe(modernToLegacyWhereClause, () => {
     it("should handle $title in $not clause", () => {
       const result = modernToLegacyWhereClause<typeof mockObjectType>(
         { $not: { $title: { $eq: "Admin" } } },
-        mockObjectType
+        mockObjectType,
       );
 
       expect(result).toMatchInlineSnapshot(`
@@ -1848,7 +1848,7 @@ describe(modernToLegacyWhereClause, () => {
     it("should handle $primaryKey with $in filter", () => {
       const result = modernToLegacyWhereClause<typeof mockObjectType>(
         { $primaryKey: { $in: [1, 2, 3] } },
-        mockObjectType
+        mockObjectType,
       );
 
       expect(result).toMatchInlineSnapshot(`

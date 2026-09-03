@@ -18,12 +18,13 @@ import type {
   InterfaceDefinition,
   ObjectTypeDefinition,
   QueryDefinition,
+  ActionDefinition,
 } from "@osdk/client";
 
 /**
  * Declare which resources a function needs access to.
  *
- * For `objects`, `interfaces` and `queries`, you may provide either:
+ * For `objects`, `interfaces`, `actions` and `queries`, you may provide either:
  * - A string alias from resources.json (e.g. `"myObject"`)
  * - An OSDK type reference imported from your generated ontology SDK (e.g. `Employee`)
  *
@@ -31,6 +32,7 @@ import type {
  */
 export interface ScopeResources {
   queries?: Array<string | QueryDefinition>;
+  actions?: Array<string | ActionDefinition>;
   objects?: Array<string | ObjectTypeDefinition>;
   interfaces?: Array<string | InterfaceDefinition>;
   links?: string[];
@@ -51,7 +53,7 @@ export namespace ScopeResources {
    * Sentinel value: discovery populates scope from `defaultResources` declared in functions.json.
    */
   export const defaultResources: unique symbol = Symbol(
-    "ScopeResources.defaultResources"
+    "ScopeResources.defaultResources",
   );
 }
 
@@ -77,10 +79,15 @@ export interface ScopeReadWriteAuthorization extends ScopeReadAuthorization {
  */
 export namespace ScopeAuthorization {
   /**
+   * Sentinel value: the generated function inherits authorization from its caller.
+   */
+  export const inherit: unique symbol = Symbol("ScopeAuthorization.inherit");
+
+  /**
    * Sentinel value: discovery uses `defaultAuthorization.read` declared in functions.json.
    */
   export const defaultRead: unique symbol = Symbol(
-    "ScopeAuthorization.defaultRead"
+    "ScopeAuthorization.defaultRead",
   );
 }
 
@@ -93,5 +100,6 @@ export interface Scope {
   authorization:
     | ScopeReadAuthorization
     | ScopeReadWriteAuthorization
+    | typeof ScopeAuthorization.inherit
     | typeof ScopeAuthorization.defaultRead;
 }

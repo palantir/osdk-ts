@@ -46,6 +46,7 @@
   --osdk-typography-color-default-disabled: var(
     --bp-typography-color-default-disabled
   );
+  --osdk-typography-color-primary-rest: var(--bp-typography-color-primary-rest);
   --osdk-typography-color-danger-rest: var(--bp-typography-color-danger-rest);
   --osdk-typography-color-danger-active: var(
     --bp-typography-color-danger-active
@@ -98,6 +99,8 @@
   --osdk-palette-gray-1: var(--bp-palette-gray-1);
   --osdk-palette-gray-2: var(--bp-palette-gray-2);
   --osdk-palette-gray-4: var(--bp-palette-gray-4);
+  --osdk-palette-blue-4: var(--bp-palette-blue-4);
+  --osdk-palette-red-4: var(--bp-palette-red-4);
   --osdk-palette-dark-gray-2: var(--bp-palette-dark-gray-2);
   --osdk-palette-dark-gray-3: var(--bp-palette-dark-gray-3);
   --osdk-palette-light-gray-1: var(--bp-palette-light-gray-1);
@@ -109,6 +112,13 @@
   --osdk-palette-black: var(--bp-palette-black);
 
   /* Semantic color tokens - abstracting palette usage */
+  /* Typography colors */
+  /* These aliases let components use one role-specific token across themes.
+     Error text is not a 1:1 Blueprint mapping: light mode uses
+     --bp-typography-color-danger-hover, while dark mode uses another color since Blueprint has no dark equivalent. */
+  --osdk-typography-color-error: var(--bp-typography-color-danger-hover);
+  --osdk-typography-color-placeholder: var(--osdk-typography-color-muted);
+
   /* Background colors */
   --osdk-background-primary: var(--osdk-palette-white);
   --osdk-background-secondary: var(--osdk-palette-light-gray-5);
@@ -220,4 +230,3 @@
 :focus-visible {
   outline: none;
 }
-

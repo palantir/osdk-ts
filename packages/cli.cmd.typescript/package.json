@@ -1,7 +1,7 @@
 {
   "name": "@osdk/cli.cmd.typescript",
   "private": true,
-  "version": "0.67.0",
+  "version": "0.90.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -34,7 +34,6 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@arethetypeswrong/cli": "^0.17.4",
     "@osdk/cli.common": "workspace:~",
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/generator": "workspace:~",
@@ -46,6 +45,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.17.4",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/node": "^18.19.124",

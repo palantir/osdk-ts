@@ -46,7 +46,7 @@ const describeIfConfigured = baseUrl && token ? describe : describe.skip;
 const E2E_TIMEOUT_MS = 30_000;
 
 function makeClient(baseUrlIn: string, tokenIn: string): PlatformClient {
-  const fetchFn: typeof globalThis.fetch = async (input, init) => {
+  const fetchFn: typeof globalThis.fetch = (input, init) => {
     const headers = new Headers(init?.headers);
     headers.set("Authorization", `Bearer ${tokenIn}`);
     return fetch(input, { ...init, headers });
@@ -83,7 +83,7 @@ describeIfConfigured("generateText (e2e)", () => {
       expect(result.usage.outputTokens).toBeGreaterThan(0);
       expect(result.steps).toHaveLength(1);
     },
-    E2E_TIMEOUT_MS
+    E2E_TIMEOUT_MS,
   );
 
   it(
@@ -124,7 +124,7 @@ describeIfConfigured("generateText (e2e)", () => {
       assertDefined(input.city, "tool call city");
       expect(input.city.toLowerCase()).toMatch(/san\s*francisco|sf/u);
     },
-    E2E_TIMEOUT_MS
+    E2E_TIMEOUT_MS,
   );
 
   it(
@@ -146,6 +146,6 @@ describeIfConfigured("generateText (e2e)", () => {
 
       await expect(promise).rejects.toThrow();
     },
-    E2E_TIMEOUT_MS
+    E2E_TIMEOUT_MS,
   );
 });

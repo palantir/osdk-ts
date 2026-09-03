@@ -26,12 +26,12 @@ import type {
  */
 export async function checkBulkOperationPermissions(
   ctx: ConjureContext,
-  request: _api_CheckBulkOperationPermissionsRequest
+  request: _api_CheckBulkOperationPermissionsRequest,
 ): Promise<_api_CheckBulkOperationPermissionsResponse> {
   return conjureFetch(
     ctx,
     `/bulk/versionedObjectSets/permissionCheck`,
     "PUT",
-    request
+    request,
   );
 }

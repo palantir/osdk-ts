@@ -39,17 +39,17 @@ import { convertCardinality } from "./convertCardinality.js";
 
 export function convertLink(
   linkType: LinkType,
-  ridGenerator: OntologyRidGenerator
+  ridGenerator: OntologyRidGenerator,
 ): LinkTypeBlockDataV2 {
   validateLink(linkType);
   let definition: LinkDefinition;
   let datasource: ManyToManyLinkTypeDatasource | undefined;
   if ("one" in linkType) {
     const { apiName: oneObjectApiName, object: oneObject } = getObject(
-      linkType.one.object
+      linkType.one.object,
     );
     const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
-      linkType.toMany.object
+      linkType.toMany.object,
     );
     const oneObjectRid =
       ridGenerator.generateRidForObjectType(oneObjectApiName);
@@ -57,11 +57,11 @@ export function convertLink(
       ridGenerator.generateRidForObjectType(toManyObjectApiName);
     const onePkRid = ridGenerator.generatePropertyRid(
       oneObject.primaryKeyPropertyApiName,
-      oneObjectApiName
+      oneObjectApiName,
     );
     const manyFkRid = ridGenerator.generatePropertyRid(
       linkType.manyForeignKeyProperty,
-      toManyObjectApiName
+      toManyObjectApiName,
     );
 
     definition = {
@@ -80,13 +80,13 @@ export function convertLink(
     };
   } else if ("intermediaryObjectType" in linkType) {
     const { apiName: manyObjectApiName, object: manyObject } = getObject(
-      linkType.many.object
+      linkType.many.object,
     );
     const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
-      linkType.toMany.object
+      linkType.toMany.object,
     );
     const { apiName: intermediaryObjectApiName } = getObject(
-      linkType.intermediaryObjectType
+      linkType.intermediaryObjectType,
     );
     definition = {
       type: "intermediary",
@@ -98,22 +98,24 @@ export function convertLink(
         objectTypeRidB:
           ridGenerator.generateRidForObjectType(toManyObjectApiName),
         intermediaryObjectTypeRid: ridGenerator.generateRidForObjectType(
-          intermediaryObjectApiName
+          intermediaryObjectApiName,
         ),
         aToIntermediaryLinkTypeRid: ridGenerator.generateRidForLinkType(
-          cleanAndValidateLinkTypeId(linkType.many.linkToIntermediary.apiName)
+          cleanAndValidateLinkTypeId(linkType.many.linkToIntermediary.apiName),
         ),
         intermediaryToBLinkTypeRid: ridGenerator.generateRidForLinkType(
-          cleanAndValidateLinkTypeId(linkType.toMany.linkToIntermediary.apiName)
+          cleanAndValidateLinkTypeId(
+            linkType.toMany.linkToIntermediary.apiName,
+          ),
         ),
       },
     };
   } else {
     const { apiName: manyObjectApiName, object: manyObject } = getObject(
-      linkType.many.object
+      linkType.many.object,
     );
     const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
-      linkType.toMany.object
+      linkType.toMany.object,
     );
     const manyObjectRidA =
       ridGenerator.generateRidForObjectType(manyObjectApiName);
@@ -121,11 +123,11 @@ export function convertLink(
       ridGenerator.generateRidForObjectType(toManyObjectApiName);
     const manyPkRidA = ridGenerator.generatePropertyRid(
       manyObject.primaryKeyPropertyApiName,
-      manyObjectApiName
+      manyObjectApiName,
     );
     const manyPkRidB = ridGenerator.generatePropertyRid(
       toManyObject.primaryKeyPropertyApiName,
-      toManyObjectApiName
+      toManyObjectApiName,
     );
 
     const columnA = manyObject.primaryKeyPropertyApiName;
@@ -153,7 +155,7 @@ export function convertLink(
     };
     const datasetLocator = ridGenerator.generateDatasetLocator(
       `link.${linkType.apiName}`,
-      new Set([resolvedColumnA, resolvedColumnB])
+      new Set([resolvedColumnA, resolvedColumnB]),
     );
     datasource = {
       rid: ridGenerator.generateDatasourceRid(linkType.apiName),
@@ -185,6 +187,9 @@ export function convertLink(
   return {
     linkType: {
       definition,
+      ...(linkType.description !== undefined && {
+        description: linkType.description,
+      }),
       rid: ridGenerator.generateRidForLinkType(linkTypeId),
       id: cleanAndValidateLinkTypeId(linkType.apiName),
       status: convertLinkStatus(linkType.status, ridGenerator),
@@ -209,32 +214,32 @@ export function convertLink(
 function validateLink(linkDefinition: LinkType) {
   if ("one" in linkDefinition) {
     const { apiName: oneObjectApiName, object: oneObject } = getObject(
-      linkDefinition.one.object
+      linkDefinition.one.object,
     );
     const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
-      linkDefinition.toMany.object
+      linkDefinition.toMany.object,
     );
     const foreignKey = toManyObject.properties?.find(
-      (p) => p.apiName === linkDefinition.manyForeignKeyProperty
+      (p) => p.apiName === linkDefinition.manyForeignKeyProperty,
     );
     invariant(
       foreignKey !== undefined,
-      `Foreign key ${linkDefinition.manyForeignKeyProperty} on link ${linkDefinition.apiName} does not exist on object ${toManyObjectApiName}`
+      `Foreign key ${linkDefinition.manyForeignKeyProperty} on link ${linkDefinition.apiName} does not exist on object ${toManyObjectApiName}`,
     );
 
     invariant(
       /([a-z][a-z0-9\\-]*)/u.test(linkDefinition.apiName),
-      `Top level link api names are expected to match the regex pattern ([a-z][a-z0-9\\-]*) ${linkDefinition.apiName} does not match`
+      `Top level link api names are expected to match the regex pattern ([a-z][a-z0-9\\-]*) ${linkDefinition.apiName} does not match`,
     );
 
     const typesMatch =
       foreignKey.type ===
       oneObject.properties?.find(
-        (p) => p.apiName === oneObject.primaryKeyPropertyApiName
+        (p) => p.apiName === oneObject.primaryKeyPropertyApiName,
       )?.type;
     invariant(
       typesMatch,
-      `Link ${linkDefinition.apiName} has type mismatch between the one side's primary key and the foreign key on the many side`
+      `Link ${linkDefinition.apiName} has type mismatch between the one side's primary key and the foreign key on the many side`,
     );
   }
   if ("intermediaryObjectType" in linkDefinition) {
@@ -243,10 +248,10 @@ function validateLink(linkDefinition: LinkType) {
       object: intermediaryObjectType,
     } = getObject(linkDefinition.intermediaryObjectType);
     const { apiName: manyObjectApiName, object: manyObject } = getObject(
-      linkDefinition.many.object
+      linkDefinition.many.object,
     );
     const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
-      linkDefinition.toMany.object
+      linkDefinition.toMany.object,
     );
 
     const {
@@ -261,7 +266,7 @@ function validateLink(linkDefinition: LinkType) {
       "one" in linkDefinition.many.linkToIntermediary &&
         manyIntermediaryOneObjectApiName === manyObject.apiName &&
         manyIntermediaryToManyObjectApiName === intermediaryObjectTypeApiName,
-      `LinkTypeA ${linkDefinition.many.linkToIntermediary.apiName} must be a many to one link from intermediary object ${intermediaryObjectTypeApiName} to objectA ${manyObjectApiName}`
+      `LinkTypeA ${linkDefinition.many.linkToIntermediary.apiName} must be a many to one link from intermediary object ${intermediaryObjectTypeApiName} to objectA ${manyObjectApiName}`,
     );
 
     const {
@@ -276,7 +281,7 @@ function validateLink(linkDefinition: LinkType) {
       "one" in linkDefinition.toMany.linkToIntermediary &&
         toManyIntermediaryOneObjectApiName === toManyObjectApiName &&
         toManyIntermediaryToManyObjectApiName === intermediaryObjectTypeApiName,
-      `LinkTypeB ${linkDefinition.toMany.linkToIntermediary.apiName} must be a many to one link from intermediary object ${intermediaryObjectTypeApiName} to objectB ${toManyObjectApiName}`
+      `LinkTypeB ${linkDefinition.toMany.linkToIntermediary.apiName} must be a many to one link from intermediary object ${intermediaryObjectTypeApiName} to objectB ${toManyObjectApiName}`,
     );
   }
 }
@@ -296,7 +301,7 @@ export function getObject(object: string | ObjectTypeDefinition | ObjectType): {
 
 export function convertLinkStatus(
   status: UserLinkTypeStatus | undefined,
-  ridGenerator: OntologyRidGenerator
+  ridGenerator: OntologyRidGenerator,
 ): LinkTypeStatus {
   if (
     typeof status === "object" &&
@@ -310,7 +315,7 @@ export function convertLinkStatus(
         deadline: status.deadline,
         replacedBy: status.replacedBy
           ? ridGenerator.generateRidForLinkType(
-              cleanAndValidateLinkTypeId(status.replacedBy)
+              cleanAndValidateLinkTypeId(status.replacedBy),
             )
           : undefined,
       },

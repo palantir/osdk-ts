@@ -22,12 +22,12 @@ import type {
 } from "../__components.js";
 export async function batchExecuteMonitor(
   ctx: ConjureContext,
-  request: _api_executor_BatchExecuteMonitorRequest
+  request: _api_executor_BatchExecuteMonitorRequest,
 ): Promise<_api_executor_BatchExecuteMonitorResponse> {
   return conjureFetch(
     ctx,
     `/executor/v0/monitors/batchExecute`,
     "POST",
-    request
+    request,
   );
 }

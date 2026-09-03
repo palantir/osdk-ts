@@ -43,6 +43,7 @@ const columnDefinitions: Array<
       id: "fullName",
     },
     columnName: "My Name",
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     validateEdit: async (value: unknown) => {
       if (typeof value !== "string" || !value.trim()) {
         return "Name cannot be empty";
@@ -142,6 +143,42 @@ const columnDefinitions: Array<
     },
     orderable: false,
   },
+  // Custom + editable: no ontology property backs this column, so `getCellValue`
+  // supplies the value and `cellValueType` picks the editor. Without it the
+  // cell would get a text input and commit "12345" instead of 12345.
+  {
+    locator: {
+      type: "custom",
+      id: "reportsTo",
+    },
+    columnName: "Reports To (#)",
+    getCellValue: (object: Osdk.Instance<Employee>) =>
+      object.leadEmployeeNumber ?? object.mentorEmployeeNumber,
+    cellValueType: "integer",
+    editable: true,
+    orderable: false,
+  },
+  // Custom + editable, string-typed, and `renderCell` reusing the value the
+  // table already derived rather than recomputing it.
+  {
+    locator: {
+      type: "custom",
+      id: "contact",
+    },
+    columnName: "Contact",
+    getCellValue: (object: Osdk.Instance<Employee>) =>
+      [object.emailPrimaryWork, object.jobTitle]
+        .filter((part) => part != null)
+        .join(" · "),
+    cellValueType: "string",
+    editable: true,
+    orderable: false,
+    renderCell: (
+      _object: Osdk.Instance<Employee>,
+      _locator: unknown,
+      value: unknown,
+    ) => <em>{(value as string) || "No value"}</em>,
+  },
 ];
 
 const THEME_MODES: readonly OsdkThemeMode[] = ["light", "dark", "system"];
@@ -177,6 +214,7 @@ function ThemeToggle(): React.ReactElement {
 }
 
 export function EmployeesTable(): React.ReactElement {
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   const handleSubmitEdits = useCallback(async () => {
     alert(`Submitting edits...`);
     return true;

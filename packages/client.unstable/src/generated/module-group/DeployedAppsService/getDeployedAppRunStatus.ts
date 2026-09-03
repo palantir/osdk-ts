@@ -24,11 +24,11 @@ import type { DeployedAppRunStatus as _DeployedAppRunStatus } from "../__compone
  */
 export async function getDeployedAppRunStatus(
   ctx: ConjureContext,
-  deployedAppRid: string
+  deployedAppRid: string,
 ): Promise<_DeployedAppRunStatus> {
   return conjureFetch(
     ctx,
     `/deployed-apps/${deployedAppRid}/deployed-app-run-status`,
-    "GET"
+    "GET",
   );
 }

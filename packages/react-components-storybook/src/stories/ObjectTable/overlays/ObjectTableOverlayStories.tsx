@@ -79,7 +79,7 @@ export const ObjectTableInBlueprintDrawer = memo(
         </Drawer>
       </>
     );
-  }
+  },
 );
 
 export const ObjectTableInBlueprintDialog = memo(
@@ -115,7 +115,7 @@ export const ObjectTableInBlueprintDialog = memo(
         </BlueprintDialog>
       </>
     );
-  }
+  },
 );
 
 export const ObjectTableInBaseUIDialog = memo(
@@ -149,5 +149,5 @@ export const ObjectTableInBaseUIDialog = memo(
         </BaseUIDialog>
       </>
     );
-  }
+  },
 );

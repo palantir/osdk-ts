@@ -24,7 +24,7 @@ import type { GetActionTypePermissionsResponse as _api_permissions_GetActionType
  */
 export async function getActionTypePermissions(
   ctx: ConjureContext,
-  actionTypeRid: _api_ActionTypeRid
+  actionTypeRid: _api_ActionTypeRid,
 ): Promise<_api_permissions_GetActionTypePermissionsResponse> {
   return conjureFetch(ctx, `/permissions/actionType/${actionTypeRid}`, "GET");
 }

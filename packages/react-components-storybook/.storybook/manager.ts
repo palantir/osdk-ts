@@ -18,6 +18,7 @@ import React from "react";
 import type { TagBadgeParameters } from "storybook-addon-tag-badges/manager-helpers";
 import type { API } from "storybook/manager-api";
 import { addons, types } from "storybook/manager-api";
+import { create } from "storybook/theming";
 
 import {
   ADDON_ID,
@@ -25,8 +26,17 @@ import {
 } from "./addons/brand-theme-extractor/constants.js";
 import { Panel } from "./addons/brand-theme-extractor/Panel.js";
 import { ThemeToolbar } from "./addons/brand-theme-extractor/ThemeToolbar.js";
+// Composed Palantir mark + "OSDK React Components" wordmark (text pre-outlined).
+import brandImage from "./osdk-react-components-logo.svg";
 
 addons.setConfig({
+  theme: create({
+    base: "light",
+    brandTitle: "OSDK React Components",
+    brandImage,
+    brandUrl: "./?path=/docs/docs-welcome--docs",
+    brandTarget: "_self",
+  }),
   tagBadges: [
     {
       tags: "beta",

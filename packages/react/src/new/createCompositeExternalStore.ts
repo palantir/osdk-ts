@@ -36,7 +36,7 @@ type FunctionPayload = ObserveFunctionCallbackArgs<QueryDefinition<unknown>>;
 export function createCompositeExternalStore(
   queries: Array<FunctionQueryParams<QueryDefinition<unknown>>>,
   observableClient: ObservableClient,
-  maxConcurrent: number | undefined
+  maxConcurrent: number | undefined,
 ): {
   subscribe: (notifyUpdate: () => void) => () => void;
   getSnapshot: () => Array<Snapshot<FunctionPayload>>;
@@ -55,7 +55,7 @@ export function createCompositeExternalStore(
     query: FunctionQueryParams<QueryDefinition<unknown>>,
     index: number,
     notifyUpdate: () => void,
-    onSettled: () => void
+    onSettled: () => void,
   ): { unsubscribe: () => void } {
     const { params, dedupeIntervalMs, dependsOn, dependsOnObjects } =
       query.options ?? {};
@@ -86,7 +86,7 @@ export function createCompositeExternalStore(
           onSettled();
         },
         complete: () => {},
-      }
+      },
     );
   }
 
@@ -110,7 +110,7 @@ export function createCompositeExternalStore(
           : () => {};
 
       subscriptions.push(
-        observeQuery(queries[index], index, notifyUpdate, onSettled)
+        observeQuery(queries[index], index, notifyUpdate, onSettled),
       );
     };
 

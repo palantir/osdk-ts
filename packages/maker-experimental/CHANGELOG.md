@@ -1,5 +1,327 @@
 # @osdk/maker-experimental
 
+## 0.58.0
+
+### Minor Changes
+
+- 1fe5887: Require generated backing Media Sets to exist before ontology reconciliation.
+
+### Patch Changes
+
+- @osdk/api@2.64.0
+- @osdk/client.unstable@2.64.0
+- @osdk/generator-converters.ontologyir@2.64.0
+- @osdk/maker@0.64.0
+- @osdk/generator-converters.preview@0.42.0
+
+## 0.57.0
+
+### Minor Changes
+
+- ab7c384: Add opt-in generation of empty backing Media Sets for media reference properties.
+- d316359: Add vector property support
+
+### Patch Changes
+
+- Updated dependencies [ab7c384]
+- Updated dependencies [d316359]
+  - @osdk/maker@0.63.0
+
+## 0.56.0
+
+### Minor Changes
+
+- 3742aad: Preserve nullability for value type props
+
+### Patch Changes
+
+- Updated dependencies [08ba782]
+- Updated dependencies [3742aad]
+  - @osdk/api@2.63.0
+  - @osdk/maker@0.62.0
+  - @osdk/client.unstable@2.63.0
+  - @osdk/generator-converters.ontologyir@2.63.0
+  - @osdk/generator-converters.preview@0.41.0
+
+## 0.55.0
+
+### Patch Changes
+
+- @osdk/api@2.62.0
+- @osdk/client.unstable@2.62.0
+- @osdk/generator-converters.ontologyir@2.62.0
+- @osdk/maker@0.61.0
+- @osdk/generator-converters.preview@0.40.0
+
+## 0.54.0
+
+### Patch Changes
+
+- Updated dependencies [bdf45fa]
+- Updated dependencies [34cb7e0]
+- Updated dependencies [c742209]
+  - @osdk/api@2.61.0
+  - @osdk/maker@0.60.0
+  - @osdk/client.unstable@2.61.0
+  - @osdk/generator-converters.ontologyir@2.61.0
+  - @osdk/generator-converters.preview@0.39.0
+
+## 0.53.0
+
+### Minor Changes
+
+- 32cd3f8: Stop generating input shapes for spt-backed interface props
+
+## 0.52.0
+
+### Minor Changes
+
+- bbbeca8: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.75.0`, which reinstates the `streamingExecute` query endpoint as a Server-Sent Events (`text/event-stream`) stream. The experimental `executeStreamingFunction` helper is reimplemented on top of it and no longer throws: it yields each result as it arrives, flattening batched results so array-returning queries emit one element at a time.
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+  - @osdk/generator-converters.ontologyir@2.60.0
+  - @osdk/api@2.60.0
+  - @osdk/generator-converters.preview@0.38.0
+  - @osdk/maker@0.59.0
+  - @osdk/client.unstable@2.60.0
+
+## 0.51.0
+
+### Minor Changes
+
+- 6fe08e8: direct datasources
+- b68174d: Bug fixes
+
+### Patch Changes
+
+- Updated dependencies [2d75a53]
+  - @osdk/generator-converters.preview@0.37.0
+
+## 0.50.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+- Updated dependencies [90cce42]
+  - @osdk/generator-converters.ontologyir@2.58.0
+  - @osdk/generator-converters.preview@0.36.0
+  - @osdk/api@2.58.0
+  - @osdk/client.unstable@2.58.0
+  - @osdk/maker@0.58.0
+
+## 0.49.0
+
+### Minor Changes
+
+- a035a89: Allow empty collections for marking props
+
+### Patch Changes
+
+- Updated dependencies [b28235f]
+  - @osdk/maker@0.57.0
+
+## 0.48.0
+
+### Minor Changes
+
+- cea978e: Add configurable missing descriptions to all entities
+- 240964f: Convert recursive security conditions
+
+### Patch Changes
+
+- Updated dependencies [cea978e]
+  - @osdk/maker@0.56.0
+
+## 0.47.0
+
+### Minor Changes
+
+- 519e448: Fix bug with edit only properties.
+- e9d7ffa: Add struct action parameter validation types and serialization support.
+- bd9e86a: Fix spt-backed interface property shapes
+
+### Patch Changes
+
+- Updated dependencies [8ce066f]
+- Updated dependencies [3bfccdb]
+- Updated dependencies [e9d7ffa]
+  - @osdk/generator-converters.ontologyir@2.57.0
+  - @osdk/client.unstable@2.57.0
+  - @osdk/maker@0.55.0
+  - @osdk/generator-converters.preview@0.35.0
+  - @osdk/api@2.57.0
+
+## 0.46.0
+
+### Minor Changes
+
+- 849f34e: Port over knownIdentifier logic for imported interface props from java
+- e8584ec: Fix value type shapes
+
+### Patch Changes
+
+- Updated dependencies [7b85fa7]
+- Updated dependencies [342c492]
+  - @osdk/generator-converters.preview@0.34.0
+  - @osdk/api@2.56.0
+  - @osdk/client.unstable@2.56.0
+  - @osdk/generator-converters.ontologyir@2.56.0
+
+## 0.45.0
+
+### Minor Changes
+
+- e786c2a: Write direct oac imports to metadata file
+- b336b1d: generate external recs for interface props
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+  - @osdk/maker@0.54.0
+  - @osdk/client.unstable@2.55.0
+  - @osdk/generator-converters.ontologyir@2.55.0
+  - @osdk/generator-converters.preview@0.33.0
+
+## 0.44.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [5bd3024]
+- Updated dependencies [c14abb8]
+  - @osdk/generator-converters.preview@0.32.0
+  - @osdk/generator-converters.ontologyir@2.53.0
+  - @osdk/api@2.53.0
+  - @osdk/client.unstable@2.53.0
+  - @osdk/maker@0.53.0
+
+## 0.43.0
+
+### Minor Changes
+
+- 7ae7004: Revert re-enabling the `unicorn/no-useless-switch-case` oxlint rule; the rule is disabled again and the explicit `case` labels are restored. Behavior-preserving with no runtime or API changes.
+- d349c0b: Support presets for imports
+- e0cbc70: Add propertiesV2 to imported interface shapes
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [7ae7004]
+- Updated dependencies [eab0750]
+- Updated dependencies [bf4580a]
+- Updated dependencies [7667b67]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/maker@0.52.0
+  - @osdk/generator-converters.ontologyir@2.52.0
+  - @osdk/client.unstable@2.52.0
+  - @osdk/generator-converters.preview@0.31.0
+
+## 0.42.0
+
+### Minor Changes
+
+- bce917e: Write dependency file for maker-experimental
+
+### Patch Changes
+
+- Updated dependencies [bce917e]
+- Updated dependencies [9d75f4e]
+  - @osdk/maker@0.51.0
+  - @osdk/generator-converters.ontologyir@2.50.0
+  - @osdk/api@2.50.0
+  - @osdk/client.unstable@2.50.0
+
+## 0.41.0
+
+### Minor Changes
+
+- f4f70fb: Make codegen and build dir different arguments
+- ecfcf3d: Fix transitive interface link imports
+
+### Patch Changes
+
+- Updated dependencies [3a1c5a2]
+  - @osdk/maker@0.50.0
+  - @osdk/api@2.49.0
+  - @osdk/client.unstable@2.49.0
+  - @osdk/generator-converters.ontologyir@2.49.0
+
+## 0.40.0
+
+### Minor Changes
+
+- 62f9714: Re-enable the `unicorn/no-useless-switch-case` oxlint rule and drop the redundant empty `case` labels that fell straight through to `default`. Behavior-preserving with no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [62f9714]
+  - @osdk/maker@0.49.0
+  - @osdk/api@2.48.0
+  - @osdk/client.unstable@2.48.0
+  - @osdk/generator-converters.ontologyir@2.48.0
+  - @osdk/generator-converters.preview@0.30.0
+
+## 0.39.0
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+- @osdk/client.unstable@2.47.0
+- @osdk/generator-converters.ontologyir@2.47.0
+- @osdk/maker@0.48.0
+- @osdk/generator-converters.preview@0.29.0
+
+## 0.38.0
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+- @osdk/client.unstable@2.46.0
+- @osdk/generator-converters.ontologyir@2.46.0
+- @osdk/maker@0.47.0
+- @osdk/generator-converters.preview@0.28.0
+
+## 0.37.0
+
+### Minor Changes
+
+- 93958d7: Support interface link actions in maker-experimental
+
+### Patch Changes
+
+- Updated dependencies [93958d7]
+- Updated dependencies [db2bfa2]
+  - @osdk/generator-converters.ontologyir@2.45.0
+  - @osdk/generator-converters.preview@0.27.0
+  - @osdk/api@2.45.0
+  - @osdk/client.unstable@2.45.0
+
+## 0.36.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+  - @osdk/client.unstable@2.44.0
+  - @osdk/api@2.44.0
+  - @osdk/generator-converters.ontologyir@2.44.0
+
 ## 0.35.0
 
 ### Minor Changes

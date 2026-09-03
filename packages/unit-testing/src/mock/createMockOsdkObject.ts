@@ -28,7 +28,7 @@ import { isMockObjectSet } from "./createMockObjectSet.js";
 // TODO: Add support for RDPs
 
 function createSingleLinkStub<T extends ObjectTypeDefinition>(
-  linked: Osdk.Instance<T> | Error
+  linked: Osdk.Instance<T> | Error,
 ): {
   fetchOne: () => Promise<Osdk.Instance<T>>;
   fetchOneWithErrors: () => Promise<Result<Osdk.Instance<T>>>;
@@ -48,7 +48,7 @@ function createSingleLinkStub<T extends ObjectTypeDefinition>(
 function createMissingLinkStub(
   linkName: string,
   objectApiName: string,
-  primaryKey: string
+  primaryKey: string,
 ): {
   fetchOne: () => Promise<never>;
   fetchOneWithErrors: () => Promise<{ error: Error; value?: never }>;
@@ -61,7 +61,7 @@ function createMissingLinkStub(
       `Link "${linkName}" was not configured on mock ${objectApiName} ` +
         `object with primary key ${primaryKey}. ` +
         `Pass it via the \`links\` option on createMockOsdkObject, or ` +
-        `pass an Error instance to simulate a link failure.`
+        `pass an Error instance to simulate a link failure.`,
     );
   return {
     fetchOne: () => Promise.reject(makeError()),
@@ -77,7 +77,7 @@ function createMissingLinkStub(
 }
 
 function createManyLinkStub<T extends ObjectTypeDefinition>(
-  linkedObjects: Array<Osdk.Instance<T>>
+  linkedObjects: Array<Osdk.Instance<T>>,
 ): {
   fetchOne: (primaryKey: unknown) => Promise<Osdk.Instance<T> | undefined>;
   fetchPage: () => Promise<{
@@ -92,13 +92,13 @@ function createManyLinkStub<T extends ObjectTypeDefinition>(
       if (linkedObjects.length > 0 && linkedObjects[0].$primaryKey == null) {
         invariant(
           false,
-          `fetchOne requires primaryKeyApiName to be set on linked objects`
+          `fetchOne requires primaryKeyApiName to be set on linked objects`,
         );
       }
       const found = linkedObjects.find((obj) => obj.$primaryKey === primaryKey);
       invariant(
         found != null,
-        `fetchOne could not find object with primary key ${String(primaryKey)}`
+        `fetchOne could not find object with primary key ${String(primaryKey)}`,
       );
       return Promise.resolve(found);
     },
@@ -110,6 +110,7 @@ function createManyLinkStub<T extends ObjectTypeDefinition>(
         [Symbol.asyncIterator]() {
           return this;
         },
+        // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
         async next() {
           if (index < linkedObjects.length) {
             return { value: linkedObjects[index++], done: false as const };
@@ -156,7 +157,7 @@ function createManyLinkStub<T extends ObjectTypeDefinition>(
 export function createMockOsdkObject<Q extends ObjectTypeDefinition>(
   objectType: Q,
   properties?: Partial<CompileTimeMetadata<Q>["props"]>,
-  options: MockOsdkObjectOptions<Q> = {}
+  options: MockOsdkObjectOptions<Q> = {},
 ): Osdk.Instance<Q> {
   const { links, titlePropertyApiName } = options;
 
@@ -165,7 +166,7 @@ export function createMockOsdkObject<Q extends ObjectTypeDefinition>(
   invariant(
     primaryKeyApiName != null,
     `Object type "${objectType.apiName}" does not have a primaryKeyApiName defined. ` +
-      `Ensure you are using a generated object type constant that includes primaryKeyApiName.`
+      `Ensure you are using a generated object type constant that includes primaryKeyApiName.`,
   );
 
   if (properties == null) {
@@ -175,13 +176,13 @@ export function createMockOsdkObject<Q extends ObjectTypeDefinition>(
   invariant(
     primaryKeyApiName in properties,
     `Primary key property "${primaryKeyApiName}" must be provided in properties for ${objectType.apiName}. ` +
-      `Include "${primaryKeyApiName}" in the properties argument.`
+      `Include "${primaryKeyApiName}" in the properties argument.`,
   );
 
   if (titlePropertyApiName != null) {
     invariant(
       titlePropertyApiName in properties,
-      `titlePropertyApiName "${titlePropertyApiName}" was specified but not found in properties for ${objectType.apiName}`
+      `titlePropertyApiName "${titlePropertyApiName}" was specified but not found in properties for ${objectType.apiName}`,
     );
   }
 
@@ -244,11 +245,11 @@ export function createMockOsdkObject<Q extends ObjectTypeDefinition>(
           linkAccessors[linkName] = linkValue;
         } else if (Array.isArray(linkValue)) {
           linkAccessors[linkName] = createManyLinkStub(
-            linkValue as Array<Osdk.Instance<ObjectTypeDefinition>>
+            linkValue as Array<Osdk.Instance<ObjectTypeDefinition>>,
           );
         } else {
           linkAccessors[linkName] = createSingleLinkStub(
-            linkValue as Osdk.Instance<ObjectTypeDefinition> | Error
+            linkValue as Osdk.Instance<ObjectTypeDefinition> | Error,
           );
         }
       }
@@ -260,7 +261,7 @@ export function createMockOsdkObject<Q extends ObjectTypeDefinition>(
           return createMissingLinkStub(
             prop,
             objectType.apiName,
-            String($primaryKey)
+            String($primaryKey),
           );
         },
       });
@@ -277,20 +278,20 @@ export function createMockOsdkObject<Q extends ObjectTypeDefinition>(
 
   Object.defineProperty(mockObject, "$clone", {
     value: function $clone(
-      updates?: Partial<CompileTimeMetadata<Q>["props"]>
+      updates?: Partial<CompileTimeMetadata<Q>["props"]>,
     ): Osdk.Instance<Q, "$rid"> {
       if (updates == null) {
         return createMockOsdkObject(
           objectType,
           { ...properties },
-          options
+          options,
         ) as any;
       }
 
       if (primaryKeyApiName in updates) {
         invariant(
           updates[primaryKeyApiName as keyof typeof updates] === $primaryKey,
-          `Cannot update ${objectType.apiName} object with differing primary key values`
+          `Cannot update ${objectType.apiName} object with differing primary key values`,
         );
       }
 
@@ -307,11 +308,11 @@ export function createMockOsdkObject<Q extends ObjectTypeDefinition>(
       get(): never {
         invariant(
           false,
-          `$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata is not supported on mock objects.`
+          `$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata is not supported on mock objects.`,
         );
       },
       enumerable: false,
-    }
+    },
   );
 
   Object.defineProperty(
@@ -322,11 +323,11 @@ export function createMockOsdkObject<Q extends ObjectTypeDefinition>(
         function $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(): never {
           invariant(
             false,
-            `$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue is not supported on mock objects.`
+            `$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue is not supported on mock objects.`,
           );
         },
       enumerable: false,
-    }
+    },
   );
 
   return Object.freeze(mockObject) as unknown as any;

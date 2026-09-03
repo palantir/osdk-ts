@@ -46,7 +46,6 @@ export function StatusUpdatesTab(): React.JSX.Element {
           key={resetKey}
           objectSet={objectSet}
           filterDefinitions={orderedFilterDefs}
-          filterClause={filterClause}
           onFilterClauseChanged={setFilterClause}
           onFilterStateChanged={handleFilterStateChanged}
           onFilterVisibilityChange={handleFilterVisibilityChange}

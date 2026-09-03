@@ -24,7 +24,7 @@ import type { CreateValueTypeResponse } from "../CreateValueTypeResponse.js";
  */
 export async function createValueType(
   ctx: ConjureContext,
-  request: CreateValueTypeRequest
+  request: CreateValueTypeRequest,
 ): Promise<CreateValueTypeResponse> {
   return conjureFetch(ctx, `/type-registry/value-types`, "POST", request);
 }

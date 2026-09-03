@@ -23,7 +23,7 @@ import type { PropertyTypeType } from "../../api/properties/PropertyTypeType.js"
 import { distributeTypeHelper } from "../toConjure/distributeTypeHelper.js";
 
 export function propertyTypeTypeToOntologyIrInterfaceType(
-  type: PropertyTypeType
+  type: PropertyTypeType,
 ): OntologyIrInterfacePropertyTypeType {
   switch (true) {
     case typeof type === "object" && type.type === "marking":
@@ -58,7 +58,7 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
               ...fieldTypeDefinition,
               apiName: key,
               fieldType: propertyTypeTypeToOntologyIrInterfaceType(
-                fieldTypeDefinition.fieldType
+                fieldTypeDefinition.fieldType,
               ),
               displayMetadata: fieldTypeDefinition.displayMetadata ?? {
                 displayName: key,
@@ -110,6 +110,17 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
         decimal: {
           precision: type.precision,
           scale: type.scale,
+        },
+      };
+
+    case typeof type === "object" && type.type === "vector":
+      return {
+        type: "vector",
+        vector: {
+          dimension: type.dimension,
+          supportsSearchWith: [type.supportsSearchWith],
+          embeddingModel: type.embeddingModel,
+          quantization: type.quantization,
         },
       };
 

@@ -16,6 +16,7 @@
 
 import { Employee } from "@osdk/client.test.ontology";
 import type {
+  ListScenarioConflictingObjectsResponse,
   ListScenarioEditedEntityTypesResponse,
   ListScenarioEditedLinksResponse,
   ListScenarioEditedLinkTypesResponse,
@@ -39,9 +40,9 @@ describe("ScenarioClient methods", () => {
     client = createClient(
       "https://mock.com",
       ontologyRid,
-      async () => "Token",
+      () => "Token",
       undefined,
-      fetchFunction
+      fetchFunction,
     );
   });
 
@@ -61,10 +62,10 @@ describe("ScenarioClient methods", () => {
       expect(fetchFunction).toHaveBeenCalledTimes(1);
       const url = new URL(
         fetchFunction.mock.calls[0][0] as string,
-        "https://mock.com"
+        "https://mock.com",
       );
       expect(url.pathname).toMatch(
-        /\/scenarios\/ri\.actions\.\.scenario\.abc\/editedEntityTypes$/u
+        /\/scenarios\/ri\.actions\.\.scenario\.abc\/editedEntityTypes$/u,
       );
       expect(result.objectTypes).toEqual(["Employee", "Office"]);
       expect(result.linkTypes).toEqual([
@@ -93,10 +94,10 @@ describe("ScenarioClient methods", () => {
       expect(fetchFunction).toHaveBeenCalledTimes(1);
       const url = new URL(
         fetchFunction.mock.calls[0][0] as string,
-        "https://mock.com"
+        "https://mock.com",
       );
       expect(url.pathname).toMatch(
-        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objects\/Employee\/edited$/u
+        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objects\/Employee\/edited$/u,
       );
       expect(url.searchParams.get("pageSize")).toBe("100");
       expect(url.searchParams.get("pageToken")).toBe("tok-1");
@@ -105,6 +106,110 @@ describe("ScenarioClient methods", () => {
         { $apiName: "Employee", $primaryKey: 50030 },
         { $apiName: "Employee", $primaryKey: 50031 },
       ]);
+    });
+  });
+
+  describe("getConflictingObjects (page form)", () => {
+    it("calls the conflicting objects endpoint and converts object locators", async () => {
+      const scenario = withScenario(client, "ri.actions..scenario.abc");
+      const mock: ListScenarioConflictingObjectsResponse = {
+        data: [
+          { objectTypeApiName: "Employee", primaryKeyValue: 50030 },
+          { objectTypeApiName: "Employee", primaryKeyValue: 50031 },
+        ],
+        nextPageToken: "tok-2",
+      };
+      mockFetchResponse(fetchFunction, mock);
+
+      const result = await scenario.getConflictingObjects(Employee, {
+        pageSize: 1_000,
+        pageToken: "tok-1",
+      });
+
+      expect(fetchFunction).toHaveBeenCalledTimes(1);
+      const url = new URL(
+        fetchFunction.mock.calls[0][0] as string,
+        "https://mock.com",
+      );
+      expect(url.pathname).toMatch(
+        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objects\/Employee\/conflicting$/u,
+      );
+      expect(url.searchParams.get("pageSize")).toBe("1000");
+      expect(url.searchParams.get("pageToken")).toBe("tok-1");
+      expect(url.searchParams.get("preview")).toBe("true");
+      expect(result).toEqual({
+        data: [
+          { $apiName: "Employee", $primaryKey: 50030 },
+          { $apiName: "Employee", $primaryKey: 50031 },
+        ],
+        nextPageToken: "tok-2",
+      });
+    });
+  });
+
+  describe("conflictingObjectsAsyncIter", () => {
+    it("paginates lazily through empty pages without deduplicating", async () => {
+      const scenario = withScenario(client, "ri.actions..scenario.abc");
+      const page1: ListScenarioConflictingObjectsResponse = {
+        data: [{ objectTypeApiName: "Employee", primaryKeyValue: 1 }],
+        nextPageToken: "tok-empty",
+      };
+      const emptyPage: ListScenarioConflictingObjectsResponse = {
+        data: [],
+        nextPageToken: "tok-3",
+      };
+      const page3: ListScenarioConflictingObjectsResponse = {
+        data: [
+          { objectTypeApiName: "Employee", primaryKeyValue: 1 },
+          { objectTypeApiName: "Employee", primaryKeyValue: 2 },
+        ],
+      };
+      mockFetchResponse(fetchFunction, page1);
+      mockFetchResponse(fetchFunction, emptyPage);
+      mockFetchResponse(fetchFunction, page3);
+
+      const iterator = scenario.conflictingObjectsAsyncIter(Employee, {
+        pageSize: 1_000,
+      });
+      expect(fetchFunction).not.toHaveBeenCalled();
+
+      await expect(iterator.next()).resolves.toEqual({
+        done: false,
+        value: { $apiName: "Employee", $primaryKey: 1 },
+      });
+      expect(fetchFunction).toHaveBeenCalledTimes(1);
+
+      await expect(iterator.next()).resolves.toEqual({
+        done: false,
+        value: { $apiName: "Employee", $primaryKey: 1 },
+      });
+      expect(fetchFunction).toHaveBeenCalledTimes(3);
+
+      await expect(iterator.next()).resolves.toEqual({
+        done: false,
+        value: { $apiName: "Employee", $primaryKey: 2 },
+      });
+      await expect(iterator.next()).resolves.toEqual({
+        done: true,
+        value: undefined,
+      });
+      expect(fetchFunction).toHaveBeenCalledTimes(3);
+
+      const firstUrl = new URL(
+        fetchFunction.mock.calls[0][0] as string,
+        "https://mock.com",
+      );
+      const secondUrl = new URL(
+        fetchFunction.mock.calls[1][0] as string,
+        "https://mock.com",
+      );
+      const thirdUrl = new URL(
+        fetchFunction.mock.calls[2][0] as string,
+        "https://mock.com",
+      );
+      expect(firstUrl.searchParams.get("pageSize")).toBe("1000");
+      expect(secondUrl.searchParams.get("pageToken")).toBe("tok-empty");
+      expect(thirdUrl.searchParams.get("pageToken")).toBe("tok-3");
     });
   });
 
@@ -138,7 +243,7 @@ describe("ScenarioClient methods", () => {
       expect(fetchFunction).toHaveBeenCalledTimes(2);
       const secondUrl = new URL(
         fetchFunction.mock.calls[1][0] as string,
-        "https://mock.com"
+        "https://mock.com",
       );
       expect(secondUrl.searchParams.get("pageToken")).toBe("tok-2");
     });
@@ -173,10 +278,10 @@ describe("ScenarioClient methods", () => {
       expect(fetchFunction).toHaveBeenCalledTimes(1);
       const url = new URL(
         fetchFunction.mock.calls[0][0] as string,
-        "https://mock.com"
+        "https://mock.com",
       );
       expect(url.pathname).toMatch(
-        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objectTypes\/Employee\/outgoingLinkTypes\/edited$/u
+        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objectTypes\/Employee\/outgoingLinkTypes\/edited$/u,
       );
       expect(result).toEqual(["lead", "peeps"]);
     });
@@ -222,10 +327,10 @@ describe("ScenarioClient methods", () => {
       expect(fetchFunction).toHaveBeenCalledTimes(1);
       const url = new URL(
         fetchFunction.mock.calls[0][0] as string,
-        "https://mock.com"
+        "https://mock.com",
       );
       expect(url.pathname).toMatch(
-        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objects\/Employee\/links\/lead\/edited$/u
+        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objects\/Employee\/links\/lead\/edited$/u,
       );
       expect(url.searchParams.get("pageSize")).toBe("100");
       expect(url.searchParams.get("pageToken")).toBe("tok-1");
@@ -291,8 +396,8 @@ describe("ScenarioClient methods", () => {
       } of scenario.editedLinksAsyncIter(Employee, "lead")) {
         pairs.push(
           `${String(source.$primaryKey)}-${String(
-            target.$primaryKey
-          )}-${linkType as string}`
+            target.$primaryKey,
+          )}-${linkType as string}`,
         );
       }
 

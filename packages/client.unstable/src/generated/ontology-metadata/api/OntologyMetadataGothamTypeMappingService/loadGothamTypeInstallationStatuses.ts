@@ -37,12 +37,12 @@ import type {
 export async function loadGothamTypeInstallationStatuses(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_typemapping_LoadGothamTypeInstallationStatusesRequest
+  request: _api_typemapping_LoadGothamTypeInstallationStatusesRequest,
 ): Promise<_api_typemapping_LoadGothamTypeInstallationStatusesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/typemapping/loadGothamTypeInstallationStatuses/${ontologyRid}`,
     "PUT",
-    request
+    request,
   );
 }

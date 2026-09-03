@@ -26,7 +26,7 @@ type MockInstance = Osdk.Instance<MockObjectDef, "$allBaseProperties", string>;
 
 function createMockObjectInstance(
   id: string,
-  additionalProps = {}
+  additionalProps = {},
 ): MockInstance {
   return {
     $apiName: "mock-object" as const,
@@ -40,7 +40,7 @@ describe("useEditableTable", () => {
   it("adds cell to cellEdits when edited", () => {
     const onCellValueChanged = vi.fn();
     const { result } = renderHook(() =>
-      useEditableTable({ editMode: "always", onCellValueChanged })
+      useEditableTable({ editMode: "always", onCellValueChanged }),
     );
     const cellIdentifier = { rowId: "row-1", columnId: "col-1" };
     const cellId = getCellId(cellIdentifier);
@@ -67,7 +67,7 @@ describe("useEditableTable", () => {
   it("removes cell from cellEdits when edited back to original value", () => {
     const onCellValueChanged = vi.fn();
     const { result } = renderHook(() =>
-      useEditableTable({ editMode: "always", onCellValueChanged })
+      useEditableTable({ editMode: "always", onCellValueChanged }),
     );
     const cellIdentifier = { rowId: "row-1", columnId: "col-1" };
     const cellId = getCellId(cellIdentifier);
@@ -123,7 +123,7 @@ describe("useEditableTable", () => {
     "removes cell from cellEdits when $name (null/undefined equivalence)",
     ({ newValue, oldValue }) => {
       const { result } = renderHook(() =>
-        useEditableTable({ editMode: "always" })
+        useEditableTable({ editMode: "always" }),
       );
       const cellId = getCellId({ rowId: "row-1", columnId: "col-1" });
 
@@ -138,12 +138,12 @@ describe("useEditableTable", () => {
       });
 
       expect(result.current.cellEdits).toEqual({});
-    }
+    },
   );
 
   it("handles multiple cell edits", () => {
     const { result } = renderHook(() =>
-      useEditableTable({ editMode: "always" })
+      useEditableTable({ editMode: "always" }),
     );
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
@@ -200,7 +200,7 @@ describe("useEditableTable", () => {
 
   it("clears all edits", () => {
     const { result } = renderHook(() =>
-      useEditableTable({ editMode: "always" })
+      useEditableTable({ editMode: "always" }),
     );
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
@@ -236,7 +236,7 @@ describe("useEditableTable", () => {
   it("handles submit edits", async () => {
     const onSubmitEdits = vi.fn();
     const { result } = renderHook(() =>
-      useEditableTable({ editMode: "always", onSubmitEdits })
+      useEditableTable({ editMode: "always", onSubmitEdits }),
     );
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
@@ -269,12 +269,12 @@ describe("useEditableTable", () => {
     expect(onSubmitEdits).toHaveBeenCalledWith([edit1, edit2]);
   });
 
-  it("when submit edits is undefined, onSubmitEdits is undefined", async () => {
+  it("when submit edits is undefined, onSubmitEdits is undefined", () => {
     const { result } = renderHook(() =>
       useEditableTable({
         editMode: "always",
         onSubmitEdits: undefined,
-      })
+      }),
     );
 
     expect(result.current.onSubmitEdits).toBeUndefined();
@@ -282,7 +282,7 @@ describe("useEditableTable", () => {
 
   it("when editMode is manual, isActive is false initially", () => {
     const { result } = renderHook(() =>
-      useEditableTable({ editMode: "manual" })
+      useEditableTable({ editMode: "manual" }),
     );
 
     expect(result.current.editModeState.type).toBe("manual");
@@ -297,7 +297,7 @@ describe("useEditableTable", () => {
 
       expect(
         result.current.editModeState.type === "manual" &&
-          result.current.editModeState.isActive
+          result.current.editModeState.isActive,
       ).toBe(true);
 
       act(() => {
@@ -307,14 +307,14 @@ describe("useEditableTable", () => {
 
       expect(
         result.current.editModeState.type === "manual" &&
-          result.current.editModeState.isActive
+          result.current.editModeState.isActive,
       ).toBe(false);
     }
   });
 
   it("when editMode is always, the type is always and isActive is true", () => {
     const { result } = renderHook(() =>
-      useEditableTable({ editMode: "always" })
+      useEditableTable({ editMode: "always" }),
     );
 
     expect(result.current.editModeState.type).toBe("always");
@@ -323,7 +323,7 @@ describe("useEditableTable", () => {
 
   it("when editMode is manual with default settings, it starts as inactive", () => {
     const { result } = renderHook(() =>
-      useEditableTable({ editMode: "manual" })
+      useEditableTable({ editMode: "manual" }),
     );
 
     expect(result.current.editModeState.type).toBe("manual");
@@ -334,7 +334,7 @@ describe("useEditableTable", () => {
 
   it("adds validation error when onCellValidationError is called", () => {
     const { result } = renderHook(() =>
-      useEditableTable({ editMode: "always" })
+      useEditableTable({ editMode: "always" }),
     );
     const cellId = getCellId({ rowId: "row-1", columnId: "col-1" });
     const errorMessage = "Value must be positive";
@@ -348,7 +348,7 @@ describe("useEditableTable", () => {
 
   it("maintains validation errors for multiple cells", () => {
     const { result } = renderHook(() =>
-      useEditableTable({ editMode: "always" })
+      useEditableTable({ editMode: "always" }),
     );
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
@@ -368,7 +368,7 @@ describe("useEditableTable", () => {
 
   it("clears all validation errors when clearEdits is called", () => {
     const { result } = renderHook(() =>
-      useEditableTable({ editMode: "always" })
+      useEditableTable({ editMode: "always" }),
     );
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
@@ -389,7 +389,7 @@ describe("useEditableTable", () => {
 
   it("replaces previous validation error with new one for same cell", () => {
     const { result } = renderHook(() =>
-      useEditableTable({ editMode: "always" })
+      useEditableTable({ editMode: "always" }),
     );
     const cellId = getCellId({ rowId: "row-1", columnId: "col-1" });
 
@@ -409,7 +409,7 @@ describe("useEditableTable", () => {
 
   it("clears specific validation error when clearCellValidationError is called", () => {
     const { result } = renderHook(() =>
-      useEditableTable({ editMode: "always" })
+      useEditableTable({ editMode: "always" }),
     );
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });

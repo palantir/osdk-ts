@@ -97,7 +97,7 @@ const NESTED_FLUSH_DELAY_MS = 25;
  */
 function pruneStaleNestedEntries(
   nestedByPk: Map<string | number, Map<string, LinkEntry>>,
-  currentPks: Set<string | number>
+  currentPks: Set<string | number>,
 ): void {
   for (const [pk, nestedMap] of nestedByPk) {
     if (!currentPks.has(pk)) {
@@ -126,7 +126,7 @@ export function createDerivedLinksStore<
   sourceObject: Osdk.Instance<ShapeBaseType<S>>,
   observableClient: ObservableClient,
   client: Client,
-  linkConfig: Partial<Record<keyof ShapeDerivedLinks<S>, LinkLoadConfig>>
+  linkConfig: Partial<Record<keyof ShapeDerivedLinks<S>, LinkLoadConfig>>,
 ): DerivedLinksStore<S> {
   const castSource = sourceObject as Osdk.Instance<ObjectOrInterfaceDefinition>;
   const linkEntries = new Map<string, LinkEntry>();
@@ -137,7 +137,7 @@ export function createDerivedLinksStore<
     ];
     linkEntries.set(
       linkDef.name,
-      createLinkEntry(linkDef, castSource, config?.defer)
+      createLinkEntry(linkDef, castSource, config?.defer),
     );
   }
   const subscribers = new Set<() => void>();
@@ -183,7 +183,7 @@ export function createDerivedLinksStore<
    */
   function trackNestedLinksForObjects(
     parentEntry: LinkEntry,
-    rawObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[]
+    rawObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[],
   ): Set<string | number> {
     const nestedDerivedLinks = parentEntry.linkDef.targetShape
       .__derivedLinks as readonly ShapeDerivedLinkDef[];
@@ -224,7 +224,7 @@ export function createDerivedLinksStore<
    */
   function handleNestedLinks(
     parentEntry: LinkEntry,
-    rawObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[]
+    rawObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[],
   ): void {
     const nestedDerivedLinks = parentEntry.linkDef.targetShape
       .__derivedLinks as readonly ShapeDerivedLinkDef[];
@@ -251,7 +251,7 @@ export function createDerivedLinksStore<
     entries: Array<{
       entry: LinkEntry;
       sourceType: ObjectOrInterfaceDefinition;
-    }>
+    }>,
   ): void {
     for (const { entry } of entries) {
       entry.status = "loading";
@@ -270,7 +270,7 @@ export function createDerivedLinksStore<
   /** Skips links already loading/loaded, otherwise marks as loading and starts observation. */
   function startLinkObservation(
     entry: LinkEntry,
-    sourceType: ObjectOrInterfaceDefinition
+    sourceType: ObjectOrInterfaceDefinition,
   ): void {
     if (entry.status === "loading" || entry.status === "loaded") {
       return;
@@ -293,7 +293,7 @@ export function createDerivedLinksStore<
         const resolved = payload.resolvedList ?? [];
         const transformResult = applyShapeTransformationsToArray(
           entry.linkDef.targetShape,
-          resolved
+          resolved,
         );
 
         entry.status = payload.status === "loading" ? "loading" : "loaded";
@@ -301,7 +301,7 @@ export function createDerivedLinksStore<
         entry.fetchMore = payload.fetchMore;
         entry.error = violationsToError(
           entry.linkDef.targetShape,
-          transformResult.violations
+          transformResult.violations,
         );
 
         handleNestedLinks(entry, resolved);
@@ -323,13 +323,13 @@ export function createDerivedLinksStore<
 
   async function startLinkObservationInternal(
     entry: LinkEntry,
-    sourceType: ObjectOrInterfaceDefinition
+    sourceType: ObjectOrInterfaceDefinition,
   ): Promise<void> {
     const objectSet = await buildObjectSetFromLinkDefByType(
       client,
       sourceType,
       entry.sourceObject.$primaryKey,
-      entry.linkDef.objectSetDef
+      entry.linkDef.objectSetDef,
     );
 
     if (isDestroyed) {
@@ -343,7 +343,7 @@ export function createDerivedLinksStore<
     const queryOptions = getLinkQueryOptions(
       entry.linkDef.objectSetDef,
       entry.sourceObject,
-      config?.pageSize
+      config?.pageSize,
     );
 
     const subscription = observableClient.observeObjectSet(
@@ -355,7 +355,7 @@ export function createDerivedLinksStore<
         autoFetchMore: config?.autoFetchMore,
         streamUpdates: config?.streamUpdates,
       },
-      createLinkObserver(entry)
+      createLinkObserver(entry),
     );
 
     if (isDestroyed) {
@@ -439,7 +439,7 @@ export function createDerivedLinksStore<
         startLinksInBatch(entriesToStart);
       }
     },
-    destroy
+    destroy,
   );
 
   /**

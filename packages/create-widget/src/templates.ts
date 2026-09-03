@@ -33,7 +33,7 @@ export interface Template {
   label: string;
   envPrefix: string;
   buildDirectory: string;
-  requiresOsdk: boolean;
+  supportsOsdk: boolean;
   hidden?: boolean;
   isBeta?: boolean;
   files: {
@@ -43,5 +43,7 @@ export interface Template {
 
 export interface TemplateContext {
   project: string;
+  foundryUrl: string;
+  widgetSet: string;
   osdkPackage?: string;
 }

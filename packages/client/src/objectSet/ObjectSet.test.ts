@@ -52,7 +52,7 @@ import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import { fetchPage } from "../object/fetchPage.js";
+import { fetchPage, fetchStaticRidPage } from "../object/fetchPage.js";
 import {
   createMockCaptureClient,
   getLastObjectSetRequest,
@@ -167,10 +167,10 @@ describe("ObjectSet", () => {
 
     expect(objectSet2Results.data).toHaveLength(1);
     expect(subtractedObjectSetResults.data).toHaveLength(
-      objectSetResults.data.length - objectSet2Results.data.length
+      objectSetResults.data.length - objectSet2Results.data.length,
     );
     expect(
-      subtractedObjectSetResults.data.find((x) => x.$primaryKey === 50030)
+      subtractedObjectSetResults.data.find((x) => x.$primaryKey === 50030),
     ).toBeUndefined();
   });
 
@@ -215,7 +215,7 @@ describe("ObjectSet", () => {
 
   it("allows fetching by PK from a base object set - fetchOne", async () => {
     const employee = await client(Employee).fetchOne(
-      stubData.employee1.employeeId
+      stubData.employee1.employeeId,
     );
     expectTypeOf<typeof employee>().toExtend<
       Osdk<Employee, PropertyKeys<Employee>>
@@ -225,7 +225,7 @@ describe("ObjectSet", () => {
 
   it("allows fetching by rid with experimental function", async () => {
     const employee = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
     ).fetchOneByRid(Employee, stubData.employee1.__rid);
     expectTypeOf<typeof employee>().toExtend<
       Osdk<Employee, PropertyKeys<Employee>>
@@ -235,11 +235,11 @@ describe("ObjectSet", () => {
 
   it("allows fetching page of rids with experimental function", async () => {
     const employees = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
     ).fetchPageByRid(
       Employee,
       [stubData.employee1.__rid, stubData.employee2.__rid],
-      {}
+      {},
     );
     expectTypeOf<typeof employees>().toExtend<
       FetchPageResult<Employee, PropertyKeys<Employee>, boolean, any, any>
@@ -250,10 +250,10 @@ describe("ObjectSet", () => {
 
   it("allows fetching a page of rids without a type specifier", async () => {
     const employees = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
     ).fetchPageByRidNoType(
       [stubData.employee1.__rid, stubData.employee2.__rid],
-      {}
+      {},
     );
     expectTypeOf<typeof employees>().toExtend<
       FetchPageResult<
@@ -270,7 +270,7 @@ describe("ObjectSet", () => {
 
   it("allows fetching by rid with experimental function, with select", async () => {
     const employee = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
     ).fetchOneByRid(Employee, stubData.employee2.__rid, {
       $select: ["fullName"],
     });
@@ -280,11 +280,11 @@ describe("ObjectSet", () => {
 
   it("allows fetching by rid with experimental function, with select 2", async () => {
     const employees = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
     ).fetchPageByRid(
       Employee,
       [stubData.employee2.__rid, stubData.employee3.__rid],
-      { $select: ["fullName"] }
+      { $select: ["fullName"] },
     );
     expectTypeOf<typeof employees>().toExtend<
       FetchPageResult<Employee, "fullName", boolean, any, any>
@@ -295,7 +295,7 @@ describe("ObjectSet", () => {
 
   it("allows fetchPageByRid with $loadPropertySecurityMetadata", async () => {
     const employees = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
     ).fetchPageByRid(Employee, [stubData.unsecuredEmployee.__rid], {
       $loadPropertySecurityMetadata: true,
     });
@@ -320,11 +320,11 @@ describe("ObjectSet", () => {
     >();
 
     expectTypeOf(
-      employees.data[0].$propertySecurities.favoriteRestaurants
+      employees.data[0].$propertySecurities.favoriteRestaurants,
     ).toExtend<PropertySecurity[][]>();
 
     expect(employees.data[0].$primaryKey).toBe(
-      stubData.unsecuredEmployee.__primaryKey
+      stubData.unsecuredEmployee.__primaryKey,
     );
   });
 
@@ -370,7 +370,7 @@ describe("ObjectSet", () => {
 
   it("allows fetching by PK from a base object set - fetchOneWithErrors", async () => {
     const employeeResult = await client(Employee).fetchOneWithErrors(
-      stubData.employee1.employeeId
+      stubData.employee1.employeeId,
     );
     expectTypeOf<typeof employeeResult>().toExtend<
       Result<Osdk<Employee, PropertyKeys<Employee>>>
@@ -385,7 +385,7 @@ describe("ObjectSet", () => {
   it("allows fetching by PK from a base object set with selected properties - fetchOne", async () => {
     const employee = await client(Employee).fetchOne(
       stubData.employee1.employeeId,
-      { $select: ["fullName"] }
+      { $select: ["fullName"] },
     );
     expectTypeOf<typeof employee>().branded.toEqualTypeOf<
       Osdk<Employee, "fullName">
@@ -396,7 +396,7 @@ describe("ObjectSet", () => {
   it("allows fetching by PK from a base object set with selected properties - fetchOneWithErrors", async () => {
     const employeeResult = await client(Employee).fetchOneWithErrors(
       stubData.employee1.employeeId,
-      { $select: ["fullName"] }
+      { $select: ["fullName"] },
     );
     expectTypeOf<typeof employeeResult>().branded.toEqualTypeOf<
       Result<Osdk<Employee, "fullName">>
@@ -485,6 +485,11 @@ describe("ObjectSet", () => {
       // @ts-expect-error
       nonExistentProp: "",
     });
+  });
+
+  it("allows filtering by $primaryKey and $title on interfaces with no properties", () => {
+    client(BarInterface).where({ $primaryKey: { $eq: "abc" } });
+    client(BarInterface).where({ $title: { $eq: "abc" } });
   });
 
   it("type checking containsallterm and containsanyterm", () => {
@@ -983,7 +988,7 @@ describe("ObjectSet", () => {
 
       expectTypeOf(objectWithRdp.derivedPropertyName).toEqualTypeOf<number>();
       expect(objectWithRdp.derivedPropertyName).toBe(
-        stubData.employee2.__primaryKey
+        stubData.employee2.__primaryKey,
       );
 
       const objectWithUndefinedRdp = await client(Employee)
@@ -1022,7 +1027,7 @@ describe("ObjectSet", () => {
           "fetchMetadata": [Function],
           "rid": "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
         }
-      `
+      `,
       );
 
       expectTypeOf(objectWithRdp.geoSelectDp).toEqualTypeOf<
@@ -1117,7 +1122,7 @@ describe("ObjectSet", () => {
           "fetchMetadata": [Function],
           "rid": "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
         }
-      `
+      `,
       );
     });
     it("correctly deserializes count", async () => {
@@ -1149,7 +1154,7 @@ describe("ObjectSet", () => {
       const nearestNeighborsObjectSet = client(Employee).nearestNeighbors(
         "textQuery",
         7,
-        "skillSetEmbedding"
+        "skillSetEmbedding",
       );
 
       const filteredObjectSet = await nearestNeighborsObjectSet
@@ -1335,22 +1340,99 @@ describe("ObjectSet", () => {
       const { client, fetchFn } = createMockCaptureClient();
       await fetchPage(client, Employee, {});
       expect(
-        (getLastObjectSetRequest(fetchFn) as { snapshot: boolean }).snapshot
+        (getLastObjectSetRequest(fetchFn) as { snapshot: boolean }).snapshot,
       ).toBe(false);
     });
     it("properly generates fetch request when $snapshot is true", async () => {
       const { client, fetchFn } = createMockCaptureClient();
       await fetchPage(client, Employee, { $snapshot: true });
       expect(
-        (getLastObjectSetRequest(fetchFn) as { snapshot: boolean }).snapshot
+        (getLastObjectSetRequest(fetchFn) as { snapshot: boolean }).snapshot,
       ).toBe(true);
     });
     it("strips $snapshot from the wire request body", async () => {
       const { client, fetchFn } = createMockCaptureClient();
       await fetchPage(client, Employee, { $snapshot: true });
       expect(
-        getLastObjectSetRequest(fetchFn) as { snapshot: boolean }
+        getLastObjectSetRequest(fetchFn) as { snapshot: boolean },
       ).not.toHaveProperty("$snapshot");
+    });
+  });
+
+  describe("$EXPERIMENTAL_defaultLoadLevel", () => {
+    it("exposes $EXPERIMENTAL_defaultLoadLevel to client (type)", () => {
+      expectTypeOf<FetchPageArgs<Employee>>().toHaveProperty(
+        "$EXPERIMENTAL_defaultLoadLevel",
+      );
+    });
+
+    it("omits defaultLoadLevel from the wire request body by default", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      await fetchPage(client, Employee, {});
+      expect(getLastObjectSetRequest(fetchFn)).not.toHaveProperty(
+        "defaultLoadLevel",
+      );
+    });
+
+    it("sends defaultLoadLevel for fetchObjectPage with an empty selection", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      await fetchPage(client, Employee, {
+        $EXPERIMENTAL_defaultLoadLevel: "applyReducersAndExtractMainValue",
+      });
+      // No $select => empty selection so the server applies the level to all properties.
+      expect(getLastObjectSetRequest(fetchFn)).toMatchObject({
+        select: [],
+        selectV2: [],
+        defaultLoadLevel: { type: "applyReducersAndExtractMainValue" },
+      });
+    });
+
+    it("maps applyMainValue to the extractMainValue wire discriminant", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      await fetchPage(client, Employee, {
+        $EXPERIMENTAL_defaultLoadLevel: "applyMainValue",
+      });
+      expect(getLastObjectSetRequest(fetchFn)).toMatchObject({
+        defaultLoadLevel: { type: "extractMainValue" },
+      });
+    });
+
+    it("accepts $EXPERIMENTAL_defaultLoadLevel on fetchPageByRid", async () => {
+      const employees = await client(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+      ).fetchPageByRid(
+        Employee,
+        [stubData.employee1.__rid, stubData.employee2.__rid],
+        { $EXPERIMENTAL_defaultLoadLevel: "applyReducers" },
+      );
+      expect(employees.data[0].$primaryKey).toBe(stubData.employee1.employeeId);
+      expectTypeOf(employees.data[0].employeeProfile).toMatchTypeOf<
+        string | undefined
+      >();
+      expectTypeOf(employees.data[0].performanceScores).toMatchTypeOf<
+        number | undefined
+      >();
+    });
+
+    it("accepts $EXPERIMENTAL_defaultLoadLevel on fetchPageByRidNoType", async () => {
+      const employees = await client(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+      ).fetchPageByRidNoType(
+        [stubData.employee1.__rid, stubData.employee2.__rid],
+        { $EXPERIMENTAL_defaultLoadLevel: "applyReducers" },
+      );
+      expect(employees.data[0].$primaryKey).toBe(stubData.employee1.employeeId);
+    });
+
+    it("sends defaultLoadLevel for fetchStaticRidPage", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      await fetchStaticRidPage(client, [stubData.employee1.__rid], {
+        $EXPERIMENTAL_defaultLoadLevel: "applyReducers",
+      });
+      expect(getLastObjectSetRequest(fetchFn)).toMatchObject({
+        objectSet: { type: "static" },
+        defaultLoadLevel: { type: "applyReducers" },
+      });
     });
   });
 
@@ -1362,7 +1444,7 @@ describe("ObjectSet", () => {
           stubData.employee1,
           "officeLink",
           stubData.nycOffice,
-          "occupants"
+          "occupants",
         );
     });
 

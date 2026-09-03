@@ -170,6 +170,50 @@ describe(OntologyIrToFullMetadataConverter, () => {
                       "active": {},
                     },
                   },
+                  "footprint": {
+                    "apiName": "footprint",
+                    "displayMetadata": {
+                      "displayName": "Footprint",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "type": {
+                      "type": "struct",
+                      "struct": {
+                        "structFields": [
+                          {
+                            "apiName": "length",
+                            "aliases": [],
+                            "displayMetadata": {
+                              "displayName": "Length",
+                            },
+                            "fieldType": {
+                              "type": "double",
+                              "double": {},
+                            },
+                            "typeClasses": [],
+                          },
+                          {
+                            "apiName": "width",
+                            "aliases": [],
+                            "displayMetadata": {
+                              "displayName": "Width",
+                            },
+                            "fieldType": {
+                              "type": "double",
+                              "double": {},
+                            },
+                            "typeClasses": [],
+                          },
+                        ],
+                      },
+                    },
+                    "typeClasses": [],
+                    "status": {
+                      "type": "active",
+                      "active": {},
+                    },
+                  },
                 },
                 "titlePropertyTypeRid": "name",
                 "apiName": "Dc3DistributionCenterProposal",
@@ -3174,7 +3218,9 @@ describe(OntologyIrToFullMetadataConverter, () => {
               },
             ],
             "objectType": {
+              "aliases": [],
               "apiName": "Dc3DistributionCenterProposal",
+              "datasources": [],
               "description": undefined,
               "displayName": "[DC3] Distribution Center Proposal",
               "icon": {
@@ -3185,6 +3231,37 @@ describe(OntologyIrToFullMetadataConverter, () => {
               "pluralDisplayName": "",
               "primaryKey": "primaryKey_",
               "properties": {
+                "footprint": {
+                  "dataType": {
+                    "structFieldTypes": [
+                      {
+                        "apiName": "length",
+                        "dataType": {
+                          "type": "double",
+                        },
+                        "rid": "ri.ontology.main.struct-field.490f8661-78fc-53f9-9243-6e02531057ce",
+                        "typeClasses": [],
+                      },
+                      {
+                        "apiName": "width",
+                        "dataType": {
+                          "type": "double",
+                        },
+                        "rid": "ri.ontology.main.struct-field.850f2c3a-d97f-52ab-b9d3-a711468eb63f",
+                        "typeClasses": [],
+                      },
+                    ],
+                    "type": "struct",
+                  },
+                  "description": undefined,
+                  "displayName": "Footprint",
+                  "rid": "ri.Dc3DistributionCenterProposal.footprint",
+                  "status": {
+                    "type": "active",
+                  },
+                  "typeClasses": [],
+                  "visibility": "NORMAL",
+                },
                 "name": {
                   "dataType": {
                     "type": "string",
@@ -3268,7 +3345,9 @@ describe(OntologyIrToFullMetadataConverter, () => {
               },
             ],
             "objectType": {
+              "aliases": [],
               "apiName": "Dc3DistributionRouteAnalysis",
+              "datasources": [],
               "description": undefined,
               "displayName": "[DC3] Distribution Route Analysis",
               "icon": {
@@ -3352,7 +3431,9 @@ describe(OntologyIrToFullMetadataConverter, () => {
               },
             ],
             "objectType": {
+              "aliases": [],
               "apiName": "Dc3Restaurant",
+              "datasources": [],
               "description": undefined,
               "displayName": "[DC3] Restaurant",
               "icon": {

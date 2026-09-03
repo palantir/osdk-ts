@@ -26,7 +26,7 @@ describe("Parameters", () => {
           type: "array",
           subType: "string",
           value: { type: "loaded", value: ["a", "b", "c"] },
-        })
+        }),
       ).toEqualTypeOf<string[] | undefined>();
     });
   });

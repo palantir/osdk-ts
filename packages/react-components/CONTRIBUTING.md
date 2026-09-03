@@ -139,7 +139,8 @@ Components in this package favour **minimum configuration**. A consumer should b
 - **Default `enable*` boolean flags to `true`** when the feature is part of the out-of-the-box experience (e.g. `enableOrdering`, `enableColumnPinning`).
 - **Document defaults inline** with `@default` JSDoc tags on every optional prop.
 - **Provide controlled and/or uncontrolled variants** for any stateful feature — implement **at least one** (both encouraged where useful). State the chosen mode(s) explicitly in JSDoc on each prop, e.g. `"Controlled mode only. Caller owns selection state..."` or `"Uncontrolled. Seeds initial sort; component continues to own the state."`. See how `ObjectTable` exposes both `defaultOrderBy` (uncontrolled) and `orderBy` + `onOrderByChanged` (controlled); `useRowSelection.ts` is the canonical both-modes hook implementation — drop the branch you don't support for single-mode features.
-- **Define the API in its own file:** `<Name>Api.ts` co-located with the component, exporting only the OSDK-aware outer-component props plus public sub-types (column definitions, locators, options). Base props live inline in `Base<Name>.tsx`.
+- **Define the API in its own file:** `<Name>Api.ts` co-located with the component, exporting the base props, the OSDK-aware outer-component props, and any public sub-types (column definitions, locators, options).
+- **Name a viewer's primary input `src` or `content`, by form.** `src` is the binary source to render from, in whatever forms the renderer supports (a URL, raw bytes, or both); `content` is the already-decoded payload (text, or a parsed object). Never overload one name across both categories, and never name the prop after the file type. See [`PdfViewerApi.ts`](./src/pdf-viewer/PdfViewerApi.ts) for the reference `src` and [`XmlViewerApi.ts`](./src/xml-viewer/XmlViewerApi.ts) for `content`.
 
 ### Adding a New Component
 
@@ -153,6 +154,7 @@ Components in this package favour **minimum configuration**. A consumer should b
 8. Export the OSDK component (and optionally the Base component) from `src/public/experimental/<name>.ts`.
 9. **Update documentation:**
    - Add `docs/<Name>.md` with usage and a minimal example, matching the structure of existing per-component docs
+   - **Add an auto-generated props table.** Drop a `<!-- AUTOGEN:props START src=... interface=... -->` / `END` marker block into the doc and run `pnpm --filter @osdk/react-components gen-props`. See [Props reference tables (auto-generated)](./README.md#props-reference-tables-auto-generated) in the README. Don't hand-author the props table
    - If you added CSS variables, update `docs/CSSVariables.md`
    - Add a one-line entry to the components table in `AGENTS.md` and `README.md`
    - **Register the new doc with Docusaurus.** Add `"<Name>"` to the `@osdk/react-components` category in [`docs/sidebarsReactComponents.ts`](../../docs/sidebarsReactComponents.ts) (repo root).
@@ -181,7 +183,19 @@ src/my-component/
 
 - **Never hardcode colors or pixel values.** Use CSS variables for all visual properties.
 - **Use `--bp` design tokens first.** Any `--bp` token used must be mapped from an `--osdk` token.
-- **Add default styles** to src/tokens
+- **Declare defaults for your own tokens in `src/tokens/`.** A component's own `--osdk-<name>-*` tokens must be declared in `src/tokens/component-tokens/<name>.css` — never in a `.module.css` or inline in a `.tsx`. Document each one in [`docs/CSSVariables.md`](./docs/CSSVariables.md).
+- **Exception — nested-primitive scoping.** A `.module.css` **may** assign to a token _owned by another primitive_, scoped to a local class, to restyle that primitive where your component embeds it. Feed the value from one of your own tokens wherever a sensible one exists, so the override stays themeable:
+
+  ```css
+  .osdkEditableCellDropdown {
+    /* re-point Select's own token at the table's cell-input background */
+    --osdk-select-trigger-bg: var(--osdk-table-cell-input-bg);
+  }
+  ```
+
+  This is a cascade override, not a token declaration — it introduces no new public token, so it does not belong in `src/tokens/`.
+
+- **Every token you reference must be declared — except when its default is a CSS-wide keyword.** Don't lean on `var(--osdk-x, <fallback>)` to stand in for a token you simply forgot to declare. But a token whose default is `inherit` / `initial` / `unset` **cannot** be declared: `--osdk-x: inherit` at `:root` has no parent to inherit from, so it resolves to the guaranteed-invalid value and `var(--osdk-x)` silently computes to the property's initial value. Such defaults must live in the `var()` fallback; leave a comment in the token file saying so. Canonical case: `--osdk-table-cell-bg` (see `component-tokens/table.css`), where declaring it turned sticky pinned table cells transparent.
 - **Use CSS modules** (`.module.css`) for component-scoped styles.
 - **Combine class names** with the `classnames` utility. Never use template literals for class names.
 - **Respect CSS layers.** See the [README CSS Setup section](./README.md#css-setup)

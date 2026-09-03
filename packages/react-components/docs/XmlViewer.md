@@ -41,7 +41,7 @@ import { BaseXmlViewer } from "@osdk/react-components/experimental/xml-viewer";
 | `content`   | `string` | Yes      | XML text to render                    |
 | `className` | `string` | No       | CSS class applied to the root element |
 
-### XmlViewerMediaProps
+### XmlViewerProps
 
 | Prop        | Type     | Required | Description                             |
 | ----------- | -------- | -------- | --------------------------------------- |

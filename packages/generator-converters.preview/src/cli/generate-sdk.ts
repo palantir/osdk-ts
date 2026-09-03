@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-import {
-  generateClientSdkVersionTwoPointZero,
-  getTsCompilerOptions,
-} from "@osdk/generator";
-import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
-import { consola } from "consola";
 import { spawnSync } from "node:child_process";
 import * as fsSync from "node:fs";
 import * as fs from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
+
+import {
+  generateClientSdkVersionTwoPointZero,
+  getTsCompilerOptions,
+  ONTOLOGY_METADATA_DCTS_PATH,
+  ONTOLOGY_METADATA_DMTS_PATH,
+  ONTOLOGY_METADATA_JSON_PATH,
+} from "@osdk/generator";
+import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
+import { consola } from "consola";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+
 import { PreviewOntologyIrConverter } from "../PreviewOntologyIrConverter.js";
 
 const PYTHON_SDK_PACKAGE_NAME = "ontology_sdk";
@@ -151,7 +156,7 @@ async function main(): Promise<void> {
       "$0 --input <path> --package-name <name> --version <ver> --output-dir <dir>",
     )
     .options({
-      "input": {
+      input: {
         describe: "Path to the OntologyIR JSON file",
         type: "string",
         demandOption: true,
@@ -162,7 +167,7 @@ async function main(): Promise<void> {
         type: "string",
         demandOption: true,
       },
-      "version": {
+      version: {
         describe: "Version string for the generated SDK",
         type: "string",
         demandOption: true,
@@ -273,10 +278,7 @@ async function main(): Promise<void> {
   // that import ontology types (e.g. `from ontology_sdk.ontology.objects import X`)
   // can be successfully parsed during discovery.
   if (argv.pythonBinary && argv.pythonFunctionsDir) {
-    generatePythonSdk(
-      previewMetadata,
-      argv.pythonBinary,
-    );
+    generatePythonSdk(previewMetadata, argv.pythonBinary);
   }
 
   // Function discovery is optional - only run if at least one functions flag is provided
@@ -309,7 +311,9 @@ async function main(): Promise<void> {
       previewMetadata.queryTypes = queryTypes;
       consola.info(
         `Discovered ${functionNames.length} function(s): ${
-          functionNames.join(", ")
+          functionNames.join(
+            ", ",
+          )
         }`,
       );
     } else {
@@ -346,7 +350,7 @@ async function main(): Promise<void> {
     async writeFile(filePath: string, contents: string): Promise<void> {
       // Normalize backslashes to forward slashes so path.join/isAbsolute
       // work consistently on Windows where generators may emit mixed separators.
-      const normalized = filePath.replace(/\\/g, "/");
+      const normalized = filePath.replaceAll("\\", "/");
       const fullPath = path.isAbsolute(normalized)
         ? normalized
         : path.join(fullOutputDir, normalized);
@@ -354,7 +358,7 @@ async function main(): Promise<void> {
       await fs.writeFile(fullPath, contents, "utf-8");
     },
     async mkdir(dirPath: string): Promise<void> {
-      const normalized = dirPath.replace(/\\/g, "/");
+      const normalized = dirPath.replaceAll("\\", "/");
       const fullPath = path.isAbsolute(normalized)
         ? normalized
         : path.join(fullOutputDir, normalized);
@@ -378,6 +382,7 @@ async function main(): Promise<void> {
     new Map(),
     false,
     [],
+    true,
   );
 
   // Write package.json for module resolution. Points to compiled output in
@@ -396,6 +401,16 @@ async function main(): Promise<void> {
         types: "./dist/index.d.ts",
         import: "./dist/index.js",
       },
+      "./experimental/ontology-metadata": {
+        import: {
+          types: `./${ONTOLOGY_METADATA_DMTS_PATH}`,
+          default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
+        },
+        require: {
+          types: `./${ONTOLOGY_METADATA_DCTS_PATH}`,
+          default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
+        },
+      },
     },
     scripts: {
       build: "tsc",
@@ -404,13 +419,13 @@ async function main(): Promise<void> {
       "@osdk/client": "^2.0.0",
     },
     devDependencies: {
-      "typescript": "^5.0.0",
+      typescript: "^5.0.0",
     },
   };
 
   await fs.writeFile(
     path.join(fullOutputDir, "package.json"),
-    JSON.stringify(previewPackageJson, null, 2) + "\n",
+    `${JSON.stringify(previewPackageJson, null, 2)}\n`,
     "utf-8",
   );
   consola.info(`Wrote ${path.join(fullOutputDir, "package.json")}`);
@@ -436,7 +451,7 @@ async function main(): Promise<void> {
 
   await fs.writeFile(
     path.join(fullOutputDir, "tsconfig.json"),
-    JSON.stringify(previewTsconfig, null, 2) + "\n",
+    `${JSON.stringify(previewTsconfig, null, 2)}\n`,
     "utf-8",
   );
   consola.info(`Wrote ${path.join(fullOutputDir, "tsconfig.json")}`);
@@ -489,7 +504,9 @@ async function main(): Promise<void> {
     const objectTypeMetadata: Record<string, unknown> = {};
     if (previewMetadata.objectTypes) {
       for (
-        const [apiName, objData] of Object.entries(previewMetadata.objectTypes)
+        const [apiName, objData] of Object.entries(
+          previewMetadata.objectTypes,
+        )
       ) {
         const objType = objData.objectType;
         const propertyTypeMetadata: Record<
@@ -498,7 +515,9 @@ async function main(): Promise<void> {
         > = {};
         if (objType.properties) {
           for (
-            const [propApiName, propDef] of Object.entries(objType.properties)
+            const [propApiName, propDef] of Object.entries(
+              objType.properties,
+            )
           ) {
             propertyTypeMetadata[propApiName] = {
               propertyTypeApiName: propApiName,

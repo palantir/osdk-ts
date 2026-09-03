@@ -70,7 +70,7 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = ({
 
   const recommendationMap = useMemo(
     () => buildRecommendationMap(recommendations),
-    [recommendations]
+    [recommendations],
   );
 
   const enrichmentStore = React.useMemo(
@@ -84,11 +84,11 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = ({
           recentActions: actions.slice(-20),
         };
       }, 2000),
-    [monitorStore]
+    [monitorStore],
   );
   const enrichmentData = React.useSyncExternalStore(
     enrichmentStore.subscribe,
-    enrichmentStore.getSnapshot
+    enrichmentStore.getSnapshot,
   );
   const cacheEntries = enrichmentData?.cacheEntries ?? [];
   const recentActions = enrichmentData?.recentActions ?? [];
@@ -152,7 +152,7 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = ({
         }
         return false;
       }),
-    [metrics.recent, filter]
+    [metrics.recent, filter],
   );
 
   const operations = filteredOperations.slice(-MAX_RECENT_OPERATIONS).reverse();
@@ -225,7 +225,7 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = ({
                 formatTime={formatTime}
                 recommendations={getRecommendationsForOperation(
                   op,
-                  recommendationMap
+                  recommendationMap,
                 )}
                 displayName={
                   displayKey ? displayNameMap.get(displayKey) : undefined
@@ -338,7 +338,7 @@ const OperationItem: React.FC<OperationItemProps> = ({
       metricBadges.push(
         <span key="server" className={styles.operationMetric}>
           Server {formatTime(operation.serverRoundTripTime)}
-        </span>
+        </span>,
       );
     }
 
@@ -349,7 +349,7 @@ const OperationItem: React.FC<OperationItemProps> = ({
       metricBadges.push(
         <span key="optimistic" className={styles.operationMetric}>
           Optimistic {formatTime(operation.optimisticRenderTime)}
-        </span>
+        </span>,
       );
     }
 
@@ -360,7 +360,7 @@ const OperationItem: React.FC<OperationItemProps> = ({
           className={classNames(styles.operationMetric, styles.saved)}
         >
           Speedup {formatTime(operation.perceivedSpeedup)}
-        </span>
+        </span>,
       );
     }
 
@@ -371,7 +371,7 @@ const OperationItem: React.FC<OperationItemProps> = ({
           className={classNames(styles.operationMetric, styles.rollback)}
         >
           Rollback
-        </span>
+        </span>,
       );
     }
   } else if (isValidation) {
@@ -379,7 +379,7 @@ const OperationItem: React.FC<OperationItemProps> = ({
       metricBadges.push(
         <span key="validation" className={styles.operationMetric}>
           Validation {formatTime(operation.responseTime)}
-        </span>
+        </span>,
       );
     }
   } else {
@@ -387,7 +387,7 @@ const OperationItem: React.FC<OperationItemProps> = ({
       metricBadges.push(
         <span key="response" className={styles.operationMetric}>
           {formatTime(operation.responseTime)}
-        </span>
+        </span>,
       );
     }
   }

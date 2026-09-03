@@ -59,7 +59,7 @@ const fullOntology = fauxFoundry
         fauxFoundry
           .getDefaultOntology()
           .getAllQueryTypes()
-          .map((x) => x.apiName)
+          .map((x) => x.apiName),
       ),
     ],
   });
@@ -85,6 +85,7 @@ await generateClientSdkVersionTwoPointZero(
     mkdir: async (path, options) => {
       await mkdir(path, options);
     },
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     readdir: async (path) => readdir(path),
   },
   outDir,
@@ -93,5 +94,5 @@ await generateClientSdkVersionTwoPointZero(
   undefined,
   undefined,
   true,
-  ["addOne"]
+  ["addOne"],
 );

@@ -33,11 +33,11 @@ import type {
  */
 export async function getEventOffsetForFirstNonProxiedFdsEvent(
   ctx: ConjureContext,
-  omsOpsDependentType: _api_provenance_OmsOpsDependentType
+  omsOpsDependentType: _api_provenance_OmsOpsDependentType,
 ): Promise<_api_provenance_GetEventOffsetForFirstNonProxiedFdsEventResponse> {
   return conjureFetch(
     ctx,
     `/provenance-service-metadata/get-event-offset-for-first-non-proxied-fds-event/${omsOpsDependentType}`,
-    "GET"
+    "GET",
   );
 }

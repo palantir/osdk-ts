@@ -32,13 +32,13 @@ export async function listSdks(
   repositoryRid: ArtifactsRepositoryRid,
   packageName: PackageName,
   pageSize: PageSize | undefined,
-  pageToken: SdkPageToken | undefined
+  pageToken: SdkPageToken | undefined,
 ): Promise<ListSdksResponse> {
   return conjureFetch(
     ctx,
     `/sdks/${repositoryRid}/${packageName}`,
     "GET",
     undefined,
-    { pageSize, pageToken }
+    { pageSize, pageToken },
   );
 }

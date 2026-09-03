@@ -23,10 +23,57 @@ import { defineLink } from "../defineLink.js";
 import { defineObject } from "../defineObject.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
+import type { PropertyTypeTypeVector } from "../properties/PropertyTypeType.js";
+
+const VECTOR: PropertyTypeTypeVector = {
+  type: "vector",
+  dimension: 768,
+  supportsSearchWith: "COSINE_SIMILARITY",
+};
 
 describe("Object Types", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, "/tmp/");
+  });
+
+  it("allows an empty backing Media Set for a media reference property", () => {
+    const object = defineObject({
+      titlePropertyApiName: "id",
+      displayName: "Document",
+      pluralDisplayName: "Documents",
+      apiName: "Document",
+      primaryKeyPropertyApiName: "id",
+      properties: {
+        id: { type: "string" },
+        file: {
+          type: "mediaReference",
+          includeEmptyBackingMediaSet: true,
+        },
+      },
+    });
+
+    expect(object.properties?.file.includeEmptyBackingMediaSet).toBe(true);
+  });
+
+  it("rejects an empty backing Media Set for other property types", () => {
+    expect(() =>
+      defineObject({
+        titlePropertyApiName: "id",
+        displayName: "Document",
+        pluralDisplayName: "Documents",
+        apiName: "Document",
+        primaryKeyPropertyApiName: "id",
+        properties: {
+          id: { type: "string" },
+          fileName: {
+            type: "string",
+            includeEmptyBackingMediaSet: true,
+          },
+        },
+      }),
+    ).toThrowError(
+      "Property fileName on object Document can only use includeEmptyBackingMediaSet when its type is mediaReference",
+    );
   });
 
   it("Fails if the api name is invalid", () => {
@@ -40,7 +87,7 @@ describe("Object Types", () => {
         properties: { bar: { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Invalid API name foo_with_underscores. API names must match the regex /^[a-zA-Z][a-zA-Z0-9]{0,99}$/u.]`
+      `[Error: Invariant failed: Invalid API name foo_with_underscores. API names must match the regex /^(?=.{1,100}$)[a-zA-Z][a-zA-Z0-9]*(?:\\.[a-zA-Z0-9]+)*$/u.]`,
     );
   });
   it("Fails if any property reference does not exist", () => {
@@ -64,7 +111,7 @@ describe("Object Types", () => {
         properties: { bar: { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Title property fizz is not defined on object foo]`
+      `[Error: Invariant failed: Title property fizz is not defined on object foo]`,
     );
 
     expect(() => {
@@ -77,7 +124,7 @@ describe("Object Types", () => {
         properties: { bar: { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Primary key property fizz does not exist on object foo]`
+      `[Error: Invariant failed: Primary key property fizz does not exist on object foo]`,
     );
 
     expect(() => {
@@ -101,7 +148,7 @@ describe("Object Types", () => {
         ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: \nOntology Definition Error: Object property mapped to interface does not exist. Object Property Mapped: fizz\n]`
+      `[Error: Invariant failed: \nOntology Definition Error: Object property mapped to interface does not exist. Object Property Mapped: fizz\n]`,
     );
 
     expect(() => {
@@ -129,7 +176,100 @@ describe("Object Types", () => {
         ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: \nOntology Definition Error: Interface property com.palantir.fizz referenced in foo object does not exist\n]`
+      `[Error: Invariant failed: \nOntology Definition Error: Interface property com.palantir.fizz referenced in foo object does not exist\n]`,
+    );
+  });
+
+  it("Allows inherited optional interface properties to be omitted", () => {
+    const optionalProperty = defineSharedPropertyType({
+      apiName: "optionalProperty",
+      type: "string",
+    });
+    const parentInterface = defineInterface({
+      apiName: "parentInterface",
+      properties: {
+        optionalProperty: {
+          required: false,
+          sharedPropertyType: optionalProperty,
+        },
+        optionalInterfaceProperty: {
+          required: false,
+          type: "string",
+        },
+      },
+    });
+    const childInterface = defineInterface({
+      apiName: "childInterface",
+      extends: parentInterface,
+    });
+
+    expect(() =>
+      defineObject({
+        titlePropertyApiName: "id",
+        displayName: "Sample Object",
+        pluralDisplayName: "Sample Objects",
+        apiName: "sampleObject",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+        implementsInterfaces: [
+          {
+            implements: childInterface,
+            propertyMapping: [],
+          },
+        ],
+      }),
+    ).not.toThrow();
+  });
+
+  it("Validates supplied mappings for inherited optional interface properties", () => {
+    const optionalProperty = defineSharedPropertyType({
+      apiName: "optionalProperty",
+      type: "string",
+    });
+    const parentInterface = defineInterface({
+      apiName: "parentInterface",
+      properties: {
+        optionalProperty: {
+          required: false,
+          sharedPropertyType: optionalProperty,
+        },
+        optionalInterfaceProperty: {
+          required: false,
+          type: "string",
+        },
+      },
+    });
+    const childInterface = defineInterface({
+      apiName: "childInterface",
+      extends: parentInterface,
+    });
+
+    expect(() =>
+      defineObject({
+        titlePropertyApiName: "id",
+        displayName: "Sample Object",
+        pluralDisplayName: "Sample Objects",
+        apiName: "sampleObject",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+        implementsInterfaces: [
+          {
+            implements: childInterface,
+            propertyMapping: [
+              {
+                interfaceProperty: "optionalProperty",
+                mapsTo: "missingSpt",
+              },
+              {
+                interfaceProperty: "com.palantir.optionalInterfaceProperty",
+                mapsTo: "missingIdp",
+              },
+            ],
+          },
+        ],
+      }),
+    ).toThrowError(
+      /Object Property Mapped: missingSpt[\s\S]*Object Property Mapped: missingIdp/u,
     );
   });
 
@@ -582,6 +722,91 @@ describe("Object Types", () => {
         },
       }
     `);
+  });
+
+  it("Vector properties are properly defined", () => {
+    defineObject({
+      titlePropertyApiName: "bar",
+      displayName: "Foo",
+      pluralDisplayName: "Foo",
+      apiName: "foo",
+      primaryKeyPropertyApiName: "bar",
+      properties: {
+        bar: { type: "string" },
+        embedding: {
+          type: {
+            type: "vector",
+            dimension: 1536,
+            supportsSearchWith: "COSINE_SIMILARITY",
+            embeddingModel: {
+              type: "text",
+              text: { type: "lms", lms: "OPENAI_TEXT_EMBEDDING_ADA_002" },
+            },
+            quantization: "BYTE",
+          },
+        },
+      },
+    });
+
+    const embedding =
+      dumpOntologyFullMetadata().ontology.objectTypes["com.palantir.foo"]
+        .objectType.propertyTypes["embedding"];
+    expect(embedding.type).toMatchInlineSnapshot(`
+      {
+        "type": "vector",
+        "vector": {
+          "dimension": 1536,
+          "embeddingModel": {
+            "text": {
+              "lms": "OPENAI_TEXT_EMBEDDING_ADA_002",
+              "type": "lms",
+            },
+            "type": "text",
+          },
+          "quantization": "BYTE",
+          "supportsSearchWith": [
+            "COSINE_SIMILARITY",
+          ],
+        },
+      }
+    `);
+    expect(embedding.indexedForSearch).toBe(true);
+  });
+
+  it("Fails on a vector property declared as an array", () => {
+    defineObject({
+      titlePropertyApiName: "bar",
+      displayName: "Foo",
+      pluralDisplayName: "Foo",
+      apiName: "foo",
+      primaryKeyPropertyApiName: "bar",
+      properties: {
+        bar: { type: "string" },
+        embedding: { type: VECTOR, array: true },
+      },
+    });
+
+    expect(() => dumpOntologyFullMetadata()).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Vector property 'com.palantir.embedding' cannot be an array]`,
+    );
+  });
+
+  it("Fails on a vector property with a non-positive dimension", () => {
+    defineObject({
+      titlePropertyApiName: "bar",
+      displayName: "Foo",
+      pluralDisplayName: "Foo",
+      apiName: "foo",
+      primaryKeyPropertyApiName: "bar",
+      properties: {
+        bar: { type: "string" },
+        embedding: { type: { ...VECTOR, dimension: 0 } },
+      },
+    });
+
+    expect(() => dumpOntologyFullMetadata()).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Vector property 'com.palantir.embedding' must have an integer 'dimension' of at least 1, but got 0]`,
+    );
   });
 
   it("Explicit datasource definitions are properly defined", () => {
@@ -1359,7 +1584,7 @@ describe("Object Types", () => {
         properties: { bar: { type: "string", editOnly: true } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Primary key property bar on object foo cannot be edit-only]`
+      `[Error: Invariant failed: Primary key property bar on object foo cannot be edit-only]`,
     );
   });
 
@@ -1378,9 +1603,9 @@ describe("Object Types", () => {
             retentionPeriod: "bad retention period string",
           },
         ],
-      })
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Retention period "bad retention period string" on object "buzz" is not a valid ISO 8601 duration string]`
+      `[Error: Invariant failed: Retention period "bad retention period string" on object "buzz" is not a valid ISO 8601 duration string]`,
     );
   });
 
@@ -1641,7 +1866,7 @@ describe("Object Types", () => {
       },
     });
     expect(() => dumpOntologyFullMetadata()).toThrow(
-      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/u
+      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/u,
     );
   });
   it("Derived datasources are properly defined", () => {
@@ -1716,7 +1941,7 @@ describe("Object Types", () => {
         ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Property 'numPassengers' on object 'flight' is not collectible]`
+      `[Error: Invariant failed: Property 'numPassengers' on object 'flight' is not collectible]`,
     );
     const flight = defineObject({
       displayName: "Flight",
@@ -4584,7 +4809,7 @@ describe("Object Types", () => {
             "ri.ontology-package.main.ontology-package.abc-123",
         });
       },
-      "/tmp/"
+      "/tmp/",
     );
   });
 

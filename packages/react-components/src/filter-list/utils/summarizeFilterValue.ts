@@ -33,7 +33,7 @@ const SELECT_EMPTY_STRING_LABEL = "(empty string)";
 
 function summarizeSelectionValues(
   values: ReadonlyArray<string | number | boolean | Date | null | undefined>,
-  formatDate: (d: Date) => string
+  formatDate: (d: Date) => string,
 ): string {
   if (values.length === 0) {
     return "";
@@ -59,7 +59,7 @@ function formatRange<T>(
   max: T | undefined,
   format: (value: T) => string,
   loFallback: string,
-  hiFallback: string
+  hiFallback: string,
 ): string {
   return `${min != null ? format(min) : loFallback} – ${
     max != null ? format(max) : hiFallback
@@ -69,7 +69,7 @@ function formatRange<T>(
 /** Short summary of a filter's current value for rendering inside a `FilterPopover` trigger. */
 export function summarizeFilterValue<Q extends ObjectTypeDefinition>(
   definition: FilterDefinitionUnion<Q>,
-  state: FilterState | undefined
+  state: FilterState | undefined,
 ): string {
   if (state == null) {
     return "";
@@ -102,7 +102,7 @@ export function summarizeFilterValue<Q extends ObjectTypeDefinition>(
         maxValue,
         formatDate,
         NO_VALUE_PLACEHOLDER,
-        NO_VALUE_PLACEHOLDER
+        NO_VALUE_PLACEHOLDER,
       );
     }
     case "TIMELINE": {
@@ -115,13 +115,16 @@ export function summarizeFilterValue<Q extends ObjectTypeDefinition>(
         endDate,
         formatDate,
         NO_VALUE_PLACEHOLDER,
-        NO_VALUE_PLACEHOLDER
+        NO_VALUE_PLACEHOLDER,
       );
     }
     case "TOGGLE":
       return state.enabled ? "Enabled" : "";
     case "hasLink":
-      return state.hasLink ? "Has link" : "";
+      if (!state.hasLink) {
+        return "";
+      }
+      return state.isExcluding ? "Not linked" : "Linked";
     case "linkedProperty":
       // Forwards the outer definition so options like formatDate flow into the
       // linked summary; assumes the linked property shares the outer property's

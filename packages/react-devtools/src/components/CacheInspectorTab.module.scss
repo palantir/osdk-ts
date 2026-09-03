@@ -1,5 +1,5 @@
-@use 'tokens' as t;
-@use 'mixins' as m;
+@use "tokens" as t;
+@use "mixins" as m;
 
 .cacheInspector {
   display: flex;
@@ -119,7 +119,9 @@
   gap: 10px;
   min-height: auto;
   border-left: 2px solid transparent;
-  transition: background-color t.$transition-fast, border-left-color t.$transition-fast;
+  transition:
+    background-color t.$transition-fast,
+    border-left-color t.$transition-fast;
 
   &:hover {
     background: t.$bg-hover;

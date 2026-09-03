@@ -33,12 +33,12 @@ import type {
  */
 export async function getLinkTypesForObjectTypes(
   ctx: ConjureContext,
-  request: _api_GetLinkTypesForObjectTypesRequest
+  request: _api_GetLinkTypesForObjectTypesRequest,
 ): Promise<_api_GetLinkTypesForObjectTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/linkTypesForObjectTypes`,
     "POST",
-    request
+    request,
   );
 }

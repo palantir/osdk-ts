@@ -49,8 +49,7 @@
   color: var(--osdk-intent-primary-rest);
   background: transparent;
   border: none;
-  padding: calc(var(--osdk-surface-spacing) * 0.5)
-    var(--osdk-surface-spacing);
+  padding: calc(var(--osdk-surface-spacing) * 0.5) var(--osdk-surface-spacing);
   cursor: pointer;
   border-radius: var(--osdk-surface-border-radius);
 
@@ -70,8 +69,7 @@
   display: inline-block;
   background: var(--osdk-typography-color-default-rest);
   color: var(--osdk-background-primary);
-  padding: calc(var(--osdk-surface-spacing) * 0.5)
-    var(--osdk-surface-spacing);
+  padding: calc(var(--osdk-surface-spacing) * 0.5) var(--osdk-surface-spacing);
   border-radius: var(--osdk-surface-border-radius);
   font-family: var(--osdk-filter-range-label-font-family);
   font-size: var(--osdk-typography-size-body-small);
@@ -92,7 +90,8 @@
 .axisLines,
 .bars,
 .countLabels,
-.xTicks {}
+.xTicks {
+}
 
 .selectionBand {
   fill: var(
@@ -185,7 +184,8 @@
 
   &:focus {
     border-color: var(--osdk-filter-input-focus-border);
-    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
+    outline: var(--osdk-filter-input-focus-outline-width) solid
+      var(--osdk-filter-input-focus-outline-color);
     outline-offset: var(--osdk-filter-input-focus-outline-offset);
   }
 

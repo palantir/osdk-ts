@@ -31,6 +31,12 @@ export type Resolver = (calls: Call[]) => unknown;
 
 export type Stub = { calls: Call[]; value: unknown };
 
+type MockObjectSetDefinition = {
+  calls: Call[];
+};
+
+const mockObjectSetDefinitions = new WeakMap<object, MockObjectSetDefinition>();
+
 export function createMockObjectSetWithResolver<
   Q extends ObjectOrInterfaceDefinition,
 >(objectType: Q, resolver: Resolver, calls: Call[] = []): ObjectSet<Q> {
@@ -43,15 +49,27 @@ export function createMockObjectSetWithResolver<
   const terminal = <T>(method: string, args: unknown): T =>
     resolver([...calls, [method, args]]) as T;
 
-  // All methods should execute synchronously even if marked as async
-  return {
+  const setOperation = (
+    method: "union" | "intersect" | "subtract",
+    objectSets: ReadonlyArray<ObjectSet<Q>>,
+  ): ObjectSet<Q> =>
+    chain(
+      method,
+      objectSets.map((operand) => {
+        const definition = mockObjectSetDefinitions.get(operand);
+        invariant(definition, `${method} only supports mock object sets`);
+        return definition;
+      }),
+    );
+
+  const objectSet = {
     where: (clause: WhereClause<Q>) => chain("where", clause),
-    union: () =>
-      void invariant(false, "union is not supported in mocks") as any,
-    intersect: () =>
-      void invariant(false, "intersect is not supported in mocks") as any,
-    subtract: () =>
-      void invariant(false, "subtract is not supported in mocks") as any,
+    union: (...objectSets: ReadonlyArray<ObjectSet<Q>>) =>
+      setOperation("union", objectSets),
+    intersect: (...objectSets: ReadonlyArray<ObjectSet<Q>>) =>
+      setOperation("intersect", objectSets),
+    subtract: (...objectSets: ReadonlyArray<ObjectSet<Q>>) =>
+      setOperation("subtract", objectSets),
     pivotTo: (link: string) => chain("pivotTo", link) as any,
     narrowToType: (type: ObjectOrInterfaceDefinition) =>
       chain("narrowToType", type) as any,
@@ -60,6 +78,7 @@ export function createMockObjectSetWithResolver<
     withProperties: () =>
       // TODO: Add with properties support
       void invariant(false, "withProperties is not supported in mocks") as any,
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     fetchPage: async (args?: unknown) =>
       terminal<PageResult<Osdk.Instance<Q>>>("fetchPage", args) as any,
     fetchPageWithErrors: async (args?: unknown) => {
@@ -72,6 +91,7 @@ export function createMockObjectSetWithResolver<
         return { type: "error" as const, error };
       }
     },
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     fetchOne: (async (pk: unknown) =>
       terminal<Osdk.Instance<Q>>("fetchOne", pk)) as any,
     fetchOneWithErrors: (async (pk: unknown) => {
@@ -84,10 +104,11 @@ export function createMockObjectSetWithResolver<
         return { type: "error" as const, error } as any;
       }
     }) as any,
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     aggregate: async (req: AggregateOpts<Q>) =>
       terminal<AggregationsResults<Q, AggregateOpts<Q>>>(
         "aggregate",
-        req
+        req,
       ) as any,
     asyncIter: (args?: unknown) => {
       const data = terminal<Osdk.Instance<Q>[]>("asyncIter", args);
@@ -101,24 +122,31 @@ export function createMockObjectSetWithResolver<
     experimental_asyncIterLinks: () =>
       void invariant(
         false,
-        "experimental_asyncIterLinks is not supported in mocks"
+        "experimental_asyncIterLinks is not supported in mocks",
       ) as any,
     $objectSetInternals: {
       def: {} as Q,
     },
   } satisfies ObjectSet<Q>;
+
+  mockObjectSetDefinitions.set(objectSet, {
+    calls,
+  });
+
+  return objectSet;
 }
 
 export function resolveStub(
   stubs: Stub[],
   calls: Call[],
-  errorMsg: string
+  errorMsg: string,
 ): unknown {
-  for (const stub of stubs) {
+  for (let s = stubs.length - 1; s >= 0; s--) {
+    const stub = stubs[s];
     if (stub.calls.length !== calls.length) continue;
     if (
       stub.calls.every(
-        ([m, a], i) => calls[i][0] === m && deepEqual(a, calls[i][1])
+        ([m, a], i) => calls[i][0] === m && deepEqual(a, calls[i][1]),
       )
     ) {
       const terminal = calls[calls.length - 1][0];
@@ -152,14 +180,14 @@ export function deepEqual(a: unknown, b: unknown): boolean {
     const bKeys = Object.keys(b as object);
     if (aKeys.length !== bKeys.length) return false;
     return aKeys.every((k) =>
-      deepEqual((a as any)[k], (b as Record<string, unknown>)[k])
+      deepEqual((a as any)[k], (b as Record<string, unknown>)[k]),
     );
   }
   return false;
 }
 
 function isAsymmetricMatcher(
-  x: unknown
+  x: unknown,
 ): x is { asymmetricMatch: (other: unknown) => boolean } {
   return (
     x != null &&

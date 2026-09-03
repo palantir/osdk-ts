@@ -26,7 +26,7 @@ import type {
  */
 export async function getBulkOntologyPermissions(
   ctx: ConjureContext,
-  request: _api_permissions_GetBulkOntologyPermissionsRequest
+  request: _api_permissions_GetBulkOntologyPermissionsRequest,
 ): Promise<_api_permissions_GetBulkOntologyPermissionsResponse> {
   return conjureFetch(ctx, `/permissions/ontologies`, "PUT", request);
 }

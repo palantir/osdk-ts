@@ -15,13 +15,7 @@
  */
 
 import { Button } from "@base-ui/react/button";
-import {
-  Add,
-  CaretDown,
-  Cog,
-  SortAlphabetical,
-  SortAlphabeticalDesc,
-} from "@blueprintjs/icons";
+import { Add, CaretDown, Cog } from "@blueprintjs/icons";
 import { arrayMove } from "@dnd-kit/sortable";
 import type { SortingState } from "@tanstack/react-table";
 import classNames from "classnames";
@@ -31,6 +25,7 @@ import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { Dialog } from "../base-components/dialog/Dialog.js";
 import { SearchableMenu } from "../base-components/searchable-menu/SearchableMenu.js";
 import { type SortableItem, SortableItemsList } from "./SortableItemsList.js";
+import { getSortIcons } from "./utils/getSortIcons.js";
 import type { ColumnOption } from "./utils/types.js";
 
 import styles from "./MultiColumnSortDialog.module.css";
@@ -89,7 +84,7 @@ export function MultiColumnSortDialog({
     (fromIndex: number, toIndex: number) => {
       setSelectedSortColumns((items) => arrayMove(items, fromIndex, toIndex));
     },
-    []
+    [],
   );
 
   const handleToggleSortDirection = useCallback((id: string) => {
@@ -97,8 +92,8 @@ export function MultiColumnSortDialog({
       prev.map((item) =>
         item.id === id
           ? { ...item, direction: item.direction === "asc" ? "desc" : "asc" }
-          : item
-      )
+          : item,
+      ),
     );
   }, []);
 
@@ -116,14 +111,14 @@ export function MultiColumnSortDialog({
       columnOptions.filter(
         (col) =>
           col.canSort &&
-          !selectedSortColumns.some((selected) => selected.id === col.id)
+          !selectedSortColumns.some((selected) => selected.id === col.id),
       ),
-    [columnOptions, selectedSortColumns]
+    [columnOptions, selectedSortColumns],
   );
 
   const searchableMenuItems = useMemo(
     () => availableColumns.map((col) => ({ key: col.id, label: col.name })),
-    [availableColumns]
+    [availableColumns],
   );
 
   const handleMenuItemSelected = useCallback(
@@ -133,32 +128,39 @@ export function MultiColumnSortDialog({
         handleAddColumn(column);
       }
     },
-    [availableColumns, handleAddColumn]
+    [availableColumns, handleAddColumn],
   );
 
   const sortableItems: SortableItem[] = useMemo(() => {
-    return selectedSortColumns.map((item) => ({
-      id: item.id,
-      label: item.name,
-      content: (
-        <div className={styles.sortColumnItem}>
-          <span className={classNames(styles.sortColumnName, styles.truncate)}>
-            {item.name}
-          </span>
-          <Button
-            className={styles.sortDirectionButton}
-            onClick={() => handleToggleSortDirection(item.id)}
-            aria-label={`Toggle sort direction for ${item.name}`}
-          >
-            {item.direction === "asc" ? (
-              <SortAlphabetical className={styles.sortIcon} />
-            ) : (
-              <SortAlphabeticalDesc className={styles.sortIcon} />
-            )}
-          </Button>
-        </div>
-      ),
-    }));
+    return selectedSortColumns.map((item) => {
+      const { asc: SortAscendingIcon, desc: SortDescendingIcon } = getSortIcons(
+        item.dataType,
+      );
+      return {
+        id: item.id,
+        label: item.name,
+        content: (
+          <div className={styles.sortColumnItem}>
+            <span
+              className={classNames(styles.sortColumnName, styles.truncate)}
+            >
+              {item.name}
+            </span>
+            <Button
+              className={styles.sortDirectionButton}
+              onClick={() => handleToggleSortDirection(item.id)}
+              aria-label={`Toggle sort direction for ${item.name}`}
+            >
+              {item.direction === "asc" ? (
+                <SortAscendingIcon className={styles.sortIcon} />
+              ) : (
+                <SortDescendingIcon className={styles.sortIcon} />
+              )}
+            </Button>
+          </div>
+        ),
+      };
+    });
   }, [selectedSortColumns, handleToggleSortDirection]);
 
   const footer = useMemo(
@@ -170,7 +172,7 @@ export function MultiColumnSortDialog({
         </ActionButton>
       </>
     ),
-    [handleApply, onClose]
+    [handleApply, onClose],
   );
 
   return (

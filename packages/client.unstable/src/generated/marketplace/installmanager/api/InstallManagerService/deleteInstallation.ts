@@ -34,12 +34,12 @@ export async function deleteInstallation(
   ctx: ConjureContext,
   namespaceRid: _api_NamespaceRid,
   installationName: _api_ManagedInstallationName,
-  request: _installmanager_api_DeleteInstallationRequest
+  request: _installmanager_api_DeleteInstallationRequest,
 ): Promise<_installmanager_api_DeleteInstallationResponse> {
   return conjureFetch(
     ctx,
     `/install-manager/namespaces/${namespaceRid}/installations/${installationName}`,
     "DELETE",
-    request
+    request,
   );
 }

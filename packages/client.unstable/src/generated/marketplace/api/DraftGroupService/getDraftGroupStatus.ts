@@ -30,7 +30,7 @@ import type {
  */
 export async function getDraftGroupStatus(
   ctx: ConjureContext,
-  draftGroupRid: _api_DraftGroupRid
+  draftGroupRid: _api_DraftGroupRid,
 ): Promise<_api_GetDraftGroupStatusResponse> {
   return conjureFetch(ctx, `/draft-groups/${draftGroupRid}/status`, "GET");
 }

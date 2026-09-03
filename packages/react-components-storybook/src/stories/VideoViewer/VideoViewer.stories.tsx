@@ -15,7 +15,7 @@
  */
 
 import type { Media } from "@osdk/api";
-import type { VideoViewerMediaProps } from "@osdk/react-components/experimental/video-viewer";
+import type { VideoViewerProps } from "@osdk/react-components/experimental/video-viewer";
 import { VideoViewer } from "@osdk/react-components/experimental/video-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { http, passthrough } from "msw";
@@ -48,14 +48,14 @@ function createMockMedia(url: string, filename: string): Media {
 
 const mockMedia = createMockMedia(SAMPLE_VIDEO_URL, "example.mp4");
 
-const meta: Meta<VideoViewerMediaProps> = {
+const meta: Meta<VideoViewerProps> = {
   title: "Components/DocumentViewer/Renderers/VideoViewer",
   component: VideoViewer,
   tags: ["beta"],
   args: {
     media: mockMedia,
   },
-  render: (args: VideoViewerMediaProps) => (
+  render: (args: VideoViewerProps) => (
     <div style={{ height: "400px", width: "600px" }}>
       <VideoViewer media={args.media} onError={args.onError} />
     </div>
@@ -90,9 +90,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { VideoViewer } from "@osdk/react-components/experimental/video-viewer";
-
-<VideoViewer media={myOsdkMedia} />`,
+        code: `<VideoViewer media={myOsdkMedia} />`,
       },
     },
   },
@@ -121,5 +119,16 @@ export const WithErrorCallback: Story = {
       }),
     },
     onError: fn(),
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// onError fires when fetching the media or decoding the video fails
+<VideoViewer
+  media={myOsdkMedia}
+  onError={reportPlaybackFailure}
+/>`,
+      },
+    },
   },
 };

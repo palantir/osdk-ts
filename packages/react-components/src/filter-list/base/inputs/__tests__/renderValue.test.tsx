@@ -63,7 +63,7 @@ describe("ListogramInput renderValue", () => {
         selectedValues={[]}
         onChange={vi.fn()}
         renderValue={mockRenderValue}
-      />
+      />,
     );
 
     expect(screen.getByText("Alice Smith")).toBeDefined();
@@ -79,7 +79,7 @@ describe("ListogramInput renderValue", () => {
         error={null}
         selectedValues={[]}
         onChange={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText("abc-123")).toBeDefined();
@@ -101,7 +101,7 @@ describe("ListogramInput renderValue", () => {
         selectedValues={[]}
         onChange={vi.fn()}
         renderValue={mockRenderValue}
-      />
+      />,
     );
 
     expect(screen.getByText("No value")).toBeDefined();
@@ -124,7 +124,7 @@ describe("ListogramInput renderValue", () => {
         selectedValues={[]}
         onChange={vi.fn()}
         renderValue={mockRenderValue}
-      />
+      />,
     );
 
     expect(screen.getByText("No value")).toBeDefined();
@@ -143,7 +143,7 @@ describe("ListogramInput renderValue", () => {
         onChange={vi.fn()}
         renderValue={mockRenderValue}
         searchQuery="Alice"
-      />
+      />,
     );
 
     expect(screen.getByText("Alice Smith")).toBeDefined();
@@ -160,7 +160,7 @@ describe("ListogramInput renderValue", () => {
         selectedValues={[]}
         onChange={vi.fn()}
         searchQuery="abc"
-      />
+      />,
     );
 
     expect(screen.getByText("abc-123")).toBeDefined();
@@ -178,7 +178,7 @@ describe("MultiSelectInput renderValue", () => {
         selectedValues={["abc-123"]}
         onChange={vi.fn()}
         renderValue={mockRenderValue}
-      />
+      />,
     );
 
     expect(screen.getByText("Alice Smith")).toBeDefined();
@@ -192,7 +192,7 @@ describe("MultiSelectInput renderValue", () => {
         error={null}
         selectedValues={["abc-123"]}
         onChange={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.queryByText("Alice Smith")).toBeNull();
@@ -216,7 +216,7 @@ describe("ListogramInput renderValue (ReactNode)", () => {
         selectedValues={[]}
         onChange={vi.fn()}
         renderValue={renderValueAsNode}
-      />
+      />,
     );
 
     expect(screen.getByTestId("anchor-abc-123")).toBeDefined();
@@ -234,7 +234,7 @@ describe("ListogramInput renderValue (ReactNode)", () => {
         onChange={vi.fn()}
         renderValue={renderValueAsNode}
         searchQuery="abc"
-      />
+      />,
     );
 
     expect(screen.getByTestId("anchor-abc-123")).toBeDefined();
@@ -258,7 +258,7 @@ describe("MultiSelectInput renderValue (ReactNode)", () => {
         selectedValues={["abc-123"]}
         onChange={vi.fn()}
         renderValue={renderValueAsNode}
-      />
+      />,
     );
 
     expect(screen.getByTestId("chip-anchor-abc-123")).toBeDefined();
@@ -305,7 +305,7 @@ describe("SingleSelectInput renderValue", () => {
         selectedValue={undefined}
         onChange={vi.fn()}
         renderValue={mockRenderValue}
-      />
+      />,
     );
 
     expect(container.querySelector("input")).toBeDefined();
@@ -319,7 +319,7 @@ describe("SingleSelectInput renderValue", () => {
         error={null}
         selectedValue={undefined}
         onChange={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.queryByText("Alice Smith")).toBeNull();
@@ -358,8 +358,8 @@ function createMockLinkedObjectSet(): ObjectSet<ObjectTypeDefinition> {
 }
 
 function createLinkedDefinition(
-  linkedFilterComponent: "MULTI_SELECT" | "LISTOGRAM" | "SINGLE_SELECT",
-  renderValue?: (value: string) => React.ReactNode
+  filterComponent: "MULTI_SELECT" | "LISTOGRAM" | "SINGLE_SELECT",
+  renderValue?: (value: string) => React.ReactNode,
 ): LinkedPropertyFilterDefinition<
   ObjectTypeDefinition,
   string,
@@ -367,16 +367,15 @@ function createLinkedDefinition(
   PropertyKeys<ObjectTypeDefinition>
 > {
   const innerStateType =
-    linkedFilterComponent === "LISTOGRAM"
+    filterComponent === "LISTOGRAM"
       ? { type: "EXACT_MATCH" as const, values: [] }
       : { type: "SELECT" as const, selectedValues: [] };
 
   return {
     type: "LINKED_PROPERTY",
     linkName: "primaryOffice",
-    reverseLinkName: "occupants",
     linkedPropertyKey: "name" as PropertyKeys<ObjectTypeDefinition>,
-    linkedFilterComponent,
+    filterComponent,
     linkedFilterState: innerStateType,
     filterState: {
       type: "linkedProperty",
@@ -392,7 +391,7 @@ function createLinkedDefinition(
 }
 
 function mockLinkedAggregationData(
-  groups: Array<{ name: string; count: number }>
+  groups: Array<{ name: string; count: number }>,
 ): void {
   vi.mocked(useOsdkAggregation).mockReturnValue({
     data: groups.map((g) => ({
@@ -431,7 +430,7 @@ describe("LinkedPropertyInput renderValue", () => {
           },
         }}
         onFilterStateChanged={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByTestId("linked-anchor-abc-123")).toBeDefined();
@@ -457,7 +456,7 @@ describe("LinkedPropertyInput renderValue", () => {
           },
         }}
         onFilterStateChanged={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByTestId("linked-anchor-abc-123")).toBeDefined();
@@ -484,7 +483,7 @@ describe("LinkedPropertyInput renderValue", () => {
         }}
         onFilterStateChanged={vi.fn()}
         searchQuery="abc"
-      />
+      />,
     );
 
     expect(screen.getByTestId("linked-anchor-abc-123")).toBeDefined();
@@ -514,7 +513,7 @@ describe("LinkedPropertyInput renderValue", () => {
           },
         }}
         onFilterStateChanged={vi.fn()}
-      />
+      />,
     );
 
     expect(container.querySelector("input")).toBeDefined();

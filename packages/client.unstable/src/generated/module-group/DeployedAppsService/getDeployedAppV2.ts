@@ -27,7 +27,7 @@ import type { GetDeployedAppResponse as _GetDeployedAppResponse } from "../__com
  */
 export async function getDeployedAppV2(
   ctx: ConjureContext,
-  deployedAppRid: string
+  deployedAppRid: string,
 ): Promise<_GetDeployedAppResponse> {
   return conjureFetch(ctx, `/deployed-apps/${deployedAppRid}/v2`, "GET");
 }

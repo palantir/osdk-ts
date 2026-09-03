@@ -29,7 +29,7 @@ type MockQ = typeof MockObjectType;
 
 function makeDef(
   key: string,
-  isVisible?: boolean
+  isVisible?: boolean,
 ): FilterDefinitionUnion<MockQ> {
   const def = createPropertyFilterDef(key, "LISTOGRAM", createSelectState([]));
   if (isVisible !== undefined) {
@@ -228,7 +228,7 @@ describe("useFilterVisibility", () => {
 
     // "b" should be appended after the existing visible filters
     expect(
-      result.current.visibleDefinitions.map((d) => (d as { key: string }).key)
+      result.current.visibleDefinitions.map((d) => (d as { key: string }).key),
     ).toEqual(["a", "c", "b"]);
   });
 
@@ -237,7 +237,7 @@ describe("useFilterVisibility", () => {
     const definitions = [makeDef("a"), makeDef("b", false)];
 
     const { result } = renderHook(() =>
-      useFilterVisibility(definitions, onChange)
+      useFilterVisibility(definitions, onChange),
     );
 
     act(() => {
@@ -253,7 +253,7 @@ describe("useFilterVisibility", () => {
     const definitions = [makeDef("a"), makeDef("b")];
 
     const { result } = renderHook(() =>
-      useFilterVisibility(definitions, onChange)
+      useFilterVisibility(definitions, onChange),
     );
 
     act(() => {
@@ -269,7 +269,7 @@ describe("useFilterVisibility", () => {
     const definitions = [makeDef("a"), makeDef("b")];
 
     const { result } = renderHook(() =>
-      useFilterVisibility(definitions, onChange)
+      useFilterVisibility(definitions, onChange),
     );
 
     act(() => {
@@ -299,7 +299,7 @@ describe("useFilterVisibility", () => {
 
     const { result, rerender } = renderHook(
       ({ defs }) => useFilterVisibility(defs),
-      { initialProps: { defs: defsV1 } }
+      { initialProps: { defs: defsV1 } },
     );
 
     expect(result.current.visibleDefinitions).toHaveLength(2);

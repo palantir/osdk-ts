@@ -14,28 +14,35 @@
  * limitations under the License.
  */
 
-import { writeFile } from "fs/promises";
-import { join } from "path";
+import { writeFile } from "node:fs/promises";
+import { join } from "node:path";
+
+import {
+  ONTOLOGY_METADATA_DCTS_PATH,
+  ONTOLOGY_METADATA_DMTS_PATH,
+  ONTOLOGY_METADATA_JSON_PATH,
+} from "@osdk/generator";
 
 export async function generatePackageJson(options: {
   packageName: string;
   packageVersion: string;
   packagePath: string;
   dependencies?: Array<{ dependencyName: string; dependencyVersion: string }>;
-  peerDependencies?: Array<
-    { dependencyName: string; dependencyVersion: string }
-  >;
+  peerDependencies?: Array<{
+    dependencyName: string;
+    dependencyVersion: string;
+  }>;
   beta: boolean;
   packageRid?: string;
-}): Promise<
-  {
-    name: string;
-    version: string;
-    dependencies: { [dependencyName: string]: string } | undefined;
-    peerDependencies: { [dependencyName: string]: string } | undefined;
-    type: string;
-  }
-> {
+  branch?: string;
+  exportOntologyMetadata: boolean;
+}): Promise<{
+  name: string;
+  version: string;
+  dependencies: { [dependencyName: string]: string } | undefined;
+  peerDependencies: { [dependencyName: string]: string } | undefined;
+  type: string;
+}> {
   const packageDeps = constructDependencies(options.dependencies);
   const packagePeerDeps = constructDependencies(options.peerDependencies);
 
@@ -45,7 +52,7 @@ export async function generatePackageJson(options: {
     version: options.packageVersion,
     main: "./cjs/index.js",
     types: "./cjs/index.d.ts",
-    osdk: { packageRid: options.packageRid },
+    osdk: { packageRid: options.packageRid, branch: options.branch },
     exports: {
       ".": {
         script: {
@@ -63,6 +70,20 @@ export async function generatePackageJson(options: {
         types: "./cjs/index.d.ts",
         default: "./cjs/index.js",
       },
+      ...(options.exportOntologyMetadata
+        ? {
+          "./experimental/ontology-metadata": {
+            require: {
+              types: `./${ONTOLOGY_METADATA_DCTS_PATH}`,
+              default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
+            },
+            import: {
+              types: `./${ONTOLOGY_METADATA_DMTS_PATH}`,
+              default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
+            },
+          },
+        }
+        : {}),
     },
     dependencies: packageDeps,
     peerDependencies: packagePeerDeps,
@@ -78,13 +99,18 @@ export async function generatePackageJson(options: {
 }
 
 function constructDependencies(
-  dependencies: {
-    dependencyName: string;
-    dependencyVersion: string;
-  }[] | undefined,
+  dependencies:
+    | {
+      dependencyName: string;
+      dependencyVersion: string;
+    }[]
+    | undefined,
 ) {
-  return dependencies?.reduce((acc, value) => {
-    acc[value.dependencyName] = value.dependencyVersion;
-    return acc;
-  }, {} as { [dependencyName: string]: string });
+  return dependencies?.reduce(
+    (acc, value) => {
+      acc[value.dependencyName] = value.dependencyVersion;
+      return acc;
+    },
+    {} as { [dependencyName: string]: string },
+  );
 }

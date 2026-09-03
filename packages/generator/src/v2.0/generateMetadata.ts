@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import path from "path";
+import path from "node:path";
+
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { formatTs } from "../util/test/formatTs.js";
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
-const ExpectedOsdkVersion = "2.43.0";
+const ExpectedOsdkVersion = "2.64.0";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 
-export async function generateOntologyMetadataFile(
+export async function generateOntologyMetadataTypeFile(
   { fs, outDir, ontology, ontologyApiNamespace }: GenerateContext,
   userAgent: string,
 ): Promise<void> {
@@ -51,4 +52,52 @@ export async function generateOntologyMetadataFile(
       `,
     ),
   );
+}
+
+export const ONTOLOGY_METADATA_JSON_PATH =
+  "experimental/ontology-metadata.json";
+
+export const ONTOLOGY_METADATA_DMTS_PATH =
+  "experimental/ontology-metadata.d.mts";
+
+export const ONTOLOGY_METADATA_DCTS_PATH =
+  "experimental/ontology-metadata.d.cts";
+
+export const ONTOLOGY_METADATA_DTS_PATH = "experimental/ontology-metadata.d.ts";
+
+function getTypeShim(packageType: "commonjs" | "module") {
+  const exportStatement = packageType === "commonjs"
+    ? "export = ontologyFullMetadata;"
+    : "export default ontologyFullMetadata;";
+  return `import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
+
+declare const ontologyFullMetadata: OntologyFullMetadata;
+
+${exportStatement}
+`;
+}
+
+export async function generateOntologyMetadataJSONFile({
+  fs,
+  outDir,
+  ontology,
+}: GenerateContext): Promise<void> {
+  const writeAsset = fs.writeAsset ?? fs.writeFile;
+  await fs.mkdir(path.dirname(path.join(outDir, ONTOLOGY_METADATA_JSON_PATH)), {
+    recursive: true,
+  });
+  await writeAsset(
+    path.join(outDir, ONTOLOGY_METADATA_JSON_PATH),
+    JSON.stringify(ontology.raw, null, 4),
+  );
+  await writeAsset(
+    path.join(outDir, ONTOLOGY_METADATA_DMTS_PATH),
+    await formatTs(getTypeShim("module")),
+  );
+  const exportEquals = await formatTs(getTypeShim("commonjs"));
+  await writeAsset(
+    path.join(outDir, ONTOLOGY_METADATA_DCTS_PATH),
+    exportEquals,
+  );
+  await writeAsset(path.join(outDir, ONTOLOGY_METADATA_DTS_PATH), exportEquals);
 }

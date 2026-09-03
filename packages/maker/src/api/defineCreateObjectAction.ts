@@ -22,6 +22,8 @@ import {
   convertValidationRule,
   createDefaultParameterOrdering,
   createParameters,
+  createPropertyParameterValues,
+  createStructFieldValues,
   defineAction,
   isPropertyParameter,
   kebab,
@@ -33,10 +35,9 @@ import {
   getPropertyKeys,
   toPropertyMap,
 } from "./object/objectPropertyHelpers.js";
-import { isStruct } from "./properties/PropertyTypeType.js";
 
 export function defineCreateObjectAction(
-  defInput: ActionTypeUserDefinition
+  defInput: ActionTypeUserDefinition,
 ): ActionType {
   const def = cloneDefinition(defInput);
   const propertyKeys = getPropertyKeys(def.objectType);
@@ -48,40 +49,40 @@ export function defineCreateObjectAction(
   const propertyParameters = propertyKeys.filter(
     (id) =>
       isPropertyParameter(def, id, getProperty(def.objectType, id)?.type!) &&
-      !isStruct(getProperty(def.objectType, id)?.type!) &&
-      !propertiesWithDerivedDatasources.includes(id)
+      !propertiesWithDerivedDatasources.includes(id),
   );
   const parameterNames = new Set(propertyParameters);
   Object.keys(def.parameterConfiguration ?? {}).forEach((param) =>
-    parameterNames.add(param)
+    parameterNames.add(param),
   );
   const actionApiName =
     def.apiName ??
     `create-object-${kebab(
-      def.objectType.apiName.split(".").pop() ?? def.objectType.apiName
+      def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
     )}`;
   if (def.parameterOrdering) {
     validateParameterOrdering(
       def.parameterOrdering,
       parameterNames,
-      actionApiName
+      actionApiName,
     );
   }
   const parameters = createParameters(
     def,
     toPropertyMap(def.objectType),
-    parameterNames
+    parameterNames,
   );
   const mappings = Object.fromEntries(
     Object.entries(def.nonParameterMappings ?? {}).map(([id, value]) => [
       id,
       convertMappingValue(value),
-    ])
+    ]),
   );
 
   return defineAction({
     apiName: actionApiName,
     displayName: def.displayName ?? `Create ${def.objectType.displayName}`,
+    description: def.description,
     parameters,
     status: def.status ?? "active",
     entities: {
@@ -96,15 +97,10 @@ export function defineCreateObjectAction(
         addObjectRule: {
           objectTypeId: def.objectType.apiName,
           propertyValues: {
-            ...Object.fromEntries(
-              propertyParameters.map((p) => [
-                p,
-                { type: "parameterId", parameterId: p },
-              ])
-            ),
+            ...createPropertyParameterValues(def, propertyParameters),
             ...mappings,
           },
-          structFieldValues: {},
+          structFieldValues: createStructFieldValues(def, parameters),
         },
       },
     ],
@@ -115,7 +111,7 @@ export function defineCreateObjectAction(
       ? {
           validation: convertValidationRule(
             def.actionLevelValidation,
-            parameters
+            parameters,
           ),
         }
       : {}),
@@ -130,7 +126,7 @@ export function defineCreateObjectAction(
     }),
     ...(def.sections && {
       sections: Object.fromEntries(
-        def.sections.map((section) => [section.id, section])
+        def.sections.map((section) => [section.id, section]),
       ),
     }),
     ...(def.submissionMetadata && {

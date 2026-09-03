@@ -45,7 +45,7 @@ export function subSelectPropertiesUrl<
 
       return acc;
     },
-    {}
+    {},
   );
 
   return result as T;
@@ -61,7 +61,7 @@ export function subSelectProperties<
   objects: PagedBodyResponse<T>,
   urlOrProperties: URL | string[],
   includeCount: TIncludeCount,
-  excludeRid?: boolean
+  excludeRid?: boolean,
 ): TIncludeCount extends true
   ? PagedBodyResponseWithTotal<T>
   : PagedBodyResponse<T> {
@@ -102,7 +102,7 @@ export function subSelectProperties<
 
         return acc;
       },
-      {}
+      {},
     );
   });
 

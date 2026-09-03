@@ -25,6 +25,7 @@ export interface CbacBannerProps {
   onClick?: () => void;
   onDismiss?: () => void;
   className?: string;
+  isLoading?: boolean;
 }
 
 export function CbacBanner({
@@ -32,8 +33,11 @@ export function CbacBanner({
   onClick,
   onDismiss,
   className,
+  isLoading = false,
 }: CbacBannerProps): React.ReactElement {
-  const { banner } = useCbacBanner({ markingIds });
+  const { banner, isLoading: isFetchingCbacMarkings } = useCbacBanner({
+    markingIds,
+  });
   const resolved = resolveBannerDisplay(banner);
 
   return (
@@ -44,6 +48,7 @@ export function CbacBanner({
       onClick={onClick}
       onDismiss={onDismiss}
       className={className}
+      isLoading={isFetchingCbacMarkings || isLoading}
     />
   );
 }

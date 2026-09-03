@@ -28,7 +28,7 @@ export default async function makeTsupOptions(options, ourOptions) {
   const babel = (await import("esbuild-plugin-babel")).default;
 
   const packageJson = await readFile("package.json", "utf-8").then((f) =>
-    JSON.parse(f)
+    JSON.parse(f),
   );
 
   /** @type {import("tsup").Options} */
@@ -53,7 +53,7 @@ export default async function makeTsupOptions(options, ourOptions) {
     splitting: true,
     shims: true, // so we can use __dirname in both esm and cjs
     minify: false, // !options.watch,
-    onSuccess: async () => {
+    onSuccess: () => {
       // eslint-disable-next-line no-console
       console.log("👍");
     },
@@ -114,6 +114,6 @@ async function readPackageVersion(k) {
   const workspaceRoot = path.dirname(workspaceFile);
   return await readFile(
     path.join(workspaceRoot, k, "package.json"),
-    "utf-8"
+    "utf-8",
   ).then((f) => JSON.parse(f).version);
 }

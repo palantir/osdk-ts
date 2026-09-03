@@ -42,7 +42,7 @@ function SingleDateFilterInputInner({
           ? filterState.selectedValues[0]
           : undefined
         : undefined,
-    [filterState]
+    [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
 
@@ -54,7 +54,7 @@ function SingleDateFilterInputInner({
         isExcluding,
       });
     },
-    [onFilterStateChanged, isExcluding]
+    [onFilterStateChanged, isExcluding],
   );
 
   return (

@@ -32,10 +32,10 @@ export class GenericCanonicalizer extends CachingCanonicalizer<object, object> {
 
   canonicalize<T extends object>(input: T): Canonical<T>;
   canonicalize<T extends object>(
-    input: T | undefined
+    input: T | undefined,
   ): Canonical<T> | undefined;
   canonicalize<T extends object>(
-    input: T | undefined
+    input: T | undefined,
   ): Canonical<T> | undefined {
     return super.canonicalize(input as object) as Canonical<T> | undefined;
   }

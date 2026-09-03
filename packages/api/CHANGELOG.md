@@ -1,5 +1,95 @@
 # @osdk/api
 
+## 2.64.0
+
+## 2.63.0
+
+### Minor Changes
+
+- 08ba782: cipherText object edits now accept distinct, ergonomic create and update inputs — `{ plaintext }` for create, `{ plaintext, strategy? }` for update, or an existing `CipherText` to reuse — and `getEdits()` emits the backend wire shape (`{ plaintext }` or `{ ciphertext }`, the reused ciphertext's encrypted envelope).
+
+## 2.62.0
+
+## 2.61.0
+
+### Minor Changes
+
+- bdf45fa: Add experimental subscriptions for directed link changes between selected objects.
+- 34cb7e0: Type the OCR and transcription language parameters on the experimental media transformation surface as the closed enums the platform actually declares, and export the encoding types that were previously unreachable.
+
+  These four parameters were previously `string`, so this narrows a shipped public type on the `@osdk/api/unstable` entrypoint. Existing call sites holding a `string` in those positions no longer compile, and a language the pinned platform SDK does not list must be cast until the pin moves.
+
+## 2.60.0
+
+### Minor Changes
+
+- e879ad7: Bump platform SDKs and add loadOntologyDefinedDerivedProperties flag, which defaults to true
+- bbbeca8: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.75.0`, which reinstates the `streamingExecute` query endpoint as a Server-Sent Events (`text/event-stream`) stream. The experimental `executeStreamingFunction` helper is reimplemented on top of it and no longer throws: it yields each result as it arrives, flattening batched results so array-returning queries emit one element at a time.
+
+## 2.59.0
+
+### Minor Changes
+
+- 4ae6d8b: Add experimental `$EXPERIMENTAL_defaultLoadLevel` fetch arg that applies reducers and struct main values to every property without listing property IDs. Wired through the object and static-rid load paths.
+- 1aff7f4: Allow interfaces w/ no properties to filter on pk+title
+
+## 2.58.0
+
+## 2.57.0
+
+## 2.56.0
+
+### Minor Changes
+
+- 342c492: Graduate `Media.fetchFullMetadata` out of beta. It stays optional so existing external implementations of `Media` keep compiling.
+
+## 2.55.0
+
+### Minor Changes
+
+- c40b6e5: Remove the experimental `__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference` export. To upload media, pass `{ data, fileName }` directly to an Action's media parameter; the client uploads it via `uploadMedia` and links the resulting media item.
+- f27a119: Rename the experimental `__EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait` export to `transformAndWait`, and change its argument from `mediaReference: MediaReference` to `media: Media`. It is still only exported from `@osdk/api/unstable`. Callers holding a media property can now pass it straight through instead of unwrapping it with `getMediaReference()` first.
+
+## 2.54.0
+
+## 2.53.0
+
+## 2.52.0
+
+### Minor Changes
+
+- 5d92381: Reject unknown top-level keys in `aggregate()` options (e.g. a misspelled group-by key or a non-existent `$orderBy`). These were previously accepted by the type checker and silently ignored at runtime.
+- bf4580a: Add annotate, contrast, encrypt, and decrypt image operations to the experimental media transformation surface, closing parity with the platform image-operation set.
+- 9d0b21e: Surface action parameter displayName in metadata and use it for ActionForm field labels
+
+## 2.51.0
+
+### Minor Changes
+
+- b99b0bb: Fix type for casting interfaces to objects using generic types.
+
+## 2.50.0
+
+## 2.49.0
+
+## 2.48.0
+
+## 2.47.0
+
+## 2.46.0
+
+## 2.45.0
+
+### Minor Changes
+
+- db2bfa2: Add ability to pass null for struct action parameters.
+
+## 2.44.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
 ## 2.43.0
 
 ### Minor Changes

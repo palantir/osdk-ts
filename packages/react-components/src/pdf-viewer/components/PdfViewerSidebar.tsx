@@ -23,7 +23,7 @@ import {
   THUMBNAIL_GAP,
   THUMBNAIL_SCALE,
 } from "../constants.js";
-import type { SidebarMode } from "../types.js";
+import type { SidebarMode } from "../PdfViewerApi.js";
 import { PdfViewerSidebarHeader } from "./PdfViewerSidebarHeader.js";
 import { PdfViewerThumbnail } from "./PdfViewerThumbnail.js";
 
@@ -62,7 +62,7 @@ export function PdfViewerSidebar({
     function syncActiveThumbnail() {
       virtualizer.scrollToIndex(currentPage - 1, { align: "auto" });
     },
-    [currentPage, virtualizer]
+    [currentPage, virtualizer],
   );
 
   return (

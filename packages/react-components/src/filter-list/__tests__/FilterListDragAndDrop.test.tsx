@@ -54,12 +54,12 @@ function createDefinitions() {
 }
 
 function createFilterStates(
-  definitions: ReturnType<typeof createPropertyFilterDef>[]
+  definitions: ReturnType<typeof createPropertyFilterDef>[],
 ): Map<string, FilterState> {
   const map = new Map<string, FilterState>();
   for (const def of definitions) {
-    if (def.filterState) {
-      map.set(getFilterKey(def), def.filterState);
+    if (def.defaultFilterState) {
+      map.set(getFilterKey(def), def.defaultFilterState);
     }
   }
   return map;
@@ -78,7 +78,7 @@ describe("FilterList drag and drop", () => {
         renderInput={stubRenderInput}
         getFilterKey={getFilterKey}
         getFilterLabel={getFilterLabel}
-      />
+      />,
     );
 
     const dragHandles = screen.queryAllByLabelText(/Reorder/u);
@@ -98,7 +98,7 @@ describe("FilterList drag and drop", () => {
         renderInput={stubRenderInput}
         getFilterKey={getFilterKey}
         getFilterLabel={getFilterLabel}
-      />
+      />,
     );
 
     const dragHandles = await screen.findAllByLabelText(/Reorder/u);
@@ -118,7 +118,7 @@ describe("FilterList drag and drop", () => {
         renderInput={stubRenderInput}
         getFilterKey={getFilterKey}
         getFilterLabel={getFilterLabel}
-      />
+      />,
     );
 
     const dragHandles = await screen.findAllByLabelText(/Reorder/u);
@@ -151,7 +151,7 @@ describe("FilterList drag and drop", () => {
         renderInput={stubRenderInput}
         getFilterKey={getFilterKey}
         getFilterLabel={getFilterLabel}
-      />
+      />,
     );
 
     expect(await screen.findByLabelText("Reorder Full Name")).toBeDefined();
@@ -161,7 +161,7 @@ describe("FilterList drag and drop", () => {
   it("preserves filter state references after providing reorder callback", async () => {
     const definitions = createDefinitions();
     const filterStates = createFilterStates(definitions);
-    const stateRef = definitions[0].filterState;
+    const stateRef = definitions[0].defaultFilterState;
 
     render(
       <FilterListContent
@@ -172,7 +172,7 @@ describe("FilterList drag and drop", () => {
         renderInput={stubRenderInput}
         getFilterKey={getFilterKey}
         getFilterLabel={getFilterLabel}
-      />
+      />,
     );
 
     await screen.findAllByLabelText(/Reorder/u);
@@ -190,7 +190,7 @@ describe("FilterList drag and drop", () => {
         renderInput={stubRenderInput}
         getFilterKey={getFilterKey}
         getFilterLabel={getFilterLabel}
-      />
+      />,
     );
 
     const dragHandles = screen.queryAllByLabelText(/Reorder/u);
@@ -212,7 +212,7 @@ describe("FilterList drag and drop", () => {
         renderInput={stubRenderInput}
         getFilterKey={getFilterKey}
         getFilterLabel={getFilterLabel}
-      />
+      />,
     );
 
     await screen.findAllByLabelText(/Reorder/u);

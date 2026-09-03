@@ -34,7 +34,7 @@ import type {
 import { convertDataConstraintToDataConstraints } from "./convertDataConstraintToDataConstraints.js";
 
 export function dataConstraintToPropertyTypeDataConstraint(
-  dc: DataConstraint
+  dc: DataConstraint,
 ): PropertyTypeDataConstraints {
   switch (dc.type) {
     case "array":
@@ -85,8 +85,8 @@ export function dataConstraintToPropertyTypeDataConstraint(
               ([field, constraint]) => [
                 field,
                 convertDataConstraintToDataConstraints(constraint),
-              ]
-            )
+              ],
+            ),
           ),
         },
       } as PropertyTypeDataConstraints_struct;

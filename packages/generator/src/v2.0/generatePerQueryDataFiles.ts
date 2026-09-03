@@ -33,6 +33,7 @@ import { getInterfaceTypeApiNamesFromQuery } from "../shared/getInterfaceTypeApi
 import { getObjectImports } from "../shared/getObjectImports.js";
 import { getObjectTypeApiNamesFromQuery } from "../shared/getObjectTypeApiNamesFromQuery.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
+import { escapeJsDocText } from "../util/escapeJsDocText.js";
 import { stringify } from "../util/stringify.js";
 import { formatTs } from "../util/test/formatTs.js";
 import { getDescriptionIfPresent } from "./getDescriptionIfPresent.js";
@@ -213,14 +214,14 @@ async function generateV2QueryFile(
             ${getLineFor__OsdkTargetType(ontology, query.output)}
             };
             signature: ${query.shortApiName}.Signature;
-        }, 
+        },
         ${
       stringify(baseProps, {
         "description": () => undefined,
         "displayName": () => undefined,
         "rid": () => undefined,
       })
-    }, 
+    },
           osdkMetadata: typeof $osdkMetadata;
               }
 
@@ -277,7 +278,7 @@ export function queryParamJsDoc(
 
   if (param.description) {
     if (param.description) {
-      ret += ` *   description: ${param.description}\n`;
+      ret += ` *   description: ${escapeJsDocText(param.description)}\n`;
     }
   } else {
     ret += ` * (no ontology metadata)\n`;
@@ -359,7 +360,7 @@ export function getQueryParamType(
         input.threeDimensionalAggregation.valueType.keyType === "range"
           ? `Query${type}.RangeKey<"${input.threeDimensionalAggregation.valueType.keySubtype}">`
           : `"${input.threeDimensionalAggregation.valueType.keyType}"`
-      }, 
+      },
         "${input.threeDimensionalAggregation.valueType.valueType}">`;
       break;
     case "object":

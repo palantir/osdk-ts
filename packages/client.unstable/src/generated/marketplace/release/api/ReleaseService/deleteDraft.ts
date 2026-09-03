@@ -38,13 +38,13 @@ export async function deleteDraft(
   ctx: ConjureContext,
   releaseRid: _api_ReleaseRid,
   compassProjectRid: _api_CompassProjectRid,
-  request: _release_api_DeleteDraftRequest
+  request: _release_api_DeleteDraftRequest,
 ): Promise<_release_api_DeleteDraftResponse> {
   return conjureFetch(
     ctx,
     `/releases/delete/${releaseRid}`,
     "DELETE",
     request,
-    { compassProjectRid }
+    { compassProjectRid },
   );
 }

@@ -34,6 +34,9 @@
   --osdk-table-row-border-color-active: var(--osdk-intent-primary-rest);
 
   /* Table Cell */
+  /* `--osdk-table-cell-bg` is intentionally NOT declared here. Its default is
+     `inherit` (paint the row's background), and that can only be expressed as
+     the var() fallback in TableCell.module.css. */
   --osdk-table-cell-padding: 0 calc(var(--osdk-surface-spacing) * 2);
   --osdk-table-cell-fontSize: var(--osdk-typography-size-body-medium);
   --osdk-table-cell-color: var(--osdk-typography-color-default-rest);
@@ -47,9 +50,7 @@
   --osdk-table-header-menu-color-active: var(
     --osdk-typography-color-default-rest
   );
-  --osdk-table-header-menu-icon-color: var(
-    --osdk-table-header-menu-color
-  );
+  --osdk-table-header-menu-icon-color: var(--osdk-table-header-menu-color);
   --osdk-table-header-menu-bg-hover: var(
     --osdk-surface-background-color-default-hover
   );

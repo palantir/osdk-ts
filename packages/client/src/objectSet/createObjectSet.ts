@@ -77,13 +77,13 @@ const a: WireObjectSet = {
   },
 };
 function isObjectTypeDefinition(
-  def: ObjectOrInterfaceDefinition
+  def: ObjectOrInterfaceDefinition,
 ): def is ObjectTypeDefinition {
   return def.type === "object";
 }
 
 export function isObjectSet(
-  o: object
+  o: object,
 ): o is ObjectSet<ObjectOrInterfaceDefinition> {
   return (
     o != null &&
@@ -93,7 +93,7 @@ export function isObjectSet(
 }
 
 export function getWireObjectSet(
-  objectSet: ObjectSet<any> | MinimalObjectSet<any>
+  objectSet: ObjectSet<any> | MinimalObjectSet<any>,
 ): WireObjectSet {
   return objectSetDefinitions.get(objectSet)!;
 }
@@ -105,7 +105,7 @@ export const objectSetDefinitions = new WeakMap<any, WireObjectSet>();
 export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   objectType: Q,
   clientCtx: MinimalClient,
-  objectSet: WireObjectSet = resolveBaseObjectSetType(objectType)
+  objectSet: WireObjectSet = resolveBaseObjectSetType(objectType),
 ): ObjectSet<Q> {
   // `aggregate<Q, any>` is an instantiation expression; binding it inline as
   // `(aggregate<Q, any>).bind(...)` is valid TS but trips oxfmt's parser, so the
@@ -118,7 +118,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         finalMethodCall: "aggregate",
       })),
       objectType,
-      objectSet
+      objectSet,
     ) as ObjectSet<Q>["aggregate"],
 
     fetchPage: fetchPageInternal.bind(
@@ -127,7 +127,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         finalMethodCall: "fetchPage",
       })),
       objectType,
-      objectSet
+      objectSet,
     ) as ObjectSet<Q>["fetchPage"],
 
     fetchPageWithErrors: fetchPageWithErrorsInternal.bind(
@@ -136,7 +136,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         finalMethodCall: "fetchPageWithErrors",
       })),
       objectType,
-      objectSet
+      objectSet,
     ) as ObjectSet<Q>["fetchPageWithErrors"],
 
     where: (clause) => {
@@ -205,7 +205,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       T extends boolean = false,
       ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = never,
     >(
-      args?: AsyncIterArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>
+      args?: AsyncIterArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
     ): AsyncIterableIterator<
       SingleOsdkResult<Q, L, R, S, {}, T, ORDER_BY_OPTIONS>
     > {
@@ -218,7 +218,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
             })),
             objectType,
             objectSet,
-            { ...args, $pageSize: 10000, $nextPageToken, $snapshot: true }
+            { ...args, $pageSize: 10000, $nextPageToken, $snapshot: true },
           );
         $nextPageToken = result.nextPageToken;
 
@@ -231,7 +231,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     fetchOne: (isObjectTypeDefinition(objectType)
       ? async <A extends SelectArg<Q>>(
           primaryKey: PrimaryKeyType<Q>,
-          options: A
+          options: A,
         ) => {
           return (await fetchSingle(
             augmentRequestContext(clientCtx, (_) => ({
@@ -239,7 +239,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
             })),
             objectType,
             options,
-            await createWithPk(clientCtx, objectType, objectSet, primaryKey)
+            await createWithPk(clientCtx, objectType, objectSet, primaryKey),
           )) as Osdk<Q>;
         }
       : undefined) as ObjectSet<Q>["fetchOne"],
@@ -249,7 +249,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           primaryKey: Q extends ObjectTypeDefinition
             ? PrimaryKeyType<Q>
             : never,
-          options: A
+          options: A,
         ) => {
           return (await fetchSingleWithErrors(
             augmentRequestContext(clientCtx, (_) => ({
@@ -257,18 +257,21 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
             })),
             objectType,
             options,
-            await createWithPk(clientCtx, objectType, objectSet, primaryKey)
+            await createWithPk(clientCtx, objectType, objectSet, primaryKey),
           )) as Result<Osdk<Q>>;
         }
       : undefined) as ObjectSet<Q>["fetchOneWithErrors"],
 
     subscribe: (listener, opts) => {
-      const pendingSubscribe = clientCtx.subscribeFn(
-        objectType,
-        objectSet,
-        listener as ObjectSetSubscription.Listener<Q, any>,
-        opts?.properties,
-        opts?.includeRid
+      const pendingSubscribe = import("./ObjectSetListenerWebsocket.js").then(
+        ({ ObjectSetListenerWebsocket }) =>
+          ObjectSetListenerWebsocket.getInstance(clientCtx).subscribe(
+            objectType,
+            objectSet,
+            listener as ObjectSetSubscription.Listener<Q, any>,
+            opts?.properties,
+            opts?.includeRid,
+          ),
       );
 
       return { unsubscribe: async () => (await pendingSubscribe)() };
@@ -284,8 +287,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
             objectType,
             { type: "methodInput" },
             definitionMap,
-            true
-          )
+            true,
+          ),
         );
         derivedProperties[key] = definitionMap.get(derivedPropertyDefinition)!;
       }
@@ -298,13 +301,13 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
 
     narrowToType: (
-      objectTypeDef: ObjectTypeDefinition | InterfaceDefinition
+      objectTypeDef: ObjectTypeDefinition | InterfaceDefinition,
     ) => {
       const existingMapping =
         clientCtx.narrowTypeInterfaceOrObjectMapping[objectTypeDef.apiName];
       invariant(
         !existingMapping || existingMapping === objectTypeDef.type,
-        `${objectTypeDef.apiName} was previously used as an ${existingMapping}, but now used as a ${objectTypeDef.type}.`
+        `${objectTypeDef.apiName} was previously used as an ${existingMapping}, but now used as a ${objectTypeDef.type}.`,
       );
       clientCtx.narrowTypeInterfaceOrObjectMapping[objectTypeDef.apiName] =
         objectTypeDef.type;
@@ -319,7 +322,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     async *experimental_asyncIterLinks<
       LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
     >(
-      links: LINK_TYPE_API_NAME[]
+      links: LINK_TYPE_API_NAME[],
     ): AsyncIterableIterator<
       MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>
     > {
@@ -331,7 +334,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           })),
           objectType,
           objectSet,
-          links
+          links,
+          $nextPageToken,
         );
         $nextPageToken = result.nextPageToken;
 
@@ -361,7 +365,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
               type: "interfaceLinkSearchAround",
               objectSet,
               interfaceLink: link,
-            }
+            },
       );
     };
   }
@@ -377,7 +381,7 @@ async function createWithPk(
   clientCtx: MinimalClient,
   objectType: ObjectTypeDefinition,
   objectSet: WireObjectSet,
-  primaryKey: PrimaryKeyType<ObjectTypeDefinition>
+  primaryKey: PrimaryKeyType<ObjectTypeDefinition>,
 ) {
   const resolved = await extractObjectOrInterfaceType(clientCtx, objectSet);
   const targetApiName =

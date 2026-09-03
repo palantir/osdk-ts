@@ -33,7 +33,7 @@ describe("FilterPopover", () => {
     render(
       <FilterPopover label="Sites" summary="3 selected" isActive={true}>
         <div>popup body</div>
-      </FilterPopover>
+      </FilterPopover>,
     );
     expect(screen.getByText("Sites")).toBeDefined();
     expect(screen.getByText("3 selected")).toBeDefined();
@@ -48,7 +48,7 @@ describe("FilterPopover", () => {
         placeholder="Search…"
       >
         <div>popup body</div>
-      </FilterPopover>
+      </FilterPopover>,
     );
     expect(screen.getByText("Search…")).toBeDefined();
   });
@@ -57,7 +57,7 @@ describe("FilterPopover", () => {
     render(
       <FilterPopover label="Sites" summary="" isActive={false}>
         <div>popup body</div>
-      </FilterPopover>
+      </FilterPopover>,
     );
     expect(screen.getByText("Any")).toBeDefined();
   });
@@ -66,7 +66,7 @@ describe("FilterPopover", () => {
     const { rerender } = render(
       <FilterPopover label="Sites" summary="" isActive={false}>
         <div>popup body</div>
-      </FilterPopover>
+      </FilterPopover>,
     );
     const trigger = screen.getByRole("button", { name: /Any/iu });
     expect(trigger.getAttribute("data-active")).toBeNull();
@@ -74,10 +74,10 @@ describe("FilterPopover", () => {
     rerender(
       <FilterPopover label="Sites" summary="X" isActive={true}>
         <div>popup body</div>
-      </FilterPopover>
+      </FilterPopover>,
     );
     expect(
-      screen.getByRole("button", { name: /X/iu }).getAttribute("data-active")
+      screen.getByRole("button", { name: /X/iu }).getAttribute("data-active"),
     ).toBe("true");
   });
 
@@ -85,7 +85,7 @@ describe("FilterPopover", () => {
     render(
       <FilterPopover label="Sites" summary="" isActive={false}>
         <div data-testid="popup-body">popup body</div>
-      </FilterPopover>
+      </FilterPopover>,
     );
     expect(screen.queryByTestId("popup-body")).toBeNull();
 
@@ -97,7 +97,7 @@ describe("FilterPopover", () => {
     render(
       <FilterPopover label="Sites" summary="" isActive={false}>
         <div data-testid="popup-body">popup body</div>
-      </FilterPopover>
+      </FilterPopover>,
     );
     const trigger = screen.getByRole("button", { name: /Any/iu });
     fireEvent.click(trigger);
@@ -114,10 +114,10 @@ describe("FilterPopover", () => {
     const { rerender } = render(
       <FilterPopover label="Sites" summary="" isActive={false}>
         <div>popup body</div>
-      </FilterPopover>
+      </FilterPopover>,
     );
     expect(
-      screen.queryByRole("button", { name: /Remove Sites filter/iu })
+      screen.queryByRole("button", { name: /Remove Sites filter/iu }),
     ).toBeNull();
 
     rerender(
@@ -128,7 +128,7 @@ describe("FilterPopover", () => {
         onRemove={onRemove}
       >
         <div>popup body</div>
-      </FilterPopover>
+      </FilterPopover>,
     );
     const removeButton = screen.getByRole("button", {
       name: /Remove Sites filter/iu,
@@ -146,7 +146,7 @@ describe("FilterPopover", () => {
         labelPlacement="top"
       >
         <div>popup body</div>
-      </FilterPopover>
+      </FilterPopover>,
     );
     const wrapper = container.firstElementChild;
     expect(wrapper?.className).toMatch(/fieldGroupTop/u);
@@ -156,7 +156,7 @@ describe("FilterPopover", () => {
     const { container } = render(
       <FilterPopover label="Sites" summary="" isActive={false}>
         <div>popup body</div>
-      </FilterPopover>
+      </FilterPopover>,
     );
     const wrapper = container.firstElementChild;
     expect(wrapper?.className).not.toMatch(/fieldGroupTop/u);
@@ -171,7 +171,7 @@ describe("FilterPopover", () => {
         className="custom-wrapper"
       >
         <div>popup body</div>
-      </FilterPopover>
+      </FilterPopover>,
     );
     const wrapper = container.querySelector(".custom-wrapper");
     expect(wrapper).not.toBeNull();

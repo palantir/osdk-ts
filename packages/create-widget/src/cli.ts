@@ -25,6 +25,7 @@ import { promptOverwrite } from "./prompts/promptOverwrite.js";
 import { promptProject } from "./prompts/promptProject.js";
 import { promptSdkVersion } from "./prompts/promptSdkVersion.js";
 import { promptTemplate } from "./prompts/promptTemplate.js";
+import { promptUseOsdk } from "./prompts/promptUseOsdk.js";
 import { promptWidgetSetRid } from "./prompts/promptWidgetSetRid.js";
 import { run } from "./run.js";
 import type { SdkVersion, Template } from "./templates.js";
@@ -39,6 +40,7 @@ interface CliArgs {
   repository?: string;
   osdkPackage?: string;
   osdkRegistryUrl?: string;
+  skipOsdk?: boolean;
 }
 
 export async function cli(args: string[] = process.argv): Promise<void> {
@@ -83,11 +85,17 @@ export async function cli(args: string[] = process.argv): Promise<void> {
           .option("osdkPackage", {
             type: "string",
             describe: "OSDK package name for application",
+            conflicts: "skipOsdk",
           })
           .option("osdkRegistryUrl", {
             type: "string",
             describe: "URL for NPM registry to install OSDK package",
+            conflicts: "skipOsdk",
           })
+          .option("skipOsdk", {
+            type: "boolean",
+            describe: "Skip filling in OSDK options",
+          }),
     );
 
   const parsed: CliArgs = base.parseSync();
@@ -100,10 +108,11 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   });
   const foundryUrl: string = await promptFoundryUrl(parsed);
   const repository: string | undefined = parsed.repository;
-  const osdkPackage: string | undefined = template.requiresOsdk
+  const useOsdk: boolean = await promptUseOsdk({ ...parsed, template });
+  const osdkPackage: string | undefined = useOsdk
     ? await promptOsdkPackage(parsed)
     : undefined;
-  const osdkRegistryUrl: string | undefined = template.requiresOsdk
+  const osdkRegistryUrl: string | undefined = useOsdk
     ? await promptOsdkRegistryUrl(parsed)
     : undefined;
   const widgetSet: string = await promptWidgetSetRid(parsed);

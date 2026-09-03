@@ -37,7 +37,7 @@ export interface ChatStore {
    * change is wasteful.
    */
   setStateThrottled: (
-    next: ChatState | ((prev: ChatState) => ChatState)
+    next: ChatState | ((prev: ChatState) => ChatState),
   ) => void;
 }
 

@@ -63,7 +63,7 @@ export const CacheMetrics: React.FC<CacheMetricsProps> = ({ metrics }) => {
           {formatNumber(
             metrics.aggregates.cacheHits +
               metrics.aggregates.revalidations +
-              metrics.aggregates.deduplications
+              metrics.aggregates.deduplications,
           )}{" "}
           requests saved
         </span>

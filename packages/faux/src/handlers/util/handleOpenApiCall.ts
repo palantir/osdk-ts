@@ -34,12 +34,12 @@ export class OpenApiCallError extends Error {
       errorInstanceId: string;
       errorDescription?: string;
       parameters: Record<string, unknown>;
-    }
+    },
   ) {
     super(
       `${json.errorCode} ${json.errorName ?? "Unknown error"} ${JSON.stringify(
-        json.parameters
-      )}`
+        json.parameters,
+      )}`,
     );
     this.name = "OpenApiCallError";
   }
@@ -89,7 +89,7 @@ export type RestImpl<
       REQ_BODY,
       RESP_BODY | BaseAPIError
     >
-  >[0]
+  >[0],
 ) => RESP_BODY | Promise<RESP_BODY>;
 
 export type OpenApiCallFactory<
@@ -99,7 +99,7 @@ export type OpenApiCallFactory<
 > = (
   baseUrl: string,
   restImpl: RestImpl<URL_PARAMS, REQ_BODY, RESP_BODY>,
-  options?: RequestHandlerOptions
+  options?: RequestHandlerOptions,
 ) => HttpHandler;
 
 export type CallFactory<
@@ -108,7 +108,7 @@ export type CallFactory<
 > = (
   baseUrl: string,
   restImpl: RestImpl<URL_PARAMS, ExtractBody<X>, ExtractResponse<X>>,
-  options?: RequestHandlerOptions
+  options?: RequestHandlerOptions,
 ) => HttpHandler;
 
 export function handleOpenApiCall<
@@ -118,7 +118,7 @@ export function handleOpenApiCall<
   return (
     baseUrl: string,
     restImpl: RestImpl<N[number], ExtractBody<X>, ExtractResponse<X>>,
-    options?: RequestHandlerOptions
+    options?: RequestHandlerOptions,
   ): HttpHandler => {
     let captured: {
       method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
@@ -154,7 +154,7 @@ export function handleOpenApiCall<
       capture as any,
       ...(names.map((n) => `:${n}`) as any),
       // add a simulated blob in here in case of an upload
-      { type: "", size: 5 }
+      { type: "", size: 5 },
     );
 
     return http[
@@ -167,7 +167,7 @@ export function handleOpenApiCall<
 
           if (result instanceof Response) {
             return new HttpResponse(
-              result.body
+              result.body,
             ) as HttpResponse<DefaultBodyType>;
           }
           return HttpResponse.json(result);
@@ -178,13 +178,13 @@ export function handleOpenApiCall<
               {
                 status: e.status,
                 statusText: e.message,
-              }
+              },
             );
           }
           throw e;
         }
       }),
-      options
+      options,
     );
   };
 }

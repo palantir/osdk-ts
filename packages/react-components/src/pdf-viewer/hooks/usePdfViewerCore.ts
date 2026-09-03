@@ -23,6 +23,7 @@ import type {
 import type { RefObject } from "react";
 import { useCallback, useMemo, useRef, useState } from "react";
 
+import type { PdfSource } from "../PdfViewerApi.js";
 import type { AnnotationPortalTarget } from "./usePdfAnnotationPortals.js";
 import { usePdfAnnotationPortals } from "./usePdfAnnotationPortals.js";
 import { usePdfDocument } from "./usePdfDocument.js";
@@ -30,8 +31,8 @@ import { usePdfViewer } from "./usePdfViewer.js";
 import { usePdfViewerSync } from "./usePdfViewerSync.js";
 
 export interface UsePdfViewerCoreOptions {
-  /** PDF source — URL string or ArrayBuffer */
-  src: string | ArrayBuffer;
+  /** PDF source — URL string, ArrayBuffer, Uint8Array, or Blob */
+  src: PdfSource;
   /** Initial page number (1-indexed, default 1) */
   initialPage?: number;
   /** Initial zoom scale (default 1.0) */
@@ -99,7 +100,7 @@ export function usePdfViewerCore({
     viewerRef,
     document,
     initialScale,
-    initialPage
+    initialPage,
   );
 
   const handleScaleChange = useCallback((newScale: number) => {
@@ -126,13 +127,13 @@ export function usePdfViewerCore({
       setCurrentPage(page);
       syncScrollToPage(page);
     },
-    [syncScrollToPage]
+    [syncScrollToPage],
   );
 
   const portalTargets = usePdfAnnotationPortals(
     pdfViewerRef,
     eventBusRef,
-    document
+    document,
   );
 
   return useMemo(
@@ -166,6 +167,6 @@ export function usePdfViewerCore({
       autoSize,
       setAutoSize,
       portalTargets,
-    ]
+    ],
   );
 }

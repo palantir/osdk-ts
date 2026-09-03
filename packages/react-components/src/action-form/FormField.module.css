@@ -74,6 +74,7 @@
 .osdkFormFieldInfoPopup {
   padding: var(--osdk-form-info-popup-padding);
   background-color: var(--osdk-form-info-popup-bg);
+  color: var(--osdk-form-info-popup-color);
   border-radius: var(--osdk-surface-border-radius);
   box-shadow: var(--osdk-form-info-popup-shadow);
   max-width: var(--osdk-form-info-popup-max-width);

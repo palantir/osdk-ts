@@ -29,12 +29,12 @@ import type {
 export async function getInstallationInputs(
   ctx: ConjureContext,
   installationRid: _api_BlockSetInstallationRid,
-  request: _api_experimental_GetInstallationInputsRequest
+  request: _api_experimental_GetInstallationInputsRequest,
 ): Promise<_api_experimental_GetInstallationInputsResponse> {
   return conjureFetch(
     ctx,
     `/experimental/installations/${installationRid}/inputs`,
     "POST",
-    request
+    request,
   );
 }

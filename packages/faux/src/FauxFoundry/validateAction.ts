@@ -77,7 +77,7 @@ const NUMERIC_LITERAL_BOUNDS: Record<
 export function validateAction(
   payload: ApplyActionRequestV2 | BatchApplyActionRequestItem,
   def: ActionTypeV2,
-  dataStore: FauxDataStore
+  dataStore: FauxDataStore,
 ): ValidateActionResponseV2 {
   const ret: ValidateActionResponseV2 = {
     parameters: {},
@@ -100,7 +100,7 @@ function validateActionParameterType(
   value: unknown,
   ret: ValidateActionResponseV2,
   paramKey: string,
-  dataStore: FauxDataStore
+  dataStore: FauxDataStore,
 ) {
   if (paramDef.required && value == null) {
     ret.result = "INVALID";
@@ -137,7 +137,7 @@ function validateActionParameterType(
           item,
           ret,
           paramKey,
-          dataStore
+          dataStore,
         );
       }
       return;
@@ -251,10 +251,19 @@ function validateActionParameterType(
 
       for (const { name, fieldType, required } of dataType.fields) {
         const fieldValue = (value as Record<string, unknown>)[name];
-        if (
-          (required && fieldValue == null) ||
-          !matchesOntologyDataType(fieldType, fieldValue)
-        ) {
+        // A non-required field may be omitted or explicitly null; only run the
+        // type check when a value is actually present.
+        if (fieldValue == null) {
+          if (required) {
+            ret.result = "INVALID";
+            ret.parameters[paramKey] = {
+              ...baseParam,
+            };
+            return;
+          }
+          continue;
+        }
+        if (!matchesOntologyDataType(fieldType, fieldValue)) {
           ret.result = "INVALID";
           ret.parameters[paramKey] = {
             ...baseParam,
@@ -305,7 +314,7 @@ function validateActionParameterType(
 
 export function matchesOntologyDataType(
   odt: OntologyDataType,
-  value: unknown
+  value: unknown,
 ): boolean {
   switch (odt.type) {
     case "any":
@@ -354,7 +363,7 @@ export function matchesOntologyDataType(
       );
     case "map":
       throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`
+        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
       );
     case "marking":
       return typeof value === "string";
@@ -370,7 +379,7 @@ export function matchesOntologyDataType(
       );
     case "set":
       throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`
+        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
       );
     case "short":
       return (
@@ -381,18 +390,18 @@ export function matchesOntologyDataType(
       return typeof value === "string";
     case "struct":
       throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`
+        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
       );
     case "timestamp":
       return isValidTimestampString(value);
     case "unsupported":
       throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`
+        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
       );
     default:
       const _assertNever = odt;
       throw new Error(
-        `matchesOntologyDataType: ${(odt as any).type} not implemented yet.`
+        `matchesOntologyDataType: ${(odt as any).type} not implemented yet.`,
       );
   }
 }
@@ -439,7 +448,7 @@ function isPoint(obj: any): obj is GeoJSON.Point {
 
 function isInBounds(
   value: number,
-  bounds: { minimum: number; maximum: number }
+  bounds: { minimum: number; maximum: number },
 ) {
   return bounds.minimum <= value && value <= bounds.maximum;
 }
@@ -487,7 +496,7 @@ function isValidCipherText(value: unknown): boolean {
 function isValidCipherAffix(
   parts: string[],
   affix: "BELLASO" | "CIPHER",
-  prefixOnly: boolean = false
+  prefixOnly: boolean = false,
 ): boolean {
   const totalParts = prefixOnly ? 3 : 4;
 

@@ -60,12 +60,12 @@ type ObjectLinkMapping = Record<
 let cachedAllOntologies: LoadAllOntologiesResponse | undefined;
 async function getOntologyVersionForRid(
   ctx: ConjureContext,
-  ontologyRid: string
+  ontologyRid: string,
 ) {
   cachedAllOntologies ??= await loadAllOntologies(ctx, {});
   invariant(
     cachedAllOntologies.ontologies[ontologyRid],
-    "ontology should be loaded"
+    "ontology should be loaded",
   );
 
   return cachedAllOntologies.ontologies[ontologyRid].currentOntologyVersion;
@@ -103,6 +103,8 @@ export class MetadataClient {
     getLinkMapping: () => Promise<ObjectLinkMapping>;
     getRid: () => string;
     getApiName: () => Promise<string | null | undefined>;
+    // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   }> = strongMemoAsync(async (rid: string) => {
     return Promise.resolve({
       getPropertyMapping: this.#objectPropertyMapping.bind(this, rid),
@@ -145,7 +147,7 @@ export class MetadataClient {
       const helper = (
         { apiName }: LinkTypeMetadata,
         linkSide: "SOURCE" | "TARGET",
-        otherObjectType: string
+        otherObjectType: string,
       ) => {
         if (apiName) {
           ret[apiName] = {
@@ -226,34 +228,34 @@ export class MetadataClient {
     const entities = await bulkLoadOntologyEntities(this.#ctx, undefined, body);
     invariant(
       entities.objectTypes[0]?.objectType,
-      "object type should be loaded"
+      "object type should be loaded",
     );
     return entities.objectTypes[0].objectType;
   });
 
   ontologyVersion: (key: string) => Promise<string> = strongMemoAsync(
     async (_: string) =>
-      getOntologyVersionForRid(this.#ctx, await this.#client.ontologyRid)
+      getOntologyVersionForRid(this.#ctx, await this.#client.ontologyRid),
   );
 }
 
 export const metadataCacheClient: (
-  key: MinimalClient
+  key: MinimalClient,
 ) => Promise<MetadataClient> = weakMemoAsync((client: MinimalClient) =>
-  Promise.resolve(new MetadataClient(client))
+  Promise.resolve(new MetadataClient(client)),
 );
 
 function createObjectPropertyMapping(
-  conjureOT: ObjectType
+  conjureOT: ObjectType,
 ): ObjectPropertyMapping {
   invariant(
     conjureOT.primaryKeys.length === 1,
-    `only one primary key supported, got ${conjureOT.primaryKeys.length}`
+    `only one primary key supported, got ${conjureOT.primaryKeys.length}`,
   );
   const pkRid = conjureOT.primaryKeys[0];
 
   const pkProperty = Object.values(conjureOT.propertyTypes).find(
-    (a) => a.rid === pkRid
+    (a) => a.rid === pkRid,
   );
   if (!pkProperty) {
     throw new Error(`Could not find PK property by rid: ${pkRid}`);
@@ -262,13 +264,13 @@ function createObjectPropertyMapping(
   const propertyIdToApiNameMapping: Record<string, string> = Object.fromEntries(
     Object.values(conjureOT.propertyTypes).map((property) => {
       return [property.id, property.apiName!];
-    })
+    }),
   );
 
   const propertyApiNameToIdMapping: Record<string, string> = Object.fromEntries(
     Object.values(conjureOT.propertyTypes).map((property) => {
       return [property.apiName!, property.id];
-    })
+    }),
   );
 
   return {

@@ -19,7 +19,10 @@ import type {
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
-import type { ApplyModifiersArg } from "../ontology/PropertyModifiers.js";
+import type {
+  ApplyModifiersArg,
+  PropertyModifierValue,
+} from "../ontology/PropertyModifiers.js";
 
 export type NullabilityAdherence = false | "throw" | "drop";
 export namespace NullabilityAdherence {
@@ -82,6 +85,7 @@ export interface SelectArg<
   $select?: readonly L[];
   $includeRid?: R;
   $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
+  $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
 }
 
 export interface OrderByArg<
@@ -111,6 +115,8 @@ export interface FetchPageArgs<
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {},
   PROPERTY_SECURITIES extends boolean = false,
   MODIFIERS extends ApplyModifiersArg<Q> = {},
+  DEFAULT_LOAD_LEVEL extends PropertyModifierValue | undefined =
+    PropertyModifierValue,
 > extends AsyncIterArgs<
   Q,
   K,
@@ -127,6 +133,14 @@ export interface FetchPageArgs<
   $pageSize?: number;
   $applyModifiers?: ApplyModifiersArg<Q> &
     MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
+  /**
+   * Best-effort load level applied to every property without listing them:
+   * reducers and struct main values where defined, other properties unchanged.
+   * A per-property `$applyModifiers` entry wins.
+   *
+   * @experimental
+   */
+  $EXPERIMENTAL_defaultLoadLevel?: DEFAULT_LOAD_LEVEL;
   /**
    * Ensures paging consistency by freezing the view at the time of query to prevent duplicate or missing items. Setting $snapshot to false ensures that you will always get the latest results.
    * @default false

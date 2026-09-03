@@ -33,7 +33,7 @@ import type {
  */
 export async function install(
   ctx: ConjureContext,
-  request: _api_experimental_InstallRequest
+  request: _api_experimental_InstallRequest,
 ): Promise<_api_experimental_InstallResponse> {
   return conjureFetch(ctx, `/experimental/installations`, "POST", request);
 }

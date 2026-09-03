@@ -89,7 +89,7 @@ const basePropDefs = {
         rawObj[def.primaryKeyApiName] !== update[def.primaryKeyApiName]
       ) {
         throw new Error(
-          `Cannot update ${def.apiName} object with differing primary key values `
+          `Cannot update ${def.apiName} object with differing primary key values `,
         );
       }
 
@@ -106,7 +106,7 @@ const basePropDefs = {
       const rawObj = this[UnderlyingOsdkObject];
       return createObjectSpecifierFromPrimaryKey(
         this[ObjectDefRef],
-        rawObj.$primaryKey
+        rawObj.$primaryKey,
       );
     },
     enumerable: true,
@@ -129,7 +129,7 @@ const basePropDefs = {
     value(
       this: ObjectHolder,
       propertyApiName: string,
-      options?: FormatPropertyOptions
+      options?: FormatPropertyOptions,
     ): string | undefined {
       const rawObj = this[UnderlyingOsdkObject] as SimpleOsdkProperties;
       const def = this[ObjectDefRef];
@@ -139,7 +139,7 @@ const basePropDefs = {
         propertyValue,
         def.properties[propertyApiName],
         rawObj,
-        options
+        options,
       );
     },
     enumerable: false,
@@ -157,13 +157,13 @@ export function createOsdkObject(
   objectDef: FetchedObjectTypeDefinition,
   simpleOsdkProperties: SimpleOsdkProperties,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata = {},
-  wirePropertySecurities: PropertySecurities[] | undefined = []
+  wirePropertySecurities: PropertySecurities[] | undefined = [],
 ): ObjectHolder {
   const { parsedObject, clientPropertySecurities } = parseWhenSecuritiesLoaded(
     wirePropertySecurities,
     simpleOsdkProperties,
     objectDef,
-    derivedPropertyTypeByName
+    derivedPropertyTypeByName,
   );
 
   // updates the object's "hidden class/map".
@@ -193,14 +193,14 @@ export function createOsdkObject(
         client,
         objectDef,
         rawObj,
-        propKey
+        propKey,
       );
     } else if (propKey in derivedPropertyTypeByName) {
       rawObj[propKey] = modifyRdpProperties(
         client,
         derivedPropertyTypeByName,
         rawObj[propKey],
-        propKey
+        propKey,
       );
     }
   }
@@ -212,7 +212,7 @@ function modifyRdpProperties(
   client: MinimalClient,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
   rawValue: any,
-  propKey: string
+  propKey: string,
 ): any {
   if (
     derivedPropertyTypeByName[propKey].definition.type === "selection" &&
@@ -223,7 +223,7 @@ function modifyRdpProperties(
       Number.isSafeInteger(num),
       "Count aggregation for derived property " +
         propKey +
-        " returned a value larger than safe integer."
+        " returned a value larger than safe integer.",
     );
     return num;
   } // Selected or collected properties need to be deserialized specially when constructed with RDP
@@ -233,7 +233,7 @@ function modifyRdpProperties(
     typeof derivedPropertyTypeByName[propKey].selectedOrCollectedPropertyType
       .type === "string" &&
     specialPropertyTypes.has(
-      derivedPropertyTypeByName[propKey].selectedOrCollectedPropertyType.type
+      derivedPropertyTypeByName[propKey].selectedOrCollectedPropertyType.type,
     )
   ) {
     switch (
@@ -242,19 +242,19 @@ function modifyRdpProperties(
       case "attachment":
         if (Array.isArray(rawValue)) {
           return rawValue.map((a) =>
-            hydrateAttachmentFromRidInternal(client, a.rid)
+            hydrateAttachmentFromRidInternal(client, a.rid),
           );
         } else {
           return hydrateAttachmentFromRidInternal(
             client,
-            (rawValue as Attachment).rid
+            (rawValue as Attachment).rid,
           );
         }
         break;
       default:
         invariant(
           false,
-          "Derived property aggregations for Timeseries and Media are not supported"
+          "Derived property aggregations for Timeseries and Media are not supported",
         );
     }
   }
@@ -265,7 +265,7 @@ function createSpecialProperty(
   client: MinimalClient,
   objectDef: FetchedObjectTypeDefinition,
   rawObject: ObjectHolder,
-  p: (keyof typeof rawObject & string) | symbol
+  p: (keyof typeof rawObject & string) | symbol,
 ) {
   const rawValue = rawObject[p as any];
   const propDef = objectDef.properties[p as any];
@@ -273,18 +273,18 @@ function createSpecialProperty(
     invariant(
       propDef != null &&
         typeof propDef.type === "string" &&
-        specialPropertyTypes.has(propDef.type)
+        specialPropertyTypes.has(propDef.type),
     );
   }
   if (propDef.type === "attachment") {
     if (Array.isArray(rawValue)) {
       return rawValue.map((a) =>
-        hydrateAttachmentFromRidInternal(client, a.rid)
+        hydrateAttachmentFromRidInternal(client, a.rid),
       );
     }
     return hydrateAttachmentFromRidInternal(
       client,
-      (rawValue as Attachment).rid
+      (rawValue as Attachment).rid,
     );
   }
   if (propDef.type === "cipherText") {
@@ -293,6 +293,7 @@ function createSpecialProperty(
       objectApiName: objectDef.apiName,
       primaryKey: rawObject[objectDef.primaryKeyApiName as string],
       propertyName: p as string,
+      value: rawValue as string,
     });
   }
   if (
@@ -310,7 +311,7 @@ function createSpecialProperty(
       client,
       objectDef.apiName,
       rawObject[objectDef.primaryKeyApiName as string],
-      p as string
+      p as string,
     );
   }
 
@@ -328,7 +329,7 @@ function createSpecialProperty(
               coordinates: (rawValue as ReferenceValue).position,
             },
           }
-        : undefined
+        : undefined,
     );
   }
   if (propDef.type === "mediaReference") {
@@ -346,7 +347,7 @@ function parseWhenSecuritiesLoaded(
   wirePropertySecurities: PropertySecurities[] | undefined,
   rawObject: SimpleOsdkProperties,
   objectDef: FetchedObjectTypeDefinition,
-  derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata = {}
+  derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata = {},
 ): {
   parsedObject: SimpleOsdkProperties;
   clientPropertySecurities:
@@ -379,23 +380,23 @@ function parseWhenSecuritiesLoaded(
               spv != null &&
               "value" in spv &&
               "propertySecurityIndex" in spv,
-            "Expected destructured secured property value object in array"
+            "Expected destructured secured property value object in array",
           );
           const securedValue = spv as SecuredPropertyValue;
           newVal.push(securedValue.value);
           const securityIndex = securedValue.propertySecurityIndex;
           invariant(
             securityIndex != null,
-            "Expected property security index to be defined"
+            "Expected property security index to be defined",
           );
           invariant(
             securityIndex < wirePropertySecurities.length,
-            "Expected property security index to be within bounds"
+            "Expected property security index to be within bounds",
           );
           newSecurities.push(
             wirePropertySecurities[securityIndex].disjunction.map(
-              wireToClientPropertySecurities
-            )
+              wireToClientPropertySecurities,
+            ),
           );
         });
         parsedObject[propKey] = newVal;
@@ -413,11 +414,11 @@ function parseWhenSecuritiesLoaded(
         const securityIndex = securedValue.propertySecurityIndex;
         invariant(
           securityIndex != null,
-          "Expected property security index to be defined"
+          "Expected property security index to be defined",
         );
         invariant(
           securityIndex < wirePropertySecurities.length,
-          "Expected property security index to be within bounds"
+          "Expected property security index to be within bounds",
         );
         clientPropertySecurities[propKey] = wirePropertySecurities[
           securityIndex
@@ -433,7 +434,7 @@ function parseWhenSecuritiesLoaded(
 }
 
 function wireToClientPropertySecurities(
-  propertySecurity: WirePropertySecurity
+  propertySecurity: WirePropertySecurity,
 ): PropertySecurity {
   switch (propertySecurity.type) {
     case "propertyMarkingSummary":

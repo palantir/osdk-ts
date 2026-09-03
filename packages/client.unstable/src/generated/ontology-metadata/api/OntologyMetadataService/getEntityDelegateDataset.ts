@@ -26,7 +26,7 @@ import type {
  */
 export async function getEntityDelegateDataset(
   ctx: ConjureContext,
-  request: _api_GetEntityDelegateDatasetRequest
+  request: _api_GetEntityDelegateDatasetRequest,
 ): Promise<_api_GetEntityDelegateDatasetResponse> {
   return conjureFetch(ctx, `/ontology/entityDelegateDataset`, "POST", request);
 }

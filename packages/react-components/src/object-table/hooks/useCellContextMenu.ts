@@ -23,11 +23,11 @@ export interface PopoverPosition {
   width: number;
 }
 
-interface UseCellContextMenuProps {
+export interface UseCellContextMenuProps {
   tdRef: RefObject<HTMLTableCellElement>;
 }
 
-interface UseCellContextMenuResults {
+export interface UseCellContextMenuResult {
   isContextMenuOpen: boolean;
   handleOpenContextMenu: MouseEventHandler<HTMLTableCellElement>;
   handleCloseContextMenu: () => void;
@@ -36,7 +36,7 @@ interface UseCellContextMenuResults {
 
 export const useCellContextMenu = ({
   tdRef,
-}: UseCellContextMenuProps): UseCellContextMenuResults => {
+}: UseCellContextMenuProps): UseCellContextMenuResult => {
   const [popoverPosition, setPopoverPosition] =
     useState<PopoverPosition | null>(null);
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
@@ -57,7 +57,7 @@ export const useCellContextMenu = ({
         setIsContextMenuOpen(true);
       }
     },
-    [tdRef]
+    [tdRef],
   );
 
   const handleCloseContextMenu = useCallback(() => {

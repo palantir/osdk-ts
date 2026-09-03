@@ -39,7 +39,7 @@ import type {
  */
 export async function loadEntityMetadata(
   ctx: ConjureContext,
-  request: _api_entitymetadata_LoadEntityMetadataRequest
+  request: _api_entitymetadata_LoadEntityMetadataRequest,
 ): Promise<_api_entitymetadata_LoadEntityMetadataResponse> {
   return conjureFetch(ctx, `/entityMetadata/load`, "POST", request);
 }

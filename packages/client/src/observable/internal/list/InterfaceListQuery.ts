@@ -61,7 +61,7 @@ export class InterfaceListQuery extends ListQuery {
 
       if (rdpConfig != null) {
         objectSet = objectSet.withProperties(
-          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>
+          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
         );
       }
 
@@ -111,8 +111,10 @@ export class InterfaceListQuery extends ListQuery {
     }
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   protected async postProcessFetchedData(
-    data: Osdk.Instance<any>[]
+    data: Osdk.Instance<any>[],
   ): Promise<Osdk.Instance<any>[]> {
     return reloadDataAsFullObjects(this.store.client, data);
   }
@@ -123,7 +125,7 @@ export class InterfaceListQuery extends ListQuery {
 
   protected createPayload(params: CollectionConnectableParams): ListPayload {
     const resolvedList = params.resolvedData?.map((obj: ObjectHolder) =>
-      this.wrapObject(obj)
+      this.wrapObject(obj),
     );
 
     return {
@@ -133,7 +135,7 @@ export class InterfaceListQuery extends ListQuery {
   }
 
   protected extractRelevantObjects(
-    changes: Changes
+    changes: Changes,
   ): ExtractRelevantObjectsResult {
     const matchesApiName = ([, object]: [unknown, ObjectHolder]) => {
       return this.apiName in object[ObjectDefRef].interfaceMap;
@@ -165,7 +167,7 @@ export class InterfaceListQuery extends ListQuery {
 function createSourceSetForPivot(
   store: Store,
   pivotInfo: PivotInfo,
-  rids: string[] | undefined
+  rids: string[] | undefined,
 ): ObjectSet<ObjectOrInterfaceDefinition> {
   const clientCtx = store.client[additionalContext];
 
@@ -176,7 +178,7 @@ function createSourceSetForPivot(
         apiName: pivotInfo.sourceType,
       } as ObjectTypeDefinition,
       clientCtx,
-      { type: "static", objects: [...rids] }
+      { type: "static", objects: [...rids] },
     );
   }
 

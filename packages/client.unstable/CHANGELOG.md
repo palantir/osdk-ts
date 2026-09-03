@@ -1,5 +1,55 @@
 # @osdk/client.unstable
 
+## 2.64.0
+
+## 2.63.0
+
+## 2.62.0
+
+## 2.61.0
+
+## 2.60.0
+
+## 2.59.0
+
+## 2.58.0
+
+## 2.57.0
+
+### Minor Changes
+
+- e9d7ffa: Add struct action parameter validation types and serialization support.
+
+## 2.56.0
+
+## 2.55.0
+
+## 2.54.0
+
+## 2.53.0
+
+## 2.52.0
+
+## 2.51.0
+
+## 2.50.0
+
+## 2.49.0
+
+## 2.48.0
+
+## 2.47.0
+
+## 2.46.0
+
+## 2.45.0
+
+## 2.44.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
 ## 2.43.0
 
 ## 2.42.0

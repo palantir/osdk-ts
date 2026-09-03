@@ -83,7 +83,7 @@ function GrabbedFlash({
         }
       };
     },
-    [trigger]
+    [trigger],
   );
 
   const getSnapshot = useCallback(() => {
@@ -152,7 +152,7 @@ export function InspectorOverlay({
     (sourceLocation: SourceLocation) => {
       eventHandlers?.onOpenSource?.(sourceLocation);
     },
-    [eventHandlers]
+    [eventHandlers],
   );
 
   const containerStyle = useMemo(
@@ -160,7 +160,7 @@ export function InspectorOverlay({
       ...overlayContainerStyles,
       zIndex: effectiveZIndex,
     }),
-    [effectiveZIndex]
+    [effectiveZIndex],
   );
 
   if (!isActive) {

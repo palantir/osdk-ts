@@ -28,7 +28,7 @@ interface TableRowProps<TData extends RowData> {
   onRowClick?: (row: TData) => void;
   renderCellContextMenu?: (
     row: TData,
-    cell: Cell<TData, unknown>
+    cell: Cell<TData, unknown>,
   ) => React.ReactNode;
   isFocused: boolean;
   setFocusedRowId?: (id: string | null) => void;
@@ -64,8 +64,8 @@ export function TableRow<TData extends RowData>({
     }
     return Object.fromEntries(
       Object.entries(getRowAttributes(row.original)).filter(
-        (entry): entry is [string, string] => entry[1] != null
-      )
+        (entry): entry is [string, string] => entry[1] != null,
+      ),
     );
   }, [getRowAttributes, row.original]);
 

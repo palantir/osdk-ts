@@ -23,16 +23,19 @@ import type { MinimalClient } from "./MinimalClientContext.js";
 export class CipherTextPropertyImpl implements CipherText {
   #client: MinimalClient;
   #locator: [string, any, string];
+  #value: string;
 
   constructor(args: {
     client: MinimalClient;
     objectApiName: string;
     primaryKey: any;
     propertyName: string;
+    value: string;
   }) {
-    const { client, objectApiName, primaryKey, propertyName } = args;
+    const { client, objectApiName, primaryKey, propertyName, value } = args;
     this.#client = client;
     this.#locator = [objectApiName, primaryKey, propertyName];
+    this.#value = value;
   }
 
   async decrypt(): Promise<string> {
@@ -40,12 +43,16 @@ export class CipherTextPropertyImpl implements CipherText {
     const result = await cipherTextDecrypt(
       this.#client,
       ontologyRid,
-      ...this.#locator
+      ...this.#locator,
     );
     invariant(
       Object.hasOwn(result, "plaintext"),
-      "Expected decryption result to have plaintext value"
+      "Expected decryption result to have plaintext value",
     );
     return result.plaintext!;
+  }
+
+  getValue(): string {
+    return this.#value;
   }
 }

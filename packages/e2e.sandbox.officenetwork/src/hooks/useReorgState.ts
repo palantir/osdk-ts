@@ -306,12 +306,12 @@ export function useReorgState(): UseReorgStateResult {
 
   const selectedCount = React.useMemo(
     () => state.selection.employeeIds.size,
-    [state.selection.employeeIds]
+    [state.selection.employeeIds],
   );
 
   const changesCount = React.useMemo(
     () => state.selection.changes.size,
-    [state.selection.changes]
+    [state.selection.changes],
   );
 
   const canProceedToSelect = React.useMemo(() => {

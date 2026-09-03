@@ -28,7 +28,7 @@ import type {
 } from "@tanstack/react-table";
 import { useCallback, useEffect, useState } from "react";
 
-interface UseColumnVisibilityProps<
+export interface UseColumnVisibilityProps<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -42,11 +42,11 @@ interface UseColumnVisibilityProps<
     newStates: Array<{
       columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
       isVisible: boolean;
-    }>
+    }>,
   ) => void;
 }
 
-interface UseColumnVisibilityResult {
+export interface UseColumnVisibilityResult {
   columnVisibility: VisibilityState;
   onColumnVisibilityChange: OnChangeFn<VisibilityState>;
   columnOrder: ColumnOrderState;
@@ -71,11 +71,11 @@ export const useColumnVisibility = <
   TData
 >): UseColumnVisibilityResult => {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    () => getColumnVisibilityState<TData>(allColumns)
+    () => getColumnVisibilityState<TData>(allColumns),
   );
 
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(() =>
-    getColumnOrder(allColumns)
+    getColumnOrder(allColumns),
   );
 
   // TODO: Explore other ways to respond to props changes for controlled mode
@@ -100,7 +100,7 @@ export const useColumnVisibility = <
             ([columnId, isVisible]) => ({
               columnId,
               isVisible,
-            })
+            }),
           );
           onColumnVisibilityChanged(changes);
         }
@@ -108,7 +108,7 @@ export const useColumnVisibility = <
         return newState;
       });
     },
-    [onColumnVisibilityChanged]
+    [onColumnVisibilityChanged],
   );
 
   const onColumnOrderChange: OnChangeFn<ColumnOrderState> = useCallback(
@@ -121,7 +121,7 @@ export const useColumnVisibility = <
         return newState;
       });
     },
-    []
+    [],
   );
 
   return {
@@ -133,7 +133,7 @@ export const useColumnVisibility = <
 };
 
 const getColumnVisibilityState = <TData>(
-  allColumns: ColumnDef<TData>[]
+  allColumns: ColumnDef<TData>[],
 ): VisibilityState => {
   return allColumns.reduce((acc, col) => {
     const colId = col.id ?? (col as { accessorKey?: string }).accessorKey;
@@ -148,7 +148,7 @@ const getColumnVisibilityState = <TData>(
 };
 
 const getColumnOrder = <TData>(
-  allColumns: ColumnDef<TData>[]
+  allColumns: ColumnDef<TData>[],
 ): ColumnOrderState => {
   return allColumns
     .map((col) => col.id ?? (col as { accessorKey?: string }).accessorKey)

@@ -55,12 +55,12 @@ import type {
 export async function uninstall(
   ctx: ConjureContext,
   blockSetInstallationRid: _api_BlockSetInstallationRid,
-  request: _api_UninstallRequest
+  request: _api_UninstallRequest,
 ): Promise<_api_UninstallResponse> {
   return conjureFetch(
     ctx,
     `/block-set-installation/${blockSetInstallationRid}/uninstall`,
     "POST",
-    request
+    request,
   );
 }

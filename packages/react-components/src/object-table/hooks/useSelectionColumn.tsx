@@ -29,7 +29,7 @@ import {
   SELECTION_COLUMN_WIDTH,
 } from "../utils/constants.js";
 
-interface UseSelectionColumnProps {
+export interface UseSelectionColumnProps {
   selectionMode?: "single" | "multiple" | "none";
   isAllSelected: boolean;
   hasSelection: boolean;
@@ -39,7 +39,7 @@ interface UseSelectionColumnProps {
 
 export const useSelectionColumn = <
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >({
   selectionMode,
   isAllSelected,

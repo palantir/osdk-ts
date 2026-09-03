@@ -55,7 +55,7 @@ export const ObjectLoadingMetrics: React.FC<ObjectLoadingMetricsProps> = ({
               ? styles.success
               : unusedFieldReport.inefficientComponents < 5
                 ? styles.warning
-                : styles.danger
+                : styles.danger,
           )}
         >
           {formatNumber(unusedFieldReport.inefficientComponents)} of{" "}

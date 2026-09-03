@@ -139,7 +139,7 @@ export class WindowErrorStore extends SubscribableStore {
       if (this.rejectionListener) {
         window.removeEventListener(
           "unhandledrejection",
-          this.rejectionListener
+          this.rejectionListener,
         );
       }
     }

@@ -62,7 +62,7 @@ function InteractivePicker({
   initialSelection?: string[];
 }) {
   const [selectedIds, setSelectedIds] = useState<string[]>(
-    initialSelection ?? EMPTY_SELECTED
+    initialSelection ?? EMPTY_SELECTED,
   );
 
   return (
@@ -126,7 +126,7 @@ function WithImpliedAndDisallowedPicker() {
 
   const markingStates = useMemo(
     () => computeMarkingStates(selectedIds, impliedIds, disallowedIds),
-    [selectedIds, impliedIds, disallowedIds]
+    [selectedIds, impliedIds, disallowedIds],
   );
 
   const noop = useCallback(() => {}, []);
@@ -200,6 +200,26 @@ export const BannerOnly: Story = {
         classificationString={mockBannerGradient.classificationString}
         textColor={mockBannerGradient.textColor}
         backgroundColors={mockBannerGradient.backgroundColors}
+      />
+    </div>
+  ),
+};
+
+const EMPTY_BACKGROUND_COLORS: string[] = [];
+
+export const BannerLoading: Story = {
+  render: () => (
+    <div style={BANNER_ROW_STYLE}>
+      <BaseCbacBanner
+        classificationString=""
+        textColor=""
+        backgroundColors={EMPTY_BACKGROUND_COLORS}
+        isLoading={true}
+      />
+      <BaseCbacBanner
+        classificationString={mockBannerSecret.classificationString}
+        textColor={mockBannerSecret.textColor}
+        backgroundColors={mockBannerSecret.backgroundColors}
       />
     </div>
   ),

@@ -26,12 +26,12 @@ import type {
  */
 export async function validateRetryEvents(
   ctx: ConjureContext,
-  request: _api_executor_ValidateRetryEventsRequest
+  request: _api_executor_ValidateRetryEventsRequest,
 ): Promise<_api_executor_ValidatedRetryEventsResponse> {
   return conjureFetch(
     ctx,
     `/executor/v0/monitors/validateRunRetry`,
     "POST",
-    request
+    request,
   );
 }

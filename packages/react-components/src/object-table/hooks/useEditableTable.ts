@@ -33,7 +33,7 @@ import type {
 
 export interface UseEditableTableProps<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -52,7 +52,7 @@ export interface UseEditableTableProps<
 
 export function useEditableTable<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -76,7 +76,7 @@ export function useEditableTable<
     >
   >({});
   const [validationErrors, setValidationErrors] = useState<Map<string, string>>(
-    new Map()
+    new Map(),
   );
 
   const clearCellValidationError = useCallback((cellId: string) => {
@@ -93,7 +93,7 @@ export function useEditableTable<
       info: CellEditInfo<
         Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
         unknown
-      >
+      >,
     ) => {
       // If value is changed back to original, remove it from edits. null
       // and undefined are treated as the same empty state so clearing a
@@ -113,7 +113,7 @@ export function useEditableTable<
 
       onCellValueChanged?.(info);
     },
-    [onCellValueChanged]
+    [onCellValueChanged],
   );
 
   const clearEdits = useCallback(() => {
@@ -121,6 +121,8 @@ export function useEditableTable<
     setValidationErrors(new Map());
   }, []);
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   const handleSubmitEdits = useCallback(async () => {
     const edits = Object.values(cellEdits);
     return onSubmitEdits ? onSubmitEdits(edits) : false;

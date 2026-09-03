@@ -34,12 +34,12 @@ import type {
  */
 export async function batchUpdatePendingBlockSetVersionMetadataV3(
   ctx: ConjureContext,
-  request: _api_BatchUpdatePendingBlockSetVersionMetadataRequestV3
+  request: _api_BatchUpdatePendingBlockSetVersionMetadataRequestV3,
 ): Promise<_api_BatchUpdatePendingBlockSetVersionMetadataResponseV3> {
   return conjureFetch(
     ctx,
     `/block-sets/v3/pending/versions/metadata/batchUpdate`,
     "POST",
-    request
+    request,
   );
 }

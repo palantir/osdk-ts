@@ -20,7 +20,7 @@ import type { RefObject } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ANNOTATION_LAYER_RENDERED_EVENT } from "../constants.js";
-import type { PdfFormFieldValue } from "../types.js";
+import type { PdfFormFieldValue } from "../PdfViewerApi.js";
 
 /** Get the viewer's container element (typed loosely by pdf.js). */
 function getViewerContainer(viewer: PDFViewer): HTMLElement | undefined {
@@ -56,7 +56,7 @@ export interface UsePdfFormFieldsResult {
  * @internal Exported for testing.
  */
 export function normalizeFieldType(
-  type: string
+  type: string,
 ): "text" | "checkbox" | "radiobutton" | "combobox" | "listbox" {
   switch (type) {
     case "checkbox":
@@ -75,7 +75,7 @@ export function normalizeFieldType(
  */
 export function toFormFieldValue(
   storageValue: unknown,
-  fieldType: "text" | "checkbox" | "radiobutton" | "combobox" | "listbox"
+  fieldType: "text" | "checkbox" | "radiobutton" | "combobox" | "listbox",
 ): PdfFormFieldValue {
   if (fieldType === "checkbox") {
     if (typeof storageValue === "boolean") {
@@ -102,7 +102,7 @@ export function toFormFieldValue(
  */
 export function toStorageValue(
   formValue: PdfFormFieldValue,
-  fieldType: "text" | "checkbox" | "radiobutton" | "combobox" | "listbox"
+  fieldType: "text" | "checkbox" | "radiobutton" | "combobox" | "listbox",
 ): unknown {
   if (fieldType === "checkbox") {
     if (typeof formValue === "boolean") {
@@ -139,7 +139,7 @@ export function usePdfFormFields({
       onFormChangeRef.current = onFormChange;
       formDataRef.current = formData;
     },
-    [onFormSubmit, onFormChange, formData]
+    [onFormSubmit, onFormChange, formData],
   );
 
   // Map from annotation ID -> field metadata
@@ -203,7 +203,7 @@ export function usePdfFormFields({
         cancelled = true;
       };
     },
-    [document]
+    [document],
   );
 
   // Populates form fields from formData into both annotation storage and DOM elements.
@@ -228,7 +228,7 @@ export function usePdfFormFields({
 
         // Also update the DOM element directly (scoped to viewer container)
         const el = container?.querySelector(
-          `[data-element-id="${CSS.escape(id)}"]`
+          `[data-element-id="${CSS.escape(id)}"]`,
         );
 
         if (entry.fieldType === "radiobutton") {
@@ -294,11 +294,11 @@ export function usePdfFormFields({
       return () => {
         eventBus.off(
           ANNOTATION_LAYER_RENDERED_EVENT,
-          onAnnotationLayerRendered
+          onAnnotationLayerRendered,
         );
       };
     },
-    [eventBusRef, document, hasFormFields, populateFields]
+    [eventBusRef, document, hasFormFields, populateFields],
   );
 
   // Effect 3: Listen for field changes via MutationObserver + event listeners
@@ -316,7 +316,7 @@ export function usePdfFormFields({
       const listeners = new Map<Element, () => void>();
 
       function handleFieldChange(
-        el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+        el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement,
       ) {
         const id = el.getAttribute("data-element-id");
         if (id == null) return;
@@ -342,7 +342,7 @@ export function usePdfFormFields({
 
       function attachListeners(root: Node) {
         const elements = (root as Element).querySelectorAll?.(
-          ".annotationLayer input, .annotationLayer select, .annotationLayer textarea"
+          ".annotationLayer input, .annotationLayer select, .annotationLayer textarea",
         );
         if (elements == null) return;
 
@@ -351,7 +351,7 @@ export function usePdfFormFields({
 
           const handler = () => {
             handleFieldChange(
-              el as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+              el as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement,
             );
           };
           el.addEventListener("input", handler);
@@ -385,7 +385,7 @@ export function usePdfFormFields({
         listeners.clear();
       };
     },
-    [pdfViewerRef, document]
+    [pdfViewerRef, document],
   );
 
   // Callback: collect all form data and invoke onFormSubmit

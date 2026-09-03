@@ -69,7 +69,8 @@ export async function convertWireToOsdkObjects(
   interfaceToObjectTypeMappingsV2?: Record<
     InterfaceTypeApiName,
     InterfaceToObjectTypeMappingsV2
-  >
+  >,
+  objectDefsByApiName?: Record<string, ObjectMetadata>,
 ): Promise<Array<InterfaceHolder>>;
 export async function convertWireToOsdkObjects(
   client: MinimalClient,
@@ -87,7 +88,8 @@ export async function convertWireToOsdkObjects(
   interfaceToObjectTypeMappingsV2?: Record<
     InterfaceTypeApiName,
     InterfaceToObjectTypeMappingsV2
-  >
+  >,
+  objectDefsByApiName?: Record<string, ObjectMetadata>,
 ): Promise<Array<ObjectHolder>>;
 export async function convertWireToOsdkObjects(
   client: MinimalClient,
@@ -105,7 +107,8 @@ export async function convertWireToOsdkObjects(
   interfaceToObjectTypeMappingsV2?: Record<
     InterfaceTypeApiName,
     InterfaceToObjectTypeMappingsV2
-  >
+  >,
+  objectDefsByApiName?: Record<string, ObjectMetadata>,
 ): Promise<Array<ObjectHolder | InterfaceHolder>>;
 /**
  * @internal
@@ -126,7 +129,8 @@ export async function convertWireToOsdkObjects(
   interfaceToObjectTypeMappingsV2: Record<
     InterfaceTypeApiName,
     InterfaceToObjectTypeMappingsV2
-  > = {}
+  > = {},
+  objectDefsByApiName?: Record<string, ObjectMetadata>,
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
   fixObjectPropertiesInPlace(objects, forceRemoveRid);
 
@@ -134,16 +138,22 @@ export async function convertWireToOsdkObjects(
   const effectiveMappings =
     Object.keys(interfaceToObjectTypeMappingsV2).length > 0
       ? convertInterfaceToObjectTypeMappingsV2ToV1(
-          interfaceToObjectTypeMappingsV2
+          interfaceToObjectTypeMappingsV2,
         )
       : interfaceToObjectTypeMappings;
 
   const isInterfaceScoped = Object.keys(effectiveMappings).length > 0;
   const ret = [];
   for (const rawObj of objects) {
-    const objectDef = await client.ontologyProvider.getObjectDefinition(
-      rawObj.$apiName
-    );
+    // If caller supplied object definitions, use them exclusively instead of
+    // hitting the ontology provider - a missing entry is an error rather than a
+    // fallback. Only when no map is provided do we defer to the provider, so
+    // existing behavior is preserved.
+    const objectDef = (
+      objectDefsByApiName != null
+        ? objectDefsByApiName[rawObj.$apiName]
+        : await client.ontologyProvider.getObjectDefinition(rawObj.$apiName)
+    ) as FetchedObjectTypeDefinition;
     invariant(objectDef, `Missing definition for '${rawObj.$apiName}'`);
 
     const interfaceToObjMapping =
@@ -181,7 +191,7 @@ export async function convertWireToOsdkObjects(
 
     if (strictNonNull === "throw" && !conforming) {
       throw new Error(
-        "Unable to safely convert objects as some non nullable properties are null"
+        "Unable to safely convert objects as some non nullable properties are null",
       );
     } else if (strictNonNull === "drop" && !conforming) {
       continue;
@@ -192,7 +202,7 @@ export async function convertWireToOsdkObjects(
       objectDef,
       rawObj,
       derivedPropertyTypeByName,
-      propertySecurities
+      propertySecurities,
     );
     if (interfaceApiName && isInterfaceScoped)
       osdkObject = osdkObject.$as(interfaceApiName);
@@ -207,7 +217,7 @@ function isConforming(
   client: MinimalClient,
   def: InterfaceMetadata | ObjectMetadata,
   obj: OntologyObjectV2,
-  propsToCheck: readonly string[]
+  propsToCheck: readonly string[],
 ) {
   for (const propName of propsToCheck) {
     if (
@@ -224,7 +234,7 @@ function isConforming(
               $primaryKey: obj.$primaryKey,
             },
           },
-          `Found object that does not conform to its definition. Expected ${def.apiName}'s ${propName} to not be null.`
+          `Found object that does not conform to its definition. Expected ${def.apiName}'s ${propName} to not be null.`,
         );
       }
       return false;
@@ -236,7 +246,7 @@ function isConforming(
 function invariantInterfacesAsViews(
   objectDef: FetchedObjectTypeDefinition,
   interfaceApiName: string,
-  client: MinimalClient
+  client: MinimalClient,
 ): asserts objectDef is typeof objectDef & { interfaceMap: {} } {
   if (objectDef.interfaceMap?.[interfaceApiName] == null) {
     const warning =
@@ -253,7 +263,7 @@ function invariantInterfacesAsViews(
 
 function fixObjectPropertiesInPlace(
   objs: OntologyObjectV2[],
-  forceRemoveRid: boolean
+  forceRemoveRid: boolean,
 ): asserts objs is SimpleOsdkProperties[] {
   for (const obj of objs) {
     if (forceRemoveRid) {
@@ -294,7 +304,7 @@ function fixObjectPropertiesInPlace(
  * V1 format: { interfaceProp: "objectProp" }
  */
 function convertInterfaceToObjectTypeMappingsV2ToV1(
-  mappingsV2: Record<InterfaceTypeApiName, InterfaceToObjectTypeMappingsV2>
+  mappingsV2: Record<InterfaceTypeApiName, InterfaceToObjectTypeMappingsV2>,
 ): Record<InterfaceTypeApiName, InterfaceToObjectTypeMappings> {
   return Object.fromEntries(
     Object.entries(mappingsV2).map(
@@ -307,18 +317,18 @@ function convertInterfaceToObjectTypeMappingsV2ToV1(
               Object.fromEntries(
                 Object.entries(propertyMappings)
                   .filter(
-                    ([, impl]) => impl.type === "localPropertyImplementation"
+                    ([, impl]) => impl.type === "localPropertyImplementation",
                   )
                   .map(([interfaceProp, impl]) => [
                     interfaceProp,
                     (impl as InterfacePropertyLocalPropertyImplementation)
                       .propertyApiName,
-                  ])
+                  ]),
               ),
-            ]
-          )
+            ],
+          ),
         ),
-      ]
-    )
+      ],
+    ),
   );
 }

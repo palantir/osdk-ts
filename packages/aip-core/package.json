@@ -1,6 +1,6 @@
 {
   "name": "@osdk/aip-core",
-  "version": "0.8.0",
+  "version": "0.10.0",
   "description": "Core building blocks for the AIP SDK: streaming chat completions, tool calling, and chat transports backed by the Foundry Language Model Service",
   "access": "public",
   "license": "Apache-2.0",
@@ -50,10 +50,12 @@
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "dependencies": {
+    "@osdk/language-models": "workspace:*"
+  },
   "peerDependencies": {
     "@ai-sdk/provider": "^3.0.0",
-    "@osdk/client": "workspace:^",
-    "@osdk/language-models": ">=0.6.0 <1.0.0"
+    "@osdk/client": "workspace:^"
   },
   "peerDependenciesMeta": {
     "@ai-sdk/provider": {

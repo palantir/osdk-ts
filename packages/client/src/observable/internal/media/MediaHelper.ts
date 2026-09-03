@@ -39,24 +39,24 @@ export class MediaHelper extends AbstractHelper<
   private blobManager: BlobMemoryManager = createBlobMemoryManager();
 
   getCacheKey(
-    mediaOrLocation: Media | Attachment | MediaPropertyLocation
+    mediaOrLocation: Media | Attachment | MediaPropertyLocation,
   ): string {
     return getMediaCacheKey(mediaOrLocation);
   }
 
   private getTypedCacheKey(
-    coords: MediaPropertyLocation
+    coords: MediaPropertyLocation,
   ): MediaMetadataCacheKey {
     return this.cacheKeys.get(
       "mediaMetadata",
       coords.objectType,
       coords.primaryKey,
-      coords.propertyName
+      coords.propertyName,
     );
   }
 
   getQuery(
-    options: MediaMetadataObserveOptions & { coords: MediaPropertyLocation }
+    options: MediaMetadataObserveOptions & { coords: MediaPropertyLocation },
   ): MediaMetadataQuery {
     const cacheKey = this.getTypedCacheKey(options.coords);
     return this.store.queries.get(cacheKey, () => {
@@ -68,7 +68,7 @@ export class MediaHelper extends AbstractHelper<
         options.coords.primaryKey,
         options.coords.propertyName,
         cacheKey,
-        options
+        options,
       );
     });
   }
@@ -76,7 +76,7 @@ export class MediaHelper extends AbstractHelper<
   observeMediaMetadata(
     coords: MediaPropertyLocation,
     options: MediaMetadataObserveOptions,
-    observer: Observer<MediaMetadataPayload>
+    observer: Observer<MediaMetadataPayload>,
   ): UnsubscribableWrapper {
     const query = this.getQuery({ ...options, coords });
     return this._subscribe(query, options, observer);
@@ -84,7 +84,7 @@ export class MediaHelper extends AbstractHelper<
 
   async fetchMetadata(
     coords: MediaPropertyLocation,
-    options?: { preview?: boolean }
+    options?: { preview?: boolean },
   ): Promise<MediaMetadata> {
     const ontologyRid = await this.store.client[additionalContext].ontologyRid;
     const response =
@@ -94,7 +94,7 @@ export class MediaHelper extends AbstractHelper<
         coords.objectType,
         String(coords.primaryKey),
         coords.propertyName,
-        { preview: options?.preview ?? true }
+        { preview: options?.preview ?? true },
       );
 
     return {
@@ -106,7 +106,7 @@ export class MediaHelper extends AbstractHelper<
 
   async fetchContent(
     mediaOrLocation: Media | Attachment | MediaPropertyLocation,
-    options?: { preview?: boolean }
+    options?: { preview?: boolean },
   ): Promise<Blob> {
     const preview = options?.preview ?? true;
     const baseCacheKey = this.getCacheKey(mediaOrLocation);
@@ -129,7 +129,7 @@ export class MediaHelper extends AbstractHelper<
         coords.objectType,
         String(coords.primaryKey),
         coords.propertyName,
-        { preview }
+        { preview },
       );
     } else if ("fetchContents" in mediaOrLocation) {
       response = await mediaOrLocation.fetchContents();
@@ -141,7 +141,7 @@ export class MediaHelper extends AbstractHelper<
       return blob;
     } else {
       throw new Error(
-        "Cannot fetch media content: no coordinates or fetchContents"
+        "Cannot fetch media content: no coordinates or fetchContents",
       );
     }
 
@@ -156,7 +156,7 @@ export class MediaHelper extends AbstractHelper<
   }
 
   private resolveToCoords(
-    source: Media | Attachment | MediaPropertyLocation
+    source: Media | Attachment | MediaPropertyLocation,
   ): MediaPropertyLocation | undefined {
     if (
       "objectType" in source &&
@@ -173,7 +173,7 @@ export class MediaHelper extends AbstractHelper<
 
   getCachedContent(
     mediaOrLocation: Media | Attachment | MediaPropertyLocation,
-    options?: { preview?: boolean }
+    options?: { preview?: boolean },
   ): Blob | undefined {
     const preview = options?.preview ?? true;
     const baseCacheKey = this.getCacheKey(mediaOrLocation);
@@ -193,7 +193,7 @@ export class MediaHelper extends AbstractHelper<
 
   createBlobUrl(
     mediaOrLocation: Media | Attachment | MediaPropertyLocation,
-    options?: { preview?: boolean }
+    options?: { preview?: boolean },
   ): string | undefined {
     const preview = options?.preview ?? true;
     const baseCacheKey = this.getCacheKey(mediaOrLocation);
@@ -203,7 +203,7 @@ export class MediaHelper extends AbstractHelper<
 
   releaseBlobUrl(
     mediaOrLocation: Media | Attachment | MediaPropertyLocation,
-    options?: { preview?: boolean }
+    options?: { preview?: boolean },
   ): void {
     const preview = options?.preview ?? true;
     const baseCacheKey = this.getCacheKey(mediaOrLocation);
@@ -212,7 +212,7 @@ export class MediaHelper extends AbstractHelper<
   }
 
   clearCache(
-    mediaOrLocation: Media | Attachment | MediaPropertyLocation
+    mediaOrLocation: Media | Attachment | MediaPropertyLocation,
   ): void {
     const cacheKey = this.getCacheKey(mediaOrLocation);
 

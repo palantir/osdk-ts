@@ -30,6 +30,7 @@ import { useColumnPinning } from "./hooks/useColumnPinning.js";
 import { useColumnResize } from "./hooks/useColumnResize.js";
 import { useColumnVisibility } from "./hooks/useColumnVisibility.js";
 import { useEditableTable } from "./hooks/useEditableTable.js";
+import { useLoadedObjectsChanged } from "./hooks/useLoadedObjectsChanged.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
 import { useObjectTableSnapshot } from "./hooks/useObjectTableSnapshot.js";
 import type { UseRowSelectionChange } from "./hooks/useRowSelection.js";
@@ -45,18 +46,9 @@ import type { EditableConfig } from "./utils/types.js";
 
 const EMPTY_ARRAY: [] = [];
 
-/**
- * ObjectTable - A headless table component for displaying OSDK object sets
- *
- * @example
- * ```tsx
- * <ObjectTable objectType={MyObjectType} />
- * ```
- */
-
 export function ObjectTable<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -75,9 +67,8 @@ export function ObjectTable<
   onOrderByChanged,
   onColumnsPinnedChanged,
   onColumnResize,
-  // eslint-disable-next-line @typescript-eslint/no-deprecated -- intentional pass-through to fire alongside onRowSelectionChanged for backwards compatibility
-  onRowSelection,
   onRowSelectionChanged,
+  onLoadedObjectsChanged,
   onColumnHeaderClick,
   renderCellContextMenu,
   selectionMode = "none",
@@ -117,8 +108,8 @@ export function ObjectTable<
     error,
     totalCount,
     objectSet: resultingObjectSet,
-  } = useObjectTableData<Q, RDPs, FunctionColumns>(
-    objectType,
+  } = useObjectTableData<Q, RDPs, FunctionColumns>({
+    objectOrInterfaceType: objectType,
     columnDefinitions,
     filter,
     sorting,
@@ -126,8 +117,15 @@ export function ObjectTable<
     objectSetOptions,
     dedupeIntervalMs,
     pageSize,
-    streamUpdates
-  );
+    streamUpdates,
+  });
+
+  useLoadedObjectsChanged<Q, RDPs>({
+    loadedObjects: data,
+    totalCount,
+    isLoading,
+    onLoadedObjectsChanged,
+  });
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<
     Q,
@@ -145,7 +143,7 @@ export function ObjectTable<
         objectSet: deriveSelectionObjectSet(resultingObjectSet, change),
       });
     },
-    [onRowSelectionChanged, resultingObjectSet]
+    [onRowSelectionChanged, resultingObjectSet],
   );
 
   const {
@@ -159,7 +157,6 @@ export function ObjectTable<
     selectionMode,
     selectedRows,
     isAllSelected: isAllSelectedProp,
-    onRowSelection,
     onRowSelectionChanged: handleRowSelectionChanged,
     data,
   });
@@ -257,11 +254,11 @@ export function ObjectTable<
       cell: Cell<
         Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
         unknown
-      >
+      >,
     ) => {
       return renderCellContextMenu?.(row, cell.getValue());
     },
-    [renderCellContextMenu]
+    [renderCellContextMenu],
   );
 
   const handleColumnHeaderClick = useMemo(
@@ -269,10 +266,10 @@ export function ObjectTable<
       onColumnHeaderClick
         ? (columnId: string) =>
             onColumnHeaderClick(
-              columnId as PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns
+              columnId as PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns,
             )
         : undefined,
-    [onColumnHeaderClick]
+    [onColumnHeaderClick],
   );
 
   const isTableLoading = isLoading || isColumnsLoading;
@@ -289,7 +286,7 @@ export function ObjectTable<
       enableColumnPinning,
       enableColumnResizing,
       enableColumnConfig,
-    ]
+    ],
   );
 
   return (

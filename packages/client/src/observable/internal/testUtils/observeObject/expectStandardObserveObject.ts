@@ -64,8 +64,8 @@ export async function expectStandardObserveObject<
         apiName: type,
         pk: primaryKey,
       },
-      subFn
-    )
+      subFn,
+    ),
   );
 
   expectSingleObjectCallAndClear(subFn, undefined, "loading");
@@ -78,7 +78,7 @@ export async function expectStandardObserveObject<
       $apiName: type.apiName,
       $primaryKey: primaryKey,
     }),
-    "loaded"
+    "loaded",
   );
   return { payload: obj as TypedObjectPayload<T>, subFn };
 }

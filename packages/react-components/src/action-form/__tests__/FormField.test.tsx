@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
@@ -28,11 +28,11 @@ describe("FormField", () => {
       const { container } = render(
         <FormField fieldKey="name" label="Name">
           <input id="name" />
-        </FormField>
+        </FormField>,
       );
 
       expect(
-        container.querySelector("[data-osdk-form-field-error-slot]")
+        container.querySelector("[data-osdk-form-field-error-slot]"),
       ).not.toBeNull();
       expect(screen.queryByRole("alert")).toBeNull();
     });
@@ -41,7 +41,7 @@ describe("FormField", () => {
       const { container } = render(
         <FormField fieldKey="name" label="Name" error="This field is required">
           <input id="name" />
-        </FormField>
+        </FormField>,
       );
 
       const alert = screen.getByRole("alert");
@@ -49,7 +49,7 @@ describe("FormField", () => {
       expect(
         container
           .querySelector("[data-osdk-form-field-error-slot]")
-          ?.contains(alert)
+          ?.contains(alert),
       ).toBe(true);
     });
 
@@ -57,7 +57,7 @@ describe("FormField", () => {
       render(
         <FormField fieldKey="name" label="Name">
           <input id="name" />
-        </FormField>
+        </FormField>,
       );
 
       expect(screen.queryByRole("alert")).toBeNull();
@@ -75,17 +75,36 @@ describe("FormField", () => {
           error="This field is required"
         >
           <input id="name" />
-        </FormField>
+        </FormField>,
       );
 
       expect(screen.getByRole("alert").textContent).toBe(
-        "This field is required"
+        "This field is required",
       );
       expect(screen.getByText("Enter your full name")).toBeDefined();
     });
   });
 
   describe("tooltip helper text", () => {
+    it("labels the helper text dialog", () => {
+      render(
+        <FormField
+          fieldKey="name"
+          label="Name"
+          helperText="Enter your full name"
+          helperTextPlacement="tooltip"
+        >
+          <input id="name" />
+        </FormField>,
+      );
+
+      fireEvent.click(screen.getByLabelText("Info about Name"));
+
+      expect(
+        screen.getByRole("dialog", { name: "Info about Name" }),
+      ).toBeDefined();
+    });
+
     it("shows tooltip icon when placement is tooltip", () => {
       render(
         <FormField
@@ -95,7 +114,7 @@ describe("FormField", () => {
           helperTextPlacement="tooltip"
         >
           <input id="name" />
-        </FormField>
+        </FormField>,
       );
 
       expect(screen.queryByRole("alert")).toBeNull();
@@ -112,11 +131,11 @@ describe("FormField", () => {
           error="This field is required"
         >
           <input id="name" />
-        </FormField>
+        </FormField>,
       );
 
       expect(screen.getByRole("alert").textContent).toBe(
-        "This field is required"
+        "This field is required",
       );
       expect(screen.getByLabelText("Info about Name")).toBeDefined();
     });

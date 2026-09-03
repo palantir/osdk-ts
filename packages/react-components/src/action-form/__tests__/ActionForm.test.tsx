@@ -143,7 +143,7 @@ describe("ActionForm", () => {
           actionDefinition={TestAction}
           formTitle="Custom Title"
           showFormTitle={true}
-        />
+        />,
       );
 
       expect(screen.getByRole("heading").textContent).toBe("Custom Title");
@@ -151,7 +151,7 @@ describe("ActionForm", () => {
 
     it("does not render a form title when showFormTitle is false", () => {
       render(
-        <ActionForm actionDefinition={TestAction} showFormTitle={false} />
+        <ActionForm actionDefinition={TestAction} showFormTitle={false} />,
       );
 
       expect(screen.queryByRole("heading")).toBeNull();
@@ -201,7 +201,7 @@ describe("ActionForm", () => {
         <ActionForm
           actionDefinition={TestAction}
           formFieldDefinitions={customDefs}
-        />
+        />,
       );
 
       expect(screen.getByText("Full Name")).toBeDefined();
@@ -223,7 +223,7 @@ describe("ActionForm", () => {
         <ActionForm
           actionDefinition={TestAction}
           formFieldDefinitions={customDefs}
-        />
+        />,
       );
 
       const input = screen.getByRole("textbox", { name: "Full Name" });
@@ -233,7 +233,7 @@ describe("ActionForm", () => {
 
       await vi.waitFor(() => {
         expect(mockApplyAction).toHaveBeenCalledWith(
-          expect.objectContaining({ name: "Alice" })
+          expect.objectContaining({ name: "Alice" }),
         );
       });
     });
@@ -244,7 +244,7 @@ describe("ActionForm", () => {
       render(<ActionForm actionDefinition={TestAction} />);
 
       expect(screen.getByRole("button", { name: /submit/iu }).textContent).toBe(
-        "Submit"
+        "Submit",
       );
     });
 
@@ -269,7 +269,7 @@ describe("ActionForm", () => {
       mockApplyAction.mockResolvedValue(result);
 
       render(
-        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />
+        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />,
       );
 
       // Fill required field before submitting
@@ -310,7 +310,7 @@ describe("ActionForm", () => {
       mockApplyAction.mockResolvedValue(result);
 
       render(
-        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />
+        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />,
       );
 
       // Submit without filling the required "name" field
@@ -341,7 +341,7 @@ describe("ActionForm", () => {
       mockApplyAction.mockResolvedValue(result);
 
       render(
-        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />
+        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />,
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
@@ -366,14 +366,14 @@ describe("ActionForm", () => {
         <ActionForm
           actionDefinition={TestAction}
           formFieldDefinitions={customDefs}
-        />
+        />,
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
         expect(mockApplyAction).toHaveBeenCalledWith(
-          expect.objectContaining({ name: "Ada Lovelace" })
+          expect.objectContaining({ name: "Ada Lovelace" }),
         );
       });
     });
@@ -410,7 +410,7 @@ describe("ActionForm", () => {
           expect.objectContaining({
             name: "Updated",
             email: "initial@test.com",
-          })
+          }),
         );
       });
     });

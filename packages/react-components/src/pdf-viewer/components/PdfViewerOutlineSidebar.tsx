@@ -17,7 +17,7 @@
 import classnames from "classnames";
 import React, { useCallback, useMemo } from "react";
 
-import type { OutlineItem, SidebarMode } from "../types.js";
+import type { OutlineItem, SidebarMode } from "../PdfViewerApi.js";
 import { PdfViewerSidebarHeader } from "./PdfViewerSidebarHeader.js";
 
 import styles from "./PdfViewerOutlineSidebar.module.css";
@@ -104,14 +104,14 @@ function PdfViewerOutlineItem({
         onClick(item.pageNumber);
       }
     },
-    [onClick, item.pageNumber]
+    [onClick, item.pageNumber],
   );
 
   const itemClassName = classnames(
     styles.outlineItem,
     isActive && styles.outlineItemActive,
     item.bold && styles.outlineItemBold,
-    item.italic && styles.outlineItemItalic
+    item.italic && styles.outlineItemItalic,
   );
 
   const paddingLeft = INDENT_PER_DEPTH * item.depth + 12;

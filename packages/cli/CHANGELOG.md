@@ -1,5 +1,166 @@
 # @osdk/cli
 
+## 0.90.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.63.0
+
+## 0.89.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.62.0
+
+## 0.88.0
+
+### Minor Changes
+
+- dc46b5d: Add branch-aware local development and update CLI branch detection.
+
+### Patch Changes
+
+- @osdk/widget.api@3.61.0
+
+## 0.87.0
+
+### Minor Changes
+
+- d592d46: Move @arethetypeswrong/cli to devDependencies so installing the CLI no longer pulls in a check-only tool
+
+### Patch Changes
+
+- @osdk/widget.api@3.60.0
+
+## 0.86.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.59.0
+
+## 0.85.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.58.0
+
+## 0.84.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.57.0
+
+## 0.83.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.56.0
+
+## 0.82.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.55.0
+
+## 0.81.0
+
+### Patch Changes
+
+- Updated dependencies [47c66c3]
+  - @osdk/widget.api@3.54.0
+
+## 0.80.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.53.0
+
+## 0.79.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.52.0
+
+## 0.78.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.51.0
+
+## 0.77.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.50.0
+
+## 0.76.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.49.0
+
+## 0.75.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.48.0
+
+## 0.74.0
+
+### Minor Changes
+
+- a7ff4d3: Improve branch command OSDK discovery and global branch<->main dependency syncing.
+
+### Patch Changes
+
+- @osdk/widget.api@3.47.0
+
+## 0.73.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.46.0
+
+## 0.72.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.45.0
+
+## 0.71.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.44.0
+
+## 0.70.0
+
+### Minor Changes
+
+- 2d4ad2d: Introduce branched SDKs commands to @osdk/cli
+
+### Patch Changes
+
+- @osdk/widget.api@3.43.0
+
+## 0.69.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.42.0
+
+## 0.68.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+  - @osdk/foundry-config-json@1.12.0
+  - @osdk/widget.api@3.41.0
+
 ## 0.67.0
 
 ### Minor Changes

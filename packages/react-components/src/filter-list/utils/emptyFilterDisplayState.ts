@@ -18,6 +18,7 @@ import type { ObjectTypeDefinition } from "@osdk/api";
 
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterComponentType, FilterState } from "../FilterListItemApi.js";
+import { getLinkedFilterComponent } from "./getLinkedFilterComponent.js";
 
 /**
  * Filter components whose state supports the overflow (…) controls
@@ -26,7 +27,7 @@ import type { FilterComponentType, FilterState } from "../FilterListItemApi.js";
  * the components that wrap their input in `FilterInputExcludeRow`.
  */
 function emptyOverflowStateForComponent(
-  component: FilterComponentType
+  component: FilterComponentType,
 ): FilterState | undefined {
   switch (component) {
     case "MULTI_SELECT":
@@ -63,22 +64,23 @@ function emptyOverflowStateForComponent(
  * map, so an untouched filter stays empty (no where-clause, not counted active).
  */
 export function getEmptyDisplayState<Q extends ObjectTypeDefinition>(
-  definition: FilterDefinitionUnion<Q>
+  definition: FilterDefinitionUnion<Q>,
 ): FilterState | undefined {
   switch (definition.type) {
     case "PROPERTY":
     case "STATIC_VALUES":
       return emptyOverflowStateForComponent(definition.filterComponent);
     case "LINKED_PROPERTY": {
-      const inner = emptyOverflowStateForComponent(
-        definition.linkedFilterComponent
-      );
+      const component = getLinkedFilterComponent(definition);
+      const inner =
+        component == null
+          ? undefined
+          : emptyOverflowStateForComponent(component);
       return inner == null
         ? undefined
         : { type: "linkedProperty", linkedFilterState: inner };
     }
     case "HAS_LINK":
-      // hasLink supports the include/exclude overflow dropdown.
       return { type: "hasLink", hasLink: false };
     case "KEYWORD_SEARCH":
     case "CUSTOM":

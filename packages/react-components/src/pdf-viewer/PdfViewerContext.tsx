@@ -35,7 +35,7 @@ import type {
   PdfAnnotation,
   PdfViewerInstanceOptions,
   SidebarMode,
-} from "./types.js";
+} from "./PdfViewerApi.js";
 
 /** The shape of the value provided by {@link PdfViewerProvider}. */
 export interface PdfViewerContextValue {
@@ -119,7 +119,7 @@ export function usePdfViewerContext(): PdfViewerContextValue {
   const ctx = useContext(PdfViewerContext);
   if (ctx == null) {
     throw new Error(
-      "usePdfViewerContext must be used within a PdfViewerProvider"
+      "usePdfViewerContext must be used within a PdfViewerProvider",
     );
   }
   return ctx;
@@ -131,7 +131,7 @@ export function usePdfViewerContext(): PdfViewerContextValue {
  * for passing to {@link PdfViewerProvider}.
  */
 export function usePdfViewerInstance(
-  options: PdfViewerInstanceOptions
+  options: PdfViewerInstanceOptions,
 ): PdfViewerContextValue {
   const viewer = usePdfViewerState({
     src: options.src,
@@ -146,7 +146,7 @@ export function usePdfViewerInstance(
   const { highlightModeActive, toggleHighlightMode } = usePdfHighlightMode({
     pdfViewerRef: viewer.pdfViewerRef,
     document: viewer.document,
-    enabled: options.highlightEnabled ?? false,
+    enabled: options.enableHighlight ?? options.highlightEnabled ?? false,
     onTextHighlight: options.onTextHighlight,
     onHighlightDelete: options.onHighlightDelete,
   });
@@ -163,7 +163,9 @@ export function usePdfViewerInstance(
   const annotations = options.annotations ?? EMPTY_ANNOTATION_ARRAY;
   const annotationsByPage = usePdfAnnotationsByPage(annotations);
 
-  const highlightEnabled = options.highlightEnabled ?? false;
+  // `highlightEnabled` is the deprecated spelling of `enableHighlight`.
+  const highlightEnabled =
+    options.enableHighlight ?? options.highlightEnabled ?? false;
   const enableDownload = options.enableDownload ?? false;
   const enableFormSave = options.onFormSubmit != null && hasFormFields;
   const { onAnnotationClick, outlineIcons } = options;
@@ -196,6 +198,6 @@ export function usePdfViewerInstance(
       enableDownload,
       enableFormSave,
       outlineIcons,
-    ]
+    ],
   );
 }

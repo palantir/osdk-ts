@@ -1,5 +1,183 @@
 # @osdk/maker
 
+## 0.64.0
+
+### Patch Changes
+
+- @osdk/api@2.64.0
+- @osdk/generator-converters.ontologyir@2.64.0
+
+## 0.63.0
+
+### Minor Changes
+
+- ab7c384: Add opt-in generation of empty backing Media Sets for media reference properties.
+- d316359: Add vector property support
+
+## 0.62.0
+
+### Minor Changes
+
+- 3742aad: Preserve nullability for value type props
+
+### Patch Changes
+
+- Updated dependencies [08ba782]
+  - @osdk/api@2.63.0
+  - @osdk/generator-converters.ontologyir@2.63.0
+
+## 0.61.0
+
+### Patch Changes
+
+- @osdk/api@2.62.0
+- @osdk/generator-converters.ontologyir@2.62.0
+
+## 0.60.0
+
+### Minor Changes
+
+- c742209: Sanitize underscores in link api names
+
+### Patch Changes
+
+- Updated dependencies [bdf45fa]
+- Updated dependencies [34cb7e0]
+  - @osdk/api@2.61.0
+  - @osdk/generator-converters.ontologyir@2.61.0
+
+## 0.59.0
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+  - @osdk/generator-converters.ontologyir@2.60.0
+  - @osdk/api@2.60.0
+  - @osdk/typescript-sdk-docs@0.23.0
+
+## 0.58.0
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+  - @osdk/generator-converters.ontologyir@2.58.0
+  - @osdk/typescript-sdk-docs@0.22.0
+  - @osdk/api@2.58.0
+
+## 0.57.0
+
+### Minor Changes
+
+- b28235f: check for duplicate links
+
+## 0.56.0
+
+### Minor Changes
+
+- cea978e: Add configurable missing descriptions to all entities
+
+## 0.55.0
+
+### Minor Changes
+
+- e9d7ffa: Add struct action parameter validation types and serialization support.
+
+### Patch Changes
+
+- Updated dependencies [8ce066f]
+- Updated dependencies [3bfccdb]
+  - @osdk/generator-converters.ontologyir@2.57.0
+  - @osdk/api@2.57.0
+
+## 0.54.0
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+  - @osdk/typescript-sdk-docs@0.21.0
+  - @osdk/generator-converters.ontologyir@2.55.0
+
+## 0.53.0
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/generator-converters.ontologyir@2.53.0
+  - @osdk/typescript-sdk-docs@0.20.0
+  - @osdk/api@2.53.0
+
+## 0.52.0
+
+### Minor Changes
+
+- 7ae7004: Revert re-enabling the `unicorn/no-useless-switch-case` oxlint rule; the rule is disabled again and the explicit `case` labels are restored. Behavior-preserving with no runtime or API changes.
+- 7667b67: export interface link constraints
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [7ae7004]
+- Updated dependencies [9ef0982]
+- Updated dependencies [eab0750]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/typescript-sdk-docs@0.19.0
+  - @osdk/generator-converters.ontologyir@2.52.0
+
+## 0.51.0
+
+### Minor Changes
+
+- bce917e: Write dependency file for maker-experimental
+
+### Patch Changes
+
+- Updated dependencies [9d75f4e]
+  - @osdk/generator-converters.ontologyir@2.50.0
+  - @osdk/api@2.50.0
+
+## 0.50.0
+
+### Minor Changes
+
+- 3a1c5a2: Fix inherited optional property being required
+
+### Patch Changes
+
+- @osdk/api@2.49.0
+- @osdk/generator-converters.ontologyir@2.49.0
+
+## 0.49.0
+
+### Minor Changes
+
+- 62f9714: Re-enable the `unicorn/no-useless-switch-case` oxlint rule and drop the redundant empty `case` labels that fell straight through to `default`. Behavior-preserving with no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [62f9714]
+  - @osdk/typescript-sdk-docs@0.18.0
+  - @osdk/api@2.48.0
+  - @osdk/generator-converters.ontologyir@2.48.0
+
+## 0.48.0
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+- @osdk/generator-converters.ontologyir@2.47.0
+
+## 0.47.0
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+- @osdk/generator-converters.ontologyir@2.46.0
+
 ## 0.46.0
 
 ### Minor Changes

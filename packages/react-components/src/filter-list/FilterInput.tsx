@@ -26,7 +26,17 @@ import type { FilterState } from "./FilterListItemApi.js";
 import { LinkedPropertyInput } from "./inputs/LinkedPropertyInput.js";
 import { PropertyFilterInput } from "./inputs/PropertyFilterInput.js";
 import { StaticValuesFilterInput } from "./inputs/StaticValuesFilterInput.js";
+import type { CustomFilterState } from "./types/CustomRendererTypes.js";
 import type { LinkedFilter } from "./types/LinkedFilterTypes.js";
+
+/**
+ * Handed to a custom filter's `renderInput` when the definition seeds no state
+ * at all, so renderers can rely on always receiving a state object.
+ */
+const EMPTY_CUSTOM_STATE: CustomFilterState = {
+  type: "custom",
+  customState: {},
+};
 
 export interface FilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
@@ -110,7 +120,7 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
         );
       }
       const customFilterState =
-        filterState?.type === "custom" ? filterState : definition.filterState;
+        filterState?.type === "custom" ? filterState : EMPTY_CUSTOM_STATE;
       return (
         <>
           {definition.renderInput({
@@ -180,7 +190,7 @@ const HasLinkInput = memo(function HasLinkInput({
     (hasLink: boolean) => {
       onFilterStateChanged({ type: "hasLink", hasLink, isExcluding });
     },
-    [onFilterStateChanged, isExcluding]
+    [onFilterStateChanged, isExcluding],
   );
 
   const handleClearAll = useCallback(() => {
@@ -223,7 +233,7 @@ const KeywordSearchInput = memo(function KeywordSearchInput({
         operator,
       });
     },
-    [onFilterStateChanged, operator]
+    [onFilterStateChanged, operator],
   );
 
   return (

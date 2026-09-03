@@ -30,7 +30,7 @@ import { convertActionVisibility } from "./convertActionVisibility.js";
 import { convertSectionConditionalOverride } from "./convertSectionConditionalOverride.js";
 
 export function convertActionValidation(
-  action: ActionType
+  action: ActionType,
 ): OntologyIrActionValidation {
   return {
     actionTypeLevelValidation: {
@@ -42,7 +42,7 @@ export function convertActionValidation(
               displayMetadata: { failureMessage: "", typeClasses: [] },
             },
           ]
-        ).map((rule, idx) => [idx, rule])
+        ).map((rule, idx) => [idx, rule]),
       ),
     },
     parameterValidations: Object.fromEntries(
@@ -55,16 +55,16 @@ export function convertActionValidation(
                 renderHint:
                   p.renderHint ?? renderHintFromBaseType(p, p.validation),
                 visibility: convertActionVisibility(
-                  p.validation.defaultVisibility
+                  p.validation.defaultVisibility,
                 ),
                 ...(p.defaultValue && { prefill: p.defaultValue }),
               },
               validation: {
                 allowedValues: extractAllowedValues(
-                  p.validation.allowedValues!
+                  p.validation.allowedValues!,
                 ),
                 required: convertParameterRequirementConstraint(
-                  p.validation.required!
+                  p.validation.required!,
                 ),
               },
             },
@@ -73,12 +73,12 @@ export function convertActionValidation(
                 convertActionParameterConditionalOverride(
                   override,
                   p.validation,
-                  action.parameters
-                )
+                  action.parameters,
+                ),
               ) ?? [],
           },
         ];
-      })
+      }),
     ),
     sectionValidations: {
       ...Object.fromEntries(
@@ -104,18 +104,18 @@ export function convertActionValidation(
                 convertSectionConditionalOverride(
                   override,
                   section.defaultVisibility ?? "visible",
-                  action.parameters
-                )
+                  action.parameters,
+                ),
               ) ?? [],
           },
-        ])
+        ]),
       ),
     },
   };
 }
 
 function convertParameterRequirementConstraint(
-  required: ActionParameterRequirementConstraint
+  required: ActionParameterRequirementConstraint,
 ): ParameterRequiredConfiguration {
   if (typeof required === "boolean") {
     return required

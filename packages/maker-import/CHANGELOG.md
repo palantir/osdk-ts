@@ -1,5 +1,128 @@
 # @osdk/maker-import
 
+## 0.34.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.64.0
+- @osdk/maker@0.64.0
+
+## 0.33.0
+
+### Patch Changes
+
+- Updated dependencies [ab7c384]
+- Updated dependencies [d316359]
+  - @osdk/maker@0.63.0
+
+## 0.32.0
+
+### Patch Changes
+
+- Updated dependencies [3742aad]
+  - @osdk/maker@0.62.0
+  - @osdk/client.unstable@2.63.0
+
+## 0.31.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.62.0
+- @osdk/maker@0.61.0
+
+## 0.30.0
+
+### Patch Changes
+
+- Updated dependencies [c742209]
+  - @osdk/maker@0.60.0
+  - @osdk/client.unstable@2.61.0
+
+## 0.29.0
+
+### Minor Changes
+
+- bbbeca8: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.75.0`, which reinstates the `streamingExecute` query endpoint as a Server-Sent Events (`text/event-stream`) stream. The experimental `executeStreamingFunction` helper is reimplemented on top of it and no longer throws: it yields each result as it arrives, flattening batched results so array-returning queries emit one element at a time.
+
+### Patch Changes
+
+- @osdk/maker@0.59.0
+- @osdk/client.unstable@2.60.0
+
+## 0.28.0
+
+### Minor Changes
+
+- 24ba6fa: Emit metadata needed for shape parity
+
+## 0.27.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.58.0
+- @osdk/maker@0.58.0
+
+## 0.26.0
+
+### Patch Changes
+
+- Updated dependencies [e9d7ffa]
+  - @osdk/client.unstable@2.57.0
+  - @osdk/maker@0.55.0
+
+## 0.25.0
+
+### Patch Changes
+
+- @osdk/maker@0.54.0
+- @osdk/client.unstable@2.55.0
+
+## 0.24.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.53.0
+- @osdk/maker@0.53.0
+
+## 0.23.0
+
+### Patch Changes
+
+- Updated dependencies [7ae7004]
+- Updated dependencies [7667b67]
+  - @osdk/maker@0.52.0
+  - @osdk/client.unstable@2.52.0
+
+## 0.22.0
+
+### Patch Changes
+
+- Updated dependencies [62f9714]
+  - @osdk/maker@0.49.0
+  - @osdk/client.unstable@2.48.0
+
+## 0.21.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.47.0
+- @osdk/maker@0.48.0
+
+## 0.20.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.46.0
+- @osdk/maker@0.47.0
+
 ## 0.19.0
 
 ### Minor Changes

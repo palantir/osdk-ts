@@ -34,7 +34,7 @@ import { getRowId, getRowIdFromPrimaryKey } from "../utils/getRowId.js";
  */
 export interface UseRowSelectionChange<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   selectedRows: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[];
   isSelectAll: boolean;
@@ -42,18 +42,11 @@ export interface UseRowSelectionChange<
 
 export interface UseRowSelectionProps<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   selectionMode?: "single" | "multiple" | "none";
   selectedRows?: PrimaryKeyType<Q>[];
   isAllSelected?: boolean;
-  /**
-   * @deprecated Use {@link onRowSelectionChanged} instead.
-   */
-  onRowSelection?: (
-    selectedRowIds: PrimaryKeyType<Q>[],
-    isSelectAll: boolean
-  ) => void;
   onRowSelectionChanged?: (change: UseRowSelectionChange<Q, RDPs>) => void;
   data:
     | Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>
@@ -69,19 +62,17 @@ export interface UseRowSelectionResult {
   onToggleRow: (
     rowId: string,
     rowIndex: number,
-    isShiftClick?: boolean
+    isShiftClick?: boolean,
   ) => void;
 }
 
 export function useRowSelection<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >({
   selectionMode = "none",
   selectedRows,
   isAllSelected: isAllSelectedProp,
-  // eslint-disable-next-line @typescript-eslint/no-deprecated -- intentional pass-through to fire alongside onRowSelectionChanged for backwards compatibility
-  onRowSelection,
   onRowSelectionChanged,
   data,
 }: UseRowSelectionProps<Q, RDPs>): UseRowSelectionResult {
@@ -122,7 +113,7 @@ export function useRowSelection<
 
   const selectedCount = useMemo(
     () => Object.values(rowSelectionState).filter(Boolean).length,
-    [rowSelectionState]
+    [rowSelectionState],
   );
   const totalCount = data?.length ?? 0;
   const isAllSelected = deriveIsAllSelected(
@@ -130,7 +121,7 @@ export function useRowSelection<
     isAllSelectedProp,
     internalIsAllSelected,
     selectedCount,
-    totalCount
+    totalCount,
   );
   const hasSelection = isAllSelected || selectedCount > 0;
 
@@ -139,19 +130,18 @@ export function useRowSelection<
 
   const fireSelectionCallbacks = useEventCallback(
     (ids: PrimaryKeyType<Q>[], isSelectAll: boolean) => {
-      onRowSelection?.(ids, isSelectAll);
       if (onRowSelectionChanged) {
         const currentData = data ?? [];
         const selectedKeySet = new Set(ids.map((id) => String(id)));
         const instances = currentData.filter((item) =>
-          selectedKeySet.has(String(item.$primaryKey))
+          selectedKeySet.has(String(item.$primaryKey)),
         );
         onRowSelectionChanged({
           selectedRows: instances,
           isSelectAll,
         });
       }
-    }
+    },
   );
 
   const onToggleAll = useCallback(() => {
@@ -232,7 +222,7 @@ export function useRowSelection<
       fireSelectionCallbacks,
       rowSelectionState,
       lastSelectedRowIndex,
-    ]
+    ],
   );
 
   // Refire callbacks when uncontrolled "select all" is active and new rows arrive.
@@ -250,7 +240,7 @@ export function useRowSelection<
       lastFiredAllSelectedIdsRef.current = serializedIds;
       fireSelectionCallbacks(ids, true);
     },
-    [isControlled, internalIsAllSelected, data, fireSelectionCallbacks]
+    [isControlled, internalIsAllSelected, data, fireSelectionCallbacks],
   );
 
   return {
@@ -265,7 +255,7 @@ export function useRowSelection<
 
 interface GetSelectedRowsProps<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   rowId: string;
   rowIndex: number;
@@ -276,7 +266,7 @@ interface GetSelectedRowsProps<
 
 function getSingleSelectionRows<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >({
   rowId,
   rowIndex,
@@ -289,7 +279,7 @@ function getSingleSelectionRows<
 
 function getRangeSelectionRows<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >({
   lastSelectedRowIndex,
   rowIndex,
@@ -315,7 +305,7 @@ function getRangeSelectionRows<
 
 function isCurrentlySelected<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >({
   rowIndex,
   data,
@@ -331,7 +321,7 @@ function isCurrentlySelected<
 
 function getMultipleSelectionRows<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >({
   rowIndex,
   data,
@@ -346,11 +336,11 @@ function getMultipleSelectionRows<
 
 function getRowsInRange<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   data: Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>,
   startIndex: number,
-  endIndex: number
+  endIndex: number,
 ): Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>> {
   const start = Math.min(startIndex, endIndex);
   const end = Math.max(startIndex, endIndex);
@@ -373,7 +363,7 @@ function deriveIsAllSelected(
   isAllSelectedProp: boolean | undefined,
   internalIsAllSelected: boolean,
   selectedCount: number,
-  totalCount: number
+  totalCount: number,
 ): boolean {
   if (isControlled && isAllSelectedProp !== undefined) return isAllSelectedProp;
   if (!isControlled && internalIsAllSelected) return true;
@@ -381,7 +371,7 @@ function deriveIsAllSelected(
 }
 
 function getRowSelectionState<Q extends ObjectOrInterfaceDefinition>(
-  primaryKeys: PrimaryKeyType<Q>[]
+  primaryKeys: PrimaryKeyType<Q>[],
 ): RowSelectionState {
   return primaryKeys.reduce<RowSelectionState>((acc, primaryKey) => {
     acc[getRowIdFromPrimaryKey(primaryKey)] = true;
@@ -391,10 +381,10 @@ function getRowSelectionState<Q extends ObjectOrInterfaceDefinition>(
 
 function getSelectedPrimaryKeys<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   selectionState: RowSelectionState,
-  data: Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>
+  data: Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>,
 ): PrimaryKeyType<Q>[] {
   return data
     .filter((item) => selectionState[getRowId(item)])

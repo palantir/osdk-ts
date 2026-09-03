@@ -31,12 +31,12 @@ import type {
  */
 export async function getOntologyRidsForEntities(
   ctx: ConjureContext,
-  request: _api_OntologyRidsForEntitiesRequest
+  request: _api_OntologyRidsForEntitiesRequest,
 ): Promise<_api_OntologyRidsForEntitiesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/getOntologyRidsForEntities`,
     "POST",
-    request
+    request,
   );
 }

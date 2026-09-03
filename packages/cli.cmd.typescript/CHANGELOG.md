@@ -1,5 +1,183 @@
 # @osdk/cli.cmd.typescript
 
+## 0.90.0
+
+### Patch Changes
+
+- @osdk/generator@2.64.0
+- @osdk/cli.common@0.90.0
+
+## 0.89.0
+
+### Patch Changes
+
+- @osdk/generator@2.63.0
+- @osdk/cli.common@0.89.0
+
+## 0.88.0
+
+### Patch Changes
+
+- @osdk/generator@2.62.0
+- @osdk/cli.common@0.88.0
+
+## 0.87.0
+
+### Minor Changes
+
+- d592d46: Move @arethetypeswrong/cli to devDependencies so installing the CLI no longer pulls in a check-only tool
+
+### Patch Changes
+
+- @osdk/generator@2.61.0
+- @osdk/cli.common@0.87.0
+
+## 0.86.0
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+  - @osdk/generator@2.60.0
+  - @osdk/cli.common@0.86.0
+
+## 0.85.0
+
+### Patch Changes
+
+- @osdk/cli.common@0.85.0
+
+## 0.84.0
+
+### Patch Changes
+
+- @osdk/generator@2.59.0
+- @osdk/cli.common@0.84.0
+
+## 0.83.0
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+- Updated dependencies [90cce42]
+  - @osdk/generator@2.58.0
+  - @osdk/cli.common@0.83.0
+
+## 0.82.0
+
+### Patch Changes
+
+- @osdk/generator@2.57.0
+- @osdk/cli.common@0.82.0
+
+## 0.81.0
+
+### Patch Changes
+
+- @osdk/generator@2.56.0
+- @osdk/cli.common@0.81.0
+
+## 0.80.0
+
+### Patch Changes
+
+- @osdk/generator@2.55.0
+- @osdk/cli.common@0.80.0
+
+## 0.79.0
+
+### Minor Changes
+
+- 8bd0053: Gate ontology metadata generation behind the additive, opt-in `--experimentalOntologyMetadata` flag, replacing the unreleased negative `--disableOntologyMetadataExport`
+
+### Patch Changes
+
+- @osdk/generator@2.54.0
+- @osdk/cli.common@0.79.0
+
+## 0.78.0
+
+### Minor Changes
+
+- 5bd3024: Type the ontology metadata json subpath per resolution mode instead of per generated package type, and honor --generateOntologyMetadata when generating sources in place (without --asPackage)
+
+### Patch Changes
+
+- Updated dependencies [5bd3024]
+- Updated dependencies [c14abb8]
+  - @osdk/generator@2.53.0
+  - @osdk/cli.common@0.78.0
+
+## 0.77.0
+
+### Patch Changes
+
+- @osdk/generator@2.52.0
+- @osdk/cli.common@0.77.0
+
+## 0.76.0
+
+### Patch Changes
+
+- @osdk/generator@2.51.0
+- @osdk/cli.common@0.76.0
+
+## 0.75.0
+
+### Patch Changes
+
+- @osdk/generator@2.50.0
+- @osdk/cli.common@0.75.0
+
+## 0.74.0
+
+### Patch Changes
+
+- @osdk/generator@2.49.0
+- @osdk/cli.common@0.74.0
+
+## 0.73.0
+
+### Patch Changes
+
+- @osdk/generator@2.48.0
+- @osdk/cli.common@0.73.0
+
+## 0.72.0
+
+### Patch Changes
+
+- @osdk/generator@2.47.0
+- @osdk/cli.common@0.72.0
+
+## 0.71.0
+
+### Patch Changes
+
+- @osdk/generator@2.46.0
+- @osdk/cli.common@0.71.0
+
+## 0.70.0
+
+### Patch Changes
+
+- @osdk/cli.common@0.70.0
+
+## 0.69.0
+
+### Patch Changes
+
+- @osdk/generator@2.45.0
+- @osdk/cli.common@0.69.0
+
+## 0.68.0
+
+### Patch Changes
+
+- Updated dependencies [f29a4df]
+  - @osdk/generator@2.44.0
+  - @osdk/cli.common@0.68.0
+
 ## 0.67.0
 
 ### Patch Changes

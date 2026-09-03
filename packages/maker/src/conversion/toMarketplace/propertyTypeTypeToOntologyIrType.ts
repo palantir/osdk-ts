@@ -27,7 +27,7 @@ import { convertMainValue } from "./convertMainValue.js";
 export function propertyTypeTypeToOntologyIrType(
   type: PropertyTypeType,
   apiName?: string,
-  sharedPropertyType?: SharedPropertyType
+  sharedPropertyType?: SharedPropertyType,
 ): OntologyIrType {
   switch (true) {
     case typeof type === "object" && type.type === "marking":
@@ -56,7 +56,7 @@ export function propertyTypeTypeToOntologyIrType(
               ...fieldTypeDefinition,
               apiName: key,
               fieldType: propertyTypeTypeToOntologyIrType(
-                fieldTypeDefinition.fieldType
+                fieldTypeDefinition.fieldType,
               ),
               displayMetadata: fieldTypeDefinition.displayMetadata ?? {
                 displayName: key,
@@ -107,6 +107,17 @@ export function propertyTypeTypeToOntologyIrType(
         decimal: {
           precision: type.precision,
           scale: type.scale,
+        },
+      };
+
+    case typeof type === "object" && type.type === "vector":
+      return {
+        type: "vector",
+        vector: {
+          dimension: type.dimension,
+          supportsSearchWith: [type.supportsSearchWith],
+          embeddingModel: type.embeddingModel,
+          quantization: type.quantization,
         },
       };
 

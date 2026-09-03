@@ -117,21 +117,21 @@ export interface ReducerTest extends $ObjectTypeDefinition {
     implements: ['ReducerTestInterface'];
     interfaceImplementations: {
       ReducerTestInterface: {
-        stringFromNonMainValueOfStruct: {
+        stringFromStruct: {
           type: 'structField';
           propertyApiName: 'struct';
           structFieldApiName: 'string';
         };
-        stringFromReducedMainValueStructArray: {
+        integerFromReducedMainValueStructArray: {
           type: 'structField';
           propertyApiName: 'struct';
           structFieldApiName: 'integer';
         };
-        stringFromArrayFromAlreadyReduced: {
+        stringArray: {
           type: 'localProperty';
           propertyApiName: 'stringArray';
         };
-        stringFromSingleMainValue: {
+        stringFromReducedArray: {
           type: 'reduced';
           implementation: {
             type: 'structField';
@@ -139,7 +139,7 @@ export interface ReducerTest extends $ObjectTypeDefinition {
             structFieldApiName: 'integer';
           };
         };
-        structFromMultipleMainValue: {
+        structWithLessPropsThanOt: {
           type: 'struct';
           mapping: {
             string: {
@@ -158,12 +158,12 @@ export interface ReducerTest extends $ObjectTypeDefinition {
     };
     interfaceMap: {
       ReducerTestInterface: {
-        stringFromArrayFromAlreadyReduced: 'stringArray';
+        stringArray: 'stringArray';
       };
     };
     inverseInterfaceMap: {
       ReducerTestInterface: {
-        stringArray: 'stringFromArrayFromAlreadyReduced';
+        stringArray: 'stringArray';
       };
     };
     links: {};

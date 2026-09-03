@@ -25,7 +25,8 @@ import { useStableObjectSet } from "../core/useStableObjectSet.js";
 const client = createClient(
   "https://stack.palantir.com/",
   "ri.ontology.main.ontology.dummy",
-  async () => "token"
+  // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
+  async () => "token",
 );
 
 type EmployeeSet = ObjectSet<typeof Employee>;
@@ -43,7 +44,7 @@ describe("useStableObjectSet", () => {
     const { result, rerender } = renderHook(
       ({ value }: { value: EmployeeSet | undefined }) =>
         useStableObjectSet(value as ObjectSet<ObjectTypeDefinition>),
-      { initialProps: { value: os } }
+      { initialProps: { value: os } },
     );
 
     const first = result.current;
@@ -65,7 +66,7 @@ describe("useStableObjectSet", () => {
       const { result, rerender } = renderHook(
         ({ value }: { value: EmployeeSet }) =>
           useStableObjectSet(value as ObjectSet<ObjectTypeDefinition>),
-        { initialProps: { value: osA } }
+        { initialProps: { value: osA } },
       );
 
       const first = result.current;
@@ -73,7 +74,7 @@ describe("useStableObjectSet", () => {
 
       // Wire forms are equal
       expect(result.current).toBe(first);
-    }
+    },
   );
 
   it(
@@ -88,7 +89,7 @@ describe("useStableObjectSet", () => {
       const { result, rerender } = renderHook(
         ({ value }: { value: EmployeeSet }) =>
           useStableObjectSet(value as ObjectSet<ObjectTypeDefinition>),
-        { initialProps: { value: osA } }
+        { initialProps: { value: osA } },
       );
 
       const first = result.current;
@@ -98,7 +99,7 @@ describe("useStableObjectSet", () => {
 
       expect(result.current).toBe(osB);
       expect(result.current).not.toBe(first);
-    }
+    },
   );
 
   it("transitions between undefined and a defined ObjectSet", () => {
@@ -109,7 +110,7 @@ describe("useStableObjectSet", () => {
         useStableObjectSet(value as ObjectSet<ObjectTypeDefinition>),
       {
         initialProps: { value: undefined as EmployeeSet | undefined },
-      }
+      },
     );
 
     expect(result.current).toBeUndefined();

@@ -39,9 +39,9 @@ describe("Value Types", () => {
           constraints: [{ constraint: { allowedValues: ["TRUE_VALUE"] } }],
         },
         version: "not a version",
-      })
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
-      "[Error: Invariant failed: Version is not a valid semver]"
+      "[Error: Invariant failed: Version is not a valid semver]",
     );
   });
 
@@ -81,6 +81,10 @@ describe("Value Types", () => {
           type: "string",
           displayName: "Constrained String",
           valueType: testStringValueType,
+          nullability: {
+            noNulls: true,
+            noEmptyCollections: false,
+          },
         },
       },
     });
@@ -102,7 +106,7 @@ describe("Value Types", () => {
 
     expect(objectPropertyType.dataConstraints).toBeDefined();
     expect(
-      objectPropertyType.dataConstraints?.propertyTypeConstraints
+      objectPropertyType.dataConstraints?.propertyTypeConstraints,
     ).toHaveLength(1);
 
     const constraintWrapper =
@@ -114,7 +118,7 @@ describe("Value Types", () => {
           type: "string";
           string: { length: { minSize: number; maxSize: number } };
         }
-      ).string.length.minSize
+      ).string.length.minSize,
     ).toBe(5);
     expect(
       (
@@ -122,11 +126,57 @@ describe("Value Types", () => {
           type: "string";
           string: { length: { minSize: number; maxSize: number } };
         }
-      ).string.length.maxSize
+      ).string.length.maxSize,
     ).toBe(20);
     expect(constraintWrapper?.failureMessage?.message).toBe(
-      "String must be between 5 and 20 characters"
+      "String must be between 5 and 20 characters",
     );
+    expect(objectPropertyType.dataConstraints?.nullabilityV2).toEqual({
+      noNulls: true,
+      noEmptyCollections: false,
+    });
+  });
+
+  it("Preserves nullability for properties with unconstrained value types", () => {
+    const valueType = defineValueType({
+      apiName: "classification",
+      displayName: "Classification",
+      type: { type: "string" },
+      version: "1.0.0",
+    });
+
+    defineObject({
+      titlePropertyApiName: "id",
+      displayName: "Classified Object",
+      pluralDisplayName: "Classified Objects",
+      apiName: "classifiedObject",
+      primaryKeyPropertyApiName: "id",
+      properties: {
+        id: { type: "string" },
+        classification: {
+          type: "string",
+          valueType,
+          nullability: {
+            noNulls: true,
+            noEmptyCollections: true,
+          },
+        },
+      },
+    });
+
+    const property =
+      dumpOntologyFullMetadata().ontology.objectTypes[
+        "com.palantir.classifiedObject"
+      ].objectType.propertyTypes.classification;
+
+    expect(property.dataConstraints).toEqual({
+      propertyTypeConstraints: [],
+      nullability: undefined,
+      nullabilityV2: {
+        noNulls: true,
+        noEmptyCollections: true,
+      },
+    });
   });
 
   it("Correctly serializes a value type", () => {
@@ -312,9 +362,9 @@ describe("Value Types", () => {
           type: "boolean",
         },
         version: "1.0.0",
-      })
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
-      "[Error: Invariant failed: Value type with apiName duplicateTest and version 1.0.0 is already defined]"
+      "[Error: Invariant failed: Value type with apiName duplicateTest and version 1.0.0 is already defined]",
     );
   });
 

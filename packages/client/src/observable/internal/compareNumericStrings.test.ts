@@ -32,13 +32,13 @@ describe(compareNumericStrings, () => {
   it("preserves precision for longs beyond Number.MAX_SAFE_INTEGER", () => {
     // 2^53 and 2^53 + 1 are indistinguishable as JS numbers.
     expect(compareNumericStrings("9007199254740993", "9007199254740992")).toBe(
-      1
+      1,
     );
     expect(compareNumericStrings("9007199254740992", "9007199254740993")).toBe(
-      -1
+      -1,
     );
     expect(compareNumericStrings("9007199254740992", "9007199254740992")).toBe(
-      0
+      0,
     );
   });
 
@@ -59,7 +59,7 @@ describe(compareNumericStrings, () => {
         "9007199254740993.6",
         "9007199254740993.5",
         "9007199254740993.55",
-      ])
+      ]),
     ).toEqual([
       "9007199254740993.5",
       "9007199254740993.55",

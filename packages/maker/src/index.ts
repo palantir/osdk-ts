@@ -24,6 +24,7 @@ export type { ActionParameterConditionalOverride } from "./api/action/ActionPara
 export type {
   ActionParameterConfiguration,
   ActionParameterRequirementConstraint,
+  StructFieldValidationConfiguration,
 } from "./api/action/ActionParameterConfiguration.js";
 export type { ActionParameterType } from "./api/action/ActionParameterType.js";
 export { isActionParameterTypePrimitive } from "./api/action/ActionParameterType.js";
@@ -88,6 +89,7 @@ export {
   getOntologyDefinition,
   initializeOntologyState,
   withoutNamespace,
+  writeDependencyFile,
   writeStaticObjects,
 } from "./api/defineOntology.js";
 export { defineSharedPropertyType } from "./api/defineSpt.js";
@@ -105,6 +107,7 @@ export type {
   OneToManyLinkTypeDefinition,
   UserLinkTypeStatus,
 } from "./api/links/LinkType.js";
+export type { InterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
 export type { EditsHistoryConfig } from "./api/object/EditsHistoryConfig.js";
 export type { ObjectPropertyType } from "./api/object/ObjectPropertyType.js";
 export type { ObjectType } from "./api/object/ObjectType.js";
@@ -117,7 +120,10 @@ export type {
 export type { ObjectTypeDefinition } from "./api/object/ObjectTypeDefinition.js";
 export type { SecurityConditionDefinition } from "./api/object/SecurityCondition.js";
 export type { Nullability } from "./api/properties/Nullability.js";
-export type { PropertyTypeType } from "./api/properties/PropertyTypeType.js";
+export type {
+  PropertyTypeType,
+  PropertyTypeTypeVector,
+} from "./api/properties/PropertyTypeType.js";
 export { isExotic } from "./api/properties/PropertyTypeType.js";
 export type { SharedPropertyType } from "./api/properties/SharedPropertyType.js";
 export {
@@ -126,6 +132,7 @@ export {
   hasRenderHints,
   shouldBeIndexedForSearch,
   shouldNotHaveRenderHints,
+  validateVectorProperty,
 } from "./api/propertyConversionUtils.js";
 export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";

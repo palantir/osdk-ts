@@ -1,5 +1,155 @@
 # @osdk/widget.api
 
+## 3.63.0
+
+### Patch Changes
+
+- @osdk/api@2.64.0
+
+## 3.62.0
+
+### Patch Changes
+
+- Updated dependencies [08ba782]
+  - @osdk/api@2.63.0
+
+## 3.61.0
+
+### Patch Changes
+
+- @osdk/api@2.62.0
+
+## 3.60.0
+
+### Patch Changes
+
+- Updated dependencies [bdf45fa]
+- Updated dependencies [34cb7e0]
+  - @osdk/api@2.61.0
+
+## 3.59.0
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+  - @osdk/api@2.60.0
+
+## 3.58.0
+
+## 3.57.0
+
+### Patch Changes
+
+- Updated dependencies [4ae6d8b]
+- Updated dependencies [1aff7f4]
+  - @osdk/api@2.59.0
+
+## 3.56.0
+
+### Patch Changes
+
+- @osdk/api@2.58.0
+
+## 3.55.0
+
+### Patch Changes
+
+- @osdk/api@2.57.0
+
+## 3.54.0
+
+### Minor Changes
+
+- 47c66c3: Generate widget set manifest authorizations defined in a resources.json file
+
+### Patch Changes
+
+- Updated dependencies [342c492]
+  - @osdk/api@2.56.0
+
+## 3.53.0
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+
+## 3.52.0
+
+### Patch Changes
+
+- @osdk/api@2.54.0
+
+## 3.51.0
+
+### Patch Changes
+
+- @osdk/api@2.53.0
+
+## 3.50.0
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+
+## 3.49.0
+
+### Patch Changes
+
+- Updated dependencies [b99b0bb]
+  - @osdk/api@2.51.0
+
+## 3.48.0
+
+### Patch Changes
+
+- @osdk/api@2.50.0
+
+## 3.47.0
+
+### Patch Changes
+
+- @osdk/api@2.49.0
+
+## 3.46.0
+
+### Patch Changes
+
+- @osdk/api@2.48.0
+
+## 3.45.0
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+
+## 3.44.0
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+
+## 3.43.0
+
+## 3.42.0
+
+### Patch Changes
+
+- Updated dependencies [db2bfa2]
+  - @osdk/api@2.45.0
+
+## 3.41.0
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+  - @osdk/api@2.44.0
+
 ## 3.40.0
 
 ### Patch Changes

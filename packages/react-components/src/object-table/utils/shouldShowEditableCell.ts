@@ -15,24 +15,30 @@
  */
 
 import type { EditablePredicate } from "./editableUtils.js";
+import { isCellEditable } from "./editableUtils.js";
 
 /**
- * Determines if a cell should be rendered as editable
+ * Determines if a cell should be rendered as editable.
  *
- * @param editable - Whether the column is marked as editable
+ * Resolves `editable` against `object` internally. Callers must not
+ * pre-resolve it — taking the raw predicate here is what keeps every call
+ * site from having to remember the per-row check.
+ *
+ * @param editable - The column's `editable` value: `true`, `false`, or a per-row predicate
+ * @param object - The row's object, used to resolve a predicate `editable`
  * @param onCellEdit - The onCellEdit callback from table meta (indicates edit handlers exist)
  * @param isInEditMode - Whether the table is currently in edit mode
  * @returns true if the cell should be rendered with edit controls
  */
 export function shouldShowEditableCell<TData>(
   editable: EditablePredicate<TData> | undefined,
+  object: TData,
   onCellEdit: unknown,
-  isInEditMode: boolean | undefined
+  isInEditMode: boolean | undefined,
 ): boolean {
   return (
-    editable != null &&
-    editable !== false &&
     onCellEdit != null &&
-    isInEditMode === true
+    isInEditMode === true &&
+    isCellEditable(editable, object)
   );
 }

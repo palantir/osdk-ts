@@ -25,6 +25,7 @@ import {
   hasRenderHints,
   shouldBeIndexedForSearch,
   shouldNotHaveRenderHints,
+  validateVectorProperty,
 } from "../../api/propertyConversionUtils.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
 import { convertReducers } from "./convertReducers.js";
@@ -33,16 +34,17 @@ import { convertValueTypeDataConstraints } from "./convertValueTypeDataConstrain
 import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIrType.js";
 
 export function convertObjectPropertyType(
-  property: ObjectPropertyType
+  property: ObjectPropertyType,
 ): OntologyIrPropertyType {
   const apiName = namespace + property.apiName;
   invariant(
     !shouldNotHaveRenderHints(property.type) ||
       !hasRenderHints(property.typeClasses),
     `Property type ${apiName} of type '${getPropertyTypeName(
-      property.type
-    )}' should not have render hints`
+      property.type,
+    )}' should not have render hints`,
   );
+  validateVectorProperty(apiName, property.type, property.array);
   const output: OntologyIrPropertyType = {
     apiName: property.apiName,
     sharedPropertyTypeApiName: property.sharedPropertyType?.apiName,
@@ -62,13 +64,13 @@ export function convertObjectPropertyType(
             subtype: propertyTypeTypeToOntologyIrType(
               property.type,
               property.apiName,
-              property.sharedPropertyType
+              property.sharedPropertyType,
             ),
             reducers: convertReducers(
               property.type,
               property.apiName,
               property.reducers ?? [],
-              property.sharedPropertyType
+              property.sharedPropertyType,
             ),
           },
         }
@@ -79,7 +81,10 @@ export function convertObjectPropertyType(
     status: convertObjectStatus(property.status),
     inlineAction: undefined,
     dataConstraints: property.valueType
-      ? convertValueTypeDataConstraints(property.valueType.constraints)
+      ? convertValueTypeDataConstraints(
+          property,
+          property.valueType.constraints,
+        )
       : convertNullabilityToDataConstraint(property),
     sharedPropertyTypeRid: property.sharedPropertyType?.apiName,
     valueType: property.valueType

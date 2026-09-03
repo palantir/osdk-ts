@@ -18,8 +18,8 @@
 
 import type { Media } from "@osdk/api";
 import type {
+  BasePdfViewerProps,
   PdfTextHighlightEvent,
-  PdfViewerMediaProps,
   PdfViewerProps,
 } from "@osdk/react-components/experimental/pdf-viewer";
 import {
@@ -28,6 +28,7 @@ import {
 } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http } from "msw";
+import { useEffect, useState } from "react";
 import { fn } from "storybook/test";
 
 const SAMPLE_PDF_URL = `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
@@ -59,21 +60,21 @@ function createMockMedia(url: string, filename: string): Media {
 
 const mockMedia = createMockMedia(
   SAMPLE_PDF_URL,
-  "compressed.tracemonkey-pldi-09.pdf"
+  "compressed.tracemonkey-pldi-09.pdf",
 );
 const mockBookmarkedMedia = createMockMedia(
   BOOKMARKED_PDF_URL,
-  "pdf-example-bookmarks.pdf"
+  "pdf-example-bookmarks.pdf",
 );
 
-const meta: Meta<PdfViewerMediaProps> = {
+const meta: Meta<PdfViewerProps> = {
   title: "Components/DocumentViewer/Renderers/PdfViewer/Features",
   component: PdfViewer,
   tags: ["beta"],
   args: {
     media: mockMedia,
   },
-  render: (args: PdfViewerMediaProps) => (
+  render: (args: PdfViewerProps) => (
     <div style={{ height: "600px" }}>
       <PdfViewer {...args} />
     </div>
@@ -138,11 +139,11 @@ const meta: Meta<PdfViewerMediaProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const WithPdfUrl: StoryObj<PdfViewerProps> = {
+export const WithPdfUrl: StoryObj<BasePdfViewerProps> = {
   args: {
     src: SAMPLE_PDF_URL,
   },
-  render: (args: PdfViewerProps) => (
+  render: (args: BasePdfViewerProps) => (
     <div style={{ height: "600px" }}>
       <BasePdfViewer {...args} />
     </div>
@@ -150,9 +151,49 @@ export const WithPdfUrl: StoryObj<PdfViewerProps> = {
   parameters: {
     docs: {
       source: {
-        code: `import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+        code: `<BasePdfViewer src="/compressed.tracemonkey-pldi-09.pdf" />`,
+      },
+    },
+  },
+};
 
-<BasePdfViewer src="/compressed.tracemonkey-pldi-09.pdf" />`,
+function BlobViewerDemo({ url }: { url: string }) {
+  const [blob, setBlob] = useState<Blob | undefined>(undefined);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetch(url)
+      .then((response) => response.blob())
+      .then((fetched) => {
+        if (!cancelled) {
+          setBlob(fetched);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [url]);
+
+  return (
+    <div style={{ height: "600px" }}>
+      {blob == null ? (
+        "Fetching PDF into a Blob…"
+      ) : (
+        <BasePdfViewer src={blob} />
+      )}
+    </div>
+  );
+}
+
+export const WithBlob: StoryObj<BasePdfViewerProps> = {
+  render: () => <BlobViewerDemo url={SAMPLE_PDF_URL} />,
+  parameters: {
+    docs: {
+      source: {
+        code: `// src also accepts in-memory bytes: Blob, ArrayBuffer, or Uint8Array
+const blob = await (await fetch("/compressed.tracemonkey-pldi-09.pdf")).blob();
+
+<BasePdfViewer src={blob} />`,
       },
     },
   },
@@ -194,9 +235,7 @@ export const WithAnnotations: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
-
-<PdfViewer
+        code: `<PdfViewer
   media={myMediaObject}
   annotations={[
     { id: "h1", type: "highlight", page: 1, rect: { x: 55, y: 696, width: 480, height: 24 }, label: "Title highlight" },
@@ -204,7 +243,7 @@ export const WithAnnotations: Story = {
     { id: "c1", type: "comment", page: 1, rect: { x: 538, y: 400, width: 24, height: 24 }, label: "Review this" },
     { id: "p1", type: "pin", page: 1, rect: { x: 44, y: 446, width: 16, height: 16 }, label: "Pin" },
   ]}
-  onAnnotationClick={(annotation) => handleAnnotationClick(annotation)}
+  onAnnotationClick={handleAnnotationClick}
 />`,
       },
     },
@@ -218,9 +257,7 @@ export const WithSidebar: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
-
-<PdfViewer media={myMediaObject} initialSidebarOpen />`,
+        code: `<PdfViewer media={myMediaObject} initialSidebarOpen />`,
       },
     },
   },
@@ -233,9 +270,7 @@ export const CustomScale: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
-
-<PdfViewer media={myMediaObject} initialScale={1.5} />`,
+        code: `<PdfViewer media={myMediaObject} initialScale={1.5} />`,
       },
     },
   },
@@ -248,9 +283,7 @@ export const WithAutoSize: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
-
-<PdfViewer media={myMediaObject} initialAutoSize />`,
+        code: `<PdfViewer media={myMediaObject} initialAutoSize />`,
       },
     },
   },
@@ -263,9 +296,7 @@ export const WithDownload: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
-
-<PdfViewer media={myMediaObject} enableDownload />`,
+        code: `<PdfViewer media={myMediaObject} enableDownload />`,
       },
     },
   },
@@ -279,19 +310,17 @@ export const WithOutlineSidebar: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
-
-<PdfViewer media={myMediaObject} initialSidebarOpen sidebarMode="outline" />`,
+        code: `<PdfViewer media={myMediaObject} initialSidebarOpen sidebarMode="outline" />`,
       },
     },
   },
 };
 
-export const Loading: StoryObj<PdfViewerProps> = {
+export const Loading: StoryObj<BasePdfViewerProps> = {
   args: {
     src: "/loading.pdf",
   },
-  render: (args: PdfViewerProps) => (
+  render: (args: BasePdfViewerProps) => (
     <div style={{ height: "600px" }}>
       <BasePdfViewer {...args} />
     </div>
@@ -304,14 +333,20 @@ export const Loading: StoryObj<PdfViewerProps> = {
         }),
       ],
     },
+    docs: {
+      source: {
+        code: `// Loading state handling is built-in
+<BasePdfViewer src="/slow-to-download.pdf" />`,
+      },
+    },
   },
 };
 
-export const Error: StoryObj<PdfViewerProps> = {
+export const Error: StoryObj<BasePdfViewerProps> = {
   args: {
     src: "/error.pdf",
   },
-  render: (args: PdfViewerProps) => (
+  render: (args: BasePdfViewerProps) => (
     <div style={{ height: "600px" }}>
       <BasePdfViewer {...args} />
     </div>
@@ -323,6 +358,12 @@ export const Error: StoryObj<PdfViewerProps> = {
           return new Response("Server Error", { status: 500 });
         }),
       ],
+    },
+    docs: {
+      source: {
+        code: `// A failed fetch or an unparseable document renders the built-in error state
+<BasePdfViewer src="/does-not-load.pdf" />`,
+      },
     },
   },
 };
@@ -348,7 +389,7 @@ function HighlightModeDemo({
   );
 }
 
-export const WithHighlightMode: StoryObj<PdfViewerProps> = {
+export const WithHighlightMode: StoryObj<BasePdfViewerProps> = {
   args: {
     onTextHighlight: fn(),
     onHighlightDelete: fn(),
@@ -363,11 +404,7 @@ export const WithHighlightMode: StoryObj<PdfViewerProps> = {
   parameters: {
     docs: {
       source: {
-        code: `import { useState, useCallback } from "react";
-import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
-import type { PdfAnnotation, PdfTextHighlightEvent } from "@osdk/react-components/experimental/pdf-viewer";
-
-function MyPdfViewer({ src }: { src: string }) {
+        code: `function MyPdfViewer({ src }: { src: string }) {
   const [annotations, setAnnotations] = useState<PdfAnnotation[]>([]);
 
   const handleTextHighlight = useCallback((event: PdfTextHighlightEvent) => {
@@ -408,15 +445,27 @@ export const WithEmbeddedOutline: Story = {
     initialSidebarOpen: true,
     sidebarMode: "outline",
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `// The outline content is auto-generated from the PDF's own bookmarks
+<PdfViewer
+  media={handbook.pdf}
+  initialSidebarOpen
+  sidebarMode="outline"
+/>`,
+      },
+    },
+  },
 };
 
-export const InteractiveForm: StoryObj<PdfViewerProps> = {
+export const InteractiveForm: StoryObj<BasePdfViewerProps> = {
   args: {
     src: `${import.meta.env.BASE_URL}interactive-form-pdf.pdf`,
     onFormSubmit: fn(),
     onFormChange: fn(),
   },
-  render: (args: PdfViewerProps) => (
+  render: (args: BasePdfViewerProps) => (
     <div style={{ height: "600px" }}>
       <BasePdfViewer {...args} />
     </div>
@@ -424,12 +473,24 @@ export const InteractiveForm: StoryObj<PdfViewerProps> = {
   parameters: {
     docs: {
       source: {
-        code: `import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+        code: `const handleFormChange = useCallback(
+  (fieldName: string, value: PdfFormFieldValue) => {
+    console.log(fieldName, value);
+  },
+  [],
+);
+
+const handleFormSubmit = useCallback(
+  (data: Record<string, PdfFormFieldValue>) => {
+    console.log("Form submitted:", data);
+  },
+  [],
+);
 
 <BasePdfViewer
   src="https://example.com/interactive-form.pdf"
-  onFormChange={(fieldName, value) => console.log(fieldName, value)}
-  onFormSubmit={(data) => console.log("Form submitted:", data)}
+  onFormChange={handleFormChange}
+  onFormSubmit={handleFormSubmit}
 />`,
       },
     },

@@ -31,7 +31,7 @@ describe("ObjectSetHelper RDP canonicalization", () => {
   beforeAll(() => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/"),
-      createClient
+      createClient,
     );
     client = testSetup.client;
 

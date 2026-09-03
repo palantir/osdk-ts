@@ -41,7 +41,7 @@ import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
 const USER_AGENT = `osdk-cli.cmd.typescript/${process.env.PACKAGE_VERSION}`;
 
 export async function handleGenerate(
-  args: TypescriptGenerateArgs
+  args: TypescriptGenerateArgs,
 ): Promise<void> {
   let success = false;
   if (args.ontologyPath) {
@@ -50,7 +50,7 @@ export async function handleGenerate(
     success = await generateFromStack(args);
   } else {
     throw new YargsCheckError(
-      "Must have specified ontologyPath or stack and clientId"
+      "Must have specified ontologyPath or stack and clientId",
     );
   }
 
@@ -68,7 +68,7 @@ async function generateFromLocalFile(args: TypescriptGenerateArgs) {
   }
 
   const ontology = JSON.parse(
-    await fs.promises.readFile(args.ontologyPath!, "utf-8")
+    await fs.promises.readFile(args.ontologyPath!, "utf-8"),
   );
 
   return await generateClientSdk(ontology, args);
@@ -85,8 +85,9 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
   });
   const ctx = createSharedClientContext(
     args.foundryUrl!,
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     async () => token.access_token,
-    USER_AGENT
+    USER_AGENT,
   );
 
   try {
@@ -94,13 +95,13 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
 
     if (args.ontologyRid) {
       ontologies.data = ontologies.data.filter(
-        (o) => o.rid === args.ontologyRid
+        (o) => o.rid === args.ontologyRid,
       );
     }
 
     if (ontologies.data.length !== 1) {
       consola.error(
-        `Could not look up ontology with these credentials. Found ${ontologies.data.length} ontologies.`
+        `Could not look up ontology with these credentials. Found ${ontologies.data.length} ontologies.`,
       );
       return false;
     }
@@ -108,14 +109,14 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
     const ontology = await OntologiesV2.getFullMetadata(
       ctx,
       ontologies.data[0].apiName as OntologyIdentifier,
-      { branch: args.branch }
+      { branch: args.branch },
     );
 
     function sortKeys<T extends Record<string, any>>(
       obj: T,
       mutateValue?: (
-        x: T extends Record<string, infer Y> ? Y : never
-      ) => T extends Record<string, infer Y> ? Y : never
+        x: T extends Record<string, infer Y> ? Y : never,
+      ) => T extends Record<string, infer Y> ? Y : never,
     ): T {
       const sorted = Object.entries(obj).sort(([a], [b]) => a.localeCompare(b));
       const mutated = mutateValue
@@ -135,7 +136,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
       return {
         ...x,
         linkTypes: [...x.linkTypes].sort((a, b) =>
-          a.apiName.localeCompare(b.apiName)
+          a.apiName.localeCompare(b.apiName),
         ),
         implementsInterfaces2: sortKeys(x.implementsInterfaces2),
         sharedPropertyTypeMapping: sortKeys(x.sharedPropertyTypeMapping),
@@ -158,14 +159,14 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
       Object.fromEntries(
         Object.entries(ontology.queryTypes).filter(([_, query]) => {
           return !isOntologyEditQuery(query.output);
-        })
+        }),
       ),
       (x) => {
         return {
           ...x,
           parameters: sortKeys(x.parameters),
         };
-      }
+      },
     );
 
     ontology.sharedPropertyTypes = sortKeys(ontology.sharedPropertyTypes);
@@ -187,7 +188,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
 
 async function generateClientSdk(
   ontology: WireOntologyDefinition,
-  args: TypescriptGenerateArgs
+  args: TypescriptGenerateArgs,
 ) {
   const minimalFs = createNormalFs();
 
@@ -209,10 +210,10 @@ async function generateClientSdk(
           return true;
         }
         const packageJsonOriginal = JSON.parse(
-          await fs.promises.readFile(packageJsonPath, "utf-8")
+          await fs.promises.readFile(packageJsonPath, "utf-8"),
         );
         const packageJson = JSON.parse(
-          await fs.promises.readFile(packageJsonPath, "utf-8")
+          await fs.promises.readFile(packageJsonPath, "utf-8"),
         );
 
         const dependencyVersions = await getDependencyVersions();
@@ -247,14 +248,14 @@ async function generateClientSdk(
             "@osdk/api":
               dependencyVersions.osdkApiPeerVersion ??
               dependencyVersions.osdkApiVersion,
-          }
+          },
         );
 
         // only write if changed
         if (!deepEqual(packageJsonOriginal, packageJson)) {
           await fs.promises.writeFile(
             packageJsonPath,
-            JSON.stringify(packageJson, undefined, 2) + "\n"
+            JSON.stringify(packageJson, undefined, 2) + "\n",
           );
         }
       }
@@ -272,14 +273,15 @@ async function generateClientSdk(
       await getDependencyVersions(),
       process.env.PACKAGE_CLI_VERSION!,
       args.externalObjects,
-      args.externalInterfaces
+      args.externalInterfaces,
+      args.experimentalOntologyMetadata ?? false,
     );
     return true;
   } catch (e) {
     consola.error(
       "OSDK generation failed",
       (e as Error).message,
-      (e as Error).stack
+      (e as Error).stack,
     );
 
     return false;
@@ -289,7 +291,7 @@ async function generateClientSdk(
 export function updateVersionsIfTheyExist(
   packageJson: any,
   versions: Record<string, string>,
-  peerVersions: Record<string, string> = versions
+  peerVersions: Record<string, string> = versions,
 ): void {
   for (const d of ["dependencies", "devDependencies", "peerDependencies"]) {
     const v = d === "peerDependencies" ? peerVersions : versions;
@@ -314,13 +316,13 @@ export async function getDependencyVersions(): Promise<{
   const ourPackageJsonPath = await getOurPackageJsonPath();
 
   const ourPackageJson = JSON.parse(
-    await fs.promises.readFile(ourPackageJsonPath, "utf-8")
+    await fs.promises.readFile(ourPackageJsonPath, "utf-8"),
   );
 
   const typescriptVersion = ourPackageJson.devDependencies.typescript;
   const tslibVersion = ourPackageJson.dependencies.tslib;
   const areTheTypesWrongVersion =
-    ourPackageJson.dependencies["@arethetypeswrong/cli"];
+    ourPackageJson.devDependencies["@arethetypeswrong/cli"];
   const osdkClientVersion = `^${process.env.PACKAGE_CLIENT_VERSION}`;
   const osdkApiVersion = `^${process.env.PACKAGE_API_VERSION}`;
   const osdkLegacyClientVersion = `^${process.env.PACKAGE_LEGACY_CLIENT_VERSION}`;
@@ -351,7 +353,7 @@ async function getOurPackageJsonPath() {
 async function generateSourceFiles(
   args: TypescriptGenerateArgs,
   ontology: WireOntologyDefinition,
-  fs: MinimalFs
+  fs: MinimalFs,
 ) {
   await generateClientSdkVersionTwoPointZero(
     ontology,
@@ -360,7 +362,11 @@ async function generateSourceFiles(
     args.outDir,
     args.packageType,
     args.externalObjects,
-    args.externalInterfaces
+    args.externalInterfaces,
+    undefined, // externalSpts
+    undefined, // forInternalUse
+    undefined, // fixedVersionQueryTypes
+    args.experimentalOntologyMetadata ?? false,
   );
 }
 
@@ -382,6 +388,8 @@ function createNormalFs(): MinimalFs {
     mkdir: async (path: string, options?: { recursive: boolean }) => {
       await fs.promises.mkdir(path, options);
     },
+    // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     readdir: async (path: string) => fs.promises.readdir(path),
   };
 }

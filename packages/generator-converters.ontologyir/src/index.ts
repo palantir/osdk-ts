@@ -29,6 +29,7 @@ export type {
 export { isInjectedRuntimeInput } from "./convertDataType.js";
 export {
   type BlockDataApiNameLookup,
+  buildBlockDataInterfaceLinkTypeLookup,
   buildBlockDataInterfaceTypeLookup,
   buildBlockDataObjectTypeLookup,
   OntologyBlockDataToFullMetadataConverter,
@@ -39,3 +40,4 @@ export {
   type IDiscoveredFunction,
   OntologyIrToFullMetadataConverter,
 } from "./OntologyIrToFullMetadataConverter.js";
+export { toStructFieldRid, toUuid } from "./ridUtils.js";

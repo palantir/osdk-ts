@@ -24,11 +24,11 @@ import type { ValueTypeRid } from "../ValueTypeRid.js";
  */
 export async function getValueTypeVersions(
   ctx: ConjureContext,
-  valueTypeRid: ValueTypeRid
+  valueTypeRid: ValueTypeRid,
 ): Promise<GetValueTypeVersionsResponse> {
   return conjureFetch(
     ctx,
     `/type-registry/value-types/get/${valueTypeRid}/versions`,
-    "POST"
+    "POST",
   );
 }

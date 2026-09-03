@@ -110,6 +110,8 @@ export namespace ActionMetadata {
         		// (undocumented)
         description?: string;
         		// (undocumented)
+        displayName?: string;
+        		// (undocumented)
         multiplicity?: boolean;
         		// (undocumented)
         nullable?: boolean;
@@ -155,7 +157,7 @@ export namespace ActionParam {
             	} ? R extends true ? K : never : never]? : T[K] extends {
             		type: infer U
             		nullable: infer R
-            	} ? U extends keyof DataValueClientToWire ? R extends true ? DataValueClientToWire[U] | undefined : never : never : never };
+            	} ? U extends keyof DataValueClientToWire ? R extends true ? DataValueClientToWire[U] | null : never : never : never };
 }
 
 // @public (undocumented)
@@ -389,9 +391,18 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 // @public (undocumented)
 export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "cipherText" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
 
+// @public (undocumented)
+export type CipherChannelStrategy = "PREFER_EXISTING" | "PREFER_DEFAULT" | "EXISTING_ONLY" | "DEFAULT_ONLY";
+
 // @public
 export interface CipherText {
     	decrypt(): Promise<string>;
+}
+
+// @public
+export interface CipherTextValue {
+    	// (undocumented)
+    ciphertext: string;
 }
 
 // @public (undocumented)
@@ -440,6 +451,12 @@ export type ConvertProps<
 export interface CoordinateReferenceSystem {
     	// (undocumented)
     wkt?: string;
+}
+
+// @public
+export interface CreateCipherText {
+    	// (undocumented)
+    plaintext: string;
 }
 
 // @public (undocumented)
@@ -837,6 +854,8 @@ export type FetchLinksPageResult<
     	nextPageToken?: string
 };
 
+// Warning: (ae-forgotten-export) The symbol "PropertyModifierValue" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
 export interface FetchPageArgs<
 	Q extends ObjectOrInterfaceDefinition,
@@ -848,10 +867,12 @@ export interface FetchPageArgs<
 	RDP_KEYS extends string = never,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {},
 	PROPERTY_SECURITIES extends boolean = false,
-	MODIFIERS extends ApplyModifiersArg<Q> = {}
+	MODIFIERS extends ApplyModifiersArg<Q> = {},
+	DEFAULT_LOAD_LEVEL extends PropertyModifierValue | undefined = PropertyModifierValue
 > extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, PROPERTY_SECURITIES, MODIFIERS> {
     	// (undocumented)
     $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
+    	$EXPERIMENTAL_defaultLoadLevel?: DEFAULT_LOAD_LEVEL;
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -861,6 +882,7 @@ export interface FetchPageArgs<
 }
 
 // Warning: (ae-forgotten-export) The symbol "ExtractOptions" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "SelectedKeysWithDefaultLoadLevel" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ModifiersToSelectStrings_2" needs to be exported by the entry point index.d.ts
 //
 // @public
@@ -872,8 +894,9 @@ export type FetchPageResult<
 	T extends boolean = false,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
 	PROPERTY_SECURITIES extends boolean = false,
-	MODIFIERS extends ApplyModifiersArg<Q> = {}
-> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T, PROPERTY_SECURITIES>, Exclude<PropertyKeys<Q> extends L ? never : L, keyof MODIFIERS> | ModifiersToSelectStrings_2<MODIFIERS>, {}>, ORDER_BY_OPTIONS>>;
+	MODIFIERS extends ApplyModifiersArg<Q> = {},
+	DEFAULT_LOAD_LEVEL extends PropertyModifierValue | undefined = undefined
+> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T, PROPERTY_SECURITIES>, SelectedKeysWithDefaultLoadLevel<Q, L, MODIFIERS, DEFAULT_LOAD_LEVEL> | ModifiersToSelectStrings_2<MODIFIERS>, {}>, ORDER_BY_OPTIONS>>;
 
 // @public (undocumented)
 export type FlipAxis = "HORIZONTAL" | "VERTICAL" | "UNKNOWN";
@@ -1231,8 +1254,7 @@ export type MaybeScore<
 // @public (undocumented)
 export interface Media {
     	fetchContents(): Promise<Response>;
-    	// @beta
-    fetchFullMetadata?(): Promise<MediaFullMetadata>;
+    	fetchFullMetadata?(): Promise<MediaFullMetadata>;
     	fetchMetadata(): Promise<MediaMetadata_2>;
     	getMediaReference(): MediaReference;
     	// (undocumented)
@@ -1794,7 +1816,7 @@ export namespace Osdk {
         		readonly $link: Q extends {
             			linksType?: any
             		} ? Q["linksType"] : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q> : never
-        		readonly $as: <NEW_Q extends HasModifiers<P> extends true ? ValidToFrom<Q> & ObjectTypeDefinition : ValidToFrom<Q>>(type: Q extends InterfaceDefinition ? NEW_Q extends ObjectTypeDefinition ? OtHasNonLocalInterfaceImpl<Q, NEW_Q> extends true ? never : NEW_Q | string : NEW_Q | string : NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
+        		readonly $as: <NEW_Q extends HasModifiers<P> extends true ? ValidToFrom<Q> & ObjectTypeDefinition : ValidToFrom<Q>>(type: [Q] extends [InterfaceDefinition] ? NEW_Q extends ObjectTypeDefinition ? OtHasNonLocalInterfaceImpl<Q, NEW_Q> extends true ? never : NEW_Q | string : NEW_Q | string : NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
         		readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]? : CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>
         		readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends ObjectTypeDefinition ? {
             			ObjectMetadata: ObjectMetadata
@@ -1837,6 +1859,14 @@ export type OsdkObjectCreatePropertyType<
 	STRICTLY_ENFORCE_NULLABLE extends boolean = true
 > = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, GetCreatePropertyValueFromWire<T["type"]>> | undefined : MaybeNullable<T, MaybeArray<T, GetCreatePropertyValueFromWire<T["type"]>>>;
 
+// Warning: (ae-forgotten-export) The symbol "GetCreateWirePropertyValueFromWire" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type OsdkObjectCreateWirePropertyType<
+	T extends ObjectMetadata.Property,
+	STRICTLY_ENFORCE_NULLABLE extends boolean = true
+> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, GetCreateWirePropertyValueFromWire<T["type"]>> | undefined : MaybeNullable<T, MaybeArray<T, GetCreateWirePropertyValueFromWire<T["type"]>>>;
+
 // Warning: (ae-forgotten-export) The symbol "ObjectTypeLinkKeysFrom2" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "OsdkObjectLinksEntry" needs to be exported by the entry point index.d.ts
 //
@@ -1850,6 +1880,22 @@ export type OsdkObjectPropertyType<
 	T extends ObjectMetadata.Property,
 	STRICTLY_ENFORCE_NULLABLE extends boolean = true
 > = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, GetClientPropertyValueFromWire<T["type"]>> | undefined : MaybeNullable<T, MaybeArray<T, GetClientPropertyValueFromWire<T["type"]>>>;
+
+// Warning: (ae-forgotten-export) The symbol "GetUpdatePropertyValueFromWire" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type OsdkObjectUpdatePropertyType<
+	T extends ObjectMetadata.Property,
+	STRICTLY_ENFORCE_NULLABLE extends boolean = true
+> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, GetUpdatePropertyValueFromWire<T["type"]>> | undefined : MaybeNullable<T, MaybeArray<T, GetUpdatePropertyValueFromWire<T["type"]>>>;
+
+// Warning: (ae-forgotten-export) The symbol "GetUpdateWirePropertyValueFromWire" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type OsdkObjectUpdateWirePropertyType<
+	T extends ObjectMetadata.Property,
+	STRICTLY_ENFORCE_NULLABLE extends boolean = true
+> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, GetUpdateWirePropertyValueFromWire<T["type"]>> | undefined : MaybeNullable<T, MaybeArray<T, GetUpdateWirePropertyValueFromWire<T["type"]>>>;
 
 // @public (undocumented)
 export interface PageResult<T> {
@@ -2205,6 +2251,8 @@ export interface SelectArg<
     $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
     	// (undocumented)
     $select?: readonly L[];
+    	// (undocumented)
+    $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
 }
 
 // @public (undocumented)
@@ -2416,6 +2464,14 @@ export interface UntypedMediaItemMetadata {
     sizeBytes: number;
 }
 
+// @public
+export interface UpdateCipherText {
+    	// (undocumented)
+    plaintext: string;
+    	// (undocumented)
+    strategy?: CipherChannelStrategy;
+}
+
 // Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "WITH_PROPERTIES_AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
 //
@@ -2456,13 +2512,15 @@ export interface VideoSpecification {
     durationSeconds: number;
 }
 
-// Warning: (ae-forgotten-export) The symbol "MergedPropertyWhereClause" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "SpecialPropertyWhereClause" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "PropertyWhereClause" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "DerivedObjectOrInterfaceDefinition" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type WhereClause<
 	T extends ObjectOrInterfaceDefinition,
 	RDPs extends Record<string, SimplePropertyDef> = {}
-> = OrWhereClause<T, RDPs> | AndWhereClause<T, RDPs> | NotWhereClause<T, RDPs> | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true ? Record<string, never> : MergedPropertyWhereClause<T, RDPs>);
+> = OrWhereClause<T, RDPs> | AndWhereClause<T, RDPs> | NotWhereClause<T, RDPs> | SpecialPropertyWhereClause<T> | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true ? Record<string, never> : PropertyWhereClause<DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>>);
 
 // @public (undocumented)
 export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWirePropertyTypes>;

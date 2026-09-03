@@ -65,7 +65,7 @@ export function useCbacBanner({
 
   const stableMarkingIds = React.useMemo(
     () => markingIds,
-    [JSON.stringify(markingIds)]
+    [JSON.stringify(markingIds)],
   );
 
   const enabled = stableMarkingIds.length > 0 && externalEnabled;

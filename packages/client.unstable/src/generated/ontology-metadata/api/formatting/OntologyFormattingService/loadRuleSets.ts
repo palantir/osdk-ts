@@ -29,12 +29,12 @@ import type {
  */
 export async function loadRuleSets(
   ctx: ConjureContext,
-  request: _api_formatting_LoadRuleSetsRequest
+  request: _api_formatting_LoadRuleSetsRequest,
 ): Promise<_api_formatting_LoadRuleSetsResponse> {
   return conjureFetch(
     ctx,
     `/formatting/rulesets/loadRuleSets`,
     "POST",
-    request
+    request,
   );
 }

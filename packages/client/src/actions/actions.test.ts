@@ -62,7 +62,7 @@ describe.each([
   beforeAll(() => {
     const testSetup = startNodeApiServer(
       new LegacyFauxFoundry(baseUrl),
-      createClient
+      createClient,
     );
     ({ client, apiServer } = testSetup);
 
@@ -78,7 +78,7 @@ describe.each([
         address: "123 Main Street",
         capacity: 100,
       },
-      { $returnEdits: true }
+      { $returnEdits: true },
     );
 
     expectTypeOf<typeof result>().toEqualTypeOf<ActionEditResponse>();
@@ -118,7 +118,7 @@ describe.each([
           capacity: 100,
         },
       ],
-      { $returnEdits: true }
+      { $returnEdits: true },
     );
   });
 
@@ -132,7 +132,7 @@ describe.each([
       },
       {
         $validateOnly: true,
-      }
+      },
     );
     expectTypeOf<typeof result>().toEqualTypeOf<ActionValidationResponse>();
 
@@ -159,7 +159,7 @@ describe.each([
       },
       {
         $validateOnly: true,
-      }
+      },
     );
     expectTypeOf<typeof result>().toEqualTypeOf<ActionValidationResponse>();
 
@@ -187,7 +187,7 @@ describe.each([
         },
         {
           $returnEdits: true,
-        }
+        },
       );
       expect.fail("Should not reach here");
     } catch (e) {
@@ -211,7 +211,7 @@ describe.each([
     type InferredParamType = Parameters<typeof clientBoundActionTakesStruct>[0];
     expectTypeOf<{
       name: string;
-      address: { city: string; state: string; zipcode?: number | undefined };
+      address: { city: string; state: string; zipcode?: number | null };
     }>().toMatchTypeOf<InferredParamType>();
 
     const result = void (await client(createStructPerson).applyAction({
@@ -220,11 +220,24 @@ describe.each([
     }));
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
     expect(result).toBeUndefined();
+
+    // Nullable struct fields accept null (to clear the value), undefined, or omission.
+    const nullFieldResult = await client(createStructPerson).applyAction({
+      name: "testMan",
+      address: { city: "NYC", state: "NY", zipcode: null },
+    });
+    expect(nullFieldResult).toBeUndefined();
+
+    const omittedFieldResult = await client(createStructPerson).applyAction({
+      name: "testMan",
+      address: { city: "NYC", state: "NY" },
+    });
+    expect(omittedFieldResult).toBeUndefined();
   });
 
   it("Accepts attachments", async () => {
     const clientBoundActionTakesAttachment = client(
-      actionTakesAttachment
+      actionTakesAttachment,
     ).applyAction;
 
     type InferredParamType = Parameters<
@@ -236,7 +249,7 @@ describe.each([
     }>().toMatchTypeOf<InferredParamType>();
 
     const clientBoundBatchActionTakesAttachment = client(
-      actionTakesAttachment
+      actionTakesAttachment,
     ).batchApplyAction;
     type InferredBatchParamType = Parameters<
       typeof clientBoundBatchActionTakesAttachment
@@ -258,7 +271,7 @@ describe.each([
               parameters: {},
             },
           };
-        })
+        }),
       );
 
       const result = await client(actionTakesAttachment).applyAction({
@@ -272,13 +285,13 @@ describe.each([
 
   it("Accepts attachment uploads", async () => {
     const clientBoundActionTakesAttachment = client(
-      actionTakesAttachment
+      actionTakesAttachment,
     ).applyAction;
     type InferredParamType = Parameters<
       typeof clientBoundActionTakesAttachment
     >[0];
     const clientBoundBatchActionTakesAttachment = client(
-      actionTakesAttachment
+      actionTakesAttachment,
     ).batchApplyAction;
     type InferredBatchParamType = Parameters<
       typeof clientBoundBatchActionTakesAttachment
@@ -407,7 +420,7 @@ describe.each([
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
     expect(result).toBeUndefined();
   });
-  it("Accepts interfaces if implementing object types unknown", async () => {
+  it("Accepts interfaces if implementing object types unknown", () => {
     const clientBoundTakesInterface = client(deleteBarInterface).applyAction;
 
     type InferredParamType = Parameters<typeof clientBoundTakesInterface>[0];
@@ -476,7 +489,7 @@ describe.each([
           newCapacity: 80,
         },
       ],
-      { $returnEdits: true }
+      { $returnEdits: true },
     );
 
     expect(result).toMatchObject({
@@ -697,7 +710,7 @@ describe("ActionResponse remapping", () => {
       }
     `);
   });
-  it("actions are enumerable", async () => {
+  it("actions are enumerable", () => {
     const actions = Object.keys($Actions);
     expect(actions).toStrictEqual([
       "actionTakesAttachment",
@@ -723,5 +736,5 @@ function wrapper<R>(fn: () => R): typeof fn {
 }
 
 async function example() {
-  await wrapper(async () => Promise.resolve("hi"))();
+  await wrapper(() => Promise.resolve("hi"))();
 }

@@ -39,11 +39,11 @@ import type {
  */
 export async function getPendingBlockSetVersionDiff(
   ctx: ConjureContext,
-  blockSetVersionId: _api_BlockSetVersionId
+  blockSetVersionId: _api_BlockSetVersionId,
 ): Promise<_api_BlockSetVersionDiff> {
   return conjureFetch(
     ctx,
     `/block-sets/v2/pending/version/${blockSetVersionId}/diff`,
-    "GET"
+    "GET",
   );
 }

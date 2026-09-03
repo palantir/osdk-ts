@@ -57,12 +57,12 @@ import type {
  */
 export async function updatePlaceholders(
   ctx: ConjureContext,
-  request: _api_UpdatePlaceholdersRequest
+  request: _api_UpdatePlaceholdersRequest,
 ): Promise<_api_UpdatePlaceholdersResponse> {
   return conjureFetch(
     ctx,
     `/block-set-installation/placeholders/update`,
     "POST",
-    request
+    request,
   );
 }

@@ -46,6 +46,7 @@
     "@osdk/oauth": "workspace:~",
     "@osdk/react": "workspace:~",
     "@osdk/react-components": "workspace:~",
+    "@tanstack/react-table": "^8.21.3",
     "ai": "^6.0.168",
     "core-js": "^3.45.1",
     "maplibre-gl": "^5.7.1",

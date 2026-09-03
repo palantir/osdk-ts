@@ -23,12 +23,12 @@ const JITTER_FACTOR = 0.5;
 const MAX_RETRIES = 3;
 
 export function createRetryingFetch(
-  fetch: typeof globalThis.fetch
+  fetch: typeof globalThis.fetch,
 ): (
   input: RequestInfo | URL,
   init?:
     | (RequestInit & RequestInitRetryParams<typeof globalThis.fetch>)
-    | undefined
+    | undefined,
 ) => ReturnType<typeof globalThis.fetch> {
   return fetchRetry(fetch, {
     retryDelay(attempt) {

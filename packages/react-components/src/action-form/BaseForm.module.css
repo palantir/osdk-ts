@@ -45,7 +45,8 @@
   align-items: center;
   padding-block: var(--osdk-form-content-padding-inline);
   padding-inline: var(--osdk-form-content-padding-inline);
-  border-block-start: var(--osdk-surface-border-width) solid var(--osdk-form-footer-border-color);
+  border-block-start: var(--osdk-surface-border-width) solid
+    var(--osdk-form-footer-border-color);
   flex-shrink: 0;
 }
 

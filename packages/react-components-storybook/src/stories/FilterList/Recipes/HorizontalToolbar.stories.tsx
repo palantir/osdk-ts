@@ -42,7 +42,6 @@ const sitesFilter: FilterDefinitionUnion<Employee> = {
   key: "locationCity",
   label: "Sites",
   filterComponent: "MULTI_SELECT",
-  filterState: { type: "SELECT", selectedValues: [] },
 };
 
 const specialtiesFilter: FilterDefinitionUnion<Employee> = {
@@ -51,7 +50,6 @@ const specialtiesFilter: FilterDefinitionUnion<Employee> = {
   key: "department",
   label: "Specialties",
   filterComponent: "MULTI_SELECT",
-  filterState: { type: "SELECT", selectedValues: [] },
 };
 
 const consultantsFilter: FilterDefinitionUnion<Employee> = {
@@ -60,7 +58,6 @@ const consultantsFilter: FilterDefinitionUnion<Employee> = {
   key: "fullName",
   label: "Consultants",
   filterComponent: "CONTAINS_TEXT",
-  filterState: { type: "CONTAINS_TEXT" },
 };
 
 const TOOLBAR_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
@@ -143,7 +140,7 @@ function InlineFilterField({
 }: FilterToolbarItemProps): React.ReactElement {
   const handleStateChange = useCallback(
     (state: FilterState) => setFilterState(filterKey, state),
-    [filterKey, setFilterState]
+    [filterKey, setFilterState],
   );
   return (
     <span className={styles.inlineFieldGroup}>
@@ -172,11 +169,11 @@ function PopoverFilterField({
 }: FilterToolbarItemProps): React.ReactElement {
   const handleStateChange = useCallback(
     (state: FilterState) => setFilterState(filterKey, state),
-    [filterKey, setFilterState]
+    [filterKey, setFilterState],
   );
   const handleRemove = useCallback(
     () => clearFilterState(filterKey),
-    [filterKey, clearFilterState]
+    [filterKey, clearFilterState],
   );
   return (
     <FilterPopover
@@ -280,6 +277,63 @@ export const HorizontalToolbar: Story = {
           "history, layers) are owned entirely by the consumer — `FilterList`" +
           " never sees them. Replace the SVG icons with your own and swap " +
           "the wrapper styles to match your design system.",
+      },
+      source: {
+        code: `import {
+  filterHasActiveState,
+  FilterInput,
+  FilterPopover,
+  getFilterKey,
+  getFilterLabel,
+  summarizeFilterValue,
+  useFilterListState,
+} from "@osdk/react-components/experimental/filter-list";
+
+function HorizontalFilterToolbar({ objectType, filterDefinitions }) {
+  const {
+    filterStates,
+    setFilterState,
+    clearFilterState,
+    perFilterWhereClauses,
+  } = useFilterListState({ objectType, filterDefinitions });
+
+  return (
+    <div className={styles.toolbar}>
+      {filterDefinitions.map((definition) => {
+        const key = getFilterKey(definition);
+        return (
+          <FilterPopover
+            key={key}
+            label={getFilterLabel(definition)}
+            summary={summarizeFilterValue(definition, filterStates.get(key))}
+            isActive={filterHasActiveState(filterStates.get(key))}
+            onRemove={() => clearFilterState(key)}
+            labelPlacement="top"
+          >
+            <FilterInput
+              objectType={objectType}
+              definition={definition}
+              filterState={filterStates.get(key)}
+              onFilterStateChanged={(state) => setFilterState(key, state)}
+              whereClause={perFilterWhereClauses.get(key) ?? {}}
+              layout="inline"
+            />
+          </FilterPopover>
+        );
+      })}
+      {/* Trailing utility buttons are owned entirely by the consumer. */}
+    </div>
+  );
+}
+
+<HorizontalFilterToolbar
+  objectType={Employee}
+  filterDefinitions={[
+    { type: "PROPERTY", key: "locationCity", label: "Sites", filterComponent: "MULTI_SELECT" },
+    { type: "PROPERTY", key: "department", label: "Specialties", filterComponent: "MULTI_SELECT" },
+    { type: "PROPERTY", key: "fullName", label: "Consultants", filterComponent: "CONTAINS_TEXT" },
+  ]}
+/>`,
       },
     },
   },

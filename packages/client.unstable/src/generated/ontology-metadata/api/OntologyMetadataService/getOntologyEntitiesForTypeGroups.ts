@@ -27,12 +27,12 @@ import type {
  */
 export async function getOntologyEntitiesForTypeGroups(
   ctx: ConjureContext,
-  request: _api_GetOntologyEntitiesForTypeGroupsRequest
+  request: _api_GetOntologyEntitiesForTypeGroupsRequest,
 ): Promise<_api_GetOntologyEntitiesForTypeGroupsResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/entitiesForTypeGroups`,
     "PUT",
-    request
+    request,
   );
 }

@@ -38,7 +38,7 @@ export async function listPendingBlockSetVersionsV2(
   pageToken: _api_ListPendingBlockSetVersionsPageToken | null | undefined,
   limit: _api_PageSizeLimitHint | null | undefined,
   createdByCurrentUser: boolean,
-  groupFilter: _api_GroupFilter | null | undefined
+  groupFilter: _api_GroupFilter | null | undefined,
 ): Promise<_api_ListPendingBlockSetVersionsResponse> {
   return conjureFetch(ctx, `/block-sets/v2/pending/list`, "GET", undefined, {
     marketplaceRid,

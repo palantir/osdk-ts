@@ -30,6 +30,7 @@ import type {
   UpdatableObjectOrInterfaceLocatorProperties,
   UpdatableObjectOrInterfaceLocators,
 } from "./EditBatch.js";
+import { toFunctionEditValue } from "./toFunctionEditValue.js";
 import type { AnyEdit } from "./types.js";
 import { isInterfaceLocator } from "./types.js";
 
@@ -39,7 +40,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
   public link<SOL extends AddLinkSources<X>, A extends AddLinkApiNames<X, SOL>>(
     source: SOL,
     apiName: A,
-    target: AddLinkTargets<X, SOL, A>
+    target: AddLinkTargets<X, SOL, A>,
   ): void {
     if (!Array.isArray(target)) {
       this.edits.push({
@@ -87,13 +88,14 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
 
   public create<OI extends CreatableObjectOrInterfaceTypes<X>>(
     objectOrInterfaceType: OI,
-    properties: CreatableObjectOrInterfaceTypeProperties<X, OI>
+    properties: CreatableObjectOrInterfaceTypeProperties<X, OI>,
   ): void {
+    const wireProperties = toFunctionEditValue(properties);
     if (objectOrInterfaceType.type === "interface") {
       this.edits.push({
         type: "createObjectForInterface",
         int: objectOrInterfaceType,
-        properties,
+        properties: wireProperties,
       } as unknown as X);
       return;
     }
@@ -101,12 +103,12 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     this.edits.push({
       type: "createObject",
       obj: objectOrInterfaceType,
-      properties,
+      properties: wireProperties,
     } as unknown as X);
   }
 
   public delete<OL extends DeletableObjectOrInterfaceLocators<X>>(
-    obj: OL
+    obj: OL,
   ): void {
     if (isInterfaceLocator(obj)) {
       this.edits.push({
@@ -125,13 +127,14 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
 
   public update<OL extends UpdatableObjectOrInterfaceLocators<X>>(
     obj: OL,
-    properties: UpdatableObjectOrInterfaceLocatorProperties<X, OL>
+    properties: UpdatableObjectOrInterfaceLocatorProperties<X, OL>,
   ): void {
+    const wireProperties = toFunctionEditValue(properties);
     if (isInterfaceLocator(obj)) {
       this.edits.push({
         type: "updateObjectForInterface",
         obj,
-        properties,
+        properties: wireProperties,
       } as unknown as X);
 
       return;
@@ -140,7 +143,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     this.edits.push({
       type: "updateObject",
       obj,
-      properties,
+      properties: wireProperties,
     } as unknown as X);
   }
 
@@ -150,7 +153,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
 }
 
 export function createEditBatch<T extends AnyEdit = never>(
-  _client: Client
+  _client: Client,
 ): EditBatch<T> {
   return new InMemoryEditBatch<T>();
 }

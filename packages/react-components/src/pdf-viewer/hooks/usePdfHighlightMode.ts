@@ -20,7 +20,7 @@ import type { PDFViewer } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import type { PdfRect, PdfTextHighlightEvent } from "../types.js";
+import type { PdfRect, PdfTextHighlightEvent } from "../PdfViewerApi.js";
 
 export interface UsePdfHighlightModeOptions {
   pdfViewerRef: RefObject<PDFViewer | null>;
@@ -99,7 +99,7 @@ export function usePdfHighlightMode({
       onTextHighlightRef.current = onTextHighlight;
       onHighlightDeleteRef.current = onHighlightDelete;
     },
-    [onTextHighlight, onHighlightDelete]
+    [onTextHighlight, onHighlightDelete],
   );
 
   // Toggle the PDF.js annotation editor mode
@@ -124,7 +124,7 @@ export function usePdfHighlightMode({
         // AnnotationEditorUIManager may not be initialized yet
       }
     },
-    [pdfViewerRef, document, highlightModeActive, enabled]
+    [pdfViewerRef, document, highlightModeActive, enabled],
   );
 
   // Deactivate highlight mode when the feature is disabled
@@ -134,7 +134,7 @@ export function usePdfHighlightMode({
         setHighlightModeActive(false);
       }
     },
-    [enabled]
+    [enabled],
   );
 
   // Clear tracked editors when the document changes (but not on highlight toggle)
@@ -147,7 +147,7 @@ export function usePdfHighlightMode({
         prevDocumentRef.current = document;
       }
     },
-    [document]
+    [document],
   );
 
   // Listen for new highlights being added to annotation storage
@@ -247,7 +247,7 @@ export function usePdfHighlightMode({
         storage.remove = originalRemove;
       };
     },
-    [document, highlightModeActive, enabled]
+    [document, highlightModeActive, enabled],
   );
 
   const toggleHighlightMode = useCallback(() => {
@@ -279,7 +279,7 @@ export function usePdfHighlightMode({
 
       storage.remove(editorId);
     },
-    [document]
+    [document],
   );
 
   return {

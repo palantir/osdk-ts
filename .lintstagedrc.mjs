@@ -39,8 +39,8 @@ const OXC_PACKAGES = [
   "create-app.template.typescript-library.beta",
   "create-app.template.vue",
   "create-app.template.vue.v2",
-  "create-widget.template.minimal-react.v2",
   "create-widget.template.react.v2",
+  "typescript-sdk-docs-examples",
 ];
 const OXC_PACKAGE_GLOB = `packages/{${
   OXC_PACKAGES.join(",")
@@ -57,12 +57,14 @@ const OXC_NESTED_CONFIG_PACKAGES = {
   "react-components": "packages/react-components/oxlint.config.ts",
   "client.unstable": "packages/client.unstable/oxlint.config.ts",
   "client.unstable.tpsa": "packages/client.unstable.tpsa/oxlint.config.ts",
+  "integration-testing": "packages/integration-testing/oxlint.config.ts",
   "client": "packages/client/oxlint.config.ts",
   "maker": "packages/maker/oxlint.config.ts",
   "maker-experimental": "packages/maker-experimental/oxlint.config.ts",
   "maker-import": "packages/maker-import/oxlint.config.ts",
   "api": "packages/api/oxlint.config.ts",
   "functions": "packages/functions/oxlint.config.ts",
+  "agents": "packages/agents/oxlint.config.ts",
   "unit-testing": "packages/unit-testing/oxlint.config.ts",
   "aip-core": "packages/aip-core/oxlint.config.ts",
   "foundry-config-json": "packages/foundry-config-json/oxlint.config.ts",
@@ -85,10 +87,13 @@ const OXC_NESTED_CONFIG_PACKAGES = {
   "tool.generate-with-mock-ontology":
     "packages/tool.generate-with-mock-ontology/oxlint.config.ts",
   "version-updater": "packages/version-updater/oxlint.config.ts",
+  "vite-plugin-branch": "packages/vite-plugin-branch/oxlint.config.ts",
   "vite-plugin-oac": "packages/vite-plugin-oac/oxlint.config.ts",
   "vite-plugin-superrepo": "packages/vite-plugin-superrepo/oxlint.config.ts",
   "vite-plugin-status-reporter":
     "packages/vite-plugin-status-reporter/oxlint.config.ts",
+  "vite-plugin-code-workspace-preview":
+    "packages/vite-plugin-code-workspace-preview/oxlint.config.ts",
   "widget.vite-plugin": "packages/widget.vite-plugin/oxlint.config.ts",
   "ontology-explorer-app": "packages/ontology-explorer-app/oxlint.config.ts",
   "ontology-explorer-server":
@@ -117,10 +122,22 @@ const OXC_NESTED_CONFIG_PACKAGES = {
 
 // All oxc packages (root-config + nested-config) are excluded from the ESLint +
 // dprint path below.
-const OXC_PACKAGE_EXCLUDES = [
+const ALL_OXC_PACKAGES = [
   ...OXC_PACKAGES,
   ...Object.keys(OXC_NESTED_CONFIG_PACKAGES),
-].map((p) => `**/packages/${p}/**`);
+];
+const OXC_PACKAGE_EXCLUDES = ALL_OXC_PACKAGES.map((p) => `**/packages/${p}/**`);
+
+/*
+ * css / scss / html inside oxc packages are formatted by oxfmt (the root config
+ * covers these types). They run oxfmt ONLY: oxlint is a JS/TS linter and does
+ * not process stylesheets or html, so handing it these files would match 0 files
+ * and exit non-zero. dprint never formatted these types either, so packages
+ * still on the eslint/dprint path get no handler for them.
+ */
+const OXC_STYLE_GLOB = `packages/{${
+  ALL_OXC_PACKAGES.join(",")
+}}/**/*.{css,scss,html}`;
 
 // Files that must never be linted/formatted regardless of toolchain: generated
 // SDK output and copied templates. Both the oxc and ESLint paths below exclude
@@ -189,6 +206,12 @@ export default {
       },
     ]),
   ),
+  [OXC_STYLE_GLOB]: (files) => {
+    const match = micromatch.not(files, IGNORED_FILE_GLOBS, MICROMATCH_OPTS);
+    if (match.length === 0) return [];
+    // oxfmt only — oxlint does not handle css/scss/html (see OXC_STYLE_GLOB).
+    return [`oxfmt -c oxfmt.config.ts ${match.join(" ")}`];
+  },
   "packages/**/*.{js,jsx,ts,tsx,mjs,cjs}": (
     files,
   ) => {

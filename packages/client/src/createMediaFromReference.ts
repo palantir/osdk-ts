@@ -30,29 +30,30 @@ import { validateMediaItemMetadata } from "./object/validateMediaItemMetadata.js
 
 export function createMediaFromReference(
   client: Client,
-  mediaReference: MediaReference
+  mediaReference: MediaReference,
 ): Media {
   return createMediaFromReferenceInternal(
     client[additionalContext],
-    mediaReference
+    mediaReference,
   );
 }
 
 export function createMediaFromReferenceInternal(
   client: MinimalClient,
-  mediaReference: MediaReference
+  mediaReference: MediaReference,
 ): Media {
   const { mediaSetRid, mediaItemRid } =
     mediaReference.reference.mediaSetViewItem;
   const token = mediaReference.reference.mediaSetViewItem.token;
   return {
+    // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     async fetchContents(): Promise<Response> {
       return MediaSets.read(
         client,
         mediaSetRid,
         mediaItemRid,
-        { preview: true },
-        token ? { ReadToken: token } : undefined
+        token ? { ReadToken: token } : undefined,
       );
     },
 
@@ -61,8 +62,7 @@ export function createMediaFromReferenceInternal(
         client,
         mediaSetRid,
         mediaItemRid,
-        { preview: true },
-        token ? { ReadToken: token } : undefined
+        token ? { ReadToken: token } : undefined,
       );
 
       invariant(info.sizeBytes != null, "Expected sizeBytes in media info");
@@ -80,8 +80,7 @@ export function createMediaFromReferenceInternal(
         client,
         mediaSetRid,
         mediaItemRid,
-        { preview: true },
-        token ? { ReadToken: token } : undefined
+        token ? { ReadToken: token } : undefined,
       );
       return { itemMetadata: validateMediaItemMetadata(raw) };
     },

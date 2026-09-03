@@ -18,7 +18,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { OutlineItem } from "../../types.js";
+import type { OutlineItem } from "../../PdfViewerApi.js";
 import { PdfViewerOutlineSidebar } from "../PdfViewerOutlineSidebar.js";
 
 afterEach(() => {
@@ -87,7 +87,7 @@ describe("PdfViewerOutlineSidebar", () => {
         {...defaultProps}
         outlineItems={items}
         onItemClick={onItemClick}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByLabelText("Section A"));
@@ -103,7 +103,7 @@ describe("PdfViewerOutlineSidebar", () => {
         {...defaultProps}
         outlineItems={items}
         onItemClick={onItemClick}
-      />
+      />,
     );
 
     fireEvent.keyDown(screen.getByLabelText("Section B"), { key: "Enter" });
@@ -119,7 +119,7 @@ describe("PdfViewerOutlineSidebar", () => {
         {...defaultProps}
         outlineItems={items}
         onItemClick={onItemClick}
-      />
+      />,
     );
 
     fireEvent.keyDown(screen.getByLabelText("Section C"), { key: " " });
@@ -140,18 +140,18 @@ describe("PdfViewerOutlineSidebar", () => {
         {...defaultProps}
         outlineItems={items}
         currentPage={7}
-      />
+      />,
     );
 
     // Current page 7 is between page 5 and 10, so "Page 5 Item" should be active
     expect(
-      screen.getByLabelText("Page 5 Item").getAttribute("aria-current")
+      screen.getByLabelText("Page 5 Item").getAttribute("aria-current"),
     ).toBe("location");
     expect(
-      screen.getByLabelText("Page 1 Item").getAttribute("aria-current")
+      screen.getByLabelText("Page 1 Item").getAttribute("aria-current"),
     ).toBeNull();
     expect(
-      screen.getByLabelText("Page 10 Item").getAttribute("aria-current")
+      screen.getByLabelText("Page 10 Item").getAttribute("aria-current"),
     ).toBeNull();
   });
 
@@ -166,11 +166,11 @@ describe("PdfViewerOutlineSidebar", () => {
         {...defaultProps}
         outlineItems={items}
         currentPage={15}
-      />
+      />,
     );
 
     expect(screen.getByLabelText("End").getAttribute("aria-current")).toBe(
-      "location"
+      "location",
     );
   });
 
@@ -209,7 +209,7 @@ describe("PdfViewerOutlineSidebar", () => {
         {...defaultProps}
         outlineItems={items}
         outlineIcons={{ 0: TestIcon }}
-      />
+      />,
     );
 
     expect(screen.getByTestId("test-icon")).toBeTruthy();
@@ -227,7 +227,7 @@ describe("PdfViewerOutlineSidebar", () => {
         {...defaultProps}
         outlineItems={items}
         outlineIcons={{ 0: TestIcon }}
-      />
+      />,
     );
 
     expect(screen.queryByTestId("test-icon")).toBeNull();

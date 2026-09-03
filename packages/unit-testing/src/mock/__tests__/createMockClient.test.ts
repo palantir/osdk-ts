@@ -26,6 +26,8 @@ import { createMockClient } from "../createMockClient.js";
 import { createMockObjectSet } from "../createMockObjectSet.js";
 import { createMockOsdkObject } from "../createMockOsdkObject.js";
 
+const setOperations = ["union", "intersect", "subtract"] as const;
+
 describe("createMockClient", () => {
   describe("fetchPage", () => {
     it("returns stubbed objects", async () => {
@@ -73,7 +75,7 @@ describe("createMockClient", () => {
         .when((c) =>
           c(Employee)
             .where({ office: { $eq: "NYC" } })
-            .fetchPage()
+            .fetchPage(),
         )
         .thenReturnObjects([emp]);
 
@@ -99,15 +101,41 @@ describe("createMockClient", () => {
         .when((c) =>
           c(Employee)
             .where({ office: { $eq: "NYC" } })
-            .fetchPage()
+            .fetchPage(),
         )
         .thenReturnObjects([emp]);
 
       await expect(
         mockClient(Employee)
           .where({ office: { $eq: "LA" } })
-          .fetchPage()
+          .fetchPage(),
       ).rejects.toThrow();
+    });
+
+    it("re-registering the same pattern overrides the previous stub", async () => {
+      const mockClient = createMockClient();
+      const emp = createMockOsdkObject(Employee, { employeeId: 1 });
+
+      mockClient
+        .when((c) =>
+          c(Employee)
+            .where({ office: { $eq: "NYC" } })
+            .fetchPage(),
+        )
+        .thenReturnObjects([]);
+      mockClient
+        .when((c) =>
+          c(Employee)
+            .where({ office: { $eq: "NYC" } })
+            .fetchPage(),
+        )
+        .thenReturnObjects([emp]);
+
+      const result = await mockClient(Employee)
+        .where({ office: { $eq: "NYC" } })
+        .fetchPage();
+
+      expect(result.data).toHaveLength(1);
     });
 
     it("types: when((c) => c(T).fetchPage()) → FetchPageStubBuilder", () => {
@@ -264,7 +292,7 @@ describe("createMockClient", () => {
         .when((c) =>
           c(Employee)
             .where({ office: { $eq: "NYC" } })
-            .asyncIter()
+            .asyncIter(),
         )
         .thenReturnObjects([emp]);
 
@@ -291,7 +319,7 @@ describe("createMockClient", () => {
 
       mockClient
         .when((c) =>
-          c(Employee).aggregate({ $select: { $count: "unordered" } })
+          c(Employee).aggregate({ $select: { $count: "unordered" } }),
         )
         .thenReturnAggregation({ $count: 42 });
 
@@ -305,7 +333,7 @@ describe("createMockClient", () => {
     it("types: when((c) => c(T).aggregate(...)) → AggregateStubBuilder", () => {
       const mockClient = createMockClient();
       const builder = mockClient.when((c) =>
-        c(Employee).aggregate({ $select: { $count: "unordered" } })
+        c(Employee).aggregate({ $select: { $count: "unordered" } }),
       );
       expectTypeOf(builder).toHaveProperty("thenReturnAggregation");
       expectTypeOf(builder).not.toHaveProperty("thenReturnObject");
@@ -341,7 +369,7 @@ describe("createMockClient", () => {
             .where({
               $and: [{ office: { $eq: "NYC" } }, { employeeId: { $gte: 1 } }],
             })
-            .fetchPage()
+            .fetchPage(),
         )
         .thenReturnObjects([emp]);
 
@@ -353,6 +381,71 @@ describe("createMockClient", () => {
 
       expect(result.data).toHaveLength(1);
     });
+  });
+
+  describe("set arithmetic", () => {
+    it("matches multiple union operands", async () => {
+      const mockClient = createMockClient();
+      const emp = createMockOsdkObject(Employee, { employeeId: 1 });
+
+      mockClient
+        .when((c) =>
+          c(Employee)
+            .where({ office: { $eq: "NYC" } })
+            .union(
+              c(Employee).where({ office: { $eq: "LA" } }),
+              c(Employee).where({ office: { $eq: "LONDON" } }),
+            )
+            .fetchPage(),
+        )
+        .thenReturnObjects([emp]);
+
+      const result = await mockClient(Employee)
+        .where({ office: { $eq: "NYC" } })
+        .union(
+          mockClient(Employee).where({ office: { $eq: "LA" } }),
+          mockClient(Employee).where({ office: { $eq: "LONDON" } }),
+        )
+        .fetchPage();
+
+      expect(result.data).toEqual([emp]);
+    });
+
+    it("distinguishes object set operands", async () => {
+      const mockClient = createMockClient();
+
+      mockClient
+        .when((c) =>
+          c(Employee)
+            .union(c(Employee).where({ office: { $eq: "NYC" } }))
+            .fetchPage(),
+        )
+        .thenReturnObjects([]);
+
+      await expect(
+        mockClient(Employee)
+          .union(mockClient(Employee).where({ office: { $eq: "LA" } }))
+          .fetchPage(),
+      ).rejects.toThrow();
+    });
+
+    it.each(setOperations)(
+      "matches %s with a standalone mock object set",
+      async (operation) => {
+        const mockClient = createMockClient();
+        const empSet = createMockObjectSet(Employee);
+        const emp = createMockOsdkObject(Employee, { employeeId: 1 });
+
+        mockClient
+          .when((c) => c(Employee)[operation](empSet).fetchPage())
+          .thenReturnObjects([emp]);
+
+        const employeeSet = mockClient(Employee);
+        const result = await employeeSet[operation](empSet).fetchPage();
+
+        expect(result.data).toEqual([emp]);
+      },
+    );
   });
 
   describe("clearStubs", () => {
@@ -372,7 +465,7 @@ describe("createMockClient", () => {
     it("throws on subscribe", () => {
       const mockClient = createMockClient();
       expect(() => mockClient(Employee).subscribe({})).toThrow(
-        "subscribe is not supported"
+        "subscribe is not supported",
       );
     });
   });
@@ -413,7 +506,7 @@ describe("createMockClient", () => {
         .when((c) =>
           c(Employee)
             .where(expect.objectContaining({ office: { $eq: "NYC" } }) as any)
-            .fetchPage()
+            .fetchPage(),
         )
         .thenReturnObjects([emp]);
 
@@ -436,7 +529,7 @@ describe("createMockClient", () => {
       expect(
         await mockClient(queryTypeReturnsArray).executeFunction({
           people: ["whatever"],
-        })
+        }),
       ).toEqual(["ok"]);
     });
   });
@@ -483,7 +576,7 @@ describe("createMockClient", () => {
       const mockClient = createMockClient();
 
       await expect(
-        mockClient(addOne).executeFunction({ n: 5 })
+        mockClient(addOne).executeFunction({ n: 5 }),
       ).rejects.toThrow("No stub for query 'addOne'");
     });
 
@@ -493,7 +586,7 @@ describe("createMockClient", () => {
       mockClient.whenQuery(addOne, { n: 5 }).thenReturn(6);
 
       await expect(
-        mockClient(addOne).executeFunction({ n: 10 })
+        mockClient(addOne).executeFunction({ n: 10 }),
       ).rejects.toThrow("No stub for query 'addOne'");
     });
 
@@ -505,7 +598,7 @@ describe("createMockClient", () => {
       mockClient.clearStubs();
 
       await expect(
-        mockClient(addOne).executeFunction({ n: 5 })
+        mockClient(addOne).executeFunction({ n: 5 }),
       ).rejects.toThrow("No stub for query 'addOne'");
     });
 
@@ -516,7 +609,7 @@ describe("createMockClient", () => {
       mockClient.whenQuery(addOne, { n: 5 }).thenThrow(err);
 
       await expect(mockClient(addOne).executeFunction({ n: 5 })).rejects.toBe(
-        err
+        err,
       );
     });
 
@@ -526,7 +619,7 @@ describe("createMockClient", () => {
       mockClient.whenQuery(addOne, { n: 2 }).thenReturn(99);
 
       await expect(
-        mockClient(addOne).executeFunction({ n: 1 })
+        mockClient(addOne).executeFunction({ n: 1 }),
       ).rejects.toThrow("boom");
       expect(await mockClient(addOne).executeFunction({ n: 2 })).toBe(99);
     });
@@ -536,7 +629,7 @@ describe("createMockClient", () => {
       mockClient.whenQuery(addOne, { n: 1 }).thenThrow(new Error("boom"));
 
       await expect(
-        mockClient(addOne).executeFunction({ n: 99 })
+        mockClient(addOne).executeFunction({ n: 99 }),
       ).rejects.toThrow("No stub for query 'addOne'");
     });
   });
@@ -571,7 +664,7 @@ describe("createMockClient", () => {
 
       mockClient
         .whenObjectSet(peepsSet, (os) =>
-          os.aggregate({ $select: { $count: "unordered" } })
+          os.aggregate({ $select: { $count: "unordered" } }),
         )
         .thenReturnAggregation({ $count: 5 });
 
@@ -610,7 +703,7 @@ describe("createMockClient", () => {
 
       mockClient
         .whenObjectSet(empSet, (os) =>
-          os.where({ office: { $eq: "NYC" } }).fetchPage()
+          os.where({ office: { $eq: "NYC" } }).fetchPage(),
         )
         .thenReturnObjects([emp]);
 
@@ -620,12 +713,33 @@ describe("createMockClient", () => {
       expect(result.data[0].office).toBe("NYC");
     });
 
+    it.each(setOperations)(
+      "stubs %s + fetchPage on a standalone mock object set",
+      async (operation) => {
+        const mockClient = createMockClient();
+        const empSet = createMockObjectSet(Employee);
+        const emp = createMockOsdkObject(Employee, { employeeId: 1 });
+
+        mockClient
+          .whenObjectSet(empSet, (os) =>
+            os[operation](os.where({ office: { $eq: "NYC" } })).fetchPage(),
+          )
+          .thenReturnObjects([emp]);
+
+        const result = await empSet[operation](
+          empSet.where({ office: { $eq: "NYC" } }),
+        ).fetchPage();
+
+        expect(result.data).toEqual([emp]);
+      },
+    );
+
     it("throws when no stub matches on standalone object set", async () => {
       createMockClient();
       const empSet = createMockObjectSet(Employee);
 
       await expect(empSet.fetchPage()).rejects.toThrow(
-        "No stub registered on standalone MockObjectSet"
+        "No stub registered on standalone MockObjectSet",
       );
     });
   });

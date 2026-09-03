@@ -1,5 +1,67 @@
 # @osdk/functions
 
+## 1.22.0
+
+### Minor Changes
+
+- 311ff2a: Added support for inheriting function scope authorization from the caller
+
+## 1.21.0
+
+### Minor Changes
+
+- 08ba782: cipherText object edits now accept distinct, ergonomic create and update inputs — `{ plaintext }` for create, `{ plaintext, strategy? }` for update, or an existing `CipherText` to reuse — and `getEdits()` emits the backend wire shape (`{ plaintext }` or `{ ciphertext }`, the reused ciphertext's encrypted envelope).
+
+### Patch Changes
+
+- Updated dependencies [08ba782]
+  - @osdk/client@2.63.0
+
+## 1.20.0
+
+### Minor Changes
+
+- feaf298: Add `Aliases.dataset`, `Aliases.mediaset`, and `Aliases.stream` APIs for resolving dataset, media set, and stream aliases
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/client@2.53.0
+
+## 1.19.0
+
+### Minor Changes
+
+- 21f7434: Fix EditBatch/WriteableClient `update` rejecting interface (and object) edits whose types have array-valued properties.
+
+### Patch Changes
+
+- Updated dependencies [bf4580a]
+  - @osdk/client@2.52.0
+
+## 1.18.0
+
+### Minor Changes
+
+- d3d5895: Add new Annotated type to @osdk/functions
+
+### Patch Changes
+
+- @osdk/client@2.50.0
+
+## 1.17.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+- f733ceb: Added support for actions in function Scope
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+- Updated dependencies [ffa3daa]
+  - @osdk/client@2.44.0
+
 ## 1.16.0
 
 ### Minor Changes

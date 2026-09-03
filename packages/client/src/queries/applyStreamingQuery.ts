@@ -25,10 +25,6 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import {
-  iterateReadableStream,
-  parseNdjsonStream,
-} from "../util/streamutils.js";
-import {
   getRequiredDefinitions,
   remapQueryParams,
   remapQueryResponse,
@@ -41,7 +37,7 @@ export async function* applyStreamingQuery<
 >(
   client: MinimalClient,
   query: QD,
-  params?: P
+  params?: P,
 ): AsyncGenerator<
   QueryReturnType<CompileTimeMetadata<QD>["output"]>,
   void,
@@ -49,7 +45,7 @@ export async function* applyStreamingQuery<
 > {
   const qd: QueryMetadata = await client.ontologyProvider.getQueryDefinition(
     query.apiName,
-    query.isFixedVersion ? query.version : undefined
+    query.isFixedVersion ? query.version : undefined,
   );
 
   if (client.flushEdits != null) {
@@ -61,7 +57,7 @@ export async function* applyStreamingQuery<
       augmentRequestContext(client, (_) => ({
         finalMethodCall: "applyStreamingQuery",
       })),
-      query
+      query,
     ),
     query.apiName,
     {
@@ -70,7 +66,7 @@ export async function* applyStreamingQuery<
         ? await remapQueryParams(
             params as { [parameterId: string]: any },
             client,
-            qd.parameters
+            qd.parameters,
           )
         : {},
       version: query.isFixedVersion ? query.version : undefined,
@@ -79,31 +75,21 @@ export async function* applyStreamingQuery<
     {
       transactionId: client.transactionId,
       preview: true,
-    }
+    },
   );
 
-  if (response.body == null) {
-    throw new Error("streamingExecute returned no response body");
-  }
-
   const definitions = await getRequiredDefinitions(qd.output, client);
-  const reader = response.body.getReader();
-  for await (const line of parseNdjsonStream(iterateReadableStream(reader))) {
-    if (line.type === "error") {
-      const err = new Error(
-        `${line.errorName} (${line.errorCode}) [${line.errorInstanceId}]: ${
-          line.errorDescription ?? ""
-        }`
-      );
-      Object.assign(err, line);
-      throw err;
-    }
+
+  for await (const event of response) {
+    if (event.type !== "data") continue;
+
     const remapped = await remapQueryResponse(
       client,
       qd.output,
-      line.value,
-      definitions
+      event.value,
+      definitions,
     );
+
     if (qd.output.type === "array" && Array.isArray(remapped)) {
       for (const item of remapped) {
         yield item as QueryReturnType<CompileTimeMetadata<QD>["output"]>;

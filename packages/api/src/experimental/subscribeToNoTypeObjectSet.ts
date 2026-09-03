@@ -28,7 +28,7 @@ type subscribeToNoTypeObjectSetFn = <R extends boolean = false>(
   opts?: Pick<
     ObjectSetSubscription.Options<ObjectOrInterfaceDefinition, never, R>,
     "includeRid"
-  >
+  >,
 ) => { unsubscribe: () => void };
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet: Experiment<

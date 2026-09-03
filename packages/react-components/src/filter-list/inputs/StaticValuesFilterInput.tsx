@@ -59,14 +59,14 @@ interface StaticValuesFilterInputProps<Q extends ObjectTypeDefinition> {
 function useExactMatchState(
   filterState: FilterState | undefined,
   onFilterStateChanged: (state: FilterState) => void,
-  isExcluding: boolean
+  isExcluding: boolean,
 ) {
   const selectedValues = useMemo(
     () =>
       filterState?.type === "EXACT_MATCH"
         ? coerceToStringArray(filterState.values)
         : [],
-    [filterState]
+    [filterState],
   );
 
   const handleClearAll = useCallback(() => {
@@ -85,7 +85,7 @@ function useExactMatchState(
         isExcluding,
       });
     },
-    [onFilterStateChanged, isExcluding]
+    [onFilterStateChanged, isExcluding],
   );
 
   return { selectedValues, handleClearAll, handleChange };
@@ -97,14 +97,14 @@ function useExactMatchState(
 function useSelectState(
   filterState: FilterState | undefined,
   onFilterStateChanged: (state: FilterState) => void,
-  isExcluding: boolean
+  isExcluding: boolean,
 ) {
   const selectedValue = useMemo(
     () =>
       filterState?.type === "SELECT"
         ? coerceToString(filterState.selectedValues[0])
         : undefined,
-    [filterState]
+    [filterState],
   );
 
   const selectedValues = useMemo(
@@ -112,7 +112,7 @@ function useSelectState(
       filterState?.type === "SELECT"
         ? coerceToStringArray(filterState.selectedValues)
         : [],
-    [filterState]
+    [filterState],
   );
 
   const handleClearAll = useCallback(() => {
@@ -131,7 +131,7 @@ function useSelectState(
         isExcluding,
       });
     },
-    [onFilterStateChanged, isExcluding]
+    [onFilterStateChanged, isExcluding],
   );
 
   const handleMultiChange = useCallback(
@@ -142,7 +142,7 @@ function useSelectState(
         isExcluding,
       });
     },
-    [onFilterStateChanged, isExcluding]
+    [onFilterStateChanged, isExcluding],
   );
 
   return {
@@ -164,7 +164,7 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
 }: StaticValuesFilterInputProps<Q>): React.ReactElement {
   const aggregationValues: PropertyAggregationValue[] = useMemo(
     () => definition.values.map((value) => ({ value, count: 0 })),
-    [definition.values]
+    [definition.values],
   );
 
   const isExcluding = filterState?.isExcluding ?? false;
@@ -172,7 +172,7 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
   const exactMatch = useExactMatchState(
     filterState,
     onFilterStateChanged,
-    isExcluding
+    isExcluding,
   );
   const select = useSelectState(filterState, onFilterStateChanged, isExcluding);
 

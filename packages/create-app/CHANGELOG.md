@@ -1,5 +1,158 @@
 # @osdk/create-app
 
+## 2.64.0
+
+### Minor Changes
+
+- e3855b2: Add new branch-aware changes to unstable features
+
+### Patch Changes
+
+- @osdk/generator-utils@2.64.0
+
+## 2.63.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.63.0
+
+## 2.62.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.62.0
+
+## 2.61.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.61.0
+
+## 2.60.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.60.0
+
+## 2.59.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.59.0
+
+## 2.58.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.58.0
+
+## 2.57.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.57.0
+
+## 2.56.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.56.0
+
+## 2.55.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.55.0
+
+## 2.54.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.54.0
+
+## 2.53.0
+
+### Minor Changes
+
+- f6806ee: Add an opt-in `--unstableFeatures` flag. When enabled, apps generated from the 2.x/beta templates (React, Vue, Expo, and the to-do tutorials) are wired for Foundry branch support.
+
+### Patch Changes
+
+- @osdk/generator-utils@2.53.0
+
+## 2.52.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.52.0
+
+## 2.51.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.51.0
+
+## 2.50.0
+
+### Minor Changes
+
+- 5e380f2: Template scripts express every check as a standard lint/typecheck/test task instead of a bespoke `check` script, so a scaffolded project's verification runs under the same tasks its CI already runs. The TypeScript Library template folds formatting into `lint` (`ultracite check`); the React template gains a `typecheck` script (`tsc --noEmit`). Both drop their standalone `check` script.
+- a754871: Reverting "Lowercase generated package.json name fields" (#3681) due to unintended side effects.
+
+### Patch Changes
+
+- Updated dependencies [a754871]
+  - @osdk/generator-utils@2.50.0
+
+## 2.49.0
+
+### Minor Changes
+
+- 98c7343: Fix the TypeScript Library template so a freshly scaffolded project passes `ultracite check`: exclude package.json/tsconfig.json from oxfmt (their key order is owned by the package manager and tsc) and remove the stray blank line between imports in oxlint.config.ts
+
+### Patch Changes
+
+- @osdk/generator-utils@2.49.0
+
+## 2.48.0
+
+### Minor Changes
+
+- 079b488: Lowercase the generated package.json name field so scaffolded projects with uppercase names are npm-publishable
+
+### Patch Changes
+
+- Updated dependencies [079b488]
+  - @osdk/generator-utils@2.48.0
+
+## 2.47.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.47.0
+
+## 2.46.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.46.0
+
+## 2.45.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.45.0
+
+## 2.44.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
+### Patch Changes
+
+- @osdk/generator-utils@2.44.0
+
 ## 2.43.0
 
 ### Minor Changes

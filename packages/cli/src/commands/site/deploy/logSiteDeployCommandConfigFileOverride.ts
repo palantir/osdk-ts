@@ -20,22 +20,23 @@ import type { Arguments } from "yargs";
 
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function logSiteDeployCommandConfigFileOverride(
   args: Arguments<SiteDeployArgs>,
-  config: SiteConfig | undefined
+  config: SiteConfig | undefined,
 ): Promise<void> {
   if (
     config?.autoVersion != null &&
     args.autoVersion !== config.autoVersion.type
   ) {
     consola.debug(
-      `Overriding "autoVersion" from config file with ${args.autoVersion}`
+      `Overriding "autoVersion" from config file with ${args.autoVersion}`,
     );
   }
 
   if (config?.directory != null && args.directory !== config.directory) {
     consola.debug(
-      `Overriding "directory" from config file with ${args.directory}`
+      `Overriding "directory" from config file with ${args.directory}`,
     );
   }
 
@@ -46,13 +47,13 @@ export async function logSiteDeployCommandConfigFileOverride(
     args.gitTagPrefix !== config.autoVersion.tagPrefix
   ) {
     consola.debug(
-      `Overriding "gitTagPrefix" from config file with ${args.gitTagPrefix}`
+      `Overriding "gitTagPrefix" from config file with ${args.gitTagPrefix}`,
     );
   }
 
   if (config?.uploadOnly != null && args.uploadOnly !== config.uploadOnly) {
     consola.debug(
-      `Overriding "uploadOnly" from config file with ${args.uploadOnly}`
+      `Overriding "uploadOnly" from config file with ${args.uploadOnly}`,
     );
   }
 }

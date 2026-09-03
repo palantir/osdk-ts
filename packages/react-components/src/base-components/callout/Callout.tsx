@@ -100,5 +100,5 @@ export const Callout: React.NamedExoticComponent<CalloutProps> = React.memo(
         {actions != null && <div className={styles.actions}>{actions}</div>}
       </div>
     );
-  }
+  },
 );

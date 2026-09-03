@@ -67,7 +67,7 @@ export interface SingleLinkAccessor<T extends ObjectOrInterfaceDefinition> {
   /** Load the linked object
    */
   fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(
-    options?: A
+    options?: A,
   ) => Promise<
     A extends FetchPageArgs<T, infer L, infer R, any, infer S>
       ? Osdk.Instance<T, ExtractOptions<R, S>, L & PropertyKeys<T>>
@@ -77,7 +77,7 @@ export interface SingleLinkAccessor<T extends ObjectOrInterfaceDefinition> {
   /** Load the linked object, with a result wrapper
    */
   fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(
-    options?: A
+    options?: A,
   ) => Promise<
     Result<
       A extends FetchPageArgs<T, infer L, infer R, any, infer S>

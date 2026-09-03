@@ -32,7 +32,6 @@ import type * as Ontologies from "@osdk/foundry.ontologies";
 import { consola } from "consola";
 import * as fs from "fs";
 import { spawnSync } from "node:child_process";
-import { hash } from "node:crypto";
 import { accessSync, constants } from "node:fs";
 import { createRequire } from "node:module";
 import * as path from "node:path";
@@ -41,6 +40,7 @@ import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
 import { convertDataType, isInjectedRuntimeInput } from "./convertDataType.js";
+import { toStructFieldRid } from "./ridUtils.js";
 
 // Type definitions for optional function discovery dependencies
 // These are declared inline to avoid compile-time dependency on optional packages
@@ -787,6 +787,10 @@ export class OntologyIrToFullMetadataConverter {
         status: this.convertObjectTypeStatus(object.status),
         properties,
         rid: `ri.${object.apiName}`,
+        // TODO: aliases and datasources are not yet derived from the IR; to be
+        // implemented later.
+        aliases: [],
+        datasources: [],
       };
 
       const sharedPropertyTypeMappings: Record<ApiName, ApiName> = {};
@@ -811,6 +815,7 @@ export class OntologyIrToFullMetadataConverter {
           properties: propertyMappings,
           propertiesV2: {},
           links: {},
+          actionTypes: {},
         };
       }
 
@@ -963,7 +968,7 @@ export class OntologyIrToFullMetadataConverter {
   static getOsdkActionOperations(
     action: OntologyIrActionTypeBlockDataV2,
   ): Ontologies.LogicRule[] {
-    return action.actionType.actionTypeLogic.logic.rules.map(irLogic => {
+    return action.actionType.actionTypeLogic.logic.rules.flatMap(irLogic => {
       switch (irLogic.type) {
         case "addInterfaceRule": {
           const r = irLogic.addInterfaceRule;
@@ -1069,6 +1074,9 @@ export class OntologyIrToFullMetadataConverter {
             );
           }
         }
+        case "addInterfaceLinkRuleV2":
+        case "deleteInterfaceLinkRule":
+          return [];
         default:
           throw new Error("Unknown logic rule type");
       }
@@ -1477,9 +1485,7 @@ export class OntologyIrToFullMetadataConverter {
         return { type: "geotimeSeriesReference" };
       case "struct": {
         const value = type.struct;
-        const ridBase = `ri.struct.${
-          hash("sha256", JSON.stringify(type)).slice(0, 10)
-        }`;
+        const structIdentity = JSON.stringify(type);
         return {
           type: "struct",
           structFieldTypes: value.structFields.map(field => {
@@ -1491,7 +1497,7 @@ export class OntologyIrToFullMetadataConverter {
             }
             return {
               apiName: field.apiName,
-              rid: `${ridBase}.${field.apiName}`,
+              rid: toStructFieldRid(structIdentity, field.apiName),
               dataType: fieldDataType,
               typeClasses: [],
             };

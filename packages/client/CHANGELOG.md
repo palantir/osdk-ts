@@ -1,5 +1,280 @@
 # @osdk/client
 
+## 2.64.0
+
+### Minor Changes
+
+- 6adfde4: Support object set subscriptions through clients scoped to ontology scenarios.
+- 06cd3ea: Materialize array-valued struct interface implementations as arrays
+
+### Patch Changes
+
+- @osdk/api@2.64.0
+- @osdk/client.unstable@2.64.0
+- @osdk/generator-converters@2.64.0
+- @osdk/shared.test@2.44.0
+
+## 2.63.0
+
+### Minor Changes
+
+- 08ba782: cipherText object edits now accept distinct, ergonomic create and update inputs — `{ plaintext }` for create, `{ plaintext, strategy? }` for update, or an existing `CipherText` to reuse — and `getEdits()` emits the backend wire shape (`{ plaintext }` or `{ ciphertext }`, the reused ciphertext's encrypted envelope).
+
+### Patch Changes
+
+- Updated dependencies [08ba782]
+  - @osdk/api@2.63.0
+  - @osdk/generator-converters@2.63.0
+  - @osdk/shared.test@2.43.0
+  - @osdk/client.unstable@2.63.0
+
+## 2.62.0
+
+### Minor Changes
+
+- 691c32e: The client is now branch-aware without configuration. When `UNSTABLE_DO_NOT_USE_BRANCH` is omitted, the branch is read from the `VITE_FOUNDRY_BRANCH_RID` environment variable that Foundry runtimes set to the branch the application is checked out on, so objects, actions, and queries read and write on that branch.
+
+  An explicitly supplied branch still wins, and `UNSTABLE_DO_NOT_USE_BRANCH` now accepts `null` to pin the client to the default branch while checked out on a branch.
+
+- 13649db: Add `getConflictingObjects` (paginated) and `conflictingObjectsAsyncIter` (auto-paginating) methods to `ScenarioClient`. Lets consumers discover which objects have edits that conflict with changes on a scenario's base before merge. Beta — surface may change.
+
+### Patch Changes
+
+- @osdk/api@2.62.0
+- @osdk/client.unstable@2.62.0
+- @osdk/generator-converters@2.62.0
+- @osdk/shared.test@2.42.0
+
+## 2.61.0
+
+### Minor Changes
+
+- bdf45fa: Add experimental subscriptions for directed link changes between selected objects.
+- 34cb7e0: Type the OCR and transcription language parameters on the experimental media transformation surface as the closed enums the platform actually declares, and export the encoding types that were previously unreachable.
+
+  These four parameters were previously `string`, so this narrows a shipped public type on the `@osdk/api/unstable` entrypoint. Existing call sites holding a `string` in those positions no longer compile, and a language the pinned platform SDK does not list must be cast until the pin moves.
+
+### Patch Changes
+
+- Updated dependencies [bdf45fa]
+- Updated dependencies [34cb7e0]
+  - @osdk/api@2.61.0
+  - @osdk/generator-converters@2.61.0
+  - @osdk/shared.test@2.41.0
+  - @osdk/client.unstable@2.61.0
+
+## 2.60.0
+
+### Minor Changes
+
+- e879ad7: Bump platform SDKs and add loadOntologyDefinedDerivedProperties flag, which defaults to true
+- bbbeca8: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.75.0`, which reinstates the `streamingExecute` query endpoint as a Server-Sent Events (`text/event-stream`) stream. The experimental `executeStreamingFunction` helper is reimplemented on top of it and no longer throws: it yields each result as it arrives, flattening batched results so array-returning queries emit one element at a time.
+- 6cf2be9: Default the loadOntologyDefinedDerivedProperties flag to None
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+  - @osdk/generator-converters@2.60.0
+  - @osdk/shared.test@2.40.0
+  - @osdk/api@2.60.0
+  - @osdk/client.unstable@2.60.0
+
+## 2.59.0
+
+### Minor Changes
+
+- 4ae6d8b: Add experimental `$EXPERIMENTAL_defaultLoadLevel` fetch arg that applies reducers and struct main values to every property without listing property IDs. Wired through the object and static-rid load paths.
+- 1aff7f4: Allow interfaces w/ no properties to filter on pk+title
+
+### Patch Changes
+
+- Updated dependencies [4ae6d8b]
+- Updated dependencies [1aff7f4]
+  - @osdk/api@2.59.0
+  - @osdk/client.unstable@2.59.0
+  - @osdk/generator-converters@2.59.0
+
+## 2.58.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+  - @osdk/generator-converters@2.58.0
+  - @osdk/api@2.58.0
+  - @osdk/client.unstable@2.58.0
+  - @osdk/shared.test@2.39.0
+
+## 2.57.0
+
+### Patch Changes
+
+- Updated dependencies [e9d7ffa]
+  - @osdk/client.unstable@2.57.0
+  - @osdk/api@2.57.0
+  - @osdk/generator-converters@2.57.0
+  - @osdk/shared.test@2.38.0
+
+## 2.56.0
+
+### Patch Changes
+
+- Updated dependencies [342c492]
+  - @osdk/api@2.56.0
+  - @osdk/client.unstable@2.56.0
+  - @osdk/generator-converters@2.56.0
+
+## 2.55.0
+
+### Minor Changes
+
+- c40b6e5: Remove the experimental `__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference` export. To upload media, pass `{ data, fileName }` directly to an Action's media parameter; the client uploads it via `uploadMedia` and links the resulting media item.
+- f27a119: Rename the experimental `__EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait` export to `transformAndWait`, and change its argument from `mediaReference: MediaReference` to `media: Media`. It is still only exported from `@osdk/api/unstable`. Callers holding a media property can now pass it straight through instead of unwrapping it with `getMediaReference()` first.
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+  - @osdk/generator-converters@2.55.0
+  - @osdk/shared.test@2.37.0
+  - @osdk/client.unstable@2.55.0
+
+## 2.54.0
+
+### Patch Changes
+
+- @osdk/api@2.54.0
+- @osdk/client.unstable@2.54.0
+- @osdk/generator-converters@2.54.0
+
+## 2.53.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/generator-converters@2.53.0
+  - @osdk/api@2.53.0
+  - @osdk/client.unstable@2.53.0
+  - @osdk/shared.test@2.36.0
+
+## 2.52.0
+
+### Minor Changes
+
+- bf4580a: Add annotate, contrast, encrypt, and decrypt image operations to the experimental media transformation surface, closing parity with the platform image-operation set.
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/generator-converters@2.52.0
+  - @osdk/shared.test@2.35.0
+  - @osdk/client.unstable@2.52.0
+
+## 2.51.0
+
+### Minor Changes
+
+- d96b5de: Export scenario helpers from experimental
+
+### Patch Changes
+
+- Updated dependencies [b99b0bb]
+  - @osdk/api@2.51.0
+  - @osdk/client.unstable@2.51.0
+  - @osdk/generator-converters@2.51.0
+
+## 2.50.0
+
+### Patch Changes
+
+- @osdk/api@2.50.0
+- @osdk/client.unstable@2.50.0
+- @osdk/generator-converters@2.50.0
+
+## 2.49.0
+
+### Patch Changes
+
+- @osdk/api@2.49.0
+- @osdk/client.unstable@2.49.0
+- @osdk/generator-converters@2.49.0
+
+## 2.48.0
+
+### Minor Changes
+
+- b46473d: Remove the unused `getMetaTagContent`, `getOsdkConfig`, and `OsdkConfig` exports from `@osdk/client/unstable-do-not-use`; they referenced browser/Vite-only globals (`document`, `import.meta.env`) that broke non-node environments and had no consumers.
+
+### Patch Changes
+
+- @osdk/api@2.48.0
+- @osdk/client.unstable@2.48.0
+- @osdk/generator-converters@2.48.0
+- @osdk/shared.test@2.34.0
+
+## 2.47.0
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+- @osdk/client.unstable@2.47.0
+- @osdk/generator-converters@2.47.0
+- @osdk/shared.test@2.33.0
+
+## 2.46.0
+
+### Minor Changes
+
+- c26e051: Add unstable `hydrateOsdkObject` helper to hydrate raw wire objects into OSDK object instances using a caller-supplied map of object definitions.
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+- @osdk/client.unstable@2.46.0
+- @osdk/generator-converters@2.46.0
+- @osdk/shared.test@2.32.0
+
+## 2.45.0
+
+### Minor Changes
+
+- db2bfa2: Add ability to pass null for struct action parameters.
+- cbf692b: Pipe next page token through to PSDK loadLinks call in asyncIterLinks
+
+### Patch Changes
+
+- Updated dependencies [db2bfa2]
+  - @osdk/shared.test@2.31.0
+  - @osdk/api@2.45.0
+  - @osdk/client.unstable@2.45.0
+  - @osdk/generator-converters@2.45.0
+
+## 2.44.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+- ffa3daa: Update unstable subscribe injection with unstable subscribe connection injection
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+  - @osdk/client.unstable@2.44.0
+  - @osdk/api@2.44.0
+  - @osdk/generator-converters@2.44.0
+
 ## 2.43.0
 
 ### Minor Changes

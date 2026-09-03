@@ -15,6 +15,13 @@
  */
 
 import type { Just } from "../aggregate/Just.js";
+import type {
+  OcrLanguage,
+  OcrScript,
+  TranscriptionLanguage,
+} from "./MediaTransformationLanguages.js";
+
+export type { OcrLanguage, OcrScript, TranscriptionLanguage };
 
 // ─── Top-level transformation ─────────────────────────────────────────────────
 
@@ -224,8 +231,8 @@ export type OcrOutputFormat = OcrOutputFormat.$hocr | OcrOutputFormat.$text;
  * @experimental
  */
 export interface OcrLanguageOrScriptOptions {
-  $language: string;
-  $script: string;
+  $language: OcrLanguage;
+  $script: OcrScript;
 }
 
 export namespace OcrLanguageOrScript {
@@ -255,7 +262,7 @@ export interface OcrParameters {
  * @experimental
  */
 export interface LayoutAwareExtractionParameters {
-  $languages: Array<string>;
+  $languages: Array<OcrLanguage>;
 }
 
 /**
@@ -341,6 +348,86 @@ export interface ImageSpec {
   $mimeType: "BMP" | "TIFF" | "NITF" | "JP2K" | "JPG" | "PNG" | "WEBP";
 }
 
+/**
+ * @experimental
+ */
+export interface Annotation {
+  $geometry: AnnotateGeometry;
+  $label?: string;
+  $color?: Color;
+  $thickness?: number;
+  $fontSize?: number;
+}
+
+/**
+ * @experimental
+ */
+export interface AnnotateGeometryOptions {
+  $boundingBox: BoundingBox;
+}
+
+export namespace AnnotateGeometry {
+  export interface $boundingBox extends Just<
+    "$boundingBox",
+    AnnotateGeometryOptions
+  > {}
+}
+
+export type AnnotateGeometry = AnnotateGeometry.$boundingBox;
+
+/**
+ * @experimental
+ */
+export interface BoundingBox {
+  $left: number;
+  $top: number;
+  $width: number;
+  $height: number;
+}
+
+/**
+ * @experimental
+ */
+export interface Color {
+  $r: number;
+  $g: number;
+  $b: number;
+  $a?: number;
+}
+
+/**
+ * @experimental
+ */
+export interface ContrastTypeOptions {
+  $equalize: {};
+  $rayleigh: { $sigma: number };
+  $binarize: { $threshold?: number };
+}
+
+export namespace ContrastType {
+  export interface $equalize extends Just<"$equalize", ContrastTypeOptions> {}
+  export interface $rayleigh extends Just<"$rayleigh", ContrastTypeOptions> {}
+  export interface $binarize extends Just<"$binarize", ContrastTypeOptions> {}
+}
+
+export type ContrastType =
+  | ContrastType.$equalize
+  | ContrastType.$rayleigh
+  | ContrastType.$binarize;
+
+/**
+ * @experimental
+ */
+export interface ImagePixelCoordinate {
+  $x: number;
+  $y: number;
+}
+
+/**
+ * @experimental
+ */
+export type ImageRegionPolygon = Array<ImagePixelCoordinate>;
+
 // ─── Image operations ─────────────────────────────────────────────────────────
 
 /**
@@ -358,6 +445,16 @@ export interface ImageOperationOptions {
   };
   $grayscale: {};
   $tile: { $zoom: number; $x: number; $y: number };
+  $annotate: { $annotations: Array<Annotation> };
+  $contrast: { $contrastType: ContrastType };
+  $encrypt: {
+    $polygons: Array<ImageRegionPolygon>;
+    $cipherLicenseRid: string;
+  };
+  $decrypt: {
+    $polygons: Array<ImageRegionPolygon>;
+    $cipherLicenseRid: string;
+  };
 }
 
 /**
@@ -376,6 +473,10 @@ export namespace ImageOperation {
     ImageOperationOptions
   > {}
   export interface $tile extends Just<"$tile", ImageOperationOptions> {}
+  export interface $annotate extends Just<"$annotate", ImageOperationOptions> {}
+  export interface $contrast extends Just<"$contrast", ImageOperationOptions> {}
+  export interface $encrypt extends Just<"$encrypt", ImageOperationOptions> {}
+  export interface $decrypt extends Just<"$decrypt", ImageOperationOptions> {}
 }
 
 /**
@@ -387,7 +488,11 @@ export type ImageOperation =
   | ImageOperation.$rotate
   | ImageOperation.$crop
   | ImageOperation.$grayscale
-  | ImageOperation.$tile;
+  | ImageOperation.$tile
+  | ImageOperation.$annotate
+  | ImageOperation.$contrast
+  | ImageOperation.$encrypt
+  | ImageOperation.$decrypt;
 
 // ─── Video operations ─────────────────────────────────────────────────────────
 
@@ -470,7 +575,7 @@ export type VideoToAudioOperation = VideoToAudioOperation.$extractAudio;
  */
 export interface AudioToTextOperationOptions {
   $transcribe: {
-    $language?: string;
+    $language?: TranscriptionLanguage;
     $diarize?: boolean;
     $outputFormat?: TranscribeOutputFormat;
     $performanceMode?: "MORE_ECONOMICAL" | "MORE_PERFORMANT";

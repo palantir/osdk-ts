@@ -32,12 +32,12 @@ import type {
 export async function dataCommitBlockVersionFailed(
   ctx: ConjureContext,
   blockVersionId: _api_BlockVersionId,
-  request: _api_DataCommitBlockVersionFailedRequest
+  request: _api_DataCommitBlockVersionFailedRequest,
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/blocks/versions/${blockVersionId}/data-upload-failed`,
     "POST",
-    request
+    request,
   );
 }

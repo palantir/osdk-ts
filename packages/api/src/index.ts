@@ -43,7 +43,10 @@ export type {
 } from "./aggregate/WhereClause.js";
 export type {
   OsdkObjectCreatePropertyType,
+  OsdkObjectCreateWirePropertyType,
   OsdkObjectPropertyType,
+  OsdkObjectUpdatePropertyType,
+  OsdkObjectUpdateWirePropertyType,
 } from "./Definitions.js";
 export type {
   OsdkObjectLinksObject,
@@ -69,7 +72,13 @@ export type {
   AttachmentMetadata,
   AttachmentUpload,
 } from "./object/Attachment.js";
-export type { CipherText } from "./object/CipherText.js";
+export type { CipherChannelStrategy } from "./object/CipherText.js";
+export type {
+  CipherText,
+  CipherTextValue,
+  CreateCipherText,
+  UpdateCipherText,
+} from "./object/CipherText.js";
 export type {
   AsyncIterArgs,
   Augment,

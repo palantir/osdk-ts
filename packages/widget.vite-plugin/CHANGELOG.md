@@ -1,5 +1,162 @@
 # @osdk/widget.vite-plugin
 
+## 3.63.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.63.0
+
+## 3.62.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.62.0
+
+## 3.61.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.61.0
+
+## 3.60.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.60.0
+
+## 3.59.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.59.0
+
+## 3.58.0
+
+### Minor Changes
+
+- 85cac11: Include the widget Vite plugin version in dev mode request user agents.
+
+### Patch Changes
+
+- @osdk/widget.api@3.58.0
+
+## 3.57.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.57.0
+
+## 3.56.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.56.0
+
+## 3.55.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.55.0
+
+## 3.54.0
+
+### Minor Changes
+
+- 47c66c3: Generate widget set manifest authorizations defined in a resources.json file
+
+### Patch Changes
+
+- Updated dependencies [47c66c3]
+  - @osdk/widget.api@3.54.0
+
+## 3.53.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.53.0
+
+## 3.52.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.52.0
+
+## 3.51.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.51.0
+
+## 3.50.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.50.0
+
+## 3.49.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.49.0
+
+## 3.48.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.48.0
+
+## 3.47.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.47.0
+
+## 3.46.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.46.0
+
+## 3.45.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.45.0
+
+## 3.44.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.44.0
+
+## 3.43.0
+
+### Minor Changes
+
+- 7e1aade: Extend oxfmt formatting to css, scss, and html in oxc-migrated packages. These file types were previously left unformatted (dprint had no css/html plugin); they are now covered by oxfmt and reformatted accordingly. yaml stays excluded because the only yaml in migrated packages is mustache-template documentation that oxfmt would corrupt.
+
+### Patch Changes
+
+- @osdk/widget.api@3.43.0
+
+## 3.42.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.42.0
+
+## 3.41.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+  - @osdk/foundry-config-json@1.12.0
+  - @osdk/widget.api@3.41.0
+
 ## 3.40.0
 
 ### Minor Changes

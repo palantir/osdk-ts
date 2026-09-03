@@ -30,39 +30,39 @@ describe("getEmptyDisplayState", () => {
   it("returns an empty SELECT for select components", () => {
     expect(
       getEmptyDisplayState(
-        createPropertyFilterDef("dept", "MULTI_SELECT", ANY_STATE)
-      )
+        createPropertyFilterDef("dept", "MULTI_SELECT", ANY_STATE),
+      ),
     ).toEqual({ type: "SELECT", selectedValues: [] });
     expect(
       getEmptyDisplayState(
-        createPropertyFilterDef("dept", "SINGLE_SELECT", ANY_STATE)
-      )
+        createPropertyFilterDef("dept", "SINGLE_SELECT", ANY_STATE),
+      ),
     ).toEqual({ type: "SELECT", selectedValues: [] });
   });
 
   it("returns an empty EXACT_MATCH for listogram/text-tags components", () => {
     expect(
       getEmptyDisplayState(
-        createPropertyFilterDef("dept", "LISTOGRAM", ANY_STATE)
-      )
+        createPropertyFilterDef("dept", "LISTOGRAM", ANY_STATE),
+      ),
     ).toEqual({ type: "EXACT_MATCH", values: [] });
     expect(
       getEmptyDisplayState(
-        createPropertyFilterDef("dept", "TEXT_TAGS", ANY_STATE)
-      )
+        createPropertyFilterDef("dept", "TEXT_TAGS", ANY_STATE),
+      ),
     ).toEqual({ type: "EXACT_MATCH", values: [] });
   });
 
   it("returns empty CONTAINS_TEXT and TIMELINE states", () => {
     expect(
       getEmptyDisplayState(
-        createPropertyFilterDef("name", "CONTAINS_TEXT", ANY_STATE)
-      )
+        createPropertyFilterDef("name", "CONTAINS_TEXT", ANY_STATE),
+      ),
     ).toEqual({ type: "CONTAINS_TEXT", value: undefined });
     expect(
       getEmptyDisplayState(
-        createPropertyFilterDef("createdAt", "TIMELINE", ANY_STATE)
-      )
+        createPropertyFilterDef("createdAt", "TIMELINE", ANY_STATE),
+      ),
     ).toEqual({ type: "TIMELINE", startDate: undefined, endDate: undefined });
   });
 
@@ -75,7 +75,9 @@ describe("getEmptyDisplayState", () => {
       "MULTI_DATE",
     ] as const) {
       expect(
-        getEmptyDisplayState(createPropertyFilterDef("p", component, ANY_STATE))
+        getEmptyDisplayState(
+          createPropertyFilterDef("p", component, ANY_STATE),
+        ),
       ).toBeUndefined();
     }
   });
@@ -83,7 +85,9 @@ describe("getEmptyDisplayState", () => {
   it("wraps the empty inner state for LINKED_PROPERTY", () => {
     // createLinkedPropertyFilterDef uses a LISTOGRAM linked component.
     expect(
-      getEmptyDisplayState(createLinkedPropertyFilterDef("manager", "fullName"))
+      getEmptyDisplayState(
+        createLinkedPropertyFilterDef("manager", "fullName"),
+      ),
     ).toEqual({
       type: "linkedProperty",
       linkedFilterState: { type: "EXACT_MATCH", values: [] },

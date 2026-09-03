@@ -30,7 +30,7 @@ import type {
 export async function importBlockSet(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  request: string
+  request: string,
 ): Promise<_api_ImportBlockSetResponse> {
   return conjureFetch(
     ctx,
@@ -38,6 +38,6 @@ export async function importBlockSet(
     "POST",
     request,
     undefined,
-    "application/octet-stream"
+    "application/octet-stream",
   );
 }

@@ -17,9 +17,9 @@
 import React from "react";
 
 import { BaseCbacPickerDialog } from "./base/BaseCbacPickerDialog.js";
+import { ConstraintCallout } from "./ConstraintCallout.js";
 import type { MaxClassificationConstraint } from "./types.js";
 import { useCbacSelection } from "./useCbacSelection.js";
-import { useConstraintCallout } from "./useConstraintCallout.js";
 import { getSubmitDisabledReason } from "./utils/validationMessages.js";
 
 export interface CbacPickerDialogProps {
@@ -81,10 +81,16 @@ export function CbacPickerDialog({
       selectedIds,
       disallowedMarkingIds,
       userSatisfiesMarkings,
-    ]
+    ],
   );
 
-  const constraintCallout = useConstraintCallout(maxClassificationConstraint);
+  const constraintCallout = React.useMemo(
+    () =>
+      maxClassificationConstraint != null ? (
+        <ConstraintCallout constraint={maxClassificationConstraint} />
+      ) : undefined,
+    [maxClassificationConstraint],
+  );
 
   return (
     <BaseCbacPickerDialog

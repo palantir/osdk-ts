@@ -1,5 +1,69 @@
 # @osdk/create-app.template.react
 
+## 2.64.0
+
+### Minor Changes
+
+- e3855b2: Add new branch-aware changes to unstable features
+
+## 2.63.0
+
+## 2.62.0
+
+## 2.61.0
+
+### Minor Changes
+
+- d055f3f: Templates depend on @osdk/foundry with caret range
+
+## 2.60.0
+
+## 2.59.0
+
+## 2.58.0
+
+## 2.57.0
+
+### Minor Changes
+
+- ff0ef7e: Add React components guidance to generated React applications.
+- 212eb8c: Polish generated React Next steps card alignment and spacing.
+
+## 2.56.0
+
+## 2.55.0
+
+## 2.54.0
+
+## 2.53.0
+
+## 2.52.0
+
+## 2.51.0
+
+## 2.50.0
+
+### Minor Changes
+
+- 5e380f2: Template scripts express every check as a standard lint/typecheck/test task instead of a bespoke `check` script, so a scaffolded project's verification runs under the same tasks its CI already runs. The TypeScript Library template folds formatting into `lint` (`ultracite check`); the React template gains a `typecheck` script (`tsc --noEmit`). Both drop their standalone `check` script.
+- a754871: Reverting "Lowercase generated package.json name fields" (#3681) due to unintended side effects.
+
+## 2.49.0
+
+## 2.48.0
+
+### Minor Changes
+
+- 079b488: Lowercase the generated package.json name field so scaffolded projects with uppercase names are npm-publishable
+
+## 2.47.0
+
+## 2.46.0
+
+## 2.45.0
+
+## 2.44.0
+
 ## 2.43.0
 
 ## 2.42.0

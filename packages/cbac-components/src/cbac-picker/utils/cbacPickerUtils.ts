@@ -39,7 +39,7 @@ export interface ResolvedBannerDisplay {
 }
 
 export function resolveBannerDisplay(
-  banner: CbacBannerData | undefined
+  banner: CbacBannerData | undefined,
 ): ResolvedBannerDisplay {
   return {
     classificationString:
@@ -59,7 +59,7 @@ export function groupMarkingsByCategory(
   categories: ReadonlyArray<{ id: string; name: string }> | undefined,
   markings:
     | ReadonlyArray<{ id: string; name: string; categoryId: string }>
-    | undefined
+    | undefined,
 ): AppliedMarkingGroup[] {
   if (
     markingIds.length === 0 ||
@@ -93,12 +93,12 @@ export function groupMarkingsByCategory(
 
 export function resolveRequiredGroups(
   categoryGroups: CategoryMarkingGroup[],
-  requiredMarkingGroups: string[][]
+  requiredMarkingGroups: string[][],
 ): RequiredMarkingGroup[] {
   const markingIdToName = new Map(
     categoryGroups
       .flatMap((g) => g.markings)
-      .map((m) => [m.id, m.name] as const)
+      .map((m) => [m.id, m.name] as const),
   );
   return requiredMarkingGroups.map((ids) => ({
     markingNames: ids.map((id) => markingIdToName.get(id) ?? id),

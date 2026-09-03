@@ -19,14 +19,17 @@ import * as fs from "fs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { custom } from "./custom.js";
+import { dataset } from "./dataset.js";
 import {
   ALIASES_JSON_FILE_ENV_VAR,
   detectEnvironment,
   RESOURCES_JSON_FILE_ENV_VAR,
 } from "./environment.js";
 import { resetPublishedCache } from "./loaders.js";
+import { mediaset } from "./mediaset.js";
 import { model } from "./model.js";
 import { source } from "./source.js";
+import { stream } from "./stream.js";
 import { AliasEnvironment } from "./types.js";
 
 // Read test data before mocking fs - use node:fs which is not affected by vi.mock("fs")
@@ -36,7 +39,7 @@ const { testAliasesData, testResourcesData } = vi.hoisted(() => {
   const aliasesPath = nodePath.resolve(__dirname, "./test-data/aliases.json");
   const resourcesPath = nodePath.resolve(
     __dirname,
-    "./test-data/resources.json"
+    "./test-data/resources.json",
   );
   return {
     testAliasesData: nodeFs.readFileSync(aliasesPath, "utf-8") as string,
@@ -101,7 +104,7 @@ describe("published mode aliases", () => {
 
     it("throws on nonexistent alias", () => {
       expect(() => custom("nonexistent")).toThrow(
-        "Custom alias 'nonexistent' not found. Available aliases: [myCustomAlias, anotherCustomAlias]"
+        "Custom alias 'nonexistent' not found. Available aliases: [myCustomAlias, anotherCustomAlias]",
       );
     });
 
@@ -121,7 +124,7 @@ describe("published mode aliases", () => {
 
     it("throws on nonexistent alias", () => {
       expect(() => model("nonexistent")).toThrow(
-        "Model alias 'nonexistent' not found. Available aliases: [myModelAlias, anotherModelAlias]"
+        "Model alias 'nonexistent' not found. Available aliases: [myModelAlias, anotherModelAlias]",
       );
     });
 
@@ -129,10 +132,10 @@ describe("published mode aliases", () => {
       const result1 = model("myModelAlias");
       const result2 = model("anotherModelAlias");
       expect(result1.rid).toBe(
-        "ri.foundry-ml.main.model.11111111-1111-1111-1111-111111111111"
+        "ri.foundry-ml.main.model.11111111-1111-1111-1111-111111111111",
       );
       expect(result2.rid).toBe(
-        "ri.foundry-ml.main.model.22222222-2222-2222-2222-222222222222"
+        "ri.foundry-ml.main.model.22222222-2222-2222-2222-222222222222",
       );
     });
   });
@@ -147,7 +150,7 @@ describe("published mode aliases", () => {
 
     it("throws on nonexistent alias", () => {
       expect(() => source("nonexistent")).toThrow(
-        "Source alias 'nonexistent' not found. Available aliases: [mySourceAlias, anotherSourceAlias]"
+        "Source alias 'nonexistent' not found. Available aliases: [mySourceAlias, anotherSourceAlias]",
       );
     });
 
@@ -155,10 +158,88 @@ describe("published mode aliases", () => {
       const result1 = source("mySourceAlias");
       const result2 = source("anotherSourceAlias");
       expect(result1.rid).toBe(
-        "ri.magritte..source.11111111-1111-1111-1111-111111111111"
+        "ri.magritte..source.11111111-1111-1111-1111-111111111111",
       );
       expect(result2.rid).toBe(
-        "ri.magritte..source.22222222-2222-2222-2222-222222222222"
+        "ri.magritte..source.22222222-2222-2222-2222-222222222222",
+      );
+    });
+  });
+
+  describe("dataset", () => {
+    it("loads alias successfully and returns rid", () => {
+      const result = dataset("myDatasetAlias");
+      expect(result).toEqual({
+        rid: "ri.foundry.main.dataset.11111111-1111-1111-1111-111111111111",
+      });
+    });
+
+    it("throws on nonexistent alias", () => {
+      expect(() => dataset("nonexistent")).toThrow(
+        "Dataset alias 'nonexistent' not found. Available aliases: [myDatasetAlias, anotherDatasetAlias]",
+      );
+    });
+
+    it("selects correct alias from multiple", () => {
+      const result1 = dataset("myDatasetAlias");
+      const result2 = dataset("anotherDatasetAlias");
+      expect(result1.rid).toBe(
+        "ri.foundry.main.dataset.11111111-1111-1111-1111-111111111111",
+      );
+      expect(result2.rid).toBe(
+        "ri.foundry.main.dataset.22222222-2222-2222-2222-222222222222",
+      );
+    });
+  });
+
+  describe("mediaset", () => {
+    it("loads alias successfully and returns rid", () => {
+      const result = mediaset("myMediasetAlias");
+      expect(result).toEqual({
+        rid: "ri.mio.main.media-set.11111111-1111-1111-1111-111111111111",
+      });
+    });
+
+    it("throws on nonexistent alias", () => {
+      expect(() => mediaset("nonexistent")).toThrow(
+        "Mediaset alias 'nonexistent' not found. Available aliases: [myMediasetAlias, anotherMediasetAlias]",
+      );
+    });
+
+    it("selects correct alias from multiple", () => {
+      const result1 = mediaset("myMediasetAlias");
+      const result2 = mediaset("anotherMediasetAlias");
+      expect(result1.rid).toBe(
+        "ri.mio.main.media-set.11111111-1111-1111-1111-111111111111",
+      );
+      expect(result2.rid).toBe(
+        "ri.mio.main.media-set.22222222-2222-2222-2222-222222222222",
+      );
+    });
+  });
+
+  describe("stream", () => {
+    it("loads alias successfully and returns rid", () => {
+      const result = stream("myStreamAlias");
+      expect(result).toEqual({
+        rid: "ri.foundry.main.dataset.33333333-3333-3333-3333-333333333333",
+      });
+    });
+
+    it("throws on nonexistent alias", () => {
+      expect(() => stream("nonexistent")).toThrow(
+        "Stream alias 'nonexistent' not found. Available aliases: [myStreamAlias, anotherStreamAlias]",
+      );
+    });
+
+    it("selects correct alias from multiple", () => {
+      const result1 = stream("myStreamAlias");
+      const result2 = stream("anotherStreamAlias");
+      expect(result1.rid).toBe(
+        "ri.foundry.main.dataset.33333333-3333-3333-3333-333333333333",
+      );
+      expect(result2.rid).toBe(
+        "ri.foundry.main.dataset.44444444-4444-4444-4444-444444444444",
       );
     });
   });
@@ -168,6 +249,9 @@ describe("published mode aliases", () => {
       custom("myCustomAlias");
       model("myModelAlias");
       source("mySourceAlias");
+      dataset("myDatasetAlias");
+      mediaset("myMediasetAlias");
+      stream("myStreamAlias");
       custom("anotherCustomAlias");
 
       expect(fs.readFileSync).toHaveBeenCalledTimes(1);
@@ -214,7 +298,7 @@ describe("live preview mode aliases", () => {
 
     it("throws on nonexistent alias", () => {
       expect(() => custom("nonexistent")).toThrow(
-        "Custom alias 'nonexistent' not found. Available aliases: [previewCustomAlias, anotherPreviewCustom]"
+        "Custom alias 'nonexistent' not found. Available aliases: [previewCustomAlias, anotherPreviewCustom]",
       );
     });
 
@@ -234,7 +318,7 @@ describe("live preview mode aliases", () => {
 
     it("throws on nonexistent alias", () => {
       expect(() => model("nonexistent")).toThrow(
-        "Model alias 'nonexistent' not found. Available aliases: [previewModelAlias, anotherPreviewModel]"
+        "Model alias 'nonexistent' not found. Available aliases: [previewModelAlias, anotherPreviewModel]",
       );
     });
 
@@ -242,16 +326,16 @@ describe("live preview mode aliases", () => {
       const result1 = model("previewModelAlias");
       const result2 = model("anotherPreviewModel");
       expect(result1.rid).toBe(
-        "ri.foundry-ml.main.model.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+        "ri.foundry-ml.main.model.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
       );
       expect(result2.rid).toBe(
-        "ri.foundry-ml.main.model.bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+        "ri.foundry-ml.main.model.bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
       );
     });
 
     it("excludes models with null or missing alias", () => {
       expect(() => model("some-random-lookup")).toThrow(
-        "Available aliases: [previewModelAlias, anotherPreviewModel]"
+        "Available aliases: [previewModelAlias, anotherPreviewModel]",
       );
     });
   });
@@ -266,7 +350,7 @@ describe("live preview mode aliases", () => {
 
     it("throws on nonexistent alias", () => {
       expect(() => source("nonexistent")).toThrow(
-        "Source alias 'nonexistent' not found. Available aliases: [previewSourceAlias, anotherPreviewSource]"
+        "Source alias 'nonexistent' not found. Available aliases: [previewSourceAlias, anotherPreviewSource]",
       );
     });
 
@@ -274,16 +358,112 @@ describe("live preview mode aliases", () => {
       const result1 = source("previewSourceAlias");
       const result2 = source("anotherPreviewSource");
       expect(result1.rid).toBe(
-        "ri.magritte..source.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+        "ri.magritte..source.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
       );
       expect(result2.rid).toBe(
-        "ri.magritte..source.bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+        "ri.magritte..source.bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
       );
     });
 
     it("excludes sources with null or missing alias", () => {
       expect(() => source("some-random-lookup")).toThrow(
-        "Available aliases: [previewSourceAlias, anotherPreviewSource]"
+        "Available aliases: [previewSourceAlias, anotherPreviewSource]",
+      );
+    });
+  });
+
+  describe("dataset", () => {
+    it("loads alias successfully and returns rid", () => {
+      const result = dataset("previewDatasetAlias");
+      expect(result).toEqual({
+        rid: "ri.foundry.main.dataset.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      });
+    });
+
+    it("throws on nonexistent alias", () => {
+      expect(() => dataset("nonexistent")).toThrow(
+        "Dataset alias 'nonexistent' not found. Available aliases: [previewDatasetAlias, anotherPreviewDataset]",
+      );
+    });
+
+    it("selects correct alias from multiple", () => {
+      const result1 = dataset("previewDatasetAlias");
+      const result2 = dataset("anotherPreviewDataset");
+      expect(result1.rid).toBe(
+        "ri.foundry.main.dataset.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      );
+      expect(result2.rid).toBe(
+        "ri.foundry.main.dataset.bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      );
+    });
+
+    it("excludes datasets with null or missing alias", () => {
+      expect(() => dataset("some-random-lookup")).toThrow(
+        "Available aliases: [previewDatasetAlias, anotherPreviewDataset]",
+      );
+    });
+  });
+
+  describe("mediaset", () => {
+    it("loads alias successfully and returns rid", () => {
+      const result = mediaset("previewMediasetAlias");
+      expect(result).toEqual({
+        rid: "ri.mio.main.media-set.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      });
+    });
+
+    it("throws on nonexistent alias", () => {
+      expect(() => mediaset("nonexistent")).toThrow(
+        "Mediaset alias 'nonexistent' not found. Available aliases: [previewMediasetAlias, anotherPreviewMediaset]",
+      );
+    });
+
+    it("selects correct alias from multiple", () => {
+      const result1 = mediaset("previewMediasetAlias");
+      const result2 = mediaset("anotherPreviewMediaset");
+      expect(result1.rid).toBe(
+        "ri.mio.main.media-set.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      );
+      expect(result2.rid).toBe(
+        "ri.mio.main.media-set.bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      );
+    });
+
+    it("excludes mediasets with null or missing alias", () => {
+      expect(() => mediaset("some-random-lookup")).toThrow(
+        "Available aliases: [previewMediasetAlias, anotherPreviewMediaset]",
+      );
+    });
+  });
+
+  describe("stream", () => {
+    it("loads alias successfully and returns rid", () => {
+      const result = stream("previewStreamAlias");
+      expect(result).toEqual({
+        rid: "ri.foundry.main.dataset.eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+      });
+    });
+
+    it("throws on nonexistent alias", () => {
+      expect(() => stream("nonexistent")).toThrow(
+        "Stream alias 'nonexistent' not found. Available aliases: [previewStreamAlias, anotherPreviewStream]",
+      );
+    });
+
+    it("selects correct alias from multiple", () => {
+      const result1 = stream("previewStreamAlias");
+      const result2 = stream("anotherPreviewStream");
+      expect(result1.rid).toBe(
+        "ri.foundry.main.dataset.eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+      );
+      expect(result2.rid).toBe(
+        "ri.foundry.main.dataset.ffffffff-ffff-ffff-ffff-ffffffffffff",
+      );
+    });
+
+    it("excludes streams with null or missing alias", () => {
+      expect(() => stream("some-random-lookup")).toThrow(
+        "Available aliases: [previewStreamAlias, anotherPreviewStream]",
       );
     });
   });

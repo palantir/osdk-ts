@@ -21,7 +21,7 @@ import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js"
 
 export const createCipherTextHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
-  fauxFoundry
+  fauxFoundry,
 ) => [
   /**
    * Decrypt a ciphertext property value.
@@ -38,6 +38,6 @@ export const createCipherTextHandlers: FauxFoundryHandlersFactory = (
         // Just return a deterministic string that acts as plaintext
         plaintext: `decrypted:${objectType}:${primaryKey}:${propertyName}`,
       };
-    }
+    },
   ),
 ];

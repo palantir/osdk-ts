@@ -214,7 +214,7 @@ export function useObjectSet<
   options: UseObjectSetOptions<Q, RDPs> & {
     pivotTo: LinkNames<Q>;
     streamUpdates?: never;
-  }
+  },
 ): UseObjectSetResult<Q, RDPs>;
 
 // Non-pivotTo overload: pivotTo is forbidden to prevent fallthrough.
@@ -224,7 +224,7 @@ export function useObjectSet<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
-  options?: UseObjectSetOptions<Q, RDPs> & { pivotTo?: never }
+  options?: UseObjectSetOptions<Q, RDPs> & { pivotTo?: never },
 ): UseObjectSetResult<Q, RDPs>;
 
 export function useObjectSet<
@@ -233,7 +233,7 @@ export function useObjectSet<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
-  options: UseObjectSetOptions<Q, RDPs> = {}
+  options: UseObjectSetOptions<Q, RDPs> = {},
 ): UseObjectSetResult<Q, RDPs> {
   const { observableClient } = React.useContext(OsdkContext);
 
@@ -290,7 +290,7 @@ export function useObjectSet<
         devToolsMetadata({
           hookType: "useObjectSet",
           objectType: objectTypeKey,
-        })
+        }),
       );
     }
 
@@ -321,7 +321,7 @@ export function useObjectSet<
             $includeAllBaseObjectProperties:
               otherOptions.$includeAllBaseObjectProperties,
           },
-          observer
+          observer,
         );
         return subscription;
       },
@@ -329,7 +329,7 @@ export function useObjectSet<
         hookType: "useObjectSet",
         objectType: objectTypeKey,
       }),
-      initialValue
+      initialValue,
     );
   }, [
     enabled,

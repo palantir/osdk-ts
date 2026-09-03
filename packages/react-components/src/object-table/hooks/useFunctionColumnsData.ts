@@ -54,9 +54,9 @@ export interface FunctionColumnData {
   };
 }
 
-export interface UseFunctionColumnsDataOptions<
+export interface UseFunctionColumnsDataProps<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -72,7 +72,7 @@ export interface UseFunctionColumnsDataOptions<
 
 export function useFunctionColumnsData<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -82,11 +82,7 @@ export function useFunctionColumnsData<
   objects,
   columnDefinitions,
   pageSize = DEFAULT_PAGE_SIZE,
-}: UseFunctionColumnsDataOptions<
-  Q,
-  RDPs,
-  FunctionColumns
->): FunctionColumnData {
+}: UseFunctionColumnsDataProps<Q, RDPs, FunctionColumns>): FunctionColumnData {
   const client = useOsdkClient();
   const prevDataRef = useRef<FunctionColumnData>({});
 
@@ -94,7 +90,7 @@ export function useFunctionColumnsData<
 
   const functionColDefs = useMemo(
     () => extractFunctionLocators<Q, RDPs, FunctionColumns>(columnDefinitions),
-    [columnDefinitions]
+    [columnDefinitions],
   );
 
   // Construct an object set per page (base set filtered to each page's
@@ -109,7 +105,7 @@ export function useFunctionColumnsData<
       client,
       objectOrInterfaceType,
       stableObjects,
-      pageSize
+      pageSize,
     );
   }, [client, objectOrInterfaceType, stableObjects, pageSize]);
 
@@ -121,7 +117,7 @@ export function useFunctionColumnsData<
     }
     return buildQueryGrid<Q, RDPs, FunctionColumns>(
       pagedObjectSets,
-      functionColDefs
+      functionColDefs,
     );
   }, [pagedObjectSets, functionColDefs]);
 
@@ -133,7 +129,7 @@ export function useFunctionColumnsData<
 
   const mergedResults = useMemo(
     () => mergePagedResults(results, queryGrid.numColumns),
-    [results, queryGrid.numColumns]
+    [results, queryGrid.numColumns],
   );
 
   const data = useMemo(() => {
@@ -142,7 +138,7 @@ export function useFunctionColumnsData<
       functionColDefs,
       stableObjects,
       disabled,
-      prevDataRef.current
+      prevDataRef.current,
     );
     prevDataRef.current = columnData;
     return columnData;
@@ -182,14 +178,14 @@ const EMPTY_QUERY_GRID: QueryGrid = { queries: [], numColumns: 0 };
  */
 function buildQueryGrid<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
   >,
 >(
   pagedObjects: PagedObjects<Q, RDPs>[],
-  functionColDefs: FunctionColumnLocator<Q, RDPs, FunctionColumns>[]
+  functionColDefs: FunctionColumnLocator<Q, RDPs, FunctionColumns>[],
 ): QueryGrid {
   const queries: FunctionQueryParams<QueryDefinition<unknown>>[] = [];
 
@@ -225,7 +221,7 @@ function buildQueryGrid<
  */
 function mergePagedResults(
   results: UseOsdkFunctionsResult,
-  numColumns: number
+  numColumns: number,
 ): MergedResult[] {
   if (numColumns === 0) return [];
 
@@ -256,7 +252,7 @@ function mergePagedResults(
 
 function buildFunctionColumnData<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -268,7 +264,7 @@ function buildFunctionColumnData<
     | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
     | undefined,
   disabled: boolean,
-  prevColumnData: FunctionColumnData
+  prevColumnData: FunctionColumnData,
 ): FunctionColumnData {
   const columnData: FunctionColumnData = {};
 
@@ -287,7 +283,7 @@ function buildFunctionColumnData<
       const prevData = prevColumnData[columnId]?.[key]?.data;
 
       columnData[columnId][key] = createAsyncCellData(
-        resolveCell(result, locator.getKey(obj), locator.getValue, prevData)
+        resolveCell(result, locator.getKey(obj), locator.getValue, prevData),
       );
     });
   });
@@ -300,7 +296,7 @@ function resolveCell(
   result: MergedResult,
   objectKey: string,
   getValue: ((cellData: unknown) => unknown) | undefined,
-  prevData: unknown
+  prevData: unknown,
 ): Omit<AsyncCellData, "__asyncCell"> {
   if (result.error) {
     return { isLoading: false, error: result.error };
@@ -322,11 +318,11 @@ function resolveCell(
 
 const useStableObjects = <
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   objects:
     | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
-    | undefined
+    | undefined,
 ):
   | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
   | undefined => {
@@ -346,8 +342,8 @@ const useStableObjects = <
               return a.$apiName.localeCompare(b.$apiName);
             }
             return String(a.$primaryKey).localeCompare(String(b.$primaryKey));
-          })
+          }),
       ),
-    ]
+    ],
   );
 };

@@ -67,17 +67,17 @@ beforeAll(() => {
   clientCtx = createMinimalClient(
     metadata,
     "https://host.com",
-    async () => "myAccessToken",
+    () => "myAccessToken",
     {},
-    mockFetch
+    mockFetch,
   );
 
   client = createClient(
     "https://host.com",
     metadata.ontologyRid,
-    async () => "",
+    () => "",
     undefined,
-    mockFetch
+    mockFetch,
   );
 });
 
@@ -139,7 +139,7 @@ describe("aggregate", () => {
           "id:avg": "unordered",
           $count: "unordered",
         },
-      }
+      },
     );
 
     expect(mockFetch).toHaveBeenCalledWith(
@@ -166,7 +166,7 @@ describe("aggregate", () => {
         }),
         method: "POST",
         headers: expect.anything(),
-      }
+      },
     );
 
     expectType<number>(notGrouped.string.approximateDistinct);
@@ -214,15 +214,15 @@ describe("aggregate", () => {
     expectType<number>(grouped[0].$group.id);
     expectType<number>(grouped[0].$count);
     expectType<{ startValue: number; endValue: number }>(
-      grouped[0].$group.integer
+      grouped[0].$group.integer,
     );
     expectType<{ startValue: number; endValue: number }>(
-      grouped[0].$group.short
+      grouped[0].$group.short,
     );
     expectType<number | undefined>(grouped[0].$group.float);
     expectType<string | undefined>(grouped[0].$group.dateTime);
     expectType<{ startValue: string; endValue: string }>(
-      grouped[0].$group.date
+      grouped[0].$group.date,
     );
     expectType<boolean | undefined>(grouped[0].$group.boolean);
     expectType<number | undefined>(grouped[0].$group.double);
@@ -358,7 +358,7 @@ describe("aggregate", () => {
           },
           float: { $fixedWidth: 10 },
         },
-      }
+      },
     );
 
     expectType<GroupByClause<objectTypeWithAllPropertyTypes>>({
@@ -401,7 +401,7 @@ describe("aggregate", () => {
           "id:max": "asc",
           $count: "unordered",
         },
-      }
+      },
     );
 
     expect(mockFetch).toHaveBeenCalledWith(
@@ -440,7 +440,7 @@ describe("aggregate", () => {
         }),
         method: "POST",
         headers: expect.anything(),
-      }
+      },
     );
 
     expectType<number>(notGrouped.string.approximateDistinct);
@@ -477,7 +477,7 @@ describe("aggregate", () => {
         $groupBy: {
           id: "exact",
         },
-      }
+      },
     );
 
     expect(mockFetch).toHaveBeenCalledWith(
@@ -511,7 +511,7 @@ describe("aggregate", () => {
         }),
         method: "POST",
         headers: expect.anything(),
-      }
+      },
     );
 
     expectType<number>(grouped[0].string.approximateDistinct);
@@ -545,6 +545,20 @@ describe("aggregate", () => {
         id: "exact",
         timestamp: "exact",
       },
+    });
+  });
+
+  it("rejects unknown top-level keys", async () => {
+    await client(Todo).aggregate({
+      $select: { $count: "unordered" },
+      // @ts-expect-error unknown top-level keys must not be silently accepted
+      $orderBy: { group: "string" },
+    });
+
+    await client(Todo).aggregate({
+      // @ts-expect-error misspelled $groupBy must be rejected
+      $groupByy: { text: "exact" },
+      $select: { $count: "unordered" },
     });
   });
 
@@ -592,7 +606,7 @@ describe("aggregate", () => {
       });
     });
 
-    it("disallows null values with default value", async () => {
+    it("disallows null values with default value", () => {
       void client(Todo).aggregate({
         $select: {
           "text:exactDistinct": "unordered",
@@ -670,8 +684,8 @@ describe("aggregate", () => {
           $select: {
             "id:max": "unordered",
           },
-        }
-      )
+        },
+      ),
     ).rejects.toThrow("Aggregation request failed");
   });
 
@@ -708,12 +722,12 @@ describe("aggregate", () => {
           $groupBy: {
             id: "exact",
           },
-        }
-      )
+        },
+      ),
     ).rejects.toThrow("Aggregation request failed");
   });
 
-  it("works with where: todo", async () => {
+  it("works with where: todo", () => {
     const f: AggregateOpts<Employee> = {
       $select: {
         "office:approximateDistinct": "unordered",

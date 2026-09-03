@@ -22,6 +22,8 @@ import {
   convertValidationRule,
   createDefaultParameterOrdering,
   createParameters,
+  createPropertyParameterValues,
+  createStructFieldValues,
   defineAction,
   isPropertyParameter,
   kebab,
@@ -34,9 +36,10 @@ import {
   getPropertyKeys,
   toPropertyMap,
 } from "./object/objectPropertyHelpers.js";
+import { isStruct } from "./properties/PropertyTypeType.js";
 
 export function defineModifyObjectAction(
-  defInput: ActionTypeUserDefinition
+  defInput: ActionTypeUserDefinition,
 ): ActionType {
   const def = cloneDefinition(defInput);
   const propertyKeys = getPropertyKeys(def.objectType);
@@ -44,17 +47,17 @@ export function defineModifyObjectAction(
   const propertyParameters = propertyKeys.filter(
     (id) =>
       isPropertyParameter(def, id, getProperty(def.objectType, id)?.type!) &&
-      id !== def.objectType.primaryKeyPropertyApiName
+      id !== def.objectType.primaryKeyPropertyApiName,
   );
   const parameterNames = new Set(propertyParameters);
   Object.keys(def.parameterConfiguration ?? {}).forEach((param) =>
-    parameterNames.add(param)
+    parameterNames.add(param),
   );
   parameterNames.add(MODIFY_OBJECT_PARAMETER);
   const actionApiName =
     def.apiName ??
     `modify-object-${kebab(
-      def.objectType.apiName.split(".").pop() ?? def.objectType.apiName
+      def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
     )}`;
   if (def.parameterOrdering) {
     if (!def.parameterOrdering.includes(MODIFY_OBJECT_PARAMETER)) {
@@ -63,17 +66,18 @@ export function defineModifyObjectAction(
     validateParameterOrdering(
       def.parameterOrdering,
       parameterNames,
-      actionApiName
+      actionApiName,
     );
   }
   const parameters = createParameters(
     def,
     toPropertyMap(def.objectType),
-    parameterNames
+    parameterNames,
   );
   parameters.forEach((p) => {
     // create prefilled parameters for object type properties unless overridden
-    if (getProperty(def.objectType, p.id) && p.defaultValue === undefined) {
+    const property = getProperty(def.objectType, p.id);
+    if (property && !isStruct(property.type) && p.defaultValue === undefined) {
       p.defaultValue = {
         type: "objectParameterPropertyValue",
         objectParameterPropertyValue: {
@@ -88,12 +92,13 @@ export function defineModifyObjectAction(
     Object.entries(def.nonParameterMappings ?? {}).map(([id, value]) => [
       id,
       convertMappingValue(value),
-    ])
+    ]),
   );
 
   return defineAction({
     apiName: actionApiName,
     displayName: def.displayName ?? `Modify ${def.objectType.displayName}`,
+    description: def.description,
     parameters,
     status: def.status ?? "active",
     rules: [
@@ -102,15 +107,10 @@ export function defineModifyObjectAction(
         modifyObjectRule: {
           objectToModify: MODIFY_OBJECT_PARAMETER,
           propertyValues: {
-            ...Object.fromEntries(
-              propertyParameters.map((p) => [
-                p,
-                { type: "parameterId", parameterId: p },
-              ])
-            ),
+            ...createPropertyParameterValues(def, propertyParameters),
             ...mappings,
           },
-          structFieldValues: {},
+          structFieldValues: createStructFieldValues(def, parameters),
         },
       },
     ],
@@ -126,13 +126,13 @@ export function defineModifyObjectAction(
         def,
         propertyKeys,
         parameters,
-        MODIFY_OBJECT_PARAMETER
+        MODIFY_OBJECT_PARAMETER,
       ),
     ...(def.actionLevelValidation
       ? {
           validation: convertValidationRule(
             def.actionLevelValidation,
-            parameters
+            parameters,
           ),
         }
       : {}),
@@ -147,7 +147,7 @@ export function defineModifyObjectAction(
     }),
     ...(def.sections && {
       sections: Object.fromEntries(
-        def.sections.map((section) => [section.id, section])
+        def.sections.map((section) => [section.id, section]),
       ),
     }),
     ...(def.submissionMetadata && {

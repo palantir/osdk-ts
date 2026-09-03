@@ -26,7 +26,7 @@ import type {
  */
 export async function bulkLoadOntologyBranches(
   ctx: ConjureContext,
-  request: _branch_api_BulkLoadOntologyBranchesRequest
+  request: _branch_api_BulkLoadOntologyBranchesRequest,
 ): Promise<_branch_api_BulkLoadOntologyBranchesResponse> {
   return conjureFetch(ctx, `/ontology/branch/bulk-load`, "POST", request);
 }

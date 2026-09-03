@@ -30,7 +30,7 @@ describe(useOsdkMetadata, () => {
   it("works", async () => {
     const deferred = pDefer();
     const fakeClient = {
-      fetchMetadata: vitest.fn(async (o) => {
+      fetchMetadata: vitest.fn((o) => {
         return deferred.promise;
       }),
     } as any as Client;
@@ -48,7 +48,7 @@ describe(useOsdkMetadata, () => {
 
     const { result, rerender } = renderHook(
       () => useOsdkMetadata(FooObjectDef),
-      { wrapper }
+      { wrapper },
     );
 
     expect(result.current).toEqual({ loading: true });
@@ -59,7 +59,7 @@ describe(useOsdkMetadata, () => {
       expect(result.current).toEqual({
         loading: false,
         metadata: { passedIn: FooObjectDef },
-      })
+      }),
     );
   });
 });

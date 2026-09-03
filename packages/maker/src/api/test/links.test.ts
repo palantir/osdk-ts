@@ -34,6 +34,49 @@ describe("Link Types", () => {
     await defineOntology("com.palantir.", () => {}, "/tmp/");
   });
   describe("Object Links", () => {
+    it("does not allow duplicate link API names", () => {
+      const sourceObject = defineObject({
+        titlePropertyApiName: "id",
+        apiName: "sourceObject",
+        displayName: "Source Object",
+        pluralDisplayName: "Source Objects",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+      });
+
+      const otherObject = defineObject({
+        titlePropertyApiName: "id",
+        apiName: "otherObject",
+        displayName: "Other Object",
+        pluralDisplayName: "Other Objects",
+        primaryKeyPropertyApiName: "id",
+        properties: {
+          id: { type: "string" },
+          objectId: { type: "string" },
+        },
+      });
+
+      const defineDuplicateLink = () =>
+        defineLink({
+          apiName: "objectToOtherObject",
+          one: {
+            object: sourceObject,
+            metadata: { apiName: "sourceObjects" },
+          },
+          toMany: {
+            object: otherObject,
+            metadata: { apiName: "otherObjects" },
+          },
+          manyForeignKeyProperty: "objectId",
+        });
+
+      defineDuplicateLink();
+
+      expect(defineDuplicateLink).toThrowError(
+        "Link type with apiName objectToOtherObject is already defined",
+      );
+    });
+
     it("One To Many Links are properly defined", () => {
       const object = defineObject({
         titlePropertyApiName: "bar",
@@ -835,10 +878,12 @@ describe("Link Types", () => {
       const linkDatasource =
         metadata.ontology.linkTypes["person-to-friend"].datasources[0];
       expect(
-        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0].column
+        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0]
+          .column,
       ).toBe("id_from");
       expect(
-        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0].column
+        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0]
+          .column,
       ).toBe("id_to");
     });
 
@@ -885,10 +930,12 @@ describe("Link Types", () => {
       const linkDatasource =
         metadata.ontology.linkTypes["foo-to-bar"].datasources[0];
       expect(
-        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0].column
+        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0]
+          .column,
       ).toBe("id_from");
       expect(
-        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0].column
+        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0]
+          .column,
       ).toBe("id_to");
     });
 
@@ -935,10 +982,12 @@ describe("Link Types", () => {
       const linkDatasource =
         metadata.ontology.linkTypes["foo-to-bar"].datasources[0];
       expect(
-        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0].column
+        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0]
+          .column,
       ).toBe("fooId");
       expect(
-        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0].column
+        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0]
+          .column,
       ).toBe("barId");
     });
 
@@ -987,7 +1036,7 @@ describe("Link Types", () => {
       expect(
         "many" in link &&
           !("intermediaryObjectType" in link) &&
-          link.includeEmptyBackingDatasource
+          link.includeEmptyBackingDatasource,
       ).toBe(true);
     });
 
@@ -2310,7 +2359,7 @@ describe("Link Types", () => {
           ontologyPackageRid: null,
         });
       },
-      "/tmp/"
+      "/tmp/",
     );
   });
 

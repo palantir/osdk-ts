@@ -7,6 +7,7 @@
       "@osdk/api",
       "@osdk/client.unstable",
       "@osdk/client",
+      "@osdk/vite-plugin-branch",
       "@osdk/react",
       "@osdk/create-app.template-packager",
       "@osdk/create-app.template.*",
@@ -27,10 +28,6 @@
       "@osdk/widget.vite-plugin",
       "@osdk/create-widget",
       "@osdk/create-widget.template.*"
-    ],
-    [
-      "@osdk/react-components",
-      "@osdk/react-components-styles"
     ]
   ],
   "linked": [],

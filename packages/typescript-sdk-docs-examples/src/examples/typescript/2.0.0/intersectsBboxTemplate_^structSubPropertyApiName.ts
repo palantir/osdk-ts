@@ -23,7 +23,6 @@ import { Office } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const OfficeObjectSet = client(Office)
-  .where({
-    entrance: { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128] } },
-  });
+const OfficeObjectSet = client(Office).where({
+  entrance: { $intersects: { $bbox: [-74.006, 25.123, 80.4231, 40.7128] } },
+});

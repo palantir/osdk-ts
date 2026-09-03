@@ -123,7 +123,7 @@ class RecommendationsStore {
 }
 
 export function useRecommendations(
-  monitorStore: MonitorStore
+  monitorStore: MonitorStore,
 ): RecommendationsState {
   const storeRef = React.useRef<RecommendationsStore | null>(null);
 
@@ -135,7 +135,7 @@ export function useRecommendations(
 
   const subscribe = React.useCallback(
     (callback: () => void) => store.subscribe(callback),
-    [store]
+    [store],
   );
 
   const getSnapshot = React.useCallback(() => store.getSnapshot(), [store]);

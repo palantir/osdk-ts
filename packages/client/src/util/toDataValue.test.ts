@@ -55,7 +55,7 @@ describe(toDataValue, () => {
       { ontologyRid: testSetup.fauxFoundry.defaultOntologyRid },
       testSetup.fauxFoundry.baseUrl,
       testSetup.auth,
-      {}
+      {},
     );
 
     // toDataValue only needs the apiName right now, update this if that changes
@@ -82,7 +82,7 @@ describe(toDataValue, () => {
     const convertedBasic = await toDataValue(
       basic,
       clientCtx,
-      mockActionMetadata
+      mockActionMetadata,
     );
     expect(convertedBasic).toEqual(basic);
   });
@@ -99,7 +99,7 @@ describe(toDataValue, () => {
         attachmentSet,
       },
       clientCtx,
-      mockActionMetadata
+      mockActionMetadata,
     );
 
     expect(recursiveConversion).toEqual({
@@ -119,7 +119,7 @@ describe(toDataValue, () => {
     const recursiveConversion = await toDataValue(
       struct,
       clientCtx,
-      mockActionMetadata
+      mockActionMetadata,
     );
 
     expect(recursiveConversion).toEqual({
@@ -145,10 +145,10 @@ describe(toDataValue, () => {
     };
 
     expect(await toDataValue(point, clientCtx, mockActionMetadata)).toEqual(
-      point
+      point,
     );
     expect(await toDataValue(polygon, clientCtx, mockActionMetadata)).toEqual(
-      polygon
+      polygon,
     );
   });
 
@@ -157,7 +157,7 @@ describe(toDataValue, () => {
     const ontologyConversion = await toDataValue(
       employee,
       clientCtx,
-      mockActionMetadata
+      mockActionMetadata,
     );
     expect(ontologyConversion).toEqual(stubData.employee1.__primaryKey);
   });
@@ -167,7 +167,7 @@ describe(toDataValue, () => {
     const ontologyConversion = await toDataValue(
       task,
       clientCtx,
-      mockActionMetadata
+      mockActionMetadata,
     );
     expect(ontologyConversion).toEqual(task.$primaryKey);
   });
@@ -193,14 +193,14 @@ describe(toDataValue, () => {
     const objectSetConversion = await toDataValue(
       clientObjectSet,
       clientCtx,
-      mockActionMetadata
+      mockActionMetadata,
     );
     expect(objectSetConversion).toMatchInlineSnapshot(expected);
 
     const definitionConversion = await toDataValue(
       definition,
       clientCtx,
-      mockActionMetadata
+      mockActionMetadata,
     );
     expect(definitionConversion).toMatchInlineSnapshot(expected);
   });
@@ -211,7 +211,7 @@ describe(toDataValue, () => {
     const converted = await toDataValue(
       attachmentUpload,
       clientCtx,
-      mockActionMetadata
+      mockActionMetadata,
     );
 
     expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/iu);
@@ -223,14 +223,14 @@ describe(toDataValue, () => {
       new Blob([JSON.stringify({ name: "Hello World" }, null, 2)], {
         type: "application/json",
       }),
-      { name: "file1.txt" }
+      { name: "file1.txt" },
     );
 
     const converted = await toDataValue(file, clientCtx, mockActionMetadata);
     expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/iu);
   });
 
-  it("converts media uploads correctly", async () => {
+  it("converts media uploads correctly", () => {
     const file: MediaUpload = {
       data: new Blob([JSON.stringify({ name: "Hello World" }, null, 2)], {
         type: "application/json",
@@ -255,8 +255,8 @@ describe(toDataValue, () => {
                 },
               },
             };
-          }
-        )
+          },
+        ),
       );
       const converted = await toDataValue(file, clientCtx, mockActionMetadata);
       expect(isMediaReference(converted)).toBe(true);
@@ -279,7 +279,7 @@ describe(toDataValue, () => {
     const converted = await toDataValue(
       mediaReference,
       clientCtx,
-      mockActionMetadata
+      mockActionMetadata,
     );
     expect(converted).toEqual(mediaReference);
   });
@@ -303,18 +303,18 @@ describe(toDataValue, () => {
     };
 
     const mockMedia: Media = {
-      fetchMetadata: async () => ({
+      fetchMetadata: () => ({
         sizeBytes: 1024,
         mediaType: "image/png",
       }),
-      fetchContents: async () => new Response(),
+      fetchContents: () => new Response(),
       getMediaReference: () => expectedMediaReference,
     };
 
     const converted = await toDataValue(
       mockMedia,
       clientCtx,
-      mockActionMetadata
+      mockActionMetadata,
     );
 
     expect(converted).toEqual(expectedMediaReference);
@@ -327,7 +327,7 @@ describe(toDataValue, () => {
     const converted = await toDataValue(
       scenario,
       clientCtx,
-      mockActionMetadata
+      mockActionMetadata,
     );
     expect(converted).toBe("ri.actions..scenario.abc");
   });

@@ -15,8 +15,10 @@
  */
 
 import type {
+  OntologyIrAddObjectRule,
   OntologyIrInterfacePropertyLogicRuleValue,
   OntologyIrParameterPrefill,
+  OntologyIrStructFieldBaseParameterType,
   ParameterId,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
@@ -61,14 +63,19 @@ import {
   isInterfaceSharedPropertyType,
 } from "./interface/InterfacePropertyType.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
-import { getPropertyKeys } from "./object/objectPropertyHelpers.js";
+import {
+  getProperty,
+  getPropertyKeys,
+} from "./object/objectPropertyHelpers.js";
 import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
 import type { ObjectPropertyTypeUserDefinition } from "./object/ObjectPropertyTypeUserDefinition.js";
 import type { ObjectType } from "./object/ObjectType.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 import {
   isStruct,
+  isVector,
   type PropertyTypeType,
+  type PropertyTypeTypeStruct,
 } from "./properties/PropertyTypeType.js";
 
 export const MODIFY_OBJECT_PARAMETER: string = "objectToModifyParameter";
@@ -89,6 +96,7 @@ export type ActionTypeUserDefinition = {
   objectType: ObjectTypeDefinition | ObjectType;
   apiName?: string;
   displayName?: string;
+  description?: string;
   status?: ActionStatus;
   parameterConfiguration?: Record<string, ActionParameterConfiguration>;
   nonParameterMappings?: Record<string, MappingValue>;
@@ -111,6 +119,7 @@ export type InterfaceActionTypeUserDefinition = {
   objectType?: ObjectTypeDefinition | ObjectType;
   apiName?: string;
   displayName?: string;
+  description?: string;
   status?: ActionStatus;
   parameterConfiguration?: Record<string, ActionParameterConfiguration>;
   nonParameterMappings?: Record<string, MappingValue>;
@@ -139,28 +148,28 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
     undefined
   ) {
     throw new Error(
-      `Action type with apiName ${actionDef.apiName} is already defined`
+      `Action type with apiName ${actionDef.apiName} is already defined`,
     );
   }
   invariant(
-    /^[a-z0-9]+(-[a-z0-9]+)*$/u.test(actionDef.apiName),
-    `Action type apiName "${actionDef.apiName}" must be alphanumeric, lowercase, and kebab-case`
+    /^[a-z0-9]+(?:[-.][a-z0-9]+)*$/u.test(actionDef.apiName),
+    `Action type apiName "${actionDef.apiName}" must contain lowercase alphanumeric segments separated by hyphens or dots`,
   );
 
   const parameterIdsSet = new Set(parameterIds);
   invariant(
     parameterIdsSet.size === parameterIds.length,
-    `Parameter ids must be unique`
+    `Parameter ids must be unique`,
   );
 
   const parameterIdsNotFound = Array.from(
-    referencedParameterIds(actionDef)
+    referencedParameterIds(actionDef),
   ).filter((p) => !parameterIdsSet.has(p));
   invariant(
     parameterIdsNotFound.length === 0,
     `Parameters ${JSON.stringify(
-      parameterIdsNotFound
-    )} were referenced but not defined`
+      parameterIdsNotFound,
+    )} were referenced but not defined`,
   );
 
   const definedSectionIds = new Set(Object.keys(actionDef.sections ?? []));
@@ -169,38 +178,38 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
     .filter((sId) => !definedSectionIds.has(sId));
   invariant(
     undefinedSectionsInOrdering.length === 0,
-    `Sections [${undefinedSectionsInOrdering}] were referenced in content ordering but not defined`
+    `Sections [${undefinedSectionsInOrdering}] were referenced in content ordering but not defined`,
   );
 
   invariant(
     actionDef.rules.length > 0,
-    `Action type ${actionDef.apiName} must have at least one logic rule`
+    `Action type ${actionDef.apiName} must have at least one logic rule`,
   );
   actionDef.rules.forEach((rule) => {
     if (rule.type === "modifyObjectRule") {
       invariant(
         parameterIds.some((id) => id === rule.modifyObjectRule.objectToModify),
-        `Object to modify parameter must be defined in parameters`
+        `Object to modify parameter must be defined in parameters`,
       );
     }
     if (rule.type === "deleteObjectRule") {
       invariant(
         parameterIds.some((id) => id === rule.deleteObjectRule.objectToDelete),
-        `Object to delete parameter must be defined in parameters`
+        `Object to delete parameter must be defined in parameters`,
       );
     }
     if (rule.type === "modifyInterfaceRule") {
       // The there must be a parameter for the interface, and the interface there must exist
       const interfaceParam = actionDef.parameters!.find(
         (p) =>
-          p.id === rule.modifyInterfaceRule.interfaceObjectToModifyParameter
+          p.id === rule.modifyInterfaceRule.interfaceObjectToModifyParameter,
       );
       invariant(
         interfaceParam !== undefined &&
           typeof interfaceParam.type === "object" &&
           (interfaceParam.type.type === "interfaceReference" ||
             interfaceParam.type.type === "interfaceReferenceList"),
-        `Interface object to modify parameter must be an interface reference`
+        `Interface object to modify parameter must be an interface reference`,
       );
       const interfaceReference =
         interfaceParam.type.type === "interfaceReference"
@@ -209,7 +218,7 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
       invariant(
         ontologyDefinition.INTERFACE_TYPE[interfaceReference] !== undefined ||
           importedTypes.INTERFACE_TYPE[interfaceReference] !== undefined,
-        `Interface type ${interfaceReference} does not exist`
+        `Interface type ${interfaceReference} does not exist`,
       );
 
       // All referenced SPTs must exist on the interface
@@ -219,11 +228,11 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
         (spt) => {
           invariant(
             Object.keys(
-              getFlattenedInterfaceProperties(interfaceType)
+              getFlattenedInterfaceProperties(interfaceType),
             ).includes(spt),
-            `Shared property type ${spt} does not exist in interface type ${interfaceReference}`
+            `Shared property type ${spt} does not exist in interface type ${interfaceReference}`,
           );
-        }
+        },
       );
     }
     if (rule.type === "addInterfaceRule") {
@@ -235,16 +244,16 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
         importedTypes.INTERFACE_TYPE[rule.addInterfaceRule.interfaceApiName];
       invariant(
         interfaceType !== undefined,
-        `Interface type ${rule.addInterfaceRule.interfaceApiName} does not exist`
+        `Interface type ${rule.addInterfaceRule.interfaceApiName} does not exist`,
       );
 
       // All referenced SPTs must exist on the interface
       Object.keys(rule.addInterfaceRule.sharedPropertyValues).forEach((spt) => {
         invariant(
           Object.keys(getFlattenedInterfaceProperties(interfaceType)).includes(
-            spt
+            spt,
           ),
-          `Shared property type ${spt} does not exist in interface type ${interfaceType.apiName}`
+          `Shared property type ${spt} does not exist in interface type ${interfaceType.apiName}`,
         );
       });
     }
@@ -255,13 +264,13 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
         importedTypes.INTERFACE_TYPE[ilr.interfaceTypeRid];
       invariant(
         interfaceType !== undefined,
-        `Interface type ${ilr.interfaceTypeRid} does not exist`
+        `Interface type ${ilr.interfaceTypeRid} does not exist`,
       );
       invariant(
         interfaceType.links.some(
-          (link) => link.metadata.apiName === ilr.interfaceLinkTypeRid
+          (link) => link.metadata.apiName === ilr.interfaceLinkTypeRid,
         ),
-        `Interface link type ${ilr.interfaceLinkTypeRid} does not exist on interface ${ilr.interfaceTypeRid}`
+        `Interface link type ${ilr.interfaceLinkTypeRid} does not exist on interface ${ilr.interfaceTypeRid}`,
       );
     }
   });
@@ -285,22 +294,23 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
 export function isPropertyParameter(
   def: ActionTypeUserDefinition | InterfaceActionTypeUserDefinition,
   name: string,
-  type: PropertyTypeType
+  type: PropertyTypeType,
 ): boolean {
   if ("interfaceType" in def) {
     return (
       Object.keys(getFlattenedInterfaceProperties(def.interfaceType)).includes(
-        name
+        name,
       ) &&
       !Object.keys(def.nonParameterMappings ?? {}).includes(name) &&
       !isStruct(type) &&
+      !isVector(type) &&
       !def.excludedProperties?.includes(name)
     );
   }
   return (
     getPropertyKeys(def.objectType).includes(name) &&
     !Object.keys(def.nonParameterMappings ?? {}).includes(name) &&
-    !isStruct(type) &&
+    !isVector(type) &&
     !def.excludedProperties?.includes(name)
   );
 }
@@ -313,7 +323,7 @@ export function createParameters(
     | Record<string, ObjectPropertyType | ObjectPropertyTypeUserDefinition>
     | Record<string, InterfacePropertyType>,
   parameterSet: Set<string>,
-  requiredMap?: Record<string, boolean>
+  requiredMap?: Record<string, boolean>,
 ): Array<ActionParameter> {
   const targetParams = getTargetParameters(def, parameterSet);
   return [
@@ -343,15 +353,21 @@ export function createParameters(
                   def.parameterConfiguration?.[id].allowedValues ??
                   (def.parameterConfiguration?.[id].customParameterType
                     ? extractAllowedValuesFromActionParameterType(
-                        def.parameterConfiguration?.[id].customParameterType
+                        def.parameterConfiguration?.[id].customParameterType,
                       )
                     : extractAllowedValuesFromPropertyType(
-                        propertyMetadata!.type
+                        propertyMetadata!.type,
                       )),
                 required:
                   def.parameterConfiguration?.[id].required ??
-                  propertyMetadata?.nullability?.noNulls ??
-                  false,
+                  ((propertyMetadata?.array ?? false)
+                    ? {
+                        listLength: propertyMetadata?.nullability
+                          ?.noEmptyCollections
+                          ? { min: 1 }
+                          : {},
+                      }
+                    : (propertyMetadata?.nullability?.noNulls ?? false)),
               }
             : {
                 required:
@@ -366,7 +382,7 @@ export function createParameters(
                       propertyMetadata?.nullability?.noNulls ??
                       false),
                 allowedValues: extractAllowedValuesFromPropertyType(
-                  propertyMetadata?.type!
+                  propertyMetadata?.type!,
                 ),
               },
         defaultValue: def.parameterConfiguration?.[id]?.defaultValue,
@@ -377,9 +393,72 @@ export function createParameters(
   ];
 }
 
+export function createStructFieldValues(
+  def: ActionTypeUserDefinition,
+  parameters: Array<ActionParameter>,
+): OntologyIrAddObjectRule["structFieldValues"] {
+  return Object.fromEntries(
+    parameters.flatMap((parameter) => {
+      const property = getProperty(def.objectType, parameter.id);
+      if (property === undefined || !isStruct(property.type)) {
+        return [];
+      }
+
+      invariant(
+        typeof parameter.type === "object" &&
+          (parameter.type.type === "struct" ||
+            parameter.type.type === "structList"),
+        `Parameter ${parameter.id} for struct property ${parameter.id} must have a struct parameter type`,
+      );
+      return [
+        [
+          parameter.id,
+          Object.fromEntries(
+            Object.keys(property.type.structDefinition).map((fieldApiName) => [
+              fieldApiName,
+              property.array
+                ? {
+                    type: "structListParameterFieldValue",
+                    structListParameterFieldValue: {
+                      parameterId: parameter.id,
+                      structFieldApiName: fieldApiName,
+                    },
+                  }
+                : {
+                    type: "structParameterFieldValue",
+                    structParameterFieldValue: {
+                      parameterId: parameter.id,
+                      structFieldApiName: fieldApiName,
+                    },
+                  },
+            ]),
+          ),
+        ],
+      ];
+    }),
+  );
+}
+
+export function createPropertyParameterValues(
+  def: ActionTypeUserDefinition,
+  parameterIds: Array<ParameterId>,
+): OntologyIrAddObjectRule["propertyValues"] {
+  return Object.fromEntries(
+    parameterIds
+      .filter((parameterId) => {
+        const property = getProperty(def.objectType, parameterId);
+        return property === undefined || !isStruct(property.type);
+      })
+      .map(
+        (parameterId) =>
+          [parameterId, { type: "parameterId", parameterId }] as const,
+      ),
+  );
+}
+
 function getTargetParameters(
   def: ActionTypeUserDefinition | InterfaceActionTypeUserDefinition,
-  parameterSet: Set<string>
+  parameterSet: Set<string>,
 ): Array<ActionParameter> {
   const targetParams: Array<ActionParameter> = [];
   parameterSet.forEach((name) => {
@@ -611,7 +690,7 @@ function getTargetParameters(
 }
 
 function referencedParameterIds(
-  actionDef: ActionTypeDefinition
+  actionDef: ActionTypeDefinition,
 ): Set<ParameterId> {
   const parameterIds: Set<ParameterId> = new Set();
 
@@ -633,7 +712,7 @@ function referencedParameterIds(
     switch (rule.type) {
       case "addInterfaceRule":
         rule.addInterfaceRule.interfaceApiName = sanitize(
-          rule.addInterfaceRule.interfaceApiName
+          rule.addInterfaceRule.interfaceApiName,
         );
         parameterIds.add(rule.addInterfaceRule.objectTypeParameter);
         Object.entries(rule.addInterfaceRule.sharedPropertyValues).forEach(
@@ -643,12 +722,12 @@ function referencedParameterIds(
             }
             delete rule.addInterfaceRule.sharedPropertyValues[k];
             rule.addInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
-          }
+          },
         );
         break;
       case "modifyInterfaceRule":
         parameterIds.add(
-          rule.modifyInterfaceRule.interfaceObjectToModifyParameter
+          rule.modifyInterfaceRule.interfaceObjectToModifyParameter,
         );
         Object.entries(rule.modifyInterfaceRule.sharedPropertyValues).forEach(
           ([k, v]) => {
@@ -657,7 +736,7 @@ function referencedParameterIds(
             }
             delete rule.modifyInterfaceRule.sharedPropertyValues[k];
             rule.modifyInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
-          }
+          },
         );
         break;
       case "addObjectRule":
@@ -673,7 +752,7 @@ function referencedParameterIds(
             if (v.type === "parameterId") {
               parameterIds.add(v.parameterId);
             }
-          }
+          },
         );
         break;
       case "addOrModifyObjectRuleV2":
@@ -682,15 +761,15 @@ function referencedParameterIds(
             if (v.type === "parameterId") {
               parameterIds.add(v.parameterId);
             }
-          }
+          },
         );
         break;
       case "addInterfaceLinkRuleV2":
         rule.addInterfaceLinkRuleV2.interfaceTypeRid = sanitize(
-          rule.addInterfaceLinkRuleV2.interfaceTypeRid
+          rule.addInterfaceLinkRuleV2.interfaceTypeRid,
         );
         rule.addInterfaceLinkRuleV2.interfaceLinkTypeRid = sanitize(
-          rule.addInterfaceLinkRuleV2.interfaceLinkTypeRid
+          rule.addInterfaceLinkRuleV2.interfaceLinkTypeRid,
         );
         [
           ...rule.addInterfaceLinkRuleV2.sourceObjects,
@@ -702,15 +781,16 @@ function referencedParameterIds(
               break;
             case "createdInterfaceObjectReferenceByPk":
               parameterIds.add(
-                ref.createdInterfaceObjectReferenceByPk.objectType
+                ref.createdInterfaceObjectReferenceByPk.objectType,
               );
               parameterIds.add(
-                ref.createdInterfaceObjectReferenceByPk.primaryKey
+                ref.createdInterfaceObjectReferenceByPk.primaryKey,
               );
               break;
             case "createdInterfaceObjectReferenceByUniqueIdentifier":
               parameterIds.add(
-                ref.createdInterfaceObjectReferenceByUniqueIdentifier.objectType
+                ref.createdInterfaceObjectReferenceByUniqueIdentifier
+                  .objectType,
               );
               break;
             case "createdObjectReference":
@@ -721,10 +801,10 @@ function referencedParameterIds(
         break;
       case "deleteInterfaceLinkRule":
         rule.deleteInterfaceLinkRule.interfaceTypeRid = sanitize(
-          rule.deleteInterfaceLinkRule.interfaceTypeRid
+          rule.deleteInterfaceLinkRule.interfaceTypeRid,
         );
         rule.deleteInterfaceLinkRule.interfaceLinkTypeRid = sanitize(
-          rule.deleteInterfaceLinkRule.interfaceLinkTypeRid
+          rule.deleteInterfaceLinkRule.interfaceLinkTypeRid,
         );
         parameterIds.add(rule.deleteInterfaceLinkRule.sourceObject);
         parameterIds.add(rule.deleteInterfaceLinkRule.targetObject);
@@ -735,7 +815,7 @@ function referencedParameterIds(
 }
 
 export function extractAllowedValuesFromActionParameterType(
-  type: ActionParameterType
+  type: ActionParameterType,
 ): ActionParameterAllowedValues {
   if (typeof type === "object") {
     switch (type.type) {
@@ -749,10 +829,10 @@ export function extractAllowedValuesFromActionParameterType(
         return { type: "objectSetRid" };
       case "struct":
       case "structList":
-        throw new Error("Structs are not supported yet");
+        return { type: "struct" };
       default:
         throw new Error(
-          `Inferred allowed values for ${type.type} not yet supported. Please explicitly provide allowed values.`
+          `Inferred allowed values for ${type.type} not yet supported. Please explicitly provide allowed values.`,
         );
     }
   }
@@ -794,13 +874,13 @@ export function extractAllowedValuesFromActionParameterType(
       return { type: "attachment" };
     default:
       throw new Error(
-        `Inferred allowed values for ${type} not yet supported. Please explicitly provide allowed values.`
+        `Inferred allowed values for ${type} not yet supported. Please explicitly provide allowed values.`,
       );
   }
 }
 
 function extractAllowedValuesFromPropertyType(
-  type: PropertyTypeType
+  type: PropertyTypeType,
 ): ActionParameterAllowedValues {
   switch (type) {
     case "boolean":
@@ -861,7 +941,9 @@ function extractAllowedValuesFromPropertyType(
         case "string":
           return { type: "text" };
         case "struct":
-          throw new Error("Structs are not supported yet");
+          return { type: "struct" };
+        case "vector":
+          throw new Error("Vectors are not supported as action parameters yet");
         default:
           throw new Error("Unknown type");
       }
@@ -873,7 +955,7 @@ function extractActionParameterType(
   pt:
     | InterfaceDefinedProperty
     | ObjectPropertyType
-    | ObjectPropertyTypeUserDefinition
+    | ObjectPropertyTypeUserDefinition,
 ): ActionParameterType {
   const typeType = pt.type;
   if (typeof typeType === "object") {
@@ -885,7 +967,9 @@ function extractActionParameterType(
       case "string":
         return maybeAddList("string", pt);
       case "struct":
-        throw new Error("Structs are not supported yet");
+        return extractStructActionParameterType(typeType, pt.array ?? false);
+      case "vector":
+        throw new Error("Vectors are not supported as action parameters yet");
       default:
         throw new Error(`Unknown type`);
     }
@@ -911,12 +995,65 @@ function extractActionParameterType(
   }
 }
 
+function extractStructActionParameterType(
+  type: PropertyTypeTypeStruct,
+  isList: boolean,
+): ActionParameterType {
+  const structFieldTypes = Object.fromEntries(
+    Object.entries(type.structDefinition).map(([apiName, fieldDefinition]) => [
+      apiName,
+      extractStructFieldParameterType(
+        typeof fieldDefinition === "object" && "fieldType" in fieldDefinition
+          ? fieldDefinition.fieldType
+          : fieldDefinition,
+      ),
+    ]),
+  );
+  return isList
+    ? { type: "structList", structList: { structFieldTypes } }
+    : { type: "struct", struct: { structFieldTypes } };
+}
+
+function extractStructFieldParameterType(
+  type: Exclude<PropertyTypeType, PropertyTypeTypeStruct>,
+): OntologyIrStructFieldBaseParameterType {
+  const typeName = typeof type === "object" ? type.type : type;
+  switch (typeName) {
+    case "boolean":
+      return { type: "boolean", boolean: {} };
+    case "byte":
+    case "integer":
+    case "short":
+      return { type: "integer", integer: {} };
+    case "long":
+      return { type: "long", long: {} };
+    case "decimal":
+    case "double":
+    case "float":
+      return { type: "double", double: {} };
+    case "string":
+      return { type: "string", string: {} };
+    case "geopoint":
+      return { type: "geohash", geohash: {} };
+    case "geoshape":
+      return { type: "geoshape", geoshape: {} };
+    case "timestamp":
+      return { type: "timestamp", timestamp: {} };
+    case "date":
+      return { type: "date", date: {} };
+    default:
+      throw new Error(
+        `Property type ${typeName} is not supported for struct action parameter fields`,
+      );
+  }
+}
+
 function maybeAddList(
   type: ActionParameterTypePrimitive,
   pt:
     | InterfaceDefinedProperty
     | ObjectPropertyType
-    | ObjectPropertyTypeUserDefinition
+    | ObjectPropertyTypeUserDefinition,
 ): ActionParameterType {
   return ((pt.array ?? false) ? type + "List" : type) as ActionParameterType;
 }
@@ -935,7 +1072,7 @@ function sanitize(s: string): string {
 
 export function convertValidationRule(
   actionValidation: ActionLevelValidationDefinition,
-  actionParameters?: ActionParameter[]
+  actionParameters?: ActionParameter[],
 ): Array<ActionValidationRule> {
   return actionValidation.map((rule) => {
     return {
@@ -956,7 +1093,7 @@ function validateActionConfiguration(action: ActionType): void {
         acc[param.id] = param;
         return acc;
       },
-      {} as Record<string, ActionParameter>
+      {} as Record<string, ActionParameter>,
     ) ?? {};
   const orderedParameters =
     action.parameterOrdering?.map((id) => parameterMap[id]) ??
@@ -967,14 +1104,14 @@ function validateActionConfiguration(action: ActionType): void {
         override.condition,
         param.id,
         seenParameterIds,
-        action.parameters
+        action.parameters,
       );
     });
     validateParameterPrefill(
       param.id,
       seenParameterIds,
       action.parameters,
-      param.defaultValue
+      param.defaultValue,
     );
     seenParameterIds.add(param.id);
   });
@@ -984,22 +1121,22 @@ function validateParameterCondition(
   condition: ConditionDefinition,
   currentParameterId: ParameterId,
   seenParameterIds: Set<ParameterId>,
-  parameters?: ActionParameter[]
+  parameters?: ActionParameter[],
 ): void {
   switch (condition.type) {
     case "parameter":
       const overrideParamId = condition.parameterId;
       invariant(
         parameters?.some((p) => p.id === overrideParamId),
-        `Parameter condition on ${currentParameterId} is referencing unknown parameter ${overrideParamId}`
+        `Parameter condition on ${currentParameterId} is referencing unknown parameter ${overrideParamId}`,
       );
       invariant(
         overrideParamId !== currentParameterId,
-        `Parameter condition on ${currentParameterId} is referencing itself`
+        `Parameter condition on ${currentParameterId} is referencing itself`,
       );
       invariant(
         seenParameterIds.has(overrideParamId),
-        `Parameter condition on ${currentParameterId} is referencing later parameter ${overrideParamId}`
+        `Parameter condition on ${currentParameterId} is referencing later parameter ${overrideParamId}`,
       );
       break;
     case "and":
@@ -1010,8 +1147,8 @@ function validateParameterCondition(
             c,
             currentParameterId,
             seenParameterIds,
-            parameters
-          )
+            parameters,
+          ),
         );
       }
       break;
@@ -1022,8 +1159,8 @@ function validateParameterCondition(
             c,
             currentParameterId,
             seenParameterIds,
-            parameters
-          )
+            parameters,
+          ),
         );
       }
       break;
@@ -1037,7 +1174,7 @@ function validateParameterCondition(
       break;
     default:
       throw new Error(
-        `Unknown condition type on parameter ${currentParameterId}`
+        `Unknown condition type on parameter ${currentParameterId}`,
       );
   }
 }
@@ -1046,29 +1183,29 @@ function validateParameterPrefill(
   currentParameterId: ParameterId,
   seenParameterIds: Set<ParameterId>,
   parameters?: ActionParameter[],
-  defaultValue?: OntologyIrParameterPrefill
+  defaultValue?: OntologyIrParameterPrefill,
 ): void {
   if (!defaultValue) return;
   switch (defaultValue.type) {
     case "objectParameterPropertyValue":
       invariant(
         parameters?.some(
-          (p) => p.id === defaultValue.objectParameterPropertyValue.parameterId
+          (p) => p.id === defaultValue.objectParameterPropertyValue.parameterId,
         ),
-        `Default value for parameter ${currentParameterId} is referencing unknown parameter ${defaultValue.objectParameterPropertyValue.parameterId}`
+        `Default value for parameter ${currentParameterId} is referencing unknown parameter ${defaultValue.objectParameterPropertyValue.parameterId}`,
       );
       invariant(
         seenParameterIds.has(
-          defaultValue.objectParameterPropertyValue.parameterId
+          defaultValue.objectParameterPropertyValue.parameterId,
         ),
-        `Default value for parameter ${currentParameterId} is referencing later parameter ${defaultValue.objectParameterPropertyValue.parameterId}`
+        `Default value for parameter ${currentParameterId} is referencing later parameter ${defaultValue.objectParameterPropertyValue.parameterId}`,
       );
       break;
     case "staticValue":
       invariant(
         defaultValue.staticValue.type ===
           parameters?.find((p) => p.id === currentParameterId)?.type,
-        `Default static value for parameter ${currentParameterId} does not match type`
+        `Default static value for parameter ${currentParameterId} does not match type`,
       );
       break;
     case "staticObject":
@@ -1080,7 +1217,7 @@ function validateParameterPrefill(
       break;
     default:
       throw new Error(
-        `Unknown default value type for parameter ${currentParameterId}`
+        `Unknown default value type for parameter ${currentParameterId}`,
       );
   }
 }
@@ -1088,7 +1225,7 @@ function validateParameterPrefill(
 export function validateActionParameters(
   def: ActionTypeUserDefinition | InterfaceActionTypeUserDefinition,
   properties: Array<string>,
-  name: string
+  name: string,
 ): void {
   // validates that parameters either exist as object properties or have a type defined
   [...Object.keys(def.parameterConfiguration ?? {})].forEach((id) => {
@@ -1097,7 +1234,7 @@ export function validateActionParameters(
         properties.includes(addNamespaceIfNone(id)) ||
         def.parameterConfiguration?.[id].customParameterType !== undefined ||
         isTargetParameter(id),
-      `Parameter ${id} does not exist as a property on ${name} and its type is not explicitly defined`
+      `Parameter ${id} does not exist as a property on ${name} and its type is not explicitly defined`,
     );
   });
   [
@@ -1108,7 +1245,7 @@ export function validateActionParameters(
       properties.includes(id) ||
         properties.includes(addNamespaceIfNone(id)) ||
         properties.includes(withoutNamespace(id)),
-      `Property ${id} does not exist as a property on ${name}`
+      `Property ${id} does not exist as a property on ${name}`,
     );
   });
 }
@@ -1119,16 +1256,17 @@ export function createDefaultParameterOrdering(
   def: ActionTypeUserDefinition | InterfaceActionTypeUserDefinition,
   properties: Array<string>,
   parameters: ActionParameter[],
-  priorityId?: string
+  priorityId?: string,
 ): string[] {
   return [
     ...(priorityId ? [priorityId] : []),
     ...Object.keys(def.parameterConfiguration ?? {}).filter(
-      (id) => id !== priorityId
+      (id) => id !== priorityId,
     ),
     ...properties.filter(
       (id) =>
-        !def.parameterConfiguration?.[id] && parameters.some((p) => p.id === id)
+        !def.parameterConfiguration?.[id] &&
+        parameters.some((p) => p.id === id),
     ),
   ];
 }
@@ -1136,18 +1274,18 @@ export function createDefaultParameterOrdering(
 export function validateParameterOrdering(
   parameterOrdering: string[],
   parameterSet: Set<string>,
-  actionApiName: string
+  actionApiName: string,
 ): void {
   const orderingSet = new Set(parameterOrdering);
   const missingParameters = [...parameterSet].filter(
-    (param) => !orderingSet.has(param)
+    (param) => !orderingSet.has(param),
   );
   const extraneousParameters = parameterOrdering.filter(
-    (param) => !parameterSet.has(param)
+    (param) => !parameterSet.has(param),
   );
   invariant(
     extraneousParameters.length === 0 && missingParameters.length === 0,
-    `Action parameter ordering for ${actionApiName} does not match expected parameters. Extraneous parameters in ordering: {${extraneousParameters}}, Missing parameters in ordering: {${missingParameters}}`
+    `Action parameter ordering for ${actionApiName} does not match expected parameters. Extraneous parameters in ordering: {${extraneousParameters}}, Missing parameters in ordering: {${missingParameters}}`,
   );
 }
 
@@ -1161,27 +1299,27 @@ export function isTargetParameter(parameterId: string): boolean {
 }
 
 export function addNamespaceToActionDefinition(
-  def: InterfaceActionTypeUserDefinition
+  def: InterfaceActionTypeUserDefinition,
 ): void {
   def.parameterConfiguration = Object.fromEntries(
     Object.entries(def.parameterConfiguration ?? {}).map(([id, config]) => [
       getInterfaceParameterName(def, id),
       config,
-    ])
+    ]),
   );
   def.nonParameterMappings = Object.fromEntries(
     Object.entries(def.nonParameterMappings ?? {}).map(([id, value]) => [
       addNamespaceIfNone(id),
       value,
-    ])
+    ]),
   );
   def.excludedProperties = (def.excludedProperties ?? []).map((id) =>
-    addNamespaceIfNone(id)
+    addNamespaceIfNone(id),
   );
   def.sections = def.sections?.map((section) => ({
     ...section,
     parameters: section.parameters.map((p) =>
-      getInterfaceParameterName(def, p)
+      getInterfaceParameterName(def, p),
     ),
   }));
 }
@@ -1189,14 +1327,14 @@ export function addNamespaceToActionDefinition(
 // Adds a namespace to an interface parameter name if it is supposed to be namespaced
 export function getInterfaceParameterName(
   def: InterfaceActionTypeUserDefinition,
-  parameter: string
+  parameter: string,
 ): string {
   if (def.useNonNamespacedParameters) {
     return getNonNamespacedParameterName(def, parameter);
   }
   return isTargetParameter(parameter) ||
     !Object.keys(def.interfaceType.propertiesV2).includes(
-      addNamespaceIfNone(parameter)
+      addNamespaceIfNone(parameter),
     )
     ? parameter
     : addNamespaceIfNone(parameter);
@@ -1204,7 +1342,7 @@ export function getInterfaceParameterName(
 
 export function getNonNamespacedParameterName(
   def: InterfaceActionTypeUserDefinition,
-  parameter: string
+  parameter: string,
 ): string {
   return (
     def.conflictingParameterOverrides?.[parameter] ??
@@ -1215,7 +1353,7 @@ export function getNonNamespacedParameterName(
 export function createInterfacePropertyLogicRuleValue(
   id: string,
   def: InterfacePropertyType,
-  actionDef: InterfaceActionTypeUserDefinition
+  actionDef: InterfaceActionTypeUserDefinition,
 ): OntologyIrInterfacePropertyLogicRuleValue {
   const type = getInterfacePropertyTypeType(def);
   const array = isInterfaceSharedPropertyType(def)
@@ -1247,7 +1385,7 @@ export function createInterfacePropertyLogicRuleValue(
                   },
                 },
           ];
-        })
+        }),
       ),
     };
   }

@@ -137,7 +137,7 @@ export function DraggableList<T extends DraggableItem>({
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const handleDragEnd = useCallback(
@@ -150,7 +150,7 @@ export function DraggableList<T extends DraggableItem>({
         onReorder(oldIndex, newIndex);
       }
     },
-    [items, onReorder]
+    [items, onReorder],
   );
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -225,7 +225,7 @@ const useKeyboardEvents = (containerRef: RefObject<HTMLDivElement>) => {
           key: event.key,
           code: event.code,
           bubbles: true,
-        })
+        }),
       );
     }
 

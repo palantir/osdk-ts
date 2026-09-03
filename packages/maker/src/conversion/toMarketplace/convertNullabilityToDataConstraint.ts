@@ -37,7 +37,7 @@ export function convertNullabilityToDataConstraint(prop: {
     }
     invariant(
       prop.nullability?.noNulls,
-      "Marking property type has noNulls set to false, marking properties must not be nullable"
+      "Marking property type has noNulls set to false, marking properties must not be nullable",
     );
     return {
       propertyTypeConstraints: [],

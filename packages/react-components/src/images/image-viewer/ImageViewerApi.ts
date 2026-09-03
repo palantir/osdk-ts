@@ -30,10 +30,7 @@ export interface BaseImageViewerProps {
   onError?: () => void;
 }
 
-export interface ImageViewerMediaProps extends Omit<
-  BaseImageViewerProps,
-  "src"
-> {
+export interface ImageViewerProps extends Omit<BaseImageViewerProps, "src"> {
   /** The Media object to fetch image contents from */
   media: Media;
 }

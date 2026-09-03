@@ -30,8 +30,8 @@ beforeAll(() => {
   createAppVersion = JSON.parse(
     fs.readFileSync(
       path.join(dirname(fileURLToPath(import.meta.url)), "..", "package.json"),
-      "utf-8"
-    )
+      "utf-8",
+    ),
   ).version;
 });
 
@@ -91,7 +91,7 @@ describe.each(TEMPLATES.filter((template) => !template.hidden))(
         skipOsdk: true,
       });
     });
-  }
+  },
 );
 
 const VISIBLE_TEMPLATE = TEMPLATES.filter((template) => !template.hidden)[0];
@@ -104,7 +104,7 @@ test(`CLI rejects no OSDK with 1.x`, async () => {
       corsProxy: false,
       sdkVersion: "1.x",
       skipOsdk: true,
-    })
+    }),
   ).rejects.toThrowError();
 });
 
@@ -170,17 +170,17 @@ async function runTest({
   await cli(args);
 
   expect(
-    fs.readdirSync(path.join(process.cwd(), project)).length
+    fs.readdirSync(path.join(process.cwd(), project)).length,
   ).toBeGreaterThan(0);
   expect(fs.existsSync(path.join(process.cwd(), project, "package.json"))).toBe(
-    true
+    true,
   );
   expect(fs.existsSync(path.join(process.cwd(), project, "README.md"))).toBe(
-    true
+    true,
   );
 
   const packageJson = JSON.parse(
-    fs.readFileSync(path.join(process.cwd(), project, "package.json"), "utf-8")
+    fs.readFileSync(path.join(process.cwd(), project, "package.json"), "utf-8"),
   );
 
   // The TypeScript library template is a hidden, non-OSDK scaffold: it ships no
@@ -196,7 +196,7 @@ async function runTest({
     // it should be, so that if the create-app code were to change to different behavior
     // it would be caught.
     expect(packageJson.dependencies["@osdk/client"]).toBe(
-      `^${createAppVersion}`
+      `^${createAppVersion}`,
     );
 
     // The React template pins @osdk/react to the same clientVersion as
@@ -205,10 +205,112 @@ async function runTest({
     // independently, so this assertion is scoped to template-react.
     if (template.id === "template-react") {
       expect(packageJson.dependencies["@osdk/react"]).toBe(
-        `^${createAppVersion}`
+        `^${createAppVersion}`,
       );
     }
   } else {
     expect(packageJson.dependencies["@osdk/client"]).toBe(undefined);
   }
 }
+
+describe("--unstableFeatures flag", () => {
+  const argsFor = (
+    project: string,
+    extra: string[],
+    template = "template-react",
+  ): string[] => [
+    "npx",
+    "@osdk/create-app",
+    project,
+    "--overwrite",
+    "--template",
+    template,
+    "--foundryUrl",
+    "https://example.palantirfoundry.com",
+    "--applicationUrl",
+    "https://app.example.palantirfoundry.com",
+    "--application",
+    "ri.third-party-applications.main.application.fake",
+    "--clientId",
+    "123",
+    "--corsProxy",
+    "false",
+    "--sdkVersion",
+    "2.x",
+    "--scopes",
+    "api:read-data",
+    "--ontology",
+    "ri.ontology.main.ontology.fake",
+    "--osdkPackage",
+    "@fake/sdk",
+    "--osdkRegistryUrl",
+    "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
+    ...extra,
+  ];
+
+  const readProject = (project: string) => {
+    const root = path.join(process.cwd(), project);
+    const pkgPath = path.join(root, "package.json");
+    const viteConfigPath = path.join(root, "vite.config.ts");
+    return {
+      packageJson: JSON.parse(fs.readFileSync(pkgPath, "utf-8")),
+      viteConfigTs: fs.readFileSync(viteConfigPath, "utf-8"),
+    };
+  };
+
+  test("wires Foundry branch support when enabled", async () => {
+    const project = "expected-unstable-on";
+    await cli(argsFor(project, ["--unstableFeatures", "true"]));
+    const { packageJson, viteConfigTs } = readProject(project);
+
+    const postinstall = "./node_modules/.bin/osdk unstable branch sync";
+    expect(packageJson.scripts.postinstall).toBe(postinstall);
+    expect(packageJson.devDependencies["@osdk/cli"]).toBe("latest");
+    expect(packageJson.dependencies["@osdk/vite-plugin-branch"]).toBe(
+      `^${createAppVersion}`,
+    );
+    expect(viteConfigTs).toContain(
+      'import { branchPlugin } from "@osdk/vite-plugin-branch";',
+    );
+    expect(viteConfigTs).toContain("plugins: [react(), branchPlugin()]");
+  });
+
+  test("omits Foundry branch support by default", async () => {
+    const project = "expected-unstable-off";
+    await cli(argsFor(project, []));
+    const { packageJson, viteConfigTs } = readProject(project);
+
+    expect(packageJson.scripts.postinstall).toBeUndefined();
+    expect(packageJson.devDependencies?.["@osdk/cli"]).toBeUndefined();
+    expect(
+      packageJson.dependencies["@osdk/vite-plugin-branch"],
+    ).toBeUndefined();
+    expect(viteConfigTs).not.toContain("branchPlugin");
+  });
+
+  test("passes the generated branch explicitly for Expo", async () => {
+    const project = "expected-unstable-expo";
+    await cli(
+      argsFor(project, ["--unstableFeatures", "true"], "template-expo"),
+    );
+
+    const root = path.join(process.cwd(), project);
+    const packageJson = JSON.parse(
+      fs.readFileSync(path.join(root, "package.json"), "utf-8"),
+    );
+    const clientTs = fs.readFileSync(
+      path.join(root, "foundry", "client.ts"),
+      "utf-8",
+    );
+
+    expect(packageJson.scripts.postinstall).toBe(
+      "./node_modules/.bin/osdk unstable branch sync",
+    );
+    expect(packageJson.devDependencies["@osdk/cli"]).toBe("latest");
+    expect(
+      packageJson.dependencies["@osdk/vite-plugin-branch"],
+    ).toBeUndefined();
+    expect(clientTs).toContain('import { $branch } from "@fake/sdk";');
+    expect(clientTs).toContain("UNSTABLE_DO_NOT_USE_BRANCH: $branch");
+  });
+});

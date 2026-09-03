@@ -25,7 +25,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
 import { SELECTION_COLUMN_ID } from "../utils/constants.js";
 
-interface UseColumnPinningProps<
+export interface UseColumnPinningProps<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -48,7 +48,7 @@ interface UseColumnPinningProps<
   >["onColumnsPinnedChanged"];
 }
 
-interface UseColumnPinningResults {
+export interface UseColumnPinningResult {
   columnPinning: ColumnPinningState;
   onColumnPinningChange: OnChangeFn<ColumnPinningState>;
 }
@@ -64,11 +64,7 @@ export const useColumnPinning = <
   columnDefinitions,
   hasSelectionColumn,
   onColumnsPinnedChanged,
-}: UseColumnPinningProps<
-  Q,
-  RDPs,
-  FunctionColumns
->): UseColumnPinningResults => {
+}: UseColumnPinningProps<Q, RDPs, FunctionColumns>): UseColumnPinningResult => {
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({
     left: [],
     right: [],
@@ -93,7 +89,7 @@ export const useColumnPinning = <
         if (onColumnsPinnedChanged) {
           const newStates = convertColumnPinningStateToArray(newPinning);
           const stateWithoutSelectionCol = newStates.filter(
-            (state) => state.columnId !== SELECTION_COLUMN_ID
+            (state) => state.columnId !== SELECTION_COLUMN_ID,
           );
           onColumnsPinnedChanged(stateWithoutSelectionCol);
         }
@@ -101,7 +97,7 @@ export const useColumnPinning = <
         return newPinning;
       });
     },
-    [onColumnsPinnedChanged]
+    [onColumnsPinnedChanged],
   );
 
   return { columnPinning, onColumnPinningChange };
@@ -119,7 +115,7 @@ const getColumnPinningStateFromColumnDefs = <
     Q,
     RDPs,
     FunctionColumns
-  >["columnDefinitions"]
+  >["columnDefinitions"],
 ): ColumnPinningState => {
   if (!columnDefinitions) {
     return {};
@@ -145,7 +141,7 @@ const getColumnPinningStateFromColumnDefs = <
           right: [...(acc.right ?? []), colKey],
         };
       },
-      { left: [], right: [] }
+      { left: [], right: [] },
     );
   return columnPinningState;
 };
@@ -154,7 +150,7 @@ const getColumnPinningStateFromColumnDefs = <
  * Converts ColumnPinningState to array format for the callback
  */
 function convertColumnPinningStateToArray(
-  pinningState: ColumnPinningState
+  pinningState: ColumnPinningState,
 ): Array<{ columnId: string; pinned: "left" | "right" | "none" }> {
   return [
     ...(pinningState.left ?? []).map((columnId) => ({

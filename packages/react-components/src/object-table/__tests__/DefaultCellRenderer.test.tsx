@@ -38,7 +38,7 @@ function createCellContext(
     rowData?: unknown;
     tableMeta?: Record<string, unknown>;
     columnMeta?: Record<string, unknown>;
-  }
+  },
 ): CellContext<unknown, unknown> {
   return {
     getValue: () => value,
@@ -100,7 +100,7 @@ describe("renderDefaultCell", () => {
       const result = renderDefaultCell(
         createCellContext("marking-1", {
           columnMeta: { markingType: "CBAC" },
-        })
+        }),
       );
       render(<div data-testid="cell">{result}</div>);
       expect(screen.getByTestId("cbac-banner").textContent).toBe("marking-1");
@@ -110,7 +110,7 @@ describe("renderDefaultCell", () => {
       const result = renderDefaultCell(
         createCellContext(["m-1", "m-2"], {
           columnMeta: { markingType: "CBAC" },
-        })
+        }),
       );
       render(<div data-testid="cell">{result}</div>);
       expect(screen.getByTestId("cbac-banner").textContent).toBe("m-1,m-2");
@@ -120,7 +120,7 @@ describe("renderDefaultCell", () => {
       const result = renderDefaultCell(
         createCellContext(null, {
           columnMeta: { markingType: "CBAC" },
-        })
+        }),
       );
       render(<div data-testid="cell">{result}</div>);
       expect(screen.queryByTestId("cbac-banner")).toBeNull();
@@ -130,7 +130,7 @@ describe("renderDefaultCell", () => {
       const result = renderDefaultCell(
         createCellContext(["m-1", "m-2"], {
           columnMeta: { markingType: "MANDATORY" },
-        })
+        }),
       );
       render(<div data-testid="cell">{result}</div>);
       const banners = screen.getAllByTestId("cbac-banner");
@@ -145,7 +145,7 @@ describe("renderDefaultCell", () => {
       const result = renderDefaultCell(
         createCellContext(["m-1", "m-1", "m-2"], {
           columnMeta: { markingType: "MANDATORY" },
-        })
+        }),
       );
       render(<div data-testid="cell">{result}</div>);
       const banners = screen.getAllByTestId("cbac-banner");
@@ -160,7 +160,7 @@ describe("renderDefaultCell", () => {
       const result = renderDefaultCell(
         createCellContext("m-1", {
           columnMeta: { markingType: "MANDATORY" },
-        })
+        }),
       );
       render(<div data-testid="cell">{result}</div>);
       const banners = screen.getAllByTestId("cbac-banner");
@@ -172,7 +172,7 @@ describe("renderDefaultCell", () => {
       const result = renderDefaultCell(
         createCellContext("plain-value", {
           columnMeta: { dataType: "marking" },
-        })
+        }),
       );
       render(<div data-testid="cell">{result}</div>);
       expect(screen.getByTestId("cell").textContent).toBe("plain-value");
@@ -220,7 +220,7 @@ describe("renderDefaultCell", () => {
           editable: true,
           editFieldConfig,
         },
-      })
+      }),
     );
 
     render(<div data-testid="cell">{result}</div>);

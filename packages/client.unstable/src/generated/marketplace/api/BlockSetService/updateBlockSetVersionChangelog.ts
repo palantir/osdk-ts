@@ -35,12 +35,12 @@ export async function updateBlockSetVersionChangelog(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   blockSetVersionId: _api_BlockSetVersionId,
-  request: _api_UpdateBlockSetVersionChangelogRequest
+  request: _api_UpdateBlockSetVersionChangelogRequest,
 ): Promise<_api_UpdateBlockSetVersionChangelogResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/${marketplaceRid}/version/${blockSetVersionId}/changelog`,
     "PUT",
-    request
+    request,
   );
 }

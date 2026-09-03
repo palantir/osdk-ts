@@ -70,7 +70,7 @@ type TestInstance = Osdk.Instance<
 /** Builds a fake tanstack-table leaf column with the fields the hook reads. */
 function makeColumn(
   id: string,
-  columnDef: { header?: unknown; meta?: { columnName?: string } } = {}
+  columnDef: { header?: unknown; meta?: { columnName?: string } } = {},
 ): Column<TestInstance> {
   return {
     id,
@@ -101,7 +101,7 @@ function makeObjectSet(objects: ReadonlyArray<Record<string, unknown>>): {
       for (const object of objects) {
         yield object;
       }
-    })()
+    })(),
   );
   return {
     objectSet: { asyncIter } as unknown as ObjectSet<TestObject, TestRDPs>,
@@ -120,13 +120,13 @@ function renderGetSnapshot<
     Parameters<typeof useObjectTableSnapshot<Q, RDPs, FC>>[0],
     "orderBy"
   > & { orderBy?: OrderBy<Q> },
-  client: Client = fakeClient
+  client: Client = fakeClient,
 ) {
   mockClient = client;
   // `orderBy` is a required field on the hook args; default it to undefined so
   // tests that don't exercise ordering can omit it.
   const { result } = renderHook(() =>
-    useObjectTableSnapshot({ orderBy: undefined, ...args })
+    useObjectTableSnapshot({ orderBy: undefined, ...args }),
   );
   return result.current.getSnapshot;
 }
@@ -152,7 +152,7 @@ describe(useObjectTableSnapshot, () => {
       });
 
       await expect(getSnapshot()).rejects.toContain(
-        "total row count exceeds row limit"
+        "total row count exceeds row limit",
       );
       // It should fail fast without paginating the object set.
       expect(asyncIter).not.toHaveBeenCalled();
@@ -168,7 +168,7 @@ describe(useObjectTableSnapshot, () => {
       });
 
       await expect(getSnapshot({ rowLimit: 10 })).rejects.toContain(
-        "total row count exceeds row limit"
+        "total row count exceeds row limit",
       );
     });
 
@@ -229,7 +229,7 @@ describe(useObjectTableSnapshot, () => {
       });
 
       await expect(getSnapshot({ rowLimit: 1 })).rejects.toContain(
-        "total row count exceeds row limit"
+        "total row count exceeds row limit",
       );
     });
 
@@ -424,11 +424,11 @@ describe(useObjectTableSnapshot, () => {
      * `executeFunction` when called with a query definition.
      */
     function makeFunctionClient(executeResult: Record<string, unknown>) {
-      const executeFunction = vi.fn(async () => executeResult);
+      const executeFunction = vi.fn(() => executeResult);
       const pageObjectSet = {};
       const baseObjectSet = { where: vi.fn(() => pageObjectSet) };
       const client = vi.fn((arg: { type?: string }) =>
-        arg?.type === "object" ? baseObjectSet : { executeFunction }
+        arg?.type === "object" ? baseObjectSet : { executeFunction },
       ) as unknown as Client;
       return { client, executeFunction, baseObjectSet };
     }
@@ -467,7 +467,7 @@ describe(useObjectTableSnapshot, () => {
           objectSet,
           totalCount: "2",
         },
-        client
+        client,
       );
 
       const snapshot = await getSnapshot();
@@ -489,7 +489,7 @@ describe(useObjectTableSnapshot, () => {
           objectSet,
           totalCount: "2",
         },
-        client
+        client,
       );
 
       const snapshot = await getSnapshot();

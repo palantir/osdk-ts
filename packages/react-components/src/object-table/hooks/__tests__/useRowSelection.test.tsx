@@ -29,7 +29,7 @@ type TestObject = typeof TestObjectType;
 
 // Helper to create mock data
 function createMockData(
-  count: number
+  count: number,
 ): Array<
   Osdk.Instance<TestObject, "$allBaseProperties", never, Record<string, never>>
 > {
@@ -46,7 +46,7 @@ function createMockData(
         "$allBaseProperties",
         never,
         Record<string, never>
-      >
+      >,
   );
 }
 
@@ -58,7 +58,7 @@ describe("useRowSelection", () => {
         useRowSelection({
           selectionMode: "none",
           data,
-        })
+        }),
       );
 
       expect(result.current.rowSelection).toEqual({});
@@ -73,7 +73,7 @@ describe("useRowSelection", () => {
         useRowSelection({
           selectionMode: "none",
           data,
-        })
+        }),
       );
 
       act(() => {
@@ -94,15 +94,15 @@ describe("useRowSelection", () => {
 
   describe("uncontrolled mode", () => {
     describe("single selection mode", () => {
-      it("selects a single row and calls onRowSelection", () => {
+      it("selects a single row and calls onRowSelectionChanged", () => {
         const data = createMockData(5);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result } = renderHook(() =>
           useRowSelection({
             selectionMode: "single",
-            onRowSelection,
+            onRowSelectionChanged,
             data,
-          })
+          }),
         );
 
         act(() => {
@@ -112,21 +112,21 @@ describe("useRowSelection", () => {
         expect(result.current.enableRowSelection).toBe(true);
         expect(result.current.rowSelection).toEqual({ "item-0": true });
         expect(result.current.hasSelection).toBe(true);
-        expect(onRowSelection).toHaveBeenCalledWith(
-          [data[0].$primaryKey],
-          false
-        );
+        expect(onRowSelectionChanged).toHaveBeenCalledWith({
+          selectedRows: [data[0]],
+          isSelectAll: false,
+        });
       });
 
-      it("deselects when toggling selected row and calls onRowSelection", () => {
+      it("deselects when toggling selected row and calls onRowSelectionChanged", () => {
         const data = createMockData(5);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result } = renderHook(() =>
           useRowSelection({
             selectionMode: "single",
-            onRowSelection,
+            onRowSelectionChanged,
             data,
-          })
+          }),
         );
 
         // Select
@@ -143,7 +143,10 @@ describe("useRowSelection", () => {
 
         expect(result.current.rowSelection).toEqual({});
         expect(result.current.hasSelection).toBe(false);
-        expect(onRowSelection).toHaveBeenLastCalledWith([], false);
+        expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
+          selectedRows: [],
+          isSelectAll: false,
+        });
       });
 
       it("replaces selection when selecting different row", () => {
@@ -152,7 +155,7 @@ describe("useRowSelection", () => {
           useRowSelection({
             selectionMode: "single",
             data,
-          })
+          }),
         );
 
         act(() => {
@@ -171,13 +174,13 @@ describe("useRowSelection", () => {
 
       it("onToggleAll selects all rows in single selection mode", () => {
         const data = createMockData(3);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result } = renderHook(() =>
           useRowSelection({
             selectionMode: "single",
-            onRowSelection,
+            onRowSelectionChanged,
             data,
-          })
+          }),
         );
 
         act(() => {
@@ -190,10 +193,10 @@ describe("useRowSelection", () => {
           "item-2": true,
         });
         expect(result.current.isAllSelected).toBe(true);
-        expect(onRowSelection).toHaveBeenCalledWith(
-          data.map((item) => item.$primaryKey),
-          true
-        );
+        expect(onRowSelectionChanged).toHaveBeenCalledWith({
+          selectedRows: data,
+          isSelectAll: true,
+        });
 
         // Toggling all again deselects
         act(() => {
@@ -210,7 +213,7 @@ describe("useRowSelection", () => {
           useRowSelection({
             selectionMode: "single",
             data,
-          })
+          }),
         );
         // First click as the lastSelectedRow
         act(() => {
@@ -227,15 +230,15 @@ describe("useRowSelection", () => {
     });
 
     describe("multiple selection mode", () => {
-      it("selects multiple rows independently and calls onRowSelection", () => {
+      it("selects multiple rows independently and calls onRowSelectionChanged", () => {
         const data = createMockData(5);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result } = renderHook(() =>
           useRowSelection({
             selectionMode: "multiple",
-            onRowSelection,
+            onRowSelectionChanged,
             data,
-          })
+          }),
         );
 
         act(() => {
@@ -254,10 +257,10 @@ describe("useRowSelection", () => {
           "item-2": true,
         });
         expect(result.current.isAllSelected).toBe(false);
-        expect(onRowSelection).toHaveBeenLastCalledWith(
-          [data[0].$primaryKey, data[2].$primaryKey],
-          false
-        );
+        expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
+          selectedRows: [data[0], data[2]],
+          isSelectAll: false,
+        });
       });
 
       it("deselects individual rows", () => {
@@ -266,7 +269,7 @@ describe("useRowSelection", () => {
           useRowSelection({
             selectionMode: "multiple",
             data,
-          })
+          }),
         );
 
         // Select two rows
@@ -290,15 +293,15 @@ describe("useRowSelection", () => {
         expect(result.current.rowSelection).toEqual({ "item-1": true });
       });
 
-      it("selects range with shift-click and calls onRowSelection", () => {
+      it("selects range with shift-click and calls onRowSelectionChanged", () => {
         const data = createMockData(5);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result } = renderHook(() =>
           useRowSelection({
             selectionMode: "multiple",
-            onRowSelection,
+            onRowSelectionChanged,
             data,
-          })
+          }),
         );
 
         // First click
@@ -316,10 +319,10 @@ describe("useRowSelection", () => {
           "item-2": true,
           "item-3": true,
         });
-        expect(onRowSelection).toHaveBeenLastCalledWith(
-          [data[1].$primaryKey, data[2].$primaryKey, data[3].$primaryKey],
-          false
-        );
+        expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
+          selectedRows: [data[1], data[2], data[3]],
+          isSelectAll: false,
+        });
       });
 
       it("selects range in reverse order (shift-click up)", () => {
@@ -328,7 +331,7 @@ describe("useRowSelection", () => {
           useRowSelection({
             selectionMode: "multiple",
             data,
-          })
+          }),
         );
 
         // First click on row 3
@@ -354,7 +357,7 @@ describe("useRowSelection", () => {
           useRowSelection({
             selectionMode: "multiple",
             data,
-          })
+          }),
         );
 
         // Shift-click without previous selection
@@ -371,7 +374,7 @@ describe("useRowSelection", () => {
           useRowSelection({
             selectionMode: "multiple",
             data,
-          })
+          }),
         );
 
         // Select row 0
@@ -403,7 +406,7 @@ describe("useRowSelection", () => {
           useRowSelection({
             selectionMode: "multiple",
             data,
-          })
+          }),
         );
 
         // Select rows 0, 1, 2
@@ -449,7 +452,7 @@ describe("useRowSelection", () => {
           useRowSelection({
             selectionMode: "multiple",
             data,
-          })
+          }),
         );
 
         // Select all rows one by one
@@ -476,13 +479,13 @@ describe("useRowSelection", () => {
 
       it("toggles all rows", () => {
         const data = createMockData(3);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result } = renderHook(() =>
           useRowSelection({
             selectionMode: "multiple",
-            onRowSelection,
+            onRowSelectionChanged,
             data,
-          })
+          }),
         );
 
         expect(result.current.isAllSelected).toBe(false);
@@ -498,10 +501,10 @@ describe("useRowSelection", () => {
           "item-2": true,
         });
         expect(result.current.isAllSelected).toBe(true);
-        expect(onRowSelection).toHaveBeenCalledWith(
-          [data[0].$primaryKey, data[1].$primaryKey, data[2].$primaryKey],
-          true
-        );
+        expect(onRowSelectionChanged).toHaveBeenCalledWith({
+          selectedRows: [data[0], data[1], data[2]],
+          isSelectAll: true,
+        });
 
         // Deselect all
         act(() => {
@@ -510,20 +513,23 @@ describe("useRowSelection", () => {
 
         expect(result.current.rowSelection).toEqual({});
         expect(result.current.isAllSelected).toBe(false);
-        expect(onRowSelection).toHaveBeenLastCalledWith([], false);
+        expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
+          selectedRows: [],
+          isSelectAll: false,
+        });
       });
     });
 
     describe("lastSelectedRowIndex after onToggleAll", () => {
       it("shift-click after select-all then deselect-all treats click as normal (no stale anchor)", () => {
         const data = createMockData(5);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result } = renderHook(() =>
           useRowSelection({
             selectionMode: "multiple",
-            onRowSelection,
+            onRowSelectionChanged,
             data,
-          })
+          }),
         );
 
         // Select row 1 to set lastSelectedRowIndex
@@ -549,23 +555,23 @@ describe("useRowSelection", () => {
           result.current.onToggleRow("item-3", 3, true);
         });
 
-        expect(onRowSelection).toHaveBeenLastCalledWith(
-          [data[1].$primaryKey, data[2].$primaryKey, data[3].$primaryKey],
-          false
-        );
+        expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
+          selectedRows: [data[1], data[2], data[3]],
+          isSelectAll: false,
+        });
       });
     });
 
     describe("onToggleAll from indeterminate state", () => {
       it("deselects all when some rows are selected (uncontrolled)", () => {
         const data = createMockData(5);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result } = renderHook(() =>
           useRowSelection({
             selectionMode: "multiple",
-            onRowSelection,
+            onRowSelectionChanged,
             data,
-          })
+          }),
         );
 
         // Select two of five rows → indeterminate
@@ -587,19 +593,22 @@ describe("useRowSelection", () => {
         expect(result.current.rowSelection).toEqual({});
         expect(result.current.isAllSelected).toBe(false);
         expect(result.current.hasSelection).toBe(false);
-        expect(onRowSelection).toHaveBeenLastCalledWith([], false);
+        expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
+          selectedRows: [],
+          isSelectAll: false,
+        });
       });
 
       it("deselects all when controlled selectedRows is non-empty but not all", () => {
         const data = createMockData(5);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result } = renderHook(() =>
           useRowSelection({
             selectionMode: "multiple",
             selectedRows: [data[0].$primaryKey, data[2].$primaryKey],
-            onRowSelection,
+            onRowSelectionChanged,
             data,
-          })
+          }),
         );
 
         expect(result.current.isAllSelected).toBe(false);
@@ -609,22 +618,25 @@ describe("useRowSelection", () => {
           result.current.onToggleAll();
         });
 
-        expect(onRowSelection).toHaveBeenCalledWith([], false);
+        expect(onRowSelectionChanged).toHaveBeenCalledWith({
+          selectedRows: [],
+          isSelectAll: false,
+        });
       });
     });
 
     describe("select-all persists when data grows (scroll/fetchMore)", () => {
       it("keeps all rows checked when new rows arrive after select-all", () => {
         const initialData = createMockData(3);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result, rerender } = renderHook(
           ({ data }) =>
             useRowSelection({
               selectionMode: "multiple",
-              onRowSelection,
+              onRowSelectionChanged,
               data,
             }),
-          { initialProps: { data: initialData } }
+          { initialProps: { data: initialData } },
         );
 
         // User clicks "select all"
@@ -654,22 +666,22 @@ describe("useRowSelection", () => {
         expect(result.current.isAllSelected).toBe(true);
         expect(result.current.hasSelection).toBe(true);
 
-        // onRowSelection refires with the expanded id list so callers stay in sync
-        expect(onRowSelection).toHaveBeenLastCalledWith(
-          moreData.map((item) => item.$primaryKey),
-          true
-        );
+        // onRowSelectionChanged refires with the expanded id list so callers stay in sync
+        expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
+          selectedRows: moreData,
+          isSelectAll: true,
+        });
       });
 
       it("drops out of select-all when an individual row is toggled", () => {
         const initialData = createMockData(3);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result } = renderHook(() =>
           useRowSelection({
             selectionMode: "multiple",
-            onRowSelection,
+            onRowSelectionChanged,
             data: initialData,
-          })
+          }),
         );
 
         act(() => {
@@ -687,43 +699,45 @@ describe("useRowSelection", () => {
           "item-0": true,
           "item-2": true,
         });
-        expect(onRowSelection).toHaveBeenLastCalledWith(
-          [initialData[0].$primaryKey, initialData[2].$primaryKey],
-          false
-        );
+        expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
+          selectedRows: [initialData[0], initialData[2]],
+          isSelectAll: false,
+        });
       });
 
-      it("does not re-fire onRowSelection if data identity changes but ids stay the same", () => {
+      it("does not re-fire onRowSelectionChanged if data identity changes but ids stay the same", () => {
         const initialData = createMockData(3);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result, rerender } = renderHook(
           ({ data }) =>
             useRowSelection({
               selectionMode: "multiple",
-              onRowSelection,
+              onRowSelectionChanged,
               data,
             }),
-          { initialProps: { data: initialData } }
+          { initialProps: { data: initialData } },
         );
 
         act(() => {
           result.current.onToggleAll();
         });
-        const callsAfterToggleAll = onRowSelection.mock.calls.length;
+        const callsAfterToggleAll = onRowSelectionChanged.mock.calls.length;
 
         // Same ids, different array identity (common after refetch with unchanged data)
         rerender({ data: createMockData(3) });
 
-        expect(onRowSelection).toHaveBeenCalledTimes(callsAfterToggleAll);
+        expect(onRowSelectionChanged).toHaveBeenCalledTimes(
+          callsAfterToggleAll,
+        );
       });
 
       it("does not auto-fire when data arrives after mount with no select-all active", () => {
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { rerender } = renderHook(
           ({ data }) =>
             useRowSelection({
               selectionMode: "multiple",
-              onRowSelection,
+              onRowSelectionChanged,
               data,
             }),
           {
@@ -739,25 +753,25 @@ describe("useRowSelection", () => {
                   >
                 | undefined,
             },
-          }
+          },
         );
 
         rerender({ data: createMockData(3) });
 
         // No select-all was active, so no callback fire expected.
-        expect(onRowSelection).not.toHaveBeenCalled();
+        expect(onRowSelectionChanged).not.toHaveBeenCalled();
       });
 
       it("does not re-fire after deselect-all when data grows", () => {
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result, rerender } = renderHook(
           ({ data }) =>
             useRowSelection({
               selectionMode: "multiple",
-              onRowSelection,
+              onRowSelectionChanged,
               data,
             }),
-          { initialProps: { data: createMockData(3) } }
+          { initialProps: { data: createMockData(3) } },
         );
 
         // Select all, then deselect all.
@@ -768,13 +782,13 @@ describe("useRowSelection", () => {
           result.current.onToggleAll();
         });
 
-        const callsAfterDeselect = onRowSelection.mock.calls.length;
+        const callsAfterDeselect = onRowSelectionChanged.mock.calls.length;
 
-        // More rows arrive — should not refire onRowSelection because we
+        // More rows arrive — should not refire onRowSelectionChanged because we
         // explicitly exited "select all" mode.
         rerender({ data: createMockData(5) });
 
-        expect(onRowSelection).toHaveBeenCalledTimes(callsAfterDeselect);
+        expect(onRowSelectionChanged).toHaveBeenCalledTimes(callsAfterDeselect);
       });
     });
   });
@@ -788,27 +802,27 @@ describe("useRowSelection", () => {
             selectionMode: "single",
             selectedRows: [data[1].$primaryKey],
             data,
-          })
+          }),
         );
 
         expect(result.current.rowSelection).toEqual({ "item-1": true });
         expect(result.current.hasSelection).toBe(true);
       });
 
-      it("calls onRowSelection when toggling but does not update internal state", () => {
+      it("calls onRowSelectionChanged when toggling but does not update internal state", () => {
         const data = createMockData(5);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result, rerender } = renderHook(
           ({ selectedRows }) =>
             useRowSelection({
               selectionMode: "single",
               selectedRows,
-              onRowSelection,
+              onRowSelectionChanged,
               data,
             }),
           {
             initialProps: { selectedRows: [] as PrimaryKeyType<TestObject>[] },
-          }
+          },
         );
 
         expect(result.current.rowSelection).toEqual({});
@@ -819,10 +833,10 @@ describe("useRowSelection", () => {
         });
 
         // Callback is called
-        expect(onRowSelection).toHaveBeenCalledWith(
-          [data[0].$primaryKey],
-          false
-        );
+        expect(onRowSelectionChanged).toHaveBeenCalledWith({
+          selectedRows: [data[0]],
+          isSelectAll: false,
+        });
 
         // State doesn't change (controlled)
         expect(result.current.rowSelection).toEqual({});
@@ -843,7 +857,7 @@ describe("useRowSelection", () => {
             selectionMode: "multiple",
             selectedRows: [data[0].$primaryKey, data[2].$primaryKey],
             data,
-          })
+          }),
         );
 
         expect(result.current.rowSelection).toEqual({
@@ -852,16 +866,16 @@ describe("useRowSelection", () => {
         });
       });
 
-      it("calls onRowSelection when toggling rows", () => {
+      it("calls onRowSelectionChanged when toggling rows", () => {
         const data = createMockData(5);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result } = renderHook(() =>
           useRowSelection({
             selectionMode: "multiple",
             selectedRows: [data[0].$primaryKey],
-            onRowSelection,
+            onRowSelectionChanged,
             data,
-          })
+          }),
         );
 
         // Add selection to selectedRows
@@ -869,29 +883,32 @@ describe("useRowSelection", () => {
           result.current.onToggleRow("item-2", 2);
         });
 
-        expect(onRowSelection).toHaveBeenCalledWith(
-          [data[0].$primaryKey, data[2].$primaryKey],
-          false
-        );
+        expect(onRowSelectionChanged).toHaveBeenCalledWith({
+          selectedRows: [data[0], data[2]],
+          isSelectAll: false,
+        });
 
         // Remove selection from selectedRows
         act(() => {
           result.current.onToggleRow("item-0", 0);
         });
 
-        expect(onRowSelection).toHaveBeenCalledWith([], false);
+        expect(onRowSelectionChanged).toHaveBeenCalledWith({
+          selectedRows: [],
+          isSelectAll: false,
+        });
       });
 
-      it("calls onRowSelection for shift-click range selection", () => {
+      it("calls onRowSelectionChanged for shift-click range selection", () => {
         const data = createMockData(5);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result } = renderHook(() =>
           useRowSelection({
             selectionMode: "multiple",
             selectedRows: [],
-            onRowSelection,
+            onRowSelectionChanged,
             data,
-          })
+          }),
         );
 
         // First click
@@ -904,28 +921,28 @@ describe("useRowSelection", () => {
           result.current.onToggleRow("item-3", 3, true);
         });
 
-        expect(onRowSelection).toHaveBeenLastCalledWith(
-          [data[1].$primaryKey, data[2].$primaryKey, data[3].$primaryKey],
-          false
-        );
+        expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
+          selectedRows: [data[1], data[2], data[3]],
+          isSelectAll: false,
+        });
       });
 
       it("shift-click range merges with updated controlled selectedRows", () => {
         const data = createMockData(5);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result, rerender } = renderHook(
           ({ selectedRows }) =>
             useRowSelection({
               selectionMode: "multiple",
               selectedRows,
-              onRowSelection,
+              onRowSelectionChanged,
               data,
             }),
           {
             initialProps: {
               selectedRows: [] as PrimaryKeyType<TestObject>[],
             },
-          }
+          },
         );
 
         // First click on row 1
@@ -941,32 +958,32 @@ describe("useRowSelection", () => {
           result.current.onToggleRow("item-3", 3, true);
         });
 
-        expect(onRowSelection).toHaveBeenLastCalledWith(
-          [data[1].$primaryKey, data[2].$primaryKey, data[3].$primaryKey],
-          false
-        );
+        expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
+          selectedRows: [data[1], data[2], data[3]],
+          isSelectAll: false,
+        });
       });
 
-      it("calls onRowSelection when toggling all rows", () => {
+      it("calls onRowSelectionChanged when toggling all rows", () => {
         const data = createMockData(3);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result } = renderHook(() =>
           useRowSelection({
             selectionMode: "multiple",
             selectedRows: [],
-            onRowSelection,
+            onRowSelectionChanged,
             data,
-          })
+          }),
         );
 
         act(() => {
           result.current.onToggleAll();
         });
 
-        expect(onRowSelection).toHaveBeenCalledWith(
-          [data[0].$primaryKey, data[1].$primaryKey, data[2].$primaryKey],
-          true
-        );
+        expect(onRowSelectionChanged).toHaveBeenCalledWith({
+          selectedRows: [data[0], data[1], data[2]],
+          isSelectAll: true,
+        });
       });
 
       it("updates when selectedRows prop changes", () => {
@@ -984,7 +1001,7 @@ describe("useRowSelection", () => {
                 data[0].$primaryKey,
               ] as PrimaryKeyType<TestObject>[],
             },
-          }
+          },
         );
 
         expect(result.current.rowSelection).toEqual({ "item-0": true });
@@ -999,16 +1016,16 @@ describe("useRowSelection", () => {
         });
       });
 
-      it("passes isSelectAll parameter to onRowSelection callback", () => {
+      it("passes isSelectAll parameter to onRowSelectionChanged callback", () => {
         const data = createMockData(3);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result } = renderHook(() =>
           useRowSelection({
             selectionMode: "multiple",
             selectedRows: [],
-            onRowSelection,
+            onRowSelectionChanged,
             data,
-          })
+          }),
         );
 
         // Toggle all - should pass isSelectAll=true
@@ -1016,41 +1033,41 @@ describe("useRowSelection", () => {
           result.current.onToggleAll();
         });
 
-        expect(onRowSelection).toHaveBeenCalledWith(
-          data.map((item) => item.$primaryKey),
-          true
-        );
+        expect(onRowSelectionChanged).toHaveBeenCalledWith({
+          selectedRows: data,
+          isSelectAll: true,
+        });
 
         // Toggle individual row - should pass isSelectAll=false
         act(() => {
           result.current.onToggleRow("item-1", 1);
         });
 
-        expect(onRowSelection).toHaveBeenLastCalledWith(
-          [data[1].$primaryKey],
-          false
-        );
+        expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
+          selectedRows: [data[1]],
+          isSelectAll: false,
+        });
       });
 
-      it("does not auto-fire onRowSelection in controlled mode when isAllSelected and data grows", () => {
+      it("does not auto-fire onRowSelectionChanged in controlled mode when isAllSelected and data grows", () => {
         const initialData = createMockData(3);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { rerender } = renderHook(
           ({ data }) =>
             useRowSelection({
               selectionMode: "multiple",
               selectedRows: [] as PrimaryKeyType<TestObject>[],
               isAllSelected: true,
-              onRowSelection,
+              onRowSelectionChanged,
               data,
             }),
-          { initialProps: { data: initialData } }
+          { initialProps: { data: initialData } },
         );
 
         rerender({ data: createMockData(5) });
         rerender({ data: createMockData(8) });
 
-        expect(onRowSelection).not.toHaveBeenCalled();
+        expect(onRowSelectionChanged).not.toHaveBeenCalled();
       });
 
       it("when isAllSelected is true, selects all rows and updates when data changes", () => {
@@ -1068,7 +1085,7 @@ describe("useRowSelection", () => {
               data: initialData,
               isAllSelected: true,
             },
-          }
+          },
         );
 
         // Initially, all 3 rows should be selected
@@ -1098,15 +1115,15 @@ describe("useRowSelection", () => {
 
       it("onToggleAll deselects when controlled isAllSelected is already true", () => {
         const data = createMockData(3);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result } = renderHook(() =>
           useRowSelection({
             selectionMode: "multiple",
             selectedRows: data.map((item) => item.$primaryKey),
             isAllSelected: true,
-            onRowSelection,
+            onRowSelectionChanged,
             data,
-          })
+          }),
         );
 
         expect(result.current.isAllSelected).toBe(true);
@@ -1116,19 +1133,22 @@ describe("useRowSelection", () => {
           result.current.onToggleAll();
         });
 
-        expect(onRowSelection).toHaveBeenCalledWith([], false);
+        expect(onRowSelectionChanged).toHaveBeenCalledWith({
+          selectedRows: [],
+          isSelectAll: false,
+        });
       });
 
       it("when both selectedRows and isAllSelected props are provided", () => {
         const data = createMockData(5);
-        const onRowSelection = vi.fn();
+        const onRowSelectionChanged = vi.fn();
         const { result, rerender } = renderHook(
           ({ selectedRows, isAllSelected }) =>
             useRowSelection({
               selectionMode: "multiple",
               selectedRows,
               isAllSelected,
-              onRowSelection,
+              onRowSelectionChanged,
               data,
             }),
           {
@@ -1139,7 +1159,7 @@ describe("useRowSelection", () => {
               ] as PrimaryKeyType<TestObject>[],
               isAllSelected: false,
             },
-          }
+          },
         );
 
         // Initially shows selectedRows with isAllSelected false
@@ -1187,7 +1207,7 @@ describe("useRowSelection", () => {
         useRowSelection({
           selectionMode: "multiple",
           data: undefined,
-        })
+        }),
       );
 
       expect(result.current.rowSelection).toEqual({});
@@ -1206,7 +1226,7 @@ describe("useRowSelection", () => {
         useRowSelection({
           selectionMode: "multiple",
           data: [],
-        })
+        }),
       );
 
       expect(result.current.rowSelection).toEqual({});
@@ -1229,7 +1249,7 @@ describe("useRowSelection", () => {
           selectionMode: "single",
           onRowSelectionChanged,
           data,
-        })
+        }),
       );
 
       act(() => {
@@ -1250,7 +1270,7 @@ describe("useRowSelection", () => {
           selectionMode: "single",
           onRowSelectionChanged,
           data,
-        })
+        }),
       );
 
       act(() => {
@@ -1274,7 +1294,7 @@ describe("useRowSelection", () => {
           selectionMode: "multiple",
           onRowSelectionChanged,
           data,
-        })
+        }),
       );
 
       act(() => {
@@ -1298,7 +1318,7 @@ describe("useRowSelection", () => {
           selectionMode: "multiple",
           onRowSelectionChanged,
           data,
-        })
+        }),
       );
 
       act(() => {
@@ -1322,7 +1342,7 @@ describe("useRowSelection", () => {
           selectionMode: "multiple",
           onRowSelectionChanged,
           data,
-        })
+        }),
       );
 
       act(() => {
@@ -1343,7 +1363,7 @@ describe("useRowSelection", () => {
           selectionMode: "multiple",
           onRowSelectionChanged,
           data,
-        })
+        }),
       );
 
       act(() => {
@@ -1353,37 +1373,6 @@ describe("useRowSelection", () => {
         result.current.onToggleAll();
       });
 
-      expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
-        selectedRows: [],
-        isSelectAll: false,
-      });
-    });
-
-    it("deselect-all passes isSelectAll=false to both callbacks", () => {
-      const data = createMockData(3);
-      const onRowSelection = vi.fn();
-      const onRowSelectionChanged = vi.fn();
-      const { result } = renderHook(() =>
-        useRowSelection({
-          selectionMode: "multiple",
-          onRowSelection,
-          onRowSelectionChanged,
-          data,
-        })
-      );
-
-      // Select all
-      act(() => {
-        result.current.onToggleAll();
-      });
-
-      // Deselect all
-      act(() => {
-        result.current.onToggleAll();
-      });
-
-      // Both callbacks consistently report isSelectAll=false on deselect
-      expect(onRowSelection).toHaveBeenLastCalledWith([], false);
       expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
         selectedRows: [],
         isSelectAll: false,
@@ -1400,7 +1389,7 @@ describe("useRowSelection", () => {
             onRowSelectionChanged,
             data,
           }),
-        { initialProps: { data: initialData } }
+        { initialProps: { data: initialData } },
       );
 
       act(() => {
@@ -1416,51 +1405,6 @@ describe("useRowSelection", () => {
       });
     });
 
-    it("fires both onRowSelection and onRowSelectionChanged on same action", () => {
-      const data = createMockData(3);
-      const onRowSelection = vi.fn();
-      const onRowSelectionChanged = vi.fn();
-      const { result } = renderHook(() =>
-        useRowSelection({
-          selectionMode: "single",
-          onRowSelection,
-          onRowSelectionChanged,
-          data,
-        })
-      );
-
-      act(() => {
-        result.current.onToggleRow("item-0", 0);
-      });
-
-      expect(onRowSelection).toHaveBeenCalledWith([data[0].$primaryKey], false);
-      expect(onRowSelectionChanged).toHaveBeenCalledWith({
-        selectedRows: [data[0]],
-        isSelectAll: false,
-      });
-    });
-
-    it("works without legacy onRowSelection callback", () => {
-      const data = createMockData(3);
-      const onRowSelectionChanged = vi.fn();
-      const { result } = renderHook(() =>
-        useRowSelection({
-          selectionMode: "multiple",
-          onRowSelectionChanged,
-          data,
-        })
-      );
-
-      act(() => {
-        result.current.onToggleAll();
-      });
-
-      expect(onRowSelectionChanged).toHaveBeenCalledWith({
-        selectedRows: data,
-        isSelectAll: true,
-      });
-    });
-
     it("fires with correct payload in controlled mode", () => {
       const data = createMockData(5);
       const onRowSelectionChanged = vi.fn();
@@ -1470,7 +1414,7 @@ describe("useRowSelection", () => {
           selectedRows: [data[0].$primaryKey],
           onRowSelectionChanged,
           data,
-        })
+        }),
       );
 
       act(() => {
@@ -1492,7 +1436,7 @@ describe("useRowSelection", () => {
           selectedRows: [],
           onRowSelectionChanged,
           data,
-        })
+        }),
       );
 
       act(() => {

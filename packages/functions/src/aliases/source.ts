@@ -25,8 +25,8 @@ export function source(alias: string): Source {
     const available = Object.keys(resolvedAliases.sources);
     throw new Error(
       `Source alias '${alias}' not found. Available aliases: [${available.join(
-        ", "
-      )}]`
+        ", ",
+      )}]`,
     );
   }
 

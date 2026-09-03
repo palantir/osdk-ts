@@ -16,8 +16,14 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+
 import type { MinimalFs } from "./MinimalFs.js";
 import { generateClientSdkVersionTwoPointZero } from "./v2.0/generateClientSdkVersionTwoPointZero.js";
+import {
+  ONTOLOGY_METADATA_DCTS_PATH,
+  ONTOLOGY_METADATA_DMTS_PATH,
+  ONTOLOGY_METADATA_JSON_PATH,
+} from "./v2.0/generateMetadata.js";
 import type { WireOntologyDefinition } from "./WireOntologyDefinition.js";
 
 export async function generateClientSdkPackage(
@@ -29,8 +35,9 @@ export async function generateClientSdkPackage(
   minimalFs: MinimalFs,
   dependencyVersions: DependencyVersions,
   cliVersion: string,
-  externalObjects: Map<string, string> = new Map(),
-  externalInterfaces: Map<string, string> = new Map(),
+  externalObjects: Map<string, string> = new Map<string, string>(),
+  externalInterfaces: Map<string, string> = new Map<string, string>(),
+  exportOntologyMetadata: boolean = false,
 ): Promise<void> {
   if (!packageName) throw new Error("Package name is required");
   if (sdkVersion === "1.1") {
@@ -50,22 +57,20 @@ export async function generateClientSdkPackage(
       packageType,
       externalObjects,
       externalInterfaces,
+      undefined,
+      undefined,
+      undefined,
+      exportOntologyMetadata,
     );
 
     await fs.promises.mkdir(outDir, { recursive: true });
-    await writeJson(
-      minimalFs,
-      path.join(outDir, "package.json"),
-      { type: packageType },
-    );
+    await writeJson(minimalFs, path.join(outDir, "package.json"), {
+      type: packageType,
+    });
 
-    await writeJson(
-      minimalFs,
-      path.join(outDir, `tsconfig.json`),
-      {
-        compilerOptions: getTsCompilerOptions(packageType),
-      },
-    );
+    await writeJson(minimalFs, path.join(outDir, `tsconfig.json`), {
+      compilerOptions: getTsCompilerOptions(packageType),
+    });
   }
 
   await writeJson(
@@ -75,6 +80,7 @@ export async function generateClientSdkPackage(
       packageName,
       packageVersion,
       dependencyVersions,
+      exportOntologyMetadata,
     ),
   );
 
@@ -141,14 +147,12 @@ export interface DependencyVersions {
   osdkClientPeerVersion?: string;
 }
 
-export function getExpectedDependencies(
-  {
-    osdkApiVersion,
-    osdkClientVersion,
-    osdkApiPeerVersion = osdkApiVersion,
-    osdkClientPeerVersion = osdkClientVersion,
-  }: DependencyVersions,
-): {
+export function getExpectedDependencies({
+  osdkApiVersion,
+  osdkClientVersion,
+  osdkApiPeerVersion = osdkApiVersion,
+  osdkClientPeerVersion = osdkClientVersion,
+}: DependencyVersions): {
   devDependencies: Record<string, string>;
   peerDependencies: Record<string, string>;
 } {
@@ -163,22 +167,17 @@ export function getExpectedDependencies(
   };
 }
 
-function getExpectedDependenciesFull(
-  dependencyVersions: DependencyVersions,
-) {
-  const {
-    typescriptVersion,
-    tslibVersion,
-    areTheTypesWrongVersion,
-  } = dependencyVersions;
+function getExpectedDependenciesFull(dependencyVersions: DependencyVersions) {
+  const { typescriptVersion, tslibVersion, areTheTypesWrongVersion } =
+    dependencyVersions;
 
   const base = getExpectedDependencies(dependencyVersions);
 
   return {
     devDependencies: {
       ...base.devDependencies,
-      "typescript": typescriptVersion,
-      "tslib": tslibVersion,
+      typescript: typescriptVersion,
+      tslib: tslibVersion,
       "@arethetypeswrong/cli": areTheTypesWrongVersion,
     },
     peerDependencies: {
@@ -191,6 +190,7 @@ export function getPackageJsonContents(
   name: string,
   version: string,
   dependencyVersions: DependencyVersions,
+  exportOntologyMetadata: boolean = false,
 ): {
   files: string[];
   devDependencies: Record<string, string>;
@@ -222,6 +222,20 @@ export function getPackageJsonContents(
         import: `${esmPrefix}/index.js`,
         require: `${commonjsPrefix}/index.js`,
       },
+      ...(exportOntologyMetadata
+        ? {
+          "./experimental/ontology-metadata": {
+            import: {
+              types: `./${ONTOLOGY_METADATA_DMTS_PATH}`,
+              default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
+            },
+            require: {
+              types: `./${ONTOLOGY_METADATA_DCTS_PATH}`,
+              default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
+            },
+          },
+        }
+        : {}),
     },
     scripts: {
       prepack:
@@ -229,11 +243,7 @@ export function getPackageJsonContents(
       check: "npm exec attw $(npm pack)",
     },
     ...getExpectedDependenciesFull(dependencyVersions),
-    files: [
-      "**/*.js",
-      "**/*.d.ts",
-      "dist/**/package.json",
-    ],
+    files: ["**/*.js", "**/*.d.ts", "dist/**/package.json"],
   };
 }
 
@@ -242,8 +252,8 @@ async function writeJson(
   filePath: string,
   body: unknown,
 ) {
-  return void await minimalFs.writeFile(
+  return void (await minimalFs.writeFile(
     filePath,
-    JSON.stringify(body, undefined, 2) + "\n",
-  );
+    `${JSON.stringify(body, undefined, 2)}\n`,
+  ));
 }

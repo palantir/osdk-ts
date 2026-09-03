@@ -84,7 +84,7 @@ export interface CodeBlockSpec {
 export function getBlockVersionId(
   blockSpec: CodeBlockSpec,
   blockSetVersion: SemverVersion,
-  randomnessKey?: string
+  randomnessKey?: string,
 ): UUID {
   let mergedString = `${blockSpec.blockMavenCoordinate}_${blockSetVersion}`;
   if (randomnessKey) {
@@ -103,7 +103,7 @@ function generateUUIDFromStr(input: crypto.BinaryLike): UUID {
   const hex = md5Bytes.toString("hex");
   const uuid = hex.replace(
     /(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/u,
-    "$1-$2-$3-$4-$5"
+    "$1-$2-$3-$4-$5",
   );
   return uuid as UUID;
 }

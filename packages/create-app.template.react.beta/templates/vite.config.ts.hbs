@@ -1,11 +1,16 @@
 import path from "node:path";
+{{#if osdkPackage}}
+{{#if unstableFeatures}}
+import { branchPlugin } from "@osdk/vite-plugin-branch";
+{{/if}}
+{{/if}}
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {  
+export default defineConfig(({ mode }) => {
   return {
-    plugins: [react()],
+    plugins: [react(){{#if osdkPackage}}{{#if unstableFeatures}}, branchPlugin(){{/if}}{{/if}}],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),

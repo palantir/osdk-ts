@@ -1,5 +1,164 @@
 # @osdk/generator-converters.preview
 
+## 0.42.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.64.0
+- @osdk/generator-converters.ontologyir@2.64.0
+- @osdk/generator@2.64.0
+
+## 0.41.0
+
+### Patch Changes
+
+- @osdk/generator@2.63.0
+- @osdk/client.unstable@2.63.0
+- @osdk/generator-converters.ontologyir@2.63.0
+
+## 0.40.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.62.0
+- @osdk/generator-converters.ontologyir@2.62.0
+- @osdk/generator@2.62.0
+
+## 0.39.0
+
+### Patch Changes
+
+- @osdk/generator@2.61.0
+- @osdk/client.unstable@2.61.0
+- @osdk/generator-converters.ontologyir@2.61.0
+
+## 0.38.0
+
+### Minor Changes
+
+- bbbeca8: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.75.0`, which reinstates the `streamingExecute` query endpoint as a Server-Sent Events (`text/event-stream`) stream. The experimental `executeStreamingFunction` helper is reimplemented on top of it and no longer throws: it yields each result as it arrives, flattening batched results so array-returning queries emit one element at a time.
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+  - @osdk/generator-converters.ontologyir@2.60.0
+  - @osdk/generator@2.60.0
+  - @osdk/client.unstable@2.60.0
+
+## 0.37.0
+
+### Minor Changes
+
+- 2d75a53: Convert action logic-rule arguments to the gateway API representation.
+
+## 0.36.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+- 90cce42: Generate ontology metadata under experimental path
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+- Updated dependencies [90cce42]
+  - @osdk/generator@2.58.0
+  - @osdk/generator-converters.ontologyir@2.58.0
+  - @osdk/client.unstable@2.58.0
+
+## 0.35.0
+
+### Patch Changes
+
+- Updated dependencies [8ce066f]
+- Updated dependencies [3bfccdb]
+- Updated dependencies [e9d7ffa]
+  - @osdk/generator-converters.ontologyir@2.57.0
+  - @osdk/client.unstable@2.57.0
+  - @osdk/generator@2.57.0
+
+## 0.34.0
+
+### Minor Changes
+
+- 7b85fa7: Include ontology metadata in generator converter preview
+
+### Patch Changes
+
+- @osdk/client.unstable@2.56.0
+- @osdk/generator-converters.ontologyir@2.56.0
+- @osdk/generator@2.56.0
+
+## 0.33.0
+
+### Patch Changes
+
+- @osdk/generator@2.55.0
+- @osdk/client.unstable@2.55.0
+- @osdk/generator-converters.ontologyir@2.55.0
+
+## 0.32.0
+
+### Minor Changes
+
+- 5bd3024: Type the ontology metadata json subpath per resolution mode instead of per generated package type, and honor --generateOntologyMetadata when generating sources in place (without --asPackage)
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [5bd3024]
+- Updated dependencies [c14abb8]
+  - @osdk/generator@2.53.0
+  - @osdk/generator-converters.ontologyir@2.53.0
+  - @osdk/client.unstable@2.53.0
+
+## 0.31.0
+
+### Patch Changes
+
+- Updated dependencies [eab0750]
+  - @osdk/generator-converters.ontologyir@2.52.0
+  - @osdk/generator@2.52.0
+  - @osdk/client.unstable@2.52.0
+
+## 0.30.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.48.0
+- @osdk/generator-converters.ontologyir@2.48.0
+- @osdk/generator@2.48.0
+
+## 0.29.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.47.0
+- @osdk/generator-converters.ontologyir@2.47.0
+- @osdk/generator@2.47.0
+
+## 0.28.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.46.0
+- @osdk/generator-converters.ontologyir@2.46.0
+- @osdk/generator@2.46.0
+
+## 0.27.0
+
+### Minor Changes
+
+- 93958d7: Support interface link actions in maker-experimental
+
+### Patch Changes
+
+- Updated dependencies [93958d7]
+  - @osdk/generator-converters.ontologyir@2.45.0
+  - @osdk/client.unstable@2.45.0
+  - @osdk/generator@2.45.0
+
 ## 0.26.0
 
 ### Patch Changes

@@ -44,10 +44,10 @@ describe("DateRangePicker", () => {
           onChange={vi.fn()}
           placeholderStart="Start"
           placeholderEnd="End"
-        />
+        />,
       );
       const startInput = screen.getByLabelText(
-        "Start date"
+        "Start date",
       ) as HTMLInputElement;
       const endInput = screen.getByLabelText("End date") as HTMLInputElement;
       expect(startInput.placeholder).toBe("Start");
@@ -59,10 +59,10 @@ describe("DateRangePicker", () => {
         <DateRangePicker
           value={[new Date(2024, 0, 15), new Date(2024, 5, 30)]}
           onChange={vi.fn()}
-        />
+        />,
       );
       const startInput = screen.getByLabelText(
-        "Start date"
+        "Start date",
       ) as HTMLInputElement;
       const endInput = screen.getByLabelText("End date") as HTMLInputElement;
       expect(startInput.value).toBe("2024-01-15");
@@ -72,7 +72,7 @@ describe("DateRangePicker", () => {
     it("renders empty inputs when value is null", () => {
       render(<DateRangePicker value={null} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText(
-        "Start date"
+        "Start date",
       ) as HTMLInputElement;
       const endInput = screen.getByLabelText("End date") as HTMLInputElement;
       expect(startInput.value).toBe("");
@@ -97,7 +97,7 @@ describe("DateRangePicker", () => {
       fireEvent.pointerDown(startInput);
       fireEvent.click(startInput);
       expect(
-        screen.getByLabelText("Start date").getAttribute("aria-expanded")
+        screen.getByLabelText("Start date").getAttribute("aria-expanded"),
       ).toBe("true");
       expect(screen.getByRole("dialog")).toBeDefined();
     });
@@ -125,10 +125,10 @@ describe("DateRangePicker", () => {
           value={[null, null]}
           onChange={vi.fn()}
           disabled={true}
-        />
+        />,
       );
       const startInput = screen.getByLabelText(
-        "Start date"
+        "Start date",
       ) as HTMLInputElement;
       const endInput = screen.getByLabelText("End date") as HTMLInputElement;
 
@@ -139,10 +139,10 @@ describe("DateRangePicker", () => {
       expect(startInput.disabled).toBe(true);
       expect(endInput.disabled).toBe(true);
       expect(startInput.parentElement?.getAttribute("data-disabled")).toBe(
-        "true"
+        "true",
       );
       expect(endInput.parentElement?.getAttribute("data-disabled")).toBe(
-        "true"
+        "true",
       );
       expect(startInput.getAttribute("aria-expanded")).toBe("false");
       expect(endInput.getAttribute("aria-expanded")).toBe("false");
@@ -162,14 +162,14 @@ describe("DateRangePicker", () => {
             value={[null, null]}
             onChange={vi.fn()}
             portalContainer={portalContainer}
-          />
+          />,
         );
 
         fireEvent.focus(screen.getByLabelText("Start date"));
         expect(screen.getByRole("dialog")).toBeDefined();
 
         const dismissLayer = portalContainer.querySelector(
-          "[data-osdk-portal-dismiss-layer]"
+          "[data-osdk-portal-dismiss-layer]",
         );
         if (!(dismissLayer instanceof HTMLElement)) {
           throw new Error("Expected date picker dismiss layer to be rendered");
@@ -191,7 +191,7 @@ describe("DateRangePicker", () => {
       const onChange = vi.fn();
       render(<DateRangePicker value={[null, null]} onChange={onChange} />);
       const startInput = screen.getByLabelText(
-        "Start date"
+        "Start date",
       ) as HTMLInputElement;
       fireEvent.focus(startInput);
       fireEvent.change(startInput, { target: { value: "2024-03-20" } });
@@ -209,7 +209,7 @@ describe("DateRangePicker", () => {
         <DateRangePicker
           value={[new Date(2024, 0, 1), null]}
           onChange={onChange}
-        />
+        />,
       );
       const endInput = screen.getByLabelText("End date") as HTMLInputElement;
       fireEvent.focus(endInput);
@@ -225,7 +225,7 @@ describe("DateRangePicker", () => {
       const onChange = vi.fn();
       render(<DateRangePicker value={[null, null]} onChange={onChange} />);
       const startInput = screen.getByLabelText(
-        "Start date"
+        "Start date",
       ) as HTMLInputElement;
       fireEvent.focus(startInput);
       fireEvent.change(startInput, { target: { value: "not-a-date" } });
@@ -239,7 +239,7 @@ describe("DateRangePicker", () => {
       const onChange = vi.fn();
       render(<DateRangePicker value={[null, null]} onChange={onChange} />);
       const startInput = screen.getByLabelText(
-        "Start date"
+        "Start date",
       ) as HTMLInputElement;
       fireEvent.focus(startInput);
       fireEvent.change(startInput, { target: { value: "2024-01-15" } });
@@ -257,10 +257,10 @@ describe("DateRangePicker", () => {
         <DateRangePicker
           value={[new Date(2024, 0, 15), null]}
           onChange={vi.fn()}
-        />
+        />,
       );
       const startInput = screen.getByLabelText(
-        "Start date"
+        "Start date",
       ) as HTMLInputElement;
       fireEvent.focus(startInput);
       fireEvent.change(startInput, { target: { value: "2099-12-31" } });
@@ -285,7 +285,7 @@ describe("DateRangePicker", () => {
         <DateRangePicker
           value={[new Date(2024, 5, 15), null]}
           onChange={vi.fn()}
-        />
+        />,
       );
       const endInput = screen.getByLabelText("End date");
       fireEvent.focus(endInput);
@@ -325,10 +325,10 @@ describe("DateRangePicker", () => {
         <DateRangePicker
           value={[new Date(2024, 0, 1), new Date(2024, 5, 15)]}
           onChange={onChange}
-        />
+        />,
       );
       const startInput = screen.getByLabelText(
-        "Start date"
+        "Start date",
       ) as HTMLInputElement;
       fireEvent.focus(startInput);
       fireEvent.change(startInput, { target: { value: "2024-12-01" } });
@@ -344,7 +344,7 @@ describe("DateRangePicker", () => {
         <DateRangePicker
           value={[new Date(2024, 5, 15), new Date(2024, 11, 31)]}
           onChange={onChange}
-        />
+        />,
       );
       const endInput = screen.getByLabelText("End date") as HTMLInputElement;
       fireEvent.focus(endInput);
@@ -361,10 +361,10 @@ describe("DateRangePicker", () => {
         <DateRangePicker
           value={[new Date(2024, 0, 1), new Date(2024, 5, 15)]}
           onChange={onChange}
-        />
+        />,
       );
       const startInput = screen.getByLabelText(
-        "Start date"
+        "Start date",
       ) as HTMLInputElement;
       fireEvent.focus(startInput);
       fireEvent.change(startInput, { target: { value: "2024-12-01" } });
@@ -379,7 +379,7 @@ describe("DateRangePicker", () => {
         <DateRangePicker
           value={[new Date(2024, 5, 15), new Date(2024, 11, 31)]}
           onChange={onChange}
-        />
+        />,
       );
       const endInput = screen.getByLabelText("End date") as HTMLInputElement;
       fireEvent.focus(endInput);
@@ -396,7 +396,7 @@ describe("DateRangePicker", () => {
           value={[new Date(2024, 5, 15), new Date(2024, 11, 31)]}
           onChange={onChange}
           allowSingleDayRange={false}
-        />
+        />,
       );
       const endInput = screen.getByLabelText("End date") as HTMLInputElement;
       fireEvent.focus(endInput);
@@ -438,7 +438,7 @@ describe("DateRangePicker", () => {
         <DateRangePicker
           value={[new Date(2024, 0, 1), null]}
           onChange={onChange}
-        />
+        />,
       );
       const endInput = screen.getByLabelText("End date") as HTMLInputElement;
       endInput.focus();
@@ -468,10 +468,10 @@ describe("DateRangePicker", () => {
         <DateRangePicker
           value={[new Date(2024, 0, 15), null]}
           onChange={vi.fn()}
-        />
+        />,
       );
       const startInput = screen.getByLabelText(
-        "Start date"
+        "Start date",
       ) as HTMLInputElement;
       startInput.focus();
       fireEvent.focus(startInput);
@@ -479,7 +479,7 @@ describe("DateRangePicker", () => {
 
       const dialog = screen.getByRole("dialog");
       const endSentinel = dialog.querySelector(
-        "[aria-label='End of date range picker dialog']"
+        '[data-osdk-date-picker-focus-boundary="end"]',
       ) as HTMLElement;
 
       // Simulate Tab reaching the sentinel from inside the popover.
@@ -494,7 +494,7 @@ describe("DateRangePicker", () => {
         <DateRangePicker
           value={[new Date(2024, 0, 15), null]}
           onChange={vi.fn()}
-        />
+        />,
       );
       const endInput = screen.getByLabelText("End date") as HTMLInputElement;
       endInput.focus();
@@ -503,7 +503,7 @@ describe("DateRangePicker", () => {
 
       const dialog = screen.getByRole("dialog");
       const endSentinel = dialog.querySelector(
-        "[aria-label='End of date range picker dialog']"
+        '[data-osdk-date-picker-focus-boundary="end"]',
       ) as HTMLElement;
 
       fireEvent.focus(endSentinel, { relatedTarget: dialog });
@@ -520,7 +520,7 @@ describe("DateRangePicker", () => {
         <DateRangePicker
           value={[new Date(2024, 0, 1), null]}
           onChange={vi.fn()}
-        />
+        />,
       );
       const endInput = screen.getByLabelText("End date");
       fireEvent.focus(endInput);
@@ -540,7 +540,7 @@ describe("DateRangePicker", () => {
           value={[new Date(2024, 0, 15, 10, 30), new Date(2024, 0, 20, 14, 0)]}
           onChange={vi.fn()}
           showTime={true}
-        />
+        />,
       );
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
@@ -556,7 +556,7 @@ describe("DateRangePicker", () => {
         <DateRangePicker
           value={[new Date(2024, 0, 15), null]}
           onChange={vi.fn()}
-        />
+        />,
       );
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
@@ -572,7 +572,7 @@ describe("DateRangePicker", () => {
           value={[new Date(2024, 0, 15, 10, 0), new Date(2024, 0, 20)]}
           onChange={onChange}
           showTime={true}
-        />
+        />,
       );
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
@@ -603,7 +603,7 @@ describe("DateRangePicker", () => {
           value={[new Date(2024, 0, 15, 10, 30), new Date(2024, 0, 20, 14, 0)]}
           onChange={onChange}
           showTime={true}
-        />
+        />,
       );
       fireEvent.focus(screen.getByLabelText("Start date"));
 
@@ -621,7 +621,7 @@ describe("DateRangePicker", () => {
           value={[new Date(2024, 0, 15), new Date(2024, 0, 20, 9, 0)]}
           onChange={onChange}
           showTime={true}
-        />
+        />,
       );
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
@@ -651,10 +651,10 @@ describe("DateRangePicker", () => {
           value={[new Date(2024, 0, 15, 10, 30), new Date(2024, 0, 20, 14, 0)]}
           onChange={vi.fn()}
           showTime={true}
-        />
+        />,
       );
       const startInput = screen.getByLabelText(
-        "Start date"
+        "Start date",
       ) as HTMLInputElement;
       const endInput = screen.getByLabelText("End date") as HTMLInputElement;
       expect(startInput.value).toBe("2024-01-15 10:30");
@@ -667,7 +667,7 @@ describe("DateRangePicker", () => {
           value={[null, null]}
           onChange={vi.fn()}
           showTime={true}
-        />
+        />,
       );
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
@@ -698,10 +698,10 @@ describe("DateRangePicker", () => {
           formatDate={(d) =>
             `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`
           }
-        />
+        />,
       );
       const startInput = screen.getByLabelText(
-        "Start date"
+        "Start date",
       ) as HTMLInputElement;
       expect(startInput.value).toBe("1/15/2024");
     });
@@ -721,10 +721,10 @@ describe("DateRangePicker", () => {
             const date = new Date(y, m - 1, d);
             return isNaN(date.getTime()) ? undefined : date;
           }}
-        />
+        />,
       );
       const startInput = screen.getByLabelText(
-        "Start date"
+        "Start date",
       ) as HTMLInputElement;
       fireEvent.focus(startInput);
       fireEvent.change(startInput, { target: { value: "3/20/2024" } });

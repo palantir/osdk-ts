@@ -124,7 +124,7 @@ export function createPublicOauthClient(
   clientId: string,
   url: string,
   redirectUrl: string,
-  options?: PublicOauthClientOptions
+  options?: PublicOauthClientOptions,
 ): PublicOauthClient;
 
 /**
@@ -150,7 +150,7 @@ export function createPublicOauthClient(
   postLoginPage?: string,
   scopes?: string[],
   fetchFn?: typeof globalThis.fetch,
-  ctxPath?: string
+  ctxPath?: string,
 ): PublicOauthClient;
 export function createPublicOauthClient(
   client_id: string,
@@ -161,7 +161,7 @@ export function createPublicOauthClient(
   postLoginPage?: string,
   scopes?: string[],
   fetchFn?: typeof globalThis.fetch,
-  ctxPath?: string
+  ctxPath?: string,
 ): PublicOauthClient {
   let refreshTokenMarker: string | undefined;
   let joinedScopes: string;
@@ -185,7 +185,7 @@ export function createPublicOauthClient(
     postLoginPage,
     scopes,
     fetchFn,
-    ctxPath
+    ctxPath,
   ));
 
   const client: Client = {
@@ -205,7 +205,7 @@ export function createPublicOauthClient(
     maybeRefresh.bind(globalThis, true),
     refreshTokenMarker,
     joinedScopes,
-    storage
+    storage,
   );
 
   // as an arrow function, `useHistory` is known to be a boolean
@@ -220,7 +220,7 @@ export function createPublicOauthClient(
   };
 
   async function maybeRefresh(
-    expectRefreshToken?: boolean
+    expectRefreshToken?: boolean,
   ): Promise<Token | undefined> {
     if (tokenStorage === "none") {
       if (expectRefreshToken) throw new Error("No refresh token found");
@@ -257,11 +257,11 @@ export function createPublicOauthClient(
               authServer,
               client,
               refresh_token,
-              oauthHttpOptions
-            )
-          )
+              oauthHttpOptions,
+            ),
+          ),
         ),
-        "refresh"
+        "refresh",
       );
 
       if (
@@ -277,7 +277,7 @@ export function createPublicOauthClient(
       if (process.env.NODE_ENV !== "production") {
         logger?.warn(
           "Failed to get OAuth2 refresh token. Removing refresh token",
-          e
+          e,
         );
       }
       removeLocal(client, storage);
@@ -305,16 +305,16 @@ export function createPublicOauthClient(
                   authServer,
                   client,
                   new URL(window.location.href),
-                  state
-                )
+                  state,
+                ),
               ),
               redirect_uri,
               codeVerifier,
-              oauthHttpOptions
-            )
-          )
+              oauthHttpOptions,
+            ),
+          ),
         ),
-        "signIn"
+        "signIn",
       );
 
       void go(oldUrl);
@@ -323,7 +323,7 @@ export function createPublicOauthClient(
       if (process.env.NODE_ENV !== "production") {
         logger?.warn(
           "Failed to get OAuth2 token using PKCE, removing PKCE and starting a new auth flow",
-          e
+          e,
         );
       }
       removeLocal(client, storage);
@@ -364,7 +364,7 @@ export function createPublicOauthClient(
         code_challenge: await calculatePKCECodeChallenge(codeVerifier),
         code_challenge_method: "S256",
         scope: scopeString,
-      })}`
+      })}`,
     );
 
     // Give time for redirect to happen

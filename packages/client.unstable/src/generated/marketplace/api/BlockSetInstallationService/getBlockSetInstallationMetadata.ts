@@ -30,11 +30,11 @@ import type {
  */
 export async function getBlockSetInstallationMetadata(
   ctx: ConjureContext,
-  blockSetInstallationRid: _api_BlockSetInstallationRid
+  blockSetInstallationRid: _api_BlockSetInstallationRid,
 ): Promise<_api_BlockSetInstallationMetadata> {
   return conjureFetch(
     ctx,
     `/block-set-installation/metadata/${blockSetInstallationRid}`,
-    "GET"
+    "GET",
   );
 }

@@ -16,13 +16,13 @@
 
 import { useMemo } from "react";
 
-import type { PdfAnnotation } from "../types.js";
+import type { PdfAnnotation } from "../PdfViewerApi.js";
 
 /**
  * Groups a flat array of annotations by page number for efficient per-page lookup.
  */
 export function usePdfAnnotationsByPage(
-  annotations: PdfAnnotation[]
+  annotations: PdfAnnotation[],
 ): Record<number, PdfAnnotation[]> {
   return useMemo(() => {
     const result: Record<number, PdfAnnotation[]> = {};

@@ -41,7 +41,10 @@
   --osdk-dark-background-primary: #111418;
   --osdk-dark-background-secondary: #1c2127;
   --osdk-dark-background-tertiary: #1c2127;
+  --osdk-dark-typography-color-error: var(--osdk-palette-red-4);
   --osdk-dark-typography-color-muted: #8f99a8;
+  --osdk-dark-typography-color-placeholder: var(--osdk-palette-gray-4);
+  --osdk-dark-typography-color-primary-rest: var(--osdk-palette-blue-4);
   --osdk-dark-intent-default-rest: #8f99a8;
   --osdk-dark-intent-default-foreground: #f6f7f9;
   --osdk-dark-table-row-bg-default: #111418;
@@ -70,11 +73,20 @@
      set --osdk-* tokens that have no --bp-* counterpart or that
      intentionally diverge from Blueprint's value. */
   --osdk-surface-shadow-2: var(--osdk-dark-surface-shadow-2);
-  --osdk-surface-border-color-default: var(--osdk-dark-bp-surface-border-color-default);
+  --osdk-surface-border-color-default: var(
+    --osdk-dark-bp-surface-border-color-default
+  );
   --osdk-background-primary: var(--osdk-dark-background-primary);
   --osdk-background-secondary: var(--osdk-dark-background-secondary);
   --osdk-background-tertiary: var(--osdk-dark-background-tertiary);
+  --osdk-typography-color-error: var(--osdk-dark-typography-color-error);
   --osdk-typography-color-muted: var(--osdk-dark-typography-color-muted);
+  --osdk-typography-color-placeholder: var(
+    --osdk-dark-typography-color-placeholder
+  );
+  --osdk-typography-color-primary-rest: var(
+    --osdk-dark-typography-color-primary-rest
+  );
   --osdk-intent-default-rest: var(--osdk-dark-intent-default-rest);
   --osdk-intent-default-foreground: var(--osdk-dark-intent-default-foreground);
   --osdk-table-row-bg-default: var(--osdk-dark-table-row-bg-default);

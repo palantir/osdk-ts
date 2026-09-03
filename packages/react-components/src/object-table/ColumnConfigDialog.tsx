@@ -115,7 +115,7 @@ export function ColumnConfigDialog({
     (fromIndex: number, toIndex: number) => {
       setVisibleColumns((items) => arrayMove(items, fromIndex, toIndex));
     },
-    []
+    [],
   );
 
   const handleRemoveColumn = useCallback((columnId: string) => {
@@ -137,13 +137,13 @@ export function ColumnConfigDialog({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setSearchQuery(event.target.value);
     },
-    []
+    [],
   );
 
   const handleSelectAll = useCallback((columns: ColumnItem[]) => {
     setVisibleColumns((prev) => {
       const allSelected = columns.every((col) =>
-        prev.some((v) => v.id === col.id)
+        prev.some((v) => v.id === col.id),
       );
       if (allSelected) {
         // Deselect all filtered columns
@@ -151,7 +151,7 @@ export function ColumnConfigDialog({
       } else {
         // Select all filtered columns that aren't already selected
         const newColumns = columns.filter(
-          (col) => !prev.some((v) => v.id === col.id)
+          (col) => !prev.some((v) => v.id === col.id),
         );
         return [...prev, ...newColumns];
       }
@@ -166,7 +166,7 @@ export function ColumnConfigDialog({
     return allColumns.filter(
       (col) =>
         (col.label?.toLowerCase().includes(query) ?? false) ||
-        col.id.toLowerCase().includes(query)
+        col.id.toLowerCase().includes(query),
     );
   }, [allColumns, searchQuery]);
 
@@ -183,7 +183,7 @@ export function ColumnConfigDialog({
         </ActionButton>
       </>
     ),
-    [onClose, handleApply, isApplyDisabled]
+    [onClose, handleApply, isApplyDisabled],
   );
 
   return (
@@ -222,10 +222,10 @@ const DialogTitle = (
 
 const getColumnConfig = (
   allColumns: ColumnItem[],
-  visibleColumns: ColumnItem[]
+  visibleColumns: ColumnItem[],
 ): ColumnConfig[] => {
   const hiddenColumns = allColumns.filter(
-    (col) => !visibleColumns.some((v) => v.id === col.id)
+    (col) => !visibleColumns.some((v) => v.id === col.id),
   );
 
   return [
@@ -286,10 +286,10 @@ function AvailableColumnsList({
   const selectedCount = visibleColumns.length;
   const totalCount = filteredColumns.length;
   const allFilteredSelected = filteredColumns.every((col) =>
-    visibleColumns.some((v) => v.id === col.id)
+    visibleColumns.some((v) => v.id === col.id),
   );
   const someFilteredSelected = filteredColumns.some((col) =>
-    visibleColumns.some((v) => v.id === col.id)
+    visibleColumns.some((v) => v.id === col.id),
   );
 
   const handleSelectAllClick = useCallback(() => {

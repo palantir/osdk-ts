@@ -17,6 +17,8 @@
 import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 
+// TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function promptCorsProxy({
   corsProxy,
 }: {
@@ -28,8 +30,8 @@ export async function promptCorsProxy({
 
   return consola.prompt(
     `Include a CORS proxy for Foundry API requests during local development?\n${italic(
-      "This is required if your enrollment has not allowed localhost for CORS."
+      "This is required if your enrollment has not allowed localhost for CORS.",
     )}`,
-    { type: "confirm", initial: false }
+    { type: "confirm", initial: false },
   );
 }

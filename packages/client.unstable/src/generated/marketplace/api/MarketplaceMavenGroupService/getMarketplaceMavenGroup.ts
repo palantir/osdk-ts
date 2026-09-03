@@ -26,11 +26,11 @@ import type {
  */
 export async function getMarketplaceMavenGroup(
   ctx: ConjureContext,
-  marketplaceRid: _api_MarketplaceRid
+  marketplaceRid: _api_MarketplaceRid,
 ): Promise<_api_GetMarketplaceMavenGroupResponse> {
   return conjureFetch(
     ctx,
     `/marketplace-maven-group/${marketplaceRid}/maven-group`,
-    "GET"
+    "GET",
   );
 }

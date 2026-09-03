@@ -14,18 +14,21 @@ export namespace editOffice {
   export type ParamsDefinition = {
     location: {
       description: undefined;
+      displayName: 'Location';
       multiplicity: false;
       nullable: false;
       type: 'geohash';
     };
     name: {
       description: undefined;
+      displayName: 'Name';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     Office: {
       description: undefined;
+      displayName: 'Office';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Office>;

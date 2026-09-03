@@ -33,7 +33,7 @@ export function useConsoleLogs(monitorStore: MonitorStore): {
 
   const subscribe = React.useCallback(
     (callback: () => void) => store.subscribe(callback),
-    [store]
+    [store],
   );
 
   const cachedRef = React.useRef<ConsoleLogSnapshot>({

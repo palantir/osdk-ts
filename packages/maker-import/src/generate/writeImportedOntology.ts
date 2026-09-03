@@ -92,7 +92,7 @@ export function resolveVarNames(apiNames: string[]): string[] {
  */
 export function writeImportedOntology(
   metadata: Ontologies.OntologyFullMetadata,
-  outputDir: string
+  outputDir: string,
 ): void {
   const codegenDir = path.resolve(outputDir, "codegen");
 
@@ -157,7 +157,7 @@ export function writeImportedOntology(
       entries[i].entityType,
       entries[i].entity,
       varNames[i],
-      topLevelExports
+      topLevelExports,
     );
   }
 
@@ -174,14 +174,14 @@ function writeEntityFile(
   entityType: OntologyEntityTypeEnum,
   entity: unknown,
   varName: string,
-  topLevelExports: string[]
+  topLevelExports: string[],
 ): void {
   const typeName = TYPE_NAME_MAP[entityType];
   const dirName = DIR_NAME_MAP[entityType];
 
   const entityJSON = JSON.stringify(entity, null, 2).replace(
     /("__type"\s*:\s*)"([^"]*)"/gu,
-    (_, prefix, value) => `${prefix}OntologyEntityTypeEnum.${value}`
+    (_, prefix, value) => `${prefix}OntologyEntityTypeEnum.${value}`,
   );
 
   const content = `import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
@@ -197,6 +197,6 @@ export const ${varName}: ${typeName} = wrapWithProxy(${varName}_base);
   fs.writeFileSync(filePath, content, { flag: "w" });
 
   topLevelExports.push(
-    `export { ${varName} } from "./codegen/${dirName}/${varName}.js";`
+    `export { ${varName} } from "./codegen/${dirName}/${varName}.js";`,
   );
 }

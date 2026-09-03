@@ -36,7 +36,7 @@ afterEach(() => {
 it("publishes PREPARING through the discovered status server URL", async () => {
   fs.writeFileSync(
     path.join(workDir, "foundry.yml"),
-    'minCliVersion: "0.0.0"\n'
+    'minCliVersion: "0.0.0"\n',
   );
 
   const events: unknown[] = [];
@@ -65,7 +65,7 @@ it("publishes PREPARING through the discovered status server URL", async () => {
       JSON.stringify({
         pid: process.pid,
         url: `http://127.0.0.1:${port}`,
-      })
+      }),
     );
 
     const plugin = statusReporterPlugin({ service: "APP" });
@@ -91,7 +91,7 @@ it("publishes PREPARING through the discovered status server URL", async () => {
         else resolveEvent = resolve;
       }),
       new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("PREPARING never published")), 5000)
+        setTimeout(() => reject(new Error("PREPARING never published")), 5000),
       ),
     ]);
     expect(first).toMatchObject({

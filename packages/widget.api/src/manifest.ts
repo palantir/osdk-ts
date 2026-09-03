@@ -120,7 +120,7 @@ export interface WidgetManifestConfigV1 {
 
 export interface WidgetSetInputSpecV1 {
   /**
-   * The input specification for the widget set that was automatically discovered from the project's dependencies.
+   * The input specification for the widget set that was automatically discovered from the project.
    * @optional
    */
   discovered?: WidgetSetDiscoveredInputSpecV1;
@@ -131,6 +131,13 @@ export interface WidgetSetDiscoveredInputSpecV1 {
    * The discovered Ontology SDK packages in the project's dependencies.
    */
   sdks: Array<OntologySdkInputSpecV1>;
+
+  /**
+   * The widget set authorizations, read from the project's resources.json.
+   * Only present when resources.json exists with the expected format.
+   * @optional
+   */
+  authorizations?: WidgetSetAuthorizationsInputSpecV1;
 }
 
 export interface OntologySdkInputSpecV1 {
@@ -139,5 +146,19 @@ export interface OntologySdkInputSpecV1 {
   /** The Ontology SDK package version */
   version: string;
 }
+
+export interface WidgetSetAuthorizationsInputSpecV1 {
+  /**
+   * The widget set authorizations.
+   */
+  read?: WidgetSetAuthorizationV1;
+  requiredRead?: WidgetSetAuthorizationV1;
+  write?: WidgetSetAuthorizationV1;
+}
+
+/**
+ * A set of markings representing an authorization constraint, expressed in conjunctive normal form (CNF).
+ */
+type WidgetSetAuthorizationV1 = string[][];
 
 export const MANIFEST_FILE_LOCATION = ".palantir/widgets.config.json";

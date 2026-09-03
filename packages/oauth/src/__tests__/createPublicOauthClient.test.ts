@@ -43,7 +43,7 @@ type ProcessedPublicOauthClientOptionsReturn = ReturnType<
 >;
 
 describe("createPublicOauthClient", () => {
-  it("should return the same processed options for both client creation methods", async () => {
+  it("should return the same processed options for both client creation methods", () => {
     const mockProcessOptionsAndAssignDefaults =
       vi.fn<
         (
@@ -56,7 +56,7 @@ describe("createPublicOauthClient", () => {
       (...args: ProcessedPublicOauthClientOptionsParams) => {
         mockProcessOptionsAndAssignDefaults(...args);
         return utilsModule.processOptionsAndAssignDefaults(...args);
-      }
+      },
     );
 
     // Mock createPublicOauthClient to call both the mock and the original function
@@ -65,7 +65,7 @@ describe("createPublicOauthClient", () => {
         const [_client_id, ...rest] = args;
         mockProcessOptionsAndAssignDefaults(...rest);
         return originalCreatePublicOauthClient(...args);
-      }
+      },
     );
 
     const authClient = createPublicOauthClient(
@@ -77,7 +77,7 @@ describe("createPublicOauthClient", () => {
       undefined,
       undefined,
       fetch,
-      undefined
+      undefined,
     );
 
     expect(authClient).toBeDefined();
@@ -90,7 +90,7 @@ describe("createPublicOauthClient", () => {
       {
         useHistory: true,
         fetchFn: fetch,
-      }
+      },
     );
 
     expect(authClientWithOptions).toBeDefined();

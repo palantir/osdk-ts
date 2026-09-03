@@ -59,12 +59,12 @@ import type {
 export async function validateInstallBlockSets(
   ctx: ConjureContext,
   installBlockSetsRequest: _api_InstallBlockSetsRequest,
-  onBehalfOf: string | null | undefined
+  onBehalfOf: string | null | undefined,
 ): Promise<_api_ValidateInstallBlockSetsResponse> {
   return conjureFetch(
     ctx,
     `/block-set-installation/validate-install-block-sets-request`,
     "POST",
-    installBlockSetsRequest
+    installBlockSetsRequest,
   );
 }

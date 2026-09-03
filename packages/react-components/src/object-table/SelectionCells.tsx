@@ -58,7 +58,7 @@ export function SelectionCell<TData extends RowData>({
       const isShiftClick = event.shiftKey;
       onToggleRow(row.id, row.index, isShiftClick);
     },
-    [onToggleRow, row.id, row.index]
+    [onToggleRow, row.id, row.index],
   );
 
   const handleKeyDown = useCallback(
@@ -70,7 +70,7 @@ export function SelectionCell<TData extends RowData>({
         onToggleRow(row.id, row.index, isShiftClick);
       }
     },
-    [onToggleRow, row.id, row.index]
+    [onToggleRow, row.id, row.index],
   );
 
   return (

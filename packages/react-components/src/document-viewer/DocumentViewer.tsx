@@ -21,12 +21,12 @@ import classnames from "classnames";
 import React, { useMemo } from "react";
 
 import { EmailViewer } from "../email-viewer/EmailViewer.js";
-import { ExcelViewer } from "../excel-viewer/ExcelViewer.js";
 import { ImageViewer } from "../images/image-viewer/ImageViewer.js";
-import { TiffViewerMedia } from "../images/tiff-renderer/TiffViewerMedia.js";
-import { MarkdownViewerMedia } from "../markdown-renderer/MarkdownViewerMedia.js";
-import { PdfViewer } from "../pdf-viewer/PdfRenderer.js";
+import { TiffViewer } from "../images/tiff-viewer/TiffViewer.js";
+import { MarkdownViewer } from "../markdown-viewer/MarkdownViewer.js";
+import { PdfViewer } from "../pdf-viewer/PdfViewer.js";
 import { assertUnreachable } from "../shared/assertUnreachable.js";
+import { SpreadsheetViewer } from "../spreadsheet-viewer/SpreadsheetViewer.js";
 import { VideoViewer } from "../video-viewer/VideoViewer.js";
 import { XmlViewer } from "../xml-viewer/XmlViewer.js";
 import type { DocumentViewerProps } from "./DocumentViewerApi.js";
@@ -60,7 +60,7 @@ function isTiffFile(mimeType: string, fileName: string | undefined): boolean {
 
 function getViewerType(
   mimeType: string,
-  fileName: string | undefined
+  fileName: string | undefined,
 ): ViewerType {
   if (mimeType === "application/pdf") {
     return ViewerType.Pdf;
@@ -81,7 +81,7 @@ function getViewerType(
     mimeType ===
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   ) {
-    return ViewerType.Excel;
+    return ViewerType.Spreadsheet;
   }
   if (mimeType === "message/rfc822") {
     return ViewerType.Email;
@@ -99,20 +99,22 @@ export function DocumentViewer({
   pdfViewerProps,
   imageViewerProps,
   videoViewerProps,
+  tiffViewerProps,
   tiffRendererProps,
-  markdownRendererProps,
-  excelViewerProps,
-  emailViewerProps,
-  xmlViewerProps,
   fileName,
   enableTiffToPdf = false,
 }: DocumentViewerProps): React.ReactElement {
   const mimeType = mimeTypeOverride ?? media.getMediaReference().mimeType;
   const viewerType = useMemo(
     () => getViewerType(mimeType, fileName),
-    [mimeType, fileName]
+    [mimeType, fileName],
   );
   const rootClassName = classnames(styles.container, className);
+
+  // `tiffRendererProps` is the deprecated name for `tiffViewerProps`. Coalescing
+  // (rather than merging) keeps the alias behaving exactly like its replacement
+  // and avoids creating a new object identity on every render.
+  const resolvedTiffViewerProps = tiffViewerProps ?? tiffRendererProps;
 
   switch (viewerType) {
     case ViewerType.Pdf:
@@ -130,16 +132,16 @@ export function DocumentViewer({
             media={media}
             className={rootClassName}
             enableTiffToPdf={enableTiffToPdf}
-            tiffRendererProps={tiffRendererProps}
+            tiffViewerProps={resolvedTiffViewerProps}
             pdfViewerProps={pdfViewerProps}
           />
         );
       }
       return (
-        <TiffViewerMedia
+        <TiffViewer
           media={media}
           className={rootClassName}
-          {...tiffRendererProps}
+          {...resolvedTiffViewerProps}
         />
       );
     case ViewerType.Image:
@@ -159,37 +161,13 @@ export function DocumentViewer({
         />
       );
     case ViewerType.Markdown:
-      return (
-        <MarkdownViewerMedia
-          media={media}
-          className={rootClassName}
-          {...markdownRendererProps}
-        />
-      );
-    case ViewerType.Excel:
-      return (
-        <ExcelViewer
-          media={media}
-          className={rootClassName}
-          {...excelViewerProps}
-        />
-      );
+      return <MarkdownViewer media={media} className={rootClassName} />;
+    case ViewerType.Spreadsheet:
+      return <SpreadsheetViewer media={media} className={rootClassName} />;
     case ViewerType.Email:
-      return (
-        <EmailViewer
-          media={media}
-          className={rootClassName}
-          {...emailViewerProps}
-        />
-      );
+      return <EmailViewer media={media} className={rootClassName} />;
     case ViewerType.Xml:
-      return (
-        <XmlViewer
-          media={media}
-          className={rootClassName}
-          {...xmlViewerProps}
-        />
-      );
+      return <XmlViewer media={media} className={rootClassName} />;
     case ViewerType.Unsupported:
       return (
         <div className={rootClassName}>

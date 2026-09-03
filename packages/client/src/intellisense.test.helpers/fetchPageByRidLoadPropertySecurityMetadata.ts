@@ -31,5 +31,5 @@ void client(__EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid).fetchPageByRid(
   ["rid.foo"],
   {
     $loadPropertySecurityMetadata: true,
-  }
+  },
 );

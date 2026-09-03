@@ -26,7 +26,7 @@ import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIr
 export function convertMainValue(
   type: PropertyTypeType,
   apiName?: string,
-  sharedPropertyType?: SharedPropertyType
+  sharedPropertyType?: SharedPropertyType,
 ): OntologyIrStructMainValue | undefined {
   if (
     sharedPropertyType &&
@@ -39,7 +39,7 @@ export function convertMainValue(
         : [sharedPropertyType.type.mainValue.fields],
       structApiName: sharedPropertyType.apiName,
       type: propertyTypeTypeToOntologyIrType(
-        sharedPropertyType.type.mainValue.type
+        sharedPropertyType.type.mainValue.type,
       ),
     };
   }

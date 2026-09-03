@@ -14,9 +14,11 @@
  * limitations under the License.
  */}
 
-import { Meta, Markdown } from "@storybook/addon-docs/blocks";
-import objectTableDocs from "@docs/ObjectTable.md?raw";
+import { Meta } from "@storybook/addon-docs/blocks";
+import objectTableDocs from "@docs/ObjectTableOverview.md?raw";
+import { ComponentDoc } from "../../util/ComponentDoc.js";
+import * as ObjectTableStories from "./ObjectTable.stories";
 
-<Meta title="Components/ObjectTable/Docs" tags={["beta"]}/>
+<Meta title="Components/ObjectTable/Docs" tags={["beta"]} />
 
-<Markdown>{objectTableDocs}</Markdown>
+<ComponentDoc raw={objectTableDocs} canvasOf={ObjectTableStories.Default} />

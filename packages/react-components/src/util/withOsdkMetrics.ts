@@ -26,7 +26,7 @@ import { componentUserAgent } from "./UserAgent.js";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function withOsdkMetrics<C extends FunctionComponent<any>>(
   Component: C,
-  name: string
+  name: string,
 ): C {
   const Wrapped = (props: React.ComponentProps<C>) => {
     useRegisterUserAgent(componentUserAgent(name));

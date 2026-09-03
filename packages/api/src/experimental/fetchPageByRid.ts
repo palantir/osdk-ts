@@ -23,6 +23,10 @@ import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
+import type {
+  ApplyModifiersArg,
+  PropertyModifierValue,
+} from "../ontology/PropertyModifiers.js";
 import type { Experiment } from "./Experiment.js";
 
 type fetchPageByRidFn = <
@@ -32,11 +36,38 @@ type fetchPageByRidFn = <
   const S extends NullabilityAdherence,
   const T extends boolean,
   const PROPERTY_SECURITIES extends boolean = false,
+  const MODIFIERS extends ApplyModifiersArg<Q> = {},
+  const DEFAULT_LOAD_LEVEL extends PropertyModifierValue | undefined =
+    undefined,
 >(
   objectType: Q,
   rids: string[],
-  options?: FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>
-) => Promise<FetchPageResult<Q, L, R, S, T, {}, PROPERTY_SECURITIES>>;
+  options?: FetchPageArgs<
+    Q,
+    L,
+    R,
+    any,
+    S,
+    T,
+    never,
+    {},
+    PROPERTY_SECURITIES,
+    MODIFIERS,
+    DEFAULT_LOAD_LEVEL
+  >,
+) => Promise<
+  FetchPageResult<
+    Q,
+    L,
+    R,
+    S,
+    T,
+    {},
+    PROPERTY_SECURITIES,
+    MODIFIERS,
+    DEFAULT_LOAD_LEVEL
+  >
+>;
 
 export type FetchPageByRidPayload = {
   fetchPageByRid: fetchPageByRidFn;
@@ -60,7 +91,7 @@ type fetchPageByRidNoTypeFn = <
     never,
     {},
     PROPERTY_SECURITIES
-  >
+  >,
 ) => Promise<
   FetchPageResult<
     ObjectOrInterfaceDefinition,

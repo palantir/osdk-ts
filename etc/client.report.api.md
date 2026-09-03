@@ -15,7 +15,9 @@ import { ApplyBatchActionOptions } from '@osdk/api';
 import { Attachment } from '@osdk/api';
 import type { AttachmentUpload } from '@osdk/api';
 import { CipherText } from '@osdk/api';
+import { CipherTextValue } from '@osdk/api';
 import { CompileTimeMetadata } from '@osdk/api';
+import { CreateCipherText } from '@osdk/api';
 import type { DataValueClientToWire } from '@osdk/api';
 import type { DataValueWireToClient } from '@osdk/api';
 import { DerivedProperty } from '@osdk/api';
@@ -43,7 +45,10 @@ import { ObjectTypeDefinition } from '@osdk/api';
 import { Osdk } from '@osdk/api';
 import { OsdkObject } from '@osdk/api';
 import { OsdkObjectCreatePropertyType } from '@osdk/api';
+import { OsdkObjectCreateWirePropertyType } from '@osdk/api';
 import { OsdkObjectPropertyType } from '@osdk/api';
+import { OsdkObjectUpdatePropertyType } from '@osdk/api';
+import { OsdkObjectUpdateWirePropertyType } from '@osdk/api';
 import { PageResult } from '@osdk/api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
 import type { PrimaryKeyType } from '@osdk/api';
@@ -64,6 +69,7 @@ import { SingleLinkAccessor } from '@osdk/api';
 import { ThreeDimensionalAggregation } from '@osdk/api';
 import { TwoDimensionalAggregation } from '@osdk/api';
 import { UnknownMediaItemMetadata } from '@osdk/api';
+import { UpdateCipherText } from '@osdk/api';
 import type { ValidateActionResponseV2 } from '@osdk/foundry.ontologies';
 import { VersionBound } from '@osdk/api';
 import { WhereClause } from '@osdk/api';
@@ -96,6 +102,8 @@ export { Attachment }
 
 export { CipherText }
 
+export { CipherTextValue }
+
 // Warning: (ae-forgotten-export) The symbol "OldSharedClient" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -112,7 +120,7 @@ export interface Client extends SharedClient, OldSharedClient {
     // (undocumented)
     <Q extends QueryDefinition<any>>(o: Q): QuerySignatureFromDef<Q>;
     	// (undocumented)
-    <Q extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.2.0"> | Experiment<"2.8.0"> | Experiment<"2.19.0">>(experiment: Q): ExperimentFns<Q>;
+    <Q extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.59.0"> | Experiment<"2.2.0"> | Experiment<"2.8.0"> | Experiment<"2.19.0">>(experiment: Q): ExperimentFns<Q>;
     	fetchMetadata<Q extends ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any>>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any> ? QueryMetadata : never>;
 }
 
@@ -121,10 +129,12 @@ export { CompileTimeMetadata }
 // @public (undocumented)
 export function createAttachmentUpload(data: Blob, name: string): AttachmentUpload;
 
+export { CreateCipherText }
+
 // @public
 export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
     	logger?: Logger
-    	UNSTABLE_DO_NOT_USE_BRANCH?: string
+    	UNSTABLE_DO_NOT_USE_BRANCH?: string | null
     	headers?: Record<string, string>
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
 
@@ -188,7 +198,13 @@ export { OsdkObject }
 
 export { OsdkObjectCreatePropertyType }
 
+export { OsdkObjectCreateWirePropertyType }
+
 export { OsdkObjectPropertyType }
+
+export { OsdkObjectUpdatePropertyType }
+
+export { OsdkObjectUpdateWirePropertyType }
 
 export { PageResult }
 
@@ -230,6 +246,8 @@ export { ThreeDimensionalAggregation }
 export { TwoDimensionalAggregation }
 
 export { UnknownMediaItemMetadata }
+
+export { UpdateCipherText }
 
 export { VersionBound }
 

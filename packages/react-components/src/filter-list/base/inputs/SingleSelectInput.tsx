@@ -63,24 +63,24 @@ function SingleSelectInputInner({
     (value: string | null) => {
       onChange(value ?? undefined);
     },
-    [onChange]
+    [onChange],
   );
 
   const stableValues = useStableData(values, isLoading);
 
   const items = useMemo(
     () => stableValues.map(({ value }) => value),
-    [stableValues]
+    [stableValues],
   );
 
   const countByValue = useMemo(
     () => new Map(stableValues.map(({ value, count }) => [value, count])),
-    [stableValues]
+    [stableValues],
   );
 
   const comboboxFilter = useMemo(
     () => (renderValue ? createRenderValueFilter(renderValue) : undefined),
-    [renderValue]
+    [renderValue],
   );
 
   const renderItem = useCallback(
@@ -99,7 +99,7 @@ function SingleSelectInputInner({
         </Combobox.Item>
       );
     },
-    [countByValue, showCounts, renderValue]
+    [countByValue, showCounts, renderValue],
   );
 
   const isNoData = !error && stableValues.length === 0;
@@ -157,5 +157,5 @@ function SingleSelectInputInner({
 }
 
 export const SingleSelectInput = memo(
-  SingleSelectInputInner
+  SingleSelectInputInner,
 ) as typeof SingleSelectInputInner;

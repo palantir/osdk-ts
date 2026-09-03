@@ -25,8 +25,11 @@ const RESERVED_KEYWORDS = new Set([
   "typeid",
   "ontologyobject",
 ]);
-export const OBJECT_API_NAME_PATTERN: RegExp = /^[a-zA-Z][a-zA-Z0-9]{0,99}$/u;
+export const OBJECT_API_NAME_PATTERN: RegExp =
+  /^(?=.{1,100}$)[a-zA-Z][a-zA-Z0-9]*(?:\.[a-zA-Z0-9]+)*$/u;
 export const API_NAME_PATTERN: RegExp = /^[a-zA-Z][a-zA-Z0-9_]{0,99}$/u;
+export const NAMESPACED_API_NAME_PATTERN: RegExp =
+  /^(?=.{1,100}$)[a-zA-Z][a-zA-Z0-9_]*(?:\.[a-zA-Z0-9_]+)*$/u;
 
 export function isValidApiName(apiName: string): boolean {
   return (
@@ -38,6 +41,13 @@ export function isValidApiName(apiName: string): boolean {
 export function isValidObjectApiName(apiName: string): boolean {
   return (
     OBJECT_API_NAME_PATTERN.test(apiName) &&
+    !RESERVED_KEYWORDS.has(apiName.toLowerCase())
+  );
+}
+
+export function isValidNamespacedApiName(apiName: string): boolean {
+  return (
+    NAMESPACED_API_NAME_PATTERN.test(apiName) &&
     !RESERVED_KEYWORDS.has(apiName.toLowerCase())
   );
 }

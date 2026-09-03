@@ -21,10 +21,7 @@
 }
 
 .noValueLabel {
-  color: var(
-    --osdk-filter-null-label-color,
-    var(--osdk-filter-no-value-color)
-  );
+  color: var(--osdk-filter-null-label-color, var(--osdk-filter-no-value-color));
   font-family: var(--osdk-filter-null-label-font-family, inherit);
   font-size: var(--osdk-filter-null-label-font-size, inherit);
   line-height: var(--osdk-filter-null-label-line-height, inherit);

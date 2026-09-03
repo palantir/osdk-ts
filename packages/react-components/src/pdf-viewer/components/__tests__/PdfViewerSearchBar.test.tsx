@@ -44,7 +44,7 @@ describe("PdfViewerSearchBar", () => {
   it("should call onQueryChange when typing", () => {
     const onQueryChange = vi.fn();
     render(
-      <PdfViewerSearchBar {...defaultProps} onQueryChange={onQueryChange} />
+      <PdfViewerSearchBar {...defaultProps} onQueryChange={onQueryChange} />,
     );
 
     fireEvent.change(screen.getByLabelText("Search in PDF"), {
@@ -90,7 +90,7 @@ describe("PdfViewerSearchBar", () => {
         query="test"
         totalMatches={5}
         currentMatchIndex={2}
-      />
+      />,
     );
 
     expect(screen.getByText("3 of 5")).toBeTruthy();
@@ -98,7 +98,7 @@ describe("PdfViewerSearchBar", () => {
 
   it("should display 'No results' when query has no matches", () => {
     render(
-      <PdfViewerSearchBar {...defaultProps} query="test" totalMatches={0} />
+      <PdfViewerSearchBar {...defaultProps} query="test" totalMatches={0} />,
     );
 
     expect(screen.getByText("No results")).toBeTruthy();
@@ -114,10 +114,10 @@ describe("PdfViewerSearchBar", () => {
     render(<PdfViewerSearchBar {...defaultProps} totalMatches={0} />);
 
     expect(
-      (screen.getByLabelText("Previous match") as HTMLButtonElement).disabled
+      (screen.getByLabelText("Previous match") as HTMLButtonElement).disabled,
     ).toBe(true);
     expect(
-      (screen.getByLabelText("Next match") as HTMLButtonElement).disabled
+      (screen.getByLabelText("Next match") as HTMLButtonElement).disabled,
     ).toBe(true);
   });
 
@@ -128,14 +128,14 @@ describe("PdfViewerSearchBar", () => {
         query="test"
         totalMatches={3}
         currentMatchIndex={0}
-      />
+      />,
     );
 
     expect(
-      (screen.getByLabelText("Previous match") as HTMLButtonElement).disabled
+      (screen.getByLabelText("Previous match") as HTMLButtonElement).disabled,
     ).toBe(false);
     expect(
-      (screen.getByLabelText("Next match") as HTMLButtonElement).disabled
+      (screen.getByLabelText("Next match") as HTMLButtonElement).disabled,
     ).toBe(false);
   });
 });

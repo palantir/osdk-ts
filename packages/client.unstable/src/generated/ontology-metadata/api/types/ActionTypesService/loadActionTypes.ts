@@ -28,7 +28,7 @@ import type {
 export async function loadActionTypes(
   ctx: ConjureContext,
   onBehalfOf: string | null | undefined,
-  request: _api_ActionTypeLoadRequest
+  request: _api_ActionTypeLoadRequest,
 ): Promise<_api_ActionTypeLoadResponse> {
   return conjureFetch(ctx, `/actions/types/load`, "POST", request);
 }

@@ -33,7 +33,7 @@ function createMockClient() {
 }
 
 function createMockConfig(
-  metricsStore: MetricsStore
+  metricsStore: MetricsStore,
 ): ObservableClientMonitorConfig {
   return {
     metricsStore,
@@ -108,7 +108,7 @@ describe("ObservableClientMonitor", () => {
 
     wrapped.observeList(
       { type: "Employee", where: {} } as never,
-      observer as never
+      observer as never,
     );
 
     expect(mockClient.observeList).toHaveBeenCalledTimes(1);
@@ -157,7 +157,7 @@ describe("ObservableClientMonitor", () => {
       "Employee",
       "pk-1",
       {},
-      observer as never
+      observer as never,
     );
     sub.unsubscribe();
 
@@ -185,11 +185,11 @@ describe("ObservableClientMonitor", () => {
   it("returns a stable bound reference for unwrapped methods", () => {
     const mockClient = createMockClient();
     const wrapped = monitor.wrapClient(
-      mockClient as never
+      mockClient as never,
     ) as unknown as Record<string, unknown>;
 
     expect(wrapped.canonicalizeWhereClause).toBe(
-      wrapped.canonicalizeWhereClause
+      wrapped.canonicalizeWhereClause,
     );
     expect(typeof wrapped.canonicalizeWhereClause).toBe("function");
   });

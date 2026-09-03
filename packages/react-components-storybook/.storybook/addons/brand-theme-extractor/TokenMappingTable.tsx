@@ -80,7 +80,7 @@ interface TokenMappingTableProps {
   assignments: TokenAssignment[];
   onAssignmentChange: (
     role: string,
-    assignment: Partial<TokenAssignment>
+    assignment: Partial<TokenAssignment>,
   ) => void;
   onReset: (role: string) => void;
 }
@@ -257,7 +257,7 @@ interface ContrastInfo {
 /** Returns the worst (lowest ratio) contrast pair for a given role */
 function getContrastInfo(
   role: string,
-  assignments: TokenAssignment[]
+  assignments: TokenAssignment[],
 ): ContrastInfo | undefined {
   let worst: ContrastInfo | undefined;
 
@@ -327,7 +327,7 @@ interface TokenRowProps {
   assignment: TokenAssignment | undefined;
   onAssignmentChange: (
     role: string,
-    assignment: Partial<TokenAssignment>
+    assignment: Partial<TokenAssignment>,
   ) => void;
   onReset: (role: string) => void;
 }
@@ -346,7 +346,7 @@ function TokenRow({
       roleDef.inputType === "color"
         ? getContrastInfo(roleDef.role, assignments)
         : undefined,
-    [roleDef.role, roleDef.inputType, assignments]
+    [roleDef.role, roleDef.inputType, assignments],
   );
 
   const handleValueChange = useCallback(
@@ -356,12 +356,12 @@ function TokenRow({
         customValue: e.target.value,
       });
     },
-    [roleDef.role, onAssignmentChange]
+    [roleDef.role, onAssignmentChange],
   );
 
   const handleReset = useCallback(
     () => onReset(roleDef.role),
-    [roleDef.role, onReset]
+    [roleDef.role, onReset],
   );
 
   return (
@@ -373,7 +373,7 @@ function TokenRow({
             (contrast.pass ? (
               <ContrastPass
                 title={`${contrast.ratio.toFixed(
-                  1
+                  1,
                 )}:1 vs ${contrast.against} (needs ${contrast.required}:1)`}
               >
                 {contrast.ratio.toFixed(1)}:1
@@ -381,7 +381,7 @@ function TokenRow({
             ) : (
               <ContrastWarning
                 title={`${contrast.ratio.toFixed(
-                  1
+                  1,
                 )}:1 vs ${contrast.against} (needs ${contrast.required}:1)`}
               >
                 {contrast.ratio.toFixed(1)}:1
