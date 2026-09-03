@@ -94,6 +94,11 @@ export type LockfileFinding =
       property: string;
     };
 
+/** Worth telling the author about, but not by itself a reason to reject the ontology. */
+export type LockfileWarning =
+  /** The source still declares the interface, but has dropped its `schemaMigrations` block. */
+  { code: "optedOut"; interfaceApiName: string };
+
 export interface LockfileValidationResult {
   /**
    * Changes the author must resolve before the ontology can be published. Every entry is a change
@@ -102,6 +107,8 @@ export interface LockfileValidationResult {
   findings: LockfileFinding[];
   /** Finalizations and deletions inferred from the diff, in lockfile order. */
   checkpoints: DetectedCheckpoint[];
+  /** Changes the author probably wants to know they made, in lockfile order. */
+  warnings: LockfileWarning[];
 }
 
 /**
@@ -119,18 +126,23 @@ export function validateOntologySchemaLockfile(
 ): LockfileValidationResult {
   const findings: LockfileFinding[] = [];
   const checkpoints: DetectedCheckpoint[] = [];
+  const warnings: LockfileWarning[] = [];
 
   for (const [interfaceApiName, previousInterface] of Object.entries(
     previous.interfaces,
   )) {
+    const enrolled = own(next.interfaces, interfaceApiName);
     const nextInterface =
-      own(next.interfaces, interfaceApiName) ??
-      asOptedOut(interfaceApiName, census.interfaces);
+      enrolled ?? asOptedOut(interfaceApiName, census.interfaces);
 
     // Not a break to remove the IT, existing installations will just continue
     // with what they have
     if (nextInterface === undefined) {
       continue;
+    }
+
+    if (enrolled === undefined) {
+      warnings.push({ code: "optedOut", interfaceApiName });
     }
 
     validateInterface(
@@ -142,7 +154,7 @@ export function validateOntologySchemaLockfile(
     );
   }
 
-  return { findings, checkpoints };
+  return { findings, checkpoints, warnings };
 }
 
 /**

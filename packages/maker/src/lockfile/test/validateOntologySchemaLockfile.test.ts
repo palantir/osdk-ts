@@ -99,6 +99,7 @@ describe("validateOntologySchemaLockfile", () => {
       );
       expect(result.findings).toEqual([]);
       expect(result.checkpoints).toEqual([]);
+      expect(result.warnings).toEqual([]);
     });
 
     /** A source that still declares `Person` with these properties, but no longer enrolls it. */
@@ -168,18 +169,32 @@ describe("validateOntologySchemaLockfile", () => {
       ]);
     });
 
+    it("warns that an opted-out interface will stop being checked", () => {
+      const result = validate(
+        lastNameInFlight,
+        lockfile({}),
+        optedOut({ firstName: REQUIRED_STRING, lastName: REQUIRED_STRING }),
+      );
+      expect(result.warnings).toEqual([
+        { code: "optedOut", interfaceApiName: "Person" },
+      ]);
+    });
+
     it("accepts an interface the source no longer declares at all", () => {
       const result = validate(lastNameInFlight, lockfile({}), {
         interfaces: new Map(),
       });
       expect(result.findings).toEqual([]);
       expect(result.checkpoints).toEqual([]);
+      // Deleting the interface is not opting out of checking it; there is nothing left to check.
+      expect(result.warnings).toEqual([]);
     });
 
     it("reports nothing for an unchanged lockfile", () => {
       const result = validate(lastNameInFlight, lastNameInFlight);
       expect(result.findings).toEqual([]);
       expect(result.checkpoints).toEqual([]);
+      expect(result.warnings).toEqual([]);
     });
   });
 
