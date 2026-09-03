@@ -375,11 +375,8 @@ export class OntologyIrToFullMetadataConverter {
         }
       > = {};
       if (previewMetadata.objectTypes) {
-        for (
-          const [apiName, objData] of Object.entries(
-            previewMetadata.objectTypes,
-          )
-        ) {
+        for (const objData of Object.values(previewMetadata.objectTypes)) {
+          const apiName = objData.objectType.apiName;
           const linkTypesMap: Record<string, { linkTypeId: string }> = {};
           if (objData.linkTypes) {
             for (const lt of objData.linkTypes) {
@@ -400,10 +397,11 @@ export class OntologyIrToFullMetadataConverter {
       > = {};
       if (previewMetadata.interfaceTypes) {
         for (
-          const [apiName, interfaceType] of Object.entries(
+          const interfaceType of Object.values(
             previewMetadata.interfaceTypes,
           )
         ) {
+          const apiName = interfaceType.apiName;
           interfaceTypesMap[apiName] = {
             interfaceTypeRid: interfaceType.rid,
           };

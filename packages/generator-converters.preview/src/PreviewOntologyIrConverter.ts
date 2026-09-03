@@ -55,6 +55,7 @@ export class PreviewOntologyIrConverter {
     const actionTypes = this.convertActionTypesWithFullLogicRulesFromBlockData(
       blockdata.actionTypes,
       blockdata,
+      importedTypes,
     );
     // Post-process object types to use UUID-based RIDs
     const objectTypes = this.convertObjectTypesWithUuidRids(
@@ -122,9 +123,16 @@ export class PreviewOntologyIrConverter {
   private static convertActionTypesWithFullLogicRulesFromBlockData(
     actions: Record<string, ActionTypeBlockDataV2>,
     blockdata: OntologyBlockDataV2,
+    importedTypes?: Ontologies.OntologyFullMetadata,
   ): Record<string, Ontologies.ActionTypeFullMetadata> {
-    const objectTypeLookup = buildBlockDataObjectTypeLookup(blockdata);
-    const interfaceTypeLookup = buildBlockDataInterfaceTypeLookup(blockdata);
+    const objectTypeLookup = buildBlockDataObjectTypeLookup(
+      blockdata,
+      importedTypes,
+    );
+    const interfaceTypeLookup = buildBlockDataInterfaceTypeLookup(
+      blockdata,
+      importedTypes,
+    );
     const baseActionTypes = OntologyBlockDataToFullMetadataConverter
       .getOsdkActionTypesFromBlockData(
         blockdata,
@@ -147,6 +155,7 @@ export class PreviewOntologyIrConverter {
           action.actionType.actionTypeLogic.logic.rules,
           action,
           blockdata,
+          importedTypes,
         ),
       };
     }

@@ -4420,6 +4420,9 @@ importers:
       '@osdk/maker':
         specifier: workspace:~
         version: link:../maker
+      '@osdk/maker-import':
+        specifier: workspace:~
+        version: link:../maker-import
       consola:
         specifier: ^3.4.2
         version: 3.4.2

@@ -22,10 +22,22 @@ import {
   OntologyIrToFullMetadataConverter,
 } from "./OntologyIrToFullMetadataConverter.js";
 
-const discoveredFunctions = vi.hoisted<IDiscoveredFunction[]>(() => []);
+const { discoveredFunctions, entityMetadataMappings } = vi.hoisted(() => ({
+  discoveredFunctions: [] as IDiscoveredFunction[],
+  entityMetadataMappings: [] as unknown[],
+}));
 
 vi.mock("@foundry/functions-typescript-osdk-discovery", () => ({
   FunctionDiscoverer: class {
+    constructor(
+      _program: unknown,
+      _entryPointPath: string,
+      _fullFilePath: string,
+      entityMetadataMapping?: unknown,
+    ) {
+      entityMetadataMappings.push(entityMetadataMapping);
+    }
+
     discover() {
       return { discoveredFunctions };
     }
@@ -3631,6 +3643,62 @@ describe(OntologyIrToFullMetadataConverter, () => {
           client: {
             dataType: { type: "string" },
             required: true,
+          },
+        },
+      ]);
+    } finally {
+      createProgramSpy.mockRestore();
+    }
+  });
+
+  it("uses canonical API names in function discovery entity metadata", async () => {
+    const createProgramSpy = vi.spyOn(
+      OntologyIrToFullMetadataConverter,
+      "createProgram",
+    ).mockReturnValue({} as never);
+    const ontologyRid = "ri.ontology.main.ontology.0";
+    const objectApiName = "com.palantir.ontology.pdfPage";
+    const interfaceApiName = "com.palantir.ontology.pdfDocument";
+    const interfaceRid = "ri.ontology.main.interface-type.pdf-document";
+    discoveredFunctions.splice(0);
+    entityMetadataMappings.splice(0);
+
+    try {
+      await OntologyIrToFullMetadataConverter.discoverTypeScriptFunctions(
+        fileURLToPath(new URL(".", import.meta.url)),
+        undefined,
+        undefined,
+        {
+          ontology: { rid: ontologyRid },
+          objectTypes: {
+            PdfPage: {
+              objectType: { apiName: objectApiName },
+              linkTypes: [],
+            },
+          },
+          interfaceTypes: {
+            PdfDocument: {
+              apiName: interfaceApiName,
+              rid: interfaceRid,
+            },
+          },
+        } as never,
+      );
+
+      expect(entityMetadataMappings).toEqual([
+        {
+          ontologies: {
+            [ontologyRid]: {
+              objectTypes: {
+                [objectApiName]: {
+                  objectTypeId: objectApiName,
+                  linkTypes: {},
+                },
+              },
+              interfaceTypes: {
+                [interfaceApiName]: { interfaceTypeRid: interfaceRid },
+              },
+            },
           },
         },
       ]);
