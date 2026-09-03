@@ -52,7 +52,7 @@ export default defineConfig({
     // dprint, which had no css/html plugin). oxfmt only runs inside oxc-migrated
     // packages (each invokes `oxfmt -c ../../oxfmt.config.ts .`), so enabling
     // these types here formats the migrated component packages' stylesheets
-    // (@osdk/react-components, @osdk/cbac-components, @osdk/react-devtools, …) and
+    // (@osdk/react-components, @osdk/react-devtools, …) and
     // the vite sandbox apps' index.html entry points, while packages still on the
     // dprint/eslint path are untouched. `.hbs`/mustache stays out via the
     // **/templates/ exclusion below; YAML stays out above.

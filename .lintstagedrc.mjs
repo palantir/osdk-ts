@@ -21,7 +21,6 @@ const OXC_PACKAGES = [
   "widget.client-react",
   "widget.api",
   "widget.client",
-  "cbac-components",
   "react",
   "react-devtools",
   // oxc increment 12 (low-risk tail) — packages whose source surfaces no
