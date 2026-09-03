@@ -207,6 +207,22 @@ function validateTransition(
         `declared.`,
     );
   }
+  // The bar is whatever `Date.parse` accepts, not the canonical ISO-8601 UTC datetime the DSL
+  // insists on: this deadline is whatever a previous release published, and maker only ever reads
+  // it back as an instant. A value `Date.parse` rejects would otherwise survive parsing and
+  // surface as a silent NaN comparison, far from the file that caused it.
+  const { gracePeriod } = transition;
+  if (gracePeriod.type === "deadline") {
+    const { deadline } = gracePeriod;
+    if (typeof deadline !== "string" || Number.isNaN(Date.parse(deadline))) {
+      throw new Error(
+        `${where}: schema migration "${transition.id}" has a 'deadline' grace period of ` +
+          `${JSON.stringify(deadline)}, which is not a valid datetime. Restore the deadline the ` +
+          `last published release declared, as an ISO-8601 UTC datetime (e.g. ` +
+          `"2026-01-31T00:00:00Z").`,
+      );
+    }
+  }
   if (
     !Array.isArray(transition.instructions) ||
     transition.instructions.length === 0

@@ -170,6 +170,28 @@ describe("parseLockfile", () => {
   });
 
   it.each([
+    ["absent", { type: "deadline" }],
+    ["not a string", { type: "deadline", deadline: 20260131 }],
+    ["not a datetime", { type: "deadline", deadline: "next Tuesday" }],
+  ])(
+    "rejects a 'deadline' grace period whose deadline is %s",
+    (_name, gracePeriod) => {
+      expect(() => parse(withTransition({ gracePeriod }))).toThrowError(
+        /schema migration "requireLastName" has a 'deadline' grace period of .*, which is not a valid datetime/u,
+      );
+    },
+  );
+
+  it("accepts a deadline the DSL would reject but a release could have published", () => {
+    // The DSL refuses a bare date, but the lockfile records what a previous release published
+    // rather than what today's DSL would accept.
+    const published = withTransition({
+      gracePeriod: { type: "deadline", deadline: "2026-01-31" },
+    });
+    expect(parse(published)).toStrictEqual(published);
+  });
+
+  it.each([
     ["absent", undefined],
     ["empty", []],
     ["not an array", {}],
