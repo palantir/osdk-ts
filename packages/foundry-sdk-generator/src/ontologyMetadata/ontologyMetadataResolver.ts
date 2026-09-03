@@ -62,7 +62,7 @@ export interface OntologyInfo {
   requestedMetadata: OntologyFullMetadata;
   externalInterfaces: Map<string, string>;
   externalObjects: Map<string, string>;
-  fixedVersionQueryTypes: string[];
+  queryVersionReferences: ReadonlyMap<string, string>;
 }
 
 export class OntologyMetadataResolver {
@@ -333,7 +333,7 @@ export class OntologyMetadataResolver {
         requestedMetadata: filteredFullMetadata,
         externalInterfaces,
         externalObjects,
-        fixedVersionQueryTypes: [],
+        queryVersionReferences: new Map(),
       });
     } else {
       const objectTypes = new Set(entities.objectTypesApiNamesToLoad);
@@ -353,19 +353,27 @@ export class OntologyMetadataResolver {
       }
 
       const queryTypes = new Set<string>();
-      const fixedVersionQueryTypes = [];
+      const queryTypeApiNames = new Set<string>();
+      const queryVersionReferences = new Map<string, string>();
 
       for (const queryType of entities.queryTypesApiNamesToLoad ?? []) {
-        if (queryTypes.has(queryType)) {
+        const lastColonIndex = queryType.lastIndexOf(":");
+        const queryTypeApiName = lastColonIndex === -1
+          ? queryType
+          : queryType.substring(0, lastColonIndex);
+
+        if (queryTypeApiNames.has(queryTypeApiName)) {
           return Result.err([
-            `Query type ${queryType} was specified multiple times.`,
+            `Query type ${queryTypeApiName} was specified multiple times.`,
           ]);
         }
-        const lastColonIndex = queryType.lastIndexOf(":");
+        queryTypeApiNames.add(queryTypeApiName);
 
         if (lastColonIndex !== -1) {
-          const queryTypeApiName = queryType.substring(0, lastColonIndex);
-          fixedVersionQueryTypes.push(queryTypeApiName);
+          queryVersionReferences.set(
+            queryTypeApiName,
+            queryType.substring(lastColonIndex + 1),
+          );
         }
         queryTypes.add(queryType);
       }
@@ -408,7 +416,7 @@ export class OntologyMetadataResolver {
         requestedMetadata,
         externalInterfaces: new Map(),
         externalObjects: new Map(),
-        fixedVersionQueryTypes,
+        queryVersionReferences,
       });
     }
   }

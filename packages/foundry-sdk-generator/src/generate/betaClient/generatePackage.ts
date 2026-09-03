@@ -90,7 +90,7 @@ export async function generatePackage(
     ontologyInfo.externalInterfaces,
     new Map(),
     false,
-    ontologyInfo.fixedVersionQueryTypes,
+    ontologyInfo.queryVersionReferences,
   );
 
   // actually write file plus save contents

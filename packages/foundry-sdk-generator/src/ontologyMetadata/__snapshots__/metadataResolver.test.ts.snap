@@ -4,7 +4,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
 {
   "externalInterfaces": Map {},
   "externalObjects": Map {},
-  "fixedVersionQueryTypes": [],
+  "queryVersionReferences": Map {},
   "requestedMetadata": {
     "actionTypes": {
       "actionTakesMedia": {
@@ -533,7 +533,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
 {
   "externalInterfaces": Map {},
   "externalObjects": Map {},
-  "fixedVersionQueryTypes": [],
+  "queryVersionReferences": Map {},
   "requestedMetadata": {
     "actionTypes": {
       "promoteEmployee": {
@@ -877,7 +877,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
 {
   "externalInterfaces": Map {},
   "externalObjects": Map {},
-  "fixedVersionQueryTypes": [],
+  "queryVersionReferences": Map {},
   "requestedMetadata": {
     "actionTypes": {
       "promoteEmployee": {
