@@ -23,7 +23,10 @@ import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
+import type { OntologyDefinition } from "../api/common/OntologyDefinition.js";
 import { defineOntology } from "../api/defineOntology.js";
+import { DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME } from "../lockfile/OntologySchemaLockfile.js";
+import { reconcileOntologySchemaLockfile } from "../lockfile/reconcileOntologySchemaLockfile.js";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/u;
 const uuidRegex =
@@ -44,6 +47,9 @@ export default async function main(
     codeSnippetPackageName: string;
     codeSnippetDir: string;
     randomnessKey?: string;
+    lockfile?: string;
+    writeLocks?: boolean;
+    yes?: boolean;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -114,6 +120,42 @@ export default async function main(
         describe: "Value used to assure uniqueness of entities",
         type: "string",
       },
+      lockfile: {
+        describe: `Interface schema lockfile, recording the last published shape of every interface opted into schema migrations (default: ${DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME} beside --input)`,
+        type: "string",
+        // No `default`: it depends on --input, which `coerce` cannot see. Resolved after parsing.
+        coerce: path.resolve,
+      },
+      // Neither of these declares a `default`: yargs' `implies` asks whether a key is present in
+      // argv, and a default would make it present always, turning the check below into a no-op.
+      writeLocks: {
+        describe:
+          "Update the interface schema lockfile instead of failing when it is out of date",
+        type: "boolean",
+      },
+      yes: {
+        alias: "y",
+        describe:
+          "Accept detected interface schema migration finalizations/deletions without prompting",
+        type: "boolean",
+      },
+    })
+    // --yes only answers the prompt that --write-locks can raise, so on its own it does nothing.
+    .implies("yes", "writeLocks")
+    // Without this, the usage error that `implies` raises calls `process.exit` from inside the
+    // library, which takes the whole host process with it — a test runner's included. Throwing
+    // leaves the failure to the caller. `--help` and `--version` do not come through here.
+    .fail((msg, err, usage) => {
+      // `err` is set only when something downstream threw; yargs' own usage errors arrive as a
+      // bare `msg`.
+      if (err) {
+        throw err;
+      }
+      // Registering a handler suppresses yargs' `showHelpOnFail`, so reinstate it. `@types/yargs`
+      // calls this third argument an `Argv`; at runtime it is the internal usage instance, and
+      // both expose the same `showHelp`.
+      usage.showHelp("error");
+      throw new Error(msg);
     })
     .parseAsync();
   let apiNamespace = "";
@@ -147,6 +189,15 @@ export default async function main(
     );
   }
 
+  // The lockfile is checked-in source describing the ontology definition, not a build artifact
+  // like `output`, so it belongs beside the definition rather than wherever maker was invoked.
+  const lockfilePath =
+    commandLineOpts.lockfile ??
+    path.join(
+      path.dirname(commandLineOpts.input),
+      DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME,
+    );
+
   const ontologyIr = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
@@ -156,6 +207,15 @@ export default async function main(
     commandLineOpts.codeSnippetPackageName,
     commandLineOpts.codeSnippetDir,
     commandLineOpts.randomnessKey,
+    // Runs once the ontology is registered and before anything is written: an ontology that fails
+    // these checks would fail at OMS installation-time, so it should never reach the disk at all.
+    async (ontology) =>
+      await reconcileOntologySchemaLockfile({
+        ontology,
+        lockfilePath,
+        writeLocks: commandLineOpts.writeLocks ?? false,
+        assumeYes: commandLineOpts.yes ?? false,
+      }),
   );
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
@@ -187,7 +247,8 @@ async function loadOntology(
   generateCodeSnippets: boolean,
   snippetPackageName: string,
   codeSnippetDir: string,
-  randomnessKey?: string,
+  randomnessKey: string | undefined,
+  beforeWrite: (ontology: OntologyDefinition) => Promise<void>,
 ) {
   const q = await defineOntology(
     apiNamespace,
@@ -198,6 +259,7 @@ async function loadOntology(
     snippetPackageName,
     codeSnippetDir,
     randomnessKey,
+    beforeWrite,
   );
   return q;
 }

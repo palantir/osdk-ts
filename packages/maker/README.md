@@ -10,6 +10,7 @@ The Maker package provides a type-safe, programmatic way to define ontologies, w
 - [Defining Shared Property Types](#defining-shared-property-types)
 - [Defining Value Types](#defining-value-types)
 - [Defining Interfaces](#defining-interfaces)
+- [Interface Schema Migrations](#interface-schema-migrations)
 - [Defining Objects](#defining-objects)
 - [Defining Links](#defining-links)
 - [Interface Link Constraints](#interface-link-constraints)
@@ -357,6 +358,94 @@ const experimentalInterface = defineInterface({
   },
 });
 ```
+
+## Interface Schema Migrations
+
+Making a property required is a breaking change: every object type already implementing the interface
+would have to provide it the moment the change lands. An interface schema migration declares the
+change ahead of time and gives implementing object types a grace period to comply before it is
+enforced.
+
+The interface's `properties` always describe the _lenient_ schema — the contract as it stands while
+the migration is still in flight — and the migration describes where it is heading.
+
+```typescript
+const personInterface = defineInterface({
+  apiName: "Person",
+  displayName: "Person",
+  properties: {
+    firstName: { type: "string" },
+    // Stays `required: false` until the migration below is finalized.
+    lastName: { type: "string", required: false },
+  },
+  schemaMigrations: {
+    transitions: [
+      {
+        id: "requireLastName",
+        title: "Require last name",
+        description: "Adding last name to better identify a person",
+        gracePeriod: { type: "afterInstall", days: 30 },
+        instructions: [{ type: "addRequiredProperty", property: "lastName" }],
+      },
+    ],
+  },
+});
+```
+
+Declaring `schemaMigrations: { transitions: [] }` opts an interface into schema migrations without
+declaring one, which is how you onboard an existing interface.
+
+### The schema lockfile
+
+Maker is otherwise a stateless `ontology.ts` -> `ontology.json` transformer, so it has nothing to
+compare a new definition against. `ontology-schema-lock.json` supplies that baseline: it records the
+last published shape of every interface opted into schema migrations, letting maker reject at
+authoring-time the changes that would fail at installation-time.
+
+```bash
+# Check the ontology against the lockfile. Fails if it is missing, out of date, or if the
+# ontology contains a breaking change. No ontology.json is written when it fails.
+maker -i ontology.ts -o ontology.json
+
+# Same checks, but bring the lockfile up to date instead of failing on a compatible change.
+maker -i ontology.ts -o ontology.json --write-locks
+```
+
+The lockfile lands beside `--input` — `.ontology/ontology-schema-lock.json` for the default input —
+because it is checked-in source describing the ontology definition, not a build artifact like
+`--output`. Pass `--lockfile` to put it elsewhere; a relative path there resolves against the
+working directory.
+
+Commit the lockfile. CI running plain `maker` is what catches a change that was never recorded.
+
+Once an interface is opted in, maker rejects:
+
+- adding a required property, or making an existing one required, without a migration phasing it in
+- removing a property, or changing its type — no currently-supported migration can phase these in
+- changing an in-flight migration's instructions, or shortening its grace period
+
+Opting in is what subjects an interface to these checks, so dropping the `schemaMigrations` block
+opts back out of them and is allowed: an interface with no block may change however it likes. The
+lockfile diff distinguishes opting out from deleting the interface, since the former ends all
+checking and is worth catching in review.
+
+Removing a transition is how you finalize or delete it, and maker tells the two apart from the
+schema you left behind: `lastName` becoming `required: true` is a finalization, `lastName` staying
+`required: false` is a deletion, and anything else is an error. `--write-locks` lists what it
+detected and asks before recording it:
+
+```
+Detected interface schema migration finalizations/deletions:
+Person:
+  DELETE addUnnecessaryProperty
+  FINALIZE requireLastName
+
+Accept? [y/n]
+```
+
+Pass `--yes` to accept without prompting. Without a terminal to prompt at — CI, most notably —
+`--write-locks` fails rather than accepting on your behalf, since finalizations and deletions are
+semver-major events.
 
 ## Defining Objects
 

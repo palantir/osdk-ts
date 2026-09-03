@@ -98,6 +98,13 @@ export async function defineOntology(
   snippetPackageName?: string,
   snippetFileOutputDir?: string,
   randomnessKey?: string,
+  /**
+   * Runs once the ontology is fully registered and before anything is written to disk, so a
+   * rejection here leaves the author's tree exactly as it was. Note that `writeStaticObjects`
+   * deletes and recreates the codegen directory, which is precisely what a check placed after it
+   * would fail to prevent.
+   */
+  beforeWrite?: (ontology: OntologyDefinition) => void | Promise<void>,
 ): Promise<OntologyIr> {
   namespace = ns;
   dependencies = {};
@@ -127,6 +134,7 @@ export async function defineOntology(
     );
     throw e;
   }
+  await beforeWrite?.(ontologyDefinition);
   if (outputDir) {
     writeStaticObjects(outputDir);
   }
