@@ -1,0 +1,81 @@
+import{j as r}from"./iframe-CVgWx_mk.js";import{O as b}from"./object-table-F8273WKJ.js";import{E as i}from"./Employee-BAk2o20h.js";import{d as j,o as f,T as h}from"./objectTableStoryHelpers-Cj9noLjG.js";import{u as g}from"./useOsdkClient-9IMUcDL7.js";import"./preload-helper-CFfBa7BD.js";import"./Table-ee8B848t.js";import"./index-KhqTHjvK.js";import"./Dialog-DbMkWdGC.js";import"./cross-Ch2oGVZP.js";import"./svgIconContainer-MI5luthc.js";import"./useBaseUiId-B0ovho4b.js";import"./InternalBackdrop-w-gmvkMd.js";import"./composite-mrQGTihx.js";import"./index-Dj_0AH5M.js";import"./index-kHlCzxdB.js";import"./index-xvBWe_nZ.js";import"./useEventCallback-KGEKy1Kp.js";import"./SkeletonBar-DSJVYfMY.js";import"./LoadingCell-C4Fh_PtS.js";import"./ColumnConfigDialog-rdQ95Jra.js";import"./DraggableList-N7PPscOJ.js";import"./search-BdiQZg80.js";import"./Input-B_ebmuiE.js";import"./useControlled-CmMjx2zB.js";import"./Button-BdWA5AOv.js";import"./small-cross-Ct--V4I5.js";import"./ActionButton-CMmqUJoP.js";import"./Checkbox-DUqXmOBs.js";import"./useValueChanged-BbKX3ggH.js";import"./CollapsiblePanel-CjrlksH3.js";import"./MultiColumnSortDialog-CB3-aHjQ.js";import"./MenuTrigger-BqO-RbZe.js";import"./CompositeItem-CCjIa2t2.js";import"./ToolbarRootContext-CaqtX5pJ.js";import"./getDisabledMountTransitionStyles-BU3lkCAL.js";import"./getPseudoElementBounds-BHTi51r7.js";import"./chevron-down-DTQ9C7Jw.js";import"./index-Bo_a2b3D.js";import"./error-aoO-9vvY.js";import"./BaseCbacBanner-dCyQbW6T.js";import"./makeExternalStore-Dyx7TWX2.js";import"./Tooltip-DP4ZeHkc.js";import"./PopoverPopup-X41W4tQB.js";import"./debounce-BtFrK_-r.js";import"./tick-BnV8UH-j.js";import"./DropdownField-BXwDMn-1.js";import"./isEqual-Csoq5Do4.js";import"./withOsdkMetrics-DoeckjWh.js";const u={type:"interface",apiName:"Worker"},{expect:n,within:d}=__STORYBOOK_MODULE_TEST__,je={...f,title:"Components/ObjectTable/Features/Data Sources"},a={args:{objectType:i,columnDefinitions:j},parameters:{docs:{source:{code:`
+const client = useOsdkClient();
+const employeeObjectSet = client(Employee).where({
+  jobProfile: "Marketing Manager",
+});
+return <ObjectTable objectType={Employee} objectSet={employeeObjectSet} />`}}},render:t=>{const T=g()(i).where({jobProfile:"Marketing Manager"});return r.jsx("div",{className:"object-table-container",style:{height:"600px"},children:r.jsx(b,{...t,objectType:i,objectSet:T})})},play:async({canvasElement:t})=>{const e=d(t);await e.findAllByText("Marketing Manager"),await n(e.getAllByText("Marketing Manager").length).toBeGreaterThan(1),await n(e.queryByText("Content Manager")).not.toBeInTheDocument()}},o={args:{objectType:u},parameters:{docs:{description:{story:"Pass an interface type instead of an object type. The table shows the interface's properties (email, name, employeeNumber) and any object implementing the interface will be displayed."},source:{code:`import { WorkerInterface } from "./types/WorkerInterface";
+
+<ObjectTable objectType={WorkerInterface} />`}}},render:t=>r.jsx("div",{className:"object-table-container",style:{height:"600px"},children:r.jsx(b,{...t})}),play:async({canvasElement:t})=>{const e=d(t);await e.findByText(h),await n(e.getByText("Name")).toBeInTheDocument(),await n(e.getByText("Email")).toBeInTheDocument()}};var c,s,m;a.parameters={...a.parameters,docs:{...(c=a.parameters)==null?void 0:c.docs,source:{originalSource:`{
+  args: {
+    objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: \`
+const client = useOsdkClient();
+const employeeObjectSet = client(Employee).where({
+  jobProfile: "Marketing Manager",
+});
+return <ObjectTable objectType={Employee} objectSet={employeeObjectSet} />\`
+      }
+    }
+  },
+  render: args => {
+    const client = useOsdkClient();
+    const employeeObjectSet = client(Employee).where({
+      jobProfile: "Marketing Manager"
+    });
+    return <div className="object-table-container" style={{
+      height: "600px"
+    }}>
+        <ObjectTable {...args} objectType={Employee} objectSet={employeeObjectSet} />
+      </div>;
+  },
+  // The object set is filtered to \`jobProfile: "Marketing Manager"\`
+  play: async ({
+    canvasElement
+  }) => {
+    const canvas = within(canvasElement);
+    // Wait for the (MSW-mocked) rows to load.
+    await canvas.findAllByText("Marketing Manager");
+    await expect(canvas.getAllByText("Marketing Manager").length).toBeGreaterThan(1);
+    await expect(canvas.queryByText("Content Manager")).not.toBeInTheDocument();
+  }
+}`,...(m=(s=a.parameters)==null?void 0:s.docs)==null?void 0:m.source}}};var p,l,y;o.parameters={...o.parameters,docs:{...(p=o.parameters)==null?void 0:p.docs,source:{originalSource:`{
+  args: {
+    objectType: WorkerInterface as unknown as typeof Employee
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Pass an interface type instead of an object type. The table shows the interface's " + "properties (email, name, employeeNumber) and any object implementing the interface " + "will be displayed."
+      },
+      source: {
+        code: \`import { WorkerInterface } from "./types/WorkerInterface";
+
+<ObjectTable objectType={WorkerInterface} />\`
+      }
+    }
+  },
+  render: args => <div className="object-table-container" style={{
+    height: "600px"
+  }}>
+      <ObjectTable {...args} />
+    </div>,
+  // The interface exposes name/email/employeeNumber; objects implementing it
+  // (Employees) render with those mapped properties (name ← fullName).
+  play: async ({
+    canvasElement
+  }) => {
+    const canvas = within(canvasElement);
+
+    // Interface "name" maps to the Employee's fullName.
+    await canvas.findByText(TARGET_DATA);
+
+    // The interface's columns are shown by their display names.
+    await expect(canvas.getByText("Name")).toBeInTheDocument();
+    await expect(canvas.getByText("Email")).toBeInTheDocument();
+  }
+}`,...(y=(l=o.parameters)==null?void 0:l.docs)==null?void 0:y.source}}};const fe=["WithObjectSet","WithInterfaceType"];export{o as WithInterfaceType,a as WithObjectSet,fe as __namedExportsOrder,je as default};
