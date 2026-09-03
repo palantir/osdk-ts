@@ -23,19 +23,12 @@ import {
 } from "../OntologySchemaLockfile.js";
 
 /**
- * A lockfile is a checked-in artifact, so its bytes are the compatibility surface. Two of the
- * shapes it persists — a property's `PropertyTypeType` and a transition's
- * `InterfaceSchemaMigrationInstruction` — are the authoring DSL's own types, recorded verbatim.
- * Nothing else couples the on-disk format to the DSL that tightly, and nothing in the type system
- * notices when the DSL is reshaped for authoring ergonomics: every lockfile in every consumer's
- * repository would silently change shape.
+ * A lockfile is a checked-in artifact, so its bytes are the compatibility surface. A change to
+ * the format requires migrations for existing any existing lockfile.
  *
- * This test is that tripwire. If it fails and the diff was intended, bump
- * `ONTOLOGY_SCHEMA_LOCKFILE_VERSION` and provide the migration for any lockfile already written
- * under the old version, then update the golden below.
- *
- * It covers one of each instruction variant and each grace period kind, so a variant added without
- * a deliberate look at the persisted format has nowhere to hide.
+ * This test is the tripwire to catch such changes. If it fails, and the diff was intended, bump
+ * ONTOLOGY_SCHEMA_LOCKFILE_VERSION and provide the migration for a previously-written lockfile,
+ * then update this golden object.
  */
 const golden: OntologySchemaLockfile = {
   version: 1,
@@ -55,24 +48,20 @@ const golden: OntologySchemaLockfile = {
           startDate: { type: "date", required: false },
         },
       },
-      migrations: {
-        active: [
-          {
-            id: "require-lastName",
-            gracePeriod: { type: "afterInstall", days: 30 },
-            instructions: [
-              { type: "addRequiredProperty", property: "lastName" },
-            ],
-          },
-          {
-            id: "require-startDate",
-            gracePeriod: { type: "deadline", deadline: "2026-01-31T00:00:00Z" },
-            instructions: [
-              { type: "addRequiredProperty", property: "startDate" },
-            ],
-          },
-        ],
-      },
+      transitions: [
+        {
+          id: "require-lastName",
+          gracePeriod: { type: "afterInstall", days: 30 },
+          instructions: [{ type: "addRequiredProperty", property: "lastName" }],
+        },
+        {
+          id: "require-startDate",
+          gracePeriod: { type: "deadline", deadline: "2026-01-31T00:00:00Z" },
+          instructions: [
+            { type: "addRequiredProperty", property: "startDate" },
+          ],
+        },
+      ],
     },
   },
 };
@@ -104,36 +93,34 @@ describe("serializeLockfile", () => {
           }
         }
       },
-      "migrations": {
-        "active": [
-          {
-            "id": "require-lastName",
-            "gracePeriod": {
-              "type": "afterInstall",
-              "days": 30
-            },
-            "instructions": [
-              {
-                "type": "addRequiredProperty",
-                "property": "lastName"
-              }
-            ]
+      "transitions": [
+        {
+          "id": "require-lastName",
+          "gracePeriod": {
+            "type": "afterInstall",
+            "days": 30
           },
-          {
-            "id": "require-startDate",
-            "gracePeriod": {
-              "type": "deadline",
-              "deadline": "2026-01-31T00:00:00Z"
-            },
-            "instructions": [
-              {
-                "type": "addRequiredProperty",
-                "property": "startDate"
-              }
-            ]
-          }
-        ]
-      }
+          "instructions": [
+            {
+              "type": "addRequiredProperty",
+              "property": "lastName"
+            }
+          ]
+        },
+        {
+          "id": "require-startDate",
+          "gracePeriod": {
+            "type": "deadline",
+            "deadline": "2026-01-31T00:00:00Z"
+          },
+          "instructions": [
+            {
+              "type": "addRequiredProperty",
+              "property": "startDate"
+            }
+          ]
+        }
+      ]
     }
   }
 }
@@ -141,8 +128,6 @@ describe("serializeLockfile", () => {
     );
   });
 
-  // Pinned separately so that bumping the version fails here too, rather than only inside the
-  // golden above where it could be waved through as part of a larger reformat.
   it("pins the version the golden was written under", () => {
     expect(golden.version).toBe(ONTOLOGY_SCHEMA_LOCKFILE_VERSION);
   });

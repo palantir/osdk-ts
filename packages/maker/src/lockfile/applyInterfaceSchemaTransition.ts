@@ -28,21 +28,11 @@ import type {
  *
  * - `lenient`: the transition is in flight. Implementing object types are not held to it yet.
  * - `strict`: the transition has been finalized. Implementing object types must comply.
- *
- * Not vocabulary an author ever writes: it names the two readings of an in-flight transition that
- * reconciling a lockfile against source has to tell apart.
  */
 export type ApplyMode = "lenient" | "strict";
 
 /**
  * The change an instruction makes to one property, as a patch over that property's recorded shape.
- *
- * Spelled out structurally rather than as a `Partial` of the lockfile's property type so that
- * describing an instruction stays independent of how it happens to be persisted. The fields line
- * up, so applying an edit is a spread.
- *
- * Every edit patches a property that already exists. Creating or removing one is deliberately not
- * representable until an instruction needs it — see {@link applyEdits}.
  */
 interface PropertyEdit {
   type?: PropertyTypeType;
@@ -52,12 +42,8 @@ interface PropertyEdit {
 /**
  * The per-property changes an instruction makes in the given mode, keyed by the property each one
  * applies to.
- *
- * This is the only place an instruction is read for what it touches and what it does to it, so
- * "which properties this affects" cannot drift out of step with "how it affects them". Both
- * readings of a transition and the comparison between them derive from this map.
  */
-function instructionEdits(
+function editsByProperty(
   instruction: InterfaceSchemaMigrationInstruction,
   mode: ApplyMode,
 ): ReadonlyMap<string, PropertyEdit> {
@@ -73,20 +59,18 @@ function instructionEdits(
 }
 
 /**
- * The properties an instruction touches, which may be none: an instruction that changes an
- * interface-level attribute rather than a property targets nothing.
- *
- * The union across both modes, so an instruction whose target depends on whether it has been
- * finalized reports every name it could occupy. Callers that need the properties one *particular*
- * application touched should read them off that application instead.
+ * The properties an instruction touches (which maybe none if the instruction targets
+ * interface-level attributes rather than property-level attributes).
  */
-function instructionTargetProperties(
+function targetPropertiesOfInstruction(
   instruction: InterfaceSchemaMigrationInstruction,
 ): readonly string[] {
   return [
     ...new Set([
-      ...instructionEdits(instruction, "lenient").keys(),
-      ...instructionEdits(instruction, "strict").keys(),
+      // Include both modes since an instruction could target different properties depending
+      // on whether it's been finalized or not
+      ...editsByProperty(instruction, "lenient").keys(),
+      ...editsByProperty(instruction, "strict").keys(),
     ]),
   ];
 }
@@ -94,24 +78,13 @@ function instructionTargetProperties(
 /** A transition applied in one mode. */
 export interface AppliedTransition {
   schema: LockedInterfaceSchema;
-  /**
-   * The properties this application changed, which are the ones {@link schemasAgreeOn} should be
-   * asked about. Reading them off the application rather than off the transition is what keeps the
-   * comparison honest for an instruction whose target depends on the mode.
-   */
+  /** The properties this application changed. */
   touched: readonly string[];
 }
 
 /**
  * The schema that results from patching `schema` with `edits`, or `undefined` if any target
  * property is absent.
- *
- * Every instruction so far patches properties that already exist, so that precondition lives in
- * this shared fold. An instruction that *creates* or *removes* a property — an out-of-place rename
- * does both — would need {@link PropertyEdit} to tell those apart from patching, and the check
- * belongs with that distinction rather than with the identity of the instruction that asked for
- * it. {@link schemasAgreeOn} already compares an absent property correctly, so this fold and the
- * edit type are all that stand in the way.
  */
 function applyEdits(
   schema: LockedInterfaceSchema,
@@ -132,11 +105,6 @@ function applyEdits(
  * The result of applying `transition` to `schema` in the given mode, or `undefined` if the
  * transition cannot be applied to that schema at all (e.g. it targets a property the schema does
  * not have).
- *
- * Comparing both modes against the new source schema is how a transition disappearing from the
- * source is disambiguated: matching `strict` means the author finalized it, matching `lenient`
- * means the author deleted it, and matching neither means the author made an illegal change.
- * This mirrors the reconciliation OMS performs at installation-time.
  */
 export function applyTransition(
   transition: LockedTransition,
@@ -146,7 +114,7 @@ export function applyTransition(
   let applied: LockedInterfaceSchema = schema;
   const touched = new Set<string>();
   for (const instruction of transition.instructions) {
-    const edits = instructionEdits(instruction, mode);
+    const edits = editsByProperty(instruction, mode);
     const next = applyEdits(applied, edits);
     if (next === undefined) {
       return undefined;
@@ -160,31 +128,20 @@ export function applyTransition(
 }
 
 /**
- * Every property a transition could touch, in either mode. These are exempt from the general
- * breaking-change checks, because a transition disappearing has already been reported on in its
- * own right.
+ * Every property a transition could touch, in either mode.
  *
- * Not the right list for the deletion-vs-finalization comparison itself: that has a mode in hand
- * and should use {@link AppliedTransition.touched}.
+ * These are exempt from the general breaking-change checks, because a transition disappearing
+ * has already been reported on in its own right.
  */
-export function transitionTargetProperties(
-  transition: LockedTransition,
-): string[] {
-  return transition.instructions.flatMap(instructionTargetProperties);
+export function targetPropertiesOf(transition: LockedTransition): string[] {
+  return transition.instructions.flatMap(targetPropertiesOfInstruction);
 }
 
 /**
- * Whether two schemas agree on the named properties, comparing the whole state of each name:
- * absent from both sides agrees, and present on only one side does not.
+ * Whether two schemas agree on the named properties, comparing the whole state of each name.
  *
- * Stated over states rather than over values so that an instruction which *removes* a property can
- * be compared like any other. Demanding presence instead would read that removal as a
- * disagreement, and so report a legal finalization of such an instruction as an illegal change.
- *
- * An empty list is `false`, not vacuously `true`: naming no properties means the schemas were
- * never compared, and the sole caller reads `true` as "this transition was applied". An
- * instruction that changes an interface-level attribute rather than a property would touch
- * nothing, and must not read as its own successful application.
+ * At least one property must be named: an instruction that changes interface-level attributes
+ * rather than property-level ones cannot be decided by this comparison.
  */
 export function schemasAgreeOn(
   a: LockedInterfaceSchema,
@@ -192,7 +149,9 @@ export function schemasAgreeOn(
   propertyApiNames: readonly string[],
 ): boolean {
   if (propertyApiNames.length === 0) {
-    return false;
+    throw new Error(
+      "schemasAgreeOn requires at least one property to compare.",
+    );
   }
   return propertyApiNames.every((apiName) =>
     isDeepStrictEqual(a.properties[apiName], b.properties[apiName]),

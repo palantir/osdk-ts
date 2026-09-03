@@ -27,12 +27,9 @@ export const DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME =
 /**
  * A record of the last-published shape of every interface type enrolled in schema migrations.
  *
- * `@osdk/maker` is otherwise a stateless `ontology.ts -> ontology.json` transformer, so it has
- * nothing to diff a new definition against. The lockfile supplies that baseline, letting us reject
- * at authoring-time the definitions that OMS would reject at installation-time.
- *
- * Generation is a pure function of the source ontology; only *validation* consults the previously
- * persisted lockfile.
+ * `@osdk/maker` is a stateless `ontology.ts -> ontology.json` transformer, so it has nothing to
+ * diff a new definition against. This lockfile supplies that baseline, letting us reject
+ * at authoring-time any definitions that OMS would reject at installation-time.
  */
 export interface OntologySchemaLockfile {
   version: number;
@@ -46,16 +43,12 @@ export interface OntologySchemaLockfile {
 /** A top-level section of the lockfile, one per kind of ontology entity it tracks. */
 export type LockfileSection = keyof Omit<OntologySchemaLockfile, "version">;
 
-/**
- * Total over the lockfile's sections by construction, so adding one is a compile error here rather
- * than a section that every fold over the document silently skips. A `switch` cannot stand in for
- * this: the set of sections is needed as runtime data, not control flow.
- */
+// Enforces compile-time exhaustive checks for new top-level sections (since we rely
+// on these for determining if a lockfile is empty)
 const SECTIONS: Record<LockfileSection, true> = {
   interfaces: true,
 };
 
-/** Every section, as the single list that folds over the document go through. */
 export const LOCKFILE_SECTIONS = Object.keys(SECTIONS) as LockfileSection[];
 
 export interface LockedInterfaceType {
@@ -64,32 +57,23 @@ export interface LockedInterfaceType {
    * been finalized yet.
    */
   schema: LockedInterfaceSchema;
-  migrations: LockedMigrations;
+  /**
+   * The transitions that are still in flight, i.e. declared by the source and not yet
+   * finalized or deleted.
+   */
+  transitions: LockedTransition[];
 }
 
 export interface LockedInterfaceSchema {
   /**
    * The interface's locally-declared properties, keyed by the api name they are published under.
-   * Inherited properties are owned by the interface that declares them.
    */
   properties: Record<string, LockedProperty>;
 }
 
 export interface LockedProperty {
   type: PropertyTypeType;
-  /** Whether implementing object types must provide this property. */
   required: boolean;
-}
-
-export interface LockedMigrations {
-  /**
-   * The transitions that are still in flight, i.e. declared by the source and not yet
-   * finalized or deleted.
-   *
-   * Deliberately excludes `title`/`description`: those are free to change between versions,
-   * and recording them would churn the lockfile without telling us anything about compatibility.
-   */
-  active: LockedTransition[];
 }
 
 export interface LockedTransition {
@@ -110,15 +94,12 @@ export function lockedEntityCount(lockfile: OntologySchemaLockfile): number {
   );
 }
 
-/**
- * The canonical on-disk form. Generation emits objects in a stable key order, so a
- * byte comparison of two serializations is a valid equality check.
- */
+/** The canonical on-disk form. */
 export function serializeLockfile(lockfile: OntologySchemaLockfile): string {
   return JSON.stringify(lockfile, undefined, 2) + "\n";
 }
 
 /** How a property's type is named in error messages and in the rendered lockfile diff. */
 export function describeType(type: PropertyTypeType): string {
-  return typeof type === "string" ? `"${type}"` : JSON.stringify(type);
+  return JSON.stringify(type);
 }

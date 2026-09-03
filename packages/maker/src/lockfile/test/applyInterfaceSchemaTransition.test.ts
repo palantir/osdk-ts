@@ -31,7 +31,6 @@ const requireLastName: LockedTransition = {
   instructions: [{ type: "addRequiredProperty", property: "lastName" }],
 };
 
-/** The interface as the lockfile records it: `lastName` present, not yet enforced. */
 const previousSchema: LockedInterfaceSchema = {
   properties: {
     firstName: { type: "string", required: true },
@@ -140,13 +139,13 @@ describe("schemasAgreeOn", () => {
     expect(schemasAgreeOn(schema({}), present, ["lastName"])).toBe(false);
   });
 
-  it("never agrees when asked about no properties at all", () => {
-    expect(schemasAgreeOn(previousSchema, previousSchema, [])).toBe(false);
+  it("rejects being asked about no properties at all", () => {
+    expect(() =>
+      schemasAgreeOn(previousSchema, previousSchema, []),
+    ).toThrowError(/requires at least one property to compare/u);
   });
 });
 
-// The disambiguation table from the RFC: which of the two applications reproduces the new source
-// schema tells us what the author meant by removing the transition.
 describe("deletion vs finalization disambiguation", () => {
   it("reads `required: false` as a deletion", () => {
     const source = sourceSchema({ required: false });
