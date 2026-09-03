@@ -41,7 +41,7 @@ const MAX_GRACE_PERIOD_DAYS = 180;
  * Structural validation for authored Interface Type Schema Migrations.
  */
 export function validateInterfaceSchemaMigrations(
-  apiName: string,
+  interfaceApiName: string,
   schemaMigrations: InterfaceSchemaMigrations,
   // The interface type's locally-defined properties; inherited properties are not included
   // (since migrations for those should occur in the interface that defines them)
@@ -51,7 +51,7 @@ export function validateInterfaceSchemaMigrations(
 
   invariant(
     transitions.length <= MAX_TRANSITIONS,
-    `Interface ${apiName} has ${transitions.length} schema migration transitions, which exceeds the maximum of ${MAX_TRANSITIONS}.`,
+    `Interface ${interfaceApiName} has ${transitions.length} schema migration transitions, which exceeds the maximum of ${MAX_TRANSITIONS}.`,
   );
 
   const seenIds = new Set<string>();
@@ -66,39 +66,39 @@ export function validateInterfaceSchemaMigrations(
 
     invariant(
       id.length > 0 && id.length <= MAX_ID_LENGTH,
-      `Schema migration transition id "${id}" on interface ${apiName} must be between 1 and ${MAX_ID_LENGTH} characters, but was ${id.length}.`,
+      `Schema migration transition id "${id}" on interface ${interfaceApiName} must be between 1 and ${MAX_ID_LENGTH} characters, but was ${id.length}.`,
     );
     invariant(
       ID_PATTERN.test(id),
-      `Schema migration transition id "${id}" on interface ${apiName} must match ${ID_PATTERN.source}: a letter or digit followed by letters, digits, underscores, or dashes.`,
+      `Schema migration transition id "${id}" on interface ${interfaceApiName} must match ${ID_PATTERN.source}: a letter or digit followed by letters, digits, underscores, or dashes.`,
     );
     invariant(
       !seenIds.has(id),
-      `Duplicate schema migration transition id "${id}" on interface ${apiName}.`,
+      `Duplicate schema migration transition id "${id}" on interface ${interfaceApiName}.`,
     );
     seenIds.add(id);
 
     invariant(
       title.length > 0 && title.length <= MAX_TITLE_LENGTH,
-      `Schema migration transition "${id}" on interface ${apiName} must have a title between 1 and ${MAX_TITLE_LENGTH} characters, but was ${title.length}.`,
+      `Schema migration transition "${id}" on interface ${interfaceApiName} must have a title between 1 and ${MAX_TITLE_LENGTH} characters, but was ${title.length}.`,
     );
     if (description !== undefined) {
       invariant(
         description.length <= MAX_DESCRIPTION_LENGTH,
-        `Schema migration transition "${id}" on interface ${apiName} has a description of length ${description.length}, which exceeds the maximum of ${MAX_DESCRIPTION_LENGTH}.`,
+        `Schema migration transition "${id}" on interface ${interfaceApiName} has a description of length ${description.length}, which exceeds the maximum of ${MAX_DESCRIPTION_LENGTH}.`,
       );
     }
 
     invariant(
       instructions.length > 0,
-      `Schema migration transition "${id}" on interface ${apiName} must have at least one instruction.`,
+      `Schema migration transition "${id}" on interface ${interfaceApiName} must have at least one instruction.`,
     );
     invariant(
       instructions.length <= MAX_INSTRUCTIONS,
-      `Schema migration transition "${id}" on interface ${apiName} has ${instructions.length} instructions, which exceeds the maximum of ${MAX_INSTRUCTIONS}.`,
+      `Schema migration transition "${id}" on interface ${interfaceApiName} has ${instructions.length} instructions, which exceeds the maximum of ${MAX_INSTRUCTIONS}.`,
     );
 
-    validateGracePeriod(apiName, id, gracePeriod);
+    validateGracePeriod(interfaceApiName, id, gracePeriod);
 
     for (const instruction of instructions) {
       const instructionDescription = describeInstruction(instruction);
@@ -106,7 +106,7 @@ export function validateInterfaceSchemaMigrations(
         const conflict = claimedBy.get(claim);
         invariant(
           conflict === undefined,
-          `Schema migration transition "${id}" on interface ${apiName} declares ${instructionDescription}, which conflicts with ${conflict?.description} already declared by transition "${conflict?.transitionId}". A property may be migrated by at most one in-flight transition.`,
+          `Schema migration transition "${id}" on interface ${interfaceApiName} declares ${instructionDescription}, which conflicts with ${conflict?.description} already declared by transition "${conflict?.transitionId}". A property may be migrated by at most one in-flight transition.`,
         );
         claimedBy.set(claim, {
           transitionId: id,
@@ -114,11 +114,7 @@ export function validateInterfaceSchemaMigrations(
         });
       }
 
-      validateInstruction(instruction, {
-        apiName,
-        transitionId: id,
-        propertiesV3,
-      });
+      validateInstruction(interfaceApiName, id, instruction, propertiesV3);
     }
   }
 }
