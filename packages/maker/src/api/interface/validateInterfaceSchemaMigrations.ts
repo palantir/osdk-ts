@@ -55,9 +55,11 @@ export function validateInterfaceSchemaMigrations(
   );
 
   const seenIds = new Set<string>();
-  // Maps an instruction's identity to the transition that first declared it, across ALL
-  // transitions. What that identity is is decided per variant, in `validateInstruction`.
-  const seenInstructions = new Map<string, string>();
+  // What each claim (see `getClaims`) is already spoken for by, across ALL transitions.
+  const claimedBy = new Map<
+    string,
+    { transitionId: string; description: string }
+  >();
 
   for (const transition of transitions) {
     const { id, title, description, gracePeriod, instructions } = transition;
@@ -99,11 +101,23 @@ export function validateInterfaceSchemaMigrations(
     validateGracePeriod(apiName, id, gracePeriod);
 
     for (const instruction of instructions) {
+      const instructionDescription = describeInstruction(instruction);
+      for (const claim of getClaims(instruction)) {
+        const conflict = claimedBy.get(claim);
+        invariant(
+          conflict === undefined,
+          `Schema migration transition "${id}" on interface ${apiName} declares ${instructionDescription}, which conflicts with ${conflict?.description} already declared by transition "${conflict?.transitionId}". A property may be migrated by at most one in-flight transition.`,
+        );
+        claimedBy.set(claim, {
+          transitionId: id,
+          description: instructionDescription,
+        });
+      }
+
       validateInstruction(instruction, {
         apiName,
         transitionId: id,
         propertiesV3,
-        seenInstructions,
       });
     }
   }
@@ -157,16 +171,8 @@ interface InstructionContext {
   apiName: string;
   transitionId: string;
   propertiesV3: Record<string, InterfacePropertyType>;
-  /** Instruction identity to the transition that first declared it. See {@link declareOnce}. */
-  seenInstructions: Map<string, string>;
 }
 
-/**
- * Per-variant authoring rules, including what makes two instructions the same. Both live here
- * rather than in the shared loop because they are facts about a particular kind of instruction —
- * "the target property must be declared locally" and "two of these collide when they name the same
- * property" are neither of them true of instructions in general.
- */
 function validateInstruction(
   instruction: InterfaceSchemaMigrationInstruction,
   context: InstructionContext,
@@ -175,7 +181,6 @@ function validateInstruction(
   switch (instruction.type) {
     case "addRequiredProperty": {
       const { property: propertyApiName } = instruction;
-      declareOnce(instruction, propertyApiName, context);
       invariant(
         Object.hasOwn(propertiesV3, propertyApiName),
         `Schema migration transition "${transitionId}" on interface ${apiName} references property "${propertyApiName}" via ${instruction.type}, but interface ${apiName} does not declare that property. Properties inherited from an extended interface must be migrated by a transition on the interface that declares them.`,
@@ -195,26 +200,21 @@ function validateInstruction(
 }
 
 /**
- * Records that this transition declares `instruction`, rejecting a second transition that declares
- * the same one.
+ * What an instruction claims exclusive use of for the duration of its transition.
  *
- * `discriminator` is what distinguishes two instructions of the same kind, and is supplied by the
- * caller because only the variant knows it. Two transitions migrating the same interface in the
- * same way is always an authoring mistake: which of them wins would decide the property's fate,
- * and nothing says which that should be.
+ * Stacked migrations (i.e. those which operate against the same property, etc.) are not allowed today,
+ * so we reject any conflicting migrations that try to claim the same thing,
  */
-function declareOnce(
+function getClaims(
   instruction: InterfaceSchemaMigrationInstruction,
-  discriminator: string,
-  { apiName, transitionId, seenInstructions }: InstructionContext,
-): void {
-  const identity = `${instruction.type}:${discriminator}`;
-  const alreadyDeclaredBy = seenInstructions.get(identity);
-  invariant(
-    alreadyDeclaredBy === undefined,
-    `Schema migration transition "${transitionId}" on interface ${apiName} repeats the instruction ${describeInstruction(
-      instruction,
-    )}, which transition "${alreadyDeclaredBy}" already declares.`,
-  );
-  seenInstructions.set(identity, transitionId);
+): readonly string[] {
+  switch (instruction.type) {
+    case "addRequiredProperty":
+      return [`property:${instruction.property}`];
+    default:
+      // TODO: add a never exhaustiveness check once there's more than one instruction type
+      throw new Error(
+        `Unknown schema migration instruction type: ${instruction.type}`,
+      );
+  }
 }

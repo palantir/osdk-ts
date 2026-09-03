@@ -96,13 +96,7 @@ export function convertInterfaceSchemaGracePeriod(
   }
 }
 
-/**
- * A converted instruction, alongside the property api names it came out referencing.
- *
- * The block data carries a side map of every property its migrations mention, and the emitter is
- * what knows which those are: reporting them back is the only way the map cannot end up describing
- * a set of properties different from the one the emitted migrations actually name.
- */
+/** A converted instruction, alongside the property api names it came out referencing. */
 interface ConvertedInstruction {
   migration: OntologyIrInterfaceTypeSchemaMigrationInstruction;
   referencedApiNames: readonly string[];

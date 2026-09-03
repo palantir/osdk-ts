@@ -182,6 +182,33 @@ describe("Interface schema migrations", () => {
     });
   });
 
+  describe("conflicting instructions", () => {
+    it("rejects two transitions migrating the same property", () => {
+      const instruction = addRequiredProperty("optional0");
+
+      expect(() =>
+        defineWithMigrations([
+          transition({ id: "t1", instructions: [instruction] }),
+          transition({ id: "t2", instructions: [instruction] }),
+        ]),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Schema migration transition "t2" on interface com.palantir.Foo declares addRequiredProperty("optional0"), which conflicts with addRequiredProperty("optional0") already declared by transition "t1". A property may be migrated by at most one in-flight transition.]`,
+      );
+    });
+
+    it("rejects one transition migrating the same property twice", () => {
+      const instruction = addRequiredProperty("optional0");
+
+      expect(() =>
+        defineWithMigrations([
+          transition({ id: "t1", instructions: [instruction, instruction] }),
+        ]),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares addRequiredProperty("optional0"), which conflicts with addRequiredProperty("optional0") already declared by transition "t1". A property may be migrated by at most one in-flight transition.]`,
+      );
+    });
+  });
+
   describe("addRequiredProperty", () => {
     function defineTargeting(property: string, declaration: AuthoredProperty) {
       return () =>
@@ -194,19 +221,6 @@ describe("Interface schema migrations", () => {
           { [property]: declaration },
         );
     }
-
-    it("rejects the same instruction repeated across transitions", () => {
-      const instruction = addRequiredProperty("optional0");
-
-      expect(() =>
-        defineWithMigrations([
-          transition({ id: "t1", instructions: [instruction] }),
-          transition({ id: "t2", instructions: [instruction] }),
-        ]),
-      ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t2" on interface com.palantir.Foo repeats the instruction addRequiredProperty("optional0"), which transition "t1" already declares.]`,
-      );
-    });
 
     it("accepts an interface-defined property declared required:false", () => {
       expect(

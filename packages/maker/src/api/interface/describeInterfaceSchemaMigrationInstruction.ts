@@ -17,20 +17,14 @@
 import type { InterfaceSchemaMigrationInstruction } from "./InterfaceSchemaMigrations.js";
 
 /**
- * How an instruction is named in a message addressed to whoever authored it, e.g.
- * `addRequiredProperty("lastName")`.
- *
- * Renders each variant from the fields that variant actually has, so an instruction that names
- * something other than a single property still reads sensibly. This is only ever for human
- * consumption: nothing should parse the result or use it to decide whether two instructions are
- * the same.
+ * Renders an instruction for use in error messages.
  */
 export function describeInstruction(
   instruction: InterfaceSchemaMigrationInstruction,
 ): string {
   switch (instruction.type) {
     case "addRequiredProperty":
-      return `${instruction.type}("${instruction.property}")`;
+      return `addRequiredProperty("${instruction.property}")`;
     default:
       // TODO: add a never exhaustiveness check once there's more than one instruction type
       throw new Error(
