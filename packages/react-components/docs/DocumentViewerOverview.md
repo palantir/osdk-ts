@@ -24,7 +24,7 @@ PDF, image, video, and TIFF rendering accept their own options via a pass-throug
 ```tsx
 <DocumentViewer
   media={myMedia}
-  pdfViewerProps={{ initialSidebarOpen: true, enableDownload: true }}
+  pdfViewerProps={{ defaultSidebarOpen: true, enableDownload: true }}
   imageViewerProps={{ alt: "Product photo" }}
 />
 ```

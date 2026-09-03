@@ -98,17 +98,17 @@ const meta: Meta<PdfViewerProps> = {
       control: false,
       table: { category: "Events" },
     },
-    initialPage: {
+    defaultPage: {
       description: "Page to display on first render (1-indexed)",
       control: "number",
       table: { defaultValue: { summary: "1" } },
     },
-    initialScale: {
+    defaultScale: {
       description: "Initial zoom scale",
       control: "number",
       table: { defaultValue: { summary: "1.0" } },
     },
-    initialSidebarOpen: {
+    defaultSidebarOpen: {
       description: "Whether the thumbnail sidebar is initially open",
       control: "boolean",
       table: { defaultValue: { summary: "false" } },
@@ -252,12 +252,12 @@ export const WithAnnotations: Story = {
 
 export const WithSidebar: Story = {
   args: {
-    initialSidebarOpen: true,
+    defaultSidebarOpen: true,
   },
   parameters: {
     docs: {
       source: {
-        code: `<PdfViewer media={myMediaObject} initialSidebarOpen />`,
+        code: `<PdfViewer media={myMediaObject} defaultSidebarOpen />`,
       },
     },
   },
@@ -265,12 +265,12 @@ export const WithSidebar: Story = {
 
 export const CustomScale: Story = {
   args: {
-    initialScale: 1.5,
+    defaultScale: 1.5,
   },
   parameters: {
     docs: {
       source: {
-        code: `<PdfViewer media={myMediaObject} initialScale={1.5} />`,
+        code: `<PdfViewer media={myMediaObject} defaultScale={1.5} />`,
       },
     },
   },
@@ -278,12 +278,12 @@ export const CustomScale: Story = {
 
 export const WithAutoSize: Story = {
   args: {
-    initialAutoSize: true,
+    defaultAutoSize: true,
   },
   parameters: {
     docs: {
       source: {
-        code: `<PdfViewer media={myMediaObject} initialAutoSize />`,
+        code: `<PdfViewer media={myMediaObject} defaultAutoSize />`,
       },
     },
   },
@@ -304,13 +304,13 @@ export const WithDownload: Story = {
 
 export const WithOutlineSidebar: Story = {
   args: {
-    initialSidebarOpen: true,
+    defaultSidebarOpen: true,
     sidebarMode: "outline",
   },
   parameters: {
     docs: {
       source: {
-        code: `<PdfViewer media={myMediaObject} initialSidebarOpen sidebarMode="outline" />`,
+        code: `<PdfViewer media={myMediaObject} defaultSidebarOpen sidebarMode="outline" />`,
       },
     },
   },
@@ -442,7 +442,7 @@ export const WithHighlightMode: StoryObj<BasePdfViewerProps> = {
 export const WithEmbeddedOutline: Story = {
   args: {
     media: mockBookmarkedMedia,
-    initialSidebarOpen: true,
+    defaultSidebarOpen: true,
     sidebarMode: "outline",
   },
   parameters: {
@@ -451,7 +451,7 @@ export const WithEmbeddedOutline: Story = {
         code: `// The outline content is auto-generated from the PDF's own bookmarks
 <PdfViewer
   media={handbook.pdf}
-  initialSidebarOpen
+  defaultSidebarOpen
   sidebarMode="outline"
 />`,
       },

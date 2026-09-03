@@ -49,9 +49,9 @@ import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 ```tsx
 <PdfViewer
   media={myMedia}
-  initialPage={3}
-  initialScale={1.5}
-  initialSidebarOpen
+  defaultPage={3}
+  defaultScale={1.5}
+  defaultSidebarOpen
   sidebarMode="outline"
   enableDownload
   annotations={[
@@ -89,10 +89,10 @@ Plus all props from `BasePdfViewerProps` except `src`.
 | `enableHighlight`    | `boolean`                                               | `false`        | Whether the highlight toggle button is shown in the toolbar                                                           |
 | `onTextHighlight`    | `(event: PdfTextHighlightEvent) => void`                | —              | Callback fired when the user creates a text highlight. Only fires while highlight mode is active                      |
 | `onHighlightDelete`  | `(event: PdfTextHighlightEvent) => void`                | —              | Callback fired when the user deletes a highlight via the PDF.js editor UI                                             |
-| `initialPage`        | `number`                                                | `1`            | Page to display on first render                                                                                       |
-| `initialScale`       | `number`                                                | `1.0`          | Initial zoom level                                                                                                    |
-| `initialAutoSize`    | `boolean`                                               | `false`        | Whether auto-size (fit to width) is initially enabled, re-fitting on resize. Takes precedence over `initialScale`     |
-| `initialSidebarOpen` | `boolean`                                               | `false`        | Whether the sidebar is initially open                                                                                 |
+| `defaultPage`        | `number`                                                | `1`            | Initial uncontrolled page                                                                                             |
+| `defaultScale`       | `number`                                                | `1.0`          | Initial uncontrolled zoom level                                                                                       |
+| `defaultAutoSize`    | `boolean`                                               | `false`        | Initial uncontrolled auto-size state. Takes precedence over `defaultScale`                                            |
+| `defaultSidebarOpen` | `boolean`                                               | `false`        | Initial uncontrolled sidebar state                                                                                    |
 | `enableDownload`     | `boolean`                                               | `false`        | Whether the download button is shown in the toolbar                                                                   |
 | `downloadFileName`   | `string`                                                | —              | Filename used by the toolbar download button. Derived from the `src` URL when omitted, falling back to `document.pdf` |
 | `sidebarMode`        | `SidebarMode`                                           | `"thumbnails"` | Which sidebar panel to show: `"thumbnails"` or `"outline"`                                                            |
@@ -194,7 +194,7 @@ import { PdfViewerContent } from "@osdk/react-components/experimental/pdf-viewer
 
 <PdfViewerContent
   src="https://example.com/document.pdf"
-  initialScale={1.5}
+  defaultScale={1.5}
   onPageChange={(page) => console.log("Page:", page)}
   onScaleChange={(scale) => console.log("Scale:", scale)}
 />;
@@ -238,7 +238,7 @@ import {
 import { createPortal } from "react-dom";
 
 function MyCustomViewer({ src }: { src: string }) {
-  const viewer = usePdfViewerState({ src, initialScale: 1.0 });
+  const viewer = usePdfViewerState({ src, defaultScale: 1.0 });
 
   if (viewer.loading) return <div>Loading...</div>;
   if (viewer.error) return <div>Error: {viewer.error.message}</div>;

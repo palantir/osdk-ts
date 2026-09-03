@@ -34,10 +34,16 @@ export interface UsePdfViewerCoreOptions {
   /** PDF source — URL string, ArrayBuffer, Uint8Array, or Blob */
   src: PdfSource;
   /** Initial page number (1-indexed, default 1) */
+  defaultPage?: number;
+  /** @deprecated Rename to `defaultPage`. */
   initialPage?: number;
   /** Initial zoom scale (default 1.0) */
+  defaultScale?: number;
+  /** @deprecated Rename to `defaultScale`. */
   initialScale?: number;
   /** Whether auto-size (fit to width) is initially enabled (default false) */
+  defaultAutoSize?: boolean;
+  /** @deprecated Rename to `defaultAutoSize`. */
   initialAutoSize?: boolean;
 }
 
@@ -84,14 +90,21 @@ export interface UsePdfViewerCoreResult {
 
 export function usePdfViewerCore({
   src,
+  defaultPage,
+  // TODO: Move these defaults to the default* props when the initial* aliases are removed.
   initialPage = 1,
+  defaultScale,
   initialScale = 1.0,
+  defaultAutoSize,
   initialAutoSize = false,
 }: UsePdfViewerCoreOptions): UsePdfViewerCoreResult {
+  const seededPage = defaultPage ?? initialPage;
+  const seededScale = defaultScale ?? initialScale;
+  const seededAutoSize = defaultAutoSize ?? initialAutoSize;
   const { document, numPages, loading, error } = usePdfDocument(src);
-  const [scale, setScale] = useState(initialScale);
-  const [currentPage, setCurrentPage] = useState(initialPage);
-  const [autoSize, setAutoSize] = useState(initialAutoSize);
+  const [scale, setScale] = useState(seededScale);
+  const [currentPage, setCurrentPage] = useState(seededPage);
+  const [autoSize, setAutoSize] = useState(seededAutoSize);
   const containerRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<HTMLDivElement>(null);
 
@@ -99,8 +112,8 @@ export function usePdfViewerCore({
     containerRef,
     viewerRef,
     document,
-    initialScale,
-    initialPage,
+    seededScale,
+    seededPage,
   );
 
   const handleScaleChange = useCallback((newScale: number) => {
