@@ -162,9 +162,6 @@ function validateGracePeriod(
   }
 }
 
-/** Everything an instruction needs to validate itself against the interface declaring it. */
-interface InstructionContext {}
-
 function validateInstruction(
   interfaceApiName: string,
   transitionId: string,
