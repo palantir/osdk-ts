@@ -157,9 +157,7 @@ function validateInterface(
 ): void {
   const where = `${lockfilePath}: interface ${apiName}`;
   if (!isObject(interfaceType?.schema?.properties)) {
-    throw new Error(
-      `${where} is missing \`schema.properties\`.`,
-    );
+    throw new Error(`${where} is missing \`schema.properties\`.`);
   }
   for (const [property, locked] of Object.entries(
     interfaceType.schema.properties,
@@ -167,9 +165,7 @@ function validateInterface(
     validateProperty(where, property, locked);
   }
   if (!Array.isArray(interfaceType.migrations?.active)) {
-    throw new Error(
-      `${where} is missing \`migrations.active\`.`,
-    );
+    throw new Error(`${where} is missing \`migrations.active\`.`);
   }
   for (const transition of interfaceType.migrations.active) {
     validateTransition(where, transition, lockfilePath);
@@ -186,9 +182,7 @@ function validateProperty(
   locked: LockedProperty,
 ): void {
   if (locked?.type == null) {
-    throw new Error(
-      `${where}: property "${property}" is missing \`type\`.`,
-    );
+    throw new Error(`${where}: property "${property}" is missing \`type\`.`);
   }
   if (typeof locked.required !== "boolean") {
     throw new Error(
@@ -204,9 +198,7 @@ function validateTransition(
   lockfilePath: string,
 ): void {
   if (typeof transition?.id !== "string" || transition.id.length === 0) {
-    throw new Error(
-      `${where} records a schema migration with no id.`,
-    );
+    throw new Error(`${where} records a schema migration with no id.`);
   }
   if (!isKnownGracePeriodType(transition.gracePeriod?.type)) {
     throw new Error(
