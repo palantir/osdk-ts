@@ -27,6 +27,7 @@ hideable
 inbetween
 isModifierable
 jsons
+lockfiles
 millis
 Multimap
 objs
@@ -56,4 +57,6 @@ unparseable
 unresolve
 Unsubscribable
 unvalidated
+upgrader
+upgraders
 webapi
