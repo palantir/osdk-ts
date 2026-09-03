@@ -21,7 +21,10 @@ import {
   defineOntology,
   getOntologyDefinition,
 } from "../../api/defineOntology.js";
-import { generateOntologySchemaLockfile } from "../generateOntologySchemaLockfile.js";
+import {
+  censusOfSource,
+  generateOntologySchemaLockfile,
+} from "../generateOntologySchemaLockfile.js";
 import type { OntologySchemaLockfile } from "../OntologySchemaLockfile.js";
 
 async function lockAddressStruct(
@@ -63,11 +66,11 @@ async function lockNameProperty(
   return generateOntologySchemaLockfile(getOntologyDefinition());
 }
 
-describe("generateOntologySchemaLockfile", () => {
-  beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, undefined);
-  });
+beforeEach(async () => {
+  await defineOntology("com.palantir.", () => {}, undefined);
+});
 
+describe("generateOntologySchemaLockfile", () => {
   it("records a struct type without its field display metadata", async () => {
     expect(await lockAddressStruct("ZIP")).toEqual(
       await lockAddressStruct("Postal code"),
@@ -78,5 +81,39 @@ describe("generateOntologySchemaLockfile", () => {
     expect(await lockNameProperty("Name")).toEqual(
       await lockNameProperty("Full name"),
     );
+  });
+});
+
+describe("censusOfSource", () => {
+  it("counts an interface that never opted in", () => {
+    defineInterface({ apiName: "Unenrolled" });
+    defineInterface({
+      apiName: "Enrolled",
+      schemaMigrations: { transitions: [] },
+    });
+
+    const ontology = getOntologyDefinition();
+    expect([...censusOfSource(ontology).interfaces.keys()].sort()).toEqual([
+      "com.palantir.Enrolled",
+      "com.palantir.Unenrolled",
+    ]);
+    expect(
+      Object.keys(generateOntologySchemaLockfile(ontology).interfaces),
+    ).toEqual(["com.palantir.Enrolled"]);
+  });
+
+  it("records the schema of an interface that opted back out", () => {
+    defineInterface({
+      apiName: "Unenrolled",
+      properties: { lastName: { type: "string", required: false } },
+    });
+
+    expect(
+      censusOfSource(getOntologyDefinition()).interfaces.get(
+        "com.palantir.Unenrolled",
+      ),
+    ).toEqual({
+      properties: { lastName: { type: "string", required: false } },
+    });
   });
 });
