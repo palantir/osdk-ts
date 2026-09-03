@@ -24,6 +24,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
 import { defineOntology } from "../api/defineOntology.js";
+import { MakerValidationError } from "../MakerValidationError.js";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/u;
 const uuidRegex =
@@ -114,6 +115,12 @@ export default async function main(
         describe: "Value used to assure uniqueness of entities",
         type: "string",
       },
+    })
+    // Without this, a usage error calls `process.exit` from inside the library, which takes the
+    // whole host process with it. Throwing routes it through the same handler as every other
+    // author-facing failure. `--help` and `--version` do not come through here.
+    .fail((msg, err) => {
+      throw err ?? new MakerValidationError(msg);
     })
     .parseAsync();
   let apiNamespace = "";
