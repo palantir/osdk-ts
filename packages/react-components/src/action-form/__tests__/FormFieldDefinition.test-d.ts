@@ -81,6 +81,22 @@ interface GeneratedEmployee extends ObjectTypeDefinition {
 declare const generatedEmployeeObjectSet: GeneratedEmployeeObjectSet;
 declare const generatedOfficeObjectSet: ObjectSet<typeof GENERATED_OFFICE_TYPE>;
 
+interface ActionWithoutDefinitionMetadata extends ActionDefinition<unknown> {
+  type: "action";
+  apiName: "ActionWithoutDefinitionMetadata";
+}
+
+const metadataAgnosticObjectSelect: FormFieldDefinition<ActionWithoutDefinitionMetadata> =
+  {
+    fieldKey: "employee",
+    fieldComponent: "OBJECT_SELECT",
+    label: "Employee",
+    fieldComponentProps: {
+      objectType: EMPLOYEE_TYPE,
+    },
+  };
+metadataAgnosticObjectSelect satisfies FormFieldDefinition<ActionWithoutDefinitionMetadata>;
+
 interface UpdateProfileAction extends ActionDefinition<unknown> {
   __DefinitionMetadata: {
     signatures: unknown;

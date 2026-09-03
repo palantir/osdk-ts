@@ -166,22 +166,33 @@ export interface FormFieldPropsByType {
 type FormFieldComponentPropsByActionParameter<
   P extends ActionMetadata.Parameter,
 > = {
-  [C in ValidFormFieldForActionParameter<P>]: C extends "DROPDOWN"
-    ? DropdownFieldPropsByActionParameter<P>
-    : C extends "RADIO_BUTTONS"
-      ? RadioButtonsFieldProps<ActionParameterValueType<P>>
-      : C extends "CUSTOM"
-        ? CustomFieldProps<ActionParameterValueType<P>>
-        : C extends "OBJECT_SELECT"
-          ? P["type"] extends ActionMetadata.DataType.Object<infer T>
-            ? ObjectSelectFieldProps<T>
-            : never
-          : C extends "OBJECT_SET"
-            ? P["type"] extends ActionMetadata.DataType.ObjectSet<infer T>
-              ? ObjectSetFieldProps<T>
+  [C in ValidFormFieldForActionParameter<P>]: IsBroadActionParameter<P> extends true
+    ? FormFieldPropsByType[C]
+    : C extends "DROPDOWN"
+      ? DropdownFieldPropsByActionParameter<P>
+      : C extends "RADIO_BUTTONS"
+        ? RadioButtonsFieldProps<ActionParameterValueType<P>>
+        : C extends "CUSTOM"
+          ? CustomFieldProps<ActionParameterValueType<P>>
+          : C extends "OBJECT_SELECT"
+            ? P["type"] extends ActionMetadata.DataType.Object<infer T>
+              ? ObjectSelectFieldProps<T>
               : never
-            : FormFieldPropsByType[C];
+            : C extends "OBJECT_SET"
+              ? P["type"] extends ActionMetadata.DataType.ObjectSet<infer T>
+                ? ObjectSetFieldProps<T>
+                : never
+              : FormFieldPropsByType[C];
 };
+
+// Actions without concrete definition metadata expose the base parameter type.
+// Preserve the renderer-facing props because its data-type union has no single
+// object target or value type to infer.
+type IsBroadActionParameter<P extends ActionMetadata.Parameter> = [
+  ActionMetadata.Parameter,
+] extends [P]
+  ? true
+  : false;
 
 type DropdownFieldPropsByActionParameter<P extends ActionMetadata.Parameter> =
   P extends { multiplicity: true }
