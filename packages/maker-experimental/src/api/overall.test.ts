@@ -99,6 +99,19 @@ describe("Experimental Test Suite", () => {
         isAccessedInReconcile: true,
         reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
       });
+
+      const document = Object.values(result.ontologyIr.ontology.objectTypes)[0];
+      const fileProperty = Object.values(
+        document.objectType.propertyTypes,
+      ).find((property) => property.apiName === "file");
+      invariant(fileProperty != null, "File property is missing");
+      expect(document.datasources[0]?.datasource).toMatchObject({
+        type: "mediaSetView",
+        mediaSetView: {
+          properties: [fileProperty.rid],
+          uploadProperties: [fileProperty.rid],
+        },
+      });
     });
   });
 
