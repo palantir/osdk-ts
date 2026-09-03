@@ -53,6 +53,16 @@ describe("Object Types", () => {
     });
 
     expect(object.properties?.file.includeEmptyBackingMediaSet).toBe(true);
+    expect(
+      dumpOntologyFullMetadata().ontology.objectTypes["com.palantir.Document"]
+        ?.datasources[0]?.datasource,
+    ).toMatchObject({
+      type: "mediaSetView",
+      mediaSetView: {
+        properties: ["file"],
+        uploadProperties: ["file"],
+      },
+    });
   });
 
   it("rejects an empty backing Media Set for other property types", () => {

@@ -296,6 +296,10 @@ export function extractPropertyDatasource(
         buildDatasource(property.apiName, geotimeDefinition, ridGenerator),
       ];
     case "mediaReference":
+      const propertyRid = ridGenerator.generatePropertyRid(
+        property.apiName,
+        objectTypeApiName,
+      );
       const mediaSetDefinition: ObjectTypeDatasourceDefinition = {
         type: "mediaSetView",
         mediaSetView: {
@@ -303,13 +307,10 @@ export function extractPropertyDatasource(
           clearOnDeleteProperties: [],
           mediaSetViewLocator:
             ridGenerator.generateMediaSetViewLocator(identifier),
-          properties: [
-            ridGenerator.generatePropertyRid(
-              property.apiName,
-              objectTypeApiName,
-            ),
-          ],
-          uploadProperties: [],
+          properties: [propertyRid],
+          uploadProperties: property.includeEmptyBackingMediaSet
+            ? [propertyRid]
+            : [],
         },
       };
       return [
