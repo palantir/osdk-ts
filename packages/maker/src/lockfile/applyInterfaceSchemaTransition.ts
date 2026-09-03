@@ -147,6 +147,13 @@ export function applyTransition(
   return { schema: { ...schema, properties }, touched: [...touched] };
 }
 
+/** Every property a transition could touch, in either mode. */
+export function targetPropertiesOf(transition: LockedTransition): string[] {
+  return transition.instructions.flatMap((instruction) => [
+    ...editsOf(instruction).keys(),
+  ]);
+}
+
 /**
  * Whether applying a transition in one mode results in `schema`, comparing only the properties the
  * application asserted something about.

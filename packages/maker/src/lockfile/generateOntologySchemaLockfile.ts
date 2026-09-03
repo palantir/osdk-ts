@@ -34,6 +34,16 @@ import type {
 import { ONTOLOGY_SCHEMA_LOCKFILE_VERSION } from "./OntologySchemaLockfile.js";
 
 /**
+ * Every interface the lockfile could track, enrolled or not, with the schema it declares now.
+ *
+ * This enables disambiguating "this interface was deleted from source" vs "this interface was
+ * unenrolled from being locked, but still exists in source", which may have different consequences.
+ */
+export interface SourceCensus {
+  interfaces: ReadonlyMap<string, LockedInterfaceSchema>;
+}
+
+/**
  * Derives the lockfile that the given ontology *should* have, purely from source.
  *
  * NB: Deliberately does not consult the previously-persisted lockfile, and instead keeps
@@ -54,6 +64,17 @@ export function generateOntologySchemaLockfile(
   }
 
   return { version: ONTOLOGY_SCHEMA_LOCKFILE_VERSION, interfaces };
+}
+
+export function censusOfSource(ontology: OntologyDefinition): SourceCensus {
+  return {
+    interfaces: new Map(
+      Object.values(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE]).map(
+        (interfaceType) =>
+          [interfaceType.apiName, lockInterfaceSchema(interfaceType)] as const,
+      ),
+    ),
+  };
 }
 
 export function shouldLockInterface(interfaceType: InterfaceType): boolean {
