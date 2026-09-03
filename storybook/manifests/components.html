@@ -10052,7 +10052,7 @@ export const WithPdfViewerProps: Story = {
   args: {
     media: mockPdfMedia,
     pdfViewerProps: {
-      initialSidebarOpen: true,
+      defaultSidebarOpen: true,
       enableDownload: true,
     },
   },
@@ -10062,7 +10062,7 @@ export const WithPdfViewerProps: Story = {
         code: `&lt;DocumentViewer
   media={myMedia}
   pdfViewerProps={{
-    initialSidebarOpen: true,
+    defaultSidebarOpen: true,
     enableDownload: true,
   }}
 /&gt;`,
@@ -10225,7 +10225,7 @@ export const WithPdfViewerProps: Story = {
     &lt;DocumentViewer
         media={mockPdfMedia}
         pdfViewerProps={{
-          initialSidebarOpen: true,
+          defaultSidebarOpen: true,
           enableDownload: true,
         }} /&gt;
 &lt;/div&gt;;</code></pre>
@@ -18074,17 +18074,17 @@ const meta: Meta&lt;PdfViewerProps&gt; = {
       control: false,
       table: { category: &quot;Events&quot; },
     },
-    initialPage: {
+    defaultPage: {
       description: &quot;Page to display on first render (1-indexed)&quot;,
       control: &quot;number&quot;,
       table: { defaultValue: { summary: &quot;1&quot; } },
     },
-    initialScale: {
+    defaultScale: {
       description: &quot;Initial zoom scale&quot;,
       control: &quot;number&quot;,
       table: { defaultValue: { summary: &quot;1.0&quot; } },
     },
-    initialSidebarOpen: {
+    defaultSidebarOpen: {
       description: &quot;Whether the thumbnail sidebar is initially open&quot;,
       control: &quot;boolean&quot;,
       table: { defaultValue: { summary: &quot;false&quot; } },
@@ -18228,12 +18228,12 @@ export const WithAnnotations: Story = {
 
 export const WithSidebar: Story = {
   args: {
-    initialSidebarOpen: true,
+    defaultSidebarOpen: true,
   },
   parameters: {
     docs: {
       source: {
-        code: `&lt;PdfViewer media={myMediaObject} initialSidebarOpen /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} defaultSidebarOpen /&gt;`,
       },
     },
   },
@@ -18241,12 +18241,12 @@ export const WithSidebar: Story = {
 
 export const CustomScale: Story = {
   args: {
-    initialScale: 1.5,
+    defaultScale: 1.5,
   },
   parameters: {
     docs: {
       source: {
-        code: `&lt;PdfViewer media={myMediaObject} initialScale={1.5} /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} defaultScale={1.5} /&gt;`,
       },
     },
   },
@@ -18254,12 +18254,12 @@ export const CustomScale: Story = {
 
 export const WithAutoSize: Story = {
   args: {
-    initialAutoSize: true,
+    defaultAutoSize: true,
   },
   parameters: {
     docs: {
       source: {
-        code: `&lt;PdfViewer media={myMediaObject} initialAutoSize /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} defaultAutoSize /&gt;`,
       },
     },
   },
@@ -18280,13 +18280,13 @@ export const WithDownload: Story = {
 
 export const WithOutlineSidebar: Story = {
   args: {
-    initialSidebarOpen: true,
+    defaultSidebarOpen: true,
     sidebarMode: &quot;outline&quot;,
   },
   parameters: {
     docs: {
       source: {
-        code: `&lt;PdfViewer media={myMediaObject} initialSidebarOpen sidebarMode=&quot;outline&quot; /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} defaultSidebarOpen sidebarMode=&quot;outline&quot; /&gt;`,
       },
     },
   },
@@ -18418,7 +18418,7 @@ export const WithHighlightMode: StoryObj&lt;BasePdfViewerProps&gt; = {
 export const WithEmbeddedOutline: Story = {
   args: {
     media: mockBookmarkedMedia,
-    initialSidebarOpen: true,
+    defaultSidebarOpen: true,
     sidebarMode: &quot;outline&quot;,
   },
   parameters: {
@@ -18427,7 +18427,7 @@ export const WithEmbeddedOutline: Story = {
         code: `// The outline content is auto-generated from the PDF&#39;s own bookmarks
 &lt;PdfViewer
   media={handbook.pdf}
-  initialSidebarOpen
+  defaultSidebarOpen
   sidebarMode=&quot;outline&quot;
 /&gt;`,
       },
@@ -18567,7 +18567,7 @@ const handleFormSubmit = useCallback(
               
               
               <pre><code>const WithSidebar = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
-    &lt;PdfViewer media={mockMedia} initialSidebarOpen /&gt;
+    &lt;PdfViewer media={mockMedia} defaultSidebarOpen /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -18578,7 +18578,7 @@ const handleFormSubmit = useCallback(
               
               
               <pre><code>const CustomScale = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
-    &lt;PdfViewer media={mockMedia} initialScale={1.5} /&gt;
+    &lt;PdfViewer media={mockMedia} defaultScale={1.5} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -18589,7 +18589,7 @@ const handleFormSubmit = useCallback(
               
               
               <pre><code>const WithAutoSize = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
-    &lt;PdfViewer media={mockMedia} initialAutoSize /&gt;
+    &lt;PdfViewer media={mockMedia} defaultAutoSize /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -18611,7 +18611,7 @@ const handleFormSubmit = useCallback(
               
               
               <pre><code>const WithOutlineSidebar = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
-    &lt;PdfViewer media={mockMedia} initialSidebarOpen sidebarMode=&quot;outline&quot; /&gt;
+    &lt;PdfViewer media={mockMedia} defaultSidebarOpen sidebarMode=&quot;outline&quot; /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -18653,7 +18653,7 @@ const handleFormSubmit = useCallback(
               
               
               <pre><code>const WithEmbeddedOutline = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
-    &lt;PdfViewer media={mockBookmarkedMedia} initialSidebarOpen sidebarMode=&quot;outline&quot; /&gt;
+    &lt;PdfViewer media={mockBookmarkedMedia} defaultSidebarOpen sidebarMode=&quot;outline&quot; /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -19150,11 +19150,11 @@ const meta: Meta&lt;PdfViewerContentProps&gt; = {
       description: &quot;PDF source — URL string, ArrayBuffer, Uint8Array, or Blob&quot;,
       control: false,
     },
-    initialPage: {
+    defaultPage: {
       description: &quot;Initial page number (1-indexed)&quot;,
       control: { type: &quot;number&quot;, min: 1 },
     },
-    initialScale: {
+    defaultScale: {
       description: &quot;Initial zoom scale&quot;,
       control: { type: &quot;number&quot;, min: 0.25, max: 5, step: 0.25 },
     },
@@ -19181,7 +19181,7 @@ export const Default: Story = {
 
 export const ZoomedIn: Story = {
   args: {
-    initialScale: 2,
+    defaultScale: 2,
   },
   parameters: {
     docs: {
@@ -19199,7 +19199,7 @@ export const ZoomedIn: Story = {
 
 export const StartOnPage5: Story = {
   args: {
-    initialPage: 5,
+    defaultPage: 5,
   },
   parameters: {
     docs: {
@@ -19262,7 +19262,7 @@ export const StartOnPage5: Story = {
         src={SAMPLE_PDF_URL}
         onPageChange={fn()}
         onScaleChange={fn()}
-        initialScale={2} /&gt;
+        defaultScale={2} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -19277,7 +19277,7 @@ export const StartOnPage5: Story = {
         src={SAMPLE_PDF_URL}
         onPageChange={fn()}
         onScaleChange={fn()}
-        initialPage={5} /&gt;
+        defaultPage={5} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
         </div>
@@ -30539,7 +30539,7 @@ export const WithPdfViewerProps: Story = {
   args: {
     media: mockPdfMedia,
     pdfViewerProps: {
-      initialSidebarOpen: true,
+      defaultSidebarOpen: true,
       enableDownload: true,
     },
   },
@@ -30549,7 +30549,7 @@ export const WithPdfViewerProps: Story = {
         code: `&lt;DocumentViewer
   media={myMedia}
   pdfViewerProps={{
-    initialSidebarOpen: true,
+    defaultSidebarOpen: true,
     enableDownload: true,
   }}
 /&gt;`,
@@ -30712,7 +30712,7 @@ export const WithPdfViewerProps: Story = {
     &lt;DocumentViewer
         media={mockPdfMedia}
         pdfViewerProps={{
-          initialSidebarOpen: true,
+          defaultSidebarOpen: true,
           enableDownload: true,
         }} /&gt;
 &lt;/div&gt;;</code></pre>
@@ -36310,17 +36310,17 @@ const meta: Meta&lt;PdfViewerProps&gt; = {
       control: false,
       table: { category: &quot;Events&quot; },
     },
-    initialPage: {
+    defaultPage: {
       description: &quot;Page to display on first render (1-indexed)&quot;,
       control: &quot;number&quot;,
       table: { defaultValue: { summary: &quot;1&quot; } },
     },
-    initialScale: {
+    defaultScale: {
       description: &quot;Initial zoom scale&quot;,
       control: &quot;number&quot;,
       table: { defaultValue: { summary: &quot;1.0&quot; } },
     },
-    initialSidebarOpen: {
+    defaultSidebarOpen: {
       description: &quot;Whether the thumbnail sidebar is initially open&quot;,
       control: &quot;boolean&quot;,
       table: { defaultValue: { summary: &quot;false&quot; } },
@@ -36464,12 +36464,12 @@ export const WithAnnotations: Story = {
 
 export const WithSidebar: Story = {
   args: {
-    initialSidebarOpen: true,
+    defaultSidebarOpen: true,
   },
   parameters: {
     docs: {
       source: {
-        code: `&lt;PdfViewer media={myMediaObject} initialSidebarOpen /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} defaultSidebarOpen /&gt;`,
       },
     },
   },
@@ -36477,12 +36477,12 @@ export const WithSidebar: Story = {
 
 export const CustomScale: Story = {
   args: {
-    initialScale: 1.5,
+    defaultScale: 1.5,
   },
   parameters: {
     docs: {
       source: {
-        code: `&lt;PdfViewer media={myMediaObject} initialScale={1.5} /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} defaultScale={1.5} /&gt;`,
       },
     },
   },
@@ -36490,12 +36490,12 @@ export const CustomScale: Story = {
 
 export const WithAutoSize: Story = {
   args: {
-    initialAutoSize: true,
+    defaultAutoSize: true,
   },
   parameters: {
     docs: {
       source: {
-        code: `&lt;PdfViewer media={myMediaObject} initialAutoSize /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} defaultAutoSize /&gt;`,
       },
     },
   },
@@ -36516,13 +36516,13 @@ export const WithDownload: Story = {
 
 export const WithOutlineSidebar: Story = {
   args: {
-    initialSidebarOpen: true,
+    defaultSidebarOpen: true,
     sidebarMode: &quot;outline&quot;,
   },
   parameters: {
     docs: {
       source: {
-        code: `&lt;PdfViewer media={myMediaObject} initialSidebarOpen sidebarMode=&quot;outline&quot; /&gt;`,
+        code: `&lt;PdfViewer media={myMediaObject} defaultSidebarOpen sidebarMode=&quot;outline&quot; /&gt;`,
       },
     },
   },
@@ -36654,7 +36654,7 @@ export const WithHighlightMode: StoryObj&lt;BasePdfViewerProps&gt; = {
 export const WithEmbeddedOutline: Story = {
   args: {
     media: mockBookmarkedMedia,
-    initialSidebarOpen: true,
+    defaultSidebarOpen: true,
     sidebarMode: &quot;outline&quot;,
   },
   parameters: {
@@ -36663,7 +36663,7 @@ export const WithEmbeddedOutline: Story = {
         code: `// The outline content is auto-generated from the PDF&#39;s own bookmarks
 &lt;PdfViewer
   media={handbook.pdf}
-  initialSidebarOpen
+  defaultSidebarOpen
   sidebarMode=&quot;outline&quot;
 /&gt;`,
       },
@@ -36803,7 +36803,7 @@ const handleFormSubmit = useCallback(
               
               
               <pre><code>const WithSidebar = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
-    &lt;PdfViewer media={mockMedia} initialSidebarOpen /&gt;
+    &lt;PdfViewer media={mockMedia} defaultSidebarOpen /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -36814,7 +36814,7 @@ const handleFormSubmit = useCallback(
               
               
               <pre><code>const CustomScale = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
-    &lt;PdfViewer media={mockMedia} initialScale={1.5} /&gt;
+    &lt;PdfViewer media={mockMedia} defaultScale={1.5} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -36825,7 +36825,7 @@ const handleFormSubmit = useCallback(
               
               
               <pre><code>const WithAutoSize = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
-    &lt;PdfViewer media={mockMedia} initialAutoSize /&gt;
+    &lt;PdfViewer media={mockMedia} defaultAutoSize /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -36847,7 +36847,7 @@ const handleFormSubmit = useCallback(
               
               
               <pre><code>const WithOutlineSidebar = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
-    &lt;PdfViewer media={mockMedia} initialSidebarOpen sidebarMode=&quot;outline&quot; /&gt;
+    &lt;PdfViewer media={mockMedia} defaultSidebarOpen sidebarMode=&quot;outline&quot; /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -36889,7 +36889,7 @@ const handleFormSubmit = useCallback(
               
               
               <pre><code>const WithEmbeddedOutline = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
-    &lt;PdfViewer media={mockBookmarkedMedia} initialSidebarOpen sidebarMode=&quot;outline&quot; /&gt;
+    &lt;PdfViewer media={mockBookmarkedMedia} defaultSidebarOpen sidebarMode=&quot;outline&quot; /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -37386,11 +37386,11 @@ const meta: Meta&lt;PdfViewerContentProps&gt; = {
       description: &quot;PDF source — URL string, ArrayBuffer, Uint8Array, or Blob&quot;,
       control: false,
     },
-    initialPage: {
+    defaultPage: {
       description: &quot;Initial page number (1-indexed)&quot;,
       control: { type: &quot;number&quot;, min: 1 },
     },
-    initialScale: {
+    defaultScale: {
       description: &quot;Initial zoom scale&quot;,
       control: { type: &quot;number&quot;, min: 0.25, max: 5, step: 0.25 },
     },
@@ -37417,7 +37417,7 @@ export const Default: Story = {
 
 export const ZoomedIn: Story = {
   args: {
-    initialScale: 2,
+    defaultScale: 2,
   },
   parameters: {
     docs: {
@@ -37435,7 +37435,7 @@ export const ZoomedIn: Story = {
 
 export const StartOnPage5: Story = {
   args: {
-    initialPage: 5,
+    defaultPage: 5,
   },
   parameters: {
     docs: {
@@ -37498,7 +37498,7 @@ export const StartOnPage5: Story = {
         src={SAMPLE_PDF_URL}
         onPageChange={fn()}
         onScaleChange={fn()}
-        initialScale={2} /&gt;
+        defaultScale={2} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -37513,7 +37513,7 @@ export const StartOnPage5: Story = {
         src={SAMPLE_PDF_URL}
         onPageChange={fn()}
         onScaleChange={fn()}
-        initialPage={5} /&gt;
+        defaultPage={5} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
         </div>
