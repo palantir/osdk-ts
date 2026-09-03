@@ -18,16 +18,19 @@ import * as fs from "fs";
 
 import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { InputPreset } from "@osdk/client.unstable/api";
+import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import type { LinkType, ObjectType } from "@osdk/maker";
 import {
   getImportedTypes,
   getOntologyDefinition,
+  importOntologyEntity,
   initializeOntologyState,
   OntologyEntityTypeEnum,
   writeDependencyFile,
   writeStaticObjects,
 } from "@osdk/maker";
+import { convertOntologyFullMetadata } from "@osdk/maker-import";
 
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
 import {
@@ -62,6 +65,7 @@ export async function defineOntologyV2(
   functionsIrFile?: string,
   randomnessKey?: string,
   importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
+  externalImportedMetadata?: OntologyFullMetadata,
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
 
@@ -74,6 +78,22 @@ export async function defineOntologyV2(
       e,
     );
     throw e;
+  }
+
+  if (externalImportedMetadata) {
+    const importedOntology = convertOntologyFullMetadata(
+      externalImportedMetadata,
+    );
+    for (const entityType of [
+      OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
+      OntologyEntityTypeEnum.INTERFACE_TYPE,
+      OntologyEntityTypeEnum.OBJECT_TYPE,
+      OntologyEntityTypeEnum.ACTION_TYPE,
+    ] as const) {
+      for (const entity of Object.values(importedOntology[entityType])) {
+        importOntologyEntity(entity);
+      }
+    }
   }
 
   const ontologyDefinition = getOntologyDefinition();
