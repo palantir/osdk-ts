@@ -119,6 +119,19 @@ export function validateInterfaceSchemaMigrations(
   }
 }
 
+export function isCanonicalIsoUtcDatetime(value: string): boolean {
+  const asIsoString = Number.isNaN(Date.parse(value))
+    ? undefined
+    : new Date(value).toISOString();
+  return (
+    asIsoString !== undefined &&
+    // Ensures the declared deadline is actually an ISO string, rather than a bare date-only string
+    // (so we don't have to pick whether a bare date means "done by this day" or "done at the end
+    // of this day")
+    (value === asIsoString || value === asIsoString.replace(/\.000Z$/u, "Z"))
+  );
+}
+
 function validateGracePeriod(
   apiName: string,
   transitionId: string,
@@ -137,16 +150,8 @@ function validateGracePeriod(
     }
     case "deadline": {
       const { deadline } = gracePeriod;
-      const asIsoString = Number.isNaN(Date.parse(deadline))
-        ? undefined
-        : new Date(deadline).toISOString();
       invariant(
-        asIsoString !== undefined &&
-          // Ensures the declared deadline is actually an ISO string, rather than a bare date-only string
-          // (so we don't have to pick whether a bare date means "done by this day" or "done at the end
-          // of this day")
-          (deadline === asIsoString ||
-            deadline === asIsoString.replace(/\.000Z$/u, "Z")),
+        isCanonicalIsoUtcDatetime(deadline),
         `Schema migration transition "${transitionId}" on interface ${apiName} has a 'deadline' grace period of "${deadline}", which is not a canonical ISO-8601 UTC datetime (e.g. "2026-01-31T00:00:00Z").`,
       );
       return;

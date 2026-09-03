@@ -49,7 +49,8 @@
     "semver-ts": "^1.0.3",
     "tiny-invariant": "^1.3.3",
     "ts-node": "^10.9.2",
-    "yargs": "^17.7.2"
+    "yargs": "^17.7.2",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@osdk/client.unstable": "workspace:~",
