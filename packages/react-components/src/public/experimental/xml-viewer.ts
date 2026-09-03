@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-/** @deprecated Import from `@osdk/react-components/xml-viewer` instead. */
-export { BaseXmlViewer, XmlViewer } from "../xml-viewer.js";
+import * as Stable from "../xml-viewer.js";
 
 /** @deprecated Import from `@osdk/react-components/xml-viewer` instead. */
-export type { BaseXmlViewerProps, XmlViewerProps } from "../xml-viewer.js";
+export const BaseXmlViewer: typeof Stable.BaseXmlViewer = Stable.BaseXmlViewer;
+
+/** @deprecated Import from `@osdk/react-components/xml-viewer` instead. */
+export type BaseXmlViewerProps = Stable.BaseXmlViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/xml-viewer` instead. */
+export type XmlViewerProps = Stable.XmlViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/xml-viewer` instead. */
+export const XmlViewer: typeof Stable.XmlViewer = Stable.XmlViewer;

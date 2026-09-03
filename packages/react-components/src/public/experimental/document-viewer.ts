@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
-/** @deprecated Import from `@osdk/react-components/document-viewer` instead. */
-export { DocumentViewer, ViewerType } from "../document-viewer.js";
+import * as Stable from "../document-viewer.js";
 
 /** @deprecated Import from `@osdk/react-components/document-viewer` instead. */
-export type { DocumentViewerProps } from "../document-viewer.js";
+export const DocumentViewer: typeof Stable.DocumentViewer =
+  Stable.DocumentViewer;
+
+/** @deprecated Import from `@osdk/react-components/document-viewer` instead. */
+export type DocumentViewerProps = Stable.DocumentViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/document-viewer` instead. */
+export const ViewerType: typeof Stable.ViewerType = Stable.ViewerType;
+
+/** @deprecated Import from `@osdk/react-components/document-viewer` instead. */
+export type ViewerType = Stable.ViewerType;

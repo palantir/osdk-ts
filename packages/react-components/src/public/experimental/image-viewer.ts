@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-/** @deprecated Import from `@osdk/react-components/image-viewer` instead. */
-export { BaseImageViewer, ImageViewer } from "../image-viewer.js";
+import * as Stable from "../image-viewer.js";
 
 /** @deprecated Import from `@osdk/react-components/image-viewer` instead. */
-export type {
-  BaseImageViewerProps,
-  ImageViewerProps,
-} from "../image-viewer.js";
+export const BaseImageViewer: typeof Stable.BaseImageViewer =
+  Stable.BaseImageViewer;
+
+/** @deprecated Import from `@osdk/react-components/image-viewer` instead. */
+export type BaseImageViewerProps = Stable.BaseImageViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/image-viewer` instead. */
+export type ImageViewerProps = Stable.ImageViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/image-viewer` instead. */
+export const ImageViewer: typeof Stable.ImageViewer = Stable.ImageViewer;

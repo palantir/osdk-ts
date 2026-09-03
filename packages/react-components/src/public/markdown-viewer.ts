@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { BaseMarkdownViewer as _BaseMarkdownViewer } from "../markdown-viewer/BaseMarkdownViewer.js";
 import { MarkdownViewer as _MarkdownViewer } from "../markdown-viewer/MarkdownViewer.js";
-import type { BaseMarkdownViewerProps as _BaseMarkdownViewerProps } from "../markdown-viewer/MarkdownViewerApi.js";
 import { withOsdkMetrics } from "../util/withOsdkMetrics.js";
 
 // BaseMarkdownViewer
@@ -31,16 +29,3 @@ export const MarkdownViewer: typeof _MarkdownViewer = withOsdkMetrics(
   _MarkdownViewer,
   "MarkdownViewer",
 );
-
-// Deprecated `Renderer` aliases of the same values, cleared in a later pass.
-// `MarkdownViewerMediaProps` has none: the `Media` drop is a uniform break
-// because pdf's old name was reused for a different type.
-
-/** @deprecated Use `BaseMarkdownViewer` instead. */
-export const MarkdownRenderer: typeof _BaseMarkdownViewer = _BaseMarkdownViewer;
-
-/** @deprecated Use `BaseMarkdownViewerProps` instead. */
-export type MarkdownRendererProps = _BaseMarkdownViewerProps;
-
-/** @deprecated Use `MarkdownViewer` instead. */
-export const MarkdownViewerMedia: typeof MarkdownViewer = MarkdownViewer;

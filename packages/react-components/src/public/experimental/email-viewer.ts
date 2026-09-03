@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-/** @deprecated Import from `@osdk/react-components/email-viewer` instead. */
-export { BaseEmailViewer, EmailViewer } from "../email-viewer.js";
+import * as Stable from "../email-viewer.js";
 
 /** @deprecated Import from `@osdk/react-components/email-viewer` instead. */
-export type {
-  BaseEmailViewerProps,
-  EmailAddress,
-  EmailViewerProps,
-  ParsedEmail,
-} from "../email-viewer.js";
+export const BaseEmailViewer: typeof Stable.BaseEmailViewer =
+  Stable.BaseEmailViewer;
+
+/** @deprecated Import from `@osdk/react-components/email-viewer` instead. */
+export type BaseEmailViewerProps = Stable.BaseEmailViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/email-viewer` instead. */
+export type EmailAddress = Stable.EmailAddress;
+
+/** @deprecated Import from `@osdk/react-components/email-viewer` instead. */
+export type EmailViewerProps = Stable.EmailViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/email-viewer` instead. */
+export type ParsedEmail = Stable.ParsedEmail;
+
+/** @deprecated Import from `@osdk/react-components/email-viewer` instead. */
+export const EmailViewer: typeof Stable.EmailViewer = Stable.EmailViewer;

@@ -5,10 +5,7 @@ A React component for rendering PDF documents with text selection, custom annota
 ## Import
 
 ```tsx
-import {
-  BasePdfViewer,
-  PdfViewer,
-} from "@osdk/react-components/pdf-viewer";
+import { BasePdfViewer, PdfViewer } from "@osdk/react-components/pdf-viewer";
 ```
 
 - **`PdfViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the PDF contents, and renders the viewer.

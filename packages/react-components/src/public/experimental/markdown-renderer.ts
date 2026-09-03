@@ -14,17 +14,29 @@
  * limitations under the License.
  */
 
-/** @deprecated Import from `@osdk/react-components/markdown-viewer` instead. */
-export {
-  BaseMarkdownViewer,
-  MarkdownRenderer,
-  MarkdownViewer,
-  MarkdownViewerMedia,
-} from "../markdown-viewer.js";
+import * as Stable from "../markdown-viewer.js";
 
 /** @deprecated Import from `@osdk/react-components/markdown-viewer` instead. */
-export type {
-  BaseMarkdownViewerProps,
-  MarkdownRendererProps,
-  MarkdownViewerProps,
-} from "../markdown-viewer.js";
+export const BaseMarkdownViewer: typeof Stable.BaseMarkdownViewer =
+  Stable.BaseMarkdownViewer;
+
+/** @deprecated Import from `@osdk/react-components/markdown-viewer` instead. */
+export type BaseMarkdownViewerProps = Stable.BaseMarkdownViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/markdown-viewer` instead. */
+export type MarkdownViewerProps = Stable.MarkdownViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/markdown-viewer` instead. */
+export const MarkdownViewer: typeof Stable.MarkdownViewer =
+  Stable.MarkdownViewer;
+
+/** @deprecated Use `BaseMarkdownViewer` instead. */
+export const MarkdownRenderer: typeof Stable.BaseMarkdownViewer =
+  Stable.BaseMarkdownViewer;
+
+/** @deprecated Use `BaseMarkdownViewerProps` instead. */
+export type MarkdownRendererProps = Stable.BaseMarkdownViewerProps;
+
+/** @deprecated Use `MarkdownViewer` instead. */
+export const MarkdownViewerMedia: typeof Stable.MarkdownViewer =
+  Stable.MarkdownViewer;

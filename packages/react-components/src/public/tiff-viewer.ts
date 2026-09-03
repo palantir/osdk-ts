@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { BaseTiffViewer as _BaseTiffViewer } from "../images/tiff-viewer/BaseTiffViewer.js";
 import { TiffViewer as _TiffViewer } from "../images/tiff-viewer/TiffViewer.js";
-import type { BaseTiffViewerProps as _BaseTiffViewerProps } from "../images/tiff-viewer/TiffViewerApi.js";
 import { withOsdkMetrics } from "../util/withOsdkMetrics.js";
 
 // BaseTiffViewer
@@ -31,16 +29,3 @@ export const TiffViewer: typeof _TiffViewer = withOsdkMetrics(
   _TiffViewer,
   "TiffViewer",
 );
-
-// Deprecated `Renderer` aliases of the same values, cleared in a later pass.
-// `TiffViewerMediaProps` has none: the `Media` drop is a uniform break because
-// pdf's old name was reused for a different type.
-
-/** @deprecated Use `BaseTiffViewer` instead. */
-export const TiffRenderer: typeof _BaseTiffViewer = _BaseTiffViewer;
-
-/** @deprecated Use `BaseTiffViewerProps` instead. */
-export type TiffRendererProps = _BaseTiffViewerProps;
-
-/** @deprecated Use `TiffViewer` instead. */
-export const TiffViewerMedia: typeof TiffViewer = TiffViewer;

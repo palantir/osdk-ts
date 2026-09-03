@@ -76,15 +76,15 @@ Each format ships two components from its own subpath:
 - **`<Format>Viewer`** — the OSDK-aware component. Takes a `media: Media` prop and handles fetching and decoding.
 - **`Base<Format>Viewer`** — the OSDK-agnostic component. Takes an already-resolved `src` (binary source: URL or bytes) or `content` (decoded payload), so you can drive it from your own data source.
 
-Import subpaths below are relative to `@osdk/react-components/experimental/`.
+Import subpaths below are relative to `@osdk/react-components/`.
 
 | OSDK viewer         | Import subpath       | Base component          | Base input                   | Handles                                               |
 | ------------------- | -------------------- | ----------------------- | ---------------------------- | ----------------------------------------------------- |
 | `PdfViewer`         | `pdf-viewer`         | `BasePdfViewer`         | `src: PdfSource`             | `application/pdf`                                     |
 | `ImageViewer`       | `image-viewer`       | `BaseImageViewer`       | `src: string`                | PNG, JPEG, GIF, SVG, WebP, BMP                        |
-| `TiffViewer`        | `tiff-renderer`      | `BaseTiffViewer`        | `src: Uint8Array`            | `image/tiff`, plus `.tif`/`.tiff` file-name detection |
+| `TiffViewer`        | `tiff-viewer`        | `BaseTiffViewer`        | `src: Uint8Array`            | `image/tiff`, plus `.tif`/`.tiff` file-name detection |
 | `VideoViewer`       | `video-viewer`       | `BaseVideoViewer`       | `src: string`                | any `video/*`                                         |
-| `MarkdownViewer`    | `markdown-renderer`  | `BaseMarkdownViewer`    | `content: string`            | `text/markdown`, `text/x-markdown`                    |
+| `MarkdownViewer`    | `markdown-viewer`    | `BaseMarkdownViewer`    | `content: string`            | `text/markdown`, `text/x-markdown`                    |
 | `SpreadsheetViewer` | `spreadsheet-viewer` | `BaseSpreadsheetViewer` | `content: ParsedSpreadsheet` | `.xlsx`                                               |
 | `EmailViewer`       | `email-viewer`       | `BaseEmailViewer`       | `content: ParsedEmail`       | `message/rfc822`                                      |
 | `XmlViewer`         | `xml-viewer`         | `BaseXmlViewer`         | `content: string`            | `application/xml`, `text/xml`                         |

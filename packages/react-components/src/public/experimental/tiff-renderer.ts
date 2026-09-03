@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 
-/** @deprecated Import from `@osdk/react-components/tiff-viewer` instead. */
-export {
-  BaseTiffViewer,
-  TiffRenderer,
-  TiffViewer,
-  TiffViewerMedia,
-} from "../tiff-viewer.js";
+import * as Stable from "../tiff-viewer.js";
 
 /** @deprecated Import from `@osdk/react-components/tiff-viewer` instead. */
-export type {
-  BaseTiffViewerProps,
-  TiffRendererProps,
-  TiffViewerProps,
-} from "../tiff-viewer.js";
+export const BaseTiffViewer: typeof Stable.BaseTiffViewer =
+  Stable.BaseTiffViewer;
+
+/** @deprecated Import from `@osdk/react-components/tiff-viewer` instead. */
+export type BaseTiffViewerProps = Stable.BaseTiffViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/tiff-viewer` instead. */
+export type TiffViewerProps = Stable.TiffViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/tiff-viewer` instead. */
+export const TiffViewer: typeof Stable.TiffViewer = Stable.TiffViewer;
+
+/** @deprecated Use `BaseTiffViewer` instead. */
+export const TiffRenderer: typeof Stable.BaseTiffViewer = Stable.BaseTiffViewer;
+
+/** @deprecated Use `BaseTiffViewerProps` instead. */
+export type TiffRendererProps = Stable.BaseTiffViewerProps;
+
+/** @deprecated Use `TiffViewer` instead. */
+export const TiffViewerMedia: typeof Stable.TiffViewer = Stable.TiffViewer;

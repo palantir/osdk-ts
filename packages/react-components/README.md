@@ -253,7 +253,7 @@ This package focuses on complex, Ontology-aware components with built-in data fe
 
 Every OSDK component (the outermost data-fetching layer, **not** the Base component) must register a user agent string so that network requests include a `Fetch-User-Agent` header identifying which component initiated them. This enables usage tracking and debugging.
 
-This is handled automatically by the `withOsdkMetrics` HOC. Wrap your component at the **export barrel** (`public/experimental/*.ts`), not inside the component body:
+This is handled automatically by the `withOsdkMetrics` HOC. Wrap your component at its canonical **export barrel** (`public/experimental/*.ts` before promotion, or `public/*.ts` after promotion), not inside the component body:
 
 ```ts
 // public/experimental/my-component.ts
