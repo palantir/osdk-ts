@@ -17,7 +17,7 @@
 import { isDeepStrictEqual } from "node:util";
 
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
-import type { PropertyTypeType } from "../api/properties/PropertyTypeType.js";
+import type { LockedPropertyType } from "./normalizePropertyType.js";
 import type {
   LockedInterfaceSchema,
   LockedTransition,
@@ -35,7 +35,7 @@ export type ApplyMode = "lenient" | "strict";
  * The change an instruction makes to one property, as a patch over that property's recorded shape.
  */
 interface PropertyEdit {
-  type?: PropertyTypeType;
+  type?: LockedPropertyType;
   required?: boolean;
 }
 

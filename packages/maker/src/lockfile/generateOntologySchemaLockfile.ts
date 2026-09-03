@@ -24,6 +24,7 @@ import {
 } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "../api/interface/InterfaceType.js";
+import { normalizePropertyType } from "./normalizePropertyType.js";
 import type {
   LockedInterfaceSchema,
   LockedInterfaceType,
@@ -94,7 +95,7 @@ function lockInterfaceSchema(
         [
           interfacePropertyWireApiName(property, propertyApiName),
           {
-            type: getInterfacePropertyTypeType(property),
+            type: normalizePropertyType(getInterfacePropertyTypeType(property)),
             required: isInterfacePropertyRequired(property),
           },
         ] as const,

@@ -12,6 +12,7 @@ codegen
 commitish
 Cpath
 Csvg
+datetimes
 dedups
 devx
 Discoverability
@@ -26,9 +27,11 @@ hideable
 inbetween
 isModifierable
 jsons
+millis
 Multimap
 objs
 onwarn
+parseable
 peopleapp
 pypi
 retryable
@@ -49,6 +52,7 @@ uncapitalize
 unevaluable
 ungroup
 unioned
+unparseable
 unresolve
 Unsubscribable
 unvalidated

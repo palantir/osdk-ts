@@ -18,7 +18,7 @@ import type {
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
 } from "../api/interface/InterfaceSchemaMigrations.js";
-import type { PropertyTypeType } from "../api/properties/PropertyTypeType.js";
+import type { LockedPropertyType } from "./normalizePropertyType.js";
 
 export const ONTOLOGY_SCHEMA_LOCKFILE_VERSION = 1;
 export const DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME =
@@ -72,7 +72,20 @@ export interface LockedInterfaceSchema {
 }
 
 export interface LockedProperty {
-  type: PropertyTypeType;
+  /**
+   * The type as the author spelled it, less the parts that carry no compatibility meaning.
+   *
+   * Recorded whole rather than distilled to the fields that matter, because `PropertyTypeType` is
+   * an open union: distilling it would mean an allowlist, and a field left off that allowlist —
+   * `vector`'s `quantization`, say — would silently stop being compared, letting a real breaking
+   * change through to installation-time. Recording everything can only err the other way, towards
+   * reporting a change that OMS would in fact accept.
+   *
+   * That direction of error is live today: the type is the author's own spelling, so `"string"` and
+   * `{ type: "string" }` mean the same thing to OMS but compare unequal here. Rewriting one as the
+   * other therefore reads as a type change. Rare, and it fails safe.
+   */
+  type: LockedPropertyType;
   required: boolean;
 }
 
@@ -100,6 +113,6 @@ export function serializeLockfile(lockfile: OntologySchemaLockfile): string {
 }
 
 /** How a property's type is named in error messages and in the rendered lockfile diff. */
-export function describeType(type: PropertyTypeType): string {
+export function describeType(type: LockedPropertyType): string {
   return JSON.stringify(type);
 }
