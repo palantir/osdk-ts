@@ -86,6 +86,15 @@ export function own<T>(record: Record<string, T>, key: string): T | undefined {
   return Object.hasOwn(record, key) ? record[key] : undefined;
 }
 
+export function isEmptyLockfile(lockfile: OntologySchemaLockfile): boolean {
+  return lockedInterfaceCount(lockfile) === 0;
+}
+
+/** How many interfaces the lockfile tracks. */
+export function lockedInterfaceCount(lockfile: OntologySchemaLockfile): number {
+  return Object.keys(lockfile.interfaces).length;
+}
+
 /** The api names of every locked interface whose recorded shape no longer matches the source. */
 export function staleInterfaces(
   previousLockfile: OntologySchemaLockfile,
