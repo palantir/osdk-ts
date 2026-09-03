@@ -40,7 +40,10 @@ import { ONTOLOGY_SCHEMA_LOCKFILE_VERSION } from "./OntologySchemaLockfile.js";
  * This enables disambiguating "this entity was deleted" vs "this entity was unenrolled from
  * being locked", which may have different consequences.
  */
-export type SourceCensus = Record<LockfileSection, ReadonlySet<string>>;
+export type SourceCensus = Record<
+  LockfileSection,
+  ReadonlyMap<string, LockedInterfaceSchema>
+>;
 
 /**
  * Derives the lockfile that the given ontology *should* have, purely from source.
@@ -70,8 +73,11 @@ export function generateOntologySchemaLockfile(
  */
 export function censusOfSource(ontology: OntologyDefinition): SourceCensus {
   return {
-    interfaces: new Set(
-      Object.keys(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE]),
+    interfaces: new Map(
+      Object.values(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE]).map(
+        (interfaceType) =>
+          [interfaceType.apiName, lockInterfaceSchema(interfaceType)] as const,
+      ),
     ),
   };
 }

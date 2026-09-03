@@ -21,7 +21,10 @@ import {
   defineOntology,
   getOntologyDefinition,
 } from "../../api/defineOntology.js";
-import { generateOntologySchemaLockfile } from "../generateOntologySchemaLockfile.js";
+import {
+  censusOfSource,
+  generateOntologySchemaLockfile,
+} from "../generateOntologySchemaLockfile.js";
 import type { OntologySchemaLockfile } from "../OntologySchemaLockfile.js";
 
 /**
@@ -86,5 +89,41 @@ describe("generateOntologySchemaLockfile", () => {
     expect(await lockNameProperty("Name")).toEqual(
       await lockNameProperty("Full name"),
     );
+  });
+});
+
+describe("censusOfSource", () => {
+  it("counts an interface that never opted in", () => {
+    defineInterface({ apiName: "Unenrolled" });
+    defineInterface({
+      apiName: "Enrolled",
+      schemaMigrations: { transitions: [] },
+    });
+
+    const ontology = getOntologyDefinition();
+    expect([...censusOfSource(ontology).interfaces.keys()].sort()).toEqual([
+      "com.palantir.Enrolled",
+      "com.palantir.Unenrolled",
+    ]);
+    expect(
+      Object.keys(generateOntologySchemaLockfile(ontology).interfaces),
+    ).toEqual(["com.palantir.Enrolled"]);
+  });
+
+  it("records the schema of an interface that opted back out", () => {
+    // This is the only record of it: validation has to read what became of its in-flight
+    // transitions, and opting out drops it from the generated lockfile entirely.
+    defineInterface({
+      apiName: "Unenrolled",
+      properties: { lastName: { type: "string", required: false } },
+    });
+
+    expect(
+      censusOfSource(getOntologyDefinition()).interfaces.get(
+        "com.palantir.Unenrolled",
+      ),
+    ).toEqual({
+      properties: { lastName: { type: "string", required: false } },
+    });
   });
 });
