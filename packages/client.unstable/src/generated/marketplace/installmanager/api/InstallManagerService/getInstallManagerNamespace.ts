@@ -27,11 +27,11 @@ import type { InstallManagerNamespace as _installmanager_api_InstallManagerNames
  */
 export async function getInstallManagerNamespace(
   ctx: ConjureContext,
-  namespaceRid: _api_NamespaceRid
+  namespaceRid: _api_NamespaceRid,
 ): Promise<_installmanager_api_InstallManagerNamespace> {
   return conjureFetch(
     ctx,
     `/install-manager/namespaces/${namespaceRid}`,
-    "GET"
+    "GET",
   );
 }

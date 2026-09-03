@@ -57,15 +57,15 @@ function MultiDateInputInner({
       if (date == null) return;
       const dateStr = formatDateForInput(date);
       const exists = selectedDates.some(
-        (d) => formatDateForInput(d) === dateStr
+        (d) => formatDateForInput(d) === dateStr,
       );
       if (!exists) {
         onChange(
-          [...selectedDates, date].sort((a, b) => a.getTime() - b.getTime())
+          [...selectedDates, date].sort((a, b) => a.getTime() - b.getTime()),
         );
       }
     },
-    [selectedDates, onChange]
+    [selectedDates, onChange],
   );
 
   const removeDate = useCallback(
@@ -73,7 +73,7 @@ function MultiDateInputInner({
       const dateStr = formatDateForInput(date);
       onChange(selectedDates.filter((d) => formatDateForInput(d) !== dateStr));
     },
-    [selectedDates, onChange]
+    [selectedDates, onChange],
   );
 
   const clearAll = useCallback(() => {

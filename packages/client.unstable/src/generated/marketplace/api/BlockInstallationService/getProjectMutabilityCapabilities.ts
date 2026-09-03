@@ -31,11 +31,11 @@ import type {
  */
 export async function getProjectMutabilityCapabilities(
   ctx: ConjureContext,
-  projectRid: _api_CompassProjectRid
+  projectRid: _api_CompassProjectRid,
 ): Promise<_api_ProjectMutabilityCapabilities> {
   return conjureFetch(
     ctx,
     `/block-installation/v2/projects/${projectRid}/mutability-capabilities`,
-    "GET"
+    "GET",
   );
 }

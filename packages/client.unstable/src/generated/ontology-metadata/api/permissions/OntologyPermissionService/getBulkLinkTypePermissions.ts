@@ -26,7 +26,7 @@ import type {
  */
 export async function getBulkLinkTypePermissions(
   ctx: ConjureContext,
-  request: _api_permissions_GetBulkLinkTypePermissionsRequest
+  request: _api_permissions_GetBulkLinkTypePermissionsRequest,
 ): Promise<_api_permissions_GetBulkLinkTypePermissionsResponse> {
   return conjureFetch(ctx, `/permissions/linkTypes`, "PUT", request);
 }

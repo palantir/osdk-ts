@@ -25,9 +25,9 @@ import { client } from "./client.js";
 
 const sumEmployee = await client(Employee)
   .withProperties({
-    "newPropertyName": (baseObjectSet) =>
-      baseObjectSet.pivotTo("assignedEquipment").aggregate(
-        "purchasePrice:approximatePercentile",
-        { percentile: 95 },
-      ),
-  }).fetchPage();
+    newPropertyName: (baseObjectSet) =>
+      baseObjectSet
+        .pivotTo("assignedEquipment")
+        .aggregate("purchasePrice:approximatePercentile", { percentile: 95 }),
+  })
+  .fetchPage();

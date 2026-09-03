@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-const NON_BRANCH = new Set(["main", "master", "HEAD"]);
+const NON_BRANCH: ReadonlySet<string> = new Set(["main", "master", "HEAD"]);
+
+function normalizeGitBranch(branch: string | undefined): string | undefined {
+  const trimmed = branch?.trim();
+  if (trimmed == null || trimmed === "" || NON_BRANCH.has(trimmed)) {
+    return undefined;
+  }
+  return trimmed;
+}
 
 /**
  * Resolve the branch context: `argBranchName` wins; else `gitBranchName`, with
@@ -22,15 +30,11 @@ const NON_BRANCH = new Set(["main", "master", "HEAD"]);
  */
 export function resolveBranch(
   argBranchName: string | undefined,
-  gitBranchName: string | undefined
+  gitBranchName: string | undefined,
 ): string | undefined {
   const argBranch = argBranchName?.trim();
   if (argBranch != null && argBranch !== "") {
     return argBranch;
   }
-  const gitBranch = gitBranchName?.trim();
-  if (gitBranch == null || gitBranch === "" || NON_BRANCH.has(gitBranch)) {
-    return undefined;
-  }
-  return gitBranch;
+  return normalizeGitBranch(gitBranchName);
 }

@@ -95,7 +95,7 @@ describe("extractObjectOrInterfaceType", () => {
   it("handles 'withProperties' object set type", async () => {
     const result = await extractObjectOrInterfaceType(
       mockClientCtx,
-      objectSetInterfaceToInterface
+      objectSetInterfaceToInterface,
     );
 
     expect(result).toEqual({ apiName: "interface2", type: "interface" });
@@ -120,7 +120,7 @@ describe("extractObjectOrInterfaceType", () => {
 
     const result = await extractObjectOrInterfaceType(
       mockClientCtx,
-      intersectionObjectSet
+      intersectionObjectSet,
     );
 
     expect(result).toEqual({ apiName: "interface2", type: "interface" });
@@ -143,9 +143,9 @@ describe("extractObjectOrInterfaceType", () => {
     };
 
     await expect(
-      extractObjectOrInterfaceType(mockClientCtx, intersectionObjectSet)
+      extractObjectOrInterfaceType(mockClientCtx, intersectionObjectSet),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Can only have one object type when doing subtract, union]`
+      `[Error: Invariant failed: Can only have one object type when doing subtract, union]`,
     );
   });
 
@@ -164,7 +164,7 @@ describe("extractObjectOrInterfaceType", () => {
         ...mockClientCtx,
         narrowTypeInterfaceOrObjectMapping: { BaseType: "object" },
       },
-      narrowToTypeObjectSet
+      narrowToTypeObjectSet,
     );
 
     expect(result).toEqual({ apiName: "BaseType", type: "object" });

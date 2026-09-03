@@ -85,7 +85,7 @@ function handleActionParameterSampleValuesV1({
 }) {
   return renderActionParameterValues(
     rawActionTypeParameterValues,
-    SdkMajorVersion.V1
+    SdkMajorVersion.V1,
   );
 }
 
@@ -96,7 +96,7 @@ function handleActionParameterSampleValuesV2({
 }) {
   return renderActionParameterValues(
     rawActionTypeParameterValues,
-    SdkMajorVersion.V2
+    SdkMajorVersion.V2,
   );
 }
 
@@ -142,7 +142,7 @@ function handleArrayElementValue({
 
 function renderArrayElementPropertyValue(
   propertyValue: PropertySampleValueTypeIR | undefined,
-  majorVersion: SdkMajorVersion
+  majorVersion: SdkMajorVersion,
 ): string {
   if (propertyValue == null) {
     throw new Error("Cannot render a null property value");
@@ -271,7 +271,7 @@ function handleLinkedPrimaryKeyPropertyV1({
     type: rawLinkedPrimaryKeyProperty.type,
     value: renderPropertyValue(
       rawLinkedPrimaryKeyProperty.value,
-      SdkMajorVersion.V1
+      SdkMajorVersion.V1,
     ),
   };
 }
@@ -294,7 +294,7 @@ function handleLinkedPrimaryKeyPropertyV2({
     type: rawLinkedPrimaryKeyProperty.type,
     value: renderPropertyValue(
       rawLinkedPrimaryKeyProperty.value,
-      SdkMajorVersion.V2
+      SdkMajorVersion.V2,
     ),
   };
 }
@@ -302,7 +302,7 @@ function handleLinkedPrimaryKeyPropertyV2({
 // Common function to render function input values for any version
 function renderFunctionInputValues(
   rawFunctionInputValues: FunctionSampleParametersIR | undefined,
-  majorVersion: SdkMajorVersion
+  majorVersion: SdkMajorVersion,
 ): string {
   if (rawFunctionInputValues == null) {
     throw new Error("Cannot render a null rawFunctionInputValues");
@@ -316,7 +316,7 @@ function renderFunctionInputValues(
         ${Object.entries(rawFunctionInputValues.parameters)
           .map(
             ([key, value]) =>
-              `"${key}": ${renderType(value, majorVersion, "functionInput")}`
+              `"${key}": ${renderType(value, majorVersion, "functionInput")}`,
           )
           .join(`,${indentedNewLine(4)}`)}
     }`;
@@ -325,7 +325,7 @@ function renderFunctionInputValues(
 // Common function to render action parameter values for any version
 function renderActionParameterValues(
   rawActionTypeParameterValues: ActionParameterSampleValuesIR | undefined,
-  majorVersion: SdkMajorVersion
+  majorVersion: SdkMajorVersion,
 ): { key: string; value: string; last: boolean }[] {
   if (rawActionTypeParameterValues == null) {
     throw new Error("Cannot render a null rawActionTypeParameterValues");
@@ -341,7 +341,7 @@ function renderActionParameterValues(
 // Function to render property values
 function renderPropertyValue(
   propertyValue: PropertySampleValueTypeIR | undefined,
-  majorVersion: SdkMajorVersion
+  majorVersion: SdkMajorVersion,
 ): string {
   if (propertyValue == null) {
     throw new Error("Cannot render a null property value");
@@ -357,7 +357,7 @@ function renderType(
     | FunctionSampleValueTypeIR
     | PropertySampleValueTypeIR,
   majorVersion: SdkMajorVersion,
-  context: "property" | "functionInput" | "actionParameter" | "arraySubType"
+  context: "property" | "functionInput" | "actionParameter" | "arraySubType",
 ): string {
   if (type == null) {
     throw new Error("Cannot render a null type value");
@@ -413,7 +413,7 @@ function renderType(
         const rendered = entries
           .map(
             ([name, value]) =>
-              `"${name}": ${renderType(value, majorVersion, context)}`
+              `"${name}": ${renderType(value, majorVersion, context)}`,
           )
           .join(`,${indentedNewLine(8)}`);
         return `{${indentedNewLine(8)}${rendered}${indentedNewLine(4)}}`;
@@ -440,20 +440,22 @@ function renderType(
     case "map": {
       if (type.keyType.type === "object") {
         return `{[${getMapKeyObjectName(
-          type.keyType.apiName
+          type.keyType.apiName,
         )}.$objectSpecifier]: ${renderType(
           type.valueType,
           majorVersion,
-          context
+          context,
         )}}`;
       }
       return `{${renderType(
         type.valueType,
         majorVersion,
-        context
+        context,
       )}: ${renderType(type.valueType, majorVersion, context)}}`;
     }
 
+    case "string":
+    case "unknown":
     default: {
       return `"${type.value ?? "value"}"`;
     }
@@ -490,7 +492,7 @@ function processObjectApiName(objectApiName: string) {
 // Generic helper functions for date and timestamp
 function getDateParameter(
   majorVersion: SdkMajorVersion,
-  daysOffset = 0
+  daysOffset = 0,
 ): string {
   const offsetDate = new Date();
   offsetDate.setDate(offsetDate.getDate() + daysOffset);
@@ -506,7 +508,7 @@ function getDateParameter(
 
 function getTimestampParameter(
   majorVersion: SdkMajorVersion,
-  daysOffset = 0
+  daysOffset = 0,
 ): string {
   const offsetDate = new Date();
   offsetDate.setDate(offsetDate.getDate() + daysOffset);

@@ -28,12 +28,12 @@ import type { BulkGetEntitySdkVersionsResponse } from "../BulkGetEntitySdkVersio
 export async function bulkGetEntitySdkVersions(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
-  request: BulkGetEntitySdkVersionsRequest
+  request: BulkGetEntitySdkVersionsRequest,
 ): Promise<BulkGetEntitySdkVersionsResponse> {
   return conjureFetch(
     ctx,
     `/application-sdks/${applicationRid}/entity-sdk-versions`,
     "PUT",
-    request
+    request,
   );
 }

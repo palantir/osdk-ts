@@ -19,10 +19,11 @@
 
 // Example: uploadAttachment
 
-// Edit this import if your client location differs
 import type { AttachmentUpload } from "@osdk/api";
 import { createAttachmentUpload } from "@osdk/client";
+
 import { documentEquipment } from "../../../generatedNoCheck/index.js";
+// Edit this import if your client location differs
 import { client } from "./client.js";
 
 // To call an action with an attachment property, you first need to upload the file

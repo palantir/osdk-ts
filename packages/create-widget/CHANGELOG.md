@@ -1,5 +1,94 @@
 # @osdk/create-widget
 
+## 3.63.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.64.0
+
+## 3.62.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.63.0
+
+## 3.61.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.62.0
+
+## 3.60.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.61.0
+
+## 3.59.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.60.0
+
+## 3.58.0
+
+## 3.57.0
+
+### Minor Changes
+
+- b913397: Remove the create-widget minimal-react template which is now replaced by the react template rendered without OSDK. The minimal-react template is still available via CLI selection for compatibility and is simply an alias of the react template rendered without OSDK.
+- 7c4c517: Use minimal react template structure for react template
+
+### Patch Changes
+
+- @osdk/generator-utils@2.59.0
+
+## 3.56.0
+
+### Minor Changes
+
+- 8718d53: create-widget.template.react.v2 can be used with or without an osdk package
+
+### Patch Changes
+
+- @osdk/generator-utils@2.58.0
+
+## 3.55.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.57.0
+
+## 3.54.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.56.0
+
+## 3.53.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.55.0
+
+## 3.52.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.54.0
+
+## 3.51.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.53.0
+
+## 3.50.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.52.0
+
 ## 3.49.0
 
 ### Patch Changes

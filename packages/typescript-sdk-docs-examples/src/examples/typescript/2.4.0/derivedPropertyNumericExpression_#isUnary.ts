@@ -25,7 +25,7 @@ import { client } from "./client.js";
 
 const EmployeeWithExpression = await client(Employee)
   .withProperties({
-    "abs_salary": (baseObjectSet) =>
-      baseObjectSet.pivotTo("lead")
-        .selectProperty("salary").abs(),
-  }).fetchPage();
+    abs_salary: (baseObjectSet) =>
+      baseObjectSet.pivotTo("lead").selectProperty("salary").abs(),
+  })
+  .fetchPage();

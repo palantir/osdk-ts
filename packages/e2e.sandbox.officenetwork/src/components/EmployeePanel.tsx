@@ -121,7 +121,7 @@ export function EmployeePanel({
       onSelectEmployee(emp);
       onPanToEmployee?.(emp);
     },
-    [onSelectEmployee, onPanToEmployee]
+    [onSelectEmployee, onPanToEmployee],
   );
   const { data: enrichedEmployees, isLoading: rdpLoading } = useOsdkObjects(
     Employee,
@@ -129,7 +129,7 @@ export function EmployeePanel({
       where: { employeeNumber: employee.employeeNumber },
       withProperties: employeeWithRdps,
       pageSize: 1,
-    }
+    },
   );
   const enrichedEmployee = enrichedEmployees?.[0];
 
@@ -139,7 +139,7 @@ export function EmployeePanel({
       where: { employeeNumber: employee.employeeNumber },
       pageSize: 1,
       $includeAllBaseObjectProperties: true,
-    }
+    },
   );
   const worker = workerData?.[0];
 
@@ -149,7 +149,7 @@ export function EmployeePanel({
       where: { employeeNumber: employee.employeeNumber },
       pageSize: 1,
       $includeAllBaseObjectProperties: true,
-    }
+    },
   );
   const person = personData?.[0];
 
@@ -173,7 +173,7 @@ export function EmployeePanel({
     {
       orderBy: { fullName: "asc" },
       $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
-    }
+    },
   );
 
   const { links: manager } = useLinks(employee, "lead", {
@@ -189,7 +189,7 @@ export function EmployeePanel({
 
   const { links: employeeOffice, isLoading: officeLoading } = useLinks(
     employee,
-    "primaryOffice"
+    "primaryOffice",
   );
   const employeeOfficeObj = employeeOffice?.[0];
 
@@ -209,12 +209,12 @@ export function EmployeePanel({
       enabled: !!employeeOfficeObj,
       orderBy: { fullName: "asc" },
       $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
-    }
+    },
   );
   const colleaguesExcludingSelf = React.useMemo(
     () =>
       colleagues?.filter((c) => c.employeeNumber !== employee.employeeNumber),
-    [colleagues, employee.employeeNumber]
+    [colleagues, employee.employeeNumber],
   );
 
   const { links: peerReports, isLoading: peersLoading } = useLinks(
@@ -224,12 +224,12 @@ export function EmployeePanel({
       enabled: !!managerObj,
       orderBy: { fullName: "asc" },
       $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
-    }
+    },
   );
   const peersExcludingSelf = React.useMemo(
     () =>
       peerReports?.filter((p) => p.employeeNumber !== employee.employeeNumber),
-    [peerReports, employee.employeeNumber]
+    [peerReports, employee.employeeNumber],
   );
 
   const { links: skipLevelManager, isLoading: skipLevelLoading } = useLinks(
@@ -238,14 +238,14 @@ export function EmployeePanel({
     {
       enabled: !!managerObj,
       $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
-    }
+    },
   );
   const skipLevelManagerObj = skipLevelManager?.[0];
 
   const { links: skipLevelOffice } = useLinks(
     skipLevelManagerObj,
     "primaryOffice",
-    { enabled: !!skipLevelManagerObj }
+    { enabled: !!skipLevelManagerObj },
   );
   const skipLevelOfficeObj = skipLevelOffice?.[0];
 

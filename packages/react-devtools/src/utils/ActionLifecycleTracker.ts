@@ -71,7 +71,7 @@ export class ActionLifecycleTracker {
 
   constructor(
     private readonly metricsStore: MetricsStore,
-    private readonly eventTimeline?: EventTimeline
+    private readonly eventTimeline?: EventTimeline,
   ) {}
 
   startAction(options: StartActionOptions): string {

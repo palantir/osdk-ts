@@ -32,7 +32,7 @@ export function useDebouncedValue<T>(value: T, debounceMs: number): T {
         clearTimeout(timer);
       };
     },
-    [value, debounceMs]
+    [value, debounceMs],
   );
 
   return debouncedValue;

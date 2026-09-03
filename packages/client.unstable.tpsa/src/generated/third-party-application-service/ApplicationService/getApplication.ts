@@ -27,7 +27,7 @@ import type { VersionedApplication } from "../VersionedApplication.js";
  */
 export async function getApplication(
   ctx: ConjureContext,
-  applicationRid: ApplicationRid
+  applicationRid: ApplicationRid,
 ): Promise<VersionedApplication> {
   return conjureFetch(ctx, `/applications/${applicationRid}`, "GET");
 }

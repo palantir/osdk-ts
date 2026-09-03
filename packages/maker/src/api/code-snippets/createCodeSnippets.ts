@@ -36,7 +36,7 @@ import {
 export function createCodeSnippets(
   ontology: OntologyDefinition,
   packageName: string | undefined,
-  outputDir: string | undefined
+  outputDir: string | undefined,
 ): void {
   if (outputDir === undefined) {
     outputDir = "./code-snippets";
@@ -66,7 +66,7 @@ export function createCodeSnippets(
       }
       fs.writeFileSync(
         path.join(outputDir, object.apiName),
-        JSON.stringify(snippet)
+        JSON.stringify(snippet),
       );
     }
   }
@@ -75,7 +75,7 @@ export function createCodeSnippets(
 
 function generateInterfaceSnippet(
   interfaceType: InterfaceType,
-  packageName: string
+  packageName: string,
 ) {
   const interfaceContext = {
     interfaceApiName: interfaceType.apiName,
@@ -110,11 +110,11 @@ function getSnippets(
     | typeof interfaceSnippets
     | typeof actionSnippets
     | typeof objectSnippets,
-  context: {}
+  context: {},
 ) {
   const allSnippets = {};
   for (const templateName of Object.keys(snippetType).filter((key) =>
-    isNaN(Number(key))
+    isNaN(Number(key)),
   )) {
     const versions = Object.values(TYPESCRIPT_OSDK_SNIPPETS.versions);
     const latestTemplate =

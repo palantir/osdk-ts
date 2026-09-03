@@ -28,12 +28,12 @@ import type { CreateApplicationSdkRequest } from "../CreateApplicationSdkRequest
 export async function createSdk(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
-  request: CreateApplicationSdkRequest
+  request: CreateApplicationSdkRequest,
 ): Promise<ApplicationSdk> {
   return conjureFetch(
     ctx,
     `/application-sdks/${applicationRid}`,
     "POST",
-    request
+    request,
   );
 }

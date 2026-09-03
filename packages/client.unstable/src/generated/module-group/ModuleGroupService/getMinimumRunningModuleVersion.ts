@@ -29,7 +29,7 @@ import type {
  */
 export async function getMinimumRunningModuleVersion(
   ctx: ConjureContext,
-  moduleGroupName: _ModuleGroupName
+  moduleGroupName: _ModuleGroupName,
 ): Promise<_SlsVersion | null | undefined> {
   return conjureFetch(ctx, `/module-group/versions/${moduleGroupName}`, "GET");
 }

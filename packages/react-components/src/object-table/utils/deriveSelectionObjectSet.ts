@@ -36,10 +36,10 @@ import type { UseRowSelectionChange } from "../hooks/useRowSelection.js";
  */
 export function deriveSelectionObjectSet<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   resultingObjectSet: ObjectSet<Q, RDPs> | undefined,
-  change: UseRowSelectionChange<Q, RDPs>
+  change: UseRowSelectionChange<Q, RDPs>,
 ): ObjectSet<Q, RDPs> | undefined {
   if (!resultingObjectSet) {
     return undefined;

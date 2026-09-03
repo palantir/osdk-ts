@@ -40,7 +40,7 @@ const hoistedMocks = vi.hoisted(() => {
 vi.mock("./delay.js", () => ({
   delay: vi.fn(
     (ms: number) =>
-      new Promise<void>((resolve) => setTimeout(resolve, ms / 100))
+      new Promise<void>((resolve) => setTimeout(resolve, ms / 100)),
   ),
 }));
 
@@ -154,7 +154,7 @@ describe(createPublicOauthClient, () => {
         clientArgs.clientId,
         clientArgs.foundryUrl,
         clientArgs.redirectUrl,
-        clientArgs
+        clientArgs,
       );
     } else {
       client = createPublicOauthClient(
@@ -166,7 +166,7 @@ describe(createPublicOauthClient, () => {
         clientArgs.postLoginPage,
         clientArgs.scopes,
         clientArgs.fetchFn,
-        clientArgs.ctxPath
+        clientArgs.ctxPath,
       );
     }
   }
@@ -181,7 +181,7 @@ describe(createPublicOauthClient, () => {
     // we assume window.location.assign will take you away therefore we
     // also have to expect in this scenario that the thrown error happens
     await expect(tokenPromise).rejects.toThrowError(
-      new Error("Unable to redirect")
+      new Error("Unable to redirect"),
     );
 
     expect(mockWindow.location.assign).toHaveBeenCalledOnce();
@@ -207,7 +207,7 @@ describe(createPublicOauthClient, () => {
             ].sort()),
         ].join(" "),
         state: expect.any(String),
-      })
+      }),
     );
   }
 
@@ -369,7 +369,7 @@ describe(createPublicOauthClient, () => {
         }),
         commonJs.createAuthorizationServer(
           clientArgs.ctxPath ?? "/multipass",
-          clientArgs.foundryUrl
+          clientArgs.foundryUrl,
         ),
         expect.any(Function),
         expect.anything(),
@@ -385,7 +385,7 @@ describe(createPublicOauthClient, () => {
         )
           .sort()
           .join(" "),
-        undefined
+        undefined,
       );
     });
 
@@ -423,11 +423,11 @@ describe(createPublicOauthClient, () => {
 
       beforeEach(() => {
         vi.mocked(commonJs.readLocal).mockImplementation(
-          () => initialState.localStorage
+          () => initialState.localStorage,
         );
 
         vi.mocked(commonJs.readSession).mockImplementation(
-          () => initialState.sessionStorage
+          () => initialState.sessionStorage,
         );
 
         hoistedMocks.makeTokenAndSaveRefresh.mockImplementation(() => ({
@@ -451,12 +451,12 @@ describe(createPublicOauthClient, () => {
               await expect(tokenPromise).resolves.toBeUndefined();
               expect(mockSessionStorage.setItem).toBeCalledWith(
                 `@osdk/oauth : refresh : ${clientArgs.clientId}`,
-                JSON.stringify({ oldUrl: window.location.toString() })
+                JSON.stringify({ oldUrl: window.location.toString() }),
               );
               expect(mockWindow.history.replaceState).toHaveBeenCalledWith(
                 {},
                 "",
-                clientArgs.loginPage
+                clientArgs.loginPage,
               );
               return;
             }
@@ -471,13 +471,13 @@ describe(createPublicOauthClient, () => {
               await expect(tokenPromise).resolves.toBeUndefined();
               expect(mockSessionStorage.setItem).toBeCalledWith(
                 `@osdk/oauth : refresh : ${clientArgs.clientId}`,
-                JSON.stringify({ oldUrl: window.location.toString() })
+                JSON.stringify({ oldUrl: window.location.toString() }),
               );
 
               expect(mockWindow.history.replaceState).toHaveBeenCalledWith(
                 {},
                 "",
-                clientArgs.loginPage
+                clientArgs.loginPage,
               );
               return;
             }
@@ -493,14 +493,14 @@ describe(createPublicOauthClient, () => {
           expect(hoistedMocks.makeTokenAndSaveRefresh).toHaveBeenCalledTimes(1);
           expect(hoistedMocks.makeTokenAndSaveRefresh).toHaveBeenCalledWith(
             undefined, // this is only because we didn't mock out the internals
-            "signIn"
+            "signIn",
           );
 
           expect(mockWindow.history.replaceState).toHaveBeenCalledTimes(1);
           expect(mockWindow.history.replaceState).toBeCalledWith(
             expect.anything(),
             expect.anything(),
-            initialState.sessionStorage.oldUrl
+            initialState.sessionStorage.oldUrl,
           );
         });
       }
@@ -512,7 +512,7 @@ describe(createPublicOauthClient, () => {
           expect(hoistedMocks.makeTokenAndSaveRefresh).toHaveBeenCalledTimes(1);
           expect(hoistedMocks.makeTokenAndSaveRefresh).toHaveBeenCalledWith(
             undefined, // this is only because we didn't mock out the internals
-            "refresh"
+            "refresh",
           );
         });
       }
@@ -541,7 +541,7 @@ describe(createPublicOauthClient, () => {
         BASE_CLIENT_ARGS.clientId,
         BASE_CLIENT_ARGS.foundryUrl,
         BASE_CLIENT_ARGS.redirectUrl,
-        { tokenStorage: "localStorage" }
+        { tokenStorage: "localStorage" },
       );
 
       // common() is called with 8 args, the last one being the storage
@@ -554,7 +554,7 @@ describe(createPublicOauthClient, () => {
         BASE_CLIENT_ARGS.clientId,
         BASE_CLIENT_ARGS.foundryUrl,
         BASE_CLIENT_ARGS.redirectUrl,
-        { tokenStorage: "sessionStorage" }
+        { tokenStorage: "sessionStorage" },
       );
 
       const lastArg = vi.mocked(commonJs.common).mock.calls[0][7];
@@ -566,7 +566,7 @@ describe(createPublicOauthClient, () => {
         BASE_CLIENT_ARGS.clientId,
         BASE_CLIENT_ARGS.foundryUrl,
         BASE_CLIENT_ARGS.redirectUrl,
-        { tokenStorage: "none" }
+        { tokenStorage: "none" },
       );
 
       const lastArg = vi.mocked(commonJs.common).mock.calls[0][7];
@@ -578,7 +578,7 @@ describe(createPublicOauthClient, () => {
         BASE_CLIENT_ARGS.clientId,
         BASE_CLIENT_ARGS.foundryUrl,
         BASE_CLIENT_ARGS.redirectUrl,
-        { tokenStorage: "none" }
+        { tokenStorage: "none" },
       );
 
       // Trigger the auth flow - this should redirect to multipass
@@ -599,7 +599,7 @@ describe(createPublicOauthClient, () => {
       createPublicOauthClient(
         BASE_CLIENT_ARGS.clientId,
         BASE_CLIENT_ARGS.foundryUrl,
-        BASE_CLIENT_ARGS.redirectUrl
+        BASE_CLIENT_ARGS.redirectUrl,
       );
       const lastArg = vi.mocked(commonJs.common).mock.calls[0][7];
       expect(lastArg).toBe(mockLocalStorage);
@@ -610,7 +610,7 @@ describe(createPublicOauthClient, () => {
         BASE_CLIENT_ARGS.clientId,
         BASE_CLIENT_ARGS.foundryUrl,
         BASE_CLIENT_ARGS.redirectUrl,
-        { tokenStorage: "localStorage" }
+        { tokenStorage: "localStorage" },
       );
 
       await expect(client()).rejects.toThrowError("Unable to redirect");
@@ -626,7 +626,7 @@ describe(createPublicOauthClient, () => {
         BASE_CLIENT_ARGS.clientId,
         BASE_CLIENT_ARGS.foundryUrl,
         BASE_CLIENT_ARGS.redirectUrl,
-        { tokenStorage: "sessionStorage" }
+        { tokenStorage: "sessionStorage" },
       );
 
       await expect(client()).rejects.toThrowError("Unable to redirect");
@@ -644,7 +644,7 @@ describe(createPublicOauthClient, () => {
         BASE_CLIENT_ARGS.clientId,
         BASE_CLIENT_ARGS.foundryUrl,
         BASE_CLIENT_ARGS.redirectUrl,
-        { tokenStorage: "none" }
+        { tokenStorage: "none" },
       );
 
       await expect(client()).rejects.toThrowError("Unable to redirect");

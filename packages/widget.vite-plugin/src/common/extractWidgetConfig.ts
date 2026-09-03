@@ -21,7 +21,7 @@ import { validateWidgetConfig } from "./validateWidgetConfig.js";
 
 export async function extractWidgetConfig(
   moduleId: string,
-  server: ViteDevServer
+  server: ViteDevServer,
 ): Promise<WidgetConfig<ParameterConfig>> {
   try {
     const configModule = await server.ssrLoadModule(moduleId);
@@ -37,8 +37,8 @@ export async function extractWidgetConfig(
     ) {
       server.config.logger.warn(
         `Config object does not look like a widget config: ${JSON.stringify(
-          config
-        )}`
+          config,
+        )}`,
       );
     }
 
@@ -49,7 +49,7 @@ export async function extractWidgetConfig(
       `Encountered error: '${
         error instanceof Error ? error.message : error
       }' while loading widget config from ${moduleId}`,
-      { cause: error }
+      { cause: error },
     );
   }
 }

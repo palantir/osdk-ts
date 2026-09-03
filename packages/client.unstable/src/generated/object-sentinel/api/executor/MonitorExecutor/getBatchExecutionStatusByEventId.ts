@@ -25,13 +25,13 @@ export async function getBatchExecutionStatusByEventId(
   ctx: ConjureContext,
   request: _api_executor_BatchExecutionStatusByEventIdRequest,
   pageToken: _api_registry_PageToken | null | undefined,
-  pageSize: number | null | undefined
+  pageSize: number | null | undefined,
 ): Promise<_api_executor_BatchExecutionStatusByEventIdResponse> {
   return conjureFetch(
     ctx,
     `/executor/v0/monitors/batchExecuteStatusByEventId`,
     "POST",
     request,
-    { pageToken, pageSize }
+    { pageToken, pageSize },
   );
 }

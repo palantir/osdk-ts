@@ -1,5 +1,85 @@
 # @osdk/seed-helpers
 
+## 0.29.0
+
+### Minor Changes
+
+- bbbeca8: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.75.0`, which reinstates the `streamingExecute` query endpoint as a Server-Sent Events (`text/event-stream`) stream. The experimental `executeStreamingFunction` helper is reimplemented on top of it and no longer throws: it yields each result as it arrives, flattening batched results so array-returning queries emit one element at a time.
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+- Updated dependencies [6cf2be9]
+  - @osdk/client@2.60.0
+  - @osdk/api@2.60.0
+
+## 0.28.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+- 38c812b: allow null values in seed builder update
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+  - @osdk/client@2.58.0
+  - @osdk/api@2.58.0
+
+## 0.27.0
+
+### Minor Changes
+
+- fb5b752: Reduce `@osdk/seed-compiler` to merging. Seed files are fed through a single `SeedBuilder` from `@osdk/seed-helpers`, which already validates objects, rejects duplicate primary keys, and deduplicates links — so the compiler's own wire-type tables and validator are gone, along with the `mergeSeedOutputs`, `validateSeedOutput`, and `schemaFromMetadata` exports. `compileSeedData` is the only remaining export and now takes `OntologyFullMetadata` in place of a `SchemaMap`. Sharing one builder lets a link reference objects from another seed file, and primary-key conflicts name the file that introduced them. Seed files may default-export either the `createSeed(...)` result (`{ output, context }`) or its `.output`; anything else is rejected with a message naming what was found instead. `SeedBuilder` now names the object type in its not-in-metadata error.
+
+## 0.26.0
+
+### Minor Changes
+
+- cec01e5: Introduce the `@osdk/integration-testing` package for Ontology SDK integration-testing helpers, and add `SeedClient.set` for replacing the seeded state rather than adding to it.
+
+### Patch Changes
+
+- Updated dependencies [342c492]
+  - @osdk/api@2.56.0
+  - @osdk/client@2.56.0
+
+## 0.25.0
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+  - @osdk/client@2.55.0
+
+## 0.24.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/client@2.53.0
+  - @osdk/api@2.53.0
+
+## 0.23.0
+
+### Minor Changes
+
+- fc3e4b9: Implement new seed builder with built-in validation
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/client@2.52.0
+
 ## 0.22.0
 
 ### Patch Changes

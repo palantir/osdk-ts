@@ -24,10 +24,9 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
 import { compileSeedData } from "../compileSeedData.js";
-import { schemaFromMetadata } from "../schema.js";
 
 export default async function main(
-  args: string[] = process.argv
+  args: string[] = process.argv,
 ): Promise<void> {
   const opts: {
     metadata: string;
@@ -68,20 +67,20 @@ export default async function main(
   const metadataStat = fs.statSync(opts.metadata);
   invariant(
     metadataStat.isFile(),
-    `--metadata '${opts.metadata}' is not a file`
+    `--metadata '${opts.metadata}' is not a file`,
   );
   const metadata = JSON.parse(
-    fs.readFileSync(opts.metadata, "utf-8")
+    fs.readFileSync(opts.metadata, "utf-8"),
   ) as OntologyFullMetadata;
 
   const seedDirStat = fs.statSync(opts.seedDir);
   invariant(
     seedDirStat.isDirectory(),
-    `--seed-dir '${opts.seedDir}' is not a directory`
+    `--seed-dir '${opts.seedDir}' is not a directory`,
   );
   const seedFiles = fs
     .readdirSync(opts.seedDir)
-    .filter((f) => f.endsWith(".mts"))
+    .filter((f) => f.endsWith(".mts") && !f.startsWith("$"))
     .sort()
     .map((f) => path.join(opts.seedDir, f));
 
@@ -90,6 +89,5 @@ export default async function main(
     return;
   }
 
-  const schema = schemaFromMetadata(metadata);
-  await compileSeedData(seedFiles, opts.output, schema);
+  await compileSeedData(seedFiles, opts.output, metadata);
 }

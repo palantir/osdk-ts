@@ -178,6 +178,7 @@ export const HookRow: React.FC<HookRowProps> = ({
             </Tag>
           </Tooltip>
         );
+      case "idle":
       default:
         return null;
     }
@@ -189,7 +190,7 @@ export const HookRow: React.FC<HookRowProps> = ({
         <div
           className={classNames(
             styles.hookBadge,
-            getHookColor(binding.hookType)
+            getHookColor(binding.hookType),
           )}
         >
           <Icon icon={getHookIcon(binding.hookType)} size={12} />
@@ -228,7 +229,7 @@ export const HookRow: React.FC<HookRowProps> = ({
       {binding.renderCount > 0 && (
         <Tooltip
           content={`Renders: ${binding.renderCount}, Avg: ${formatTime(
-            binding.avgRenderDuration
+            binding.avgRenderDuration,
           )}`}
         >
           <div className={styles.performance}>

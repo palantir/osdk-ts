@@ -37,7 +37,7 @@ class AnimationBoundsStore {
     private targetBounds: OverlayBounds,
     private interpolationFactor: number,
     private convergenceThreshold: number,
-    private enabled: boolean
+    private enabled: boolean,
   ) {
     this.current = {
       x: targetBounds.x,
@@ -67,7 +67,7 @@ class AnimationBoundsStore {
     targetBounds: OverlayBounds,
     interpolationFactor: number,
     convergenceThreshold: number,
-    enabled: boolean
+    enabled: boolean,
   ): void {
     this.targetBounds = targetBounds;
     this.interpolationFactor = interpolationFactor;
@@ -118,22 +118,22 @@ class AnimationBoundsStore {
       const nextX = interpolate(
         this.current.x,
         targetX,
-        this.interpolationFactor
+        this.interpolationFactor,
       );
       const nextY = interpolate(
         this.current.y,
         targetY,
-        this.interpolationFactor
+        this.interpolationFactor,
       );
       const nextWidth = interpolate(
         this.current.width,
         targetWidth,
-        this.interpolationFactor
+        this.interpolationFactor,
       );
       const nextHeight = interpolate(
         this.current.height,
         targetHeight,
-        this.interpolationFactor
+        this.interpolationFactor,
       );
 
       const hasConverged =
@@ -181,7 +181,7 @@ class AnimationBoundsStore {
 
 export function useAnimatedBounds(
   targetBounds: OverlayBounds | null,
-  options: AnimationOptions = {}
+  options: AnimationOptions = {},
 ): AnimatedBounds | null {
   const {
     interpolationFactor = INTERPOLATION_FACTORS.selection,
@@ -197,14 +197,14 @@ export function useAnimatedBounds(
         targetBounds,
         interpolationFactor,
         convergenceThreshold,
-        enabled
+        enabled,
       );
     } else {
       storeRef.current = new AnimationBoundsStore(
         targetBounds,
         interpolationFactor,
         convergenceThreshold,
-        enabled
+        enabled,
       );
     }
   } else {
@@ -225,7 +225,7 @@ export function useAnimatedBounds(
       }
       return store.subscribe(onStoreChange);
     },
-    [targetBounds == null]
+    [targetBounds == null],
   );
 
   const getSnapshot = React.useCallback((): AnimatedBounds | null => {

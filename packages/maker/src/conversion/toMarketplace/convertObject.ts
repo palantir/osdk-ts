@@ -42,7 +42,7 @@ import { convertDatasourceDefinition } from "./convertDatasourceDefinition.js";
 import { convertObjectPropertyType } from "./convertObjectPropertyType.js";
 
 export function convertObject(
-  objectType: ObjectType
+  objectType: ObjectType,
 ): OntologyIrObjectTypeBlockDataV2 {
   const { derivedDatasources, derivedPropertyNames } =
     extractDerivedDatasources(objectType);
@@ -55,12 +55,12 @@ export function convertObject(
 
   const classificationGroupMarkingNames = extractMarkingGroups(
     objectType.properties ?? [],
-    "CBAC"
+    "CBAC",
   );
 
   const mandatoryMarkingNames = extractMarkingGroups(
     objectType.properties ?? [],
-    "MANDATORY"
+    "MANDATORY",
   );
 
   const classificationInputGroup =
@@ -78,11 +78,11 @@ export function convertObject(
     convertDatasourceDefinition(
       objectType,
       (objectType.properties ?? []).filter(
-        (prop) => !derivedPropertyNames.includes(prop.apiName)
-      )
+        (prop) => !derivedPropertyNames.includes(prop.apiName),
+      ),
     ),
     classificationInputGroup,
-    mandatoryInputGroup
+    mandatoryInputGroup,
   );
 
   const implementations = objectType.implementsInterfaces ?? [];
@@ -96,8 +96,8 @@ export function convertObject(
       `Object "${objectType.apiName}" implements interface "${impl.implements.apiName}" which has required action type constraints: ${requiredConstraints
         .map((constraint) => constraint.metadata.apiName)
         .join(
-          ", "
-        )}. Action type constraint implementation is not yet supported in OAC. Set requireImplementation to false and manually implement the constraint after installation.`
+          ", ",
+        )}. Action type constraint implementation is not yet supported in OAC. Set requireImplementation to false and manually implement the constraint after installation.`,
     );
   }
 
@@ -119,7 +119,7 @@ export function convertObject(
         objectType.properties?.map<[string, OntologyIrPropertyType]>((val) => [
           val.apiName,
           convertObjectPropertyType(val),
-        ]) ?? []
+        ]) ?? [],
       ),
       titlePropertyTypeRid: objectType.titlePropertyApiName,
       apiName: objectType.apiName,
@@ -136,7 +136,7 @@ export function convertObject(
               type: "propertyTypeRid",
               propertyTypeRid: mappings.mapsTo,
             },
-          ])
+          ]),
         ),
         properties: {},
       })),
@@ -152,7 +152,7 @@ export function convertObject(
       aliases: objectType.aliases ?? [],
       editsHistory: convertEditsHistory(
         objectType.apiName,
-        objectType.editsHistoryConfig
+        objectType.editsHistoryConfig,
       ),
     },
     propertySecurityGroupPackagingVersion: {
@@ -167,7 +167,7 @@ export function convertObject(
  */
 export function extractMarkingGroups(
   properties: ObjectPropertyType[],
-  markingType: "CBAC" | "MANDATORY"
+  markingType: "CBAC" | "MANDATORY",
 ): string[] {
   return properties
     .map((prop) => {
@@ -184,7 +184,7 @@ export function extractMarkingGroups(
 }
 export function extractPropertyDatasource(
   property: ObjectPropertyType,
-  objectTypeApiName: string
+  objectTypeApiName: string,
 ): OntologyIrObjectTypeDatasource[] {
   if (!isExotic(property.type)) {
     return [];
@@ -208,7 +208,9 @@ export function extractPropertyDatasource(
           clearOnDeleteProperties: [],
           mediaSetViewLocator: identifier,
           properties: [property.apiName],
-          uploadProperties: [],
+          uploadProperties: property.includeEmptyBackingMediaSet
+            ? [property.apiName]
+            : [],
         },
       };
       return [buildDatasource(property.apiName, mediaSetDefinition)];
@@ -222,24 +224,24 @@ function extractDerivedDatasources(objectType: ObjectType): {
   derivedPropertyNames: string[];
 } {
   const inputDerivedDatasources = (objectType.datasources ?? []).filter(
-    (ds) => ds.type === "derived"
+    (ds) => ds.type === "derived",
   );
   const propertyApiNames = new Set(
-    (objectType.properties ?? []).map((prop) => prop.apiName)
+    (objectType.properties ?? []).map((prop) => prop.apiName),
   );
   inputDerivedDatasources.forEach((ds) =>
     Object.keys(ds.propertyMapping).forEach((prop) =>
       invariant(
         propertyApiNames.has(prop),
-        `Property '${prop}' used in derived datasource for object '${objectType.apiName}' is not defined.`
-      )
-    )
+        `Property '${prop}' used in derived datasource for object '${objectType.apiName}' is not defined.`,
+      ),
+    ),
   );
   const derivedDatasources = inputDerivedDatasources.map((ds, i) =>
-    buildDerivedDatasource(ds, i, objectType.apiName)
+    buildDerivedDatasource(ds, i, objectType.apiName),
   );
   const derivedPropertyNames = inputDerivedDatasources.flatMap((ds) =>
-    Object.keys(ds.propertyMapping)
+    Object.keys(ds.propertyMapping),
   );
   return { derivedDatasources, derivedPropertyNames };
 }
@@ -247,7 +249,7 @@ function extractDerivedDatasources(objectType: ObjectType): {
 function buildDerivedDatasource(
   datasource: ObjectTypeDatasourceDefinition_derived,
   index: number,
-  objectTypeApiName: string
+  objectTypeApiName: string,
 ): OntologyIrObjectTypeDatasource {
   const linkDefinition = {
     type: "multiHopLink",
@@ -280,8 +282,8 @@ function buildDerivedDatasource(
                   type: "propertyType",
                   propertyType: targetProp,
                 },
-              ]
-            )
+              ],
+            ),
           ),
         },
       }
@@ -291,8 +293,8 @@ function buildDerivedDatasource(
           linkDefinition,
           propertyTypeMapping: Object.fromEntries(
             Object.entries(datasource.propertyMapping).map(
-              ([sourceProp, agg]) => [sourceProp, buildAggregation(agg)]
-            )
+              ([sourceProp, agg]) => [sourceProp, buildAggregation(agg)],
+            ),
           ),
         },
       };
@@ -304,12 +306,12 @@ function buildDerivedDatasource(
   };
   return buildDatasource(
     objectTypeApiName + ".derived." + index.toString(),
-    fullDefinition
+    fullDefinition,
   );
 }
 
 function buildAggregation(
-  agg: DerivedPropertyAggregation
+  agg: DerivedPropertyAggregation,
 ): OntologyIrDerivedPropertyAggregation {
   const type = agg.type;
   const limit = "limit" in agg ? agg.limit : undefined;
@@ -337,7 +339,7 @@ function buildAggregation(
 
 function convertEditsHistory(
   apiName: string,
-  config?: EditsHistoryConfig
+  config?: EditsHistoryConfig,
 ): OntologyIrEditsHistory | undefined {
   if (config) {
     return config.enabled

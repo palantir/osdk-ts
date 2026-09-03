@@ -17,7 +17,7 @@
 import React from "react";
 
 export function useTimeElapsed(
-  startTime: Date | undefined
+  startTime: Date | undefined,
 ): number | undefined {
   const startMs = startTime?.getTime();
 
@@ -41,7 +41,7 @@ export function useTimeElapsed(
         clearInterval(intervalId);
       };
     },
-    [startMs]
+    [startMs],
   );
 
   const getSnapshot = React.useCallback((): number | undefined => {

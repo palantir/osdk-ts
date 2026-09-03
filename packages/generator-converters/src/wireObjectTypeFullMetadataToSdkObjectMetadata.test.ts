@@ -34,6 +34,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         description: "description",
         displayName: "displayName",
         pluralDisplayName: "displayNames",
+        aliases: [],
+        datasources: [],
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
@@ -109,6 +111,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         description: "description",
         displayName: "displayName",
         pluralDisplayName: "displayNames",
+        aliases: [],
+        datasources: [],
         icon: {
           type: "INVALID_NOT_IN_API",
           name: "blueprint",
@@ -150,9 +154,24 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
     const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
       implementsInterfaces: ["InterfaceZ", "InterfaceA", "InterfaceC"],
       implementsInterfaces2: {
-        "InterfaceZ": { properties: {}, propertiesV2: {}, links: {} },
-        "InterfaceA": { properties: {}, propertiesV2: {}, links: {} },
-        "InterfaceC": { properties: {}, propertiesV2: {}, links: {} },
+        "InterfaceZ": {
+          properties: {},
+          propertiesV2: {},
+          links: {},
+          actionTypes: {},
+        },
+        "InterfaceA": {
+          properties: {},
+          propertiesV2: {},
+          links: {},
+          actionTypes: {},
+        },
+        "InterfaceC": {
+          properties: {},
+          propertiesV2: {},
+          links: {},
+          actionTypes: {},
+        },
       },
       linkTypes: [],
       objectType: {
@@ -160,6 +179,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         description: "description",
         displayName: "displayName",
         pluralDisplayName: "displayNames",
+        aliases: [],
+        datasources: [],
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
@@ -219,6 +240,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         description: "description",
         displayName: "displayName",
         pluralDisplayName: "displayNames",
+        aliases: [],
+        datasources: [],
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
@@ -252,6 +275,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         description: "description",
         displayName: "displayName",
         pluralDisplayName: "displayNames",
+        aliases: [],
+        datasources: [],
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
@@ -331,6 +356,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         description: "description",
         displayName: "displayName",
         pluralDisplayName: "displayNames",
+        aliases: [],
+        datasources: [],
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {

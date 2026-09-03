@@ -20,7 +20,7 @@ import type { ActionType } from "../../api/action/ActionType.js";
 import { uppercaseFirstLetter } from "../../api/defineObject.js";
 
 export function convertActionSections(
-  action: ActionType
+  action: ActionType,
 ): Record<SectionId, OntologyIrSection> {
   return Object.fromEntries(
     Object.entries(action.sections ?? {}).map(([sectionId, section]) => [
@@ -45,6 +45,6 @@ export function convertActionSections(
           }),
         },
       },
-    ])
+    ]),
   );
 }

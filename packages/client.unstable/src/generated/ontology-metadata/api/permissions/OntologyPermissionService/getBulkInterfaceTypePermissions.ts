@@ -27,7 +27,7 @@ import type {
  */
 export async function getBulkInterfaceTypePermissions(
   ctx: ConjureContext,
-  request: _api_permissions_GetBulkInterfaceTypePermissionsRequest
+  request: _api_permissions_GetBulkInterfaceTypePermissionsRequest,
 ): Promise<_api_permissions_GetBulkInterfaceTypePermissionsResponse> {
   return conjureFetch(ctx, `/permissions/interfaceTypes`, "PUT", request);
 }

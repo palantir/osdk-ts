@@ -52,7 +52,7 @@ describe("PerformanceTab", () => {
     const metricsStore = store.getMetricsStore();
 
     const { container } = render(
-      <PerformanceTab metricsStore={metricsStore} monitorStore={store} />
+      <PerformanceTab metricsStore={metricsStore} monitorStore={store} />,
     );
 
     expect(container.firstChild).not.toBeNull();

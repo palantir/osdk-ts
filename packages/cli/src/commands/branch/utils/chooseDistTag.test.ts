@@ -25,7 +25,7 @@ describe("chooseDistTag", () => {
         branch: "my-feature",
         isBranchedSdk: false,
         availableTags: ["latest", "my-feature-latest"],
-      })
+      }),
     ).toBe("my-feature-latest");
   });
 
@@ -35,7 +35,7 @@ describe("chooseDistTag", () => {
         branch: "my-feature",
         isBranchedSdk: true,
         availableTags: ["latest", "my-feature-latest"],
-      })
+      }),
     ).toBe("my-feature-latest");
   });
 
@@ -45,7 +45,7 @@ describe("chooseDistTag", () => {
         branch: "my-feature",
         isBranchedSdk: true,
         availableTags: ["latest"],
-      })
+      }),
     ).toBeUndefined();
   });
 
@@ -55,7 +55,7 @@ describe("chooseDistTag", () => {
         branch: "my-feature",
         isBranchedSdk: false,
         availableTags: ["latest"],
-      })
+      }),
     ).toBeUndefined();
   });
 
@@ -65,7 +65,7 @@ describe("chooseDistTag", () => {
         branch: undefined,
         isBranchedSdk: true,
         availableTags: ["latest"],
-      })
+      }),
     ).toBe("latest");
   });
 
@@ -75,7 +75,7 @@ describe("chooseDistTag", () => {
         branch: undefined,
         isBranchedSdk: false,
         availableTags: ["latest"],
-      })
+      }),
     ).toBeUndefined();
   });
 
@@ -85,7 +85,7 @@ describe("chooseDistTag", () => {
         branch: undefined,
         isBranchedSdk: true,
         availableTags: ["my-feature-latest"],
-      })
+      }),
     ).toBeUndefined();
   });
 });

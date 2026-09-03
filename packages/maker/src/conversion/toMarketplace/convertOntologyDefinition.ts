@@ -23,7 +23,7 @@ import { convertOntologyToValueTypeIr } from "./convertOntologyToValueTypeIr.js"
 
 export function convertOntologyDefinition(
   ontology: OntologyDefinition,
-  randomnessKey?: string
+  randomnessKey?: string,
 ): OntologyIr {
   return {
     ontology: convertOntologyDefinitionToWireBlockData(ontology),

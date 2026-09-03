@@ -1,5 +1,91 @@
 # @osdk/shared.test
 
+## 2.44.0
+
+### Patch Changes
+
+- @osdk/api@2.64.0
+- @osdk/generator-converters@2.64.0
+
+## 2.43.0
+
+### Patch Changes
+
+- Updated dependencies [08ba782]
+  - @osdk/api@2.63.0
+  - @osdk/generator-converters@2.63.0
+
+## 2.42.0
+
+### Patch Changes
+
+- @osdk/api@2.62.0
+- @osdk/generator-converters@2.62.0
+
+## 2.41.0
+
+### Patch Changes
+
+- Updated dependencies [bdf45fa]
+- Updated dependencies [34cb7e0]
+  - @osdk/api@2.61.0
+  - @osdk/generator-converters@2.61.0
+
+## 2.40.0
+
+### Minor Changes
+
+- e879ad7: Bump platform SDKs and add loadOntologyDefinedDerivedProperties flag, which defaults to true
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+  - @osdk/generator-converters@2.60.0
+  - @osdk/api@2.60.0
+
+## 2.39.0
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+  - @osdk/generator-converters@2.58.0
+  - @osdk/api@2.58.0
+
+## 2.38.0
+
+### Patch Changes
+
+- @osdk/api@2.57.0
+- @osdk/generator-converters@2.57.0
+
+## 2.37.0
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+  - @osdk/generator-converters@2.55.0
+
+## 2.36.0
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/generator-converters@2.53.0
+  - @osdk/api@2.53.0
+
+## 2.35.0
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/generator-converters@2.52.0
+
 ## 2.34.0
 
 ### Patch Changes

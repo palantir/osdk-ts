@@ -15,7 +15,11 @@
  */
 
 import type * as Ontologies from "@osdk/foundry.ontologies";
-import type { ObjectPropertyType, ObjectType } from "@osdk/maker";
+import type {
+  ObjectPropertyType,
+  ObjectType,
+  SharedPropertyType,
+} from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
 import { consola } from "consola";
 
@@ -23,24 +27,48 @@ import { mapPropertyType } from "./mapPropertyType.js";
 import { withoutNamespace } from "./utils.js";
 
 export function convertObjectType(
-  fullMetadata: Ontologies.ObjectTypeFullMetadata
+  fullMetadata: Ontologies.ObjectTypeFullMetadata,
 ): ObjectType {
   const obj = fullMetadata.objectType;
   const properties: Array<ObjectPropertyType> = [];
+  const sharedPropertyTypeApiNameByPropertyApiName = new Map(
+    Object.entries(fullMetadata.sharedPropertyTypeMapping).map(
+      ([sharedPropertyTypeApiName, propertyApiName]) => [
+        propertyApiName,
+        sharedPropertyTypeApiName,
+      ],
+    ),
+  );
 
   for (const [propApiName, propV2] of Object.entries(obj.properties)) {
     const mapped = mapPropertyType(propV2.dataType);
     if (!mapped) {
       consola.warn(
-        `Skipping property "${propApiName}" on object "${obj.apiName}": unsupported type "${propV2.dataType.type}"`
+        `Skipping property "${propApiName}" on object "${obj.apiName}": unsupported type "${propV2.dataType.type}"`,
       );
       continue;
     }
 
+    const sharedPropertyTypeApiName =
+      sharedPropertyTypeApiNameByPropertyApiName.get(propApiName);
+    // Imported property shapes only need the SPT API name.
+    const sharedPropertyType: SharedPropertyType | undefined =
+      sharedPropertyTypeApiName
+        ? {
+            __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
+            apiName: sharedPropertyTypeApiName,
+            nonNameSpacedApiName: withoutNamespace(sharedPropertyTypeApiName),
+            type: mapped.type,
+            array: mapped.array,
+          }
+        : undefined;
+
     const prop: ObjectPropertyType = {
       apiName: propApiName,
       displayName: propV2.displayName ?? propApiName,
+      description: propV2.description,
       type: mapped.type,
+      sharedPropertyType,
     };
     if (mapped.array) {
       (prop as ObjectPropertyType & { array?: boolean }).array = true;
@@ -66,7 +94,7 @@ export function convertObjectType(
 }
 
 function mapObjectStatus(
-  status: string
+  status: string,
 ): "active" | "experimental" | undefined {
   switch (status) {
     case "ACTIVE":

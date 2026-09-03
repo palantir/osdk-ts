@@ -20,14 +20,12 @@ import React from "react";
 import { AsyncValueCell } from "./components/AsyncValueCell.js";
 import { CbacMarkingCell } from "./components/CbacMarkingCell.js";
 import { MandatoryMarkingCell } from "./components/MandatoryMarkingCell.js";
+import { NonEditableCellInEditMode } from "./components/NonEditableCellInEditMode.js";
 import { EditableCell } from "./EditableCell.js";
 import { isAsyncCellData } from "./utils/AsyncCellData.js";
-import { isCellEditable } from "./utils/editableUtils.js";
 import { getCellId } from "./utils/getCellId.js";
 import { shouldShowEditableCell } from "./utils/shouldShowEditableCell.js";
 import type { CellEditInfo } from "./utils/types.js";
-
-import styles from "./EditableCell.module.css";
 
 function toDisplayValue(value: unknown): React.ReactNode {
   if (typeof value === "boolean") {
@@ -42,7 +40,7 @@ function toDisplayValue(value: unknown): React.ReactNode {
 // edits change elsewhere in the table.
 function filterCellEditsToRow<TData extends RowData>(
   cellEdits: Record<string, CellEditInfo<TData, unknown>> | undefined,
-  rowId: string
+  rowId: string,
 ): Record<string, CellEditInfo<TData, unknown>> | undefined {
   if (!cellEdits) return undefined;
   let result: Record<string, CellEditInfo<TData, unknown>> | undefined;
@@ -56,7 +54,7 @@ function filterCellEditsToRow<TData extends RowData>(
 }
 
 export function renderDefaultCell<TData extends RowData>(
-  cellContext: CellContext<TData, unknown>
+  cellContext: CellContext<TData, unknown>,
 ): React.ReactNode {
   const meta = cellContext.table.options.meta;
   const columnMeta = cellContext.column.columnDef.meta;
@@ -80,18 +78,22 @@ export function renderDefaultCell<TData extends RowData>(
   }
 
   const rowData = cellContext.row.original;
-  const isEditable = isCellEditable(columnMeta?.editable, rowData);
 
   if (
     !meta?.onCellEdit || // Type guard
-    !shouldShowEditableCell(isEditable, meta?.onCellEdit, meta?.isInEditMode)
+    !shouldShowEditableCell(
+      columnMeta?.editable,
+      rowData,
+      meta?.onCellEdit,
+      meta?.isInEditMode,
+    )
   ) {
     // Align non editable cells with the editable cells
     if (meta?.isInEditMode) {
       return (
-        <span className={styles.nonEditableCellInEditMode}>
+        <NonEditableCellInEditMode>
           {toDisplayValue(cellValue)}
-        </span>
+        </NonEditableCellInEditMode>
       );
     }
 

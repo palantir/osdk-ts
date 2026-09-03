@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { LoadedObjectsChange } from "@osdk/react-components/experimental/object-table";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useState } from "react";
@@ -115,7 +116,7 @@ export const WithContextMenu: Story = {
     // Clicking outside the menu closes it.
     await userEvent.click(canvas.getByText("Right click on any cell"));
     await waitFor(() =>
-      expect(screen.queryByText("Cell Value:")).not.toBeInTheDocument()
+      expect(screen.queryByText("Cell Value:")).not.toBeInTheDocument(),
     );
   },
 };
@@ -135,6 +136,7 @@ export const EventListeners: Story = {
     onColumnsPinnedChanged: fn(),
     onColumnResize: fn(),
     onFocusedRowChanged: fn(),
+    onLoadedObjectsChanged: fn(),
   } as EmployeeTableProps,
   parameters: {
     docs: {
@@ -168,6 +170,9 @@ export const EventListeners: Story = {
   onColumnResize={(columnId, newWidth) => {
     console.log("Column resized:", columnId, newWidth);
   }}
+  onLoadedObjectsChanged={({ loadedObjects, totalCount }) => {
+    console.log(\`Loaded \${loadedObjects.length} of \${totalCount} employees\`);
+  }}
 />`,
       },
     },
@@ -184,6 +189,8 @@ export const EventListeners: Story = {
       },
     ]);
     const [lastEvent, setLastEvent] = useState<string>("");
+    const [loadedCount, setLoadedCount] = useState<number>(0);
+    const [totalCount, setTotalCount] = useState<string | undefined>(undefined);
 
     const handleRowClick = useCallback(
       (employee: any) => {
@@ -191,7 +198,7 @@ export const EventListeners: Story = {
         setClickedRow(employee);
         setLastEvent("onRowClick");
       },
-      [args]
+      [args],
     );
 
     const handleColumnHeaderClick = useCallback(
@@ -200,7 +207,7 @@ export const EventListeners: Story = {
         setClickedColumn(columnId);
         setLastEvent("onColumnHeaderClick");
       },
-      [args]
+      [args],
     );
 
     const handleRowSelectionChanged = useCallback(
@@ -210,7 +217,7 @@ export const EventListeners: Story = {
         setIsSelectAll(change.isSelectAll);
         setLastEvent("onRowSelectionChanged");
       },
-      [args]
+      [args],
     );
 
     const handleOrderByChanged = useCallback(
@@ -219,7 +226,7 @@ export const EventListeners: Story = {
         setOrderBy(newOrderBy);
         setLastEvent("onOrderByChanged");
       },
-      [args]
+      [args],
     );
 
     const handleColumnVisibilityChanged = useCallback(
@@ -227,7 +234,7 @@ export const EventListeners: Story = {
         args.onColumnVisibilityChanged?.(visibilityState);
         setLastEvent("onColumnVisibilityChanged");
       },
-      [args]
+      [args],
     );
 
     const handleColumnsPinnedChanged = useCallback(
@@ -235,7 +242,7 @@ export const EventListeners: Story = {
         args.onColumnsPinnedChanged?.(pinnedState);
         setLastEvent("onColumnsPinnedChanged");
       },
-      [args]
+      [args],
     );
 
     const handleColumnResize = useCallback(
@@ -243,7 +250,17 @@ export const EventListeners: Story = {
         args.onColumnResize?.(columnId, newWidth);
         setLastEvent(`onColumnResize (${columnId})`);
       },
-      [args]
+      [args],
+    );
+
+    const handleLoadedObjectsChanged = useCallback(
+      (change: LoadedObjectsChange<typeof Employee>) => {
+        args.onLoadedObjectsChanged?.(change);
+        setLoadedCount(change.loadedObjects.length);
+        setTotalCount(change.totalCount);
+        setLastEvent("onLoadedObjectsChanged");
+      },
+      [args],
     );
 
     return (
@@ -275,18 +292,25 @@ export const EventListeners: Story = {
             <strong>Selected rows:</strong>{" "}
             {isSelectAll ? "All employees" : `${selectedRows.length} employees`}
           </div>
-          <div style={{ fontSize: "12px" }}>
+          <div style={{ marginBottom: "8px", fontSize: "12px" }}>
             <strong>Current sort:</strong>{" "}
             {orderBy?.[0]
               ? `${orderBy[0].property} (${orderBy[0].direction})`
               : "None"}
           </div>
+          <div style={{ fontSize: "12px" }}>
+            <strong>Loaded objects:</strong>{" "}
+            <code>
+              {loadedCount} of {totalCount ?? "unknown"}
+            </code>
+          </div>
         </div>
-        <div className="object-table-container" style={{ height: "600px" }}>
+        <div className="object-table-container" style={{ height: "300px" }}>
           <ObjectTable
             {...args}
             selectedRows={selectedRows}
             orderBy={orderBy}
+            pageSize={10}
             onRowClick={handleRowClick}
             onColumnHeaderClick={handleColumnHeaderClick}
             onRowSelectionChanged={handleRowSelectionChanged}
@@ -294,6 +318,7 @@ export const EventListeners: Story = {
             onColumnVisibilityChanged={handleColumnVisibilityChanged}
             onColumnsPinnedChanged={handleColumnsPinnedChanged}
             onColumnResize={handleColumnResize}
+            onLoadedObjectsChanged={handleLoadedObjectsChanged}
           />
         </div>
       </div>
@@ -306,6 +331,15 @@ export const EventListeners: Story = {
 
     await canvas.findByText(TARGET_DATA);
 
+    // onLoadedObjectsChanged: fires from the initial load, no interaction needed.
+    await waitFor(() =>
+      expect(args.onLoadedObjectsChanged).toHaveBeenCalledWith(
+        expect.objectContaining({
+          loadedObjects: expect.arrayContaining([expect.anything()]),
+        }),
+      ),
+    );
+
     // onRowClick + onFocusedRowChanged: clicking a row body fires both.
     await userEvent.click(canvas.getByText(TARGET_DATA));
     await waitFor(() => expect(args.onRowClick).toHaveBeenCalled());
@@ -315,7 +349,7 @@ export const EventListeners: Story = {
     const fullNameHeader = await getColumnHeader(canvas, "fullName");
     await userEvent.click(within(fullNameHeader).getByText("Name"));
     await waitFor(() =>
-      expect(args.onColumnHeaderClick).toHaveBeenCalledWith("fullName")
+      expect(args.onColumnHeaderClick).toHaveBeenCalledWith("fullName"),
     );
 
     // onRowSelectionChanged: toggling a row checkbox (selectionMode "multiple").
@@ -346,7 +380,7 @@ export const EventListeners: Story = {
     await userEvent.click(removeButtons[0]);
     await userEvent.click(await screen.findByRole("button", { name: "Apply" }));
     await waitFor(() =>
-      expect(args.onColumnVisibilityChanged).toHaveBeenCalled()
+      expect(args.onColumnVisibilityChanged).toHaveBeenCalled(),
     );
 
     // Reset the row selection so the story does not end with a checked row.

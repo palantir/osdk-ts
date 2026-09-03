@@ -66,10 +66,10 @@ export interface FoundryAIProvider {
  * @returns A provider that can be called directly or via `.languageModel()`.
  */
 export function createFoundryAI(
-  options: FoundryAIProviderOptions
+  options: FoundryAIProviderOptions,
 ): FoundryAIProvider {
   const createLanguageModel = (
-    model: string | ModelIdentifier
+    model: string | ModelIdentifier,
   ): LanguageModelV3 => {
     const identifier: ModelIdentifier =
       typeof model === "string" ? { type: "lmsModel", apiName: model } : model;

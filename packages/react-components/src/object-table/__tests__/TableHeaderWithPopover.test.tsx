@@ -26,7 +26,6 @@ import React, { createRef } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { PortalContainerProvider } from "../../shared/PortalContainerContext.js";
-import { ObjectTableLabelsProvider } from "../ObjectTableLabels.js";
 import { TableHeaderWithPopover } from "../TableHeaderWithPopover.js";
 
 interface TestRow {
@@ -52,13 +51,13 @@ describe(TableHeaderWithPopover, () => {
           }}
         />
         <div data-testid="header-menu-portal" ref={portalContainerRef} />
-      </PortalContainerProvider>
+      </PortalContainerProvider>,
     );
 
     fireEvent.click(
       screen.getByRole("button", {
         name: "Open header menu for column with id=name",
-      })
+      }),
     );
 
     await waitFor(() => {
@@ -68,44 +67,76 @@ describe(TableHeaderWithPopover, () => {
     const portalContainer = screen.getByTestId("header-menu-portal");
     expect(
       portalContainer.contains(
-        screen.getByRole("menuitem", { name: "Pin column" })
-      )
+        screen.getByRole("menuitem", { name: "Pin column" }),
+      ),
     ).toBe(true);
   });
 
-  it("renders overridden labels supplied via the labels provider", async () => {
-    const portalContainerRef = createRef<HTMLDivElement>();
+  describe("sort indicator icon", () => {
+    it.each([
+      ["string", "asc", "sort-alphabetical"],
+      ["string", "desc", "sort-alphabetical-desc"],
+      ["double", "asc", "sort-numerical"],
+      ["double", "desc", "sort-numerical-desc"],
+      ["integer", "asc", "sort-numerical"],
+      ["long", "desc", "sort-numerical-desc"],
+      ["timestamp", "asc", "sort-asc"],
+      ["datetime", "desc", "sort-desc"],
+      ["boolean", "asc", "sort-asc"],
+      [undefined, "asc", "sort-asc"],
+    ] as const)(
+      "renders %s sorted %s with the %s icon",
+      (dataType, direction, expectedIcon) => {
+        const { container } = render(
+          <TableHeaderWithPopover
+            table={createTable()}
+            header={createHeader({ dataType, isSorted: direction })}
+            isColumnPinned={false}
+          />,
+        );
 
-    render(
-      <ObjectTableLabelsProvider
-        labels={{
-          headerMenuPinColumn: "Stick this column",
-          headerMenuAriaLabel: (id) => `Menu for ${id}`,
-        }}
-      >
+        expect(
+          container.querySelector(`svg[data-icon="${expectedIcon}"]`),
+        ).toBeTruthy();
+      },
+    );
+
+    it("uses the property-type icons for the sort menu items", async () => {
+      const portalContainerRef = createRef<HTMLDivElement>();
+
+      render(
         <PortalContainerProvider container={portalContainerRef}>
           <TableHeaderWithPopover
             table={createTable()}
-            header={createHeader()}
+            header={createHeader({ dataType: "double", canSort: true })}
             isColumnPinned={false}
-            featureFlags={{
-              showPinningItems: true,
-            }}
+            featureFlags={{ showSortingItems: true }}
           />
           <div data-testid="header-menu-portal" ref={portalContainerRef} />
-        </PortalContainerProvider>
-      </ObjectTableLabelsProvider>
-    );
+        </PortalContainerProvider>,
+      );
 
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Menu for name",
-      })
-    );
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: "Open header menu for column with id=name",
+        }),
+      );
 
-    await waitFor(() => {
+      await waitFor(() => {
+        expect(
+          screen.getByRole("menuitem", { name: "Sort ascending" }),
+        ).toBeTruthy();
+      });
+
       expect(
-        screen.getByRole("menuitem", { name: "Stick this column" })
+        screen
+          .getByRole("menuitem", { name: "Sort ascending" })
+          .querySelector('svg[data-icon="sort-numerical"]'),
+      ).toBeTruthy();
+      expect(
+        screen
+          .getByRole("menuitem", { name: "Sort descending" })
+          .querySelector('svg[data-icon="sort-numerical-desc"]'),
       ).toBeTruthy();
     });
   });
@@ -121,15 +152,24 @@ function createTable(): Table<TestRow> {
   } as unknown as Table<TestRow>;
 }
 
-function createHeader(): Header<TestRow, unknown> {
+function createHeader({
+  dataType,
+  isSorted = false,
+  canSort = false,
+}: {
+  dataType?: string;
+  isSorted?: "asc" | "desc" | false;
+  canSort?: boolean;
+} = {}): Header<TestRow, unknown> {
   return {
     column: {
       id: "name",
       columnDef: {
         header: "Name",
+        meta: dataType != null ? { dataType } : undefined,
       },
-      getIsSorted: () => false,
-      getCanSort: () => false,
+      getIsSorted: () => isSorted,
+      getCanSort: () => canSort,
       toggleSorting: vi.fn(),
       clearSorting: vi.fn(),
     },

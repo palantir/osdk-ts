@@ -176,12 +176,12 @@ describe("MediaHelper", () => {
 
     function mockFetchResponse(): void {
       const mockGetMediaContent = vi.mocked(
-        OntologiesV2.MediaReferenceProperties.getMediaContent
+        OntologiesV2.MediaReferenceProperties.getMediaContent,
       );
       mockGetMediaContent.mockResolvedValue(
         new Response("fake-image-data", {
           headers: { "content-type": "image/png" },
-        })
+        }),
       );
     }
 

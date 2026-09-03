@@ -95,7 +95,7 @@ describe("buildWhereClause", () => {
     const def = createPropertyFilterDef(
       "name",
       "CONTAINS_TEXT",
-      createContainsTextState("test")
+      createContainsTextState("test"),
     );
     const filterStates = stateMap([def, createContainsTextState("test")]);
     const result = buildWhereClause([def], filterStates);
@@ -106,7 +106,7 @@ describe("buildWhereClause", () => {
     const def = createPropertyFilterDef(
       "active",
       "TOGGLE",
-      createToggleState(true)
+      createToggleState(true),
     );
     const filterStates = stateMap([def, createToggleState(true)]);
     const result = buildWhereClause([def], filterStates);
@@ -117,7 +117,7 @@ describe("buildWhereClause", () => {
     const def = createPropertyFilterDef(
       "age",
       "NUMBER_RANGE",
-      createNumberRangeState(18, undefined)
+      createNumberRangeState(18, undefined),
     );
     const filterStates = stateMap([def, createNumberRangeState(18, undefined)]);
     const result = buildWhereClause([def], filterStates);
@@ -128,7 +128,7 @@ describe("buildWhereClause", () => {
     const def = createPropertyFilterDef(
       "age",
       "NUMBER_RANGE",
-      createNumberRangeState(18, 65)
+      createNumberRangeState(18, 65),
     );
     const filterStates = stateMap([def, createNumberRangeState(18, 65)]);
     const result = buildWhereClause([def], filterStates);
@@ -141,7 +141,7 @@ describe("buildWhereClause", () => {
     const def = createPropertyFilterDef(
       "age",
       "NUMBER_RANGE",
-      createNumberRangeState(18, undefined, { includeNull: true })
+      createNumberRangeState(18, undefined, { includeNull: true }),
     );
     const filterStates = stateMap([
       def,
@@ -159,7 +159,7 @@ describe("buildWhereClause", () => {
     const def = createPropertyFilterDef(
       "createdAt",
       "DATE_RANGE",
-      createDateRangeState(minDate, maxDate)
+      createDateRangeState(minDate, maxDate),
     );
     const filterStates = stateMap([
       def,
@@ -182,11 +182,11 @@ describe("buildWhereClause", () => {
     const activeDef = createPropertyFilterDef(
       "active",
       "TOGGLE",
-      createToggleState(true)
+      createToggleState(true),
     );
     const filterStates = stateMap(
       [nameDef, { type: "EXACT_MATCH", values: ["John"] }],
-      [activeDef, createToggleState(true)]
+      [activeDef, createToggleState(true)],
     );
     const result = buildWhereClause([nameDef, activeDef], filterStates);
     expect(result).toEqual({
@@ -202,7 +202,7 @@ describe("buildWhereClause", () => {
     const activeDef = createPropertyFilterDef(
       "active",
       "TOGGLE",
-      createToggleState(false)
+      createToggleState(false),
     );
     const filterStates = stateMap([
       nameDef,
@@ -212,11 +212,11 @@ describe("buildWhereClause", () => {
     expect(result).toEqual({ name: "John" });
   });
 
-  it("builds $isNotNull for hasLink filter", () => {
+  it("emits no clause for an active hasLink filter", () => {
     const def = createHasLinkFilterDef("employees");
     const filterStates = stateMap([def, { type: "hasLink", hasLink: true }]);
     const result = buildWhereClause([def], filterStates);
-    expect(result).toEqual({ employees: { $isNotNull: true } });
+    expect(result).toEqual({});
   });
 
   it("emits no clause for hasLink filter when hasLink is false", () => {
@@ -224,16 +224,6 @@ describe("buildWhereClause", () => {
     const filterStates = stateMap([def, { type: "hasLink", hasLink: false }]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({});
-  });
-
-  it("negates the hasLink clause when excluding (no link)", () => {
-    const def = createHasLinkFilterDef("employees");
-    const filterStates = stateMap([
-      def,
-      { type: "hasLink", hasLink: true, isExcluding: true },
-    ]);
-    const result = buildWhereClause([def], filterStates);
-    expect(result).toEqual({ $not: { employees: { $isNotNull: true } } });
   });
 
   it("builds $containsAllTerms for keywordSearch filter with AND operator", () => {
@@ -306,7 +296,7 @@ describe("buildWhereClause", () => {
     const def = createPropertyFilterDef(
       "birthDate",
       "DATE_RANGE",
-      createDateRangeState(minDate, maxDate)
+      createDateRangeState(minDate, maxDate),
     );
     const filterStates = stateMap([
       def,
@@ -325,7 +315,7 @@ describe("buildWhereClause", () => {
     const def = createPropertyFilterDef(
       "age",
       "NUMBER_RANGE",
-      createNumberRangeState(18, 65, { includeNull: true })
+      createNumberRangeState(18, 65, { includeNull: true }),
     );
     const filterStates = stateMap([
       def,
@@ -344,7 +334,7 @@ describe("buildWhereClause", () => {
     const def = createPropertyFilterDef(
       "age",
       "NUMBER_RANGE",
-      createNumberRangeState(5_000_000_000, undefined)
+      createNumberRangeState(5_000_000_000, undefined),
     );
     const filterStates = stateMap([
       def,
@@ -358,7 +348,7 @@ describe("buildWhereClause", () => {
     const def = createPropertyFilterDef(
       "age",
       "NUMBER_RANGE",
-      createNumberRangeState(18, 65, { isExcluding: true })
+      createNumberRangeState(18, 65, { isExcluding: true }),
     );
     const filterStates = stateMap([
       def,
@@ -417,7 +407,7 @@ describe("buildWhereClause", () => {
     const def = createPropertyFilterDef(
       "name",
       "MULTI_SELECT",
-      createSelectState([""])
+      createSelectState([""]),
     );
     const filterStates = stateMap([def, createSelectState([""])]);
     const result = buildWhereClause([def], filterStates);
@@ -428,7 +418,7 @@ describe("buildWhereClause", () => {
     const def = createPropertyFilterDef(
       "name",
       "MULTI_SELECT",
-      createSelectState([NO_VALUE])
+      createSelectState([NO_VALUE]),
     );
     const filterStates = stateMap([def, createSelectState([NO_VALUE])]);
     const result = buildWhereClause([def], filterStates);
@@ -439,7 +429,7 @@ describe("buildWhereClause", () => {
     const def = createPropertyFilterDef(
       "name",
       "MULTI_SELECT",
-      createSelectState(["a", ""])
+      createSelectState(["a", ""]),
     );
     const filterStates = stateMap([def, createSelectState(["a", ""])]);
     const result = buildWhereClause([def], filterStates);
@@ -450,7 +440,7 @@ describe("buildWhereClause", () => {
     const def = createPropertyFilterDef(
       "name",
       "MULTI_SELECT",
-      createSelectState(["a", NO_VALUE])
+      createSelectState(["a", NO_VALUE]),
     );
     const filterStates = stateMap([def, createSelectState(["a", NO_VALUE])]);
     const result = buildWhereClause([def], filterStates);
@@ -503,7 +493,7 @@ describe("buildWhereClause", () => {
       "status",
       "LISTOGRAM",
       ["Active", "Inactive"],
-      { type: "EXACT_MATCH", values: [] }
+      { type: "EXACT_MATCH", values: [] },
     );
     const filterStates = stateMap([
       def,
@@ -518,7 +508,7 @@ describe("buildWhereClause", () => {
       "status",
       "LISTOGRAM",
       ["Active", "Inactive"],
-      { type: "EXACT_MATCH", values: [] }
+      { type: "EXACT_MATCH", values: [] },
     );
     const filterStates = stateMap([
       def,
@@ -533,7 +523,7 @@ describe("buildWhereClause", () => {
       "status",
       "LISTOGRAM",
       ["Active", "Inactive"],
-      { type: "EXACT_MATCH", values: [] }
+      { type: "EXACT_MATCH", values: [] },
     );
     const filterStates = stateMap([def, { type: "EXACT_MATCH", values: [] }]);
     const result = buildWhereClause([def], filterStates);
@@ -545,7 +535,7 @@ describe("buildWhereClause", () => {
       "status",
       "LISTOGRAM",
       ["Active", "Inactive"],
-      { type: "EXACT_MATCH", values: [] }
+      { type: "EXACT_MATCH", values: [] },
     );
     const filterStates = stateMap([
       def,
@@ -560,7 +550,7 @@ describe("buildWhereClause", () => {
       "priority",
       "SINGLE_SELECT",
       ["High", "Medium", "Low"],
-      { type: "SELECT", selectedValues: [] }
+      { type: "SELECT", selectedValues: [] },
     );
     const filterStates = stateMap([def, createSelectState(["High"])]);
     const result = buildWhereClause([def], filterStates);
@@ -572,7 +562,7 @@ describe("buildWhereClause", () => {
       "team",
       "MULTI_SELECT",
       ["Alpha", "Beta", "Gamma"],
-      { type: "SELECT", selectedValues: [] }
+      { type: "SELECT", selectedValues: [] },
     );
     const filterStates = stateMap([def, createSelectState(["Alpha", "Beta"])]);
     const result = buildWhereClause([def], filterStates);
@@ -584,7 +574,7 @@ describe("buildWhereClause", () => {
       "tags",
       "TEXT_TAGS",
       ["urgent", "blocked", "ready"],
-      { type: "EXACT_MATCH", values: [] }
+      { type: "EXACT_MATCH", values: [] },
     );
     const filterStates = stateMap([
       def,
@@ -610,7 +600,7 @@ describe("buildWhereClause", () => {
           }
           return undefined;
         },
-      }
+      },
     );
     const filterStates = stateMap([
       def,
@@ -628,7 +618,7 @@ describe("buildWhereClause", () => {
       { type: "EXACT_MATCH", values: [] },
       {
         toWhereClause: () => undefined,
-      }
+      },
     );
     const filterStates = stateMap([
       def,
@@ -646,11 +636,11 @@ describe("buildWhereClause", () => {
     const activeDef = createPropertyFilterDef(
       "active",
       "TOGGLE",
-      createToggleState(true)
+      createToggleState(true),
     );
     const filterStates = stateMap(
       [nameDef, { type: "EXACT_MATCH", values: ["John"] }],
-      [activeDef, createToggleState(true)]
+      [activeDef, createToggleState(true)],
     );
 
     const result1 = buildWhereClause([nameDef, activeDef], filterStates);
@@ -668,7 +658,7 @@ describe("buildWhereClause", () => {
 describe("getActiveLinkedFilters", () => {
   function linkedState(
     values: (string | boolean)[],
-    isExcluding = false
+    isExcluding = false,
   ): FilterState {
     return {
       type: "linkedProperty",
@@ -682,7 +672,7 @@ describe("getActiveLinkedFilters", () => {
 
   it("returns empty array for undefined definitions", () => {
     expect(
-      getActiveLinkedFilters(undefined, new Map<string, FilterState>())
+      getActiveLinkedFilters(undefined, new Map<string, FilterState>()),
     ).toEqual([]);
   });
 
@@ -698,7 +688,7 @@ describe("getActiveLinkedFilters", () => {
     expect(getActiveLinkedFilters([def], filterStates)).toEqual([]);
   });
 
-  it("builds an entry for an active linked filter with reverseLinkName", () => {
+  it("builds an entry for an active linked filter", () => {
     const def = createLinkedPropertyFilterDef("manager", "fullName");
     const filterStates = stateMap([def, linkedState(["Alice"])]);
 
@@ -706,9 +696,10 @@ describe("getActiveLinkedFilters", () => {
 
     expect(result).toEqual([
       {
+        id: getFilterKey(def),
         linkName: "manager",
-        reverseLinkName: "reverseLink",
         innerWhere: { fullName: "Alice" },
+        isExcluding: false,
       },
     ]);
   });
@@ -725,23 +716,22 @@ describe("getActiveLinkedFilters", () => {
     });
   });
 
-  it("wraps innerWhere with $not when isExcluding", () => {
+  it("keeps innerWhere positive and sets isExcluding when isExcluding", () => {
+    // isExcluding hoists to LinkedFilter.isExcluding so the isExcluding state
+    // is handled by narrowObjectSet
     const def = createLinkedPropertyFilterDef("manager", "fullName");
     const filterStates = stateMap([def, linkedState(["Alice"], true)]);
 
     const result = getActiveLinkedFilters([def], filterStates);
 
-    expect(result).toHaveLength(1);
-    expect(result[0].innerWhere).toEqual({ $not: { fullName: "Alice" } });
-  });
-
-  it("excludes linked filters without reverseLinkName", () => {
-    const def = createLinkedPropertyFilterDef("manager", "fullName", {
-      reverseLinkName: null,
-    });
-    const filterStates = stateMap([def, linkedState(["Alice"])]);
-
-    expect(getActiveLinkedFilters([def], filterStates)).toEqual([]);
+    expect(result).toEqual([
+      {
+        id: getFilterKey(def),
+        linkName: "manager",
+        innerWhere: { fullName: "Alice" },
+        isExcluding: true,
+      },
+    ]);
   });
 
   it("excludes linked filters with empty values", () => {
@@ -756,13 +746,13 @@ describe("getActiveLinkedFilters", () => {
     const def2 = createLinkedPropertyFilterDef("office", "city");
     const filterStates = stateMap(
       [def1, linkedState(["Alice"])],
-      [def2, linkedState(["Berlin"])]
+      [def2, linkedState(["Berlin"])],
     );
 
     const result = getActiveLinkedFilters(
       [def1, def2],
       filterStates,
-      getFilterKey(def1)
+      getFilterKey(def1),
     );
 
     expect(result).toHaveLength(1);
@@ -774,12 +764,61 @@ describe("getActiveLinkedFilters", () => {
     const def2 = createLinkedPropertyFilterDef("office", "city");
     const filterStates = stateMap(
       [def1, linkedState(["Alice"])],
-      [def2, linkedState(["Berlin"])]
+      [def2, linkedState(["Berlin"])],
     );
 
     const result = getActiveLinkedFilters([def1, def2], filterStates);
 
     expect(result).toHaveLength(2);
     expect(result.map((r) => r.linkName)).toEqual(["manager", "office"]);
+  });
+
+  describe("HAS_LINK", () => {
+    it("builds an entry with no innerWhere for an active hasLink filter", () => {
+      const def = createHasLinkFilterDef("peeps");
+      const filterStates = stateMap([def, { type: "hasLink", hasLink: true }]);
+
+      expect(getActiveLinkedFilters([def], filterStates)).toEqual([
+        { id: getFilterKey(def), linkName: "peeps", isExcluding: false },
+      ]);
+    });
+
+    it("marks the entry as excluding", () => {
+      const def = createHasLinkFilterDef("peeps");
+      const filterStates = stateMap([
+        def,
+        { type: "hasLink", hasLink: true, isExcluding: true },
+      ]);
+
+      expect(getActiveLinkedFilters([def], filterStates)).toEqual([
+        { id: getFilterKey(def), linkName: "peeps", isExcluding: true },
+      ]);
+    });
+
+    it("returns nothing when hasLink is false", () => {
+      const def = createHasLinkFilterDef("peeps");
+      const filterStates = stateMap([def, { type: "hasLink", hasLink: false }]);
+
+      expect(getActiveLinkedFilters([def], filterStates)).toEqual([]);
+    });
+
+    it("returns nothing when hasLink is false even with isExcluding", () => {
+      const def = createHasLinkFilterDef("peeps");
+      const filterStates = stateMap([
+        def,
+        { type: "hasLink", hasLink: false, isExcluding: true },
+      ]);
+
+      expect(getActiveLinkedFilters([def], filterStates)).toEqual([]);
+    });
+
+    it("skips a hasLink filter matching excludeFilterKey", () => {
+      const def = createHasLinkFilterDef("peeps");
+      const filterStates = stateMap([def, { type: "hasLink", hasLink: true }]);
+
+      expect(
+        getActiveLinkedFilters([def], filterStates, getFilterKey(def)),
+      ).toEqual([]);
+    });
   });
 });

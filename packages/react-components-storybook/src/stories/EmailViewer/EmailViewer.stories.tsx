@@ -17,7 +17,7 @@
 import type { Media } from "@osdk/api";
 import type {
   BaseEmailViewerProps,
-  EmailViewerMediaProps,
+  EmailViewerProps,
   ParsedEmail,
 } from "@osdk/react-components/experimental/email-viewer";
 import {
@@ -99,7 +99,7 @@ const meta: Meta<BaseEmailViewerProps> = {
   component: BaseEmailViewer,
   tags: ["beta"],
   args: {
-    email: SAMPLE_EMAIL,
+    content: SAMPLE_EMAIL,
   },
   render: (args: BaseEmailViewerProps) => (
     <div style={{ height: "500px" }}>
@@ -110,8 +110,8 @@ const meta: Meta<BaseEmailViewerProps> = {
     controls: { expanded: true },
   },
   argTypes: {
-    email: {
-      description: "Parsed email data",
+    content: {
+      description: "The parsed email to render",
       control: false,
     },
     className: {
@@ -124,11 +124,11 @@ const meta: Meta<BaseEmailViewerProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: StoryObj<EmailViewerMediaProps> = {
+export const Default: StoryObj<EmailViewerProps> = {
   args: {
     media: createMockEmailMedia(SAMPLE_EML_CONTENT),
   },
-  render: (args: EmailViewerMediaProps) => (
+  render: (args: EmailViewerProps) => (
     <div style={{ height: "500px" }}>
       <EmailViewer {...args} />
     </div>
@@ -136,9 +136,7 @@ export const Default: StoryObj<EmailViewerMediaProps> = {
   parameters: {
     docs: {
       source: {
-        code: `import { EmailViewer } from "@osdk/react-components/experimental/email-viewer";
-
-<EmailViewer media={myOsdkMedia} />`,
+        code: `<EmailViewer media={myOsdkMedia} />`,
       },
     },
   },
@@ -148,9 +146,7 @@ export const HtmlEmail: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseEmailViewer } from "@osdk/react-components/experimental/email-viewer";
-
-<BaseEmailViewer email={parsedEmail} />`,
+        code: `<BaseEmailViewer content={parsedEmail} />`,
       },
     },
   },
@@ -158,6 +154,24 @@ export const HtmlEmail: Story = {
 
 export const PlainTextEmail: Story = {
   args: {
-    email: SAMPLE_TEXT_EMAIL,
+    content: SAMPLE_TEXT_EMAIL,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// A ParsedEmail with no html part renders its text body as preformatted text
+<BaseEmailViewer
+  content={{
+    subject: "Meeting Notes",
+    from: { name: "Bob Smith", address: "bob@example.com" },
+    to: [{ name: "Alice Johnson", address: "alice@example.com" }],
+    cc: [],
+    date: "2026-03-16T09:00:00Z",
+    html: undefined,
+    text: "Hi Alice,\\n\\nHere are the meeting notes from today.\\n\\nThanks,\\nBob",
+  }}
+/>`,
+      },
+    },
   },
 };

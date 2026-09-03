@@ -30,13 +30,13 @@ import { ReadableIdGenerator } from "../../util/generateRid.js";
 import { getExternalRecommendations } from "./RecommendationUtils.js";
 
 function callGetExternalRecommendations(
-  result: Awaited<ReturnType<typeof defineOntologyV2>>
+  result: Awaited<ReturnType<typeof defineOntologyV2>>,
 ) {
   return getExternalRecommendations(
     result.ontologyIr.importedOntology,
     result.ontologyIr.valueTypes,
     result.ontologyIr.importedValueTypes,
-    result.shapes.inputShapes
+    result.shapes.inputShapes,
   );
 }
 
@@ -83,7 +83,7 @@ describe("RecommendationUtils", () => {
     const allMappings = recs.flatMap((r) => r.mappings);
 
     const sptReadableId = ReadableIdGenerator.getForSpt(
-      "com.external.pkg.externalId"
+      "com.external.pkg.externalId",
     );
     expect(allMappings).toContainEqual({
       targetInputReadableId: sptReadableId,
@@ -124,7 +124,7 @@ describe("RecommendationUtils", () => {
     // Property external recs
     const propReadableId = ReadableIdGenerator.getForObjectProperty(
       "ImportedObj",
-      "id"
+      "id",
     );
     expect(allMappings).toContainEqual({
       targetInputReadableId: propReadableId,
@@ -169,6 +169,61 @@ describe("RecommendationUtils", () => {
     expect(allMappings).toContainEqual({
       targetInputReadableId: ifaceReadableId,
       upstreamOutputReadableId: ifaceReadableId,
+    });
+  });
+
+  it("generates external recs for imported interface-defined properties", async () => {
+    const result = await defineOntologyV2("com.palantir.", () => {
+      const importedInterface: InterfaceType = {
+        apiName: "com.external.pkg.ImportedIface",
+        displayMetadata: {
+          displayName: "Imported Interface",
+          description: "An imported interface",
+        },
+        extendsInterfaces: [],
+        links: [],
+        actionTypeConstraints: [],
+        status: { type: "active", active: {} },
+        propertiesV2: {},
+        propertiesV3: {
+          interfaceProperty: {
+            type: "string",
+            required: false,
+          },
+        },
+        searchable: true,
+        __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
+      };
+      importOntologyEntity(importedInterface);
+
+      defineObject({
+        apiName: "localObj",
+        displayName: "Local Obj",
+        pluralDisplayName: "Local Objs",
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+      });
+    });
+
+    const recs = callGetExternalRecommendations(result);
+    const propertyReadableId = ReadableIdGenerator.getForInterfaceProperty(
+      "com.external.pkg.ImportedIface",
+      "interfaceProperty",
+    );
+
+    expect(recs).toContainEqual({
+      upstreamPackageName: "com.external.pkg",
+      upstreamVersionCompatibility: {
+        from: "0.0.0",
+        until: "x.x.x",
+      },
+      mappings: [
+        {
+          targetInputReadableId: propertyReadableId,
+          upstreamOutputReadableId: propertyReadableId,
+        },
+      ],
     });
   });
 

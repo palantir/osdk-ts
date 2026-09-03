@@ -24,11 +24,11 @@ import type { GetRequestDurationMetricsDelayResponse } from "../GetRequestDurati
  */
 export async function getRequestDurationMetricsDelay(
   ctx: ConjureContext,
-  applicationRid: ApplicationRid
+  applicationRid: ApplicationRid,
 ): Promise<GetRequestDurationMetricsDelayResponse> {
   return conjureFetch(
     ctx,
     `/application-metrics/delays/${applicationRid}/getRequestDurationMetrics`,
-    "GET"
+    "GET",
   );
 }

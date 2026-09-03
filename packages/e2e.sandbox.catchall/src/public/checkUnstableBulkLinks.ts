@@ -55,13 +55,13 @@ export const buildGraph = async (): Promise<void> => {
     (await fetchAll(venturesObjectSet)).map((venture) => [
       objectIdentifier(venture),
       venture,
-    ])
+    ]),
   );
   const allLinkedEmployees = new Map(
     (await fetchAll(venturesObjectSet.pivotTo("employees"))).map((employee) => [
       objectIdentifier(employee),
       employee,
-    ])
+    ]),
   );
 
   // Fetch links and build graph
@@ -92,7 +92,7 @@ export const buildGraph = async (): Promise<void> => {
             .get(venture)!
             .map((venture) => venture.$title)
             .join(", ")}`
-        : "no ventures."
+        : "no ventures.",
     );
   }
 };
@@ -100,19 +100,19 @@ export const buildGraph = async (): Promise<void> => {
 export const checkAsyncIterLinks = async (): Promise<void> => {
   // one link
   for await (const { source, target, linkType } of client(
-    Venture
+    Venture,
   ).experimental_asyncIterLinks(["employees"])) {
     console.log(
-      `${locatorString(source)} ---(${linkType})--> ${locatorString(target)}`
+      `${locatorString(source)} ---(${linkType})--> ${locatorString(target)}`,
     );
   }
 
   // multiple links
   for await (const { source, target, linkType } of client(
-    Employee
+    Employee,
   ).experimental_asyncIterLinks(["ventures", "peeps"])) {
     console.log(
-      `${locatorString(source)} ---(${linkType})--> ${locatorString(target)}`
+      `${locatorString(source)} ---(${linkType})--> ${locatorString(target)}`,
     );
   }
 };
@@ -128,10 +128,10 @@ export async function checkUnstableBulkLinks(): Promise<void> {
     otherObjectPk,
   } of client(__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks).getBulkLinks(
     stations.data,
-    ["boundariesUsState"]
+    ["boundariesUsState"],
   )) {
     logger.info(
-      `Found link ${object.$objectType}:${object.$primaryKey} <- (${linkApiName}) -> ${otherObjectApiName}:${otherObjectPk}`
+      `Found link ${object.$objectType}:${object.$primaryKey} <- (${linkApiName}) -> ${otherObjectApiName}:${otherObjectPk}`,
     );
   }
 
@@ -149,10 +149,10 @@ export async function checkUnstableBulkLinks(): Promise<void> {
     otherObjectPk,
   } of client(__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks).getBulkLinks(
     employees,
-    ["ventures", "amishsSyncGroup"]
+    ["ventures", "amishsSyncGroup"],
   )) {
     logger.info(
-      `Found link ${object.$objectType}:${object.$primaryKey} <- (${linkApiName}) -> ${otherObjectApiName}:${otherObjectPk}`
+      `Found link ${object.$objectType}:${object.$primaryKey} <- (${linkApiName}) -> ${otherObjectApiName}:${otherObjectPk}`,
     );
   }
 }

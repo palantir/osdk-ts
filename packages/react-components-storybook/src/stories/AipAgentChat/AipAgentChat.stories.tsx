@@ -39,12 +39,12 @@ const SAMPLE_CONVERSATION: UIMessage[] = [
   makeMessage("user", "What can you help me with?"),
   makeMessage(
     "assistant",
-    "I can assist you with a wide range of tasks! For example, I can help answer questions, analyze data, write content, brainstorm ideas, and more. What would you like to work on today?"
+    "I can assist you with a wide range of tasks! For example, I can help answer questions, analyze data, write content, brainstorm ideas, and more. What would you like to work on today?",
   ),
   makeMessage("user", "Can you summarize the latest sales report?"),
   makeMessage(
     "assistant",
-    "Based on the Q1 sales report:\n\n- Total revenue: $2.4M (up 12% QoQ)\n- New customers: 148 (up 23%)\n- Average deal size: $16.2K\n- Top performing region: Northeast\n\nThe main growth driver was enterprise expansion deals. Would you like me to dig into any specific area?"
+    "Based on the Q1 sales report:\n\n- Total revenue: $2.4M (up 12% QoQ)\n- New customers: 148 (up 23%)\n- Average deal size: $16.2K\n- Top performing region: Northeast\n\nThe main growth driver was enterprise expansion deals. Would you like me to dig into any specific area?",
   ),
 ];
 
@@ -64,7 +64,7 @@ function InteractiveChat(
   > & {
     initialMessages?: UIMessage[];
     simulateError?: boolean;
-  }
+  },
 ) {
   const { initialMessages = [], simulateError = false, ...rest } = props;
   const [messages, setMessages] = React.useState<UIMessage[]>(initialMessages);
@@ -74,7 +74,7 @@ function InteractiveChat(
   const [error, setError] = React.useState<Error | undefined>(
     simulateError
       ? new Error("Connection timed out. Please try again.")
-      : undefined
+      : undefined,
   );
   const abortRef = React.useRef(false);
 

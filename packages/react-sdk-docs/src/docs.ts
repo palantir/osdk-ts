@@ -96,7 +96,7 @@ function handleLinkedPrimaryKeyPropertyV2({
 }
 
 function renderPropertyValue(
-  propertyValue: PropertySampleValueTypeIR | undefined
+  propertyValue: PropertySampleValueTypeIR | undefined,
 ): string {
   if (propertyValue == null) {
     throw new Error("Cannot render a null property value");
@@ -109,7 +109,7 @@ function renderType(
   type:
     | ActionParameterSampleValueTypeIR
     | FunctionSampleValueTypeIR
-    | PropertySampleValueTypeIR
+    | PropertySampleValueTypeIR,
 ): string {
   if (type == null) {
     throw new Error("Cannot render a null type value");
@@ -183,6 +183,7 @@ function renderType(
     case "string": {
       return `"${type.value ?? "value"}"`;
     }
+    case "unknown":
     default: {
       return `"value"`;
     }

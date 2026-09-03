@@ -14,33 +14,33 @@ export type OsdkObjectLinks$ReducerTestInterface = {};
 
 export namespace ReducerTestInterface {
   export type PropertyKeys =
-    | 'stringFromArrayFromAlreadyReduced'
-    | 'stringFromNonMainValueOfStruct'
-    | 'stringFromReducedMainValueStructArray'
-    | 'stringFromSingleMainValue'
-    | 'structFromMultipleMainValue';
+    | 'integerFromReducedMainValueStructArray'
+    | 'stringArray'
+    | 'stringFromReducedArray'
+    | 'stringFromStruct'
+    | 'structWithLessPropsThanOt';
 
   export interface Props {
     /**
-     *   display name: 'stringArray'
+     * (no ontology metadata)
      */
-    readonly stringFromArrayFromAlreadyReduced: $PropType['string'][] | undefined;
+    readonly integerFromReducedMainValueStructArray: $PropType['integer'] | undefined;
     /**
-     *   display name: 'stringFromStruct'
+     * (no ontology metadata)
      */
-    readonly stringFromNonMainValueOfStruct: $PropType['string'] | undefined;
+    readonly stringArray: $PropType['string'][] | undefined;
     /**
-     *   display name: 'integerFromReducedMainValueStructArray'
+     * (no ontology metadata)
      */
-    readonly stringFromReducedMainValueStructArray: $PropType['integer'] | undefined;
+    readonly stringFromReducedArray: $PropType['string'] | undefined;
     /**
-     *   display name: 'stringFromReducedArray'
+     * (no ontology metadata)
      */
-    readonly stringFromSingleMainValue: $PropType['string'] | undefined;
+    readonly stringFromStruct: $PropType['string'] | undefined;
     /**
-     *   display name: 'structWithLessPropsThanOt'
+     * (no ontology metadata)
      */
-    readonly structFromMultipleMainValue:
+    readonly structWithLessPropsThanOt:
       | { integer: $PropType['integer'] | undefined; string: $PropType['string'] | undefined }
       | undefined;
   }
@@ -77,25 +77,25 @@ export interface ReducerTestInterface extends $InterfaceDefinition {
     links: {};
     properties: {
       /**
-       *   display name: 'stringArray'
+       * (no ontology metadata)
        */
-      stringFromArrayFromAlreadyReduced: $PropertyDef<'string', 'nullable', 'array'>;
+      integerFromReducedMainValueStructArray: $PropertyDef<'integer', 'nullable', 'single'>;
       /**
-       *   display name: 'stringFromStruct'
+       * (no ontology metadata)
        */
-      stringFromNonMainValueOfStruct: $PropertyDef<'string', 'nullable', 'single'>;
+      stringArray: $PropertyDef<'string', 'nullable', 'array'>;
       /**
-       *   display name: 'integerFromReducedMainValueStructArray'
+       * (no ontology metadata)
        */
-      stringFromReducedMainValueStructArray: $PropertyDef<'integer', 'nullable', 'single'>;
+      stringFromReducedArray: $PropertyDef<'string', 'nullable', 'single'>;
       /**
-       *   display name: 'stringFromReducedArray'
+       * (no ontology metadata)
        */
-      stringFromSingleMainValue: $PropertyDef<'string', 'nullable', 'single'>;
+      stringFromStruct: $PropertyDef<'string', 'nullable', 'single'>;
       /**
-       *   display name: 'structWithLessPropsThanOt'
+       * (no ontology metadata)
        */
-      structFromMultipleMainValue: $PropertyDef<{ string: 'string'; integer: 'integer' }, 'nullable', 'single'>;
+      structWithLessPropsThanOt: $PropertyDef<{ string: 'string'; integer: 'integer' }, 'nullable', 'single'>;
     };
     rid: 'ri.ontology.main.interface.ee112779-ed04-44c6-bf84-9543513eb80b';
     type: 'interface';

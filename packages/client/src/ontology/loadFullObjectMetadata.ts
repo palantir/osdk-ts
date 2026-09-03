@@ -21,13 +21,13 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadFullObjectMetadata(
   client: MinimalClient,
-  objectType: string
+  objectType: string,
 ): Promise<ObjectMetadata & { rid: string }> {
   const full = await ObjectTypesV2.getFullMetadata(
     client,
     await client.ontologyRid,
     objectType,
-    { preview: true, branch: client.branch }
+    { preview: true, branch: client.branch },
   );
   const { wireObjectTypeFullMetadataToSdkObjectMetadata } =
     await import("@osdk/generator-converters");

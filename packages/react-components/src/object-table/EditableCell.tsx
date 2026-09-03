@@ -28,7 +28,6 @@ import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { DatePickerCellField } from "./components/DatePickerCellField.js";
 import { DropdownCellField } from "./components/DropdownCellField.js";
 import { TextInputCellField } from "./components/TextInputCellField.js";
-import { useObjectTableLabels } from "./ObjectTableLabels.js";
 import { cellValuesEqual } from "./utils/editableUtils.js";
 import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
 
@@ -45,6 +44,8 @@ const NUMBER_TYPES: readonly string[] = [
 ];
 
 const DATE_TYPES: readonly string[] = ["datetime", "timestamp"];
+
+const VALIDATION_ERROR_MESSAGE = "Validation error";
 
 export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   initialValue: CellValue;
@@ -116,9 +117,8 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   rowCellEdits,
   isRowFocused = false,
 }: EditableCellProps<TData, CellValue>): React.ReactElement {
-  const labels = useObjectTableLabels();
   const [inputValue, setInputValue] = useState<string>(
-    valueToString(currentValue)
+    valueToString(currentValue),
   );
   const isCancelled = useRef(false);
   const validationAbortControllerRef = useRef<AbortController | null>(null);
@@ -175,18 +175,12 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
         },
         (error) => {
           if (!controller.signal.aborted && error.name !== "AbortError") {
-            onCellValidationError?.(cellId, labels.cellValidationError);
+            onCellValidationError?.(cellId, VALIDATION_ERROR_MESSAGE);
           }
-        }
+        },
       );
     },
-    [
-      validateEdit,
-      onCellValidationError,
-      clearCellValidationError,
-      cellId,
-      labels,
-    ]
+    [validateEdit, onCellValidationError, clearCellValidationError, cellId],
   );
 
   const commitEdit = useCallback(
@@ -212,7 +206,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
       initialValue,
       originalRowData,
       runValidation,
-    ]
+    ],
   );
 
   // Text/number input: commit on blur
@@ -237,7 +231,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
       abortValidation();
       setInputValue(value);
     },
-    [abortValidation]
+    [abortValidation],
   );
 
   const handleKeyDown = useCallback(
@@ -251,7 +245,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
         e.currentTarget.blur();
       }
     },
-    [currentValue]
+    [currentValue],
   );
 
   const handleCommit = useCallback(
@@ -263,7 +257,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
       if (cellValuesEqual(newValue, currentValue)) return;
       commitEdit(newValue as CellValue);
     },
-    [commitEdit, currentValue]
+    [commitEdit, currentValue],
   );
 
   const inputType =
@@ -276,7 +270,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
       editFieldConfig?.fieldComponent === "DROPDOWN"
         ? editFieldConfig.getFieldComponentProps(originalRowData, rowCellEdits)
         : undefined,
-    [editFieldConfig, originalRowData, rowCellEdits]
+    [editFieldConfig, originalRowData, rowCellEdits],
   );
 
   const datePickerFieldProps = useMemo(
@@ -284,7 +278,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
       editFieldConfig?.fieldComponent === "DATE_PICKER"
         ? editFieldConfig.getFieldComponentProps(originalRowData, rowCellEdits)
         : undefined,
-    [editFieldConfig, originalRowData, rowCellEdits]
+    [editFieldConfig, originalRowData, rowCellEdits],
   );
 
   const renderFieldInput = () => {
@@ -363,6 +357,6 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
 }
 
 export const EditableCell = React.memo(
-  EditableCellInner
+  EditableCellInner,
 ) as typeof EditableCellInner;
 ("");

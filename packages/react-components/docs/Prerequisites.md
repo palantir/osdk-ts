@@ -42,7 +42,7 @@ const client = createClient(
   "ri.ontology.main.ontology.{UUID}",
   async () => {
     // return your auth token
-  }
+  },
 );
 
 function App() {
@@ -107,7 +107,7 @@ Add a custom layer after the OSDK layers to override any token:
 
 All components resolve their visual properties through CSS custom properties. There are two scopes of tokens you can target when theming:
 
-- **OSDK tokens (`--osdk-*`)** — every visual property used inside OSDK components resolves through a token prefixed with `--osdk-` (e.g. `--osdk-table-header-bg`, `--osdk-form-section-padding`). Override these to theme **OSDK components only**, leaving other Blueprint components in your app untouched.
+- **OSDK tokens (`--osdk-*`)** — every visual property used inside OSDK components resolves through a token prefixed with `--osdk-` (e.g. `--osdk-table-header-bg`, `--osdk-form-section-content-padding-inline`). Override these to theme **OSDK components only**, leaving other Blueprint components in your app untouched.
 - **Blueprint tokens (`--bp-*`)** — the underlying Blueprint design tokens that most `--osdk-*` tokens map to. Override these for consistent theming across **both Blueprint and OSDK components**. (A few `--osdk-*` tokens hold raw values rather than mapping to a `--bp-*` token — override those `--osdk-*` tokens directly.)
 
 Per-component references list the `--osdk-*` variables each component exposes — see, for example, [ObjectTable › Theming](./ObjectTable.md#theming). The full catalog of variables lives in [CSSVariables.md](./CSSVariables.md).

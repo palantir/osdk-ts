@@ -16,7 +16,11 @@
 
 import { describe, expect, it } from "vitest";
 
-import { isValidApiName, isValidObjectApiName } from "./ApiNameValidator.js";
+import {
+  isValidApiName,
+  isValidNamespacedApiName,
+  isValidObjectApiName,
+} from "./ApiNameValidator.js";
 
 describe("isValidApiName", () => {
   it("accepts valid names", () => {
@@ -35,6 +39,7 @@ describe("isValidApiName", () => {
   it("rejects names with special characters", () => {
     expect(isValidApiName("foo bar")).toBe(false);
     expect(isValidApiName("foo-bar")).toBe(false);
+    expect(isValidApiName("foo.bar")).toBe(false);
   });
 
   it("rejects reserved keywords case-insensitively", () => {
@@ -52,6 +57,10 @@ describe("isValidApiName", () => {
 });
 
 describe("isValidObjectApiName", () => {
+  it("accepts names with dots", () => {
+    expect(isValidObjectApiName("foo.bar")).toBe(true);
+  });
+
   it("rejects names with underscores", () => {
     expect(isValidObjectApiName("foo_bar")).toBe(false);
   });
@@ -62,5 +71,11 @@ describe("isValidObjectApiName", () => {
 
   it("rejects names exceeding 100 characters", () => {
     expect(isValidObjectApiName("a".repeat(101))).toBe(false);
+  });
+});
+
+describe("isValidNamespacedApiName", () => {
+  it("accepts names with dots", () => {
+    expect(isValidNamespacedApiName("foo.bar_baz")).toBe(true);
   });
 });

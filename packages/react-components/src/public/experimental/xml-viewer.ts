@@ -18,7 +18,7 @@
 export { BaseXmlViewer } from "../../xml-viewer/BaseXmlViewer.js";
 export type {
   BaseXmlViewerProps,
-  XmlViewerMediaProps,
+  XmlViewerProps,
 } from "../../xml-viewer/XmlViewerApi.js";
 
 // XmlViewer (Media wrapper)
@@ -26,5 +26,5 @@ import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 import { XmlViewer as _XmlViewer } from "../../xml-viewer/XmlViewer.js";
 export const XmlViewer: typeof _XmlViewer = withOsdkMetrics(
   _XmlViewer,
-  "XmlViewer"
+  "XmlViewer",
 );

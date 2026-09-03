@@ -30,7 +30,7 @@ export async function importRidAssociatedCodeBlockSet(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   parentRid: _api_CodeBlockSetParentRid,
-  request: string
+  request: string,
 ): Promise<_api_BulkImportBlockSetsResponse> {
   return conjureFetch(
     ctx,
@@ -38,6 +38,6 @@ export async function importRidAssociatedCodeBlockSet(
     "POST",
     request,
     undefined,
-    "application/octet-stream"
+    "application/octet-stream",
   );
 }

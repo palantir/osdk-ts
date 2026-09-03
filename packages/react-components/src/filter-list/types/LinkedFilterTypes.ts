@@ -33,15 +33,22 @@ import type {
 } from "../FilterListItemApi.js";
 
 /**
- * Runtime representation of an active linked-property filter. Each entry
- * binds a `linkName` to its `reverseLinkName` and an `innerWhere` typed
- * against the linked object type, so `narrowObjectSet` can pivot type-safely.
+ * Runtime representation of an active link-traversing filter
  */
 export type LinkedFilter<Q extends ObjectTypeDefinition> = {
   [L in LinkNames<Q>]: {
+    /** The filter definition's `getFilterKey` value. */
+    id: string;
+
     linkName: L;
-    reverseLinkName: LinkNames<LinkedType<Q, L>>;
-    innerWhere: WhereClause<LinkedType<Q, L>>;
+    /**
+     * Predicate the linked objects must match to be counted.
+     */
+    innerWhere?: WhereClause<LinkedType<Q, L>>;
+    /**
+     * When true, keep source rows whose match-count is zero.
+     */
+    isExcluding?: boolean;
   };
 }[LinkNames<Q>];
 
@@ -69,27 +76,30 @@ export interface LinkedPropertyFilterState<
 
 /**
  * Filter definition for "Has Link" filter
- * Filters objects based on whether they have any linked objects of the specified type
+ * Filters objects based on whether they have any linked objects of the specified
+ * type. Filters `objectSet` and is emitted via `onEffectiveObjectSet`; link
+ * presence has no filter-clause form, so it never appears in
+ * `onFilterClauseChanged`.
  */
 export interface HasLinkFilterDefinition<
   Q extends ObjectTypeDefinition,
   L extends LinkNames<Q> = LinkNames<Q>,
 > extends FilterDefinitionControls {
   type: "HAS_LINK";
-  /**
-   * Optional unique identifier for stable keying across filter reorders.
-   */
-  id?: string;
   linkName: L;
   label?: string;
-  filterState: HasLinkFilterState;
-  defaultFilterState?: HasLinkFilterState;
+
   /**
-   * Controls whether this filter is rendered.
-   * When false, the filter is hidden but its state is preserved.
-   * @default true
+   * Seeds the filter's state on mount, FilterList owns the state from then on
+   *
+   * @default undefined (filter starts empty)
    */
-  isVisible?: boolean;
+  defaultFilterState?: HasLinkFilterState;
+
+  /**
+   * @deprecated Has no effect, remove it.
+   */
+  filterState?: HasLinkFilterState;
 }
 
 /**
@@ -105,25 +115,53 @@ export interface LinkedPropertyFilterDefinition<
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<LinkedQ, LinkedK>>,
 > extends FilterDefinitionControls {
   type: "LINKED_PROPERTY";
-  /**
-   * Optional unique identifier for stable keying across filter reorders.
-   */
-  id?: string;
   linkName: L;
   /**
-   * Set this to make the filter narrow `objectSet`; the result is emitted
-   * via `onEffectiveObjectSet`. The value names the link on the linked
-   * object type that points back to `Q` (the inverse of `linkName`).
-   *
-   * Leave unset to keep the filter UI-only. It still renders and fires
-   * `onFilterStateChanged`, but FilterList won't narrow on it.
+   * @deprecated Has no effect, remove it.
    */
   reverseLinkName?: LinkNames<LinkedQ>;
   linkedPropertyKey: LinkedK;
-  linkedFilterComponent: LinkedC;
-  linkedFilterState: FilterStateByComponentType[LinkedC];
+
+  /**
+   * The filter component to render for the linked property. Must be
+   * compatible with the linked property's type, see
+   * ValidComponentsForPropertyType.
+   *
+   * Required in practice — a definition that sets neither this nor
+   * `linkedFilterComponent` renders as unsupported.
+   */
+  // TODO: make this required, and drop the note above, when
+  // `linkedFilterComponent` is removed.
+  filterComponent?: LinkedC;
+
+  /**
+   * @deprecated Rename to `filterComponent`.
+   */
+  linkedFilterComponent?: LinkedC;
+
+  /**
+   * Seeds the state of the filter on the *linked* property. FilterList owns the
+   * state from then on. `onFilterStateChanged` fires with the wrapper.
+   *
+   * @default undefined (filter starts empty)
+   */
+  defaultFilterState?: FilterStateByComponentType[LinkedC];
+
+  /**
+   * @deprecated Rename to `defaultFilterState`.
+   */
   defaultLinkedFilterState?: FilterStateByComponentType[LinkedC];
-  filterState: LinkedPropertyFilterState<FilterStateByComponentType[LinkedC]>;
+
+  /**
+   * @deprecated Has no effect, remove it.
+   */
+  linkedFilterState?: FilterStateByComponentType[LinkedC];
+
+  /**
+   * @deprecated Has no effect, remove it.
+   */
+  filterState?: LinkedPropertyFilterState<FilterStateByComponentType[LinkedC]>;
+
   label?: string;
 
   /**
@@ -141,11 +179,4 @@ export interface LinkedPropertyFilterDefinition<
    * back to the raw value.
    */
   renderValue?: (value: string) => ReactNode;
-
-  /**
-   * Controls whether this filter is rendered.
-   * When false, the filter is hidden but its state is preserved.
-   * @default true
-   */
-  isVisible?: boolean;
 }

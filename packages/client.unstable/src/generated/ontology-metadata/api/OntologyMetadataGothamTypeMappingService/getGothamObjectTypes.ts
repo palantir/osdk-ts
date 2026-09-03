@@ -28,11 +28,11 @@ import type { GetGothamObjectTypesResponse as _api_typemapping_GetGothamObjectTy
  */
 export async function getGothamObjectTypes(
   ctx: ConjureContext,
-  ontologyRid: _api_OntologyRid
+  ontologyRid: _api_OntologyRid,
 ): Promise<_api_typemapping_GetGothamObjectTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/typemapping/getGothamObjectTypes/${ontologyRid}`,
-    "GET"
+    "GET",
   );
 }

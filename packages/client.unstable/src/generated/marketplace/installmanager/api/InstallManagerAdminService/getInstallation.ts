@@ -30,11 +30,11 @@ export async function getInstallation(
   ctx: ConjureContext,
   organizationRid: _api_OrganizationRid,
   namespaceRid: _api_NamespaceRid,
-  installationName: _api_ManagedInstallationName
+  installationName: _api_ManagedInstallationName,
 ): Promise<_installmanager_api_GetInstallationResponse> {
   return conjureFetch(
     ctx,
     `/install-manager-admin/organization/${organizationRid}/namespace/${namespaceRid}/installation/${installationName}`,
-    "GET"
+    "GET",
   );
 }

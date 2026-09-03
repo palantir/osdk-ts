@@ -36,10 +36,10 @@ import type { SecurityConditionDefinition } from "../../api/object/SecurityCondi
 
 export function convertDatasourceDefinition(
   objectType: ObjectType,
-  properties: ObjectPropertyType[]
+  properties: ObjectPropertyType[],
 ): OntologyIrObjectTypeDatasourceDefinition {
   const baseDatasource = objectType.datasources?.find((ds) =>
-    ["dataset", "stream", "restrictedView", "direct"].includes(ds.type)
+    ["dataset", "stream", "restrictedView", "direct"].includes(ds.type),
   );
   switch (baseDatasource?.type) {
     case "stream":
@@ -48,7 +48,7 @@ export function convertDatasourceDefinition(
         ? { type: "time", time: { window } }
         : { type: "none", none: {} };
       const propertyMapping = Object.fromEntries(
-        properties.map((prop) => [prop.apiName, prop.apiName])
+        properties.map((prop) => [prop.apiName, prop.apiName]),
       );
       return {
         type: "streamV2",
@@ -84,15 +84,16 @@ export function convertDatasourceDefinition(
           propertySecurityGroups: convertPropertySecurityGroups(
             baseDatasource,
             properties,
-            objectType.primaryKeyPropertyApiName
+            objectType.primaryKeyPropertyApiName,
           ),
         },
       };
+    case "dataset":
     default:
       if (
         objectType.properties?.some(
           (prop) =>
-            typeof prop.type === "object" && prop.type.type === "marking"
+            typeof prop.type === "object" && prop.type.type === "marking",
         ) ||
         baseDatasource?.objectSecurityPolicy ||
         baseDatasource?.propertySecurityGroups
@@ -106,7 +107,7 @@ export function convertDatasourceDefinition(
             propertySecurityGroups: convertPropertySecurityGroups(
               baseDatasource,
               properties,
-              objectType.primaryKeyPropertyApiName
+              objectType.primaryKeyPropertyApiName,
             ),
           },
         };
@@ -127,7 +128,7 @@ function convertPropertySecurityGroups(
     | ObjectTypeDatasourceDefinition_direct
     | undefined,
   properties: ObjectPropertyType[],
-  primaryKeyPropertyApiName: string
+  primaryKeyPropertyApiName: string,
 ): OntologyIrPropertySecurityGroups {
   if (
     !ds ||
@@ -172,15 +173,15 @@ function convertPropertySecurityGroups(
     psg.properties.forEach((propertyName) => {
       invariant(
         validPropertyNames.has(propertyName),
-        `Property "${propertyName}" in property security group ${psg.name} does not exist in the properties list`
+        `Property "${propertyName}" in property security group ${psg.name} does not exist in the properties list`,
       );
       invariant(
         !usedProperties.has(propertyName),
-        `Property "${propertyName}" is used in multiple property security groups`
+        `Property "${propertyName}" is used in multiple property security groups`,
       );
       invariant(
         propertyName !== primaryKeyPropertyApiName,
-        `Property "${propertyName}" in property security group ${psg.name} cannot be the primary key`
+        `Property "${propertyName}" in property security group ${psg.name} cannot be the primary key`,
       );
       usedProperties.add(propertyName);
     });
@@ -193,7 +194,7 @@ function convertPropertySecurityGroups(
       granular: convertGranularPolicy(
         ds.objectSecurityPolicy?.granularPolicy,
         ds.objectSecurityPolicy?.appliedMarkings,
-        ds.objectSecurityPolicy?.assumedMarkings
+        ds.objectSecurityPolicy?.assumedMarkings,
       ),
     },
     type: {
@@ -215,7 +216,7 @@ function convertPropertySecurityGroups(
           granular: convertGranularPolicy(
             psg.granularPolicy,
             psg.appliedMarkings,
-            psg.assumedMarkings
+            psg.assumedMarkings,
           ),
         },
         type: {
@@ -233,7 +234,7 @@ function convertPropertySecurityGroups(
 function convertGranularPolicy(
   granularPolicy?: SecurityConditionDefinition,
   appliedMarkings?: Record<string, MarkingType>,
-  assumedMarkings?: Record<string, MarkingType>
+  assumedMarkings?: Record<string, MarkingType>,
 ): OntologyIrSecurityGroupGranularSecurityDefinition {
   return {
     viewPolicy: {
@@ -255,7 +256,7 @@ function convertGranularPolicy(
 }
 
 function convertSecurityCondition(
-  condition: SecurityConditionDefinition
+  condition: SecurityConditionDefinition,
 ): OntologyIrSecurityGroupGranularCondition {
   switch (condition.type) {
     case "and":
@@ -264,7 +265,7 @@ function convertSecurityCondition(
           type: "and",
           and: {
             conditions: condition.conditions.map((c) =>
-              convertSecurityCondition(c)
+              convertSecurityCondition(c),
             ),
           },
         };
@@ -277,7 +278,7 @@ function convertSecurityCondition(
           type: "or",
           or: {
             conditions: condition.conditions.map((c) =>
-              convertSecurityCondition(c)
+              convertSecurityCondition(c),
             ),
           },
         };
@@ -337,7 +338,7 @@ function convertSecurityCondition(
 }
 
 function buildPropertyMapping(
-  properties: ObjectPropertyType[]
+  properties: ObjectPropertyType[],
 ): Record<string, PropertyTypeMappingInfo> {
   return Object.fromEntries(
     properties.map((prop) => {
@@ -355,7 +356,7 @@ function buildPropertyMapping(
               Object.keys(prop.type.structDefinition).map((fieldName) => [
                 fieldName,
                 { apiName: fieldName, mappings: {} },
-              ])
+              ]),
             ),
           },
         };
@@ -363,6 +364,6 @@ function buildPropertyMapping(
       }
       // default: column mapping
       return [prop.apiName, { type: "column", column: prop.apiName }];
-    })
+    }),
   );
 }

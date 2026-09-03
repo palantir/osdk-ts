@@ -1,5 +1,90 @@
 # @osdk/widget.client
 
+## 3.63.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.63.0
+
+## 3.62.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.62.0
+
+## 3.61.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.61.0
+
+## 3.60.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.60.0
+
+## 3.59.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.59.0
+
+## 3.58.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.58.0
+
+## 3.57.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.57.0
+
+## 3.56.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.56.0
+
+## 3.55.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.55.0
+
+## 3.54.0
+
+### Patch Changes
+
+- Updated dependencies [47c66c3]
+  - @osdk/widget.api@3.54.0
+
+## 3.53.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.53.0
+
+## 3.52.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.52.0
+
+## 3.51.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.51.0
+
+## 3.50.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.50.0
+
 ## 3.49.0
 
 ### Patch Changes

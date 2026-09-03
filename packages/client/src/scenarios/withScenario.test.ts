@@ -36,7 +36,7 @@ describe("withScenario", () => {
       ontologyRid,
       () => "Token",
       undefined,
-      fetchFunction
+      fetchFunction,
     );
   });
 
@@ -61,10 +61,10 @@ describe("withScenario", () => {
     expect(fetchFunction).toHaveBeenCalledTimes(1);
     const url = new URL(
       fetchFunction.mock.calls[0][0] as string,
-      "https://mock.com"
+      "https://mock.com",
     );
     expect(url.searchParams.get("scenarioRid")).toBe(
-      "ri.actions..scenario.abc"
+      "ri.actions..scenario.abc",
     );
   });
 
@@ -77,7 +77,7 @@ describe("withScenario", () => {
       ontologyRid,
       () => "Token",
       {},
-      fetchFunction
+      fetchFunction,
     );
     const scenario = withScenario(txClient, "ri.actions..scenario.abc");
     expect(warnSpy).toHaveBeenCalledWith(expect.stringMatching(/transaction/u));
@@ -88,7 +88,7 @@ describe("withScenario", () => {
   it("rejects a client already scoped to a scenario at runtime", () => {
     const scenario = withScenario(client, "ri.actions..scenario.abc");
     expect(() => withScenario(scenario, "ri.actions..scenario.def")).toThrow(
-      /scenario/u
+      /scenario/u,
     );
   });
 });

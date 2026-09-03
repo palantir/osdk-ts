@@ -94,13 +94,13 @@ const command: CommandModule<CommonSiteArgs, SiteDeployArgs> = {
           args.version == null
         ) {
           throw new YargsCheckError(
-            "One of --version or --autoVersion must be specified"
+            "One of --version or --autoVersion must be specified",
           );
         }
 
         if (args.version != null && !isValidSemver(args.version)) {
           throw new YargsCheckError(
-            `--version "${args.version}" must be a valid SemVer string`
+            `--version "${args.version}" must be a valid SemVer string`,
           );
         }
 
@@ -111,33 +111,33 @@ const command: CommandModule<CommonSiteArgs, SiteDeployArgs> = {
           autoVersionType !== "package-json"
         ) {
           throw new YargsCheckError(
-            `Only 'git-describe' and 'package-json' are supported for autoVersion`
+            `Only 'git-describe' and 'package-json' are supported for autoVersion`,
           );
         }
 
         const gitTagPrefixValue = args.gitTagPrefix ?? gitTagPrefix;
         if (gitTagPrefixValue != null && autoVersionType !== "git-describe") {
           throw new YargsCheckError(
-            `--gitTagPrefix is only supported when --autoVersion=git-describe`
+            `--gitTagPrefix is only supported when --autoVersion=git-describe`,
           );
         }
 
         if (args.uploadOnly && args.snapshot) {
           throw new YargsCheckError(
-            `--uploadOnly and --snapshot cannot be enabled together`
+            `--uploadOnly and --snapshot cannot be enabled together`,
           );
         }
 
         if (args.snapshotId != null && !args.snapshot) {
           throw new YargsCheckError(
-            "--snapshotId is only supported when --snapshot is enabled"
+            "--snapshotId is only supported when --snapshot is enabled",
           );
         }
 
         return true;
       })
       .middleware((args) =>
-        logSiteDeployCommandConfigFileOverride(args, siteConfig)
+        logSiteDeployCommandConfigFileOverride(args, siteConfig),
       );
   },
   handler: async (args) => {

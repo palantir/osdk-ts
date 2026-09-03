@@ -19,9 +19,10 @@
 
 // Example: loadObjectsReference
 
+import type { Osdk, PageResult } from "@osdk/client";
+
 import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
-import type { Osdk, PageResult } from "@osdk/client";
 import { client } from "./client.js";
 try {
   const responseNoErrorWrapper: PageResult<Osdk.Instance<Employee>> =

@@ -57,16 +57,53 @@ const meta: Meta<PdfViewerContentProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `
+<PdfViewerContent
+  src="/whitepaper.pdf"
+  onPageChange={setCurrentPage}
+  onScaleChange={setScale}
+/>`,
+      },
+    },
+  },
+};
 
 export const ZoomedIn: Story = {
   args: {
     initialScale: 2,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+<PdfViewerContent
+  src="/whitepaper.pdf"
+  initialScale={2}
+  onScaleChange={setScale}
+/>`,
+      },
+    },
   },
 };
 
 export const StartOnPage5: Story = {
   args: {
     initialPage: 5,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+<PdfViewerContent
+  src="/whitepaper.pdf"
+  initialPage={5}
+  onPageChange={setCurrentPage}
+/>`,
+      },
+    },
   },
 };

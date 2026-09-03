@@ -28,11 +28,11 @@ import type {
  */
 export async function getManagedStoresSettingsForOrg(
   ctx: ConjureContext,
-  organizationRid: _api_OrganizationRid
+  organizationRid: _api_OrganizationRid,
 ): Promise<_api_GetManagedStoresSettingsForOrgResponse> {
   return conjureFetch(
     ctx,
     `/marketplaces/managedStoresSettings/${organizationRid}`,
-    "GET"
+    "GET",
   );
 }

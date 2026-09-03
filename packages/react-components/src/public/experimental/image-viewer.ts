@@ -18,7 +18,7 @@
 export { BaseImageViewer } from "../../images/image-viewer/BaseImageViewer.js";
 export type {
   BaseImageViewerProps,
-  ImageViewerMediaProps,
+  ImageViewerProps,
 } from "../../images/image-viewer/ImageViewerApi.js";
 
 // ImageViewer (Media wrapper)
@@ -26,5 +26,5 @@ import { ImageViewer as _ImageViewer } from "../../images/image-viewer/ImageView
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 export const ImageViewer: typeof _ImageViewer = withOsdkMetrics(
   _ImageViewer,
-  "ImageViewer"
+  "ImageViewer",
 );

@@ -1,7 +1,7 @@
 # @osdk/seed-compiler
 
-Compiles seed data files (`.mts`) into a single merged JSON output for the
-local ontology server to load into SQLite on startup.
+Merges seed data files (`.mts`) into a single JSON output for the local ontology
+server to load into SQLite on startup.
 
 ## Usage
 
@@ -14,67 +14,82 @@ seed-compiler \
   --output path/to/seed-data.json
 ```
 
-| Flag         | Description                                                                                                                                                                 |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--metadata` | Path to the `ontology-metadata.json` file written by the SDK generator. Provides per-property wire types for format validation and per-object-type primary key field names. |
-| `--seed-dir` | Directory containing seed `.mts` files. All top-level `.mts` files are loaded, sorted by filename for deterministic output, and merged.                                     |
-| `--output`   | Path where the merged seed JSON is written.                                                                                                                                 |
+| Flag         | Description                                                                                                                             |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `--metadata` | Path to the `ontology-metadata.json` file written by the SDK generator. Backs the `SeedBuilder` the files are merged through.           |
+| `--seed-dir` | Directory containing seed `.mts` files. All top-level `.mts` files are loaded, sorted by filename for deterministic output, and merged. |
+| `--output`   | Path where the merged seed JSON is written.                                                                                             |
 
 ## Authoring seed files
 
-Seed files use `@osdk/seed-helpers` and the user's generated `@ontology/sdk`:
+Seed files use a metadata-bound `createSeed` — `createSeedWithMetadata()` from
+`@osdk/seed-helpers` partially applied to your ontology's metadata — together with
+the user's generated `@ontology/sdk`. Each file must **default-export either the
+`createSeed(...)` result** (the `{ output, context }` object) **or its `.output`**
+(a bare `SeedOutput`); the compiler tells the two apart structurally and treats
+them identically. Exporting the result itself is the recommended form, since
+`context` stays available to anything else importing the file:
 
 ```ts
 import { Product, Seller } from "@ontology/sdk";
-import { createSeed } from "@osdk/seed-helpers";
+
+import { createSeed } from "./createSeed.js";
 
 export default createSeed((seed) => {
-  const widget = seed.add(Product, {
-    pk: "prod-001",
+  const widget = seed.create(Product, {
+    productId: "prod-001",
     title: "Widget",
     price: 100,
   });
-  const alice = seed.add(Seller, {
-    pk: "seller-001",
+  const alice = seed.create(Seller, {
+    sellerId: "seller-001",
     name: "Alice",
   });
 
   // Link by reference — full compile-time validation on link names and target types.
-  seed.link("widget-seller", widget, "sellers", alice, "products");
+  seed.link(widget, "sellers", alice);
 });
 ```
 
-The `link()` method also supports a type + primary-key form for cases where
-keeping refs in scope is awkward:
+`seed.link()` also accepts an array of targets:
 
 ```ts
-seed.add(Product, { pk: "prod-001", title: "Widget", price: 100 });
-seed.add(Seller, { pk: "seller-001", name: "Alice" });
-
-seed.link(
-  "widget-seller",
-  Product,
-  "prod-001",
-  "sellers",
-  Seller,
-  "seller-001",
-  "products"
-);
+seed.link(widget, "sellers", [alice, bob]);
 ```
 
-Both forms produce identical output.
+where `createSeed` is defined once per project as:
+
+```ts
+import metadata from "@ontology/sdk/experimental/ontology-metadata";
+import {
+  createSeedWithMetadata,
+  type SeedFunction,
+  type SeedOutput,
+} from "@osdk/seed-helpers";
+
+export const createSeed = <T>(
+  fn: SeedFunction<T>,
+): { output: SeedOutput; context: T } => createSeedWithMetadata(metadata, fn);
+```
 
 ## Validation
 
-The compiler validates:
+Validation is not this package's job. `@osdk/seed-helpers` validates every object as
+`seed.create()` / `seed.update()` inserts it, and again when the compiler feeds each
+file's output into its shared `SeedBuilder`:
 
-- **Object types** in seed data must be defined in the ontology (via the metadata file).
-- **Primary keys** must be unique within an object type, across all seed files in the directory.
+- **Object types** must be defined in the ontology (via the metadata file).
+- **Property names** must exist on the object type, and values must be non-null and
+  match the wire type's expected JS type.
 - **String-encoded property values** must match the regex format for their wire type
   (`timestamp`, `date`, `datetime`, `long`, `decimal`).
-- **Links** must reference objects that were `add`-ed in the same seed file.
-  Cross-file linking is not supported — the link source and target must be
-  registered in the same `createSeed(...)` call.
+- **Primary keys** must be unique within an object type.
 
-Duplicate links (same source, target, link type) across files are deduplicated
-with a warning rather than an error.
+Because all files are merged through one `SeedBuilder`, primary-key uniqueness holds
+across the whole directory, not just within a file. The compiler's only addition is
+the seed file's name in the error message, so a conflict points at the file that
+introduced it.
+
+Links are deduplicated by their identity (source, link type, target). Link entries
+may reference objects created in any seed file in the directory, and a link's `name`
+is derived from that identity rather than taken from the input.

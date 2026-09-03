@@ -107,7 +107,7 @@ export class ComponentPrimitiveDiscovery {
 
   private buildPrimitivesFromMetadata(
     metadata: OsdkHookMetadata[],
-    componentName: string
+    componentName: string,
   ): DiscoveredPrimitives {
     const primitives: DiscoveredPrimitives = {
       componentId: componentName,

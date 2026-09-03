@@ -27,11 +27,11 @@ import type { ArtifactsRepositoryRid } from "../ArtifactsRepositoryRid.js";
  */
 export async function getApplicationForSdkRepository(
   ctx: ConjureContext,
-  repositoryRid: ArtifactsRepositoryRid
+  repositoryRid: ArtifactsRepositoryRid,
 ): Promise<ApplicationRid | undefined> {
   return conjureFetch(
     ctx,
     `/application-sdks/for-repository/${repositoryRid}`,
-    "GET"
+    "GET",
   );
 }

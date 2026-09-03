@@ -30,8 +30,8 @@ beforeAll(() => {
   createWidgetVersion = JSON.parse(
     fs.readFileSync(
       path.join(dirname(fileURLToPath(import.meta.url)), "..", "package.json"),
-      "utf-8"
-    )
+      "utf-8",
+    ),
   ).version;
 });
 
@@ -48,12 +48,23 @@ beforeEach(() => {
 
 for (const template of TEMPLATES) {
   describe.each(["2.x"])("For SDK version %s", (sdkVersion) => {
-    test(`CLI creates ${template.id}`, async () => {
+    if (template.supportsOsdk) {
+      test(`CLI creates ${template.id} with an OSDK`, async () => {
+        await runTest({
+          project: `expected-${template.id}`,
+          template,
+          sdkVersion,
+          withOsdk: true,
+        });
+      });
+    }
+
+    test(`CLI creates ${template.id} without an OSDK`, async () => {
       await runTest({
-        project: `expected-${template.id}`,
+        project: `expected-${template.id}-no-osdk`,
         template,
         sdkVersion,
-        requiresOsdk: template.requiresOsdk,
+        withOsdk: false,
       });
     });
   });
@@ -63,12 +74,12 @@ async function runTest({
   project,
   template,
   sdkVersion,
-  requiresOsdk,
+  withOsdk,
 }: {
   project: string;
   template: Template;
   sdkVersion: string;
-  requiresOsdk: boolean;
+  withOsdk: boolean;
 }): Promise<void> {
   let options = [
     "npx",
@@ -85,29 +96,33 @@ async function runTest({
     sdkVersion,
   ];
 
-  if (requiresOsdk) {
-    options = options.concat([
-      "--osdkPackage",
-      "@custom-widget/sdk",
-      "--osdkRegistryUrl",
-      "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
-    ]);
+  if (template.supportsOsdk) {
+    if (withOsdk) {
+      options = options.concat([
+        "--osdkPackage",
+        "@custom-widget/sdk",
+        "--osdkRegistryUrl",
+        "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
+      ]);
+    } else {
+      options = options.concat(["--skipOsdk"]);
+    }
   }
 
   await cli(options);
 
   expect(
-    fs.readdirSync(path.join(process.cwd(), project)).length
+    fs.readdirSync(path.join(process.cwd(), project)).length,
   ).toBeGreaterThan(0);
   expect(fs.existsSync(path.join(process.cwd(), project, "package.json"))).toBe(
-    true
+    true,
   );
   expect(fs.existsSync(path.join(process.cwd(), project, "README.md"))).toBe(
-    true
+    true,
   );
   const packageJsonContents = fs.readFileSync(
     path.join(process.cwd(), project, "package.json"),
-    "utf-8"
+    "utf-8",
   );
   expect(() => JSON.parse(packageJsonContents)).not.toThrow();
 }

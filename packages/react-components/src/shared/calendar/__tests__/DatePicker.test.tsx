@@ -62,7 +62,7 @@ describe("DatePicker", () => {
           value={new Date(2024, 0, 15, 14, 30)}
           onChange={vi.fn()}
           showTime={true}
-        />
+        />,
       );
       const input = screen.getByRole("combobox") as HTMLInputElement;
       expect(input.value).toBe("2024-01-15 14:30");
@@ -70,7 +70,11 @@ describe("DatePicker", () => {
 
     it("renders placeholder when value is null and placeholder is set", () => {
       render(
-        <DatePicker value={null} onChange={vi.fn()} placeholder="Pick a date" />
+        <DatePicker
+          value={null}
+          onChange={vi.fn()}
+          placeholder="Pick a date"
+        />,
       );
       const input = screen.getByRole("combobox") as HTMLInputElement;
       expect(input.placeholder).toBe("Pick a date");
@@ -149,7 +153,7 @@ describe("DatePicker", () => {
           value={null}
           onChange={onChange}
           max={new Date(2024, 6, 3)}
-        />
+        />,
       );
       fireEvent.focus(screen.getByRole("combobox"));
 
@@ -171,7 +175,7 @@ describe("DatePicker", () => {
           value={null}
           onChange={onChange}
           max={new Date(2024, 6, 4)}
-        />
+        />,
       );
       fireEvent.focus(screen.getByRole("combobox"));
 
@@ -214,7 +218,7 @@ describe("DatePicker", () => {
           value={new Date(2024, 6, 4, 9, 30)}
           onChange={onChange}
           showTime={true}
-        />
+        />,
       );
       const input = screen.getByRole("combobox") as HTMLInputElement;
       fireEvent.focus(input);
@@ -254,7 +258,7 @@ describe("DatePicker", () => {
           value={new Date(2024, 6, 4, 12, 0)}
           onChange={onChange}
           showTime={true}
-        />
+        />,
       );
       fireEvent.focus(screen.getByRole("combobox"));
 
@@ -290,7 +294,7 @@ describe("DatePicker", () => {
             value={new Date(2024, 0, 15)}
             onChange={vi.fn()}
             portalContainer={portalContainer}
-          />
+          />,
         );
 
         fireEvent.focus(screen.getByRole("combobox"));
@@ -314,14 +318,14 @@ describe("DatePicker", () => {
             value={new Date(2024, 0, 15)}
             onChange={vi.fn()}
             portalContainer={portalContainer}
-          />
+          />,
         );
 
         fireEvent.focus(screen.getByRole("combobox"));
         expect(screen.getByRole("dialog")).toBeDefined();
 
         const dismissLayer = portalContainer.querySelector(
-          "[data-osdk-portal-dismiss-layer]"
+          "[data-osdk-portal-dismiss-layer]",
         );
         if (!(dismissLayer instanceof HTMLElement)) {
           throw new Error("Expected date picker dismiss layer to be rendered");
@@ -348,14 +352,14 @@ describe("DatePicker", () => {
             onChange={vi.fn()}
             portalContainer={portalContainer}
             modal={false}
-          />
+          />,
         );
 
         fireEvent.focus(screen.getByRole("combobox"));
         expect(screen.getByRole("dialog")).toBeDefined();
 
         expect(
-          portalContainer.querySelector("[data-osdk-portal-dismiss-layer]")
+          portalContainer.querySelector("[data-osdk-portal-dismiss-layer]"),
         ).toBeNull();
       } finally {
         portalContainer.remove();
@@ -369,7 +373,7 @@ describe("DatePicker", () => {
           value={new Date(2024, 0, 15, 14, 30)}
           onChange={onChange}
           showTime={true}
-        />
+        />,
       );
       const input = screen.getByRole("combobox");
       fireEvent.focus(input);
@@ -405,7 +409,7 @@ describe("DatePicker", () => {
           value={new Date(2024, 6, 4, 9, 30)}
           onChange={onChange}
           showTime={true}
-        />
+        />,
       );
       const input = screen.getByRole("combobox") as HTMLInputElement;
       fireEvent.focus(input);
@@ -490,16 +494,16 @@ describe("DatePicker", () => {
           value={new Date(2024, 0, 15, 14, 30)}
           onChange={vi.fn()}
           showTime={true}
-        />
+        />,
       );
       const input = screen.getByRole("combobox");
       fireEvent.focus(input);
 
       expect(
-        (screen.getByLabelText("Time hours") as HTMLInputElement).value
+        (screen.getByLabelText("Time hours") as HTMLInputElement).value,
       ).toBe("14");
       expect(
-        (screen.getByLabelText("Time minutes") as HTMLInputElement).value
+        (screen.getByLabelText("Time minutes") as HTMLInputElement).value,
       ).toBe("30");
     });
 
@@ -510,7 +514,7 @@ describe("DatePicker", () => {
           value={new Date(2024, 0, 15, 14, 30)}
           onChange={onChange}
           showTime={true}
-        />
+        />,
       );
       const input = screen.getByRole("combobox");
       fireEvent.focus(input);
@@ -542,7 +546,7 @@ describe("DatePicker", () => {
           onChange={onChange}
           showTime={true}
           closeOnSelection={true}
-        />
+        />,
       );
       const input = screen.getByRole("combobox");
       fireEvent.focus(input);
@@ -566,7 +570,7 @@ describe("DatePicker", () => {
           value={new Date(2024, 0, 15, 14, 30)}
           onChange={onChange}
           showTime={true}
-        />
+        />,
       );
       fireEvent.focus(screen.getByRole("combobox"));
 
@@ -584,7 +588,7 @@ describe("DatePicker", () => {
           value={new Date(2024, 0, 15, 14, 30)}
           onChange={onChange}
           showTime={true}
-        />
+        />,
       );
       const input = screen.getByRole("combobox") as HTMLInputElement;
       fireEvent.focus(input);
@@ -613,10 +617,10 @@ describe("DatePicker", () => {
       fireEvent.change(input, { target: { value: "2024-03-20 14:30" } });
 
       expect(
-        (screen.getByLabelText("Time hours") as HTMLInputElement).value
+        (screen.getByLabelText("Time hours") as HTMLInputElement).value,
       ).toBe("14");
       expect(
-        (screen.getByLabelText("Time minutes") as HTMLInputElement).value
+        (screen.getByLabelText("Time minutes") as HTMLInputElement).value,
       ).toBe("30");
     });
 
@@ -641,7 +645,7 @@ describe("DatePicker", () => {
           formatDate={(d) =>
             `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`
           }
-        />
+        />,
       );
       const input = screen.getByRole("combobox") as HTMLInputElement;
       expect(input.value).toBe("1/15/2024");
@@ -670,7 +674,7 @@ describe("DatePicker", () => {
       fireEvent.change(input, { target: { value: "2024-03-20" } });
 
       const [monthSelect, yearSelect] = document.querySelectorAll(
-        "select"
+        "select",
       ) as NodeListOf<HTMLSelectElement>;
       expect(monthSelect?.value).toBe("2");
       expect(yearSelect?.value).toBe("2024");
@@ -738,7 +742,7 @@ describe("DatePicker", () => {
           onChange={onChange}
           min={new Date(2024, 0, 1)}
           max={new Date(2024, 11, 31)}
-        />
+        />,
       );
       const input = screen.getByRole("combobox") as HTMLInputElement;
       fireEvent.focus(input);
@@ -763,7 +767,7 @@ describe("DatePicker", () => {
             const date = new Date(y, m - 1, d);
             return isNaN(date.getTime()) ? undefined : date;
           }}
-        />
+        />,
       );
       const input = screen.getByRole("combobox") as HTMLInputElement;
       fireEvent.focus(input);
@@ -858,7 +862,7 @@ describe("DatePicker", () => {
 
       // Find the end-of-popover focus sentinel inside the dialog.
       const endSentinel = dialog.querySelector(
-        "[aria-label='End of date picker dialog']"
+        '[data-osdk-date-picker-focus-boundary="end"]',
       ) as HTMLElement;
 
       // Simulate Tab reaching the sentinel from inside the popover.
@@ -882,7 +886,7 @@ describe("DatePicker", () => {
 
       const dialog = screen.getByRole("dialog");
       const endSentinel = dialog.querySelector(
-        "[aria-label='End of date picker dialog']"
+        '[data-osdk-date-picker-focus-boundary="end"]',
       ) as HTMLElement;
 
       // Tab reaches end boundary → popover closes, focus returns to input

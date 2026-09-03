@@ -32,7 +32,7 @@ describe("Interfaces", () => {
     expect(() => {
       defineInterface({ apiName: "Foo" });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Interface com.palantir.Foo already exists]`
+      `[Error: Invariant failed: Interface com.palantir.Foo already exists]`,
     );
   });
 
@@ -686,6 +686,68 @@ describe("Interfaces", () => {
       `);
     });
 
+    it("Vector IDPs", () => {
+      defineInterface({
+        apiName: "bar",
+        displayName: "Bar",
+        properties: {
+          embedding: {
+            type: {
+              type: "vector",
+              dimension: 768,
+              supportsSearchWith: "COSINE_SIMILARITY",
+            },
+          },
+        },
+      });
+
+      const prop =
+        dumpOntologyFullMetadata().ontology.interfaceTypes["com.palantir.bar"]
+          .interfaceType.propertiesV3["embedding"];
+      if (prop.type !== "interfaceDefinedPropertyType") {
+        throw new Error("expected interfaceDefinedPropertyType");
+      }
+      expect(prop.interfaceDefinedPropertyType.type).toMatchInlineSnapshot(`
+        {
+          "type": "vector",
+          "vector": {
+            "dimension": 768,
+            "embeddingModel": undefined,
+            "quantization": undefined,
+            "supportsSearchWith": [
+              "COSINE_SIMILARITY",
+            ],
+          },
+        }
+      `);
+      expect(
+        prop.interfaceDefinedPropertyType.constraints.indexedForSearch,
+      ).toBe(true);
+    });
+
+    it("doesn't let you make a vector IDP an array", () => {
+      defineInterface({
+        apiName: "bar",
+        displayName: "Bar",
+        properties: {
+          embedding: {
+            type: {
+              type: "vector",
+              dimension: 768,
+              supportsSearchWith: "COSINE_SIMILARITY",
+            },
+            array: true,
+          },
+        },
+      });
+
+      expect(() =>
+        dumpOntologyFullMetadata(),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Vector property 'embedding' cannot be an array]`,
+      );
+    });
+
     it("Complex interface properties", () => {
       const spt = defineSharedPropertyType({
         apiName: "spt",
@@ -1298,7 +1360,7 @@ describe("Interfaces", () => {
           ontologyPackageRid: null,
         });
       },
-      "/tmp/"
+      "/tmp/",
     );
   });
 
@@ -1361,7 +1423,7 @@ describe("Interfaces", () => {
           parameters: [],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action type constraint with apiName com.palantir.myConstraint already exists on interface com.palantir.MyInterface]`
+        `[Error: Invariant failed: Action type constraint with apiName com.palantir.myConstraint already exists on interface com.palantir.MyInterface]`,
       );
     });
 
@@ -1418,7 +1480,7 @@ describe("Interfaces", () => {
           ],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Duplicate parameter constraint apiName "paramA" in action type constraint com.palantir.myConstraint]`
+        `[Error: Invariant failed: Duplicate parameter constraint apiName "paramA" in action type constraint com.palantir.myConstraint]`,
       );
     });
 
@@ -1481,10 +1543,10 @@ describe("Interfaces", () => {
               ],
             });
           },
-          undefined
-        )
+          undefined,
+        ),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Object "com.palantir.myObject" implements interface "com.palantir.MyInterface" which has required action type constraints: com.palantir.myConstraint. Action type constraint implementation is not yet supported in OAC. Set requireImplementation to false and manually implement the constraint after installation.]`
+        `[Error: Invariant failed: Object "com.palantir.myObject" implements interface "com.palantir.MyInterface" which has required action type constraints: com.palantir.myConstraint. Action type constraint implementation is not yet supported in OAC. Set requireImplementation to false and manually implement the constraint after installation.]`,
       );
     });
 

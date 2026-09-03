@@ -38,7 +38,7 @@ describe("SPTs", () => {
         type: "string",
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Shared property type com.palantir.foo already exists]`
+      `[Error: Invariant failed: Shared property type com.palantir.foo already exists]`,
     );
   });
 
@@ -594,6 +594,52 @@ describe("SPTs", () => {
       }
     `);
   });
+  it("Vector shared property type properly set", () => {
+    defineSharedPropertyType({
+      apiName: "embedding",
+      type: {
+        type: "vector",
+        dimension: 768,
+        supportsSearchWith: "COSINE_SIMILARITY",
+      },
+    });
+
+    const spt =
+      dumpOntologyFullMetadata().ontology.sharedPropertyTypes[
+        "com.palantir.embedding"
+      ].sharedPropertyType;
+    expect(spt.type).toMatchInlineSnapshot(`
+      {
+        "type": "vector",
+        "vector": {
+          "dimension": 768,
+          "embeddingModel": undefined,
+          "quantization": undefined,
+          "supportsSearchWith": [
+            "COSINE_SIMILARITY",
+          ],
+        },
+      }
+    `);
+    expect(spt.indexedForSearch).toBe(true);
+  });
+
+  it("doesn't let you make a vector SPT an array", () => {
+    defineSharedPropertyType({
+      apiName: "embedding",
+      array: true,
+      type: {
+        type: "vector",
+        dimension: 768,
+        supportsSearchWith: "COSINE_SIMILARITY",
+      },
+    });
+
+    expect(() => dumpOntologyFullMetadata()).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Vector property 'com.palantir.embedding' cannot be an array]`,
+    );
+  });
+
   it("Object decimal property with precision/scale works in actions", () => {
     const obj = defineObject({
       apiName: "decimalTest",
@@ -789,7 +835,7 @@ describe("SPTs", () => {
           ontologyPackageRid: null,
         });
       },
-      "/tmp/"
+      "/tmp/",
     );
   });
 });

@@ -26,10 +26,10 @@ import type { RendererFieldDefinition } from "../FormFieldApi.js";
  * correct fieldComponent and default fieldComponentProps.
  */
 export function getDefaultFieldDefinitions(
-  metadata: ActionMetadata
+  metadata: ActionMetadata,
 ): ReadonlyArray<RendererFieldDefinition> {
   return Object.entries(metadata.parameters).map(([key, param]) =>
-    buildFieldDefinition(key, param)
+    buildFieldDefinition(key, param),
   );
 }
 
@@ -41,11 +41,11 @@ export function getDefaultFieldDefinitions(
  */
 function buildFieldDefinition(
   key: string,
-  param: ActionMetadata.Parameter
+  param: ActionMetadata.Parameter,
 ): RendererFieldDefinition {
   const base = {
     fieldKey: key,
-    label: key,
+    label: param.displayName ?? key,
     isRequired: !param.nullable,
     fieldType: param.type,
   };

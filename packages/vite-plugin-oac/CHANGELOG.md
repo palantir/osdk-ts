@@ -1,5 +1,185 @@
 # @osdk/vite-plugin-oac
 
+## 0.64.0
+
+### Patch Changes
+
+- @osdk/api@2.64.0
+- @osdk/client.unstable@2.64.0
+- @osdk/generator-converters.ontologyir@2.64.0
+- @osdk/faux@0.48.0
+- @osdk/maker@0.64.0
+- @osdk/cli@0.90.0
+
+## 0.63.0
+
+### Patch Changes
+
+- Updated dependencies [08ba782]
+- Updated dependencies [3742aad]
+  - @osdk/api@2.63.0
+  - @osdk/maker@0.62.0
+  - @osdk/faux@0.47.0
+  - @osdk/cli@0.89.0
+  - @osdk/client.unstable@2.63.0
+  - @osdk/generator-converters.ontologyir@2.63.0
+
+## 0.62.0
+
+### Patch Changes
+
+- Updated dependencies [dc46b5d]
+  - @osdk/cli@0.88.0
+  - @osdk/api@2.62.0
+  - @osdk/client.unstable@2.62.0
+  - @osdk/generator-converters.ontologyir@2.62.0
+  - @osdk/faux@0.46.0
+  - @osdk/maker@0.61.0
+
+## 0.61.0
+
+### Patch Changes
+
+- Updated dependencies [d592d46]
+- Updated dependencies [bdf45fa]
+- Updated dependencies [34cb7e0]
+- Updated dependencies [c742209]
+  - @osdk/cli@0.87.0
+  - @osdk/api@2.61.0
+  - @osdk/maker@0.60.0
+  - @osdk/faux@0.45.0
+  - @osdk/client.unstable@2.61.0
+  - @osdk/generator-converters.ontologyir@2.61.0
+
+## 0.60.0
+
+### Minor Changes
+
+- bbbeca8: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.75.0`, which reinstates the `streamingExecute` query endpoint as a Server-Sent Events (`text/event-stream`) stream. The experimental `executeStreamingFunction` helper is reimplemented on top of it and no longer throws: it yields each result as it arrives, flattening batched results so array-returning queries emit one element at a time.
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+  - @osdk/generator-converters.ontologyir@2.60.0
+  - @osdk/api@2.60.0
+  - @osdk/faux@0.44.0
+  - @osdk/maker@0.59.0
+  - @osdk/cli@0.86.0
+  - @osdk/client.unstable@2.60.0
+
+## 0.59.0
+
+### Patch Changes
+
+- @osdk/cli@0.85.0
+
+## 0.58.0
+
+### Patch Changes
+
+- Updated dependencies [4ae6d8b]
+- Updated dependencies [1aff7f4]
+  - @osdk/api@2.59.0
+  - @osdk/cli@0.84.0
+  - @osdk/client.unstable@2.59.0
+  - @osdk/generator-converters.ontologyir@2.59.0
+
+## 0.57.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+  - @osdk/faux@0.43.0
+  - @osdk/generator-converters.ontologyir@2.58.0
+  - @osdk/api@2.58.0
+  - @osdk/client.unstable@2.58.0
+  - @osdk/cli@0.83.0
+  - @osdk/maker@0.58.0
+
+## 0.56.0
+
+### Patch Changes
+
+- Updated dependencies [8ce066f]
+- Updated dependencies [3bfccdb]
+- Updated dependencies [e9d7ffa]
+  - @osdk/generator-converters.ontologyir@2.57.0
+  - @osdk/client.unstable@2.57.0
+  - @osdk/maker@0.55.0
+  - @osdk/api@2.57.0
+  - @osdk/faux@0.42.0
+  - @osdk/cli@0.82.0
+
+## 0.55.0
+
+### Patch Changes
+
+- Updated dependencies [342c492]
+  - @osdk/api@2.56.0
+  - @osdk/cli@0.81.0
+  - @osdk/client.unstable@2.56.0
+  - @osdk/generator-converters.ontologyir@2.56.0
+
+## 0.54.0
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+  - @osdk/faux@0.41.0
+  - @osdk/maker@0.54.0
+  - @osdk/cli@0.80.0
+  - @osdk/client.unstable@2.55.0
+  - @osdk/generator-converters.ontologyir@2.55.0
+
+## 0.53.0
+
+### Patch Changes
+
+- @osdk/api@2.54.0
+- @osdk/client.unstable@2.54.0
+- @osdk/generator-converters.ontologyir@2.54.0
+- @osdk/cli@0.79.0
+
+## 0.52.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/faux@0.40.0
+  - @osdk/generator-converters.ontologyir@2.53.0
+  - @osdk/api@2.53.0
+  - @osdk/client.unstable@2.53.0
+  - @osdk/cli@0.78.0
+  - @osdk/maker@0.53.0
+
+## 0.51.0
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [7ae7004]
+- Updated dependencies [eab0750]
+- Updated dependencies [bf4580a]
+- Updated dependencies [7667b67]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/maker@0.52.0
+  - @osdk/generator-converters.ontologyir@2.52.0
+  - @osdk/faux@0.39.0
+  - @osdk/cli@0.77.0
+  - @osdk/client.unstable@2.52.0
+
 ## 0.50.0
 
 ### Patch Changes

@@ -50,6 +50,7 @@ export namespace ActionMetadata {
       | DataType.Interface<any>
       | DataType.Struct<any>;
     description?: string;
+    displayName?: string;
     multiplicity?: boolean;
     nullable?: boolean;
   }

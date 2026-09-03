@@ -1,6 +1,6 @@
 {
   "name": "@osdk/generator-converters.preview",
-  "version": "0.30.0",
+  "version": "0.42.0",
   "description": "OSDK generator with support for Python and TSv2 discovered functions",
   "access": "public",
   "license": "Apache-2.0",
@@ -34,7 +34,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt",
     "lint": "eslint . && dprint check",
-    "test": "vitest run --pool=forks",
+    "test": "vitest run --pool=forks --passWithNoTests",
     "test:watch": "vitest",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",

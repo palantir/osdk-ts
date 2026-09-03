@@ -68,7 +68,7 @@ class MockBiMap<K, V> implements BiMap<K, V> {
 
 // Helper to create a mock OntologyRidGenerator with overrides
 function createMockRidGenerator(
-  overrides: Partial<OntologyRidGenerator> = {}
+  overrides: Partial<OntologyRidGenerator> = {},
 ): OntologyRidGenerator {
   return {
     getActionTypeRids: () => new MockBiMap([]) as any,
@@ -79,10 +79,12 @@ function createMockRidGenerator(
     getInterfacePropertyTypeRids: () => new MockBiMap([]) as any,
     getPropertyTypeRids: () => new MockBiMap([]) as any,
     getDatasourceLocators: () => new MockBiMap([]) as any,
+    getDirectDatasourceLocators: () => new MockBiMap([]) as any,
     getFilesDatasourceLocators: () => new MockBiMap([]) as any,
     getGeotimeSeriesIntegrationRids: () => new MockBiMap([]) as any,
     getTimeSeriesSyncs: () => new MockBiMap([]) as any,
     getColumnShapes: () => new MockBiMap([]) as any,
+    getDirectDatasourceColumnShapes: () => new MockBiMap([]) as any,
     getObjectTypeRids: () => new MockBiMap([]) as any,
     getLinkTypeRids: () => new MockBiMap([]) as any,
     getGroupIds: () => new MockBiMap([]) as any,
@@ -97,7 +99,7 @@ function createMockRidGenerator(
     generateRidForInterface: (apiName: string) => `interface.${apiName}` as any,
     generateRidForInterfaceLinkType: (
       apiName: string,
-      interfaceTypeApiName: string
+      interfaceTypeApiName: string,
     ) => `interface-link.${interfaceTypeApiName}.${apiName}` as any,
     generateRidForObjectType: (apiName: string) => `object.${apiName}` as any,
     generateRidForValueType: (apiName: string, version: string) =>
@@ -117,7 +119,7 @@ function createMockRidGenerator(
       `prop.${objectTypeApiName}.${apiName}` as any,
     generateInterfacePropertyTypeRid: (
       apiName: string,
-      interfaceTypeApiName: string
+      interfaceTypeApiName: string,
     ) => `interface-prop.${interfaceTypeApiName}.${apiName}` as any,
     generateIptRidFromSptRid: (sptRid: string) =>
       sptRid.replace("shared-property-type", "interface-property-type") as any,
@@ -125,10 +127,18 @@ function createMockRidGenerator(
       `struct-field.${propertyApiName}.${apiName}` as any,
     generateDatasetLocator: (
       dataSetName: string,
-      _columnNames: Set<string>
+      _columnNames: Set<string>,
     ) => ({
       rid: `dataset.${dataSetName}`,
       branchId: "main",
+    }),
+    generateDirectDatasourceLocator: (
+      dataSetName: string,
+      _columnNames: Set<string>,
+      branchId: string,
+    ) => ({
+      rid: `dataset.${dataSetName}`,
+      branchId,
     }),
     generateStreamLocator: (streamName: string, _columnNames: Set<string>) => ({
       streamLocatorRid: `stream.${streamName}`,
@@ -136,7 +146,7 @@ function createMockRidGenerator(
     }),
     generateRestrictedViewLocator: (
       restrictedViewName: string,
-      _columnNames: Set<string>
+      _columnNames: Set<string>,
     ) => ({
       rid: `restricted-view.${restrictedViewName}`,
     }),
@@ -161,13 +171,13 @@ function createMockRidGenerator(
       `ri.ontology-metadata.temp.property-security-group.${groupName}`,
     generateRidForInterfaceActionTypeConstraint: (
       apiName: string,
-      interfaceTypeApiName: string
+      interfaceTypeApiName: string,
     ) =>
       `interface-action-type-constraint.${interfaceTypeApiName}.${apiName}` as any,
     generateRidForInterfaceParameterConstraint: (
       constraintApiName: string,
       interfaceTypeApiName: string,
-      paramApiName: string
+      paramApiName: string,
     ) =>
       `interface-parameter-constraint.${interfaceTypeApiName}.${constraintApiName}.${paramApiName}` as any,
     getInterfaceActionTypeConstraintRids: () => new MockBiMap([]) as any,
@@ -287,7 +297,7 @@ describe("ObjectTypeShapeExtractor", () => {
       const result: BlockShapes = extractor.extract(
         "employee" as ReadableId,
         objectType,
-        ridGenerator
+        ridGenerator,
       );
 
       // Should have output shapes for object type
@@ -302,14 +312,14 @@ describe("ObjectTypeShapeExtractor", () => {
       if (objectTypeShape?.type === "objectType") {
         expect(objectTypeShape.objectType.about.fallbackTitle).toBe("Employee");
         expect(objectTypeShape.objectType.about.fallbackDescription).toBe(
-          "An employee in the organization"
+          "An employee in the organization",
         );
         expect(objectTypeShape.objectType.editsSupport).toBe("EDITS_ENABLED");
         expect(objectTypeShape.objectType.objectsBackendVersion).toBe("V2");
       }
     });
 
-    it("should handle object type with dataset datasource", () => {
+    it("should exclude edit-only properties from dataset column shapes", () => {
       const objectType: ObjectTypeBlockDataV2 = {
         objectType: {
           apiName: "Person",
@@ -344,6 +354,22 @@ describe("ObjectTypeShapeExtractor", () => {
               status: { type: "active", active: {} },
               typeClasses: [],
             },
+            "ri.ontology.main.property-type.person.notes": {
+              rid: "ri.ontology.main.property-type.person.notes" as PropertyTypeRid,
+              apiName: "notes",
+              displayMetadata: {
+                displayName: "Notes",
+                visibility: "NORMAL",
+              },
+              type: {
+                type: "string",
+                string: { isLongText: true, supportsExactMatching: false },
+              },
+              id: "person-notes-pt-id",
+              indexedForSearch: false,
+              status: { type: "active", active: {} },
+              typeClasses: [],
+            },
           },
           titlePropertyTypeRid:
             "ri.ontology.main.property-type.person.id" as PropertyTypeRid,
@@ -367,6 +393,10 @@ describe("ObjectTypeShapeExtractor", () => {
                   "ri.ontology.main.property-type.person.id": {
                     type: "column",
                     column: "person_id",
+                  },
+                  "ri.ontology.main.property-type.person.notes": {
+                    type: "editOnly",
+                    editOnly: {},
                   },
                 },
               },
@@ -401,6 +431,10 @@ describe("ObjectTypeShapeExtractor", () => {
               "person.id" as ReadableId,
               "ri.ontology.main.property-type.person.id" as PropertyTypeRid,
             ],
+            [
+              "person.notes" as ReadableId,
+              "ri.ontology.main.property-type.person.notes" as PropertyTypeRid,
+            ],
           ]) as any,
         getDatasourceLocators: () =>
           new MockBiMap<ReadableId, DatasourceLocator>([
@@ -415,6 +449,13 @@ describe("ObjectTypeShapeExtractor", () => {
                 name: "person_id",
               },
             ],
+            [
+              "person-dataset.notes" as ReadableId,
+              {
+                datasource: datasetLocator,
+                name: "notes",
+              },
+            ],
           ]) as any,
       });
 
@@ -422,7 +463,7 @@ describe("ObjectTypeShapeExtractor", () => {
       const result: BlockShapes = extractor.extract(
         "person" as ReadableId,
         objectType,
-        ridGenerator
+        ridGenerator,
       );
 
       // Should have input shapes for dataset
@@ -430,7 +471,7 @@ describe("ObjectTypeShapeExtractor", () => {
       expect(result.inputShapes.has("person-dataset" as ReadableId)).toBe(true);
 
       const datasetShape = result.inputShapes.get(
-        "person-dataset" as ReadableId
+        "person-dataset" as ReadableId,
       );
       expect(datasetShape).toBeDefined();
       expect(datasetShape?.type).toBe("tabularDatasource");
@@ -440,9 +481,19 @@ describe("ObjectTypeShapeExtractor", () => {
           "RESTRICTED_VIEW",
         ]);
         expect(datasetShape.tabularDatasource.about.fallbackTitle).toBe(
-          "person-dataset"
+          "person-dataset",
         );
+        expect(datasetShape.tabularDatasource.schema).toEqual([
+          "person-dataset.person_id",
+        ]);
       }
+      expect(
+        result.inputShapes.has("person-dataset.person_id" as ReadableId),
+      ).toBe(true);
+      expect(result.inputShapes.has("person-dataset.notes" as ReadableId)).toBe(
+        false,
+      );
+      expect(result.outputShapes.has("person.notes" as ReadableId)).toBe(true);
     });
 
     it("should handle object type with stream datasource", () => {
@@ -558,7 +609,7 @@ describe("ObjectTypeShapeExtractor", () => {
       const result: BlockShapes = extractor.extract(
         "event" as ReadableId,
         objectType,
-        ridGenerator
+        ridGenerator,
       );
 
       // Should have input shapes for stream
@@ -648,7 +699,7 @@ describe("ObjectTypeShapeExtractor", () => {
       const result: BlockShapes = extractor.extract(
         "task" as ReadableId,
         objectType,
-        ridGenerator
+        ridGenerator,
       );
 
       const taskShape = result.outputShapes.get("task" as ReadableId);
@@ -715,7 +766,7 @@ describe("ObjectTypeShapeExtractor", () => {
       const result: BlockShapes = extractor.extract(
         "simple" as ReadableId,
         objectType,
-        ridGenerator
+        ridGenerator,
       );
 
       expect(result.outputShapes.size).toBe(1); // Just the object type
@@ -771,7 +822,7 @@ describe("ObjectTypeShapeExtractor", () => {
       const result: BlockShapes = extractor.extract(
         "readonly" as ReadableId,
         objectType,
-        ridGenerator
+        ridGenerator,
       );
 
       const objectTypeShape = result.outputShapes.get("readonly" as ReadableId);

@@ -89,7 +89,7 @@ export const useColumnPinning = <
         if (onColumnsPinnedChanged) {
           const newStates = convertColumnPinningStateToArray(newPinning);
           const stateWithoutSelectionCol = newStates.filter(
-            (state) => state.columnId !== SELECTION_COLUMN_ID
+            (state) => state.columnId !== SELECTION_COLUMN_ID,
           );
           onColumnsPinnedChanged(stateWithoutSelectionCol);
         }
@@ -97,7 +97,7 @@ export const useColumnPinning = <
         return newPinning;
       });
     },
-    [onColumnsPinnedChanged]
+    [onColumnsPinnedChanged],
   );
 
   return { columnPinning, onColumnPinningChange };
@@ -115,7 +115,7 @@ const getColumnPinningStateFromColumnDefs = <
     Q,
     RDPs,
     FunctionColumns
-  >["columnDefinitions"]
+  >["columnDefinitions"],
 ): ColumnPinningState => {
   if (!columnDefinitions) {
     return {};
@@ -141,7 +141,7 @@ const getColumnPinningStateFromColumnDefs = <
           right: [...(acc.right ?? []), colKey],
         };
       },
-      { left: [], right: [] }
+      { left: [], right: [] },
     );
   return columnPinningState;
 };
@@ -150,7 +150,7 @@ const getColumnPinningStateFromColumnDefs = <
  * Converts ColumnPinningState to array format for the callback
  */
 function convertColumnPinningStateToArray(
-  pinningState: ColumnPinningState
+  pinningState: ColumnPinningState,
 ): Array<{ columnId: string; pinned: "left" | "right" | "none" }> {
   return [
     ...(pinningState.left ?? []).map((columnId) => ({

@@ -92,7 +92,7 @@ function setupOntology(fauxFoundry: FauxFoundry) {
 function setupTodos(
   fauxFoundry: FauxFoundry,
   count: number,
-  options?: { withRids?: boolean; textFn?: (i: number) => string }
+  options?: { withRids?: boolean; textFn?: (i: number) => string },
 ): string[] {
   const dataStore = fauxFoundry.getDefaultDataStore();
   dataStore.clear();
@@ -123,7 +123,7 @@ describe("ListQuery autoFetchMore tests", () => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
       createClient,
-      { logger }
+      { logger },
     );
     ({ client, apiServer, fauxFoundry } = testSetup);
 
@@ -153,14 +153,14 @@ describe("ListQuery autoFetchMore tests", () => {
           pageSize: 20,
           autoFetchMore: 50,
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     testStage("Wait for threshold to be met");
     const payload = await waitForPayload(
       listSub,
-      (p) => p?.status === "loaded" && (p?.resolvedList?.length ?? 0) >= 50
+      (p) => p?.status === "loaded" && (p?.resolvedList?.length ?? 0) >= 50,
     );
 
     testStage("Verify final state meets threshold");
@@ -183,14 +183,14 @@ describe("ListQuery autoFetchMore tests", () => {
           pageSize: 20,
           autoFetchMore: true,
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     testStage("Wait for all items to load");
     const payload = await waitForPayload(
       listSub,
-      (p) => p?.status === "loaded" && !p?.hasMore
+      (p) => p?.status === "loaded" && !p?.hasMore,
     );
 
     testStage("Verify all items fetched");
@@ -211,8 +211,8 @@ describe("ListQuery autoFetchMore tests", () => {
           orderBy: {},
           pageSize: 20,
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     testStage("Initial loading state");
@@ -238,7 +238,7 @@ describe("ListQuery autoFetchMore tests", () => {
     setupTodos(fauxFoundry, 100);
 
     testStage(
-      "Setup observation with autoFetchMore: 500 (high threshold), pageSize: 20"
+      "Setup observation with autoFetchMore: 500 (high threshold), pageSize: 20",
     );
     const listSub = mockListSubCallback();
     defer(
@@ -250,14 +250,14 @@ describe("ListQuery autoFetchMore tests", () => {
           pageSize: 20,
           autoFetchMore: 500,
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     testStage("Wait for all data despite high threshold");
     const payload = await waitForPayload(
       listSub,
-      (p) => p?.status === "loaded" && !p?.hasMore
+      (p) => p?.status === "loaded" && !p?.hasMore,
     );
 
     testStage("Verify all available items fetched");
@@ -278,8 +278,8 @@ describe("ListQuery autoFetchMore tests", () => {
           orderBy: { id: "desc" },
           pageSize: 20,
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     testStage("Initial loading state");
@@ -323,8 +323,8 @@ describe("ListQuery autoFetchMore tests", () => {
           orderBy: { id: "desc" },
           pageSize: 2,
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     testStage("Initial loading state");
@@ -371,8 +371,8 @@ describe("ListQuery autoFetchMore tests", () => {
           rids: [],
           pageSize: 10,
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     testStage("Initial loading state");
@@ -402,7 +402,7 @@ describe("ListQuery sort stability across pages", () => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
       createClient,
-      { logger }
+      { logger },
     );
     ({ client, apiServer, fauxFoundry } = testSetup);
 
@@ -440,8 +440,8 @@ describe("ListQuery sort stability across pages", () => {
           orderBy: { text: "asc" },
           pageSize: 5,
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     await waitForCall(listSub.next, 1);
@@ -496,8 +496,8 @@ describe("ListQuery sort stability across pages", () => {
           orderBy: { text: "asc" },
           pageSize: 4,
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     await waitForCall(listSub.next, 1);
@@ -556,8 +556,8 @@ describe("ListQuery sort stability across pages", () => {
           orderBy: { text: "asc" },
           pageSize: 10,
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     // Wait for server load to complete
@@ -608,12 +608,14 @@ describe("ListQuery sort stability across pages", () => {
 
     // Fetch real instances (carry the object metadata used to resolve types).
     const fetched = await Promise.all(
-      rows.map((row) => client(objectTypeWithAllPropertyTypes).fetchOne(row.id))
+      rows.map((row) =>
+        client(objectTypeWithAllPropertyTypes).fetchOne(row.id),
+      ),
     );
 
     async function expectClientOrdered(
       orderByProp: "decimal" | "long",
-      expectedValues: string[]
+      expectedValues: string[],
     ) {
       const listSub = mockListSubCallback();
       defer(
@@ -624,8 +626,8 @@ describe("ListQuery sort stability across pages", () => {
             orderBy: { [orderByProp]: "asc" },
             pageSize: 10,
           },
-          listSub
-        )
+          listSub,
+        ),
       );
 
       await waitForCall(listSub.next, 1);
@@ -643,7 +645,7 @@ describe("ListQuery sort stability across pages", () => {
           where: {},
           orderBy: { [orderByProp]: "asc" },
         },
-        fetched
+        fetched,
       );
 
       await waitForCall(listSub.next, 1);
@@ -694,7 +696,7 @@ describe("ListQuery sort stability across pages", () => {
         { __apiName: "objectTypeWithAllPropertyTypes", __primaryKey: id },
         "linkedObjectType",
         { __apiName: "objectTypeWithAllPropertyTypes", __primaryKey: linksTo },
-        "linkedFrom"
+        "linkedFrom",
       );
     }
 
@@ -722,8 +724,8 @@ describe("ListQuery sort stability across pages", () => {
           pageSize: 10,
           withProperties,
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     await waitForCall(listSub.next, 1);
@@ -745,7 +747,7 @@ describe("ListQuery sort stability across pages", () => {
       },
       fetched,
       {},
-      { dedupeInterval: 0, withProperties }
+      { dedupeInterval: 0, withProperties },
     );
 
     await waitForCall(listSub.next, 1);
@@ -755,7 +757,7 @@ describe("ListQuery sort stability across pages", () => {
     const resolved = payload!.resolvedList!;
     // Numeric order of the derived long ("100" must sort after "42").
     expect(
-      resolved.map((o) => (o as { derivedLong: string }).derivedLong)
+      resolved.map((o) => (o as { derivedLong: string }).derivedLong),
     ).toEqual(["1", "42", "100", "9007199254740993"]);
   });
 });
@@ -770,7 +772,7 @@ describe("ListQuery pivotTo tests", () => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
       createClient,
-      { logger }
+      { logger },
     );
     ({ client, apiServer, fauxFoundry } = testSetup);
 
@@ -836,8 +838,8 @@ describe("ListQuery pivotTo tests", () => {
           orderBy: {},
           pivotTo: "officeLink",
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     testStage("Initial loading state");
@@ -917,8 +919,8 @@ describe("ListQuery pivotTo tests", () => {
           orderBy: {},
           pivotTo: "officeLink",
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     testStage("Initial loading state");
@@ -937,7 +939,7 @@ describe("ListQuery pivotTo tests", () => {
       expect.arrayContaining([
         expect.objectContaining({ officeId: "office-a" }),
         expect.objectContaining({ officeId: "office-b" }),
-      ])
+      ]),
     );
 
     testStage("Verify no additional calls");
@@ -979,7 +981,7 @@ describe("ListQuery pivotTo tests", () => {
       .registerLink(emp2, "officeLink", officeB, "occupants");
 
     testStage(
-      "Observe with rids for both employees, where filters to employeeId 1"
+      "Observe with rids for both employees, where filters to employeeId 1",
     );
     const listSub = mockListSubCallback();
     defer(
@@ -994,8 +996,8 @@ describe("ListQuery pivotTo tests", () => {
           orderBy: {},
           pivotTo: "officeLink",
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     testStage("Initial loading state");
@@ -1049,8 +1051,8 @@ describe("ListQuery pivotTo tests", () => {
           orderBy: {},
           pivotTo: "officeLink",
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     testStage("Initial loading state");
@@ -1094,8 +1096,8 @@ describe("ListQuery pivotTo tests", () => {
           orderBy: {},
           pivotTo: "toBar",
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     testStage("Initial loading state verifies query construction succeeded");
@@ -1133,8 +1135,8 @@ describe("ListQuery pivotTo tests", () => {
           orderBy: {},
           pivotTo: "officeLink",
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     await waitForCall(listSub.next, 1);
@@ -1193,8 +1195,8 @@ describe("ListQuery pivotTo tests", () => {
           orderBy: {},
           pivotTo: "officeLink",
         },
-        listSub
-      )
+        listSub,
+      ),
     );
 
     await waitForCall(listSub.next, 1);
@@ -1226,7 +1228,7 @@ describe("ListQuery shared query autoFetchMore tests", () => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
       createClient,
-      { logger }
+      { logger },
     );
     ({ client, apiServer, fauxFoundry } = testSetup);
 
@@ -1255,8 +1257,8 @@ describe("ListQuery shared query autoFetchMore tests", () => {
           orderBy: {},
           pageSize: 20,
         },
-        subA
-      )
+        subA,
+      ),
     );
 
     testStage("A gets initial loading");
@@ -1282,14 +1284,14 @@ describe("ListQuery shared query autoFetchMore tests", () => {
           pageSize: 20,
           autoFetchMore: true,
         },
-        subB
-      )
+        subB,
+      ),
     );
 
     testStage("B should eventually get all 100 items");
     const lastBPayload = await waitForPayload(
       subB,
-      (p) => p?.status === "loaded" && p?.resolvedList?.length === 100
+      (p) => p?.status === "loaded" && p?.resolvedList?.length === 100,
     );
 
     testStage("Verify B got all items");
@@ -1317,8 +1319,8 @@ describe("ListQuery shared query autoFetchMore tests", () => {
           orderBy: {},
           pageSize: 20,
         },
-        subA
-      )
+        subA,
+      ),
     );
 
     testStage("Wait for A to finish loading");
@@ -1340,14 +1342,14 @@ describe("ListQuery shared query autoFetchMore tests", () => {
           pageSize: 20,
           autoFetchMore: 60,
         },
-        subB
-      )
+        subB,
+      ),
     );
 
     testStage("B should get at least 60 items");
     const lastBPayload = await waitForPayload(
       subB,
-      (p) => p?.status === "loaded" && (p?.resolvedList?.length ?? 0) >= 60
+      (p) => p?.status === "loaded" && (p?.resolvedList?.length ?? 0) >= 60,
     );
 
     testStage("Verify B met threshold");
@@ -1368,14 +1370,14 @@ describe("ListQuery shared query autoFetchMore tests", () => {
           pageSize: 20,
           autoFetchMore: true,
         },
-        sub
-      )
+        sub,
+      ),
     );
 
     testStage("Wait for all data to load");
     const lastPayload = await waitForPayload(
       sub,
-      (p) => p?.status === "loaded" && p?.resolvedList?.length === 60
+      (p) => p?.status === "loaded" && p?.resolvedList?.length === 60,
     );
 
     testStage("Verify no status oscillation");
@@ -1398,5 +1400,107 @@ describe("ListQuery shared query autoFetchMore tests", () => {
     expect(lastPayload?.resolvedList?.length).toBe(60);
     expect(lastPayload?.hasMore).toBe(false);
     expect(lastPayload?.status).toBe("loaded");
+  });
+
+  it("shared query: smaller pageSize subscriber first, default pageSize subscriber second", async () => {
+    setupTodos(fauxFoundry, 150);
+
+    testStage("Subscribe A with pageSize: 20");
+    const subA = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: {},
+          pageSize: 20,
+        },
+        subA,
+      ),
+    );
+
+    testStage("Wait for A to load 20 items");
+    const payloadA = await waitForPayload(
+      subA,
+      (p) => p?.status === "loaded" && p?.resolvedList?.length === 20,
+    );
+    expect(payloadA?.hasMore).toBe(true);
+
+    testStage("Subscribe B with the default pageSize");
+    const subB = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: {},
+        },
+        subB,
+      ),
+    );
+
+    testStage("Wait for B to load the default 100 items");
+    const payloadB = await waitForPayload(
+      subB,
+      (p) => p?.status === "loaded" && p?.resolvedList?.length === 100,
+    );
+    expect(payloadB?.hasMore).toBe(true);
+
+    testStage("Verify A still shows 20 items");
+    const aCalls = subA.next.mock.calls;
+    expect(aCalls).not.toHaveLength(0);
+    const lastPayloadA = aCalls[aCalls.length - 1][0];
+    expect(lastPayloadA?.resolvedList?.length).toBe(20);
+  });
+
+  it("shared query: default pageSize subscriber first, smaller pageSize subscriber second", async () => {
+    setupTodos(fauxFoundry, 150);
+
+    testStage("Subscribe A with the default pageSize");
+    const subA = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: {},
+        },
+        subA,
+      ),
+    );
+
+    testStage("Wait for A to load the default 100 items");
+    const payloadA = await waitForPayload(
+      subA,
+      (p) => p?.status === "loaded" && p?.resolvedList?.length === 100,
+    );
+    expect(payloadA?.hasMore).toBe(true);
+
+    testStage("Subscribe B with pageSize: 20");
+    const subB = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: {},
+          pageSize: 20,
+        },
+        subB,
+      ),
+    );
+
+    testStage("Wait for B to load 20 items");
+    const payloadB = await waitForPayload(
+      subB,
+      (p) => p?.status === "loaded" && p?.resolvedList?.length === 20,
+    );
+    expect(payloadB?.hasMore).toBe(true);
+
+    testStage("Verify A still shows 100 items");
+    const aCalls = subA.next.mock.calls;
+    expect(aCalls).not.toHaveLength(0);
+    const lastPayloadA = aCalls[aCalls.length - 1][0];
+    expect(lastPayloadA?.resolvedList?.length).toBe(100);
   });
 });

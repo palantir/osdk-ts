@@ -49,7 +49,7 @@ function metric(
   value: number,
   sampleCount: number,
   group: MinSamplesGroup,
-  unit?: string
+  unit?: string,
 ): Metric {
   const enough = sampleCount >= MIN_SAMPLES[group];
   const safeValue = Number.isFinite(value) ? value : 0;
@@ -75,7 +75,7 @@ export function getClientMetrics(snapshot: MetricsSnapshot): ClientMetrics {
   const cacheHitRate = metric(
     requestTotal > 0 ? (hits + revals) / requestTotal : 0,
     requestTotal,
-    "cacheHitRate"
+    "cacheHitRate",
   );
 
   const requestsSavedCount = hits + revals + dedups;
@@ -83,14 +83,14 @@ export function getClientMetrics(snapshot: MetricsSnapshot): ClientMetrics {
     requestsSavedCount,
     requestsSavedCount,
     "requestsSaved",
-    "requests"
+    "requests",
   );
 
   const avgNetworkMs = metric(
     a.networkResponseTime / Math.max(misses, 1),
     misses,
     "latency",
-    "ms"
+    "ms",
   );
 
   // Derived from two other metrics, so it stays undefined until both of those
@@ -112,33 +112,33 @@ export function getClientMetrics(snapshot: MetricsSnapshot): ClientMetrics {
     requestTotal > 0 ? a.totalResponseTime / requestTotal : 0,
     requestTotal,
     "latency",
-    "ms"
+    "ms",
   );
 
   const avgCachedMs = metric(
     a.cachedResponseTime / Math.max(hits, 1),
     hits,
     "latency",
-    "ms"
+    "ms",
   );
 
   const optimisticCoverage = metric(
     actions > 0 ? optimisticActions / actions : 0,
     actions,
-    "optimisticCoverage"
+    "optimisticCoverage",
   );
 
   const avgPerceivedSpeedupMs = metric(
     a.totalPerceivedSpeedup / Math.max(optimisticActions, 1),
     optimisticActions,
     "latency",
-    "ms"
+    "ms",
   );
 
   const rollbackRate = metric(
     actions > 0 ? rollbacks / actions : 0,
     actions,
-    "rollbackRate"
+    "rollbackRate",
   );
 
   return {

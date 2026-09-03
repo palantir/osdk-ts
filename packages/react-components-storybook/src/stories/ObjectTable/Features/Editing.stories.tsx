@@ -137,6 +137,28 @@ export const EditableTable: Story = {
       }),
     },
   },
+  // Custom columns: getCellValue supplies the value, cellValueType picks the editor
+  {
+    locator: { type: "custom", id: "reportsTo" },
+    columnName: "Reports To (#)",
+    getCellValue: (employee) =>
+      employee.leadEmployeeNumber ?? employee.mentorEmployeeNumber,
+    cellValueType: "integer",
+    editable: true,
+    orderable: false,
+  },
+  {
+    locator: { type: "custom", id: "contact" },
+    columnName: "Contact",
+    getCellValue: (employee) =>
+      [employee.emailPrimaryWork, employee.jobTitle]
+        .filter((part) => part != null)
+        .join(" · "),
+    cellValueType: "string",
+    editable: true,
+    orderable: false,
+    renderCell: (object, locator, value) => <em>{value || "No value"}</em>,
+  },
 ];
 
 return (
@@ -158,7 +180,7 @@ return (
         args.onCellValueChanged?.(editInfo as any);
         setLastEdit(editInfo);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -221,25 +243,25 @@ return (
         expect.objectContaining({
           columnId: "fullName",
           newValue: "Ahmed Williamson",
-        })
-      )
+        }),
+      ),
     );
 
     // Dropdown edit (department, column 3) — visible once the row is focused.
     const departmentCombobox = await within(cellsOf()[3]).findByRole(
-      "combobox"
+      "combobox",
     );
     await userEvent.click(departmentCombobox);
     await userEvent.click(
-      await screen.findByRole("option", { name: "Engineering" })
+      await screen.findByRole("option", { name: "Engineering" }),
     );
     await waitFor(() =>
       expect(args.onCellValueChanged).toHaveBeenCalledWith(
         expect.objectContaining({
           columnId: "department",
           newValue: "Engineering",
-        })
-      )
+        }),
+      ),
     );
 
     // Date edit (firstFullTimeStartDate, column 5) — focusing opens the
@@ -249,14 +271,36 @@ return (
     await userEvent.click(await screen.findByRole("button", { name: "Today" }));
     await waitFor(() =>
       expect(args.onCellValueChanged).toHaveBeenCalledWith(
-        expect.objectContaining({ columnId: "firstFullTimeStartDate" })
-      )
+        expect.objectContaining({ columnId: "firstFullTimeStartDate" }),
+      ),
+    );
+
+    // Custom columns (reportsTo, column 7; contact, column 8) have no ontology
+    // property, so their editors come from `cellValueType`: the integer column
+    // renders a number input and commits a number, not the string it would
+    // have produced without one.
+    const reportsToInput = within(cellsOf()[7]).getByRole("spinbutton");
+    await expect(reportsToInput).toHaveAttribute("type", "number");
+    await userEvent.click(reportsToInput);
+    await userEvent.clear(reportsToInput);
+    await userEvent.type(reportsToInput, "4242");
+    await userEvent.tab();
+    await waitFor(() =>
+      expect(args.onCellValueChanged).toHaveBeenCalledWith(
+        expect.objectContaining({ columnId: "reportsTo", newValue: 4242 }),
+      ),
+    );
+
+    // The string-typed custom column stays a text input.
+    await expect(within(cellsOf()[8]).getByRole("textbox")).toHaveAttribute(
+      "type",
+      "text",
     );
 
     // Cancel exits edit mode; the "Edit Table" button returns.
     await userEvent.click(canvas.getByRole("button", { name: "Cancel" }));
     await expect(
-      await canvas.findByRole("button", { name: "Edit Table" })
+      await canvas.findByRole("button", { name: "Edit Table" }),
     ).toBeInTheDocument();
   },
 };
@@ -368,7 +412,7 @@ export const EditableWithValidation: Story = {
       // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
       async (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
         return true;
-      }
+      },
     ),
   },
   parameters: {
@@ -489,10 +533,10 @@ return (
     await userEvent.tab();
 
     await waitFor(() =>
-      expect(canvas.getByText("Validation error")).toBeInTheDocument()
+      expect(canvas.getByText("Validation error")).toBeInTheDocument(),
     );
     await expect(
-      canvas.getByRole("button", { name: "Submit Edits" })
+      canvas.getByRole("button", { name: "Submit Edits" }),
     ).toBeDisabled();
 
     // Correcting the value clears the error and re-enables Submit Edits.
@@ -502,10 +546,10 @@ return (
     await userEvent.tab();
 
     await waitFor(() =>
-      expect(canvas.queryByText("Validation error")).not.toBeInTheDocument()
+      expect(canvas.queryByText("Validation error")).not.toBeInTheDocument(),
     );
     await expect(
-      canvas.getByRole("button", { name: "Submit Edits" })
+      canvas.getByRole("button", { name: "Submit Edits" }),
     ).toBeEnabled();
 
     // Restore the original value
@@ -514,7 +558,7 @@ return (
     await userEvent.type(nameInput, TARGET_DATA);
     await userEvent.tab();
     await waitFor(() =>
-      expect(canvas.getByDisplayValue(TARGET_DATA)).toBeInTheDocument()
+      expect(canvas.getByDisplayValue(TARGET_DATA)).toBeInTheDocument(),
     );
   },
 };
@@ -528,7 +572,7 @@ export const WithSubmitEditsButton: Story = {
       async (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         return true;
-      }
+      },
     ),
   } as any,
   parameters: {
@@ -621,6 +665,28 @@ export const WithSubmitEditsButton: Story = {
       }),
     },
   },
+  // Custom columns: getCellValue supplies the value, cellValueType picks the editor
+  {
+    locator: { type: "custom", id: "reportsTo" },
+    columnName: "Reports To (#)",
+    getCellValue: (employee) =>
+      employee.leadEmployeeNumber ?? employee.mentorEmployeeNumber,
+    cellValueType: "integer",
+    editable: true,
+    orderable: false,
+  },
+  {
+    locator: { type: "custom", id: "contact" },
+    columnName: "Contact",
+    getCellValue: (employee) =>
+      [employee.emailPrimaryWork, employee.jobTitle]
+        .filter((part) => part != null)
+        .join(" · "),
+    cellValueType: "string",
+    editable: true,
+    orderable: false,
+    renderCell: (object, locator, value) => <em>{value || "No value"}</em>,
+  },
 ];
 
 return (
@@ -674,9 +740,9 @@ return (
     await waitFor(
       () =>
         expect(
-          canvas.getByRole("button", { name: "Edit Table" })
+          canvas.getByRole("button", { name: "Edit Table" }),
         ).toBeInTheDocument(),
-      { timeout: 5000 }
+      { timeout: 5000 },
     );
   },
 };
@@ -692,6 +758,17 @@ export const PerRowEditableAndFieldConfig: Story = {
           const jobTitle = rowData.jobTitle ?? "";
           return jobTitle === "Senior Product Manager";
         },
+        cellValueType: "string",
+        renderCell: (_obj, _locator, value) => (
+          <div
+            style={{
+              fontStyle: "italic",
+              color: "grey",
+            }}
+          >
+            {typeof value === "string" ? value : ""}
+          </div>
+        ),
       },
       {
         locator: { type: "property", id: "department" },
@@ -723,10 +800,21 @@ export const PerRowEditableAndFieldConfig: Story = {
   {
     locator: { type: "property", id: "jobTitle" },
     // Only allow editing for Senior Product Manager
-    editable: (rowData) => {
-      const jobTitle = String(rowData.jobTitle ?? "");
+    editable: (rowData: Osdk.Instance<Employee>) => {
+      const jobTitle = rowData.jobTitle ?? "";
       return jobTitle === "Senior Product Manager";
     },
+    cellValueType: "string",
+    renderCell: (_obj, _locator, value) => (
+      <div
+        style={{
+          fontStyle: "italic",
+          color: "grey",
+        }}
+      >
+        {typeof value === "string" ? value : ""}
+      </div>
+    ),
   },
   {
     locator: { type: "property", id: "department" },
@@ -779,12 +867,12 @@ return (
 
     // jobTitle (column 1) is editable only for the Senior Product Manager.
     const editableCell = within(
-      rowContaining(canvas.getByText("Margaret Jackson"))
+      rowContaining(canvas.getByText("Margaret Jackson")),
     ).getAllByRole("cell");
     await expect(editableCell[1]).toHaveAttribute("data-editable", "true");
 
     const nonEditableCell = within(
-      rowContaining(canvas.getByText(TARGET_DATA))
+      rowContaining(canvas.getByText(TARGET_DATA)),
     ).getAllByRole("cell");
     await expect(nonEditableCell[1]).not.toHaveAttribute("data-editable");
 
@@ -794,7 +882,7 @@ return (
     void fireEvent.click(await within(opRow).findByRole("combobox"));
     await expect(await screen.findAllByRole("option")).toHaveLength(2);
     await expect(
-      screen.queryByRole("option", { name: "Finance" })
+      screen.queryByRole("option", { name: "Finance" }),
     ).not.toBeInTheDocument();
     await userEvent.keyboard("{Escape}");
 
@@ -803,15 +891,15 @@ return (
     await userEvent.click(canvas.getByText(TARGET_DATA));
     void fireEvent.click(await within(ahmedRow).findByRole("combobox"));
     await expect(
-      await screen.findByRole("option", { name: "Finance" })
+      await screen.findByRole("option", { name: "Finance" }),
     ).toBeInTheDocument();
 
     // Close the dropdown so the story ends with no popup open.
     await userEvent.keyboard("{Escape}");
     await waitFor(() =>
       expect(
-        screen.queryByRole("option", { name: "Finance" })
-      ).not.toBeInTheDocument()
+        screen.queryByRole("option", { name: "Finance" }),
+      ).not.toBeInTheDocument(),
     );
   },
 };

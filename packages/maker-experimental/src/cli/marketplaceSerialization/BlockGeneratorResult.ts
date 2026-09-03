@@ -18,6 +18,7 @@ import type {
   BlockType,
   InputShape,
   InputShapeMetadata,
+  InputPreset,
   OutputShape,
 } from "@osdk/client.unstable/api";
 
@@ -60,6 +61,11 @@ export interface BlockGeneratorResult {
    * Map of input shapes keyed by ReadableId
    */
   inputs: Record<ReadableId, InputShape>;
+
+  /**
+   * Portable presets for imported input shapes, keyed by ReadableId
+   */
+  input_presets?: Record<ReadableId, InputPreset>;
 
   /**
    * Map of output shapes keyed by ReadableId

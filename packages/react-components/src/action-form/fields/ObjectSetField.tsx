@@ -30,12 +30,15 @@ import type { ObjectSetFieldProps } from "../FormFieldApi.js";
 
 import styles from "./ObjectSetField.module.css";
 
-const DEFAULT_OBJECT_ICON: Icon = { name: "cube", color: "#4C90F0" };
+const DEFAULT_OBJECT_ICON: Icon = {
+  name: "cube",
+  color: "var(--osdk-object-set-icon-default-color)",
+};
 const ICON_SIZE = IconSize.STANDARD;
 const DEFAULT_EMPTY_MESSAGE = "Object set is not defined";
 
 export const ObjectSetField: <T extends ObjectTypeDefinition>(
-  props: ObjectSetFieldProps<T>
+  props: ObjectSetFieldProps<T>,
 ) => React.ReactElement = typedReactMemo(function ObjectSetFieldFn<
   T extends ObjectTypeDefinition,
 >({
@@ -48,7 +51,7 @@ export const ObjectSetField: <T extends ObjectTypeDefinition>(
       <div
         className={classnames(
           styles.osdkObjectSetField,
-          styles.osdkObjectSetFieldEmpty
+          styles.osdkObjectSetFieldEmpty,
         )}
         aria-disabled={disabled === true || undefined}
       >
@@ -86,7 +89,7 @@ const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
       metadata != null && "icon" in metadata && metadata.icon != null
         ? toComponentIcon(metadata.icon)
         : DEFAULT_OBJECT_ICON,
-    [metadata]
+    [metadata],
   );
 
   const displayName =

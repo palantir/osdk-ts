@@ -19,7 +19,6 @@ import type { RowData } from "@tanstack/react-table";
 import React, { type ReactElement, useCallback, useState } from "react";
 
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
-import { useObjectTableLabels } from "./ObjectTableLabels.js";
 import type { EditableConfig } from "./utils/types.js";
 
 import styles from "./TableEditContainer.module.css";
@@ -41,7 +40,6 @@ export function TableEditContainer<TData extends RowData>({
     validationErrors,
   } = editableConfig;
 
-  const labels = useObjectTableLabels();
   const hasEdits = Object.keys(cellEdits ?? {}).length > 0;
   const hasValidationError = (validationErrors?.size ?? 0) > 0;
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -83,36 +81,32 @@ export function TableEditContainer<TData extends RowData>({
         <div className={styles.editsInfoContainer}>
           {hasEdits && (
             <div className={styles.modificationCount}>
-              {labels.editFooterModificationCount(
-                cellEdits ? Object.keys(cellEdits).length : 0
-              )}
+              {`${cellEdits ? Object.keys(cellEdits).length : 0} modifications`}
             </div>
           )}
           {hasEdits && hasValidationError && <div className={styles.divider} />}
           {hasValidationError && (
             <div className={styles.validationError}>
               <Error className={styles.errorIcon} />
-              {labels.editFooterValidationError}
+              Validation error
             </div>
           )}
         </div>
       ) : (
         isInEditMode &&
         !hasFocusedRow && (
-          <div className={styles.placeholder}>
-            {labels.editFooterSelectRowToEdit}
-          </div>
+          <div className={styles.placeholder}>Select a row to edit data…</div>
         )
       )}
       <div className={styles.editButtons}>
         {!isInEditMode && canToggleEditMode && (
           <ActionButton variant="primary" onClick={handleEnterEditMode}>
-            {labels.editFooterEditTable}
+            Edit Table
           </ActionButton>
         )}
         {isInEditMode && canToggleEditMode && (
           <ActionButton variant="secondary" onClick={handleCancelEdits}>
-            {labels.editFooterCancel}
+            Cancel
           </ActionButton>
         )}
         {isInEditMode && !!onSubmitEdits && (
@@ -121,7 +115,7 @@ export function TableEditContainer<TData extends RowData>({
             onClick={handleSubmitEdits}
             disabled={!hasEdits || isSubmitting || hasValidationError}
           >
-            {labels.editFooterSubmitEdits}
+            Submit Edits
           </ActionButton>
         )}
       </div>

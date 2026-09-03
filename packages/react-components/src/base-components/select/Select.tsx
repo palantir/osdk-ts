@@ -82,7 +82,7 @@ function SelectTrigger({
 }
 
 function SelectValue(
-  props: Omit<SelectValueProps, "className"> & { className?: string }
+  props: Omit<SelectValueProps, "className"> & { className?: string },
 ): React.ReactElement {
   const { className, ...rest } = props;
   return (

@@ -13,24 +13,28 @@ export namespace createOffice {
   export type ParamsDefinition = {
     address: {
       description: "The office's physical address (not necessarily shipping address)";
+      displayName: undefined;
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     capacity: {
       description: 'The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)';
+      displayName: undefined;
       multiplicity: false;
       nullable: true;
       type: 'integer';
     };
     officeId: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     officeNames: {
       description: 'A list of all office names';
+      displayName: undefined;
       multiplicity: true;
       nullable: true;
       type: 'string';

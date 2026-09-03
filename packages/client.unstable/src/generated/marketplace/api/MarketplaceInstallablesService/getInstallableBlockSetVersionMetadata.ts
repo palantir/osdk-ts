@@ -28,11 +28,11 @@ import type {
 export async function getInstallableBlockSetVersionMetadata(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  blockSetVersionId: _api_BlockSetVersionId
+  blockSetVersionId: _api_BlockSetVersionId,
 ): Promise<_api_InstallableBlockSetVersionMetadata> {
   return conjureFetch(
     ctx,
     `/installation-app-service/installable/v2/${marketplaceRid}/blockSet/version/${blockSetVersionId}/metadata`,
-    "GET"
+    "GET",
   );
 }

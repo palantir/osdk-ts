@@ -93,7 +93,7 @@ export class PerformanceRecommendationEngine {
   constructor(
     private metricsStore: MetricsStore,
     private registry: ComponentQueryRegistry,
-    private timeline: EventTimeline
+    private timeline: EventTimeline,
   ) {
     this.cacheAnalyzer = new CacheEfficiencyAnalyzer(metricsStore);
     this.fieldAnalyzer = new UnusedFieldAnalyzer(registry, undefined);
@@ -139,7 +139,7 @@ export class PerformanceRecommendationEngine {
       }
 
       const subscribers = this.registry.getQuerySubscribers(
-        offender.querySignature
+        offender.querySignature,
       );
       const locatedBinding = subscribers.find((b) => b.filePath);
 
@@ -150,7 +150,7 @@ export class PerformanceRecommendationEngine {
         title: `${offender.componentName} fetches unused data`,
         description: `This component fetches ${offender.fetched.length} properties but only uses ${offender.accessed.length}`,
         impact: `Save ${(offender.wastedBytes / 1024).toFixed(
-          1
+          1,
         )}KB bandwidth per load`,
         effort: "Low",
         suggestion: "Use $select to only fetch used properties",
@@ -205,17 +205,17 @@ export class PerformanceRecommendationEngine {
     const cacheScore = Math.round(cacheMetrics.score);
     const queryScore = Math.round(100 - Math.min(waterfalls.length * 5, 50));
     const bandwidthScore = Math.round(
-      100 - Math.min((fieldReport.totalWastedBytes / 1024 / 100) * 10, 40)
+      100 - Math.min((fieldReport.totalWastedBytes / 1024 / 100) * 10, 40),
     );
     const codeQualityScore = Math.round(
-      100 - Math.min((1 - fieldReport.averageEfficiency) * 30, 50)
+      100 - Math.min((1 - fieldReport.averageEfficiency) * 30, 50),
     );
 
     const overall = Math.round(
       cacheScore * 0.3 +
         queryScore * 0.3 +
         bandwidthScore * 0.2 +
-        codeQualityScore * 0.2
+        codeQualityScore * 0.2,
     );
 
     const breakdown = {
@@ -282,17 +282,17 @@ export class PerformanceRecommendationEngine {
   } {
     const recommendations = this.generateRecommendations(cacheSnapshot);
     const criticalCount = recommendations.filter(
-      (r) => r.level === "critical"
+      (r) => r.level === "critical",
     ).length;
 
     const lowEffortCount = recommendations.filter(
-      (r) => r.effort === "Low"
+      (r) => r.effort === "Low",
     ).length;
     const mediumEffortCount = recommendations.filter(
-      (r) => r.effort === "Medium"
+      (r) => r.effort === "Medium",
     ).length;
     const highEffortCount = recommendations.filter(
-      (r) => r.effort === "High"
+      (r) => r.effort === "High",
     ).length;
 
     const minutesToFix =

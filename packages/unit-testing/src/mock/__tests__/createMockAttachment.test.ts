@@ -41,7 +41,7 @@ describe("createMockAttachment", () => {
       const attachment = createMockAttachment(rid);
 
       expect(() => attachment.fetchContents()).toThrow(
-        `fetchContents was called on mock attachment "${rid}" but no blob was provided.`
+        `fetchContents was called on mock attachment "${rid}" but no blob was provided.`,
       );
     });
   });
@@ -68,7 +68,7 @@ describe("createMockAttachment", () => {
       const attachment = createMockAttachment(rid);
 
       expect(() => attachment.fetchMetadata()).toThrow(
-        `fetchMetadata was called on mock attachment "${rid}" but no metadata was provided.`
+        `fetchMetadata was called on mock attachment "${rid}" but no metadata was provided.`,
       );
     });
   });

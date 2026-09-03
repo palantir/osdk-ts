@@ -35,10 +35,10 @@ export interface AnnotationPortalTarget {
 export function usePdfAnnotationPortals(
   pdfViewerRef: RefObject<PDFViewer | null>,
   eventBusRef: RefObject<EventBus | null>,
-  document: PDFDocumentProxy | undefined
+  document: PDFDocumentProxy | undefined,
 ): AnnotationPortalTarget[] {
   const [portalTargets, setPortalTargets] = useState<AnnotationPortalTarget[]>(
-    []
+    [],
   );
 
   useEffect(
@@ -52,7 +52,7 @@ export function usePdfAnnotationPortals(
       const measurePage = (
         pageNumber: number,
         containerRect: DOMRect,
-        scrollContainer: HTMLElement
+        scrollContainer: HTMLElement,
       ): AnnotationPortalTarget | null => {
         const pageView = pdfViewer.getPageView(pageNumber - 1);
         if (pageView?.div == null || pageView?.viewport == null) {
@@ -103,7 +103,7 @@ export function usePdfAnnotationPortals(
             return filtered;
           }
           return [...filtered, next].sort(
-            (a, b) => a.pageNumber - b.pageNumber
+            (a, b) => a.pageNumber - b.pageNumber,
           );
         });
       };
@@ -124,7 +124,7 @@ export function usePdfAnnotationPortals(
             const remeasured = measurePage(
               target.pageNumber,
               container.rect,
-              container.el
+              container.el,
             );
             if (remeasured != null) {
               next.push(remeasured);
@@ -163,7 +163,7 @@ export function usePdfAnnotationPortals(
         setPortalTargets([]);
       };
     },
-    [document]
+    [document],
   );
 
   return portalTargets;

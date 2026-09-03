@@ -65,7 +65,7 @@ function isBrowserLoggerCall(args: unknown[]): boolean {
 function serializeValue(
   value: unknown,
   depth: number,
-  seen: WeakSet<object>
+  seen: WeakSet<object>,
 ): string {
   if (value == null) {
     return String(value);
@@ -131,7 +131,7 @@ function serializeValue(
       const val = serializeValue(
         (obj as Record<string, unknown>)[key],
         depth + 1,
-        seen
+        seen,
       );
       entries.push(`"${key}":${val}`);
     }

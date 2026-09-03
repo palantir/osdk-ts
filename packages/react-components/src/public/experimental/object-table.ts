@@ -19,7 +19,7 @@ import { ObjectTable as _ObjectTable } from "../../object-table/ObjectTable.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 export const ObjectTable: typeof _ObjectTable = withOsdkMetrics(
   _ObjectTable,
-  "ObjectTable"
+  "ObjectTable",
 );
 export type {
   ColumnDefinition,
@@ -27,6 +27,7 @@ export type {
   CustomColumnLocator,
   EditFieldConfig,
   FunctionColumnLocator,
+  LoadedObjectsChange,
   ObjectTableDataColumn,
   ObjectTableDataRow,
   ObjectTableHandle,
@@ -37,8 +38,6 @@ export type {
   RdpColumnLocator,
 } from "../../object-table/ObjectTableApi.js";
 export type { CellEditInfo } from "../../object-table/utils/types.js";
-
-export type { ObjectTableLabels } from "../../object-table/ObjectTableLabels.js";
 
 // BaseTable that does not handle data fetching
 export type { BaseTableProps } from "../../object-table/Table.js";
@@ -111,6 +110,10 @@ export {
   type UseFocusedRowProps,
   type UseFocusedRowResult,
 } from "../../object-table/hooks/useFocusedRow.js";
+export {
+  useLoadedObjectsChanged,
+  type UseLoadedObjectsChangedProps,
+} from "../../object-table/hooks/useLoadedObjectsChanged.js";
 export {
   useRowSelection,
   type UseRowSelectionChange,

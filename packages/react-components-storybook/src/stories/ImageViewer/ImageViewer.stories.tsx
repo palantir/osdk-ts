@@ -15,7 +15,7 @@
  */
 
 import type { Media } from "@osdk/api";
-import type { ImageViewerMediaProps } from "@osdk/react-components/experimental/image-viewer";
+import type { ImageViewerProps } from "@osdk/react-components/experimental/image-viewer";
 import { ImageViewer } from "@osdk/react-components/experimental/image-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
@@ -48,7 +48,7 @@ const sampleImageDataUrl = createSampleImageDataUrl();
 function createMockImageMedia(
   dataUrl: string,
   mimeType: string,
-  filename: string
+  filename: string,
 ): Media {
   return {
     fetchContents: async () => {
@@ -75,7 +75,7 @@ function createMockImageMedia(
   };
 }
 
-const meta: Meta<ImageViewerMediaProps> = {
+const meta: Meta<ImageViewerProps> = {
   title: "Components/DocumentViewer/Renderers/ImageViewer",
   component: ImageViewer,
   tags: ["beta"],
@@ -100,12 +100,12 @@ const meta: Meta<ImageViewerMediaProps> = {
 
 export default meta;
 
-export const Default: StoryObj<ImageViewerMediaProps> = {
+export const Default: StoryObj<ImageViewerProps> = {
   args: {
     media: createMockImageMedia(sampleImageDataUrl, "image/png", "sample.png"),
     alt: "Sample image loaded from Media",
   },
-  render: (args: ImageViewerMediaProps) => (
+  render: (args: ImageViewerProps) => (
     <div style={{ height: "400px", width: "400px" }}>
       <ImageViewer {...args} />
     </div>
@@ -113,9 +113,7 @@ export const Default: StoryObj<ImageViewerMediaProps> = {
   parameters: {
     docs: {
       source: {
-        code: `import { ImageViewer } from "@osdk/react-components/experimental/image-viewer";
-
-<ImageViewer media={myOsdkMedia} alt="My image" />`,
+        code: `<ImageViewer media={myOsdkMedia} alt="My image" />`,
       },
     },
   },

@@ -1,5 +1,194 @@
 # @osdk/foundry-sdk-generator
 
+## 2.64.0
+
+### Patch Changes
+
+- Updated dependencies [6adfde4]
+- Updated dependencies [06cd3ea]
+  - @osdk/client@2.64.0
+  - @osdk/api@2.64.0
+  - @osdk/client.unstable@2.64.0
+  - @osdk/generator-converters@2.64.0
+  - @osdk/generator-utils@2.64.0
+  - @osdk/generator@2.64.0
+
+## 2.63.0
+
+### Patch Changes
+
+- Updated dependencies [08ba782]
+  - @osdk/api@2.63.0
+  - @osdk/client@2.63.0
+  - @osdk/generator@2.63.0
+  - @osdk/generator-converters@2.63.0
+  - @osdk/client.unstable@2.63.0
+  - @osdk/generator-utils@2.63.0
+
+## 2.62.0
+
+### Patch Changes
+
+- Updated dependencies [691c32e]
+- Updated dependencies [13649db]
+  - @osdk/client@2.62.0
+  - @osdk/api@2.62.0
+  - @osdk/client.unstable@2.62.0
+  - @osdk/generator-converters@2.62.0
+  - @osdk/generator-utils@2.62.0
+  - @osdk/generator@2.62.0
+
+## 2.61.0
+
+### Patch Changes
+
+- Updated dependencies [bdf45fa]
+- Updated dependencies [34cb7e0]
+  - @osdk/api@2.61.0
+  - @osdk/client@2.61.0
+  - @osdk/generator@2.61.0
+  - @osdk/generator-converters@2.61.0
+  - @osdk/client.unstable@2.61.0
+  - @osdk/generator-utils@2.61.0
+
+## 2.60.0
+
+### Minor Changes
+
+- e879ad7: Bump platform SDKs and add loadOntologyDefinedDerivedProperties flag, which defaults to true
+- bbbeca8: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.75.0`, which reinstates the `streamingExecute` query endpoint as a Server-Sent Events (`text/event-stream`) stream. The experimental `executeStreamingFunction` helper is reimplemented on top of it and no longer throws: it yields each result as it arrives, flattening batched results so array-returning queries emit one element at a time.
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+- Updated dependencies [6cf2be9]
+  - @osdk/generator-converters@2.60.0
+  - @osdk/generator@2.60.0
+  - @osdk/client@2.60.0
+  - @osdk/api@2.60.0
+  - @osdk/client.unstable@2.60.0
+  - @osdk/generator-utils@2.60.0
+
+## 2.59.0
+
+### Patch Changes
+
+- Updated dependencies [4ae6d8b]
+- Updated dependencies [1aff7f4]
+  - @osdk/api@2.59.0
+  - @osdk/client@2.59.0
+  - @osdk/client.unstable@2.59.0
+  - @osdk/generator-converters@2.59.0
+  - @osdk/generator-utils@2.59.0
+  - @osdk/generator@2.59.0
+
+## 2.58.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+- 90cce42: Generate ontology metadata under experimental path
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+- Updated dependencies [90cce42]
+  - @osdk/client@2.58.0
+  - @osdk/generator@2.58.0
+  - @osdk/generator-converters@2.58.0
+  - @osdk/api@2.58.0
+  - @osdk/client.unstable@2.58.0
+  - @osdk/generator-utils@2.58.0
+
+## 2.57.0
+
+### Patch Changes
+
+- Updated dependencies [e9d7ffa]
+  - @osdk/client.unstable@2.57.0
+  - @osdk/client@2.57.0
+  - @osdk/api@2.57.0
+  - @osdk/generator-converters@2.57.0
+  - @osdk/generator-utils@2.57.0
+  - @osdk/generator@2.57.0
+
+## 2.56.0
+
+### Patch Changes
+
+- Updated dependencies [342c492]
+  - @osdk/api@2.56.0
+  - @osdk/client@2.56.0
+  - @osdk/client.unstable@2.56.0
+  - @osdk/generator-converters@2.56.0
+  - @osdk/generator-utils@2.56.0
+  - @osdk/generator@2.56.0
+
+## 2.55.0
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+  - @osdk/client@2.55.0
+  - @osdk/generator@2.55.0
+  - @osdk/generator-converters@2.55.0
+  - @osdk/client.unstable@2.55.0
+  - @osdk/generator-utils@2.55.0
+
+## 2.54.0
+
+### Minor Changes
+
+- 8bd0053: Gate ontology metadata generation behind the additive, opt-in `--experimentalOntologyMetadata` flag, replacing the unreleased negative `--disableOntologyMetadataExport`
+
+### Patch Changes
+
+- @osdk/api@2.54.0
+- @osdk/client.unstable@2.54.0
+- @osdk/client@2.54.0
+- @osdk/generator-converters@2.54.0
+- @osdk/generator-utils@2.54.0
+- @osdk/generator@2.54.0
+
+## 2.53.0
+
+### Minor Changes
+
+- 5bd3024: Type the ontology metadata json subpath per resolution mode instead of per generated package type, and honor --generateOntologyMetadata when generating sources in place (without --asPackage)
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [5bd3024]
+- Updated dependencies [c14abb8]
+  - @osdk/generator@2.53.0
+  - @osdk/client@2.53.0
+  - @osdk/generator-converters@2.53.0
+  - @osdk/api@2.53.0
+  - @osdk/client.unstable@2.53.0
+  - @osdk/generator-utils@2.53.0
+
+## 2.52.0
+
+### Minor Changes
+
+- 913563f: Generated SDKs now ship the full ontology metadata as a typed `./experimental/ontology-metadata` subpath export.
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/client@2.52.0
+  - @osdk/generator-converters@2.52.0
+  - @osdk/generator@2.52.0
+  - @osdk/client.unstable@2.52.0
+  - @osdk/generator-utils@2.52.0
+
 ## 2.51.0
 
 ### Patch Changes

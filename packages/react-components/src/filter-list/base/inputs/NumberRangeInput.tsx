@@ -55,11 +55,11 @@ interface NumberRangeInputProps {
 }
 
 function NumberRangeInputInner(
-  props: NumberRangeInputProps
+  props: NumberRangeInputProps,
 ): React.ReactElement {
   return <RangeInput {...props} config={numberConfig} />;
 }
 
 export const NumberRangeInput = memo(
-  NumberRangeInputInner
+  NumberRangeInputInner,
 ) as typeof NumberRangeInputInner;

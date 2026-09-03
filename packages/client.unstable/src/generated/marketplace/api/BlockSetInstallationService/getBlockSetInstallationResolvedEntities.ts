@@ -28,11 +28,11 @@ import type {
  */
 export async function getBlockSetInstallationResolvedEntities(
   ctx: ConjureContext,
-  blockSetInstallationRid: _api_BlockSetInstallationRid
+  blockSetInstallationRid: _api_BlockSetInstallationRid,
 ): Promise<_api_BlockSetInstallationResolvedEntities> {
   return conjureFetch(
     ctx,
     `/block-set-installation/resolved-entities/${blockSetInstallationRid}`,
-    "GET"
+    "GET",
   );
 }

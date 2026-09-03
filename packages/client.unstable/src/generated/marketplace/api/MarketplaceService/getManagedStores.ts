@@ -22,7 +22,7 @@ import type { GetManagedStoresResponse as _api_GetManagedStoresResponse } from "
  * Returns all managed stores the user has access to.
  */
 export async function getManagedStores(
-  ctx: ConjureContext
+  ctx: ConjureContext,
 ): Promise<_api_GetManagedStoresResponse> {
   return conjureFetch(ctx, `/marketplaces/managedStores`, "GET");
 }

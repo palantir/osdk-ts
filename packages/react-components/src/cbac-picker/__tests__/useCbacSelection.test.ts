@@ -84,7 +84,7 @@ describe("useCbacSelection", () => {
   it("resets the selection when the initial marking ids change", () => {
     const { result, rerender } = renderHook(
       ({ ids }) => useCbacSelection(ids),
-      { initialProps: { ids: ["m1"] } }
+      { initialProps: { ids: ["m1"] } },
     );
     expect(result.current.selectedIds).toEqual(["m1"]);
 

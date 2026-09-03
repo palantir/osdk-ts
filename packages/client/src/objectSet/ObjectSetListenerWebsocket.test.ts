@@ -34,7 +34,7 @@ import {
 import ImportedWebSocket from "isomorphic-ws";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
-import type { MockedClass, MockedFunction, MockedObject } from "vitest";
+import type { MockedObject } from "vitest";
 import {
   afterEach,
   beforeAll,
@@ -52,9 +52,19 @@ import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
-  constructWebsocketUrl,
-  ObjectSetListenerWebsocket,
-} from "./ObjectSetListenerWebsocket.js";
+  type MockedWebSocket,
+  sendToClient,
+  setWebSocketState,
+} from "./MockWebSocket.js";
+import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
+import { constructWebsocketUrl } from "./websocketUtils.js";
+
+// both this and `rootLogger` must be hoisted because they are referenced from
+// the `vi.mock("isomorphic-ws")` factory, which is itself hoisted
+const createMockWebSocketConstructor = await vi.hoisted(
+  async () =>
+    (await import("./MockWebSocket.js")).createMockWebSocketConstructor,
+);
 
 // it needs to be hoisted because its referenced from our mocked WebSocket
 // which must be hoisted to work
@@ -81,8 +91,8 @@ const rootLogger = await vi.hoisted(async (): Promise<Logger> => {
         errorProps: "stack,cause,properties",
         ignore: "time,hostname,pid",
         destination: new PinoConsoleLogDestination(),
-      })
-    )
+      }),
+    ),
   );
 });
 
@@ -96,7 +106,7 @@ vi.mock("isomorphic-ws", async (importOriginal) => {
 
   const WebSocket = createMockWebSocketConstructor(
     original.default,
-    rootLogger
+    rootLogger,
   );
   return { default: WebSocket, WebSocket };
 });
@@ -108,7 +118,7 @@ describe("ObjectSetListenerWebsocket", () => {
   beforeAll(() => {
     const testSetup = startNodeApiServer(
       new LegacyFauxFoundry(STACK),
-      createClient
+      createClient,
     );
     ({ apiServer } = testSetup);
     addLoggerToApiServer(testSetup.apiServer, rootLogger);
@@ -143,7 +153,7 @@ describe("ObjectSetListenerWebsocket", () => {
         { ontologyRid: $ontologyRid },
         STACK,
         () => "myAccessToken",
-        { logger: rootLogger }
+        { logger: rootLogger },
       );
       client = new ObjectSetListenerWebsocket(
         {
@@ -152,7 +162,7 @@ describe("ObjectSetListenerWebsocket", () => {
         },
         {
           minimumReconnectDelayMs: MINIMUM_RECONNECT_DELAY,
-        }
+        },
       );
 
       listenerPromise = pDefer();
@@ -174,8 +184,8 @@ describe("ObjectSetListenerWebsocket", () => {
           () =>
             msw.HttpResponse.json({
               objectSetRid: `rid.hi.${objectSetRidCounter++}`,
-            })
-        )
+            }),
+        ),
       );
 
       vi.useFakeTimers();
@@ -191,6 +201,41 @@ describe("ObjectSetListenerWebsocket", () => {
       expect(listener.onOutOfDate).not.toHaveBeenCalled();
       expect(listener.onChange).not.toHaveBeenCalled();
       expect(listener.onError).not.toHaveBeenCalled();
+    });
+
+    it("includes scenario context in subscription requests", async () => {
+      const scenarioRid = "ri.actions.main.scenario.123";
+      const scopedClient = new ObjectSetListenerWebsocket({
+        ...minimalClient,
+        scenarioRid,
+      });
+
+      const [ws, unsubscribe] = await subscribeAndExpectWebSocket(
+        scopedClient,
+        listener,
+      );
+
+      try {
+        await vi.waitFor(() => {
+          const request = ws.send.mock.calls
+            .map(
+              ([message]) =>
+                JSON.parse(
+                  message.toString(),
+                ) as ObjectSetStreamSubscribeRequests,
+            )
+            .find(({ requests }) => requests.length > 0);
+          expect(request?.requests).toHaveLength(1);
+          expect(request?.requests[0]).toEqual(
+            expect.objectContaining({ scenarioRid }),
+          );
+        });
+      } finally {
+        unsubscribe();
+        setWebSocketState(ws, "close");
+        vi.runAllTicks();
+        expectEqualRemoveAndAddListeners(ws);
+      }
     });
 
     describe("requests subscription", () => {
@@ -292,7 +337,7 @@ describe("ObjectSetListenerWebsocket", () => {
         it("should call onError", () => {
           expect(listener.onError).toHaveBeenCalled();
           expect(listener.onError.mock.calls[0][0].subscriptionClosed).toBe(
-            false
+            false,
           );
         });
       });
@@ -376,7 +421,7 @@ describe("ObjectSetListenerWebsocket", () => {
                 objectType: Employee.apiName,
               },
               listener,
-              ["employeeId"]
+              ["employeeId"],
             );
 
             subReq2 = await expectSubscribeMessages(ws);
@@ -411,7 +456,7 @@ describe("ObjectSetListenerWebsocket", () => {
                 // delay for connection reconnect with exponential backoff
                 // First attempt: MINIMUM_RECONNECT_DELAY * 2^0 = 2000ms +/- jitter
                 vi.advanceTimersByTimeAsync(
-                  MINIMUM_RECONNECT_DELAY * (1 + 0.3)
+                  MINIMUM_RECONNECT_DELAY * (1 + 0.3),
                 ),
               ]);
               setWebSocketState(ws, "open");
@@ -435,9 +480,9 @@ describe("ObjectSetListenerWebsocket", () => {
 
         it("should create url correctly", () => {
           expect(
-            constructWebsocketUrl(STACK, "ontologyRid1").toString()
+            constructWebsocketUrl(STACK, "ontologyRid1").toString(),
           ).toEqual(
-            "wss://stack.palantircustom.com/foo/first/someStuff/api/v2/ontologySubscriptions/ontologies/ontologyRid1/streamSubscriptions"
+            "wss://stack.palantircustom.com/foo/first/someStuff/api/v2/ontologySubscriptions/ontologies/ontologyRid1/streamSubscriptions",
           );
         });
       });
@@ -453,7 +498,7 @@ describe("ObjectSetListenerWebsocket", () => {
           { ontologyRid: $ontologyRid },
           STACK,
           () => "myAccessToken",
-          { logger: rootLogger }
+          { logger: rootLogger },
         );
         client = new ObjectSetListenerWebsocket(
           {
@@ -462,7 +507,7 @@ describe("ObjectSetListenerWebsocket", () => {
           },
           {
             minimumReconnectDelayMs: 1000,
-          }
+          },
         );
 
         listener = {
@@ -483,7 +528,7 @@ describe("ObjectSetListenerWebsocket", () => {
         // First connection attempt
         const [ws1, unsubscribe] = await subscribeAndExpectWebSocket(
           client,
-          listener
+          listener,
         );
         setWebSocketState(ws1, "close");
 
@@ -534,7 +579,7 @@ describe("ObjectSetListenerWebsocket", () => {
         {
           // @ts-expect-error
           includeRid: true,
-        }
+        },
       );
     });
 
@@ -562,7 +607,7 @@ describe("ObjectSetListenerWebsocket", () => {
             expectTypeOf(change.object.$rid).toBeString();
           },
         },
-        { includeRid: true, properties: ["employeeId"] }
+        { includeRid: true, properties: ["employeeId"] },
       );
 
       client(Office).subscribe(
@@ -571,26 +616,11 @@ describe("ObjectSetListenerWebsocket", () => {
             expectTypeOf(change.object.$rid).toBeString();
           },
         },
-        { includeRid: true }
+        { includeRid: true },
       );
     });
   });
 });
-
-interface RawWebSocketPlus extends Pick<
-  ImportedWebSocket,
-  "addEventListener" | "removeEventListener"
-> {
-  _eventEmitter: EventTarget;
-  readyState: 0 | 1 | 2 | 3;
-  send: MockedFunction<ImportedWebSocket["send"]>;
-  close: MockedFunction<ImportedWebSocket["close"]>;
-}
-
-interface MockedWebSocket
-  extends
-    MockedClass<typeof ImportedWebSocket>,
-    MockedObject<RawWebSocketPlus> {}
 
 type MockedListener = MockedObject<
   Required<ObjectSetSubscription.Listener<Employee, PropertyKeys<Employee>>>
@@ -598,7 +628,7 @@ type MockedListener = MockedObject<
 
 function respondSuccessToSubscribe(
   ws: MockedWebSocket,
-  subReq2: ObjectSetStreamSubscribeRequests
+  subReq2: ObjectSetStreamSubscribeRequests,
 ) {
   sendToClient<StreamMessage>(ws, {
     id: subReq2.id,
@@ -655,13 +685,13 @@ function sendReferenceUpdatesResponse(ws: MockedWebSocket, subId: string) {
 
 function expectEqualRemoveAndAddListeners(ws: MockedWebSocket) {
   expect(ws.removeEventListener).toHaveBeenCalledTimes(
-    ws.addEventListener.mock.calls.length
+    ws.addEventListener.mock.calls.length,
   );
 }
 
 async function expectSubscribeMessages(
   ws: MockedWebSocket,
-  times: number = 1
+  times: number = 1,
 ): Promise<ObjectSetStreamSubscribeRequests> {
   return await vi.waitFor(() => {
     expect(ws.send).toBeCalledTimes(times);
@@ -673,7 +703,7 @@ async function expectSubscribeMessages(
 
 async function subscribeAndExpectWebSocket(
   client: ObjectSetListenerWebsocket,
-  listener: MockedListener
+  listener: MockedListener,
 ): Promise<readonly [MockedWebSocket, () => void]> {
   const [ws, unsubscribe] = await Promise.all([
     expectWebSocketConstructed(),
@@ -686,7 +716,7 @@ async function subscribeAndExpectWebSocket(
         type: "base",
         objectType: Employee.apiName,
       },
-      listener
+      listener,
     ),
   ]);
 
@@ -712,62 +742,10 @@ async function expectWebSocketConstructed(): Promise<MockedWebSocket> {
   return ws;
 }
 
-function createMockWebSocketConstructor(
-  OriginalWebSocket: WebSocket,
-  logger: Logger
-): MockedWebSocket {
-  let i = 0;
-  const ret = vi.fn((..._args: any[]): MockedWebSocket => {
-    const webSocketInst = i++;
-    logger.debug("WebSocket constructor called");
-    const eventEmitter = new EventTarget();
-
-    return {
-      addEventListener: vi.fn(
-        eventEmitter.addEventListener.bind(eventEmitter)
-      ) as any,
-      removeEventListener: vi.fn(
-        eventEmitter.removeEventListener.bind(eventEmitter)
-      ) as any,
-
-      send: vi.fn((a, _b: any) => {
-        logger.debug(
-          { message: JSON.parse(a.toString()), webSocketInst },
-          "send() called"
-        );
-      }),
-      close: vi.fn(),
-      _eventEmitter: eventEmitter,
-      readyState: OriginalWebSocket.CONNECTING,
-    } satisfies RawWebSocketPlus as any as MockedWebSocket;
-    // ^ we only implement some things but the type system wants to think its the full deal,
-    // thus the satisfies plus the cast
-  }) as any as MockedWebSocket;
-
-  Object.assign(ret, {
-    OPEN: OriginalWebSocket.OPEN,
-    CLOSED: OriginalWebSocket.CLOSED,
-    CLOSING: OriginalWebSocket.CLOSING,
-    CONNECTING: OriginalWebSocket.CONNECTING,
-  });
-
-  return ret;
-}
-
-function setWebSocketState(ws: MockedWebSocket, readyState: "open" | "close") {
-  const newState =
-    readyState === "open" ? ImportedWebSocket.OPEN : ImportedWebSocket.CLOSED;
-
-  if (newState === ws.readyState) return;
-
-  ws.readyState = newState;
-  ws._eventEmitter.dispatchEvent(new Event(readyState, {}));
-}
-
 function addLoggerToApiServer(apiServer: SetupServer, logger: Logger) {
   const z = (
     name: string,
-    { requestId, request }: { requestId: string; request: Request }
+    { requestId, request }: { requestId: string; request: Request },
   ) => logger.trace({ requestId, url: request.url }, name);
 
   const eventNames = [
@@ -791,18 +769,6 @@ const SubscribeMessage = z.object({
       objectSet: z.object({ id: z.string() }),
       propertySet: z.array(z.string()),
       referenceSet: z.array(z.string()),
-    })
+    }),
   ),
 });
-
-class MessageEvent extends Event {
-  data: string;
-  constructor(data: any) {
-    super("message");
-    this.data = JSON.stringify(data);
-  }
-}
-
-function sendToClient<T>(ws: MockedWebSocket, t: T) {
-  ws._eventEmitter.dispatchEvent(new MessageEvent(t));
-}

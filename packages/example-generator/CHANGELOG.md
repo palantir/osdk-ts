@@ -1,5 +1,103 @@
 # @osdk/example-generator
 
+## 0.53.0
+
+### Patch Changes
+
+- Updated dependencies [e3855b2]
+  - @osdk/create-app@2.64.0
+  - @osdk/create-widget@3.63.0
+
+## 0.52.0
+
+### Patch Changes
+
+- @osdk/create-app@2.63.0
+- @osdk/create-widget@3.62.0
+
+## 0.51.0
+
+### Patch Changes
+
+- @osdk/create-app@2.62.0
+- @osdk/create-widget@3.61.0
+
+## 0.50.0
+
+### Patch Changes
+
+- @osdk/create-app@2.61.0
+- @osdk/create-widget@3.60.0
+
+## 0.49.0
+
+### Patch Changes
+
+- @osdk/create-app@2.60.0
+- @osdk/create-widget@3.59.0
+
+## 0.48.0
+
+### Minor Changes
+
+- b913397: Remove the create-widget minimal-react template which is now replaced by the react template rendered without OSDK. The minimal-react template is still available via CLI selection for compatibility and is simply an alias of the react template rendered without OSDK.
+- 7c4c517: Use minimal react template structure for react template
+
+### Patch Changes
+
+- Updated dependencies [b913397]
+- Updated dependencies [7c4c517]
+  - @osdk/create-widget@3.57.0
+  - @osdk/create-app@2.59.0
+
+## 0.47.0
+
+### Minor Changes
+
+- 8718d53: create-widget.template.react.v2 can be used with or without an osdk package
+
+### Patch Changes
+
+- Updated dependencies [8718d53]
+  - @osdk/create-widget@3.56.0
+  - @osdk/create-app@2.58.0
+
+## 0.46.0
+
+### Patch Changes
+
+- @osdk/create-app@2.57.0
+- @osdk/create-widget@3.55.0
+
+## 0.45.0
+
+### Patch Changes
+
+- @osdk/create-app@2.56.0
+- @osdk/create-widget@3.54.0
+
+## 0.44.0
+
+### Patch Changes
+
+- @osdk/create-app@2.55.0
+- @osdk/create-widget@3.53.0
+
+## 0.43.0
+
+### Patch Changes
+
+- Updated dependencies [f6806ee]
+  - @osdk/create-app@2.53.0
+  - @osdk/create-widget@3.51.0
+
+## 0.42.0
+
+### Patch Changes
+
+- @osdk/create-app@2.52.0
+- @osdk/create-widget@3.50.0
+
 ## 0.41.0
 
 ### Patch Changes

@@ -17,15 +17,17 @@
 import type { DevModeManifest } from "./buildDevModeManifest.js";
 import { getFoundryToken } from "./getFoundryToken.js";
 
+const USER_AGENT = `osdk-widget.vite-plugin/${process.env.PACKAGE_VERSION}`;
+
 export function setWidgetSetManifest(
   foundryUrl: string,
   widgetSetRid: string,
   manifest: DevModeManifest,
-  viteMode: string | undefined
+  viteMode: string | undefined,
 ): Promise<Response> {
   const url = new URL(
     "api/v2/widgets/devModeSettingsV2/setWidgetSetManifest",
-    foundryUrl
+    foundryUrl,
   );
   url.searchParams.set("preview", "true");
   return fetch(url, {
@@ -38,13 +40,14 @@ export function setWidgetSetManifest(
       authorization: `Bearer ${getFoundryToken(viteMode)}`,
       accept: "application/json",
       "content-type": "application/json",
+      "Fetch-User-Agent": USER_AGENT,
     },
   });
 }
 
 export function enableDevMode(
   foundryUrl: string,
-  viteMode: string | undefined
+  viteMode: string | undefined,
 ): Promise<Response> {
   const url = new URL("api/v2/widgets/devModeSettingsV2/enable", foundryUrl);
   url.searchParams.set("preview", "true");
@@ -53,6 +56,7 @@ export function enableDevMode(
     headers: {
       authorization: `Bearer ${getFoundryToken(viteMode)}`,
       accept: "application/json",
+      "Fetch-User-Agent": USER_AGENT,
     },
   });
 }

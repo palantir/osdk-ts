@@ -16,7 +16,7 @@
 
 export function createPollingStore<T>(
   fetchFn: () => T | Promise<T>,
-  intervalMs: number
+  intervalMs: number,
 ): {
   subscribe: (callback: () => void) => () => void;
   getSnapshot: () => T | undefined;

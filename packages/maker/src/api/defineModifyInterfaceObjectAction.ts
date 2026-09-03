@@ -41,52 +41,52 @@ import {
 } from "./interface/InterfacePropertyType.js";
 
 export function defineModifyInterfaceObjectAction(
-  defInput: InterfaceActionTypeUserDefinition
+  defInput: InterfaceActionTypeUserDefinition,
 ): ActionType {
   const def = cloneDefinition(defInput);
   const allProperties = getFlattenedInterfaceProperties(def.interfaceType);
   validateActionParameters(
     def,
     Object.keys(allProperties),
-    def.interfaceType.apiName
+    def.interfaceType.apiName,
   );
   const actionInterfaceProperties = Object.entries(allProperties).filter(
     ([apiName, type]) => {
       return isPropertyParameter(
         def,
         apiName,
-        getInterfacePropertyTypeType(type)
+        getInterfacePropertyTypeType(type),
       );
-    }
+    },
   );
   const sptNames = actionInterfaceProperties
     .filter(([_apiName, type]) => isInterfaceSharedPropertyType(type))
     .map(([apiName]) => apiName);
   const parameterNames = new Set(
     actionInterfaceProperties.map(([apiName, _type]) =>
-      getInterfaceParameterName(def, apiName)
-    )
+      getInterfaceParameterName(def, apiName),
+    ),
   );
   const propertyMap = Object.fromEntries(
     Object.entries(allProperties).map(([id, prop]) => [
       getInterfaceParameterName(def, id),
       prop,
-    ])
+    ]),
   );
 
   Object.keys(def.parameterConfiguration ?? {}).forEach((param) =>
-    parameterNames.add(getInterfaceParameterName(def, param))
+    parameterNames.add(getInterfaceParameterName(def, param)),
   );
   parameterNames.add(MODIFY_INTERFACE_OBJECT_PARAMETER);
   const actionApiName =
     def.apiName ??
     `modify-${kebab(
-      def.interfaceType.apiName.split(".").pop() ?? def.interfaceType.apiName
+      def.interfaceType.apiName.split(".").pop() ?? def.interfaceType.apiName,
     )}${
       def.objectType === undefined
         ? ""
         : `-${kebab(
-            def.objectType.apiName.split(".").pop() ?? def.objectType.apiName
+            def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
           )}`
     }`;
   if (def.parameterOrdering) {
@@ -96,7 +96,7 @@ export function defineModifyInterfaceObjectAction(
     validateParameterOrdering(
       def.parameterOrdering,
       parameterNames,
-      actionApiName
+      actionApiName,
     );
   }
   const parameters = createParameters(
@@ -107,8 +107,8 @@ export function defineModifyInterfaceObjectAction(
       Object.entries(allProperties).map(([id, prop]) => [
         id,
         prop.required ?? true,
-      ])
-    )
+      ]),
+    ),
   );
   let sptMappings = {};
   const mappings = Object.fromEntries(
@@ -120,7 +120,7 @@ export function defineModifyInterfaceObjectAction(
         };
       }
       return [id, convertInterfacePropertyMappingValue(value)];
-    })
+    }),
   );
 
   return defineAction({
@@ -128,6 +128,7 @@ export function defineModifyInterfaceObjectAction(
     displayName:
       def.displayName ??
       `Modify ${def.interfaceType.displayMetadata.displayName}`,
+    description: def.description,
     parameters,
     status:
       def.status ??
@@ -156,7 +157,7 @@ export function defineModifyInterfaceObjectAction(
                     ? getNonNamespacedParameterName(def, id)
                     : id,
                 },
-              ])
+              ]),
             ),
             ...sptMappings,
           },
@@ -173,7 +174,7 @@ export function defineModifyInterfaceObjectAction(
                       : id,
                   },
                 },
-              ])
+              ]),
             ),
             ...mappings,
           },
@@ -186,13 +187,13 @@ export function defineModifyInterfaceObjectAction(
         def,
         Array.from(parameterNames),
         parameters,
-        MODIFY_INTERFACE_OBJECT_PARAMETER
+        MODIFY_INTERFACE_OBJECT_PARAMETER,
       ),
     ...(def.actionLevelValidation
       ? {
           validation: convertValidationRule(
             def.actionLevelValidation,
-            parameters
+            parameters,
           ),
         }
       : {}),
@@ -207,7 +208,7 @@ export function defineModifyInterfaceObjectAction(
     }),
     ...(def.sections && {
       sections: Object.fromEntries(
-        def.sections.map((section) => [section.id, section])
+        def.sections.map((section) => [section.id, section]),
       ),
     }),
     ...(def.submissionMetadata && {

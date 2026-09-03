@@ -191,7 +191,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
         }
         onChange?.([date, endDate ?? null]);
       },
-      [endDate, onChange, allowSingleDayRange]
+      [endDate, onChange, allowSingleDayRange],
     );
 
     const endOnChange = useCallback(
@@ -204,7 +204,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
         }
         onChange?.([startDate ?? null, date]);
       },
-      [startDate, onChange, allowSingleDayRange]
+      [startDate, onChange, allowSingleDayRange],
     );
 
     const {
@@ -275,7 +275,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
 
     const getActiveInputRef = useCallback(
       () => (activeBoundary === "start" ? startInputRef : endInputRef),
-      [activeBoundary]
+      [activeBoundary],
     );
 
     const beginEditing = useCallback(
@@ -287,7 +287,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
         }
         setActiveBoundary(boundary);
       },
-      [beginStartEditing, beginEndEditing]
+      [beginStartEditing, beginEndEditing],
     );
 
     const handleInputFocus = useCallback(
@@ -299,7 +299,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
         }
         setIsOpen(true);
       },
-      [beginEditing]
+      [beginEditing],
     );
 
     const handleStartFocus = useCallback(() => {
@@ -348,7 +348,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
         }
         commitStartAndStopEditing();
       },
-      [commitStartAndStopEditing]
+      [commitStartAndStopEditing],
     );
 
     const handleEndBlur = useCallback(
@@ -363,7 +363,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
         }
         commitEndAndStopEditing();
       },
-      [commitEndAndStopEditing]
+      [commitEndAndStopEditing],
     );
 
     // --- Popover helpers ---
@@ -394,7 +394,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
           setIsOpen(false);
         }
       },
-      [commitStartAndStopEditing, closePopover]
+      [commitStartAndStopEditing, closePopover],
     );
 
     const handleEndKeyDown = useCallback(
@@ -418,7 +418,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
           }
         }
       },
-      [commitEndAndStopEditing, closePopover, isOpen]
+      [commitEndAndStopEditing, closePopover, isOpen],
     );
 
     // Called by base-ui when the popover opens or closes (e.g. click outside, Escape).
@@ -430,7 +430,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
           closePopover();
         }
       },
-      [closePopover]
+      [closePopover],
     );
 
     // --- Calendar handlers ---
@@ -469,7 +469,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
         stopStartEditing,
         setStartDateValue,
         setEndDateValue,
-      ]
+      ],
     );
 
     // --- Time handlers ---
@@ -479,7 +479,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
         onChange?.([time, endDate ?? null]);
         setStartDateValue(time);
       },
-      [endDate, onChange, setStartDateValue]
+      [endDate, onChange, setStartDateValue],
     );
 
     const handleEndTimeChange = useCallback(
@@ -487,7 +487,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
         onChange?.([startDate ?? null, time]);
         setEndDateValue(time);
       },
-      [startDate, onChange, setEndDateValue]
+      [startDate, onChange, setEndDateValue],
     );
 
     // --- Focus boundary handlers ---
@@ -518,7 +518,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
           lastButton?.focus();
         }
       },
-      [closePopoverForBoundaryExit]
+      [closePopoverForBoundaryExit],
     );
 
     // --- Calendar selected range ---
@@ -567,7 +567,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
             className={classnames(
               commonStyles.osdkDatePickerInputWrapper,
               styles.osdkDateRangeInputWrapper,
-              startInvalid && commonStyles.osdkDatePickerInputWrapperError
+              startInvalid && commonStyles.osdkDatePickerInputWrapperError,
             )}
             data-disabled={disabled || undefined}
           >
@@ -597,7 +597,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
             className={classnames(
               commonStyles.osdkDatePickerInputWrapper,
               styles.osdkDateRangeInputWrapper,
-              endInvalid && commonStyles.osdkDatePickerInputWrapperError
+              endInvalid && commonStyles.osdkDatePickerInputWrapperError,
             )}
             data-disabled={disabled || undefined}
           >
@@ -649,7 +649,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
               <div
                 onFocus={handleStartFocusBoundary}
                 tabIndex={0}
-                aria-label="Start of date range picker dialog"
+                data-osdk-date-picker-focus-boundary="start"
                 className={commonStyles.osdkDatePickerFocusBoundary}
               />
               <LazyDateRangeCalendar
@@ -662,7 +662,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
               <div
                 onFocus={handleEndFocusBoundary}
                 tabIndex={0}
-                aria-label="End of date range picker dialog"
+                data-osdk-date-picker-focus-boundary="end"
                 className={commonStyles.osdkDatePickerFocusBoundary}
               />
             </Popover.Popup>
@@ -676,7 +676,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
 function isOverlapping(
   start: Date | null | undefined,
   end: Date | null | undefined,
-  allowSingleDayRange: boolean
+  allowSingleDayRange: boolean,
 ): boolean {
   if (start == null || end == null) return false;
   if (!allowSingleDayRange && end.getTime() === start.getTime()) return true;

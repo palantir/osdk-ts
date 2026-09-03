@@ -1,5 +1,58 @@
 # @osdk/unit-testing
 
+## 0.24.0
+
+### Minor Changes
+
+- bbbeca8: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.75.0`, which reinstates the `streamingExecute` query endpoint as a Server-Sent Events (`text/event-stream`) stream. The experimental `executeStreamingFunction` helper is reimplemented on top of it and no longer throws: it yields each result as it arrives, flattening batched results so array-returning queries emit one element at a time.
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+- Updated dependencies [6cf2be9]
+  - @osdk/client@2.60.0
+  - @osdk/api@2.60.0
+
+## 0.23.0
+
+### Minor Changes
+
+- 109b7f1: Add support for stubbing unioned, intersected, and subtracted mock object sets.
+
+### Patch Changes
+
+- Updated dependencies [4ae6d8b]
+- Updated dependencies [1aff7f4]
+  - @osdk/api@2.59.0
+  - @osdk/client@2.59.0
+
+## 0.22.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+  - @osdk/client@2.58.0
+  - @osdk/api@2.58.0
+
+## 0.21.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [feaf298]
+- Updated dependencies [c14abb8]
+  - @osdk/functions@1.20.0
+  - @osdk/client@2.53.0
+  - @osdk/api@2.53.0
+
 ## 0.20.0
 
 ### Minor Changes

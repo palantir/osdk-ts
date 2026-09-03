@@ -28,5 +28,5 @@ export type FauxActionImpl<
   ctx: {
     def: Q;
     attachments: FauxAttachmentStore;
-  }
+  },
 ) => unknown;

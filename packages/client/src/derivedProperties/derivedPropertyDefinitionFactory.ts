@@ -21,7 +21,7 @@ import invariant from "tiny-invariant";
 /** @internal */
 export function derivedPropertyDefinitionFactory(
   wireDefinition: DerivedPropertyDefinition,
-  definitionMap: Map<any, DerivedPropertyDefinition>
+  definitionMap: Map<any, DerivedPropertyDefinition>,
 ): DerivedProperty.NumericPropertyDefinition<any, any> & {
   extractPart: DerivedProperty.DatetimePropertyDefinition<
     any,
@@ -46,7 +46,7 @@ export function derivedPropertyDefinitionFactory(
           type: "absoluteValue",
           property: wireDefinition,
         },
-        definitionMap
+        definitionMap,
       );
     },
     negate() {
@@ -55,7 +55,7 @@ export function derivedPropertyDefinitionFactory(
           type: "negate",
           property: wireDefinition,
         },
-        definitionMap
+        definitionMap,
       );
     },
     max(value) {
@@ -67,7 +67,7 @@ export function derivedPropertyDefinitionFactory(
             getDefinitionFromMap(value, definitionMap),
           ],
         },
-        definitionMap
+        definitionMap,
       );
     },
     min(value) {
@@ -79,7 +79,7 @@ export function derivedPropertyDefinitionFactory(
             getDefinitionFromMap(value, definitionMap),
           ],
         },
-        definitionMap
+        definitionMap,
       );
     },
     add(value) {
@@ -91,7 +91,7 @@ export function derivedPropertyDefinitionFactory(
             getDefinitionFromMap(value, definitionMap),
           ],
         },
-        definitionMap
+        definitionMap,
       );
     },
     subtract(value) {
@@ -101,7 +101,7 @@ export function derivedPropertyDefinitionFactory(
           left: wireDefinition,
           right: getDefinitionFromMap(value, definitionMap),
         },
-        definitionMap
+        definitionMap,
       );
     },
     multiply(value) {
@@ -113,7 +113,7 @@ export function derivedPropertyDefinitionFactory(
             getDefinitionFromMap(value, definitionMap),
           ],
         },
-        definitionMap
+        definitionMap,
       );
     },
     divide(value) {
@@ -123,7 +123,7 @@ export function derivedPropertyDefinitionFactory(
           left: wireDefinition,
           right: getDefinitionFromMap(value, definitionMap),
         },
-        definitionMap
+        definitionMap,
       );
     },
     extractPart: (part) => {
@@ -133,7 +133,7 @@ export function derivedPropertyDefinitionFactory(
           part,
           property: wireDefinition,
         },
-        definitionMap
+        definitionMap,
       );
     },
   };
@@ -144,7 +144,7 @@ export function derivedPropertyDefinitionFactory(
 
 const getDefinitionFromMap = (
   arg: string | number | DerivedProperty.Definition<any, any>,
-  definitionMap: Map<any, DerivedPropertyDefinition>
+  definitionMap: Map<any, DerivedPropertyDefinition>,
 ): DerivedPropertyDefinition => {
   if (typeof arg === "object") {
     const definition = definitionMap.get(arg);

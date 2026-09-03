@@ -43,7 +43,7 @@ describe("CbacPickerDialogFooter", () => {
         onCancel={vi.fn()}
         onConfirm={onConfirm}
         submitDisabledReason="Selections include disallowed markings."
-      />
+      />,
     );
     const submit = screen.getByRole("button", { name: "Set classification" });
     expect((submit as HTMLButtonElement).disabled).toBe(true);

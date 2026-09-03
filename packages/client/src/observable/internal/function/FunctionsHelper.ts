@@ -51,7 +51,7 @@ export class FunctionsHelper extends AbstractHelper<
 
   observe(
     options: ObserveFunctionOptions,
-    subFn: Observer<FunctionPayload>
+    subFn: Observer<FunctionPayload>,
   ): QuerySubscription<FunctionQuery> {
     return super.observe(options, subFn);
   }
@@ -67,7 +67,7 @@ export class FunctionsHelper extends AbstractHelper<
       "function",
       apiName,
       version,
-      canonicalParams
+      canonicalParams,
     );
 
     return this.store.queries.get(
@@ -80,8 +80,8 @@ export class FunctionsHelper extends AbstractHelper<
           params,
           functionCacheKey,
           observeOpts,
-          objectSetTypesPromise
-        )
+          objectSetTypesPromise,
+        ),
     );
   }
 
@@ -101,7 +101,7 @@ export class FunctionsHelper extends AbstractHelper<
 
   async invalidateFunction(
     apiName: string | QueryDefinition<unknown>,
-    params?: FunctionParams
+    params?: FunctionParams,
   ): Promise<void> {
     const functionApiName =
       typeof apiName === "string" ? apiName : apiName.apiName;
@@ -130,7 +130,7 @@ export class FunctionsHelper extends AbstractHelper<
 
   async invalidateFunctionsByObject(
     apiName: string,
-    primaryKey: PrimaryKeyValue
+    primaryKey: PrimaryKeyValue,
   ): Promise<void> {
     const promises: Array<Promise<void>> = [];
     for (const query of this.#functionQueries()) {

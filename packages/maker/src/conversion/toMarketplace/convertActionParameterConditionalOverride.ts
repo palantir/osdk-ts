@@ -30,7 +30,7 @@ import { convertConditionDefinition } from "./convertConditionDefinition.js";
 export function convertActionParameterConditionalOverride(
   override: ActionParameterConditionalOverride,
   validation: ActionParameterValidation,
-  actionParameters?: ActionParameter[]
+  actionParameters?: ActionParameter[],
 ): OntologyIrConditionalOverride {
   let parameterBlockOverride: OntologyIrParameterValidationBlockOverride;
   switch (override.type) {

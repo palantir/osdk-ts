@@ -27,13 +27,13 @@ import type {
 export async function takeAutomationOwnership(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
-  branchRid: _api_BranchRid | null | undefined
+  branchRid: _api_BranchRid | null | undefined,
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/registry/v0/take-ownership/${monitorRid}`,
     "POST",
     undefined,
-    { branchRid }
+    { branchRid },
   );
 }

@@ -20,7 +20,7 @@ import React, { useMemo } from "react";
 
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseVideoViewer } from "./BaseVideoViewer.js";
-import type { VideoViewerMediaProps } from "./VideoViewerApi.js";
+import type { VideoViewerProps } from "./VideoViewerApi.js";
 
 import styles from "./BaseVideoViewer.module.css";
 
@@ -37,7 +37,7 @@ export function VideoViewer({
   media,
   className,
   ...videoViewerProps
-}: VideoViewerMediaProps): React.ReactElement {
+}: VideoViewerProps): React.ReactElement {
   const {
     data: src,
     loading,
@@ -46,7 +46,7 @@ export function VideoViewer({
 
   const mimeType = useMemo(
     () => videoViewerProps.mimeType ?? media.getMediaReference().mimeType,
-    [videoViewerProps.mimeType, media]
+    [videoViewerProps.mimeType, media],
   );
 
   const rootClassName = classnames(styles.container, className);

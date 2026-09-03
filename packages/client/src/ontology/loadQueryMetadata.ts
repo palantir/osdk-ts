@@ -21,7 +21,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadQueryMetadata(
   client: MinimalClient,
-  queryTypeApiNameAndVersion: string
+  queryTypeApiNameAndVersion: string,
 ): Promise<QueryMetadata> {
   const separatorIndex = queryTypeApiNameAndVersion.lastIndexOf(":");
   const apiName =
@@ -43,7 +43,7 @@ export async function loadQueryMetadata(
     client,
     await client.ontologyRid,
     apiName,
-    queryParameters
+    queryParameters,
   );
 
   const { wireQueryTypeV2ToSdkQueryMetadata } =

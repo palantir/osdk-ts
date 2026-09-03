@@ -39,16 +39,16 @@ export class CacheKeys<TCacheKey extends CacheKey> {
       // eslint-disable-next-line no-console
       console.log(
         `CacheKeys.onCreate(${cacheKey.type}, ${JSON.stringify(
-          cacheKey.otherKeys
-        )})`
+          cacheKey.otherKeys,
+        )})`,
       );
 
       this.#finalizationRegistry.register(cacheKey, () => {
         // eslint-disable-next-line no-console
         console.log(
           `CacheKey Finalization(${cacheKey.type}, ${JSON.stringify(
-            cacheKey.otherKeys
-          )})`
+            cacheKey.otherKeys,
+          )})`,
         );
       });
     }
@@ -81,7 +81,7 @@ export class CacheKeys<TCacheKey extends CacheKey> {
     this.#refCounts = new RefCounts<TCacheKey>(
       this.#debugRefCounts ? 15_000 : 60_000,
       (k) => this.#cleanupCacheKey(k),
-      this.#debugRefCounts
+      this.#debugRefCounts,
     );
 
     setInterval(() => {
@@ -96,10 +96,10 @@ export class CacheKeys<TCacheKey extends CacheKey> {
           // eslint-disable-next-line no-console
           console.error(
             "Caught an error while running a finalization callback",
-            e
+            e,
           );
         }
-      }
+      },
     );
   }
 
@@ -116,7 +116,7 @@ export class CacheKeys<TCacheKey extends CacheKey> {
           .slice(1)
           .map((x) => JSON.stringify(x))
           .join(", ")}]) - already exists? `,
-        this.#cacheKeys.peekArray(cacheKeyArgs) != null
+        this.#cacheKeys.peekArray(cacheKeyArgs) != null,
       );
     }
 

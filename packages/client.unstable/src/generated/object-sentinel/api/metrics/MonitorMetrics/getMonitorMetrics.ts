@@ -24,7 +24,7 @@ import type { GetMonitorMetricsResponse as _api_metrics_GetMonitorMetricsRespons
  */
 export async function getMonitorMetrics(
   ctx: ConjureContext,
-  monitorRid: _api_MonitorRid
+  monitorRid: _api_MonitorRid,
 ): Promise<_api_metrics_GetMonitorMetricsResponse> {
   return conjureFetch(ctx, `/monitorMetrics/metrics/${monitorRid}`, "GET");
 }

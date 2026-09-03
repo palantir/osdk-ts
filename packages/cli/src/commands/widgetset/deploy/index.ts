@@ -56,7 +56,7 @@ const command: CommandModule<CommonWidgetSetArgs, WidgetSetDeployArgs> = {
       })
       .group(["directory", "repository"], "Deploy Options")
       .middleware((args) =>
-        logWidgetSetDeployCommandConfigFileOverride(args, widgetSetConfig)
+        logWidgetSetDeployCommandConfigFileOverride(args, widgetSetConfig),
       );
   },
   handler: async (args) => {

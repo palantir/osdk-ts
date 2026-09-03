@@ -40,7 +40,7 @@ const MOCK_EDIT_RESPONSE: ActionEditResponse = {
 };
 
 function createMockObservableClient(
-  overrides?: Partial<ObservableClient>
+  overrides?: Partial<ObservableClient>,
 ): ObservableClient {
   return {
     applyAction: vi.fn().mockResolvedValue(MOCK_EDIT_RESPONSE),
@@ -107,7 +107,7 @@ describe("useOsdkAction", () => {
 
     await act(async () => {
       await expect(result.current.applyAction({})).rejects.toThrow(
-        validationError
+        validationError,
       );
     });
 
@@ -128,7 +128,7 @@ describe("useOsdkAction", () => {
 
     await act(async () => {
       await expect(result.current.applyAction({})).rejects.toThrow(
-        unknownError
+        unknownError,
       );
     });
 
@@ -223,7 +223,7 @@ describe("useOsdkAction", () => {
 
       await act(async () => {
         await expect(result.current.applyAction([{}, {}])).rejects.toThrow(
-          error
+          error,
         );
       });
 

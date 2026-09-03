@@ -32,12 +32,12 @@ export async function updateInstallationForBlockSet(
   ctx: ConjureContext,
   namespaceRid: _api_NamespaceRid,
   installationName: _api_ManagedInstallationName,
-  request: _installmanager_api_UpdateInstallationForBlockSetRequest
+  request: _installmanager_api_UpdateInstallationForBlockSetRequest,
 ): Promise<_installmanager_api_UpdateInstallationResponse> {
   return conjureFetch(
     ctx,
     `/install-manager/namespaces/${namespaceRid}/installations/${installationName}/block-set`,
     "PUT",
-    request
+    request,
   );
 }

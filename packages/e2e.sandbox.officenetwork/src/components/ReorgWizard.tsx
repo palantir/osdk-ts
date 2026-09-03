@@ -54,48 +54,48 @@ export function ReorgWizard({ employees, offices, onClose }: ReorgWizardProps) {
   const handleUpdateConfig = React.useCallback(
     (config: Partial<ReorgConfig>) =>
       dispatch({ type: "UPDATE_CONFIG", config }),
-    [dispatch]
+    [dispatch],
   );
 
   const handleUpdateConstraints = React.useCallback(
     (constraints: Partial<ReorgConstraints>) =>
       dispatch({ type: "UPDATE_CONSTRAINTS", constraints }),
-    [dispatch]
+    [dispatch],
   );
 
   const handleToggleEmployee = React.useCallback(
     (employeeNumber: number) =>
       dispatch({ type: "TOGGLE_EMPLOYEE", employeeNumber }),
-    [dispatch]
+    [dispatch],
   );
 
   const handleSelectAll = React.useCallback(
     (employeeNumbers: number[]) =>
       dispatch({ type: "SELECT_ALL", employeeNumbers }),
-    [dispatch]
+    [dispatch],
   );
 
   const handleSelectByOffice = React.useCallback(
     (employeeNumbers: number[]) =>
       dispatch({ type: "SELECT_BY_OFFICE", employeeNumbers }),
-    [dispatch]
+    [dispatch],
   );
 
   const handleClearSelection = React.useCallback(
     () => dispatch({ type: "CLEAR_SELECTION" }),
-    [dispatch]
+    [dispatch],
   );
 
   const handleSetAllChanges = React.useCallback(
     (changes: Map<number, EmployeeChange>) =>
       dispatch({ type: "SET_ALL_CHANGES", changes }),
-    [dispatch]
+    [dispatch],
   );
 
   const handleSetChange = React.useCallback(
     (employeeNumber: number, change: EmployeeChange) =>
       dispatch({ type: "SET_CHANGE", employeeNumber, change }),
-    [dispatch]
+    [dispatch],
   );
 
   const canProceed = React.useMemo(() => {

@@ -37,7 +37,7 @@ describe("MetricsStore", () => {
               didTimeout: false,
               timeRemaining: () => 50,
             }),
-          0
+          0,
         ) as unknown as number;
       }) as typeof globalThis.requestIdleCallback;
       globalThis.cancelIdleCallback = ((id: number) => {

@@ -4,29 +4,29 @@ sidebar_position: 1
 
 # Prerequisites
 
-Setup required before using `@osdk/react-devtools`.
+Set up `@osdk/react-devtools` before opening the panel.
 
-`@osdk/react-devtools` is an in-app monitoring panel and Vite plugin that adds visibility into how an `@osdk/react` application is querying the ontology, where compute is being spent, and which components are paying for what. It is a development-only library — the Vite plugin is a no-op in production builds, so the panel never ships to end users.
+`@osdk/react-devtools` combines an in-app monitoring panel with a Vite plugin. The panel shows how an `@osdk/react` application uses the Ontology, which components own OSDK hooks, what the application writes to the console, and what the observable cache contains. The package runs only during development. The Vite plugin does nothing in production builds, so the panel does not ship to end users.
 
 ## Install dependencies
 
-Add `@osdk/react-devtools` as a **dev dependency**:
+Add `@osdk/react-devtools` as a dev dependency.
 
 ```bash
 pnpm add -D @osdk/react-devtools
 ```
 
-Or with npm:
+You can also install it with npm.
 
 ```bash
 npm install --save-dev @osdk/react-devtools
 ```
 
-The package's peer dependencies are `@osdk/api`, `@osdk/client`, `@osdk/react`, `react`, `react-dom`, and `vite` — these are usually already present in any OSDK React app.
+The package declares peer dependencies on `@osdk/api`, `@osdk/client`, `@osdk/react`, `@types/react`, `react`, `react-dom`, and `vite`. An OSDK React application usually already includes them.
 
 ## Configure the Vite plugin
 
-Add the `osdkDevTools()` plugin to your Vite config:
+Add the `osdkDevTools()` plugin to your Vite config.
 
 ```ts
 // vite.config.ts
@@ -39,11 +39,11 @@ export default defineConfig({
 });
 ```
 
-The plugin only applies in Vite dev (`vite dev` / `vite serve`) and is a no-op in production builds.
+The plugin runs only in Vite development mode through `vite dev` or `vite serve`. It does nothing in production builds.
 
 ## No JSX wiring required
 
-The Vite plugin injects a development-only `<script>` tag into `index.html`:
+The Vite plugin adds a development script to `index.html`.
 
 ```html
 <script type="module">
@@ -51,28 +51,39 @@ The Vite plugin injects a development-only `<script>` tag into `index.html`:
 </script>
 ```
 
-Your existing `OsdkProvider` setup is all that's needed:
+Your existing `OsdkProvider` setup is sufficient.
 
 ```tsx
-// main.tsx — unchanged
+// main.tsx
 import { OsdkProvider } from "@osdk/react";
+import ReactDOM from "react-dom/client";
+
 import App from "./App.js";
 import { client } from "./foundryClient.js";
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+const root = document.getElementById("root");
+if (root == null) {
+  throw new Error("Root element not found");
+}
+
+ReactDOM.createRoot(root).render(
   <OsdkProvider client={client}>
     <App />
   </OsdkProvider>,
 );
 ```
 
-There is no provider to add, no component to render, and no production bundle impact.
+You do not need another provider or component. The production bundle does not include the panel.
 
 ## Run the dev server
 
-Start Vite in development mode with whatever dev script your app already uses (typically `pnpm dev`, `npm run dev`, or `yarn dev`).
+Start Vite in development mode with the dev script your app already uses, typically `pnpm dev`, `npm run dev`, or `yarn dev`.
 
-Look for the floating `</>` panel in the bottom-right corner of the browser window. You can drag it, dock it, resize it, and switch between light, dark, and auto themes — preferences persist across reloads.
+The panel opens automatically in the top right corner of the browser window. Minimizing it collapses it to a `</>` launcher in the bottom right corner. Select the launcher to reopen the panel.
+
+![Collapsed OSDK Devtools launcher](/img/react-devtools/launcher.png)
+
+The panel uses dark mode by default. Use the header controls to switch between dark, light, and automatic themes. The dock control cycles through floating, docked to the bottom, and docked to the right. The browser stores the position, size, theme, dock mode, and collapsed state across reloads.
 
 ## Plugin options
 
@@ -82,21 +93,19 @@ osdkDevTools({
   enabled: true,
   // Verbose plugin logging during startup. Default: false
   verbose: false,
-  // Auto-inject the devtools stylesheet. Default: true
-  injectCSS: true,
 });
 ```
 
-All options are optional. The defaults are appropriate for almost every app.
+Every option is optional. The defaults fit most applications.
 
 ## Disabling the panel
 
-The plugin only runs in dev mode, so end users will never see it. To disable it during development you have three options:
+The plugin runs only in development mode. Choose one of these options to disable it during development.
 
-- Pass `osdkDevTools({ enabled: false })` to keep the plugin wired up but inert
-- Remove `osdkDevTools()` from the `plugins` array in `vite.config.ts`
-- Uninstall the `@osdk/react-devtools` npm dependency
+- Pass `osdkDevTools({ enabled: false })` to keep the plugin configured but inactive.
+- Remove `osdkDevTools()` from the `plugins` array in `vite.config.ts`.
+- Uninstall the `@osdk/react-devtools` package.
 
 ## Compatibility
 
-`@osdk/react-devtools` versions must be compatible with the rest of your `@osdk/*` install. As with `@osdk/react`, all `@osdk/*` packages should resolve to compatible majors — mismatched versions can cause unexpected behavior. See the [@osdk/react Getting Started](/react/getting-started) page for the same guidance.
+Use compatible major versions across `@osdk/react-devtools` and the rest of the installed `@osdk/*` packages. Mismatched versions can produce unexpected behavior. The [@osdk/react Getting Started](/react/getting-started) page covers the same version guidance.

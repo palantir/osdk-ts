@@ -13,18 +13,21 @@ export namespace createOsdkTestObject {
   export type ParamsDefinition = {
     description: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     osdk_object_name: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     string_property: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';

@@ -31,12 +31,12 @@ export async function loadAllSharedPropertyTypesFromOntology(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
   ontologyVersion: _api_OntologyVersion,
-  request: _api_LoadAllSharedPropertyTypesPageRequest
+  request: _api_LoadAllSharedPropertyTypesPageRequest,
 ): Promise<_api_LoadAllSharedPropertyTypesPageResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/${ontologyRid}/${ontologyVersion}/loadAllSharedPropertyTypes`,
     "PUT",
-    request
+    request,
   );
 }

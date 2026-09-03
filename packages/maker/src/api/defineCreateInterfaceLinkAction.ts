@@ -41,9 +41,18 @@ import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfM
 type CreateInterfaceLinkActionBaseDefinition = {
   apiName?: string;
   displayName?: string;
+  description?: string;
   status?: ActionStatus;
-  sourceParameter?: { id?: string; displayName?: string };
-  targetParameter?: { id?: string; displayName?: string };
+  sourceParameter?: {
+    id?: string;
+    displayName?: string;
+    description?: string;
+  };
+  targetParameter?: {
+    id?: string;
+    displayName?: string;
+    description?: string;
+  };
   actionLevelValidation?: ActionLevelValidationDefinition;
   sections?: Array<ActionSection>;
   defaultFormat?: DefaultFormat;
@@ -62,7 +71,7 @@ export type CreateInterfaceLinkActionUserDefinition =
     );
 
 export function defineCreateInterfaceLinkAction(
-  defInput: CreateInterfaceLinkActionUserDefinition
+  defInput: CreateInterfaceLinkActionUserDefinition,
 ): ActionType {
   const def = cloneDefinition(defInput);
 
@@ -72,12 +81,12 @@ export function defineCreateInterfaceLinkAction(
     linkConstraint === undefined ||
       def.from === undefined ||
       def.from.apiName === linkConstraint.from.apiName,
-    `"from" ("${def.from?.apiName}") does not match the interface ("${linkConstraint?.from.apiName}") that interface link constraint "${linkConstraint?.apiName}" was defined on. Omit "from" to use the constraint's own interface.`
+    `"from" ("${def.from?.apiName}") does not match the interface ("${linkConstraint?.from.apiName}") that interface link constraint "${linkConstraint?.apiName}" was defined on. Omit "from" to use the constraint's own interface.`,
   );
   const from = def.from ?? linkConstraint?.from;
   invariant(
     from !== undefined,
-    `"from" is required when "interfaceLink" is provided as a string (the api name).`
+    `"from" is required when "interfaceLink" is provided as a string (the api name).`,
   );
 
   const interfaceLinkApiName =
@@ -86,22 +95,22 @@ export function defineCreateInterfaceLinkAction(
       : def.interfaceLink.apiName;
   const linkApiName = combineApiNamespaceIfMissing(
     namespace,
-    interfaceLinkApiName
+    interfaceLinkApiName,
   );
   const link = from.links.find((l) => l.metadata.apiName === linkApiName);
   invariant(
     link !== undefined,
-    `Interface link constraint "${interfaceLinkApiName}" not found on interface "${from.apiName}". Define it with defineInterfaceLinkConstraint first.`
+    `Interface link constraint "${interfaceLinkApiName}" not found on interface "${from.apiName}". Define it with defineInterfaceLinkConstraint first.`,
   );
   invariant(
     link.linkedEntityTypeId.type === "interfaceType",
-    `Interface link constraint "${interfaceLinkApiName}" on "${from.apiName}" does not link to an interface type.`
+    `Interface link constraint "${interfaceLinkApiName}" on "${from.apiName}" does not link to an interface type.`,
   );
   const targetApiName = link.linkedEntityTypeId.interfaceType;
   invariant(
     ontologyDefinition.INTERFACE_TYPE[targetApiName] !== undefined ||
       importedTypes.INTERFACE_TYPE[targetApiName] !== undefined,
-    `Target interface "${targetApiName}" of interface link constraint "${interfaceLinkApiName}" is not defined.`
+    `Target interface "${targetApiName}" of interface link constraint "${interfaceLinkApiName}" is not defined.`,
   );
 
   const sourceId = def.sourceParameter?.id ?? "source";
@@ -111,6 +120,7 @@ export function defineCreateInterfaceLinkAction(
     id: sourceId,
     displayName:
       def.sourceParameter?.displayName ?? from.displayMetadata.displayName,
+    description: def.sourceParameter?.description,
     type: {
       type: "interfaceReference",
       interfaceReference: { interfaceTypeRid: from.apiName },
@@ -124,6 +134,7 @@ export function defineCreateInterfaceLinkAction(
     id: targetId,
     displayName:
       def.targetParameter?.displayName ?? withoutNamespace(targetApiName),
+    description: def.targetParameter?.description,
     type:
       link.cardinality === "MANY"
         ? {
@@ -148,9 +159,10 @@ export function defineCreateInterfaceLinkAction(
     apiName:
       def.apiName ??
       `link-${kebab(withoutNamespace(from.apiName))}-${kebab(
-        withoutNamespace(interfaceLinkApiName)
+        withoutNamespace(interfaceLinkApiName),
       )}`,
     displayName: def.displayName ?? `Link ${from.displayMetadata.displayName}`,
+    description: def.description,
     status: def.status ?? "active",
     entities: {
       affectedInterfaceTypes: [from.apiName, targetApiName],
@@ -175,7 +187,7 @@ export function defineCreateInterfaceLinkAction(
       ? {
           validation: convertValidationRule(
             def.actionLevelValidation,
-            parameters
+            parameters,
           ),
         }
       : {}),

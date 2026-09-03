@@ -40,7 +40,7 @@ class AnalysisStore {
 
   constructor(
     private readonly monitorStore: MonitorStore,
-    private readonly updateIntervalMs: number
+    private readonly updateIntervalMs: number,
   ) {}
 
   subscribe(callback: () => void): () => void {
@@ -111,7 +111,7 @@ class AnalysisStore {
 
 export function useUnusedFieldAnalysis(
   monitorStore: MonitorStore,
-  updateIntervalMs: number = 2000
+  updateIntervalMs: number = 2000,
 ): UnusedFieldAnalysisState {
   const storeRef = React.useRef<AnalysisStore | null>(null);
 
@@ -123,7 +123,7 @@ export function useUnusedFieldAnalysis(
 
   const subscribe = React.useCallback(
     (callback: () => void) => store.subscribe(callback),
-    [store]
+    [store],
   );
 
   const getSnapshot = React.useCallback(() => store.getSnapshot(), [store]);

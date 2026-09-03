@@ -86,10 +86,52 @@ const meta: Meta<ThumbnailSidebarStoryProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `function MyThumbnailSidebar({ src }: { src: string }) {
+  const { document, numPages, loading, error } = usePdfDocument(src);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sidebarMode, setSidebarMode] = useState<PdfViewerSidebarMode>("thumbnails");
+
+  if (loading) return <div>Loading PDF…</div>;
+  if (error != null) return <div>Error loading PDF: {error.message}</div>;
+  if (document == null) return null;
+
+  return (
+    <PdfViewerSidebar
+      document={document}
+      numPages={numPages}
+      currentPage={currentPage}
+      onPageClick={setCurrentPage}
+      sidebarMode={sidebarMode}
+      onSidebarModeChange={setSidebarMode}
+    />
+  );
+}`,
+      },
+    },
+  },
+};
 
 export const ActivePage: Story = {
   args: {
     currentPage: 5,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// currentPage outlines that thumbnail and scrolls it into view
+<PdfViewerSidebar
+  document={document}
+  numPages={numPages}
+  currentPage={5}
+  onPageClick={setCurrentPage}
+  sidebarMode="thumbnails"
+  onSidebarModeChange={setSidebarMode}
+/>`,
+      },
+    },
   },
 };

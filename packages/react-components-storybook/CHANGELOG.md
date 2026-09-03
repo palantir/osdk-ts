@@ -1,5 +1,87 @@
 # @osdk/react-components-storybook
 
+## 0.52.0
+
+### Minor Changes
+
+- 0391250: Organize ActionForm stories and update code panel
+
+### Patch Changes
+
+- @osdk/faux@0.48.0
+
+## 0.51.0
+
+### Patch Changes
+
+- @osdk/faux@0.47.0
+
+## 0.50.0
+
+### Patch Changes
+
+- @osdk/faux@0.46.0
+
+## 0.49.0
+
+### Patch Changes
+
+- @osdk/faux@0.45.0
+
+## 0.48.0
+
+### Minor Changes
+
+- e879ad7: Bump platform SDKs and add loadOntologyDefinedDerivedProperties flag, which defaults to true
+
+### Patch Changes
+
+- Updated dependencies [bbbeca8]
+  - @osdk/faux@0.44.0
+
+## 0.47.0
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+  - @osdk/faux@0.43.0
+
+## 0.46.0
+
+### Minor Changes
+
+- 4179237: Revert labels override on ObjectTable in PR 3697
+
+## 0.45.0
+
+### Patch Changes
+
+- @osdk/faux@0.42.0
+
+## 0.44.0
+
+### Patch Changes
+
+- @osdk/faux@0.41.0
+
+## 0.43.0
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/faux@0.40.0
+
+## 0.42.0
+
+### Minor Changes
+
+- d1038c9: Re-organize ObjectTable features
+- 86e1f85: Fit markdown table width to parent container width
+
+### Patch Changes
+
+- @osdk/faux@0.39.0
+
 ## 0.41.0
 
 ### Patch Changes

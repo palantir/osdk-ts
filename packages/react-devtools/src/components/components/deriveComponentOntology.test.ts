@@ -51,27 +51,27 @@ describe("objectTypeOf", () => {
   it("reads the object type from each query shape", () => {
     expect(objectTypeOf({ type: "list", objectType: "Parcel" })).toBe("Parcel");
     expect(
-      objectTypeOf({ type: "object", objectType: "Parcel", primaryKey: "1" })
+      objectTypeOf({ type: "object", objectType: "Parcel", primaryKey: "1" }),
     ).toBe("Parcel");
     expect(objectTypeOf({ type: "aggregation", objectType: "Parcel" })).toBe(
-      "Parcel"
+      "Parcel",
     );
     expect(
       objectTypeOf({
         type: "links",
         sourceObject: "Parcel:p1",
         linkName: "owner",
-      })
+      }),
     ).toBe("Parcel");
     expect(
       objectTypeOf({
         type: "objectSet",
         baseObjectSet: "Parcel",
         operations: [],
-      })
+      }),
     ).toBe("Parcel");
     expect(
-      objectTypeOf({ type: "action", actionName: "createParcel" })
+      objectTypeOf({ type: "action", actionName: "createParcel" }),
     ).toBeNull();
   });
 });
@@ -86,7 +86,7 @@ describe("deriveComponentOntology", () => {
       ],
       [],
       undefined,
-      {}
+      {},
     );
 
     expect(result.objectTypes.map((t) => t.name)).toEqual([
@@ -107,14 +107,14 @@ describe("deriveComponentOntology", () => {
         access("Parcel:p1.owner", "displayName"),
       ],
       undefined,
-      {}
+      {},
     );
 
     const parcel = result.objectTypes.find((t) => t.name === "Parcel");
     expect(parcel?.instances).toEqual(["p1", "p2"]);
 
     const parcelProps = result.properties.find(
-      (p) => p.objectType === "Parcel"
+      (p) => p.objectType === "Parcel",
     );
     expect(parcelProps?.names).toEqual(["displayName", "name", "status"]);
   });
@@ -124,7 +124,7 @@ describe("deriveComponentOntology", () => {
       [binding({ type: "list", objectType: "Parcel" })],
       [],
       { title: "Hello", count: "3" },
-      {}
+      {},
     );
     expect(result.reactProps).toContainEqual(["title", "Hello"]);
     expect(result.reactProps).toContainEqual(["count", "3"]);
@@ -135,7 +135,7 @@ describe("deriveComponentOntology", () => {
       [binding({ type: "list", objectType: "Parcel" })],
       [],
       undefined,
-      {}
+      {},
     );
     expect(result.healthy).toBe(true);
     expect(result.warning).toBeUndefined();
@@ -169,7 +169,7 @@ describe("deriveComponentOntology", () => {
             accessCount: 0,
           },
         ],
-      }
+      },
     );
     expect(result.healthy).toBe(false);
     // wasted.count (3 wasted renders) and the two unused properties (over-fetch 2)
@@ -186,7 +186,7 @@ describe("deriveComponentOntology", () => {
       ],
       [],
       undefined,
-      {}
+      {},
     );
     expect(result.objectTypes).toEqual([]);
     expect(result.actions).toEqual([]);
@@ -203,7 +203,7 @@ describe("deriveComponentOntology", () => {
       ],
       [],
       undefined,
-      {}
+      {},
     );
     expect(result.links).toEqual(["owner"]);
     // A links binding contributes a link, not its source object type.
@@ -231,7 +231,7 @@ describe("deriveComponentOntology", () => {
       ],
       [],
       undefined,
-      {}
+      {},
     );
     expect(result.links).toEqual(["assignee", "owner"]);
   });
@@ -247,7 +247,7 @@ describe("deriveComponentOntology", () => {
       ],
       [],
       undefined,
-      {}
+      {},
     );
     expect(result.links).toEqual([]);
   });

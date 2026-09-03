@@ -35,12 +35,12 @@ import type {
 export async function bulkCreateBlockSetVersionV2(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  request: _api_BulkCreateBlockSetVersionRequest
+  request: _api_BulkCreateBlockSetVersionRequest,
 ): Promise<_api_BulkCreateBlockSetVersionResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/v2/${marketplaceRid}/versions/bulk`,
     "POST",
-    request
+    request,
   );
 }

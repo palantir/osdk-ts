@@ -17,7 +17,7 @@
 /* cspell:words ifds */
 
 import type { Media } from "@osdk/api";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait } from "@osdk/api/unstable";
+import { transformAndWait } from "@osdk/api/unstable";
 import { useOsdkClient } from "@osdk/react";
 import { useEffect, useRef, useState } from "react";
 import * as UTIF from "utif";
@@ -42,14 +42,14 @@ const DISABLED_RESULT: UseTiffToPdfResult = {
 
 /**
  * Detects multi-page TIFFs and converts them to PDF via the MIO transform API.
- * Single-page TIFFs are left for the TiffRenderer to handle.
+ * Single-page TIFFs are left for the TiffViewer to handle.
  *
  * @param media - The OSDK Media object (must be a TIFF)
  * @param enabled - Whether to attempt multi-page detection and conversion
  */
 export function useTiffToPdf(
   media: Media,
-  enabled: boolean
+  enabled: boolean,
 ): UseTiffToPdfResult {
   const client = useOsdkClient();
   const [result, setResult] = useState<UseTiffToPdfResult>(DISABLED_RESULT);
@@ -83,7 +83,7 @@ export function useTiffToPdf(
       const pageCount = ifds.length;
 
       if (pageCount <= 1) {
-        // Single-page TIFF — use TiffRenderer
+        // Single-page TIFF — use TiffViewer
         if (!cancelled) {
           setResult({
             viewerType: ViewerType.Tiff,
@@ -96,11 +96,8 @@ export function useTiffToPdf(
       }
 
       // Step 2: Multi-page TIFF — convert to PDF via MIO transform
-      const mediaReference = currentMedia.getMediaReference();
-      const pdfResponse = await client(
-        __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait
-      ).transformAndWait({
-        mediaReference,
+      const pdfResponse = await client(transformAndWait).transformAndWait({
+        media: currentMedia,
         transformation: {
           $imageToDocument: { $operation: { $createPdf: {} } },
         },
@@ -125,7 +122,7 @@ export function useTiffToPdf(
         // eslint-disable-next-line no-console
         console.warn(
           "TIFF to PDF conversion failed, falling back to TIFF renderer:",
-          err
+          err,
         );
         setResult({
           viewerType: ViewerType.Tiff,

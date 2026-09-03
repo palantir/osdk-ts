@@ -3,6 +3,7 @@ export { getBusId } from './queries/getBusId.js';
 export { getBusInterface } from './queries/getBusInterface.js';
 export { getBusInterfaceSet } from './queries/getBusInterfaceSet.js';
 export { getFirstSecondElementOf2DArray } from './queries/getFirstSecondElementOf2DArray.js';
+export { getFriends } from './queries/getFriends.js';
 export { getNamesOfCustomersFromCountry } from './queries/getNamesOfCustomersFromCountry.js';
 export { getTodoCount } from './queries/getTodoCount.js';
 export { identity2DArray } from './queries/identity2DArray.js';

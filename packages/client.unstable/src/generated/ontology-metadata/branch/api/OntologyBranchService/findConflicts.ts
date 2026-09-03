@@ -31,12 +31,12 @@ import type {
 export async function findConflicts(
   ctx: ConjureContext,
   ontologyBranchRid: _api_OntologyBranchRid,
-  request: _branch_api_FindConflictsRequest
+  request: _branch_api_FindConflictsRequest,
 ): Promise<_branch_api_FindConflictsResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/${ontologyBranchRid}/findConflicts`,
     "POST",
-    request
+    request,
   );
 }

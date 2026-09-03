@@ -28,7 +28,7 @@ import type {
  */
 export async function getRunningDeployedAppsPaginated(
   ctx: ConjureContext,
-  request: _GetRunningDeployedAppsPaginatedRequest
+  request: _GetRunningDeployedAppsPaginatedRequest,
 ): Promise<_GetRunningDeployedAppsPaginatedResponse> {
   return conjureFetch(ctx, `/deployed-apps/running-paginated`, "POST", request);
 }

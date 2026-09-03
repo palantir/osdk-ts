@@ -53,7 +53,7 @@ export class MediaReferencePropertyImpl implements Media {
       ...this.#triplet,
       {
         preview: true, // TODO: Can turn this back off when backend is no longer in beta.
-      }
+      },
     );
   }
 
@@ -64,7 +64,7 @@ export class MediaReferencePropertyImpl implements Media {
       ...this.#triplet,
       {
         preview: true, // TODO: Can turn this back off when backend is no longer in beta.
-      }
+      },
     );
     return {
       path: r.path as string,
@@ -85,8 +85,7 @@ export class MediaReferencePropertyImpl implements Media {
       this.#client,
       mediaSetRid,
       mediaItemRid,
-      { preview: true },
-      token ? { ReadToken: token } : undefined
+      token ? { ReadToken: token } : undefined,
     );
     return { itemMetadata: validateMediaItemMetadata(raw) };
   }

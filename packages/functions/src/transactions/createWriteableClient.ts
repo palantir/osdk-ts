@@ -30,6 +30,7 @@ import type {
   UpdatableObjectOrInterfaceLocatorProperties,
   UpdatableObjectOrInterfaceLocators,
 } from "../edits/EditBatch.js";
+import { toFunctionEditValue } from "../edits/toFunctionEditValue.js";
 import type { AnyEdit } from "../edits/types.js";
 import { EditRequestManager } from "./EditRequestManager.js";
 import { toPropertyDataValue } from "./toPropertyDataValue.js";
@@ -50,11 +51,11 @@ export function createWriteableClient<X extends AnyEdit = never>(
   const client = createClientWithTransaction(
     transactionId,
     () => editRequestManager.flushPendingEdits(),
-    ...args
+    ...args,
   ) as Client;
 
   editRequestManager = new EditRequestManager(
-    client as WriteableClient<any> // This cast is safe because we create the writeable client properties below.
+    client as WriteableClient<any>, // This cast is safe because we create the writeable client properties below.
   );
 
   // We use define properties because the client has non-enumerable properties that we want to preserve.
@@ -63,7 +64,7 @@ export function createWriteableClient<X extends AnyEdit = never>(
       value<SOL extends AddLinkSources<X>, A extends AddLinkApiNames<X, SOL>>(
         source: SOL,
         apiName: A,
-        target: AddLinkTargets<X, SOL, A>
+        target: AddLinkTargets<X, SOL, A>,
       ): Promise<void> {
         if (!Array.isArray(target)) {
           return editRequestManager.postEdit({
@@ -84,7 +85,7 @@ export function createWriteableClient<X extends AnyEdit = never>(
               primaryKey: source.$primaryKey,
               linkType: apiName,
               linkedObjectPrimaryKey: elem.$primaryKey,
-            })
+            }),
           );
         }
         return Promise.all(promises).then(() => undefined);
@@ -97,7 +98,7 @@ export function createWriteableClient<X extends AnyEdit = never>(
       >(
         source: SOL,
         apiName: A,
-        target: RemoveLinkTargets<X, SOL, A>
+        target: RemoveLinkTargets<X, SOL, A>,
       ): Promise<void> {
         if (!Array.isArray(target)) {
           return editRequestManager.postEdit({
@@ -117,7 +118,7 @@ export function createWriteableClient<X extends AnyEdit = never>(
               primaryKey: source.$primaryKey,
               linkType: apiName,
               linkedObjectPrimaryKey: elem.$primaryKey,
-            })
+            }),
           );
         }
         return Promise.all(promises).then(() => undefined);
@@ -128,10 +129,11 @@ export function createWriteableClient<X extends AnyEdit = never>(
       // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
       async value<OTD extends CreatableObjectOrInterfaceTypes<X>>(
         obj: OTD,
-        properties: CreatableObjectOrInterfaceTypeProperties<X, OTD>
+        properties: CreatableObjectOrInterfaceTypeProperties<X, OTD>,
       ): Promise<void> {
+        const wireProperties = toFunctionEditValue(properties);
         const propertyMap: { [propertyName: string]: unknown } = {};
-        for (const [key, value] of Object.entries(properties)) {
+        for (const [key, value] of Object.entries(wireProperties)) {
           if (key.startsWith("$")) continue;
           propertyMap[key] = toPropertyDataValue(value);
         }
@@ -147,8 +149,9 @@ export function createWriteableClient<X extends AnyEdit = never>(
         SOL extends UpdatableObjectOrInterfaceLocators<X>,
         OTD extends UpdatableObjectOrInterfaceLocatorProperties<X, SOL>,
       >(locator: SOL, properties: OTD): Promise<void> {
+        const wireProperties = toFunctionEditValue(properties);
         const propertyMap: { [propertyName: string]: unknown } = {};
-        for (const [key, value] of Object.entries(properties)) {
+        for (const [key, value] of Object.entries(wireProperties)) {
           if (key.startsWith("$")) continue;
           propertyMap[key] = toPropertyDataValue(value);
         }
@@ -162,7 +165,7 @@ export function createWriteableClient<X extends AnyEdit = never>(
     },
     delete: {
       value<OL extends DeletableObjectOrInterfaceLocators<X>>(
-        obj: OL
+        obj: OL,
       ): Promise<void> {
         return editRequestManager.postEdit({
           type: "deleteObject",

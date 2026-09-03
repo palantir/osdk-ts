@@ -21,13 +21,13 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadInterfaceMetadata(
   client: MinimalClient,
-  objectType: string
+  objectType: string,
 ): Promise<InterfaceMetadata> {
   const r = await OntologyInterfaces.get(
     client,
     await client.ontologyRid,
     objectType,
-    { preview: true, branch: client.branch }
+    { preview: true, branch: client.branch },
   );
 
   const { wireInterfaceTypeV2ToSdkObjectDefinition } =

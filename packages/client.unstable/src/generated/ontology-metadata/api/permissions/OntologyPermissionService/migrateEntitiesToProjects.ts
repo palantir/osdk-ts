@@ -30,12 +30,12 @@ import type {
  */
 export async function migrateEntitiesToProjects(
   ctx: ConjureContext,
-  request: _api_permissions_MigrateEntitiesToProjectsRequest
+  request: _api_permissions_MigrateEntitiesToProjectsRequest,
 ): Promise<_api_permissions_MigrateEntitiesToProjectsResponse> {
   return conjureFetch(
     ctx,
     `/permissions/migrateEntitiesToProjects`,
     "PUT",
-    request
+    request,
   );
 }

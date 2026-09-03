@@ -15,10 +15,10 @@
  */
 
 import type {
+  BasePdfViewerProps,
   PdfAnnotation,
   PdfRect,
   PdfViewerHandle,
-  PdfViewerProps,
 } from "@osdk/react-components/experimental/pdf-viewer";
 import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -47,7 +47,7 @@ function domRectToPdfRect(
   clientRect: DOMRect,
   pageRect: DOMRect,
   pageHeight: number,
-  scale: number
+  scale: number,
 ): PdfRect {
   const x = (clientRect.left - pageRect.left) / scale;
   const width = clientRect.width / scale;
@@ -153,7 +153,7 @@ function AnnotationSidebarItem({
       e.stopPropagation();
       onDelete(annotation.id);
     },
-    [onDelete, annotation.id]
+    [onDelete, annotation.id],
   );
 
   const itemStyles: React.CSSProperties = {
@@ -262,7 +262,7 @@ function AnnotationCreatorDemo({ src }: { src: string }): React.ReactElement {
         // Read the pdfjs scale factor from the CSS variable
         const scale =
           parseFloat(
-            getComputedStyle(pageEl).getPropertyValue("--scale-factor")
+            getComputedStyle(pageEl).getPropertyValue("--scale-factor"),
           ) || 1;
         const pageHeight = pageEl.clientHeight / scale;
 
@@ -297,7 +297,7 @@ function AnnotationCreatorDemo({ src }: { src: string }): React.ReactElement {
       container.addEventListener("mouseup", handleMouseUp);
       return () => container.removeEventListener("mouseup", handleMouseUp);
     },
-    [annotationModeActive]
+    [annotationModeActive],
   );
 
   return (
@@ -316,7 +316,7 @@ function AnnotationCreatorDemo({ src }: { src: string }): React.ReactElement {
   );
 }
 
-const meta: Meta<PdfViewerProps> = {
+const meta: Meta<BasePdfViewerProps> = {
   title: "Components/DocumentViewer/Renderers/PdfViewer/Recipes",
   component: BasePdfViewer,
   tags: ["beta"],
@@ -330,7 +330,100 @@ export const AnnotationCreator: Story = {
   parameters: {
     docs: {
       source: {
-        code: `// Select text to create annotations, view and manage them in the sidebar`,
+        code: `const HIGHLIGHT_COLOR = "#fff066";
+
+// Browser rects are viewport-relative with a top-left origin; PDF rects are
+// page-relative with a bottom-left origin. Both need dividing by the zoom
+// scale to get back to unscaled PDF units.
+function domRectToPdfRect(clientRect, pageRect, pageHeight, scale): PdfRect {
+  const topInPdfUnits = (clientRect.top - pageRect.top) / scale;
+  const height = clientRect.height / scale;
+  return {
+    x: (clientRect.left - pageRect.left) / scale,
+    y: pageHeight - topInPdfUnits - height,
+    width: clientRect.width / scale,
+    height,
+  };
+}
+
+function MyAnnotationCreator({ src }: { src: string }) {
+  const [annotations, setAnnotations] = useState<PdfAnnotation[]>([]);
+  const [annotationModeActive, setAnnotationModeActive] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const viewerRef = useRef<PdfViewerHandle>(null);
+  
+  // Listen for text selection when annotation mode is active
+  useEffect(
+    function captureTextSelection() {
+      if (!annotationModeActive) return;
+      const container = containerRef.current;
+      if (container == null) return;
+
+      function handleMouseUp() {
+        const selection = window.getSelection();
+        if (selection == null || selection.isCollapsed) return;
+
+        const selectedText = selection.toString().trim();
+        if (selectedText === "") return;
+
+        const range = selection.getRangeAt(0);
+        // pdf.js renders each page as .page[data-page-number]
+        const pageEl = range.startContainer.parentElement?.closest(".page[data-page-number]");
+        if (pageEl == null) return;
+
+        // pdf.js publishes the current zoom as a CSS variable on the page
+        const scale = parseFloat(getComputedStyle(pageEl).getPropertyValue("--scale-factor")) || 1;
+        const pageHeight = pageEl.clientHeight / scale;
+        const pageRect = pageEl.getBoundingClientRect();
+
+        // A selection spanning multiple lines produces one rect per line
+        const rects = Array.from(range.getClientRects())
+          .filter((r) => r.width > 0 && r.height > 0)
+          .map((r) => domRectToPdfRect(r, pageRect, pageHeight, scale));
+        if (rects.length === 0) return;
+
+        setAnnotations((prev) => [...prev, {
+          id: crypto.randomUUID(),
+          type: "highlight",
+          page: Number(pageEl.getAttribute("data-page-number")),
+          rect: rects[0],
+          rects,
+          color: HIGHLIGHT_COLOR,
+          label: selectedText,
+        }]);
+        selection.removeAllRanges();
+      }
+
+      container.addEventListener("mouseup", handleMouseUp);
+      return () => container.removeEventListener("mouseup", handleMouseUp);
+  }, [annotationModeActive]);
+
+  const deleteAnnotation = useCallback((id: string) => {
+    setAnnotations((prev) => prev.filter((a) => a.id !== id));
+  }, []);
+  const toggleAnnotationMode = useCallback(() => {
+    setAnnotationModeActive((prev) => !prev);
+  }, []);
+  const handleAnnotationClick = useCallback((page: number) => {
+    viewerRef.current?.scrollToPage(page);
+  }, []);
+
+  return (
+    <div style={{ display: "flex", height: "600px" }}>
+      <div ref={containerRef} style={{ flex: 1, minWidth: 0 }}>
+        <BasePdfViewer ref={viewerRef} src={src} annotations={annotations} />
+      </div>
+      <MySidebar
+        annotations={annotations}
+        annotationModeActive={annotationModeActive}
+        onToggleMode={toggleAnnotationMode}
+        // The imperative handle drives navigation from outside the viewer
+        onAnnotationClick={handleAnnotationClick}
+        onDelete={deleteAnnotation}
+      />
+    </div>
+  );
+}`,
       },
     },
   },

@@ -33,7 +33,7 @@ export function formatDateTime(
   timezone: DatetimeTimezone | undefined,
   objectData: SimpleOsdkProperties,
   locale: string,
-  userTimezoneOverride?: string
+  userTimezoneOverride?: string,
 ): string | undefined {
   const date = value instanceof Date ? value : new Date(value);
   if (isNaN(date.getTime())) {
@@ -43,7 +43,7 @@ export function formatDateTime(
   const resolvedTimezone = resolveTimezone(
     timezone,
     objectData,
-    userTimezoneOverride
+    userTimezoneOverride,
   );
 
   switch (format.type) {
@@ -64,7 +64,7 @@ function formatLocalized(
   date: Date,
   format: DatetimeLocalizedFormat,
   locale: string,
-  timezone: string | undefined
+  timezone: string | undefined,
 ): string | undefined {
   if (format.format === "DATE_FORMAT_ISO_INSTANT") {
     return date.toISOString();
@@ -77,7 +77,7 @@ function formatLocalized(
   try {
     return new Intl.DateTimeFormat(
       locale,
-      timezone ? { ...options, timeZone: timezone } : options
+      timezone ? { ...options, timeZone: timezone } : options,
     ).format(date);
   } catch (_e) {
     // If a property reference is an invalid timezone we specifically say that it's invalid instead of returning undefined;
@@ -89,7 +89,7 @@ function getLocalizedFormatOptions(
   format: Exclude<
     DatetimeLocalizedFormatType,
     "DATE_FORMAT_RELATIVE_TO_NOW" | "DATE_FORMAT_ISO_INSTANT"
-  >
+  >,
 ): Intl.DateTimeFormatOptions {
   switch (format) {
     case "DATE_FORMAT_DATE":
@@ -161,7 +161,7 @@ const DATE_TIME_SHORT_WITH_WEEKDAY: Intl.DateTimeFormatOptions = {
 function resolveTimezone(
   timezone: DatetimeTimezone | undefined,
   objectData: SimpleOsdkProperties,
-  userTimezoneOverride?: string
+  userTimezoneOverride?: string,
 ): string | undefined {
   if (userTimezoneOverride != null) {
     return userTimezoneOverride;
@@ -189,7 +189,7 @@ const DAY_MS = 24 * HOUR_MS;
 function formatRelativeToNow(
   date: Date,
   locale: string,
-  timezone: string | undefined
+  timezone: string | undefined,
 ): string {
   const now = Date.now();
   const diff = date.valueOf() - now;

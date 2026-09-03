@@ -93,7 +93,23 @@ For every state change with a built-in default behavior (sort, filter, select, e
 - **Aim for one required prop.** Most "required" inputs can be derived (e.g. column definitions from `objectType`) or defaulted
 - **`enable*` boolean flags default to `true`** when the feature is part of the out-of-the-box experience
 - **Document defaults inline** with `@default` JSDoc on every optional prop. Use `@param` / `@returns` for callbacks
-- **Define the API in its own file**: `<Name>Api.ts` co-located with the component, exporting only the OSDK-aware outer-component props plus public sub-types. Base props live inline in `Base<Name>.tsx`
+- **Define the API in its own file**: `<Name>Api.ts` co-located with the component, exporting the base props, the OSDK-aware outer-component props, and any public sub-types
+- **Name a viewer's primary input `src` or `content`, by form.** `src` is the binary source to render from, in whatever forms that renderer supports — a URL, raw bytes, or both. `content` is the already-decoded payload — text, or a parsed object. Never overload one name across both categories, and never name the prop after the file type (`email`, `spreadsheet`); that does not generalise to the next viewer. `BasePdfViewer` is the reference for `src` — `src: PdfSource = string | ArrayBuffer | Uint8Array | Blob`, a renderer that supports every source form; `BaseXmlViewer` is the reference for `content`.
+- **JSDoc on public API describes the contract, not the implementation.** Write what the caller passes, gets back, and can rely on. Do not name internal helpers, hooks, fields, or libraries; do not explain how the component computes the result or which internal branch a value ends up in. These leak into the generated props tables in `docs/`, tie published docs to internals that are free to change, and go stale silently. Put the "how" in a code comment at the implementation site instead.
+
+  ```ts
+  // Bad — describes internals, and every claim breaks if the implementation moves
+  /**
+   * Picks the editor. Property columns read it from ontology metadata; custom
+   * and derived columns have none, so without it they fall through to
+   * `renderDefaultCell`'s text input and commit strings.
+   */
+  cellValueType?: BaseWirePropertyTypes;
+
+  // Good — the caller-visible contract
+  /** The cell value's data type. */
+  cellValueType?: BaseWirePropertyTypes;
+  ```
 
 ## CSS Styling
 
@@ -102,7 +118,9 @@ For every state change with a built-in default behavior (sort, filter, select, e
 - **NEVER hardcode colors or pixel values.** Every visual property goes through a CSS variable
 - **If a value has no analog in `base.css`, do not inline it.** Flag it as a follow-up for a separate token-addition change. Inlining bypasses theming and accumulates as drift
 - **Use CSS modules** (`<Name>.module.css`) for component-scoped styles
-- **Define a CSS variable for every property a consumer may want to customize.** Defaults go in `src/tokens/<name>.css`. Document new variables in `docs/CSSVariables.md`
+- **Define a CSS variable for every property a consumer may want to customize.** Defaults for your component's own `--osdk-<name>-*` tokens go in `src/tokens/component-tokens/<name>.css` — never in a `.module.css` or a `.tsx`. Document new variables in `docs/CSSVariables.md`
+- **Exception — nested-primitive scoping.** A `.module.css` MAY assign to a token owned by _another_ primitive, scoped to a local class, to restyle that primitive where your component embeds it (e.g. `.osdkEditableCellDropdown { --osdk-select-trigger-bg: var(--osdk-table-cell-input-bg); }`). That's a cascade override, not a new public token, so it stays in the module. Feed it from one of your own tokens where one exists. See CONTRIBUTING.md "Styling Guidelines"
+- **Never let `var(--osdk-x, <fallback>)` substitute for declaring the token** — with one exception: a token whose default is a CSS-wide keyword (`inherit`/`initial`/`unset`) _cannot_ be declared, because `--osdk-x: inherit` at `:root` resolves guaranteed-invalid and makes `var(--osdk-x)` compute to the property's initial value. Keep those defaults in the fallback and comment the token file. See `--osdk-table-cell-bg` in `component-tokens/table.css`
 - **Respect CSS layers** — see `README.md` "CSS Setup" for layer order and how brand overrides plug in
 
 ## Testing
@@ -141,7 +159,7 @@ For every state change with a built-in default behavior (sort, filter, select, e
   import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
   export const MyComponent: typeof _MyComponent = withOsdkMetrics(
     _MyComponent,
-    "MyComponent"
+    "MyComponent",
   );
   ```
 

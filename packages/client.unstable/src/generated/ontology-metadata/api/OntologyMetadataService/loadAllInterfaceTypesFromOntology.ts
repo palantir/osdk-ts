@@ -31,12 +31,12 @@ export async function loadAllInterfaceTypesFromOntology(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
   ontologyVersion: _api_OntologyVersion,
-  request: _api_LoadAllInterfaceTypesPageRequest
+  request: _api_LoadAllInterfaceTypesPageRequest,
 ): Promise<_api_LoadAllInterfaceTypesPageResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/${ontologyRid}/${ontologyVersion}/loadAllInterfaceTypes`,
     "PUT",
-    request
+    request,
   );
 }

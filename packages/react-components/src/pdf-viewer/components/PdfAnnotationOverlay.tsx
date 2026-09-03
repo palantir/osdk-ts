@@ -17,7 +17,7 @@
 import React, { useMemo } from "react";
 
 import type { AnnotationPortalTarget } from "../hooks/usePdfAnnotationPortals.js";
-import type { PdfAnnotation } from "../types.js";
+import type { PdfAnnotation } from "../PdfViewerApi.js";
 import { PdfViewerAnnotationLayer } from "./PdfViewerAnnotationLayer.js";
 
 export interface PdfAnnotationOverlayProps {
@@ -41,7 +41,7 @@ export const PdfAnnotationOverlay: React.FC<PdfAnnotationOverlayProps> = ({
       pointerEvents: "none",
       zIndex: 1,
     }),
-    [target.left, target.top, target.width, target.height]
+    [target.left, target.top, target.width, target.height],
   );
 
   return (

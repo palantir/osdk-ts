@@ -15,36 +15,42 @@ export namespace actionTakesAllParameterTypes {
   export type ParamsDefinition = {
     attachmentArray: {
       description: undefined;
+      displayName: undefined;
       multiplicity: true;
       nullable: false;
       type: 'attachment';
     };
     dateArray: {
       description: undefined;
+      displayName: undefined;
       multiplicity: true;
       nullable: true;
       type: 'datetime';
     };
     object: {
       description: 'A person Object';
+      displayName: undefined;
       multiplicity: false;
       nullable: true;
       type: ActionMetadata.DataType.Object<Person>;
     };
     objectSet: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.ObjectSet<Todo>;
     };
     string: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     'time-stamp': {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'timestamp';

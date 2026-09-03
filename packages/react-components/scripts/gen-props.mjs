@@ -206,20 +206,11 @@ function buildDescription(member, isRequired) {
 // ---------------------------------------------------------------------------
 // Props-type resolver
 //
-// Resolves a named props type (interface OR type alias) to a flat, ordered,
-// deduped list of property entries. Handles the shapes component props use in
-// this package: interface `extends` clauses, intersections (`A & B`), unions
-// (controlled/uncontrolled discriminated props), inline type literals, and
-// `Pick<X, K>` / `Omit<X, K>`. Type references are resolved first among the
-// current file's top-level declarations, then by following named imports into
-// other files (so a base shared across files — e.g. `FilterDefinitionControls`
-// — still contributes its members). External/bare imports are left unresolved.
-//
-// Each entry is `{ name, member, forcedOptional }`; `member` keeps its own
-// source file (parent pointers are set), so `member.getText()` renders the
-// right text even for members pulled in from another file. `forcedOptional` is
-// set when a prop is optional in *some* union branch (or absent from one), so
-// the controlled/uncontrolled split doesn't mislabel an optional prop.
+// Resolves a named props type (interface or type alias) to a flat, ordered,
+// deduped list of `{ name, member, forcedOptional, substitutions }` entries.
+// Type references resolve against the current file first, then through named
+// imports; external/bare imports are left unresolved. Each `member` keeps its
+// own source file, so `member.getText()` works across files.
 // ---------------------------------------------------------------------------
 
 /** Build (and cache) a name -> declaration map of a file's top-level
@@ -271,7 +262,7 @@ function resolveModulePath(spec, fromFile) {
     `${base}.ts`,
     `${base}.tsx`,
     path.join(base, "index.ts"),
-    path.join(base, "index.tsx")
+    path.join(base, "index.tsx"),
   );
   return candidates.find((c) => existsSync(c));
 }
@@ -396,6 +387,18 @@ function propertyEntry(member) {
   };
 }
 
+/** Rewrite the type parameter names an entry was documented under (see
+ * `substitutions` on the mapped-type branch of `membersOfType`). Word-boundary
+ * anchored, so `T` doesn't match inside a longer identifier. */
+function applySubstitutions(text, substitutions) {
+  if (substitutions == null) return text;
+  let out = text;
+  for (const [name, replacement] of substitutions) {
+    out = out.replaceAll(new RegExp(`\\b${name}\\b`, "gu"), replacement);
+  }
+  return out;
+}
+
 function membersOfDeclaration(decl, sourceFile, seen) {
   if (ts.isTypeAliasDeclaration(decl)) {
     return membersOfType(decl.type, sourceFile, seen);
@@ -422,13 +425,33 @@ function membersOfType(typeNode, sourceFile, seen) {
   }
   if (ts.isIntersectionTypeNode(typeNode)) {
     return dedupe(
-      typeNode.types.map((t) => membersOfType(t, sourceFile, seen))
+      typeNode.types.map((t) => membersOfType(t, sourceFile, seen)),
     );
   }
   if (ts.isUnionTypeNode(typeNode)) {
     return mergeUnion(
-      typeNode.types.map((t) => membersOfType(t, sourceFile, seen))
+      typeNode.types.map((t) => membersOfType(t, sourceFile, seen)),
     );
+  }
+  // `{ [T in Keys]: <shape> }[Keys]` — a union with one member per key, all
+  // sharing <shape>. Document <shape> once, rendering the mapped parameter as
+  // the constraint it ranges over (`T` -> `Keys`), since the table describes
+  // the whole union rather than a single key's member.
+  if (
+    ts.isIndexedAccessTypeNode(typeNode) &&
+    ts.isMappedTypeNode(typeNode.objectType) &&
+    typeNode.objectType.type != null
+  ) {
+    const { typeParameter, type } = typeNode.objectType;
+    const constraint = typeParameter.constraint?.getText();
+    const substitutions =
+      constraint == null
+        ? undefined
+        : new Map([[typeParameter.name.text, constraint]]);
+    return membersOfType(type, sourceFile, seen).map((entry) => ({
+      ...entry,
+      substitutions,
+    }));
   }
 
   const ref = referenceInfo(typeNode);
@@ -457,7 +480,7 @@ function membersOfType(typeNode, sourceFile, seen) {
     // (external/bare import, re-export, or aliased import).
     console.error(
       `gen-props: could not resolve \`${ref.name}\` — any props it ` +
-        `contributes will be missing from the generated table.`
+        `contributes will be missing from the generated table.`,
     );
   }
   // Unsupported constructs contribute no members.
@@ -486,8 +509,10 @@ export function resolveProps(sourceFile, typeName) {
 
 export function buildRows(entries) {
   const rows = [];
-  for (const { name, member, forcedOptional } of entries) {
-    const type = escapeCell(collapseType(memberTypeText(member)));
+  for (const { name, member, forcedOptional, substitutions } of entries) {
+    const type = escapeCell(
+      collapseType(applySubstitutions(memberTypeText(member), substitutions)),
+    );
     const isRequired = member.questionToken == null && !forcedOptional;
     const description = buildDescription(member, isRequired);
     rows.push(`| \`${name}\` | \`${type}\` | ${description} |`);
@@ -530,7 +555,7 @@ export function getSourceFile(absPath) {
       text,
       ts.ScriptTarget.Latest,
       /* setParentNodes */ true,
-      scriptKind
+      scriptKind,
     );
     sourceCache.set(absPath, sourceFile);
   }
@@ -572,7 +597,7 @@ function oxfmtFormat(input, docPath) {
     {
       input,
       encoding: "utf-8",
-    }
+    },
   );
 }
 
@@ -597,7 +622,7 @@ export function renderDoc(docPath, format = oxfmtFormat) {
     if (src == null || interfaceName == null) {
       throw new Error(
         `AUTOGEN:props marker in ${rel} must declare both ` +
-          `\`src=<path>\` and \`interface=<name>\`.`
+          `\`src=<path>\` and \`interface=<name>\`.`,
       );
     }
     const absSrc = path.join(PKG_ROOT, src);
@@ -605,19 +630,19 @@ export function renderDoc(docPath, format = oxfmtFormat) {
     const resolved = resolveProps(sourceFile, interfaceName);
     if (resolved == null) {
       throw new Error(
-        `Could not find interface or type ${interfaceName} in ${src}`
+        `Could not find interface or type ${interfaceName} in ${src}`,
       );
     }
     if (resolved.entries.length === 0) {
       throw new Error(
-        `${interfaceName} in ${src} resolved to no documentable props.`
+        `${interfaceName} in ${src} resolved to no documentable props.`,
       );
     }
     const block = buildBlock(
       buildRows(resolved.entries),
       resolved.typeParams,
       src,
-      interfaceName
+      interfaceName,
     );
     if (tableSignature(block) !== tableSignature(_match)) {
       blockChanged = true;
@@ -648,13 +673,13 @@ function main() {
 
   if (check) {
     const stale = docs.filter(
-      ({ result }) => result.formatted !== result.original
+      ({ result }) => result.formatted !== result.original,
     );
     if (stale.length > 0) {
       console.error(
         `❌ ${stale.length} doc(s) out of date:\n` +
           stale.map(({ result }) => `   - ${result.rel}`).join("\n") +
-          `\n   Run \`${GEN_CMD}\` and commit the result.`
+          `\n   Run \`${GEN_CMD}\` and commit the result.`,
       );
       process.exit(1);
     }
@@ -673,7 +698,7 @@ function main() {
   console.log(
     written === 0
       ? `✅ ${docs.length} props table(s) already up to date`
-      : `✨ Updated ${written} of ${docs.length} doc(s)`
+      : `✨ Updated ${written} of ${docs.length} doc(s)`,
   );
 }
 

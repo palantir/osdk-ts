@@ -30,12 +30,12 @@ import type { GetMetricsResponse } from "../GetMetricsResponse.js";
 export async function getMetrics(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
-  request: GetMetricsRequest
+  request: GetMetricsRequest,
 ): Promise<GetMetricsResponse> {
   return conjureFetch(
     ctx,
     `/application-metrics/${applicationRid}/metrics`,
     "PUT",
-    request
+    request,
   );
 }

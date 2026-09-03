@@ -85,8 +85,8 @@ export async function expectStandardObserveLink<
         sourceUnderlyingObjectType: srcObject.$objectType,
         pk: srcObject.$primaryKey,
       },
-      linkSubFn
-    )
+      linkSubFn,
+    ),
   );
 
   await waitForCall(linkSubFn);

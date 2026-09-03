@@ -68,7 +68,7 @@ export class ObjectListQuery extends ListQuery {
             apiName: pivotInfo.sourceType,
           } as ObjectTypeDefinition,
           clientCtx,
-          { type: "static", objects: [...rids] }
+          { type: "static", objects: [...rids] },
         );
       } else {
         sourceSet = (
@@ -90,7 +90,7 @@ export class ObjectListQuery extends ListQuery {
 
       if (rdpConfig != null) {
         objectSet = objectSet.withProperties(
-          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>
+          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
         );
       }
 
@@ -112,7 +112,7 @@ export class ObjectListQuery extends ListQuery {
 
     if (rdpConfig != null) {
       objectSet = objectSet.withProperties(
-        rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>
+        rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
       );
     }
 
@@ -127,7 +127,7 @@ export class ObjectListQuery extends ListQuery {
 
         if (rdpConfig != null) {
           intersectSet = intersectSet.withProperties(
-            rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>
+            rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
           );
         }
 
@@ -141,13 +141,13 @@ export class ObjectListQuery extends ListQuery {
   }
 
   protected postProcessFetchedData(
-    data: Osdk.Instance<any>[]
+    data: Osdk.Instance<any>[],
   ): Promise<Osdk.Instance<any>[]> {
     return Promise.resolve(data);
   }
 
   protected extractRelevantObjects(
-    changes: Changes
+    changes: Changes,
   ): ExtractRelevantObjectsResult {
     return {
       added: {

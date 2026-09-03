@@ -15,13 +15,7 @@
  */
 
 import { Button } from "@base-ui/react/button";
-import {
-  Add,
-  CaretDown,
-  Cog,
-  SortAlphabetical,
-  SortAlphabeticalDesc,
-} from "@blueprintjs/icons";
+import { Add, CaretDown, Cog } from "@blueprintjs/icons";
 import { arrayMove } from "@dnd-kit/sortable";
 import type { SortingState } from "@tanstack/react-table";
 import classNames from "classnames";
@@ -30,12 +24,8 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { Dialog } from "../base-components/dialog/Dialog.js";
 import { SearchableMenu } from "../base-components/searchable-menu/SearchableMenu.js";
-import type { ObjectTableLabels } from "./ObjectTableLabels.js";
-import {
-  useObjectTableLabels,
-  withObjectTableLabels,
-} from "./ObjectTableLabels.js";
 import { type SortableItem, SortableItemsList } from "./SortableItemsList.js";
+import { getSortIcons } from "./utils/getSortIcons.js";
 import type { ColumnOption } from "./utils/types.js";
 
 import styles from "./MultiColumnSortDialog.module.css";
@@ -50,27 +40,15 @@ export interface MultiColumnSortDialogProps {
   onApply: (sortColumns: SortingState) => void;
   currentSorting: SortingState;
   columnOptions: ColumnOption[];
-  /**
-   * Overrides for the dialog's user-facing strings. Provide any subset; unset
-   * keys fall back to the built-in English defaults. When this dialog is
-   * rendered inside a `BaseTable`/`ObjectTable`, it inherits that table's
-   * `labels` and this prop is only needed to override further. See
-   * {@link ObjectTableLabels}.
-   */
-  labels?: Partial<ObjectTableLabels>;
 }
 
-export const MultiColumnSortDialog: React.FC<MultiColumnSortDialogProps> =
-  withObjectTableLabels(MultiColumnSortDialogInner);
-
-function MultiColumnSortDialogInner({
+export function MultiColumnSortDialog({
   isOpen,
   onClose,
   onApply,
   currentSorting,
   columnOptions,
-}: Omit<MultiColumnSortDialogProps, "labels">): React.ReactElement {
-  const labels = useObjectTableLabels();
+}: MultiColumnSortDialogProps): React.ReactElement {
   const [selectedSortColumns, setSelectedSortColumns] = useState<
     SortColumnItem[]
   >([]);
@@ -106,7 +84,7 @@ function MultiColumnSortDialogInner({
     (fromIndex: number, toIndex: number) => {
       setSelectedSortColumns((items) => arrayMove(items, fromIndex, toIndex));
     },
-    []
+    [],
   );
 
   const handleToggleSortDirection = useCallback((id: string) => {
@@ -114,8 +92,8 @@ function MultiColumnSortDialogInner({
       prev.map((item) =>
         item.id === id
           ? { ...item, direction: item.direction === "asc" ? "desc" : "asc" }
-          : item
-      )
+          : item,
+      ),
     );
   }, []);
 
@@ -133,14 +111,14 @@ function MultiColumnSortDialogInner({
       columnOptions.filter(
         (col) =>
           col.canSort &&
-          !selectedSortColumns.some((selected) => selected.id === col.id)
+          !selectedSortColumns.some((selected) => selected.id === col.id),
       ),
-    [columnOptions, selectedSortColumns]
+    [columnOptions, selectedSortColumns],
   );
 
   const searchableMenuItems = useMemo(
     () => availableColumns.map((col) => ({ key: col.id, label: col.name })),
-    [availableColumns]
+    [availableColumns],
   );
 
   const handleMenuItemSelected = useCallback(
@@ -150,61 +128,58 @@ function MultiColumnSortDialogInner({
         handleAddColumn(column);
       }
     },
-    [availableColumns, handleAddColumn]
+    [availableColumns, handleAddColumn],
   );
 
   const sortableItems: SortableItem[] = useMemo(() => {
-    return selectedSortColumns.map((item) => ({
-      id: item.id,
-      label: item.name,
-      content: (
-        <div className={styles.sortColumnItem}>
-          <span className={classNames(styles.sortColumnName, styles.truncate)}>
-            {item.name}
-          </span>
-          <Button
-            className={styles.sortDirectionButton}
-            onClick={() => handleToggleSortDirection(item.id)}
-            aria-label={labels.sortDialogToggleDirection(item.name)}
-          >
-            {item.direction === "asc" ? (
-              <SortAlphabetical className={styles.sortIcon} />
-            ) : (
-              <SortAlphabeticalDesc className={styles.sortIcon} />
-            )}
-          </Button>
-        </div>
-      ),
-    }));
-  }, [selectedSortColumns, handleToggleSortDirection, labels]);
+    return selectedSortColumns.map((item) => {
+      const { asc: SortAscendingIcon, desc: SortDescendingIcon } = getSortIcons(
+        item.dataType,
+      );
+      return {
+        id: item.id,
+        label: item.name,
+        content: (
+          <div className={styles.sortColumnItem}>
+            <span
+              className={classNames(styles.sortColumnName, styles.truncate)}
+            >
+              {item.name}
+            </span>
+            <Button
+              className={styles.sortDirectionButton}
+              onClick={() => handleToggleSortDirection(item.id)}
+              aria-label={`Toggle sort direction for ${item.name}`}
+            >
+              {item.direction === "asc" ? (
+                <SortAscendingIcon className={styles.sortIcon} />
+              ) : (
+                <SortDescendingIcon className={styles.sortIcon} />
+              )}
+            </Button>
+          </div>
+        ),
+      };
+    });
+  }, [selectedSortColumns, handleToggleSortDirection]);
 
   const footer = useMemo(
     () => (
       <>
-        <ActionButton onClick={onClose}>{labels.sortDialogCancel}</ActionButton>
+        <ActionButton onClick={onClose}>Cancel</ActionButton>
         <ActionButton variant="primary" onClick={handleApply}>
-          {labels.sortDialogApply}
+          Apply
         </ActionButton>
       </>
     ),
-    [handleApply, onClose, labels]
-  );
-
-  const dialogTitle = useMemo(
-    () => (
-      <div className={styles.title}>
-        <Cog />
-        {labels.sortDialogTitle}
-      </div>
-    ),
-    [labels]
+    [handleApply, onClose],
   );
 
   return (
     <Dialog
       isOpen={isOpen}
       onOpenChange={onClose}
-      title={dialogTitle}
+      title={DialogTitle}
       footer={footer}
     >
       <div className={styles.sortColumnsList}>
@@ -220,18 +195,23 @@ function MultiColumnSortDialogInner({
           trigger={
             <>
               <Add className={styles.addIcon} />
-              <span className={styles.addColumnText}>
-                {labels.sortDialogAddColumnToSort}
-              </span>
+              <span className={styles.addColumnText}>Add Column to Sort</span>
               <CaretDown />
             </>
           }
           triggerClassName={styles.addColumnButton}
           disabled={availableColumns.length === 0}
-          searchPlaceholder={labels.sortDialogSearchPlaceholder}
-          emptyMessage={labels.sortDialogNoMatchingColumns}
+          searchPlaceholder="Search columns"
+          emptyMessage="No matching columns"
         />
       </div>
     </Dialog>
   );
 }
+
+const DialogTitle = (
+  <div className={styles.title}>
+    <Cog />
+    Sort on Multiple Columns
+  </div>
+);

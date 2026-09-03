@@ -28,12 +28,14 @@ import { FilterListHeader } from "./FilterListHeader.js";
 import styles from "./FilterList.module.css";
 
 export function BaseFilterList<D extends FilterDefinitionControls>(
-  props: BaseFilterListProps<D>
+  props: BaseFilterListProps<D>,
 ): React.ReactElement {
   const {
     title,
     titleIcon,
-    collapsed = false,
+    enableCollapse = true,
+    collapsed,
+    defaultCollapsed,
     onCollapsedChange,
     filterDefinitions,
     filterStates,
@@ -50,31 +52,47 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
     showResetButton = false,
     showActiveFilterCount = false,
     canReset,
-    // eslint-disable-next-line @typescript-eslint/no-deprecated -- consumed as a backwards-compatible fallback when canReset is not provided
-    hasVisibilityChanges,
     enableSorting,
     className,
     renderAddFilterButton,
   } = props;
 
   const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(
-    null
+    null,
   );
+
+  // The collapsed state in uncontrolled mode.
+  const [internalCollapsed, setInternalCollapsed] = useState(
+    () => defaultCollapsed ?? false,
+  );
+
+  const isCollapsedControlled = collapsed !== undefined;
+  const collapsedState = isCollapsedControlled ? collapsed : internalCollapsed;
 
   const showHeader =
     title ||
     titleIcon ||
     showResetButton ||
     showActiveFilterCount ||
-    onCollapsedChange;
+    enableCollapse;
 
   const showAddButton = renderAddFilterButton != null || onFilterAdded != null;
 
-  const handleExpand = useCallback(() => {
-    onCollapsedChange?.(false);
-  }, [onCollapsedChange]);
+  const handleCollapsedChange = useCallback(
+    (next: boolean) => {
+      if (!isCollapsedControlled) {
+        setInternalCollapsed(next);
+      }
+      onCollapsedChange?.(next);
+    },
+    [isCollapsedControlled, onCollapsedChange],
+  );
 
-  const isCollapsed = collapsed && onCollapsedChange != null;
+  const handleExpand = useCallback(() => {
+    handleCollapsedChange(false);
+  }, [handleCollapsedChange]);
+
+  const isCollapsed = enableCollapse && collapsedState;
 
   return (
     <div className={classnames(styles.filterList, className)}>
@@ -94,7 +112,7 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
         ref={setBoundaryElement}
         className={classnames(
           styles.expandedContent,
-          isCollapsed && styles.hiddenContent
+          isCollapsed && styles.hiddenContent,
         )}
         data-active-count={activeFilterCount}
       >
@@ -103,14 +121,14 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
             <FilterListHeader
               title={title}
               titleIcon={titleIcon}
-              collapsed={collapsed}
-              onCollapsedChange={onCollapsedChange}
+              showCollapseButton={enableCollapse}
+              collapsed={isCollapsed}
+              onCollapsedChange={handleCollapsedChange}
               showResetButton={showResetButton}
               onReset={onReset}
               showActiveFilterCount={showActiveFilterCount}
               activeFilterCount={activeFilterCount}
               canReset={canReset}
-              hasVisibilityChanges={hasVisibilityChanges}
             />
           )}
 

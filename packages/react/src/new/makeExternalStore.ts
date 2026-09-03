@@ -37,7 +37,7 @@ export interface OsdkStoreMetadata {
 }
 
 export const devToolsMetadata: (
-  meta: OsdkStoreMetadata
+  meta: OsdkStoreMetadata,
 ) => OsdkStoreMetadata | undefined = __DEV__
   ? (meta) => meta
   : (_meta) => undefined;
@@ -45,7 +45,7 @@ export const devToolsMetadata: (
 export function useDevToolsMetadata(
   devtoolsEnabled: boolean,
   hookType: string,
-  key: string
+  key: string,
 ): void {
   const ref = React.useRef<{
     [k: symbol]: true;
@@ -69,7 +69,7 @@ export type Snapshot<X> =
 export function makeExternalStore<X>(
   createObservation: (callback: Observer<X | undefined>) => Unsubscribable,
   _metadata?: OsdkStoreMetadata,
-  initialValue?: Snapshot<X>
+  initialValue?: Snapshot<X>,
 ): {
   subscribe: (notifyUpdate: () => void) => () => void;
   getSnapShot: () => Snapshot<X>;
@@ -120,10 +120,10 @@ export function makeExternalStore<X>(
  */
 export function makeExternalStoreAsync<X>(
   createObservation: (
-    callback: Observer<X | undefined>
+    callback: Observer<X | undefined>,
   ) => Promise<Unsubscribable>,
   _metadata?: OsdkStoreMetadata,
-  initialValue?: Snapshot<X>
+  initialValue?: Snapshot<X>,
 ): {
   subscribe: (notifyUpdate: () => void) => () => void;
   getSnapShot: () => Snapshot<X>;

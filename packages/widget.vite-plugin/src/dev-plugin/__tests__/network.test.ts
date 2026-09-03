@@ -36,6 +36,10 @@ function getFetchedUrl(fetchMock: ReturnType<typeof vi.fn>): string {
   return arg instanceof URL ? arg.toString() : String(arg);
 }
 
+function getFetchedHeaders(fetchMock: ReturnType<typeof vi.fn>): Headers {
+  return new Headers(fetchMock.mock.calls[0][1]?.headers);
+}
+
 describe("network", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
@@ -58,10 +62,13 @@ describe("network", () => {
         foundryUrl,
         "ri.widgetregistry..widget-set.test",
         MOCK_MANIFEST,
-        undefined
+        undefined,
       );
       expect(getFetchedUrl(fetchMock)).toBe(
-        "https://example.palantirfoundry.com/api/v2/widgets/devModeSettingsV2/setWidgetSetManifest?preview=true"
+        "https://example.palantirfoundry.com/api/v2/widgets/devModeSettingsV2/setWidgetSetManifest?preview=true",
+      );
+      expect(getFetchedHeaders(fetchMock).get("Fetch-User-Agent")).toBe(
+        `osdk-widget.vite-plugin/${process.env.PACKAGE_VERSION}`,
       );
     });
   });
@@ -73,7 +80,10 @@ describe("network", () => {
     test("fetches the expected URL", async () => {
       await enableDevMode(foundryUrl, undefined);
       expect(getFetchedUrl(fetchMock)).toBe(
-        "https://example.palantirfoundry.com/api/v2/widgets/devModeSettingsV2/enable?preview=true"
+        "https://example.palantirfoundry.com/api/v2/widgets/devModeSettingsV2/enable?preview=true",
+      );
+      expect(getFetchedHeaders(fetchMock).get("Fetch-User-Agent")).toBe(
+        `osdk-widget.vite-plugin/${process.env.PACKAGE_VERSION}`,
       );
     });
   });

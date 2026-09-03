@@ -42,7 +42,6 @@ const sitesFilter: FilterDefinitionUnion<Employee> = {
   key: "locationCity",
   label: "Sites",
   filterComponent: "MULTI_SELECT",
-  filterState: { type: "SELECT", selectedValues: [] },
 };
 
 const specialtiesFilter: FilterDefinitionUnion<Employee> = {
@@ -51,7 +50,6 @@ const specialtiesFilter: FilterDefinitionUnion<Employee> = {
   key: "department",
   label: "Specialties",
   filterComponent: "MULTI_SELECT",
-  filterState: { type: "SELECT", selectedValues: [] },
 };
 
 const consultantsFilter: FilterDefinitionUnion<Employee> = {
@@ -60,7 +58,6 @@ const consultantsFilter: FilterDefinitionUnion<Employee> = {
   key: "fullName",
   label: "Consultants",
   filterComponent: "CONTAINS_TEXT",
-  filterState: { type: "CONTAINS_TEXT" },
 };
 
 const TOOLBAR_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
@@ -143,7 +140,7 @@ function InlineFilterField({
 }: FilterToolbarItemProps): React.ReactElement {
   const handleStateChange = useCallback(
     (state: FilterState) => setFilterState(filterKey, state),
-    [filterKey, setFilterState]
+    [filterKey, setFilterState],
   );
   return (
     <span className={styles.inlineFieldGroup}>
@@ -172,11 +169,11 @@ function PopoverFilterField({
 }: FilterToolbarItemProps): React.ReactElement {
   const handleStateChange = useCallback(
     (state: FilterState) => setFilterState(filterKey, state),
-    [filterKey, setFilterState]
+    [filterKey, setFilterState],
   );
   const handleRemove = useCallback(
     () => clearFilterState(filterKey),
-    [filterKey, clearFilterState]
+    [filterKey, clearFilterState],
   );
   return (
     <FilterPopover
@@ -332,9 +329,9 @@ function HorizontalFilterToolbar({ objectType, filterDefinitions }) {
 <HorizontalFilterToolbar
   objectType={Employee}
   filterDefinitions={[
-    { type: "PROPERTY", key: "locationCity", label: "Sites", filterComponent: "MULTI_SELECT", filterState: { type: "SELECT", selectedValues: [] } },
-    { type: "PROPERTY", key: "department", label: "Specialties", filterComponent: "MULTI_SELECT", filterState: { type: "SELECT", selectedValues: [] } },
-    { type: "PROPERTY", key: "fullName", label: "Consultants", filterComponent: "CONTAINS_TEXT", filterState: { type: "CONTAINS_TEXT" } },
+    { type: "PROPERTY", key: "locationCity", label: "Sites", filterComponent: "MULTI_SELECT" },
+    { type: "PROPERTY", key: "department", label: "Specialties", filterComponent: "MULTI_SELECT" },
+    { type: "PROPERTY", key: "fullName", label: "Consultants", filterComponent: "CONTAINS_TEXT" },
   ]}
 />`,
       },

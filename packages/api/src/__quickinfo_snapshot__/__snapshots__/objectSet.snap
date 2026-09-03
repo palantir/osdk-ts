@@ -19,7 +19,7 @@ type objectSet_aggregate_req_param = AggregateOpts<EmployeeApiTest> & {
   $groupBy:
     & Pick<GroupByClause<EmployeeApiTest> | undefined, never>
     & Record<never, never>;
-};
+} & Record<never, never>;
 
 /** The result of objectSet.asyncIter(). */
 type objectSet_asyncIter_result = AsyncIterableIterator<
@@ -338,15 +338,13 @@ type objectSet_where_clause_param =
   | OrWhereClause<EmployeeApiTest, {}>
   | AndWhereClause<EmployeeApiTest, {}>
   | NotWhereClause<EmployeeApiTest, {}>
-  | (
-    | PropertyWhereClause<
-      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
-        EmployeeApiTest,
-        {}
-      >
+  | SpecialPropertyWhereClause<EmployeeApiTest>
+  | PropertyWhereClause<
+    DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+      EmployeeApiTest,
+      {}
     >
-    | SpecialPropertyWhereClause<EmployeeApiTest>
-  );
+  >;
 
 /** The result of objectSet.withProperties({ mom: ..., dad: ... }). */
 type objectSet_withProperties_result = ObjectSet<
@@ -380,20 +378,18 @@ type objectSet_with_rdp_where_clause_param =
     >,
     {}
   >
-  | (
-    | PropertyWhereClause<
-      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
-        DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
-          EmployeeApiTest,
-          { mom: "integer" }
-        >,
-        {}
-      >
+  | SpecialPropertyWhereClause<
+    DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+      EmployeeApiTest,
+      { mom: "integer" }
     >
-    | SpecialPropertyWhereClause<
+  >
+  | PropertyWhereClause<
+    DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
       DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
         EmployeeApiTest,
         { mom: "integer" }
-      >
+      >,
+      {}
     >
-  );
+  >;

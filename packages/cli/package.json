@@ -1,6 +1,6 @@
 {
   "name": "@osdk/cli",
-  "version": "0.76.0",
+  "version": "0.90.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -38,7 +38,6 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@arethetypeswrong/cli": "0.17.3",
     "@osdk/foundry-config-json": "workspace:*",
     "@osdk/shared.net.errors": "workspace:*",
     "@osdk/shared.net.fetch": "workspace:*",
@@ -56,6 +55,7 @@
     "yargs": "17.7.2"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.17.3",
     "@osdk/cli.cmd.typescript": "workspace:~",
     "@osdk/cli.common": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",

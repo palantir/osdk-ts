@@ -25,7 +25,7 @@ function stripTranslateFromTransform(element: Element): string {
   }
 
   const matrixMatch = transform.match(
-    /matrix\(([^,]+),\s*([^,]+),\s*([^,]+),\s*([^,]+),\s*[^,]+,\s*[^)]+\)/u
+    /matrix\(([^,]+),\s*([^,]+),\s*([^,]+),\s*([^,]+),\s*[^,]+,\s*[^)]+\)/u,
   );
 
   if (matrixMatch) {
@@ -67,7 +67,7 @@ export function createElementBounds(element: Element): OverlayBounds {
 export function getElementAtPosition(
   clientX: number,
   clientY: number,
-  ignoreSelector?: string
+  ignoreSelector?: string,
 ): Element | null {
   const elementsAtPoint = document.elementsFromPoint(clientX, clientY);
 

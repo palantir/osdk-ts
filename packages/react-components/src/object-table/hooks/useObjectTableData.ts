@@ -41,14 +41,14 @@ import { useFunctionColumnsData } from "./useFunctionColumnsData.js";
 
 type WithProperties<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > = {
   [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
 };
 
 export interface UseObjectTableDataProps<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -89,7 +89,7 @@ export interface UseObjectTableDataProps<
 
 export interface UseObjectTableDataResult<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > extends Omit<UseOsdkListResult<Q, RDPs>, "isOptimistic"> {}
 /**
  * This hook is a wrapper that conditionally uses either useObjectSet or useOsdkObjects
@@ -99,7 +99,7 @@ export interface UseObjectTableDataResult<
  */
 export function useObjectTableData<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -128,7 +128,7 @@ export function useObjectTableData<
         acc[sort.id as PropertyKeys<Q>] = sort.desc ? "desc" : "asc";
         return acc;
       },
-      {}
+      {},
     );
   }, [sorting]);
 
@@ -155,7 +155,7 @@ export function useObjectTableData<
           [cur.id]: cur.creator,
         };
       },
-      {} as WithProperties<Q, RDPs>
+      {} as WithProperties<Q, RDPs>,
     );
   }, [columnDefinitions]);
 
@@ -175,7 +175,7 @@ export function useObjectTableData<
       enabled: shouldUseObjectSet,
       dedupeIntervalMs,
       streamUpdates,
-    }
+    },
   );
 
   const osdkObjectsResult = useOsdkObjects<Q, RDPs>(objectOrInterfaceType, {

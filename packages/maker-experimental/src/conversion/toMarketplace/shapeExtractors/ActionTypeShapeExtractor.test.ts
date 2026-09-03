@@ -64,7 +64,7 @@ class MockBiMap<K, V> implements BiMap<K, V> {
 
 // Helper to create a mock OntologyRidGenerator
 function createMockRidGenerator(
-  overrides: Partial<OntologyRidGenerator> = {}
+  overrides: Partial<OntologyRidGenerator> = {},
 ): OntologyRidGenerator {
   return {
     getActionTypeRids: () => new MockBiMap([]) as any,
@@ -75,10 +75,12 @@ function createMockRidGenerator(
     getInterfacePropertyTypeRids: () => new MockBiMap([]) as any,
     getPropertyTypeRids: () => new MockBiMap([]) as any,
     getDatasourceLocators: () => new MockBiMap([]) as any,
+    getDirectDatasourceLocators: () => new MockBiMap([]) as any,
     getFilesDatasourceLocators: () => new MockBiMap([]) as any,
     getGeotimeSeriesIntegrationRids: () => new MockBiMap([]) as any,
     getTimeSeriesSyncs: () => new MockBiMap([]) as any,
     getColumnShapes: () => new MockBiMap([]) as any,
+    getDirectDatasourceColumnShapes: () => new MockBiMap([]) as any,
     getObjectTypeRids: () => new MockBiMap([]) as any,
     getLinkTypeRids: () => new MockBiMap([]) as any,
     getGroupIds: () => new MockBiMap([]) as any,
@@ -93,7 +95,7 @@ function createMockRidGenerator(
     generateRidForInterface: (apiName: string) => `interface.${apiName}` as any,
     generateRidForInterfaceLinkType: (
       apiName: string,
-      interfaceTypeApiName: string
+      interfaceTypeApiName: string,
     ) => `interface-link.${interfaceTypeApiName}.${apiName}` as any,
     generateRidForObjectType: (apiName: string) => `object.${apiName}` as any,
     generateRidForValueType: (apiName: string, version: string) =>
@@ -113,7 +115,7 @@ function createMockRidGenerator(
       `prop.${objectTypeApiName}.${apiName}` as any,
     generateInterfacePropertyTypeRid: (
       apiName: string,
-      interfaceTypeApiName: string
+      interfaceTypeApiName: string,
     ) => `interface-prop.${interfaceTypeApiName}.${apiName}` as any,
     generateIptRidFromSptRid: (sptRid: string) =>
       sptRid.replace("shared-property-type", "interface-property-type") as any,
@@ -121,10 +123,18 @@ function createMockRidGenerator(
       `struct-field.${propertyApiName}.${apiName}` as any,
     generateDatasetLocator: (
       dataSetName: string,
-      _columnNames: Set<string>
+      _columnNames: Set<string>,
     ) => ({
       rid: `dataset.${dataSetName}`,
       branchId: "main",
+    }),
+    generateDirectDatasourceLocator: (
+      dataSetName: string,
+      _columnNames: Set<string>,
+      branchId: string,
+    ) => ({
+      rid: `dataset.${dataSetName}`,
+      branchId,
     }),
     generateStreamLocator: (streamName: string, _columnNames: Set<string>) => ({
       streamLocatorRid: `stream.${streamName}`,
@@ -132,7 +142,7 @@ function createMockRidGenerator(
     }),
     generateRestrictedViewLocator: (
       restrictedViewName: string,
-      _columnNames: Set<string>
+      _columnNames: Set<string>,
     ) => ({
       rid: `restricted-view.${restrictedViewName}`,
     }),
@@ -157,13 +167,13 @@ function createMockRidGenerator(
       `ri.ontology-metadata.temp.property-security-group.${groupName}`,
     generateRidForInterfaceActionTypeConstraint: (
       apiName: string,
-      interfaceTypeApiName: string
+      interfaceTypeApiName: string,
     ) =>
       `interface-action-type-constraint.${interfaceTypeApiName}.${apiName}` as any,
     generateRidForInterfaceParameterConstraint: (
       constraintApiName: string,
       interfaceTypeApiName: string,
-      paramApiName: string
+      paramApiName: string,
     ) =>
       `interface-parameter-constraint.${interfaceTypeApiName}.${constraintApiName}.${paramApiName}` as any,
     getInterfaceActionTypeConstraintRids: () => new MockBiMap([]) as any,
@@ -269,11 +279,13 @@ describe("ActionTypeShapeExtractor", () => {
         linkTypeIds: {},
         linkTypes: {},
         markings: {},
+        objectPropertyTypeIdsToRids: {},
         objectTypeIds: {},
         objectTypes: {},
         propertyTypeIds: {},
         propertyTypes: {},
         sharedPropertyTypes: {},
+        structFieldRidsToApiNames: {},
         timeSeriesSyncs: {},
         valueTypes: {},
         webhooks: {},
@@ -284,24 +296,24 @@ describe("ActionTypeShapeExtractor", () => {
       const result = extractor.extract(
         actionType,
         ridGenerator,
-        knownIdentifiers
+        knownIdentifiers,
       );
 
       // Should have output shapes for action type and parameters
       expect(result.outputShapes.size).toBe(3); // action + 2 parameters
       expect(
-        result.outputShapes.has("action-type-createTask" as ReadableId)
+        result.outputShapes.has("action-type-createTask" as ReadableId),
       ).toBe(true);
 
       const actionShape = result.outputShapes.get(
-        "action-type-createTask" as ReadableId
+        "action-type-createTask" as ReadableId,
       );
       expect(actionShape).toBeDefined();
       expect(actionShape?.type).toBe("action");
       if (actionShape?.type === "action") {
         expect(actionShape.action.about.fallbackTitle).toBe("Create Task");
         expect(actionShape.action.about.fallbackDescription).toBe(
-          "Creates a new task in the system"
+          "Creates a new task in the system",
         );
         expect(actionShape.action.parameters).toEqual({});
         expect(actionShape.action.parametersV2).toHaveLength(2);
@@ -309,19 +321,19 @@ describe("ActionTypeShapeExtractor", () => {
 
       // Check parameter shapes
       const titleParamShape = result.outputShapes.get(
-        "action-createTask-parameter-title" as ReadableId
+        "action-createTask-parameter-title" as ReadableId,
       );
       expect(titleParamShape).toBeDefined();
       expect(titleParamShape?.type).toBe("actionParameter");
       if (titleParamShape?.type === "actionParameter") {
         expect(titleParamShape.actionParameter.about.fallbackTitle).toBe(
-          "Title"
+          "Title",
         );
         expect(titleParamShape.actionParameter.about.fallbackDescription).toBe(
-          "The task title"
+          "The task title",
         );
         expect(titleParamShape.actionParameter.actionType).toBe(
-          "action-type-createTask"
+          "action-type-createTask",
         );
       }
     });
@@ -381,11 +393,13 @@ describe("ActionTypeShapeExtractor", () => {
         linkTypeIds: {},
         linkTypes: {},
         markings: {},
+        objectPropertyTypeIdsToRids: {},
         objectTypeIds: {},
         objectTypes: {},
         propertyTypeIds: {},
         propertyTypes: {},
         sharedPropertyTypes: {},
+        structFieldRidsToApiNames: {},
         timeSeriesSyncs: {},
         valueTypes: {},
         webhooks: {},
@@ -396,17 +410,17 @@ describe("ActionTypeShapeExtractor", () => {
       const result = extractor.extract(
         actionType,
         ridGenerator,
-        knownIdentifiers
+        knownIdentifiers,
       );
 
       // Should have only action type shape, no parameters
       expect(result.outputShapes.size).toBe(1);
       expect(result.outputShapes.has("action-type-refresh" as ReadableId)).toBe(
-        true
+        true,
       );
 
       const actionShape = result.outputShapes.get(
-        "action-type-refresh" as ReadableId
+        "action-type-refresh" as ReadableId,
       );
       expect(actionShape).toBeDefined();
       expect(actionShape?.type).toBe("action");
@@ -462,11 +476,13 @@ describe("ActionTypeShapeExtractor", () => {
         linkTypeIds: {},
         linkTypes: {},
         markings: {},
+        objectPropertyTypeIdsToRids: {},
         objectTypeIds: {},
         objectTypes: {},
         propertyTypeIds: {},
         propertyTypes: {},
         sharedPropertyTypes: {},
+        structFieldRidsToApiNames: {},
         timeSeriesSyncs: {},
         valueTypes: {},
         webhooks: {},
@@ -477,7 +493,7 @@ describe("ActionTypeShapeExtractor", () => {
       const result = extractor.extract(
         actionType,
         ridGenerator,
-        knownIdentifiers
+        knownIdentifiers,
       );
 
       // Should return empty shapes
@@ -579,11 +595,13 @@ describe("ActionTypeShapeExtractor", () => {
         linkTypeIds: {},
         linkTypes: {},
         markings: {},
+        objectPropertyTypeIdsToRids: {},
         objectTypeIds: {},
         objectTypes: {},
         propertyTypeIds: {},
         propertyTypes: {},
         sharedPropertyTypes: {},
+        structFieldRidsToApiNames: {},
         timeSeriesSyncs: {},
         valueTypes: {},
         webhooks: {},
@@ -594,32 +612,32 @@ describe("ActionTypeShapeExtractor", () => {
       const result = extractor.extract(
         actionType,
         ridGenerator,
-        knownIdentifiers
+        knownIdentifiers,
       );
 
       // Should have action + 3 parameters
       expect(result.outputShapes.size).toBe(4);
       expect(
-        result.outputShapes.has("action-type-complexAction" as ReadableId)
+        result.outputShapes.has("action-type-complexAction" as ReadableId),
       ).toBe(true);
       expect(
         result.outputShapes.has(
-          "action-complexAction-parameter-param1" as ReadableId
-        )
+          "action-complexAction-parameter-param1" as ReadableId,
+        ),
       ).toBe(true);
       expect(
         result.outputShapes.has(
-          "action-complexAction-parameter-param2" as ReadableId
-        )
+          "action-complexAction-parameter-param2" as ReadableId,
+        ),
       ).toBe(true);
       expect(
         result.outputShapes.has(
-          "action-complexAction-parameter-param3" as ReadableId
-        )
+          "action-complexAction-parameter-param3" as ReadableId,
+        ),
       ).toBe(true);
 
       const actionShape = result.outputShapes.get(
-        "action-type-complexAction" as ReadableId
+        "action-type-complexAction" as ReadableId,
       );
       if (actionShape?.type === "action") {
         expect(actionShape.action.parametersV2).toHaveLength(3);
@@ -698,11 +716,13 @@ describe("ActionTypeShapeExtractor", () => {
         linkTypeIds: {},
         linkTypes: {},
         markings: {},
+        objectPropertyTypeIdsToRids: {},
         objectTypeIds: {},
         objectTypes: {},
         propertyTypeIds: {},
         propertyTypes: {},
         sharedPropertyTypes: {},
+        structFieldRidsToApiNames: {},
         timeSeriesSyncs: {},
         valueTypes: {},
         webhooks: {},
@@ -713,11 +733,11 @@ describe("ActionTypeShapeExtractor", () => {
       const result = extractor.extract(
         actionType,
         ridGenerator,
-        knownIdentifiers
+        knownIdentifiers,
       );
 
       const actionShape = result.outputShapes.get(
-        "action-type-testAction" as ReadableId
+        "action-type-testAction" as ReadableId,
       );
       if (actionShape?.type === "action") {
         // Parameters should have randomness applied
@@ -725,12 +745,12 @@ describe("ActionTypeShapeExtractor", () => {
       }
 
       const paramShape = result.outputShapes.get(
-        "action-type-testAction-parameter-input" as ReadableId
+        "action-type-testAction-parameter-input" as ReadableId,
       );
       if (paramShape?.type === "actionParameter") {
         // Action type reference should have randomness applied
         expect(paramShape.actionParameter.actionType).toContain(
-          "with-randomness"
+          "with-randomness",
         );
       }
     });

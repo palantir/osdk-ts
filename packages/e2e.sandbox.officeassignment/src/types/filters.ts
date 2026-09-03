@@ -27,7 +27,7 @@ export type IdentifiedFilterDef<T extends ObjectTypeDefinition> =
  * present at runtime. Narrows without a cast.
  */
 export function getFilterDefId<T extends ObjectTypeDefinition>(
-  def: FilterDefinitionUnion<T>
+  def: FilterDefinitionUnion<T>,
 ): string | undefined {
   return "id" in def && typeof def.id === "string" ? def.id : undefined;
 }

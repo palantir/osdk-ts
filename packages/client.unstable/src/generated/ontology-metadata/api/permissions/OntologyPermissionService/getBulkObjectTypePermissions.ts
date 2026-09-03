@@ -26,7 +26,7 @@ import type {
  */
 export async function getBulkObjectTypePermissions(
   ctx: ConjureContext,
-  request: _api_permissions_GetBulkObjectTypePermissionsRequest
+  request: _api_permissions_GetBulkObjectTypePermissionsRequest,
 ): Promise<_api_permissions_GetBulkObjectTypePermissionsResponse> {
   return conjureFetch(ctx, `/permissions/objectTypes`, "PUT", request);
 }

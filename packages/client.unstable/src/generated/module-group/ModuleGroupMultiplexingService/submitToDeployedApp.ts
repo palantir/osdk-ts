@@ -22,12 +22,12 @@ import type {
 } from "../__components.js";
 export async function submitToDeployedApp(
   ctx: ConjureContext,
-  request: _SubmitJobToDeployedAppRequest
+  request: _SubmitJobToDeployedAppRequest,
 ): Promise<_Job> {
   return conjureFetch(
     ctx,
     `/module-group-multiplexer/deployed-apps/jobs`,
     "POST",
-    request
+    request,
   );
 }

@@ -98,7 +98,7 @@ describe("MonitoringPanel", () => {
     render(<MonitoringPanel monitorStore={store} />);
 
     expect(
-      shadow().getByRole("tab", { name: "Overview", selected: true })
+      shadow().getByRole("tab", { name: "Overview", selected: true }),
     ).not.toBeNull();
   });
 
@@ -123,11 +123,11 @@ describe("MonitoringPanel", () => {
     fireEvent.click(shadow().getByRole("tab", { name: "Components" }));
 
     expect(
-      shadow().getByRole("tab", { name: "Components", selected: true })
+      shadow().getByRole("tab", { name: "Components", selected: true }),
     ).not.toBeNull();
     // The single visible tabpanel is the one owned by the Components tab.
     expect(
-      shadow().getByRole("tabpanel").getAttribute("aria-labelledby")
+      shadow().getByRole("tabpanel").getAttribute("aria-labelledby"),
     ).toContain("components");
   });
 
@@ -149,11 +149,11 @@ describe("MonitoringPanel", () => {
 
     fireEvent.click(shadow().getByRole("tab", { name: "Components" }));
     expect(
-      shadow().getByRole("tab", { name: "Components", selected: true })
+      shadow().getByRole("tab", { name: "Components", selected: true }),
     ).not.toBeNull();
 
     fireEvent.click(
-      shadow().getByRole("button", { name: "Minimize devtools panel" })
+      shadow().getByRole("button", { name: "Minimize devtools panel" }),
     );
     expect(shadow().queryByRole("tablist")).toBeNull();
 

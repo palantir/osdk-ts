@@ -49,7 +49,7 @@ export function BaseCbacBanner({
         "--osdk-cbac-banner-bg": backgroundFromColors(backgroundColors),
         "--osdk-cbac-banner-color": textColor,
       }) as React.CSSProperties,
-    [textColor, backgroundColors]
+    [textColor, backgroundColors],
   );
 
   const handleDismiss = React.useCallback(
@@ -57,7 +57,7 @@ export function BaseCbacBanner({
       e.stopPropagation();
       onDismiss?.();
     },
-    [onDismiss]
+    [onDismiss],
   );
 
   if (isLoading) {

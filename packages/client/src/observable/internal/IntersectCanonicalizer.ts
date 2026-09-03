@@ -47,10 +47,10 @@ export class IntersectCanonicalizer extends CachingCanonicalizer<
   }
 
   protected lookupOrCreate(
-    intersectWith: IntersectWithInput
+    intersectWith: IntersectWithInput,
   ): Canonical<Array<Canonical<SimpleWhereClause>>> {
     const canonicalClauses = intersectWith.map((item) =>
-      this.whereCanonicalizer.canonicalize(item.where ?? {})
+      this.whereCanonicalizer.canonicalize(item.where ?? {}),
     );
 
     const structuralKey = canonicalClauses

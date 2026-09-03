@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Classes } from "@blueprintjs/core";
 import type { Decorator } from "@storybook/react-vite";
 import { useEffect, useMemo } from "react";
 
@@ -88,7 +89,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
       "  --osdk-input-shadow-error: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-intent-danger-rest);",
       "  --osdk-input-focus-shadow: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-surface-border-color-default);",
       "  --osdk-input-focus-shadow-error: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-intent-danger-rest);",
-      "  --osdk-button-shadow: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-surface-border-color-default);"
+      "  --osdk-button-shadow: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-surface-border-color-default);",
     );
 
     // Use :root:root (doubled specificity) to override theme layers.
@@ -114,7 +115,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
         if (styleEl) styleEl.remove();
       };
     },
-    [cssText]
+    [cssText],
   );
 
   useEffect(
@@ -122,15 +123,20 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
       const root = document.documentElement;
       if (brandTheme.colorMode === "dark") {
         root.setAttribute("data-bp-color-scheme", "dark");
+        // Blueprint component styles still use this class in addition to its
+        // design-token attribute, including dialogs portaled to document.body.
+        root.classList.add(Classes.DARK);
       } else {
         root.removeAttribute("data-bp-color-scheme");
+        root.classList.remove(Classes.DARK);
       }
 
       return () => {
         root.removeAttribute("data-bp-color-scheme");
+        root.classList.remove(Classes.DARK);
       };
     },
-    [brandTheme.colorMode]
+    [brandTheme.colorMode],
   );
 
   return <Story />;

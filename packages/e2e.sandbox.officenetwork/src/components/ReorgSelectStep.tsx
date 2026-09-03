@@ -34,7 +34,7 @@ export function ReorgSelectStep({
     if (config.algorithm === "swap" && config.swapOfficeIds) {
       const [officeA, officeB] = config.swapOfficeIds;
       result = result.filter(
-        (e) => e.primaryOfficeId === officeA || e.primaryOfficeId === officeB
+        (e) => e.primaryOfficeId === officeA || e.primaryOfficeId === officeB,
       );
     }
 
@@ -48,12 +48,12 @@ export function ReorgSelectStep({
         (e) =>
           e.fullName?.toLowerCase().includes(query) ||
           e.emailPrimaryWork?.toLowerCase().includes(query) ||
-          e.team?.toLowerCase().includes(query)
+          e.team?.toLowerCase().includes(query),
       );
     }
 
     return result.sort((a, b) =>
-      (a.fullName ?? "").localeCompare(b.fullName ?? "")
+      (a.fullName ?? "").localeCompare(b.fullName ?? ""),
     );
   }, [
     employees,
@@ -78,7 +78,7 @@ export function ReorgSelectStep({
         onSelectByOffice(officeEmployees);
       });
     },
-    [employees, onSelectByOffice]
+    [employees, onSelectByOffice],
   );
 
   const officeMap = useOfficeMap(offices);

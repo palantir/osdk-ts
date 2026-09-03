@@ -34,7 +34,7 @@ import { withoutNamespace } from "./utils.js";
  */
 export function convertInterfaceType(
   iface: Ontologies.InterfaceType,
-  allInterfaces: Record<string, Ontologies.InterfaceType>
+  allInterfaces: Record<string, Ontologies.InterfaceType>,
 ): InterfaceType {
   const shortName = withoutNamespace(iface.apiName);
 
@@ -49,7 +49,10 @@ export function convertInterfaceType(
     if (prop.type === "interfaceSharedPropertyType") {
       const converted = convertSharedPropertyType(prop);
       if (converted) {
-        const entry = { sharedPropertyType: converted, required: true };
+        const entry = {
+          sharedPropertyType: converted,
+          required: prop.required,
+        };
         propertiesV2[prop.apiName] = entry;
         propertiesV3[withoutNamespace(prop.apiName)] = entry;
       }
@@ -65,7 +68,7 @@ export function convertInterfaceType(
         };
       } else {
         consola.warn(
-          `Skipping interface-defined property "${prop.apiName}": unsupported type "${prop.dataType.type}"`
+          `Skipping interface-defined property "${prop.apiName}": unsupported type "${prop.dataType.type}"`,
         );
       }
     }
@@ -85,7 +88,7 @@ export function convertInterfaceType(
     apiName: iface.apiName,
     displayMetadata: {
       displayName: iface.displayName ?? shortName,
-      description: iface.description ?? shortName,
+      description: iface.description ?? "",
     },
     extendsInterfaces,
     links: [],

@@ -16,7 +16,11 @@
 
 import type { MarketplaceInterfacePropertyType } from "@osdk/client.unstable";
 import type { InterfacePropertyType } from "@osdk/maker";
-import { isInterfaceSharedPropertyType } from "@osdk/maker";
+import {
+  isInterfaceSharedPropertyType,
+  shouldBeIndexedForSearch,
+  validateVectorProperty,
+} from "@osdk/maker";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
@@ -27,7 +31,7 @@ export function convertInterfaceProperty(
   prop: InterfacePropertyType,
   apiName: string,
   interfaceApiName: string,
-  ridGenerator: OntologyRidGenerator
+  ridGenerator: OntologyRidGenerator,
 ): [string, MarketplaceInterfacePropertyType] {
   if (isInterfaceSharedPropertyType(prop)) {
     const convertedSpt = convertSpt(prop.sharedPropertyType, ridGenerator);
@@ -42,6 +46,7 @@ export function convertInterfaceProperty(
       },
     ];
   } else {
+    validateVectorProperty(apiName, prop.type, prop.array);
     return [
       ridGenerator.generateInterfacePropertyTypeRid(apiName, interfaceApiName),
       {
@@ -60,19 +65,19 @@ export function convertInterfaceProperty(
                   subtype: propertyTypeTypeToOntologyIrInterfaceType(
                     prop.type,
                     apiName,
-                    ridGenerator
+                    ridGenerator,
                   ),
                 },
               }
             : propertyTypeTypeToOntologyIrInterfaceType(
                 prop.type,
                 apiName,
-                ridGenerator
+                ridGenerator,
               ),
           constraints: {
             primaryKeyConstraint: prop.primaryKeyConstraint ?? "NO_RESTRICTION",
             requireImplementation: prop.required ?? true,
-            indexedForSearch: true,
+            indexedForSearch: shouldBeIndexedForSearch(prop.type),
             typeClasses: prop.typeClasses ?? [],
             dataConstraints: convertNullabilityToDataConstraint({
               type: prop.type,
@@ -81,13 +86,13 @@ export function convertInterfaceProperty(
             valueType: prop.valueType
               ? ridGenerator.generateRidForValueType(
                   prop.valueType.apiName,
-                  prop.valueType.version
+                  prop.valueType.version,
                 )
               : undefined,
           },
           rid: ridGenerator.generateInterfacePropertyTypeRid(
             apiName,
-            interfaceApiName
+            interfaceApiName,
           ),
         },
       },

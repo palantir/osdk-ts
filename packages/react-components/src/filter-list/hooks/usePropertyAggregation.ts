@@ -47,7 +47,7 @@ export interface UsePropertyAggregationOptions<
   where?: WhereClause<Q>;
   sortBy?: "count" | "value";
   /** Selected values to include in results even when they have zero matching
-   *  rows (e.g. saved filter selections from initialFilterStates). */
+   *  rows (e.g. saved filter selections from defaultFilterStates). */
   activeValues?: string[];
 }
 
@@ -58,7 +58,7 @@ export function usePropertyAggregation<
   objectType: Q,
   propertyKey: K,
   objectSet: ObjectSet<Q> | undefined,
-  options?: UsePropertyAggregationOptions<Q>
+  options?: UsePropertyAggregationOptions<Q>,
 ): UsePropertyAggregationResult {
   // AggregateOpts requires specific property keys from Q, but we're dynamically
   // using propertyKey. The cast is unavoidable for this dynamic filter pattern.
@@ -72,12 +72,12 @@ export function usePropertyAggregation<
           },
         },
       }) as AggregateOpts<Q>,
-    [propertyKey]
+    [propertyKey],
   );
 
   const aggregationArgs = useMemo(
     () => ({ aggregate: aggregateOptions, where: options?.where, objectSet }),
-    [aggregateOptions, options?.where, objectSet]
+    [aggregateOptions, options?.where, objectSet],
   );
 
   const {
@@ -119,7 +119,7 @@ export function usePropertyAggregation<
     const filteredOutEntries = activeValues.flatMap((v) =>
       existingValues.has(v)
         ? []
-        : [{ $group: { [propertyKey as string]: v }, $count: 0 }]
+        : [{ $group: { [propertyKey as string]: v }, $count: 0 }],
     );
 
     for (const item of [...dataArray, ...filteredOutEntries]) {
@@ -139,7 +139,7 @@ export function usePropertyAggregation<
     const sortBy = options?.sortBy ?? "count";
     if (sortBy === "count") {
       deduped.sort(
-        (a, b) => b.count - a.count || a.value.localeCompare(b.value)
+        (a, b) => b.count - a.count || a.value.localeCompare(b.value),
       );
     } else {
       deduped.sort((a, b) => a.value.localeCompare(b.value));

@@ -72,7 +72,7 @@ This is a **sample markdown** document rendered by the DocumentViewer.
 function createMockMedia(
   mimeType: string,
   fetchFn: () => Promise<Response>,
-  filename: string
+  filename: string,
 ): Media {
   return {
     fetchContents: fetchFn,
@@ -101,25 +101,25 @@ const imageBlob = createSampleImageBlob();
 const mockPdfMedia = createMockMedia(
   "application/pdf",
   () => fetch(SAMPLE_PDF_URL),
-  "document.pdf"
+  "document.pdf",
 );
 
 const mockImageMedia = createMockMedia(
   "image/png",
   () => Promise.resolve(new Response(imageBlob)),
-  "photo.png"
+  "photo.png",
 );
 
 const mockMarkdownMedia = createMockMedia(
   "text/markdown",
   () => Promise.resolve(new Response(SAMPLE_MARKDOWN)),
-  "readme.md"
+  "readme.md",
 );
 
 const mockVideoMedia = createMockMedia(
   "video/mp4",
   () => fetch(SAMPLE_VIDEO_URL),
-  "example.mp4"
+  "example.mp4",
 );
 
 const SAMPLE_EML = `From: Alice <alice@example.com>
@@ -134,7 +134,7 @@ Content-Type: text/html; charset=utf-8
 const mockEmailMedia = createMockMedia(
   "message/rfc822",
   () => Promise.resolve(new Response(SAMPLE_EML)),
-  "message.eml"
+  "message.eml",
 );
 
 const SAMPLE_XML = `<?xml version="1.0"?>
@@ -148,10 +148,10 @@ const SAMPLE_XML = `<?xml version="1.0"?>
 const mockXmlMedia = createMockMedia(
   "application/xml",
   () => Promise.resolve(new Response(SAMPLE_XML)),
-  "data.xml"
+  "data.xml",
 );
 
-function createMockExcelMedia(): Media {
+function createMockSpreadsheetMedia(): Media {
   const ws = utils.aoa_to_sheet([
     ["Name", "Department", "Salary"],
     ["Alice", "Engineering", "$145,000"],
@@ -163,22 +163,31 @@ function createMockExcelMedia(): Media {
   return createMockMedia(
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     () => Promise.resolve(new Response(buf)),
-    "report.xlsx"
+    "report.xlsx",
   );
 }
 
-const mockExcelMedia = createMockExcelMedia();
+const mockSpreadsheetMedia = createMockSpreadsheetMedia();
 
 const mockTiffMedia = createMockMedia(
   "image/tiff",
   () => fetch(SAMPLE_TIFF_URL),
-  "multi-page-tiff.tiff"
+  "multi-page-tiff.tiff",
 );
 
 const mockUnsupportedMedia = createMockMedia(
   "application/octet-stream",
   () => Promise.resolve(new Response("")),
-  "data.bin"
+  "data.bin",
+);
+
+// Markdown content served under a generic MIME type, which is what
+// mimeTypeOverride exists to correct. Distinct from mockUnsupportedMedia,
+// whose empty body would render as a blank viewer once overridden.
+const mockMislabeledMarkdownMedia = createMockMedia(
+  "application/octet-stream",
+  () => Promise.resolve(new Response(SAMPLE_MARKDOWN)),
+  "notes.dat",
 );
 
 const meta: Meta<DocumentViewerProps> = {
@@ -222,9 +231,7 @@ export const Pdf: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-
-<DocumentViewer media={employee.trainingMaterial} />`,
+        code: `<DocumentViewer media={employee.trainingMaterial} />`,
       },
     },
   },
@@ -239,11 +246,27 @@ export const Image: Story = {
       <DocumentViewer {...args} />
     </div>
   ),
+  parameters: {
+    docs: {
+      source: {
+        code: `// image/* media renders with the pan and zoom ImageViewer
+<DocumentViewer media={employee.profilePhoto} />`,
+      },
+    },
+  },
 };
 
 export const Markdown: Story = {
   args: {
     media: mockMarkdownMedia,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// text/markdown media renders with MarkdownViewer
+<DocumentViewer media={project.readme} />`,
+      },
+    },
   },
 };
 
@@ -260,6 +283,12 @@ export const Video: Story = {
     msw: {
       handlers: [http.get("*/example.mp4", () => passthrough())],
     },
+    docs: {
+      source: {
+        code: `// video/* media renders with VideoViewer
+<DocumentViewer media={incident.bodyCamFootage} />`,
+      },
+    },
   },
 };
 
@@ -272,17 +301,41 @@ export const UnsupportedType: Story = {
       <DocumentViewer {...args} />
     </div>
   ),
+  parameters: {
+    docs: {
+      source: {
+        code: `// MIME types with no matching renderer fall back to a download prompt
+<DocumentViewer media={record.rawAttachment} />`,
+      },
+    },
+  },
 };
 
 export const Email: Story = {
   args: {
     media: mockEmailMedia,
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `// message/rfc822 media renders with EmailViewer
+<DocumentViewer media={thread.originalMessage} />`,
+      },
+    },
+  },
 };
 
-export const Excel: Story = {
+export const Spreadsheet: Story = {
   args: {
-    media: mockExcelMedia,
+    media: mockSpreadsheetMedia,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// xlsx / xls / csv media renders with SpreadsheetViewer
+<DocumentViewer media={quarter.headcountReport} />`,
+      },
+    },
   },
 };
 
@@ -295,6 +348,14 @@ export const Xml: Story = {
       <DocumentViewer {...args} />
     </div>
   ),
+  parameters: {
+    docs: {
+      source: {
+        code: `// application/xml media renders with the collapsible-tree XmlViewer
+<DocumentViewer media={shipment.manifest} />`,
+      },
+    },
+  },
 };
 
 export const Tiff: Story = {
@@ -304,6 +365,13 @@ export const Tiff: Story = {
   parameters: {
     msw: {
       handlers: [http.get("*/multi-page-tiff.tiff", () => passthrough())],
+    },
+    docs: {
+      source: {
+        code: `// image/tiff media renders with TiffViewer, which decodes in the browser.
+// See "Tiff With Pdf Conversion" for server-side PDF conversion instead.
+<DocumentViewer media={claim.scannedForm} />`,
+      },
     },
   },
 };
@@ -336,7 +404,7 @@ export const TiffWithPdfConversion: Story = {
             return new HttpResponse(buffer, {
               headers: { "Content-Type": "application/pdf" },
             });
-          }
+          },
         ),
         // Mock MIO transform API: get status
         http.get("*/api/v2/mediasets/*/items/*/transformationJobs/*", () => {
@@ -346,27 +414,91 @@ export const TiffWithPdfConversion: Story = {
     },
     docs: {
       source: {
-        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-
-// Multi-page TIFFs are detected and converted to PDF via MIO transform API
-// Falls back to TiffRenderer if transform fails or for single-page TIFFs
+        code: `// Multi-page TIFFs are detected and converted to PDF via MIO transform API
+// Falls back to TiffViewer if transform fails or for single-page TIFFs
 <DocumentViewer media={myMedia} enableTiffToPdf fileName="scan.tiff" />`,
       },
     },
   },
 };
 
+/**
+ * Renders the reported and effective MIME types above the viewer so the story
+ * shows what the override changed, not just its end result. Both values are
+ * read back from the props rather than hardcoded, so editing the
+ * `mimeTypeOverride` control keeps the caption honest.
+ */
+function MimeTypeOverrideDemo({
+  media,
+  mimeTypeOverride,
+  ...rest
+}: DocumentViewerProps) {
+  const reportedMimeType = media.getMediaReference().mimeType;
+  const effectiveMimeType = mimeTypeOverride ?? reportedMimeType;
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+        height: "600px",
+      }}
+    >
+      <dl
+        style={{
+          display: "grid",
+          gridTemplateColumns: "auto 1fr",
+          gap: "4px 12px",
+          margin: 0,
+          padding: "12px",
+          border: "1px solid currentColor",
+          borderRadius: "4px",
+          fontSize: "12px",
+          lineHeight: 1.5,
+          opacity: 0.85,
+        }}
+      >
+        <dt style={{ opacity: 0.7 }}>Reported by media</dt>
+        <dd style={{ margin: 0, fontFamily: "monospace" }}>
+          {reportedMimeType}
+        </dd>
+
+        <dt style={{ opacity: 0.7 }}>mimeTypeOverride</dt>
+        <dd style={{ margin: 0, fontFamily: "monospace" }}>
+          {mimeTypeOverride ?? "(unset)"}
+        </dd>
+
+        <dt style={{ opacity: 0.7 }}>Dispatched on</dt>
+        <dd style={{ margin: 0, fontFamily: "monospace" }}>
+          {effectiveMimeType}
+          {mimeTypeOverride != null ? " (from the override)" : ""}
+        </dd>
+      </dl>
+
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <DocumentViewer
+          media={media}
+          mimeTypeOverride={mimeTypeOverride}
+          {...rest}
+        />
+      </div>
+    </div>
+  );
+}
+
 export const WithMimeTypeOverride: Story = {
   args: {
-    media: mockUnsupportedMedia,
+    media: mockMislabeledMarkdownMedia,
     mimeTypeOverride: "text/markdown",
   },
+  render: (args: DocumentViewerProps) => <MimeTypeOverrideDemo {...args} />,
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-
-// Override auto-detected MIME type
+        code: `// This media item reports "application/octet-stream", which would hit the
+// unsupported-type fallback. The override makes DocumentViewer dispatch on
+// "text/markdown" instead, so MarkdownViewer handles it.
 <DocumentViewer media={myMedia} mimeTypeOverride="text/markdown" />`,
       },
     },
@@ -384,9 +516,7 @@ export const WithPdfViewerProps: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-
-<DocumentViewer
+        code: `<DocumentViewer
   media={myMedia}
   pdfViewerProps={{
     initialSidebarOpen: true,

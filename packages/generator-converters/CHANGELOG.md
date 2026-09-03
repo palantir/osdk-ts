@@ -1,5 +1,113 @@
 # @osdk/generator-converters
 
+## 2.64.0
+
+### Patch Changes
+
+- @osdk/api@2.64.0
+
+## 2.63.0
+
+### Patch Changes
+
+- Updated dependencies [08ba782]
+  - @osdk/api@2.63.0
+
+## 2.62.0
+
+### Patch Changes
+
+- @osdk/api@2.62.0
+
+## 2.61.0
+
+### Patch Changes
+
+- Updated dependencies [bdf45fa]
+- Updated dependencies [34cb7e0]
+  - @osdk/api@2.61.0
+
+## 2.60.0
+
+### Minor Changes
+
+- e879ad7: Bump platform SDKs and add loadOntologyDefinedDerivedProperties flag, which defaults to true
+- bbbeca8: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.75.0`, which reinstates the `streamingExecute` query endpoint as a Server-Sent Events (`text/event-stream`) stream. The experimental `executeStreamingFunction` helper is reimplemented on top of it and no longer throws: it yields each result as it arrives, flattening batched results so array-returning queries emit one element at a time.
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+  - @osdk/api@2.60.0
+
+## 2.59.0
+
+### Patch Changes
+
+- Updated dependencies [4ae6d8b]
+- Updated dependencies [1aff7f4]
+  - @osdk/api@2.59.0
+
+## 2.58.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+
+### Patch Changes
+
+- @osdk/api@2.58.0
+
+## 2.57.0
+
+### Patch Changes
+
+- @osdk/api@2.57.0
+
+## 2.56.0
+
+### Patch Changes
+
+- Updated dependencies [342c492]
+  - @osdk/api@2.56.0
+
+## 2.55.0
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+
+## 2.54.0
+
+### Patch Changes
+
+- @osdk/api@2.54.0
+
+## 2.53.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- @osdk/api@2.53.0
+
+## 2.52.0
+
+### Minor Changes
+
+- 9d0b21e: Surface action parameter displayName in metadata and use it for ActionForm field labels
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+
 ## 2.51.0
 
 ### Patch Changes

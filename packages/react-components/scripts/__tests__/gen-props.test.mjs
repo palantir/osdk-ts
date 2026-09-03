@@ -36,7 +36,7 @@ import {
 
 const PKG_ROOT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
-  "../.."
+  "../..",
 );
 
 /** Identity stand-in for the real `oxfmt` formatter `renderDoc` injects, so
@@ -53,7 +53,7 @@ function parse(code) {
     code,
     ts.ScriptTarget.Latest,
     /* setParentNodes */ true,
-    ts.ScriptKind.TS
+    ts.ScriptKind.TS,
   );
 }
 
@@ -65,7 +65,7 @@ function propNames(code) {
 describe("collapseType", () => {
   it("collapses padding inside generics and parens", () => {
     expect(collapseType("Record< string, never >")).toBe(
-      "Record<string, never>"
+      "Record<string, never>",
     );
     expect(collapseType("( arg: T, ) => U")).toBe("(arg: T) => U");
   });
@@ -89,10 +89,10 @@ describe("collapseProse", () => {
 describe("getAttr", () => {
   it("reads a marker attribute", () => {
     expect(getAttr("src=foo/Bar.ts interface=BarProps ", "src")).toBe(
-      "foo/Bar.ts"
+      "foo/Bar.ts",
     );
     expect(getAttr("src=foo/Bar.ts interface=BarProps ", "interface")).toBe(
-      "BarProps"
+      "BarProps",
     );
   });
 
@@ -126,7 +126,7 @@ describe("resolveProps", () => {
       interface A { a: string; }
       interface B { b: number; }
       type Props = A & B;
-    `)
+    `),
     ).toEqual(["a", "b"]);
   });
 
@@ -137,7 +137,7 @@ describe("resolveProps", () => {
           | { mode: string; value: string; onlyA: number }
           | { mode: string; value?: string; onlyB: number };
       `),
-      "Props"
+      "Props",
     ).entries;
     const byName = Object.fromEntries(entries.map((e) => [e.name, e]));
     expect(entries.map((e) => e.name)).toEqual([
@@ -150,6 +150,22 @@ describe("resolveProps", () => {
     expect(byName.value.forcedOptional).toBe(true); // optional in one branch
     expect(byName.onlyA.forcedOptional).toBe(true); // absent from a branch
     expect(byName.onlyB.forcedOptional).toBe(true);
+  });
+
+  it("documents a distributed mapped type once, with the key constraint in place of the parameter", () => {
+    const code = `
+      type Keys = "a" | "b";
+      type Props =
+        | { [T in Keys]: { kind: T; value?: (arg: T) => Lookup[T] } }[Keys]
+        | { kind?: undefined; value?: (arg: string) => unknown };
+    `;
+    const entries = resolveProps(parse(code), "Props").entries;
+    expect(entries.map((e) => e.name)).toEqual(["kind", "value"]);
+    const rows = buildRows(entries);
+    expect(rows[0]).toContain("`Keys`");
+    expect(rows[1]).toContain("`(arg: Keys) => Lookup[Keys]`");
+    // Absent from the fallback branch, so it can't be reported as required.
+    expect(entries[0].forcedOptional).toBe(true);
   });
 
   it("honours Pick and Omit", () => {
@@ -169,12 +185,12 @@ describe("resolveProps", () => {
     try {
       writeFileSync(
         path.join(dir, "base.ts"),
-        `export interface Base { shared: string; }\n`
+        `export interface Base { shared: string; }\n`,
       );
       writeFileSync(
         path.join(dir, "main.ts"),
         `import type { Base } from "./base.js";\n` +
-          `export interface Props extends Base { own: number; }\n`
+          `export interface Props extends Base { own: number; }\n`,
       );
       const sf = getSourceFile(path.join(dir, "main.ts"));
       expect(resolveProps(sf, "Props").entries.map((e) => e.name)).toEqual([
@@ -212,7 +228,7 @@ describe("buildRows", () => {
           name: string;
         }
       `),
-      "Props"
+      "Props",
     ).entries;
     const rows = buildRows(entries);
     const idRow = rows.find((r) => r.startsWith("| `id`"));
@@ -232,7 +248,7 @@ describe("renderDoc — only does work when it's meant to", () => {
     const srcPath = path.join(dir, "Api.ts");
     writeFileSync(
       srcPath,
-      `export interface Props { a: string; b?: number; }\n`
+      `export interface Props { a: string; b?: number; }\n`,
     );
     const srcAttr = path.relative(PKG_ROOT, srcPath);
     const docPath = path.join(dir, "Doc.md");

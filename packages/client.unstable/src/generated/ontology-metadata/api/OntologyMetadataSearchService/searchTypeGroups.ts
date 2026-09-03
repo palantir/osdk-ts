@@ -32,12 +32,12 @@ import type {
  */
 export async function searchTypeGroups(
   ctx: ConjureContext,
-  request: _api_search_TypeGroupSearchRequest
+  request: _api_search_TypeGroupSearchRequest,
 ): Promise<_api_search_TypeGroupSearchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/search/v0/searchTypeGroups`,
     "POST",
-    request
+    request,
   );
 }

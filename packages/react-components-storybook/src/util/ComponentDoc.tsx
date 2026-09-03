@@ -35,8 +35,14 @@ export function ComponentDoc({
     <>
       <h1>{title}</h1>
       <p>{description}</p>
-      {canvasOf != null && <Canvas of={canvasOf} />}
-      <Markdown>{body}</Markdown>
+      {canvasOf != null && (
+        <div className="osdkDocCanvas">
+          <Canvas of={canvasOf} />
+        </div>
+      )}
+      <div className="osdkMarkdownDoc">
+        <Markdown>{body}</Markdown>
+      </div>
     </>
   );
 }
