@@ -16,6 +16,11 @@
 
 import { describe, expect, it } from "vitest";
 
+import type { OntologySchemaLockfile } from "../OntologySchemaLockfile.js";
+import {
+  LOCKFILE_HEADER_KEY,
+  serializeLockfile,
+} from "../OntologySchemaLockfile.js";
 import {
   parseLockfile,
   upgradeLockfile,
@@ -52,6 +57,20 @@ describe("parseLockfile", () => {
     expect(parse(wellFormed)).toStrictEqual(wellFormed);
   });
 
+  it("drops the header comment `serializeLockfile` writes", () => {
+    const onDisk = serializeLockfile(wellFormed as OntologySchemaLockfile);
+    expect(onDisk).toContain(`"${LOCKFILE_HEADER_KEY}"`);
+    expect(parseLockfile(onDisk, "lock.json")).toStrictEqual(wellFormed);
+  });
+
+  it("drops a header an author has rewritten, rather than preserving it", () => {
+    const edited = {
+      [LOCKFILE_HEADER_KEY]: "I modified it anyway",
+      ...wellFormed,
+    };
+    expect(parse(edited)).toStrictEqual(wellFormed);
+  });
+
   it("accepts an interface with no properties and no transitions", () => {
     const empty = withInterface({
       schema: { properties: {} },
@@ -73,7 +92,7 @@ describe("parseLockfile", () => {
     ["null", null],
   ])("rejects %s", (_name, lockfile) => {
     expect(() => parse(lockfile)).toThrowError(
-      /lock\.json is not an interface schema lockfile: expected an integer "version" key/u,
+      /lock\.json is not an ontology schema lockfile: expected an integer "version" key/u,
     );
   });
 
@@ -165,6 +184,19 @@ describe("parseLockfile", () => {
       /schema migration "requireLastName" has a grace period of unknown type/u,
     );
   });
+
+  it.each([
+    ["absent", { type: "afterInstall" }],
+    ["null", { type: "afterInstall", days: null }],
+    ['the string "30"', { type: "afterInstall", days: "30" }],
+  ])(
+    "rejects an 'afterInstall' grace period whose days are %s",
+    (_name, gracePeriod) => {
+      expect(() => parse(withTransition({ gracePeriod }))).toThrowError(
+        /schema migration "requireLastName" has an 'afterInstall' grace period of .*, which is not a number/u,
+      );
+    },
+  );
 
   it.each([
     ["absent", { type: "deadline" }],

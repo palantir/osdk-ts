@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { InterfaceSchemaGracePeriod } from "../api/interface/InterfaceSchemaMigrations.js";
 import {
   isKnownGracePeriodType,
   isKnownInstructionType,
@@ -24,7 +25,10 @@ import type {
   LockedTransition,
   OntologySchemaLockfile,
 } from "./OntologySchemaLockfile.js";
-import { ONTOLOGY_SCHEMA_LOCKFILE_VERSION } from "./OntologySchemaLockfile.js";
+import {
+  LOCKFILE_HEADER_KEY,
+  ONTOLOGY_SCHEMA_LOCKFILE_VERSION,
+} from "./OntologySchemaLockfile.js";
 
 /** Rewrites a lockfile written by the version it is keyed under into the next version's shape. */
 type LockfileUpgrader = (lockfile: OldLockfile) => OldLockfile;
@@ -58,7 +62,7 @@ export function parseLockfile(
 
   const versioned = requireVersion(parsed, lockfilePath);
   const upgraded = upgradeLockfile(
-    versioned,
+    withoutHeader(versioned),
     ONTOLOGY_SCHEMA_LOCKFILE_VERSION,
     UPGRADERS,
     lockfilePath,
@@ -83,6 +87,14 @@ function requireVersion(parsed: unknown, lockfilePath: string): OldLockfile {
   }
 
   return parsed as OldLockfile;
+}
+
+/**
+ * Drops the header `serializeLockfile` writes.
+ */
+function withoutHeader(lockfile: OldLockfile): OldLockfile {
+  const { [LOCKFILE_HEADER_KEY]: _header, ...rest } = lockfile;
+  return rest;
 }
 
 /**
@@ -131,7 +143,7 @@ function validateStructure(
   const { interfaces } = lockfile;
   if (typeof interfaces !== "object" || interfaces == null) {
     throw new Error(
-      `${lockfilePath} is not an interface schema lockfile: expected an object with an "interfaces" key.`,
+      `${lockfilePath} is not an ontology schema lockfile: expected an object with an "interfaces" key.`,
     );
   }
 
@@ -203,18 +215,8 @@ function validateTransition(
     );
   }
 
-  const { gracePeriod } = transition;
-  if (gracePeriod.type === "deadline") {
-    const { deadline } = gracePeriod;
-    if (typeof deadline !== "string" || Number.isNaN(Date.parse(deadline))) {
-      throw new Error(
-        `${where}: schema migration "${transition.id}" has a 'deadline' grace period of ` +
-          `${JSON.stringify(deadline)}, which is not a valid datetime. Restore the deadline the ` +
-          `last published release declared, as an ISO-8601 UTC datetime (e.g. ` +
-          `"2026-01-31T00:00:00Z").`,
-      );
-    }
-  }
+  validateGracePeriod(where, transition.id, transition.gracePeriod);
+
   if (
     !Array.isArray(transition.instructions) ||
     transition.instructions.length === 0
@@ -231,6 +233,46 @@ function validateTransition(
       throw new Error(
         `${where}: schema migration "${transition.id}" has an instruction of unknown type ` +
           `"${instruction?.type}".`,
+      );
+    }
+  }
+}
+
+function validateGracePeriod(
+  where: string,
+  transitionId: string,
+  gracePeriod: InterfaceSchemaGracePeriod,
+): void {
+  switch (gracePeriod.type) {
+    case "afterInstall": {
+      const { days } = gracePeriod;
+      if (typeof days !== "number") {
+        throw new Error(
+          `${where}: schema migration "${transitionId}" has an 'afterInstall' grace period of ` +
+            `${JSON.stringify(days)} days, which is not a number. Restore the number of days the ` +
+            `last published release declared.`,
+        );
+      }
+      return;
+    }
+    case "deadline": {
+      const { deadline } = gracePeriod;
+      if (typeof deadline !== "string" || Number.isNaN(Date.parse(deadline))) {
+        throw new Error(
+          `${where}: schema migration "${transitionId}" has a 'deadline' grace period of ` +
+            `${JSON.stringify(deadline)}, which is not a valid datetime. Restore the deadline the ` +
+            `last published release declared, as an ISO-8601 UTC datetime (e.g. ` +
+            `"2026-01-31T00:00:00Z").`,
+        );
+      }
+      return;
+    }
+    default: {
+      const unhandled: never = gracePeriod;
+      throw new Error(
+        `The lockfile parser does not validate the "${
+          (unhandled as InterfaceSchemaGracePeriod).type
+        }" grace period kind.`,
       );
     }
   }
