@@ -30,7 +30,7 @@ export const DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME =
  * `@osdk/maker` is a stateless `ontology.ts -> ontology.json` transformer, so it has nothing to
  * diff a new definition against to run backwards-compatibility checks. This lockfile supplies
  * that baseline (as a checked in source file), letting us reject at authoring-time any
- * definitions that OMS would reject at installation-time.
+ * definitions that would otherwise be rejected at installation-time.
  */
 export interface OntologySchemaLockfile {
   version: number;
@@ -99,11 +99,7 @@ export function lockedEntityCount(lockfile: OntologySchemaLockfile): number {
 }
 
 /**
- * JSON has no comment syntax, but a `"//"` key is the conventional stand-in for one, and unlike a
- * real comment it leaves the file parseable by every JSON consumer: editors, `jq`, `JSON.parse`.
- *
- * It is deliberately absent from {@link OntologySchemaLockfile}: the header describes the file, not
- * the schema state, so serialization adds it and parsing must drop it.
+ * JSON has no comment syntax, but a `"//"` key is a conventional stand-in for one.
  */
 export const LOCKFILE_HEADER_KEY = "//";
 

@@ -128,8 +128,6 @@ describe("schemasAgreeOn", () => {
     ).toBe(false);
   });
 
-  // The case removing an instruction produces: the strict application deletes the property, and the
-  // source doesn't declare it either.
   it("agrees on a property absent from both schemas", () => {
     expect(schemasAgreeOn(schema({}), schema({}), ["lastName"])).toBe(true);
   });
