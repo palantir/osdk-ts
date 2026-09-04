@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-// The local Vite dev server (and the authless api-proxy it hosts) always run
-// on this URL, so it is shared across the development env templates below.
 const LOCALHOST_URL = "http://localhost:8080";
 
 interface AuthDevelopmentArgs {
