@@ -76,6 +76,7 @@ interface IFunctionDiscovererConstructor {
 
 // Python discovery output uses the same format as IDataType with type field at top level
 interface IPythonDiscoveredFunction {
+  apiName?: string | null;
   locator: {
     type: "python3";
     python3: { moduleName: string; functionName: string };
@@ -95,6 +96,23 @@ interface IPythonCustomType {
 interface IPythonDiscoveryResult {
   functions: IPythonDiscoveredFunction[];
   errors?: Array<unknown>;
+}
+
+function getPythonFunctionApiName(func: IPythonDiscoveredFunction): string {
+  if (func.apiName != null) {
+    return func.apiName;
+  }
+
+  const segments = func.locator.python3.functionName.split("_");
+  if (segments.some(segment => segment.length === 0)) {
+    throw new Error(
+      `Cannot derive an API name from Python function name "${func.locator.python3.functionName}"`,
+    );
+  }
+  return segments[0]
+    + segments.slice(1).map(segment =>
+      segment[0].toUpperCase() + segment.slice(1)
+    ).join("");
 }
 
 function discoverPythonFunctions(
@@ -513,7 +531,7 @@ export class OntologyIrToFullMetadataConverter {
 
     const queries: Ontologies.QueryTypeV2[] = [];
     for (const func of pythonResult.functions) {
-      const functionName = func.locator.python3.functionName;
+      const functionApiName = getPythonFunctionApiName(func);
       const customTypes = func.customTypes ?? {};
       const objectTypes = func.objectTypes;
       const objectSetTypes = func.objectSetTypes;
@@ -614,8 +632,8 @@ export class OntologyIrToFullMetadataConverter {
       const resolvedOutput = resolveDataType(func.output.single.dataType);
 
       const queryType: Ontologies.QueryTypeV2 = {
-        apiName: functionName,
-        rid: `ri.function-registry.main.function.${functionName}`,
+        apiName: functionApiName,
+        rid: `ri.function-registry.main.function.${functionApiName}`,
         version: "0.0.0",
         parameters: resolvedInputs.reduce<
           Record<ApiName, Ontologies.QueryParameterV2>
