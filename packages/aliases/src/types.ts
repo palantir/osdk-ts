@@ -54,6 +54,19 @@ export enum AliasEnvironment {
   LIVE_PREVIEW = "LIVE_PREVIEW",
 }
 
+/**
+ * Custom aliases in root `resources.json`. Values are author defaults locally
+ * and installer-resolved values on a Marketplace-installed site.
+ */
+export interface CustomAliasResources {
+  aliases?: {
+    custom?: Record<
+      string,
+      { value?: string; description?: string; required?: boolean }
+    >;
+  };
+}
+
 // Live preview mode types (resources.json)
 
 export interface ModelResource {
