@@ -164,8 +164,6 @@ describe("describeFinding", () => {
     const NAMESPACED = "com.example.lastName";
 
     it("suggests a transition the author can actually paste", () => {
-      // The namespaced name would be rejected twice over: dots are illegal in a transition id, and
-      // `propertiesV3` has no such key to resolve the property reference against.
       expect(
         describeFinding({
           code: "requiredPropertyAdded",

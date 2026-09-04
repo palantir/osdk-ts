@@ -24,7 +24,7 @@ import {
   renameInstructionProperties,
 } from "../api/interface/describeInterfaceSchemaMigrationInstruction.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
-import { describeType } from "./OntologySchemaLockfile.js";
+import { describeType } from "./LockedPropertyType.js";
 import type {
   LockfileFinding,
   TargetPropertyState,
@@ -33,15 +33,12 @@ import type {
 /**
  * Renders a finding as the report an author reads.
  *
- * Every property is named by the key the author wrote rather than by the api name the lockfile
- * records, so that what they are told to go and edit is named the way their source names it.
+ * Every property is named by the key the author wrote rather than by the wire api name the lockfile records.
  */
 export function describeFinding(finding: LockfileFinding): string {
   const where = `Interface ${finding.interfaceApiName}`;
   switch (finding.code) {
     case "ambiguousDisappearance": {
-      // A transition that touches no property leaves no trace in the schema either way, so there
-      // is no drift to describe and no way for the author to express which they meant.
       if (finding.targets.length === 0) {
         return (
           `${where}: schema migration "${finding.transitionId}" is no longer declared, but ` +
@@ -97,8 +94,8 @@ export function describeFinding(finding: LockfileFinding): string {
       const property = authored(finding.property);
       return (
         `${where}: property "${property}" became required without a schema migration. ` +
-        `Keep it declared \`required: false\` and phase it in instead:\n` +
-        `  ${describeRequiringProperty(property)}`
+        `Keep it declared \`required: false\` and phase it in instead through a migration like:\n` +
+        `  ${describeSuggestedAddRequiredPropertyTransition(property)}`
       );
     }
 
@@ -107,22 +104,14 @@ export function describeFinding(finding: LockfileFinding): string {
       return (
         `${where}: property "${property}" was added as required. Existing implementing ` +
         `object types do not provide it yet, so this is a breaking change. Declare it ` +
-        `\`required: false\` and phase it in instead:\n` +
-        `  ${describeRequiringProperty(property)}`
+        `\`required: false\` and phase it in instead through a migration like:\n` +
+        `  ${describeSuggestedAddRequiredPropertyTransition(property)}`
       );
     }
   }
 }
 
-/**
- * The key the author wrote for a property, given the api name the lockfile records it under.
- *
- * A shared property type publishes under a namespaced api name — `com.example.lastName` — while
- * `defineInterface` requires the author to key it by the un-namespaced name, so stripping the
- * namespace recovers the key. Quoting the published name back at them instead would name something
- * they cannot find in their source, and would make a suggested transition not copy-paste ready: dots are
- * illegal in both a transition id and a property reference.
- */
+/** The key the author wrote for a property, given the api name the lockfile records it under. */
 function authored(wireApiName: string): string {
   return withoutNamespace(wireApiName);
 }
@@ -134,6 +123,7 @@ function describeTargetDrift(targets: readonly TargetPropertyState[]): string {
     if (next === undefined) {
       return `"${property}" was removed from the interface`;
     }
+
     if (
       previous !== undefined &&
       !isDeepStrictEqual(previous.type, next.type)
@@ -143,6 +133,7 @@ function describeTargetDrift(targets: readonly TargetPropertyState[]): string {
         describeType(next.type)
       );
     }
+
     return `"${property}" is \`required: ${next.required}\``;
   });
   return `Instead, ${descriptions.join(", ")}.`;
@@ -158,7 +149,7 @@ function describeInstructions(
     .join(", ")}]`;
 }
 
-/** Everything the author would have had to do for the transition to read as finalized. */
+/** Everything the author would do to have the transition be finalized instead. */
 function describeFinalizations(
   instructions: readonly InterfaceSchemaMigrationInstruction[],
 ): string {
@@ -170,9 +161,10 @@ function describeFinalizations(
 }
 
 /**
- * The transition an author should have declared to make `property` required, for the two findings
- * that are about exactly that.
+ * The transition an author should have declared to make `property` required.
  */
-function describeRequiringProperty(property: string): string {
+function describeSuggestedAddRequiredPropertyTransition(
+  property: string,
+): string {
   return describeSuggestedTransition({ type: "addRequiredProperty", property });
 }

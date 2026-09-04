@@ -18,6 +18,7 @@ import { isDeepStrictEqual } from "node:util";
 
 import type { InterfaceSchemaGracePeriod } from "../api/interface/InterfaceSchemaMigrations.js";
 import type { SourceCensus } from "./generateOntologySchemaLockfile.js";
+import { describeType } from "./LockedPropertyType.js";
 import type {
   LockedInterfaceType,
   LockedProperty,
@@ -25,22 +26,17 @@ import type {
   LockfileSection,
   OntologySchemaLockfile,
 } from "./OntologySchemaLockfile.js";
-import { describeType, LOCKFILE_SECTIONS } from "./OntologySchemaLockfile.js";
+import { LOCKFILE_SECTIONS } from "./OntologySchemaLockfile.js";
 
 /**
  * A human-readable rendering of what `--write-locks` would change, so an author who has not run it
  * yet can see why their build was rejected without diffing JSON by hand.
- *
- * @param census every entity the source defines, used to tell a deleted entity from one that
- *   opted back out
  */
 export function describeLockfileChanges(
   previous: OntologySchemaLockfile,
   next: OntologySchemaLockfile,
   census: SourceCensus,
 ): string {
-  // A table rather than a direct call so that adding a section to the lockfile is a compile error
-  // here, rather than a section the rendered diff silently omits.
   const bySection: Record<LockfileSection, () => string[]> = {
     interfaces: () =>
       describeInterfaceSection(
@@ -55,34 +51,43 @@ export function describeLockfileChanges(
 }
 
 function describeInterfaceSection(
-  previous: Record<string, LockedInterfaceType>,
-  next: Record<string, LockedInterfaceType>,
-  source: SourceCensus["interfaces"],
+  previousInterfaces: Record<string, LockedInterfaceType>,
+  nextInterfaces: Record<string, LockedInterfaceType>,
+  census: SourceCensus["interfaces"],
 ): string[] {
   const lines: string[] = [];
-  for (const apiName of unionOfKeys(previous, next)) {
-    const before = previous[apiName];
-    const after = next[apiName];
-    if (before === undefined) {
-      lines.push(`+ ${apiName} (now opted into schema migrations)`);
+  for (const interfaceApiName of unionOfKeys(
+    previousInterfaces,
+    nextInterfaces,
+  )) {
+    const previous = previousInterfaces[interfaceApiName];
+    if (previous === undefined) {
+      lines.push(`+ ${interfaceApiName} (now opted into schema migrations)`);
       continue;
     }
-    if (after === undefined) {
+
+    const next = nextInterfaces[interfaceApiName];
+    if (next === undefined) {
       // Both cases reach here: validation accepts a deleted interface outright, and an opt-out
       // once its in-flight transitions have been read as finalized or deleted. They are very
       // different edits to make by accident, so the line says which one it saw.
       lines.push(
-        source.has(apiName)
-          ? `- ${apiName} (no longer opted into schema migrations)`
-          : `- ${apiName} (interface no longer defined)`,
+        census.has(interfaceApiName)
+          ? `- ${interfaceApiName} (no longer opted into schema migrations)`
+          : `- ${interfaceApiName} (interface no longer defined)`,
       );
       continue;
     }
-    const changes = describeInterfaceChanges(before, after);
+
+    const changes = describeInterfaceChanges(previous, next);
     if (changes.length > 0) {
-      lines.push(`${apiName}:`, ...changes.map((change) => `  ${change}`));
+      lines.push(
+        `${interfaceApiName}:`,
+        ...changes.map((change) => `  ${change}`),
+      );
     }
   }
+
   return lines;
 }
 
@@ -97,27 +102,30 @@ function describeInterfaceChanges(
 }
 
 function describePropertyChanges(
-  previous: LockedInterfaceType,
-  next: LockedInterfaceType,
+  previousInterface: LockedInterfaceType,
+  nextInterface: LockedInterfaceType,
 ): string[] {
   const lines: string[] = [];
-  for (const apiName of unionOfKeys(
-    previous.schema.properties,
-    next.schema.properties,
+  for (const propertyApiName of unionOfKeys(
+    previousInterface.schema.properties,
+    nextInterface.schema.properties,
   )) {
-    const before = previous.schema.properties[apiName];
-    const after = next.schema.properties[apiName];
-    if (before === undefined) {
-      lines.push(`+ property "${apiName}" ${describeProperty(after)}`);
-    } else if (after === undefined) {
-      lines.push(`- property "${apiName}"`);
-    } else if (!isDeepStrictEqual(before.type, after.type)) {
+    const previousProperty =
+      previousInterface.schema.properties[propertyApiName];
+    const nextProperty = nextInterface.schema.properties[propertyApiName];
+    if (previousProperty === undefined) {
       lines.push(
-        `~ property "${apiName}" type ${describeType(before.type)} -> ${describeType(after.type)}`,
+        `+ property "${propertyApiName}" ${describeProperty(nextProperty)}`,
       );
-    } else if (before.required !== after.required) {
+    } else if (nextProperty === undefined) {
+      lines.push(`- property "${propertyApiName}"`);
+    } else if (!isDeepStrictEqual(previousProperty.type, nextProperty.type)) {
       lines.push(
-        `~ property "${apiName}" required ${before.required} -> ${after.required}`,
+        `~ property "${propertyApiName}" type ${describeType(previousProperty.type)} -> ${describeType(nextProperty.type)}`,
+      );
+    } else if (previousProperty.required !== nextProperty.required) {
+      lines.push(
+        `~ property "${propertyApiName}" required ${previousProperty.required} -> ${nextProperty.required}`,
       );
     }
   }
@@ -125,19 +133,22 @@ function describePropertyChanges(
 }
 
 function describeMigrationChanges(
-  previous: LockedInterfaceType,
-  next: LockedInterfaceType,
+  previousInterface: LockedInterfaceType,
+  nextInterface: LockedInterfaceType,
 ): string[] {
-  const before = byId(previous.transitions);
-  const after = byId(next.transitions);
+  const previousTransitionsById = byId(previousInterface.transitions);
+  const nextTransitionsById = byId(nextInterface.transitions);
   const lines: string[] = [];
-  for (const id of unionOfKeys(before, after)) {
-    const previousTransition = before[id];
-    const nextTransition = after[id];
+  for (const transitionId of unionOfKeys(
+    previousTransitionsById,
+    nextTransitionsById,
+  )) {
+    const previousTransition = previousTransitionsById[transitionId];
+    const nextTransition = nextTransitionsById[transitionId];
     if (previousTransition === undefined) {
-      lines.push(`+ migration "${id}"`);
+      lines.push(`+ migration "${transitionId}"`);
     } else if (nextTransition === undefined) {
-      lines.push(`- migration "${id}"`);
+      lines.push(`- migration "${transitionId}"`);
     } else if (
       !isDeepStrictEqual(
         previousTransition.gracePeriod,
@@ -145,12 +156,12 @@ function describeMigrationChanges(
       )
     ) {
       lines.push(
-        `~ migration "${id}" grace period ${describeGracePeriod(
+        `~ migration "${transitionId}" grace period ${describeGracePeriod(
           previousTransition.gracePeriod,
         )} -> ${describeGracePeriod(nextTransition.gracePeriod)}`,
       );
     } else if (!isDeepStrictEqual(previousTransition, nextTransition)) {
-      lines.push(`~ migration "${id}"`);
+      lines.push(`~ migration "${transitionId}"`);
     }
   }
   return lines;
@@ -161,9 +172,20 @@ function describeProperty(property: LockedProperty): string {
 }
 
 function describeGracePeriod(gracePeriod: InterfaceSchemaGracePeriod): string {
-  return gracePeriod.type === "afterInstall"
-    ? `${gracePeriod.days} days after install`
-    : gracePeriod.deadline;
+  switch (gracePeriod.type) {
+    case "afterInstall":
+      return `${gracePeriod.days} days after install`;
+    case "deadline":
+      return gracePeriod.deadline;
+    default: {
+      const unhandled: never = gracePeriod;
+      throw new Error(
+        `Unknown schema migration grace period type: ${
+          (unhandled as InterfaceSchemaGracePeriod).type
+        }`,
+      );
+    }
+  }
 }
 
 function byId(
