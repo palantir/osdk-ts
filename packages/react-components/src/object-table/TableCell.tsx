@@ -72,6 +72,7 @@ export function TableCell<TData extends RowData>({
     <>
       <td
         ref={tdRef}
+        data-column-id={cell.column.id}
         data-pinned={cell.column.getIsPinned()}
         data-editable={isEditable ? "true" : undefined}
         className={styles.osdkTableCell}
