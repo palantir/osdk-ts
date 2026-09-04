@@ -85,9 +85,6 @@ describe("reconcileOntologySchemaLockfile", () => {
 
     it("reports opting out distinctly from deleting the interface", async () => {
       await published(optedIn);
-      // Both are legal, so each reads as a lockfile the author has yet to update — but the
-      // rendered diff says which one it saw, since they are very different edits to make by
-      // accident.
       await expect(maker(notOptedIn)).rejects.toThrowError(
         /- Person \(no longer opted into schema migrations\)/u,
       );
@@ -97,8 +94,6 @@ describe("reconcileOntologySchemaLockfile", () => {
     });
 
     it("accepts deleting an enrolled interface", async () => {
-      // Removing an interface takes every promise its transitions made with it, since nothing is
-      // left to reference it or to be broken by it.
       await published(lastNameFinalized);
       await maker(() => {}, { writeLocks: true });
       expect(await readLockfile()).toStrictEqual({
@@ -238,8 +233,6 @@ describe("reconcileOntologySchemaLockfile", () => {
       expect(prompt).not.toHaveBeenCalled();
     });
 
-    // Opting out discards an in-flight transition without its effects landing, which is a
-    // deletion of that transition however the interface left.
     it("reports an in-flight migration dropped by opting out as a deletion", async () => {
       const warn = vi.spyOn(consola, "warn").mockImplementation(() => {});
       vi.spyOn(consola, "prompt").mockResolvedValue(true);
@@ -257,8 +250,6 @@ describe("reconcileOntologySchemaLockfile", () => {
       const warn = vi.spyOn(consola, "warn").mockImplementation(() => {});
       const prompt = vi.spyOn(consola, "prompt");
       await published(lastNameInFlight);
-      // Deleting the interface takes its in-flight transition with it, so there is no checkpoint
-      // to record and nothing to ask about.
       await maker(() => {}, { writeLocks: true, assumeYes: false });
       expect(warn).not.toHaveBeenCalled();
       expect(prompt).not.toHaveBeenCalled();
@@ -345,8 +336,6 @@ describe("reconcileOntologySchemaLockfile", () => {
       );
     });
 
-    // An empty instruction list makes `schemasAgreeOn` vacuously true, which would classify the
-    // transition as a finalization and silently drop it.
     it("rejects a migration with no instructions", async () => {
       await fs.writeFile(
         harness.lockfilePath,
@@ -404,7 +393,7 @@ describe("reconcileOntologySchemaLockfile", () => {
     it("reports a structural difference it cannot summarize", async () => {
       await published(optedIn);
       const lockfile = await readLockfile();
-      // A key the diff renderer knows nothing about: unequal, but nothing to describe.
+      // A key the diff renderer knows nothing about
       (
         lockfile.interfaces.Person.schema.properties
           .firstName as LockedProperty & { note?: string }

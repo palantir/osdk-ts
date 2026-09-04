@@ -85,13 +85,13 @@ export async function reconcileOntologySchemaLockfile(
   if (!writeLocks) {
     if (!isDeepStrictEqual(persisted, expected)) {
       throw new Error(
-        `Interface schema lockfile ${lockfilePath} is out of date. The changes below are backwards ` +
+        `Ontology schema lockfile ${lockfilePath} is out of date. The changes below are backwards-` +
           `compatible, but the lockfile must record them before the ontology can be published. ` +
           `Run maker again with --write-locks.\n\n` +
           describeChanges(persisted, expected, census),
       );
     }
-    consola.success(`Interface schema lockfile ${lockfilePath} is up to date`);
+    consola.success(`Ontology schema lockfile ${lockfilePath} is up to date`);
     return;
   }
 
@@ -117,6 +117,7 @@ async function reconcileMissingLockfile(
     // an empty lockfile here would force it on every consumer of maker.
     return;
   }
+
   if (!writeLocks) {
     const count = lockedEntityCount(expected);
     throw new Error(
@@ -125,6 +126,7 @@ async function reconcileMissingLockfile(
         `again with --write-locks to create it, and commit the result.`,
     );
   }
+
   await writeLockfile(lockfilePath, expected, undefined);
 }
 
@@ -140,25 +142,26 @@ async function confirmCheckpoints(
   if (assumeYes) {
     return true;
   }
-  // Finalizations and deletions are semver-major events, so the one environment that cannot ask
-  // is the one where silently accepting them would do the most damage.
-  if (process.stdin.isTTY !== true) {
+
+  if (!process.stdin.isTTY) {
     throw new Error(
       "Detected interface schema migration finalizations/deletions, but maker is not attached to a " +
         "terminal and cannot prompt. Re-run with --yes to accept them.",
     );
   }
-  return (await consola.prompt("Accept?", { type: "confirm" })) === true;
+
+  return await consola.prompt("Accept?", { type: "confirm" });
 }
 
 function formatCheckpoints(checkpoints: DetectedCheckpoint[]): string {
   const lines: string[] = [];
-  let currentInterface: string | undefined;
+  let currentInterfaceApiName: string | undefined;
   for (const checkpoint of checkpoints) {
-    if (checkpoint.interfaceApiName !== currentInterface) {
-      currentInterface = checkpoint.interfaceApiName;
-      lines.push(`${currentInterface}:`);
+    if (checkpoint.interfaceApiName !== currentInterfaceApiName) {
+      currentInterfaceApiName = checkpoint.interfaceApiName;
+      lines.push(`${currentInterfaceApiName}:`);
     }
+
     const verb = checkpoint.kind === "finalized" ? "FINALIZE" : "DELETE";
     lines.push(`  ${verb} ${checkpoint.transitionId}`);
   }
@@ -189,7 +192,8 @@ function describeChanges(
   return described.length > 0
     ? described
     : "The lockfile differs structurally from the one generated for this ontology, in a way this " +
-        "diff cannot summarize. A hand-edit is the likely cause.";
+        "diff cannot summarize. A hand-edit is the likely cause. Revert any manual changes, or delete " +
+        "the lockfile and regenerate it.";
 }
 
 async function writeLockfile(
@@ -199,11 +203,12 @@ async function writeLockfile(
 ): Promise<void> {
   const serialized = serializeLockfile(lockfile);
   if (serialized === existingContents) {
-    consola.success(`Interface schema lockfile ${lockfilePath} is up to date`);
+    consola.success(`Ontology schema lockfile ${lockfilePath} is up to date`);
     return;
   }
+
   await fs.writeFile(lockfilePath, serialized);
-  consola.success(`Wrote interface schema lockfile ${lockfilePath}`);
+  consola.success(`Wrote ontology schema lockfile ${lockfilePath}`);
 }
 
 async function readIfExists(path: string): Promise<string | undefined> {

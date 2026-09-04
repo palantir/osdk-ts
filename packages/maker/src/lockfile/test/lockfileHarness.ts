@@ -70,26 +70,26 @@ export function person(
 }
 
 // The successive states the RFC's worked example walks through.
-export const notOptedIn = person({ firstName: REQUIRED_STRING });
-export const optedIn = person(
+export const notOptedIn: () => void = person({ firstName: REQUIRED_STRING });
+export const optedIn: () => void = person(
   { firstName: REQUIRED_STRING },
   {
     transitions: [],
   },
 );
-export const lastNameInFlight = person(
+export const lastNameInFlight: () => void = person(
   { firstName: REQUIRED_STRING, lastName: OPTIONAL_STRING },
   { transitions: [requireLastName] },
 );
-export const lastNameDeleted = person(
+export const lastNameDeleted: () => void = person(
   { firstName: REQUIRED_STRING, lastName: OPTIONAL_STRING },
   { transitions: [] },
 );
-export const lastNameFinalized = person(
+export const lastNameFinalized: () => void = person(
   { firstName: REQUIRED_STRING, lastName: REQUIRED_STRING },
   { transitions: [] },
 );
-export const emailInFlight = person(
+export const emailInFlight: () => void = person(
   {
     firstName: REQUIRED_STRING,
     lastName: REQUIRED_STRING,
@@ -97,7 +97,7 @@ export const emailInFlight = person(
   },
   { transitions: [requireEmail] },
 );
-export const emailFinalized = person(
+export const emailFinalized: () => void = person(
   {
     firstName: REQUIRED_STRING,
     lastName: REQUIRED_STRING,
