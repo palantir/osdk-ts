@@ -49,16 +49,42 @@ async function lockAddressStruct(
   return generateOntologySchemaLockfile(getOntologyDefinition());
 }
 
+/**
+ * The lockfile for an ontology whose one enrolled interface has a plain string property,
+ * presented under `displayName`.
+ */
+async function lockNameProperty(
+  displayName: string,
+): Promise<OntologySchemaLockfile> {
+  await defineOntology("com.palantir.", () => {}, "/tmp/");
+  defineInterface({
+    apiName: "Person",
+    properties: {
+      name: {
+        type: "string",
+        displayName,
+        description: `The ${displayName} of the person`,
+      },
+    },
+    schemaMigrations: { transitions: [] },
+  });
+  return generateOntologySchemaLockfile(getOntologyDefinition());
+}
+
 describe("generateOntologySchemaLockfile", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, "/tmp/");
   });
 
   it("records a struct type without its field display metadata", async () => {
-    // Otherwise renaming a struct field's display name marks the lockfile out of date, and then
-    // reads as a breaking type change against the recorded one.
     expect(await lockAddressStruct("ZIP")).toEqual(
       await lockAddressStruct("Postal code"),
+    );
+  });
+
+  it("records a property without its own display metadata", async () => {
+    expect(await lockNameProperty("Name")).toEqual(
+      await lockNameProperty("Full name"),
     );
   });
 });

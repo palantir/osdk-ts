@@ -23,8 +23,8 @@ import {
 } from "../OntologySchemaLockfile.js";
 
 /**
- * A lockfile is a checked-in artifact, so its bytes are the compatibility surface. A change to
- * the format requires migrations for existing any existing lockfile.
+ * An example checked-in lockfile. A change to the lockfile format requires migrations for existing
+ * any existing lockfile.
  *
  * This test is the tripwire to catch such changes. If it fails, and the diff was intended, bump
  * ONTOLOGY_SCHEMA_LOCKFILE_VERSION and provide the migration for a previously-written lockfile,

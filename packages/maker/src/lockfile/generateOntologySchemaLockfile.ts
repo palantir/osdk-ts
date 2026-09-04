@@ -24,7 +24,7 @@ import {
 } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "../api/interface/InterfaceType.js";
-import { normalizePropertyType } from "./normalizePropertyType.js";
+import { normalizePropertyType } from "./LockedPropertyType.js";
 import type {
   LockedInterfaceSchema,
   LockedInterfaceType,
@@ -36,6 +36,9 @@ import { ONTOLOGY_SCHEMA_LOCKFILE_VERSION } from "./OntologySchemaLockfile.js";
 
 /**
  * The api names of every entity each section could track, enrolled or not.
+ *
+ * This enables disambiguating "this entity was deleted" vs "this entity was unenrolled from
+ * being locked", which may have different consequences.
  */
 export type SourceCensus = Record<LockfileSection, ReadonlySet<string>>;
 
@@ -43,8 +46,8 @@ export type SourceCensus = Record<LockfileSection, ReadonlySet<string>>;
  * Derives the lockfile that the given ontology *should* have, purely from source.
  *
  * NB: Deliberately does not consult the previously-persisted lockfile, and instead keeps
- * generate a pure function of the source. Any history-dependent logic is only a
- * validation concern.
+ * generate a pure function of the source (simpler to reason about, test, etc.).
+ * Any history-dependent logic (e.g. backwards-compatibility checking) is only a validation concern.
  */
 export function generateOntologySchemaLockfile(
   ontology: OntologyDefinition,
@@ -58,14 +61,12 @@ export function generateOntologySchemaLockfile(
     }
     interfaces[interfaceType.apiName] = lockInterface(interfaceType);
   }
+
   return { version: ONTOLOGY_SCHEMA_LOCKFILE_VERSION, interfaces };
 }
 
 /**
  * The api names of every entity each section could track, enrolled or not.
- *
- * Only the change renderer consults this, to tell "this entity was deleted" from "this entity
- * opted out" so a reviewer can more accurately disambiguate the changes.
  */
 export function censusOfSource(ontology: OntologyDefinition): SourceCensus {
   return {

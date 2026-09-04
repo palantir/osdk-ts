@@ -17,7 +17,7 @@
 import { isDeepStrictEqual } from "node:util";
 
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
-import type { LockedPropertyType } from "./normalizePropertyType.js";
+import type { LockedPropertyType } from "./LockedPropertyType.js";
 import type {
   LockedInterfaceSchema,
   LockedTransition,
@@ -59,7 +59,7 @@ function editsByProperty(
 }
 
 /**
- * The properties an instruction touches (which maybe none if the instruction targets
+ * The properties an instruction touches (which may be none if the instruction targets
  * interface-level attributes rather than property-level attributes).
  */
 function targetPropertiesOfInstruction(
@@ -78,7 +78,7 @@ function targetPropertiesOfInstruction(
 /** A transition applied in one mode. */
 export interface AppliedTransition {
   schema: LockedInterfaceSchema;
-  /** The properties this application changed. */
+  /** The properties this application modified. */
   touched: readonly string[];
 }
 
@@ -91,12 +91,12 @@ function applyEdits(
   edits: ReadonlyMap<string, PropertyEdit>,
 ): LockedInterfaceSchema | undefined {
   const properties = { ...schema.properties };
-  for (const [apiName, edit] of edits) {
-    const existing = properties[apiName];
+  for (const [propertyApiName, edit] of edits) {
+    const existing = properties[propertyApiName];
     if (existing === undefined) {
       return undefined;
     }
-    properties[apiName] = { ...existing, ...edit };
+    properties[propertyApiName] = { ...existing, ...edit };
   }
   return { ...schema, properties };
 }
@@ -120,8 +120,8 @@ export function applyTransition(
       return undefined;
     }
     applied = next;
-    for (const apiName of edits.keys()) {
-      touched.add(apiName);
+    for (const propertyApiName of edits.keys()) {
+      touched.add(propertyApiName);
     }
   }
   return { schema: applied, touched: [...touched] };
@@ -153,6 +153,7 @@ export function schemasAgreeOn(
       "schemasAgreeOn requires at least one property to compare.",
     );
   }
+
   return propertyApiNames.every((apiName) =>
     isDeepStrictEqual(a.properties[apiName], b.properties[apiName]),
   );

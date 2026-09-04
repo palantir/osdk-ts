@@ -65,18 +65,6 @@ function agreesWithSource(
 }
 
 describe("applyTransition", () => {
-  it("leaves the target property optional when applied leniently", () => {
-    expect(
-      applyTransition(requireLastName, previousSchema, "lenient")?.schema,
-    ).toStrictEqual(previousSchema);
-  });
-
-  it("makes the target property required when applied strictly", () => {
-    expect(
-      applyTransition(requireLastName, previousSchema, "strict")?.schema,
-    ).toStrictEqual(sourceSchema({ required: true }));
-  });
-
   it("reports the properties it changed", () => {
     expect(
       applyTransition(requireLastName, previousSchema, "strict")?.touched,
@@ -105,6 +93,20 @@ describe("applyTransition", () => {
       /Unknown schema migration instruction type: renameProperty/u,
     );
   });
+
+  describe("addRequiredProperty", () => {
+    it("leaves the target property optional when applied leniently", () => {
+      expect(
+        applyTransition(requireLastName, previousSchema, "lenient")?.schema,
+      ).toStrictEqual(previousSchema);
+    });
+
+    it("makes the target property required when applied strictly", () => {
+      expect(
+        applyTransition(requireLastName, previousSchema, "strict")?.schema,
+      ).toStrictEqual(sourceSchema({ required: true }));
+    });
+  });
 });
 
 describe("schemasAgreeOn", () => {
@@ -126,7 +128,7 @@ describe("schemasAgreeOn", () => {
     ).toBe(false);
   });
 
-  // The case a removing instruction produces: its strict application deletes the property, and the
+  // The case removing instruction produces: its strict application deletes the property, and the
   // source that finalized it does not declare it either. Demanding presence would report that
   // agreement as a mismatch.
   it("agrees on a property absent from both schemas", () => {
@@ -147,32 +149,34 @@ describe("schemasAgreeOn", () => {
 });
 
 describe("deletion vs finalization disambiguation", () => {
-  it("reads `required: false` as a deletion", () => {
-    const source = sourceSchema({ required: false });
-    expect(agreesWithSource("lenient", source)).toBe(true);
-    expect(agreesWithSource("strict", source)).toBe(false);
-  });
+  describe("addRequiredProperty", () => {
+    it("reads `required: false` as a deletion", () => {
+      const source = sourceSchema({ required: false });
+      expect(agreesWithSource("lenient", source)).toBe(true);
+      expect(agreesWithSource("strict", source)).toBe(false);
+    });
 
-  it("reads `required: true` as a finalization", () => {
-    const source = sourceSchema({ required: true });
-    expect(agreesWithSource("lenient", source)).toBe(false);
-    expect(agreesWithSource("strict", source)).toBe(true);
-  });
+    it("reads `required: true` as a finalization", () => {
+      const source = sourceSchema({ required: true });
+      expect(agreesWithSource("lenient", source)).toBe(false);
+      expect(agreesWithSource("strict", source)).toBe(true);
+    });
 
-  it("reads a removed property as neither", () => {
-    const source = sourceSchema("absent");
-    expect(agreesWithSource("lenient", source)).toBe(false);
-    expect(agreesWithSource("strict", source)).toBe(false);
-  });
+    it("reads a removed property as neither", () => {
+      const source = sourceSchema("absent");
+      expect(agreesWithSource("lenient", source)).toBe(false);
+      expect(agreesWithSource("strict", source)).toBe(false);
+    });
 
-  it("reads a retyped property as neither", () => {
-    const source: LockedInterfaceSchema = {
-      properties: {
-        firstName: { type: "string", required: true },
-        lastName: { type: "integer", required: true },
-      },
-    };
-    expect(agreesWithSource("lenient", source)).toBe(false);
-    expect(agreesWithSource("strict", source)).toBe(false);
+    it("reads a retyped property as neither", () => {
+      const source: LockedInterfaceSchema = {
+        properties: {
+          firstName: { type: "string", required: true },
+          lastName: { type: "integer", required: true },
+        },
+      };
+      expect(agreesWithSource("lenient", source)).toBe(false);
+      expect(agreesWithSource("strict", source)).toBe(false);
+    });
   });
 });

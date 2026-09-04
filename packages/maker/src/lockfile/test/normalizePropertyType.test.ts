@@ -17,8 +17,8 @@
 import { describe, expect, it } from "vitest";
 
 import type { PropertyTypeType } from "../../api/properties/PropertyTypeType.js";
-import type { LockedPropertyType } from "../normalizePropertyType.js";
-import { normalizePropertyType } from "../normalizePropertyType.js";
+import type { LockedPropertyType } from "../LockedPropertyType.js";
+import { normalizePropertyType } from "../LockedPropertyType.js";
 
 /**
  * `LockedPropertyType` is derived from `PropertyTypeType` by a recursive mapped type, so it could
@@ -120,8 +120,6 @@ describe("normalizePropertyType", () => {
   });
 
   it("strips at every depth, not just the fields of the outermost struct", () => {
-    // The rule is structural: presentation is dropped wherever it appears, so a type that nests
-    // another type is covered without this function knowing that it does.
     const normalized = normalizePropertyType({
       type: "struct",
       structDefinition: { street: "string" },
