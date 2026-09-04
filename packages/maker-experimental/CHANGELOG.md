@@ -1,5 +1,23 @@
 # @osdk/maker-experimental
 
+## 0.59.0
+
+### Minor Changes
+
+- 84bcd53: Allow actions to upload media for properties backed by Maker-created Media Sets.
+- e3a381d: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.77.0`. Generated experimental ontology metadata now includes full action type metadata and logic rules.
+
+### Patch Changes
+
+- Updated dependencies [84bcd53]
+- Updated dependencies [eb0c920]
+- Updated dependencies [e3a381d]
+  - @osdk/maker@0.65.0
+  - @osdk/api@2.65.0
+  - @osdk/generator-converters.ontologyir@2.65.0
+  - @osdk/generator-converters.preview@0.43.0
+  - @osdk/client.unstable@2.65.0
+
 ## 0.58.0
 
 ### Minor Changes
