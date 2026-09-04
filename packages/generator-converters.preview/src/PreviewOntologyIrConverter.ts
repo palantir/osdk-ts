@@ -52,10 +52,13 @@ export class PreviewOntologyIrConverter {
     const baseMetadata = OntologyBlockDataToFullMetadataConverter
       .getFullMetadataFromBlockData(blockdata, importedTypes);
 
-    const actionTypes = this.convertActionTypesWithFullLogicRulesFromBlockData(
-      blockdata.actionTypes,
-      blockdata,
-    );
+    const actionTypes: Record<string, Ontologies.ActionTypeFullMetadata> = {
+      ...this.convertImportedActionTypes(importedTypes),
+      ...this.convertActionTypesWithFullLogicRulesFromBlockData(
+        blockdata.actionTypes,
+        blockdata,
+      ),
+    };
     // Post-process object types to use UUID-based RIDs
     const objectTypes = this.convertObjectTypesWithUuidRids(
       baseMetadata.objectTypes,
@@ -111,6 +114,20 @@ export class PreviewOntologyIrConverter {
       };
     }
 
+    return result;
+  }
+
+  private static convertImportedActionTypes(
+    importedTypes?: Ontologies.OntologyFullMetadata,
+  ): Record<string, Ontologies.ActionTypeFullMetadata> {
+    const result: Record<string, Ontologies.ActionTypeFullMetadata> = {};
+    for (
+      const [apiName, actionType] of Object.entries(
+        importedTypes?.actionTypes ?? {},
+      )
+    ) {
+      result[apiName] = { actionType, fullLogicRules: [] };
+    }
     return result;
   }
 
