@@ -63,18 +63,13 @@ function requireProperty(id: string, property: string): LockedTransition {
 function censusOf(source: OntologySchemaLockfile): SourceCensus {
   return {
     interfaces: new Map(
-      Object.entries(source.interfaces).map(([apiName, { schema }]) => [
-        apiName,
-        schema,
-      ]),
+      Object.entries(source.interfaces).map(
+        ([interfaceApiName, { schema }]) => [interfaceApiName, schema],
+      ),
     ),
   };
 }
 
-/**
- * Validates against a source that declares exactly the interfaces it enrolled, which is the
- * uninteresting case for every test not specifically about opting out or removing.
- */
 function validate(
   previous: OntologySchemaLockfile,
   next: OntologySchemaLockfile,
@@ -174,8 +169,6 @@ describe("validateOntologySchemaLockfile", () => {
     });
 
     it("accepts an interface the source no longer declares at all", () => {
-      // Removing an interface takes every promise its transitions made with it, so there is
-      // nothing left to account for either way.
       const result = validate(lastNameInFlight, lockfile({}), {
         interfaces: new Map(),
       });
@@ -221,7 +214,7 @@ describe("validateOntologySchemaLockfile", () => {
       ]);
     });
 
-    it("rejects a disappearance that matches neither mode", () => {
+    it("rejects a disappearance that matches neither deletion or finalization", () => {
       // The target was dropped outright, so neither finalizing nor deleting reproduces this schema.
       const result = validate(
         lastNameInFlight,
@@ -265,6 +258,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ firstName: REQUIRED_STRING }),
       );
       expect(result.checkpoints).toEqual([]);
+      // TODO: this should be rejected at DSL-time; should this actually be a diff check?
       expect(result.findings).toEqual([
         {
           code: "ambiguousDisappearance",
@@ -378,9 +372,6 @@ describe("validateOntologySchemaLockfile", () => {
   });
 
   describe("api names that collide with Object.prototype", () => {
-    // A lockfile is `JSON.parse`d, so a bare index read for one of these finds the inherited
-    // function rather than `undefined` and the diff reads the entry as present.
-
     it("reports removing a property named toString as a removal", () => {
       const result = validate(
         person({ toString: OPTIONAL_STRING }),
@@ -410,8 +401,6 @@ describe("validateOntologySchemaLockfile", () => {
     });
 
     it("reads an opted-out interface named toString", () => {
-      // A bare index read would find `Object.prototype.toString` here rather than `undefined`,
-      // and so never notice that the source stopped enrolling the interface.
       const result = validate(
         lockfile({
           toString: {

@@ -24,7 +24,7 @@ import {
   targetPropertiesOf,
 } from "./applyInterfaceSchemaTransition.js";
 import type { SourceCensus } from "./generateOntologySchemaLockfile.js";
-import type { LockedPropertyType } from "./normalizePropertyType.js";
+import type { LockedPropertyType } from "./LockedPropertyType.js";
 import type {
   LockedInterfaceSchema,
   LockedInterfaceType,
@@ -42,10 +42,6 @@ import type {
 
 /**
  * A transition that the source no longer declares, along with what its disappearance meant.
- *
- * Checkpoints are events rather than declared entities: a finalization is simply a release in which a
- * transition disappeared and its effects landed in the schema, so there is nothing to record
- * beyond the new schema itself.
  */
 export interface DetectedCheckpoint {
   interfaceApiName: string;
@@ -126,15 +122,11 @@ function own<T>(record: Record<string, T>, key: string): T | undefined {
 
 /**
  * Diffs a newly-generated lockfile against the persisted one, reporting any change that OMS would
- * reject when the resulting artifact is installed.
+ * reject when the ontology is installed.
  *
  * @param previous the persisted lockfile, i.e. the last published state
  * @param next the lockfile generated from the current source
- * @param census every entity the source declares, enrolled or not, with the schema it declares now.
- * An entity's absence from this distinguishes removing it, which needs no accounting at all, from
- * opting it out of schema migrations, which must still say what became of its in-flight
- * transitions. The recorded schemas are what an opted-out entity is read against, since opting out
- * drops it from the generated lockfile.
+ * @param census every entity the source declares, enrolled or not in locking, with the schema it declares now.
  */
 export function validateOntologySchemaLockfile(
   previous: OntologySchemaLockfile,
@@ -151,9 +143,7 @@ export function validateOntologySchemaLockfile(
       own(next.interfaces, interfaceApiName) ??
       asOptedOut(interfaceApiName, census);
 
-    // The source declares no such interface any more. Removing one takes with it every promise its
-    // transitions made, since nothing is left to reference it or to be broken by it, so there is no
-    // checkpoint to record and no schema to diff.
+    // Not a break, existing installations will just continue with what they have
     if (nextInterface === undefined) {
       continue;
     }
@@ -176,8 +166,7 @@ export function validateOntologySchemaLockfile(
  *
  * Opting out ends maker's checking of the interface from the next release on, but not this one. The
  * interface is still published, so whether each in-flight transition landed or was abandoned is
- * still a real difference in the artifact, and reading that is exactly the work of every transition
- * disappearing at once.
+ * still a real difference in the artifact.
  */
 function asOptedOut(
   interfaceApiName: string,
@@ -259,7 +248,7 @@ type Disappearance =
 
 /**
  * Decides whether a transition vanishing from the source was a finalization, a deletion, or an
- * illegal change, by checking which way of applying it reproduces the new schema.
+ * illegal change.
  */
 function classifyDisappearance(
   transition: LockedTransition,
