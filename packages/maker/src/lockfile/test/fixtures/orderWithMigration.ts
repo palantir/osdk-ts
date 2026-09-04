@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// `orderOptedIn`, one release later: `shippedAt` is being phased in to required.
+// `orderOptedIn`, one release later with `shippedAt` is being phased in to required.
 import { defineInterface } from "../../../api/defineInterface.js";
 
 defineInterface({

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-// A real maker input, except that it imports from source rather than from "@osdk/maker" so the
-// tests exercise the code under test rather than the last build output.
 import { defineInterface } from "../../../api/defineInterface.js";
 
 defineInterface({

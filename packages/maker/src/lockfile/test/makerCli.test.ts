@@ -34,14 +34,7 @@ const FIXTURES = path.join(
 );
 
 /**
- * Drives the real CLI entrypoint over real files, to cover the parts the unit tests cannot: the
- * flag surface, and the ordering guarantee that no `ontology.json` is written when the lockfile
- * check fails.
- *
- * NOTE: maker loads its input with a dynamic `import()`, so within a single vitest process a
- * fixture's body only runs the first time it is loaded. Each test therefore gets its own fixture
- * and, where it needs one, hand-writes its baseline lockfile rather than producing it with an
- * extra maker run.
+ * Drives the real CLI entrypoint over real files for ETE testing.
  */
 describe("maker CLI", () => {
   let workDir: string;
@@ -73,7 +66,7 @@ describe("maker CLI", () => {
   }
 
   /** The lockfile a previous release would have left behind. */
-  async function writeBaseline(
+  async function writeBaselineLockfile(
     apiName: string,
     properties: Record<string, LockedProperty>,
   ): Promise<void> {
@@ -131,7 +124,6 @@ describe("maker CLI", () => {
           ),
         ),
       ).toStrictEqual(expectedLockfile);
-      // Emphatically not in the working directory, which is where it used to land.
       expect(await exists(lockfile)).toBe(false);
       expect(await exists(output)).toBe(true);
     } finally {
@@ -155,7 +147,7 @@ describe("maker CLI", () => {
   });
 
   it("does not write an ontology when the lockfile is out of date", async () => {
-    await writeBaseline("Person", {
+    await writeBaselineLockfile("Person", {
       firstName: { type: "string", required: true },
     });
 
@@ -166,7 +158,7 @@ describe("maker CLI", () => {
   });
 
   it("does not write an ontology for an undeclared breaking change", async () => {
-    await writeBaseline("Person", {
+    await writeBaselineLockfile("Person", {
       firstName: { type: "string", required: true },
     });
 
@@ -177,7 +169,7 @@ describe("maker CLI", () => {
   });
 
   it("records a backwards compatible change and writes the ontology", async () => {
-    await writeBaseline("Order", {
+    await writeBaselineLockfile("Order", {
       orderId: { type: "string", required: true },
     });
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// `personOptedIn`, one release later: `lastName` is being phased in to required.
+// `personOptedIn`, one release later with `lastName` is being phased in to required.
 import { defineInterface } from "../../../api/defineInterface.js";
 
 defineInterface({

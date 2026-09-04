@@ -148,6 +148,4 @@ export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitio
 export { wrapWithProxy } from "./api/wrapWithProxy.js";
 export { default } from "./cli/main.js";
 export { convertInterfaceSchemaGracePeriod } from "./conversion/toMarketplace/convertInterfaceSchemaMigrations.js";
-// The lockfile module is deliberately unexported: nothing outside `cli/main.ts` consumes it, and
-// publishing its shapes would freeze them as public API while they are still being designed.
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";

@@ -121,39 +121,36 @@ export default async function main(
         type: "string",
       },
       lockfile: {
-        describe: `Interface schema lockfile, recording the last published shape of every interface opted into schema migrations (default: ${DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME} beside --input)`,
+        describe: `Ontology schema lockfile, recording the last-published shape of every interface opted into schema migrations (default: ${DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME} beside --input)`,
         type: "string",
         // No `default`: it depends on --input, which `coerce` cannot see. Resolved after parsing.
         coerce: path.resolve,
       },
-      // Neither of these declares a `default`: yargs' `implies` asks whether a key is present in
-      // argv, and a default would make it present always, turning the check below into a no-op.
       writeLocks: {
         describe:
-          "Update the interface schema lockfile instead of failing when it is out of date",
+          "Update the ontology schema lockfile instead of failing when it is out of date",
         type: "boolean",
+        // NB: no default since "implied" below
       },
       yes: {
         alias: "y",
         describe:
-          "Accept detected interface schema migration finalizations/deletions without prompting",
+          "Accept detected ontology schema migration finalizations/deletions without prompting",
         type: "boolean",
+        // NB: no default since "implied" below
       },
     })
     // --yes only answers the prompt that --write-locks can raise, so on its own it does nothing.
     .implies("yes", "writeLocks")
     // Without this, the usage error that `implies` raises calls `process.exit` from inside the
-    // library, which takes the whole host process with it — a test runner's included. Throwing
-    // leaves the failure to the caller. `--help` and `--version` do not come through here.
+    // library, which takes the whole host process with it (including the test runner's). Throwing
+    // leaves the failure to the caller.
     .fail((msg, err, usage) => {
-      // `err` is set only when something downstream threw; yargs' own usage errors arrive as a
-      // bare `msg`.
       if (err) {
         throw err;
       }
-      // Registering a handler suppresses yargs' `showHelpOnFail`, so reinstate it. `@types/yargs`
-      // calls this third argument an `Argv`; at runtime it is the internal usage instance, and
-      // both expose the same `showHelp`.
+
+      // Registering a failure handler suppresses yargs' showHelpOnFail behavior, so reinstate it.
       usage.showHelp("error");
       throw new Error(msg);
     })
@@ -189,7 +186,7 @@ export default async function main(
     );
   }
 
-  // The lockfile is checked-in source describing the ontology definition, not a build artifact
+  // The lockfile is a checked-in source artifact describing the ontology definition, not a build artifact
   // like `output`, so it belongs beside the definition rather than wherever maker was invoked.
   const lockfilePath =
     commandLineOpts.lockfile ??
@@ -207,8 +204,8 @@ export default async function main(
     commandLineOpts.codeSnippetPackageName,
     commandLineOpts.codeSnippetDir,
     commandLineOpts.randomnessKey,
-    // Runs once the ontology is registered and before anything is written: an ontology that fails
-    // these checks would fail at OMS installation-time, so it should never reach the disk at all.
+    // An ontology that fails lockfile checks would fail at installation-time, so the ontology-ir
+    // should never reach risk at all.
     async (ontology) =>
       await reconcileOntologySchemaLockfile({
         ontology,
