@@ -70,6 +70,10 @@ describe("serializeLockfile", () => {
   it("writes the persisted format this version of maker promises", () => {
     expect(serializeLockfile(golden)).toBe(
       `{
+  "//": [
+    "This is a generated file, do not modify manually.",
+    "Run \`maker --write-locks\` to regenerate this file."
+  ],
   "version": 1,
   "interfaces": {
     "com.example.Employee": {
@@ -134,5 +138,12 @@ describe("serializeLockfile", () => {
 
   it("ends with a trailing newline, so the file is POSIX-clean in review", () => {
     expect(serializeLockfile(golden).endsWith("}\n")).toBe(true);
+  });
+
+  it("keeps the header comment parseable as JSON", () => {
+    const parsed = JSON.parse(serializeLockfile(golden));
+    expect(Object.keys(parsed)[0]).toBe("//");
+    delete parsed["//"];
+    expect(parsed).toStrictEqual(golden);
   });
 });

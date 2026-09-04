@@ -98,7 +98,23 @@ export function lockedEntityCount(lockfile: OntologySchemaLockfile): number {
   );
 }
 
+/**
+ * JSON has no comment syntax, but a `"//"` key is the conventional stand-in for one, and unlike a
+ * real comment it leaves the file parseable by every JSON consumer: editors, `jq`, `JSON.parse`.
+ *
+ * It is deliberately absent from {@link OntologySchemaLockfile}: the header describes the file, not
+ * the schema state, so serialization adds it and parsing must drop it.
+ */
+export const LOCKFILE_HEADER_KEY = "//";
+
+const LOCKFILE_HEADER = [
+  "This is a generated file, do not modify manually.",
+  "Run `maker --write-locks` to regenerate this file.",
+];
+
 /** The canonical on-disk form. */
 export function serializeLockfile(lockfile: OntologySchemaLockfile): string {
-  return JSON.stringify(lockfile, undefined, 2) + "\n";
+  // Insertion order is preserved for non-index keys, so the header serializes first.
+  const withHeader = { [LOCKFILE_HEADER_KEY]: LOCKFILE_HEADER, ...lockfile };
+  return JSON.stringify(withHeader, undefined, 2) + "\n";
 }
