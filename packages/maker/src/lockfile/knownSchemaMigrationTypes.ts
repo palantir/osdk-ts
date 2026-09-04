@@ -22,15 +22,12 @@ import type {
 /**
  * Which schema migration discriminants this version of maker understands.
  *
- * Only reading a persisted lockfile needs these. A lockfile can have been written by a newer maker
- * than the one now reading it, so parsing has to ask whether it recognizes a discriminant before
- * trusting it — a question that never arises for an authored definition, where the type system has
- * already settled it.
+ * A lockfile can have been written by a newer maker than the one now reading it, so parsing has to
+ * ask whether it recognizes a discriminant before trusting it.
  */
 
 /**
- * Whether `type` names an instruction variant this version of maker understands. Takes `unknown`
- * because its callers are reading unvalidated on-disk data.
+ * Whether `type` names an instruction variant this version of maker understands.
  */
 export function isKnownInstructionType(type: unknown): boolean {
   return (
@@ -39,8 +36,7 @@ export function isKnownInstructionType(type: unknown): boolean {
 }
 
 /**
- * Whether `type` names a grace period kind this version of maker understands. Takes `unknown`
- * because its callers are reading unvalidated on-disk data.
+ * Whether `type` names a grace period kind this version of maker understands.
  */
 export function isKnownGracePeriodType(type: unknown): boolean {
   return (
@@ -48,11 +44,7 @@ export function isKnownGracePeriodType(type: unknown): boolean {
   );
 }
 
-/**
- * Total over the instruction discriminant by construction, so adding a variant is a compile error
- * here rather than a lockfile silently accepting an instruction maker cannot apply. A `switch`
- * cannot stand in for this: the set of known types is needed as runtime data, not control flow.
- */
+// For compile-time exhaustion checks
 const KNOWN_INSTRUCTION_TYPES: Record<
   InterfaceSchemaMigrationInstruction["type"],
   true
@@ -60,10 +52,7 @@ const KNOWN_INSTRUCTION_TYPES: Record<
   addRequiredProperty: true,
 };
 
-/**
- * Total over the grace period discriminant by construction, so adding a kind is a compile error
- * here rather than a lockfile silently accepting a grace period maker cannot compare.
- */
+// For compile-time exhaustion checks
 const KNOWN_GRACE_PERIOD_TYPES: Record<
   InterfaceSchemaGracePeriod["type"],
   true

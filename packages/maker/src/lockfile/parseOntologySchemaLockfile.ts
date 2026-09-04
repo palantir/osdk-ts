@@ -35,10 +35,6 @@ type OldLockfile = { version: number } & Record<string, unknown>;
 /**
  * Upgraders keyed by the version they read, applied in ascending order until the lockfile reaches
  * {@link ONTOLOGY_SCHEMA_LOCKFILE_VERSION}.
- *
- * Empty while there is only one version, which is exactly when it is cheap to put in place. Without
- * it, bumping the version would leave authors one recovery: delete the lockfile, which regenerates
- * a fresh baseline from source and silently absorbs every breaking change accumulated since.
  */
 const UPGRADERS: Readonly<Record<number, LockfileUpgrader>> = {};
 
@@ -75,23 +71,22 @@ function requireVersion(parsed: unknown, lockfilePath: string): OldLockfile {
     ?.version;
   if (typeof version !== "number" || !Number.isInteger(version)) {
     throw new Error(
-      `${lockfilePath} is not an interface schema lockfile: expected an integer "version" key.`,
+      `${lockfilePath} is not an ontology schema lockfile: expected an integer "version" key.`,
     );
   }
+
   if (version > ONTOLOGY_SCHEMA_LOCKFILE_VERSION) {
     throw new Error(
       `${lockfilePath} has version ${version}, but this version of maker only understands ` +
         `version ${ONTOLOGY_SCHEMA_LOCKFILE_VERSION}. Upgrade @osdk/maker.`,
     );
   }
+
   return parsed as OldLockfile;
 }
 
 /**
  * Brings an older lockfile up to `targetVersion` by applying each intervening upgrader in turn.
- *
- * `upgraders` is a parameter rather than a module reference so the chain stays testable while it
- * is still empty.
  *
  * @internal
  */
@@ -107,12 +102,11 @@ export function upgradeLockfile(
     if (upgrade === undefined) {
       throw new Error(
         `${lockfilePath} has version ${upgraded.version}, which this version of maker cannot ` +
-          `upgrade to version ${targetVersion}. Delete the lockfile and re-derive it from the ` +
-          `last published ontology, rather than from your working copy.`,
+          `upgrade to version ${targetVersion}. Delete the lockfile and regenerate it.`,
       );
     }
+
     const next = upgrade(upgraded);
-    /* c8 ignore next 6 -- guards against a mis-written upgrader looping forever */
     if (next.version <= upgraded.version) {
       throw new Error(
         `The lockfile upgrader for version ${upgraded.version} did not advance the version.`,
@@ -124,13 +118,11 @@ export function upgradeLockfile(
 }
 
 /**
- * Rejects the shapes the rest of the module would otherwise misread, or crash on. Everything
- * downstream treats a parsed lockfile as well-formed, so anything it dereferences without a guard
- * — a property's `type` and `required`, a transition's `gracePeriod` — has to be checked here.
+ * Validates the lockfile is valid since everything downstream expects a parsed lockfile to be
+ * well-formed, but lockfiles are hand-editable since they are source artifacts.
  *
- * The checks are deliberately structural rather than semantic: a transition's grace period must
- * name a kind maker understands, but need not be one the DSL would accept today, since the
- * lockfile records what a *previous* release published.
+ * NB: the checks are purely structural (rather than semantic) since newer maker versions may
+ * validate new semantics that were not true/necessary when this lockfile version was written
  */
 function validateStructure(
   lockfile: OldLockfile,
@@ -142,28 +134,31 @@ function validateStructure(
       `${lockfilePath} is not an interface schema lockfile: expected an object with an "interfaces" key.`,
     );
   }
-  for (const [apiName, interfaceType] of Object.entries(
+
+  for (const [interfaceApiName, interfaceType] of Object.entries(
     interfaces as Record<string, LockedInterfaceType>,
   )) {
-    validateInterface(apiName, interfaceType, lockfilePath);
+    validateInterface(interfaceApiName, interfaceType, lockfilePath);
   }
+
   return lockfile as unknown as OntologySchemaLockfile;
 }
 
 function validateInterface(
-  apiName: string,
+  interfaceApiName: string,
   interfaceType: LockedInterfaceType,
   lockfilePath: string,
 ): void {
-  const where = `${lockfilePath}: interface ${apiName}`;
+  const where = `${lockfilePath}: interface ${interfaceApiName}`;
   if (!isObject(interfaceType?.schema?.properties)) {
     throw new Error(`${where} is missing \`schema.properties\`.`);
   }
-  for (const [property, locked] of Object.entries(
+  for (const [propertyApiName, locked] of Object.entries(
     interfaceType.schema.properties,
   )) {
-    validateProperty(where, property, locked);
+    validateProperty(where, propertyApiName, locked);
   }
+
   if (!Array.isArray(interfaceType.transitions)) {
     throw new Error(`${where} is missing \`transitions\`.`);
   }
@@ -172,21 +167,20 @@ function validateInterface(
   }
 }
 
-/**
- * `required` must be a boolean rather than merely present: the schema diff tests it for
- * truthiness, so the string `"false"` would otherwise read as required.
- */
 function validateProperty(
   where: string,
-  property: string,
+  propertyApiName: string,
   locked: LockedProperty,
 ): void {
   if (locked?.type == null) {
-    throw new Error(`${where}: property "${property}" is missing \`type\`.`);
+    throw new Error(
+      `${where}: property "${propertyApiName}" is missing \`type\`.`,
+    );
   }
+
   if (typeof locked.required !== "boolean") {
     throw new Error(
-      `${where}: property "${property}" must declare \`required\` as a boolean, but declares ` +
+      `${where}: property "${propertyApiName}" must declare \`required\` as a boolean, but declares ` +
         `${JSON.stringify(locked.required)}.`,
     );
   }
@@ -200,6 +194,7 @@ function validateTransition(
   if (typeof transition?.id !== "string" || transition.id.length === 0) {
     throw new Error(`${where} records a schema migration with no id.`);
   }
+
   if (!isKnownGracePeriodType(transition.gracePeriod?.type)) {
     throw new Error(
       `${where}: schema migration "${transition.id}" has a grace period of unknown type ` +
@@ -207,10 +202,7 @@ function validateTransition(
         `declared.`,
     );
   }
-  // The bar is whatever `Date.parse` accepts, not the canonical ISO-8601 UTC datetime the DSL
-  // insists on: this deadline is whatever a previous release published, and maker only ever reads
-  // it back as an instant. A value `Date.parse` rejects would otherwise survive parsing and
-  // surface as a silent NaN comparison, far from the file that caused it.
+
   const { gracePeriod } = transition;
   if (gracePeriod.type === "deadline") {
     const { deadline } = gracePeriod;
@@ -233,6 +225,7 @@ function validateTransition(
         `restore the instructions the last published release declared.`,
     );
   }
+
   for (const instruction of transition.instructions) {
     if (!isKnownInstructionType(instruction?.type)) {
       throw new Error(
@@ -243,7 +236,6 @@ function validateTransition(
   }
 }
 
-/** `typeof null === "object"`, so a bare `typeof` check would admit `null` here. */
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value != null;
 }

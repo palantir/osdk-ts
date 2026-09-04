@@ -24,8 +24,7 @@ import {
 /**
  * A lockfile is checked in, so every one of these shapes is something an author can hand a build
  * by editing the file or resolving a merge conflict badly. Everything downstream of the parser
- * treats what it returns as well-formed, so each shape has to be rejected with a message that
- * names the file — never a `TypeError` from wherever the bad value is first dereferenced.
+ * treats what it returns as well-formed.
  */
 describe("parseLockfile", () => {
   const property = { type: "string", required: false };
@@ -86,7 +85,6 @@ describe("parseLockfile", () => {
 
   it.each([
     ["missing", { version: 1 }],
-    // `typeof null === "object"`, so this is the shape a bare `typeof` check would wave through.
     ["null", { version: 1, interfaces: null }],
   ])("rejects `interfaces` being %s", (_name, lockfile) => {
     expect(() => parse(lockfile)).toThrowError(
@@ -113,10 +111,10 @@ describe("parseLockfile", () => {
     );
   });
 
-  /** Builds a lockfile whose sole property is `broken`. */
-  function withProperty(broken: unknown) {
+  /** Builds a lockfile whose sole "lastName" property has the given definition. */
+  function withPropertyDefinition(definition: unknown) {
     return withInterface({
-      schema: { properties: { lastName: broken } },
+      schema: { properties: { lastName: definition } },
       transitions: [],
     });
   }
@@ -126,17 +124,16 @@ describe("parseLockfile", () => {
     ["an object with no `type`", { required: false }],
     ["an object whose `type` is null", { type: null, required: false }],
   ])("rejects a property that is %s", (_name, broken) => {
-    expect(() => parse(withProperty(broken))).toThrowError(
+    expect(() => parse(withPropertyDefinition(broken))).toThrowError(
       /lock\.json: interface Person: property "lastName" is missing `type`/u,
     );
   });
 
   it.each([
     ["absent", { type: "string" }],
-    // The schema diff tests `required` for truthiness, so a stringified boolean inverts it.
     ['the string "false"', { type: "string", required: "false" }],
   ])("rejects a property whose `required` is %s", (_name, broken) => {
-    expect(() => parse(withProperty(broken))).toThrowError(
+    expect(() => parse(withPropertyDefinition(broken))).toThrowError(
       /property "lastName" must declare `required` as a boolean/u,
     );
   });
@@ -217,12 +214,6 @@ describe("parseLockfile", () => {
   });
 });
 
-/**
- * The upgrade chain is empty while there is only one lockfile version, so it is driven here with
- * stand-in upgraders. The point is that the machinery is in place *before* the first version bump:
- * without it, the only recovery from one is to delete the lockfile, which regenerates a fresh
- * baseline from the working copy and absorbs every breaking change accumulated since.
- */
 describe("upgradeLockfile", () => {
   const v1 = { version: 1, interfaces: {} };
 
