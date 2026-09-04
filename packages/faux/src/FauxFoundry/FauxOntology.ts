@@ -52,6 +52,7 @@ export class FauxOntology {
   constructor(ontology: OntologiesV2.OntologyV2) {
     this.#ontology = {
       actionTypes: {},
+      actionTypesFullMetadata: {},
       interfaceTypes: {},
       objectTypes: {},
       ontology,
@@ -91,6 +92,7 @@ export class FauxOntology {
         this.#ontology.actionTypes,
         request.actionTypes,
       ),
+      actionTypesFullMetadata: {},
       queryTypes: this.#getFilteredQueryTypes(request),
 
       interfaceTypes: filterRecord(

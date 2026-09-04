@@ -75,6 +75,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
       status: "ACTIVE",
     },
   },
+  actionTypesFullMetadata: {},
   objectTypes: {
     Todo: {
       objectType: {

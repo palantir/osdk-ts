@@ -238,6 +238,7 @@ const referencedOntology = {
     description: "",
   },
   actionTypes: {},
+  actionTypesFullMetadata: {},
   objectTypes: {
     "com.example.dep.Task": {
       implementsInterfaces: [],
@@ -384,6 +385,7 @@ const referencingOntology: WireOntologyDefinition = {
       ],
     },
   },
+  actionTypesFullMetadata: {},
   interfaceTypes: {
     ...referencedOntology.interfaceTypes,
   },
@@ -1902,6 +1904,7 @@ describe("generator", () => {
       {
         ontology: TodoWireOntology.ontology,
         actionTypes: {},
+        actionTypesFullMetadata: {},
         interfaceTypes: {},
         objectTypes: {},
         queryTypes: {},
@@ -1979,9 +1982,12 @@ describe("generator", () => {
   });
 
   describe("exportOntologyMetadata", () => {
-    async function generate(exportOntologyMetadata: boolean) {
+    async function generate(
+      exportOntologyMetadata: boolean,
+      ontology: WireOntologyDefinition = TodoWireOntology,
+    ) {
       await generateClientSdkVersionTwoPointZero(
-        TodoWireOntology,
+        ontology,
         "",
         helper.minimalFiles,
         BASE_PATH,
@@ -2005,10 +2011,19 @@ describe("generator", () => {
     });
 
     it("writes the raw metadata as pretty printed json when enabled", async () => {
-      const files = await generate(true);
+      const ontologyWithActionTypeFullMetadata: WireOntologyDefinition = {
+        ...TodoWireOntology,
+        actionTypesFullMetadata: {
+          markTodoCompleted: {
+            actionType: TodoWireOntology.actionTypes.markTodoCompleted,
+            fullLogicRules: [],
+          },
+        },
+      };
+      const files = await generate(true, ontologyWithActionTypeFullMetadata);
       const json = files[`${BASE_PATH}/experimental/ontology-metadata.json`];
 
-      expect(JSON.parse(json)).toEqual(TodoWireOntology);
+      expect(JSON.parse(json)).toEqual(ontologyWithActionTypeFullMetadata);
       expect(json).toContain("\n    \"ontology\": {");
     });
 
@@ -2347,6 +2362,7 @@ describe("generator", () => {
         {
           ontology: TodoWireOntology.ontology,
           actionTypes: {},
+          actionTypesFullMetadata: {},
           interfaceTypes: {},
           objectTypes: TodoWireOntology.objectTypes,
           queryTypes: {

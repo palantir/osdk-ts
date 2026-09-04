@@ -236,6 +236,7 @@ describe("generatePerQueryDataFiles", () => {
         ontology: enhanceOntology({
           sanitized: {
             actionTypes: {},
+            actionTypesFullMetadata: {},
             interfaceTypes: {},
             objectTypes: {},
             ontology: {
@@ -306,6 +307,7 @@ describe("generatePerQueryDataFiles", () => {
         ontology: enhanceOntology({
           sanitized: {
             actionTypes: {},
+            actionTypesFullMetadata: {},
             interfaceTypes: {},
             objectTypes: {},
             ontology: {
@@ -614,6 +616,7 @@ describe("generatePerQueryDataFiles", () => {
         ontology: enhanceOntology({
           sanitized: {
             actionTypes: {},
+            actionTypesFullMetadata: {},
             interfaceTypes: {},
             objectTypes: {},
             ontology: {
@@ -770,6 +773,7 @@ describe("generatePerQueryDataFiles", () => {
         ontology: enhanceOntology({
           sanitized: {
             actionTypes: {},
+            actionTypesFullMetadata: {},
             interfaceTypes: {},
             objectTypes: {},
             ontology: {

@@ -87,6 +87,7 @@ export class OntologyBlockDataToFullMetadataConverter {
       actionTypes: importedTypes
         ? { ...actionTypes, ...importedTypes.actionTypes }
         : actionTypes,
+      actionTypesFullMetadata: importedTypes?.actionTypesFullMetadata ?? {},
       ontology: {
         apiName: "ontology",
         rid: `ri.ontology.main.ontology.00000`,

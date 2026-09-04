@@ -24,6 +24,7 @@ const modifiedMetadata: Ontologies.OntologyFullMetadata = {
     ),
   ),
   actionTypes: {},
+  actionTypesFullMetadata: {},
   interfaceTypes: Object.fromEntries(
     Object.entries(metadata.interfaceTypes).filter(([k]) =>
       filteredInterfaceTypes.has(k),

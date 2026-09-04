@@ -270,6 +270,7 @@ export class OntologyIrToFullMetadataConverter {
       objectTypes,
       queryTypes: {},
       actionTypes,
+      actionTypesFullMetadata: {},
       ontology: {
         apiName: "ontology",
         rid: `ri.00000`,

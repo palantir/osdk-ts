@@ -65,6 +65,7 @@ export class PreviewOntologyIrConverter {
       ...baseMetadata,
       objectTypes,
       actionTypes,
+      actionTypesFullMetadata: actionTypes,
       ontology: {
         apiName: "ontology",
         rid: "ri.ontology.main.ontology.0",
