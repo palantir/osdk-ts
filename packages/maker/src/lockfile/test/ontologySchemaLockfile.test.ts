@@ -35,9 +35,7 @@ import {
 } from "./lockfileHarness.js";
 
 /**
- * The migration lifecycle walked end to end, one release at a time, as the RFC's worked example
- * describes it. The per-rule cases live in `validateOntologySchemaLockfile.test.ts`; these pin the
- * behavior an author actually meets, through the whole generate/validate/write pipeline.
+ * An end-to-end lifecycle test of interface schema migrations, as exercised through maker's CLI.
  */
 describe("interface schema migration scenarios", () => {
   const { maker, published, readLockfile } = useLockfileHarness();
@@ -265,9 +263,6 @@ describe("interface schema migration scenarios", () => {
   });
 
   describe("shared property types", () => {
-    // The source may refer to an SPT-backed property by its bare name while it is published under
-    // a namespaced one. The lockfile records the published name, so renaming the source key is
-    // correctly a no-op rather than an apparent breaking change.
     it("keys the schema and instructions by the published api name", async () => {
       await expect(
         maker(

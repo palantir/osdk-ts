@@ -2,4 +2,4 @@
 "@osdk/maker": patch
 ---
 
-Cover the interface schema migration lifecycle end to end
+Test the interface schema migration lifecycle end to end
