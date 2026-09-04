@@ -88,6 +88,7 @@ function simpleOntology<I extends InterfaceType>(
 
   return {
     actionTypes: {},
+    actionTypesFullMetadata: {},
     interfaceTypes,
     objectTypes: {},
     ontology: {

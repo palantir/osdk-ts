@@ -69,6 +69,7 @@ const metadata = {
     Office: makeObjectType("Office", "officeId", { officeId: "string" }),
   },
   actionTypes: {},
+  actionTypesFullMetadata: {},
   queryTypes: {},
   interfaceTypes: {},
   sharedPropertyTypes: {},

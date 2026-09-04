@@ -155,6 +155,7 @@ function validateActionParameterType(
 
     case "boolean":
     case "date":
+    case "decimal":
     case "long":
     case "double":
     case "integer":

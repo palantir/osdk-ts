@@ -298,6 +298,7 @@ describe("writeImportedOntology", () => {
         rid: "ri.ontology.main.ontology.1",
       },
     },
+    actionTypesFullMetadata: {},
     interfaceTypes: {},
     sharedPropertyTypes: {},
     queryTypes: {},
@@ -354,6 +355,7 @@ describe("writeImportedOntology", () => {
       },
       objectTypes: {},
       actionTypes: {},
+      actionTypesFullMetadata: {},
       interfaceTypes: {},
       sharedPropertyTypes: {},
       queryTypes: {},
@@ -429,6 +431,7 @@ describe("writeImportedOntology", () => {
         },
       },
       actionTypes: {},
+      actionTypesFullMetadata: {},
       interfaceTypes: {},
       sharedPropertyTypes: {},
       queryTypes: {},
@@ -496,6 +499,7 @@ describe("writeImportedOntology", () => {
         },
       },
       actionTypes: {},
+      actionTypesFullMetadata: {},
       interfaceTypes: {},
       sharedPropertyTypes: {
         Foo: {

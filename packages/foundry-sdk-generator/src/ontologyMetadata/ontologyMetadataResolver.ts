@@ -140,6 +140,12 @@ export class OntologyMetadataResolver {
       ),
     );
 
+    const filteredActionTypesFullMetadata = Object.fromEntries(
+      Object.entries(ontologyFullMetadata.actionTypesFullMetadata).filter(
+        ([actionApiName]) => expectedEntities.actionTypes.has(actionApiName),
+      ),
+    );
+
     const filteredQueryTypes = Object.fromEntries(
       Object.entries(ontologyFullMetadata.queryTypes).filter(([queryApiName]) =>
         expectedEntities.queryTypes.has(queryApiName)
@@ -150,6 +156,7 @@ export class OntologyMetadataResolver {
       ontology: ontologyFullMetadata.ontology,
       objectTypes: filteredObjectTypes,
       actionTypes: filteredActionTypes,
+      actionTypesFullMetadata: filteredActionTypesFullMetadata,
       queryTypes: filteredQueryTypes,
       interfaceTypes: filteredInterfaceTypes,
       sharedPropertyTypes: {},
@@ -195,6 +202,7 @@ export class OntologyMetadataResolver {
       queryTypesApiNamesToLoad?: string[];
       interfaceTypesApiNamesToLoad?: string[];
       linkTypesApiNamesToLoad?: string[];
+      includeActionTypeFullMetadata?: boolean;
     },
     extPackageInfo: PackageInfo = new Map(),
     branch: string | undefined = undefined,
@@ -225,7 +233,10 @@ export class OntologyMetadataResolver {
       const ontologyFullMetadata = await OntologiesV2.getFullMetadata(
         this.getClientContext(),
         ontology.rid as OntologyIdentifier,
-        { branch },
+        {
+          branch,
+          includeActionTypeFullMetadata: entities.includeActionTypeFullMetadata,
+        },
       );
 
       if ((ontologyFullMetadata as any).errorName != null) {
@@ -381,6 +392,7 @@ export class OntologyMetadataResolver {
           linkTypes: Array.from(linkTypes.entries()).flatMap(
             ([_, linkTypeApiNames]) => [...linkTypeApiNames],
           ),
+          includeActionTypeFullMetadata: entities.includeActionTypeFullMetadata,
         },
         {
           preview: true,
@@ -822,6 +834,7 @@ export class OntologyMetadataResolver {
       case "boolean":
       case "attachment":
       case "date":
+      case "decimal":
       case "double":
       case "integer":
       case "long":
