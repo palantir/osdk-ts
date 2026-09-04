@@ -24,6 +24,8 @@ import Handlebars from "handlebars";
 
 import { consola } from "./consola.js";
 import {
+  generateAuthlessEnvDevelopment,
+  generateAuthlessEnvProduction,
   generateEnvDevelopment,
   generateEnvProduction,
 } from "./generate/generateEnv.js";
@@ -71,7 +73,7 @@ export async function run({
     `Creating project ${green(project)} using template ${green(template.id)}`,
   );
 
-  const authless = template.authless ?? false;
+  const isAuthless = template.authless ?? false;
 
   const cwd = process.cwd();
   const root = path.join(cwd, project);
@@ -211,14 +213,12 @@ export async function run({
   const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl, foundryUrl });
   fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
 
-  const envDevelopment = authless
-    ? generateEnvDevelopment({
-        authless: true,
+  const envDevelopment = isAuthless
+    ? generateAuthlessEnvDevelopment({
         envPrefix: template.envPrefix,
         ontology,
       })
     : generateEnvDevelopment({
-        authless: false,
         envPrefix: template.envPrefix,
         foundryUrl,
         clientId: clientId ?? "",
@@ -226,15 +226,13 @@ export async function run({
         ontology,
       });
   fs.writeFileSync(path.join(root, ".env.development"), envDevelopment);
-  const envProduction = authless
-    ? generateEnvProduction({
-        authless: true,
+  const envProduction = isAuthless
+    ? generateAuthlessEnvProduction({
         envPrefix: template.envPrefix,
         applicationUrl,
         ontology,
       })
     : generateEnvProduction({
-        authless: false,
         envPrefix: template.envPrefix,
         foundryUrl,
         applicationUrl,

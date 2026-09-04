@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+// The local Vite dev server (and the authless api-proxy it hosts) always run
+// on this URL, so it is shared across the development env templates below.
+const LOCALHOST_URL = "http://localhost:8080";
+
 interface AuthDevelopmentArgs {
-  authless: false;
   envPrefix: string;
   foundryUrl: string;
   clientId: string;
@@ -24,13 +27,11 @@ interface AuthDevelopmentArgs {
 }
 
 interface AuthlessDevelopmentArgs {
-  authless: true;
   envPrefix: string;
   ontology: string | undefined;
 }
 
 interface AuthProductionArgs {
-  authless: false;
   envPrefix: string;
   foundryUrl: string;
   applicationUrl: string | undefined;
@@ -39,34 +40,18 @@ interface AuthProductionArgs {
 }
 
 interface AuthlessProductionArgs {
-  authless: true;
   envPrefix: string;
   applicationUrl: string | undefined;
   ontology: string | undefined;
-}
-
-export function generateEnvDevelopment(
-  args: AuthDevelopmentArgs | AuthlessDevelopmentArgs,
-): string {
-  return args.authless
-    ? authlessEnvDevelopment(args)
-    : authEnvDevelopment(args);
-}
-
-export function generateEnvProduction(
-  args: AuthProductionArgs | AuthlessProductionArgs,
-): string {
-  return args.authless ? authlessEnvProduction(args) : authEnvProduction(args);
 }
 
 function ontologySection(
   envPrefix: string,
   ontology: string | undefined,
 ): string {
-  if (ontology == null) {
-    return "";
-  }
-  return `
+  return ontology == null
+    ? ""
+    : `
 
 # This Ontology RID must match the Ontology RID your Developer Console is associated with.
 # You can check the Ontology on the "Ontology SDK" tab of Developer Console.
@@ -76,15 +61,15 @@ ${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontology}
 `;
 }
 
-function authEnvDevelopment({
+export function generateEnvDevelopment({
   envPrefix,
   foundryUrl,
   clientId,
   corsProxy,
   ontology,
 }: AuthDevelopmentArgs): string {
-  const foundryApiUrl = corsProxy ? "http://localhost:8080" : foundryUrl;
-  const applicationUrl = "http://localhost:8080";
+  const foundryApiUrl = corsProxy ? LOCALHOST_URL : foundryUrl;
+  const applicationUrl = LOCALHOST_URL;
 
   return `# This env file is intended for developing on your local computer.
 # To set up development in Foundry's Code Workspaces, see .env.code-workspaces.
@@ -116,7 +101,7 @@ ${envPrefix}FOUNDRY_CLIENT_ID=${clientId}
 ${ontologySection(envPrefix, ontology)}`;
 }
 
-function authlessEnvDevelopment({
+export function generateAuthlessEnvDevelopment({
   envPrefix,
   ontology,
 }: AuthlessDevelopmentArgs): string {
@@ -127,11 +112,11 @@ function authlessEnvDevelopment({
 # This URL is the local proxy that forwards requests to Foundry.
 # The Vite dev server proxies requests through /api-proxy to avoid CORS issues.
 
-${envPrefix}FOUNDRY_API_URL=http://localhost:8080/api-proxy
+${envPrefix}FOUNDRY_API_URL=${LOCALHOST_URL}/api-proxy
 ${ontologySection(envPrefix, ontology)}`;
 }
 
-function authEnvProduction({
+export function generateEnvProduction({
   envPrefix,
   foundryUrl,
   applicationUrl,
@@ -174,7 +159,7 @@ ${envPrefix}FOUNDRY_CLIENT_ID=${clientId}
 ${ontologySection(envPrefix, ontology)}`;
 }
 
-function authlessEnvProduction({
+export function generateAuthlessEnvProduction({
   envPrefix,
   applicationUrl,
   ontology,

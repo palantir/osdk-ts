@@ -2,4 +2,4 @@
 "@osdk/create-app": minor
 ---
 
-Add React (Public) template for authless, public-facing applications. The previous `--authless` flag has been removed; select the React (Public) template from the framework prompt instead.
+Add React (Public) template for authless, public-facing applications. Select the React (Public) template from the framework prompt to scaffold an app that talks to Foundry through a public proxy without OAuth.
