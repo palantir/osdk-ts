@@ -992,11 +992,11 @@ import type {
   BaseEmailViewerProps,
   EmailViewerProps,
   ParsedEmail,
-} from &quot;@osdk/react-components/experimental/email-viewer&quot;;
+} from &quot;@osdk/react-components/email-viewer&quot;;
 import {
   BaseEmailViewer,
   EmailViewer,
-} from &quot;@osdk/react-components/experimental/email-viewer&quot;;
+} from &quot;@osdk/react-components/email-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 
 const SAMPLE_EMAIL: ParsedEmail = {
@@ -1275,8 +1275,8 @@ import type {
   BaseFormFieldProps,
   FormContentItem,
   RendererFieldDefinition,
-} from &quot;@osdk/react-components/experimental&quot;;
-import { BaseForm } from &quot;@osdk/react-components/experimental&quot;;
+} from &quot;@osdk/react-components/action-form&quot;;
+import { BaseForm } from &quot;@osdk/react-components/action-form&quot;;
 import { useOsdkClient } from &quot;@osdk/react/experimental&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import React, { useCallback, useMemo, useState } from &quot;react&quot;;
@@ -1555,7 +1555,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseForm } from &quot;@osdk/react-components/experimental&quot;;
+        code: `import { BaseForm } from &quot;@osdk/react-components/action-form&quot;;
 import {
   THEMED_SLIDER_DEFAULT_VALUE,
   ThemedSliderField,
@@ -3949,8 +3949,8 @@ import { Button, Dialog } from "@blueprintjs/core";</code></pre>
  * limitations under the License.
  */
 
-import type { BaseImageViewerProps } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
-import { BaseImageViewer } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
+import type { BaseImageViewerProps } from &quot;@osdk/react-components/image-viewer&quot;;
+import { BaseImageViewer } from &quot;@osdk/react-components/image-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -4156,8 +4156,8 @@ export const WithErrorCallback: Story = {
  * limitations under the License.
  */
 
-import type { BaseMarkdownViewerProps } from &quot;@osdk/react-components/experimental/markdown-renderer&quot;;
-import { BaseMarkdownViewer } from &quot;@osdk/react-components/experimental/markdown-renderer&quot;;
+import type { BaseMarkdownViewerProps } from &quot;@osdk/react-components/markdown-viewer&quot;;
+import { BaseMarkdownViewer } from &quot;@osdk/react-components/markdown-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 
 const SAMPLE_MARKDOWN = `# Sample Document
@@ -4181,7 +4181,7 @@ This is a **sample markdown** document that demonstrates the *BaseMarkdownViewer
 ## Code Example
 
 \`\`\`typescript
-import { BaseMarkdownViewer } from &quot;@osdk/react-components/experimental/markdown-renderer&quot;;
+import { BaseMarkdownViewer } from &quot;@osdk/react-components/markdown-viewer&quot;;
 
 function App() {
   return &lt;BaseMarkdownViewer content=&quot;# Hello World&quot; /&gt;;
@@ -4414,8 +4414,8 @@ import type {
   PdfAnnotation,
   PdfRect,
   PdfViewerHandle,
-} from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { BasePdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+} from &quot;@osdk/react-components/pdf-viewer&quot;;
+import { BasePdfViewer } from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import React, { useCallback, useEffect, useRef, useState } from &quot;react&quot;;
 
@@ -4927,11 +4927,11 @@ import type {
   BaseSpreadsheetViewerProps,
   ParsedSpreadsheet,
   SpreadsheetViewerProps,
-} from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
+} from &quot;@osdk/react-components/spreadsheet-viewer&quot;;
 import {
   BaseSpreadsheetViewer,
   SpreadsheetViewer,
-} from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
+} from &quot;@osdk/react-components/spreadsheet-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { http, passthrough } from &quot;msw&quot;;
 import { utils, write } from &quot;xlsx-republish&quot;;
@@ -5317,8 +5317,8 @@ export const WithRealFile: StoryObj&lt;SpreadsheetViewerProps&gt; = {
  * limitations under the License.
  */
 
-import type { BaseTableProps } from &quot;@osdk/react-components/experimental/object-table&quot;;
-import { BaseTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import type { BaseTableProps } from &quot;@osdk/react-components/object-table&quot;;
+import { BaseTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import type {
   ColumnPinningState,
@@ -5494,7 +5494,7 @@ export const Default: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { BaseTable } from &quot;@osdk/react-components/object-table&quot;;
 import { 
   getCoreRowModel,
   useReactTable,
@@ -5555,7 +5555,7 @@ export const WithSorting: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { BaseTable } from &quot;@osdk/react-components/object-table&quot;;
 import {
   getCoreRowModel,
   getSortedRowModel,
@@ -5621,7 +5621,7 @@ export const WithColumnPinning: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { BaseTable } from &quot;@osdk/react-components/object-table&quot;;
 import {
   getCoreRowModel,
   useReactTable,
@@ -5688,7 +5688,7 @@ export const WithColumnResizing: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { BaseTable } from &quot;@osdk/react-components/object-table&quot;;
 import {
   getCoreRowModel,
   useReactTable,
@@ -5753,7 +5753,7 @@ export const WithColumnConfig: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { BaseTable } from &quot;@osdk/react-components/object-table&quot;;
 import {
   getCoreRowModel,
   getSortedRowModel,
@@ -6217,8 +6217,8 @@ export const ErrorState: Story = {
  * limitations under the License.
  */
 
-import type { BaseTiffViewerProps } from &quot;@osdk/react-components/experimental/tiff-renderer&quot;;
-import { BaseTiffViewer } from &quot;@osdk/react-components/experimental/tiff-renderer&quot;;
+import type { BaseTiffViewerProps } from &quot;@osdk/react-components/tiff-viewer&quot;;
+import { BaseTiffViewer } from &quot;@osdk/react-components/tiff-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -6443,13 +6443,13 @@ export const WithErrorCallback: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;BaseXmlViewer&quot; component.
-  79 | }
-  80 |
-&gt; 81 | const meta: Meta&lt;BaseXmlViewerProps&gt; = {
+  76 | }
+  77 |
+&gt; 78 | const meta: Meta&lt;BaseXmlViewerProps&gt; = {
      | ^
-  82 |   title: &quot;Components/DocumentViewer/Renderers/XmlViewer&quot;,
-  83 |   component: BaseXmlViewer,
-  84 |   tags: [&quot;beta&quot;],
+  79 |   title: &quot;Components/DocumentViewer/Renderers/XmlViewer&quot;,
+  80 |   component: BaseXmlViewer,
+  81 |   tags: [&quot;beta&quot;],
 
 ./src/stories/XmlViewer/XmlViewer.stories.tsx:
 /*
@@ -6474,11 +6474,8 @@ import type { Media } from &quot;@osdk/api&quot;;
 import type {
   BaseXmlViewerProps,
   XmlViewerProps,
-} from &quot;@osdk/react-components/experimental/xml-viewer&quot;;
-import {
-  BaseXmlViewer,
-  XmlViewer,
-} from &quot;@osdk/react-components/experimental/xml-viewer&quot;;
+} from &quot;@osdk/react-components/xml-viewer&quot;;
+import { BaseXmlViewer, XmlViewer } from &quot;@osdk/react-components/xml-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 
 const SAMPLE_XML = `&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
@@ -6699,8 +6696,8 @@ export const WithContent: Story = {
  * limitations under the License.
  */
 
-import type { ColumnConfigDialogProps } from &quot;@osdk/react-components/experimental/object-table&quot;;
-import { ColumnConfigDialog } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import type { ColumnConfigDialogProps } from &quot;@osdk/react-components/object-table&quot;;
+import { ColumnConfigDialog } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useState } from &quot;react&quot;;
 import { fn } from &quot;storybook/test&quot;;
@@ -6780,7 +6777,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { ColumnConfigDialog } from &quot;@osdk/react-components/experimental/object-table&quot;;
+        code: `import { ColumnConfigDialog } from &quot;@osdk/react-components/object-table&quot;;
 
 const [isOpen, setIsOpen] = useState(false);
 
@@ -7129,8 +7126,8 @@ export const WithValidation: Story = {
  */
 
 import type { DerivedProperty, ObjectSet, Osdk, WhereClause } from &quot;@osdk/api&quot;;
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
-import type { ColumnDefinition } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
+import type { ColumnDefinition } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { expect, fn, waitFor, within } from &quot;storybook/test&quot;;
 
@@ -8001,11 +7998,11 @@ import {
   ActionForm,
   type ActionFormProps,
   type FormState,
-} from &quot;@osdk/react-components/experimental&quot;;
-import { DocumentViewer } from &quot;@osdk/react-components/experimental/document-viewer&quot;;
-import type { FilterDefinitionUnion } from &quot;@osdk/react-components/experimental/filter-list&quot;;
-import { FilterList } from &quot;@osdk/react-components/experimental/filter-list&quot;;
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+} from &quot;@osdk/react-components/action-form&quot;;
+import { DocumentViewer } from &quot;@osdk/react-components/document-viewer&quot;;
+import type { FilterDefinitionUnion } from &quot;@osdk/react-components/filter-list&quot;;
+import { FilterList } from &quot;@osdk/react-components/filter-list&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { http, passthrough } from &quot;msw&quot;;
 import React, { type CSSProperties, useCallback, useState } from &quot;react&quot;;
@@ -8617,7 +8614,7 @@ export const Default: Story = {};
  */
 
 import { useOsdkClient } from &quot;@osdk/react&quot;;
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { expect, within } from &quot;storybook/test&quot;;
 
@@ -8842,7 +8839,7 @@ export const WithInterfaceType: Story = {
  * limitations under the License.
  */
 
-import { ActionForm } from &quot;@osdk/react-components/experimental&quot;;
+import { ActionForm } from &quot;@osdk/react-components/action-form&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import React from &quot;react&quot;;
 
@@ -8890,7 +8887,7 @@ export const Default: Story = {
           &quot;Shows ActionForm&#39;s default behavior: it maps action metadata to generated field components when no formFieldDefinitions are provided.&quot;,
       },
       source: {
-        code: `import { ActionForm } from &quot;@osdk/react-components/experimental&quot;;
+        code: `import { ActionForm } from &quot;@osdk/react-components/action-form&quot;;
 
 // ActionForm reads the action definition metadata and chooses default
 // field components for supported parameter types.
@@ -9050,7 +9047,7 @@ export const Default: Story = {
 import { NonIdealState } from &quot;@blueprintjs/core&quot;;
 import type { Osdk } from &quot;@osdk/api&quot;;
 import { useOsdkClient } from &quot;@osdk/react&quot;;
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback } from &quot;react&quot;;
 import { expect, fn, userEvent, waitFor, within } from &quot;storybook/test&quot;;
@@ -9560,8 +9557,8 @@ import { ObjectTable } from "@osdk/react-components-storybook";</code></pre>
 /* cspell:words tracemonkey pldi openxmlformats officedocument spreadsheetml */
 
 import type { Media } from &quot;@osdk/api&quot;;
-import type { DocumentViewerProps } from &quot;@osdk/react-components/experimental/document-viewer&quot;;
-import { DocumentViewer } from &quot;@osdk/react-components/experimental/document-viewer&quot;;
+import type { DocumentViewerProps } from &quot;@osdk/react-components/document-viewer&quot;;
+import { DocumentViewer } from &quot;@osdk/react-components/document-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { http, HttpResponse, passthrough } from &quot;msw&quot;;
 import { utils, write } from &quot;xlsx-republish&quot;;
@@ -10294,8 +10291,8 @@ export const WithPdfViewerProps: Story = {
  */
 
 import type { Osdk } from &quot;@osdk/api&quot;;
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
-import type { CellEditInfo } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
+import type { CellEditInfo } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useState } from &quot;react&quot;;
 import {
@@ -11461,13 +11458,13 @@ return (
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;FilterList&quot; component.
-  136 | );
-  137 |
-&gt; 138 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
+  133 | );
+  134 |
+&gt; 135 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
       | ^
-  139 |   title: &quot;Components/FilterList&quot;,
-  140 |   component: FilterList,
-  141 |   tags: [&quot;beta&quot;],
+  136 |   title: &quot;Components/FilterList&quot;,
+  137 |   component: FilterList,
+  138 |   tags: [&quot;beta&quot;],
 
 ./src/stories/FilterList/FilterList.stories.tsx:
 /*
@@ -11492,13 +11489,10 @@ import type {
   FilterDefinitionUnion,
   FilterListProps,
   FilterState,
-} from &quot;@osdk/react-components/experimental/filter-list&quot;;
-import {
-  FilterList,
-  getFilterKey,
-} from &quot;@osdk/react-components/experimental/filter-list&quot;;
-import type { ColumnDefinition } from &quot;@osdk/react-components/experimental/object-table&quot;;
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+} from &quot;@osdk/react-components/filter-list&quot;;
+import { FilterList, getFilterKey } from &quot;@osdk/react-components/filter-list&quot;;
+import type { ColumnDefinition } from &quot;@osdk/react-components/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useMemo, useState } from &quot;react&quot;;
 import { expect, fn, userEvent, waitFor, within } from &quot;storybook/test&quot;;
@@ -15190,7 +15184,7 @@ import type { WhereClause } from &quot;@osdk/api&quot;;
 import type {
   FilterDefinitionUnion,
   FilterState,
-} from &quot;@osdk/react-components/experimental/filter-list&quot;;
+} from &quot;@osdk/react-components/filter-list&quot;;
 import {
   filterHasActiveState,
   FilterInput,
@@ -15199,7 +15193,7 @@ import {
   getFilterLabel,
   summarizeFilterValue,
   useFilterListState,
-} from &quot;@osdk/react-components/experimental/filter-list&quot;;
+} from &quot;@osdk/react-components/filter-list&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import classnames from &quot;classnames&quot;;
 import React, { useCallback } from &quot;react&quot;;
@@ -15459,7 +15453,7 @@ export const HorizontalToolbar: Story = {
   getFilterLabel,
   summarizeFilterValue,
   useFilterListState,
-} from &quot;@osdk/react-components/experimental/filter-list&quot;;
+} from &quot;@osdk/react-components/filter-list&quot;;
 
 function HorizontalFilterToolbar({ objectType, filterDefinitions }) {
   const {
@@ -15619,8 +15613,8 @@ function HorizontalFilterToolbar({ objectType, filterDefinitions }) {
  */
 
 import type { Media } from &quot;@osdk/api&quot;;
-import type { ImageViewerProps } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
-import { ImageViewer } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
+import type { ImageViewerProps } from &quot;@osdk/react-components/image-viewer&quot;;
+import { ImageViewer } from &quot;@osdk/react-components/image-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 
 /**
@@ -15823,8 +15817,8 @@ export const Default: StoryObj&lt;ImageViewerProps&gt; = {
  * limitations under the License.
  */
 
-import type { LoadedObjectsChange } from &quot;@osdk/react-components/experimental/object-table&quot;;
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import type { LoadedObjectsChange } from &quot;@osdk/react-components/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useState } from &quot;react&quot;;
 import {
@@ -16756,7 +16750,7 @@ export const CustomPlaceholder: Story = {
  * limitations under the License.
  */
 
-import { LoadingCell } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { LoadingCell } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 
 const meta: Meta&lt;typeof LoadingCell&gt; = {
@@ -16800,7 +16794,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { LoadingCell } from &quot;@osdk/react-components/experimental/object-table&quot;;
+        code: `import { LoadingCell } from &quot;@osdk/react-components/object-table&quot;;
 
 &lt;table&gt;
   &lt;tbody&gt;
@@ -16910,7 +16904,7 @@ export const Default: Story = {
  * limitations under the License.
  */
 
-import { LoadingCellContent } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { LoadingCellContent } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 
 const meta: Meta&lt;typeof LoadingCellContent&gt; = {
@@ -16941,7 +16935,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { LoadingCellContent } from &quot;@osdk/react-components/experimental/object-table&quot;;
+        code: `import { LoadingCellContent } from &quot;@osdk/react-components/object-table&quot;;
 
 &lt;td&gt;
   &lt;LoadingCellContent /&gt;
@@ -17047,8 +17041,8 @@ export const Default: Story = {
  * limitations under the License.
  */
 
-import type { MultiColumnSortDialogProps } from &quot;@osdk/react-components/experimental/object-table&quot;;
-import { MultiColumnSortDialog } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import type { MultiColumnSortDialogProps } from &quot;@osdk/react-components/object-table&quot;;
+import { MultiColumnSortDialog } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -17125,7 +17119,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { MultiColumnSortDialog } from &quot;@osdk/react-components/experimental/object-table&quot;;
+        code: `import { MultiColumnSortDialog } from &quot;@osdk/react-components/object-table&quot;;
 
 const [isOpen, setIsOpen] = useState(false);
 
@@ -17255,7 +17249,7 @@ const [isOpen, setIsOpen] = useState(false);
  * limitations under the License.
  */
 
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { expect, screen, userEvent, within } from &quot;storybook/test&quot;;
 
@@ -17422,8 +17416,8 @@ export const Default: Story = {
  * limitations under the License.
  */
 
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
-import type { ObjectTableProps } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
+import type { ObjectTableProps } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 
 import { fauxFoundry } from &quot;../../mocks/fauxFoundry.js&quot;;
@@ -17832,8 +17826,8 @@ export const HeaderMenuInsideBaseUIDialog: Story = {
  */
 
 import { useOsdkObject } from &quot;@osdk/react&quot;;
-import type { PdfViewerProps } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+import type { PdfViewerProps } from &quot;@osdk/react-components/pdf-viewer&quot;;
+import { PdfViewer } from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 
 import { MEDIA_EMPLOYEE_PK } from &quot;../../mocks/fauxFoundry.js&quot;;
@@ -17965,13 +17959,13 @@ const employee = useOsdkObject(Employee, employeePk);
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;PdfViewer&quot; component.
-  68 | );
-  69 |
-&gt; 70 | const meta: Meta&lt;PdfViewerProps&gt; = {
+  65 | );
+  66 |
+&gt; 67 | const meta: Meta&lt;PdfViewerProps&gt; = {
      | ^
-  71 |   title: &quot;Components/DocumentViewer/Renderers/PdfViewer/Features&quot;,
-  72 |   component: PdfViewer,
-  73 |   tags: [&quot;beta&quot;],
+  68 |   title: &quot;Components/DocumentViewer/Renderers/PdfViewer/Features&quot;,
+  69 |   component: PdfViewer,
+  70 |   tags: [&quot;beta&quot;],
 
 ./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx:
 /*
@@ -17997,11 +17991,8 @@ import type {
   BasePdfViewerProps,
   PdfTextHighlightEvent,
   PdfViewerProps,
-} from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import {
-  BasePdfViewer,
-  PdfViewer,
-} from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+} from &quot;@osdk/react-components/pdf-viewer&quot;;
+import { BasePdfViewer, PdfViewer } from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { delay, http } from &quot;msw&quot;;
 import { useEffect, useState } from &quot;react&quot;;
@@ -18737,8 +18728,8 @@ const handleFormSubmit = useCallback(
 import type {
   PdfAnnotation,
   PdfViewerAnnotationLayerProps,
-} from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { PdfViewerAnnotationLayer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+} from &quot;@osdk/react-components/pdf-viewer&quot;;
+import { PdfViewerAnnotationLayer } from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -19121,8 +19112,8 @@ export const ZoomedIn: Story = {
  * limitations under the License.
  */
 
-import type { PdfViewerContentProps } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { PdfViewerContent } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+import type { PdfViewerContentProps } from &quot;@osdk/react-components/pdf-viewer&quot;;
+import { PdfViewerContent } from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -19346,8 +19337,8 @@ export const StartOnPage5: Story = {
 import type {
   OutlineItem,
   PdfViewerOutlineSidebarProps,
-} from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { PdfViewerOutlineSidebar } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+} from &quot;@osdk/react-components/pdf-viewer&quot;;
+import { PdfViewerOutlineSidebar } from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -19646,8 +19637,8 @@ export const Empty: Story = {
  * limitations under the License.
  */
 
-import type { PdfViewerSearchBarProps } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { PdfViewerSearchBar } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+import type { PdfViewerSearchBarProps } from &quot;@osdk/react-components/pdf-viewer&quot;;
+import { PdfViewerSearchBar } from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -19887,8 +19878,8 @@ export const NoResults: Story = {
  * limitations under the License.
  */
 
-import type { PdfViewerToolbarProps } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { PdfViewerToolbar } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+import type { PdfViewerToolbarProps } from &quot;@osdk/react-components/pdf-viewer&quot;;
+import { PdfViewerToolbar } from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -20173,7 +20164,7 @@ export const MidDocument: Story = {
  * limitations under the License.
  */
 
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useState } from &quot;react&quot;;
 import { expect, fn, userEvent, waitFor, within } from &quot;storybook/test&quot;;
@@ -20814,7 +20805,7 @@ return (
  * limitations under the License.
  */
 
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useState } from &quot;react&quot;;
 import { expect, fn, waitFor, within } from &quot;storybook/test&quot;;
@@ -21121,7 +21112,7 @@ return (
 import {
   PdfViewerSidebar,
   usePdfDocument,
-} from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+} from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -21352,8 +21343,8 @@ import type {
   ActionFormProps,
   FormFieldDefinition,
   FormState,
-} from &quot;@osdk/react-components/experimental&quot;;
-import { ActionForm } from &quot;@osdk/react-components/experimental&quot;;
+} from &quot;@osdk/react-components/action-form&quot;;
+import { ActionForm } from &quot;@osdk/react-components/action-form&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import React, { useCallback, useState } from &quot;react&quot;;
 import { expect, fn, userEvent, waitFor, within } from &quot;storybook/test&quot;;
@@ -22408,8 +22399,8 @@ function ControlledActionFormStory(): React.ReactElement {
  */
 
 import type { Media } from &quot;@osdk/api&quot;;
-import type { VideoViewerProps } from &quot;@osdk/react-components/experimental/video-viewer&quot;;
-import { VideoViewer } from &quot;@osdk/react-components/experimental/video-viewer&quot;;
+import type { VideoViewerProps } from &quot;@osdk/react-components/video-viewer&quot;;
+import { VideoViewer } from &quot;@osdk/react-components/video-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { http, passthrough } from &quot;msw&quot;;
 import { fn } from &quot;storybook/test&quot;;
@@ -23082,11 +23073,11 @@ import type {
   BaseEmailViewerProps,
   EmailViewerProps,
   ParsedEmail,
-} from &quot;@osdk/react-components/experimental/email-viewer&quot;;
+} from &quot;@osdk/react-components/email-viewer&quot;;
 import {
   BaseEmailViewer,
   EmailViewer,
-} from &quot;@osdk/react-components/experimental/email-viewer&quot;;
+} from &quot;@osdk/react-components/email-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 
 const SAMPLE_EMAIL: ParsedEmail = {
@@ -23365,8 +23356,8 @@ import type {
   BaseFormFieldProps,
   FormContentItem,
   RendererFieldDefinition,
-} from &quot;@osdk/react-components/experimental&quot;;
-import { BaseForm } from &quot;@osdk/react-components/experimental&quot;;
+} from &quot;@osdk/react-components/action-form&quot;;
+import { BaseForm } from &quot;@osdk/react-components/action-form&quot;;
 import { useOsdkClient } from &quot;@osdk/react/experimental&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import React, { useCallback, useMemo, useState } from &quot;react&quot;;
@@ -23645,7 +23636,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseForm } from &quot;@osdk/react-components/experimental&quot;;
+        code: `import { BaseForm } from &quot;@osdk/react-components/action-form&quot;;
 import {
   THEMED_SLIDER_DEFAULT_VALUE,
   ThemedSliderField,
@@ -26039,8 +26030,8 @@ import { Button, Dialog } from "@blueprintjs/core";</code></pre>
  * limitations under the License.
  */
 
-import type { BaseImageViewerProps } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
-import { BaseImageViewer } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
+import type { BaseImageViewerProps } from &quot;@osdk/react-components/image-viewer&quot;;
+import { BaseImageViewer } from &quot;@osdk/react-components/image-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -26246,8 +26237,8 @@ export const WithErrorCallback: Story = {
  * limitations under the License.
  */
 
-import type { BaseMarkdownViewerProps } from &quot;@osdk/react-components/experimental/markdown-renderer&quot;;
-import { BaseMarkdownViewer } from &quot;@osdk/react-components/experimental/markdown-renderer&quot;;
+import type { BaseMarkdownViewerProps } from &quot;@osdk/react-components/markdown-viewer&quot;;
+import { BaseMarkdownViewer } from &quot;@osdk/react-components/markdown-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 
 const SAMPLE_MARKDOWN = `# Sample Document
@@ -26271,7 +26262,7 @@ This is a **sample markdown** document that demonstrates the *BaseMarkdownViewer
 ## Code Example
 
 \`\`\`typescript
-import { BaseMarkdownViewer } from &quot;@osdk/react-components/experimental/markdown-renderer&quot;;
+import { BaseMarkdownViewer } from &quot;@osdk/react-components/markdown-viewer&quot;;
 
 function App() {
   return &lt;BaseMarkdownViewer content=&quot;# Hello World&quot; /&gt;;
@@ -26504,8 +26495,8 @@ import type {
   PdfAnnotation,
   PdfRect,
   PdfViewerHandle,
-} from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { BasePdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+} from &quot;@osdk/react-components/pdf-viewer&quot;;
+import { BasePdfViewer } from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import React, { useCallback, useEffect, useRef, useState } from &quot;react&quot;;
 
@@ -27017,11 +27008,11 @@ import type {
   BaseSpreadsheetViewerProps,
   ParsedSpreadsheet,
   SpreadsheetViewerProps,
-} from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
+} from &quot;@osdk/react-components/spreadsheet-viewer&quot;;
 import {
   BaseSpreadsheetViewer,
   SpreadsheetViewer,
-} from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
+} from &quot;@osdk/react-components/spreadsheet-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { http, passthrough } from &quot;msw&quot;;
 import { utils, write } from &quot;xlsx-republish&quot;;
@@ -27407,8 +27398,8 @@ export const WithRealFile: StoryObj&lt;SpreadsheetViewerProps&gt; = {
  * limitations under the License.
  */
 
-import type { BaseTableProps } from &quot;@osdk/react-components/experimental/object-table&quot;;
-import { BaseTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import type { BaseTableProps } from &quot;@osdk/react-components/object-table&quot;;
+import { BaseTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import type {
   ColumnPinningState,
@@ -27584,7 +27575,7 @@ export const Default: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { BaseTable } from &quot;@osdk/react-components/object-table&quot;;
 import { 
   getCoreRowModel,
   useReactTable,
@@ -27645,7 +27636,7 @@ export const WithSorting: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { BaseTable } from &quot;@osdk/react-components/object-table&quot;;
 import {
   getCoreRowModel,
   getSortedRowModel,
@@ -27711,7 +27702,7 @@ export const WithColumnPinning: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { BaseTable } from &quot;@osdk/react-components/object-table&quot;;
 import {
   getCoreRowModel,
   useReactTable,
@@ -27778,7 +27769,7 @@ export const WithColumnResizing: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { BaseTable } from &quot;@osdk/react-components/object-table&quot;;
 import {
   getCoreRowModel,
   useReactTable,
@@ -27843,7 +27834,7 @@ export const WithColumnConfig: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { BaseTable } from &quot;@osdk/react-components/object-table&quot;;
 import {
   getCoreRowModel,
   getSortedRowModel,
@@ -28307,8 +28298,8 @@ export const ErrorState: Story = {
  * limitations under the License.
  */
 
-import type { BaseTiffViewerProps } from &quot;@osdk/react-components/experimental/tiff-renderer&quot;;
-import { BaseTiffViewer } from &quot;@osdk/react-components/experimental/tiff-renderer&quot;;
+import type { BaseTiffViewerProps } from &quot;@osdk/react-components/tiff-viewer&quot;;
+import { BaseTiffViewer } from &quot;@osdk/react-components/tiff-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -28533,13 +28524,13 @@ export const WithErrorCallback: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;BaseXmlViewer&quot; component.
-  79 | }
-  80 |
-&gt; 81 | const meta: Meta&lt;BaseXmlViewerProps&gt; = {
+  76 | }
+  77 |
+&gt; 78 | const meta: Meta&lt;BaseXmlViewerProps&gt; = {
      | ^
-  82 |   title: &quot;Components/DocumentViewer/Renderers/XmlViewer&quot;,
-  83 |   component: BaseXmlViewer,
-  84 |   tags: [&quot;beta&quot;],
+  79 |   title: &quot;Components/DocumentViewer/Renderers/XmlViewer&quot;,
+  80 |   component: BaseXmlViewer,
+  81 |   tags: [&quot;beta&quot;],
 
 ./src/stories/XmlViewer/XmlViewer.stories.tsx:
 /*
@@ -28564,11 +28555,8 @@ import type { Media } from &quot;@osdk/api&quot;;
 import type {
   BaseXmlViewerProps,
   XmlViewerProps,
-} from &quot;@osdk/react-components/experimental/xml-viewer&quot;;
-import {
-  BaseXmlViewer,
-  XmlViewer,
-} from &quot;@osdk/react-components/experimental/xml-viewer&quot;;
+} from &quot;@osdk/react-components/xml-viewer&quot;;
+import { BaseXmlViewer, XmlViewer } from &quot;@osdk/react-components/xml-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 
 const SAMPLE_XML = `&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
@@ -28789,8 +28777,8 @@ export const WithContent: Story = {
  * limitations under the License.
  */
 
-import type { ColumnConfigDialogProps } from &quot;@osdk/react-components/experimental/object-table&quot;;
-import { ColumnConfigDialog } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import type { ColumnConfigDialogProps } from &quot;@osdk/react-components/object-table&quot;;
+import { ColumnConfigDialog } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useState } from &quot;react&quot;;
 import { fn } from &quot;storybook/test&quot;;
@@ -28870,7 +28858,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { ColumnConfigDialog } from &quot;@osdk/react-components/experimental/object-table&quot;;
+        code: `import { ColumnConfigDialog } from &quot;@osdk/react-components/object-table&quot;;
 
 const [isOpen, setIsOpen] = useState(false);
 
@@ -29224,11 +29212,11 @@ import {
   ActionForm,
   type ActionFormProps,
   type FormState,
-} from &quot;@osdk/react-components/experimental&quot;;
-import { DocumentViewer } from &quot;@osdk/react-components/experimental/document-viewer&quot;;
-import type { FilterDefinitionUnion } from &quot;@osdk/react-components/experimental/filter-list&quot;;
-import { FilterList } from &quot;@osdk/react-components/experimental/filter-list&quot;;
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+} from &quot;@osdk/react-components/action-form&quot;;
+import { DocumentViewer } from &quot;@osdk/react-components/document-viewer&quot;;
+import type { FilterDefinitionUnion } from &quot;@osdk/react-components/filter-list&quot;;
+import { FilterList } from &quot;@osdk/react-components/filter-list&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { http, passthrough } from &quot;msw&quot;;
 import React, { type CSSProperties, useCallback, useState } from &quot;react&quot;;
@@ -29839,7 +29827,7 @@ export const Default: Story = {};
  * limitations under the License.
  */
 
-import { ActionForm } from &quot;@osdk/react-components/experimental&quot;;
+import { ActionForm } from &quot;@osdk/react-components/action-form&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import React from &quot;react&quot;;
 
@@ -29887,7 +29875,7 @@ export const Default: Story = {
           &quot;Shows ActionForm&#39;s default behavior: it maps action metadata to generated field components when no formFieldDefinitions are provided.&quot;,
       },
       source: {
-        code: `import { ActionForm } from &quot;@osdk/react-components/experimental&quot;;
+        code: `import { ActionForm } from &quot;@osdk/react-components/action-form&quot;;
 
 // ActionForm reads the action definition metadata and chooses default
 // field components for supported parameter types.
@@ -30047,8 +30035,8 @@ export const Default: Story = {
 /* cspell:words tracemonkey pldi openxmlformats officedocument spreadsheetml */
 
 import type { Media } from &quot;@osdk/api&quot;;
-import type { DocumentViewerProps } from &quot;@osdk/react-components/experimental/document-viewer&quot;;
-import { DocumentViewer } from &quot;@osdk/react-components/experimental/document-viewer&quot;;
+import type { DocumentViewerProps } from &quot;@osdk/react-components/document-viewer&quot;;
+import { DocumentViewer } from &quot;@osdk/react-components/document-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { http, HttpResponse, passthrough } from &quot;msw&quot;;
 import { utils, write } from &quot;xlsx-republish&quot;;
@@ -30755,13 +30743,13 @@ export const WithPdfViewerProps: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;FilterList&quot; component.
-  136 | );
-  137 |
-&gt; 138 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
+  133 | );
+  134 |
+&gt; 135 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
       | ^
-  139 |   title: &quot;Components/FilterList&quot;,
-  140 |   component: FilterList,
-  141 |   tags: [&quot;beta&quot;],
+  136 |   title: &quot;Components/FilterList&quot;,
+  137 |   component: FilterList,
+  138 |   tags: [&quot;beta&quot;],
 
 ./src/stories/FilterList/FilterList.stories.tsx:
 /*
@@ -30786,13 +30774,10 @@ import type {
   FilterDefinitionUnion,
   FilterListProps,
   FilterState,
-} from &quot;@osdk/react-components/experimental/filter-list&quot;;
-import {
-  FilterList,
-  getFilterKey,
-} from &quot;@osdk/react-components/experimental/filter-list&quot;;
-import type { ColumnDefinition } from &quot;@osdk/react-components/experimental/object-table&quot;;
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+} from &quot;@osdk/react-components/filter-list&quot;;
+import { FilterList, getFilterKey } from &quot;@osdk/react-components/filter-list&quot;;
+import type { ColumnDefinition } from &quot;@osdk/react-components/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useMemo, useState } from &quot;react&quot;;
 import { expect, fn, userEvent, waitFor, within } from &quot;storybook/test&quot;;
@@ -34484,7 +34469,7 @@ import type { WhereClause } from &quot;@osdk/api&quot;;
 import type {
   FilterDefinitionUnion,
   FilterState,
-} from &quot;@osdk/react-components/experimental/filter-list&quot;;
+} from &quot;@osdk/react-components/filter-list&quot;;
 import {
   filterHasActiveState,
   FilterInput,
@@ -34493,7 +34478,7 @@ import {
   getFilterLabel,
   summarizeFilterValue,
   useFilterListState,
-} from &quot;@osdk/react-components/experimental/filter-list&quot;;
+} from &quot;@osdk/react-components/filter-list&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import classnames from &quot;classnames&quot;;
 import React, { useCallback } from &quot;react&quot;;
@@ -34753,7 +34738,7 @@ export const HorizontalToolbar: Story = {
   getFilterLabel,
   summarizeFilterValue,
   useFilterListState,
-} from &quot;@osdk/react-components/experimental/filter-list&quot;;
+} from &quot;@osdk/react-components/filter-list&quot;;
 
 function HorizontalFilterToolbar({ objectType, filterDefinitions }) {
   const {
@@ -34913,8 +34898,8 @@ function HorizontalFilterToolbar({ objectType, filterDefinitions }) {
  */
 
 import type { Media } from &quot;@osdk/api&quot;;
-import type { ImageViewerProps } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
-import { ImageViewer } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
+import type { ImageViewerProps } from &quot;@osdk/react-components/image-viewer&quot;;
+import { ImageViewer } from &quot;@osdk/react-components/image-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 
 /**
@@ -35402,7 +35387,7 @@ export const CustomPlaceholder: Story = {
  * limitations under the License.
  */
 
-import { LoadingCell } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { LoadingCell } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 
 const meta: Meta&lt;typeof LoadingCell&gt; = {
@@ -35446,7 +35431,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { LoadingCell } from &quot;@osdk/react-components/experimental/object-table&quot;;
+        code: `import { LoadingCell } from &quot;@osdk/react-components/object-table&quot;;
 
 &lt;table&gt;
   &lt;tbody&gt;
@@ -35556,7 +35541,7 @@ export const Default: Story = {
  * limitations under the License.
  */
 
-import { LoadingCellContent } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { LoadingCellContent } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 
 const meta: Meta&lt;typeof LoadingCellContent&gt; = {
@@ -35587,7 +35572,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { LoadingCellContent } from &quot;@osdk/react-components/experimental/object-table&quot;;
+        code: `import { LoadingCellContent } from &quot;@osdk/react-components/object-table&quot;;
 
 &lt;td&gt;
   &lt;LoadingCellContent /&gt;
@@ -35693,8 +35678,8 @@ export const Default: Story = {
  * limitations under the License.
  */
 
-import type { MultiColumnSortDialogProps } from &quot;@osdk/react-components/experimental/object-table&quot;;
-import { MultiColumnSortDialog } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import type { MultiColumnSortDialogProps } from &quot;@osdk/react-components/object-table&quot;;
+import { MultiColumnSortDialog } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -35771,7 +35756,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { MultiColumnSortDialog } from &quot;@osdk/react-components/experimental/object-table&quot;;
+        code: `import { MultiColumnSortDialog } from &quot;@osdk/react-components/object-table&quot;;
 
 const [isOpen, setIsOpen] = useState(false);
 
@@ -35901,8 +35886,8 @@ const [isOpen, setIsOpen] = useState(false);
  * limitations under the License.
  */
 
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
-import type { ObjectTableProps } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
+import type { ObjectTableProps } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 
 import { fauxFoundry } from &quot;../../mocks/fauxFoundry.js&quot;;
@@ -36068,8 +36053,8 @@ export const MarkingColumns: StoryObj&lt;EmployeeTableProps&gt; = {
  */
 
 import { useOsdkObject } from &quot;@osdk/react&quot;;
-import type { PdfViewerProps } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+import type { PdfViewerProps } from &quot;@osdk/react-components/pdf-viewer&quot;;
+import { PdfViewer } from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 
 import { MEDIA_EMPLOYEE_PK } from &quot;../../mocks/fauxFoundry.js&quot;;
@@ -36201,13 +36186,13 @@ const employee = useOsdkObject(Employee, employeePk);
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;PdfViewer&quot; component.
-  68 | );
-  69 |
-&gt; 70 | const meta: Meta&lt;PdfViewerProps&gt; = {
+  65 | );
+  66 |
+&gt; 67 | const meta: Meta&lt;PdfViewerProps&gt; = {
      | ^
-  71 |   title: &quot;Components/DocumentViewer/Renderers/PdfViewer/Features&quot;,
-  72 |   component: PdfViewer,
-  73 |   tags: [&quot;beta&quot;],
+  68 |   title: &quot;Components/DocumentViewer/Renderers/PdfViewer/Features&quot;,
+  69 |   component: PdfViewer,
+  70 |   tags: [&quot;beta&quot;],
 
 ./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx:
 /*
@@ -36233,11 +36218,8 @@ import type {
   BasePdfViewerProps,
   PdfTextHighlightEvent,
   PdfViewerProps,
-} from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import {
-  BasePdfViewer,
-  PdfViewer,
-} from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+} from &quot;@osdk/react-components/pdf-viewer&quot;;
+import { BasePdfViewer, PdfViewer } from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { delay, http } from &quot;msw&quot;;
 import { useEffect, useState } from &quot;react&quot;;
@@ -36973,8 +36955,8 @@ const handleFormSubmit = useCallback(
 import type {
   PdfAnnotation,
   PdfViewerAnnotationLayerProps,
-} from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { PdfViewerAnnotationLayer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+} from &quot;@osdk/react-components/pdf-viewer&quot;;
+import { PdfViewerAnnotationLayer } from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -37357,8 +37339,8 @@ export const ZoomedIn: Story = {
  * limitations under the License.
  */
 
-import type { PdfViewerContentProps } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { PdfViewerContent } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+import type { PdfViewerContentProps } from &quot;@osdk/react-components/pdf-viewer&quot;;
+import { PdfViewerContent } from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -37582,8 +37564,8 @@ export const StartOnPage5: Story = {
 import type {
   OutlineItem,
   PdfViewerOutlineSidebarProps,
-} from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { PdfViewerOutlineSidebar } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+} from &quot;@osdk/react-components/pdf-viewer&quot;;
+import { PdfViewerOutlineSidebar } from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -37882,8 +37864,8 @@ export const Empty: Story = {
  * limitations under the License.
  */
 
-import type { PdfViewerSearchBarProps } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { PdfViewerSearchBar } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+import type { PdfViewerSearchBarProps } from &quot;@osdk/react-components/pdf-viewer&quot;;
+import { PdfViewerSearchBar } from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -38123,8 +38105,8 @@ export const NoResults: Story = {
  * limitations under the License.
  */
 
-import type { PdfViewerToolbarProps } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { PdfViewerToolbar } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+import type { PdfViewerToolbarProps } from &quot;@osdk/react-components/pdf-viewer&quot;;
+import { PdfViewerToolbar } from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -38412,7 +38394,7 @@ export const MidDocument: Story = {
 import {
   PdfViewerSidebar,
   usePdfDocument,
-} from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+} from &quot;@osdk/react-components/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -38643,8 +38625,8 @@ import type {
   ActionFormProps,
   FormFieldDefinition,
   FormState,
-} from &quot;@osdk/react-components/experimental&quot;;
-import { ActionForm } from &quot;@osdk/react-components/experimental&quot;;
+} from &quot;@osdk/react-components/action-form&quot;;
+import { ActionForm } from &quot;@osdk/react-components/action-form&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import React, { useCallback, useState } from &quot;react&quot;;
 import { expect, fn, userEvent, waitFor, within } from &quot;storybook/test&quot;;
@@ -39699,8 +39681,8 @@ function ControlledActionFormStory(): React.ReactElement {
  */
 
 import type { Media } from &quot;@osdk/api&quot;;
-import type { VideoViewerProps } from &quot;@osdk/react-components/experimental/video-viewer&quot;;
-import { VideoViewer } from &quot;@osdk/react-components/experimental/video-viewer&quot;;
+import type { VideoViewerProps } from &quot;@osdk/react-components/video-viewer&quot;;
+import { VideoViewer } from &quot;@osdk/react-components/video-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { http, passthrough } from &quot;msw&quot;;
 import { fn } from &quot;storybook/test&quot;;
@@ -39958,8 +39940,8 @@ export const WithErrorCallback: Story = {
  */
 
 import type { DerivedProperty, ObjectSet, Osdk, WhereClause } from &quot;@osdk/api&quot;;
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
-import type { ColumnDefinition } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
+import type { ColumnDefinition } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { expect, fn, waitFor, within } from &quot;storybook/test&quot;;
 
@@ -40825,7 +40807,7 @@ export const WithCustomRenderers: Story = {
  */
 
 import { useOsdkClient } from &quot;@osdk/react&quot;;
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { expect, within } from &quot;storybook/test&quot;;
 
@@ -41053,7 +41035,7 @@ export const WithInterfaceType: Story = {
 import { NonIdealState } from &quot;@blueprintjs/core&quot;;
 import type { Osdk } from &quot;@osdk/api&quot;;
 import { useOsdkClient } from &quot;@osdk/react&quot;;
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback } from &quot;react&quot;;
 import { expect, fn, userEvent, waitFor, within } from &quot;storybook/test&quot;;
@@ -41561,8 +41543,8 @@ import { ObjectTable } from "@osdk/react-components-storybook";</code></pre>
  */
 
 import type { Osdk } from &quot;@osdk/api&quot;;
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
-import type { CellEditInfo } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
+import type { CellEditInfo } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useState } from &quot;react&quot;;
 import {
@@ -42753,8 +42735,8 @@ return (
  * limitations under the License.
  */
 
-import type { LoadedObjectsChange } from &quot;@osdk/react-components/experimental/object-table&quot;;
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import type { LoadedObjectsChange } from &quot;@osdk/react-components/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useState } from &quot;react&quot;;
 import {
@@ -43401,7 +43383,7 @@ export const EventListeners: Story = {
  * limitations under the License.
  */
 
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { expect, screen, userEvent, within } from &quot;storybook/test&quot;;
 
@@ -43811,7 +43793,7 @@ export const HeaderMenuInsideBaseUIDialog: Story = {
  * limitations under the License.
  */
 
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useState } from &quot;react&quot;;
 import { expect, fn, userEvent, waitFor, within } from &quot;storybook/test&quot;;
@@ -44452,7 +44434,7 @@ return (
  * limitations under the License.
  */
 
-import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useState } from &quot;react&quot;;
 import { expect, fn, waitFor, within } from &quot;storybook/test&quot;;
