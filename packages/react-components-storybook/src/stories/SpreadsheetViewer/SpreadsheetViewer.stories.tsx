@@ -21,11 +21,11 @@ import type {
   BaseSpreadsheetViewerProps,
   ParsedSpreadsheet,
   SpreadsheetViewerProps,
-} from "@osdk/react-components/experimental/spreadsheet-viewer";
+} from "@osdk/react-components/spreadsheet-viewer";
 import {
   BaseSpreadsheetViewer,
   SpreadsheetViewer,
-} from "@osdk/react-components/experimental/spreadsheet-viewer";
+} from "@osdk/react-components/spreadsheet-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { http, passthrough } from "msw";
 import { utils, write } from "xlsx-republish";

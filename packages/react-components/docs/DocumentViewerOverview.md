@@ -3,7 +3,7 @@ title: DocumentViewer
 description: A viewer for OSDK Media objects that auto-selects the right renderer by MIME type — PDF, TIFF, images, video, markdown, spreadsheets, email, and XML — plus the individual media viewers it dispatches to.
 ---
 
-> **Beta** — exported from `@osdk/react-components/experimental/document-viewer`.
+> **Beta** — exported from `@osdk/react-components/document-viewer`.
 
 ## Usage
 
@@ -12,7 +12,7 @@ DocumentViewer takes an OSDK `Media` object, detects its MIME type, and renders 
 > **Note** — `@my/osdk` is a placeholder for **your generated SDK package** (e.g. `@your-app/sdk`). Replace it with the actual package name in your project.
 
 ```tsx
-import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
+import { DocumentViewer } from "@osdk/react-components/document-viewer";
 
 function TrainingMaterial({ employee }) {
   return <DocumentViewer media={employee.trainingMaterial} />;
@@ -76,15 +76,15 @@ Each format ships two components from its own subpath:
 - **`<Format>Viewer`** — the OSDK-aware component. Takes a `media: Media` prop and handles fetching and decoding.
 - **`Base<Format>Viewer`** — the OSDK-agnostic component. Takes an already-resolved `src` (binary source: URL or bytes) or `content` (decoded payload), so you can drive it from your own data source.
 
-Import subpaths below are relative to `@osdk/react-components/experimental/`.
+Import subpaths below are relative to `@osdk/react-components/`.
 
 | OSDK viewer         | Import subpath       | Base component          | Base input                   | Handles                                               |
 | ------------------- | -------------------- | ----------------------- | ---------------------------- | ----------------------------------------------------- |
 | `PdfViewer`         | `pdf-viewer`         | `BasePdfViewer`         | `src: PdfSource`             | `application/pdf`                                     |
 | `ImageViewer`       | `image-viewer`       | `BaseImageViewer`       | `src: string`                | PNG, JPEG, GIF, SVG, WebP, BMP                        |
-| `TiffViewer`        | `tiff-renderer`      | `BaseTiffViewer`        | `src: Uint8Array`            | `image/tiff`, plus `.tif`/`.tiff` file-name detection |
+| `TiffViewer`        | `tiff-viewer`        | `BaseTiffViewer`        | `src: Uint8Array`            | `image/tiff`, plus `.tif`/`.tiff` file-name detection |
 | `VideoViewer`       | `video-viewer`       | `BaseVideoViewer`       | `src: string`                | any `video/*`                                         |
-| `MarkdownViewer`    | `markdown-renderer`  | `BaseMarkdownViewer`    | `content: string`            | `text/markdown`, `text/x-markdown`                    |
+| `MarkdownViewer`    | `markdown-viewer`    | `BaseMarkdownViewer`    | `content: string`            | `text/markdown`, `text/x-markdown`                    |
 | `SpreadsheetViewer` | `spreadsheet-viewer` | `BaseSpreadsheetViewer` | `content: ParsedSpreadsheet` | `.xlsx`                                               |
 | `EmailViewer`       | `email-viewer`       | `BaseEmailViewer`       | `content: ParsedEmail`       | `message/rfc822`                                      |
 | `XmlViewer`         | `xml-viewer`         | `BaseXmlViewer`         | `content: string`            | `application/xml`, `text/xml`                         |
@@ -95,14 +95,14 @@ Anything not in the table above — `.doc`/`.docx`, for instance — resolves to
 
 ```tsx
 // Standalone: you know the format, and want to configure it
-import { SpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
+import { SpreadsheetViewer } from "@osdk/react-components/spreadsheet-viewer";
 
 <SpreadsheetViewer media={report.attachment} />;
 ```
 
 ```tsx
 // Base: your source is not an OSDK Media object
-import { BaseXmlViewer } from "@osdk/react-components/experimental/xml-viewer";
+import { BaseXmlViewer } from "@osdk/react-components/xml-viewer";
 
 <BaseXmlViewer content={xmlString} />;
 ```

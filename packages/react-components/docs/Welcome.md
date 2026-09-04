@@ -21,7 +21,7 @@ forms, and filters.
 | `AipAgentChat`   | Chat surface backed by Foundry LMS                                                  |
 
 All components are exported under `@osdk/react-components/experimental/*`
-sub-paths (e.g. `@osdk/react-components/experimental/object-table`).
+sub-paths (e.g. `@osdk/react-components/object-table`).
 
 ## Quick Start
 
@@ -30,7 +30,7 @@ npm install @osdk/react-components @osdk/react @osdk/client @osdk/api react reac
 ```
 
 ```tsx
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import { Employee } from "@your-osdk-package";
 
 function EmployeeDirectory() {

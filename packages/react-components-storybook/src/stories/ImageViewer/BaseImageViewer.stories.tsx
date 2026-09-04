@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BaseImageViewerProps } from "@osdk/react-components/experimental/image-viewer";
-import { BaseImageViewer } from "@osdk/react-components/experimental/image-viewer";
+import type { BaseImageViewerProps } from "@osdk/react-components/image-viewer";
+import { BaseImageViewer } from "@osdk/react-components/image-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 

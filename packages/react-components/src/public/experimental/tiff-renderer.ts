@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,38 +14,26 @@
  * limitations under the License.
  */
 
-// This subpath keeps its `tiff-renderer` name for now even though the
-// components it exports are named `TiffViewer`. It gets renamed when the
-// `experimental/` prefix is dropped, so consumers change import paths once
-// rather than twice.
+import * as Stable from "../tiff-viewer.js";
 
-import { BaseTiffViewer as _BaseTiffViewer } from "../../images/tiff-viewer/BaseTiffViewer.js";
-import { TiffViewer as _TiffViewer } from "../../images/tiff-viewer/TiffViewer.js";
-import type { BaseTiffViewerProps as _BaseTiffViewerProps } from "../../images/tiff-viewer/TiffViewerApi.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
+/** @deprecated Import from `@osdk/react-components/tiff-viewer` instead. */
+export const BaseTiffViewer: typeof Stable.BaseTiffViewer =
+  Stable.BaseTiffViewer;
 
-// BaseTiffViewer
-export { BaseTiffViewer } from "../../images/tiff-viewer/BaseTiffViewer.js";
-export type {
-  BaseTiffViewerProps,
-  TiffViewerProps,
-} from "../../images/tiff-viewer/TiffViewerApi.js";
+/** @deprecated Import from `@osdk/react-components/tiff-viewer` instead. */
+export type BaseTiffViewerProps = Stable.BaseTiffViewerProps;
 
-// TiffViewer (Media wrapper)
-export const TiffViewer: typeof _TiffViewer = withOsdkMetrics(
-  _TiffViewer,
-  "TiffViewer",
-);
+/** @deprecated Import from `@osdk/react-components/tiff-viewer` instead. */
+export type TiffViewerProps = Stable.TiffViewerProps;
 
-// Deprecated `Renderer` aliases of the same values, cleared in a later pass.
-// `TiffViewerMediaProps` has none: the `Media` drop is a uniform break because
-// pdf's old name was reused for a different type.
+/** @deprecated Import from `@osdk/react-components/tiff-viewer` instead. */
+export const TiffViewer: typeof Stable.TiffViewer = Stable.TiffViewer;
 
 /** @deprecated Use `BaseTiffViewer` instead. */
-export const TiffRenderer: typeof _BaseTiffViewer = _BaseTiffViewer;
+export const TiffRenderer: typeof Stable.BaseTiffViewer = Stable.BaseTiffViewer;
 
 /** @deprecated Use `BaseTiffViewerProps` instead. */
-export type TiffRendererProps = _BaseTiffViewerProps;
+export type TiffRendererProps = Stable.BaseTiffViewerProps;
 
 /** @deprecated Use `TiffViewer` instead. */
-export const TiffViewerMedia: typeof TiffViewer = TiffViewer;
+export const TiffViewerMedia: typeof Stable.TiffViewer = Stable.TiffViewer;

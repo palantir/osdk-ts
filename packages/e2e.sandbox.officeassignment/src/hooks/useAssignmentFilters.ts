@@ -19,7 +19,7 @@ import { useOsdkClient } from "@osdk/react";
 import type {
   FilterDefinitionUnion,
   FilterState,
-} from "@osdk/react-components/experimental/filter-list";
+} from "@osdk/react-components/filter-list";
 import React from "react";
 
 import { ASSIGNMENT_BASE_WHERE } from "../constants/baseFilter.js";

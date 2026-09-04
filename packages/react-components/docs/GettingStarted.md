@@ -49,7 +49,7 @@ function App() {
 ## 4. Render your first component
 
 ```tsx
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import { Employee } from "@your-osdk-package";
 
 function EmployeeDirectory() {

@@ -19,8 +19,8 @@ import type {
   ActionFormProps,
   FormFieldDefinition,
   FormState,
-} from "@osdk/react-components/experimental";
-import { ActionForm } from "@osdk/react-components/experimental";
+} from "@osdk/react-components/action-form";
+import { ActionForm } from "@osdk/react-components/action-form";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useCallback, useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";

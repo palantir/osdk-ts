@@ -15,7 +15,7 @@
  */
 
 import type { Osdk } from "@osdk/api";
-import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
+import type { ColumnDefinition } from "@osdk/react-components/object-table";
 import React from "react";
 
 import { ToggleExclusionButton } from "../../components/actions/ToggleExclusionButton.js";
