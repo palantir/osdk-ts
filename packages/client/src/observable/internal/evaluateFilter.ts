@@ -43,7 +43,7 @@ export function evaluateFilter(
     case "$in":
       return Array.isArray(expected) && expected.includes(realValue);
     case "$isNull":
-      return realValue == null;
+      return expected ? realValue == null : realValue != null;
     case "$startsWith":
       return typeof realValue === "string" && realValue.startsWith(expected);
     case "$contains":
