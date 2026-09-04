@@ -34,7 +34,6 @@
     "packages/widget.client-react/",
     "packages/widget.api/",
     "packages/widget.client/",
-    "packages/cbac-components/",
     "packages/react/",
     "packages/react-devtools/",
     "packages/react-components-storybook/",

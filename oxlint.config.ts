@@ -154,8 +154,8 @@ export default defineConfig({
     // strict variance checking on published interfaces — leave as authored.
     "typescript/method-signature-style": "off",
 
-    // --- Rules first surfaced by React packages with CSS exports
-    // (@osdk/cbac-components): not enforced by the repo's prior ESLint config,
+    // --- Rules first surfaced by React packages with CSS exports: not enforced
+    // by the repo's prior ESLint config,
     // and whose autofix would be churn or change a deliberate pattern. Kept off
     // so the migration stays behavior-preserving. ---
     // The package's `index.ts` is an intentional placeholder entry point

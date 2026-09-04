@@ -35,6 +35,16 @@ import {
 } from "@osdk/react-components/experimental/cbac-picker";
 ```
 
+### Migrating from `@osdk/cbac-components`
+
+Remove `@osdk/cbac-components`, install `@osdk/react-components`, and replace imports from `@osdk/cbac-components/experimental` with `@osdk/react-components/experimental/cbac-picker`. Replace the old stylesheet import with:
+
+```css
+@import "@osdk/react-components/styles.css";
+```
+
+The component names and types are unchanged.
+
 ## Basic Usage
 
 ### Inline Picker

@@ -182,7 +182,7 @@ For every state change with a built-in default behavior (sort, filter, select, e
 
 ## CBAC components
 
-The CBAC (classification-based access control) picker lives at `src/cbac-picker/` and is exported through `src/public/experimental/cbac-picker.ts` under the `@osdk/react-components/experimental/cbac-picker` subpath. It was merged in from the legacy `@osdk/cbac-components` package — see `docs/CbacPicker.md` for usage. The legacy package still exists on disk for reference but is no longer the source of truth.
+The CBAC (classification-based access control) picker lives at `src/cbac-picker/` and is exported through `src/public/experimental/cbac-picker.ts` under the `@osdk/react-components/experimental/cbac-picker` subpath. It was merged in from the removed `@osdk/cbac-components` package — see `docs/CbacPicker.md` for usage and migration guidance.
 
 ## Common pitfalls
 
