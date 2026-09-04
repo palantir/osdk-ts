@@ -46,7 +46,7 @@ export type SourceCensus = Record<LockfileSection, ReadonlySet<string>>;
  * Derives the lockfile that the given ontology *should* have, purely from source.
  *
  * NB: Deliberately does not consult the previously-persisted lockfile, and instead keeps
- * generate a pure function of the source (simpler to reason about, test, etc.).
+ * generation a pure function of the source (simpler to reason about, test, etc.).
  * Any history-dependent logic (e.g. backwards-compatibility checking) is only a validation concern.
  */
 export function generateOntologySchemaLockfile(
