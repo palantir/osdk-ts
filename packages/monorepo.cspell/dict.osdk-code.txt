@@ -60,6 +60,7 @@ Rangeable
 rcompare
 readabe
 Rhemmings
+schemamigrations
 sdkv2
 spts
 ssanjay

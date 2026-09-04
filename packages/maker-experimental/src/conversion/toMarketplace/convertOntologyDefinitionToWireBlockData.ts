@@ -627,6 +627,8 @@ function buildKnownIdentifiers(
     interfaceParameterConstraints: interfaceParameterConstraintMappings,
     interfacePropertyTypes: interfacePropertyMappings,
     interfaceTypes: interfaceMappings,
+    // Cannot yet author interface type schema migrations.
+    interfaceTypeSchemaTransitions: {},
     linkTypeIds,
     linkTypes: linkTypeRids,
     markings: markingsMappings,
