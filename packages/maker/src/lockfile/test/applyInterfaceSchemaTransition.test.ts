@@ -128,9 +128,8 @@ describe("schemasAgreeOn", () => {
     ).toBe(false);
   });
 
-  // The case removing instruction produces: its strict application deletes the property, and the
-  // source that finalized it does not declare it either. Demanding presence would report that
-  // agreement as a mismatch.
+  // The case removing an instruction produces: the strict application deletes the property, and the
+  // source doesn't declare it either.
   it("agrees on a property absent from both schemas", () => {
     expect(schemasAgreeOn(schema({}), schema({}), ["lastName"])).toBe(true);
   });
