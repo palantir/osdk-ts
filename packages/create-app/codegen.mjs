@@ -62,6 +62,13 @@ export const TEMPLATES = [
     buildDirectory: "dist",
     hidden: true,
   },
+  {
+    id: "react-component-library",
+    label: "React Component Library",
+    envPrefix: "VITE_",
+    buildDirectory: "./apps/docs/build",
+    hidden: true,
+  },
 ];
 
 const packagesDir = path.join(__dirname, "../");

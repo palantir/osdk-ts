@@ -1,0 +1,54 @@
+---
+title: Example
+---
+
+import { Icon } from "@blueprintjs/core";
+import { Example } from "@monorepo-app-placeholder/components/example";
+
+# Example
+
+The starter component shipped with `@monorepo-app-placeholder/components`. Edit `packages/components/src/components/Example.tsx`.
+
+<ComponentPage packageName="@monorepo-app-placeholder/components" props={[
+  { name: "title", type: "string", required: true, description: "Title shown at the top of the card." },
+  { name: "icon", type: "ReactNode", description: "Optional React node rendered next to the title (Blueprint icon, SVG, emoji, anything)." },
+  { name: "description", type: "string", required: true, description: "Body text." },
+]}>
+
+## Usage
+
+<Playground
+  controls={[
+    { name: "title", label: "Title", type: "text", defaultValue: "Welcome" },
+    { name: "icon", label: "Icon", type: "select", defaultValue: "info-sign",
+      options: [
+        { value: "", label: "(none)" },
+        { value: "info-sign", label: "info-sign" },
+        { value: "tick-circle", label: "tick-circle" },
+        { value: "warning-sign", label: "warning-sign" },
+        { value: "star", label: "star" },
+        { value: "heart", label: "heart" },
+      ] },
+    { name: "description", label: "Description", type: "text", defaultValue: "The starter component from the @monorepo-app-placeholder/components package." },
+  ]}
+  render={(v) => (
+    <Example
+      description={v.description}
+      icon={v.icon ? <Icon icon={v.icon} /> : undefined}
+      title={v.title}
+    />
+  )}
+  source={(v) => `import { Icon } from "@blueprintjs/core";
+import { Example } from "@monorepo-app-placeholder/components/example";
+
+function Demo() {
+    return (
+      <Example
+        title="${v.title}"${v.icon ? `\n      icon={<Icon icon="${v.icon}" />}` : ""}
+        description="${v.description}"
+      />
+    );
+}`}
+/>
+
+</ComponentPage>
