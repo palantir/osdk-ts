@@ -24,7 +24,7 @@ type withProperties_aggregateBuilder_aggregate = <
           {
             class: PropertyDef<"string", "nullable", "single">;
             fullName: PropertyDef<"string", "nullable", "single">;
-            employeeId: PropertyDef<"integer", "nullable", "single">;
+            employeeId: PropertyDef<"integer", "non-nullable", "single">;
             attachment: PropertyDef<"attachment", "nullable", "single">;
             geopoint: PropertyDef<"geopoint", "nullable", "single">;
             timeseries: PropertyDef<"numericTimeseries", "nullable", "single">;
@@ -70,7 +70,7 @@ type withProperties_aggregateBuilder_aggregate = <
         | {
           class: PropertyDef<"string", "nullable", "single">;
           fullName: PropertyDef<"string", "nullable", "single">;
-          employeeId: PropertyDef<"integer", "nullable", "single">;
+          employeeId: PropertyDef<"integer", "non-nullable", "single">;
           attachment: PropertyDef<"attachment", "nullable", "single">;
           geopoint: PropertyDef<"geopoint", "nullable", "single">;
           timeseries: PropertyDef<"numericTimeseries", "nullable", "single">;
@@ -146,7 +146,7 @@ type withProperties_builder_selectProperty = <
     {
       class: PropertyDef<"string", "nullable", "single">;
       fullName: PropertyDef<"string", "nullable", "single">;
-      employeeId: PropertyDef<"integer", "nullable", "single">;
+      employeeId: PropertyDef<"integer", "non-nullable", "single">;
       attachment: PropertyDef<"attachment", "nullable", "single">;
       geopoint: PropertyDef<"geopoint", "nullable", "single">;
       timeseries: PropertyDef<"numericTimeseries", "nullable", "single">;
@@ -188,7 +188,7 @@ type withProperties_builder_selectProperty = <
     {
       class: PropertyDef<"string", "nullable", "single">;
       fullName: PropertyDef<"string", "nullable", "single">;
-      employeeId: PropertyDef<"integer", "nullable", "single">;
+      employeeId: PropertyDef<"integer", "non-nullable", "single">;
       attachment: PropertyDef<"attachment", "nullable", "single">;
       geopoint: PropertyDef<"geopoint", "nullable", "single">;
       timeseries: PropertyDef<"numericTimeseries", "nullable", "single">;
@@ -230,7 +230,7 @@ type withProperties_builder_selectProperty = <
     {
       class: PropertyDef<"string", "nullable", "single">;
       fullName: PropertyDef<"string", "nullable", "single">;
-      employeeId: PropertyDef<"integer", "nullable", "single">;
+      employeeId: PropertyDef<"integer", "non-nullable", "single">;
       attachment: PropertyDef<"attachment", "nullable", "single">;
       geopoint: PropertyDef<"geopoint", "nullable", "single">;
       timeseries: PropertyDef<"numericTimeseries", "nullable", "single">;

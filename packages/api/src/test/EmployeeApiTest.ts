@@ -164,7 +164,9 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
     properties: {
       class: $PropertyDef<"string", "nullable", "single">;
       fullName: $PropertyDef<"string", "nullable", "single">;
-      employeeId: $PropertyDef<"integer", "nullable", "single">;
+      // Non-nullable to match what the generator emits for a primary key, so
+      // probes that aggregate over it exercise the non-nullable code path.
+      employeeId: $PropertyDef<"integer", "non-nullable", "single">;
       attachment: $PropertyDef<"attachment", "nullable", "single">;
       geopoint: $PropertyDef<"geopoint", "nullable", "single">;
       timeseries: $PropertyDef<"numericTimeseries", "nullable", "single">;

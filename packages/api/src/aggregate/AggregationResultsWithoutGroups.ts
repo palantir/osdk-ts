@@ -45,8 +45,16 @@ export type AggregationResultsWithoutGroups<
           PropName
         >]: MetricName extends "approximateDistinct" | "exactDistinct"
           ? number
-          : OsdkObjectPropertyType<
-              CompileTimeMetadata<Q>["properties"][PropName]
+          : // `false` disables strict nullability enforcement, so the metric is
+            // always `| undefined`. Metrics like `min`/`max`/`sum`/`avg` return
+            // null when the aggregation matches no objects, which is unrelated
+            // to whether the underlying property is nullable — a non-nullable
+            // property (e.g. a primary key) still aggregates to null over an
+            // empty object set. Honoring `nullable` here would drop the
+            // `| undefined` and let callers dereference a null.
+            OsdkObjectPropertyType<
+              CompileTimeMetadata<Q>["properties"][PropName],
+              false
             >;
       };
 };
