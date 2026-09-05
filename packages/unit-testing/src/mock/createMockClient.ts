@@ -15,7 +15,6 @@
  */
 
 import type {
-  CompileTimeMetadata,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   QueryDefinition,
@@ -26,6 +25,7 @@ import invariant from "tiny-invariant";
 import type {
   MockClient,
   ObjectSetStubCallback,
+  QueryReturnTypeFromDef,
   StubPatternCallback,
 } from "../api/MockClient.js";
 import type { QueryStubBuilder, StubBuilderFor } from "../api/StubBuilders.js";
@@ -41,22 +41,20 @@ import {
 
 type ClientStub = Stub & { objectType: string };
 
-type QueryStub = {
-  queryApiName: string;
-  params: unknown;
-  value?: unknown;
-  error?: Error;
-};
-
-type QueryReturnTypeFromDef<Q extends QueryDefinition> =
-  ReturnType<CompileTimeMetadata<Q>["signature"]> extends Promise<infer R>
-    ? R
-    : never;
-
-type QueryParamsFromDef<Q extends QueryDefinition> =
-  Parameters<CompileTimeMetadata<Q>["signature"]> extends [infer P]
-    ? P
-    : undefined;
+type QueryStub = { queryApiName: string } & (
+  | {
+      /** Matched by deep-equality against the caller's params. */
+      type: "params";
+      params: unknown;
+      value?: unknown;
+      error?: Error;
+    }
+  | {
+      /** Matches any params for the query; computes the result from them. */
+      type: "impl";
+      impl: (params: unknown) => unknown;
+    }
+);
 
 // Well-known string key used by Foundry Platform APIs to pull the
 // SharedClientContext (baseUrl, tokenProvider, fetch) off a client. Matches
@@ -74,10 +72,14 @@ export function createMockClient(): MockClient {
       `No stub for request\n`,
     );
 
+  // Last matching stub wins, so a later registration overrides an earlier one.
   const resolveQuery = (queryApiName: string, params: unknown): unknown => {
     for (let i = queryStubs.length - 1; i >= 0; i--) {
       const stub = queryStubs[i];
       if (stub.queryApiName !== queryApiName) continue;
+      if (stub.type === "impl") {
+        return stub.impl(params);
+      }
       if (deepEqual(stub.params, params)) {
         if (stub.error !== undefined) {
           throw stub.error;
@@ -85,7 +87,6 @@ export function createMockClient(): MockClient {
         return stub.value;
       }
     }
-
     const msg = `No stub for query '${queryApiName}'`;
     throw new Error(msg);
   };
@@ -167,14 +168,23 @@ export function createMockClient(): MockClient {
     } as unknown as StubBuilderFor<T>;
   };
 
-  mockClient.whenQuery = <Q extends QueryDefinition>(
+  mockClient.whenQuery = (<Q extends QueryDefinition>(
     query: Q,
-    params?: QueryParamsFromDef<Q>,
-  ): QueryStubBuilder<QueryReturnTypeFromDef<Q>> => {
+    params?: unknown,
+  ): QueryStubBuilder<unknown> | void => {
+    if (typeof params === "function") {
+      queryStubs.push({
+        queryApiName: query.apiName,
+        type: "impl",
+        impl: params as (params: unknown) => unknown,
+      });
+      return;
+    }
     return {
       thenReturn: (result: QueryReturnTypeFromDef<Q>) => {
         queryStubs.push({
           queryApiName: query.apiName,
+          type: "params",
           params,
           value: result,
         });
@@ -182,12 +192,13 @@ export function createMockClient(): MockClient {
       thenThrow: (error: Error) => {
         queryStubs.push({
           queryApiName: query.apiName,
+          type: "params",
           params,
           error,
         });
       },
     };
-  };
+  }) as MockClient["whenQuery"];
 
   mockClient.clearStubs = () => {
     stubs.length = 0;
