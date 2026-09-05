@@ -1,5 +1,0 @@
-type: deprecation
-deprecation:
-  description: Deprecate __apiName, __rid, and __primaryKey
-  links:
-  - https://github.com/palantir/osdk-ts/pull/142
