@@ -21,7 +21,7 @@ import {
   InterfaceDefinitions,
 } from "../../ontology/OntologyProvider.js";
 import { createOsdkInterface } from "./createOsdkInterface.js";
-import { ObjectDefRef } from "./InternalSymbols.js";
+import { DerivedPropertiesRef, ObjectDefRef } from "./InternalSymbols.js";
 
 describe(createOsdkInterface, () => {
   it("works in the normal case", () => {
@@ -218,4 +218,96 @@ describe(createOsdkInterface, () => {
       }"
     `);
   });
+
+  it("exposes runtime derived properties alongside the interface properties", () => {
+    const underlying = {
+      foo: "hi mom",
+      linkedCount: 3,
+
+      [DerivedPropertiesRef]: ["linkedCount"],
+      [ObjectDefRef]: baseObjectDef,
+    };
+
+    const iface = createOsdkInterface(underlying as any, ifaceDef);
+
+    expect(Object.keys(iface)).toMatchInlineSnapshot(`
+      [
+        "$apiName",
+        "asdf",
+        "linkedCount",
+      ]
+    `);
+    expect((iface as any).linkedCount).toBe(3);
+    expect((iface as any).asdf).toBe("hi mom");
+  });
+
+  it("omits derived properties the server did not return", () => {
+    const underlying = {
+      foo: "hi mom",
+
+      // Requested, but absent from the payload — e.g. a `get` over a link with
+      // no target object.
+      [DerivedPropertiesRef]: ["linkedCount"],
+      [ObjectDefRef]: baseObjectDef,
+    };
+
+    const iface = createOsdkInterface(underlying as any, ifaceDef);
+
+    expect(Object.keys(iface)).toEqual(["$apiName", "asdf"]);
+    expect((iface as any).linkedCount).toBeUndefined();
+  });
+
+  it("does not add derived property keys when there are none", () => {
+    const underlying = {
+      foo: "hi mom",
+      [ObjectDefRef]: baseObjectDef,
+    };
+
+    const iface = createOsdkInterface(underlying as any, ifaceDef);
+
+    expect(Object.keys(iface)).toEqual(["$apiName", "asdf"]);
+  });
 });
+
+const baseObjectDef = {
+  [InterfaceDefinitions]: {},
+  apiName: "Obj",
+  displayName: "",
+  interfaceMap: {
+    IFoo: {
+      asdf: "foo",
+    },
+  },
+  inverseInterfaceMap: {},
+  links: {},
+  pluralDisplayName: "",
+  primaryKeyApiName: "",
+  primaryKeyType: "string",
+  properties: {
+    foo: {
+      type: "string",
+    },
+  },
+  type: "object",
+  titleProperty: "foo",
+  rid: "",
+  status: "ACTIVE",
+  icon: undefined,
+  visibility: undefined,
+  description: undefined,
+} satisfies FetchedObjectTypeDefinition;
+
+const ifaceDef = {
+  apiName: "IFoo",
+  displayName: "",
+  links: {},
+  properties: {
+    asdf: {
+      type: "string",
+    },
+  },
+  rid: "",
+  type: "interface",
+  implements: [],
+  description: undefined,
+} as const;

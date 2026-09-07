@@ -26,6 +26,7 @@ import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvide
 import { get$linkForInterface } from "./getDollarLink.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
 import {
+  DerivedPropertiesRef,
   InterfaceDefRef,
   ObjectDefRef,
   UnderlyingOsdkObject,
@@ -240,6 +241,15 @@ export function createOsdkInterface<Q extends FetchedObjectTypeDefinition>(
               },
             ];
           }),
+        ),
+        ...Object.fromEntries(
+          (underlying[DerivedPropertiesRef] ?? []).map((propName) => [
+            propName,
+            {
+              enumerable: propName in underlying,
+              value: underlying[propName as keyof typeof underlying],
+            },
+          ]),
         ),
       },
     ) as InterfaceHolder,
