@@ -21,14 +21,14 @@ import { coerceFieldValue } from "../coerceFieldValue.js";
 describe("coerceFieldValue", () => {
   describe("null/undefined handling", () => {
     it("returns undefined for null", () => {
-      expect(coerceFieldValue({ type: "string" }, null)).toBe(undefined);
+      expect(coerceFieldValue("string", null)).toBe(undefined);
     });
 
     it("returns undefined for undefined", () => {
-      expect(coerceFieldValue({ type: "string" }, undefined)).toBe(undefined);
+      expect(coerceFieldValue("string", undefined)).toBe(undefined);
     });
 
-    it("passes through when the parameter is undefined", () => {
+    it("passes through when parameterType is undefined", () => {
       expect(coerceFieldValue(undefined, "hello")).toBe("hello");
       expect(coerceFieldValue(undefined, 42)).toBe(42);
     });
@@ -36,126 +36,115 @@ describe("coerceFieldValue", () => {
 
   describe("string types", () => {
     it("passes through strings for string type", () => {
-      expect(coerceFieldValue({ type: "string" }, "hello")).toBe("hello");
+      expect(coerceFieldValue("string", "hello")).toBe("hello");
     });
 
     it("coerces non-strings to strings", () => {
-      expect(coerceFieldValue({ type: "string" }, 42)).toBe("42");
-      expect(coerceFieldValue({ type: "string" }, true)).toBe("true");
+      expect(coerceFieldValue("string", 42)).toBe("42");
+      expect(coerceFieldValue("string", true)).toBe("true");
     });
 
     it("handles marking type as string", () => {
-      expect(coerceFieldValue({ type: "marking" }, "abc")).toBe("abc");
+      expect(coerceFieldValue("marking", "abc")).toBe("abc");
     });
 
     it("handles geohash type as string", () => {
-      expect(coerceFieldValue({ type: "geohash" }, "9q8yyk")).toBe("9q8yyk");
-    });
-  });
-
-  describe("repeated values", () => {
-    it("passes through the value produced by the field", () => {
-      const value = ["one", "two"];
-      expect(
-        coerceFieldValue({ type: "string", multiplicity: true }, value),
-      ).toBe(value);
+      expect(coerceFieldValue("geohash", "9q8yyk")).toBe("9q8yyk");
     });
   });
 
   describe("numeric types", () => {
     it("passes through numbers for integer type", () => {
-      expect(coerceFieldValue({ type: "integer" }, 42)).toBe(42);
+      expect(coerceFieldValue("integer", 42)).toBe(42);
     });
 
     it("parses numeric strings for integer type", () => {
-      expect(coerceFieldValue({ type: "integer" }, "42")).toBe(42);
+      expect(coerceFieldValue("integer", "42")).toBe(42);
     });
 
     it("returns undefined for non-numeric strings", () => {
-      expect(coerceFieldValue({ type: "integer" }, "abc")).toBe(undefined);
+      expect(coerceFieldValue("integer", "abc")).toBe(undefined);
     });
 
     it("passes through numbers for double type", () => {
-      expect(coerceFieldValue({ type: "double" }, 3.14)).toBe(3.14);
+      expect(coerceFieldValue("double", 3.14)).toBe(3.14);
     });
 
     it("parses numeric strings for double type", () => {
-      expect(coerceFieldValue({ type: "double" }, "3.14")).toBe(3.14);
+      expect(coerceFieldValue("double", "3.14")).toBe(3.14);
     });
 
     it("handles long type", () => {
-      expect(coerceFieldValue({ type: "long" }, 1000000)).toBe(1000000);
-      expect(coerceFieldValue({ type: "long" }, "1000000")).toBe(1000000);
+      expect(coerceFieldValue("long", 1000000)).toBe(1000000);
+      expect(coerceFieldValue("long", "1000000")).toBe(1000000);
     });
 
     it("returns undefined for empty string", () => {
-      expect(coerceFieldValue({ type: "integer" }, "")).toBe(undefined);
-      expect(coerceFieldValue({ type: "double" }, "")).toBe(undefined);
-      expect(coerceFieldValue({ type: "long" }, "  ")).toBe(undefined);
+      expect(coerceFieldValue("integer", "")).toBe(undefined);
+      expect(coerceFieldValue("double", "")).toBe(undefined);
+      expect(coerceFieldValue("long", "  ")).toBe(undefined);
     });
 
     it("truncates floats for integer types", () => {
-      expect(coerceFieldValue({ type: "integer" }, 3.14)).toBe(3);
-      expect(coerceFieldValue({ type: "integer" }, "3.14")).toBe(3);
-      expect(coerceFieldValue({ type: "long" }, 9.99)).toBe(9);
+      expect(coerceFieldValue("integer", 3.14)).toBe(3);
+      expect(coerceFieldValue("integer", "3.14")).toBe(3);
+      expect(coerceFieldValue("long", 9.99)).toBe(9);
     });
 
     it("preserves floats for double type", () => {
-      expect(coerceFieldValue({ type: "double" }, 3.14)).toBe(3.14);
+      expect(coerceFieldValue("double", 3.14)).toBe(3.14);
     });
 
     it("returns undefined for non-string non-number values", () => {
-      expect(coerceFieldValue({ type: "integer" }, true)).toBe(undefined);
-      expect(coerceFieldValue({ type: "double" }, true)).toBe(undefined);
+      expect(coerceFieldValue("integer", true)).toBe(undefined);
+      expect(coerceFieldValue("double", true)).toBe(undefined);
     });
   });
 
   describe("boolean type", () => {
     it("passes through booleans", () => {
-      expect(coerceFieldValue({ type: "boolean" }, true)).toBe(true);
-      expect(coerceFieldValue({ type: "boolean" }, false)).toBe(false);
+      expect(coerceFieldValue("boolean", true)).toBe(true);
+      expect(coerceFieldValue("boolean", false)).toBe(false);
     });
 
     it("parses string 'true'", () => {
-      expect(coerceFieldValue({ type: "boolean" }, "true")).toBe(true);
+      expect(coerceFieldValue("boolean", "true")).toBe(true);
     });
 
     it("parses string 'false'", () => {
-      expect(coerceFieldValue({ type: "boolean" }, "false")).toBe(false);
+      expect(coerceFieldValue("boolean", "false")).toBe(false);
     });
 
     it("returns undefined for non-boolean values", () => {
-      expect(coerceFieldValue({ type: "boolean" }, "yes")).toBe(undefined);
-      expect(coerceFieldValue({ type: "boolean" }, 1)).toBe(undefined);
+      expect(coerceFieldValue("boolean", "yes")).toBe(undefined);
+      expect(coerceFieldValue("boolean", 1)).toBe(undefined);
     });
   });
 
   describe("datetime/timestamp types", () => {
     it("passes through valid ISO strings for datetime", () => {
       const iso = "2024-01-15T10:30:00.000Z";
-      expect(coerceFieldValue({ type: "datetime" }, iso)).toBe(iso);
+      expect(coerceFieldValue("datetime", iso)).toBe(iso);
     });
 
     it("coerces Date objects to ISO strings", () => {
       const date = new Date("2024-01-15T10:30:00.000Z");
-      expect(coerceFieldValue({ type: "datetime" }, date)).toBe(
+      expect(coerceFieldValue("datetime", date)).toBe(
         "2024-01-15T10:30:00.000Z",
       );
     });
 
     it("returns undefined for invalid date strings", () => {
-      expect(coerceFieldValue({ type: "datetime" }, "not-a-date")).toBe(
-        undefined,
-      );
+      expect(coerceFieldValue("datetime", "not-a-date")).toBe(undefined);
     });
 
     it("returns undefined for non-string non-Date values", () => {
-      expect(coerceFieldValue({ type: "timestamp" }, 12345)).toBe(undefined);
+      expect(coerceFieldValue("timestamp", 12345)).toBe(undefined);
     });
 
     it("handles timestamp the same as datetime", () => {
       const iso = "2024-01-15T10:30:00.000Z";
-      expect(coerceFieldValue({ type: "timestamp" }, iso)).toBe(iso);
+      expect(coerceFieldValue("timestamp", iso)).toBe(iso);
     });
   });
 });

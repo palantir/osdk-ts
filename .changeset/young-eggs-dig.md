@@ -2,4 +2,4 @@
 "@osdk/react-components": patch
 ---
 
-Preserve action parameter value types and multiplicity in action form fields.
+Preserve action parameter types in action form field component props.
