@@ -151,7 +151,7 @@ For every state change with a built-in default behavior (sort, filter, select, e
 
 ## Metrics
 
-- Wrap OSDK components with `withOsdkMetrics` at the **export barrel** (`src/public/experimental/<name>.ts`), NOT inside the component body:
+- Wrap OSDK components with `withOsdkMetrics` at their canonical **export barrel** (`src/public/experimental/<name>.ts` before promotion, or `src/public/<name>.ts` after promotion), NOT inside the component body:
 
   ```ts
   // src/public/experimental/<name>.ts

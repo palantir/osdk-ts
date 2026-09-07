@@ -24,7 +24,7 @@ import type {
 import type {
   FormFieldDefinition,
   ObjectSelectFieldProps,
-} from "../../public/experimental/action-form.js";
+} from "../../public/action-form.js";
 
 const EMPLOYEE_TYPE = {
   type: "object",

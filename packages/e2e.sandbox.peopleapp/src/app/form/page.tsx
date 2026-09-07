@@ -1,10 +1,10 @@
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
-import { BaseForm } from "@osdk/react-components/experimental/action-form";
+import { BaseForm } from "@osdk/react-components/action-form";
 import type {
   BaseFormFieldProps,
   FormContentItem,
   RendererFieldDefinition,
-} from "@osdk/react-components/experimental/action-form";
+} from "@osdk/react-components/action-form";
 import { useCallback, useMemo, useState } from "react";
 
 import { $ } from "../../foundryClient.js";

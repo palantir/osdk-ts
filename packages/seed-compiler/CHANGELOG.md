@@ -1,5 +1,20 @@
 # @osdk/seed-compiler
 
+## 0.15.0
+
+### Minor Changes
+
+- e3a381d: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.77.0`. Generated experimental ontology metadata now includes full action type metadata and logic rules.
+
+### Patch Changes
+
+- Updated dependencies [e3a381d]
+- Updated dependencies [b1bb84a]
+- Updated dependencies [aacb86b]
+  - @osdk/api@2.65.0
+  - @osdk/client@2.65.0
+  - @osdk/seed-helpers@0.30.0
+
 ## 0.14.0
 
 ### Minor Changes

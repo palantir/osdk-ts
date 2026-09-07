@@ -1,5 +1,20 @@
 # @osdk/client
 
+## 2.65.0
+
+### Minor Changes
+
+- e3a381d: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.77.0`. Generated experimental ontology metadata now includes full action type metadata and logic rules.
+- b1bb84a: Fix multiple useOsdkObjects hooks that share the same query incorrectly sharing a page size. Each hook now respects its configured pageSize, or the default of 100, regardless of subscription order.
+- aacb86b: Honor expected value of $isNull in client-side where matching
+
+### Patch Changes
+
+- Updated dependencies [e3a381d]
+  - @osdk/api@2.65.0
+  - @osdk/generator-converters@2.65.0
+  - @osdk/client.unstable@2.65.0
+
 ## 2.64.0
 
 ### Minor Changes

@@ -18,8 +18,8 @@
 ## Import
 
 ```typescript
-import { ActionForm } from "@osdk/react-components/experimental";
-import type { FormFieldDefinition } from "@osdk/react-components/experimental";
+import { ActionForm } from "@osdk/react-components/action-form";
+import type { FormFieldDefinition } from "@osdk/react-components/action-form";
 ```
 
 ## Basic Usage
@@ -30,7 +30,7 @@ import type { FormFieldDefinition } from "@osdk/react-components/experimental";
 
 ```tsx
 import { updateEmployee } from "@my/osdk";
-import { ActionForm } from "@osdk/react-components/experimental";
+import { ActionForm } from "@osdk/react-components/action-form";
 
 function UpdateEmployeeForm() {
   return <ActionForm actionDefinition={updateEmployee} />;

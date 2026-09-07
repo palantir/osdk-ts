@@ -245,6 +245,8 @@ export class GeneratePackageCommand implements
                   args.interfaceTypes,
                 ),
                 linkTypesApiNamesToLoad: transformArrayArg(args.linkTypes),
+                includeActionTypeFullMetadata: args.experimentalOntologyMetadata
+                  ?? false,
               },
               packageInfo,
               args.branch,

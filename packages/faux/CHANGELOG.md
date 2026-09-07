@@ -1,5 +1,17 @@
 # @osdk/shared.test
 
+## 0.49.0
+
+### Minor Changes
+
+- e3a381d: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.77.0`. Generated experimental ontology metadata now includes full action type metadata and logic rules.
+
+### Patch Changes
+
+- Updated dependencies [e3a381d]
+  - @osdk/api@2.65.0
+  - @osdk/generator-converters@2.65.0
+
 ## 0.48.0
 
 ### Patch Changes

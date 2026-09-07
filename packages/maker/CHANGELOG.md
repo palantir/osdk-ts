@@ -1,5 +1,19 @@
 # @osdk/maker
 
+## 0.65.0
+
+### Minor Changes
+
+- 84bcd53: Allow actions to upload media for properties backed by Maker-created Media Sets.
+- eb0c920: Allow dots in namespaced api names
+
+### Patch Changes
+
+- Updated dependencies [e3a381d]
+  - @osdk/api@2.65.0
+  - @osdk/generator-converters.ontologyir@2.65.0
+  - @osdk/typescript-sdk-docs@0.24.0
+
 ## 0.64.0
 
 ### Patch Changes

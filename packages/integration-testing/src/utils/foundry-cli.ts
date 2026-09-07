@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { exec } from "node:child_process";
+import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
 import { gte, valid } from "semver";
@@ -46,11 +46,10 @@ const parseFoundryVersion = (stdout: string): string | undefined =>
 const versionIsAtMinimum = (version: string, min: string): boolean =>
   valid(version) != null && valid(min) != null && gte(version, min);
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 export const checkFoundryCliVersion = (): Promise<FoundryProbeResult> => {
-  return execAsync("which foundry")
-    .then(() => execAsync("foundry --version"))
+  return execFileAsync("foundry", ["--version"])
     .then<FoundryProbeResult>(({ stdout }) => {
       const version = parseFoundryVersion(stdout);
       if (!version) return { type: "version-error" };

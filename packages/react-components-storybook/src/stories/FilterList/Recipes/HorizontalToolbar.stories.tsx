@@ -18,7 +18,7 @@ import type { WhereClause } from "@osdk/api";
 import type {
   FilterDefinitionUnion,
   FilterState,
-} from "@osdk/react-components/experimental/filter-list";
+} from "@osdk/react-components/filter-list";
 import {
   filterHasActiveState,
   FilterInput,
@@ -27,7 +27,7 @@ import {
   getFilterLabel,
   summarizeFilterValue,
   useFilterListState,
-} from "@osdk/react-components/experimental/filter-list";
+} from "@osdk/react-components/filter-list";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import classnames from "classnames";
 import React, { useCallback } from "react";
@@ -287,7 +287,7 @@ export const HorizontalToolbar: Story = {
   getFilterLabel,
   summarizeFilterValue,
   useFilterListState,
-} from "@osdk/react-components/experimental/filter-list";
+} from "@osdk/react-components/filter-list";
 
 function HorizontalFilterToolbar({ objectType, filterDefinitions }) {
   const {

@@ -8,7 +8,7 @@ A React component for rendering video using the browser's native `<video>` eleme
 import {
   BaseVideoViewer,
   VideoViewer,
-} from "@osdk/react-components/experimental/video-viewer";
+} from "@osdk/react-components/video-viewer";
 ```
 
 - **`VideoViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the video contents, and renders with native browser controls.
@@ -19,7 +19,7 @@ import {
 ### With OSDK Media
 
 ```tsx
-import { VideoViewer } from "@osdk/react-components/experimental/video-viewer";
+import { VideoViewer } from "@osdk/react-components/video-viewer";
 
 <VideoViewer media={training.video} />;
 ```
@@ -27,7 +27,7 @@ import { VideoViewer } from "@osdk/react-components/experimental/video-viewer";
 ### With a URL
 
 ```tsx
-import { BaseVideoViewer } from "@osdk/react-components/experimental/video-viewer";
+import { BaseVideoViewer } from "@osdk/react-components/video-viewer";
 
 <BaseVideoViewer src="https://example.com/video.mp4" mimeType="video/mp4" />;
 ```

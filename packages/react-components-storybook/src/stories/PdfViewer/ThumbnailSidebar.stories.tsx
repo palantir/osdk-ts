@@ -17,7 +17,7 @@
 import {
   PdfViewerSidebar,
   usePdfDocument,
-} from "@osdk/react-components/experimental/pdf-viewer";
+} from "@osdk/react-components/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 

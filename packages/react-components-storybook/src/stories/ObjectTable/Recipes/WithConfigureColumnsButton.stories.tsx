@@ -17,11 +17,11 @@
 import {
   ColumnConfigDialog,
   ObjectTable,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 import type {
   ColumnDefinition,
   ObjectTableProps,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
 

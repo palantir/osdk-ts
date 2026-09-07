@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import type {
   ColumnDefinition,
   ObjectTableDataColumn,
   ObjectTableDataRow,
   ObjectTableHandle,
   ObjectTableProps,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useRef, useState } from "react";
 

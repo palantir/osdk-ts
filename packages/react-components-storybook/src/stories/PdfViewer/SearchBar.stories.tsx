@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PdfViewerSearchBarProps } from "@osdk/react-components/experimental/pdf-viewer";
-import { PdfViewerSearchBar } from "@osdk/react-components/experimental/pdf-viewer";
+import type { PdfViewerSearchBarProps } from "@osdk/react-components/pdf-viewer";
+import { PdfViewerSearchBar } from "@osdk/react-components/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 

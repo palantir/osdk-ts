@@ -19,7 +19,7 @@ import {
   ActionForm,
   type FormFieldDefinition,
   type FormState,
-} from "@osdk/react-components/experimental/action-form";
+} from "@osdk/react-components/action-form";
 import React from "react";
 
 import type { Assignment } from "../../generatedNoCheck2/index.js";

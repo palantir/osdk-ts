@@ -21,7 +21,7 @@ import "@osdk/react-components/styles.css";
 import {
   type FilterDefinitionUnion,
   FilterList,
-} from "@osdk/react-components/experimental/filter-list";
+} from "@osdk/react-components/filter-list";
 import { useState } from "react";
 
 import { List } from "../../components/List.js";

@@ -8,7 +8,7 @@ A React component for rendering spreadsheets (.xlsx) as styled HTML tables with 
 import {
   BaseSpreadsheetViewer,
   SpreadsheetViewer,
-} from "@osdk/react-components/experimental/spreadsheet-viewer";
+} from "@osdk/react-components/spreadsheet-viewer";
 ```
 
 - **`SpreadsheetViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, parses the spreadsheet, and renders it.
@@ -19,7 +19,7 @@ import {
 ### With OSDK Media
 
 ```tsx
-import { SpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
+import { SpreadsheetViewer } from "@osdk/react-components/spreadsheet-viewer";
 
 <SpreadsheetViewer media={report.spreadsheet} />;
 ```
@@ -27,7 +27,7 @@ import { SpreadsheetViewer } from "@osdk/react-components/experimental/spreadshe
 ### With parsed data
 
 ```tsx
-import { BaseSpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
+import { BaseSpreadsheetViewer } from "@osdk/react-components/spreadsheet-viewer";
 
 <BaseSpreadsheetViewer
   content={{

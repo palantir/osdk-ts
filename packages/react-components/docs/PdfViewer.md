@@ -5,10 +5,7 @@ A React component for rendering PDF documents with text selection, custom annota
 ## Import
 
 ```tsx
-import {
-  BasePdfViewer,
-  PdfViewer,
-} from "@osdk/react-components/experimental/pdf-viewer";
+import { BasePdfViewer, PdfViewer } from "@osdk/react-components/pdf-viewer";
 ```
 
 - **`PdfViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the PDF contents, and renders the viewer.
@@ -24,7 +21,7 @@ whose input is already-decoded text or a parsed object take `content` instead.
 ### With OSDK Media
 
 ```tsx
-import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+import { PdfViewer } from "@osdk/react-components/pdf-viewer";
 
 <PdfViewer media={employee.employeeDocuments} />;
 ```
@@ -32,7 +29,7 @@ import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 ### With a URL, ArrayBuffer, Uint8Array, or Blob
 
 ```tsx
-import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+import { BasePdfViewer } from "@osdk/react-components/pdf-viewer";
 
 // From a URL
 <BasePdfViewer src="https://example.com/document.pdf" />
@@ -176,7 +173,7 @@ Tier 3: usePdfViewerState / usePdfViewerCore    ← custom everything
 
 ## Building blocks
 
-All building blocks are exported from `@osdk/react-components/experimental/pdf-viewer` for composing custom PDF viewer layouts. Use `PdfViewerContent` as the foundation and add whichever chrome you need.
+All building blocks are exported from `@osdk/react-components/pdf-viewer` for composing custom PDF viewer layouts. Use `PdfViewerContent` as the foundation and add whichever chrome you need.
 
 | Component                  | Description                                                        |
 | -------------------------- | ------------------------------------------------------------------ |
@@ -190,7 +187,7 @@ All building blocks are exported from `@osdk/react-components/experimental/pdf-v
 ### Example: content-only viewer
 
 ```tsx
-import { PdfViewerContent } from "@osdk/react-components/experimental/pdf-viewer";
+import { PdfViewerContent } from "@osdk/react-components/pdf-viewer";
 
 <PdfViewerContent
   src="https://example.com/document.pdf"
@@ -234,7 +231,7 @@ import {
   PdfViewerSearchBar,
   PdfViewerToolbar,
   usePdfViewerState,
-} from "@osdk/react-components/experimental/pdf-viewer";
+} from "@osdk/react-components/pdf-viewer";
 import { createPortal } from "react-dom";
 
 function MyCustomViewer({ src }: { src: string }) {
@@ -279,7 +276,7 @@ function MyCustomViewer({ src }: { src: string }) {
 ### Example: minimal viewer with `usePdfViewerCore`
 
 ```tsx
-import { usePdfViewerCore } from "@osdk/react-components/experimental/pdf-viewer";
+import { usePdfViewerCore } from "@osdk/react-components/pdf-viewer";
 
 function MinimalViewer({ src }: { src: string }) {
   const { containerRef, viewerRef, loading, error, currentPage, numPages } =

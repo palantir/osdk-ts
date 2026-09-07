@@ -7,7 +7,7 @@ A React component that automatically selects the correct viewer for an OSDK `Med
 ## Import
 
 ```tsx
-import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
+import { DocumentViewer } from "@osdk/react-components/document-viewer";
 ```
 
 ## Usage
@@ -15,7 +15,7 @@ import { DocumentViewer } from "@osdk/react-components/experimental/document-vie
 ### Basic
 
 ```tsx
-import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
+import { DocumentViewer } from "@osdk/react-components/document-viewer";
 
 <DocumentViewer media={employee.trainingMaterial} />;
 ```
