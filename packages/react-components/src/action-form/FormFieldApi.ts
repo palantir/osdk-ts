@@ -46,7 +46,7 @@ export type FormFieldDefinition<
   ? {
       // Distribute over each field key so a field's key, value type, and allowed
       // components stay correlated when K is the default union of all keys.
-      [C in ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>]: {
+      [C in ValidFormFieldForPropertyType<ActionParameter<Q, K>["type"]>]: {
         /**
          * The field's unique key
          */
@@ -119,13 +119,13 @@ export type FormFieldDefinition<
          */
         fieldComponentProps: DistributiveOmit<
           FormFieldComponentPropsByActionParameter<
-            FieldDescriptorType<Q, K>,
+            ActionParameter<Q, K>,
             FieldValueType<Q, K>
           >[C],
           FormManagedProps<C>
         >;
       };
-    }[ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>]
+    }[ValidFormFieldForPropertyType<ActionParameter<Q, K>["type"]>]
   : never;
 
 /**
@@ -167,27 +167,40 @@ export interface FormFieldPropsByType {
  * Components without action-specific props reuse the renderer-facing mapping.
  */
 type FormFieldComponentPropsByActionParameter<
-  P extends FieldDescriptorType,
+  P extends ActionMetadata.Parameter,
   V,
 > = {
-  // Preserve existing single- and multi-select configurations because the
-  // field descriptor describes the data type, not parameter multiplicity.
-  [C in ValidFormFieldForPropertyType<P>]: C extends "DROPDOWN"
-    ? DropdownFieldProps<V, boolean>
-    : C extends "RADIO_BUTTONS"
-      ? RadioButtonsFieldProps<V>
-      : C extends "CUSTOM"
-        ? CustomFieldProps<V>
-        : C extends "OBJECT_SELECT"
-          ? P extends ActionMetadata.DataType.Object<infer T>
-            ? ObjectSelectFieldProps<T>
-            : never
-          : C extends "OBJECT_SET"
-            ? P extends ActionMetadata.DataType.ObjectSet<infer T>
-              ? ObjectSetFieldProps<T>
-              : never
-            : FormFieldPropsByType[C];
+  // Only concrete scalar parameters gain more precise props. Metadata-agnostic
+  // and repeated parameters retain the renderer-facing types used previously.
+  [C in ValidFormFieldForPropertyType<
+    P["type"]
+  >]: IsBroadActionParameter<P> extends true
+    ? FormFieldPropsByType[C]
+    : P extends { multiplicity: true }
+      ? FormFieldPropsByType[C]
+      : C extends "DROPDOWN"
+        ? DropdownFieldProps<V, boolean>
+        : C extends "RADIO_BUTTONS"
+          ? RadioButtonsFieldProps<V>
+          : C extends "CUSTOM"
+            ? CustomFieldProps<V>
+            : C extends "OBJECT_SELECT"
+              ? P["type"] extends ActionMetadata.DataType.Object<infer T>
+                ? ObjectSelectFieldProps<T>
+                : never
+              : C extends "OBJECT_SET"
+                ? P["type"] extends ActionMetadata.DataType.ObjectSet<infer T>
+                  ? ObjectSetFieldProps<T>
+                  : never
+                : FormFieldPropsByType[C];
 };
+
+// Actions without concrete definition metadata expose the base parameter type.
+type IsBroadActionParameter<P extends ActionMetadata.Parameter> = [
+  ActionMetadata.Parameter,
+] extends [P]
+  ? true
+  : false;
 
 /**
  * Dropdown field props with selectable items
@@ -556,6 +569,13 @@ export type FieldKey<Q extends ActionDefinition<unknown>> =
  */
 export type ActionParameters<Q extends ActionDefinition<unknown>> =
   CompileTimeMetadata<Q>["parameters"];
+
+type ActionParameter<
+  Q extends ActionDefinition<unknown>,
+  K extends keyof ActionParameters<Q>,
+> = ActionParameters<Q>[K] extends ActionMetadata.Parameter
+  ? ActionParameters<Q>[K]
+  : never;
 
 /**
  * Extracts the value type for a specific parameter

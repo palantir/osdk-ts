@@ -2,4 +2,4 @@
 "@osdk/react-components": patch
 ---
 
-Preserve action parameter types in action form field component props.
+Preserve scalar action parameter types and align action form submission callback types with form state.

@@ -23,6 +23,7 @@ import type {
 } from "@osdk/api";
 
 import type {
+  ActionFormProps,
   FieldValueType,
   FormFieldDefinition,
 } from "../../public/experimental/action-form.js";
@@ -108,6 +109,7 @@ interface UpdateProfileAction extends ActionDefinition<unknown> {
       employees: {
         type: ActionMetadata.DataType.ObjectSet<GeneratedEmployee>;
       };
+      tags: { type: "string"; multiplicity: true };
       title: { type: "string" };
     };
     type: "action";
@@ -116,6 +118,15 @@ interface UpdateProfileAction extends ActionDefinition<unknown> {
     rid: string;
   };
 }
+
+const submitFormState: NonNullable<
+  ActionFormProps<UpdateProfileAction>["onSubmit"]
+> = async (formState, applyAction) => {
+  await applyAction(formState);
+};
+submitFormState satisfies NonNullable<
+  ActionFormProps<UpdateProfileAction>["onSubmit"]
+>;
 
 generatedEmployeeObjectSet satisfies ObjectSet<GeneratedEmployee>;
 generatedEmployeeObjectSet satisfies BaseObjectSet<GeneratedEmployee>;
@@ -263,6 +274,26 @@ const stringDropdown: FormFieldDefinition<UpdateProfileAction> = {
   },
 };
 stringDropdown satisfies FormFieldDefinition<UpdateProfileAction>;
+
+const repeatedStringDropdown: FormFieldDefinition<UpdateProfileAction, "tags"> =
+  {
+    fieldKey: "tags",
+    fieldComponent: "DROPDOWN",
+    label: "Tags",
+    fieldComponentProps: {
+      items: ["Engineer", "Manager"],
+      isMultiple: true,
+      itemToStringLabel: (item) => {
+        // @ts-expect-error Repeated parameters retain the renderer-facing unknown item type
+        item satisfies string;
+        return String(item);
+      },
+    },
+  };
+repeatedStringDropdown satisfies FormFieldDefinition<
+  UpdateProfileAction,
+  "tags"
+>;
 
 // @ts-expect-error String action parameters require string dropdown items
 const invalidStringDropdown: FormFieldDefinition<UpdateProfileAction> = {
