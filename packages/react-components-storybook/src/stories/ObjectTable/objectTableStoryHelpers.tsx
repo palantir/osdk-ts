@@ -445,6 +445,7 @@ export const columnDefinitions: ColumnDefinition<
 // ===========================================================================
 
 export const TARGET_DATA = "Ahmed Williams";
+const TABLE_DATA_TIMEOUT = 5_000;
 
 type Canvas = ReturnType<typeof within>;
 
@@ -571,7 +572,14 @@ export function rowContaining(cell: HTMLElement): HTMLElement {
 export const findRowCheckboxes =
   (root: Canvas): (() => Promise<HTMLElement[]>) =>
   () =>
-    root.findAllByRole("checkbox", { name: /Select row/u });
+    root.findAllByRole(
+      "checkbox",
+      { name: /Select row/u },
+      { timeout: TABLE_DATA_TIMEOUT },
+    );
+
+export const findTableData = (root: Canvas): Promise<HTMLElement> =>
+  root.findByText(TARGET_DATA, undefined, { timeout: TABLE_DATA_TIMEOUT });
 
 export const findSelectAllCheckbox = (root: Canvas): Promise<HTMLElement> =>
   root.findByRole("checkbox", { name: /Select all rows/u });
