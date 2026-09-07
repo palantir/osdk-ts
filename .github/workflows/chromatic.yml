@@ -7,8 +7,6 @@ on:
   push:
     branches: [main]
     paths:
-      # @osdk/react is a peer dependency the stories render through, so a change
-      # to its loading or error behavior can shift rendered output.
       - 'packages/react/**'
       - 'packages/react-components/**'
       - 'packages/react-components-storybook/**'
@@ -54,17 +52,12 @@ jobs:
           # override the /osdk-ts/storybook/ default used for GitHub Pages.
           base-path: /
 
-      # Runs the same package script as a local publish, so CI and a developer
-      # machine always use the pinned `chromatic` devDependency.
-      #
       # --exit-zero-on-changes is temporary: visual diffs are reported but do
       # not fail the build while the initial baselines settle. Drop it once
       # main has an accepted baseline for every story and no story diffs run
       # to run.
       #
-      # --auto-accept-changes main accepts main's builds as the baseline;
-      # without it, main lands as unreviewed changes and later PRs keep
-      # diffing against the last accepted build instead of main.
+      # --auto-accept-changes main accepts main's builds as the baseline
       - name: Publish to Chromatic
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
