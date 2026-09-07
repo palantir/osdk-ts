@@ -76,7 +76,7 @@ describe("createScenario", () => {
   });
 
   it("creates scenario with expireAfter", async () => {
-    const expireAfter = "2026-09-20T12:00:00.000Z";
+    const expireAfter = new Date("2026-09-20T12:00:00.000Z");
     const createResponse: CreateOntologyScenarioResponse = {
       scenarioRid: "ri.actions..scenario.new",
     };
@@ -86,13 +86,13 @@ describe("createScenario", () => {
 
     expect(fetchFunction).toHaveBeenCalledTimes(1);
     expect(JSON.parse(fetchFunction.mock.calls[0][1]?.body as string)).toEqual({
-      expireAfter,
+      expireAfter: expireAfter.toISOString(),
     });
   });
 
   it("creates scenario with branch and expireAfter", async () => {
     const branch = "my-branch";
-    const expireAfter = "2026-09-20T12:00:00.000Z";
+    const expireAfter = new Date("2026-09-20T12:00:00.000Z");
     const newScenarioRid = "ri.actions..scenario.new";
 
     client = createClient(
@@ -116,7 +116,7 @@ describe("createScenario", () => {
         type: "branch",
         branch,
       },
-      expireAfter,
+      expireAfter: expireAfter.toISOString(),
     });
   });
 

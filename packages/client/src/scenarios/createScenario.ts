@@ -42,7 +42,7 @@ import {
  * ```ts
  * import { createScenario } from "@osdk/client/unstable-do-not-use";
  *
- * const expireAfter = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+ * const expireAfter = new Date(Date.now() + 60 * 60 * 1000);
  * const scenario = await createScenario(client, { expireAfter });
  * const scenarioRid = scenario.getScenarioReference();
  * ```
@@ -50,7 +50,7 @@ import {
 export async function createScenario(
   client: Client,
   options?: {
-    expireAfter?: string;
+    expireAfter?: Date;
   },
 ): Promise<EXPERIMENTAL_ScenarioClient> {
   const ctx: MinimalClient = client[additionalContext];
@@ -68,7 +68,7 @@ export async function createScenario(
   }
 
   if (options?.expireAfter != null) {
-    request.expireAfter = options.expireAfter;
+    request.expireAfter = options.expireAfter.toISOString();
   }
 
   const response = await OntologyScenarios.createScenario(
