@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { OntologyScenarios } from "@osdk/foundry.ontologies";
+import {
+  type CreateOntologyScenarioRequest,
+  OntologyScenarios,
+} from "@osdk/foundry.ontologies";
 
 import { additionalContext, type Client } from "../Client.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -30,6 +33,7 @@ import {
  *   from. Throws at runtime if the client is already scoped to a scenario. If the client has an active transaction,
  *   the transaction is ignored (a warning is logged) and the client is scoped to the new scenario. When the base
  *   client has a branch set, the newly minted scenario uses that branch as its base.
+ * @param options - Optional settings for the new scenario.
  * @returns a {@link EXPERIMENTAL_ScenarioClient} bound to the freshly minted scenario RID.
  *
  * @beta This is an experimental, unstable feature subject to change.
@@ -38,12 +42,16 @@ import {
  * ```ts
  * import { createScenario } from "@osdk/client/unstable-do-not-use";
  *
- * const scenario = await createScenario(client);
+ * const expireAfter = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+ * const scenario = await createScenario(client, { expireAfter });
  * const scenarioRid = scenario.getScenarioReference();
  * ```
  */
 export async function createScenario(
   client: Client,
+  options?: {
+    expireAfter?: string;
+  },
 ): Promise<EXPERIMENTAL_ScenarioClient> {
   const ctx: MinimalClient = client[additionalContext];
 
@@ -53,10 +61,20 @@ export async function createScenario(
     );
   }
 
+  const request: CreateOntologyScenarioRequest = {};
+
+  if (ctx.branch != null) {
+    request.base = { type: "branch", branch: ctx.branch };
+  }
+
+  if (options?.expireAfter != null) {
+    request.expireAfter = options.expireAfter;
+  }
+
   const response = await OntologyScenarios.createScenario(
     ctx,
     await ctx.ontologyRid,
-    ctx.branch != null ? { base: { type: "branch", branch: ctx.branch } } : {},
+    request,
     { preview: true },
   );
 
