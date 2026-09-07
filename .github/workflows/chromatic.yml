@@ -7,20 +7,26 @@ on:
   push:
     branches: [main]
     paths:
+      # @osdk/react is a peer dependency the stories render through, so a change
+      # to its loading or error behavior can shift rendered output.
+      - 'packages/react/**'
       - 'packages/react-components/**'
       - 'packages/react-components-storybook/**'
+      - '.github/actions/build-storybook/**'
       - '.github/workflows/chromatic.yml'
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
+      - 'packages/react/**'
       - 'packages/react-components/**'
       - 'packages/react-components-storybook/**'
+      - '.github/actions/build-storybook/**'
       - '.github/workflows/chromatic.yml'
 
 permissions: {}
 
 concurrency:
-  group: chromatic-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name != 'push' }}
 
 jobs:
@@ -41,29 +47,28 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: 24
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build dependencies for Storybook
-        run: pnpm exec turbo transpileBrowser --filter='@osdk/react-components-storybook^...'
-
       - name: Build Storybook
-        env:
-          STORYBOOK_BASE_PATH: /
-        run: pnpm --filter @osdk/react-components-storybook build
-
-      - name: Publish to Chromatic
-        uses: chromaui/action@c93e0bc3a63aa176e14a75b61a31847cbfdd341c # v1
+        uses: ./.github/actions/build-storybook
         with:
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          workingDir: packages/react-components-storybook
-          storybookBuildDir: storybook-static
-          exitZeroOnChanges: true
+          # Chromatic serves the build from the root of its own domain, so
+          # override the /osdk-ts/storybook/ default used for GitHub Pages.
+          base-path: /
+
+      # Runs the same package script as a local publish, so CI and a developer
+      # machine always use the pinned `chromatic` devDependency.
+      #
+      # --exit-zero-on-changes is temporary: visual diffs are reported but do
+      # not fail the build while the initial baselines settle. Drop it once
+      # main has an accepted baseline for every story and no story diffs run
+      # to run.
+      #
+      # --auto-accept-changes main accepts main's builds as the baseline;
+      # without it, main lands as unreviewed changes and later PRs keep
+      # diffing against the last accepted build instead of main.
+      - name: Publish to Chromatic
+        env:
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        run: |
+          pnpm --filter @osdk/react-components-storybook chromatic \
+            --exit-zero-on-changes \
+            --auto-accept-changes main
