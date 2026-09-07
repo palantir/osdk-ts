@@ -450,8 +450,14 @@ export type ObjectSelectFieldProps<
   | "onQueryChange"
   | "disableClientSideFiltering"
   | "renderItemList"
-> &
-  ObjectSelectDataSource<Q>;
+> & {
+  /**
+   * Converts an object to its visual and accessible label.
+   *
+   * @default The object's title, falling back to its primary key.
+   */
+  itemToStringLabel?: (item: Osdk.Instance<Q>) => string;
+} & ObjectSelectDataSource<Q>;
 
 /**
  * Custom field props for user-defined renderers
