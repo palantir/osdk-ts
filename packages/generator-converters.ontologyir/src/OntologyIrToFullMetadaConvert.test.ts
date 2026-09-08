@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import type { OntologyIrV2 } from "@osdk/client.unstable";
+import {
+  generateClientSdkVersionTwoPointZero,
+  type MinimalFs,
+} from "@osdk/generator";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
 import { isInjectedRuntimeInput } from "./convertDataType.js";
@@ -23,6 +28,224 @@ import {
 } from "./OntologyIrToFullMetadataConverter.js";
 
 const discoveredFunctions = vi.hoisted<IDiscoveredFunction[]>(() => []);
+
+type OntologyBlock = OntologyIrV2["ontology"];
+type ActionBlock = OntologyBlock["actionTypes"][string];
+type InterfaceBlock = OntologyBlock["interfaceTypes"][string];
+
+function emptyOntologyBlock(): OntologyBlock {
+  return {
+    actionTypes: {},
+    blockOutputCompassLocations: {},
+    interfaceTypes: {},
+    knownIdentifiers: {
+      actionParameterIds: {},
+      actionParameters: {},
+      actionTypes: {},
+      datasourceColumns: {},
+      datasources: {},
+      filesDatasources: {},
+      functions: {},
+      geotimeSeriesSyncs: {},
+      groupIds: {},
+      interfaceActionTypeConstraints: {},
+      interfaceLinkTypes: {},
+      interfaceParameterConstraints: {},
+      interfacePropertyTypes: {},
+      interfaceTypes: {},
+      linkTypeIds: {},
+      linkTypes: {},
+      markings: {},
+      objectPropertyTypeIdsToRids: {},
+      objectTypeIds: {},
+      objectTypes: {},
+      propertyTypeIds: {},
+      propertyTypes: {},
+      sharedPropertyTypes: {},
+      structFieldRidsToApiNames: {},
+      timeSeriesSyncs: {},
+      valueTypes: {},
+      webhooks: {},
+      workshopModules: {},
+    },
+    linkTypes: {},
+    objectTypes: {},
+    ruleSets: {},
+    sharedPropertyTypes: {},
+  };
+}
+
+function interfaceType(
+  apiName: string,
+  extendsInterfaces: string[],
+  propertyApiName?: string,
+  linkedInterfaceRid?: string,
+): InterfaceBlock {
+  return {
+    interfaceType: {
+      actionTypeConstraints: [],
+      apiName,
+      displayMetadata: { displayName: apiName },
+      extendsInterfaces,
+      links: linkedInterfaceRid === undefined
+        ? []
+        : [{
+          cardinality: "SINGLE",
+          linkedEntityTypeId: {
+            interfaceType: linkedInterfaceRid,
+            type: "interfaceType",
+          },
+          metadata: {
+            apiName: "related",
+            description: "",
+            displayName: "Related",
+          },
+          required: false,
+          rid:
+            "ri.ontology.main.interface-link.830df50e-1bad-4dab-b352-dd55b01191ec",
+        }],
+      properties: [],
+      propertiesV2: {},
+      propertiesV3: propertyApiName === undefined
+        ? {}
+        : {
+          [propertyApiName]: {
+            type: "interfaceDefinedPropertyType",
+            interfaceDefinedPropertyType: {
+              apiName: propertyApiName,
+              constraints: {
+                indexedForSearch: true,
+                primaryKeyConstraint: "NO_RESTRICTION",
+                requireImplementation: true,
+                typeClasses: [],
+              },
+              displayMetadata: {
+                displayName: propertyApiName,
+                visibility: "NORMAL",
+              },
+              rid: `ri.interface-property.${propertyApiName}`,
+              type: {
+                type: "string",
+                string: {
+                  isLongText: false,
+                  supportsExactMatching: true,
+                },
+              },
+            },
+          },
+        },
+      rid: `ri.interface.${apiName}`,
+      status: { type: "active", active: {} },
+    },
+  };
+}
+
+function unsupportedImportedAction(): ActionBlock {
+  return {
+    actionType: {
+      actionTypeLogic: {
+        logic: {
+          rules: [{
+            type: "addLinkRule",
+            addLinkRule: {
+              linkTypeId: "unsupported-link",
+              sourceObject: "source",
+              targetObject: "target",
+            },
+          }],
+        },
+        notifications: [],
+        validation: {
+          actionTypeLevelValidation: {
+            ordering: [],
+            rules: {},
+          },
+          parameterValidations: {},
+          sectionValidations: {},
+        },
+      },
+      metadata: {
+        apiName: "importedUnsupported",
+        displayMetadata: {
+          applyingMessage: [],
+          description: "",
+          displayName: "Imported Unsupported",
+          successMessage: [],
+          typeClasses: [],
+        },
+        formContentOrdering: [],
+        parameterOrdering: [],
+        parameters: {},
+        rid: "ri.ontology.main.action-type.imported-unsupported",
+        sections: {},
+        status: {
+          type: "active",
+          active: {},
+        },
+        version: "",
+      },
+    },
+    parameterIds: {},
+  };
+}
+
+function importedDefinitionsEnvelope(): OntologyIrV2 {
+  const ancestor = interfaceType(
+    "TransitiveAncestor",
+    [],
+    "ancestorProperty",
+  );
+  const parent = interfaceType(
+    "ImportedParent",
+    [ancestor.interfaceType.rid],
+    "parentProperty",
+    ancestor.interfaceType.rid,
+  );
+  const child = interfaceType(
+    "LocalItem",
+    [parent.interfaceType.rid],
+    "localProperty",
+  );
+
+  return {
+    importedOntology: {
+      ...emptyOntologyBlock(),
+      actionTypes: {
+        "ri.ontology.main.action-type.imported-unsupported":
+          unsupportedImportedAction(),
+      },
+      interfaceTypes: { [parent.interfaceType.rid]: parent },
+    },
+    importedValueTypes: [],
+    ontology: {
+      ...emptyOntologyBlock(),
+      interfaceTypes: { [child.interfaceType.rid]: child },
+    },
+    transitiveImportedOntology: {
+      ...emptyOntologyBlock(),
+      interfaceTypes: { [ancestor.interfaceType.rid]: ancestor },
+    },
+    valueTypes: [],
+  };
+}
+
+function createInMemoryFiles(): {
+  fs: MinimalFs;
+  files: Map<string, string>;
+} {
+  const files = new Map<string, string>();
+  return {
+    files,
+    fs: {
+      mkdir: () => Promise.resolve(),
+      readdir: () => Promise.resolve([]),
+      writeFile: (path, contents) => {
+        files.set(path, contents);
+        return Promise.resolve();
+      },
+    },
+  };
+}
 
 vi.mock("@foundry/functions-typescript-osdk-discovery", () => ({
   FunctionDiscoverer: class {
@@ -3638,5 +3861,130 @@ describe(OntologyIrToFullMetadataConverter, () => {
     } finally {
       createProgramSpy.mockRestore();
     }
+  });
+
+  describe("full ontology V2 imports", () => {
+    it("preserves owned, direct, and transitive interface metadata", () => {
+      const metadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(importedDefinitionsEnvelope());
+      const child = metadata.interfaceTypes.LocalItem;
+      const parent = metadata.interfaceTypes.ImportedParent;
+
+      expect(metadata.actionTypes).toEqual({});
+      expect(Object.keys(metadata.interfaceTypes)).toEqual([
+        "TransitiveAncestor",
+        "ImportedParent",
+        "LocalItem",
+      ]);
+      expect(child.extendsInterfaces).toEqual(["ImportedParent"]);
+      expect(child.allExtendsInterfaces).toEqual([
+        "ImportedParent",
+        "TransitiveAncestor",
+      ]);
+      expect(Object.keys(child.allPropertiesV2)).toEqual([
+        "ancestorProperty",
+        "parentProperty",
+        "localProperty",
+      ]);
+      expect(parent.links.related).toMatchObject({
+        linkedEntityApiName: {
+          apiName: "TransitiveAncestor",
+          type: "interfaceTypeApiName",
+        },
+      });
+    });
+
+    it.each(
+      [
+        ["transitiveImportedOntology", "importedOntology"],
+        ["transitiveImportedOntology", "ontology"],
+        ["importedOntology", "ontology"],
+      ] as const,
+    )(
+      "rejects duplicate interface api names across %s and %s",
+      (firstScope, secondScope) => {
+        const ir = importedDefinitionsEnvelope();
+        const first = interfaceType("DuplicateInterface", []);
+        const second = interfaceType("DuplicateInterface", []);
+        first.interfaceType.rid = `ri.interface.${firstScope}`;
+        second.interfaceType.rid = `ri.interface.${secondScope}`;
+        ir[firstScope].interfaceTypes[first.interfaceType.rid] = first;
+        ir[secondScope].interfaceTypes[second.interfaceType.rid] = second;
+
+        expect(() =>
+          OntologyIrToFullMetadataConverter.getFullMetadataFromEnvelope(ir)
+        ).toThrow(
+          `Duplicate interface API name "DuplicateInterface" is associated with multiple RIDs: "ri.interface.${firstScope}", "ri.interface.${secondScope}"`,
+        );
+      },
+    );
+
+    it("uses the owned interface when the same rid is repeated", () => {
+      const ir = importedDefinitionsEnvelope();
+      const imported = interfaceType("RepeatedInterface", [], "importedOnly");
+      const owned = interfaceType("RepeatedInterface", [], "ownedOnly");
+      imported.interfaceType.rid = "ri.interface.repeated";
+      owned.interfaceType.rid = "ri.interface.repeated";
+      ir.importedOntology.interfaceTypes[imported.interfaceType.rid] = imported;
+      ir.ontology.interfaceTypes[owned.interfaceType.rid] = owned;
+
+      const metadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(ir);
+
+      expect(
+        Object.keys(metadata.interfaceTypes.RepeatedInterface.propertiesV2),
+      )
+        .toEqual(["ownedOnly"]);
+    });
+
+    it("rejects different interface api names under the same rid", () => {
+      const ir = importedDefinitionsEnvelope();
+      const imported = interfaceType("ImportedName", []);
+      const owned = interfaceType("OwnedName", []);
+      imported.interfaceType.rid = "ri.interface.repeated";
+      owned.interfaceType.rid = "ri.interface.repeated";
+      ir.importedOntology.interfaceTypes[imported.interfaceType.rid] = imported;
+      ir.ontology.interfaceTypes[owned.interfaceType.rid] = owned;
+
+      expect(() =>
+        OntologyIrToFullMetadataConverter.getFullMetadataFromEnvelope(ir)
+      ).toThrow(
+        "Interface RID \"ri.interface.repeated\" is associated with multiple API names: \"ImportedName\", \"OwnedName\"",
+      );
+    });
+
+    it("generates imported interfaces as local package exports", async () => {
+      const metadata = OntologyIrToFullMetadataConverter
+        .getFullMetadataFromEnvelope(importedDefinitionsEnvelope());
+      const generated = createInMemoryFiles();
+
+      await generateClientSdkVersionTwoPointZero(
+        metadata,
+        "osdk-oac/test",
+        generated.fs,
+        "generated",
+        "module",
+      );
+
+      expect(
+        generated.files.get("generated/ontology/interfaces/ImportedParent.ts"),
+      ).toContain("apiName: 'ImportedParent'");
+      expect(
+        generated.files.get(
+          "generated/ontology/interfaces/TransitiveAncestor.ts",
+        ),
+      ).toContain("apiName: 'TransitiveAncestor'");
+      expect(generated.files.get("generated/ontology/interfaces.ts"))
+        .toContain(
+          "export { ImportedParent } from './interfaces/ImportedParent.js';",
+        );
+      expect(generated.files.get("generated/ontology/interfaces.ts"))
+        .toContain(
+          "export { TransitiveAncestor } from './interfaces/TransitiveAncestor.js';",
+        );
+      expect(generated.files.get("generated/index.ts")).toContain(
+        "export * as $Interfaces from './ontology/interfaces.js';",
+      );
+    });
   });
 });
