@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-/**
- * The environment variable that a Foundry runtime sets to the RID of the branch
- * the application is currently checked out on.
- *
- * It is set by the in-platform dev server, by CI when building a pull request
- * preview, and by local tooling. When it is absent the application is running
- * against the default (`main`) branch.
- */
-export const FOUNDRY_BRANCH_RID_ENV_VAR: string = "VITE_FOUNDRY_BRANCH_RID";
+declare global {
+  interface Window {
+    /** The branch injected into application HTML by OSDK build tooling. */
+    __OSDK_FOUNDRY_BRANCH_RID__?: string | null;
+  }
+}
 
-/**
- * Reads the whole `import.meta.env` object so builds without it safely return
- * `undefined`. A direct member access would fail in the CommonJS build.
- */
-function getImportMetaEnv(): Record<string, string | undefined> | undefined {
-  return (
-    import.meta as ImportMeta & { env?: Record<string, string | undefined> }
-  ).env;
+/** Reads the injected branch without requiring a browser environment. */
+function getInjectedBranch(): string | null | undefined {
+  return typeof window === "undefined"
+    ? undefined
+    : window.__OSDK_FOUNDRY_BRANCH_RID__;
 }
 
 /**
@@ -58,19 +52,19 @@ function normalizeBranch(
  *
  * `undefined` — including the `undefined` that a generated SDK's `$branch`
  * export carries when the SDK was generated against the default branch — falls
- * back to {@link FOUNDRY_BRANCH_RID_ENV_VAR}. That fallback is the point: a
- * repository checked out on a branch reads that branch's data even if its
- * generated SDK predates the checkout.
+ * back to the branch injected into the application HTML. That fallback is the
+ * point: a repository checked out on a branch reads that branch's data even if
+ * its generated SDK predates the checkout.
  *
  * @param explicitBranch - the branch supplied by the caller, if any
- * @param env - the environment to read from. Defaults to `import.meta.env`;
- *   supply it to test without depending on the ambient environment.
+ * @param injectedBranch - the branch injected by build tooling. Defaults to
+ *   the value on `window`; supply it to test without a browser environment.
  */
 export function resolveBranch(
   explicitBranch: string | null | undefined,
-  env: Record<string, string | undefined> | undefined = getImportMetaEnv(),
+  injectedBranch: string | null | undefined = getInjectedBranch(),
 ): string | undefined {
   return explicitBranch !== undefined
     ? normalizeBranch(explicitBranch)
-    : normalizeBranch(env?.[FOUNDRY_BRANCH_RID_ENV_VAR]);
+    : normalizeBranch(injectedBranch);
 }

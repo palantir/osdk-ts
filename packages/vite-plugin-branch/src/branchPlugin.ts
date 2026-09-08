@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import path from "node:path";
-
-import { loadEnv, type Plugin } from "vite";
+import { loadEnv, type Plugin, type ResolvedConfig } from "vite";
 
 import { getGitBranch } from "./getGitBranch.js";
 import { normalizeGitBranch } from "./normalizeGitBranch.js";
 
 /**
- * The environment variable used to expose either a Foundry branch RID or a
- * local git branch name to `@osdk/client`.
+ * The server-only environment variable used to override the Foundry branch
+ * injected into the application HTML.
  */
-export const FOUNDRY_BRANCH_ENV_VAR: string = "VITE_FOUNDRY_BRANCH_RID";
+export const FOUNDRY_BRANCH_ENV_VAR: string = "FOUNDRY_BRANCH_RID";
+
+const FOUNDRY_BRANCH_WINDOW_PROPERTY = "__OSDK_FOUNDRY_BRANCH_RID__";
 
 export interface BranchPluginOptions {
   /**
@@ -38,12 +38,13 @@ export interface BranchPluginOptions {
 }
 
 /**
- * Makes the current global Foundry branch available to `@osdk/client` through
- * `import.meta.env.VITE_FOUNDRY_BRANCH_RID` during local development.
+ * Makes the current global Foundry branch available to `@osdk/client` by
+ * injecting it into the application HTML.
  *
- * An existing environment value takes precedence. Otherwise, the plugin uses
- * the checked-out git branch, except for `main`, `master`, a detached HEAD, or
- * a directory outside a git repository, which use the default Foundry branch.
+ * A server-side {@link FOUNDRY_BRANCH_ENV_VAR} value takes precedence.
+ * Otherwise, the plugin uses the checked-out git branch. `main`, `master`, a
+ * detached HEAD, and a directory outside a git repository use the default
+ * Foundry branch.
  *
  * @example
  * ```ts
@@ -52,40 +53,60 @@ export interface BranchPluginOptions {
  */
 export function branchPlugin(options: BranchPluginOptions = {}): Plugin {
   const readGitBranch = options.readGitBranch ?? getGitBranch;
-  let injectedBranch: string | undefined;
+  let root = process.cwd();
+  let mode = "development";
+  let envDir: string | false = root;
+  let logger: ResolvedConfig["logger"] | undefined;
+  let lastReportedBranch: string | null | undefined;
 
   return {
     name: "osdk-branch",
-    apply: "serve",
-
-    async config(config, { mode }) {
-      const root = path.resolve(config.root ?? process.cwd());
-      const envDir =
-        config.envDir === false
-          ? false
-          : path.resolve(root, config.envDir ?? ".");
-
-      const configuredBranch = loadEnv(mode, envDir, "VITE_")[
-        FOUNDRY_BRANCH_ENV_VAR
-      ];
-      if (configuredBranch?.trim() != null) {
-        return;
-      }
-
-      injectedBranch = normalizeGitBranch(await readGitBranch(root));
-      if (injectedBranch == null) {
-        return;
-      }
-
-      process.env[FOUNDRY_BRANCH_ENV_VAR] = injectedBranch;
-    },
 
     configResolved(config) {
-      if (injectedBranch != null) {
-        config.logger.info(
-          `Using Foundry branch "${injectedBranch}". Set ${FOUNDRY_BRANCH_ENV_VAR} to override.`,
-        );
+      root = config.root;
+      mode = config.mode;
+      envDir = config.envDir;
+      logger = config.logger;
+    },
+
+    async transformIndexHtml() {
+      const configuredBranch = loadEnv(mode, envDir, FOUNDRY_BRANCH_ENV_VAR)[
+        FOUNDRY_BRANCH_ENV_VAR
+      ];
+      const branch =
+        (configuredBranch === undefined
+          ? normalizeGitBranch(await readGitBranch(root))
+          : normalizeGitBranch(configuredBranch)) ?? null;
+
+      if (branch !== lastReportedBranch) {
+        lastReportedBranch = branch;
+        if (branch != null) {
+          logger?.info(
+            `Using Foundry branch "${branch}". Set ${FOUNDRY_BRANCH_ENV_VAR} to override.`,
+          );
+        }
       }
+
+      return [
+        {
+          tag: "script",
+          children: `window.${FOUNDRY_BRANCH_WINDOW_PROPERTY} = ${serializeForInlineScript(branch)};`,
+          injectTo: "head-prepend",
+        },
+      ];
     },
   };
+}
+
+/** Serializes data without allowing a value to terminate the script element. */
+function serializeForInlineScript(branch: string | null): string {
+  return (
+    (JSON.stringify(branch) ?? "null")
+      // Prevent a branch containing `</script>` from terminating the HTML element.
+      .replaceAll("<", "\\u003c")
+      // Escape line separators that older JavaScript parsers reject in string literals.
+      .replaceAll("\u2028", "\\u2028")
+      // Escape paragraph separators for the same cross-parser compatibility.
+      .replaceAll("\u2029", "\\u2029")
+  );
 }

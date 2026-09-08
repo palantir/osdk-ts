@@ -17,25 +17,29 @@
 import {
   mkdirSync,
   mkdtempSync,
+  readFileSync,
+  readdirSync,
   realpathSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { runInNewContext } from "node:vm";
 
 import {
+  build,
   createServer,
-  type ConfigEnv,
+  type IndexHtmlTransformContext,
   type Plugin,
   type ResolvedConfig,
-  type UserConfig,
 } from "vite";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { branchPlugin, FOUNDRY_BRANCH_ENV_VAR } from "./branchPlugin.js";
 
 const GIT_BRANCH = "zka/my-branch";
+const WINDOW_PROPERTY = "__OSDK_FOUNDRY_BRANCH_RID__";
 
 const tempDirs: string[] = [];
 
@@ -50,39 +54,52 @@ function makeProjectDir(envFiles: Record<string, string> = {}): string {
   return dir;
 }
 
-async function runConfigHook(
+function configurePlugin(
   plugin: Plugin,
-  config: UserConfig,
-  mode = "development",
-): Promise<void> {
-  const hook = plugin.config;
-  if (typeof hook !== "function") {
-    throw new TypeError("expected config to be a function hook");
-  }
-  const env: ConfigEnv = {
-    command: "serve",
-    mode,
-    isSsrBuild: false,
-    isPreview: false,
-  };
-  await hook(config, env);
-}
-
-function runConfigResolvedHook(plugin: Plugin): string[] {
+  root: string,
+  options: { envDir?: string | false; mode?: string } = {},
+): string[] {
   const hook = plugin.configResolved;
   if (typeof hook !== "function") {
     throw new TypeError("expected configResolved to be a function hook");
   }
   const messages: string[] = [];
   hook({
-    logger: { info: (msg: string) => messages.push(msg) },
+    root,
+    envDir: options.envDir ?? root,
+    mode: options.mode ?? "development",
+    logger: { info: (message: string) => messages.push(message) },
   } as unknown as ResolvedConfig);
   return messages;
+}
+
+async function readInjectedScript(plugin: Plugin): Promise<string> {
+  const hook = plugin.transformIndexHtml;
+  if (typeof hook !== "function") {
+    throw new TypeError("expected transformIndexHtml to be a function hook");
+  }
+  const result = await hook("", {} as unknown as IndexHtmlTransformContext);
+  if (!Array.isArray(result) || result.length !== 1) {
+    throw new TypeError("expected one injected HTML tag");
+  }
+  const [tag] = result;
+  if (
+    tag.tag !== "script" ||
+    tag.injectTo !== "head-prepend" ||
+    typeof tag.children !== "string"
+  ) {
+    throw new TypeError("expected a head-prepend script");
+  }
+  return tag.children;
 }
 
 function pluginOn(gitBranch: string | undefined): Plugin {
   return branchPlugin({ readGitBranch: () => Promise.resolve(gitBranch) });
 }
+
+beforeEach(() => {
+  Reflect.deleteProperty(process.env, FOUNDRY_BRANCH_ENV_VAR);
+});
 
 afterEach(() => {
   Reflect.deleteProperty(process.env, FOUNDRY_BRANCH_ENV_VAR);
@@ -92,100 +109,147 @@ afterEach(() => {
 });
 
 describe(branchPlugin, () => {
-  it("only applies to the dev server", () => {
-    expect(branchPlugin().apply).toBe("serve");
+  it("applies during development and production builds", () => {
+    expect(branchPlugin().apply).toBeUndefined();
   });
 
-  it("injects the current git branch", async () => {
-    await runConfigHook(pluginOn(GIT_BRANCH), { root: makeProjectDir() });
+  it("injects the current git branch into HTML", async () => {
+    const plugin = pluginOn(GIT_BRANCH);
+    configurePlugin(plugin, makeProjectDir());
 
-    expect(process.env[FOUNDRY_BRANCH_ENV_VAR]).toBe(GIT_BRANCH);
+    expect(await readInjectedScript(plugin)).toBe(
+      `window.${WINDOW_PROPERTY} = "${GIT_BRANCH}";`,
+    );
   });
 
-  it("injects nothing on main", async () => {
-    await runConfigHook(pluginOn("main"), { root: makeProjectDir() });
+  it.each(["main", "master", "HEAD", undefined])(
+    "injects null for the default branch state %s",
+    async (gitBranch) => {
+      const plugin = pluginOn(gitBranch);
+      configurePlugin(plugin, makeProjectDir());
 
-    expect(process.env[FOUNDRY_BRANCH_ENV_VAR]).toBeUndefined();
-  });
+      expect(await readInjectedScript(plugin)).toBe(
+        `window.${WINDOW_PROPERTY} = null;`,
+      );
+    },
+  );
 
-  it("injects nothing when the directory is not a repository", async () => {
-    await runConfigHook(pluginOn(undefined), { root: makeProjectDir() });
-
-    expect(process.env[FOUNDRY_BRANCH_ENV_VAR]).toBeUndefined();
-  });
-
-  it("does not overwrite a branch pinned in a .env file", async () => {
+  it("uses a branch from a .env file instead of git", async () => {
+    const configuredBranch = "ri.foundry.main.branch.pinned";
     const root = makeProjectDir({
-      ".env.development": `${FOUNDRY_BRANCH_ENV_VAR}=ri.foundry.main.branch.pinned\n`,
+      ".env.development": `${FOUNDRY_BRANCH_ENV_VAR}=${configuredBranch}\n`,
     });
+    const readGitBranch = vi.fn(() => Promise.resolve(GIT_BRANCH));
+    const plugin = branchPlugin({ readGitBranch });
+    configurePlugin(plugin, root);
 
-    await runConfigHook(pluginOn(GIT_BRANCH), { root });
-
-    expect(process.env[FOUNDRY_BRANCH_ENV_VAR]).toBeUndefined();
+    expect(await readInjectedScript(plugin)).toContain(
+      JSON.stringify(configuredBranch),
+    );
+    expect(readGitBranch).not.toHaveBeenCalled();
   });
 
-  it("does not overwrite a blank value in a .env file", async () => {
+  it("treats a blank .env override as the default branch", async () => {
     const root = makeProjectDir({
       ".env.development": `${FOUNDRY_BRANCH_ENV_VAR}=   \n`,
     });
+    const readGitBranch = vi.fn(() => Promise.resolve(GIT_BRANCH));
+    const plugin = branchPlugin({ readGitBranch });
+    configurePlugin(plugin, root);
 
-    await runConfigHook(pluginOn(GIT_BRANCH), { root });
-
-    expect(process.env[FOUNDRY_BRANCH_ENV_VAR]).toBeUndefined();
-  });
-
-  it("does not overwrite a branch already in process.env", async () => {
-    process.env[FOUNDRY_BRANCH_ENV_VAR] = "ri.foundry.main.branch.from-ci";
-
-    await runConfigHook(pluginOn(GIT_BRANCH), { root: makeProjectDir() });
-
-    expect(process.env[FOUNDRY_BRANCH_ENV_VAR]).toBe(
-      "ri.foundry.main.branch.from-ci",
+    expect(await readInjectedScript(plugin)).toBe(
+      `window.${WINDOW_PROPERTY} = null;`,
     );
+    expect(readGitBranch).not.toHaveBeenCalled();
   });
 
-  it("reads .env files from a relative envDir", async () => {
+  it("gives process.env precedence over .env files and git", async () => {
+    const processBranch = "ri.foundry.main.branch.from-ci";
+    process.env[FOUNDRY_BRANCH_ENV_VAR] = processBranch;
+    const root = makeProjectDir({
+      ".env.development": `${FOUNDRY_BRANCH_ENV_VAR}=from-file\n`,
+    });
+    const readGitBranch = vi.fn(() => Promise.resolve(GIT_BRANCH));
+    const plugin = branchPlugin({ readGitBranch });
+    configurePlugin(plugin, root);
+
+    expect(await readInjectedScript(plugin)).toContain(
+      JSON.stringify(processBranch),
+    );
+    expect(readGitBranch).not.toHaveBeenCalled();
+  });
+
+  it("reads .env files from the resolved envDir", async () => {
+    const configuredBranch = "ri.foundry.main.branch.pinned";
     const root = makeProjectDir();
-    mkdirSync(path.join(root, "config"));
+    const envDir = path.join(root, "config");
+    mkdirSync(envDir);
     writeFileSync(
-      path.join(root, "config", ".env.development"),
-      `${FOUNDRY_BRANCH_ENV_VAR}=ri.foundry.main.branch.pinned\n`,
+      path.join(envDir, ".env.development"),
+      `${FOUNDRY_BRANCH_ENV_VAR}=${configuredBranch}\n`,
     );
+    const plugin = pluginOn(GIT_BRANCH);
+    configurePlugin(plugin, root, { envDir });
 
-    await runConfigHook(pluginOn(GIT_BRANCH), { root, envDir: "config" });
-
-    expect(process.env[FOUNDRY_BRANCH_ENV_VAR]).toBeUndefined();
+    expect(await readInjectedScript(plugin)).toContain(
+      JSON.stringify(configuredBranch),
+    );
   });
 
-  it("reports the injected branch through Vite's logger", async () => {
-    const plugin = pluginOn(GIT_BRANCH);
-    await runConfigHook(plugin, { root: makeProjectDir() });
+  it("resolves git again for every HTML transformation", async () => {
+    let gitBranch = "first-branch";
+    const plugin = branchPlugin({
+      readGitBranch: () => Promise.resolve(gitBranch),
+    });
+    configurePlugin(plugin, makeProjectDir());
 
-    expect(runConfigResolvedHook(plugin)).toEqual([
-      expect.stringContaining(GIT_BRANCH),
+    expect(await readInjectedScript(plugin)).toContain('"first-branch"');
+    gitBranch = "second-branch";
+    expect(await readInjectedScript(plugin)).toContain('"second-branch"');
+  });
+
+  it("reports each newly resolved feature branch through Vite's logger", async () => {
+    let gitBranch = "first-branch";
+    const plugin = branchPlugin({
+      readGitBranch: () => Promise.resolve(gitBranch),
+    });
+    const messages = configurePlugin(plugin, makeProjectDir());
+
+    await readInjectedScript(plugin);
+    await readInjectedScript(plugin);
+    gitBranch = "second-branch";
+    await readInjectedScript(plugin);
+
+    expect(messages).toEqual([
+      expect.stringContaining("first-branch"),
+      expect.stringContaining("second-branch"),
     ]);
   });
 
-  it("stays quiet when nothing is injected", async () => {
-    const plugin = pluginOn("main");
-    await runConfigHook(plugin, { root: makeProjectDir() });
+  it("serializes hostile branch names without terminating the script", async () => {
+    const gitBranch =
+      'feature/"quote"\n</script><script>bad()</script>\u2028\u2029suffix';
+    const plugin = pluginOn(gitBranch);
+    configurePlugin(plugin, makeProjectDir());
 
-    expect(runConfigResolvedHook(plugin)).toEqual([]);
+    const script = await readInjectedScript(plugin);
+    expect(script).not.toContain("</script>");
+    expect(script).toContain("\\u003c/script>");
+    expect(script).toContain("\\n");
+    expect(script).toContain("\\u2028");
+    expect(script).toContain("\\u2029");
+
+    const context = { window: {} as Record<string, unknown> };
+    runInNewContext(script, context);
+    expect(context.window).toEqual({ [WINDOW_PROPERTY]: gitBranch });
   });
 });
 
-describe("injection reaches import.meta.env", () => {
-  it("substitutes the branch into a served module", async () => {
+describe("Vite integration", () => {
+  it("prepends the branch script to served HTML", async () => {
     const root = makeProjectDir();
-    writeFileSync(
-      path.join(root, "read.js"),
-      [
-        `const KEY = ${JSON.stringify(FOUNDRY_BRANCH_ENV_VAR)};`,
-        `function getEnv() { return import.meta.env; }`,
-        `export const branch = getEnv()?.[KEY];`,
-      ].join("\n"),
-    );
-
+    const html =
+      '<html><head></head><body><script type="module" src="/main.js"></script></body></html>';
     const server = await createServer({
       root,
       configFile: false,
@@ -193,14 +257,45 @@ describe("injection reaches import.meta.env", () => {
       plugins: [pluginOn(GIT_BRANCH)],
     });
     try {
-      const result =
-        await server.environments.client.transformRequest("/read.js");
-
-      expect(result?.code).toContain(
-        `"${FOUNDRY_BRANCH_ENV_VAR}": "${GIT_BRANCH}"`,
+      const transformed = await server.transformIndexHtml("/", html);
+      expect(transformed.indexOf(WINDOW_PROPERTY)).toBeLessThan(
+        transformed.indexOf('src="/main.js"'),
       );
+      expect(transformed).toContain(JSON.stringify(GIT_BRANCH));
     } finally {
       await server.close();
     }
+  });
+
+  it("writes the branch to built HTML instead of JavaScript chunks", async () => {
+    const buildBranch = "feature/build-branch";
+    const root = makeProjectDir();
+    writeFileSync(
+      path.join(root, "index.html"),
+      '<html><head></head><body><script type="module" src="/main.js"></script></body></html>',
+    );
+    writeFileSync(path.join(root, "main.js"), "globalThis.appStarted = true;");
+
+    await build({
+      root,
+      configFile: false,
+      logLevel: "silent",
+      plugins: [pluginOn(buildBranch)],
+      build: { minify: false },
+    });
+
+    const builtHtml = readFileSync(path.join(root, "dist/index.html"), "utf-8");
+    expect(builtHtml).toContain(JSON.stringify(buildBranch));
+    expect(builtHtml.indexOf(WINDOW_PROPERTY)).toBeLessThan(
+      builtHtml.indexOf('type="module"'),
+    );
+
+    const builtJavaScript = readdirSync(path.join(root, "dist/assets"))
+      .filter((file) => file.endsWith(".js"))
+      .map((file) =>
+        readFileSync(path.join(root, "dist/assets", file), "utf-8"),
+      )
+      .join("\n");
+    expect(builtJavaScript).not.toContain(buildBranch);
   });
 });

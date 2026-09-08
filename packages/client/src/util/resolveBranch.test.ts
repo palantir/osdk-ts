@@ -14,79 +14,93 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { FOUNDRY_BRANCH_RID_ENV_VAR, resolveBranch } from "./resolveBranch.js";
+import { resolveBranch } from "./resolveBranch.js";
 
-const ENV_BRANCH = "ri.foundry.main.branch.from-environment";
+const INJECTED_BRANCH = "ri.foundry.main.branch.from-html";
 const EXPLICIT_BRANCH = "ri.foundry.main.branch.from-code";
 
-type Env = Record<string, string | undefined> | undefined;
-
-/**
- * The environment is injected rather than stubbed: Vite substitutes
- * `import.meta.env` with a snapshot taken when the bundler (or, here, Vitest)
- * starts, so `vi.stubEnv` cannot reach the value a source module reads.
- */
-function envWith(branch: string | undefined): Env {
-  return { [FOUNDRY_BRANCH_RID_ENV_VAR]: branch };
-}
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 describe(resolveBranch, () => {
-  it.each<[string, string | null | undefined, Env, string | undefined]>([
+  it.each<
     [
-      "falls back to the environment",
+      string,
+      string | null | undefined,
+      string | null | undefined,
+      string | undefined,
+    ]
+  >([
+    [
+      "falls back to the injected branch",
       undefined,
-      envWith(ENV_BRANCH),
-      ENV_BRANCH,
+      INJECTED_BRANCH,
+      INJECTED_BRANCH,
     ],
     [
-      "prefers an explicit branch over the environment",
+      "prefers an explicit branch over the injected branch",
       EXPLICIT_BRANCH,
-      envWith(ENV_BRANCH),
+      INJECTED_BRANCH,
       EXPLICIT_BRANCH,
     ],
     [
       "treats null as pinning to the default branch",
       null,
-      envWith(ENV_BRANCH),
+      INJECTED_BRANCH,
       undefined,
     ],
     [
       "does not fall back for a blank explicit branch",
       "  ",
-      envWith(ENV_BRANCH),
+      INJECTED_BRANCH,
       undefined,
     ],
     [
-      "trims the environment value",
+      "trims the injected value",
       undefined,
-      envWith(`  ${ENV_BRANCH}\n`),
-      ENV_BRANCH,
+      `  ${INJECTED_BRANCH}\n`,
+      INJECTED_BRANCH,
     ],
+    ["treats a blank injected value as unset", undefined, "   ", undefined],
     [
-      "treats a blank environment value as unset",
-      undefined,
-      envWith("   "),
-      undefined,
-    ],
-    [
-      // Local development passes a branch name for the backend to resolve, so a
-      // rid-only check would break it.
       "accepts a branch name that is not a rid",
       undefined,
-      envWith("my-feature-branch"),
+      "my-feature-branch",
       "my-feature-branch",
     ],
-    ["returns undefined when the variable is unset", undefined, {}, undefined],
-    // No `import.meta.env` at all: the CJS build and plain Node ESM.
+    ["returns undefined for injected null", undefined, null, undefined],
     [
-      "returns undefined when there is no environment",
+      "returns undefined when no branch was injected",
       undefined,
       undefined,
       undefined,
     ],
-  ])("%s", (_description, explicitBranch, env, expected) => {
-    expect(resolveBranch(explicitBranch, env)).toBe(expected);
+  ])("%s", (_description, explicitBranch, injectedBranch, expected) => {
+    expect(resolveBranch(explicitBranch, injectedBranch)).toBe(expected);
+  });
+
+  it("reads the branch from window by default", () => {
+    vi.stubGlobal("window", {
+      __OSDK_FOUNDRY_BRANCH_RID__: INJECTED_BRANCH,
+    });
+
+    expect(resolveBranch(undefined)).toBe(INJECTED_BRANCH);
+  });
+
+  it("uses the default branch when window is missing", () => {
+    vi.stubGlobal("window", undefined);
+
+    expect(resolveBranch(undefined)).toBeUndefined();
+  });
+
+  it("uses the default branch when the window property is missing or null", () => {
+    vi.stubGlobal("window", {});
+    expect(resolveBranch(undefined)).toBeUndefined();
+
+    vi.stubGlobal("window", { __OSDK_FOUNDRY_BRANCH_RID__: null });
+    expect(resolveBranch(undefined)).toBeUndefined();
   });
 });
