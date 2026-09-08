@@ -762,11 +762,8 @@ describe("ListQuery sort stability across pages", () => {
   });
 
   it("invalidateAll preserves server order for tied sort keys", async () => {
-    // Regression test: a revalidation that returns byte-identical data used to
-    // fall through the list's self-recursion guard (the deep-equal write never
-    // registered the list in `changes`), so the list's own fetch results were
-    // fed back through the clientOrdered merge. That re-sorted the rows with a
-    // primary key tiebreak, shuffling ties the server had ordered differently.
+    // A deep-equal revalidation previously skipped registering the list change,
+    // causing its server-ordered results to be re-sorted by the client.
     const dataStore = fauxFoundry.getDefaultDataStore();
     dataStore.clear();
 
