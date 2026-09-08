@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.66.0
+
+### Minor Changes
+
+- 3404eda: Allow `createScenario` to accept an optional `expireAfter` timestamp
+
+### Patch Changes
+
+- @osdk/api@2.66.0
+- @osdk/client.unstable@2.66.0
+- @osdk/generator-converters@2.66.0
+- @osdk/shared.test@2.45.0
+
 ## 2.65.0
 
 ### Minor Changes
