@@ -1,0 +1,1 @@
+import{r as t,j as n}from"./iframe-Xc_JH78I.js";const r=t.createContext(void 0);function s({container:o,children:e}){return n.jsx(r.Provider,{value:o,children:e})}function i(){return t.useContext(r)}export{s as P,i as u};

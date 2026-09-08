@@ -1,0 +1,9 @@
+import{F as T}from"./iframe-Xc_JH78I.js";var s={exports:{}},f={},d;function A(){if(d)return f;d=1;/**
+ * @license React
+ * use-sync-external-store-shim.development.js
+ *
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */return(function(){function O(e,t){return e===t&&(e!==0||1/e===1/t)||e!==e&&t!==t}function p(e,t){c||o.startTransition===void 0||(c=!0,console.error("You are using an outdated, pre-release alpha of React 18 that does not support useSyncExternalStore. The use-sync-external-store shim will not work correctly. Upgrade to a newer pre-release."));var r=t();if(!l){var u=t();_(r,u)||(console.error("The result of getSnapshot should be cached to avoid an infinite loop"),l=!0)}u=h({inst:{value:r,getSnapshot:t}});var n=u[0].inst,i=u[1];return L(function(){n.value=r,n.getSnapshot=t,a(n)&&i({inst:n})},[e,r,t]),v(function(){return a(n)&&i({inst:n}),e(function(){a(n)&&i({inst:n})})},[e]),y(r),r}function a(e){var t=e.getSnapshot;e=e.value;try{var r=t();return!_(e,r)}catch{return!0}}function E(e,t){return t()}typeof __REACT_DEVTOOLS_GLOBAL_HOOK__<"u"&&typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart=="function"&&__REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());var o=T(),_=typeof Object.is=="function"?Object.is:O,h=o.useState,v=o.useEffect,L=o.useLayoutEffect,y=o.useDebugValue,c=!1,l=!1,m=typeof window>"u"||typeof window.document>"u"||typeof window.document.createElement>"u"?E:p;f.useSyncExternalStore=o.useSyncExternalStore!==void 0?o.useSyncExternalStore:m,typeof __REACT_DEVTOOLS_GLOBAL_HOOK__<"u"&&typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop=="function"&&__REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error())})(),f}var S;function x(){return S||(S=1,s.exports=A()),s.exports}var w=x();export{x as r,w as s};
