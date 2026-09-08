@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-// Browser-safe alias runtime. Must stay free of `fs`/`process` so it can be
-// bundled into a browser app.
-
 import type { Custom } from "./types.js";
 
 export type { Custom } from "./types.js";
@@ -25,24 +22,19 @@ export type { Custom } from "./types.js";
 export const DEFAULT_RESOURCES_PATH = "resources.json";
 
 interface InitAliasesOptions {
-  /** Test seam; not exposed by the public browser entry point. */
   fetch?: typeof globalThis.fetch;
 }
 
 let cachedCustomAliases: Record<string, string> | undefined;
 let inFlight: Promise<void> | undefined;
 
-/**
- * Populates the alias cache. Concurrent calls share a request, and failed
- * requests may be retried.
- */
+/** Deduplicates concurrent loads and allows failed loads to be retried. */
 export async function initAliases(options?: InitAliasesOptions): Promise<void> {
   if (cachedCustomAliases !== undefined) {
     return;
   }
   if (inFlight === undefined) {
     inFlight = loadAliases(options).catch((error: unknown) => {
-      // Clear the in-flight promise so a failed load can be retried.
       inFlight = undefined;
       throw error;
     });
@@ -64,7 +56,6 @@ interface FetchedJson {
   url: string;
 }
 
-/** Returns `undefined` when the file appears absent. Any other failure throws. */
 async function fetchJson(
   fetchImpl: typeof globalThis.fetch,
   path: string,
@@ -82,8 +73,6 @@ async function fetchJson(
 
   const body = await response.text();
 
-  // Single-page-app hosts rewrite unknown paths to index.html and answer 200,
-  // so an HTML document is how "not found" usually presents.
   if (isHtmlDocument(body)) {
     return undefined;
   }
@@ -91,10 +80,7 @@ async function fetchJson(
   return { value: parseJson(body, url), url };
 }
 
-/**
- * Detects SPA fallback pages returned for missing files. Inspect the body because
- * Foundry website hosting does not reliably serve `.json` with an HTML type.
- */
+/** Foundry hosts may return an HTML SPA fallback with a JSON content type. */
 function isHtmlDocument(body: string): boolean {
   const start = body.trimStart().slice(0, 32).toLowerCase();
   return start.startsWith("<!doctype html") || start.startsWith("<html");
@@ -110,7 +96,6 @@ function parseJson(body: string, url: string): unknown {
   }
 }
 
-/** Converts `{ aliases: { custom: { key: { value: "value" } } } }` into `{ key: "value" }`. */
 function extractCustomAliases(
   config: unknown,
   url: string,
@@ -171,17 +156,10 @@ function resolveUrl(path: string): string {
   return path;
 }
 
-/**
- * Validates values loaded from JSON before treating them as strings. TypeScript
- * types do not validate runtime data, so without this check `custom()` could
- * return a number or object despite declaring a string return type.
- */
 function toStringRecord(
   parsed: Record<string, unknown>,
 ): Record<string, string> {
-  // Null prototype, so assigning a key named `__proto__` creates an own
-  // property. On a normal object that assignment hits the inherited `__proto__`
-  // setter, which ignores a string value, silently dropping the alias.
+  // A normal object silently drops a string assigned to `__proto__`.
   const result = Object.create(null) as Record<string, string>;
   for (const [key, value] of Object.entries(parsed)) {
     if (typeof value !== "string") {
@@ -211,8 +189,6 @@ export async function custom(alias: string): Promise<Custom> {
     throw new Error("Aliases failed to initialize.");
   }
 
-  // Only accept names explicitly defined in the alias file. JavaScript objects
-  // may also expose built-in names such as `toString` and `__proto__`.
   if (!Object.hasOwn(aliases, alias)) {
     const available = Object.keys(aliases);
     throw new Error(
@@ -224,7 +200,6 @@ export async function custom(alias: string): Promise<Custom> {
   return aliases[alias] as Custom;
 }
 
-/** For tests. Deliberately not part of the public entry point. */
 export function resetAliasesCache(): void {
   cachedCustomAliases = undefined;
   inFlight = undefined;

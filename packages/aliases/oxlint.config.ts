@@ -18,12 +18,6 @@ import { defineConfig } from "oxlint";
 
 import root from "../../oxlint.config.ts";
 
-// Nested oxlint config for @osdk/aliases. This package's source was moved here
-// verbatim from @osdk/functions, which carries the same carve-outs, so the same
-// rules are disabled to keep the extraction a move rather than a rewrite. Every
-// rule below is surfaced only by the moved test setup, not by the runtime source.
-// This list is a strict subset of the one in packages/functions/oxlint.config.ts.
-//
 // `extends` only carries `rules`/`plugins`/`overrides`, so the root's
 // `ignorePatterns` are re-applied explicitly.
 export default defineConfig({
@@ -31,23 +25,17 @@ export default defineConfig({
   ignorePatterns: root.ignorePatterns,
 
   rules: {
-    // --- typescript ---
-    // `delete process.env[computed]` in test setup; the pattern is intentional.
+    // Tests delete computed environment variable names during cleanup.
     "typescript/no-dynamic-delete": "off",
 
-    // --- unicorn ---
-    // `__dirname` in test setup, reading fixture files relative to the test.
+    // Tests load fixtures relative to `__dirname`.
     "unicorn/prefer-module": "off",
-    // `require("fs")` / `"fs"` -> `"node:fs"`; the autofix rewrites specifiers,
-    // and the test deliberately uses `node:fs` separately from the mocked `fs`.
+    // `fs` must remain distinct from unmocked `node:fs` in alias tests.
     "unicorn/prefer-node-protocol": "off",
 
-    // --- import ---
-    // Keep the moved runtime files byte-for-byte identical to their source.
     "import/newline-after-import": "off",
 
-    // --- node ---
-    // `require(...)` inside `vi.hoisted(...)`, which must not be a static import.
+    // Fixture reads run inside `vi.hoisted(...)` and cannot use static imports.
     "node/global-require": "off",
   },
 });

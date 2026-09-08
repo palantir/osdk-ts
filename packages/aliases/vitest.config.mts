@@ -22,7 +22,6 @@ export default defineConfig({
     exclude: [...configDefaults.exclude, "**/build/**/*"],
     coverage: {
       include: ["src/**"],
-      // Exclude tests, generated code, and index.ts barrels (no logic).
       exclude: [
         "**/*.test.*",
         "**/__tests__/**",

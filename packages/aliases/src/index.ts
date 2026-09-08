@@ -14,7 +14,4 @@
  * limitations under the License.
  */
 
-// Intentionally empty: this package has no stable API yet. The root is reserved
-// for the browser runtime once its design settles, so that today's callers see
-// the stability of what they import at the import site. Until then, see
-// "@osdk/aliases/experimental" and "@osdk/aliases/node".
+// No stable API yet. Use "@osdk/aliases/experimental" or "@osdk/aliases/node".

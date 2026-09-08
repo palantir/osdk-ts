@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-// Compatibility boundary keeping the public `Aliases` namespace of
-// @osdk/functions unchanged now that the runtime lives in @osdk/aliases.
-//
-// Explicit named re-exports rather than `export *`, because API Extractor
-// supports neither a namespace re-export of an external package nor a namespace
-// whose target uses `export *`.
+// API Extractor cannot represent a namespace re-export whose external target
+// uses `export *`, so each export is listed explicitly.
 
 export { custom } from "@osdk/aliases/node";
 export type { Custom } from "@osdk/aliases/node";

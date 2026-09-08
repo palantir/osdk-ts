@@ -9,8 +9,7 @@ on:
       - main
       - release/*
       - next
-      # TEMPORARY: publish snapshots from this branch for stack testing. Revert
-      # this line (and the `always()` on the snapshot job below) before merging.
+      # TEMPORARY: enable branch snapshots. Remove before merging.
       - jzhang/dev-console-aliases
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
@@ -53,13 +52,10 @@ jobs:
   snapshot:
     name: Snapshot
     needs: release
-    # `always()` is required: on a non-release branch the `release` job is
-    # skipped by its own `if`, and a skipped dependency skips this job too
-    # unless the condition forces evaluation. TEMPORARY, revert with the branch
-    # trigger above.
+    # Evaluate even when the release job is skipped on branch builds.
     if: ${{ always() && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
-    # TEMPORARY: fail fast instead of hanging for an hour. Revert with the rest.
+    # TEMPORARY: bound branch snapshot builds. Remove before merging.
     timeout-minutes: 25
     permissions:
       contents: read
@@ -85,8 +81,7 @@ jobs:
         run: pnpm exec turbo run build
 
       - name: Update versions for snapshots
-        # TEMPORARY: fixed tag, matching the previously-working branch-snapshot
-        # hack. The ref-derived name contains a slash on this branch. Revert.
+        # The branch name contains a slash, which npm tags do not support.
         run: pnpm exec changeset version --snapshot pr-jzhang
 
       - name: Make sure code is up to date
@@ -96,5 +91,4 @@ jobs:
         run: pnpm exec turbo run build
 
       - name: Publish results
-        # TEMPORARY: fixed tag, see above. Revert.
         run: pnpm exec changeset publish --no-git-tag --tag pr-jzhang

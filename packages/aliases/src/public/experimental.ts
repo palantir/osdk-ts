@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-// Experimental browser-safe aliases for Developer Console apps.
-//
-//   import { Aliases } from "@osdk/aliases/experimental";
-//   const apiBaseUrl = await Aliases.custom("apiBaseUrl");
-//
-// Functions and other Node runtimes use "@osdk/aliases/node".
-
 import { custom, DEFAULT_RESOURCES_PATH } from "../browser.js";
 
-// Explicitly assembled to exclude test helpers. The type annotation is required
-// by `--isolatedDeclarations`.
 export const Aliases: {
   readonly custom: typeof custom;
   readonly DEFAULT_RESOURCES_PATH: typeof DEFAULT_RESOURCES_PATH;

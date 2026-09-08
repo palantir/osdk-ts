@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-// The public surface of the browser entry point. Alias reads are intentionally
-// available only through the Aliases namespace to match the Functions API.
-
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import * as browser from "./browser.js";
@@ -75,19 +72,15 @@ describe("experimental browser entry point", () => {
     expect(Aliases.custom).toBe(browser.custom);
     expect(experimental).not.toHaveProperty("custom");
     expect(Aliases.DEFAULT_RESOURCES_PATH).toBe(DEFAULT_RESOURCES_PATH);
-  });
-
-  it("does not re-export the filesystem loaders", () => {
-    // Those live behind "@osdk/aliases/node". Leaking them here would pull `fs`
-    // into a browser bundle.
-    expect(Aliases).not.toHaveProperty("dataset");
-    expect(Aliases).not.toHaveProperty("source");
     expect(Aliases).not.toHaveProperty("load");
   });
 
-  it("keeps the test-only cache reset out of the public surface", () => {
-    // Tests import it from ../browser.js. Exporting it would make cache
-    // invalidation supported and would race with an in-flight initAliases().
+  it("does not re-export the filesystem loaders", () => {
+    expect(Aliases).not.toHaveProperty("dataset");
+    expect(Aliases).not.toHaveProperty("source");
+  });
+
+  it("does not expose cache reset, which could race with a load", () => {
     expect(Aliases).not.toHaveProperty("resetAliasesCache");
     expect(browser.resetAliasesCache).toBeTypeOf("function");
   });
