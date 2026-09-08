@@ -1,5 +1,19 @@
 # @osdk/integration-testing
 
+## 0.4.0
+
+### Minor Changes
+
+- cde832a: Warn instead of failing package installation when automatic Foundry CLI installation fails, and validate that it is installed when creating an integration client.
+
+### Patch Changes
+
+- Updated dependencies [3404eda]
+  - @osdk/client@2.66.0
+  - @osdk/unit-testing@0.25.0
+  - @osdk/api@2.66.0
+  - @osdk/generator-converters.preview@0.44.0
+
 ## 0.3.0
 
 ### Minor Changes
