@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
+
+const { originalTarget } = vi.hoisted(() => {
+  const previousTarget = process.env.TARGET;
+  process.env.TARGET = "browser";
+  return { originalTarget: previousTarget };
+});
 
 import * as browser from "./browser.js";
 import { resetAliasesCache } from "./browser.js";
 import * as experimental from "./public/experimental.js";
-import { Aliases, DEFAULT_RESOURCES_PATH } from "./public/experimental.js";
+import { Aliases } from "./public/experimental.js";
 
 const RESOURCES_JSON = {
   aliases: {
@@ -40,6 +46,14 @@ function mockFetch(): typeof globalThis.fetch {
 }
 
 describe("experimental browser entry point", () => {
+  afterAll(() => {
+    if (originalTarget === undefined) {
+      delete process.env.TARGET;
+    } else {
+      process.env.TARGET = originalTarget;
+    }
+  });
+
   afterEach(() => {
     resetAliasesCache();
     vi.unstubAllGlobals();
@@ -69,9 +83,9 @@ describe("experimental browser entry point", () => {
   });
 
   it("exposes custom only through the Aliases namespace", () => {
-    expect(Aliases.custom).toBe(browser.custom);
+    expect(Aliases.custom).toBeTypeOf("function");
     expect(experimental).not.toHaveProperty("custom");
-    expect(Aliases.DEFAULT_RESOURCES_PATH).toBe(DEFAULT_RESOURCES_PATH);
+    expect(Aliases).not.toHaveProperty("DEFAULT_RESOURCES_PATH");
     expect(Aliases).not.toHaveProperty("load");
   });
 

@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-import { resolveCustomAlias } from "./resolveCustomAlias.js";
+import { loadResolvedAliases } from "./loaders.js";
 import type { Custom } from "./types.js";
-export type { Custom } from "./types.js";
 
-/**
- * @deprecated Import `Aliases` from "@osdk/aliases/experimental" and use
- * `await Aliases.custom(alias)`.
- */
-export function custom(alias: string): Custom {
-  return resolveCustomAlias(alias);
+export function resolveCustomAlias(alias: string): Custom {
+  const resolvedAliases = loadResolvedAliases();
+
+  if (!(alias in resolvedAliases.custom)) {
+    const available = Object.keys(resolvedAliases.custom);
+    throw new Error(
+      `Custom alias '${alias}' not found. Available aliases: [${available.join(
+        ", ",
+      )}]`,
+    );
+  }
+
+  return resolvedAliases.custom[alias] as Custom;
 }

@@ -14,15 +14,28 @@
  * limitations under the License.
  */
 
-import { custom, DEFAULT_RESOURCES_PATH } from "../browser.js";
+import type { Custom } from "../types.js";
+
+declare const process: {
+  env: { TARGET: "browser" | "node" | undefined };
+};
+
+// The transpiler removes the unused branch, keeping filesystem code out of browser builds.
+const custom: (alias: string) => Promise<Custom> =
+  process.env.TARGET === "browser"
+    ? async function customInBrowser(alias) {
+        const { custom: customFromResources } = await import("../browser.js");
+        return await customFromResources(alias);
+      }
+    : async function customInFunctions(alias) {
+        const { resolveCustomAlias } = await import("../resolveCustomAlias.js");
+        return resolveCustomAlias(alias);
+      };
 
 export const Aliases: {
   readonly custom: typeof custom;
-  readonly DEFAULT_RESOURCES_PATH: typeof DEFAULT_RESOURCES_PATH;
 } = {
   custom,
-  DEFAULT_RESOURCES_PATH,
 };
 
-export { DEFAULT_RESOURCES_PATH };
-export type { Custom } from "../browser.js";
+export type { Custom } from "../types.js";

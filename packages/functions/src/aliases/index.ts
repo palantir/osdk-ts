@@ -18,8 +18,8 @@
 // uses `export *`, so each export is listed explicitly.
 
 /**
- * @deprecated Alias retrieval will become asynchronous in a future release.
- * Add `await` to this call to prepare.
+ * @deprecated Import `Aliases` from "@osdk/aliases/experimental" and use
+ * `await Aliases.custom(alias)`.
  */
 export { custom } from "@osdk/aliases/node";
 export type { Custom } from "@osdk/aliases/node";
