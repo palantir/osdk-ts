@@ -7,15 +7,13 @@ on:
   push:
     branches: [main]
     paths:
-      - 'packages/react/**'
       - 'packages/react-components/**'
       - 'packages/react-components-storybook/**'
       - '.github/actions/build-storybook/**'
       - '.github/workflows/chromatic.yml'
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
-      - 'packages/react/**'
       - 'packages/react-components/**'
       - 'packages/react-components-storybook/**'
       - '.github/actions/build-storybook/**'
@@ -30,8 +28,13 @@ concurrency:
 jobs:
   chromatic:
     name: Run Chromatic
-    # Fork PRs cannot read repository secrets.
-    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+    # Fork PRs cannot read repository secrets. Draft PRs are skipped because
+    # every push to one bills a full set of snapshots; ready_for_review in the
+    # trigger list makes the first build land when the PR opens for review.
+    if: >-
+      ${{ github.event_name == 'push'
+        || (github.event.pull_request.draft == false
+          && github.event.pull_request.head.repo.full_name == github.repository) }}
     timeout-minutes: 20
     runs-on: ubuntu-latest
     permissions:
