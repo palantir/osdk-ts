@@ -65,26 +65,23 @@ const RESOURCES_JSON = {
 describe("browser aliases", () => {
   afterEach(() => {
     resetAliasesCache();
+    vi.unstubAllGlobals();
   });
 
   describe("custom", () => {
-    it("returns values from resources.json after loading", async () => {
-      await initAliases({ fetch: mockFetch({ body: RESOURCES_JSON }) });
+    it("loads resources.json and returns values", async () => {
+      vi.stubGlobal("fetch", mockFetch({ body: RESOURCES_JSON }));
 
-      expect(custom("apiBaseUrl")).toBe("https://api.example.com");
-      expect(custom("featureXEnabled")).toBe("false");
-    });
-
-    it("throws before loading", () => {
-      expect(() => custom("apiBaseUrl")).toThrow(
-        "Aliases have not been initialized",
+      await expect(custom("apiBaseUrl")).resolves.toBe(
+        "https://api.example.com",
       );
+      await expect(custom("featureXEnabled")).resolves.toBe("false");
     });
 
     it("lists available aliases when a key is unknown", async () => {
       await initAliases({ fetch: mockFetch({ body: RESOURCES_JSON }) });
 
-      expect(() => custom("missing")).toThrow(
+      await expect(custom("missing")).rejects.toThrow(
         "Custom alias 'missing' not found. Available aliases: " +
           "[apiBaseUrl, featureXEnabled]",
       );
@@ -103,7 +100,9 @@ describe("browser aliases", () => {
       async (name) => {
         await initAliases({ fetch: mockFetch({ body: RESOURCES_JSON }) });
 
-        expect(() => custom(name)).toThrow(`Custom alias '${name}' not found`);
+        await expect(custom(name)).rejects.toThrow(
+          `Custom alias '${name}' not found`,
+        );
       },
     );
 
@@ -114,7 +113,7 @@ describe("browser aliases", () => {
         }),
       });
 
-      expect(custom(name)).toBe("real-value");
+      await expect(custom(name)).resolves.toBe("real-value");
     });
   });
 
@@ -173,7 +172,9 @@ describe("browser aliases", () => {
       ).rejects.toThrow("Failed to load aliases");
 
       await initAliases({ fetch: mockFetch({ body: RESOURCES_JSON }) });
-      expect(custom("apiBaseUrl")).toBe("https://api.example.com");
+      await expect(custom("apiBaseUrl")).resolves.toBe(
+        "https://api.example.com",
+      );
     });
 
     it("treats a missing resources.json as no aliases", async () => {
@@ -185,7 +186,7 @@ describe("browser aliases", () => {
         }),
       });
 
-      expect(() => custom("anything")).toThrow("Available aliases: []");
+      await expect(custom("anything")).rejects.toThrow("Available aliases: []");
     });
 
     it("handles an SPA fallback as a missing resources.json", async () => {
@@ -193,7 +194,7 @@ describe("browser aliases", () => {
         fetch: mockFetch({ text: "<!doctype html><html></html>" }),
       });
 
-      expect(() => custom("anything")).toThrow("Available aliases: []");
+      await expect(custom("anything")).rejects.toThrow("Available aliases: []");
     });
 
     it("does not mistake malformed JSON for a missing file", async () => {
@@ -217,13 +218,13 @@ describe("browser aliases", () => {
     it("treats an absent aliases block as empty", async () => {
       await initAliases({ fetch: mockFetch({ body: {} }) });
 
-      expect(() => custom("anything")).toThrow("Available aliases: []");
+      await expect(custom("anything")).rejects.toThrow("Available aliases: []");
     });
 
     it("treats an absent custom block as empty", async () => {
       await initAliases({ fetch: mockFetch({ body: { aliases: {} } }) });
 
-      expect(() => custom("anything")).toThrow("Available aliases: []");
+      await expect(custom("anything")).rejects.toThrow("Available aliases: []");
     });
 
     it("treats an empty custom block as empty", async () => {
@@ -231,7 +232,7 @@ describe("browser aliases", () => {
         fetch: mockFetch({ body: { aliases: { custom: {} } } }),
       });
 
-      expect(() => custom("anything")).toThrow("Available aliases: []");
+      await expect(custom("anything")).rejects.toThrow("Available aliases: []");
     });
 
     it.each([null, [], "not an object"])(
@@ -283,7 +284,9 @@ describe("browser aliases", () => {
     it("ignores declaration metadata", async () => {
       await initAliases({ fetch: mockFetch({ body: RESOURCES_JSON }) });
 
-      expect(custom("apiBaseUrl")).toBe("https://api.example.com");
+      await expect(custom("apiBaseUrl")).resolves.toBe(
+        "https://api.example.com",
+      );
     });
 
     it("treats a missing value as an empty string", async () => {
@@ -293,7 +296,7 @@ describe("browser aliases", () => {
         }),
       });
 
-      expect(custom("needsValue")).toBe("");
+      await expect(custom("needsValue")).resolves.toBe("");
     });
   });
 });

@@ -25,8 +25,8 @@ import * as browser from "./browser.js";
 import { resetAliasesCache } from "./browser.js";
 import {
   Aliases,
+  custom,
   DEFAULT_RESOURCES_PATH,
-  load,
 } from "./public/experimental.js";
 
 const RESOURCES_JSON = {
@@ -55,17 +55,21 @@ describe("experimental browser entry point", () => {
 
   it("exposes the Aliases namespace", async () => {
     vi.stubGlobal("fetch", mockFetch());
-    const aliases = await Aliases.load();
 
-    expect(aliases.custom("apiBaseUrl")).toBe("https://api.example.com");
+    await expect(Aliases.custom("apiBaseUrl")).resolves.toBe(
+      "https://api.example.com",
+    );
   });
 
-  it("caches concurrent and repeated loads", async () => {
+  it("caches concurrent and repeated reads", async () => {
     const fetchImpl = mockFetch();
     vi.stubGlobal("fetch", fetchImpl);
 
-    const [first, second] = await Promise.all([Aliases.load(), Aliases.load()]);
-    const third = await Aliases.load();
+    const [first, second] = await Promise.all([
+      Aliases.custom("apiBaseUrl"),
+      Aliases.custom("apiBaseUrl"),
+    ]);
+    const third = await Aliases.custom("apiBaseUrl");
 
     expect(first).toBe(second);
     expect(first).toBe(third);
@@ -75,7 +79,7 @@ describe("experimental browser entry point", () => {
   it("exposes the same members as named exports", () => {
     // Same function identities, not merely same names, so the two styles can
     // never drift apart.
-    expect(Aliases.load).toBe(load);
+    expect(Aliases.custom).toBe(custom);
     expect(Aliases.DEFAULT_RESOURCES_PATH).toBe(DEFAULT_RESOURCES_PATH);
   });
 
@@ -84,7 +88,7 @@ describe("experimental browser entry point", () => {
     // into a browser bundle.
     expect(Aliases).not.toHaveProperty("dataset");
     expect(Aliases).not.toHaveProperty("source");
-    expect(Aliases).not.toHaveProperty("custom");
+    expect(Aliases).not.toHaveProperty("load");
   });
 
   it("keeps the test-only cache reset out of the public surface", () => {

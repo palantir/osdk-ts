@@ -17,22 +17,21 @@
 // Experimental browser-safe aliases for Developer Console apps.
 //
 //   import { Aliases } from "@osdk/aliases/experimental";
-//   const aliases = await Aliases.load();
-//   const apiBaseUrl = aliases.custom("apiBaseUrl");
+//   const apiBaseUrl = await Aliases.custom("apiBaseUrl");
 //
 // Functions and other Node runtimes use "@osdk/aliases/node".
 
-import { DEFAULT_RESOURCES_PATH, load } from "../browser.js";
+import { custom, DEFAULT_RESOURCES_PATH } from "../browser.js";
 
 // Explicitly assembled to exclude test helpers. The type annotation is required
 // by `--isolatedDeclarations`.
 export const Aliases: {
-  readonly load: typeof load;
+  readonly custom: typeof custom;
   readonly DEFAULT_RESOURCES_PATH: typeof DEFAULT_RESOURCES_PATH;
 } = {
-  load,
+  custom,
   DEFAULT_RESOURCES_PATH,
 };
 
-export { DEFAULT_RESOURCES_PATH, load };
-export type { Custom, LoadedAliases } from "../browser.js";
+export { custom, DEFAULT_RESOURCES_PATH };
+export type { Custom } from "../browser.js";

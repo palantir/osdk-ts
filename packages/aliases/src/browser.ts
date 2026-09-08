@@ -29,28 +29,8 @@ interface InitAliasesOptions {
   fetch?: typeof globalThis.fetch;
 }
 
-/** Aliases loaded for this application. */
-export interface LoadedAliases {
-  /** Returns a resolved custom alias. */
-  custom(alias: string): Custom;
-}
-
 let cachedCustomAliases: Record<string, string> | undefined;
 let inFlight: Promise<void> | undefined;
-
-const loadedAliases: LoadedAliases = Object.freeze({ custom });
-
-/**
- * Loads and caches the aliases for this installation, then returns a
- * synchronous reader. Repeated and concurrent calls share the same load.
- *
- * @experimental Exposed only via "@osdk/aliases/experimental". Both custom
- * aliases and the shape of this API are provisional and may change.
- */
-export async function load(): Promise<LoadedAliases> {
-  await initAliases();
-  return loadedAliases;
-}
 
 /**
  * Populates the alias cache. Concurrent calls share a request, and failed
@@ -217,30 +197,31 @@ function toStringRecord(
 }
 
 /**
- * Returns the resolved value for a custom alias. Aliases must have been loaded
- * via {@link initAliases} first; otherwise this throws.
+ * Loads the aliases for this installation if necessary, then returns the
+ * resolved value for a custom alias. Repeated and concurrent calls share the
+ * same load.
  *
  * @experimental Exposed only via "@osdk/aliases/experimental". Both custom
  * aliases and the shape of this API are provisional and may change.
  */
-export function custom(alias: string): Custom {
-  if (cachedCustomAliases === undefined) {
-    throw new Error(
-      "Aliases have not been initialized. Call `await initAliases()` before " +
-        "reading aliases.",
-    );
+export async function custom(alias: string): Promise<Custom> {
+  await initAliases();
+  const aliases = cachedCustomAliases;
+  if (aliases === undefined) {
+    throw new Error("Aliases failed to initialize.");
   }
+
   // Only accept names explicitly defined in the alias file. JavaScript objects
   // may also expose built-in names such as `toString` and `__proto__`.
-  if (!Object.hasOwn(cachedCustomAliases, alias)) {
-    const available = Object.keys(cachedCustomAliases);
+  if (!Object.hasOwn(aliases, alias)) {
+    const available = Object.keys(aliases);
     throw new Error(
       `Custom alias '${alias}' not found. Available aliases: [${available.join(
         ", ",
       )}]`,
     );
   }
-  return cachedCustomAliases[alias] as Custom;
+  return aliases[alias] as Custom;
 }
 
 /** For tests. Deliberately not part of the public entry point. */
