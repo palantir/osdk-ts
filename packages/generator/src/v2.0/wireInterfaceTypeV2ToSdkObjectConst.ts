@@ -25,6 +25,7 @@ import invariant from "tiny-invariant";
 import { extractNamespace } from "../GenerateContext/EnhancedBase.js";
 import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
+import { entityJsdoc } from "../shared/entityJsdoc.js";
 import { getObjectImports } from "../shared/getObjectImports.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
@@ -203,7 +204,16 @@ ${
       
     }    
 
-    ${createDefinition(interfaceDef, ontology, interfaceDef.shortApiName, ids)}
+    ${
+      entityJsdoc(
+        interfaceDef.fullApiName,
+        interfaceDef.raw.displayName,
+        interfaceDef.raw.description,
+      )
+    }${
+      createDefinition(interfaceDef, ontology, interfaceDef.shortApiName, ids)
+        .trimStart()
+    }
 
 `;
   }
@@ -218,7 +228,13 @@ ${
   return `${imports}
     ${v2 ? getV2Types(forInternalUse) : ""}
 
-    export const ${interfaceDef.shortApiName} = {
+    ${
+    entityJsdoc(
+      interfaceDef.fullApiName,
+      interfaceDef.raw.displayName,
+      interfaceDef.raw.description,
+    )
+  }export const ${interfaceDef.shortApiName} = {
       type: "interface",
       apiName: "${interfaceDef.fullApiName}",
       osdkMetadata: $osdkMetadata,

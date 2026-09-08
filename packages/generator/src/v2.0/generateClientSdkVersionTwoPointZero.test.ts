@@ -1979,6 +1979,34 @@ describe("generator", () => {
 
       expect(helper.getFiles()["/foo/index.ts"]).toContain("$ontologyRid");
     });
+
+    it("omits the ontology and branch identities for portable SDKs", async () => {
+      const BASE_PATH = "/foo";
+
+      await generateClientSdkVersionTwoPointZero(
+        TodoWireOntology,
+        "",
+        helper.minimalFiles,
+        BASE_PATH,
+        "module",
+        new Map(),
+        new Map(),
+        new Map(),
+        false,
+        [],
+        false,
+        true,
+      );
+
+      expect(helper.getFiles()["/foo/index.ts"]).not.toContain("$ontologyRid");
+      expect(helper.getFiles()["/foo/index.ts"]).not.toContain("$branch");
+      expect(helper.getFiles()["/foo/OntologyMetadata.ts"]).not.toContain(
+        "$ontologyRid",
+      );
+      expect(helper.getFiles()["/foo/OntologyMetadata.ts"]).not.toContain(
+        "$branch",
+      );
+    });
   });
 
   describe("exportOntologyMetadata", () => {

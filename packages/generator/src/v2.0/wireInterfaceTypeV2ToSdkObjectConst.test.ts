@@ -273,6 +273,10 @@ describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
         > = OsdkInstance<OPTIONS, K>;
       }
 
+      /**
+       * Display name: Foo interface dn
+       * Foo interface desc
+       */
       export interface Foo extends $InterfaceDefinition {
         osdkMetadata: typeof $osdkMetadata;
         type: "interface";
@@ -301,6 +305,10 @@ describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
         };
       }
 
+      /**
+       * Display name: Foo interface dn
+       * Foo interface desc
+       */
       export const Foo = {
         type: "interface",
         apiName: "Foo",
@@ -383,6 +391,10 @@ describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
         > = OsdkInstance<OPTIONS, K>;
       }
 
+      /**
+       * Display name: Foo interface dn
+       * Foo interface desc
+       */
       export interface Foo extends $InterfaceDefinition {
         osdkMetadata: typeof $osdkMetadata;
         type: "interface";
@@ -417,6 +429,10 @@ describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
         };
       }
 
+      /**
+       * Display name: Foo interface dn
+       * Foo interface desc
+       */
       export const Foo = {
         type: "interface",
         apiName: "Foo",
@@ -493,6 +509,10 @@ describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
         > = OsdkInstance<OPTIONS, K>;
       }
 
+      /**
+       * Display name: Foo interface dn
+       * Foo interface desc
+       */
       export interface Foo extends $InterfaceDefinition {
         osdkMetadata: typeof $osdkMetadata;
         type: "interface";
@@ -521,6 +541,10 @@ describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
         };
       }
 
+      /**
+       * Display name: Foo interface dn
+       * Foo interface desc
+       */
       export const Foo = {
         type: "interface",
         apiName: "Foo",

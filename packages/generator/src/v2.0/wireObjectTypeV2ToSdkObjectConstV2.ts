@@ -33,6 +33,7 @@ import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
 import { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
+import { entityJsdoc } from "../shared/entityJsdoc.js";
 import { getObjectImports } from "../shared/getObjectImports.js";
 import { propertyJsdoc } from "../shared/propertyJsdoc.js";
 import { stringify } from "../util/stringify.js";
@@ -123,7 +124,16 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
 
 
-    ${createDefinition(object, ontology, object.shortApiName, identifiers)}
+    ${
+      entityJsdoc(
+        object.fullApiName,
+        object.raw.objectType.displayName,
+        object.raw.objectType.description,
+      )
+    }${
+      createDefinition(object, ontology, object.shortApiName, identifiers)
+        .trimStart()
+    }
     `;
   }
 
@@ -136,7 +146,13 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
   return `${imports}${getV2Types(object, forInternalUse)}
 
-    export const ${object.shortApiName}
+    ${
+    entityJsdoc(
+      object.fullApiName,
+      object.raw.objectType.displayName,
+      object.raw.objectType.description,
+    )
+  }export const ${object.shortApiName}
     = {
       type: "${object instanceof EnhancedObjectType ? "object" : "interface"}",
       apiName: "${object.fullApiName}",
