@@ -66,6 +66,8 @@ export function propertyTypeToSchemaType(
       return "TIMESTAMP";
     case "array":
       return "ARRAY";
+    case "vector":
+      return "ARRAY";
     case "decimal":
       return "DECIMAL";
     case "struct":
@@ -106,7 +108,11 @@ export function typeToFieldSchema(type: Type, name?: string): FieldSchema {
     userDefinedTypeClass: null,
     customMetadata: {},
     arraySubtype:
-      type.type === "array" ? typeToFieldSchema(type.array.subtype) : null,
+      type.type === "array"
+        ? typeToFieldSchema(type.array.subtype)
+        : type.type === "vector"
+          ? typeToFieldSchema({ type: "float", float: {} })
+          : null,
     precision:
       type.type === "decimal" ? (type.decimal.precision ?? null) : null,
     scale: type.type === "decimal" ? (type.decimal.scale ?? null) : null,

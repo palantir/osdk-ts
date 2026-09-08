@@ -98,6 +98,34 @@ function externalRecsForInterfaces(
   );
 }
 
+function externalRecsForInterfaceProperties(
+  importedOntology: OntologyBlockDataV2,
+): GeneratedBlockExternalRecommendations[] {
+  const results: GeneratedBlockExternalRecommendations[] = [];
+
+  for (const interfaceBlock of Object.values(importedOntology.interfaceTypes)) {
+    const interfaceApiName = interfaceBlock.interfaceType.apiName;
+    const interfaceDefinedProperties = Object.values(
+      interfaceBlock.interfaceType.propertiesV3 ?? {},
+    ).filter((property) => property.type === "interfaceDefinedPropertyType");
+
+    results.push(
+      ...getExternalRecommendationsForType(
+        interfaceDefinedProperties,
+        (property) => property.interfaceDefinedPropertyType.apiName,
+        (propertyApiName) =>
+          ReadableIdGenerator.getForInterfaceProperty(
+            interfaceApiName,
+            propertyApiName,
+          ),
+        getPackage(interfaceApiName),
+      ),
+    );
+  }
+
+  return results;
+}
+
 function externalRecsForInterfaceLinks(
   importedOntology: OntologyBlockDataV2,
 ): GeneratedBlockExternalRecommendations[] {
@@ -341,6 +369,7 @@ export function getExternalRecommendations(
 ): GeneratedBlockExternalRecommendations[] {
   return [
     ...externalRecsForInterfaces(importedOntology),
+    ...externalRecsForInterfaceProperties(importedOntology),
     ...externalRecsForInterfaceLinks(importedOntology),
     ...externalRecsForSpts(importedOntology),
     ...externalRecsForObjects(importedOntology),

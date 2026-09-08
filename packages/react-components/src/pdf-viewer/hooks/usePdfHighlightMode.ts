@@ -20,7 +20,7 @@ import type { PDFViewer } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import type { PdfRect, PdfTextHighlightEvent } from "../types.js";
+import type { PdfRect, PdfTextHighlightEvent } from "../PdfViewerApi.js";
 
 export interface UsePdfHighlightModeOptions {
   pdfViewerRef: RefObject<PDFViewer | null>;

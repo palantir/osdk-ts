@@ -53,7 +53,6 @@ export function createMediaFromReferenceInternal(
         client,
         mediaSetRid,
         mediaItemRid,
-        { preview: true },
         token ? { ReadToken: token } : undefined,
       );
     },
@@ -63,7 +62,6 @@ export function createMediaFromReferenceInternal(
         client,
         mediaSetRid,
         mediaItemRid,
-        { preview: true },
         token ? { ReadToken: token } : undefined,
       );
 
@@ -82,7 +80,6 @@ export function createMediaFromReferenceInternal(
         client,
         mediaSetRid,
         mediaItemRid,
-        { preview: true },
         token ? { ReadToken: token } : undefined,
       );
       return { itemMetadata: validateMediaItemMetadata(raw) };

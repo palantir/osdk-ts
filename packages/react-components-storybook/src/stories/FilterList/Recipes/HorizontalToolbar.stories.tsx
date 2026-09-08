@@ -18,7 +18,7 @@ import type { WhereClause } from "@osdk/api";
 import type {
   FilterDefinitionUnion,
   FilterState,
-} from "@osdk/react-components/experimental/filter-list";
+} from "@osdk/react-components/filter-list";
 import {
   filterHasActiveState,
   FilterInput,
@@ -27,7 +27,7 @@ import {
   getFilterLabel,
   summarizeFilterValue,
   useFilterListState,
-} from "@osdk/react-components/experimental/filter-list";
+} from "@osdk/react-components/filter-list";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import classnames from "classnames";
 import React, { useCallback } from "react";
@@ -42,7 +42,6 @@ const sitesFilter: FilterDefinitionUnion<Employee> = {
   key: "locationCity",
   label: "Sites",
   filterComponent: "MULTI_SELECT",
-  filterState: { type: "SELECT", selectedValues: [] },
 };
 
 const specialtiesFilter: FilterDefinitionUnion<Employee> = {
@@ -51,7 +50,6 @@ const specialtiesFilter: FilterDefinitionUnion<Employee> = {
   key: "department",
   label: "Specialties",
   filterComponent: "MULTI_SELECT",
-  filterState: { type: "SELECT", selectedValues: [] },
 };
 
 const consultantsFilter: FilterDefinitionUnion<Employee> = {
@@ -60,7 +58,6 @@ const consultantsFilter: FilterDefinitionUnion<Employee> = {
   key: "fullName",
   label: "Consultants",
   filterComponent: "CONTAINS_TEXT",
-  filterState: { type: "CONTAINS_TEXT" },
 };
 
 const TOOLBAR_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
@@ -290,7 +287,7 @@ export const HorizontalToolbar: Story = {
   getFilterLabel,
   summarizeFilterValue,
   useFilterListState,
-} from "@osdk/react-components/experimental/filter-list";
+} from "@osdk/react-components/filter-list";
 
 function HorizontalFilterToolbar({ objectType, filterDefinitions }) {
   const {
@@ -332,9 +329,9 @@ function HorizontalFilterToolbar({ objectType, filterDefinitions }) {
 <HorizontalFilterToolbar
   objectType={Employee}
   filterDefinitions={[
-    { type: "PROPERTY", key: "locationCity", label: "Sites", filterComponent: "MULTI_SELECT", filterState: { type: "SELECT", selectedValues: [] } },
-    { type: "PROPERTY", key: "department", label: "Specialties", filterComponent: "MULTI_SELECT", filterState: { type: "SELECT", selectedValues: [] } },
-    { type: "PROPERTY", key: "fullName", label: "Consultants", filterComponent: "CONTAINS_TEXT", filterState: { type: "CONTAINS_TEXT" } },
+    { type: "PROPERTY", key: "locationCity", label: "Sites", filterComponent: "MULTI_SELECT" },
+    { type: "PROPERTY", key: "department", label: "Specialties", filterComponent: "MULTI_SELECT" },
+    { type: "PROPERTY", key: "fullName", label: "Consultants", filterComponent: "CONTAINS_TEXT" },
   ]}
 />`,
       },

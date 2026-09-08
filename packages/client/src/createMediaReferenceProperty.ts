@@ -85,7 +85,6 @@ export class MediaReferencePropertyImpl implements Media {
       this.#client,
       mediaSetRid,
       mediaItemRid,
-      { preview: true },
       token ? { ReadToken: token } : undefined,
     );
     return { itemMetadata: validateMediaItemMetadata(raw) };

@@ -358,7 +358,7 @@ function createMockLinkedObjectSet(): ObjectSet<ObjectTypeDefinition> {
 }
 
 function createLinkedDefinition(
-  linkedFilterComponent: "MULTI_SELECT" | "LISTOGRAM" | "SINGLE_SELECT",
+  filterComponent: "MULTI_SELECT" | "LISTOGRAM" | "SINGLE_SELECT",
   renderValue?: (value: string) => React.ReactNode,
 ): LinkedPropertyFilterDefinition<
   ObjectTypeDefinition,
@@ -367,16 +367,15 @@ function createLinkedDefinition(
   PropertyKeys<ObjectTypeDefinition>
 > {
   const innerStateType =
-    linkedFilterComponent === "LISTOGRAM"
+    filterComponent === "LISTOGRAM"
       ? { type: "EXACT_MATCH" as const, values: [] }
       : { type: "SELECT" as const, selectedValues: [] };
 
   return {
     type: "LINKED_PROPERTY",
     linkName: "primaryOffice",
-    reverseLinkName: "occupants",
     linkedPropertyKey: "name" as PropertyKeys<ObjectTypeDefinition>,
-    linkedFilterComponent,
+    filterComponent,
     linkedFilterState: innerStateType,
     filterState: {
       type: "linkedProperty",

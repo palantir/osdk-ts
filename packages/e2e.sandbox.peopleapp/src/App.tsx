@@ -1,6 +1,7 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import "./App.css";
+import { FilterStatesProvider } from "./app/filterStatesContext.js";
 import { Button } from "./components/Button.js";
 import { H1 } from "./components/headers.js";
 
@@ -70,7 +71,9 @@ function PeopleApp() {
         </Button>
       </div>
 
-      <Outlet />
+      <FilterStatesProvider>
+        <Outlet />
+      </FilterStatesProvider>
     </main>
   );
 }

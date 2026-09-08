@@ -40,3 +40,4 @@ export {
   type IDiscoveredFunction,
   OntologyIrToFullMetadataConverter,
 } from "./OntologyIrToFullMetadataConverter.js";
+export { toStructFieldRid, toUuid } from "./ridUtils.js";

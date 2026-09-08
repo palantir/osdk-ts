@@ -22,7 +22,7 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "reactUseOsdkObjectsFilter": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObjects } from \"@osdk/react\";\n\nfunction Filtered{{objectType}}List() {\n  const { data, isLoading, error } = useOsdkObjects({{objectType}}, {\n    where: {\n      {{titleProperty}}: { $isNotNull: true }\n    }\n  });\n\n  return (\n    <div>\n      {error && <div className=\"error-banner\">Error: {error.message}</div>}\n      {isLoading && !data && <div className=\"skeleton\">Loading...</div>}\n      <ul>\n        {data?.map(obj => (\n          <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObjects } from \"@osdk/react\";\n\nfunction Filtered{{objectType}}List() {\n  const { data, isLoading, error } = useOsdkObjects({{objectType}}, {\n    where: {\n      {{titleProperty}}: { $isNull: false }\n    }\n  });\n\n  return (\n    <div>\n      {error && <div className=\"error-banner\">Error: {error.message}</div>}\n      {isLoading && !data && <div className=\"skeleton\">Loading...</div>}\n      <ul>\n        {data?.map(obj => (\n          <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}"
           }
         ],
         "reactUseOsdkObjectByPrimaryKey": [
@@ -70,7 +70,7 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "searchObjectsGuide": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObjects } from \"@osdk/react\";\n\nfunction Filtered{{objectType}}List() {\n  const { data, isLoading, error } = useOsdkObjects({{objectType}}, {\n    where: {\n      {{titleProperty}}: { $isNotNull: true }\n    }\n  });\n\n  return (\n    <div>\n      {error && <div>Error: {error.message}</div>}\n      {isLoading && !data && <div>Loading...</div>}\n      <ul>\n        {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}\n      </ul>\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObjects } from \"@osdk/react\";\n\nfunction Filtered{{objectType}}List() {\n  const { data, isLoading, error } = useOsdkObjects({{objectType}}, {\n    where: {\n      {{titleProperty}}: { $isNull: false }\n    }\n  });\n\n  return (\n    <div>\n      {error && <div>Error: {error.message}</div>}\n      {isLoading && !data && <div>Loading...</div>}\n      <ul>\n        {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}\n      </ul>\n    </div>\n  );\n}"
           }
         ],
         "loadSingleObjectReference": [
@@ -458,7 +458,7 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "uploadMedia": [
           {
-            "template": "import { useOsdkClient } from \"@osdk/react\";\nimport { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from \"@osdk/api/unstable\";\nimport type { MediaReference } from \"@osdk/api\";\nimport { {{actionApiName}}, {{objectType}} } from \"{{{packageName}}}\";\n\nfunction MediaUploader() {\n  const client = useOsdkClient();\n\n  const handleUpload = async (file: File) => {\n    const mediaReference: MediaReference = await client(\n      __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,\n    ).createMediaReference({\n      data: file,\n      fileName: file.name,\n      objectType: {{objectType}},\n      propertyType: \"{{property}}\",\n    });\n    await client({{actionApiName}}).applyAction({\n      // Pass the required action parameters including the primary key\n      {{mediaParameter}}: mediaReference\n    });\n  };\n\n  return (\n    <input type=\"file\" onChange={e => {\n      const file = e.target.files?.[0];\n      if (file) {\n        handleUpload(file);\n      }\n    }} />\n  );\n}"
+            "template": "import { useOsdkClient } from \"@osdk/react\";\nimport type { MediaUpload } from \"@osdk/api\";\nimport { {{actionApiName}} } from \"{{{packageName}}}\";\n\nfunction MediaUploader() {\n  const client = useOsdkClient();\n\n  const handleUpload = async (file: File) => {\n    // Pass the media data straight to a media parameter on the Action. The client\n    // uploads it and links the resulting media item to the object.\n    const mediaUpload: MediaUpload = { data: file, fileName: file.name };\n    await client({{actionApiName}}).applyAction({\n      // Pass the required action parameters including the primary key\n      {{mediaParameter}}: mediaUpload\n    });\n  };\n\n  return (\n    <input type=\"file\" onChange={e => {\n      const file = e.target.files?.[0];\n      if (file) {\n        handleUpload(file);\n      }\n    }} />\n  );\n}"
           }
         ],
         "uploadMediaOntologyEdits": [

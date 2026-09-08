@@ -20,12 +20,12 @@ import type { Media } from "@osdk/api";
 import type {
   BaseSpreadsheetViewerProps,
   ParsedSpreadsheet,
-  SpreadsheetViewerMediaProps,
-} from "@osdk/react-components/experimental/spreadsheet-viewer";
+  SpreadsheetViewerProps,
+} from "@osdk/react-components/spreadsheet-viewer";
 import {
   BaseSpreadsheetViewer,
   SpreadsheetViewer,
-} from "@osdk/react-components/experimental/spreadsheet-viewer";
+} from "@osdk/react-components/spreadsheet-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { http, passthrough } from "msw";
 import { utils, write } from "xlsx-republish";
@@ -164,7 +164,7 @@ const meta: Meta<BaseSpreadsheetViewerProps> = {
   component: BaseSpreadsheetViewer,
   tags: ["beta"],
   args: {
-    spreadsheet: SAMPLE_SPREADSHEET,
+    content: SAMPLE_SPREADSHEET,
   },
   render: (args: BaseSpreadsheetViewerProps) => (
     <div style={{ height: "500px" }}>
@@ -175,8 +175,8 @@ const meta: Meta<BaseSpreadsheetViewerProps> = {
     controls: { expanded: true },
   },
   argTypes: {
-    spreadsheet: {
-      description: "Parsed spreadsheet data",
+    content: {
+      description: "The parsed spreadsheet to render",
       control: false,
     },
     className: {
@@ -189,11 +189,11 @@ const meta: Meta<BaseSpreadsheetViewerProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: StoryObj<SpreadsheetViewerMediaProps> = {
+export const Default: StoryObj<SpreadsheetViewerProps> = {
   args: {
     media: createMockSpreadsheetMedia(),
   },
-  render: (args: SpreadsheetViewerMediaProps) => (
+  render: (args: SpreadsheetViewerProps) => (
     <div style={{ height: "500px" }}>
       <SpreadsheetViewer media={args.media} />
     </div>
@@ -201,9 +201,7 @@ export const Default: StoryObj<SpreadsheetViewerMediaProps> = {
   parameters: {
     docs: {
       source: {
-        code: `import { SpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
-
-<SpreadsheetViewer media={myOsdkMedia} />`,
+        code: `<SpreadsheetViewer media={myOsdkMedia} />`,
       },
     },
   },
@@ -213,9 +211,7 @@ export const WithSpreadsheet: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseSpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
-
-<BaseSpreadsheetViewer spreadsheet={parsedSpreadsheet} />`,
+        code: `<BaseSpreadsheetViewer content={parsedSpreadsheet} />`,
       },
     },
   },
@@ -223,20 +219,40 @@ export const WithSpreadsheet: Story = {
 
 export const SingleSheet: Story = {
   args: {
-    spreadsheet: {
+    content: {
       sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// With one sheet the tab bar is hidden
+<BaseSpreadsheetViewer
+  content={{
+    sheets: [
+      {
+        name: "Employees",
+        rows: [
+          ["Name", "Department", "Salary"],
+          ["Alice Johnson", "Engineering", "$145,000"],
+        ],
+      },
+    ],
+  }}
+/>`,
+      },
     },
   },
 };
 
-export const WithRealFile: StoryObj<SpreadsheetViewerMediaProps> = {
+export const WithRealFile: StoryObj<SpreadsheetViewerProps> = {
   args: {
     media: createMockMediaFromUrl(
       SAMPLE_SPREADSHEET_URL,
       "notional-spreadsheet-example.xlsx",
     ),
   },
-  render: (args: SpreadsheetViewerMediaProps) => (
+  render: (args: SpreadsheetViewerProps) => (
     <div style={{ height: "600px" }}>
       <SpreadsheetViewer media={args.media} />
     </div>
@@ -246,6 +262,13 @@ export const WithRealFile: StoryObj<SpreadsheetViewerMediaProps> = {
       handlers: [
         http.get("*/notional-spreadsheet-example.xlsx", () => passthrough()),
       ],
+    },
+    docs: {
+      source: {
+        code: `// SpreadsheetViewer fetches and parses the xlsx workbook itself, so a real
+// multi-sheet file needs no extra wiring
+<SpreadsheetViewer media={quarter.headcountReport} />`,
+      },
     },
   },
 };

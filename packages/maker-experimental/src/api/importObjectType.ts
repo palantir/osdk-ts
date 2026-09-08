@@ -37,7 +37,8 @@ export function defineImportObject(
     objectDef.properties ?? {},
   ).map(([apiName, type]) => ({
     apiName: apiName,
-    displayName: convertToDisplayName(apiName),
+    displayName: type.displayName ?? convertToDisplayName(apiName),
+    description: type.description,
     type: type.type,
   }));
   const finalObject: ObjectType = {
@@ -48,6 +49,7 @@ export function defineImportObject(
     // the rest don't matter for now
     displayName:
       objectDef.displayName ?? convertToDisplayName(objectDef.apiName),
+    description: objectDef.description,
     pluralDisplayName: convertToPluralDisplayName(objectDef.apiName),
     primaryKeyPropertyApiName: properties[0]?.apiName,
     titlePropertyApiName: properties[0]?.apiName,

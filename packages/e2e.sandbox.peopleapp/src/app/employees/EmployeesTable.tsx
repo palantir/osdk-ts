@@ -1,15 +1,15 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
 import { useOsdkClient } from "@osdk/react";
-import type {
-  ColumnDefinition,
-  ObjectTableHandle,
-} from "@osdk/react-components/experimental/object-table";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import {
   type OsdkThemeMode,
   OsdkThemeProvider,
   useOsdkTheme,
 } from "@osdk/react-components/experimental/theme";
+import type {
+  ColumnDefinition,
+  ObjectTableHandle,
+} from "@osdk/react-components/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import React, { useCallback, useRef } from "react";
 
 import { Button } from "../../components/Button.js";
@@ -142,6 +142,42 @@ const columnDefinitions: Array<
       );
     },
     orderable: false,
+  },
+  // Custom + editable: no ontology property backs this column, so `getCellValue`
+  // supplies the value and `cellValueType` picks the editor. Without it the
+  // cell would get a text input and commit "12345" instead of 12345.
+  {
+    locator: {
+      type: "custom",
+      id: "reportsTo",
+    },
+    columnName: "Reports To (#)",
+    getCellValue: (object: Osdk.Instance<Employee>) =>
+      object.leadEmployeeNumber ?? object.mentorEmployeeNumber,
+    cellValueType: "integer",
+    editable: true,
+    orderable: false,
+  },
+  // Custom + editable, string-typed, and `renderCell` reusing the value the
+  // table already derived rather than recomputing it.
+  {
+    locator: {
+      type: "custom",
+      id: "contact",
+    },
+    columnName: "Contact",
+    getCellValue: (object: Osdk.Instance<Employee>) =>
+      [object.emailPrimaryWork, object.jobTitle]
+        .filter((part) => part != null)
+        .join(" · "),
+    cellValueType: "string",
+    editable: true,
+    orderable: false,
+    renderCell: (
+      _object: Osdk.Instance<Employee>,
+      _locator: unknown,
+      value: unknown,
+    ) => <em>{(value as string) || "No value"}</em>,
   },
 ];
 

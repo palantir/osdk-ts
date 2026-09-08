@@ -18,8 +18,8 @@
 ## Import
 
 ```typescript
-import { ActionForm } from "@osdk/react-components/experimental";
-import type { FormFieldDefinition } from "@osdk/react-components/experimental";
+import { ActionForm } from "@osdk/react-components/action-form";
+import type { FormFieldDefinition } from "@osdk/react-components/action-form";
 ```
 
 ## Basic Usage
@@ -30,7 +30,7 @@ import type { FormFieldDefinition } from "@osdk/react-components/experimental";
 
 ```tsx
 import { updateEmployee } from "@my/osdk";
-import { ActionForm } from "@osdk/react-components/experimental";
+import { ActionForm } from "@osdk/react-components/action-form";
 
 function UpdateEmployeeForm() {
   return <ActionForm actionDefinition={updateEmployee} />;
@@ -47,19 +47,19 @@ function UpdateEmployeeForm() {
 
 Type parameters: `Q extends ActionDefinition<unknown>`
 
-| Name                   | Type                                                                                                                                          | Description                                                                                                                                                          |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `formTitle`            | `string`                                                                                                                                      | Title shown in the form header. Omit to hide the header.                                                                                                             |
-| `isSubmitDisabled`     | `boolean`                                                                                                                                     | Whether the submit button is disabled. Default `false`.                                                                                                              |
-| `actionDefinition`     | `Q`                                                                                                                                           | **Required.** The OSDK action definition. Its parameters drive the rendered fields and the submission.                                                               |
-| `showFormTitle`        | `boolean`                                                                                                                                     | Whether to show the form title. Defaults to `false`.                                                                                                                 |
-| `formFieldDefinitions` | `ReadonlyArray<FormFieldDefinition<Q>>`                                                                                                       | If not supplied, field definitions are constructed from `ActionParameters`.                                                                                          |
-| `onSubmit`             | `(formState: FormState<Q>, applyAction: (args: ActionParameters<Q>) => Promise<ActionEditResponse \| undefined>) => Promise<unknown> \| void` | If supplied, this will override the default submit action. By default, the action's applyAction will be called.                                                      |
-| `onValidationResponse` | `(results: ActionValidationResponse) => void`                                                                                                 | Called when the validation response is returned from a validateOnly submission                                                                                       |
-| `onSuccess`            | `(results: ActionEditResponse \| undefined) => void`                                                                                          | Called when the action is successfully executed from a non-validateOnly submission                                                                                   |
-| `onError`              | `(error: FormError) => void`                                                                                                                  | Called when there is an error in form submission                                                                                                                     |
-| `formState`            | `FormState<Q>`                                                                                                                                | The current form values. If provided, the form state is controlled.                                                                                                  |
-| `onFormStateChange`    | `(updater: (prevState: FormState<Q>) => FormState<Q>) => void`                                                                                | Called when a field value changes, with a state updater. Required when the form state is controlled; also fires in uncontrolled mode so callers can observe changes. |
+| Name                   | Type                                                                                                                                        | Description                                                                                                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `formTitle`            | `string`                                                                                                                                    | Title shown in the form header. Omit to hide the header.                                                                                                             |
+| `isSubmitDisabled`     | `boolean`                                                                                                                                   | Whether the submit button is disabled. Default `false`.                                                                                                              |
+| `actionDefinition`     | `Q`                                                                                                                                         | **Required.** The OSDK action definition. Its parameters drive the rendered fields and the submission.                                                               |
+| `showFormTitle`        | `boolean`                                                                                                                                   | Whether to show the form title. Defaults to `false`.                                                                                                                 |
+| `formFieldDefinitions` | `ReadonlyArray<FormFieldDefinition<Q>>`                                                                                                     | If not supplied, field definitions are constructed from action metadata.                                                                                             |
+| `onSubmit`             | `(formState: FormState<Q>, applyAction: (formState: FormState<Q>) => Promise<ActionEditResponse \| undefined>) => Promise<unknown> \| void` | If supplied, this will override the default submit action. By default, the action's applyAction will be called.                                                      |
+| `onValidationResponse` | `(results: ActionValidationResponse) => void`                                                                                               | Called when the validation response is returned from a validateOnly submission                                                                                       |
+| `onSuccess`            | `(results: ActionEditResponse \| undefined) => void`                                                                                        | Called when the action is successfully executed from a non-validateOnly submission                                                                                   |
+| `onError`              | `(error: FormError) => void`                                                                                                                | Called when action metadata fails to load or form submission fails.                                                                                                  |
+| `formState`            | `FormState<Q>`                                                                                                                              | The current form values. If provided, the form state is controlled.                                                                                                  |
+| `onFormStateChange`    | `(updater: (prevState: FormState<Q>) => FormState<Q>) => void`                                                                              | Called when a field value changes, with a state updater. Required when the form state is controlled; also fires in uncontrolled mode so callers can observe changes. |
 
 <!-- AUTOGEN:props END -->
 

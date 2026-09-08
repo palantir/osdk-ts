@@ -1401,4 +1401,106 @@ describe("ListQuery shared query autoFetchMore tests", () => {
     expect(lastPayload?.hasMore).toBe(false);
     expect(lastPayload?.status).toBe("loaded");
   });
+
+  it("shared query: smaller pageSize subscriber first, default pageSize subscriber second", async () => {
+    setupTodos(fauxFoundry, 150);
+
+    testStage("Subscribe A with pageSize: 20");
+    const subA = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: {},
+          pageSize: 20,
+        },
+        subA,
+      ),
+    );
+
+    testStage("Wait for A to load 20 items");
+    const payloadA = await waitForPayload(
+      subA,
+      (p) => p?.status === "loaded" && p?.resolvedList?.length === 20,
+    );
+    expect(payloadA?.hasMore).toBe(true);
+
+    testStage("Subscribe B with the default pageSize");
+    const subB = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: {},
+        },
+        subB,
+      ),
+    );
+
+    testStage("Wait for B to load the default 100 items");
+    const payloadB = await waitForPayload(
+      subB,
+      (p) => p?.status === "loaded" && p?.resolvedList?.length === 100,
+    );
+    expect(payloadB?.hasMore).toBe(true);
+
+    testStage("Verify A still shows 20 items");
+    const aCalls = subA.next.mock.calls;
+    expect(aCalls).not.toHaveLength(0);
+    const lastPayloadA = aCalls[aCalls.length - 1][0];
+    expect(lastPayloadA?.resolvedList?.length).toBe(20);
+  });
+
+  it("shared query: default pageSize subscriber first, smaller pageSize subscriber second", async () => {
+    setupTodos(fauxFoundry, 150);
+
+    testStage("Subscribe A with the default pageSize");
+    const subA = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: {},
+        },
+        subA,
+      ),
+    );
+
+    testStage("Wait for A to load the default 100 items");
+    const payloadA = await waitForPayload(
+      subA,
+      (p) => p?.status === "loaded" && p?.resolvedList?.length === 100,
+    );
+    expect(payloadA?.hasMore).toBe(true);
+
+    testStage("Subscribe B with pageSize: 20");
+    const subB = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: {},
+          pageSize: 20,
+        },
+        subB,
+      ),
+    );
+
+    testStage("Wait for B to load 20 items");
+    const payloadB = await waitForPayload(
+      subB,
+      (p) => p?.status === "loaded" && p?.resolvedList?.length === 20,
+    );
+    expect(payloadB?.hasMore).toBe(true);
+
+    testStage("Verify A still shows 100 items");
+    const aCalls = subA.next.mock.calls;
+    expect(aCalls).not.toHaveLength(0);
+    const lastPayloadA = aCalls[aCalls.length - 1][0];
+    expect(lastPayloadA?.resolvedList?.length).toBe(100);
+  });
 });

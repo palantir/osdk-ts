@@ -75,6 +75,51 @@ describe("createScenario", () => {
     expect(url.searchParams.get("scenarioRid")).toBe(newScenarioRid);
   });
 
+  it("creates scenario with expireAfter", async () => {
+    const expireAfter = new Date("2026-09-20T12:00:00.000Z");
+    const createResponse: CreateOntologyScenarioResponse = {
+      scenarioRid: "ri.actions..scenario.new",
+    };
+    mockFetchResponse(fetchFunction, createResponse);
+
+    await createScenario(client, { expireAfter });
+
+    expect(fetchFunction).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(fetchFunction.mock.calls[0][1]?.body as string)).toEqual({
+      expireAfter: expireAfter.toISOString(),
+    });
+  });
+
+  it("creates scenario with branch and expireAfter", async () => {
+    const branch = "my-branch";
+    const expireAfter = new Date("2026-09-20T12:00:00.000Z");
+    const newScenarioRid = "ri.actions..scenario.new";
+
+    client = createClient(
+      "https://mock.com",
+      ontologyRid,
+      () => "Token",
+      { UNSTABLE_DO_NOT_USE_BRANCH: branch },
+      fetchFunction,
+    );
+
+    const createResponse: CreateOntologyScenarioResponse = {
+      scenarioRid: newScenarioRid,
+    };
+    mockFetchResponse(fetchFunction, createResponse);
+
+    await createScenario(client, { expireAfter });
+
+    expect(fetchFunction).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(fetchFunction.mock.calls[0][1]?.body as string)).toEqual({
+      base: {
+        type: "branch",
+        branch,
+      },
+      expireAfter: expireAfter.toISOString(),
+    });
+  });
+
   it("warns and ignores an active transaction, scoping to the new scenario", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     const txClient = createClientWithTransaction(

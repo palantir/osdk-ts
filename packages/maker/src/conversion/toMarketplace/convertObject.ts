@@ -208,7 +208,9 @@ export function extractPropertyDatasource(
           clearOnDeleteProperties: [],
           mediaSetViewLocator: identifier,
           properties: [property.apiName],
-          uploadProperties: [],
+          uploadProperties: property.includeEmptyBackingMediaSet
+            ? [property.apiName]
+            : [],
         },
       };
       return [buildDatasource(property.apiName, mediaSetDefinition)];

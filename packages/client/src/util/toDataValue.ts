@@ -94,7 +94,6 @@ export async function toDataValue(
   if (isMediaUpload(value)) {
     const mediaRef = await MediaSets.uploadMedia(client, value.data, {
       filename: value.fileName,
-      preview: true,
     });
     return await toDataValue(mediaRef, client, actionMetadata);
   }

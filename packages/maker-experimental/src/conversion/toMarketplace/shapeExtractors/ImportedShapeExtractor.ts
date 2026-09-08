@@ -356,16 +356,20 @@ function extractImportedInterfaceTypes(
     );
 
     const propertiesV2: string[] = [];
-    for (const [propertyRid] of Object.entries(
+    for (const [propertyRid, property] of Object.entries(
       interfaceType.propertiesV3 ?? {},
     )) {
+      if (property.type !== "interfaceDefinedPropertyType") continue;
       const propReadableId = ridGenerator
         .getInterfacePropertyTypeRids()
         .inverse()
         .get(propertyRid);
-      if (propReadableId) {
-        propertiesV2.push(ridGenerator.toBlockInternalId(propReadableId));
+      if (!propReadableId) {
+        throw new Error(
+          `Missing readable ID for interface-defined property RID ${propertyRid} on interface ${interfaceType.apiName}`,
+        );
       }
+      propertiesV2.push(ridGenerator.toBlockInternalId(propReadableId));
     }
 
     // Build links list
@@ -432,12 +436,12 @@ function extractImportedInterfaceTypes(
       });
     }
 
-    // Generate interface-defined property type input shapes
+    // Generate interface-defined property type input shapes. SPT-backed
+    // properties are represented by their shared property type input shapes.
     for (const [propertyRid, property] of Object.entries(
       interfaceType.propertiesV3 ?? {},
     )) {
       if (property.type !== "interfaceDefinedPropertyType") continue;
-
       const propReadableId = ridGenerator
         .getInterfacePropertyTypeRids()
         .inverse()
@@ -447,7 +451,6 @@ function extractImportedInterfaceTypes(
           `Missing readable ID for interface-defined property RID ${propertyRid} on interface ${interfaceType.apiName}`,
         );
       }
-
       const propInputShape: InterfacePropertyTypeInputShape = {
         about: createLocalizedAbout(
           property.interfaceDefinedPropertyType.displayMetadata.displayName,

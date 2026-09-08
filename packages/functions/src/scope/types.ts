@@ -79,6 +79,11 @@ export interface ScopeReadWriteAuthorization extends ScopeReadAuthorization {
  */
 export namespace ScopeAuthorization {
   /**
+   * Sentinel value: the generated function inherits authorization from its caller.
+   */
+  export const inherit: unique symbol = Symbol("ScopeAuthorization.inherit");
+
+  /**
    * Sentinel value: discovery uses `defaultAuthorization.read` declared in functions.json.
    */
   export const defaultRead: unique symbol = Symbol(
@@ -95,5 +100,6 @@ export interface Scope {
   authorization:
     | ScopeReadAuthorization
     | ScopeReadWriteAuthorization
+    | typeof ScopeAuthorization.inherit
     | typeof ScopeAuthorization.defaultRead;
 }

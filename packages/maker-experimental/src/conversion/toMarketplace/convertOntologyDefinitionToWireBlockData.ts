@@ -36,6 +36,7 @@ import type {
 import type { EntityPermission, OntologyDefinition } from "@osdk/maker";
 import {
   cleanAndValidateLinkTypeId,
+  isInterfaceSharedPropertyType,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
 
@@ -170,16 +171,20 @@ export function convertOntologyDefinitionToWireBlockData(
       ),
   );
 
+  const interfacePropertyMappings = {
+    ...getImportedInterfacePropertyMappings(
+      ontologiesToScan.filter((candidate) => candidate !== ontology),
+      ridGenerator,
+    ),
+    ...getInterfacePropertyMappings(interfaceTypes, ridGenerator),
+  };
+
   // Build knownIdentifiers from ridGenerator's BiMaps
   const knownIdentifiers = buildKnownIdentifiers(
     ontology,
     ridGenerator,
     ontologiesToScan,
-  );
-  // Override interfacePropertyTypes with correct mapping derived from converted interfaces,
-  knownIdentifiers.interfacePropertyTypes = getInterfacePropertyMappings(
-    interfaceTypes,
-    ridGenerator,
+    interfacePropertyMappings,
   );
 
   return {
@@ -291,6 +296,7 @@ function buildKnownIdentifiers(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGenerator,
   ontologiesToScan: OntologyDefinition[],
+  interfacePropertyMappings: Record<string, string>,
 ): KnownMarketplaceIdentifiers {
   // Interface types: InterfaceTypeRid -> BlockInternalId
   const interfaceMappings = Object.fromEntries(
@@ -338,12 +344,13 @@ function buildKnownIdentifiers(
 
   // Datasources: BlockInternalId -> DatasourceLocator
   const backingDatasourceMappings = Object.fromEntries(
-    Array.from(ridGenerator.getDatasourceLocators().entries()).map(
-      ([readableId, locator]) => [
-        ridGenerator.toBlockInternalId(readableId),
-        locator,
-      ],
-    ),
+    [
+      ...ridGenerator.getDatasourceLocators().entries(),
+      ...ridGenerator.getDirectDatasourceLocators().entries(),
+    ].map(([readableId, locator]) => [
+      ridGenerator.toBlockInternalId(readableId),
+      locator,
+    ]),
   );
 
   // Files datasources: BlockInternalId -> FilesDatasourceLocator
@@ -383,22 +390,50 @@ function buildKnownIdentifiers(
   // Property type IDs: ObjectTypeId -> (PropertyTypeId -> BlockInternalId)
   // Scan all ontologies so imported object properties are included.
   const propertyTypeIds: Record<string, Record<string, string>> = {};
+  const objectPropertyTypeIdsToRids: Record<
+    string,
+    Record<string, string>
+  > = {};
+  const structFieldRidsToApiNames: Record<string, Record<string, string>> = {};
   ontologiesToScan.forEach((ont) => {
     Object.entries(ont[OntologyEntityTypeEnum.OBJECT_TYPE]).forEach(
       ([objectTypeApiName, objectType]) => {
         const propMap: Record<string, string> = {};
+        const propertyTypeIdsToRids: Record<string, string> = {};
         (objectType.properties ?? []).forEach((property) => {
+          const propertyTypeRid = ridGenerator.generatePropertyRid(
+            property.apiName,
+            objectTypeApiName,
+          );
           propMap[property.apiName] = ridGenerator.toBlockInternalId(
             ReadableIdGenerator.getForObjectProperty(
               objectTypeApiName,
               property.apiName,
             ),
           );
+          propertyTypeIdsToRids[property.apiName] = propertyTypeRid;
+          if (
+            typeof property.type === "object" &&
+            property.type.type === "struct"
+          ) {
+            structFieldRidsToApiNames[propertyTypeRid] = Object.fromEntries(
+              Object.keys(property.type.structDefinition).map(
+                (structFieldApiName) => [
+                  ridGenerator.generateStructFieldRid(
+                    property.apiName,
+                    structFieldApiName,
+                  ),
+                  structFieldApiName,
+                ],
+              ),
+            );
+          }
         });
         const objTypeId = ridGenerator
           .getObjectTypeIds()
           .get(ReadableIdGenerator.getForObjectType(objectTypeApiName))!;
         propertyTypeIds[objTypeId] = propMap;
+        objectPropertyTypeIdsToRids[objTypeId] = propertyTypeIdsToRids;
       },
     );
   });
@@ -412,12 +447,13 @@ function buildKnownIdentifiers(
 
   // Datasource columns: BlockInternalId -> ResolvedDatasourceColumnShape
   const datasourceColumns = Object.fromEntries(
-    Array.from(ridGenerator.getColumnShapes().entries()).map(
-      ([readableId, shape]) => [
-        ridGenerator.toBlockInternalId(readableId),
-        shape,
-      ],
-    ),
+    [
+      ...ridGenerator.getColumnShapes().entries(),
+      ...ridGenerator.getDirectDatasourceColumnShapes().entries(),
+    ].map(([readableId, shape]) => [
+      ridGenerator.toBlockInternalId(readableId),
+      shape,
+    ]),
   );
 
   // Time series syncs: TimeSeriesSyncRid -> BlockInternalId
@@ -589,13 +625,14 @@ function buildKnownIdentifiers(
     interfaceActionTypeConstraints: interfaceActionTypeConstraintMappings,
     interfaceLinkTypes: interfaceLinkMappings,
     interfaceParameterConstraints: interfaceParameterConstraintMappings,
-    interfacePropertyTypes: {},
+    interfacePropertyTypes: interfacePropertyMappings,
     interfaceTypes: interfaceMappings,
     linkTypeIds,
     linkTypes: linkTypeRids,
     markings: markingsMappings,
     objectTypeIds,
     objectTypes: objectTypeRids,
+    objectPropertyTypeIdsToRids,
     propertyTypeIds,
     propertyTypes: propertyRids,
     sharedPropertyTypes: sharedPropertyMappings,
@@ -603,6 +640,7 @@ function buildKnownIdentifiers(
       MIGRATION_SHAPE_READABLE_ID,
     ),
     shapeIdForInstallPrefix: null,
+    structFieldRidsToApiNames,
     timeSeriesSyncs,
     valueTypes: valueTypeMappings,
     webhooks: {},
@@ -639,6 +677,39 @@ function getInterfacePropertyMappings(
             );
       }
       mappings[iptRid] = ridGenerator.toBlockInternalId(readableId);
+    }
+  }
+  return mappings;
+}
+
+/**
+ * Port of Java's OntologyAsCodeBlockGenerator.getImportedInterfacePropertyMappings().
+ */
+function getImportedInterfacePropertyMappings(
+  importedOntologies: OntologyDefinition[],
+  ridGenerator: OntologyRidGenerator,
+): Record<string, string> {
+  const mappings: Record<string, string> = {};
+  for (const ontology of importedOntologies) {
+    for (const [interfaceApiName, interfaceType] of Object.entries(
+      ontology[OntologyEntityTypeEnum.INTERFACE_TYPE],
+    )) {
+      for (const [propertyApiName, property] of Object.entries(
+        interfaceType.propertiesV3,
+      )) {
+        if (isInterfaceSharedPropertyType(property)) continue;
+        const readableId = ReadableIdGenerator.getForInterfaceProperty(
+          interfaceApiName,
+          propertyApiName,
+        );
+        const interfacePropertyTypeRid =
+          ridGenerator.generateInterfacePropertyTypeRid(
+            propertyApiName,
+            interfaceApiName,
+          );
+        mappings[interfacePropertyTypeRid] =
+          ridGenerator.toBlockInternalId(readableId);
+      }
     }
   }
   return mappings;

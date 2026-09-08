@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { MultiColumnSortDialogProps } from "@osdk/react-components/experimental/object-table";
-import { MultiColumnSortDialog } from "@osdk/react-components/experimental/object-table";
+import type { MultiColumnSortDialogProps } from "@osdk/react-components/object-table";
+import { MultiColumnSortDialog } from "@osdk/react-components/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
@@ -92,7 +92,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { MultiColumnSortDialog } from "@osdk/react-components/experimental/object-table";
+        code: `import { MultiColumnSortDialog } from "@osdk/react-components/object-table";
 
 const [isOpen, setIsOpen] = useState(false);
 

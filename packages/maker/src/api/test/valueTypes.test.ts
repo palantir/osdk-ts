@@ -81,6 +81,10 @@ describe("Value Types", () => {
           type: "string",
           displayName: "Constrained String",
           valueType: testStringValueType,
+          nullability: {
+            noNulls: true,
+            noEmptyCollections: false,
+          },
         },
       },
     });
@@ -127,6 +131,52 @@ describe("Value Types", () => {
     expect(constraintWrapper?.failureMessage?.message).toBe(
       "String must be between 5 and 20 characters",
     );
+    expect(objectPropertyType.dataConstraints?.nullabilityV2).toEqual({
+      noNulls: true,
+      noEmptyCollections: false,
+    });
+  });
+
+  it("Preserves nullability for properties with unconstrained value types", () => {
+    const valueType = defineValueType({
+      apiName: "classification",
+      displayName: "Classification",
+      type: { type: "string" },
+      version: "1.0.0",
+    });
+
+    defineObject({
+      titlePropertyApiName: "id",
+      displayName: "Classified Object",
+      pluralDisplayName: "Classified Objects",
+      apiName: "classifiedObject",
+      primaryKeyPropertyApiName: "id",
+      properties: {
+        id: { type: "string" },
+        classification: {
+          type: "string",
+          valueType,
+          nullability: {
+            noNulls: true,
+            noEmptyCollections: true,
+          },
+        },
+      },
+    });
+
+    const property =
+      dumpOntologyFullMetadata().ontology.objectTypes[
+        "com.palantir.classifiedObject"
+      ].objectType.propertyTypes.classification;
+
+    expect(property.dataConstraints).toEqual({
+      propertyTypeConstraints: [],
+      nullability: undefined,
+      nullabilityV2: {
+        noNulls: true,
+        noEmptyCollections: true,
+      },
+    });
   });
 
   it("Correctly serializes a value type", () => {

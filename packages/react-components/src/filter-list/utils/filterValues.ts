@@ -67,8 +67,6 @@ export function supportsExcluding(state: FilterState | undefined): boolean {
     case "EXACT_MATCH":
     case "CONTAINS_TEXT":
     case "TIMELINE":
-    // hasLink supports excluding via the overflow dropdown: "Keeping" filters
-    // to objects that have the link, "Excluding" to those that do not.
     case "hasLink":
       return true;
     case "NUMBER_RANGE":
@@ -301,7 +299,7 @@ export function filterHasActiveState(state: FilterState | undefined): boolean {
     case "TOGGLE":
       return state.enabled;
     case "hasLink":
-      return state.hasLink;
+      return state.hasLink === true;
     case "linkedProperty":
       return filterHasActiveState(state.linkedFilterState);
     case "keywordSearch":

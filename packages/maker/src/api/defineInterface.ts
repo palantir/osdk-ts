@@ -17,7 +17,12 @@
 import type { InterfaceTypeStatus } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 
-import { API_NAME_PATTERN, isValidApiName } from "../util/ApiNameValidator.js";
+import {
+  API_NAME_PATTERN,
+  isValidApiName,
+  isValidNamespacedApiName,
+  NAMESPACED_API_NAME_PATTERN,
+} from "../util/ApiNameValidator.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import type { BlueprintIcon } from "./common/BlueprintIcons.js";
 import type { EntityPermission } from "./common/EntityPermission.js";
@@ -75,8 +80,8 @@ export function defineInterface(
   );
 
   invariant(
-    isValidApiName(interfaceDef.apiName),
-    `Invalid API name ${interfaceDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
+    isValidNamespacedApiName(interfaceDef.apiName),
+    `Invalid API name ${interfaceDef.apiName}. API names must match the regex ${NAMESPACED_API_NAME_PATTERN}.`,
   );
 
   // legacy support for propertiesV2 (only SPTs)

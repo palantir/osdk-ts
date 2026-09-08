@@ -21,7 +21,7 @@ import type { ObjectIdentifiers } from "../OsdkBase.js";
 export type LinkTypeApiNamesFor<Q extends ObjectOrInterfaceDefinition> =
   Extract<keyof CompileTimeMetadata<Q>["links"], string>;
 
-type LinkedObjectType<
+export type LinkedObjectType<
   Q extends ObjectOrInterfaceDefinition,
   LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
 > = NonNullable<

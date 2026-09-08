@@ -22,6 +22,8 @@ import {
   convertValidationRule,
   createDefaultParameterOrdering,
   createParameters,
+  createPropertyParameterValues,
+  createStructFieldValues,
   defineAction,
   isPropertyParameter,
   kebab,
@@ -34,6 +36,7 @@ import {
   getPropertyKeys,
   toPropertyMap,
 } from "./object/objectPropertyHelpers.js";
+import { isStruct } from "./properties/PropertyTypeType.js";
 
 export function defineModifyObjectAction(
   defInput: ActionTypeUserDefinition,
@@ -73,7 +76,8 @@ export function defineModifyObjectAction(
   );
   parameters.forEach((p) => {
     // create prefilled parameters for object type properties unless overridden
-    if (getProperty(def.objectType, p.id) && p.defaultValue === undefined) {
+    const property = getProperty(def.objectType, p.id);
+    if (property && !isStruct(property.type) && p.defaultValue === undefined) {
       p.defaultValue = {
         type: "objectParameterPropertyValue",
         objectParameterPropertyValue: {
@@ -94,6 +98,7 @@ export function defineModifyObjectAction(
   return defineAction({
     apiName: actionApiName,
     displayName: def.displayName ?? `Modify ${def.objectType.displayName}`,
+    description: def.description,
     parameters,
     status: def.status ?? "active",
     rules: [
@@ -102,15 +107,10 @@ export function defineModifyObjectAction(
         modifyObjectRule: {
           objectToModify: MODIFY_OBJECT_PARAMETER,
           propertyValues: {
-            ...Object.fromEntries(
-              propertyParameters.map((p) => [
-                p,
-                { type: "parameterId", parameterId: p },
-              ]),
-            ),
+            ...createPropertyParameterValues(def, propertyParameters),
             ...mappings,
           },
-          structFieldValues: {},
+          structFieldValues: createStructFieldValues(def, parameters),
         },
       },
     ],

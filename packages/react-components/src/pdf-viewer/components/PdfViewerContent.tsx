@@ -24,10 +24,14 @@ import { EMPTY_ANNOTATION_ARRAY } from "../constants.js";
 import { usePdfAnnotationsByPage } from "../hooks/usePdfAnnotationsByPage.js";
 import { usePdfFormFields } from "../hooks/usePdfFormFields.js";
 import { usePdfViewerCore } from "../hooks/usePdfViewerCore.js";
-import type { PdfAnnotation, PdfFormFieldValue, PdfSource } from "../types.js";
+import type {
+  PdfAnnotation,
+  PdfFormFieldValue,
+  PdfSource,
+} from "../PdfViewerApi.js";
 import { PdfAnnotationOverlay } from "./PdfAnnotationOverlay.js";
 
-import styles from "../PdfViewer.module.css";
+import styles from "../BasePdfViewer.module.css";
 
 export interface PdfViewerContentProps {
   /** PDF source — URL string, ArrayBuffer, Uint8Array, or Blob */
@@ -37,8 +41,12 @@ export interface PdfViewerContentProps {
   /** Callback fired when an annotation is clicked */
   onAnnotationClick?: (annotation: PdfAnnotation) => void;
   /** Initial page number (1-indexed, default 1) */
+  defaultPage?: number;
+  /** @deprecated Rename to `defaultPage`. */
   initialPage?: number;
   /** Initial zoom scale (default 1.0) */
+  defaultScale?: number;
+  /** @deprecated Rename to `defaultScale`. */
   initialScale?: number;
   /** Callback fired when the current page changes during scrolling */
   onPageChange?: (page: number) => void;
@@ -56,15 +64,23 @@ export function PdfViewerContent({
   src,
   annotations = EMPTY_ANNOTATION_ARRAY,
   onAnnotationClick,
-  initialPage = 1,
-  initialScale = 1.0,
+  defaultPage,
+  initialPage,
+  defaultScale,
+  initialScale,
   onPageChange: onPageChangeProp,
   onScaleChange: onScaleChangeProp,
   formData,
   onFormChange,
   className,
 }: PdfViewerContentProps): React.ReactElement {
-  const viewer = usePdfViewerCore({ src, initialPage, initialScale });
+  const viewer = usePdfViewerCore({
+    src,
+    defaultPage,
+    initialPage,
+    defaultScale,
+    initialScale,
+  });
   const annotationsByPage = usePdfAnnotationsByPage(annotations);
 
   usePdfFormFields({

@@ -20,11 +20,11 @@ import {
   ActionForm,
   type ActionFormProps,
   type FormState,
-} from "@osdk/react-components/experimental";
-import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-import type { FilterDefinitionUnion } from "@osdk/react-components/experimental/filter-list";
-import { FilterList } from "@osdk/react-components/experimental/filter-list";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/action-form";
+import { DocumentViewer } from "@osdk/react-components/document-viewer";
+import type { FilterDefinitionUnion } from "@osdk/react-components/filter-list";
+import { FilterList } from "@osdk/react-components/filter-list";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { http, passthrough } from "msw";
 import React, { type CSSProperties, useCallback, useState } from "react";
@@ -93,7 +93,6 @@ const FILTER_DEFINITIONS: Array<FilterDefinitionUnion<Employee>> = [
     key: "department",
     label: "Department",
     filterComponent: "LISTOGRAM",
-    filterState: { type: "EXACT_MATCH", values: [] },
   },
   {
     type: "PROPERTY",
@@ -101,7 +100,6 @@ const FILTER_DEFINITIONS: Array<FilterDefinitionUnion<Employee>> = [
     key: "team",
     label: "Team",
     filterComponent: "LISTOGRAM",
-    filterState: { type: "EXACT_MATCH", values: [] },
   },
   {
     type: "PROPERTY",
@@ -109,7 +107,6 @@ const FILTER_DEFINITIONS: Array<FilterDefinitionUnion<Employee>> = [
     key: "fullName",
     label: "Full Name",
     filterComponent: "CONTAINS_TEXT",
-    filterState: { type: "CONTAINS_TEXT" },
   },
 ];
 
@@ -316,10 +313,8 @@ function DataTab(): React.ReactElement {
         <FilterList
           objectType={Employee}
           filterDefinitions={FILTER_DEFINITIONS}
-          filterClause={filterClause}
           onFilterClauseChanged={setFilterClause}
           title="Employee Filters"
-          collapsed={collapsed}
           onCollapsedChange={setCollapsed}
           showActiveFilterCount={true}
         />

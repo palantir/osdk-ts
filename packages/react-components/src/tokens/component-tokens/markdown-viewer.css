@@ -1,0 +1,29 @@
+:root {
+  /* Markdown Viewer - Container */
+  --osdk-markdown-viewer-bg: var(--osdk-background-primary);
+  --osdk-markdown-viewer-border: var(--osdk-surface-border);
+  --osdk-markdown-viewer-padding: calc(var(--osdk-surface-spacing) * 3);
+  --osdk-markdown-viewer-line-height: 1.6;
+
+  /* Markdown Viewer - Headings */
+  --osdk-markdown-viewer-heading-margin-top: 1.5em;
+  --osdk-markdown-viewer-heading-margin-bottom: 0.5em;
+
+  /* Markdown Viewer - Paragraphs */
+  --osdk-markdown-viewer-paragraph-spacing: 1em;
+
+  /* Markdown Viewer - Code */
+  --osdk-markdown-viewer-code-bg: var(--osdk-background-secondary);
+  --osdk-markdown-viewer-code-inline-padding: 2px 6px;
+  --osdk-markdown-viewer-code-inline-border-radius: 3px;
+
+  /* Markdown Viewer - Blockquotes */
+  --osdk-markdown-viewer-blockquote-border: 3px solid
+    var(--osdk-intent-primary-rest);
+
+  /* Markdown Viewer - Links */
+  --osdk-markdown-viewer-link-color: var(--osdk-intent-primary-rest);
+
+  /* Markdown Viewer - Tables */
+  --osdk-markdown-viewer-table-border: var(--osdk-surface-border-color);
+}

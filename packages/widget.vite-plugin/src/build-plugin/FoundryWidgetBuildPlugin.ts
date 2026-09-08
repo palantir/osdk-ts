@@ -87,6 +87,7 @@ export function FoundryWidgetBuildPlugin(
         );
         const widgetSetInputSpec = await getWidgetSetInputSpec(
           path.resolve(process.cwd(), "package.json"),
+          path.resolve(process.cwd(), "resources.json"),
         );
         const widgetSetManifest = buildWidgetSetManifest(
           foundryConfig.foundryConfig.widgetSet.rid,

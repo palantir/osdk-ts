@@ -1,0 +1,28 @@
+.container {
+    background-color: var(--bp-palette-white);
+    padding: 20px;
+    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+    .container {
+        background-color: var(--bp-palette-dark-gray-3);
+    }
+}
+
+.container .header {
+    margin: 0;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 150px;
+}

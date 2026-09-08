@@ -84,6 +84,11 @@ export function defineObject(
       isValidApiName(apiName),
       `Invalid API name ${apiName} for property on object ${objectDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
     );
+    invariant(
+      objectDef.properties?.[apiName]?.includeEmptyBackingMediaSet !== true ||
+        objectDef.properties[apiName].type === "mediaReference",
+      `Property ${apiName} on object ${objectDef.apiName} can only use includeEmptyBackingMediaSet when its type is mediaReference`,
+    );
   });
   invariant(
     propertyApiNames.includes(objectDef.titlePropertyApiName),

@@ -21,6 +21,9 @@ import type {
   ObjectTypeDefinition,
   Osdk,
   OsdkObjectCreatePropertyType,
+  OsdkObjectCreateWirePropertyType,
+  OsdkObjectUpdatePropertyType,
+  OsdkObjectUpdateWirePropertyType,
   PropertyKeys,
 } from "@osdk/client";
 
@@ -92,14 +95,83 @@ type PartialForOptionalProperties<T> = {
   [K in keyof T as undefined extends T[K] ? never : K]-?: T[K];
 };
 
-export interface CreateObject<S extends ObjectTypeDefinition> {
-  type: "createObject";
-  obj: S;
-  properties: PartialForOptionalProperties<{
+// Property maps come in two flavors:
+//  - *InputProps  — the friendly type callers pass to `create`/`update`
+//  - *WireProps   — the backend-ready type stored on an edit and returned by
+//                   `getEdits()`
+// The `EditBatch` helper types consume the input variants; the edit
+// interfaces below store the wire variants.
+
+/** Friendly properties accepted by `create` for an object type. */
+export type CreateObjectInputProps<S extends ObjectTypeDefinition> =
+  PartialForOptionalProperties<{
     [P in PropertyKeys<S>]: OsdkObjectCreatePropertyType<
       CompileTimeMetadata<S>["properties"][P]
     >;
   }>;
+
+/** Backend wire properties stored/emitted by a `createObject` edit. */
+export type CreateObjectWireProps<S extends ObjectTypeDefinition> =
+  PartialForOptionalProperties<{
+    [P in PropertyKeys<S>]: OsdkObjectCreateWirePropertyType<
+      CompileTimeMetadata<S>["properties"][P]
+    >;
+  }>;
+
+/** Friendly properties accepted by `create` for an interface. */
+export type CreateInterfaceInputProps<S extends InterfaceDefinition> =
+  PartialForOptionalProperties<
+    {
+      [P in PropertyKeys<S>]: OsdkObjectCreatePropertyType<
+        CompileTimeMetadata<S>["properties"][P]
+      >;
+    } & { $objectType: string }
+  >;
+
+/** Backend wire properties stored/emitted by a `createObjectForInterface` edit. */
+export type CreateInterfaceWireProps<S extends InterfaceDefinition> =
+  PartialForOptionalProperties<
+    {
+      [P in PropertyKeys<S>]: OsdkObjectCreateWirePropertyType<
+        CompileTimeMetadata<S>["properties"][P]
+      >;
+    } & { $objectType: string }
+  >;
+
+/** Friendly properties accepted by `update` for an object type. */
+export type UpdateObjectInputProps<S extends ObjectTypeDefinition> = Partial<{
+  [P in Exclude<
+    PropertyKeys<S>,
+    CompileTimeMetadata<S>["primaryKeyApiName"]
+  >]: OsdkObjectUpdatePropertyType<CompileTimeMetadata<S>["properties"][P]>;
+}>;
+
+/** Backend wire properties stored/emitted by an `updateObject` edit. */
+export type UpdateObjectWireProps<S extends ObjectTypeDefinition> = Partial<{
+  [P in Exclude<
+    PropertyKeys<S>,
+    CompileTimeMetadata<S>["primaryKeyApiName"]
+  >]: OsdkObjectUpdateWirePropertyType<CompileTimeMetadata<S>["properties"][P]>;
+}>;
+
+/** Friendly properties accepted by `update` for an interface. */
+export type UpdateInterfaceInputProps<S extends InterfaceDefinition> = Partial<{
+  [P in PropertyKeys<S>]: OsdkObjectUpdatePropertyType<
+    CompileTimeMetadata<S>["properties"][P]
+  >;
+}>;
+
+/** Backend wire properties stored/emitted by an `updateObjectForInterface` edit. */
+export type UpdateInterfaceWireProps<S extends InterfaceDefinition> = Partial<{
+  [P in PropertyKeys<S>]: OsdkObjectUpdateWirePropertyType<
+    CompileTimeMetadata<S>["properties"][P]
+  >;
+}>;
+
+export interface CreateObject<S extends ObjectTypeDefinition> {
+  type: "createObject";
+  obj: S;
+  properties: CreateObjectWireProps<S>;
 }
 
 export interface DeleteObject<S extends ObjectTypeDefinition> {
@@ -115,36 +187,19 @@ export interface DeleteObjectForInterface<S extends InterfaceDefinition> {
 export interface UpdateObject<S extends ObjectTypeDefinition> {
   type: "updateObject";
   obj: ObjectLocator<S>;
-  properties: Partial<{
-    [P in Exclude<
-      PropertyKeys<S>,
-      CompileTimeMetadata<S>["primaryKeyApiName"]
-    >]: OsdkObjectCreatePropertyType<CompileTimeMetadata<S>["properties"][P]>;
-  }>;
+  properties: UpdateObjectWireProps<S>;
 }
 
 export interface CreateObjectForInterface<S extends InterfaceDefinition> {
   type: "createObjectForInterface";
   int: S;
-  properties: PartialForOptionalProperties<
-    {
-      [P in PropertyKeys<S>]: OsdkObjectCreatePropertyType<
-        CompileTimeMetadata<S>["properties"][P]
-      >;
-    } & {
-      $objectType: string;
-    }
-  >;
+  properties: CreateInterfaceWireProps<S>;
 }
 
 export interface UpdateObjectForInterface<S extends InterfaceDefinition> {
   type: "updateObjectForInterface";
   obj: InterfaceLocator<S>;
-  properties: Partial<{
-    [P in PropertyKeys<S>]: OsdkObjectCreatePropertyType<
-      CompileTimeMetadata<S>["properties"][P]
-    >;
-  }>;
+  properties: UpdateInterfaceWireProps<S>;
 }
 
 export type AnyEdit =

@@ -18,8 +18,8 @@ import type { ObjectSet, WhereClause } from "@osdk/api";
 import type {
   FilterDefinitionUnion,
   FilterState,
-} from "@osdk/react-components/experimental/filter-list";
-import { FilterList } from "@osdk/react-components/experimental/filter-list";
+} from "@osdk/react-components/filter-list";
+import { FilterList } from "@osdk/react-components/filter-list";
 import React from "react";
 
 import { Assignment } from "../../generatedNoCheck2/index.js";
@@ -28,7 +28,6 @@ import type { IdentifiedFilterDef } from "../../types/filters.js";
 interface AssignmentsFiltersProps {
   objectSet: ObjectSet<Assignment>;
   filterDefinitions: Array<IdentifiedFilterDef<Assignment>>;
-  filterClause: WhereClause<Assignment> | undefined;
   onFilterClauseChanged: (clause: WhereClause<Assignment>) => void;
   onFilterStateChanged?: (
     definition: FilterDefinitionUnion<Assignment>,
@@ -45,14 +44,13 @@ interface AssignmentsFiltersProps {
 }
 
 /**
- * Assignments FilterList wrapper: controlled property filter clause, per-filter state + visibility
+ * Assignments FilterList wrapper: emitted property filter clause, per-filter state + visibility
  * callbacks, reset button, active filter count, drag-to-sort, and uncontrolled add-filter mode.
  */
 export const AssignmentsFilters = React.memo<AssignmentsFiltersProps>(
   function AssignmentsFiltersFn({
     objectSet,
     filterDefinitions,
-    filterClause,
     onFilterClauseChanged,
     onFilterStateChanged,
     onFilterVisibilityChange,
@@ -68,7 +66,6 @@ export const AssignmentsFilters = React.memo<AssignmentsFiltersProps>(
         objectType={Assignment}
         objectSet={objectSet}
         filterDefinitions={filterDefinitions}
-        filterClause={filterClause}
         onFilterClauseChanged={onFilterClauseChanged}
         onFilterStateChanged={onFilterStateChanged}
         onFilterVisibilityChange={onFilterVisibilityChange}

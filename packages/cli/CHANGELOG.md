@@ -1,5 +1,86 @@
 # @osdk/cli
 
+## 0.91.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.64.0
+
+## 0.90.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.63.0
+
+## 0.89.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.62.0
+
+## 0.88.0
+
+### Minor Changes
+
+- dc46b5d: Add branch-aware local development and update CLI branch detection.
+
+### Patch Changes
+
+- @osdk/widget.api@3.61.0
+
+## 0.87.0
+
+### Minor Changes
+
+- d592d46: Move @arethetypeswrong/cli to devDependencies so installing the CLI no longer pulls in a check-only tool
+
+### Patch Changes
+
+- @osdk/widget.api@3.60.0
+
+## 0.86.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.59.0
+
+## 0.85.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.58.0
+
+## 0.84.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.57.0
+
+## 0.83.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.56.0
+
+## 0.82.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.55.0
+
+## 0.81.0
+
+### Patch Changes
+
+- Updated dependencies [47c66c3]
+  - @osdk/widget.api@3.54.0
+
+## 0.80.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.53.0
+
 ## 0.79.0
 
 ### Patch Changes

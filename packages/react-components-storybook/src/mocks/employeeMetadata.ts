@@ -654,6 +654,7 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
         },
       },
       links: {},
+      actionTypes: {},
     },
     Worker: {
       apiName: "Worker",
@@ -678,6 +679,7 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
         },
       },
       links: {},
+      actionTypes: {},
     },
   },
   sharedPropertyTypeMapping: {

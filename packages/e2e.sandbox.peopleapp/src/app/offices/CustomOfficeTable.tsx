@@ -5,7 +5,7 @@ import {
   useRowSelection,
   useSelectionColumn,
   useTableSorting,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 import {
   type ColumnDef,
   flexRender,
@@ -20,7 +20,7 @@ type OfficeRow = Osdk.Instance<
   Office,
   "$allBaseProperties",
   PropertyKeys<Office>,
-  Record<string, never>
+  {}
 >;
 
 const EMPTY_ROWS: OfficeRow[] = [];
@@ -33,7 +33,7 @@ interface CustomOfficeTableProps {
 /*
  * Example of a fully custom (headless) table built from the ObjectTable
  * building-block hooks exported by
- * `@osdk/react-components/experimental/object-table`.
+ * `@osdk/react-components/object-table`.
  */
 export function CustomOfficeTable({
   onOfficeClick,

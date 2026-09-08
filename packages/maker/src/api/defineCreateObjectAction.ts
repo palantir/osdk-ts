@@ -22,6 +22,8 @@ import {
   convertValidationRule,
   createDefaultParameterOrdering,
   createParameters,
+  createPropertyParameterValues,
+  createStructFieldValues,
   defineAction,
   isPropertyParameter,
   kebab,
@@ -33,7 +35,6 @@ import {
   getPropertyKeys,
   toPropertyMap,
 } from "./object/objectPropertyHelpers.js";
-import { isStruct } from "./properties/PropertyTypeType.js";
 
 export function defineCreateObjectAction(
   defInput: ActionTypeUserDefinition,
@@ -48,7 +49,6 @@ export function defineCreateObjectAction(
   const propertyParameters = propertyKeys.filter(
     (id) =>
       isPropertyParameter(def, id, getProperty(def.objectType, id)?.type!) &&
-      !isStruct(getProperty(def.objectType, id)?.type!) &&
       !propertiesWithDerivedDatasources.includes(id),
   );
   const parameterNames = new Set(propertyParameters);
@@ -82,6 +82,7 @@ export function defineCreateObjectAction(
   return defineAction({
     apiName: actionApiName,
     displayName: def.displayName ?? `Create ${def.objectType.displayName}`,
+    description: def.description,
     parameters,
     status: def.status ?? "active",
     entities: {
@@ -96,15 +97,10 @@ export function defineCreateObjectAction(
         addObjectRule: {
           objectTypeId: def.objectType.apiName,
           propertyValues: {
-            ...Object.fromEntries(
-              propertyParameters.map((p) => [
-                p,
-                { type: "parameterId", parameterId: p },
-              ]),
-            ),
+            ...createPropertyParameterValues(def, propertyParameters),
             ...mappings,
           },
-          structFieldValues: {},
+          structFieldValues: createStructFieldValues(def, parameters),
         },
       },
     ],

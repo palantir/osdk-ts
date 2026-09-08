@@ -116,8 +116,8 @@ export interface Client extends SharedClient, OldSharedClient {
    * @param experiment - The experiment marker that gates an unstable feature.
    * @example
    * ```ts
-   * const ref = await client(__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference)
-   *   .createMediaReference({ data: blob, fileName: "media.mp4", objectType: Employee, propertyType: "photo" });
+   * const employee = await client(__EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid)
+   *   .fetchOneByRid(Employee, "ri.phonograph2-objects.main.object.1234");
    * ```
    * @returns the experiment-specific function surface.
    */
@@ -125,6 +125,7 @@ export interface Client extends SharedClient, OldSharedClient {
     Q extends
       | Experiment<"2.0.8">
       | Experiment<"2.1.0">
+      | Experiment<"2.59.0">
       | Experiment<"2.2.0">
       | Experiment<"2.8.0">
       | Experiment<"2.19.0">,
@@ -173,7 +174,7 @@ export interface Client extends SharedClient, OldSharedClient {
 export const additionalContext: unique symbol = Symbol("additionalContext");
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
-const MaxOsdkVersion = "2.54.0";
+const MaxOsdkVersion = "2.65.0";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 export type MaxOsdkVersion = typeof MaxOsdkVersion;
 const ErrorMessage: unique symbol = Symbol("ErrorMessage");

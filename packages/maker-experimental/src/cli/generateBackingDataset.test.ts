@@ -168,6 +168,10 @@ describe("propertyTypeToSchemaType", () => {
     expect(propertyTypeToSchemaType({ type: "integer" })).toBe("INTEGER");
   });
 
+  it("maps vector types to arrays", () => {
+    expect(propertyTypeToSchemaType({ type: "vector" })).toBe("ARRAY");
+  });
+
   it("throws on unsupported property types", () => {
     expect(() => propertyTypeToSchemaType("unknownType")).toThrow(
       /Unsupported property type "unknownType".*empty backing datasource/u,
@@ -181,6 +185,14 @@ describe("propertyTypeToSchemaType", () => {
 const DECIMAL_PROPERTY_TYPE: Type = {
   type: "decimal",
   decimal: { precision: 10, scale: 2 },
+};
+
+const VECTOR_PROPERTY_TYPE: Type = {
+  type: "vector",
+  vector: {
+    dimension: 2,
+    supportsSearchWith: ["COSINE_SIMILARITY"],
+  },
 };
 
 function makeArrayType(subtype: Type): Type {
@@ -253,6 +265,13 @@ describe("typeToFieldSchema", () => {
       mapValueType: null,
       subSchemas: null,
     });
+  });
+
+  it("describes vectors as arrays of floats", () => {
+    const schema = typeToFieldSchema(VECTOR_PROPERTY_TYPE, "embedding");
+    expect(schema.type).toBe("ARRAY");
+    expect(schema.arraySubtype?.type).toBe("FLOAT");
+    expect(schema.arraySubtype?.name).toBeNull();
   });
 
   it("describes struct fields via named subSchemas", () => {

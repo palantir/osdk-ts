@@ -22,9 +22,9 @@ import React, { useMemo } from "react";
 
 import { EmailViewer } from "../email-viewer/EmailViewer.js";
 import { ImageViewer } from "../images/image-viewer/ImageViewer.js";
-import { TiffViewerMedia } from "../images/tiff-renderer/TiffViewerMedia.js";
-import { MarkdownViewerMedia } from "../markdown-renderer/MarkdownViewerMedia.js";
-import { PdfViewer } from "../pdf-viewer/PdfRenderer.js";
+import { TiffViewer } from "../images/tiff-viewer/TiffViewer.js";
+import { MarkdownViewer } from "../markdown-viewer/MarkdownViewer.js";
+import { PdfViewer } from "../pdf-viewer/PdfViewer.js";
 import { assertUnreachable } from "../shared/assertUnreachable.js";
 import { SpreadsheetViewer } from "../spreadsheet-viewer/SpreadsheetViewer.js";
 import { VideoViewer } from "../video-viewer/VideoViewer.js";
@@ -99,11 +99,8 @@ export function DocumentViewer({
   pdfViewerProps,
   imageViewerProps,
   videoViewerProps,
+  tiffViewerProps,
   tiffRendererProps,
-  markdownRendererProps,
-  spreadsheetViewerProps,
-  emailViewerProps,
-  xmlViewerProps,
   fileName,
   enableTiffToPdf = false,
 }: DocumentViewerProps): React.ReactElement {
@@ -113,6 +110,11 @@ export function DocumentViewer({
     [mimeType, fileName],
   );
   const rootClassName = classnames(styles.container, className);
+
+  // `tiffRendererProps` is the deprecated name for `tiffViewerProps`. Coalescing
+  // (rather than merging) keeps the alias behaving exactly like its replacement
+  // and avoids creating a new object identity on every render.
+  const resolvedTiffViewerProps = tiffViewerProps ?? tiffRendererProps;
 
   switch (viewerType) {
     case ViewerType.Pdf:
@@ -130,16 +132,16 @@ export function DocumentViewer({
             media={media}
             className={rootClassName}
             enableTiffToPdf={enableTiffToPdf}
-            tiffRendererProps={tiffRendererProps}
+            tiffViewerProps={resolvedTiffViewerProps}
             pdfViewerProps={pdfViewerProps}
           />
         );
       }
       return (
-        <TiffViewerMedia
+        <TiffViewer
           media={media}
           className={rootClassName}
-          {...tiffRendererProps}
+          {...resolvedTiffViewerProps}
         />
       );
     case ViewerType.Image:
@@ -159,37 +161,13 @@ export function DocumentViewer({
         />
       );
     case ViewerType.Markdown:
-      return (
-        <MarkdownViewerMedia
-          media={media}
-          className={rootClassName}
-          {...markdownRendererProps}
-        />
-      );
+      return <MarkdownViewer media={media} className={rootClassName} />;
     case ViewerType.Spreadsheet:
-      return (
-        <SpreadsheetViewer
-          media={media}
-          className={rootClassName}
-          {...spreadsheetViewerProps}
-        />
-      );
+      return <SpreadsheetViewer media={media} className={rootClassName} />;
     case ViewerType.Email:
-      return (
-        <EmailViewer
-          media={media}
-          className={rootClassName}
-          {...emailViewerProps}
-        />
-      );
+      return <EmailViewer media={media} className={rootClassName} />;
     case ViewerType.Xml:
-      return (
-        <XmlViewer
-          media={media}
-          className={rootClassName}
-          {...xmlViewerProps}
-        />
-      );
+      return <XmlViewer media={media} className={rootClassName} />;
     case ViewerType.Unsupported:
       return (
         <div className={rootClassName}>

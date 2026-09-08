@@ -46,18 +46,31 @@ import {
   threeDimensionalAggregationFunction,
   twoDimensionalAggregationFunction,
 } from "@osdk/client.test.ontology";
-import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
-import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
+import {
+  LegacyFauxFoundry,
+  msw,
+  type SetupServer,
+  startNodeApiServer,
+} from "@osdk/shared.test";
+import {
+  afterEach,
+  beforeAll,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+} from "vitest";
 
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("queries", () => {
   let client: Client;
+  let apiServer: SetupServer;
 
   beforeAll(() => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
-    ({ client } = testSetup);
+    ({ client, apiServer } = testSetup);
     return () => {
       testSetup.apiServer.close();
     };
@@ -602,20 +615,151 @@ describe("queries", () => {
   });
 
   describe("executeStreamingFunction", () => {
-    it("throws because streaming execution is not currently supported", async () => {
-      let caught: unknown;
+    const STREAMING_URL_BASE =
+      "https://stack.palantir.com/api/v2/functions/queries";
+
+    function sseResponse(events: unknown[]): Response {
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          for (const event of events) {
+            controller.enqueue(
+              encoder.encode(`data: ${JSON.stringify(event)}\n\n`),
+            );
+          }
+          controller.close();
+        },
+      });
+      return new Response(stream, {
+        headers: { "Content-Type": "text/event-stream" },
+      });
+    }
+
+    afterEach(() => {
+      apiServer.resetHandlers();
+    });
+
+    it("yields the value of a single-event non-streaming response", async () => {
+      apiServer.use(
+        msw.http.post(
+          `${STREAMING_URL_BASE}/${addOne.apiName}/streamingExecute`,
+          () => sseResponse([{ type: "data", value: 3 }]),
+        ),
+      );
+
+      const items: number[] = [];
+      for await (const item of client(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
+      ).executeStreamingFunction(addOne, { n: 2 })) {
+        items.push(item);
+      }
+      expect(items).toEqual([3]);
+    });
+
+    it("flattens batched array results across multiple events", async () => {
+      apiServer.use(
+        msw.http.post(
+          `${STREAMING_URL_BASE}/${queryTypeReturnsArrayOfObjects.apiName}/streamingExecute`,
+          () =>
+            sseResponse([
+              { type: "data", value: [50030, 50031] },
+              { type: "data", value: [50032] },
+            ]),
+        ),
+      );
+
+      const items: Array<OsdkBase<Employee>> = [];
+      for await (const item of client(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
+      ).executeStreamingFunction(queryTypeReturnsArrayOfObjects, {
+        people: ["Brad", "George", "Ryan"],
+      })) {
+        items.push(item);
+      }
+      expect(items).toEqual([
+        {
+          $apiName: "Employee",
+          $objectType: "Employee",
+          $primaryKey: 50030,
+          $objectSpecifier: "Employee:50030",
+          $title: undefined,
+        },
+        {
+          $apiName: "Employee",
+          $objectType: "Employee",
+          $primaryKey: 50031,
+          $objectSpecifier: "Employee:50031",
+          $title: undefined,
+        },
+        {
+          $apiName: "Employee",
+          $objectType: "Employee",
+          $primaryKey: 50032,
+          $objectSpecifier: "Employee:50032",
+          $title: undefined,
+        },
+      ]);
+    });
+
+    it("stops consuming when the caller breaks out of the loop", async () => {
+      apiServer.use(
+        msw.http.post(
+          `${STREAMING_URL_BASE}/${queryTypeReturnsArrayOfObjects.apiName}/streamingExecute`,
+          () =>
+            sseResponse([
+              { type: "data", value: [50030, 50031] },
+              { type: "data", value: [50032] },
+            ]),
+        ),
+      );
+
+      const items: Array<OsdkBase<Employee>> = [];
+      for await (const item of client(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
+      ).executeStreamingFunction(queryTypeReturnsArrayOfObjects, {
+        people: ["Brad", "George", "Ryan"],
+      })) {
+        items.push(item);
+        break;
+      }
+      expect(items).toHaveLength(1);
+      expect(items[0].$primaryKey).toBe(50030);
+    });
+
+    it("throws on error events, attaching error fields", async () => {
+      apiServer.use(
+        msw.http.post(
+          `${STREAMING_URL_BASE}/${addOne.apiName}/streamingExecute`,
+          () =>
+            sseResponse([
+              {
+                type: "error",
+                errorCode: "INVALID_ARGUMENT",
+                errorName: "QueryRuntimeError",
+                errorInstanceId: "abc-123",
+                errorDescription: "Division by zero",
+                parameters: {},
+              },
+            ]),
+        ),
+      );
+
+      let caught: any;
       try {
         for await (const _ of client(
           __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
         ).executeStreamingFunction(addOne, { n: 2 })) {
           // unreachable
         }
-        expect.fail("expected streaming execution to throw");
+        expect.fail("expected stream to throw");
       } catch (e) {
         caught = e;
       }
       expect(caught).toBeInstanceOf(Error);
-      expect((caught as Error).message).toContain("not currently supported");
+      expect((caught as Error).message).toContain("Division by zero");
+      expect(caught.errorName).toBe("QueryRuntimeError");
+      expect(caught.errorCode).toBe("INVALID_ARGUMENT");
+      expect(caught.errorInstanceId).toBe("abc-123");
     });
 
     it("yields elements of an array-returning query as the element type", () => {

@@ -20,7 +20,7 @@ import React from "react";
 
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseXmlViewer } from "./BaseXmlViewer.js";
-import type { XmlViewerMediaProps } from "./XmlViewerApi.js";
+import type { XmlViewerProps } from "./XmlViewerApi.js";
 
 import styles from "./BaseXmlViewer.module.css";
 
@@ -34,7 +34,7 @@ export function XmlViewer({
   media,
   className,
   ...xmlViewerProps
-}: XmlViewerMediaProps): React.ReactElement {
+}: XmlViewerProps): React.ReactElement {
   const {
     data: content,
     loading,

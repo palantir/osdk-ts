@@ -8,7 +8,7 @@ A React component for rendering spreadsheets (.xlsx) as styled HTML tables with 
 import {
   BaseSpreadsheetViewer,
   SpreadsheetViewer,
-} from "@osdk/react-components/experimental/spreadsheet-viewer";
+} from "@osdk/react-components/spreadsheet-viewer";
 ```
 
 - **`SpreadsheetViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, parses the spreadsheet, and renders it.
@@ -19,7 +19,7 @@ import {
 ### With OSDK Media
 
 ```tsx
-import { SpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
+import { SpreadsheetViewer } from "@osdk/react-components/spreadsheet-viewer";
 
 <SpreadsheetViewer media={report.spreadsheet} />;
 ```
@@ -27,10 +27,10 @@ import { SpreadsheetViewer } from "@osdk/react-components/experimental/spreadshe
 ### With parsed data
 
 ```tsx
-import { BaseSpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
+import { BaseSpreadsheetViewer } from "@osdk/react-components/spreadsheet-viewer";
 
 <BaseSpreadsheetViewer
-  spreadsheet={{
+  content={{
     sheets: [
       {
         name: "Sheet1",
@@ -51,10 +51,11 @@ import { BaseSpreadsheetViewer } from "@osdk/react-components/experimental/sprea
 
 | Prop          | Type                | Required | Description                           |
 | ------------- | ------------------- | -------- | ------------------------------------- |
-| `spreadsheet` | `ParsedSpreadsheet` | Yes      | Parsed spreadsheet data               |
+| `content`     | `ParsedSpreadsheet` | No       | The parsed spreadsheet to render      |
+| `spreadsheet` | `ParsedSpreadsheet` | No       | **Deprecated** — rename to `content`  |
 | `className`   | `string`            | No       | CSS class applied to the root element |
 
-### SpreadsheetViewerMediaProps
+### SpreadsheetViewerProps
 
 | Prop        | Type     | Required | Description                                         |
 | ----------- | -------- | -------- | --------------------------------------------------- |

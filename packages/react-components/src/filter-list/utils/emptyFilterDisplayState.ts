@@ -18,6 +18,7 @@ import type { ObjectTypeDefinition } from "@osdk/api";
 
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterComponentType, FilterState } from "../FilterListItemApi.js";
+import { getLinkedFilterComponent } from "./getLinkedFilterComponent.js";
 
 /**
  * Filter components whose state supports the overflow (…) controls
@@ -70,15 +71,16 @@ export function getEmptyDisplayState<Q extends ObjectTypeDefinition>(
     case "STATIC_VALUES":
       return emptyOverflowStateForComponent(definition.filterComponent);
     case "LINKED_PROPERTY": {
-      const inner = emptyOverflowStateForComponent(
-        definition.linkedFilterComponent,
-      );
+      const component = getLinkedFilterComponent(definition);
+      const inner =
+        component == null
+          ? undefined
+          : emptyOverflowStateForComponent(component);
       return inner == null
         ? undefined
         : { type: "linkedProperty", linkedFilterState: inner };
     }
     case "HAS_LINK":
-      // hasLink supports the include/exclude overflow dropdown.
       return { type: "hasLink", hasLink: false };
     case "KEYWORD_SEARCH":
     case "CUSTOM":

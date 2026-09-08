@@ -36,7 +36,10 @@ import {
 } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
 import type { BlockShapes, ReadableId } from "../util/generateRid.js";
-import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
+import {
+  OntologyRidGeneratorImpl,
+  ReadableIdGenerator,
+} from "../util/generateRid.js";
 
 export interface OntologyV2Result {
   ontologyIr: OntologyIrV2;
@@ -44,6 +47,7 @@ export interface OntologyV2Result {
   importedInputPresets: Map<ReadableId, InputPreset>;
   backingDatasourceApiNames: string[];
   backingDatasourceLinkApiNames: string[];
+  backingMediaSetNames: string[];
 }
 
 export interface FunctionsIr {
@@ -132,6 +136,29 @@ export async function defineOntologyV2(
     })
     .map(([apiName]) => apiName);
 
+  const backingMediaSetNames = Object.values(
+    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
+  ).flatMap((ontologyEntity) => {
+    const objectType = ontologyEntity as ObjectType;
+    return (objectType.properties ?? [])
+      .filter(
+        ({ includeEmptyBackingMediaSet }) =>
+          includeEmptyBackingMediaSet === true,
+      )
+      .map(({ apiName }) => `${objectType.apiName}.${apiName}`);
+  });
+
+  for (const mediaSetName of backingMediaSetNames) {
+    shapes.inputShapeMetadata.set(
+      ReadableIdGenerator.getForMediaSetView(mediaSetName),
+      {
+        isOptional: false,
+        isAccessedInReconcile: true,
+        reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+      },
+    );
+  }
+
   if (outputDir) {
     writeStaticObjects(outputDir);
   }
@@ -145,5 +172,6 @@ export async function defineOntologyV2(
     importedInputPresets: importedShapes.inputPresets,
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
+    backingMediaSetNames,
   };
 }

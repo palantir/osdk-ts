@@ -394,7 +394,10 @@ function filterCyclicReferences(
 
 export function cleanAndValidateLinkTypeId(apiName: string): string {
   // Insert a dash before any uppercase letter that follows a lowercase letter or digit
-  const step1 = apiName.replace(/([a-z0-9])([A-Z])/gu, "$1-$2");
+  // Replace underscores used by legacy link API names with dashes.
+  const step1 = apiName
+    .replace(/_/gu, "-")
+    .replace(/([a-z0-9])([A-Z])/gu, "$1-$2");
   // Insert a dash after a sequence of uppercase letters when followed by a lowercase letter
   // then convert the whole string to lowercase
   // e.g., apiName, APIname, and apiNAME will all be converted to api-name

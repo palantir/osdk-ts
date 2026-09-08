@@ -1,4 +1,4 @@
-import type { WhereClause } from "@osdk/api";
+import type { ObjectSet } from "@osdk/api";
 import type {
   ActionDefinition,
   ActionParam,
@@ -9,17 +9,21 @@ import type {
 import type {
   FormError,
   FormFieldDefinition,
-} from "@osdk/react-components/experimental/action-form";
-import { ActionForm } from "@osdk/react-components/experimental/action-form";
-import type { FilterDefinitionUnion } from "@osdk/react-components/experimental/filter-list";
-import { FilterList } from "@osdk/react-components/experimental/filter-list";
-import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/action-form";
+import { ActionForm } from "@osdk/react-components/action-form";
+import type {
+  FilterChangeEvent,
+  FilterDefinitionUnion,
+} from "@osdk/react-components/filter-list";
+import { FilterList } from "@osdk/react-components/filter-list";
+import type { ColumnDefinition } from "@osdk/react-components/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import React, { useCallback, useMemo, useState } from "react";
 
 import { Button } from "../../components/Button.js";
 import { $ } from "../../foundryClient.js";
 import { Employee, modifyEmployee } from "../../generatedNoCheck2/index.js";
+import { useFilterStatesContext } from "../filterStatesContext.js";
 
 import "./page.css";
 
@@ -94,13 +98,44 @@ const EMPLOYEE_FILTERS: Array<FilterDefinitionUnion<Employee>> = [
     filterComponent: "DATE_RANGE",
     filterState: { type: "DATE_RANGE" },
   },
+  {
+    type: "HAS_LINK",
+    id: "hasManager",
+    linkName: "lead",
+    label: "Has a manager",
+  },
+  {
+    type: "LINKED_PROPERTY",
+    id: "managerName",
+    linkName: "lead",
+    linkedPropertyKey: "fullName",
+    filterComponent: "MULTI_SELECT",
+    label: "Manager Name",
+  },
+  {
+    type: "LINKED_PROPERTY",
+    id: "officeName",
+    linkName: "primaryOffice",
+    linkedPropertyKey: "name",
+    filterComponent: "LISTOGRAM",
+    label: "Office Name",
+  },
 ];
 
-const EMPLOYEE_COLUMNS: Array<ColumnDefinition<Employee>> = [
+type RDP = { primaryOfficeName: "string"; managerName: "string" };
+const EMPLOYEE_COLUMNS: Array<ColumnDefinition<Employee, RDP>> = [
   {
     locator: { type: "property", id: "fullName" },
     columnName: "Name",
     width: 220,
+  },
+  {
+    locator: {
+      type: "rdp",
+      id: "managerName",
+      creator: (os) => os.pivotTo("lead").selectProperty("fullName"),
+    },
+    columnName: "Manager Name",
   },
   {
     locator: { type: "property", id: "department" },
@@ -126,6 +161,14 @@ const EMPLOYEE_COLUMNS: Array<ColumnDefinition<Employee>> = [
     locator: { type: "property", id: "workerType" },
     columnName: "Worker type",
     width: 160,
+  },
+  {
+    locator: {
+      type: "rdp",
+      id: "primaryOfficeName",
+      creator: (os) => os.pivotTo("primaryOffice").selectProperty("name"),
+    },
+    columnName: "Linked Office Name",
   },
 ];
 
@@ -166,10 +209,40 @@ interface StatusMessage {
 
 export const EmployeeActionFormFilterListReproPage = React.memo(
   function EmployeeActionFormFilterListReproPageFn() {
-    const [filterClause, setFilterClause] = useState<WhereClause<Employee>>({});
+    // HAS_LINK and LINKED_PROPERTY narrow by counting linked objects, which has
+    // no `WhereClause` form — the table has to consume the object set
+    // FilterList hands back, not just the clause.
+    const [effectiveObjectSet, setEffectiveObjectSet] =
+      useState<ObjectSet<Employee>>();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [statusMessage, setStatusMessage] = useState<StatusMessage>();
     const employeeObjectSet = useMemo(() => $(Employee), []);
+    const {
+      filterStates,
+      setFilterState,
+      clearFilterState,
+      resetFilterStates,
+    } = useFilterStatesContext();
+
+    const handleFilterListChanged = useCallback(
+      (event: FilterChangeEvent<Employee>) => {
+        setEffectiveObjectSet(event.snapshot.filteredObjectSet);
+        switch (event.reason.type) {
+          case "FILTER_STATE_CHANGED":
+            setFilterState(event.reason.filterKey, event.reason.newState);
+            break;
+          case "FILTER_REMOVED":
+            clearFilterState(event.reason.filterKey);
+            break;
+          case "FILTER_LIST_RESET":
+            resetFilterStates();
+            break;
+          case "FILTER_LIST_INITIALIZED":
+            break;
+        }
+      },
+      [setFilterState, clearFilterState, resetFilterStates],
+    );
 
     const openDialog = useCallback(function openDialog() {
       setIsDialogOpen(true);
@@ -223,14 +296,13 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
             {statusMessage.text}
           </div>
         )}
-
         <div className="actionFormFilterListReproContent">
           <FilterList
             objectType={Employee}
             objectSet={employeeObjectSet}
             filterDefinitions={EMPLOYEE_FILTERS}
-            filterClause={filterClause}
-            onFilterClauseChanged={setFilterClause}
+            defaultFilterStates={filterStates}
+            onFilterListChanged={handleFilterListChanged}
             title="Employee filters"
             showActiveFilterCount={true}
             showResetButton={true}
@@ -239,8 +311,8 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
 
           <ObjectTable
             objectType={Employee}
+            objectSet={effectiveObjectSet}
             columnDefinitions={EMPLOYEE_COLUMNS}
-            filter={filterClause}
             defaultOrderBy={DEFAULT_ORDER_BY}
             pageSize={50}
           />

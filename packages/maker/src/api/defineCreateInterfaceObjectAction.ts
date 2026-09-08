@@ -124,6 +124,7 @@ export function defineCreateInterfaceObjectAction(
     displayName:
       def.displayName ??
       `Create ${def.interfaceType.displayMetadata.displayName}`,
+    description: def.description,
     parameters,
     status:
       def.status ??

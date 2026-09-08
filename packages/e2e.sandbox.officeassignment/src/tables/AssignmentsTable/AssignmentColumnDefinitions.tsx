@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
+import type { ColumnDefinition } from "@osdk/react-components/object-table";
 
 import type { Assignment } from "../../generatedNoCheck2/index.js";
 import type { AssignmentInstance } from "../../types/table.js";

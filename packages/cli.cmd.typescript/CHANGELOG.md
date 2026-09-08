@@ -1,5 +1,97 @@
 # @osdk/cli.cmd.typescript
 
+## 0.91.0
+
+### Patch Changes
+
+- Updated dependencies [e3a381d]
+  - @osdk/generator@2.65.0
+  - @osdk/cli.common@0.91.0
+
+## 0.90.0
+
+### Patch Changes
+
+- @osdk/generator@2.64.0
+- @osdk/cli.common@0.90.0
+
+## 0.89.0
+
+### Patch Changes
+
+- @osdk/generator@2.63.0
+- @osdk/cli.common@0.89.0
+
+## 0.88.0
+
+### Patch Changes
+
+- @osdk/generator@2.62.0
+- @osdk/cli.common@0.88.0
+
+## 0.87.0
+
+### Minor Changes
+
+- d592d46: Move @arethetypeswrong/cli to devDependencies so installing the CLI no longer pulls in a check-only tool
+
+### Patch Changes
+
+- @osdk/generator@2.61.0
+- @osdk/cli.common@0.87.0
+
+## 0.86.0
+
+### Patch Changes
+
+- Updated dependencies [e879ad7]
+- Updated dependencies [bbbeca8]
+  - @osdk/generator@2.60.0
+  - @osdk/cli.common@0.86.0
+
+## 0.85.0
+
+### Patch Changes
+
+- @osdk/cli.common@0.85.0
+
+## 0.84.0
+
+### Patch Changes
+
+- @osdk/generator@2.59.0
+- @osdk/cli.common@0.84.0
+
+## 0.83.0
+
+### Patch Changes
+
+- Updated dependencies [ab557b4]
+- Updated dependencies [90cce42]
+  - @osdk/generator@2.58.0
+  - @osdk/cli.common@0.83.0
+
+## 0.82.0
+
+### Patch Changes
+
+- @osdk/generator@2.57.0
+- @osdk/cli.common@0.82.0
+
+## 0.81.0
+
+### Patch Changes
+
+- @osdk/generator@2.56.0
+- @osdk/cli.common@0.81.0
+
+## 0.80.0
+
+### Patch Changes
+
+- @osdk/generator@2.55.0
+- @osdk/cli.common@0.80.0
+
 ## 0.79.0
 
 ### Minor Changes

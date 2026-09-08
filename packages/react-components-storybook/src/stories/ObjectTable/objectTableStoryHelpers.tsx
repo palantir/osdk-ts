@@ -20,11 +20,11 @@ import type {
   Osdk,
   QueryDefinition,
 } from "@osdk/api";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import type {
   ColumnDefinition,
   ObjectTableProps,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 import type { Meta } from "@storybook/react-vite";
 import { screen, type within, userEvent } from "storybook/test";
 
@@ -349,6 +349,36 @@ export const editableColumnDefinitions: ColumnDefinition<Employee>[] = [
         },
       }),
     },
+  },
+  // Custom columns have no ontology property behind them, so `getCellValue`
+  // supplies the value and `cellValueType` picks the editor. Without it this
+  // one would get a text input and commit "12345" instead of 12345.
+  {
+    locator: { type: "custom", id: "reportsTo" },
+    columnName: "Reports To (#)",
+    getCellValue: (employee: Osdk.Instance<Employee>) =>
+      employee.leadEmployeeNumber ?? employee.mentorEmployeeNumber,
+    cellValueType: "integer",
+    editable: true,
+    orderable: false,
+  },
+  {
+    locator: { type: "custom", id: "contact" },
+    columnName: "Contact",
+    getCellValue: (employee: Osdk.Instance<Employee>) =>
+      [employee.emailPrimaryWork, employee.jobTitle]
+        .filter((part) => part != null)
+        .join(" · "),
+    cellValueType: "string",
+    editable: true,
+    orderable: false,
+    // The third argument is what getCellValue returned, so there's no need to
+    // recompute it here.
+    renderCell: (
+      _object: Osdk.Instance<Employee>,
+      _locator: unknown,
+      value: unknown,
+    ) => <em>{(value as string) || "No value"}</em>,
   },
 ];
 

@@ -43,6 +43,8 @@ import {
   generateBackingDatasetBlockResultForLink,
   getNonEditOnlyProperties,
 } from "./generateBackingDataset.js";
+import { generateBackingMediaSetBlockResult } from "./generateBackingMediaSet.js";
+import { generateDirectDatasourceBlockResult } from "./generateDirectDatasource.js";
 import {
   generateValueTypeBlockResults,
   getValueTypeInternalMappings,
@@ -223,13 +225,14 @@ export default async function main(
     await fs.promises.mkdir(commandLineOpts.buildDir, { recursive: true });
   }
 
-  const importedLinkTypeIdsByApiName = commandLineOpts.importJson
-    ? getImportedLinkTypeIdsByApiName(
-        JSON.parse(
-          await fs.promises.readFile(commandLineOpts.importJson, "utf-8"),
-        ) as ImportedOntologyMetadata,
-      )
-    : undefined;
+  const importedLinkTypeIdsByApiName =
+    commandLineOpts.importJson && fs.existsSync(commandLineOpts.importJson)
+      ? getImportedLinkTypeIdsByApiName(
+          JSON.parse(
+            await fs.promises.readFile(commandLineOpts.importJson, "utf-8"),
+          ) as ImportedOntologyMetadata,
+        )
+      : undefined;
 
   const {
     ontologyIr,
@@ -237,6 +240,7 @@ export default async function main(
     importedInputPresets,
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
+    backingMediaSetNames,
   } = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
@@ -265,13 +269,20 @@ export default async function main(
       undefined,
       ontologyIr.transitiveImportedOntology,
     );
+  const directlyImportedInterfaceTypes = Object.values(
+    ontologyIr.importedOntology.interfaceTypes,
+  ).map(({ interfaceType }) => interfaceType.apiName);
   const importedMetadataPath = path.join(
     commandLineOpts.buildDir,
     "oac-imported-metadata.json",
   );
   await fs.promises.writeFile(
     importedMetadataPath,
-    JSON.stringify(importedMetadata, null, 2),
+    JSON.stringify(
+      { ...importedMetadata, directlyImportedInterfaceTypes },
+      null,
+      2,
+    ),
   );
   consola.info(`Wrote oac-imported-metadata.json to ${importedMetadataPath}`);
 
@@ -282,6 +293,18 @@ export default async function main(
       commandLineOpts.buildDir,
     );
   }
+
+  const directDatasourceGeneratorResults = (
+    await Promise.all(
+      Object.values(ontologyIr.ontology.objectTypes).map((objectType) =>
+        generateDirectDatasourceBlockResult(
+          objectType,
+          commandLineOpts.buildDir,
+          commandLineOpts.randomnessKey,
+        ),
+      ),
+    )
+  ).filter((result): result is BlockGeneratorResult => result !== undefined);
 
   // Collect input_mapping_entries for the ontology block
   // These map ontology inputs to datasource block outputs for objects with includeEmptyBackingDatasource
@@ -370,6 +393,17 @@ export default async function main(
     }
   }
 
+  for (const mediaSetName of backingMediaSetNames) {
+    const inputReadableId =
+      ReadableIdGenerator.getForMediaSetView(mediaSetName);
+    if (shapes.inputShapes.has(inputReadableId)) {
+      ontologyInputMappingEntries.push({
+        input: inputReadableId,
+        output: ReadableIdGenerator.getForMediaSetViewOutput(mediaSetName),
+      });
+    }
+  }
+
   ontologyInputMappingEntries.push(
     ...getValueTypeInternalMappings(ontologyIr.valueTypes, shapes.inputShapes),
   );
@@ -424,6 +458,19 @@ export default async function main(
       .filter((p): p is Promise<BlockGeneratorResult> => p !== undefined),
   );
 
+  const backingMediaSetGeneratorResults = await Promise.all(
+    backingMediaSetNames.map((mediaSetName) => {
+      consola.info(
+        `Generating backing Media Set BlockGeneratorResult for ${mediaSetName}...`,
+      );
+      return generateBackingMediaSetBlockResult(
+        mediaSetName,
+        commandLineOpts.buildDir,
+        commandLineOpts.randomnessKey,
+      );
+    }),
+  );
+
   // Create BlockGeneratorResult
   const blockGeneratorResult: BlockGeneratorResult = {
     block_identifier: "ontology",
@@ -449,8 +496,10 @@ export default async function main(
   const blockGeneratorResultJson = JSON.stringify(
     [
       blockGeneratorResult,
+      ...directDatasourceGeneratorResults,
       ...backingDsGeneratorResults,
       ...backingDsLinkGeneratorResults,
+      ...backingMediaSetGeneratorResults,
       ...valueTypeResults,
     ],
     null,

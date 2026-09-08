@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ColumnConfigDialogProps } from "@osdk/react-components/experimental/object-table";
-import { ColumnConfigDialog } from "@osdk/react-components/experimental/object-table";
+import type { ColumnConfigDialogProps } from "@osdk/react-components/object-table";
+import { ColumnConfigDialog } from "@osdk/react-components/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useState } from "react";
 import { fn } from "storybook/test";
@@ -95,7 +95,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { ColumnConfigDialog } from "@osdk/react-components/experimental/object-table";
+        code: `import { ColumnConfigDialog } from "@osdk/react-components/object-table";
 
 const [isOpen, setIsOpen] = useState(false);
 
@@ -201,48 +201,6 @@ export const SingleColumnVisible: Story = {
   }}
   currentColumnOrder={["fullName"]}
   onApply={handleApply}
-/>`,
-      },
-    },
-  },
-};
-
-export const LocalizedLabels: Story = {
-  args: {
-    labels: {
-      columnConfigTitle: "Choose columns",
-      columnConfigApply: "Save",
-      columnConfigCancel: "Discard",
-      columnConfigVisibleColumns: "Shown columns",
-      columnConfigDragToReorder: "Drag rows to reorder",
-      columnConfigAddOrRemoveColumns: "Toggle columns",
-      columnConfigAllColumns: "Everything",
-      columnConfigSearchPlaceholder: "Type to filter…",
-    },
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Every user-facing string can be overridden through the `labels` " +
-          "prop. Any key left unset falls back to the built-in English " +
-          "default. Pass the same object to `ObjectTable`/`BaseTable` to " +
-          "localize the whole table at once.",
-      },
-      source: {
-        code: `<ColumnConfigDialog
-  isOpen={isOpen}
-  onClose={() => setIsOpen(false)}
-  columnOptions={columnOptions}
-  currentVisibility={visibility}
-  currentColumnOrder={order}
-  onApply={handleApply}
-  labels={{
-    columnConfigTitle: "Choose columns",
-    columnConfigApply: "Save",
-    columnConfigCancel: "Discard",
-    columnConfigVisibleColumns: "Shown columns",
-  }}
 />`,
       },
     },

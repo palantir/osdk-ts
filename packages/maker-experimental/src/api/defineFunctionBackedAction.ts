@@ -21,6 +21,7 @@ export type FunctionBackedActionTypeUserDefinition = {
   functionApiName: string;
   apiName?: string;
   displayName?: string;
+  description?: string;
   status?: ActionStatus;
 };
 
@@ -32,6 +33,7 @@ export function defineFunctionBackedAction(
   return defineAction({
     apiName: def.apiName ?? `${def.functionApiName.toLowerCase()}-action`,
     displayName: def.displayName ?? `Function action ${def.functionApiName}`,
+    description: def.description,
     rules: [
       {
         type: "functionRule",

@@ -24,6 +24,7 @@ import styles from "./FilterListHeader.module.css";
 interface FilterListHeaderProps {
   title?: ReactNode;
   titleIcon?: ReactNode;
+  showCollapseButton?: boolean;
   collapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
   showResetButton?: boolean;
@@ -31,12 +32,12 @@ interface FilterListHeaderProps {
   showActiveFilterCount?: boolean;
   activeFilterCount?: number;
   canReset?: boolean;
-  hasVisibilityChanges?: boolean;
 }
 
 function FilterListHeaderInner({
   title,
   titleIcon,
+  showCollapseButton = false,
   collapsed = false,
   onCollapsedChange,
   showResetButton,
@@ -44,18 +45,12 @@ function FilterListHeaderInner({
   showActiveFilterCount,
   activeFilterCount = 0,
   canReset,
-  hasVisibilityChanges = false,
 }: FilterListHeaderProps): React.ReactElement {
-  const showCollapseButton = onCollapsedChange != null;
-
   const handleCollapseClick = useCallback(() => {
     onCollapsedChange?.(!collapsed);
   }, [onCollapsedChange, collapsed]);
 
-  const resetDisabled =
-    canReset != null
-      ? !canReset
-      : activeFilterCount === 0 && !hasVisibilityChanges;
+  const resetDisabled = canReset != null ? !canReset : activeFilterCount === 0;
 
   return (
     <div className={styles.header}>

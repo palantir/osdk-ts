@@ -196,6 +196,12 @@ export async function run({
       "@osdk/cli": "latest",
       ...packageJson.devDependencies,
     };
+    if (fs.existsSync(path.join(root, "vite.config.ts"))) {
+      packageJson.dependencies = {
+        "@osdk/vite-plugin-branch": changeVersionPrefix(clientVersion, "^"),
+        ...packageJson.dependencies,
+      };
+    }
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
   }
 

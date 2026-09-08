@@ -79,6 +79,7 @@ export async function buildDevModeManifest(
 
   const inputSpec = await getWidgetSetInputSpec(
     path.resolve(server.config.root, "package.json"),
+    path.resolve(server.config.root, "resources.json"),
   );
 
   return {

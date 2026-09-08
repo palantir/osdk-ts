@@ -21,7 +21,7 @@ import {
   OUTLINE_HEADING_SIZE_RATIO,
   OUTLINE_MAX_HEADING_LENGTH,
 } from "../constants.js";
-import type { OutlineItem } from "../types.js";
+import type { OutlineItem } from "../PdfViewerApi.js";
 
 const EMPTY_OUTLINE: OutlineItem[] = [];
 

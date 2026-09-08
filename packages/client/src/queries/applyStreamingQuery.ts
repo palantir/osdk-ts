@@ -14,25 +14,88 @@
  * limitations under the License.
  */
 
-import type { CompileTimeMetadata, QueryDefinition } from "@osdk/api";
+import type {
+  CompileTimeMetadata,
+  QueryDefinition,
+  QueryMetadata,
+} from "@osdk/api";
+import * as Functions from "@osdk/foundry.functions/Query";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
+import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
+import { augmentRequestContext } from "../util/augmentRequestContext.js";
+import {
+  getRequiredDefinitions,
+  remapQueryParams,
+  remapQueryResponse,
+} from "./applyQuery.js";
 import type { QueryParameterType, QueryReturnType } from "./types.js";
 
-// Streaming query execution is not currently supported in the TypeScript OSDK
-export function applyStreamingQuery<
+export async function* applyStreamingQuery<
   QD extends QueryDefinition<any>,
   P extends QueryParameterType<CompileTimeMetadata<QD>["parameters"]>,
 >(
-  _client: MinimalClient,
-  _query: QD,
-  _params?: P,
+  client: MinimalClient,
+  query: QD,
+  params?: P,
 ): AsyncGenerator<
   QueryReturnType<CompileTimeMetadata<QD>["output"]>,
   void,
   unknown
 > {
-  throw new Error(
-    "Streaming query execution is not currently supported in the TypeScript OSDK.",
+  const qd: QueryMetadata = await client.ontologyProvider.getQueryDefinition(
+    query.apiName,
+    query.isFixedVersion ? query.version : undefined,
   );
+
+  if (client.flushEdits != null) {
+    await client.flushEdits();
+  }
+
+  const response = await Functions.streamingExecute(
+    addUserAgentAndRequestContextHeaders(
+      augmentRequestContext(client, (_) => ({
+        finalMethodCall: "applyStreamingQuery",
+      })),
+      query,
+    ),
+    query.apiName,
+    {
+      ontology: await client.ontologyRid,
+      parameters: params
+        ? await remapQueryParams(
+            params as { [parameterId: string]: any },
+            client,
+            qd.parameters,
+          )
+        : {},
+      version: query.isFixedVersion ? query.version : undefined,
+      branch: client.branch,
+    },
+    {
+      transactionId: client.transactionId,
+      preview: true,
+    },
+  );
+
+  const definitions = await getRequiredDefinitions(qd.output, client);
+
+  for await (const event of response) {
+    if (event.type !== "data") continue;
+
+    const remapped = await remapQueryResponse(
+      client,
+      qd.output,
+      event.value,
+      definitions,
+    );
+
+    if (qd.output.type === "array" && Array.isArray(remapped)) {
+      for (const item of remapped) {
+        yield item as QueryReturnType<CompileTimeMetadata<QD>["output"]>;
+      }
+    } else {
+      yield remapped as QueryReturnType<CompileTimeMetadata<QD>["output"]>;
+    }
+  }
 }

@@ -33,13 +33,17 @@ function formatAddressList(addresses: readonly EmailAddress[]): string {
 }
 
 export function BaseEmailViewer({
+  content,
   email,
   className,
 }: BaseEmailViewerProps): React.ReactElement {
   const rootClassName = classnames(styles.container, className);
 
+  // eslint-disable-next-line @typescript-eslint/no-deprecated -- pre-rename fallback
+  const resolved = content ?? email;
+
   const bodyContent = useMemo(() => {
-    if (email.html != null) {
+    if (resolved?.html != null) {
       return (
         <div className={styles.bodyContainer}>
           {/*
@@ -56,52 +60,52 @@ export function BaseEmailViewer({
           <iframe
             className={styles.bodyIframe}
             sandbox="allow-same-origin"
-            srcDoc={email.html}
+            srcDoc={resolved.html}
             title="Email body"
           />
         </div>
       );
     }
-    if (email.text != null) {
-      return <div className={styles.textBody}>{email.text}</div>;
+    if (resolved?.text != null) {
+      return <div className={styles.textBody}>{resolved.text}</div>;
     }
     return <div className={styles.emptyBody}>No content</div>;
-  }, [email.html, email.text]);
+  }, [resolved?.html, resolved?.text]);
 
   return (
     <div className={rootClassName}>
       <div className={styles.header}>
-        {email.subject != null && (
-          <div className={styles.subject}>{email.subject}</div>
+        {resolved?.subject != null && (
+          <div className={styles.subject}>{resolved.subject}</div>
         )}
-        {email.from != null && (
+        {resolved?.from != null && (
           <div className={styles.headerRow}>
             <span className={styles.headerLabel}>From:</span>
             <span className={styles.headerValue}>
-              {formatAddress(email.from)}
+              {formatAddress(resolved.from)}
             </span>
           </div>
         )}
-        {email.to.length > 0 && (
+        {resolved != null && resolved.to.length > 0 && (
           <div className={styles.headerRow}>
             <span className={styles.headerLabel}>To:</span>
             <span className={styles.headerValue}>
-              {formatAddressList(email.to)}
+              {formatAddressList(resolved.to)}
             </span>
           </div>
         )}
-        {email.cc.length > 0 && (
+        {resolved != null && resolved.cc.length > 0 && (
           <div className={styles.headerRow}>
             <span className={styles.headerLabel}>Cc:</span>
             <span className={styles.headerValue}>
-              {formatAddressList(email.cc)}
+              {formatAddressList(resolved.cc)}
             </span>
           </div>
         )}
-        {email.date != null && (
+        {resolved?.date != null && (
           <div className={styles.headerRow}>
             <span className={styles.headerLabel}>Date:</span>
-            <span className={styles.headerValue}>{email.date}</span>
+            <span className={styles.headerValue}>{resolved.date}</span>
           </div>
         )}
       </div>

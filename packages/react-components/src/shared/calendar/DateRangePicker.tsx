@@ -649,7 +649,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
               <div
                 onFocus={handleStartFocusBoundary}
                 tabIndex={0}
-                aria-label="Start of date range picker dialog"
+                data-osdk-date-picker-focus-boundary="start"
                 className={commonStyles.osdkDatePickerFocusBoundary}
               />
               <LazyDateRangeCalendar
@@ -662,7 +662,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
               <div
                 onFocus={handleEndFocusBoundary}
                 tabIndex={0}
-                aria-label="End of date range picker dialog"
+                data-osdk-date-picker-focus-boundary="end"
                 className={commonStyles.osdkDatePickerFocusBoundary}
               />
             </Popover.Popup>

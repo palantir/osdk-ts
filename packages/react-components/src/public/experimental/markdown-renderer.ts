@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,29 @@
  * limitations under the License.
  */
 
-// MarkdownRenderer
-export {
-  MarkdownRenderer,
-  type MarkdownRendererProps,
-} from "../../markdown-renderer/MarkdownRenderer.js";
+import * as Stable from "../markdown-viewer.js";
 
-// MarkdownViewerMedia (Media wrapper)
-import { MarkdownViewerMedia as _MarkdownViewerMedia } from "../../markdown-renderer/MarkdownViewerMedia.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const MarkdownViewerMedia: typeof _MarkdownViewerMedia = withOsdkMetrics(
-  _MarkdownViewerMedia,
-  "MarkdownViewerMedia",
-);
-export type { MarkdownViewerMediaProps } from "../../markdown-renderer/MarkdownViewerMedia.js";
+/** @deprecated Import from `@osdk/react-components/markdown-viewer` instead. */
+export const BaseMarkdownViewer: typeof Stable.BaseMarkdownViewer =
+  Stable.BaseMarkdownViewer;
+
+/** @deprecated Import from `@osdk/react-components/markdown-viewer` instead. */
+export type BaseMarkdownViewerProps = Stable.BaseMarkdownViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/markdown-viewer` instead. */
+export type MarkdownViewerProps = Stable.MarkdownViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/markdown-viewer` instead. */
+export const MarkdownViewer: typeof Stable.MarkdownViewer =
+  Stable.MarkdownViewer;
+
+/** @deprecated Use `BaseMarkdownViewer` instead. */
+export const MarkdownRenderer: typeof Stable.BaseMarkdownViewer =
+  Stable.BaseMarkdownViewer;
+
+/** @deprecated Use `BaseMarkdownViewerProps` instead. */
+export type MarkdownRendererProps = Stable.BaseMarkdownViewerProps;
+
+/** @deprecated Use `MarkdownViewer` instead. */
+export const MarkdownViewerMedia: typeof Stable.MarkdownViewer =
+  Stable.MarkdownViewer;

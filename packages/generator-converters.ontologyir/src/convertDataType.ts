@@ -37,6 +37,11 @@ export interface IListDataType extends IDataType {
   list: { elementsType: IDataType };
 }
 
+export interface IMapDataType extends IDataType {
+  type: "map";
+  map: { keysType: IDataType; valuesType: IDataType };
+}
+
 export interface IFunctionCustomDataType extends IDataType {
   type: "functionCustomType";
   functionCustomType: string;
@@ -122,6 +127,8 @@ export function convertDataType(
       return { type: "timestamp" };
     case "attachment":
       return { type: "attachment" };
+    case "mediaReference":
+      return { type: "mediaReference" };
     case "optionalType": {
       const optionalData = dataType as IOptionalDataType;
       return {
@@ -166,10 +173,35 @@ export function convertDataType(
         ),
       };
     }
+    case "map": {
+      const mapData = dataType as IMapDataType;
+      // `entrySet` is the only key/value container in QueryDataType, and it names its
+      // members in the singular.
+      return {
+        type: "entrySet",
+        keyType: convertDataType(
+          mapData.map.keysType,
+          customTypes,
+          interfaceRidToApiName,
+        ),
+        valueType: convertDataType(
+          mapData.map.valuesType,
+          customTypes,
+          interfaceRidToApiName,
+        ),
+      };
+    }
     case "functionCustomType": {
       const customTypeData = dataType as IFunctionCustomDataType;
       return convertFunctionCustomType(
         customTypeData.functionCustomType,
+        customTypes,
+      );
+    }
+    case "anonymousCustomType": {
+      const anonymousData = dataType as IAnonymousCustomDataType;
+      return convertCustomTypeShape(
+        anonymousData.anonymousCustomType,
         customTypes,
       );
     }
@@ -211,7 +243,9 @@ export function convertDataType(
 }
 
 interface ICustomTypeShape {
-  fieldMetadata: Record<string, { required?: boolean }>;
+  // Discovery leaves this out when no field carries metadata, so a named custom type and
+  // an inline one both have to survive it being absent.
+  fieldMetadata?: Record<string, { required?: boolean }> | null;
   fields: Record<string, IDataType>;
 }
 
@@ -219,11 +253,28 @@ function isCustomTypeShape(value: unknown): value is ICustomTypeShape {
   return (
     typeof value === "object"
     && value != null
-    && "fieldMetadata" in value
     && "fields" in value
-    && typeof (value as Record<string, unknown>).fieldMetadata === "object"
     && typeof (value as Record<string, unknown>).fields === "object"
   );
+}
+
+function convertCustomTypeShape(
+  shape: ICustomTypeShape,
+  customTypes: Record<string, unknown>,
+): Ontologies.QueryDataType {
+  const { fieldMetadata, fields } = shape;
+  return {
+    type: "struct",
+    fields: Object.keys(fields).map(name => ({
+      name,
+      fieldType: convertDataType(
+        fields[name],
+        customTypes,
+        {},
+        fieldMetadata?.[name]?.required ?? true,
+      ),
+    })),
+  };
 }
 
 function convertFunctionCustomType(
@@ -238,23 +289,8 @@ function convertFunctionCustomType(
   }
   if (!isCustomTypeShape(customTypeRaw)) {
     throw new Error(
-      `Invalid custom type structure for '${functionId}': expected 'fieldMetadata' and 'fields' properties`,
+      `Invalid custom type structure for '${functionId}': expected a 'fields' property`,
     );
   }
-  const { fieldMetadata, fields } = customTypeRaw;
-  const structFields = Object.keys(fields).map(key => {
-    return {
-      name: key,
-      fieldType: convertDataType(
-        fields[key],
-        customTypes,
-        {},
-        fieldMetadata[key].required ?? true,
-      ),
-    };
-  });
-  return {
-    type: "struct",
-    fields: structFields,
-  };
+  return convertCustomTypeShape(customTypeRaw, customTypes);
 }

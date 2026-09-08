@@ -24,7 +24,6 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
 import { compileSeedData } from "../compileSeedData.js";
-import { schemaFromMetadata } from "../schema.js";
 
 export default async function main(
   args: string[] = process.argv,
@@ -81,7 +80,7 @@ export default async function main(
   );
   const seedFiles = fs
     .readdirSync(opts.seedDir)
-    .filter((f) => f.endsWith(".mts"))
+    .filter((f) => f.endsWith(".mts") && !f.startsWith("$"))
     .sort()
     .map((f) => path.join(opts.seedDir, f));
 
@@ -90,6 +89,5 @@ export default async function main(
     return;
   }
 
-  const schema = schemaFromMetadata(metadata);
-  await compileSeedData(seedFiles, opts.output, schema);
+  await compileSeedData(seedFiles, opts.output, metadata);
 }

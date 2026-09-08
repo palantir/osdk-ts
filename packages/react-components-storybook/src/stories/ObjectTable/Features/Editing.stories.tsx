@@ -15,8 +15,8 @@
  */
 
 import type { Osdk } from "@osdk/api";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import type { CellEditInfo } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
+import type { CellEditInfo } from "@osdk/react-components/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useState } from "react";
 import {
@@ -137,6 +137,28 @@ export const EditableTable: Story = {
       }),
     },
   },
+  // Custom columns: getCellValue supplies the value, cellValueType picks the editor
+  {
+    locator: { type: "custom", id: "reportsTo" },
+    columnName: "Reports To (#)",
+    getCellValue: (employee) =>
+      employee.leadEmployeeNumber ?? employee.mentorEmployeeNumber,
+    cellValueType: "integer",
+    editable: true,
+    orderable: false,
+  },
+  {
+    locator: { type: "custom", id: "contact" },
+    columnName: "Contact",
+    getCellValue: (employee) =>
+      [employee.emailPrimaryWork, employee.jobTitle]
+        .filter((part) => part != null)
+        .join(" · "),
+    cellValueType: "string",
+    editable: true,
+    orderable: false,
+    renderCell: (object, locator, value) => <em>{value || "No value"}</em>,
+  },
 ];
 
 return (
@@ -251,6 +273,28 @@ return (
       expect(args.onCellValueChanged).toHaveBeenCalledWith(
         expect.objectContaining({ columnId: "firstFullTimeStartDate" }),
       ),
+    );
+
+    // Custom columns (reportsTo, column 7; contact, column 8) have no ontology
+    // property, so their editors come from `cellValueType`: the integer column
+    // renders a number input and commits a number, not the string it would
+    // have produced without one.
+    const reportsToInput = within(cellsOf()[7]).getByRole("spinbutton");
+    await expect(reportsToInput).toHaveAttribute("type", "number");
+    await userEvent.click(reportsToInput);
+    await userEvent.clear(reportsToInput);
+    await userEvent.type(reportsToInput, "4242");
+    await userEvent.tab();
+    await waitFor(() =>
+      expect(args.onCellValueChanged).toHaveBeenCalledWith(
+        expect.objectContaining({ columnId: "reportsTo", newValue: 4242 }),
+      ),
+    );
+
+    // The string-typed custom column stays a text input.
+    await expect(within(cellsOf()[8]).getByRole("textbox")).toHaveAttribute(
+      "type",
+      "text",
     );
 
     // Cancel exits edit mode; the "Edit Table" button returns.
@@ -621,6 +665,28 @@ export const WithSubmitEditsButton: Story = {
       }),
     },
   },
+  // Custom columns: getCellValue supplies the value, cellValueType picks the editor
+  {
+    locator: { type: "custom", id: "reportsTo" },
+    columnName: "Reports To (#)",
+    getCellValue: (employee) =>
+      employee.leadEmployeeNumber ?? employee.mentorEmployeeNumber,
+    cellValueType: "integer",
+    editable: true,
+    orderable: false,
+  },
+  {
+    locator: { type: "custom", id: "contact" },
+    columnName: "Contact",
+    getCellValue: (employee) =>
+      [employee.emailPrimaryWork, employee.jobTitle]
+        .filter((part) => part != null)
+        .join(" · "),
+    cellValueType: "string",
+    editable: true,
+    orderable: false,
+    renderCell: (object, locator, value) => <em>{value || "No value"}</em>,
+  },
 ];
 
 return (
@@ -692,6 +758,17 @@ export const PerRowEditableAndFieldConfig: Story = {
           const jobTitle = rowData.jobTitle ?? "";
           return jobTitle === "Senior Product Manager";
         },
+        cellValueType: "string",
+        renderCell: (_obj, _locator, value) => (
+          <div
+            style={{
+              fontStyle: "italic",
+              color: "grey",
+            }}
+          >
+            {typeof value === "string" ? value : ""}
+          </div>
+        ),
       },
       {
         locator: { type: "property", id: "department" },
@@ -723,10 +800,21 @@ export const PerRowEditableAndFieldConfig: Story = {
   {
     locator: { type: "property", id: "jobTitle" },
     // Only allow editing for Senior Product Manager
-    editable: (rowData) => {
-      const jobTitle = String(rowData.jobTitle ?? "");
+    editable: (rowData: Osdk.Instance<Employee>) => {
+      const jobTitle = rowData.jobTitle ?? "";
       return jobTitle === "Senior Product Manager";
     },
+    cellValueType: "string",
+    renderCell: (_obj, _locator, value) => (
+      <div
+        style={{
+          fontStyle: "italic",
+          color: "grey",
+        }}
+      >
+        {typeof value === "string" ? value : ""}
+      </div>
+    ),
   },
   {
     locator: { type: "property", id: "department" },

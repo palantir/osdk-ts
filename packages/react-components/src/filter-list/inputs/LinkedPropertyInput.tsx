@@ -60,6 +60,7 @@ import {
   coerceToStringArray,
 } from "../utils/coerceFilterValue.js";
 import { clearFilterState } from "../utils/filterValues.js";
+import { getLinkedFilterComponent } from "../utils/getLinkedFilterComponent.js";
 import { narrowObjectSet } from "../utils/narrowObjectSet.js";
 
 import styles from "../base/inputs/LinkedPropertyInput.module.css";
@@ -275,8 +276,10 @@ function LinkedPropertyInputInner<
     [wrappedOnChange, innerState],
   );
 
+  const linkedComponent = getLinkedFilterComponent(definition);
+
   const content = (() => {
-    switch (definition.linkedFilterComponent) {
+    switch (linkedComponent) {
       case "MULTI_SELECT": {
         const values =
           innerState?.type === "SELECT"
@@ -445,8 +448,19 @@ function LinkedPropertyInputInner<
         );
       }
 
+      // Reachable only because `filterComponent` is optional to keep the
+      // deprecated `linkedFilterComponent` compiling.
+      // TODO: remove this branch with that field, once `filterComponent` is
+      // required and the switch is exhaustive again.
+      case undefined:
+        return (
+          <div data-unsupported="true">
+            Linked property filter missing filterComponent
+          </div>
+        );
+
       default:
-        return assertUnreachable(definition.linkedFilterComponent);
+        return assertUnreachable(linkedComponent);
     }
   })();
 

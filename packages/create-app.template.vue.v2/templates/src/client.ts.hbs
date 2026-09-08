@@ -1,8 +1,5 @@
 {{#if osdkPackage}}
 import { createClient, type Client } from "@osdk/client";
-{{#if unstableFeatures}}
-import { $branch } from "{{osdkPackage}}";
-{{/if}}
 {{else}}
 import { createPlatformClient, type PlatformClient } from "@osdk/client";
 {{/if}}
@@ -54,9 +51,7 @@ export const auth: PublicOauthClient = createPublicOauthClient(
 /**
  * Initialize the client to interact with the Ontology and Platform SDKs
  */
-export const client: Client = createClient(foundryUrl, ontologyRid, auth{{#if unstableFeatures}}, {
-  UNSTABLE_DO_NOT_USE_BRANCH: $branch,
-}{{/if}});
+export const client: Client = createClient(foundryUrl, ontologyRid, auth);
 {{else}}
 /**
  * Initialize the client to interact with the Platform SDK

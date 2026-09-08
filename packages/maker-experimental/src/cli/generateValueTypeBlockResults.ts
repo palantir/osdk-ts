@@ -20,6 +20,7 @@ import * as path from "node:path";
 import type { ValueTypeBlockData } from "@osdk/client.unstable";
 import type { InputShape, OutputShape } from "@osdk/client.unstable/api";
 
+import { typeToMarketplaceBaseType } from "../conversion/toMarketplace/typeVisitors.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
 import type { InputMappingEntry } from "./marketplaceSerialization/supportingTypes.js";
@@ -86,7 +87,7 @@ function buildOutputShapes(
           localizedTitle: {},
           localizedDescription: {},
         },
-        baseType: version.baseType,
+        baseType: typeToMarketplaceBaseType(version.baseType),
       },
     });
   }

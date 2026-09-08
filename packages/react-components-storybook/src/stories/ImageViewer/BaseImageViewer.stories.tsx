@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BaseImageViewerProps } from "@osdk/react-components/experimental/image-viewer";
-import { BaseImageViewer } from "@osdk/react-components/experimental/image-viewer";
+import type { BaseImageViewerProps } from "@osdk/react-components/image-viewer";
+import { BaseImageViewer } from "@osdk/react-components/image-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
@@ -89,9 +89,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseImageViewer } from "@osdk/react-components/experimental/image-viewer";
-
-<BaseImageViewer src={imageUrl} alt="My image" />`,
+        code: `<BaseImageViewer src={imageUrl} alt="My image" />`,
       },
     },
   },
@@ -100,5 +98,16 @@ export const Default: Story = {
 export const WithErrorCallback: Story = {
   args: {
     onError: fn(),
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `<BaseImageViewer
+  src={imageUrl}
+  alt="My image"
+  onError={reportImageLoadFailure}
+/>`,
+      },
+    },
   },
 };

@@ -480,7 +480,7 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
                 <div
                   onFocus={handleStartFocusBoundary}
                   tabIndex={0}
-                  aria-label="Start of date picker dialog"
+                  data-osdk-date-picker-focus-boundary="start"
                   className={commonStyles.osdkDatePickerFocusBoundary}
                 />
               )}
@@ -498,7 +498,7 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
                 <div
                   onFocus={handleEndFocusBoundary}
                   tabIndex={0}
-                  aria-label="End of date picker dialog"
+                  data-osdk-date-picker-focus-boundary="end"
                   className={commonStyles.osdkDatePickerFocusBoundary}
                 />
               )}

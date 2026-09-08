@@ -73,18 +73,6 @@ describe("validateSeedObject", () => {
     ).toThrow(
       /Property 'badProp' on 'Employee' object \(primary key emp-001\) is not defined in the ontology/u,
     );
-    // Null value — and the identity falls back to <unknown> without a primary key.
-    expect(() =>
-      validateSeedObject(
-        { employeeId: "emp-001", firstName: null },
-        employeeType,
-      ),
-    ).toThrow(
-      /Property 'firstName' on 'Employee' object \(primary key emp-001\) is null or undefined/u,
-    );
-    expect(() => validateSeedObject({ firstName: null }, employeeType)).toThrow(
-      /Property 'firstName' on 'Employee' object \(primary key <unknown>\) is null or undefined/u,
-    );
     // JS type mismatch in either direction.
     expect(() =>
       validateSeedObject(

@@ -154,9 +154,24 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
     const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
       implementsInterfaces: ["InterfaceZ", "InterfaceA", "InterfaceC"],
       implementsInterfaces2: {
-        "InterfaceZ": { properties: {}, propertiesV2: {}, links: {} },
-        "InterfaceA": { properties: {}, propertiesV2: {}, links: {} },
-        "InterfaceC": { properties: {}, propertiesV2: {}, links: {} },
+        "InterfaceZ": {
+          properties: {},
+          propertiesV2: {},
+          links: {},
+          actionTypes: {},
+        },
+        "InterfaceA": {
+          properties: {},
+          propertiesV2: {},
+          links: {},
+          actionTypes: {},
+        },
+        "InterfaceC": {
+          properties: {},
+          propertiesV2: {},
+          links: {},
+          actionTypes: {},
+        },
       },
       linkTypes: [],
       objectType: {

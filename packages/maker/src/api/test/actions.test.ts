@@ -6693,6 +6693,68 @@ describe("Action Types", () => {
   });
 
   describe("Object Actions", () => {
+    it("Vector properties are excluded from auto-generated action parameters", () => {
+      const objectType = defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: {
+          bar: { type: "string" },
+          name: { type: "string" },
+          embedding: {
+            type: {
+              type: "vector",
+              dimension: 768,
+              supportsSearchWith: "COSINE_SIMILARITY",
+            },
+          },
+        },
+      });
+
+      const create = defineCreateObjectAction({ objectType });
+      const modify = defineModifyObjectAction({ objectType });
+      const createOrModify = defineCreateOrModifyObjectAction({ objectType });
+
+      for (const action of [create, modify, createOrModify]) {
+        const paramIds = (action.parameters ?? []).map((p) => p.id);
+        expect(paramIds).toContain("name");
+        expect(paramIds).not.toContain("embedding");
+      }
+    });
+
+    it("Vector properties cannot be forced into action parameters", () => {
+      const objectType = defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: {
+          bar: { type: "string" },
+          embedding: {
+            type: {
+              type: "vector",
+              dimension: 768,
+              supportsSearchWith: "COSINE_SIMILARITY",
+            },
+          },
+        },
+      });
+
+      expect(() => {
+        defineModifyObjectAction({
+          objectType,
+          parameterConfiguration: {
+            embedding: { displayName: "Embedding" },
+          },
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Vectors are not supported as action parameters yet]`,
+      );
+    });
+
     it("Simple concrete actions are properly defined", () => {
       const exampleObjectType = defineObject({
         titlePropertyApiName: "bar",
@@ -6702,12 +6764,6 @@ describe("Action Types", () => {
         primaryKeyPropertyApiName: "bar",
         properties: {
           bar: { type: "string" },
-          structProp: {
-            type: {
-              type: "struct",
-              structDefinition: { simpleProperty: "string" },
-            },
-          },
           optionalProp: { type: "string" },
         },
       });
@@ -7440,18 +7496,6 @@ describe("Action Types", () => {
                             "column": "optionalProp",
                             "type": "column",
                           },
-                          "structProp": {
-                            "struct": {
-                              "column": "structProp",
-                              "mapping": {
-                                "simpleProperty": {
-                                  "apiName": "simpleProperty",
-                                  "mappings": {},
-                                },
-                              },
-                            },
-                            "type": "struct",
-                          },
                         },
                       },
                       "type": "datasetV2",
@@ -7568,54 +7612,6 @@ describe("Action Types", () => {
                           "name": "SORTABLE",
                         },
                       ],
-                      "valueType": undefined,
-                    },
-                    "structProp": {
-                      "apiName": "structProp",
-                      "baseFormatter": undefined,
-                      "dataConstraints": undefined,
-                      "displayMetadata": {
-                        "description": undefined,
-                        "displayName": "StructProp",
-                        "visibility": "NORMAL",
-                      },
-                      "indexedForSearch": true,
-                      "inlineAction": undefined,
-                      "ruleSetBinding": undefined,
-                      "sharedPropertyTypeApiName": undefined,
-                      "sharedPropertyTypeRid": undefined,
-                      "status": {
-                        "active": {},
-                        "type": "active",
-                      },
-                      "type": {
-                        "struct": {
-                          "mainValue": undefined,
-                          "structFields": [
-                            {
-                              "aliases": [],
-                              "apiName": "simpleProperty",
-                              "displayMetadata": {
-                                "description": undefined,
-                                "displayName": "simpleProperty",
-                              },
-                              "fieldType": {
-                                "string": {
-                                  "analyzerOverride": undefined,
-                                  "enableAsciiFolding": undefined,
-                                  "isLongText": false,
-                                  "supportsEfficientLeadingWildcard": false,
-                                  "supportsExactMatching": true,
-                                },
-                                "type": "string",
-                              },
-                              "typeClasses": [],
-                            },
-                          ],
-                        },
-                        "type": "struct",
-                      },
-                      "typeClasses": [],
                       "valueType": undefined,
                     },
                   },
@@ -11484,8 +11480,8 @@ describe("Action Types", () => {
                     "parameters": {
                       "objectToDeleteParameter": {
                         "displayMetadata": {
-                          "description": "",
-                          "displayName": "Delete object",
+                          "description": "Description",
+                          "displayName": "Chose managers to delete",
                           "typeClasses": [],
                         },
                         "id": "objectToDeleteParameter",

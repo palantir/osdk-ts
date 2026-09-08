@@ -49,7 +49,40 @@ export interface BaseFilterListProps<D extends FilterDefinitionControls> {
   onFilterRemoved?: (filterKey: string) => void;
   onOrderChange?: (orderedKeys: string[]) => void;
 
+  /**
+   * Whether the collapse/expand control is available. When `false` the panel is
+   * always expanded, no collapse control is rendered, and `collapsed` /
+   * `defaultCollapsed` are ignored.
+   * @default true
+   */
+  enableCollapse?: boolean;
+
+  /**
+   * Controlled mode. When supplied, this prop is the source of truth for
+   * whether the panel is collapsed and the component keeps no internal state;
+   * re-render with a new value in response to `onCollapsedChange`.
+   *
+   * If both `collapsed` and `defaultCollapsed` are provided, `collapsed` takes
+   * precedence. Ignored when `enableCollapse` is `false`.
+   */
   collapsed?: boolean;
+
+  /**
+   * Uncontrolled mode. Seeds the panel's internal collapsed state; the
+   * component continues to own the state after mount, so later changes to this
+   * prop are ignored.
+   *
+   * If both `collapsed` and `defaultCollapsed` are provided, `collapsed` takes
+   * precedence. Ignored when `enableCollapse` is `false`.
+   * @default false
+   */
+  defaultCollapsed?: boolean;
+
+  /**
+   * Called whenever the collapsed state changes.
+   *
+   * @param collapsed The new collapsed state
+   */
   onCollapsedChange?: (collapsed: boolean) => void;
   title?: React.ReactNode;
   titleIcon?: React.ReactNode;
@@ -60,12 +93,6 @@ export interface BaseFilterListProps<D extends FilterDefinitionControls> {
    * filter and/or visibility state has diverged from its initial snapshot.
    */
   canReset?: boolean;
-  /**
-   * @deprecated Use {@link canReset} instead. When `canReset` is provided it
-   * takes precedence; `hasVisibilityChanges` is only consulted as a fallback
-   * for the reset button's enabled state.
-   */
-  hasVisibilityChanges?: boolean;
   enableSorting?: boolean;
   className?: string;
   renderAddFilterButton?: () => React.ReactNode;

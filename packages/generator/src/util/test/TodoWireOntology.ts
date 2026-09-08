@@ -75,6 +75,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
       status: "ACTIVE",
     },
   },
+  actionTypesFullMetadata: {},
   objectTypes: {
     Todo: {
       objectType: {
@@ -145,6 +146,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
           },
           propertiesV2: {},
           links: {},
+          actionTypes: {},
         },
       },
       sharedPropertyTypeMapping: {},

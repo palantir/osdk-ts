@@ -21,7 +21,7 @@ import "@osdk/react-components/styles.css";
 import {
   type FilterDefinitionUnion,
   FilterList,
-} from "@osdk/react-components/experimental/filter-list";
+} from "@osdk/react-components/filter-list";
 import { useState } from "react";
 
 import { List } from "../../components/List.js";
@@ -75,7 +75,6 @@ const INITIAL_FILTER_DEFINITIONS: Array<FilterDefinitionUnion<Employee>> = [
     type: "LINKED_PROPERTY",
     id: "lead-department",
     linkName: "lead",
-    reverseLinkName: "peeps",
     linkedPropertyKey: "department",
     linkedFilterComponent: "LISTOGRAM",
     linkedFilterState: { type: "EXACT_MATCH", values: [] },

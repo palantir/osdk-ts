@@ -15,15 +15,9 @@
  */
 
 .osdkSelectDismissLayer {
-  --osdk-portal-dismiss-layer-z-index: var(
-    --osdk-select-z-index,
-    var(--osdk-surface-z-index-3)
-  );
+  --osdk-portal-dismiss-layer-z-index: var(--osdk-select-z-index);
 }
 
 .osdkComboboxDismissLayer {
-  --osdk-portal-dismiss-layer-z-index: var(
-    --osdk-combobox-z-index,
-    var(--osdk-surface-z-index-3)
-  );
+  --osdk-portal-dismiss-layer-z-index: var(--osdk-combobox-z-index);
 }

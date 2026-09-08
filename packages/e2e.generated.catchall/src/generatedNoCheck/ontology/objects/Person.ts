@@ -19,6 +19,7 @@ export namespace Person {
   export type PropertyKeys = 'email';
 
   export interface Links {
+    readonly FriendOf: Person.ObjectSet;
     readonly Friends: Person.ObjectSet;
     readonly Todos: Todo.ObjectSet;
   }
@@ -68,6 +69,7 @@ export interface Person extends $ObjectTypeDefinition {
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
+      FriendOf: $ObjectMetadata.Link<Person, true>;
       Friends: $ObjectMetadata.Link<Person, true>;
       Todos: $ObjectMetadata.Link<Todo, true>;
     };

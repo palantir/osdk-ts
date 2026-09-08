@@ -1,5 +1,75 @@
 # @osdk/create-app
 
+## 2.65.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.65.0
+
+## 2.64.0
+
+### Minor Changes
+
+- e3855b2: Add new branch-aware changes to unstable features
+
+### Patch Changes
+
+- @osdk/generator-utils@2.64.0
+
+## 2.63.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.63.0
+
+## 2.62.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.62.0
+
+## 2.61.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.61.0
+
+## 2.60.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.60.0
+
+## 2.59.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.59.0
+
+## 2.58.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.58.0
+
+## 2.57.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.57.0
+
+## 2.56.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.56.0
+
+## 2.55.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.55.0
+
 ## 2.54.0
 
 ### Patch Changes

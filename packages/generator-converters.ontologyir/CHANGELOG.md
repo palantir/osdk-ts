@@ -1,5 +1,90 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.65.0
+
+### Minor Changes
+
+- e3a381d: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.77.0`. Generated experimental ontology metadata now includes full action type metadata and logic rules.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.65.0
+
+## 2.64.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.64.0
+
+## 2.63.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.63.0
+
+## 2.62.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.62.0
+
+## 2.61.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.61.0
+
+## 2.60.0
+
+### Minor Changes
+
+- e879ad7: Bump platform SDKs and add loadOntologyDefinedDerivedProperties flag, which defaults to true
+- bbbeca8: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.75.0`, which reinstates the `streamingExecute` query endpoint as a Server-Sent Events (`text/event-stream`) stream. The experimental `executeStreamingFunction` helper is reimplemented on top of it and no longer throws: it yields each result as it arrives, flattening batched results so array-returning queries emit one element at a time.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.60.0
+
+## 2.59.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.59.0
+
+## 2.58.0
+
+### Minor Changes
+
+- ab557b4: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.73.0`. `ObjectTypeInterfaceImplementation` now requires an `actionTypes` field, and the generally available media set `read`, `info`, `metadata` and `uploadMedia` endpoints no longer accept a `preview` parameter.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.58.0
+
+## 2.57.0
+
+### Minor Changes
+
+- 8ce066f: Support map, media reference and inline object literal types on TypeScript function signatures
+- 3bfccdb: Emit struct field rids as valid five-component resource identifiers with a UUID locator
+
+### Patch Changes
+
+- Updated dependencies [e9d7ffa]
+  - @osdk/client.unstable@2.57.0
+
+## 2.56.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.56.0
+
+## 2.55.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.55.0
+
 ## 2.54.0
 
 ### Patch Changes

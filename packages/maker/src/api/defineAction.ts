@@ -15,8 +15,10 @@
  */
 
 import type {
+  OntologyIrAddObjectRule,
   OntologyIrInterfacePropertyLogicRuleValue,
   OntologyIrParameterPrefill,
+  OntologyIrStructFieldBaseParameterType,
   ParameterId,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
@@ -61,14 +63,19 @@ import {
   isInterfaceSharedPropertyType,
 } from "./interface/InterfacePropertyType.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
-import { getPropertyKeys } from "./object/objectPropertyHelpers.js";
+import {
+  getProperty,
+  getPropertyKeys,
+} from "./object/objectPropertyHelpers.js";
 import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
 import type { ObjectPropertyTypeUserDefinition } from "./object/ObjectPropertyTypeUserDefinition.js";
 import type { ObjectType } from "./object/ObjectType.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 import {
   isStruct,
+  isVector,
   type PropertyTypeType,
+  type PropertyTypeTypeStruct,
 } from "./properties/PropertyTypeType.js";
 
 export const MODIFY_OBJECT_PARAMETER: string = "objectToModifyParameter";
@@ -89,6 +96,7 @@ export type ActionTypeUserDefinition = {
   objectType: ObjectTypeDefinition | ObjectType;
   apiName?: string;
   displayName?: string;
+  description?: string;
   status?: ActionStatus;
   parameterConfiguration?: Record<string, ActionParameterConfiguration>;
   nonParameterMappings?: Record<string, MappingValue>;
@@ -111,6 +119,7 @@ export type InterfaceActionTypeUserDefinition = {
   objectType?: ObjectTypeDefinition | ObjectType;
   apiName?: string;
   displayName?: string;
+  description?: string;
   status?: ActionStatus;
   parameterConfiguration?: Record<string, ActionParameterConfiguration>;
   nonParameterMappings?: Record<string, MappingValue>;
@@ -143,8 +152,8 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
     );
   }
   invariant(
-    /^[a-z0-9]+(-[a-z0-9]+)*$/u.test(actionDef.apiName),
-    `Action type apiName "${actionDef.apiName}" must be alphanumeric, lowercase, and kebab-case`,
+    /^[a-z0-9]+(?:[-.][a-z0-9]+)*$/u.test(actionDef.apiName),
+    `Action type apiName "${actionDef.apiName}" must contain lowercase alphanumeric segments separated by hyphens or dots`,
   );
 
   const parameterIdsSet = new Set(parameterIds);
@@ -294,13 +303,14 @@ export function isPropertyParameter(
       ) &&
       !Object.keys(def.nonParameterMappings ?? {}).includes(name) &&
       !isStruct(type) &&
+      !isVector(type) &&
       !def.excludedProperties?.includes(name)
     );
   }
   return (
     getPropertyKeys(def.objectType).includes(name) &&
     !Object.keys(def.nonParameterMappings ?? {}).includes(name) &&
-    !isStruct(type) &&
+    !isVector(type) &&
     !def.excludedProperties?.includes(name)
   );
 }
@@ -350,8 +360,14 @@ export function createParameters(
                       )),
                 required:
                   def.parameterConfiguration?.[id].required ??
-                  propertyMetadata?.nullability?.noNulls ??
-                  false,
+                  ((propertyMetadata?.array ?? false)
+                    ? {
+                        listLength: propertyMetadata?.nullability
+                          ?.noEmptyCollections
+                          ? { min: 1 }
+                          : {},
+                      }
+                    : (propertyMetadata?.nullability?.noNulls ?? false)),
               }
             : {
                 required:
@@ -375,6 +391,69 @@ export function createParameters(
       };
     }),
   ];
+}
+
+export function createStructFieldValues(
+  def: ActionTypeUserDefinition,
+  parameters: Array<ActionParameter>,
+): OntologyIrAddObjectRule["structFieldValues"] {
+  return Object.fromEntries(
+    parameters.flatMap((parameter) => {
+      const property = getProperty(def.objectType, parameter.id);
+      if (property === undefined || !isStruct(property.type)) {
+        return [];
+      }
+
+      invariant(
+        typeof parameter.type === "object" &&
+          (parameter.type.type === "struct" ||
+            parameter.type.type === "structList"),
+        `Parameter ${parameter.id} for struct property ${parameter.id} must have a struct parameter type`,
+      );
+      return [
+        [
+          parameter.id,
+          Object.fromEntries(
+            Object.keys(property.type.structDefinition).map((fieldApiName) => [
+              fieldApiName,
+              property.array
+                ? {
+                    type: "structListParameterFieldValue",
+                    structListParameterFieldValue: {
+                      parameterId: parameter.id,
+                      structFieldApiName: fieldApiName,
+                    },
+                  }
+                : {
+                    type: "structParameterFieldValue",
+                    structParameterFieldValue: {
+                      parameterId: parameter.id,
+                      structFieldApiName: fieldApiName,
+                    },
+                  },
+            ]),
+          ),
+        ],
+      ];
+    }),
+  );
+}
+
+export function createPropertyParameterValues(
+  def: ActionTypeUserDefinition,
+  parameterIds: Array<ParameterId>,
+): OntologyIrAddObjectRule["propertyValues"] {
+  return Object.fromEntries(
+    parameterIds
+      .filter((parameterId) => {
+        const property = getProperty(def.objectType, parameterId);
+        return property === undefined || !isStruct(property.type);
+      })
+      .map(
+        (parameterId) =>
+          [parameterId, { type: "parameterId", parameterId }] as const,
+      ),
+  );
 }
 
 function getTargetParameters(
@@ -750,7 +829,7 @@ export function extractAllowedValuesFromActionParameterType(
         return { type: "objectSetRid" };
       case "struct":
       case "structList":
-        throw new Error("Structs are not supported yet");
+        return { type: "struct" };
       default:
         throw new Error(
           `Inferred allowed values for ${type.type} not yet supported. Please explicitly provide allowed values.`,
@@ -862,7 +941,9 @@ function extractAllowedValuesFromPropertyType(
         case "string":
           return { type: "text" };
         case "struct":
-          throw new Error("Structs are not supported yet");
+          return { type: "struct" };
+        case "vector":
+          throw new Error("Vectors are not supported as action parameters yet");
         default:
           throw new Error("Unknown type");
       }
@@ -886,7 +967,9 @@ function extractActionParameterType(
       case "string":
         return maybeAddList("string", pt);
       case "struct":
-        throw new Error("Structs are not supported yet");
+        return extractStructActionParameterType(typeType, pt.array ?? false);
+      case "vector":
+        throw new Error("Vectors are not supported as action parameters yet");
       default:
         throw new Error(`Unknown type`);
     }
@@ -909,6 +992,59 @@ function extractActionParameterType(
       return maybeAddList("geotimeSeriesReference", pt);
     default:
       throw new Error("Unknown type");
+  }
+}
+
+function extractStructActionParameterType(
+  type: PropertyTypeTypeStruct,
+  isList: boolean,
+): ActionParameterType {
+  const structFieldTypes = Object.fromEntries(
+    Object.entries(type.structDefinition).map(([apiName, fieldDefinition]) => [
+      apiName,
+      extractStructFieldParameterType(
+        typeof fieldDefinition === "object" && "fieldType" in fieldDefinition
+          ? fieldDefinition.fieldType
+          : fieldDefinition,
+      ),
+    ]),
+  );
+  return isList
+    ? { type: "structList", structList: { structFieldTypes } }
+    : { type: "struct", struct: { structFieldTypes } };
+}
+
+function extractStructFieldParameterType(
+  type: Exclude<PropertyTypeType, PropertyTypeTypeStruct>,
+): OntologyIrStructFieldBaseParameterType {
+  const typeName = typeof type === "object" ? type.type : type;
+  switch (typeName) {
+    case "boolean":
+      return { type: "boolean", boolean: {} };
+    case "byte":
+    case "integer":
+    case "short":
+      return { type: "integer", integer: {} };
+    case "long":
+      return { type: "long", long: {} };
+    case "decimal":
+    case "double":
+    case "float":
+      return { type: "double", double: {} };
+    case "string":
+      return { type: "string", string: {} };
+    case "geopoint":
+      return { type: "geohash", geohash: {} };
+    case "geoshape":
+      return { type: "geoshape", geoshape: {} };
+    case "timestamp":
+      return { type: "timestamp", timestamp: {} };
+    case "date":
+      return { type: "date", date: {} };
+    default:
+      throw new Error(
+        `Property type ${typeName} is not supported for struct action parameter fields`,
+      );
   }
 }
 

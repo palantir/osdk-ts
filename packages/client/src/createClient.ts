@@ -18,6 +18,7 @@ import type {
   ActionDefinition,
   FetchPageArgs,
   InterfaceDefinition,
+  LinkTypeApiNamesFor,
   Logger,
   Media,
   NullabilityAdherence,
@@ -34,16 +35,17 @@ import type {
 import type {
   Experiment,
   ExperimentFns,
+  LinkSubscription,
   MediaTransformation,
   MinimalObjectSet,
   TransformOptions,
 } from "@osdk/api/unstable";
 import {
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__linkSubscriptions,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet,
   transformAndWait,
 } from "@osdk/api/unstable";
@@ -66,6 +68,7 @@ import { ObjectSetListenerWebsocket } from "./objectSet/ObjectSetListenerWebsock
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 import type { CreateSubscriptionConnectionFn } from "./SubscriptionConnection.js";
+import { resolveBranch } from "./util/resolveBranch.js";
 
 // We import it this way to keep compatible with CJS. If we referenced the
 // value of `symbolClientContext` directly, then we would have to a dynamic import
@@ -115,7 +118,7 @@ export function createClientInternal(
   options:
     | {
         logger?: Logger;
-        UNSTABLE_DO_NOT_USE_BRANCH?: string;
+        UNSTABLE_DO_NOT_USE_BRANCH?: string | null;
         headers?: Record<string, string>;
       }
     | undefined = undefined,
@@ -145,7 +148,7 @@ export function createClientInternal(
       transactionId: transactionRid,
       flushEdits,
       scenarioRid,
-      branch: options?.UNSTABLE_DO_NOT_USE_BRANCH,
+      branch: resolveBranch(options?.UNSTABLE_DO_NOT_USE_BRANCH),
       createSubscriptionConnection: subscribeConnectionFn,
     },
     fetchFn,
@@ -166,6 +169,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       | QueryDefinition<any>
       | Experiment<"2.0.8">
       | Experiment<"2.1.0">
+      | Experiment<"2.59.0">
       | Experiment<"2.8.0">
       | Experiment<"2.19.0">,
   >(
@@ -181,6 +185,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
           : T extends
                 | Experiment<"2.0.8">
                 | Experiment<"2.1.0">
+                | Experiment<"2.59.0">
                 | Experiment<"2.8.0">
                 | Experiment<"2.19.0">
             ? { invoke: ExperimentFns<T> }
@@ -223,6 +228,28 @@ export function createClientFromContext(clientCtx: MinimalClient) {
               );
             },
           } as any;
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__linkSubscriptions.name:
+          return {
+            subscribeToLinks: (
+              objectType: ObjectTypeDefinition,
+              args: LinkSubscription.Args<
+                ObjectTypeDefinition,
+                LinkTypeApiNamesFor<ObjectTypeDefinition>
+              >,
+            ) => {
+              const pendingSubscription =
+                import("./objectSet/LinkSubscriptionWebsocket.js").then(
+                  ({ LinkSubscriptionWebsocket }) =>
+                    LinkSubscriptionWebsocket.getInstance(clientCtx).subscribe(
+                      objectType,
+                      args,
+                    ),
+                );
+              return {
+                unsubscribe: async () => (await pendingSubscription)(),
+              };
+            },
+          } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid.name:
           return {
             fetchOneByRid: async <
@@ -243,34 +270,6 @@ export function createClientFromContext(clientCtx: MinimalClient) {
               )) as Osdk<Q>;
             },
           } as any;
-        case __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference.name:
-          return {
-            createMediaReference: async <
-              Q extends ObjectTypeDefinition,
-              const L extends PropertyKeys.Filtered<Q, "mediaReference">,
-            >(args: {
-              data: Blob;
-              fileName: string;
-              objectType: Q;
-              propertyType: L;
-            }) => {
-              const { data, fileName, objectType, propertyType } = args;
-              const { upload } =
-                await import("@osdk/foundry.ontologies/MediaReferenceProperty");
-              return await upload(
-                clientCtx,
-                await clientCtx.ontologyRid,
-                objectType.apiName,
-                propertyType as string,
-                data,
-                {
-                  mediaItemPath: fileName,
-                  preview: true,
-                },
-              );
-            },
-          } as any;
-
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid.name:
           return {
             fetchPageByRid: async <
@@ -414,6 +413,12 @@ export function createClientFromContext(clientCtx: MinimalClient) {
  *   manage tokens yourself.
  * @param options - Optional client configuration: a custom `logger`, an experimental `UNSTABLE_DO_NOT_USE_BRANCH`
  *   for branch-aware requests, and additional `headers` to include on every request.
+ *
+ *   The client is branch-aware without configuration. If `UNSTABLE_DO_NOT_USE_BRANCH` is not supplied, the
+ *   branch is read from the `VITE_FOUNDRY_BRANCH_RID` environment variable, which Foundry runtimes set to
+ *   the branch the application is checked out on; objects, actions, and queries then read and write on that
+ *   branch. An explicitly supplied branch always takes precedence, and `null` pins the client to the default
+ *   branch even while checked out on a branch.
  * @param fetchFn - An optional `fetch` implementation to use for all requests. Defaults to the global `fetch`.
  * @example
  * ```ts
@@ -442,8 +447,17 @@ export const createClient: (
   options?:
     | {
         logger?: Logger;
-        /** @beta This is an experimental feature subject to change */
-        UNSTABLE_DO_NOT_USE_BRANCH?: string;
+        /**
+         * The Foundry branch to scope every request to.
+         *
+         * When omitted (or `undefined`), the branch is read from the
+         * `VITE_FOUNDRY_BRANCH_RID` environment variable, which Foundry runtimes
+         * set to the branch the application is checked out on. Pass `null` to
+         * ignore the environment and use the default branch.
+         *
+         * @beta This is an experimental feature subject to change
+         */
+        UNSTABLE_DO_NOT_USE_BRANCH?: string | null;
         headers?: Record<string, string>;
       }
     | undefined,

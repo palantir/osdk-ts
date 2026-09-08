@@ -24,7 +24,7 @@ import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePacka
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import { $ } from "execa";
 
-const ONTOLOGY_METADATA_ENTRYPOINT = "./UNSTABLE_DO_NOT_USE/ontology-metadata";
+const ONTOLOGY_METADATA_ENTRYPOINT = "./experimental/ontology-metadata";
 
 async function setup() {
   const dir = await fs.mkdtemp(

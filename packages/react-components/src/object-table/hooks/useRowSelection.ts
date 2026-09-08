@@ -34,7 +34,7 @@ import { getRowId, getRowIdFromPrimaryKey } from "../utils/getRowId.js";
  */
 export interface UseRowSelectionChange<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   selectedRows: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[];
   isSelectAll: boolean;
@@ -42,7 +42,7 @@ export interface UseRowSelectionChange<
 
 export interface UseRowSelectionProps<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   selectionMode?: "single" | "multiple" | "none";
   selectedRows?: PrimaryKeyType<Q>[];
@@ -68,7 +68,7 @@ export interface UseRowSelectionResult {
 
 export function useRowSelection<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >({
   selectionMode = "none",
   selectedRows,
@@ -255,7 +255,7 @@ export function useRowSelection<
 
 interface GetSelectedRowsProps<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   rowId: string;
   rowIndex: number;
@@ -266,7 +266,7 @@ interface GetSelectedRowsProps<
 
 function getSingleSelectionRows<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >({
   rowId,
   rowIndex,
@@ -279,7 +279,7 @@ function getSingleSelectionRows<
 
 function getRangeSelectionRows<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >({
   lastSelectedRowIndex,
   rowIndex,
@@ -305,7 +305,7 @@ function getRangeSelectionRows<
 
 function isCurrentlySelected<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >({
   rowIndex,
   data,
@@ -321,7 +321,7 @@ function isCurrentlySelected<
 
 function getMultipleSelectionRows<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >({
   rowIndex,
   data,
@@ -336,7 +336,7 @@ function getMultipleSelectionRows<
 
 function getRowsInRange<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   data: Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>,
   startIndex: number,
@@ -381,7 +381,7 @@ function getRowSelectionState<Q extends ObjectOrInterfaceDefinition>(
 
 function getSelectedPrimaryKeys<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   selectionState: RowSelectionState,
   data: Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>,

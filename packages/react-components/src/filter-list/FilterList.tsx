@@ -23,7 +23,6 @@ import type { RenderFilterInput } from "./base/BaseFilterListApi.js";
 import { FilterInput } from "./FilterInput.js";
 import type {
   FilterDefinitionUnion,
-  FilterKey,
   FilterListProps,
 } from "./FilterListApi.js";
 import { useFilterListState } from "./hooks/useFilterListState.js";
@@ -34,6 +33,7 @@ import { getFilterKey } from "./utils/getFilterKey.js";
 import { getFilterLabel } from "./utils/getFilterLabel.js";
 
 const EMPTY_WHERE = {};
+const EMPTY_DEFINITIONS: Array<never> = [];
 
 export function FilterList<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
@@ -43,6 +43,8 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     objectSet,
     title,
     titleIcon,
+    enableCollapse,
+    defaultCollapsed,
     collapsed,
     onCollapsedChange,
     filterDefinitions,
@@ -77,15 +79,9 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       if (!onFilterVisibilityChange) {
         return;
       }
-      const states: Array<{ filterKey: FilterKey<Q>; isVisible: boolean }> = [
-        ...visibleKeys.map((key) => ({
-          filterKey: key as FilterKey<Q>,
-          isVisible: true,
-        })),
-        ...hiddenKeys.map((key) => ({
-          filterKey: key as FilterKey<Q>,
-          isVisible: false,
-        })),
+      const states: Array<{ filterKey: string; isVisible: boolean }> = [
+        ...visibleKeys.map((key) => ({ filterKey: key, isVisible: true })),
+        ...hiddenKeys.map((key) => ({ filterKey: key, isVisible: false })),
       ];
       onFilterVisibilityChange(states);
     },
@@ -100,10 +96,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     reorderVisible,
     hasVisibilityChanges,
     resetVisibility,
-  } = useFilterVisibility(
-    filterDefinitions,
-    uncontrolledAddFilterMode ? handleVisibilityChange : undefined,
-  );
+  } = useFilterVisibility(filterDefinitions, handleVisibilityChange);
 
   const canReset = hasChangesFromInitial || hasVisibilityChanges;
 
@@ -140,7 +133,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   const handleFilterShown = useCallback(
     (filterKey: string) => {
       showFilter(filterKey);
-      onFilterAdded?.(filterKey, filterDefinitions ?? []);
+      onFilterAdded?.(filterKey, filterDefinitions ?? EMPTY_DEFINITIONS);
     },
     [showFilter, onFilterAdded, filterDefinitions],
   );
@@ -224,6 +217,8 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     <BaseFilterList
       title={title}
       titleIcon={titleIcon}
+      enableCollapse={enableCollapse}
+      defaultCollapsed={defaultCollapsed}
       collapsed={collapsed}
       onCollapsedChange={onCollapsedChange}
       filterDefinitions={effectiveVisibleDefinitions}

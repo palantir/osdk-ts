@@ -54,6 +54,7 @@ export type ActionParameterAllowedValues =
   | { type: "geoshape" }
   | { type: "geotimeSeriesReference" }
   | { type: "interfaceObjectQuery" }
+  | { type: "struct" }
   | { type: "redacted" }
   | { type: "multipassGroup" }
   | {

@@ -139,7 +139,8 @@ Components in this package favour **minimum configuration**. A consumer should b
 - **Default `enable*` boolean flags to `true`** when the feature is part of the out-of-the-box experience (e.g. `enableOrdering`, `enableColumnPinning`).
 - **Document defaults inline** with `@default` JSDoc tags on every optional prop.
 - **Provide controlled and/or uncontrolled variants** for any stateful feature — implement **at least one** (both encouraged where useful). State the chosen mode(s) explicitly in JSDoc on each prop, e.g. `"Controlled mode only. Caller owns selection state..."` or `"Uncontrolled. Seeds initial sort; component continues to own the state."`. See how `ObjectTable` exposes both `defaultOrderBy` (uncontrolled) and `orderBy` + `onOrderByChanged` (controlled); `useRowSelection.ts` is the canonical both-modes hook implementation — drop the branch you don't support for single-mode features.
-- **Define the API in its own file:** `<Name>Api.ts` co-located with the component, exporting only the OSDK-aware outer-component props plus public sub-types (column definitions, locators, options). Base props live inline in `Base<Name>.tsx`.
+- **Define the API in its own file:** `<Name>Api.ts` co-located with the component, exporting the base props, the OSDK-aware outer-component props, and any public sub-types (column definitions, locators, options).
+- **Name a viewer's primary input `src` or `content`, by form.** `src` is the binary source to render from, in whatever forms the renderer supports (a URL, raw bytes, or both); `content` is the already-decoded payload (text, or a parsed object). Never overload one name across both categories, and never name the prop after the file type. See [`PdfViewerApi.ts`](./src/pdf-viewer/PdfViewerApi.ts) for the reference `src` and [`XmlViewerApi.ts`](./src/xml-viewer/XmlViewerApi.ts) for `content`.
 
 ### Adding a New Component
 
@@ -150,7 +151,7 @@ Components in this package favour **minimum configuration**. A consumer should b
 5. Keep the Base component API simple using primitive types.
 6. For complex components, consider a building blocks tier with sub-components and hooks.
 7. **Reuse before writing.** Check `src/base-components/` for existing primitives, and consult `src/public/primitives.ts` (the sanctioned-reuse barrel) before creating new UI primitives. If a primitive is reusable across components, add it to `src/base-components/` rather than co-locating it in the component folder.
-8. Export the OSDK component (and optionally the Base component) from `src/public/experimental/<name>.ts`.
+8. New components start under `src/public/experimental/<name>.ts`. Add an explicit `./experimental/<name>` package export; there is no experimental wildcard. Components move to `src/public/<name>.ts` only when deliberately promoted to a stable entry point.
 9. **Update documentation:**
    - Add `docs/<Name>.md` with usage and a minimal example, matching the structure of existing per-component docs
    - **Add an auto-generated props table.** Drop a `<!-- AUTOGEN:props START src=... interface=... -->` / `END` marker block into the doc and run `pnpm --filter @osdk/react-components gen-props`. See [Props reference tables (auto-generated)](./README.md#props-reference-tables-auto-generated) in the README. Don't hand-author the props table
@@ -174,7 +175,7 @@ src/my-component/
 
 ### Export Rules
 
-- **OSDK components** are exported through per-component files in `src/public/experimental/<name>.ts`. Check `package.json` `exports` first — the existing wildcard pattern (`"./experimental/*"`) may already cover the new sub-path; only add an explicit entry if the wildcard doesn't resolve to it
+- **OSDK components** start in per-component files under `src/public/experimental/`. Add an explicit package export for each experimental entry point. Promoted components use `src/public/<name>.ts`, which is covered by the `"./*"` package export fallback
 - **Base components** may be exported for advanced use cases
 - **UI primitives** in `src/base-components/` are internal and must **not** be exported. The sanctioned reuse list is `src/public/primitives.ts`
 

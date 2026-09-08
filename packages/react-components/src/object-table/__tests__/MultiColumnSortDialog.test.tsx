@@ -20,8 +20,6 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { MultiColumnSortDialog } from "../MultiColumnSortDialog.js";
 
-const COLUMN_OPTIONS = [{ id: "a", name: "Col A", canSort: true }];
-
 function getSortToggle(columnName: string): HTMLElement {
   return screen.getByRole("button", {
     name: `Toggle sort direction for ${columnName}`,
@@ -31,44 +29,6 @@ function getSortToggle(columnName: string): HTMLElement {
 describe(MultiColumnSortDialog, () => {
   afterEach(() => {
     cleanup();
-  });
-
-  it("renders the default strings", () => {
-    render(
-      <MultiColumnSortDialog
-        isOpen={true}
-        onClose={vi.fn()}
-        onApply={vi.fn()}
-        currentSorting={[]}
-        columnOptions={COLUMN_OPTIONS}
-      />,
-    );
-
-    expect(screen.getByText("Sort on Multiple Columns")).toBeTruthy();
-    expect(screen.getByText("Add Column to Sort")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Apply" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeTruthy();
-  });
-
-  it("applies the labels prop and falls back to defaults for unset keys", () => {
-    render(
-      <MultiColumnSortDialog
-        isOpen={true}
-        onClose={vi.fn()}
-        onApply={vi.fn()}
-        currentSorting={[]}
-        columnOptions={COLUMN_OPTIONS}
-        labels={{
-          sortDialogTitle: "Sort by many columns",
-          sortDialogAddColumnToSort: "Add another column",
-        }}
-      />,
-    );
-
-    expect(screen.getByText("Sort by many columns")).toBeTruthy();
-    expect(screen.getByText("Add another column")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Apply" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeTruthy();
   });
 
   describe("sort direction icon", () => {

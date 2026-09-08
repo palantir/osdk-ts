@@ -322,7 +322,7 @@ export async function getDependencyVersions(): Promise<{
   const typescriptVersion = ourPackageJson.devDependencies.typescript;
   const tslibVersion = ourPackageJson.dependencies.tslib;
   const areTheTypesWrongVersion =
-    ourPackageJson.dependencies["@arethetypeswrong/cli"];
+    ourPackageJson.devDependencies["@arethetypeswrong/cli"];
   const osdkClientVersion = `^${process.env.PACKAGE_CLIENT_VERSION}`;
   const osdkApiVersion = `^${process.env.PACKAGE_API_VERSION}`;
   const osdkLegacyClientVersion = `^${process.env.PACKAGE_LEGACY_CLIENT_VERSION}`;

@@ -22,7 +22,7 @@ const pdfWorkerUrl = new URL(
 );
 import { useEffect, useState } from "react";
 
-import type { PdfSource } from "../types.js";
+import type { PdfSource } from "../PdfViewerApi.js";
 
 type GetDocumentParams = Parameters<typeof getDocument>[0];
 

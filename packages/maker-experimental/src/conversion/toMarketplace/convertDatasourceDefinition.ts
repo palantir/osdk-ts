@@ -21,6 +21,7 @@ import type {
   PropertySecurityGroups,
   PropertyTypeMappingInfo,
   RetentionPolicy,
+  SecurityGroupComparisonValue,
   SecurityGroupGranularCondition,
   SecurityGroupGranularSecurityDefinition,
 } from "@osdk/client.unstable";
@@ -44,7 +45,7 @@ export function convertDatasourceDefinition(
   ridGenerator: OntologyRidGenerator,
 ): ObjectTypeDatasourceDefinition {
   const baseDatasource = objectType.datasources?.find((ds) =>
-    ["dataset", "stream", "restrictedView"].includes(ds.type),
+    ["dataset", "stream", "restrictedView", "direct"].includes(ds.type),
   );
 
   // Helper to get column names from properties
@@ -126,6 +127,33 @@ export function convertDatasourceDefinition(
         },
       };
 
+    case "direct":
+      const directDatasourceLocator =
+        ridGenerator.generateDirectDatasourceLocator(
+          objectType.apiName,
+          getColumnNames(properties),
+          "master",
+        );
+
+      return {
+        type: "direct",
+        direct: {
+          directSourceRid: directDatasourceLocator.rid,
+          propertyMapping: buildPropertyMapping(
+            properties,
+            objectType.apiName,
+            ridGenerator,
+          ),
+          propertySecurityGroups: convertPropertySecurityGroups(
+            baseDatasource,
+            properties,
+            objectType.primaryKeyPropertyApiName,
+            objectType.apiName,
+            ridGenerator,
+          ),
+        },
+      };
+
     case "dataset":
     default:
       // Use generateLocator for dataset datasources
@@ -200,7 +228,9 @@ function convertPropertySecurityGroups(
       groups: [
         {
           properties: propertyRids,
-          rid: ridGenerator.generateRid("defaultObjectSecurityPolicy"),
+          rid: ridGenerator.generatePropertySecurityGroupRid(
+            "defaultObjectSecurityPolicy",
+          ),
           security: {
             type: "granular",
             granular: {
@@ -390,9 +420,15 @@ function convertSecurityCondition(
             ),
           },
         };
-      } else {
-        return condition;
       }
+      return {
+        type: "and",
+        and: {
+          conditions: condition.and.conditions.map((c) =>
+            convertSecurityCondition(c, ridGenerator, objectTypeApiName),
+          ),
+        },
+      };
     case "or":
       if ("conditions" in condition) {
         return {
@@ -403,20 +439,63 @@ function convertSecurityCondition(
             ),
           },
         };
-      } else {
-        return condition;
       }
+      return {
+        type: "or",
+        or: {
+          conditions: condition.or.conditions.map((c) =>
+            convertSecurityCondition(c, ridGenerator, objectTypeApiName),
+          ),
+        },
+      };
+    case "not":
+      return {
+        type: "not",
+        not: {
+          condition: convertSecurityCondition(
+            condition.not.condition,
+            ridGenerator,
+            objectTypeApiName,
+          ),
+        },
+      };
+    case "markings":
+      return {
+        type: "markings",
+        markings: {
+          property: convertSecurityProperty(
+            condition.markings.property,
+            ridGenerator,
+            objectTypeApiName,
+          ),
+        },
+      };
+    case "comparison":
+      return {
+        type: "comparison",
+        comparison: {
+          ...condition.comparison,
+          left: convertSecurityComparisonValue(
+            condition.comparison.left,
+            ridGenerator,
+            objectTypeApiName,
+          ),
+          right: convertSecurityComparisonValue(
+            condition.comparison.right,
+            ridGenerator,
+            objectTypeApiName,
+          ),
+        },
+      };
     case "markingProperty":
       return {
         type: "markings",
         markings: {
-          property:
-            ridGenerator && objectTypeApiName
-              ? ridGenerator.generatePropertyRid(
-                  condition.property,
-                  objectTypeApiName,
-                )
-              : condition.property,
+          property: convertSecurityProperty(
+            condition.property,
+            ridGenerator,
+            objectTypeApiName,
+          ),
         },
       };
     case "groupProperty":
@@ -433,13 +512,11 @@ function convertSecurityCondition(
           },
           right: {
             type: "property",
-            property:
-              ridGenerator && objectTypeApiName
-                ? ridGenerator.generatePropertyRid(
-                    condition.property,
-                    objectTypeApiName,
-                  )
-                : condition.property,
+            property: convertSecurityProperty(
+              condition.property,
+              ridGenerator,
+              objectTypeApiName,
+            ),
           },
         },
       };
@@ -468,6 +545,34 @@ function convertSecurityCondition(
     default:
       return condition;
   }
+}
+
+function convertSecurityComparisonValue(
+  value: SecurityGroupComparisonValue,
+  ridGenerator?: OntologyRidGenerator,
+  objectTypeApiName?: string,
+): SecurityGroupComparisonValue {
+  if (value.type !== "property") {
+    return value;
+  }
+  return {
+    type: "property",
+    property: convertSecurityProperty(
+      value.property,
+      ridGenerator,
+      objectTypeApiName,
+    ),
+  };
+}
+
+function convertSecurityProperty(
+  property: string,
+  ridGenerator?: OntologyRidGenerator,
+  objectTypeApiName?: string,
+): string {
+  return ridGenerator && objectTypeApiName
+    ? ridGenerator.generatePropertyRid(property, objectTypeApiName)
+    : property;
 }
 
 /**

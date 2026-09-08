@@ -20,7 +20,7 @@ import type { RefObject } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ANNOTATION_LAYER_RENDERED_EVENT } from "../constants.js";
-import type { PdfFormFieldValue } from "../types.js";
+import type { PdfFormFieldValue } from "../PdfViewerApi.js";
 
 /** Get the viewer's container element (typed loosely by pdf.js). */
 function getViewerContainer(viewer: PDFViewer): HTMLElement | undefined {

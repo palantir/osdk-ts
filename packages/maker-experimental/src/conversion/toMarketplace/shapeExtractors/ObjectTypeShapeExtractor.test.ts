@@ -79,10 +79,12 @@ function createMockRidGenerator(
     getInterfacePropertyTypeRids: () => new MockBiMap([]) as any,
     getPropertyTypeRids: () => new MockBiMap([]) as any,
     getDatasourceLocators: () => new MockBiMap([]) as any,
+    getDirectDatasourceLocators: () => new MockBiMap([]) as any,
     getFilesDatasourceLocators: () => new MockBiMap([]) as any,
     getGeotimeSeriesIntegrationRids: () => new MockBiMap([]) as any,
     getTimeSeriesSyncs: () => new MockBiMap([]) as any,
     getColumnShapes: () => new MockBiMap([]) as any,
+    getDirectDatasourceColumnShapes: () => new MockBiMap([]) as any,
     getObjectTypeRids: () => new MockBiMap([]) as any,
     getLinkTypeRids: () => new MockBiMap([]) as any,
     getGroupIds: () => new MockBiMap([]) as any,
@@ -129,6 +131,14 @@ function createMockRidGenerator(
     ) => ({
       rid: `dataset.${dataSetName}`,
       branchId: "main",
+    }),
+    generateDirectDatasourceLocator: (
+      dataSetName: string,
+      _columnNames: Set<string>,
+      branchId: string,
+    ) => ({
+      rid: `dataset.${dataSetName}`,
+      branchId,
     }),
     generateStreamLocator: (streamName: string, _columnNames: Set<string>) => ({
       streamLocatorRid: `stream.${streamName}`,
@@ -309,7 +319,7 @@ describe("ObjectTypeShapeExtractor", () => {
       }
     });
 
-    it("should handle object type with dataset datasource", () => {
+    it("should exclude edit-only properties from dataset column shapes", () => {
       const objectType: ObjectTypeBlockDataV2 = {
         objectType: {
           apiName: "Person",
@@ -344,6 +354,22 @@ describe("ObjectTypeShapeExtractor", () => {
               status: { type: "active", active: {} },
               typeClasses: [],
             },
+            "ri.ontology.main.property-type.person.notes": {
+              rid: "ri.ontology.main.property-type.person.notes" as PropertyTypeRid,
+              apiName: "notes",
+              displayMetadata: {
+                displayName: "Notes",
+                visibility: "NORMAL",
+              },
+              type: {
+                type: "string",
+                string: { isLongText: true, supportsExactMatching: false },
+              },
+              id: "person-notes-pt-id",
+              indexedForSearch: false,
+              status: { type: "active", active: {} },
+              typeClasses: [],
+            },
           },
           titlePropertyTypeRid:
             "ri.ontology.main.property-type.person.id" as PropertyTypeRid,
@@ -367,6 +393,10 @@ describe("ObjectTypeShapeExtractor", () => {
                   "ri.ontology.main.property-type.person.id": {
                     type: "column",
                     column: "person_id",
+                  },
+                  "ri.ontology.main.property-type.person.notes": {
+                    type: "editOnly",
+                    editOnly: {},
                   },
                 },
               },
@@ -401,6 +431,10 @@ describe("ObjectTypeShapeExtractor", () => {
               "person.id" as ReadableId,
               "ri.ontology.main.property-type.person.id" as PropertyTypeRid,
             ],
+            [
+              "person.notes" as ReadableId,
+              "ri.ontology.main.property-type.person.notes" as PropertyTypeRid,
+            ],
           ]) as any,
         getDatasourceLocators: () =>
           new MockBiMap<ReadableId, DatasourceLocator>([
@@ -413,6 +447,13 @@ describe("ObjectTypeShapeExtractor", () => {
               {
                 datasource: datasetLocator,
                 name: "person_id",
+              },
+            ],
+            [
+              "person-dataset.notes" as ReadableId,
+              {
+                datasource: datasetLocator,
+                name: "notes",
               },
             ],
           ]) as any,
@@ -442,7 +483,17 @@ describe("ObjectTypeShapeExtractor", () => {
         expect(datasetShape.tabularDatasource.about.fallbackTitle).toBe(
           "person-dataset",
         );
+        expect(datasetShape.tabularDatasource.schema).toEqual([
+          "person-dataset.person_id",
+        ]);
       }
+      expect(
+        result.inputShapes.has("person-dataset.person_id" as ReadableId),
+      ).toBe(true);
+      expect(result.inputShapes.has("person-dataset.notes" as ReadableId)).toBe(
+        false,
+      );
+      expect(result.outputShapes.has("person.notes" as ReadableId)).toBe(true);
     });
 
     it("should handle object type with stream datasource", () => {

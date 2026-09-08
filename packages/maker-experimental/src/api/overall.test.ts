@@ -19,7 +19,11 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { ActionType, InterfaceType } from "@osdk/maker";
+import type {
+  ActionType,
+  InterfaceType,
+  PropertyTypeTypeVector,
+} from "@osdk/maker";
 import {
   addDependency,
   defineCreateObjectAction,
@@ -29,11 +33,13 @@ import {
   defineObject,
   defineOntology,
   defineSharedPropertyType,
+  defineValueType,
   dumpOntologyFullMetadata,
   importOntologyEntity,
   importSharedPropertyType,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
+import invariant from "tiny-invariant";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { ReadableIdGenerator } from "../util/generateRid.js";
@@ -60,6 +66,53 @@ function apiNamePreset(apiName: string) {
 describe("Experimental Test Suite", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, "/tmp/");
+  });
+
+  describe("Empty backing Media Sets", () => {
+    it("requires opted-in Media Sets to exist before reconciliation", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineObject({
+          apiName: "Document",
+          displayName: "Document",
+          pluralDisplayName: "Documents",
+          titlePropertyApiName: "id",
+          primaryKeyPropertyApiName: "id",
+          properties: {
+            id: { type: "string" },
+            file: {
+              type: "mediaReference",
+              includeEmptyBackingMediaSet: true,
+            },
+          },
+        });
+      });
+
+      const mediaSetName = "com.palantir.Document.file";
+      const inputReadableId =
+        ReadableIdGenerator.getForMediaSetView(mediaSetName);
+      expect(result.backingMediaSetNames).toEqual([mediaSetName]);
+      expect(result.shapes.inputShapes.get(inputReadableId)?.type).toBe(
+        "filesDatasource",
+      );
+      expect(result.shapes.inputShapeMetadata.get(inputReadableId)).toEqual({
+        isOptional: false,
+        isAccessedInReconcile: true,
+        reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+      });
+
+      const document = Object.values(result.ontologyIr.ontology.objectTypes)[0];
+      const fileProperty = Object.values(
+        document.objectType.propertyTypes,
+      ).find((property) => property.apiName === "file");
+      invariant(fileProperty != null, "File property is missing");
+      expect(document.datasources[0]?.datasource).toMatchObject({
+        type: "mediaSetView",
+        mediaSetView: {
+          properties: [fileProperty.rid],
+          uploadProperties: [fileProperty.rid],
+        },
+      });
+    });
   });
 
   describe("Dependencies", () => {
@@ -782,6 +835,127 @@ describe("Experimental Test Suite", () => {
     });
   });
 
+  it("writes configurable descriptions to V2 block data", async () => {
+    const result = await defineOntologyV2("com.palantir.", () => {
+      defineImportObject({
+        apiName: "importedEmployee",
+        displayName: "Imported Employee",
+        description: "An employee supplied by another ontology",
+        properties: {
+          id: {
+            type: "string",
+            displayName: "Employee ID",
+            description: "The imported employee identifier",
+          },
+        },
+      });
+
+      const department = defineObject({
+        apiName: "department",
+        displayName: "Department",
+        pluralDisplayName: "Departments",
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+      });
+      const employee = defineObject({
+        apiName: "employee",
+        displayName: "Employee",
+        pluralDisplayName: "Employees",
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: {
+          id: { type: "string" },
+          departmentId: { type: "string" },
+        },
+      });
+
+      defineLink({
+        apiName: "department-employees",
+        description: "Employees belonging to a department",
+        one: {
+          object: department,
+          metadata: { apiName: "department" },
+        },
+        toMany: {
+          object: employee,
+          metadata: { apiName: "employees" },
+        },
+        manyForeignKeyProperty: "departmentId",
+      });
+      defineCreateObjectAction({
+        objectType: employee,
+        description: "Create an employee",
+      });
+    });
+
+    const link = Object.values(result.ontologyIr.ontology.linkTypes)[0];
+    expect(link.linkType.description).toBe(
+      "Employees belonging to a department",
+    );
+
+    const action = Object.values(result.ontologyIr.ontology.actionTypes)[0];
+    expect(action.actionType.metadata.displayMetadata.description).toBe(
+      "Create an employee",
+    );
+
+    const importedObject = Object.values(
+      result.ontologyIr.importedOntology.objectTypes,
+    )[0].objectType;
+    expect(importedObject.displayMetadata.description).toBe(
+      "An employee supplied by another ontology",
+    );
+    expect(
+      Object.values(importedObject.propertyTypes)[0].displayMetadata
+        .description,
+    ).toBe("The imported employee identifier");
+  });
+
+  it("preserves required nullability for value-typed object properties", async () => {
+    const result = await defineOntologyV2("com.palantir.", () => {
+      const classification = defineValueType({
+        apiName: "classification",
+        displayName: "Classification",
+        type: { type: "string" },
+        version: "1.0.0",
+      });
+
+      defineObject({
+        apiName: "classifiedObject",
+        displayName: "Classified Object",
+        pluralDisplayName: "Classified Objects",
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: {
+          id: { type: "string" },
+          classification: {
+            type: "string",
+            valueType: classification,
+            nullability: {
+              noNulls: true,
+              noEmptyCollections: true,
+            },
+          },
+        },
+      });
+    });
+
+    const objectType = Object.values(result.ontologyIr.ontology.objectTypes)[0]
+      .objectType;
+    const classification = Object.values(objectType.propertyTypes).find(
+      (property) => property.apiName === "classification",
+    );
+
+    expect(classification?.dataConstraints).toEqual({
+      propertyTypeConstraints: [],
+      nullability: undefined,
+      nullabilityV2: {
+        noNulls: true,
+        noEmptyCollections: true,
+      },
+    });
+  });
+
   describe("defineOntologyV2 import shapes", () => {
     it("generates input shapes for imported object types", async () => {
       const result = await defineOntologyV2("com.palantir.", () => {
@@ -1093,9 +1267,150 @@ describe("Experimental Test Suite", () => {
         ),
       ).toEqual(apiNamePreset("importedInterface"));
     });
+
+    it("maps imported SPT-backed interface properties using the SPT API name", async () => {
+      const interfaceApiName =
+        "com.palantir.core.ontology.types.sourceSystemMetadata";
+      const sptApiName =
+        "com.palantir.core.ontology.types.sourceSystemMetadataList";
+      const result = await defineOntologyV2("com.palantir.", () => {
+        const spt = importSharedPropertyType({
+          apiName: "sourceSystemMetadataList",
+          packageName: "com.palantir.core.ontology.types",
+          typeHint: "string",
+        });
+        const importedInterface: InterfaceType = {
+          apiName: interfaceApiName,
+          displayMetadata: {
+            displayName: "Source System Metadata",
+          },
+          propertiesV2: {
+            [spt.apiName]: {
+              sharedPropertyType: spt,
+              required: true,
+            },
+          },
+          propertiesV3: {
+            sourceSystemMetadataList: {
+              sharedPropertyType: spt,
+              required: true,
+            },
+          },
+          extendsInterfaces: [],
+          actionTypeConstraints: [],
+          status: { type: "active", active: {} },
+          links: [],
+          __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
+        };
+        importOntologyEntity(importedInterface);
+
+        defineObject({
+          apiName: "country",
+          displayName: "Country",
+          pluralDisplayName: "Countries",
+          titlePropertyApiName: "id",
+          primaryKeyPropertyApiName: "id",
+          properties: {
+            id: { type: "string" },
+            sourceSystemMetadataList: { type: "string" },
+          },
+          implementsInterfaces: [
+            {
+              implements: importedInterface,
+              propertyMapping: [
+                {
+                  interfaceProperty: spt.apiName,
+                  mapsTo: "sourceSystemMetadataList",
+                },
+              ],
+            },
+          ],
+        });
+      });
+
+      const country = Object.values(
+        result.ontologyIr.ontology.objectTypes,
+      ).find(
+        (objectType) =>
+          objectType.objectType.apiName === "com.palantir.country",
+      );
+      const sptRid = Object.keys(
+        result.ontologyIr.importedOntology.sharedPropertyTypes,
+      )[0];
+      expect(
+        Object.keys(country!.objectType.implementsInterfaces2[0].propertiesV2),
+      ).toEqual([
+        sptRid.replace("shared-property-type", "interface-property-type"),
+      ]);
+      expect(country!.objectType.implementsInterfaces2[0].properties).toEqual(
+        {},
+      );
+
+      const interfaceReadableId =
+        ReadableIdGenerator.getForInterface(interfaceApiName);
+      const interfacePropertyReadableId =
+        ReadableIdGenerator.getForSptBackedInterfaceProperty(
+          interfaceApiName,
+          sptApiName,
+        );
+      const sptReadableId = ReadableIdGenerator.getForSpt(sptApiName);
+      const interfaceShape = result.shapes.inputShapes.get(interfaceReadableId);
+      const interfacePropertyShape = result.shapes.inputShapes.get(
+        interfacePropertyReadableId,
+      );
+      const sptShape = result.shapes.inputShapes.get(sptReadableId);
+      expect(interfaceShape).toMatchObject({
+        type: "interfaceType",
+        interfaceType: {
+          properties: [expect.any(String)],
+          propertiesV2: [],
+        },
+      });
+      expect(interfacePropertyShape).toBeUndefined();
+      expect(sptShape).toMatchObject({
+        type: "sharedPropertyType",
+        sharedPropertyType: {
+          about: { fallbackTitle: sptApiName },
+        },
+      });
+      expect(result.importedInputPresets.get(sptReadableId)).toEqual(
+        apiNamePreset(sptApiName),
+      );
+    });
   });
 
   describe("Action Type Constraints", () => {
+    it("includes SPT-backed properties in both interface output reference lists", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        const sharedName = defineSharedPropertyType({
+          apiName: "sharedName",
+          type: "string",
+        });
+        defineInterface({
+          apiName: "sharedPropertyInterface",
+          properties: {
+            sharedName: {
+              sharedPropertyType: sharedName,
+              required: true,
+            },
+          },
+        });
+      });
+
+      const interfaceShape = result.shapes.outputShapes.get(
+        ReadableIdGenerator.getForInterface(
+          "com.palantir.sharedPropertyInterface",
+        ),
+      );
+      expect(interfaceShape).toMatchObject({
+        type: "interfaceType",
+        interfaceType: {
+          properties: [expect.any(String)],
+          propertiesV2: [expect.any(String)],
+        },
+      });
+    });
+
     it("produces output shapes for interface with action type constraints", async () => {
       const result = await defineOntologyV2("com.palantir.", () => {
         const iface = defineInterface({ apiName: "MyInterface" });
@@ -1217,6 +1532,82 @@ describe("Experimental Test Suite", () => {
     });
   });
 
+  it("converts direct datasources into marketplace inputs and mappings", async () => {
+    const result = await defineOntologyV2("com.palantir.", () => {
+      defineObject({
+        apiName: "directObject",
+        displayName: "Direct Object",
+        pluralDisplayName: "Direct Objects",
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: {
+          id: { type: "string", displayName: "ID" },
+          count: { type: "integer", displayName: "Count" },
+        },
+        datasources: [{ type: "direct" }],
+      });
+    });
+
+    const apiName = "com.palantir.directObject";
+    const datasourceReadableId = ReadableIdGenerator.getForDataset(apiName);
+    const idColumnReadableId = ReadableIdGenerator.getForDatasetColumn(
+      apiName,
+      "id",
+    );
+
+    expect(result.shapes.inputShapes.get(datasourceReadableId)).toMatchObject({
+      type: "tabularDatasource",
+      tabularDatasource: {
+        supportedTypes: ["DATASET", "RESTRICTED_VIEW", "VIRTUAL_TABLE"],
+      },
+    });
+    expect(result.shapes.inputShapes.get(idColumnReadableId)?.type).toBe(
+      "datasourceColumn",
+    );
+    expect(result.shapes.inputMappings).toContainEqual({
+      input: datasourceReadableId,
+      output: ReadableIdGenerator.getProducedReadableId(datasourceReadableId),
+    });
+    expect(result.shapes.inputMappings).toContainEqual({
+      input: idColumnReadableId,
+      output: ReadableIdGenerator.getProducedReadableId(idColumnReadableId),
+    });
+
+    const objectType = Object.values(result.ontologyIr.ontology.objectTypes)[0];
+    const directDatasource = objectType.datasources.find(
+      ({ datasource }) => datasource.type === "direct",
+    );
+    expect(directDatasource?.datasource).toMatchObject({
+      type: "direct",
+      direct: {
+        directSourceRid: expect.stringMatching(
+          /^ri\.ontology-metadata\.temp\.dataset\./u,
+        ),
+      },
+    });
+    if (directDatasource?.datasource.type !== "direct") {
+      throw new Error("Expected a direct datasource");
+    }
+    const directDatasourceLocator = {
+      type: "dataset" as const,
+      dataset: {
+        rid: directDatasource.datasource.direct.directSourceRid,
+        branch: "master",
+      },
+    };
+    expect(
+      Object.values(result.ontologyIr.ontology.knownIdentifiers.datasources),
+    ).toContainEqual(directDatasourceLocator);
+    expect(
+      Object.values(
+        result.ontologyIr.ontology.knownIdentifiers.datasourceColumns,
+      ),
+    ).toContainEqual({
+      datasource: directDatasourceLocator,
+      name: "id",
+    });
+  });
+
   it("Fails if a derived datasource added after defineObject maps a property not on the object", async () => {
     await expect(
       defineOntologyV2("com.palantir.", () => {
@@ -1278,5 +1669,121 @@ describe("Experimental Test Suite", () => {
     ).rejects.toThrow(
       /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/u,
     );
+  });
+
+  describe("Vector properties", () => {
+    const vector: PropertyTypeTypeVector = {
+      type: "vector",
+      dimension: 1536,
+      supportsSearchWith: "COSINE_SIMILARITY",
+      embeddingModel: {
+        type: "text",
+        text: { type: "lms", lms: "OPENAI_TEXT_EMBEDDING_ADA_002" },
+      },
+      quantization: "BYTE",
+    };
+
+    const expectedIr = {
+      type: "vector",
+      vector: {
+        dimension: 1536,
+        supportsSearchWith: ["COSINE_SIMILARITY"],
+        embeddingModel: {
+          type: "text",
+          text: { type: "lms", lms: "OPENAI_TEXT_EMBEDDING_ADA_002" },
+        },
+        quantization: "BYTE",
+      },
+    };
+
+    it("converts a vector object property", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineObject({
+          apiName: "foo",
+          displayName: "Foo",
+          pluralDisplayName: "Foos",
+          titlePropertyApiName: "bar",
+          primaryKeyPropertyApiName: "bar",
+          properties: {
+            bar: { type: "string" },
+            embedding: { type: vector },
+          },
+        });
+      });
+
+      const objectType = Object.values(
+        result.ontologyIr.ontology.objectTypes,
+      )[0].objectType;
+      const embedding = Object.values(objectType.propertyTypes).find(
+        (p) => p.apiName === "embedding",
+      )!;
+      expect(embedding.type).toEqual(expectedIr);
+      expect(embedding.indexedForSearch).toBe(true);
+    });
+
+    it("converts a vector shared property type", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineSharedPropertyType({ apiName: "embedding", type: vector });
+      });
+
+      const spt = Object.values(
+        result.ontologyIr.ontology.sharedPropertyTypes,
+      )[0].sharedPropertyType;
+      expect(spt.type).toEqual(expectedIr);
+      expect(spt.indexedForSearch).toBe(true);
+    });
+
+    it("converts a vector interface-defined property", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineInterface({
+          apiName: "bar",
+          displayName: "Bar",
+          properties: { embedding: { type: vector } },
+        });
+      });
+
+      const interfaceType = Object.values(
+        result.ontologyIr.ontology.interfaceTypes,
+      )[0].interfaceType;
+      const prop = Object.values(interfaceType.propertiesV3)[0];
+      invariant(prop.type === "interfaceDefinedPropertyType");
+      expect(prop.interfaceDefinedPropertyType.type).toEqual(expectedIr);
+      expect(
+        prop.interfaceDefinedPropertyType.constraints.indexedForSearch,
+      ).toBe(true);
+    });
+
+    it("rejects a vector object property declared as an array", async () => {
+      await expect(
+        defineOntologyV2("com.palantir.", () => {
+          defineObject({
+            apiName: "foo",
+            displayName: "Foo",
+            pluralDisplayName: "Foos",
+            titlePropertyApiName: "bar",
+            primaryKeyPropertyApiName: "bar",
+            properties: {
+              bar: { type: "string" },
+              embedding: { type: vector, array: true },
+            },
+          });
+        }),
+      ).rejects.toThrow(
+        "Vector property 'com.palantir.embedding' cannot be an array",
+      );
+    });
+
+    it("rejects a vector shared property type with a non-positive dimension", async () => {
+      await expect(
+        defineOntologyV2("com.palantir.", () => {
+          defineSharedPropertyType({
+            apiName: "embedding",
+            type: { ...vector, dimension: 0 },
+          });
+        }),
+      ).rejects.toThrow(
+        "Vector property 'com.palantir.embedding' must have an integer 'dimension' of at least 1, but got 0",
+      );
+    });
   });
 });

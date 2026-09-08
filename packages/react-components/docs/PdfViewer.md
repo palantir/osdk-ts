@@ -5,21 +5,23 @@ A React component for rendering PDF documents with text selection, custom annota
 ## Import
 
 ```tsx
-import {
-  BasePdfViewer,
-  PdfViewer,
-} from "@osdk/react-components/experimental/pdf-viewer";
+import { BasePdfViewer, PdfViewer } from "@osdk/react-components/pdf-viewer";
 ```
 
 - **`PdfViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the PDF contents, and renders the viewer.
 - **`BasePdfViewer`** — Lower-level component that accepts the PDF source directly as a URL string, `ArrayBuffer`, `Uint8Array`, or `Blob`. Use this when you already have the PDF source.
+
+`src` follows the convention shared by every viewer in this package: it names the
+binary source to render from, in whatever forms that renderer supports.
+`BasePdfViewer` supports all of them, so it is the reference for `src`. Viewers
+whose input is already-decoded text or a parsed object take `content` instead.
 
 ## Usage
 
 ### With OSDK Media
 
 ```tsx
-import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+import { PdfViewer } from "@osdk/react-components/pdf-viewer";
 
 <PdfViewer media={employee.employeeDocuments} />;
 ```
@@ -27,7 +29,7 @@ import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 ### With a URL, ArrayBuffer, Uint8Array, or Blob
 
 ```tsx
-import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+import { BasePdfViewer } from "@osdk/react-components/pdf-viewer";
 
 // From a URL
 <BasePdfViewer src="https://example.com/document.pdf" />
@@ -44,51 +46,58 @@ import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 ```tsx
 <PdfViewer
   media={myMedia}
-  initialPage={3}
-  initialScale={1.5}
-  initialSidebarOpen
+  defaultPage={3}
+  defaultScale={1.5}
+  defaultSidebarOpen
   sidebarMode="outline"
   enableDownload
-  annotations={{
-    1: [
-      {
-        id: "finding-1",
-        type: "highlight",
-        page: 1,
-        rect: { x: 72, y: 500, width: 200, height: 16 },
-        label: "Key finding",
-        color: "rgba(255, 200, 0, 0.4)",
-      },
-    ],
-  }}
+  annotations={[
+    {
+      id: "finding-1",
+      type: "highlight",
+      page: 1,
+      rect: { x: 72, y: 500, width: 200, height: 16 },
+      label: "Key finding",
+      color: "rgba(255, 200, 0, 0.4)",
+    },
+  ]}
   onAnnotationClick={(annotation) => console.log("Clicked:", annotation.id)}
 />
 ```
 
 ## Props
 
-### PdfViewerMediaProps
+### PdfViewerProps
 
 | Prop    | Type    | Required | Description                                  |
 | ------- | ------- | -------- | -------------------------------------------- |
 | `media` | `Media` | Yes      | OSDK Media object to fetch PDF contents from |
 
-Plus all props from `PdfViewerProps` except `src`.
+Plus all props from `BasePdfViewerProps` except `src`.
 
-### PdfViewerProps (BasePdfViewer)
+### BasePdfViewerProps
 
-| Prop                 | Type                                           | Default        | Description                                                     |
-| -------------------- | ---------------------------------------------- | -------------- | --------------------------------------------------------------- |
-| `src`                | `string \| ArrayBuffer \| Uint8Array \| Blob`  | —              | PDF source: URL string or in-memory bytes (required)            |
-| `annotations`        | `Record<number, PdfAnnotation[]>`              | `{}`           | Annotations keyed by page number (1-indexed)                    |
-| `onAnnotationClick`  | `(annotation: PdfAnnotation) => void`          | —              | Callback when an annotation is clicked                          |
-| `initialPage`        | `number`                                       | `1`            | Page to display on first render                                 |
-| `initialScale`       | `number`                                       | `1.0`          | Initial zoom level                                              |
-| `initialSidebarOpen` | `boolean`                                      | `false`        | Whether the sidebar is initially open                           |
-| `sidebarMode`        | `SidebarMode`                                  | `"thumbnails"` | Which sidebar panel to show: `"thumbnails"` or `"outline"`      |
-| `outlineIcons`       | `Partial<Record<number, React.ComponentType>>` | —              | Custom icon components for each outline depth level (0-indexed) |
-| `enableDownload`     | `boolean`                                      | `false`        | Whether the download button is shown in the toolbar             |
-| `className`          | `string`                                       | —              | CSS class applied to the root element                           |
+| Prop                 | Type                                                    | Default        | Description                                                                                                           |
+| -------------------- | ------------------------------------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `src`                | `string \| ArrayBuffer \| Uint8Array \| Blob`           | —              | PDF source: URL string or in-memory bytes (required)                                                                  |
+| `annotations`        | `PdfAnnotation[]`                                       | `[]`           | Annotations to overlay on the PDF. Each annotation carries its own 1-indexed `page`                                   |
+| `onAnnotationClick`  | `(annotation: PdfAnnotation) => void`                   | —              | Callback when an annotation is clicked                                                                                |
+| `onDownload`         | `(result: PdfDownloadResult) => void`                   | —              | Callback fired when a download completes or fails                                                                     |
+| `enableHighlight`    | `boolean`                                               | `false`        | Whether the highlight toggle button is shown in the toolbar                                                           |
+| `onTextHighlight`    | `(event: PdfTextHighlightEvent) => void`                | —              | Callback fired when the user creates a text highlight. Only fires while highlight mode is active                      |
+| `onHighlightDelete`  | `(event: PdfTextHighlightEvent) => void`                | —              | Callback fired when the user deletes a highlight via the PDF.js editor UI                                             |
+| `defaultPage`        | `number`                                                | `1`            | Initial uncontrolled page                                                                                             |
+| `defaultScale`       | `number`                                                | `1.0`          | Initial uncontrolled zoom level                                                                                       |
+| `defaultAutoSize`    | `boolean`                                               | `false`        | Initial uncontrolled auto-size state. Takes precedence over `defaultScale`                                            |
+| `defaultSidebarOpen` | `boolean`                                               | `false`        | Initial uncontrolled sidebar state                                                                                    |
+| `enableDownload`     | `boolean`                                               | `false`        | Whether the download button is shown in the toolbar                                                                   |
+| `downloadFileName`   | `string`                                                | —              | Filename used by the toolbar download button. Derived from the `src` URL when omitted, falling back to `document.pdf` |
+| `sidebarMode`        | `SidebarMode`                                           | `"thumbnails"` | Which sidebar panel to show: `"thumbnails"` or `"outline"`                                                            |
+| `outlineIcons`       | `Partial<Record<number, React.ComponentType>>`          | —              | Custom icon components for each outline depth level (0-indexed). No icons are rendered when omitted                   |
+| `formData`           | `Record<string, PdfFormFieldValue>`                     | —              | Initial form field values keyed by field name, applied when the document loads                                        |
+| `onFormSubmit`       | `(data: Record<string, PdfFormFieldValue>) => void`     | —              | Callback fired when the user clicks the toolbar save button, with all current field values                            |
+| `onFormChange`       | `(fieldName: string, value: PdfFormFieldValue) => void` | —              | Callback fired when any form field value changes                                                                      |
+| `className`          | `string`                                                | —              | CSS class applied to the root element                                                                                 |
 
 ## Features
 
@@ -105,7 +114,7 @@ The sidebar supports two modes controlled by the `sidebarMode` prop:
 
 ### Annotations
 
-Annotations are positioned using PDF coordinate space (origin at bottom-left of the page). The component transforms these to CSS positioning automatically. Four annotation types are supported:
+Annotations are positioned using PDF coordinate space (origin at bottom-left of the page). The component transforms these to CSS positioning automatically. Four built-in annotation types are supported:
 
 | Type        | Visual                             |
 | ----------- | ---------------------------------- |
@@ -113,6 +122,8 @@ Annotations are positioned using PDF coordinate space (origin at bottom-left of 
 | `underline` | Colored bottom border              |
 | `comment`   | Small circular marker              |
 | `pin`       | Rotated teardrop marker            |
+
+A fifth type, `custom`, renders whatever its `render` callback returns instead of a built-in visual. See `PdfCustomAnnotation` and `PdfAnnotationRenderProps`.
 
 Each annotation accepts an optional `color` CSS value to override the default theme color, and a `label` string shown as a tooltip on hover. Annotations are keyboard-accessible (focusable and activatable with Enter/Space).
 
@@ -162,7 +173,7 @@ Tier 3: usePdfViewerState / usePdfViewerCore    ← custom everything
 
 ## Building blocks
 
-All building blocks are exported from `@osdk/react-components/experimental/pdf-viewer` for composing custom PDF viewer layouts. Use `PdfViewerContent` as the foundation and add whichever chrome you need.
+All building blocks are exported from `@osdk/react-components/pdf-viewer` for composing custom PDF viewer layouts. Use `PdfViewerContent` as the foundation and add whichever chrome you need.
 
 | Component                  | Description                                                        |
 | -------------------------- | ------------------------------------------------------------------ |
@@ -176,11 +187,11 @@ All building blocks are exported from `@osdk/react-components/experimental/pdf-v
 ### Example: content-only viewer
 
 ```tsx
-import { PdfViewerContent } from "@osdk/react-components/experimental/pdf-viewer";
+import { PdfViewerContent } from "@osdk/react-components/pdf-viewer";
 
 <PdfViewerContent
   src="https://example.com/document.pdf"
-  initialScale={1.5}
+  defaultScale={1.5}
   onPageChange={(page) => console.log("Page:", page)}
   onScaleChange={(scale) => console.log("Scale:", scale)}
 />;
@@ -220,11 +231,11 @@ import {
   PdfViewerSearchBar,
   PdfViewerToolbar,
   usePdfViewerState,
-} from "@osdk/react-components/experimental/pdf-viewer";
+} from "@osdk/react-components/pdf-viewer";
 import { createPortal } from "react-dom";
 
 function MyCustomViewer({ src }: { src: string }) {
-  const viewer = usePdfViewerState({ src, initialScale: 1.0 });
+  const viewer = usePdfViewerState({ src, defaultScale: 1.0 });
 
   if (viewer.loading) return <div>Loading...</div>;
   if (viewer.error) return <div>Error: {viewer.error.message}</div>;
@@ -265,7 +276,7 @@ function MyCustomViewer({ src }: { src: string }) {
 ### Example: minimal viewer with `usePdfViewerCore`
 
 ```tsx
-import { usePdfViewerCore } from "@osdk/react-components/experimental/pdf-viewer";
+import { usePdfViewerCore } from "@osdk/react-components/pdf-viewer";
 
 function MinimalViewer({ src }: { src: string }) {
   const { containerRef, viewerRef, loading, error, currentPage, numPages } =
@@ -288,22 +299,27 @@ function MinimalViewer({ src }: { src: string }) {
 
 ## Types
 
-| Type                       | Description                                                                   |
-| -------------------------- | ----------------------------------------------------------------------------- |
-| `PdfViewerProps`           | Props for `BasePdfViewer`                                                     |
-| `PdfViewerMediaProps`      | Props for `PdfViewer` (extends `PdfViewerProps`, replaces `src` with `media`) |
-| `PdfViewerContentProps`    | Props for `PdfViewerContent`                                                  |
-| `UsePdfViewerStateOptions` | Options for `usePdfViewerState`                                               |
-| `UsePdfViewerStateResult`  | Return type of `usePdfViewerState`                                            |
-| `UsePdfViewerCoreOptions`  | Options for `usePdfViewerCore`                                                |
-| `UsePdfViewerCoreResult`   | Return type of `usePdfViewerCore`                                             |
-| `UsePdfViewerResult`       | Return type of `usePdfViewer`                                                 |
-| `UsePdfViewerSearchResult` | Return type of `usePdfViewerSearch`                                           |
-| `AnnotationPortalTarget`   | Portal target info returned by `usePdfAnnotationPortals`                      |
-| `PdfAnnotation`            | Annotation with `id`, `type`, `page`, `rect`, optional `label` and `color`    |
-| `AnnotationType`           | `"highlight" \| "underline" \| "comment" \| "pin"`                            |
-| `SidebarMode`              | `"thumbnails" \| "outline"`                                                   |
-| `OutlineItem`              | Outline entry with `title`, `depth`, `pageNumber`, `bold`, `italic`           |
+| Type                       | Description                                                                                                  |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `BasePdfViewerProps`       | Props for `BasePdfViewer`                                                                                    |
+| `PdfViewerProps`           | Props for `PdfViewer` (extends `BasePdfViewerProps`, replaces `src` with `media`)                            |
+| `PdfViewerContentProps`    | Props for `PdfViewerContent`                                                                                 |
+| `UsePdfViewerStateOptions` | Options for `usePdfViewerState`                                                                              |
+| `UsePdfViewerStateResult`  | Return type of `usePdfViewerState`                                                                           |
+| `UsePdfViewerCoreOptions`  | Options for `usePdfViewerCore`                                                                               |
+| `UsePdfViewerCoreResult`   | Return type of `usePdfViewerCore`                                                                            |
+| `UsePdfViewerResult`       | Return type of `usePdfViewer`                                                                                |
+| `UsePdfViewerSearchResult` | Return type of `usePdfViewerSearch`                                                                          |
+| `AnnotationPortalTarget`   | Portal target info returned by `usePdfAnnotationPortals`                                                     |
+| `PdfAnnotation`            | Annotation with `id`, `type`, `page`, `rect`, optional `label` and `color`                                   |
+| `AnnotationType`           | `"highlight" \| "underline" \| "comment" \| "pin" \| "custom"`                                               |
+| `PdfCustomAnnotation`      | Annotation with `type: "custom"` and a `render` callback supplying its content                               |
+| `PdfAnnotationRenderProps` | Argument passed to a `PdfCustomAnnotation`'s `render`: `annotation`, `scale`, `pageHeight`, `transform`      |
+| `SidebarMode`              | `"thumbnails" \| "outline"`                                                                                  |
+| `OutlineItem`              | Outline entry with `title`, `depth`, `pageNumber`, `bold`, `italic`                                          |
+| `PdfDownloadResult`        | Argument passed to `onDownload`: `{ success: true; filename }` or `{ success: false; error }`                |
+| `PdfTextHighlightEvent`    | Argument passed to `onTextHighlight` / `onHighlightDelete`, with `editorId`, `page`, `rects`, `selectedText` |
+| `PdfFormFieldValue`        | Value type used by `formData`, `onFormSubmit`, and `onFormChange`: `string \| boolean \| string[]`           |
 
 ## Theming
 

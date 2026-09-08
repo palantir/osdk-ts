@@ -134,6 +134,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
         "status": "ACTIVE",
       },
     },
+    "actionTypesFullMetadata": {},
     "interfaceTypes": {
       "FooInterface": {
         "allExtendsInterfaces": [],
@@ -288,6 +289,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
         ],
         "implementsInterfaces2": {
           "FooInterface": {
+            "actionTypes": {},
             "links": {},
             "properties": {
               "fooSpt": "fullName",
@@ -610,6 +612,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
         "status": "ACTIVE",
       },
     },
+    "actionTypesFullMetadata": {},
     "interfaceTypes": {},
     "objectTypes": {
       "Employee": {
@@ -618,6 +621,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
         ],
         "implementsInterfaces2": {
           "FooInterface": {
+            "actionTypes": {},
             "links": {},
             "properties": {
               "fooSpt": "fullName",
@@ -958,6 +962,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
         "status": "ACTIVE",
       },
     },
+    "actionTypesFullMetadata": {},
     "interfaceTypes": {
       "FooInterface": {
         "allExtendsInterfaces": [],
@@ -1112,6 +1117,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
         ],
         "implementsInterfaces2": {
           "FooInterface": {
+            "actionTypes": {},
             "links": {},
             "properties": {
               "fooSpt": "fullName",

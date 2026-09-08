@@ -23,9 +23,9 @@ import {
   buildBlockDataInterfaceTypeLookup,
   buildBlockDataObjectTypeLookup,
   OntologyBlockDataToFullMetadataConverter,
+  toUuid,
 } from "@osdk/generator-converters.ontologyir";
 import { convertBlockDataLogicRulesToActionLogicRules } from "./ActionLogicRuleConverter.js";
-import { toUuid } from "./ridUtils.js";
 
 /**
  * Extended return type that uses ActionTypeFullMetadata instead of ActionTypeV2.
@@ -65,6 +65,7 @@ export class PreviewOntologyIrConverter {
       ...baseMetadata,
       objectTypes,
       actionTypes,
+      actionTypesFullMetadata: actionTypes,
       ontology: {
         apiName: "ontology",
         rid: "ri.ontology.main.ontology.0",

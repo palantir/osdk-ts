@@ -19,6 +19,7 @@ import type {
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type {
+  ApplyDefaultLoadLevelToKeys,
   ApplyModifiersArg,
   PropertyModifierValue,
 } from "../ontology/PropertyModifiers.js";
@@ -68,18 +69,41 @@ export type FetchPageResult<
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
   PROPERTY_SECURITIES extends boolean = false,
   MODIFIERS extends ApplyModifiersArg<Q> = {},
+  DEFAULT_LOAD_LEVEL extends PropertyModifierValue | undefined = undefined,
 > = PageResult<
   MaybeScore<
     Osdk.Instance<
       Q,
       ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
-      | Exclude<PropertyKeys<Q> extends L ? never : L, keyof MODIFIERS>
+      | SelectedKeysWithDefaultLoadLevel<Q, L, MODIFIERS, DEFAULT_LOAD_LEVEL>
       | ModifiersToSelectStrings<MODIFIERS>,
       {}
     >,
     ORDER_BY_OPTIONS
   >
 >;
+
+/**
+ * The selected keys of a fetch, as `prop:modifier` select strings where a
+ * default load level applies to them. Keys carrying a per-property
+ * `$applyModifiers` entry are dropped here; they come back through
+ * `ModifiersToSelectStrings`.
+ *
+ * Without a default load level this stays `never` when everything is selected,
+ * which is how `Osdk.Instance` spells "all properties".
+ */
+type SelectedKeysWithDefaultLoadLevel<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends PropertyKeys<Q>,
+  MODIFIERS,
+  DEFAULT_LOAD_LEVEL extends PropertyModifierValue | undefined,
+> = [DEFAULT_LOAD_LEVEL] extends [PropertyModifierValue]
+  ? ApplyDefaultLoadLevelToKeys<
+      Q,
+      Exclude<PropertyKeys<Q> extends L ? PropertyKeys<Q> : L, keyof MODIFIERS>,
+      DEFAULT_LOAD_LEVEL
+    >
+  : Exclude<PropertyKeys<Q> extends L ? never : L, keyof MODIFIERS>;
 
 /**
  * Helper type for converting fetch options into an Osdk object

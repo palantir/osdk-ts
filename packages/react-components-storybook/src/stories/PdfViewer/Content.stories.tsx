@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PdfViewerContentProps } from "@osdk/react-components/experimental/pdf-viewer";
-import { PdfViewerContent } from "@osdk/react-components/experimental/pdf-viewer";
+import type { PdfViewerContentProps } from "@osdk/react-components/pdf-viewer";
+import { PdfViewerContent } from "@osdk/react-components/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
@@ -43,11 +43,11 @@ const meta: Meta<PdfViewerContentProps> = {
       description: "PDF source — URL string, ArrayBuffer, Uint8Array, or Blob",
       control: false,
     },
-    initialPage: {
+    defaultPage: {
       description: "Initial page number (1-indexed)",
       control: { type: "number", min: 1 },
     },
-    initialScale: {
+    defaultScale: {
       description: "Initial zoom scale",
       control: { type: "number", min: 0.25, max: 5, step: 0.25 },
     },
@@ -57,16 +57,53 @@ const meta: Meta<PdfViewerContentProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `
+<PdfViewerContent
+  src="/whitepaper.pdf"
+  onPageChange={setCurrentPage}
+  onScaleChange={setScale}
+/>`,
+      },
+    },
+  },
+};
 
 export const ZoomedIn: Story = {
   args: {
-    initialScale: 2,
+    defaultScale: 2,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+<PdfViewerContent
+  src="/whitepaper.pdf"
+  initialScale={2}
+  onScaleChange={setScale}
+/>`,
+      },
+    },
   },
 };
 
 export const StartOnPage5: Story = {
   args: {
-    initialPage: 5,
+    defaultPage: 5,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+<PdfViewerContent
+  src="/whitepaper.pdf"
+  initialPage={5}
+  onPageChange={setCurrentPage}
+/>`,
+      },
+    },
   },
 };

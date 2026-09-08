@@ -39,7 +39,6 @@ const OXC_PACKAGES = [
   "create-app.template.typescript-library.beta",
   "create-app.template.vue",
   "create-app.template.vue.v2",
-  "create-widget.template.minimal-react.v2",
   "create-widget.template.react.v2",
   "typescript-sdk-docs-examples",
 ];
@@ -58,12 +57,14 @@ const OXC_NESTED_CONFIG_PACKAGES = {
   "react-components": "packages/react-components/oxlint.config.ts",
   "client.unstable": "packages/client.unstable/oxlint.config.ts",
   "client.unstable.tpsa": "packages/client.unstable.tpsa/oxlint.config.ts",
+  "integration-testing": "packages/integration-testing/oxlint.config.ts",
   "client": "packages/client/oxlint.config.ts",
   "maker": "packages/maker/oxlint.config.ts",
   "maker-experimental": "packages/maker-experimental/oxlint.config.ts",
   "maker-import": "packages/maker-import/oxlint.config.ts",
   "api": "packages/api/oxlint.config.ts",
   "functions": "packages/functions/oxlint.config.ts",
+  "agents": "packages/agents/oxlint.config.ts",
   "unit-testing": "packages/unit-testing/oxlint.config.ts",
   "aip-core": "packages/aip-core/oxlint.config.ts",
   "foundry-config-json": "packages/foundry-config-json/oxlint.config.ts",
@@ -86,6 +87,7 @@ const OXC_NESTED_CONFIG_PACKAGES = {
   "tool.generate-with-mock-ontology":
     "packages/tool.generate-with-mock-ontology/oxlint.config.ts",
   "version-updater": "packages/version-updater/oxlint.config.ts",
+  "vite-plugin-branch": "packages/vite-plugin-branch/oxlint.config.ts",
   "vite-plugin-oac": "packages/vite-plugin-oac/oxlint.config.ts",
   "vite-plugin-superrepo": "packages/vite-plugin-superrepo/oxlint.config.ts",
   "vite-plugin-status-reporter":

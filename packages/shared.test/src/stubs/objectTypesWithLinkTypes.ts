@@ -56,6 +56,7 @@ export const employeeObjectWithLinkTypes: ObjectTypeFullMetadata = {
         },
       },
       links: {},
+      actionTypes: {},
     },
   },
   sharedPropertyTypeMapping: {

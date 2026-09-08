@@ -1,4 +1,5 @@
 export { BgaoNflPlayer } from './objects/BgaoNflPlayer.js';
+export { Book } from './objects/Book.js';
 export { BoundariesUsState } from './objects/BoundariesUsState.js';
 export { BuilderDeploymentState } from './objects/BuilderDeploymentState.js';
 export { CipherTextTest } from './objects/CipherTextTest.js';
@@ -8,6 +9,7 @@ export { Employee } from './objects/Employee.js';
 export { EsongIssues } from './objects/EsongIssues.js';
 export { EsongPds } from './objects/EsongPds.js';
 export { FintrafficAis } from './objects/FintrafficAis.js';
+export { Game } from './objects/Game.js';
 export { GraphqlFormatting } from './objects/GraphqlFormatting.js';
 export { GtfsTripTrackObject } from './objects/GtfsTripTrackObject.js';
 export { MasonHeavyEquipment } from './objects/MasonHeavyEquipment.js';

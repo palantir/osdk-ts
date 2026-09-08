@@ -29,7 +29,6 @@ import classNames from "classnames";
 import React, { useCallback, useMemo, useState } from "react";
 
 import { usePortalContainer } from "../shared/PortalContainerContext.js";
-import { useObjectTableLabels } from "./ObjectTableLabels.js";
 import { TableHeaderContent } from "./TableHeaderContent.js";
 import { getSortIcons } from "./utils/getSortIcons.js";
 import type { ColumnOption } from "./utils/types.js";
@@ -113,7 +112,6 @@ export function TableHeaderWithPopover<TData extends RowData>({
   onColumnHeaderClick,
 }: TableHeaderWithPopoverProps<TData>): React.ReactElement {
   const portalContainer = usePortalContainer();
-  const labels = useObjectTableLabels();
   const {
     showSortingItems = false,
     showPinningItems = false,
@@ -249,7 +247,7 @@ export function TableHeaderWithPopover<TData extends RowData>({
             )}
             {hasAnyMenuItems && (
               <Menu.Trigger
-                aria-label={labels.headerMenuAriaLabel(header.column.id)}
+                aria-label={`Open header menu for column with id=${header.column.id}`}
                 className={classNames(
                   styles.osdkCenterContainer,
                   styles.osdkHeaderPopoverTrigger,
@@ -266,7 +264,7 @@ export function TableHeaderWithPopover<TData extends RowData>({
                   <HeaderMenuItem
                     onClick={handlePinLeft}
                     icon={Pin}
-                    label={labels.headerMenuPinColumn}
+                    label="Pin column"
                   />
                 )}
 
@@ -274,7 +272,7 @@ export function TableHeaderWithPopover<TData extends RowData>({
                   <HeaderMenuItem
                     onClick={handleUnpin}
                     icon={Unpin}
-                    label={labels.headerMenuUnpinColumn}
+                    label="Unpin Column"
                     active={true}
                   />
                 )}
@@ -283,20 +281,20 @@ export function TableHeaderWithPopover<TData extends RowData>({
                     <HeaderMenuItem
                       onClick={handleSortAscending}
                       icon={SortAscendingIcon}
-                      label={labels.headerMenuSortAscending}
+                      label="Sort ascending"
                       active={isSorted === "asc"}
                     />
                     <HeaderMenuItem
                       onClick={handleSortDescending}
                       icon={SortDescendingIcon}
-                      label={labels.headerMenuSortDescending}
+                      label="Sort descending"
                       active={isSorted === "desc"}
                     />
                     {columnOptions?.some((col) => col.canSort) && (
                       <HeaderMenuItem
                         onClick={handleOpenMultiSort}
                         icon={Sort}
-                        label={labels.headerMenuSortOnMultipleColumns}
+                        label="Sort on multiple columns"
                       />
                     )}
                   </>
@@ -305,21 +303,21 @@ export function TableHeaderWithPopover<TData extends RowData>({
                   <HeaderMenuItem
                     onClick={handleClearAllSorts}
                     icon={Remove}
-                    label={labels.headerMenuClearAllSorts}
+                    label="Clear all sorts"
                   />
                 )}
                 {showResizeItem && (
                   <HeaderMenuItem
                     onClick={handleResetSize}
                     icon={VerticalDistribution}
-                    label={labels.headerMenuResetColumnSize}
+                    label="Reset Column Size"
                   />
                 )}
                 {showConfigItem && (
                   <HeaderMenuItem
                     onClick={handleOpenColumnConfig}
                     icon={Settings}
-                    label={labels.headerMenuConfigureColumns}
+                    label="Configure Columns"
                   />
                 )}
               </Menu.Popup>

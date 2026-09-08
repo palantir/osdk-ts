@@ -16,7 +16,7 @@
 
 import { useMemo } from "react";
 
-import type { PdfAnnotation } from "../types.js";
+import type { PdfAnnotation } from "../PdfViewerApi.js";
 
 /**
  * Groups a flat array of annotations by page number for efficient per-page lookup.

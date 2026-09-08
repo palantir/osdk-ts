@@ -42,7 +42,7 @@ const DISABLED_RESULT: UseTiffToPdfResult = {
 
 /**
  * Detects multi-page TIFFs and converts them to PDF via the MIO transform API.
- * Single-page TIFFs are left for the TiffRenderer to handle.
+ * Single-page TIFFs are left for the TiffViewer to handle.
  *
  * @param media - The OSDK Media object (must be a TIFF)
  * @param enabled - Whether to attempt multi-page detection and conversion
@@ -83,7 +83,7 @@ export function useTiffToPdf(
       const pageCount = ifds.length;
 
       if (pageCount <= 1) {
-        // Single-page TIFF — use TiffRenderer
+        // Single-page TIFF — use TiffViewer
         if (!cancelled) {
           setResult({
             viewerType: ViewerType.Tiff,

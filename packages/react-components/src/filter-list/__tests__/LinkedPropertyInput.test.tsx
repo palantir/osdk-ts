@@ -76,7 +76,7 @@ function createMockObjectSet() {
 }
 
 function createDefinition(
-  linkedFilterComponent:
+  filterComponent:
     | "LISTOGRAM"
     | "MULTI_SELECT"
     | "SINGLE_SELECT"
@@ -97,14 +97,9 @@ function createDefinition(
   return {
     type: "LINKED_PROPERTY",
     linkName: "primaryOffice",
-    reverseLinkName: "occupants",
     linkedPropertyKey: "name" as PropertyKeys<ObjectTypeDefinition>,
-    linkedFilterComponent,
-    linkedFilterState: { type: "SELECT", selectedValues: [] },
-    filterState: {
-      type: "linkedProperty",
-      linkedFilterState: { type: "SELECT", selectedValues: [] },
-    },
+    filterComponent,
+    defaultFilterState: { type: "SELECT", selectedValues: [] },
   } as LinkedPropertyFilterDefinition<
     ObjectTypeDefinition,
     string,
@@ -143,6 +138,60 @@ describe("LinkedPropertyInput", () => {
           enabled: true,
         },
       });
+    });
+  });
+
+  describe("component resolution", () => {
+    it("renders from the deprecated linkedFilterComponent", () => {
+      const mockObjectSet = createMockObjectSet();
+      const definition = {
+        ...createDefinition("TOGGLE"),
+        filterComponent: undefined,
+        linkedFilterComponent: "TOGGLE" as const,
+      } as LinkedPropertyFilterDefinition<
+        ObjectTypeDefinition,
+        string,
+        ObjectTypeDefinition,
+        PropertyKeys<ObjectTypeDefinition>
+      >;
+
+      render(
+        <LinkedPropertyInput
+          objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
+          definition={definition}
+          filterState={undefined}
+          onFilterStateChanged={vi.fn()}
+        />,
+      );
+
+      expect(screen.getByRole("switch")).toBeDefined();
+    });
+
+    it("renders unsupported when neither component field is set", () => {
+      const mockObjectSet = createMockObjectSet();
+      const definition = {
+        ...createDefinition("TOGGLE"),
+        filterComponent: undefined,
+      } as LinkedPropertyFilterDefinition<
+        ObjectTypeDefinition,
+        string,
+        ObjectTypeDefinition,
+        PropertyKeys<ObjectTypeDefinition>
+      >;
+
+      const { container } = render(
+        <LinkedPropertyInput
+          objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
+          definition={definition}
+          filterState={undefined}
+          onFilterStateChanged={vi.fn()}
+        />,
+      );
+
+      expect(screen.queryByRole("switch")).toBeNull();
+      expect(container.querySelector("[data-unsupported]")).not.toBeNull();
     });
   });
 
@@ -354,14 +403,7 @@ describe("LinkedPropertyInput", () => {
 
       const definition = {
         ...createDefinition("LISTOGRAM"),
-        linkedFilterState: { type: "EXACT_MATCH" as const, values: [] },
-        filterState: {
-          type: "linkedProperty" as const,
-          linkedFilterState: {
-            type: "EXACT_MATCH" as const,
-            values: [],
-          },
-        },
+        defaultFilterState: { type: "EXACT_MATCH" as const, values: [] },
       } as LinkedPropertyFilterDefinition<
         ObjectTypeDefinition,
         string,
@@ -433,7 +475,7 @@ describe("LinkedPropertyInput", () => {
       const mockObjectSet = createMockObjectSet();
       const definition = {
         ...createDefinition("LISTOGRAM"),
-        linkedFilterComponent: "SINGLE_DATE" as const,
+        filterComponent: "SINGLE_DATE" as const,
       } as LinkedPropertyFilterDefinition<
         ObjectTypeDefinition,
         string,
@@ -476,25 +518,28 @@ describe("LinkedPropertyInput", () => {
         $objectSetInternals: { def: MockLinkedObjectType },
         where: vi.fn(),
         pivotTo: vi.fn(),
-        intersect: vi.fn(),
+        withProperties: vi.fn(),
       } as unknown as ObjectSet<ObjectTypeDefinition>;
       vi.mocked(set.where).mockImplementation(() => makeChainable("chained"));
       vi.mocked(set.pivotTo).mockImplementation(() => makeChainable(kind));
-      vi.mocked(set.intersect).mockImplementation(() => makeChainable(kind));
+      vi.mocked(set.withProperties).mockImplementation(() =>
+        makeChainable(kind),
+      );
       return set;
     }
 
     function createDualScopeMock(): ObjectSet<ObjectTypeDefinition> {
       const emptySourcePivoted = makeChainable("emptySource");
       const scopedPivoted = makeChainable("scoped");
-      const intersected = {
-        ...makeChainable("scoped-intersected"),
-      } as ObjectSet<ObjectTypeDefinition>;
-      vi.mocked(intersected.pivotTo).mockImplementation(() => scopedPivoted);
+      // The scoped side is base.withProperties(counts).where(countClause).
+      const scoped = makeChainable("scoped-counts");
+      vi.mocked(scoped.pivotTo).mockImplementation(() => scopedPivoted);
+      const withCounts = makeChainable("with-counts");
+      vi.mocked(withCounts.where).mockImplementation(() => scoped);
 
       const base = makeChainable("base");
       vi.mocked(base.pivotTo).mockImplementation(() => emptySourcePivoted);
-      vi.mocked(base.intersect).mockImplementation(() => intersected);
+      vi.mocked(base.withProperties).mockImplementation(() => withCounts);
       return base;
     }
 
@@ -509,8 +554,8 @@ describe("LinkedPropertyInput", () => {
       const objectSet = createDualScopeMock();
       const linkedFilters: ReadonlyArray<LinkedFilter<ObjectTypeDefinition>> = [
         {
+          id: "linkedProperty:manager:name",
           linkName: "manager",
-          reverseLinkName: "reports",
           innerWhere: {} as WhereClause<ObjectTypeDefinition>,
         },
       ];

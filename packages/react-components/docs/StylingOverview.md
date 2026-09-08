@@ -144,6 +144,6 @@ Create a brand layer that overrides the tokens you care about:
   --osdk-table-row-bg-hover: var(--my-brand-hover);
 
   /* Form-specific overrides */
-  --osdk-form-section-padding: 20px;
+  --osdk-form-section-content-padding-inline: 20px;
 }
 ```

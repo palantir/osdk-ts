@@ -24,7 +24,7 @@ import {
   convertToPluralDisplayName,
   uppercaseFirstLetter,
 } from "./defineObject.js";
-import { updateOntology } from "./defineOntology.js";
+import { ontologyDefinition, updateOntology } from "./defineOntology.js";
 import type {
   IntermediaryObjectLinkReference,
   IntermediaryObjectLinkReferenceUserDefinition,
@@ -39,6 +39,15 @@ import type {
 
 export function defineLink(linkDefinitionInput: LinkTypeDefinition): LinkType {
   const linkDefinition = cloneDefinition(linkDefinitionInput);
+  if (
+    ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE][
+      linkDefinition.apiName
+    ] !== undefined
+  ) {
+    throw new Error(
+      `Link type with apiName ${linkDefinition.apiName} is already defined`,
+    );
+  }
   // NOTE: we would normally do validation here, but because of circular dependencies
   // we have to wait to validate until everything has been defined. The code for validation
   // was moved to convertLink.ts.

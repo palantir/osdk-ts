@@ -16,13 +16,19 @@ import type {
 } from '@osdk/client';
 
 export namespace Todo {
-  export type PropertyKeys = 'body' | 'complete' | 'id' | 'priority' | 'text';
+  export type PropertyKeys = 'assigneeEmail' | 'body' | 'complete' | 'id' | 'priority' | 'text';
 
   export interface Links {
     readonly Assignee: $SingleLinkAccessor<Person>;
   }
 
   export interface Props {
+    /**
+     *   display name: 'Assignee Email',
+     *
+     *   description: Foreign key to the assigned Person's email
+     */
+    readonly assigneeEmail: $PropType['string'] | undefined;
     /**
      *   display name: 'Body',
      *
@@ -91,6 +97,12 @@ export interface Todo extends $ObjectTypeDefinition {
     primaryKeyApiName: 'id';
     primaryKeyType: 'integer';
     properties: {
+      /**
+       *   display name: 'Assignee Email',
+       *
+       *   description: Foreign key to the assigned Person's email
+       */
+      assigneeEmail: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        *   display name: 'Body',
        *

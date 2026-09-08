@@ -71,6 +71,7 @@ export type ObjectTypePropertyApiName = string;
 
 export interface OneToManyLinkTypeDefinition {
   apiName: string;
+  description?: string;
   one: OneToManyObjectLinkReference;
   toMany: OneToManyObjectLinkReference;
   manyForeignKeyProperty: ObjectTypePropertyApiName;
@@ -88,6 +89,7 @@ export interface OneToManyObjectLinkReference {
 
 export interface OneToManyLinkTypeUserDefinition {
   apiName: string;
+  description?: string;
   one: OneToManyObjectLinkReferenceUserDefinition;
   toMany: OneToManyObjectLinkReferenceUserDefinition;
   manyForeignKeyProperty: ObjectTypePropertyApiName;
@@ -104,6 +106,7 @@ export interface OneToManyObjectLinkReferenceUserDefinition {
 
 export interface ManyToManyLinkTypeDefinition {
   apiName: string;
+  description?: string;
   many: ManyToManyObjectLinkReference;
   toMany: ManyToManyObjectLinkReference;
   editsEnabled?: boolean;
@@ -120,6 +123,7 @@ export interface ManyToManyObjectLinkReference {
 
 export interface ManyToManyLinkTypeUserDefinition {
   apiName: string;
+  description?: string;
   many: ManyToManyObjectLinkReferenceUserDefinition;
   toMany: ManyToManyObjectLinkReferenceUserDefinition;
   editsEnabled?: boolean;
@@ -135,6 +139,7 @@ export interface ManyToManyObjectLinkReferenceUserDefinition {
 
 export interface IntermediaryLinkTypeDefinition {
   apiName: string;
+  description?: string;
   many: IntermediaryObjectLinkReference;
   toMany: IntermediaryObjectLinkReference;
   intermediaryObjectType: ObjectTypeDefinition | ObjectType;
@@ -155,6 +160,7 @@ export interface IntermediaryLinkTypeUserDefinition {
   many: IntermediaryObjectLinkReferenceUserDefinition;
   toMany: IntermediaryObjectLinkReferenceUserDefinition;
   intermediaryObjectType: ObjectTypeDefinition | ObjectType | string;
+  description?: string;
   editsEnabled?: boolean;
   permission?: EntityPermission;
   status?: UserLinkTypeStatus;

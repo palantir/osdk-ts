@@ -34,6 +34,49 @@ describe("Link Types", () => {
     await defineOntology("com.palantir.", () => {}, "/tmp/");
   });
   describe("Object Links", () => {
+    it("does not allow duplicate link API names", () => {
+      const sourceObject = defineObject({
+        titlePropertyApiName: "id",
+        apiName: "sourceObject",
+        displayName: "Source Object",
+        pluralDisplayName: "Source Objects",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+      });
+
+      const otherObject = defineObject({
+        titlePropertyApiName: "id",
+        apiName: "otherObject",
+        displayName: "Other Object",
+        pluralDisplayName: "Other Objects",
+        primaryKeyPropertyApiName: "id",
+        properties: {
+          id: { type: "string" },
+          objectId: { type: "string" },
+        },
+      });
+
+      const defineDuplicateLink = () =>
+        defineLink({
+          apiName: "objectToOtherObject",
+          one: {
+            object: sourceObject,
+            metadata: { apiName: "sourceObjects" },
+          },
+          toMany: {
+            object: otherObject,
+            metadata: { apiName: "otherObjects" },
+          },
+          manyForeignKeyProperty: "objectId",
+        });
+
+      defineDuplicateLink();
+
+      expect(defineDuplicateLink).toThrowError(
+        "Link type with apiName objectToOtherObject is already defined",
+      );
+    });
+
     it("One To Many Links are properly defined", () => {
       const object = defineObject({
         titlePropertyApiName: "bar",

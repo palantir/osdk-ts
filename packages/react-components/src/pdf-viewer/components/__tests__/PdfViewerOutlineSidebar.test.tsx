@@ -18,7 +18,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { OutlineItem } from "../../types.js";
+import type { OutlineItem } from "../../PdfViewerApi.js";
 import { PdfViewerOutlineSidebar } from "../PdfViewerOutlineSidebar.js";
 
 afterEach(() => {

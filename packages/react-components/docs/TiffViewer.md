@@ -1,47 +1,46 @@
-# TiffRenderer
+# TiffViewer
 
 A React component for rendering TIFF images from raw byte arrays. Also provides an OSDK Media wrapper for fetching TIFF contents directly from Foundry.
 
 ## Import
 
 ```tsx
-import {
-  TiffRenderer,
-  TiffViewerMedia,
-} from "@osdk/react-components/experimental/tiff-renderer";
+import { BaseTiffViewer, TiffViewer } from "@osdk/react-components/tiff-viewer";
 ```
 
-- **`TiffViewerMedia`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the TIFF contents, and renders via `TiffRenderer`.
-- **`TiffRenderer`** — Lower-level component that accepts raw `Uint8Array` bytes directly.
+- **`TiffViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the TIFF contents, and renders via `BaseTiffViewer`.
+- **`BaseTiffViewer`** — Lower-level component that accepts raw `Uint8Array` bytes directly.
 
 ## Usage
 
 ### With OSDK Media
 
 ```tsx
-import { TiffViewerMedia } from "@osdk/react-components/experimental/tiff-renderer";
+import { TiffViewer } from "@osdk/react-components/tiff-viewer";
 
-<TiffViewerMedia media={scan.tiffImage} />;
+<TiffViewer media={scan.tiffImage} />;
 ```
 
 ### With raw bytes
 
 ```tsx
-import { TiffRenderer } from "@osdk/react-components/experimental/tiff-renderer";
+import { BaseTiffViewer } from "@osdk/react-components/tiff-viewer";
 
-<TiffRenderer content={tiffBytes} />;
+<BaseTiffViewer src={tiffBytes} />;
 ```
 
 ## Props
 
-### `TiffRendererProps`
+### `BaseTiffViewerProps`
 
-| Prop      | Type         | Default     | Description                         |
-| --------- | ------------ | ----------- | ----------------------------------- |
-| `content` | `Uint8Array` | (required)  | TIFF bytes to render                |
-| `onError` | `() => void` | `undefined` | Callback fired when rendering fails |
+| Prop        | Type         | Default     | Description                           |
+| ----------- | ------------ | ----------- | ------------------------------------- |
+| `src`       | `Uint8Array` | `undefined` | TIFF bytes to render                  |
+| `content`   | `Uint8Array` | `undefined` | **Deprecated** — rename to `src`      |
+| `className` | `string`     | `undefined` | CSS class applied to the root element |
+| `onError`   | `() => void` | `undefined` | Callback fired when rendering fails   |
 
-### `TiffViewerMediaProps`
+### `TiffViewerProps`
 
 | Prop        | Type         | Default     | Description                              |
 | ----------- | ------------ | ----------- | ---------------------------------------- |

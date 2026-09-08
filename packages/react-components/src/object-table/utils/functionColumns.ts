@@ -34,7 +34,7 @@ import type {
 /** A page's filtered ObjectSet paired with the row objects it covers. */
 export interface PagedObjects<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   objectSet: ObjectSet<Q, RDPs>;
   objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[];
@@ -43,7 +43,7 @@ export interface PagedObjects<
 /** Filters columnDefinitions down to only function-backed locators. */
 export function extractFunctionLocators<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -74,7 +74,7 @@ export function extractFunctionLocators<
  */
 export function buildPagedObjectSets<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   client: Client,
   objectOrInterfaceType: Q,

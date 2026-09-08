@@ -19,32 +19,18 @@
 
 // Example: uploadMedia
 
-import type { MediaReference } from "@osdk/api";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
+import type { MediaUpload } from "@osdk/api";
 
-import {
-  Equipment,
-  documentEquipment,
-} from "../../../generatedNoCheck/index.js";
+import { documentEquipment } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 // To upload media with 2.x, it has to be linked to an Action call
-async function createMediaReference() {
-  const file = await fetch("file.json");
-  const data = await file.blob();
-  // Upload media to an object type with a media property. This returns a media reference that can passed to
-  // a media parameter in an Action.
-  return await client(
-    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-  ).createMediaReference({
-    data,
-    fileName: "myFile",
-    objectType: Equipment,
-    propertyType: "trainingMaterial",
-  });
-}
-const mediaReference: MediaReference = await createMediaReference();
+const file = await fetch("file.json");
+const data = await file.blob();
+// Pass the media data straight to a media parameter on the Action. The client uploads it
+// and links the resulting media item to the object.
+const mediaUpload: MediaUpload = { data, fileName: "myFile" };
 const actionResult = client(documentEquipment).applyAction({
   equipmentId: "mac-1234",
-  instructionalVideo: mediaReference,
+  instructionalVideo: mediaUpload,
 });

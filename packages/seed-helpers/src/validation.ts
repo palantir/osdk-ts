@@ -119,13 +119,6 @@ export function validateSeedObject(
         ` (primary key ${identity}) is not defined in the ontology`,
     );
 
-    invariant(
-      value != null,
-      () =>
-        `Property '${key}' on '${apiName}' object` +
-        ` (primary key ${identity}) is null or undefined`,
-    );
-
     const expectedJsType = EXPECTED_JS_TYPE[wireType];
     invariant(
       expectedJsType === undefined || typeof value === expectedJsType,

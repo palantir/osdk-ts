@@ -16,7 +16,11 @@
 
 import type { MarketplaceInterfacePropertyType } from "@osdk/client.unstable";
 import type { InterfacePropertyType } from "@osdk/maker";
-import { isInterfaceSharedPropertyType } from "@osdk/maker";
+import {
+  isInterfaceSharedPropertyType,
+  shouldBeIndexedForSearch,
+  validateVectorProperty,
+} from "@osdk/maker";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
@@ -42,6 +46,7 @@ export function convertInterfaceProperty(
       },
     ];
   } else {
+    validateVectorProperty(apiName, prop.type, prop.array);
     return [
       ridGenerator.generateInterfacePropertyTypeRid(apiName, interfaceApiName),
       {
@@ -72,7 +77,7 @@ export function convertInterfaceProperty(
           constraints: {
             primaryKeyConstraint: prop.primaryKeyConstraint ?? "NO_RESTRICTION",
             requireImplementation: prop.required ?? true,
-            indexedForSearch: true,
+            indexedForSearch: shouldBeIndexedForSearch(prop.type),
             typeClasses: prop.typeClasses ?? [],
             dataConstraints: convertNullabilityToDataConstraint({
               type: prop.type,

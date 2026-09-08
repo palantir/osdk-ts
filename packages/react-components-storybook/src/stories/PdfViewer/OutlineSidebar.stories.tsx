@@ -17,8 +17,8 @@
 import type {
   OutlineItem,
   PdfViewerOutlineSidebarProps,
-} from "@osdk/react-components/experimental/pdf-viewer";
-import { PdfViewerOutlineSidebar } from "@osdk/react-components/experimental/pdf-viewer";
+} from "@osdk/react-components/pdf-viewer";
+import { PdfViewerOutlineSidebar } from "@osdk/react-components/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
@@ -109,16 +109,75 @@ const meta: Meta<PdfViewerOutlineSidebarProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const handleItemClick = useCallback((item: PdfOutlineItem) => {
+  goToPage(item.pageNumber);
+}, [goToPage]);
+
+// depth drives indentation; bold and italic mirror the PDF's own bookmark styling
+<PdfViewerOutlineSidebar
+  outlineItems={[
+    { title: "Introduction", depth: 0, pageNumber: 1, bold: true, italic: false },
+    { title: "Background", depth: 1, pageNumber: 2, bold: false, italic: false },
+    { title: "Data Flow", depth: 2, pageNumber: 7, bold: false, italic: true },
+  ]}
+  currentPage={1}
+  onItemClick={handleItemClick}
+  sidebarMode="outline"
+  onSidebarModeChange={setSidebarMode}
+/>`,
+      },
+    },
+  },
+};
 
 export const ActiveSection: Story = {
   args: {
     currentPage: 6,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const handleItemClick = useCallback((item: PdfOutlineItem) => {
+  goToPage(item.pageNumber);
+}, [goToPage]);
+
+// currentPage highlights the deepest entry at or before that page
+<PdfViewerOutlineSidebar
+  outlineItems={outlineItems}
+  currentPage={6}
+  onItemClick={handleItemClick}
+  sidebarMode="outline"
+  onSidebarModeChange={setSidebarMode}
+/>`,
+      },
+    },
   },
 };
 
 export const Empty: Story = {
   args: {
     outlineItems: [],
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const handleItemClick = useCallback((item: PdfOutlineItem) => {
+  goToPage(item.pageNumber);
+}, [goToPage]);
+
+// PDFs without bookmarks render an empty state rather than a blank panel
+<PdfViewerOutlineSidebar
+  outlineItems={[]}
+  currentPage={1}
+  onItemClick={handleItemClick}
+  sidebarMode="outline"
+  onSidebarModeChange={setSidebarMode}
+/>`,
+      },
+    },
   },
 };
