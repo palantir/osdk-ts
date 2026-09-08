@@ -35,3 +35,13 @@ export const loadMultipleObjectTypes: CallFactory<
 > = handleOpenApiCall(OntologyObjectSets.loadMultipleObjectTypes, [
   "ontologyApiName",
 ]);
+
+export const loadLinks: CallFactory<
+  "ontologyApiName",
+  typeof OntologyObjectSets.loadLinks
+> = handleOpenApiCall(OntologyObjectSets.loadLinks, ["ontologyApiName"]);
+
+export const createTemporary: CallFactory<
+  "ontologyApiName",
+  typeof OntologyObjectSets.createTemporary
+> = handleOpenApiCall(OntologyObjectSets.createTemporary, ["ontologyApiName"]);

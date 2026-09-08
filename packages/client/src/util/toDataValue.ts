@@ -34,6 +34,7 @@ import { isScenarioClient } from "../scenarios/ScenarioClient.js";
 import { isInterfaceActionParam } from "./interfaceUtils.js";
 import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
+import { normalizeInterfaceLinkSearchArounds } from "./normalizeInterfaceLinkSearchArounds.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
@@ -117,10 +118,10 @@ export async function toDataValue(
 
   // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
   if (isWireObjectSet(value)) {
-    return value;
+    return normalizeInterfaceLinkSearchArounds(client, value);
   }
   if (isObjectSet(value)) {
-    return getWireObjectSet(value);
+    return normalizeInterfaceLinkSearchArounds(client, getWireObjectSet(value));
   }
 
   if (isInterfaceActionParam(value)) {
