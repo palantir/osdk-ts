@@ -28,6 +28,12 @@ import type {
   InputMappingEntry,
 } from "./supportingTypes.js";
 
+export interface BlockDataAddOn {
+  idToBlockShapeId: Record<string, string>;
+  idToInputGroupId: Record<string, string>;
+  outputToLocationInput: Record<string, string>;
+}
+
 /**
  * Result from generating a block.
  * This matches the Rust BlockGeneratorResult interface and Java's BlockGeneratorResult.

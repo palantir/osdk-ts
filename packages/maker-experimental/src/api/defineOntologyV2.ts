@@ -29,6 +29,7 @@ import {
   writeStaticObjects,
 } from "@osdk/maker";
 
+import type { BlockDataAddOn } from "../cli/marketplaceSerialization/BlockGeneratorResult.js";
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
 import {
   getImportedShapes,
@@ -44,6 +45,7 @@ import {
 export interface OntologyV2Result {
   ontologyIr: OntologyIrV2;
   shapes: BlockShapes;
+  blockDataAddOn: BlockDataAddOn;
   importedInputPresets: Map<ReadableId, InputPreset>;
   backingDatasourceApiNames: string[];
   backingDatasourceLinkApiNames: string[];
@@ -166,9 +168,25 @@ export async function defineOntologyV2(
     writeDependencyFile(dependencyFile);
   }
 
+  const readableIds = new Set([
+    ...shapes.inputShapes.keys(),
+    ...shapes.outputShapes.keys(),
+  ]);
+  const blockDataAddOn: BlockDataAddOn = {
+    idToBlockShapeId: Object.fromEntries(
+      Array.from(readableIds, (readableId) => [
+        readableId,
+        ridGenerator.toBlockInternalId(readableId),
+      ]),
+    ),
+    idToInputGroupId: {},
+    outputToLocationInput: {},
+  };
+
   return {
     ontologyIr: ontDef,
     shapes,
+    blockDataAddOn,
     importedInputPresets: importedShapes.inputPresets,
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,

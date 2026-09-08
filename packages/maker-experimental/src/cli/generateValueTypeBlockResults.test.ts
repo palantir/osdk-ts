@@ -27,6 +27,7 @@ import {
   generateValueTypeBlockResults,
   getValueTypeInternalMappings,
 } from "./generateValueTypeBlockResults.js";
+import { toBlockShapeId } from "./marketplaceSerialization/CodeBlockSpec.js";
 
 function makeEntry(apiName: string, versions: string[]): ValueTypeBlockData {
   return {
@@ -108,6 +109,36 @@ describe("generateValueTypeBlockResults", () => {
     expect(results[0].external_recommendations).toEqual([]);
     expect(results[0].input_shape_metadata).toEqual({});
   });
+
+  it.each([undefined, "123e4567-e89b-12d3-a456-426614174000"])(
+    "materializes produced value type identities with randomness key %s",
+    async (randomnessKey) => {
+      const entry = makeEntry("enumerated", ["0.0.1", "0.0.2"]);
+
+      const [result] = await generateValueTypeBlockResults(
+        [entry],
+        buildDir,
+        randomnessKey,
+      );
+
+      const firstOutput = ReadableIdGenerator.getForProducedValueType(
+        "enumerated",
+        "0.0.1",
+      );
+      const secondOutput = ReadableIdGenerator.getForProducedValueType(
+        "enumerated",
+        "0.0.2",
+      );
+      expect(result.add_on_override).toEqual({
+        idToBlockShapeId: {
+          [firstOutput]: toBlockShapeId(firstOutput, randomnessKey),
+          [secondOutput]: toBlockShapeId(secondOutput, randomnessKey),
+        },
+        idToInputGroupId: {},
+        outputToLocationInput: {},
+      });
+    },
+  );
 
   it("writes value-types.json with latest version baseType in metadata", async () => {
     const entry = makeEntry("enumerated", ["0.0.1", "0.0.2"]);
