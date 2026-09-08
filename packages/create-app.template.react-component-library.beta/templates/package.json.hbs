@@ -1,0 +1,36 @@
+{
+  "name": "{{project}}",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --",
+    "dev:remote": "turbo run dev:remote --",
+    "lint": "ultracite check",
+    "format": "oxfmt .",
+    "fix": "ultracite fix",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "dependencies": {
+    "@osdk/client": "{{clientVersion}}",
+    "@osdk/foundry": "latest",
+    "@osdk/oauth": "^1.1.0"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.52.0",
+    "oxlint": "^1.67.0",
+    "turbo": "^2.5.0",
+    "typescript": "~5.5.4",
+    "ultracite": "^7.8.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "npm@11.0.0"
+}

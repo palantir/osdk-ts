@@ -1,0 +1,36 @@
+---
+title: Project structure
+sidebar_position: 3
+---
+
+# Project structure
+
+The monorepo is laid out as follows:
+
+```
+apps/
+  docs/        # Docusaurus docs site — the live preview surface
+packages/
+  components/  # @monorepo-app-placeholder/components — your own components, npm-publishable
+.claude/
+  skills/new-component/  # AI-driven component scaffolding
+```
+
+## Two sidebar sections
+
+- **Getting Started** — these MDX pages plus reference links to `@blueprintjs/core` and `@osdk/react-components` on npm.
+- **Components** — components from `packages/components`. This is where your own work lives.
+
+## How a docs page is wired
+
+Each component lives in `apps/docs/docs/custom/<slug>.mdx`. The MDX file imports the component and renders it inside a `<ComponentPage>` (Documentation/Props tabs) + `<Playground>` (live preview + Blueprint controls + auto-updating source code). The sidebar order is controlled by `sidebars.ts`. The Mantine-style theme lives in `src/css/custom.css`.
+
+`packages/components` is design-system-free — no Blueprint, no MUI. If a Blueprint primitive is needed inside the **docs demo**, the MDX file imports it directly (the docs site has Blueprint as a dependency) and passes it through as a `ReactNode` prop.
+
+## Turbo
+
+`turbo.json` defines a small set of pipelines — `build`, `dev`, `lint`, `test`, `check`, `clean` — and Turbo infers the dependency graph from each workspace's `package.json`. Building the docs site automatically builds `packages/components` first.
+
+## Publishing
+
+Every non-private workspace under `packages/` is publishable to your repo's internal Foundry npm registry. CI runs `npm publish` on each one on tagged commits. The tag name becomes the package version (any leading `v` stripped); the prerelease segment becomes the npm dist-tag, so `1.0.0-rc.1` publishes under `rc` while `1.0.0` publishes under `latest`.

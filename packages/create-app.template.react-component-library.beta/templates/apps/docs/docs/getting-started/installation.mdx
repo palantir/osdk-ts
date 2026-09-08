@@ -1,0 +1,29 @@
+---
+title: Installation
+sidebar_position: 2
+---
+
+# Installation
+
+If you bootstrapped this repo from Foundry, dependencies are already installed and the docs site is running in the preview panel — you're looking at it right now.
+
+## Run it locally
+
+```bash
+npm install
+npm run dev
+```
+
+This starts the docs site on `http://localhost:3000`.
+
+## Code Workspaces
+
+In Code Workspaces, `npm run dev:remote` binds Docusaurus to the port and base path the preview panel exposes (`DEV_SERVER_PORT` and `DEV_SERVER_BASE_PATH` env vars). The preview iframe then renders the docs directly.
+
+## Build for production
+
+```bash
+npm run build
+```
+
+Turbo builds `packages/components` first, then the docs site. The static bundle lands at `apps/docs/build`. Deploy it to your Foundry application's website host with `npx @osdk/cli site deploy` (the generated `foundry.config.json` already points at `apps/docs/build`).

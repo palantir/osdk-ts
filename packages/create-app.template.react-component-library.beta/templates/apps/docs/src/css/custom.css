@@ -1,0 +1,295 @@
+/**
+ * Custom styling for this docs site. Sticks close to Docusaurus's stock
+ * Infima defaults — the only rules below are for the custom components
+ * we render in MDX (ComponentPage tabs, UsageExample card, Playground,
+ * PropsTable, Example) and the CSS variables they consume.
+ *
+ * Anything that depends on light/dark contrast (text, headings, sidebar,
+ * navbar, code blocks) is intentionally NOT overridden, so the built-in
+ * theme toggle works correctly in both modes.
+ */
+
+/* Blueprint hardcodes a dark text color on `body` (#1c2127). Blueprint's
+   stylesheet loads after ours, so equal-specificity selectors lose to it.
+   `html body` outscores `body` and lets Docusaurus's theme variable win. */
+html body {
+  color: var(--ifm-color-content);
+}
+
+/* Dracula (Docusaurus's default dark Prism theme) renders keywords italic;
+   strip that so code blocks read the same in both color modes. */
+[data-theme="dark"] .prism-code .token {
+  font-style: normal !important;
+}
+
+:root {
+  /* Custom-properties consumed by @monorepo-app-placeholder/components.
+     The components package itself is design-system-free; it reads these
+     fallbacks so the host site can theme it. */
+  --example-card-bg: var(--ifm-background-color);
+  --example-card-border: var(--ifm-color-emphasis-200);
+  --example-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --example-card-color: var(--ifm-color-content);
+  --example-card-muted: var(--ifm-color-content-secondary);
+}
+
+[data-theme="dark"] {
+  --example-card-bg: var(--ifm-background-surface-color);
+  --example-card-border: var(--ifm-color-emphasis-200);
+  --example-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --example-card-color: var(--ifm-color-content);
+  --example-card-muted: var(--ifm-color-content-secondary);
+}
+
+/* ─── Component preview surface ──────────────────────────────────────── */
+.component-preview {
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 8px;
+  padding: 32px 24px;
+  margin: 1.5rem 0;
+  background: var(--ifm-background-surface-color);
+}
+
+/* ─── Unified usage card (preview + source in one container) ─────────── */
+.usage-example {
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+  background: var(--ifm-background-color);
+}
+
+.usage-example__preview {
+  padding: 40px 24px;
+  background: var(--ifm-background-color);
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.usage-example__code {
+  background: var(--ifm-background-surface-color);
+}
+
+.usage-example__code .theme-code-block {
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.usage-example__code .prism-code,
+.usage-example__code pre {
+  border-radius: 0 !important;
+  margin: 0 !important;
+}
+
+.usage-example__code [class*="codeBlockTitle"] {
+  background: transparent;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ifm-color-content-secondary);
+  padding: 0.5rem 0.75rem;
+}
+
+/* ─── Playground (live demo + Blueprint controls + optional source) ─── */
+.playground {
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 10px;
+  margin: 1.5rem 0;
+  overflow: hidden;
+  background: var(--ifm-background-color);
+  max-width: 100%;
+}
+
+.playground__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 24px;
+  padding: 32px 24px;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.playground__preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+
+.playground__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-left: 1px solid var(--ifm-color-emphasis-200);
+  padding-left: 24px;
+  min-width: 0;
+}
+
+.playground__controls .bp6-segmented-control {
+  max-width: 100%;
+}
+
+@media (max-width: 996px) {
+  .playground__controls .bp6-segmented-control {
+    flex-wrap: wrap;
+  }
+}
+
+.playground__controls .bp6-label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin: 0;
+  color: var(--ifm-color-content);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.playground__controls .bp6-switch {
+  margin: 0;
+}
+
+.playground__controls
+  .bp6-segmented-control
+  > .bp6-button
+  > .bp6-button-text {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.playground__source {
+  background: var(--ifm-background-surface-color);
+}
+
+.playground__source .theme-code-block,
+.playground__source pre {
+  border-radius: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+
+.playground__source [class*="codeBlockTitle"] {
+  background: transparent;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ifm-color-content-secondary);
+  padding: 0.5rem 0.75rem;
+}
+
+@media (max-width: 996px) {
+  .playground__row {
+    grid-template-columns: 1fr;
+  }
+  .playground__controls {
+    border-left: none;
+    border-top: 1px solid var(--ifm-color-emphasis-200);
+    padding-left: 0;
+    padding-top: 16px;
+  }
+}
+
+/* Lead paragraph (the first <p> after the page <h1>) reads as a subtitle,
+   so bump it slightly above body copy. */
+.theme-doc-markdown > header + p,
+.markdown > header + p {
+  font-size: 1.125rem;
+  color: var(--ifm-color-content-secondary);
+}
+
+/* Content directly after a horizontal rule reads as a section lede; bump it.
+   Cascade through subsequent paragraphs and lists in the same lede block. */
+.theme-doc-markdown hr ~ p,
+.theme-doc-markdown hr ~ ul,
+.markdown hr ~ p,
+.markdown hr ~ ul {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+/* ─── Component page tabs (Documentation / Props) ────────────────────── */
+.component-page-tabs {
+  margin: 1.5rem 0;
+}
+
+.component-page-meta {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0 0 2rem;
+  font-size: 0.875rem;
+}
+
+.component-page-meta dt {
+  color: var(--ifm-color-content-secondary);
+  font-weight: 500;
+  margin: 0;
+}
+
+.component-page-meta dd {
+  margin: 0;
+}
+
+.component-page-meta dd code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.component-page-tabs > .bp6-tabs > .bp6-tab-list {
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  gap: 0.5rem;
+  padding: 0 0 0.75rem;
+}
+
+.component-page-tabs > .bp6-tabs > .bp6-tab-list > .bp6-tab {
+  align-items: center !important;
+  background: var(--ifm-background-color) !important;
+  border: 1px solid var(--ifm-color-emphasis-200) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  color: var(--ifm-color-content) !important;
+  display: inline-flex !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  gap: 0.375rem !important;
+  height: auto !important;
+  line-height: 1 !important;
+  padding: 0.5rem 0.875rem !important;
+  transition: background-color 100ms ease, color 100ms ease;
+}
+
+.component-page-tabs > .bp6-tabs > .bp6-tab-list > .bp6-tab .bp6-icon {
+  color: currentColor !important;
+}
+
+.component-page-tabs
+  > .bp6-tabs
+  > .bp6-tab-list
+  > .bp6-tab:not([aria-disabled="true"]):hover {
+  background: var(--ifm-color-emphasis-100) !important;
+  color: var(--ifm-color-content) !important;
+}
+
+.component-page-tabs > .bp6-tabs > .bp6-tab-list > .bp6-tab[aria-selected="true"],
+.component-page-tabs
+  > .bp6-tabs
+  > .bp6-tab-list
+  > .bp6-tab[aria-selected="true"]:not([aria-disabled="true"]):hover {
+  background: var(--ifm-color-content) !important;
+  border-color: var(--ifm-color-content) !important;
+  color: var(--ifm-color-emphasis-0) !important;
+}
+
+.component-page-tabs > .bp6-tabs > .bp6-tab-indicator-wrapper,
+.component-page-tabs > .bp6-tabs > .bp6-tab-indicator {
+  display: none;
+}
+
+.component-page-tabs__panel {
+  padding-top: 1rem;
+}
