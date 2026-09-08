@@ -445,6 +445,8 @@ export const columnDefinitions: ColumnDefinition<
 // ===========================================================================
 
 export const TARGET_DATA = "Ahmed Williams";
+// Milliseconds. The 1s testing-library default is too short for stories that
+// wait on a mocked network fetch before the table paints a row.
 const TABLE_DATA_TIMEOUT = 5_000;
 
 type Canvas = ReturnType<typeof within>;
