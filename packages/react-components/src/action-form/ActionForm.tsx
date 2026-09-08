@@ -16,8 +16,16 @@
 
 import type { ActionDefinition } from "@osdk/api";
 import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
-import React, { useCallback, useEffect, useMemo } from "react";
+import { isEqual } from "lodash-es";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
+import { useDeepEqual } from "../shared/hooks/variables/useDeepEqual.js";
 import { typedReactMemo } from "../shared/typedMemo.js";
 import type {
   ActionFormProps,
@@ -26,15 +34,38 @@ import type {
 } from "./ActionFormApi.js";
 import { BaseForm } from "./BaseForm.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
+import {
+  type ActionFormValidationResult,
+  useActionFormValidation,
+} from "./useActionFormValidation.js";
+import { buildDefaultValues } from "./utils/buildDefaultValues.js";
+import {
+  buildDisplayedFormState,
+  updateFormStateFromValidation,
+} from "./utils/buildDisplayedFormState.js";
 import { coerceFieldValue } from "./utils/coerceFieldValue.js";
 import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.js";
+import { getValidationDefaultValues } from "./utils/getValidationDefaultValues.js";
 
 const EMPTY_FIELD_DEFINITIONS: ReadonlyArray<RendererFieldDefinition> = [];
 const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
 
+/**
+ * Renders an action form whose displayed state combines caller values,
+ * configured defaults, and validation-derived defaults.
+ */
 export const ActionForm: <Q extends ActionDefinition<unknown>>(
   props: ActionFormProps<Q>,
 ) => React.ReactElement = typedReactMemo(function ActionFormFn<
+  Q extends ActionDefinition<unknown>,
+>(props: ActionFormProps<Q>): React.ReactElement {
+  // Form values and validation provenance belong to one action definition.
+  return <InternalActionForm key={props.actionDefinition.apiName} {...props} />;
+});
+
+const InternalActionForm: <Q extends ActionDefinition<unknown>>(
+  props: ActionFormProps<Q>,
+) => React.ReactElement = typedReactMemo(function InternalActionFormFn<
   Q extends ActionDefinition<unknown>,
 >({
   actionDefinition,
@@ -45,12 +76,15 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   onFormStateChange,
   isSubmitDisabled,
   onSubmit,
-  onValidationResponse: _onValidationResponse,
+  onValidationResponse,
   onSuccess,
   onError,
 }: ActionFormProps<Q>): React.ReactElement {
-  const { applyAction: osdkApplyAction, isPending } =
-    useOsdkAction(actionDefinition);
+  const {
+    applyAction: osdkApplyAction,
+    validateAction,
+    isPending,
+  } = useOsdkAction(actionDefinition);
   const {
     metadata,
     loading: metadataLoading,
@@ -110,7 +144,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   );
 
   const coerceFormState = useCallback(
-    (rawState: Record<string, unknown>): Record<string, unknown> => {
+    (rawState: Readonly<Record<string, unknown>>): Record<string, unknown> => {
       const coerced: Record<string, unknown> = {};
       for (const [key, value] of Object.entries(rawState)) {
         coerced[key] = coerceFieldValue(parameters?.[key]?.type, value);
@@ -120,8 +154,115 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     [parameters],
   );
 
+  const configuredDefaultValues = useMemo(
+    () => buildDefaultValues(rendererFieldDefinitions),
+    [rendererFieldDefinitions],
+  );
+  const [validationDefaultValues, setValidationDefaultValues] = useState<
+    Record<string, unknown>
+  >({});
+  const [uncontrolledValues, setUncontrolledValues] = useState<
+    Record<string, unknown>
+  >({});
+  // Async responses need the latest defaults before React commits their state update.
+  const validationDefaultValuesRef = useRef(validationDefaultValues);
+  const editedFieldKeysRef = useRef<Set<string>>(new Set());
+
+  const isControlled = controlledFormState != null;
+  const unresolvedDisplayedFormState = useMemo(
+    () =>
+      buildDisplayedFormState({
+        validationDefaultValues,
+        configuredDefaultValues,
+        currentValues: controlledFormState ?? uncontrolledValues,
+        protectedFieldKeys: editedFieldKeysRef.current,
+      }),
+    [
+      configuredDefaultValues,
+      controlledFormState,
+      uncontrolledValues,
+      validationDefaultValues,
+    ],
+  );
+  const displayedFormState = useDeepEqual(unresolvedDisplayedFormState);
+  const validateFormState = useCallback(
+    (rawFormState: Readonly<Record<string, unknown>>) => {
+      return validateAction(coerceFormState(rawFormState));
+    },
+    [coerceFormState, validateAction],
+  );
+  function applyValidationResult(
+    validationResult: ActionFormValidationResult,
+  ): void {
+    if (
+      validationResult.parameters !== parameters ||
+      !isEqual(validationResult.formState, displayedFormState)
+    ) {
+      return;
+    }
+
+    const { response } = validationResult;
+    const nextDefaults = getValidationDefaultValues(
+      response.parameters,
+      parameters,
+    );
+    const previousDefaults = validationDefaultValuesRef.current;
+    const nextDefaultsWithClears = retainClearedDefaultKeys(
+      previousDefaults,
+      nextDefaults,
+    );
+    if (!isEqual(previousDefaults, nextDefaultsWithClears)) {
+      validationDefaultValuesRef.current = nextDefaultsWithClears;
+      setValidationDefaultValues(nextDefaultsWithClears);
+      const currentValues = controlledFormState ?? uncontrolledValues;
+      const nextReportedState = updateFormStateFromValidation({
+        currentValues,
+        previousValidationDefaultValues: previousDefaults,
+        nextValidationDefaultValues: nextDefaults,
+        configuredDefaultValues,
+        protectedFieldKeys: editedFieldKeysRef.current,
+      });
+      const previousDisplayedState = buildDisplayedFormState({
+        validationDefaultValues: previousDefaults,
+        configuredDefaultValues,
+        currentValues,
+        protectedFieldKeys: editedFieldKeysRef.current,
+      });
+      const nextDisplayedState = buildDisplayedFormState({
+        validationDefaultValues: nextDefaultsWithClears,
+        configuredDefaultValues,
+        currentValues: nextReportedState,
+        protectedFieldKeys: editedFieldKeysRef.current,
+      });
+      if (!isEqual(previousDisplayedState, nextDisplayedState)) {
+        onFormStateChange?.(
+          // Validation only adds values returned for the action's parameter
+          // keys, so the record remains a valid FormState for this action.
+          (previousState) =>
+            updateFormStateFromValidation({
+              currentValues: previousState,
+              previousValidationDefaultValues: previousDefaults,
+              nextValidationDefaultValues: nextDefaults,
+              configuredDefaultValues,
+              protectedFieldKeys: editedFieldKeysRef.current,
+            }) as FormState<Q>,
+        );
+      }
+    }
+    onValidationResponse?.(response);
+  }
+
+  const { cancelValidation } = useActionFormValidation({
+    enabled: parameters != null,
+    formState: displayedFormState,
+    parameters,
+    validateFormState,
+    onValidationResult: applyValidationResult,
+  });
+
   const handleSubmit = useCallback(
     async (rawFormState: Record<string, unknown>) => {
+      cancelValidation();
       const formState = coerceFormState(rawFormState) as FormState<Q>;
       try {
         if (onSubmit != null) {
@@ -130,15 +271,26 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
           const result = await osdkApplyAction(formState);
           onSuccess?.(result);
         }
-      } catch (e) {
+      } catch (e: unknown) {
         onError?.({ type: "submission", error: e });
       }
     },
-    [coerceFormState, onSubmit, osdkApplyAction, onSuccess, onError],
+    [
+      coerceFormState,
+      cancelValidation,
+      onSubmit,
+      osdkApplyAction,
+      onSuccess,
+      onError,
+    ],
   );
 
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) => {
+      editedFieldKeysRef.current.add(fieldKey);
+      if (!isControlled) {
+        setUncontrolledValues((prev) => ({ ...prev, [fieldKey]: value }));
+      }
       onFormStateChange?.(
         (prev) =>
           ({
@@ -147,14 +299,12 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
           }) as FormState<Q>,
       );
     },
-    [onFormStateChange],
+    [isControlled, onFormStateChange],
   );
 
   const resolvedTitle = showFormTitle
     ? (formTitle ?? metadata?.displayName ?? actionDefinition.apiName)
     : undefined;
-
-  const isControlled = controlledFormState != null;
 
   const commonProps = {
     formTitle: resolvedTitle,
@@ -164,14 +314,24 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     isPending,
     isLoading: metadataLoading,
     onFieldValueChange: handleFieldValueChange,
+    formState: displayedFormState,
   };
 
-  if (!isControlled) {
-    return <BaseForm {...commonProps} />;
-  }
-
-  return <BaseForm {...commonProps} formState={controlledFormState} />;
+  return <BaseForm {...commonProps} />;
 });
+
+function retainClearedDefaultKeys(
+  previousDefaults: Readonly<Record<string, unknown>>,
+  nextDefaults: Readonly<Record<string, unknown>>,
+): Record<string, unknown> {
+  // Keep omissions as a stable result instead of repeatedly clearing the same key.
+  return Object.fromEntries([
+    ...Object.keys(previousDefaults).flatMap((fieldKey) =>
+      nextDefaults[fieldKey] === undefined ? [[fieldKey, undefined]] : [],
+    ),
+    ...Object.entries(nextDefaults),
+  ]);
+}
 
 // The inner render fn is anonymous in the published build, so set a displayName
 // on the memo wrapper for React DevTools and the OSDK devtools component tree.
