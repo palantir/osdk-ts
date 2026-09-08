@@ -18,6 +18,10 @@ import { loadResolvedAliases } from "./loaders.js";
 import type { Custom } from "./types.js";
 export type { Custom } from "./types.js";
 
+/**
+ * @deprecated Alias retrieval will become asynchronous in a future release.
+ * Add `await` to this call to prepare.
+ */
 export function custom(alias: string): Custom {
   const resolvedAliases = loadResolvedAliases();
 

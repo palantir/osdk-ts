@@ -17,6 +17,10 @@
 // API Extractor cannot represent a namespace re-export whose external target
 // uses `export *`, so each export is listed explicitly.
 
+/**
+ * @deprecated Alias retrieval will become asynchronous in a future release.
+ * Add `await` to this call to prepare.
+ */
 export { custom } from "@osdk/aliases/node";
 export type { Custom } from "@osdk/aliases/node";
 export { dataset } from "@osdk/aliases/node";

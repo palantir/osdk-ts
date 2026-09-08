@@ -34,10 +34,6 @@ export type {
   TwoDimensionalAggregation,
 } from "@osdk/client";
 
-/**
- * @deprecated Alias retrieval will become asynchronous in a future release.
- * Add `await` to calls such as `await Aliases.custom("myAlias")` to prepare.
- */
 export * as Aliases from "./aliases/index.js";
 export { createEditBatch } from "./edits/createEditBatch.js";
 export type { EditBatch } from "./edits/EditBatch.js";
