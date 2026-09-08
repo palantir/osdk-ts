@@ -33,5 +33,5 @@ export const Aliases: {
   DEFAULT_RESOURCES_PATH,
 };
 
-export { custom, DEFAULT_RESOURCES_PATH };
+export { DEFAULT_RESOURCES_PATH };
 export type { Custom } from "../browser.js";

@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-// The public surface of the browser entry point. Both import styles are
-// supported, so both are asserted here: dropping either one later would be a
-// breaking change for consumers, and that should fail a test rather than pass
-// review unnoticed.
+// The public surface of the browser entry point. Alias reads are intentionally
+// available only through the Aliases namespace to match the Functions API.
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import * as browser from "./browser.js";
 import { resetAliasesCache } from "./browser.js";
-import {
-  Aliases,
-  custom,
-  DEFAULT_RESOURCES_PATH,
-} from "./public/experimental.js";
+import * as experimental from "./public/experimental.js";
+import { Aliases, DEFAULT_RESOURCES_PATH } from "./public/experimental.js";
 
 const RESOURCES_JSON = {
   aliases: {
@@ -76,10 +71,9 @@ describe("experimental browser entry point", () => {
     expect(fetchImpl).toHaveBeenCalledOnce();
   });
 
-  it("exposes the same members as named exports", () => {
-    // Same function identities, not merely same names, so the two styles can
-    // never drift apart.
-    expect(Aliases.custom).toBe(custom);
+  it("exposes custom only through the Aliases namespace", () => {
+    expect(Aliases.custom).toBe(browser.custom);
+    expect(experimental).not.toHaveProperty("custom");
     expect(Aliases.DEFAULT_RESOURCES_PATH).toBe(DEFAULT_RESOURCES_PATH);
   });
 
