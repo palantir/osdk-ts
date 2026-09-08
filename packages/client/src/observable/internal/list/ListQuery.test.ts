@@ -760,6 +760,60 @@ describe("ListQuery sort stability across pages", () => {
       resolved.map((o) => (o as { derivedLong: string }).derivedLong),
     ).toEqual(["1", "42", "100", "9007199254740993"]);
   });
+
+  it("invalidateAll preserves server order for tied sort keys", async () => {
+    // Regression test: a revalidation that returns byte-identical data used to
+    // fall through the list's self-recursion guard (the deep-equal write never
+    // registered the list in `changes`), so the list's own fetch results were
+    // fed back through the clientOrdered merge. That re-sorted the rows with a
+    // primary key tiebreak, shuffling ties the server had ordered differently.
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+
+    // Every row ties on `text`. Registration order is the reverse of primary
+    // key order, so server tie order and PK tie order are distinguishable.
+    for (const id of [5, 3, 1]) {
+      dataStore.registerObject(Todo, { $apiName: "Todo", id, text: "same" });
+    }
+
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: { text: "asc" },
+          pageSize: 10,
+        },
+        listSub,
+      ),
+    );
+
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
+    await waitForCall(listSub.next, 1);
+    const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+    expect(payload!.resolvedList!.map((t) => t.id)).toEqual([5, 3, 1]);
+
+    await store.invalidateAll();
+    await waitForPayload(listSub, (p) => p.status === "loaded");
+    // Let the post-batch change propagation settle; the re-sort used to land
+    // in an emission after the "loaded" one.
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    // Every payload emitted after the invalidation must keep the server's
+    // order; none may show the PK tie-broken [1, 3, 5].
+    const emittedOrders = listSub.next.mock.calls
+      .map((call) => call[0]?.resolvedList?.map((t) => t.id))
+      .filter((ids): ids is number[] => ids != null);
+
+    expect(emittedOrders.length).toBeGreaterThan(0);
+    for (const ids of emittedOrders) {
+      expect(ids).toEqual([5, 3, 1]);
+    }
+  });
 });
 
 describe("ListQuery pivotTo tests", () => {
