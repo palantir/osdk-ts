@@ -56,17 +56,6 @@ const config: Config = {
           "https://github.com/palantir/osdk-ts/tree/main/packages/react-components/docs/",
       },
     ],
-    [
-      "@docusaurus/plugin-content-docs",
-      {
-        id: "cbac-components",
-        path: "../packages/cbac-components/docs",
-        routeBasePath: "/cbac-components",
-        sidebarPath: "./sidebarsCbacComponents.ts",
-        editUrl:
-          "https://github.com/palantir/osdk-ts/tree/main/packages/cbac-components/docs/",
-      },
-    ],
   ],
 
   themeConfig: {
