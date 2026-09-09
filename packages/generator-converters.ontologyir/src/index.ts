@@ -27,6 +27,7 @@ export type {
   ISetDataType,
 } from "./convertDataType.js";
 export { isInjectedRuntimeInput } from "./convertDataType.js";
+export type { ResolvedValueType } from "./convertValueType.js";
 export {
   type BlockDataApiNameLookup,
   buildBlockDataInterfaceLinkTypeLookup,

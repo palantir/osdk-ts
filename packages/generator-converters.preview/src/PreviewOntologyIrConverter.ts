@@ -23,6 +23,7 @@ import {
   buildBlockDataInterfaceTypeLookup,
   buildBlockDataObjectTypeLookup,
   OntologyBlockDataToFullMetadataConverter,
+  type ResolvedValueType,
   toUuid,
 } from "@osdk/generator-converters.ontologyir";
 import { convertBlockDataLogicRulesToActionLogicRules } from "./ActionLogicRuleConverter.js";
@@ -48,9 +49,15 @@ export class PreviewOntologyIrConverter {
   static getPreviewFullMetadataFromBlockData(
     blockdata: OntologyBlockDataV2,
     importedTypes?: Ontologies.OntologyFullMetadata,
+    valueTypes: readonly ResolvedValueType[] = [],
   ): PreviewOntologyFullMetadata {
     const baseMetadata = OntologyBlockDataToFullMetadataConverter
-      .getFullMetadataFromBlockData(blockdata, importedTypes);
+      .getFullMetadataFromBlockData(
+        blockdata,
+        importedTypes,
+        undefined,
+        valueTypes,
+      );
 
     const actionTypes = this.convertActionTypesWithFullLogicRulesFromBlockData(
       blockdata.actionTypes,
