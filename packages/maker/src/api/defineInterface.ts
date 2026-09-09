@@ -43,6 +43,10 @@ import { mapSimplifiedStatusToInterfaceTypeStatus } from "./interface/mapSimplif
 import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
 import { isExotic, isPropertyTypeType } from "./properties/PropertyTypeType.js";
 import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
+import {
+  validateDisplayMetadataLengths,
+  validateStructFieldMetadata,
+} from "./validateMetadataLengths.js";
 
 export type SimplifiedInterfaceTypeStatus =
   | { type: "deprecated"; message: string; deadline: string }
@@ -209,6 +213,19 @@ export function defineInterface(
     __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
   };
 
+  const context = `Interface "${apiName}"`;
+  validateDisplayMetadataLengths(fullInterface.displayMetadata, context);
+  for (const [propertyApiName, property] of Object.entries(propertiesV3)) {
+    if (isInterfaceSharedPropertyType(property)) {
+      continue;
+    }
+    const propertyContext = `${context}, property "${propertyApiName}"`;
+    validateDisplayMetadataLengths(
+      { ...property, displayName: property.displayName ?? propertyApiName },
+      propertyContext,
+    );
+    validateStructFieldMetadata(property.type, propertyContext);
+  }
   updateOntology(fullInterface);
   return fullInterface;
 }
