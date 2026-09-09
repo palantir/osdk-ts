@@ -896,6 +896,9 @@ describe("generator", () => {
             linksType: Person.Links;
             strictProps: Person.StrictProps;
             apiName: 'Person';
+            createMetadata: {
+              requiredProperties: ['email'];
+            };
             description: 'A person';
             displayName: 'Person';
             icon: {
@@ -1009,6 +1012,9 @@ describe("generator", () => {
             linksType: Todo.Links;
             strictProps: Todo.StrictProps;
             apiName: 'Todo';
+            createMetadata: {
+              requiredProperties: ['id'];
+            };
             description: 'Its a todo item.';
             displayName: 'AwesomeTodoDisplayname';
             icon: {
@@ -1195,6 +1201,43 @@ describe("generator", () => {
       `);
     },
   );
+
+  it("emits object-level create metadata", async () => {
+    const ontology = immer.produce(TodoWireOntology, (draft) => {
+      const body = draft.objectTypes.Todo.objectType.properties.body as
+        & typeof draft.objectTypes.Todo.objectType.properties.body
+        & {
+          dataConstraints: { nullability: "NOT_NULLABLE" };
+        };
+      body.dataConstraints = { nullability: "NOT_NULLABLE" };
+      draft.objectTypes.Todo.objectType.datasources = [{
+        rid: "datasource-rid",
+        definition: {
+          type: "dataset",
+          datasetRid: "dataset-rid",
+          propertyMapping: {
+            id: { type: "column", column: "id" },
+            body: { type: "editOnly" },
+          },
+        },
+      }];
+    });
+
+    await generateClientSdkVersionTwoPointZero(
+      ontology,
+      "",
+      helper.minimalFiles,
+      BASE_PATH,
+    );
+
+    const generatedTodo = helper.getFiles()["/foo/ontology/objects/Todo.ts"];
+    expect(generatedTodo).toContain(
+      "requiredProperties: ['body', 'id'];",
+    );
+    expect(generatedTodo).toContain(
+      "body: $PropertyDef<'string', 'nullable', 'single'>;",
+    );
+  });
 
   test("throws an error when target destination is not empty", async () => {
     helper.minimalFiles.readdir = vi.fn(async (_path: string) => ["file"]);
@@ -1598,6 +1641,9 @@ describe("generator", () => {
             linksType: Person.Links;
             strictProps: Person.StrictProps;
             apiName: 'foo.bar.Person';
+            createMetadata: {
+              requiredProperties: ['email'];
+            };
             description: 'A person';
             displayName: 'Person';
             icon: {
@@ -1711,6 +1757,9 @@ describe("generator", () => {
             linksType: Todo.Links;
             strictProps: Todo.StrictProps;
             apiName: 'foo.bar.Todo';
+            createMetadata: {
+              requiredProperties: ['id'];
+            };
             description: 'Its a todo item.';
             displayName: 'AwesomeTodoDisplayname';
             icon: {
@@ -2188,6 +2237,9 @@ describe("generator", () => {
               linksType: UsesForeignSpt.Links;
               strictProps: UsesForeignSpt.StrictProps;
               apiName: 'UsesForeignSpt';
+              createMetadata: {
+                requiredProperties: ['id'];
+              };
               description: undefined;
               displayName: 'Uses Foreign Spt';
               icon: {
@@ -2461,6 +2513,9 @@ describe("generator", () => {
             linksType: Person.Links;
             strictProps: Person.StrictProps;
             apiName: 'Person';
+            createMetadata: {
+              requiredProperties: ['email'];
+            };
             description: 'A person';
             displayName: 'Person';
             icon: {
@@ -2574,6 +2629,9 @@ describe("generator", () => {
             linksType: Todo.Links;
             strictProps: Todo.StrictProps;
             apiName: 'Todo';
+            createMetadata: {
+              requiredProperties: ['id'];
+            };
             description: 'Its a todo item.';
             displayName: 'AwesomeTodoDisplayname';
             icon: {
@@ -2948,6 +3006,9 @@ describe("generator", () => {
             linksType: Task.Links;
             strictProps: Task.StrictProps;
             apiName: 'com.example.dep.Task';
+            createMetadata: {
+              requiredProperties: ['taskId'];
+            };
             description: undefined;
             displayName: 'Task';
             icon: {

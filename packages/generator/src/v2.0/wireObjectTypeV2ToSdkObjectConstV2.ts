@@ -37,6 +37,7 @@ import { getObjectImports } from "../shared/getObjectImports.js";
 import { propertyJsdoc } from "../shared/propertyJsdoc.js";
 import { stringify } from "../util/stringify.js";
 import { stringUnionFrom } from "../util/stringUnionFrom.js";
+import { getRequiredPropertiesForCreate } from "./getRequiredPropertiesForCreate.js";
 
 type PropertyApiNameUnion = PropertyApiName | SharedPropertyTypeApiName;
 
@@ -290,6 +291,16 @@ export function createDefinition(
   }: Identifiers,
 ) {
   const definition = object.getCleanedUpDefinition(true);
+  const definitionMetadata = object instanceof EnhancedObjectType
+    ? {
+      ...definition,
+      createMetadata: {
+        requiredProperties: getRequiredPropertiesForCreate(
+          object.raw.objectType,
+        ),
+      },
+    }
+    : definition;
   const propertyMetadata = object instanceof EnhancedObjectType
     ? object.raw.objectType.properties
     : object instanceof EnhancedInterfaceType
@@ -316,7 +327,7 @@ export function createDefinition(
       linksType: ${osdkObjectLinksIdentifier};
       strictProps: ${osdkObjectStrictPropsIdentifier};
       ${
-    stringify(definition, {
+    stringify(definitionMetadata, {
       links: (_value) =>
         `{
         ${

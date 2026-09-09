@@ -71,6 +71,7 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
 
     // was unspecified, so should be nullable
     expect(result.properties.defaulted.nullable).toBe(true);
+    expect(result).not.toHaveProperty("createMetadata");
   });
 
   it("Is up to date with the enums from API", () => {
