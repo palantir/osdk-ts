@@ -20,14 +20,19 @@ declare const process: {
   env: { TARGET: "browser" | "node" | undefined };
 };
 
-// The transpiler removes the unused branch, keeping filesystem code out of browser builds.
+/**
+ * Browser builds retrieve aliases from the `resources.json` served with the
+ * website. Functions builds retrieve aliases from runtime-provided filesystem
+ * configuration. TARGET is replaced at build time, so only the implementation
+ * for that build target remains.
+ */
 const custom: (alias: string) => Promise<Custom> =
   process.env.TARGET === "browser"
-    ? async function customInBrowser(alias) {
+    ? async function customForBrowser(alias) {
         const { custom: customFromResources } = await import("../browser.js");
         return await customFromResources(alias);
       }
-    : async function customInFunctions(alias) {
+    : async function customForFunctions(alias) {
         const { resolveCustomAlias } = await import("../resolveCustomAlias.js");
         return resolveCustomAlias(alias);
       };
