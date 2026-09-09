@@ -88,8 +88,7 @@ describe("experimental Node entry point", () => {
   });
 
   it("exposes custom only through the Aliases namespace", () => {
-    expect(experimental).not.toHaveProperty("custom");
-    expect(Aliases).not.toHaveProperty("DEFAULT_RESOURCES_PATH");
-    expect(Aliases).not.toHaveProperty("load");
+    expect(Object.keys(experimental)).toEqual(["Aliases"]);
+    expect(Object.keys(Aliases)).toEqual(["custom"]);
   });
 });

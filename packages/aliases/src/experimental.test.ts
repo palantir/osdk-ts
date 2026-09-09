@@ -22,7 +22,6 @@ const { originalTarget } = vi.hoisted(() => {
   return { originalTarget: previousTarget };
 });
 
-import * as browser from "./browser.js";
 import { resetAliasesCache } from "./browser.js";
 import * as experimental from "./public/experimental.js";
 import { Aliases } from "./public/experimental.js";
@@ -83,20 +82,7 @@ describe("experimental browser entry point", () => {
   });
 
   it("exposes custom only through the Aliases namespace", () => {
-    expect(Aliases.custom).toBeTypeOf("function");
-    expect(experimental).not.toHaveProperty("custom");
-    expect(Aliases).not.toHaveProperty("DEFAULT_RESOURCES_PATH");
-    expect(Aliases).not.toHaveProperty("load");
-  });
-
-  it("does not re-export the filesystem loaders", () => {
-    for (const name of ["dataset", "mediaset", "model", "source", "stream"]) {
-      expect(Aliases).not.toHaveProperty(name);
-    }
-  });
-
-  it("does not expose cache reset, which could race with a load", () => {
-    expect(Aliases).not.toHaveProperty("resetAliasesCache");
-    expect(browser.resetAliasesCache).toBeTypeOf("function");
+    expect(Object.keys(experimental)).toEqual(["Aliases"]);
+    expect(Object.keys(Aliases)).toEqual(["custom"]);
   });
 });
