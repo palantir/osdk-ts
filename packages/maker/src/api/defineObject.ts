@@ -37,6 +37,7 @@ import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfa
 import {
   getInterfacePropertyTypeType,
   type InterfacePropertyType,
+  isInterfacePropertyRequired,
   isInterfaceSharedPropertyType,
 } from "./interface/InterfacePropertyType.js";
 import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
@@ -250,7 +251,7 @@ export function defineObject(
           objectDef,
         );
       }
-      if (interfaceProp[1].required === false) {
+      if (!isInterfacePropertyRequired(interfaceProp[1])) {
         return { type: "valid" };
       }
       return {
