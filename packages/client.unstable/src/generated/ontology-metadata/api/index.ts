@@ -521,6 +521,7 @@ export type {
   InterfaceTypesAlreadyExistError,
   InterfaceTypeSchemaMigrationOnBranchError,
   InterfaceTypeSchemaMigrationRid,
+  InterfaceTypeSchemaTransitionRid,
   InterfaceTypesNotFoundError,
   InterfaceTypeStatus,
   InterfaceTypeUpdatedEvent,

@@ -43,6 +43,8 @@ export function convertInterfaceSchemaMigrations(
       (transition): [string, OntologyIrInterfaceTypeSchemaTransition] => [
         transition.id,
         {
+          // For ontology-ir, this carries the authored id, not a rid, despite its name
+          rid: transition.id,
           id: transition.id,
           title: transition.title,
           description: transition.description,
