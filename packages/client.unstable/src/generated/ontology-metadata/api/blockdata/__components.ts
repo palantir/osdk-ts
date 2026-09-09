@@ -127,6 +127,9 @@ import type {
 } from "../entitymetadata/provenance/__components.js";
 import type { RuleSet as _api_formatting_RuleSet } from "../formatting/__components.js";
 import type {
+  InterfaceTypeSchemaTransition as _api_schemamigrations_InterfaceTypeSchemaTransition,
+  InterfaceTypeSchemaTransitionId as _api_schemamigrations_InterfaceTypeSchemaTransitionId,
+  OntologyIrInterfaceTypeSchemaTransition as _api_schemamigrations_OntologyIrInterfaceTypeSchemaTransition,
   OntologyIrSchemaTransition as _api_schemamigrations_OntologyIrSchemaTransition,
   SchemaTransition as _api_schemamigrations_SchemaTransition,
 } from "../schemamigrations/__components.js";
@@ -212,6 +215,7 @@ export type GeotimeSeriesIntegrationName = string;
 export type InstallLocationBlockShapeId = BlockShapeId;
 export interface InterfaceTypeBlockDataV2 {
   interfaceType: MarketplaceInterfaceType;
+  schemaMigrations?: InterfaceTypeSchemaMigrationBlockData | null | undefined;
 }
 export interface InterfaceTypePermissionInformation {
   restrictionStatus: InterfaceTypeRestrictionStatus;
@@ -219,6 +223,16 @@ export interface InterfaceTypePermissionInformation {
 export interface InterfaceTypeRestrictionStatus {
   ontologyPackageRid?: _api_OntologyPackageRid | null | undefined;
   publicProject?: boolean | null | undefined;
+}
+export interface InterfaceTypeSchemaMigrationBlockData {
+  interfacePropertyTypeRidsToApiNames: Record<
+    _api_InterfacePropertyTypeRid,
+    _api_InterfacePropertyTypeApiName
+  >;
+  schemaTransitions: Record<
+    _api_schemamigrations_InterfaceTypeSchemaTransitionId,
+    _api_schemamigrations_InterfaceTypeSchemaTransition
+  >;
 }
 /**
  * Will only match if there is a single datasource that matches the output type (e.g. a dataset datasource
@@ -256,6 +270,13 @@ export interface KnownMarketplaceIdentifiers {
     BlockInternalId
   >;
   interfaceTypes: Record<_api_InterfaceTypeRid, BlockInternalId>;
+  interfaceTypeSchemaTransitions: Record<
+    _api_InterfaceTypeRid,
+    Record<
+      _api_schemamigrations_InterfaceTypeSchemaTransitionId,
+      BlockInternalId
+    >
+  >;
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeRid, BlockInternalId>;
   markings: Record<BlockInternalId, Array<_api_MarkingId>>;
@@ -428,6 +449,7 @@ export interface MarketplaceInterfaceType {
     MarketplaceInterfacePropertyType
   >;
   rid: _api_InterfaceTypeRid;
+  schemaMigrationsEnabled?: boolean | null | undefined;
   searchable?: boolean | null | undefined;
   status: MarketplaceInterfaceTypeStatus;
 }
@@ -570,6 +592,20 @@ export interface OntologyIrBlockPermissionInformation {
 }
 export interface OntologyIrInterfaceTypeBlockDataV2 {
   interfaceType: OntologyIrMarketplaceInterfaceType;
+  schemaMigrations?:
+    | OntologyIrInterfaceTypeSchemaMigrationBlockData
+    | null
+    | undefined;
+}
+export interface OntologyIrInterfaceTypeSchemaMigrationBlockData {
+  interfacePropertyTypeRidsToApiNames: Record<
+    _api_InterfacePropertyTypeApiName,
+    _api_InterfacePropertyTypeApiName
+  >;
+  schemaTransitions: Record<
+    _api_schemamigrations_InterfaceTypeSchemaTransitionId,
+    _api_schemamigrations_OntologyIrInterfaceTypeSchemaTransition
+  >;
 }
 export interface OntologyIrKnownMarketplaceIdentifiers {
   actionParameterIds: Record<
@@ -601,6 +637,13 @@ export interface OntologyIrKnownMarketplaceIdentifiers {
     BlockInternalId
   >;
   interfaceTypes: Record<_api_InterfaceTypeApiName, BlockInternalId>;
+  interfaceTypeSchemaTransitions: Record<
+    _api_InterfaceTypeApiName,
+    Record<
+      _api_schemamigrations_InterfaceTypeSchemaTransitionId,
+      BlockInternalId
+    >
+  >;
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeId, BlockInternalId>;
   markings: Record<BlockInternalId, Array<_api_MarkingId>>;
@@ -725,6 +768,7 @@ export interface OntologyIrMarketplaceInterfaceType {
     _api_InterfacePropertyTypeApiName,
     OntologyIrMarketplaceInterfacePropertyType
   >;
+  schemaMigrationsEnabled?: boolean | null | undefined;
   searchable?: boolean | null | undefined;
   status: OntologyIrMarketplaceInterfaceTypeStatus;
 }
