@@ -28,7 +28,33 @@ interface InitAliasesOptions {
 let cachedCustomAliases: Record<string, string> | undefined;
 let inFlight: Promise<void> | undefined;
 
-/** Deduplicates concurrent loads and allows failed loads to be retried. */
+/**
+ * Loads the aliases for this installation if necessary, then returns the
+ * resolved value for a custom alias. Repeated and concurrent calls share the
+ * same load.
+ *
+ * @experimental Exposed only via "@osdk/aliases/experimental". Both custom
+ * aliases and the shape of this API are provisional and may change.
+ */
+export async function custom(alias: string): Promise<Custom> {
+  await initAliases();
+  const aliases = cachedCustomAliases;
+  if (aliases === undefined) {
+    throw new Error("Aliases failed to initialize.");
+  }
+
+  if (!Object.hasOwn(aliases, alias)) {
+    const available = Object.keys(aliases);
+    throw new Error(
+      `Custom alias '${alias}' not found. Available aliases: [${available.join(
+        ", ",
+      )}]`,
+    );
+  }
+  return aliases[alias] as Custom;
+}
+
+/** Deduplicates concurrent loads; a later call can retry if failure occurs. */
 export async function initAliases(options?: InitAliasesOptions): Promise<void> {
   if (cachedCustomAliases !== undefined) {
     return;
@@ -80,7 +106,14 @@ async function fetchJson(
   return { value: parseJson(body, url), url };
 }
 
-/** Foundry hosts may return an HTML SPA fallback with a JSON content type. */
+function resolveUrl(path: string): string {
+  if (typeof document !== "undefined" && document.baseURI) {
+    return new URL(path, document.baseURI).toString();
+  }
+  return path;
+}
+
+/** A missing `resources.json` may return the website's HTML page instead of a 404. */
 function isHtmlDocument(body: string): boolean {
   const start = body.trimStart().slice(0, 32).toLowerCase();
   return start.startsWith("<!doctype html") || start.startsWith("<html");
@@ -149,17 +182,10 @@ function isJsonObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value != null && !Array.isArray(value);
 }
 
-function resolveUrl(path: string): string {
-  if (typeof document !== "undefined" && document.baseURI) {
-    return new URL(path, document.baseURI).toString();
-  }
-  return path;
-}
-
+/** Validates that alias values are strings and preserves names that match built-in object properties. */
 function toStringRecord(
   parsed: Record<string, unknown>,
 ): Record<string, string> {
-  // A normal object silently drops a string assigned to `__proto__`.
   const result = Object.create(null) as Record<string, string>;
   for (const [key, value] of Object.entries(parsed)) {
     if (typeof value !== "string") {
@@ -172,32 +198,6 @@ function toStringRecord(
     result[key] = value;
   }
   return result;
-}
-
-/**
- * Loads the aliases for this installation if necessary, then returns the
- * resolved value for a custom alias. Repeated and concurrent calls share the
- * same load.
- *
- * @experimental Exposed only via "@osdk/aliases/experimental". Both custom
- * aliases and the shape of this API are provisional and may change.
- */
-export async function custom(alias: string): Promise<Custom> {
-  await initAliases();
-  const aliases = cachedCustomAliases;
-  if (aliases === undefined) {
-    throw new Error("Aliases failed to initialize.");
-  }
-
-  if (!Object.hasOwn(aliases, alias)) {
-    const available = Object.keys(aliases);
-    throw new Error(
-      `Custom alias '${alias}' not found. Available aliases: [${available.join(
-        ", ",
-      )}]`,
-    );
-  }
-  return aliases[alias] as Custom;
 }
 
 export function resetAliasesCache(): void {
