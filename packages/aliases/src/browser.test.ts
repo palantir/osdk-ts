@@ -323,14 +323,27 @@ describe("browser aliases", () => {
       ).rejects.toThrow(`Alias 'key' must be a string, got ${type}`);
     });
 
-    it("treats a missing value as an empty string", async () => {
+    it("rejects a declaration without a value", async () => {
+      await expect(
+        initAliases({
+          fetch: mockFetch({
+            body: { aliases: { custom: { needsValue: {} } } },
+          }),
+        }),
+      ).rejects.toThrow(
+        `alias 'needsValue' from resources.json: expected its declaration ` +
+          `to include a string 'value'`,
+      );
+    });
+
+    it("allows an explicitly empty value", async () => {
       await initAliases({
         fetch: mockFetch({
-          body: { aliases: { custom: { needsValue: {} } } },
+          body: { aliases: { custom: { emptyValue: { value: "" } } } },
         }),
       });
 
-      await expect(custom("needsValue")).resolves.toBe("");
+      await expect(custom("emptyValue")).resolves.toBe("");
     });
   });
 });

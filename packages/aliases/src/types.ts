@@ -62,7 +62,7 @@ export interface CustomAliasResources {
   aliases?: {
     custom?: Record<
       string,
-      { value?: string; description?: string; required?: boolean }
+      { value: string; description?: string; required?: boolean }
     >;
   };
 }

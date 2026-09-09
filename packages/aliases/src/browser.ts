@@ -164,10 +164,13 @@ function extractCustomAliases(
               `to be an object, for example { "value": "..." }.`,
           );
         }
-        return [
-          key,
-          Object.hasOwn(declaration, "value") ? declaration.value : "",
-        ];
+        if (!Object.hasOwn(declaration, "value")) {
+          throw new TypeError(
+            `Failed to read alias '${key}' from ${url}: expected its declaration ` +
+              `to include a string 'value'.`,
+          );
+        }
+        return [key, declaration.value];
       }),
     ),
   );
