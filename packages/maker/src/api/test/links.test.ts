@@ -2062,6 +2062,21 @@ describe("Link Types", () => {
   });
 
   describe("ILTs", () => {
+    it("validates metadata before adding an interface link", () => {
+      const from = defineInterface({ apiName: "Example" });
+      expect(() =>
+        defineInterfaceLinkConstraint({
+          apiName: "related",
+          from,
+          toMany: "com.palantir.Other",
+          description: "a".repeat(100_000),
+        }),
+      ).toThrowError(
+        'Interface "com.palantir.Example", link "com.palantir.related": description',
+      );
+      expect(from.links).toEqual([]);
+    });
+
     let a: InterfaceType;
     let b: InterfaceType;
 
