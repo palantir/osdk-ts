@@ -139,7 +139,8 @@ function extractCustomAliases(
   }
   if (!isJsonObject(aliases)) {
     throw new TypeError(
-      `Failed to read aliases from ${url}: 'aliases' must be an object in resources.json.`,
+      `Failed to read aliases from ${url}: expected 'aliases' to look like ` +
+        `{ "custom": { "myAlias": { "value": "..." } } } in resources.json.`,
     );
   }
 
@@ -149,7 +150,9 @@ function extractCustomAliases(
   }
   if (!isJsonObject(declarations)) {
     throw new TypeError(
-      `Failed to read aliases from ${url}: 'aliases.custom' must be an object.`,
+      `Failed to read aliases from ${url}: expected 'aliases.custom' to map ` +
+        `alias names to declarations, for example ` +
+        `{ "myAlias": { "value": "..." } }.`,
     );
   }
   return toStringRecord(
@@ -157,7 +160,8 @@ function extractCustomAliases(
       Object.entries(declarations).map(([key, declaration]) => {
         if (!isJsonObject(declaration)) {
           throw new TypeError(
-            `Failed to read alias '${key}' from ${url}: declaration must be an object.`,
+            `Failed to read alias '${key}' from ${url}: expected its declaration ` +
+              `to be an object, for example { "value": "..." }.`,
           );
         }
         return [

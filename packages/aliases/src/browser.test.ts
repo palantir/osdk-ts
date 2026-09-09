@@ -275,7 +275,9 @@ describe("browser aliases", () => {
     it("rejects a non-object aliases block", async () => {
       await expect(
         initAliases({ fetch: mockFetch({ body: { aliases: [] } }) }),
-      ).rejects.toThrow("'aliases' must be an object in resources.json");
+      ).rejects.toThrow(
+        `'aliases' to look like { "custom": { "myAlias": { "value": "..." } } }`,
+      );
     });
 
     it("rejects a non-object custom block", async () => {
@@ -283,7 +285,10 @@ describe("browser aliases", () => {
         initAliases({
           fetch: mockFetch({ body: { aliases: { custom: [] } } }),
         }),
-      ).rejects.toThrow("'aliases.custom' must be an object");
+      ).rejects.toThrow(
+        `'aliases.custom' to map alias names to declarations, for example ` +
+          `{ "myAlias": { "value": "..." } }`,
+      );
     });
 
     it.each([null, [], "not an object"])(
@@ -295,7 +300,10 @@ describe("browser aliases", () => {
               body: { aliases: { custom: { key: declaration } } },
             }),
           }),
-        ).rejects.toThrow("declaration must be an object");
+        ).rejects.toThrow(
+          `expected its declaration to be an object, for example ` +
+            `{ "value": "..." }`,
+        );
       },
     );
 
