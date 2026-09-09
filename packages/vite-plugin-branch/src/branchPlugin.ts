@@ -25,7 +25,7 @@ import { normalizeGitBranch } from "./normalizeGitBranch.js";
  */
 export const FOUNDRY_BRANCH_ENV_VAR: string = "FOUNDRY_BRANCH_RID";
 
-const FOUNDRY_BRANCH_WINDOW_PROPERTY = "__OSDK_FOUNDRY_BRANCH_RID__";
+const FOUNDRY_BRANCH_META_NAME = "osdk-foundry-branch-rid";
 
 export interface BranchPluginOptions {
   /**
@@ -89,24 +89,14 @@ export function branchPlugin(options: BranchPluginOptions = {}): Plugin {
 
       return [
         {
-          tag: "script",
-          children: `window.${FOUNDRY_BRANCH_WINDOW_PROPERTY} = ${serializeForInlineScript(branch)};`,
+          tag: "meta",
+          attrs: {
+            name: FOUNDRY_BRANCH_META_NAME,
+            content: branch ?? "",
+          },
           injectTo: "head-prepend",
         },
       ];
     },
   };
-}
-
-/** Serializes data without allowing a value to terminate the script element. */
-function serializeForInlineScript(branch: string | null): string {
-  return (
-    (JSON.stringify(branch) ?? "null")
-      // Prevent a branch containing `</script>` from terminating the HTML element.
-      .replaceAll("<", "\\u003c")
-      // Escape line separators that older JavaScript parsers reject in string literals.
-      .replaceAll("\u2028", "\\u2028")
-      // Escape paragraph separators for the same cross-parser compatibility.
-      .replaceAll("\u2029", "\\u2029")
-  );
 }

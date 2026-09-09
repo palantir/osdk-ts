@@ -25,7 +25,6 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { runInNewContext } from "node:vm";
 
 import {
   build,
@@ -39,7 +38,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { branchPlugin, FOUNDRY_BRANCH_ENV_VAR } from "./branchPlugin.js";
 
 const GIT_BRANCH = "zka/my-branch";
-const WINDOW_PROPERTY = "__OSDK_FOUNDRY_BRANCH_RID__";
+const META_NAME = "osdk-foundry-branch-rid";
 
 const tempDirs: string[] = [];
 
@@ -73,7 +72,7 @@ function configurePlugin(
   return messages;
 }
 
-async function readInjectedScript(plugin: Plugin): Promise<string> {
+async function readInjectedMetaContent(plugin: Plugin): Promise<string> {
   const hook = plugin.transformIndexHtml;
   if (typeof hook !== "function") {
     throw new TypeError("expected transformIndexHtml to be a function hook");
@@ -84,13 +83,14 @@ async function readInjectedScript(plugin: Plugin): Promise<string> {
   }
   const [tag] = result;
   if (
-    tag.tag !== "script" ||
+    tag.tag !== "meta" ||
     tag.injectTo !== "head-prepend" ||
-    typeof tag.children !== "string"
+    tag.attrs?.name !== META_NAME ||
+    typeof tag.attrs.content !== "string"
   ) {
-    throw new TypeError("expected a head-prepend script");
+    throw new TypeError("expected a head-prepend branch meta tag");
   }
-  return tag.children;
+  return tag.attrs.content;
 }
 
 function pluginOn(gitBranch: string | undefined): Plugin {
@@ -117,20 +117,16 @@ describe(branchPlugin, () => {
     const plugin = pluginOn(GIT_BRANCH);
     configurePlugin(plugin, makeProjectDir());
 
-    expect(await readInjectedScript(plugin)).toBe(
-      `window.${WINDOW_PROPERTY} = "${GIT_BRANCH}";`,
-    );
+    expect(await readInjectedMetaContent(plugin)).toBe(GIT_BRANCH);
   });
 
   it.each(["main", "master", "HEAD", undefined])(
-    "injects null for the default branch state %s",
+    "injects an empty value for the default branch state %s",
     async (gitBranch) => {
       const plugin = pluginOn(gitBranch);
       configurePlugin(plugin, makeProjectDir());
 
-      expect(await readInjectedScript(plugin)).toBe(
-        `window.${WINDOW_PROPERTY} = null;`,
-      );
+      expect(await readInjectedMetaContent(plugin)).toBe("");
     },
   );
 
@@ -143,9 +139,7 @@ describe(branchPlugin, () => {
     const plugin = branchPlugin({ readGitBranch });
     configurePlugin(plugin, root);
 
-    expect(await readInjectedScript(plugin)).toContain(
-      JSON.stringify(configuredBranch),
-    );
+    expect(await readInjectedMetaContent(plugin)).toBe(configuredBranch);
     expect(readGitBranch).not.toHaveBeenCalled();
   });
 
@@ -157,9 +151,7 @@ describe(branchPlugin, () => {
     const plugin = branchPlugin({ readGitBranch });
     configurePlugin(plugin, root);
 
-    expect(await readInjectedScript(plugin)).toBe(
-      `window.${WINDOW_PROPERTY} = null;`,
-    );
+    expect(await readInjectedMetaContent(plugin)).toBe("");
     expect(readGitBranch).not.toHaveBeenCalled();
   });
 
@@ -173,9 +165,7 @@ describe(branchPlugin, () => {
     const plugin = branchPlugin({ readGitBranch });
     configurePlugin(plugin, root);
 
-    expect(await readInjectedScript(plugin)).toContain(
-      JSON.stringify(processBranch),
-    );
+    expect(await readInjectedMetaContent(plugin)).toBe(processBranch);
     expect(readGitBranch).not.toHaveBeenCalled();
   });
 
@@ -191,9 +181,7 @@ describe(branchPlugin, () => {
     const plugin = pluginOn(GIT_BRANCH);
     configurePlugin(plugin, root, { envDir });
 
-    expect(await readInjectedScript(plugin)).toContain(
-      JSON.stringify(configuredBranch),
-    );
+    expect(await readInjectedMetaContent(plugin)).toBe(configuredBranch);
   });
 
   it("resolves git again for every HTML transformation", async () => {
@@ -203,9 +191,9 @@ describe(branchPlugin, () => {
     });
     configurePlugin(plugin, makeProjectDir());
 
-    expect(await readInjectedScript(plugin)).toContain('"first-branch"');
+    expect(await readInjectedMetaContent(plugin)).toBe("first-branch");
     gitBranch = "second-branch";
-    expect(await readInjectedScript(plugin)).toContain('"second-branch"');
+    expect(await readInjectedMetaContent(plugin)).toBe("second-branch");
   });
 
   it("reports each newly resolved feature branch through Vite's logger", async () => {
@@ -215,10 +203,10 @@ describe(branchPlugin, () => {
     });
     const messages = configurePlugin(plugin, makeProjectDir());
 
-    await readInjectedScript(plugin);
-    await readInjectedScript(plugin);
+    await readInjectedMetaContent(plugin);
+    await readInjectedMetaContent(plugin);
     gitBranch = "second-branch";
-    await readInjectedScript(plugin);
+    await readInjectedMetaContent(plugin);
 
     expect(messages).toEqual([
       expect.stringContaining("first-branch"),
@@ -226,27 +214,17 @@ describe(branchPlugin, () => {
     ]);
   });
 
-  it("serializes hostile branch names without terminating the script", async () => {
-    const gitBranch =
-      'feature/"quote"\n</script><script>bad()</script>\u2028\u2029suffix';
+  it("preserves branch names for Vite to serialize as HTML attributes", async () => {
+    const gitBranch = 'feature/"quote"><script>bad()</script>&suffix';
     const plugin = pluginOn(gitBranch);
     configurePlugin(plugin, makeProjectDir());
 
-    const script = await readInjectedScript(plugin);
-    expect(script).not.toContain("</script>");
-    expect(script).toContain("\\u003c/script>");
-    expect(script).toContain("\\n");
-    expect(script).toContain("\\u2028");
-    expect(script).toContain("\\u2029");
-
-    const context = { window: {} as Record<string, unknown> };
-    runInNewContext(script, context);
-    expect(context.window).toEqual({ [WINDOW_PROPERTY]: gitBranch });
+    expect(await readInjectedMetaContent(plugin)).toBe(gitBranch);
   });
 });
 
 describe("Vite integration", () => {
-  it("prepends the branch script to served HTML", async () => {
+  it("prepends the branch meta tag to served HTML", async () => {
     const root = makeProjectDir();
     const html =
       '<html><head></head><body><script type="module" src="/main.js"></script></body></html>';
@@ -258,10 +236,32 @@ describe("Vite integration", () => {
     });
     try {
       const transformed = await server.transformIndexHtml("/", html);
-      expect(transformed.indexOf(WINDOW_PROPERTY)).toBeLessThan(
+      expect(transformed.indexOf(`name="${META_NAME}"`)).toBeLessThan(
         transformed.indexOf('src="/main.js"'),
       );
-      expect(transformed).toContain(JSON.stringify(GIT_BRANCH));
+      expect(transformed).toContain(`content="${GIT_BRANCH}"`);
+    } finally {
+      await server.close();
+    }
+  });
+
+  it("escapes the branch as inert HTML metadata", async () => {
+    const gitBranch = 'feature/"quote"><script>bad()</script>&suffix';
+    const root = makeProjectDir();
+    const html =
+      '<html><head></head><body><script type="module" src="/main.js"></script></body></html>';
+    const server = await createServer({
+      root,
+      configFile: false,
+      logLevel: "silent",
+      plugins: [pluginOn(gitBranch)],
+    });
+    try {
+      const transformed = await server.transformIndexHtml("/", html);
+      expect(transformed).toContain(
+        'content="feature/&quot;quote&quot;&gt;&lt;script&gt;bad()&lt;/script&gt;&amp;suffix"',
+      );
+      expect(transformed).not.toContain("<script>bad()</script>");
     } finally {
       await server.close();
     }
@@ -285,8 +285,8 @@ describe("Vite integration", () => {
     });
 
     const builtHtml = readFileSync(path.join(root, "dist/index.html"), "utf-8");
-    expect(builtHtml).toContain(JSON.stringify(buildBranch));
-    expect(builtHtml.indexOf(WINDOW_PROPERTY)).toBeLessThan(
+    expect(builtHtml).toContain(`content="${buildBranch}"`);
+    expect(builtHtml.indexOf(`name="${META_NAME}"`)).toBeLessThan(
       builtHtml.indexOf('type="module"'),
     );
 

@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-declare global {
-  interface Window {
-    /** The branch injected into application HTML by OSDK build tooling. */
-    __OSDK_FOUNDRY_BRANCH_RID__?: string | null;
-  }
-}
+const FOUNDRY_BRANCH_META_SELECTOR = 'meta[name="osdk-foundry-branch-rid"]';
 
 /** Reads the injected branch without requiring a browser environment. */
 function getInjectedBranch(): string | null | undefined {
-  return typeof window === "undefined"
+  return typeof document === "undefined"
     ? undefined
-    : window.__OSDK_FOUNDRY_BRANCH_RID__;
+    : document
+        .querySelector(FOUNDRY_BRANCH_META_SELECTOR)
+        ?.getAttribute("content");
 }
 
 /**
@@ -58,7 +55,8 @@ function normalizeBranch(
  *
  * @param explicitBranch - the branch supplied by the caller, if any
  * @param injectedBranch - the branch injected by build tooling. Defaults to
- *   the value on `window`; supply it to test without a browser environment.
+ *   the value in the OSDK branch meta tag; supply it to test without a browser
+ *   environment.
  */
 export function resolveBranch(
   explicitBranch: string | null | undefined,

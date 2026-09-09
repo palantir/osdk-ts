@@ -20,6 +20,7 @@ import { resolveBranch } from "./resolveBranch.js";
 
 const INJECTED_BRANCH = "ri.foundry.main.branch.from-html";
 const EXPLICIT_BRANCH = "ri.foundry.main.branch.from-code";
+const META_SELECTOR = 'meta[name="osdk-foundry-branch-rid"]';
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -82,25 +83,31 @@ describe(resolveBranch, () => {
     expect(resolveBranch(explicitBranch, injectedBranch)).toBe(expected);
   });
 
-  it("reads the branch from window by default", () => {
-    vi.stubGlobal("window", {
-      __OSDK_FOUNDRY_BRANCH_RID__: INJECTED_BRANCH,
+  it("reads the branch from HTML metadata by default", () => {
+    const getAttribute = vi.fn(() => INJECTED_BRANCH);
+    const querySelector = vi.fn(() => ({ getAttribute }));
+    vi.stubGlobal("document", {
+      querySelector,
     });
 
     expect(resolveBranch(undefined)).toBe(INJECTED_BRANCH);
+    expect(querySelector).toHaveBeenCalledWith(META_SELECTOR);
+    expect(getAttribute).toHaveBeenCalledWith("content");
   });
 
-  it("uses the default branch when window is missing", () => {
-    vi.stubGlobal("window", undefined);
+  it("uses the default branch when document is missing", () => {
+    vi.stubGlobal("document", undefined);
 
     expect(resolveBranch(undefined)).toBeUndefined();
   });
 
-  it("uses the default branch when the window property is missing or null", () => {
-    vi.stubGlobal("window", {});
+  it("uses the default branch when the meta tag or content is missing", () => {
+    vi.stubGlobal("document", { querySelector: () => null });
     expect(resolveBranch(undefined)).toBeUndefined();
 
-    vi.stubGlobal("window", { __OSDK_FOUNDRY_BRANCH_RID__: null });
+    vi.stubGlobal("document", {
+      querySelector: () => ({ getAttribute: () => null }),
+    });
     expect(resolveBranch(undefined)).toBeUndefined();
   });
 });
