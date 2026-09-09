@@ -40,6 +40,17 @@ const ALIASES_JSON = JSON.stringify({
   version: 1,
 });
 
+const RESOURCES_JSON = JSON.stringify({
+  resources: {
+    custom: { previewAlias: "preview-value" },
+    models: [],
+    datasets: [],
+    mediasets: [],
+    streams: [],
+  },
+  egress: { connections: [] },
+});
+
 describe("experimental Node entry point", () => {
   beforeEach(() => {
     resetPublishedCache();
@@ -66,6 +77,14 @@ describe("experimental Node entry point", () => {
     await expect(Aliases.custom("missing")).rejects.toThrow(
       "Aliases file not found",
     );
+  });
+
+  it("resolves a live-preview alias", async () => {
+    delete process.env[ALIASES_JSON_FILE_ENV_VAR];
+    process.env[RESOURCES_JSON_FILE_ENV_VAR] = "/app/var/data/resources.json";
+    vi.mocked(fs.readFileSync).mockReturnValue(RESOURCES_JSON);
+
+    await expect(Aliases.custom("previewAlias")).resolves.toBe("preview-value");
   });
 
   it("exposes custom only through the Aliases namespace", () => {

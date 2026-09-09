@@ -90,8 +90,9 @@ describe("experimental browser entry point", () => {
   });
 
   it("does not re-export the filesystem loaders", () => {
-    expect(Aliases).not.toHaveProperty("dataset");
-    expect(Aliases).not.toHaveProperty("source");
+    for (const name of ["dataset", "mediaset", "model", "source", "stream"]) {
+      expect(Aliases).not.toHaveProperty(name);
+    }
   });
 
   it("does not expose cache reset, which could race with a load", () => {

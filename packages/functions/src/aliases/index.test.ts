@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-import { loadResolvedAliases } from "./loaders.js";
-import type { Custom } from "./types.js";
+import { describe, expect, it } from "vitest";
 
-export function resolveCustomAlias(alias: string): Custom {
-  const resolvedAliases = loadResolvedAliases();
+import * as Aliases from "./index.js";
 
-  if (!Object.hasOwn(resolvedAliases.custom, alias)) {
-    const available = Object.keys(resolvedAliases.custom);
-    throw new Error(
-      `Custom alias '${alias}' not found. Available aliases: [${available.join(
-        ", ",
-      )}]`,
-    );
-  }
-
-  return resolvedAliases.custom[alias] as Custom;
-}
+describe("Functions aliases entry point", () => {
+  it("exports the supported alias readers", () => {
+    expect(Object.keys(Aliases).sort()).toEqual([
+      "custom",
+      "dataset",
+      "mediaset",
+      "model",
+      "source",
+      "stream",
+    ]);
+  });
+});

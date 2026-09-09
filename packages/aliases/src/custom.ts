@@ -18,10 +18,6 @@ import { resolveCustomAlias } from "./resolveCustomAlias.js";
 import type { Custom } from "./types.js";
 export type { Custom } from "./types.js";
 
-/**
- * @deprecated Import `Aliases` from "@osdk/aliases/experimental" and use
- * `await Aliases.custom(alias)`.
- */
 export function custom(alias: string): Custom {
   return resolveCustomAlias(alias);
 }

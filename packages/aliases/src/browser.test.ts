@@ -69,7 +69,7 @@ describe("browser aliases", () => {
   });
 
   describe("custom", () => {
-    it("loads resources.json and returns values", async () => {
+    it("loads resources.json, ignores metadata, and returns values", async () => {
       vi.stubGlobal("fetch", mockFetch({ body: RESOURCES_JSON }));
 
       await expect(custom("apiBaseUrl")).resolves.toBe(
@@ -118,14 +118,25 @@ describe("browser aliases", () => {
   });
 
   describe("loading", () => {
-    it("fetches root resources.json", async () => {
+    it("fetches resources.json", async () => {
       const fetchImpl = mockFetch({ body: RESOURCES_JSON });
 
       await initAliases({ fetch: fetchImpl });
 
       expect(fetchImpl).toHaveBeenCalledOnce();
-      expect(String(vi.mocked(fetchImpl).mock.calls[0][0])).toContain(
-        DEFAULT_RESOURCES_PATH,
+      expect(fetchImpl).toHaveBeenCalledWith(DEFAULT_RESOURCES_PATH);
+    });
+
+    it("resolves resources.json relative to document.baseURI", async () => {
+      vi.stubGlobal("document", {
+        baseURI: "https://example.com/apps/my-app/",
+      });
+      const fetchImpl = mockFetch({ body: RESOURCES_JSON });
+
+      await initAliases({ fetch: fetchImpl });
+
+      expect(fetchImpl).toHaveBeenCalledWith(
+        "https://example.com/apps/my-app/resources.json",
       );
     });
 
@@ -189,13 +200,16 @@ describe("browser aliases", () => {
       await expect(custom("anything")).rejects.toThrow("Available aliases: []");
     });
 
-    it("handles an SPA fallback as a missing resources.json", async () => {
-      await initAliases({
-        fetch: mockFetch({ text: "<!doctype html><html></html>" }),
-      });
+    it.each(["<!doctype html><html></html>", "  <HTML><body></body></html>"])(
+      "handles an SPA fallback as a missing resources.json: %s",
+      async (text) => {
+        await initAliases({ fetch: mockFetch({ text }) });
 
-      await expect(custom("anything")).rejects.toThrow("Available aliases: []");
-    });
+        await expect(custom("anything")).rejects.toThrow(
+          "Available aliases: []",
+        );
+      },
+    );
 
     it("does not mistake malformed JSON for a missing file", async () => {
       await expect(
@@ -221,8 +235,22 @@ describe("browser aliases", () => {
       await expect(custom("anything")).rejects.toThrow("Available aliases: []");
     });
 
+    it("treats a null aliases block as empty", async () => {
+      await initAliases({ fetch: mockFetch({ body: { aliases: null } }) });
+
+      await expect(custom("anything")).rejects.toThrow("Available aliases: []");
+    });
+
     it("treats an absent custom block as empty", async () => {
       await initAliases({ fetch: mockFetch({ body: { aliases: {} } }) });
+
+      await expect(custom("anything")).rejects.toThrow("Available aliases: []");
+    });
+
+    it("treats a null custom block as empty", async () => {
+      await initAliases({
+        fetch: mockFetch({ body: { aliases: { custom: null } } }),
+      });
 
       await expect(custom("anything")).rejects.toThrow("Available aliases: []");
     });
@@ -271,22 +299,20 @@ describe("browser aliases", () => {
       },
     );
 
-    it("rejects a non-string value", async () => {
+    it.each([
+      [5, "number"],
+      [true, "boolean"],
+      [null, "object"],
+      [{}, "object"],
+      [[], "array"],
+    ])("rejects non-string value %j", async (value, type) => {
       await expect(
         initAliases({
           fetch: mockFetch({
-            body: { aliases: { custom: { key: { value: 5 } } } },
+            body: { aliases: { custom: { key: { value } } } },
           }),
         }),
-      ).rejects.toThrow("Alias 'key' must be a string, got number");
-    });
-
-    it("ignores declaration metadata", async () => {
-      await initAliases({ fetch: mockFetch({ body: RESOURCES_JSON }) });
-
-      await expect(custom("apiBaseUrl")).resolves.toBe(
-        "https://api.example.com",
-      );
+      ).rejects.toThrow(`Alias 'key' must be a string, got ${type}`);
     });
 
     it("treats a missing value as an empty string", async () => {

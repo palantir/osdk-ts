@@ -18,7 +18,10 @@ import type { Custom } from "./types.js";
 
 export type { Custom } from "./types.js";
 
-/** Author defaults locally; installer-resolved values on an installed site. */
+/**
+ * `resources.json` contains author defaults during local development and
+ * installer-resolved values on an installed site.
+ */
 export const DEFAULT_RESOURCES_PATH = "resources.json";
 
 interface InitAliasesOptions {
@@ -29,12 +32,9 @@ let cachedCustomAliases: Record<string, string> | undefined;
 let inFlight: Promise<void> | undefined;
 
 /**
- * Loads the aliases for this installation if necessary, then returns the
- * resolved value for a custom alias. Repeated and concurrent calls share the
- * same load.
- *
- * @experimental Exposed only via "@osdk/aliases/experimental". Both custom
- * aliases and the shape of this API are provisional and may change.
+ * Website implementation of `Aliases.custom`. Loads aliases from the
+ * `resources.json` served with the website, then returns the resolved value.
+ * Repeated and concurrent calls share the same load.
  */
 export async function custom(alias: string): Promise<Custom> {
   await initAliases();

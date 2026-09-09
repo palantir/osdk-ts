@@ -21,7 +21,7 @@ export type { Dataset } from "./types.js";
 export function dataset(alias: string): Dataset {
   const resolvedAliases = loadResolvedAliases();
 
-  if (!(alias in resolvedAliases.datasets)) {
+  if (!Object.hasOwn(resolvedAliases.datasets, alias)) {
     const available = Object.keys(resolvedAliases.datasets);
     throw new Error(
       `Dataset alias '${alias}' not found. Available aliases: [${available.join(

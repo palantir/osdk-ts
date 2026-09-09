@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-// API Extractor cannot represent a namespace re-export whose external target
-// uses `export *`, so each export is listed explicitly.
+// API Extractor cannot represent a namespace that re-exports `export *` from
+// another package, so each export is listed explicitly.
 
 /**
  * @deprecated Import `Aliases` from "@osdk/aliases/experimental" and use

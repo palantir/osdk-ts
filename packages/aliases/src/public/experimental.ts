@@ -38,6 +38,12 @@ const custom: (alias: string) => Promise<Custom> =
       };
 
 export const Aliases: {
+  /**
+   * Returns the resolved value for a custom alias.
+   *
+   * @experimental Custom aliases and the shape of this API are provisional and
+   * may change.
+   */
   readonly custom: typeof custom;
 } = {
   custom,

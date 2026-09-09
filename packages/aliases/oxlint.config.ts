@@ -33,6 +33,7 @@ export default defineConfig({
     // `fs` must remain distinct from unmocked `node:fs` in alias tests.
     "unicorn/prefer-node-protocol": "off",
 
+    // oxfmt owns import spacing in this package.
     "import/newline-after-import": "off",
 
     // Fixture reads run inside `vi.hoisted(...)` and cannot use static imports.

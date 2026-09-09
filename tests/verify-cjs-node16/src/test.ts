@@ -1,3 +1,4 @@
+import { Aliases as ExperimentalAliases } from "@osdk/aliases/experimental";
 import * as Client from "@osdk/client";
 import * as oauth from "@osdk/oauth";
 import * as sdk from "@test-app2/osdk";
@@ -22,3 +23,21 @@ Unstable.augment({ type: "object", apiName: "foo" } as any);
 if (sdk.$Objects.Employee.apiName !== "Employee") {
   throw new Error("Expected Employee");
 }
+
+async function verifyAliasesNodeEntry(): Promise<void> {
+  try {
+    await ExperimentalAliases.custom("missing");
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message.includes("Unknown alias environment")
+    ) {
+      return;
+    }
+    throw error;
+  }
+
+  throw new Error("Expected the Node alias resolver to reject");
+}
+
+void verifyAliasesNodeEntry();
