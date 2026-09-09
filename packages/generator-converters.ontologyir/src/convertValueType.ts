@@ -181,12 +181,6 @@ function convertConstraint(
         valueConstraint: constraint.array.elementsConstraint
           && convertConstraint(constraint.array.elementsConstraint),
       };
-    default:
-      return {
-        type: "unsupported",
-        unsupportedType: constraint.type,
-        params: {},
-      };
   }
   return { type: "unsupported", unsupportedType: constraint.type, params: {} };
 }

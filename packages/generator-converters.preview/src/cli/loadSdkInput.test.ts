@@ -17,6 +17,8 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
+import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
+import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { PreviewOntologyIrConverter } from "../PreviewOntologyIrConverter.js";
@@ -169,6 +171,81 @@ describe("loadSdkInput", () => {
       path.resolve("definitions/classification/value-types.json"),
       "utf-8",
     );
+  });
+
+  it("preserves generation for imported properties with multiple value type constraints", async () => {
+    vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify(ontology));
+    const loaded = await loadSdkInput({ input: inputFile });
+    const imported: OntologyFullMetadata = {
+      ...PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData(
+        loaded.ontology,
+      ),
+      actionTypes: {},
+      objectTypes: {
+        Item: {
+          objectType: {
+            apiName: "Item",
+            rid: "item-rid",
+            displayName: "Item",
+            pluralDisplayName: "Items",
+            primaryKey: "id",
+            titleProperty: "id",
+            status: "ACTIVE",
+            aliases: [],
+            datasources: [],
+            icon: { type: "blueprint", name: "cube", color: "blue" },
+            properties: {
+              id: {
+                rid: "id-rid",
+                dataType: { type: "string" },
+                valueTypeApiName: "classification",
+                typeClasses: [],
+              },
+            },
+          },
+          linkTypes: [],
+          implementsInterfaces: [],
+          implementsInterfaces2: {},
+          sharedPropertyTypeMapping: {},
+        },
+      },
+      valueTypes: {
+        classification: {
+          apiName: "classification",
+          rid: "value-type-rid",
+          displayName: "Classification",
+          version: "1.0.0",
+          fieldType: { type: "string" },
+          constraints: [
+            { type: "enum", options: ["A", "B"] },
+            { type: "length", minimumLength: 1, maximumLength: 10 },
+          ],
+        },
+      },
+    };
+    const metadata = PreviewOntologyIrConverter
+      .getPreviewFullMetadataFromBlockData(
+        loaded.ontology,
+        imported,
+        loaded.valueTypes,
+      );
+    const writeFile = vi.fn<(file: string, contents: string) => Promise<void>>()
+      .mockResolvedValue(undefined);
+    await expect(generateClientSdkVersionTwoPointZero(
+      { ...metadata, actionTypes: {} },
+      "test",
+      {
+        readdir: () => Promise.resolve([]),
+        mkdir: () => Promise.resolve(),
+        writeFile,
+      },
+      "/virtual-sdk",
+      "module",
+    )).resolves.toBeUndefined();
+    expect(writeFile).toHaveBeenCalled();
+    expect(metadata.valueTypes).toEqual({});
+    expect(metadata.objectTypes.Item.objectType.properties.id.valueTypeApiName)
+      .toBe("classification");
   });
 
   it("does not read value type blocks for external inputs without local mappings", async () => {

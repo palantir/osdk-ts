@@ -99,14 +99,11 @@ export class OntologyBlockDataToFullMetadataConverter {
         displayName: "ontology",
         description: "",
       },
-      valueTypes: {
-        ...Object.fromEntries(
-          valueTypes.map(
-            valueType => [valueType.apiName, convertValueType(valueType)],
-          ),
+      valueTypes: Object.fromEntries(
+        valueTypes.map(
+          valueType => [valueType.apiName, convertValueType(valueType)],
         ),
-        ...importedTypes?.valueTypes,
-      },
+      ),
     };
   }
 
