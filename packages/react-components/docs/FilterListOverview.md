@@ -158,7 +158,7 @@ Standalone sub-components used internally by `FilterList`, exported so you can c
 | `FilterPopover` | Labeled, popover-backed filter trigger that shows a short summary of the current value and mounts its popup contents only while open. Pair with `FilterInput`. |
 | `FilterInput`   | OSDK-aware input body for a single filter definition. Renders the right control for the definition's `filterComponent` and drives its filter state.            |
 
-The package also exports a set of utilities for building your own filter UI: `serializeFilterStates` / `deserializeFilterStates` (persist a filter-states map to and from a string, preserving `Date` values), `filterHasActiveState` (whether a state holds an active value), `NO_VALUE` (the sentinel for the null/undefined "No value" bucket), `getFilterKey` / `getFilterLabel` (derive a stable key or display label from a definition), `summarizeFilterValue` (a short summary of a filter's current value for a `FilterPopover` trigger), and `narrowObjectSet` (apply linked-property filters to an `ObjectSet<Q>`).
+The package also exports a set of utilities for building your own filter UI: `serializeFilterStates` / `deserializeFilterStates` (persist a filter-states map to and from a string, preserving `Date` values), `filterHasActiveState` (whether a state holds an active value), `NO_VALUE` (the sentinel for the null/undefined "No value" bucket), `getFilterKey` / `getFilterLabel` (derive a stable key or display label from a definition), and `narrowObjectSet` (apply linked-property filters to an `ObjectSet<Q>`).
 
 ### Hooks
 
