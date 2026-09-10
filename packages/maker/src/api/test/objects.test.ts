@@ -33,7 +33,7 @@ const VECTOR: PropertyTypeTypeVector = {
 
 describe("Object Types", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, "/tmp/");
+    await defineOntology("com.palantir.", () => {}, undefined);
   });
 
   it("allows an empty backing Media Set for a media reference property", () => {
@@ -4819,7 +4819,7 @@ describe("Object Types", () => {
             "ri.ontology-package.main.ontology-package.abc-123",
         });
       },
-      "/tmp/",
+      undefined,
     );
   });
 

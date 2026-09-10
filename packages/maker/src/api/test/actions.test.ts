@@ -43,7 +43,7 @@ import { type SharedPropertyType } from "../properties/SharedPropertyType.js";
 
 describe("Action Types", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, "/tmp/");
+    await defineOntology("com.palantir.", () => {}, undefined);
   });
   it("pairs a listLength interface target with listLengthValidation, not scalar required", () => {
     const person = defineInterface({
@@ -17020,7 +17020,7 @@ describe("Action Types", () => {
           ontologyPackageRid: null,
         });
       },
-      "/tmp/",
+      undefined,
     );
   });
 });
