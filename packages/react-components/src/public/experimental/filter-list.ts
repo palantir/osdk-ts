@@ -116,10 +116,6 @@ export const getFilterLabel: typeof Stable.getFilterLabel =
   Stable.getFilterLabel;
 
 /** @deprecated Import from `@osdk/react-components/filter-list` instead. */
-export const summarizeFilterValue: typeof Stable.summarizeFilterValue =
-  Stable.summarizeFilterValue;
-
-/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
 export type LinkedFilter<Q extends Api.ObjectTypeDefinition> =
   Stable.LinkedFilter<Q>;
 
