@@ -172,6 +172,13 @@ export default async function main(
     );
   }
 
+  const importedOntologyMetadata =
+    commandLineOpts.importJson && fs.existsSync(commandLineOpts.importJson)
+      ? (JSON.parse(
+          await fs.promises.readFile(commandLineOpts.importJson, "utf-8"),
+        ) as ImportedOntologyMetadata)
+      : undefined;
+
   let functionsIrFile;
   if (commandLineOpts.temporaryBlockDataFile) {
     consola.info(
@@ -195,6 +202,7 @@ export default async function main(
         blockDataJson as Parameters<
           typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData
         >[0],
+        importedOntologyMetadata,
       );
     invariant(
       commandLineOpts.functionsDir && commandLineOpts.nodeModulesDir,
@@ -225,14 +233,9 @@ export default async function main(
     await fs.promises.mkdir(commandLineOpts.buildDir, { recursive: true });
   }
 
-  const importedLinkTypeIdsByApiName =
-    commandLineOpts.importJson && fs.existsSync(commandLineOpts.importJson)
-      ? getImportedLinkTypeIdsByApiName(
-          JSON.parse(
-            await fs.promises.readFile(commandLineOpts.importJson, "utf-8"),
-          ) as ImportedOntologyMetadata,
-        )
-      : undefined;
+  const importedLinkTypeIdsByApiName = importedOntologyMetadata
+    ? getImportedLinkTypeIdsByApiName(importedOntologyMetadata)
+    : undefined;
 
   const {
     ontologyIr,
