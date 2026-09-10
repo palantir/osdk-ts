@@ -15,6 +15,7 @@
  */
 
 import { additionalContext } from "../../../Client.js";
+import { getCloneUpdateFields } from "../../../object/convertWireToOsdkObjects/createOsdkObject.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { OptimisticBuilder } from "../../OptimisticBuilder.js";
 import { type Changes } from "../Changes.js";
@@ -71,7 +72,7 @@ export class OptimisticJob {
                 },
                 undefined,
               )
-              .writeToStore(obj, "loading", batch);
+              .writeToStore(obj, "loading", batch, getCloneUpdateFields(obj));
           }
 
           for (const obj of deletedObjects) {
