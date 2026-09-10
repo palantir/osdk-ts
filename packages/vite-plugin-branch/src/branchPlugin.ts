@@ -44,7 +44,8 @@ export interface BranchPluginOptions {
  * A server-side {@link FOUNDRY_BRANCH_ENV_VAR} value takes precedence.
  * Otherwise, the plugin uses the checked-out git branch. `main`, `master`, a
  * detached HEAD, and a directory outside a git repository use the default
- * Foundry branch.
+ * Foundry branch. During development, switching git branches reloads connected
+ * pages so they receive fresh HTML without restarting the dev server.
  *
  * @example
  * ```ts
@@ -67,6 +68,16 @@ export function branchPlugin(options: BranchPluginOptions = {}): Plugin {
       mode = config.mode;
       envDir = config.envDir;
       logger = config.logger;
+    },
+
+    applyToEnvironment(environment) {
+      if (
+        environment.name === "client" &&
+        environment.config.command === "serve"
+      ) {
+        return branchPollingPlugin(readGitBranch);
+      }
+      return true;
     },
 
     async transformIndexHtml() {
@@ -97,6 +108,54 @@ export function branchPlugin(options: BranchPluginOptions = {}): Plugin {
           injectTo: "head-prepend",
         },
       ];
+    },
+  };
+}
+
+function branchPollingPlugin(
+  readGitBranch: (cwd: string) => Promise<string | undefined>,
+): Plugin {
+  let closed = false;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+
+  return {
+    name: "osdk-branch:poll",
+
+    async buildStart() {
+      const { environment } = this;
+      if (environment.mode !== "dev") return;
+      const { config, hot, logger } = environment;
+      let previousBranch = await readGitBranch(config.root);
+
+      function schedule(): void {
+        if (closed) return;
+        timer = setTimeout(() => void poll(), 1000).unref();
+      }
+
+      async function poll(): Promise<void> {
+        try {
+          const branch = await readGitBranch(config.root);
+          if (closed || branch == null || branch === previousBranch) return;
+
+          previousBranch = branch;
+          hot.send({ type: "full-reload" });
+        } catch (error) {
+          if (!closed) {
+            logger.error(
+              `Unable to check for a git branch change: ${error instanceof Error ? error.message : String(error)}`,
+            );
+          }
+        } finally {
+          schedule();
+        }
+      }
+
+      schedule();
+    },
+
+    closeBundle() {
+      closed = true;
+      clearTimeout(timer);
     },
   };
 }
