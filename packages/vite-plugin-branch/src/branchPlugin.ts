@@ -91,11 +91,9 @@ export function branchPlugin(options: BranchPluginOptions = {}): Plugin {
 
       if (branch !== lastReportedBranch) {
         lastReportedBranch = branch;
-        if (branch != null) {
-          logger?.info(
-            `Using Foundry branch "${branch}". Set ${FOUNDRY_BRANCH_ENV_VAR} to override.`,
-          );
-        }
+        logger?.info(
+          `Using Foundry branch "${branch ?? "main"}". Set ${FOUNDRY_BRANCH_ENV_VAR} to override.`,
+        );
       }
 
       return [
