@@ -35,7 +35,10 @@ import {
   mergeObjectFields,
   mergeSelectFields,
 } from "../utils/rdpFieldOperations.js";
-import { type ObjectCacheKey } from "./ObjectCacheKey.js";
+import {
+  LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX,
+  type ObjectCacheKey,
+} from "./ObjectCacheKey.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 
 function isSuperset(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
@@ -237,6 +240,18 @@ export class ObjectsHelper extends AbstractHelper<
 
     for (const targetKey of relatedKeys) {
       if (targetKey === sourceCacheKey || !this.isKeyActive(targetKey)) {
+        continue;
+      }
+
+      // A response fetched with one derived-property loading setting cannot
+      // populate a cache entry fetched with another setting. Deletions remain
+      // safe to propagate to all variants because object existence is
+      // independent of fetch options.
+      if (
+        value !== tombstone &&
+        targetKey.otherKeys[LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX] !==
+          sourceCacheKey.otherKeys[LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX]
+      ) {
         continue;
       }
 

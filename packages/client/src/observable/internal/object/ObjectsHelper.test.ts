@@ -748,7 +748,7 @@ describe("ObjectsHelper variant cache keys", () => {
     expect(q1.cacheKey).not.toBe(q2.cacheKey);
   });
 
-  it("returns distinct queries for each ontology-defined derived properties setting", () => {
+  it("does not propagate writes across ontology-defined derived property settings", () => {
     const serverDefault = store.objects.getQuery({
       apiName: Employee,
       pk: 1,
@@ -764,9 +764,37 @@ describe("ObjectsHelper variant cache keys", () => {
       $UNSTABLE_loadOntologyDefinedDerivedProperties: true,
     });
 
-    expect(serverDefault.cacheKey).not.toBe(explicitlyDisabled.cacheKey);
-    expect(serverDefault.cacheKey).not.toBe(explicitlyEnabled.cacheKey);
-    expect(explicitlyDisabled.cacheKey).not.toBe(explicitlyEnabled.cacheKey);
+    const subscriptions = [
+      serverDefault,
+      explicitlyDisabled,
+      explicitlyEnabled,
+    ].map((query) => store.subjects.get(query.cacheKey).subscribe(() => {}));
+
+    store.batch({}, (batch) => {
+      serverDefault.writeToStore(emp as any, "loaded", batch);
+      explicitlyDisabled.writeToStore(
+        emp.$clone({ fullName: "Disabled" }) as any,
+        "loaded",
+        batch,
+      );
+      explicitlyEnabled.writeToStore(
+        emp.$clone({ fullName: "Enabled" }) as any,
+        "loaded",
+        batch,
+      );
+    });
+
+    expect(store.getValue(serverDefault.cacheKey)?.value?.fullName).toBe(
+      "Alice",
+    );
+    expect(store.getValue(explicitlyDisabled.cacheKey)?.value?.fullName).toBe(
+      "Disabled",
+    );
+    expect(store.getValue(explicitlyEnabled.cacheKey)?.value?.fullName).toBe(
+      "Enabled",
+    );
+
+    subscriptions.forEach((subscription) => subscription.unsubscribe());
   });
 
   it("treats no-select and empty-select as the same cache key", () => {
