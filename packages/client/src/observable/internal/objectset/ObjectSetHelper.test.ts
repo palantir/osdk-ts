@@ -112,4 +112,66 @@ describe("ObjectSetHelper RDP canonicalization", () => {
 
     expect(query.rdpConfig).toBeUndefined();
   });
+
+  it("getQuery distinguishes each ontology-defined derived properties setting", () => {
+    const baseObjectSet = client(Employee);
+    const serverDefault = store.objectSets.getQuery({
+      baseObjectSet,
+      mode: "offline",
+    });
+    const explicitlyDisabled = store.objectSets.getQuery({
+      baseObjectSet,
+      mode: "offline",
+      $UNSTABLE_loadOntologyDefinedDerivedProperties: false,
+    });
+    const explicitlyEnabled = store.objectSets.getQuery({
+      baseObjectSet,
+      mode: "offline",
+      $UNSTABLE_loadOntologyDefinedDerivedProperties: true,
+    });
+
+    expect(serverDefault.cacheKey).not.toBe(explicitlyDisabled.cacheKey);
+    expect(serverDefault.cacheKey).not.toBe(explicitlyEnabled.cacheKey);
+    expect(explicitlyDisabled.cacheKey).not.toBe(explicitlyEnabled.cacheKey);
+  });
+
+  it("list queries distinguish each ontology-defined derived properties setting", () => {
+    const serverDefault = store.lists.getQuery({
+      type: Employee,
+    });
+    const explicitlyDisabled = store.lists.getQuery({
+      type: Employee,
+      $UNSTABLE_loadOntologyDefinedDerivedProperties: false,
+    });
+    const explicitlyEnabled = store.lists.getQuery({
+      type: Employee,
+      $UNSTABLE_loadOntologyDefinedDerivedProperties: true,
+    });
+
+    expect(serverDefault.cacheKey).not.toBe(explicitlyDisabled.cacheKey);
+    expect(serverDefault.cacheKey).not.toBe(explicitlyEnabled.cacheKey);
+    expect(explicitlyDisabled.cacheKey).not.toBe(explicitlyEnabled.cacheKey);
+  });
+
+  it("link queries distinguish each ontology-defined derived properties setting", () => {
+    const baseOptions = {
+      srcType: Employee,
+      sourceUnderlyingObjectType: Employee.apiName,
+      pk: 1,
+      linkName: "lead" as const,
+    };
+    const serverDefault = store.links.getQuery(baseOptions);
+    const explicitlyDisabled = store.links.getQuery({
+      ...baseOptions,
+      $UNSTABLE_loadOntologyDefinedDerivedProperties: false,
+    });
+    const explicitlyEnabled = store.links.getQuery({
+      ...baseOptions,
+      $UNSTABLE_loadOntologyDefinedDerivedProperties: true,
+    });
+
+    expect(serverDefault.cacheKey).not.toBe(explicitlyDisabled.cacheKey);
+    expect(serverDefault.cacheKey).not.toBe(explicitlyEnabled.cacheKey);
+    expect(explicitlyDisabled.cacheKey).not.toBe(explicitlyEnabled.cacheKey);
+  });
 });

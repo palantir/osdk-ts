@@ -58,6 +58,12 @@ export namespace ObserveLinks {
     $includeAllBaseObjectProperties?: boolean;
 
     /**
+     * Controls whether ontology-defined derived properties are loaded. When
+     * omitted, the server's default behavior is used.
+     */
+    $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
+
+    /**
      * When traversing to linked objects via an interface link target, return
      * the full concrete object type instances instead of interface views.
      * Has no effect when the link target is already an object type.

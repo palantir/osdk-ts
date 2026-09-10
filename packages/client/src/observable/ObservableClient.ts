@@ -109,6 +109,12 @@ export interface ObserveObjectOptions<
   $loadPropertySecurityMetadata?: boolean;
 
   /**
+   * Controls whether ontology-defined derived properties are loaded. When
+   * omitted, the server's default behavior is used.
+   */
+  $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
+
+  /**
    * When true, includes all properties of the underlying concrete object type
    * for interface queries. Has no effect for non-interface queries.
    */
@@ -181,6 +187,12 @@ export interface ObserveListOptions<
    * populated with conjunctive/disjunctive marking requirements per property.
    */
   $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * Controls whether ontology-defined derived properties are loaded. When
+   * omitted, the server's default behavior is used.
+   */
+  $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
 
   /**
    * When true, includes all properties of the underlying concrete object type

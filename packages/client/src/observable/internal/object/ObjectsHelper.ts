@@ -66,7 +66,12 @@ export class ObjectsHelper extends AbstractHelper<
       typeof options.apiName === "string"
         ? options.apiName
         : options.apiName.apiName;
-    const { pk, select, $loadPropertySecurityMetadata } = options;
+    const {
+      pk,
+      select,
+      $loadPropertySecurityMetadata,
+      $UNSTABLE_loadOntologyDefinedDerivedProperties,
+    } = options;
 
     const defType = getDefType(options.apiName);
     // The flag is interface-only on the server. Drop it for object queries so
@@ -89,6 +94,7 @@ export class ObjectsHelper extends AbstractHelper<
       canonSelect,
       $loadPropertySecurityMetadata ? true : undefined,
       $includeAllBaseObjectProperties,
+      $UNSTABLE_loadOntologyDefinedDerivedProperties,
     );
 
     return this.store.queries.get(
@@ -105,6 +111,7 @@ export class ObjectsHelper extends AbstractHelper<
           select,
           $loadPropertySecurityMetadata,
           $includeAllBaseObjectProperties,
+          $UNSTABLE_loadOntologyDefinedDerivedProperties,
         ),
     );
   }
@@ -125,6 +132,7 @@ export class ObjectsHelper extends AbstractHelper<
     selectFields?: ReadonlySet<string>,
     includeAllBaseObjectProperties?: boolean,
     computedRdpFields?: ReadonlySet<string>,
+    loadOntologyDefinedDerivedProperties?: boolean,
   ): ObjectCacheKey[] {
     const holders: ReadonlyArray<ObjectHolder | InterfaceHolder> =
       values as ReadonlyArray<ObjectHolder | InterfaceHolder>;
@@ -136,6 +144,8 @@ export class ObjectsHelper extends AbstractHelper<
           apiName: v.$objectType ?? v.$apiName,
           pk: v.$primaryKey,
           $includeAllBaseObjectProperties: includeAllBaseObjectProperties,
+          $UNSTABLE_loadOntologyDefinedDerivedProperties:
+            loadOntologyDefinedDerivedProperties,
         },
         rdpConfig,
       ).writeToStore(

@@ -748,6 +748,27 @@ describe("ObjectsHelper variant cache keys", () => {
     expect(q1.cacheKey).not.toBe(q2.cacheKey);
   });
 
+  it("returns distinct queries for each ontology-defined derived properties setting", () => {
+    const serverDefault = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    });
+    const explicitlyDisabled = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      $UNSTABLE_loadOntologyDefinedDerivedProperties: false,
+    });
+    const explicitlyEnabled = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      $UNSTABLE_loadOntologyDefinedDerivedProperties: true,
+    });
+
+    expect(serverDefault.cacheKey).not.toBe(explicitlyDisabled.cacheKey);
+    expect(serverDefault.cacheKey).not.toBe(explicitlyEnabled.cacheKey);
+    expect(explicitlyDisabled.cacheKey).not.toBe(explicitlyEnabled.cacheKey);
+  });
+
   it("treats no-select and empty-select as the same cache key", () => {
     const qNone = store.objects.getQuery({
       apiName: Employee,

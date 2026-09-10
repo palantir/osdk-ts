@@ -119,6 +119,12 @@ export interface UseObjectSetOptions<
   $select?: readonly PropertyKeys<Q>[];
 
   /**
+   * Controls whether ontology-defined derived properties are loaded. When
+   * omitted, the server's default behavior is used.
+   */
+  $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
+
+  /**
    * Enable or disable the query.
    *
    * When `false`, the query will not automatically execute. It will still
@@ -312,6 +318,8 @@ export function useObjectSet<
             autoFetchMore: otherOptions.autoFetchMore,
             streamUpdates,
             select: canonOptions.$select,
+            $UNSTABLE_loadOntologyDefinedDerivedProperties:
+              otherOptions.$UNSTABLE_loadOntologyDefinedDerivedProperties,
           },
           observer,
         );
@@ -338,6 +346,7 @@ export function useObjectSet<
     otherOptions.pageSize,
     otherOptions.autoFetchMore,
     otherOptions.dedupeIntervalMs,
+    otherOptions.$UNSTABLE_loadOntologyDefinedDerivedProperties,
     streamUpdates,
     objectTypeKey,
   ]);

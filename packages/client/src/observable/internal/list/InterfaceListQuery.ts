@@ -116,7 +116,11 @@ export class InterfaceListQuery extends ListQuery {
   protected async postProcessFetchedData(
     data: Osdk.Instance<any>[],
   ): Promise<Osdk.Instance<any>[]> {
-    return reloadDataAsFullObjects(this.store.client, data);
+    return reloadDataAsFullObjects(
+      this.store.client,
+      data,
+      this.loadOntologyDefinedDerivedProperties,
+    );
   }
 
   private wrapObject(object: ObjectHolder): ObjectHolder | InterfaceHolder {

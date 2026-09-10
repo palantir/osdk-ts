@@ -97,6 +97,14 @@ export abstract class BaseListQuery<
     return false;
   }
 
+  /**
+   * Whether this query explicitly configures ontology-defined derived property
+   * loading. Subclasses override this to read the canonical cache key.
+   */
+  public get loadOntologyDefinedDerivedProperties(): boolean | undefined {
+    return undefined;
+  }
+
   private _selectFieldSetMemo: ReadonlySet<string> | undefined;
 
   protected abstract get rawSelect(): Canonical<readonly string[]> | undefined;
@@ -169,6 +177,8 @@ export abstract class BaseListQuery<
         this.rdpConfig,
         this.selectFieldSet,
         this.includeAllBaseObjectProperties,
+        undefined,
+        this.loadOntologyDefinedDerivedProperties,
       );
     } else {
       // Items are already cache keys
@@ -529,6 +539,8 @@ export abstract class BaseListQuery<
           this.rdpConfig,
           this.selectFieldSet,
           this.includeAllBaseObjectProperties,
+          undefined,
+          this.loadOntologyDefinedDerivedProperties,
         );
 
         return this._updateList(
@@ -649,6 +661,8 @@ export abstract class BaseListQuery<
         this.rdpConfig,
         this.selectFieldSet,
         this.includeAllBaseObjectProperties,
+        undefined,
+        this.loadOntologyDefinedDerivedProperties,
       );
     } else {
       // Items are already cache keys
@@ -790,6 +804,7 @@ export abstract class BaseListQuery<
           undefined,
           this.includeAllBaseObjectProperties,
           EMPTY_RDP_SET,
+          this.loadOntologyDefinedDerivedProperties,
         );
       });
     } else if (state === "REMOVED") {

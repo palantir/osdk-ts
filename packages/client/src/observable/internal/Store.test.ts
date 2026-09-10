@@ -1545,7 +1545,8 @@ describe(Store, () => {
       // Two subscribers that share apiName + pk but differ in any cache-key
       // dimension should observe independent fetches, not share a stale query.
       // Add a new case here whenever a new dimension is added to ObjectCacheKey
-      // (currently: $select, $loadPropertySecurityMetadata, withProperties/Rdp).
+      // (currently: $select, $loadPropertySecurityMetadata,
+      // $UNSTABLE_loadOntologyDefinedDerivedProperties, withProperties/Rdp).
       // Cache-key uniqueness for dimensions the FauxFoundry can't fetch (e.g.
       // $loadPropertySecurityMetadata) is unit-tested at the ObjectsHelper
       // level instead.
@@ -1577,6 +1578,21 @@ describe(Store, () => {
                 employeeId: JOHN_DOE_ID,
               }),
             ),
+        },
+        {
+          name: "$UNSTABLE_loadOntologyDefinedDerivedProperties",
+          optionsA: {
+            apiName: Employee,
+            pk: JOHN_DOE_ID,
+            mode: "force",
+            $UNSTABLE_loadOntologyDefinedDerivedProperties: false,
+          },
+          optionsB: {
+            apiName: Employee,
+            pk: JOHN_DOE_ID,
+            mode: "force",
+            $UNSTABLE_loadOntologyDefinedDerivedProperties: true,
+          },
         },
       ];
 
