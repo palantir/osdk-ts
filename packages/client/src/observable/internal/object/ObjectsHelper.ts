@@ -244,10 +244,11 @@ export class ObjectsHelper extends AbstractHelper<
       }
 
       // A response fetched with one derived-property loading setting cannot
-      // populate a cache entry fetched with another setting. Deletions remain
-      // safe to propagate to all variants because object existence is
-      // independent of fetch options.
+      // populate a cache entry fetched with another setting. Optimistic writes
+      // still represent the same local object edit and must reach every active
+      // variant. Deletions also remain safe to propagate to all variants.
       if (
+        !batch.optimisticWrite &&
         value !== tombstone &&
         targetKey.otherKeys[LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX] !==
           sourceCacheKey.otherKeys[LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX]

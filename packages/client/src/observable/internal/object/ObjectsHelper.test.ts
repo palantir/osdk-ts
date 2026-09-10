@@ -26,6 +26,7 @@ import {
   ObjectDefRef,
 } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { Canonical } from "../Canonical.js";
+import { createOptimisticId } from "../OptimisticId.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import { Store } from "../Store.js";
 import {
@@ -748,7 +749,7 @@ describe("ObjectsHelper variant cache keys", () => {
     expect(q1.cacheKey).not.toBe(q2.cacheKey);
   });
 
-  it("does not propagate writes across ontology-defined derived property settings", () => {
+  it("isolates fetched variants but propagates optimistic writes", () => {
     const serverDefault = store.objects.getQuery({
       apiName: Employee,
       pk: 1,
@@ -793,6 +794,20 @@ describe("ObjectsHelper variant cache keys", () => {
     expect(store.getValue(explicitlyEnabled.cacheKey)?.value?.fullName).toBe(
       "Enabled",
     );
+
+    store.batch({ optimisticId: createOptimisticId() }, (batch) => {
+      serverDefault.writeToStore(
+        emp.$clone({ fullName: "Optimistic" }) as any,
+        "loading",
+        batch,
+      );
+    });
+
+    expect(
+      [serverDefault, explicitlyDisabled, explicitlyEnabled].map(
+        (query) => store.getValue(query.cacheKey)?.value?.fullName,
+      ),
+    ).toEqual(["Optimistic", "Optimistic", "Optimistic"]);
 
     subscriptions.forEach((subscription) => subscription.unsubscribe());
   });
