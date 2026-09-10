@@ -64,6 +64,10 @@ export class OptimisticJob {
           }
 
           for (const obj of updatedObjects) {
+            const cloneUpdateFields = getCloneUpdateFields(obj);
+            if (cloneUpdateFields?.size === 0) {
+              continue;
+            }
             store.objects
               .getQuery(
                 {
@@ -72,7 +76,7 @@ export class OptimisticJob {
                 },
                 undefined,
               )
-              .writeToStore(obj, "loading", batch, getCloneUpdateFields(obj));
+              .writeToStore(obj, "loading", batch, cloneUpdateFields);
           }
 
           for (const obj of deletedObjects) {

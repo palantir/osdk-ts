@@ -23,6 +23,7 @@ import type {
   ReferenceValue,
   SecuredPropertyValue,
 } from "@osdk/foundry.ontologies";
+import deepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
 
 import { CipherTextPropertyImpl } from "../../createCipherTextProperty.js";
@@ -84,14 +85,17 @@ function recordCloneUpdateFields(
   if (update) {
     const objectDef = source[ObjectDefRef];
     for (const field of Object.keys(update)) {
-      if (field in objectDef.properties) {
+      if (
+        field in objectDef.properties &&
+        !deepEqual(source[field], update[field])
+      ) {
         fields.add(field);
       }
     }
   }
-  if (fields.size > 0) {
-    cloneUpdateFields.set(clone, fields);
-  }
+  // Store an empty set as well, so OptimisticJob can distinguish a no-op clone
+  // from an object that was not produced by $clone.
+  cloneUpdateFields.set(clone, fields);
   return clone;
 }
 

@@ -813,6 +813,55 @@ describe("ObjectsHelper variant cache keys", () => {
     );
 
     store.layers.remove(fromEnabled);
+
+    const fromSpread = createOptimisticId();
+    const spreadJob = new OptimisticJob(store, fromSpread);
+    spreadJob.context.updateObject(
+      enabledValue.$clone({
+        ...enabledValue,
+        fullName: "From spread",
+      }),
+    );
+    await spreadJob.getResult();
+
+    expect(
+      [serverDefault, explicitlyDisabled, explicitlyEnabled].map(
+        (query) => store.getValue(query.cacheKey)?.value?.fullName,
+      ),
+    ).toEqual(["From spread", "From spread", "From spread"]);
+    expect(store.getValue(explicitlyDisabled.cacheKey)?.value?.office).toBe(
+      undefined,
+    );
+    expect(store.getValue(serverDefault.cacheKey)?.value?.office).toBe(
+      undefined,
+    );
+
+    store.layers.remove(fromSpread);
+
+    const unchangedJob = new OptimisticJob(store, createOptimisticId());
+    unchangedJob.context.updateObject(enabledValue.$clone(enabledValue));
+    await unchangedJob.getResult();
+
+    expect(
+      [serverDefault, explicitlyDisabled, explicitlyEnabled].map(
+        (query) => store.getValue(query.cacheKey)?.value?.fullName,
+      ),
+    ).toEqual(["Alice", "Disabled", "Enabled"]);
+    expect(store.getValue(explicitlyDisabled.cacheKey)?.value?.office).toBe(
+      undefined,
+    );
+
+    const fromClear = createOptimisticId();
+    const clearJob = new OptimisticJob(store, fromClear);
+    clearJob.context.updateObject(enabledValue.$clone({ office: undefined }));
+    await clearJob.getResult();
+
+    expect(store.getValue(explicitlyEnabled.cacheKey)?.value?.office).toBe(
+      undefined,
+    );
+
+    store.layers.remove(fromClear);
+
     const disabledJob = new OptimisticJob(store, createOptimisticId());
     disabledJob.context.updateObject(
       disabledValue.$clone({ fullName: "From disabled" }),
