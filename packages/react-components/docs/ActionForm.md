@@ -163,7 +163,7 @@ const fields = [
 
 ### Scoped object select fields
 
-`OBJECT_SELECT` can load options from either an object type or a pre-scoped object set. Pass `objectType` for an unfiltered selector, or pass `objectSet` to limit selectable options. The two are mutually exclusive. Search text is applied within the object set, and the current value is not automatically cleared when it is outside that set.
+`OBJECT_SELECT` can load options from either an object type or a pre-scoped object set. Pass `objectType` for an unfiltered selector, or pass `objectSet` to limit selectable options. The two are mutually exclusive. Use `itemToStringLabel` to customize the visual and accessible label; by default, the object's title is shown with its primary key as a fallback. Search remains title-based, and the current value is not automatically cleared when it is outside the object set.
 
 ```tsx
 import { Employee, updateEmployee } from "@my/osdk";
@@ -184,6 +184,8 @@ function UpdateEmployeeForm() {
       fieldComponentProps: {
         objectSet: marketingEmployees,
         placeholder: "Search Marketing employees…",
+        itemToStringLabel: (employee) =>
+          `${employee.$title ?? "Untitled"} (#${employee.$primaryKey})`,
       },
     },
   ] satisfies Array<FormFieldDefinition<typeof updateEmployee>>;

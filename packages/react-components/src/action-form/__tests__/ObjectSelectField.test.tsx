@@ -216,6 +216,44 @@ describe("ObjectSelectField", () => {
     });
   });
 
+  it("uses a custom itemToStringLabel for dropdown items", async () => {
+    mockLoadedState();
+    renderObjectSelect({
+      itemToStringLabel: (item) => `Employee ${item.$primaryKey}`,
+    });
+    await openCombobox();
+
+    await vi.waitFor(() => {
+      const popup = getPopup();
+      expect(popup?.textContent).toContain("Employee 1");
+      expect(popup?.textContent).not.toContain("Alice Smith");
+    });
+  });
+
+  it("keeps search title-based when itemToStringLabel is customized", async () => {
+    vi.useFakeTimers();
+    try {
+      mockLoadedState();
+      renderObjectSelect({
+        itemToStringLabel: (item) => `Employee ${item.$primaryKey}`,
+      });
+      await openCombobox();
+
+      const searchInput = screen.getByPlaceholderText("Search…");
+      fireEvent.change(searchInput, { target: { value: "Ali" } });
+      vi.advanceTimersByTime(300);
+
+      await vi.waitFor(() => {
+        const latestCall = mockUseOsdkObjects.mock.calls.at(-1);
+        expect(latestCall?.[1]?.where).toEqual({
+          $title: { $containsAllTermsInOrder: "Ali" },
+        });
+      });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("calls onChange with the selected object when an option is clicked", async () => {
     const onChange = vi.fn();
     mockLoadedState();
