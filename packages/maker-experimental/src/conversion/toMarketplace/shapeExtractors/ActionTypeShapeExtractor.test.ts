@@ -19,6 +19,7 @@ import type {
   ActionTypeRid,
   KnownMarketplaceIdentifiers,
 } from "@osdk/client.unstable";
+import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import { describe, expect, it } from "vitest";
 
 import type {
@@ -26,7 +27,10 @@ import type {
   OntologyRidGenerator,
   ReadableId,
 } from "../../../util/generateRid.js";
-import { ActionTypeShapeExtractor } from "./ActionTypeShapeExtractor.js";
+import {
+  ActionTypeShapeExtractor,
+  buildFunctionShape,
+} from "./ActionTypeShapeExtractor.js";
 
 // Mock BiMap implementation for testing
 class MockBiMap<K, V> implements BiMap<K, V> {

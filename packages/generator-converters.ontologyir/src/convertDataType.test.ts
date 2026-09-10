@@ -145,6 +145,18 @@ describe(convertDataType, () => {
     });
   });
 
+  it("converts a union recursively", () => {
+    expect(
+      convert({
+        type: "union",
+        union: { allowedTypes: [STRING, INTEGER] },
+      } as IDataType),
+    ).toEqual({
+      type: "union",
+      unionTypes: [{ type: "string" }, { type: "integer" }],
+    });
+  });
+
   it("still reports genuinely unsupported data types", () => {
     expect(() => convert({ type: "vector" } as unknown as IDataType)).toThrow(
       "Unsupported data type: vector",
