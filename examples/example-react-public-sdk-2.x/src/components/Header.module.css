@@ -1,0 +1,26 @@
+.headerContainer {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--bp-surface-spacing) * 10);
+}
+
+.header {
+  margin: 0;
+  text-align: center;
+}
+
+.logos {
+  display: flex;
+  gap: calc(var(--bp-surface-spacing) * 8);
+}
+
+.logo {
+  height: 48px;
+  transition: filter 300ms;
+  will-change: filter;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}

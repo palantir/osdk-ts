@@ -56,6 +56,15 @@ export type {
 export type * from "./generated/ontology-metadata/api/blockdata/__components.ts";
 
 export type {
+  GracePeriod,
+  InterfaceTypeSchemaMigrationInstruction,
+  InterfaceTypeSchemaTransition,
+  InterfaceTypeSchemaTransitionId,
+  OntologyIrInterfaceTypeSchemaMigrationInstruction,
+  OntologyIrInterfaceTypeSchemaTransition,
+} from "./generated/ontology-metadata/api/schemamigrations/__components.js";
+
+export type {
   EditsHistory,
   OntologyIrEditsHistory,
 } from "./generated/ontology-metadata/api/entitymetadata/__components.js";

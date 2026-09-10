@@ -155,6 +155,8 @@ async function generateCreateAppExamples(
     }`,
   );
 
+  const authless = template.authless ?? false;
+
   await runCreateApp({
     project: exampleId,
     overwrite: true,
@@ -163,12 +165,14 @@ async function generateCreateAppExamples(
     foundryUrl: "https://fake.palantirfoundry.com",
     applicationUrl: "https://example.com",
     application: "ri.third-party-applications.main.application.fake",
-    clientId: "123",
+    clientId: authless ? undefined : "123",
     ontology: osdkArgs?.ontology,
     osdkPackage: osdkArgs?.package,
     osdkRegistryUrl: osdkArgs?.registryUrl,
-    corsProxy: false,
-    scopes: ["api:ontologies-read", "api:ontologies-write"],
+    corsProxy: authless ? true : false,
+    scopes: authless
+      ? undefined
+      : ["api:ontologies-read", "api:ontologies-write"],
   });
 
   await mutateFiles(
