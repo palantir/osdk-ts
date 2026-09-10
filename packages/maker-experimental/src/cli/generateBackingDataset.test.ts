@@ -466,6 +466,73 @@ describe("generateBackingDatasetBlockResult", () => {
     expect(zipBuffer[3]).toBe(0x06);
   });
 
+  it.each(["CBAC", "MANDATORY"] as const)(
+    "generates backing columns for scalar and array %s markings",
+    async (markingType) => {
+      const type: Type = { type: "marking", marking: { markingType } };
+      const blockData = createObjectTypeBlockData({
+        properties: [
+          { apiName: "id", type: STRING_PROPERTY_TYPE },
+          { apiName: "marking", type },
+          { apiName: "markings", type: makeArrayType(type) },
+        ],
+      });
+
+      const result = await generateBackingDatasetBlockResult(
+        blockData,
+        buildDir,
+      );
+      const schema = JSON.parse(
+        await fs.promises.readFile(
+          path.join(result.block_data_directory, "schema.json"),
+          "utf-8",
+        ),
+      );
+      expect(schema.fieldSchemaList).toMatchObject([
+        { name: "id", type: "STRING", arraySubtype: null },
+        { name: "marking", type: "STRING", arraySubtype: null },
+        { name: "markings", type: "ARRAY", arraySubtype: { type: "STRING" } },
+      ]);
+      expect(
+        result.outputs[
+          ReadableIdGenerator.getForDatasetColumnOutput("TestObject", "marking")
+        ],
+      ).toMatchObject({
+        type: "datasourceColumn",
+        datasourceColumn: {
+          type: {
+            type: "concrete",
+            concrete: { type: "primitive", primitive: { type: "string" } },
+          },
+        },
+      });
+      expect(
+        result.outputs[
+          ReadableIdGenerator.getForDatasetColumnOutput(
+            "TestObject",
+            "markings",
+          )
+        ],
+      ).toMatchObject({
+        type: "datasourceColumn",
+        datasourceColumn: {
+          type: {
+            type: "concrete",
+            concrete: {
+              type: "array",
+              array: {
+                elementType: {
+                  type: "primitive",
+                  primitive: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+      });
+    },
+  );
+
   it("excludes editOnly properties from outputs and files", async () => {
     const blockData = createObjectTypeBlockData({
       properties: [
