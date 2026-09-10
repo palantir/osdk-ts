@@ -23,7 +23,6 @@ import type {
   ReferenceValue,
   SecuredPropertyValue,
 } from "@osdk/foundry.ontologies";
-import deepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
 
 import { CipherTextPropertyImpl } from "../../createCipherTextProperty.js";
@@ -62,43 +61,6 @@ const specialPropertyTypes = new Set<BaseWirePropertyTypes>([
 
 const securableSpecialKeys = new Set(["$primaryKey", "$title"]);
 
-const cloneUpdateFields = new WeakMap<ObjectHolder, ReadonlySet<string>>();
-
-/** @internal */
-export function getCloneUpdateFields(
-  value: ObjectHolder,
-): ReadonlySet<string> | undefined {
-  return cloneUpdateFields.get(value);
-}
-
-/** @internal */
-export function clearCloneUpdateFields(value: ObjectHolder): void {
-  cloneUpdateFields.delete(value);
-}
-
-function recordCloneUpdateFields(
-  source: ObjectHolder,
-  clone: ObjectHolder,
-  update: Record<string, any> | undefined,
-): ObjectHolder {
-  const fields = new Set(cloneUpdateFields.get(source));
-  if (update) {
-    const objectDef = source[ObjectDefRef];
-    for (const field of Object.keys(update)) {
-      if (
-        field in objectDef.properties &&
-        !deepEqual(source[field], update[field])
-      ) {
-        fields.add(field);
-      }
-    }
-  }
-  // Store an empty set as well, so OptimisticJob can distinguish a no-op clone
-  // from an object that was not produced by $clone.
-  cloneUpdateFields.set(clone, fields);
-  return clone;
-}
-
 // kept separate so we are not redefining these functions
 // every time an object is created.
 const basePropDefs = {
@@ -119,11 +81,7 @@ const basePropDefs = {
       const def = this[ObjectDefRef];
 
       if (update == null) {
-        return recordCloneUpdateFields(
-          this,
-          createOsdkObject(this[ClientRef], def, { ...rawObj }),
-          update,
-        );
+        return createOsdkObject(this[ClientRef], def, { ...rawObj });
       }
 
       if (
@@ -140,11 +98,7 @@ const basePropDefs = {
       }
 
       const newObject = { ...this[UnderlyingOsdkObject], ...update };
-      return recordCloneUpdateFields(
-        this,
-        createOsdkObject(this[ClientRef], this[ObjectDefRef], newObject),
-        update,
-      );
+      return createOsdkObject(this[ClientRef], this[ObjectDefRef], newObject);
     },
   },
   $objectSpecifier: {

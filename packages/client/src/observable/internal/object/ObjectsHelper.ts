@@ -17,7 +17,6 @@
 import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 
-import { clearCloneUpdateFields } from "../../../object/convertWireToOsdkObjects/createOsdkObject.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import { isInterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import { UnderlyingOsdkObject } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
@@ -174,10 +173,6 @@ export class ObjectsHelper extends AbstractHelper<
     selectFields?: ReadonlySet<string>,
     computedRdpFields?: ReadonlySet<string>,
   ): void {
-    if (!batch.optimisticWrite && value !== tombstone) {
-      clearCloneUpdateFields(value);
-    }
-
     const existing = batch.read(sourceCacheKey);
     const dataChanged =
       !existing ||
@@ -252,15 +247,11 @@ export class ObjectsHelper extends AbstractHelper<
         targetKey.otherKeys[LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX] !==
         sourceCacheKey.otherKeys[LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX];
 
-      // A response fetched with one derived-property loading setting cannot
-      // populate a cache entry fetched with another setting. Optimistic writes
-      // still represent the same local object edit and must reach every active
-      // variant. Deletions also remain safe to propagate to all variants.
-      if (
-        !batch.optimisticWrite &&
-        value !== tombstone &&
-        crossesDerivedPropertySetting
-      ) {
+      // Values from one derived-property loading setting cannot populate a
+      // cache entry for another setting. This includes optimistic writes;
+      // explicit variants refresh after the action completes. Deletions remain
+      // safe to propagate to every variant.
+      if (value !== tombstone && crossesDerivedPropertySetting) {
         continue;
       }
 

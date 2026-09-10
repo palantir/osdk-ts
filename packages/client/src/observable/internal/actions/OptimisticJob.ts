@@ -15,7 +15,6 @@
  */
 
 import { additionalContext } from "../../../Client.js";
-import { getCloneUpdateFields } from "../../../object/convertWireToOsdkObjects/createOsdkObject.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { OptimisticBuilder } from "../../OptimisticBuilder.js";
 import { type Changes } from "../Changes.js";
@@ -64,10 +63,6 @@ export class OptimisticJob {
           }
 
           for (const obj of updatedObjects) {
-            const cloneUpdateFields = getCloneUpdateFields(obj);
-            if (cloneUpdateFields?.size === 0) {
-              continue;
-            }
             store.objects
               .getQuery(
                 {
@@ -76,7 +71,7 @@ export class OptimisticJob {
                 },
                 undefined,
               )
-              .writeToStore(obj, "loading", batch, cloneUpdateFields);
+              .writeToStore(obj, "loading", batch);
           }
 
           for (const obj of deletedObjects) {
