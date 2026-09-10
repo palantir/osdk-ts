@@ -25,6 +25,7 @@ import {
   findDeselectAllCheckbox,
   findRowCheckboxes,
   findSelectAllCheckbox,
+  findTableData,
   objectTableMeta,
   rowContaining,
   TARGET_DATA,
@@ -112,6 +113,7 @@ export const MultipleSelection: Story = {
     const canvas = within(canvasElement);
     const rowCheckboxes = findRowCheckboxes(canvas);
 
+    await findTableData(canvas);
     const [firstRow, secondRow] = await rowCheckboxes();
 
     // Selecting one row checks it and notifies the consumer.
