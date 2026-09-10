@@ -27,6 +27,7 @@ import { loadSdkInput } from "./loadSdkInput.js";
 vi.mock("node:fs/promises", () => ({ readFile: vi.fn() }));
 
 const inputFile = path.resolve("build/block-results.json");
+const ontologyFile = path.resolve("build/ontology/ontology.json");
 const ontology = {
   objectTypes: {},
   actionTypes: {},
@@ -37,6 +38,19 @@ const ontology = {
     valueTypes: { "value-type-rid": { "version-id": "generated-id" } },
   },
 };
+const ontologyBlock = {
+  block_type: "ONTOLOGY",
+  block_data_directory: "ontology",
+  inputs: {},
+  outputs: {},
+  input_mapping_entries: [],
+};
+
+function mockFiles(files: Record<string, unknown>): void {
+  vi.mocked(fs.readFile).mockImplementation(file =>
+    Promise.resolve(JSON.stringify(files[String(file)]))
+  );
+}
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -46,7 +60,7 @@ describe("loadSdkInput", () => {
   it.each([ontology, { ontology }])(
     "preserves legacy ontology input: %j",
     async data => {
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify(data));
+      mockFiles({ [inputFile]: data });
       await expect(loadSdkInput({ input: inputFile })).resolves.toEqual({
         ontology,
         valueTypes: [],
@@ -64,7 +78,7 @@ describe("loadSdkInput", () => {
   });
 
   it("retains the existing ontology structure check", async () => {
-    vi.mocked(fs.readFile).mockResolvedValue("{}");
+    mockFiles({ [inputFile]: {} });
     await expect(loadSdkInput({ input: inputFile })).rejects.toThrow(
       "Invalid Ontology structure",
     );
@@ -73,6 +87,8 @@ describe("loadSdkInput", () => {
   it("loads each connected value type once and selects its latest available version", async () => {
     const firstOutput = "produced-value-type-classification-1.0.0";
     const secondOutput = "produced-value-type-classification-1.1.0";
+    const definitionDir = path.resolve("definitions/classification");
+    const definitionFile = path.join(definitionDir, "value-types.json");
     const metadata = {
       apiName: "classification",
       displayMetadata: { displayName: "Classification" },
@@ -92,17 +108,15 @@ describe("loadSdkInput", () => {
         },
       },
     };
-    vi.mocked(fs.readFile)
-      .mockResolvedValueOnce(JSON.stringify([
+    mockFiles({
+      [inputFile]: [
         {
-          block_type: "ONTOLOGY",
-          block_data_directory: "ontology",
+          ...ontologyBlock,
           inputs: {
             first: { type: "valueType" },
             second: { type: "valueType" },
             external: { type: "valueType" },
           },
-          outputs: {},
           input_mapping_entries: [{ input: "first", output: firstOutput }, {
             input: "second",
             output: secondOutput,
@@ -113,7 +127,7 @@ describe("loadSdkInput", () => {
         },
         {
           block_type: "VALUE_TYPE",
-          block_data_directory: path.resolve("definitions/classification"),
+          block_data_directory: definitionDir,
           outputs: {
             [firstOutput]: { type: "valueType" },
             [secondOutput]: { type: "valueType" },
@@ -125,9 +139,9 @@ describe("loadSdkInput", () => {
           outputs: { unused: { type: "valueType" } },
         },
         { block_type: "STATIC_DATASET", outputs: {} },
-      ]))
-      .mockResolvedValueOnce(JSON.stringify(data))
-      .mockResolvedValueOnce(JSON.stringify({
+      ],
+      [ontologyFile]: data,
+      [definitionFile]: {
         metadata,
         versions: [
           { version: "1.0.0", constraints: [] },
@@ -136,7 +150,8 @@ describe("loadSdkInput", () => {
           { version: "1.10.0", constraints: [] },
           { version: "1.1.0", constraints: [] },
         ],
-      }));
+      },
+    });
 
     const loaded = await loadSdkInput({ blockResultsInput: inputFile });
     expect(loaded).toEqual({
@@ -161,20 +176,12 @@ describe("loadSdkInput", () => {
       },
     });
     expect(fs.readFile).toHaveBeenCalledTimes(3);
-    expect(fs.readFile).toHaveBeenNthCalledWith(
-      2,
-      path.resolve("build/ontology/ontology.json"),
-      "utf-8",
-    );
-    expect(fs.readFile).toHaveBeenNthCalledWith(
-      3,
-      path.resolve("definitions/classification/value-types.json"),
-      "utf-8",
-    );
+    expect(fs.readFile).toHaveBeenNthCalledWith(2, ontologyFile, "utf-8");
+    expect(fs.readFile).toHaveBeenNthCalledWith(3, definitionFile, "utf-8");
   });
 
   it("preserves generation for imported properties with multiple value type constraints", async () => {
-    vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify(ontology));
+    mockFiles({ [inputFile]: ontology });
     const loaded = await loadSdkInput({ input: inputFile });
     const imported: OntologyFullMetadata = {
       ...PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData(
@@ -216,10 +223,11 @@ describe("loadSdkInput", () => {
           displayName: "Classification",
           version: "1.0.0",
           fieldType: { type: "string" },
-          constraints: [
-            { type: "enum", options: ["A", "B"] },
-            { type: "length", minimumLength: 1, maximumLength: 10 },
-          ],
+          constraints: [{ type: "enum", options: ["A", "B"] }, {
+            type: "length",
+            minimumLength: 1,
+            maximumLength: 10,
+          }],
         },
       },
     };
@@ -249,23 +257,17 @@ describe("loadSdkInput", () => {
   });
 
   it("does not read value type blocks for external inputs without local mappings", async () => {
-    vi.mocked(fs.readFile)
-      .mockResolvedValueOnce(JSON.stringify([
-        {
-          block_type: "ONTOLOGY",
-          block_data_directory: "ontology",
-          inputs: { external: { type: "valueType" } },
-          outputs: {},
-          input_mapping_entries: [],
-        },
+    mockFiles({
+      [inputFile]: [
+        { ...ontologyBlock, inputs: { external: { type: "valueType" } } },
         {
           block_type: "VALUE_TYPE",
           block_data_directory: "unused",
           outputs: {},
         },
-      ]))
-      .mockResolvedValueOnce(JSON.stringify(ontology));
-
+      ],
+      [ontologyFile]: ontology,
+    });
     await expect(loadSdkInput({ blockResultsInput: inputFile })).resolves
       .toEqual({ ontology, valueTypes: [] });
     expect(fs.readFile).toHaveBeenCalledTimes(2);

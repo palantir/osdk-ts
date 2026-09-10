@@ -155,23 +155,20 @@ function convertConstraint(
     case "decimal":
       return convertNumericConstraint(constraint.decimal);
     case "binary":
-      return {
-        type: "range",
-        minimumValue: constraint.binary.size.minSize,
-        maximumValue: constraint.binary.size.maxSize,
-      };
+      return rangeConstraint(
+        constraint.binary.size.minSize,
+        constraint.binary.size.maxSize,
+      );
     case "date":
-      return {
-        type: "range",
-        minimumValue: constraint.date.range.min,
-        maximumValue: constraint.date.range.max,
-      };
+      return rangeConstraint(
+        constraint.date.range.min,
+        constraint.date.range.max,
+      );
     case "timestamp":
-      return {
-        type: "range",
-        minimumValue: constraint.timestamp.range.min,
-        maximumValue: constraint.timestamp.range.max,
-      };
+      return rangeConstraint(
+        constraint.timestamp.range.min,
+        constraint.timestamp.range.max,
+      );
     case "array":
       return {
         type: "array",
@@ -196,9 +193,12 @@ function convertNumericConstraint(
 ): Ontologies.ValueTypeConstraint {
   return value.type === "oneOf"
     ? { type: "enum", options: value.oneOf.values }
-    : {
-      type: "range",
-      minimumValue: value.range.min,
-      maximumValue: value.range.max,
-    };
+    : rangeConstraint(value.range.min, value.range.max);
+}
+
+function rangeConstraint(
+  minimumValue: Ontologies.RangesConstraint["minimumValue"],
+  maximumValue: Ontologies.RangesConstraint["maximumValue"],
+): Ontologies.ValueTypeConstraint {
+  return { type: "range", minimumValue, maximumValue };
 }

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import type {
+  DataConstraint,
+  ValueTypeDataConstraint,
+} from "@osdk/client.unstable";
 import { describe, expect, it } from "vitest";
 import {
   convertValueType,
@@ -33,32 +37,26 @@ const valueType: ResolvedValueType = {
   constraints: [],
 };
 
+function wrappedConstraint(value: DataConstraint): ValueTypeDataConstraint {
+  return { constraint: { failureMessage: undefined, constraint: value } };
+}
+
 describe("convertValueType", () => {
   it("converts named metadata and preserves multiple constraints", () => {
     const result = convertValueType({
       ...valueType,
       constraints: [
-        {
-          constraint: {
-            failureMessage: undefined,
-            constraint: {
-              type: "string",
-              string: {
-                type: "oneOf",
-                oneOf: { values: ["A", "B"], useIgnoreCase: false },
-              },
-            },
+        wrappedConstraint({
+          type: "string",
+          string: {
+            type: "oneOf",
+            oneOf: { values: ["A", "B"], useIgnoreCase: false },
           },
-        },
-        {
-          constraint: {
-            failureMessage: undefined,
-            constraint: {
-              type: "string",
-              string: { type: "length", length: { minSize: 1, maxSize: 10 } },
-            },
-          },
-        },
+        }),
+        wrappedConstraint({
+          type: "string",
+          string: { type: "length", length: { minSize: 1, maxSize: 10 } },
+        }),
       ],
     });
     expect(result).toEqual({
@@ -84,24 +82,19 @@ describe("convertValueType", () => {
         type: "array",
         array: { elementType: { type: "boolean", boolean: {} } },
       },
-      constraints: [{
-        constraint: {
-          failureMessage: undefined,
-          constraint: {
-            type: "array",
-            array: {
-              size: { minSize: 1, maxSize: 3 },
-              elementsUnique: false,
-              elementsConstraint: {
-                type: "boolean",
-                boolean: {
-                  allowedValues: ["TRUE_VALUE", "FALSE_VALUE", "NULL_VALUE"],
-                },
-              },
+      constraints: [wrappedConstraint({
+        type: "array",
+        array: {
+          size: { minSize: 1, maxSize: 3 },
+          elementsUnique: false,
+          elementsConstraint: {
+            type: "boolean",
+            boolean: {
+              allowedValues: ["TRUE_VALUE", "FALSE_VALUE", "NULL_VALUE"],
             },
           },
         },
-      }],
+      })],
     });
     expect(result.fieldType).toEqual({
       type: "array",
@@ -120,36 +113,23 @@ describe("convertValueType", () => {
     const result = convertValueType({
       ...valueType,
       constraints: [
-        {
-          constraint: {
-            failureMessage: undefined,
-            constraint: {
-              type: "integer",
-              integer: { type: "range", range: { min: 0, max: 10 } },
-            },
+        wrappedConstraint({
+          type: "integer",
+          integer: { type: "range", range: { min: 0, max: 10 } },
+        }),
+        wrappedConstraint({
+          type: "string",
+          string: {
+            type: "oneOf",
+            oneOf: { values: ["A"], useIgnoreCase: true },
           },
-        },
-        {
-          constraint: {
-            failureMessage: undefined,
-            constraint: {
-              type: "string",
-              string: {
-                type: "oneOf",
-                oneOf: { values: ["A"], useIgnoreCase: true },
-              },
-            },
-          },
-        },
+        }),
       ],
     });
     expect(result.constraints).toEqual([{
       type: "range",
       minimumValue: 0,
       maximumValue: 10,
-    }, {
-      type: "enum",
-      options: ["A"],
-    }]);
+    }, { type: "enum", options: ["A"] }]);
   });
 });
