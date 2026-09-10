@@ -17,13 +17,13 @@
 import type {
   ActionTypeBlockDataV2,
   OntologyBlockDataV2,
+  ValueTypeBlockData,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import {
   buildBlockDataInterfaceTypeLookup,
   buildBlockDataObjectTypeLookup,
   OntologyBlockDataToFullMetadataConverter,
-  type ResolvedValueType,
   toUuid,
 } from "@osdk/generator-converters.ontologyir";
 import { convertBlockDataLogicRulesToActionLogicRules } from "./ActionLogicRuleConverter.js";
@@ -49,7 +49,7 @@ export class PreviewOntologyIrConverter {
   static getPreviewFullMetadataFromBlockData(
     blockdata: OntologyBlockDataV2,
     importedTypes?: Ontologies.OntologyFullMetadata,
-    valueTypes: readonly ResolvedValueType[] = [],
+    valueTypes: Record<string, ValueTypeBlockData> = {},
   ): PreviewOntologyFullMetadata {
     const baseMetadata = OntologyBlockDataToFullMetadataConverter
       .getFullMetadataFromBlockData(

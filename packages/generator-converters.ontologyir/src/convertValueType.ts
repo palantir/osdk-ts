@@ -23,38 +23,32 @@ import type {
   IntegerTypeDataConstraints,
   LongTypeDataConstraints,
   ShortTypeDataConstraints,
-  ValueTypeApiName,
+  ValueTypeBlockData,
   ValueTypeDataConstraint,
-  ValueTypeDisplayMetadata,
   ValueTypeRid,
-  ValueTypeStatus,
-  ValueTypeVersion,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
-export interface ResolvedValueType {
-  rid: ValueTypeRid;
-  apiName: ValueTypeApiName;
-  displayMetadata: ValueTypeDisplayMetadata;
-  status: ValueTypeStatus;
-  version: ValueTypeVersion;
-  baseType: BaseType;
-  constraints: ValueTypeDataConstraint[];
-}
-
 export function convertValueType(
-  valueType: ResolvedValueType,
+  rid: ValueTypeRid,
+  { metadata, versions }: ValueTypeBlockData,
 ): Ontologies.OntologyValueType {
+  // Select the latest version: 1.0.0 < 1.0.0-2 < 1.0.0-10.
+  const [latest] = [...versions].sort((a, b) =>
+    b.version.localeCompare(a.version, "en", { numeric: true })
+  );
   return {
-    apiName: valueType.apiName,
-    rid: valueType.rid,
-    version: valueType.version,
-    displayName: valueType.displayMetadata.displayName,
-    description: valueType.displayMetadata.description,
-    status: valueType.status.type === "active" ? "ACTIVE" : "DEPRECATED",
-    fieldType: convertFieldType(valueType.baseType),
-    constraints: valueType.constraints
-      .map(({ constraint }) => convertConstraint(constraint.constraint))
+    apiName: metadata.apiName,
+    rid,
+    version: latest.version,
+    displayName: metadata.displayMetadata.displayName,
+    description: metadata.displayMetadata.description,
+    status: metadata.status.type === "active" ? "ACTIVE" : "DEPRECATED",
+    fieldType: convertFieldType(latest.baseType ?? metadata.baseType),
+    constraints: latest.constraints
+      .map(({ constraint }: ValueTypeDataConstraint) =>
+        convertConstraint(constraint.constraint)
+      )
       .filter(constraint => constraint.type !== "unsupported"),
   };
 }
@@ -155,23 +149,20 @@ function convertConstraint(
     case "decimal":
       return convertNumericConstraint(constraint.decimal);
     case "binary":
-      return {
-        type: "range",
-        minimumValue: constraint.binary.size.minSize,
-        maximumValue: constraint.binary.size.maxSize,
-      };
+      return rangeConstraint(
+        constraint.binary.size.minSize,
+        constraint.binary.size.maxSize,
+      );
     case "date":
-      return {
-        type: "range",
-        minimumValue: constraint.date.range.min,
-        maximumValue: constraint.date.range.max,
-      };
+      return rangeConstraint(
+        constraint.date.range.min,
+        constraint.date.range.max,
+      );
     case "timestamp":
-      return {
-        type: "range",
-        minimumValue: constraint.timestamp.range.min,
-        maximumValue: constraint.timestamp.range.max,
-      };
+      return rangeConstraint(
+        constraint.timestamp.range.min,
+        constraint.timestamp.range.max,
+      );
     case "array":
       return {
         type: "array",
@@ -196,9 +187,12 @@ function convertNumericConstraint(
 ): Ontologies.ValueTypeConstraint {
   return value.type === "oneOf"
     ? { type: "enum", options: value.oneOf.values }
-    : {
-      type: "range",
-      minimumValue: value.range.min,
-      maximumValue: value.range.max,
-    };
+    : rangeConstraint(value.range.min, value.range.max);
+}
+
+function rangeConstraint(
+  minimumValue: Ontologies.RangesConstraint["minimumValue"],
+  maximumValue: Ontologies.RangesConstraint["maximumValue"],
+): Ontologies.ValueTypeConstraint {
+  return { type: "range", minimumValue, maximumValue };
 }

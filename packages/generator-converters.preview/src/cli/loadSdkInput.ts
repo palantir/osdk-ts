@@ -17,30 +17,22 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
-import type { OntologyBlockDataV2 } from "@osdk/client.unstable";
+import type {
+  OntologyBlockDataV2,
+  ValueTypeBlockData,
+} from "@osdk/client.unstable";
 import type { InputShape, OutputShape } from "@osdk/client.unstable/api";
-import type { ResolvedValueType } from "@osdk/generator-converters.ontologyir";
 
-type ValueTypeDefinition = {
-  metadata: Pick<
-    ResolvedValueType,
-    "apiName" | "displayMetadata" | "status" | "baseType"
-  >;
-  versions: Array<
-    Pick<ResolvedValueType, "version" | "constraints"> & {
-      baseType?: ResolvedValueType["baseType"];
-    }
-  >;
-};
-
-type ValueTypeConnection = Pick<ResolvedValueType, "rid"> & { output: string };
-type ValueTypeOutput = Omit<ResolvedValueType, "rid">;
+type ValueTypeConnection = { rid: string; output: string };
 
 export async function loadSdkInput(options: {
   input?: string;
   blockResultsInput?: string;
 }): Promise<
-  { ontology: OntologyBlockDataV2; valueTypes: ResolvedValueType[] }
+  {
+    ontology: OntologyBlockDataV2;
+    valueTypes: Record<string, ValueTypeBlockData>;
+  }
 > {
   const inputFile = options.input ?? options.blockResultsInput;
   if (
@@ -52,21 +44,19 @@ export async function loadSdkInput(options: {
 
   const data = await readJson(inputFile);
   if (options.input !== undefined) {
-    return { ontology: ontologyData(data, inputFile), valueTypes: [] };
+    return { ontology: getOntologyData(data, inputFile), valueTypes: {} };
   }
 
   const blocks = data as Record<string, unknown>[];
   const ontologyBlock = blocks.find(block => block.block_type === "ONTOLOGY")!;
-  const ontologyFile = blockFile(ontologyBlock, inputFile, "ontology.json");
-  const ontology = ontologyData(await readJson(ontologyFile), ontologyFile);
+  const ontologyFile = getBlockFile(ontologyBlock, inputFile, "ontology.json");
+  const ontology = getOntologyData(await readJson(ontologyFile), ontologyFile);
   const connections = getValueTypeConnections(ontology, ontologyBlock);
   const outputs = await loadValueTypeOutputs(blocks, connections, inputFile);
-  const valueTypes = new Map(
-    connections.map((
-      { rid, output },
-    ) => [rid, { ...outputs.get(output)!, rid }]),
+  const valueTypes = Object.fromEntries(
+    connections.map(({ rid, output }) => [rid, outputs.get(output)!]),
   );
-  return { ontology, valueTypes: Array.from(valueTypes.values()) };
+  return { ontology, valueTypes };
 }
 
 function getValueTypeConnections(
@@ -84,7 +74,7 @@ function getValueTypeConnections(
   const addOn = block.add_on_override as Record<string, unknown>;
   const identities = addOn?.idToBlockShapeId as Record<string, string>;
 
-  // Imported value types have external recommendations, not local mappings.
+  // Imported dependencies have no local value-type block to read.
   return mappings
     .filter(({ input }) => inputs[input].type === "valueType")
     .map(({ input, output }) => ({
@@ -97,7 +87,7 @@ async function loadValueTypeOutputs(
   blocks: Record<string, unknown>[],
   connections: ValueTypeConnection[],
   inputFile: string,
-): Promise<Map<string, ValueTypeOutput>> {
+): Promise<Map<string, ValueTypeBlockData>> {
   const neededOutputs = new Set(
     connections.map(connection => connection.output),
   );
@@ -109,25 +99,16 @@ async function loadValueTypeOutputs(
   );
   const entries = await Promise.all(producers.map(async block => {
     const definition = await readJson(
-      blockFile(block, inputFile, "value-types.json"),
-    ) as ValueTypeDefinition;
-    // Metadata uses the latest available version; numeric suffixes sort after the base version.
-    const [latest] = definition.versions.sort((a, b) =>
-      b.version.localeCompare(a.version, "en", { numeric: true })
-    );
-    const valueType = {
-      ...definition.metadata,
-      ...latest,
-      baseType: latest.baseType ?? definition.metadata.baseType,
-    };
+      getBlockFile(block, inputFile, "value-types.json"),
+    ) as ValueTypeBlockData;
     return Object.keys(block.outputs as Record<string, OutputShape>).map(
-      output => [output, valueType] as const,
+      output => [output, definition] as const,
     );
   }));
   return new Map(entries.flat());
 }
 
-function ontologyData(data: unknown, file: string): OntologyBlockDataV2 {
+function getOntologyData(data: unknown, file: string): OntologyBlockDataV2 {
   const wrapped = data as { ontology?: OntologyBlockDataV2 };
   const ontology = wrapped?.ontology ?? data as OntologyBlockDataV2;
   if (
@@ -141,7 +122,7 @@ function ontologyData(data: unknown, file: string): OntologyBlockDataV2 {
   return ontology;
 }
 
-function blockFile(
+function getBlockFile(
   block: Record<string, unknown>,
   inputFile: string,
   name: string,

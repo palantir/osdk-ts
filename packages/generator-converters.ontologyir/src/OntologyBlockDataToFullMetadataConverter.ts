@@ -28,15 +28,13 @@ import type {
   OntologyIrStructFieldBaseParameterType,
   SharedPropertyTypeBlockDataV2,
   Type,
+  ValueTypeBlockData,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
 import invariant from "tiny-invariant";
 import type { ApiName } from "./ApiName.js";
-import {
-  convertValueType,
-  type ResolvedValueType,
-} from "./convertValueType.js";
+import { convertValueType } from "./convertValueType.js";
 import { toStructFieldRid } from "./ridUtils.js";
 
 export class OntologyBlockDataToFullMetadataConverter {
@@ -44,7 +42,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     blockData: OntologyBlockDataV2,
     importedTypes?: Ontologies.OntologyFullMetadata,
     transitiveImportedBlockData?: OntologyBlockDataV2,
-    valueTypes: readonly ResolvedValueType[] = [],
+    valueTypes: Record<string, ValueTypeBlockData> = {},
   ): Ontologies.OntologyFullMetadata {
     const objectTypeLookup = buildBlockDataObjectTypeLookup(
       blockData,
@@ -100,9 +98,10 @@ export class OntologyBlockDataToFullMetadataConverter {
         description: "",
       },
       valueTypes: Object.fromEntries(
-        valueTypes.map(
-          valueType => [valueType.apiName, convertValueType(valueType)],
-        ),
+        Object.entries(valueTypes).map(([rid, valueType]) => [
+          valueType.metadata.apiName,
+          convertValueType(rid, valueType),
+        ]),
       ),
     };
   }

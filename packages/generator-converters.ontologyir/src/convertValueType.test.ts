@@ -14,51 +14,52 @@
  * limitations under the License.
  */
 
+import type {
+  DataConstraint,
+  ValueTypeBlockData,
+  ValueTypeDataConstraint,
+} from "@osdk/client.unstable";
 import { describe, expect, it } from "vitest";
-import {
-  convertValueType,
-  type ResolvedValueType,
-} from "./convertValueType.js";
+import { convertValueType } from "./convertValueType.js";
 
-const valueType: ResolvedValueType = {
-  rid: "classification-rid",
+const metadata: ValueTypeBlockData["metadata"] = {
   apiName: "classification",
   displayMetadata: {
     displayName: "Classification",
     description: "A classification",
   },
   status: { type: "active", active: {} },
-  version: "1.0.0",
   baseType: { type: "string", string: {} },
-  constraints: [],
 };
+
+function convertVersion(version: ValueTypeBlockData["versions"][number]) {
+  return convertValueType("classification-rid", {
+    metadata,
+    versions: [version],
+  });
+}
+
+function wrappedConstraint(value: DataConstraint): ValueTypeDataConstraint {
+  return { constraint: { failureMessage: undefined, constraint: value } };
+}
 
 describe("convertValueType", () => {
   it("converts named metadata and preserves multiple constraints", () => {
-    const result = convertValueType({
-      ...valueType,
+    const result = convertVersion({
+      version: "1.0.0",
+      exampleValues: [],
       constraints: [
-        {
-          constraint: {
-            failureMessage: undefined,
-            constraint: {
-              type: "string",
-              string: {
-                type: "oneOf",
-                oneOf: { values: ["A", "B"], useIgnoreCase: false },
-              },
-            },
+        wrappedConstraint({
+          type: "string",
+          string: {
+            type: "oneOf",
+            oneOf: { values: ["A", "B"], useIgnoreCase: false },
           },
-        },
-        {
-          constraint: {
-            failureMessage: undefined,
-            constraint: {
-              type: "string",
-              string: { type: "length", length: { minSize: 1, maxSize: 10 } },
-            },
-          },
-        },
+        }),
+        wrappedConstraint({
+          type: "string",
+          string: { type: "length", length: { minSize: 1, maxSize: 10 } },
+        }),
       ],
     });
     expect(result).toEqual({
@@ -78,30 +79,26 @@ describe("convertValueType", () => {
   });
 
   it("converts array types and their element constraints", () => {
-    const result = convertValueType({
-      ...valueType,
+    const result = convertVersion({
+      version: "1.0.0",
+      exampleValues: [],
       baseType: {
         type: "array",
         array: { elementType: { type: "boolean", boolean: {} } },
       },
-      constraints: [{
-        constraint: {
-          failureMessage: undefined,
-          constraint: {
-            type: "array",
-            array: {
-              size: { minSize: 1, maxSize: 3 },
-              elementsUnique: false,
-              elementsConstraint: {
-                type: "boolean",
-                boolean: {
-                  allowedValues: ["TRUE_VALUE", "FALSE_VALUE", "NULL_VALUE"],
-                },
-              },
+      constraints: [wrappedConstraint({
+        type: "array",
+        array: {
+          size: { minSize: 1, maxSize: 3 },
+          elementsUnique: false,
+          elementsConstraint: {
+            type: "boolean",
+            boolean: {
+              allowedValues: ["TRUE_VALUE", "FALSE_VALUE", "NULL_VALUE"],
             },
           },
         },
-      }],
+      })],
     });
     expect(result.fieldType).toEqual({
       type: "array",
@@ -117,39 +114,27 @@ describe("convertValueType", () => {
   });
 
   it("converts numeric ranges and enum options", () => {
-    const result = convertValueType({
-      ...valueType,
+    const result = convertVersion({
+      version: "1.0.0",
+      exampleValues: [],
       constraints: [
-        {
-          constraint: {
-            failureMessage: undefined,
-            constraint: {
-              type: "integer",
-              integer: { type: "range", range: { min: 0, max: 10 } },
-            },
+        wrappedConstraint({
+          type: "integer",
+          integer: { type: "range", range: { min: 0, max: 10 } },
+        }),
+        wrappedConstraint({
+          type: "string",
+          string: {
+            type: "oneOf",
+            oneOf: { values: ["A"], useIgnoreCase: true },
           },
-        },
-        {
-          constraint: {
-            failureMessage: undefined,
-            constraint: {
-              type: "string",
-              string: {
-                type: "oneOf",
-                oneOf: { values: ["A"], useIgnoreCase: true },
-              },
-            },
-          },
-        },
+        }),
       ],
     });
     expect(result.constraints).toEqual([{
       type: "range",
       minimumValue: 0,
       maximumValue: 10,
-    }, {
-      type: "enum",
-      options: ["A"],
-    }]);
+    }, { type: "enum", options: ["A"] }]);
   });
 });
