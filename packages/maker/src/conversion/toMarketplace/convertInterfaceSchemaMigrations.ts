@@ -36,14 +36,14 @@ export function convertInterfaceSchemaMigrations(
     return undefined;
   }
 
-  // NB: Ontology-ir identifies interface property types by API name rather than rid
+  // NB: Ontology-ir keys by API name rather than rid, making it an identity map
   const interfacePropertyTypeRidsToApiNames: Record<string, string> = {};
   const schemaTransitions = Object.fromEntries(
     schemaMigrations.transitions.map(
       (transition): [string, OntologyIrInterfaceTypeSchemaTransition] => [
         transition.id,
         {
-          // For ontology-ir, this carries the authored id, not a rid, despite its name
+          // Ontology-ir uses the ID for all identifiers (even RID, despite the name)
           rid: transition.id,
           id: transition.id,
           title: transition.title,
@@ -103,7 +103,7 @@ function convertInstruction(
       return {
         type: "addRequiredProperty",
         addRequiredProperty: {
-          // For ontology-ir, this carries an API name, not a rid, despite its name
+          // Ontology-ir types this as an API name despite the field name
           propertyTypeRid: propertyApiName,
         },
       };
