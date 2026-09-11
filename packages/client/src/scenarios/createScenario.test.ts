@@ -24,7 +24,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Client } from "../Client.js";
 import { createClient, createClientWithTransaction } from "../createClient.js";
-import { mockFetchResponse } from "../createClient.test.js";
+import {
+  mockFetchResponse,
+  mockInterfaceFetchPageResponse,
+} from "../createClient.test.js";
 import { createScenario } from "./createScenario.js";
 import { withScenario } from "./withScenario.js";
 
@@ -66,12 +69,12 @@ describe("createScenario", () => {
     const loadResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
       data: [],
     };
-    mockFetchResponse(fetchFunction, loadResponse);
+    mockInterfaceFetchPageResponse(fetchFunction, loadResponse);
     await scenario(BarInterface).fetchPage();
-    const url = new URL(
-      fetchFunction.mock.calls[1][0] as string,
-      "https://mock.com",
+    const loadCall = fetchFunction.mock.calls.find(([input]) =>
+      String(input).includes("objectSets/loadObjects"),
     );
+    const url = new URL(loadCall?.[0] as string, "https://mock.com");
     expect(url.searchParams.get("scenarioRid")).toBe(newScenarioRid);
   });
 
