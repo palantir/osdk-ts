@@ -9,6 +9,8 @@ on:
       - main
       - release/*
       - next
+      # TEMPORARY: enable branch snapshots. Remove before merging.
+      - jzhang/functions-aliases-refactor
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -50,8 +52,11 @@ jobs:
   snapshot:
     name: Snapshot
     needs: release
-    if: ${{ !failure() && !cancelled() }}
+    # Evaluate even when the release job is skipped on branch builds.
+    if: ${{ always() && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
+    # TEMPORARY: bound branch snapshot builds. Remove before merging.
+    timeout-minutes: 25
     permissions:
       contents: read
       id-token: write
@@ -76,7 +81,8 @@ jobs:
         run: pnpm exec turbo run build
 
       - name: Update versions for snapshots
-        run: pnpm exec changeset version --snapshot ${GITHUB_REF_NAME//\//__}
+        # The branch name contains a slash, which npm tags do not support.
+        run: pnpm exec changeset version --snapshot pr-jzhang
 
       - name: Make sure code is up to date
         run: pnpm exec turbo run postVersioning
@@ -85,4 +91,4 @@ jobs:
         run: pnpm exec turbo run build
 
       - name: Publish results
-        run: pnpm exec changeset publish --no-git-tag --tag next-${GITHUB_REF_NAME//\//__}
+        run: pnpm exec changeset publish --no-git-tag --tag pr-jzhang
