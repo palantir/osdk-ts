@@ -26,6 +26,7 @@ import { normalizeGitBranch } from "./normalizeGitBranch.js";
 export const FOUNDRY_BRANCH_ENV_VAR: string = "FOUNDRY_BRANCH_RID";
 
 const FOUNDRY_BRANCH_META_NAME = "osdk-foundry-branch-rid";
+const UNKNOWN_BRANCH_RID = "ri.branch..branch.unknown";
 
 export interface BranchPluginOptions {
   /**
@@ -42,9 +43,12 @@ export interface BranchPluginOptions {
  * injecting it into the application HTML.
  *
  * A server-side {@link FOUNDRY_BRANCH_ENV_VAR} value takes precedence.
- * Otherwise, the plugin uses the checked-out git branch. `main`, `master`, a
- * detached HEAD, and a directory outside a git repository use the default
- * Foundry branch.
+ * Otherwise, the plugin uses the checked-out git branch. `main` and `master`
+ * use the default Foundry branch. During development, an unreadable branch or
+ * detached HEAD uses an unknown branch value while polling continues.
+ * Production builds fall back to the default Foundry branch. Switching git
+ * branches during development reloads connected pages so they receive fresh
+ * HTML without restarting the dev server.
  *
  * @example
  * ```ts
@@ -69,22 +73,34 @@ export function branchPlugin(options: BranchPluginOptions = {}): Plugin {
       logger = config.logger;
     },
 
-    async transformIndexHtml() {
+    applyToEnvironment(environment) {
+      if (
+        environment.name === "client" &&
+        environment.config.command === "serve"
+      ) {
+        return branchPollingPlugin(readGitBranch);
+      }
+      return true;
+    },
+
+    async transformIndexHtml(_html, { server }) {
       const configuredBranch = loadEnv(mode, envDir, FOUNDRY_BRANCH_ENV_VAR)[
         FOUNDRY_BRANCH_ENV_VAR
       ];
+      const rawBranch =
+        configuredBranch ?? (await readGitBranch(root).catch(() => undefined));
       const branch =
-        (configuredBranch === undefined
-          ? normalizeGitBranch(await readGitBranch(root))
-          : normalizeGitBranch(configuredBranch)) ?? null;
+        normalizeGitBranch(
+          configuredBranch === undefined && server
+            ? gitBranchOrUnknown(rawBranch)
+            : rawBranch,
+        ) ?? null;
 
       if (branch !== lastReportedBranch) {
         lastReportedBranch = branch;
-        if (branch != null) {
-          logger?.info(
-            `Using Foundry branch "${branch}". Set ${FOUNDRY_BRANCH_ENV_VAR} to override.`,
-          );
-        }
+        logger?.info(
+          `Using Foundry branch "${branch ?? "main"}". Set ${FOUNDRY_BRANCH_ENV_VAR} to override.`,
+        );
       }
 
       return [
@@ -97,6 +113,72 @@ export function branchPlugin(options: BranchPluginOptions = {}): Plugin {
           injectTo: "head-prepend",
         },
       ];
+    },
+  };
+}
+
+function gitBranchOrUnknown(branch: string | undefined): string {
+  const trimmed = branch?.trim();
+  return !trimmed || trimmed === "HEAD" ? UNKNOWN_BRANCH_RID : trimmed;
+}
+
+function branchPollingPlugin(
+  readGitBranch: (cwd: string) => Promise<string | undefined>,
+): Plugin {
+  let closed = false;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+
+  return {
+    name: "osdk-branch:poll",
+
+    async buildStart() {
+      const { environment } = this;
+      if (environment.mode !== "dev") return;
+      const { config, hot, logger } = environment;
+      let previousBranch = await readBranch();
+
+      async function readBranch(): Promise<string> {
+        try {
+          return gitBranchOrUnknown(await readGitBranch(config.root));
+        } catch (error) {
+          if (!closed) {
+            logger.error(
+              `Unable to check for a git branch change: ${error instanceof Error ? error.message : String(error)}`,
+            );
+          }
+          return UNKNOWN_BRANCH_RID;
+        }
+      }
+
+      function schedule(): void {
+        if (closed) return;
+        timer = setTimeout(() => void poll(), 1000).unref();
+      }
+
+      async function poll(): Promise<void> {
+        try {
+          const branch = await readBranch();
+          if (closed || branch === previousBranch) return;
+
+          previousBranch = branch;
+          hot.send({ type: "full-reload" });
+        } catch (error) {
+          if (!closed) {
+            logger.error(
+              `Unable to check for a git branch change: ${error instanceof Error ? error.message : String(error)}`,
+            );
+          }
+        } finally {
+          schedule();
+        }
+      }
+
+      schedule();
+    },
+
+    closeBundle() {
+      closed = true;
+      clearTimeout(timer);
     },
   };
 }

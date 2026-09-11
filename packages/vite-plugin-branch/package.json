@@ -44,7 +44,7 @@
     "execa": "^9.6.0"
   },
   "peerDependencies": {
-    "vite": "*"
+    "vite": "^6.0.0 || ^7.0.0 || ^8.0.0"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
