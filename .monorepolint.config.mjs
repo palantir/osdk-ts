@@ -270,6 +270,7 @@ const archetypeRules = archetypes(standardPackageRules, {
   .addArchetype(
     "oxc migrated libraries with carve-outs",
     [
+      "@osdk/aliases",
       "@osdk/maker",
       "@osdk/maker-experimental",
       "@osdk/maker-import",
