@@ -66,7 +66,7 @@ describe("Load Ontologies Metadata", () => {
       {
         "externalInterfaces": Map {},
         "externalObjects": Map {},
-        "fixedVersionQueryTypes": [],
+        "queryVersionReferences": Map {},
         "requestedMetadata": {
           "actionTypes": {},
           "actionTypesFullMetadata": {},
@@ -389,9 +389,9 @@ describe("Load Ontologies Metadata", () => {
         throw new Error(ontologyDefinitions.error.join("\n"));
       }
 
-      expect(ontologyDefinitions.value.fixedVersionQueryTypes).toEqual([
-        "addOne",
-      ]);
+      expect(ontologyDefinitions.value.queryVersionReferences).toEqual(
+        new Map([["addOne", "0.0.9"]]),
+      );
       expect(
         ontologyDefinitions.value.requestedMetadata.queryTypes,
       ).toMatchInlineSnapshot(`
@@ -434,8 +434,8 @@ describe("Load Ontologies Metadata", () => {
         throw new Error(ontologyDefinitions.error.join("\n"));
       }
 
-      expect(ontologyDefinitions.value.fixedVersionQueryTypes.length).toEqual(
-        0,
+      expect(ontologyDefinitions.value.queryVersionReferences).toEqual(
+        new Map(),
       );
       expect(
         ontologyDefinitions.value.requestedMetadata.queryTypes,
@@ -461,6 +461,23 @@ describe("Load Ontologies Metadata", () => {
           },
         }
       `);
+    });
+
+    it("rejects multiple version references for the same query", async () => {
+      const ontologyDefinitions = await ontologyMetadataResolver
+        .getWireOntologyDefinition(
+          "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+          {
+            queryTypesApiNamesToLoad: ["addOne", "addOne:2.x"],
+          },
+        );
+
+      if (ontologyDefinitions.isOk()) {
+        throw new Error("Expected duplicate query references to be rejected");
+      }
+      expect(ontologyDefinitions.error).toEqual([
+        "Query type addOne was specified multiple times.",
+      ]);
     });
   });
 });

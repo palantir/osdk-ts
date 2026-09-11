@@ -381,7 +381,7 @@ async function main(): Promise<void> {
     new Map(),
     new Map(),
     false,
-    [],
+    new Map(),
     true,
   );
 
