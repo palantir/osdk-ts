@@ -97,12 +97,14 @@ function filterStateToPropertyFilter(
     case "DATE_RANGE": {
       const conditions: PropertyFilter[] = [];
 
-      const minDate = state.isRelative
-        ? resolveRelativeDateBound(state.relativeMin)
-        : state.minValue;
-      const maxDate = state.isRelative
-        ? resolveRelativeDateBound(state.relativeMax, true)
-        : state.maxValue;
+      const minDate =
+        state.relativeState != null
+          ? resolveRelativeDateBound(state.relativeState.relativeMin)
+          : state.minValue;
+      const maxDate =
+        state.relativeState != null
+          ? resolveRelativeDateBound(state.relativeState.relativeMax, true)
+          : state.maxValue;
 
       if (minDate !== undefined) {
         conditions.push({

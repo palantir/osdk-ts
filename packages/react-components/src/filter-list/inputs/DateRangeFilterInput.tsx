@@ -20,7 +20,7 @@ import React, { memo, useCallback, useMemo } from "react";
 
 import { DateRangeHistogramInput } from "../base/inputs/DateRangeHistogramInput.js";
 import { NullValueWrapper } from "../base/inputs/NullValueWrapper.js";
-import type { FilterState, RelativeDateBound } from "../FilterListItemApi.js";
+import type { FilterState, RelativeDateState } from "../FilterListItemApi.js";
 import {
   createGroupByAggregateOptions,
   createNullCountAggregateOptions,
@@ -61,9 +61,7 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
         type: "DATE_RANGE",
         minValue: dateRangeState?.minValue,
         maxValue: dateRangeState?.maxValue,
-        isRelative: dateRangeState?.isRelative,
-        relativeMin: dateRangeState?.relativeMin,
-        relativeMax: dateRangeState?.relativeMax,
+        relativeState: dateRangeState?.relativeState,
         includeNull,
       });
     },
@@ -71,9 +69,7 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
       onFilterStateChanged,
       dateRangeState?.minValue,
       dateRangeState?.maxValue,
-      dateRangeState?.isRelative,
-      dateRangeState?.relativeMin,
-      dateRangeState?.relativeMax,
+      dateRangeState?.relativeState,
     ],
   );
 
@@ -102,7 +98,7 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
       // Switching to relative — clear absolute dates, start fresh
       onFilterStateChanged({
         type: "DATE_RANGE",
-        isRelative: true,
+        relativeState: { relativeMin: null, relativeMax: null },
         includeNull,
       });
     },
@@ -110,19 +106,17 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const handleRelativeChange = useCallback(
-    (
-      relativeMin: RelativeDateBound | undefined,
-      relativeMax: RelativeDateBound | undefined,
-    ) => {
-      const minValue = resolveRelativeDateBound(relativeMin);
-      const maxValue = resolveRelativeDateBound(relativeMax, true);
+    (relativeState: RelativeDateState) => {
+      const minValue = resolveRelativeDateBound(relativeState.relativeMin);
+      const maxValue = resolveRelativeDateBound(
+        relativeState.relativeMax,
+        true,
+      );
       onFilterStateChanged({
         type: "DATE_RANGE",
         minValue,
         maxValue,
-        isRelative: true,
-        relativeMin,
-        relativeMax,
+        relativeState,
         includeNull,
       });
     },
@@ -216,9 +210,7 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
         formatDate={formatDate}
         clickToFilter={clickToFilter}
         enableRelativeMode={enableRelativeMode}
-        isRelative={dateRangeState?.isRelative}
-        relativeMin={dateRangeState?.relativeMin}
-        relativeMax={dateRangeState?.relativeMax}
+        relativeState={dateRangeState?.relativeState}
         onToggleRelative={handleToggleRelative}
         onRelativeChange={handleRelativeChange}
       />

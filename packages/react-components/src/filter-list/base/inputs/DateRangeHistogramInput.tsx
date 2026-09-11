@@ -17,7 +17,7 @@
 import React, { memo, useMemo } from "react";
 
 import { formatDateForInput } from "../../../shared/dateUtils.js";
-import type { RelativeDateBound } from "../../FilterListItemApi.js";
+import type { RelativeDateState } from "../../FilterListItemApi.js";
 import { createDateHistogramBuckets } from "./createDateHistogramBuckets.js";
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
 import { RelativeDateRangeInput } from "./RelativeDateRangeInput.js";
@@ -60,28 +60,19 @@ interface DateRangeHistogramInputProps {
    * @default false
    */
   enableRelativeMode?: boolean;
-  /** Whether the filter is currently in relative mode. */
-  isRelative?: boolean;
-  /** Relative definition for the From bound. `undefined` = Indefinitely. */
-  relativeMin?: RelativeDateBound;
-  /** Relative definition for the To bound. `undefined` = Indefinitely. */
-  relativeMax?: RelativeDateBound;
+  /** Current relative state. Present = relative mode ON. */
+  relativeState?: RelativeDateState;
   /** Called when the Absolute/Relative toggle changes. */
   onToggleRelative?: (checked: boolean) => void;
   /** Called when either relative bound changes. */
-  onRelativeChange?: (
-    relativeMin: RelativeDateBound | undefined,
-    relativeMax: RelativeDateBound | undefined,
-  ) => void;
+  onRelativeChange?: (relativeState: RelativeDateState) => void;
 }
 
 function DateRangeHistogramInputInner({
   formatDate,
   valueCountPairs,
   enableRelativeMode,
-  isRelative,
-  relativeMin,
-  relativeMax,
+  relativeState,
   onToggleRelative,
   onRelativeChange,
   ...rest
@@ -127,21 +118,20 @@ function DateRangeHistogramInputInner({
     return { buckets, subtitle };
   }, [valueCountPairs, formatDate]);
 
-  const showRelativeUI = enableRelativeMode === true && isRelative === true;
+  const showRelativeUI = enableRelativeMode === true && relativeState != null;
 
   return (
     <>
       {enableRelativeMode === true && onToggleRelative != null && (
         <RelativeModeToggle
-          checked={isRelative === true}
+          checked={relativeState != null}
           onCheckedChange={onToggleRelative}
         />
       )}
 
       {showRelativeUI && onRelativeChange ? (
         <RelativeDateRangeInput
-          relativeMin={relativeMin}
-          relativeMax={relativeMax}
+          relativeState={relativeState}
           onRelativeChange={onRelativeChange}
         />
       ) : (

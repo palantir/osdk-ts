@@ -20,16 +20,16 @@ import type { RelativeDateBound } from "../FilterListItemApi.js";
 
 /**
  * Resolves a single {@link RelativeDateBound} to an absolute `Date`.
- * Returns `undefined` when `bound` is `undefined` (= "Indefinitely").
+ * Returns `undefined` when `bound` is `null` or `undefined` (= "Indefinitely").
  *
- * @param bound     The relative bound to resolve, or `undefined`.
+ * @param bound     The relative bound to resolve, or `null`/`undefined`.
  * @param endOfDay  When `true`, sets time to 23:59:59.999 (inclusive upper
  *                  bound). When `false` (default), sets time to 00:00:00.000.
  * @param now       Reference point (defaults to `new Date()`). Injectable for
  *                  deterministic tests.
  */
 export function resolveRelativeDateBound(
-  bound: RelativeDateBound | undefined,
+  bound: RelativeDateBound | null | undefined,
   endOfDay?: boolean,
   now?: Date,
 ): Date | undefined {

@@ -94,12 +94,12 @@ export function summarizeFilterValue<Q extends ObjectTypeDefinition>(
       return formatRange(minValue, maxValue, String, "−∞", "∞");
     }
     case "DATE_RANGE": {
-      if (state.isRelative === true) {
-        const minLabel = state.relativeMin
-          ? formatRelativeBound(state.relativeMin)
+      if (state.relativeState != null) {
+        const minLabel = state.relativeState.relativeMin
+          ? formatRelativeBound(state.relativeState.relativeMin)
           : "Indefinitely";
-        const maxLabel = state.relativeMax
-          ? formatRelativeBound(state.relativeMax)
+        const maxLabel = state.relativeState.relativeMax
+          ? formatRelativeBound(state.relativeState.relativeMax)
           : "Indefinitely";
         return `${minLabel} – ${maxLabel}`;
       }

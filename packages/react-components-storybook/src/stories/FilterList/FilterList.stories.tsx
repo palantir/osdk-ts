@@ -135,12 +135,13 @@ const relativeDateFilterDefinitions: Array<FilterDefinitionUnion<Employee>> = [
     enableRelativeMode: true,
     defaultFilterState: {
       type: "DATE_RANGE",
-      isRelative: true,
-      relativeMin: { count: 30, unit: "years", direction: "ago" },
-      relativeMax: {
-        count: 0,
-        unit: "days",
-        direction: "fromNow",
+      relativeState: {
+        relativeMin: { count: 30, unit: "years", direction: "ago" },
+        relativeMax: {
+          count: 0,
+          unit: "days",
+          direction: "fromNow",
+        },
       },
     },
   },

@@ -28,49 +28,54 @@ describe("summarizeFilterValue", () => {
         createDateRangeState(),
       );
       const state = createDateRangeState(undefined, undefined, {
-        isRelative: true,
-        relativeMin: { count: 7, unit: "days", direction: "ago" },
-        relativeMax: { count: 0, unit: "days", direction: "fromNow" },
+        relativeState: {
+          relativeMin: { count: 7, unit: "days", direction: "ago" },
+          relativeMax: { count: 0, unit: "days", direction: "fromNow" },
+        },
       });
       expect(summarizeFilterValue(def, state)).toBe("7 days ago – Today");
     });
 
-    it("shows Indefinitely for absent min bound", () => {
+    it("shows Indefinitely for null min bound", () => {
       const def = createPropertyFilterDef(
         "createdAt",
         "DATE_RANGE",
         createDateRangeState(),
       );
       const state = createDateRangeState(undefined, undefined, {
-        isRelative: true,
-        relativeMax: { count: 0, unit: "days", direction: "fromNow" },
+        relativeState: {
+          relativeMin: null,
+          relativeMax: { count: 0, unit: "days", direction: "fromNow" },
+        },
       });
       expect(summarizeFilterValue(def, state)).toBe("Indefinitely – Today");
     });
 
-    it("shows Indefinitely for absent max bound", () => {
+    it("shows Indefinitely for null max bound", () => {
       const def = createPropertyFilterDef(
         "createdAt",
         "DATE_RANGE",
         createDateRangeState(),
       );
       const state = createDateRangeState(undefined, undefined, {
-        isRelative: true,
-        relativeMin: { count: 5, unit: "months", direction: "ago" },
+        relativeState: {
+          relativeMin: { count: 5, unit: "months", direction: "ago" },
+          relativeMax: null,
+        },
       });
       expect(summarizeFilterValue(def, state)).toBe(
         "5 months ago – Indefinitely",
       );
     });
 
-    it("shows both Indefinitely when no bounds set", () => {
+    it("shows both Indefinitely when both bounds are null", () => {
       const def = createPropertyFilterDef(
         "createdAt",
         "DATE_RANGE",
         createDateRangeState(),
       );
       const state = createDateRangeState(undefined, undefined, {
-        isRelative: true,
+        relativeState: { relativeMin: null, relativeMax: null },
       });
       expect(summarizeFilterValue(def, state)).toBe(
         "Indefinitely – Indefinitely",
@@ -84,9 +89,10 @@ describe("summarizeFilterValue", () => {
         createDateRangeState(),
       );
       const state = createDateRangeState(undefined, undefined, {
-        isRelative: true,
-        relativeMin: { count: 1, unit: "months", direction: "ago" },
-        relativeMax: { count: 1, unit: "weeks", direction: "fromNow" },
+        relativeState: {
+          relativeMin: { count: 1, unit: "months", direction: "ago" },
+          relativeMax: { count: 1, unit: "weeks", direction: "fromNow" },
+        },
       });
       expect(summarizeFilterValue(def, state)).toBe(
         "1 month ago – 1 week from now",

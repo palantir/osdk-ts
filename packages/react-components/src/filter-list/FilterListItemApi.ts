@@ -208,6 +208,16 @@ export interface RelativeDateBound {
   direction: "ago" | "fromNow";
 }
 
+/**
+ * Groups the two relative bounds for a `DATE_RANGE` filter.
+ * Presence of this object on the filter state means relative mode is ON.
+ * `null` for either bound means "Indefinitely" (no constraint on that side).
+ */
+export interface RelativeDateState {
+  relativeMin: RelativeDateBound | null;
+  relativeMax: RelativeDateBound | null;
+}
+
 export interface DateRangeFilterState extends BaseFilterState {
   type: "DATE_RANGE";
   /**
@@ -220,27 +230,10 @@ export interface DateRangeFilterState extends BaseFilterState {
   maxValue?: Date;
 
   /**
-   * When `true`, the filter UI renders in relative-date mode.
-   * The `minValue` / `maxValue` are computed from `relativeMin` /
-   * `relativeMax`.
-   *
-   * @default false
+   * When present, the filter is in relative-date mode.
+   * When `undefined`, the filter uses absolute `minValue` / `maxValue`.
    */
-  isRelative?: boolean;
-
-  /**
-   * Relative definition for the From (min) bound.
-   * Only meaningful when `isRelative` is `true`.
-   * When absent in relative mode, the From bound is "Indefinitely" (no lower bound).
-   */
-  relativeMin?: RelativeDateBound;
-
-  /**
-   * Relative definition for the To (max) bound.
-   * Only meaningful when `isRelative` is `true`.
-   * When absent in relative mode, the To bound is "Indefinitely" (no upper bound).
-   */
-  relativeMax?: RelativeDateBound;
+  relativeState?: RelativeDateState;
 }
 
 export interface ContainsTextFilterState extends BaseFilterState {
