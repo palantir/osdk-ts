@@ -21,7 +21,7 @@ export type { Source } from "./types.js";
 export function source(alias: string): Source {
   const resolvedAliases = loadResolvedAliases();
 
-  if (!(alias in resolvedAliases.sources)) {
+  if (!Object.hasOwn(resolvedAliases.sources, alias)) {
     const available = Object.keys(resolvedAliases.sources);
     throw new Error(
       `Source alias '${alias}' not found. Available aliases: [${available.join(

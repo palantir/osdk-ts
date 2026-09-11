@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-// The root API is reserved for the async API. Functions callers should use
-// Aliases from "@osdk/functions".
+// The root API is reserved. Use "@osdk/aliases/experimental" for the async API.
+// Existing Functions callers should use Aliases from "@osdk/functions".
