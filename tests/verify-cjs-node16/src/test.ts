@@ -1,3 +1,4 @@
+import * as NodeAliases from "@osdk/aliases/node";
 import * as Client from "@osdk/client";
 import * as oauth from "@osdk/oauth";
 import * as sdk from "@test-app2/osdk";
@@ -21,4 +22,16 @@ Unstable.augment({ type: "object", apiName: "foo" } as any);
 
 if (sdk.$Objects.Employee.apiName !== "Employee") {
   throw new Error("Expected Employee");
+}
+
+try {
+  NodeAliases.custom("missing");
+  throw new Error("Expected the Node alias resolver to throw");
+} catch (error) {
+  if (
+    !(error instanceof Error) ||
+    !error.message.includes("Unknown alias environment")
+  ) {
+    throw error;
+  }
 }

@@ -1921,6 +1921,18 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
+  packages/aliases:
+    devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      typescript:
+        specifier: ~5.5.4
+        version: 5.5.4
+
   packages/api:
     dependencies:
       '@types/geojson':
@@ -4333,6 +4345,9 @@ importers:
 
   packages/functions:
     dependencies:
+      '@osdk/aliases':
+        specifier: workspace:~
+        version: link:../aliases
       '@osdk/client':
         specifier: workspace:^
         version: link:../client
@@ -6317,6 +6332,9 @@ importers:
 
   tests/verify-cjs-node16:
     dependencies:
+      '@osdk/aliases':
+        specifier: workspace:~
+        version: link:../../packages/aliases
       '@osdk/api':
         specifier: workspace:~
         version: link:../../packages/api
@@ -6339,6 +6357,9 @@ importers:
 
   tests/verify-esm-node16:
     dependencies:
+      '@osdk/aliases':
+        specifier: workspace:~
+        version: link:../../packages/aliases
       '@osdk/api':
         specifier: workspace:~
         version: link:../../packages/api

@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-export * from "./custom.js";
-export * from "./dataset.js";
-export * from "./mediaset.js";
-export * from "./model.js";
-export * from "./source.js";
-export * from "./stream.js";
+// API Extractor cannot represent a namespace that re-exports `export *` from
+// another package, so each export is listed explicitly.
+
+export { custom } from "@osdk/aliases/node";
+export type { Custom } from "@osdk/aliases/node";
+export { dataset } from "@osdk/aliases/node";
+export type { Dataset } from "@osdk/aliases/node";
+export { mediaset } from "@osdk/aliases/node";
+export type { Mediaset } from "@osdk/aliases/node";
+export { model } from "@osdk/aliases/node";
+export type { Model } from "@osdk/aliases/node";
+export { source } from "@osdk/aliases/node";
+export type { Source } from "@osdk/aliases/node";
+export { stream } from "@osdk/aliases/node";
+export type { Stream } from "@osdk/aliases/node";
