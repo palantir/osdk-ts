@@ -269,6 +269,49 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
     store.cacheKeys.release(queryWithRdp.cacheKey);
   });
 
+  it("loads an object with no RDPs from an RDP write without derived fields", () => {
+    const rdpConfig = createFakeRdpConfig("derivedAddress");
+    const queryWithRdp = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig,
+    );
+    const queryNoRdp = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    });
+    store.cacheKeys.retain(queryNoRdp.cacheKey);
+    const subscription = store.subjects
+      .get(queryNoRdp.cacheKey)
+      .subscribe(() => {});
+    store.batch({}, (batch) => {
+      queryNoRdp.writeToStore(emp as any, "loading", batch);
+    });
+    const rdpValue = emp.$clone({
+      fullName: "Bob",
+      derivedAddress: "123 Main St",
+    } as any);
+
+    store.batch({}, (batch) => {
+      queryWithRdp.writeToStore(rdpValue as any, "loaded", batch);
+    });
+
+    expect(store.getValue(queryNoRdp.cacheKey)).toMatchObject({
+      status: "loaded",
+      value: {
+        $primaryKey: 1,
+        fullName: "Bob",
+      },
+    });
+    expect(
+      (store.getValue(queryNoRdp.cacheKey)?.value as any)?.derivedAddress,
+    ).toBeUndefined();
+    subscription.unsubscribe();
+    store.cacheKeys.release(queryNoRdp.cacheKey);
+  });
+
   it("keeps the recomputed derived value on a $select refetch", () => {
     const rdpConfig = createFakeRdpConfig("derivedAddress");
     const queryB = store.objects.getQuery(
