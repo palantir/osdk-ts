@@ -100,7 +100,6 @@ const archetypeRules = archetypes(standardPackageRules, {
       // @osdk/e2e.generated.1.1.x migrated to the oxc toolchain (it joins "oxc
       // migrated minimal packages" below).
       "@osdk/examples.*",
-      "@psdk/examples.*",
       "@osdk/monorepo.*",
     ],
     {
@@ -1414,6 +1413,20 @@ function standardPackageRules(shared, options) {
                   "**/index.ts",
                 ],
               },
+              // Classnames are package-prefixed: test paths repeat across packages.
+              reporters: process.env.CI
+                ? [
+                  "default",
+                  [
+                    "junit",
+                    {
+                      classnameTemplate: (v) =>
+                        v.filepath.split("/packages/").pop() ?? v.filepath,
+                    },
+                  ],
+                ]
+                : ["default"],
+              outputFile: { junit: "reports/junit.xml" },
               fakeTimers: {
                 toFake: ["setTimeout", "clearTimeout", "Date"],
               },

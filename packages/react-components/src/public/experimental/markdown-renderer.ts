@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,38 +14,29 @@
  * limitations under the License.
  */
 
-// This subpath keeps its `markdown-renderer` name for now even though the
-// components it exports are named `MarkdownViewer`. It gets renamed when the
-// `experimental/` prefix is dropped, so consumers change import paths once
-// rather than twice.
+import * as Stable from "../markdown-viewer.js";
 
-import { BaseMarkdownViewer as _BaseMarkdownViewer } from "../../markdown-viewer/BaseMarkdownViewer.js";
-import { MarkdownViewer as _MarkdownViewer } from "../../markdown-viewer/MarkdownViewer.js";
-import type { BaseMarkdownViewerProps as _BaseMarkdownViewerProps } from "../../markdown-viewer/MarkdownViewerApi.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
+/** @deprecated Import from `@osdk/react-components/markdown-viewer` instead. */
+export const BaseMarkdownViewer: typeof Stable.BaseMarkdownViewer =
+  Stable.BaseMarkdownViewer;
 
-// BaseMarkdownViewer
-export { BaseMarkdownViewer } from "../../markdown-viewer/BaseMarkdownViewer.js";
-export type {
-  BaseMarkdownViewerProps,
-  MarkdownViewerProps,
-} from "../../markdown-viewer/MarkdownViewerApi.js";
+/** @deprecated Import from `@osdk/react-components/markdown-viewer` instead. */
+export type BaseMarkdownViewerProps = Stable.BaseMarkdownViewerProps;
 
-// MarkdownViewer (Media wrapper)
-export const MarkdownViewer: typeof _MarkdownViewer = withOsdkMetrics(
-  _MarkdownViewer,
-  "MarkdownViewer",
-);
+/** @deprecated Import from `@osdk/react-components/markdown-viewer` instead. */
+export type MarkdownViewerProps = Stable.MarkdownViewerProps;
 
-// Deprecated `Renderer` aliases of the same values, cleared in a later pass.
-// `MarkdownViewerMediaProps` has none: the `Media` drop is a uniform break
-// because pdf's old name was reused for a different type.
+/** @deprecated Import from `@osdk/react-components/markdown-viewer` instead. */
+export const MarkdownViewer: typeof Stable.MarkdownViewer =
+  Stable.MarkdownViewer;
 
 /** @deprecated Use `BaseMarkdownViewer` instead. */
-export const MarkdownRenderer: typeof _BaseMarkdownViewer = _BaseMarkdownViewer;
+export const MarkdownRenderer: typeof Stable.BaseMarkdownViewer =
+  Stable.BaseMarkdownViewer;
 
 /** @deprecated Use `BaseMarkdownViewerProps` instead. */
-export type MarkdownRendererProps = _BaseMarkdownViewerProps;
+export type MarkdownRendererProps = Stable.BaseMarkdownViewerProps;
 
 /** @deprecated Use `MarkdownViewer` instead. */
-export const MarkdownViewerMedia: typeof MarkdownViewer = MarkdownViewer;
+export const MarkdownViewerMedia: typeof Stable.MarkdownViewer =
+  Stable.MarkdownViewer;

@@ -3202,6 +3202,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "status": "ACTIVE",
           },
         },
+        "actionTypesFullMetadata": {},
         "interfaceTypes": {},
         "objectTypes": {
           "Dc3DistributionCenterProposal": {

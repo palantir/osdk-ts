@@ -1,4 +1,4 @@
-import type { FilterState } from "@osdk/react-components/experimental/filter-list";
+import type { FilterState } from "@osdk/react-components/filter-list";
 import React, { useCallback, useContext, useMemo, useState } from "react";
 
 interface FilterStatesContextValue {

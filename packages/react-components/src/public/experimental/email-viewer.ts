@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-// BaseEmailViewer
-export { BaseEmailViewer } from "../../email-viewer/BaseEmailViewer.js";
-export type {
-  BaseEmailViewerProps,
-  EmailAddress,
-  EmailViewerProps,
-  ParsedEmail,
-} from "../../email-viewer/EmailViewerApi.js";
+import * as Stable from "../email-viewer.js";
 
-// EmailViewer (Media wrapper)
-import { EmailViewer as _EmailViewer } from "../../email-viewer/EmailViewer.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const EmailViewer: typeof _EmailViewer = withOsdkMetrics(
-  _EmailViewer,
-  "EmailViewer",
-);
+/** @deprecated Import from `@osdk/react-components/email-viewer` instead. */
+export const BaseEmailViewer: typeof Stable.BaseEmailViewer =
+  Stable.BaseEmailViewer;
+
+/** @deprecated Import from `@osdk/react-components/email-viewer` instead. */
+export type BaseEmailViewerProps = Stable.BaseEmailViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/email-viewer` instead. */
+export type EmailAddress = Stable.EmailAddress;
+
+/** @deprecated Import from `@osdk/react-components/email-viewer` instead. */
+export type EmailViewerProps = Stable.EmailViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/email-viewer` instead. */
+export type ParsedEmail = Stable.ParsedEmail;
+
+/** @deprecated Import from `@osdk/react-components/email-viewer` instead. */
+export const EmailViewer: typeof Stable.EmailViewer = Stable.EmailViewer;

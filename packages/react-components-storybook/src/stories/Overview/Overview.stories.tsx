@@ -20,11 +20,11 @@ import {
   ActionForm,
   type ActionFormProps,
   type FormState,
-} from "@osdk/react-components/experimental";
-import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
-import type { FilterDefinitionUnion } from "@osdk/react-components/experimental/filter-list";
-import { FilterList } from "@osdk/react-components/experimental/filter-list";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/action-form";
+import { DocumentViewer } from "@osdk/react-components/document-viewer";
+import type { FilterDefinitionUnion } from "@osdk/react-components/filter-list";
+import { FilterList } from "@osdk/react-components/filter-list";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { http, passthrough } from "msw";
 import React, { type CSSProperties, useCallback, useState } from "react";

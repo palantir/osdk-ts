@@ -77,6 +77,11 @@ import {
   type PropertyTypeType,
   type PropertyTypeTypeStruct,
 } from "./properties/PropertyTypeType.js";
+import {
+  ACTION_DESCRIPTION_LIMIT,
+  ACTION_DISPLAY_NAME_LIMIT,
+  validateDisplayMetadataLengths,
+} from "./validateMetadataLengths.js";
 
 export const MODIFY_OBJECT_PARAMETER: string = "objectToModifyParameter";
 
@@ -287,6 +292,29 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
     __type: OntologyEntityTypeEnum.ACTION_TYPE,
   } as ActionType;
   validateActionConfiguration(fullAction);
+  const context = `Action type "${apiName}"`;
+  validateDisplayMetadataLengths(
+    fullAction,
+    context,
+    ACTION_DISPLAY_NAME_LIMIT,
+    ACTION_DESCRIPTION_LIMIT,
+  );
+  for (const parameter of fullAction.parameters ?? []) {
+    validateDisplayMetadataLengths(
+      parameter,
+      `${context}, parameter "${parameter.id}"`,
+      ACTION_DISPLAY_NAME_LIMIT,
+      ACTION_DESCRIPTION_LIMIT,
+    );
+  }
+  for (const [id, section] of Object.entries(fullAction.sections ?? {})) {
+    validateDisplayMetadataLengths(
+      section,
+      `${context}, section "${id}"`,
+      ACTION_DISPLAY_NAME_LIMIT,
+      ACTION_DESCRIPTION_LIMIT,
+    );
+  }
   updateOntology(fullAction);
   return fullAction;
 }

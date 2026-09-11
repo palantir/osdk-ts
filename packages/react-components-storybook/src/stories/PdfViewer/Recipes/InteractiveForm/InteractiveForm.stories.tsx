@@ -19,8 +19,8 @@
 import type {
   BasePdfViewerProps,
   PdfFormFieldValue,
-} from "@osdk/react-components/experimental/pdf-viewer";
-import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+} from "@osdk/react-components/pdf-viewer";
+import { BasePdfViewer } from "@osdk/react-components/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   PDFCheckBox,

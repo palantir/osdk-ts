@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-import type { FilterDefinitionUnion } from "@osdk/react-components/experimental/filter-list";
+import type { FilterDefinitionUnion } from "@osdk/react-components/filter-list";
 
 /** Filter definition with a required id — used to key per-filter UI state. */
 export type IdentifiedFilterDef<T extends ObjectTypeDefinition> =

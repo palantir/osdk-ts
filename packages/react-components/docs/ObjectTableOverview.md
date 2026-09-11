@@ -3,7 +3,7 @@ title: ObjectTable
 description: An OSDK-aware data table for ontology objects. Renders rows from an object type, ObjectSet, or interface, with built-in column configuration, selection, sorting, pinning, resizing, and inline editing.
 ---
 
-> **Beta** — exported from `@osdk/react-components/experimental/object-table`.
+> **Beta** — exported from `@osdk/react-components/object-table`.
 
 ## Usage
 
@@ -13,7 +13,7 @@ ObjectTable fetches its own data. Wrap your app in `OsdkProvider` and import the
 
 ```tsx
 import { Office } from "@my/osdk";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 
 function OfficesPage() {
   return <ObjectTable objectType={Office} />;
@@ -89,7 +89,7 @@ The ObjectTable emits a stable set of `data-*` attributes on its rendered DOM an
 
 ## Advanced
 
-`ObjectTable` is the OSDK-aware component most consumers should use. For cases where you need to bring your own data fetching or assemble the table from smaller pieces, the package also exports the OSDK-agnostic base component, the individual building blocks, and the headless hooks that back them. All are available from `@osdk/react-components/experimental/object-table`.
+`ObjectTable` is the OSDK-aware component most consumers should use. For cases where you need to bring your own data fetching or assemble the table from smaller pieces, the package also exports the OSDK-agnostic base component, the individual building blocks, and the headless hooks that back them. All are available from `@osdk/react-components/object-table`.
 
 ### BaseTable
 

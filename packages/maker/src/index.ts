@@ -100,7 +100,10 @@ export type {
   InterfaceDefinedProperty,
   InterfacePropertyType,
 } from "./api/interface/InterfacePropertyType.js";
-export { isInterfaceSharedPropertyType } from "./api/interface/InterfacePropertyType.js";
+export {
+  isInterfacePropertyRequired,
+  isInterfaceSharedPropertyType,
+} from "./api/interface/InterfacePropertyType.js";
 export type { InterfaceType } from "./api/interface/InterfaceType.js";
 export type {
   LinkType,

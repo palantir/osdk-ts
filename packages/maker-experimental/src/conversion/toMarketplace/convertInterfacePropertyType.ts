@@ -17,6 +17,7 @@
 import type { MarketplaceInterfacePropertyType } from "@osdk/client.unstable";
 import type { InterfacePropertyType } from "@osdk/maker";
 import {
+  isInterfacePropertyRequired,
   isInterfaceSharedPropertyType,
   shouldBeIndexedForSearch,
   validateVectorProperty,
@@ -27,20 +28,43 @@ import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataCo
 import { convertSpt } from "./convertSpt.js";
 import { propertyTypeTypeToOntologyIrInterfaceType } from "./propertyTypeTypeToOntologyIrInterfaceType.js";
 
+/**
+ * The rid a property is keyed by on the wire, accounting for both interface-defined
+ * and shared-property-backed properties.
+ */
+export function interfacePropertyWireRid(
+  prop: InterfacePropertyType,
+  apiName: string,
+  interfaceApiName: string,
+  ridGenerator: OntologyRidGenerator,
+): string {
+  return isInterfaceSharedPropertyType(prop)
+    ? ridGenerator.generateIptRidFromSptRid(
+        ridGenerator.generateSptRid(prop.sharedPropertyType.apiName),
+      )
+    : ridGenerator.generateInterfacePropertyTypeRid(apiName, interfaceApiName);
+}
+
 export function convertInterfaceProperty(
   prop: InterfacePropertyType,
   apiName: string,
   interfaceApiName: string,
   ridGenerator: OntologyRidGenerator,
 ): [string, MarketplaceInterfacePropertyType] {
+  const rid = interfacePropertyWireRid(
+    prop,
+    apiName,
+    interfaceApiName,
+    ridGenerator,
+  );
   if (isInterfaceSharedPropertyType(prop)) {
     const convertedSpt = convertSpt(prop.sharedPropertyType, ridGenerator);
     return [
-      ridGenerator.generateIptRidFromSptRid(convertedSpt.rid),
+      rid,
       {
         type: "sharedPropertyBasedPropertyType",
         sharedPropertyBasedPropertyType: {
-          requireImplementation: prop.required,
+          requireImplementation: isInterfacePropertyRequired(prop),
           sharedPropertyType: convertedSpt,
         },
       },
@@ -48,7 +72,7 @@ export function convertInterfaceProperty(
   } else {
     validateVectorProperty(apiName, prop.type, prop.array);
     return [
-      ridGenerator.generateInterfacePropertyTypeRid(apiName, interfaceApiName),
+      rid,
       {
         type: "interfaceDefinedPropertyType",
         interfaceDefinedPropertyType: {
@@ -76,7 +100,7 @@ export function convertInterfaceProperty(
               ),
           constraints: {
             primaryKeyConstraint: prop.primaryKeyConstraint ?? "NO_RESTRICTION",
-            requireImplementation: prop.required ?? true,
+            requireImplementation: isInterfacePropertyRequired(prop),
             indexedForSearch: shouldBeIndexedForSearch(prop.type),
             typeClasses: prop.typeClasses ?? [],
             dataConstraints: convertNullabilityToDataConstraint({
@@ -90,10 +114,7 @@ export function convertInterfaceProperty(
                 )
               : undefined,
           },
-          rid: ridGenerator.generateInterfacePropertyTypeRid(
-            apiName,
-            interfaceApiName,
-          ),
+          rid,
         },
       },
     ];

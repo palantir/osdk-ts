@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,52 +14,115 @@
  * limitations under the License.
  */
 
-export { BaseFilterList } from "../../filter-list/base/BaseFilterList.js";
-export type {
-  BaseFilterListProps,
-  RenderFilterInput,
-} from "../../filter-list/base/BaseFilterListApi.js";
-import { FilterList as _FilterList } from "../../filter-list/FilterList.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const FilterList: typeof _FilterList = withOsdkMetrics(
-  _FilterList,
-  "FilterList",
-);
+import type * as Api from "@osdk/api";
 
-export type {
-  FilterChangeEvent,
-  FilterChangeReason,
-  FilterChangeSnapshot,
-  FilterDefinitionUnion,
-  FilterListProps,
-} from "../../filter-list/FilterListApi.js";
-export type {
-  FilterComponentType,
-  FilterDefinitionControls,
-  FilterState,
-  PropertyFilterDefinition,
-} from "../../filter-list/FilterListItemApi.js";
-export {
-  deserializeFilterStates,
-  serializeFilterStates,
-} from "../../filter-list/utils/filterStateSerialization.js";
+import type * as FilterListItemApi from "../../filter-list/FilterListItemApi.js";
+import * as Stable from "../filter-list.js";
 
-export { FilterPopover } from "../../filter-list/base/FilterPopover.js";
-export type { FilterPopoverProps } from "../../filter-list/base/FilterPopover.js";
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export const BaseFilterList: typeof Stable.BaseFilterList =
+  Stable.BaseFilterList;
 
-export { FilterInput } from "../../filter-list/FilterInput.js";
-export type { FilterInputProps } from "../../filter-list/FilterInput.js";
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export type BaseFilterListProps<D extends Stable.FilterDefinitionControls> =
+  Stable.BaseFilterListProps<D>;
 
-export { useFilterListState } from "../../filter-list/hooks/useFilterListState.js";
-export type { UseFilterListStateResult } from "../../filter-list/hooks/useFilterListState.js";
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export type RenderFilterInput<D> = Stable.RenderFilterInput<D>;
 
-export {
-  filterHasActiveState,
-  NO_VALUE,
-} from "../../filter-list/utils/filterValues.js";
-export { getFilterKey } from "../../filter-list/utils/getFilterKey.js";
-export { getFilterLabel } from "../../filter-list/utils/getFilterLabel.js";
-export { summarizeFilterValue } from "../../filter-list/utils/summarizeFilterValue.js";
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export const FilterList: typeof Stable.FilterList = Stable.FilterList;
 
-export type { LinkedFilter } from "../../filter-list/types/LinkedFilterTypes.js";
-export { narrowObjectSet } from "../../filter-list/utils/narrowObjectSet.js";
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export type FilterChangeEvent<Q extends Api.ObjectTypeDefinition> =
+  Stable.FilterChangeEvent<Q>;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export type FilterChangeReason = Stable.FilterChangeReason;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export type FilterChangeSnapshot<Q extends Api.ObjectTypeDefinition> =
+  Stable.FilterChangeSnapshot<Q>;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export type FilterDefinitionUnion<Q extends Api.ObjectTypeDefinition> =
+  Stable.FilterDefinitionUnion<Q>;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export type FilterListProps<Q extends Api.ObjectTypeDefinition> =
+  Stable.FilterListProps<Q>;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export type FilterComponentType = Stable.FilterComponentType;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export type FilterDefinitionControls = Stable.FilterDefinitionControls;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export type FilterState = Stable.FilterState;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export type PropertyFilterDefinition<
+  Q extends Api.ObjectTypeDefinition,
+  K extends Api.PropertyKeys<Q> = Api.PropertyKeys<Q>,
+  C extends FilterListItemApi.ValidComponentsForPropertyType<
+    FilterListItemApi.PropertyTypeFromKey<Q, K>
+  > = FilterListItemApi.ValidComponentsForPropertyType<
+    FilterListItemApi.PropertyTypeFromKey<Q, K>
+  >,
+> = Stable.PropertyFilterDefinition<Q, K, C>;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export const deserializeFilterStates: typeof Stable.deserializeFilterStates =
+  Stable.deserializeFilterStates;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export const serializeFilterStates: typeof Stable.serializeFilterStates =
+  Stable.serializeFilterStates;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export const FilterPopover: typeof Stable.FilterPopover = Stable.FilterPopover;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export type FilterPopoverProps = Stable.FilterPopoverProps;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export const FilterInput: typeof Stable.FilterInput = Stable.FilterInput;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export type FilterInputProps<Q extends Api.ObjectTypeDefinition> =
+  Stable.FilterInputProps<Q>;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export const useFilterListState: typeof Stable.useFilterListState =
+  Stable.useFilterListState;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export type UseFilterListStateResult<Q extends Api.ObjectTypeDefinition> =
+  Stable.UseFilterListStateResult<Q>;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export const filterHasActiveState: typeof Stable.filterHasActiveState =
+  Stable.filterHasActiveState;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export const NO_VALUE: typeof Stable.NO_VALUE = Stable.NO_VALUE;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export const getFilterKey: typeof Stable.getFilterKey = Stable.getFilterKey;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export const getFilterLabel: typeof Stable.getFilterLabel =
+  Stable.getFilterLabel;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export const summarizeFilterValue: typeof Stable.summarizeFilterValue =
+  Stable.summarizeFilterValue;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export type LinkedFilter<Q extends Api.ObjectTypeDefinition> =
+  Stable.LinkedFilter<Q>;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export const narrowObjectSet: typeof Stable.narrowObjectSet =
+  Stable.narrowObjectSet;

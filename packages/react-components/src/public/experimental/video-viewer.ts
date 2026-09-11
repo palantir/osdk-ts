@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-// BaseVideoViewer
-export { BaseVideoViewer } from "../../video-viewer/BaseVideoViewer.js";
-export type {
-  BaseVideoViewerProps,
-  VideoViewerProps,
-} from "../../video-viewer/VideoViewerApi.js";
+import * as Stable from "../video-viewer.js";
 
-// VideoViewer (Media wrapper)
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-import { VideoViewer as _VideoViewer } from "../../video-viewer/VideoViewer.js";
-export const VideoViewer: typeof _VideoViewer = withOsdkMetrics(
-  _VideoViewer,
-  "VideoViewer",
-);
+/** @deprecated Import from `@osdk/react-components/video-viewer` instead. */
+export const BaseVideoViewer: typeof Stable.BaseVideoViewer =
+  Stable.BaseVideoViewer;
+
+/** @deprecated Import from `@osdk/react-components/video-viewer` instead. */
+export type BaseVideoViewerProps = Stable.BaseVideoViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/video-viewer` instead. */
+export type VideoViewerProps = Stable.VideoViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/video-viewer` instead. */
+export const VideoViewer: typeof Stable.VideoViewer = Stable.VideoViewer;

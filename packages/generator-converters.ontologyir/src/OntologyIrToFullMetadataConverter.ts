@@ -52,7 +52,9 @@ export interface IDataType {
 export interface IDiscoveredFunction {
   locator: { type: string; typescript?: { functionName: string } };
   inputs: Array<{ name: string; dataType: IDataType; required?: boolean }>;
-  output: { single: { dataType: IDataType } };
+  output:
+    | { type?: "single"; single: { dataType: IDataType } }
+    | { type: "void"; void?: Record<string, never> };
   customTypes: Record<string, unknown>;
   ontologyProvenance?: {
     editedLinks: Record<string, {}>;
@@ -270,6 +272,7 @@ export class OntologyIrToFullMetadataConverter {
       objectTypes,
       queryTypes: {},
       actionTypes,
+      actionTypesFullMetadata: {},
       ontology: {
         apiName: "ontology",
         rid: `ri.00000`,
@@ -486,11 +489,13 @@ export class OntologyIrToFullMetadataConverter {
           };
           return acc;
         }, {}),
-        output: convertDataType(
-          func.output.single.dataType,
-          func.customTypes,
-          interfaceRidToApiName,
-        ),
+        output: "single" in func.output
+          ? convertDataType(
+            func.output.single.dataType,
+            func.customTypes,
+            interfaceRidToApiName,
+          )
+          : { type: "void" },
         typeReferences: {},
       } satisfies Ontologies.QueryTypeV2;
     });

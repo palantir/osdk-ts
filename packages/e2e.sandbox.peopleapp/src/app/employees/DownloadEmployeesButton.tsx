@@ -2,7 +2,7 @@ import type { ObjectOrInterfaceDefinition, SimplePropertyDef } from "@osdk/api";
 import type {
   ObjectTableHandle,
   ObjectTableSnapshot,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 import type { RefObject } from "react";
 import React, { useCallback, useState } from "react";
 

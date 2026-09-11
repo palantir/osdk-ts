@@ -9,15 +9,15 @@ import type {
 import type {
   FormError,
   FormFieldDefinition,
-} from "@osdk/react-components/experimental/action-form";
-import { ActionForm } from "@osdk/react-components/experimental/action-form";
+} from "@osdk/react-components/action-form";
+import { ActionForm } from "@osdk/react-components/action-form";
 import type {
   FilterChangeEvent,
   FilterDefinitionUnion,
-} from "@osdk/react-components/experimental/filter-list";
-import { FilterList } from "@osdk/react-components/experimental/filter-list";
-import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/filter-list";
+import { FilterList } from "@osdk/react-components/filter-list";
+import type { ColumnDefinition } from "@osdk/react-components/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import React, { useCallback, useMemo, useState } from "react";
 
 import { Button } from "../../components/Button.js";

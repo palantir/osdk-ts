@@ -1,5 +1,21 @@
 # @osdk/create-app
 
+## 2.66.0
+
+### Minor Changes
+
+- 44fbc5d: Add React (Public) template for authless, public-facing applications. Select the React (Public) template from the framework prompt to scaffold an app that talks to Foundry through a public proxy without OAuth.
+
+### Patch Changes
+
+- @osdk/generator-utils@2.66.0
+
+## 2.65.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.65.0
+
 ## 2.64.0
 
 ### Minor Changes

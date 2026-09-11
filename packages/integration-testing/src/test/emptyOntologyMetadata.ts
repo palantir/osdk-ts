@@ -26,6 +26,7 @@ export const EMPTY_ONTOLOGY_METADATA: OntologyFullMetadata = {
   },
   objectTypes: {},
   actionTypes: {},
+  actionTypesFullMetadata: {},
   queryTypes: {},
   interfaceTypes: {},
   sharedPropertyTypes: {},

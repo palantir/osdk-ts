@@ -69,6 +69,51 @@ export interface IAnonymousCustomDataType extends IDataType {
   };
 }
 
+interface IUnionDataType extends IDataType {
+  type: "union";
+  union: { allowedTypes: IDataType[] };
+}
+
+interface IRangeDataType {
+  type: "integer" | "double" | "timestamp" | "date";
+}
+
+interface IBucketKeyDataType {
+  type:
+    | "double"
+    | "integer"
+    | "date"
+    | "timestamp"
+    | "range"
+    | "string"
+    | "boolean";
+  range?: IRangeDataType;
+}
+
+interface IBucketValueDataType {
+  type: "double" | "timestamp" | "date";
+}
+
+interface ISingleBucketDataType {
+  keyType: IBucketKeyDataType;
+  valueType: IBucketValueDataType;
+}
+
+interface ITwoDimensionalAggregationDataType extends IDataType {
+  type: "twoDimensionalAggregation";
+  twoDimensionalAggregation: { bucketType: ISingleBucketDataType };
+}
+
+interface IThreeDimensionalAggregationDataType extends IDataType {
+  type: "threeDimensionalAggregation";
+  threeDimensionalAggregation: {
+    nestedBucketType: {
+      keyType: IBucketKeyDataType;
+      subBucketType: ISingleBucketDataType;
+    };
+  };
+}
+
 function isInjectedRuntimeDataType(dataType: IDataType): boolean {
   return dataType.type === "client" || dataType.type === "durableContext";
 }
@@ -205,6 +250,38 @@ export function convertDataType(
         customTypes,
       );
     }
+    case "union": {
+      const unionData = dataType as IUnionDataType;
+      return {
+        type: "union",
+        unionTypes: unionData.union.allowedTypes.map(allowedType =>
+          convertDataType(
+            allowedType,
+            customTypes,
+            interfaceRidToApiName,
+          )
+        ),
+      };
+    }
+    case "twoDimensionalAggregation": {
+      const aggregationData = dataType as ITwoDimensionalAggregationDataType;
+      return {
+        type: "twoDimensionalAggregation",
+        ...convertSingleBucketType(
+          aggregationData.twoDimensionalAggregation.bucketType,
+        ),
+      };
+    }
+    case "threeDimensionalAggregation": {
+      const aggregationData = dataType as IThreeDimensionalAggregationDataType;
+      const { keyType, subBucketType } =
+        aggregationData.threeDimensionalAggregation.nestedBucketType;
+      return {
+        type: "threeDimensionalAggregation",
+        keyType: convertBucketKeyType(keyType),
+        valueType: convertSingleBucketType(subBucketType),
+      };
+    }
     case "object": {
       const objectData = dataType as IObjectDataType;
       return {
@@ -240,6 +317,49 @@ export function convertDataType(
     default:
       throw new Error(`Unsupported data type: ${dataType.type}`);
   }
+}
+
+function convertRangeType(
+  rangeType: IRangeDataType,
+): Ontologies.QueryAggregationRangeSubType {
+  switch (rangeType.type) {
+    case "integer":
+    case "double":
+    case "timestamp":
+    case "date":
+      return { type: rangeType.type };
+  }
+}
+
+function convertBucketKeyType(
+  keyType: IBucketKeyDataType,
+): Ontologies.QueryAggregationKeyType {
+  if (keyType.type === "range") {
+    if (keyType.range == null) {
+      throw new Error("Range bucket key is missing its range type");
+    }
+    return {
+      type: "range",
+      subType: convertRangeType(keyType.range),
+    };
+  }
+
+  return { type: keyType.type };
+}
+
+function convertBucketValueType(
+  valueType: IBucketValueDataType,
+): Ontologies.QueryAggregationValueType {
+  return { type: valueType.type };
+}
+
+function convertSingleBucketType(
+  bucketType: ISingleBucketDataType,
+): Ontologies.TwoDimensionalAggregation {
+  return {
+    keyType: convertBucketKeyType(bucketType.keyType),
+    valueType: convertBucketValueType(bucketType.valueType),
+  };
 }
 
 interface ICustomTypeShape {

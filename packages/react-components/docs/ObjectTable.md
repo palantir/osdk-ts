@@ -27,11 +27,11 @@ Before using ObjectTable, make sure you have completed the library setup describ
 ## Import
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import type {
   ColumnDefinition,
   EditFieldConfig,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 ```
 
 ## Basic Usage
@@ -46,7 +46,7 @@ The simplest way to use ObjectTable is with just an object type:
 
 ```typescript
 import { Office } from "@my/osdk";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 
 function OfficesPage() {
   return (
@@ -326,7 +326,7 @@ import { Employee } from "@my/osdk";
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
@@ -360,7 +360,7 @@ function EmployeesTable() {
 
 ```typescript
 import { Employee } from "@my/osdk";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 
 function EmployeesTable() {
   return (
@@ -376,7 +376,7 @@ function EmployeesTable() {
 
 ```typescript
 import { Employee } from "@my/osdk";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 
 function EmployeesTable() {
   return (
@@ -398,7 +398,7 @@ import { Employee } from "@my/osdk";
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
@@ -435,7 +435,7 @@ import { Employee } from "@my/osdk";
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
@@ -482,7 +482,7 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
 
 ```typescript
 import { Employee } from "@my/osdk";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 
 function EmployeesTable() {
   const renderCellContextMenu = (employee: Employee, cellValue: unknown) => (
@@ -519,7 +519,7 @@ function EmployeesTable() {
 
 ```typescript
 import { Employee } from "@my/osdk";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import { useRouter } from "next/router";
 
 function EmployeesTable() {
@@ -548,7 +548,7 @@ import { DerivedProperty } from "@osdk/client";
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 
 type RDPs = {
   managerName: string | undefined;
@@ -592,7 +592,7 @@ function EmployeesWithManagerTable() {
 
 ```typescript
 import { Employee } from "@my/osdk";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import { useState } from "react";
 
 function EmployeesTable() {
@@ -619,7 +619,7 @@ function EmployeesTable() {
 
 ```typescript
 import { Employee } from "@my/osdk";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import { useState } from "react";
 
 function EmployeesTable() {
@@ -697,7 +697,7 @@ import { Employee } from "@my/osdk";
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
@@ -738,7 +738,7 @@ import {
   type CellEditInfo,
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
@@ -878,7 +878,7 @@ import { Employee } from "@my/osdk";
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
@@ -910,7 +910,7 @@ import {
   ColumnConfigDialog,
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 import { useCallback, useMemo, useState } from "react";
 
 const initialColumnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -1038,7 +1038,7 @@ import { Employee, getEmployeeMetrics } from "@my/osdk";
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 
 // Define a type map for your function columns
 type EmployeeFunctionColumns = {
@@ -1210,7 +1210,7 @@ Use `getRowAttributes` to apply custom HTML attributes (typically `data-*` attri
 ```tsx
 import { Employee } from "@my/osdk";
 import type { Osdk } from "@osdk/api";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import { useCallback } from "react";
 
 function EmployeesTable() {
@@ -1310,7 +1310,7 @@ import type { Employee } from "@my/osdk";
 import {
   ObjectTable,
   type ObjectTableHandle,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/object-table";
 import { useRef } from "react";
 
 type RDPs = Record<string, never>;
@@ -1377,7 +1377,7 @@ npm install @tanstack/react-table
 >
 > Install a version that matches the one this package depends on (see `@tanstack/react-table` in `@osdk/react-components`'s `package.json`) — and dedupe so a single copy is resolved (e.g. a pnpm `overrides` / npm `overrides` / yarn `resolutions` entry if a transitive dependency pulls in another version).
 
-Available hooks (import from `@osdk/react-components/experimental/object-table`):
+Available hooks (import from `@osdk/react-components/object-table`):
 
 | Hook                                                           | Responsibility                                                                             |
 | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
@@ -1402,7 +1402,7 @@ import {
   useColumnDefs,
   useObjectTableData,
   useTableSorting,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 import {
   flexRender,
   getCoreRowModel,
@@ -1475,7 +1475,7 @@ import { Employee } from "@my/osdk";
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 
 type RDPs = {
   managerName: string | undefined;

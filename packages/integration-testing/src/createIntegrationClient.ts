@@ -25,9 +25,11 @@ import type {
 import type { Experiment } from "@osdk/api/unstable";
 import { createClient, type Client } from "@osdk/client";
 import { createMockClient } from "@osdk/unit-testing";
+import invariant from "tiny-invariant";
 import { fetch as undiciFetch, Agent } from "undici";
 
 import type { IntegrationClient, IntegrationClientConfig } from "./types.js";
+import { checkFoundryCliVersion } from "./utils/foundry-cli.js";
 
 /** The definition kinds accepted by {@link Client}'s call signatures. */
 type ClientArg =
@@ -39,6 +41,17 @@ type ClientArg =
   | Experiment<any>;
 
 export async function createIntegrationClient(
+  config: IntegrationClientConfig,
+): Promise<IntegrationClient> {
+  const foundryCli = await checkFoundryCliVersion();
+  invariant(
+    foundryCli.type !== "not-found",
+    "Foundry CLI must be installed before creating an integration client.",
+  );
+  return createIntegrationClientForRunningServer(config);
+}
+
+export async function createIntegrationClientForRunningServer(
   config: IntegrationClientConfig,
 ): Promise<IntegrationClient> {
   const { baseUrl, metadata, caCertPath } = config;
