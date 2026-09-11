@@ -32,3 +32,24 @@ export function describeInstruction(
       );
   }
 }
+
+/**
+ * The instruction with every property it references renamed by `rename`.
+ */
+export function mapPropertyNames(
+  instruction: InterfaceSchemaMigrationInstruction,
+  rename: (propertyApiName: string) => string,
+): InterfaceSchemaMigrationInstruction {
+  switch (instruction.type) {
+    case "addRequiredProperty":
+      return {
+        type: "addRequiredProperty",
+        property: rename(instruction.property),
+      };
+    default:
+      // TODO: add a never exhaustiveness check once there's more than one instruction type
+      throw new Error(
+        `Unknown schema migration instruction type: ${instruction.type}`,
+      );
+  }
+}
