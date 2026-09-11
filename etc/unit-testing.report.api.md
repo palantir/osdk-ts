@@ -65,9 +65,9 @@ export interface MockClient extends Client {
     	>(objectSet: ObjectSet<Q>, callback: ObjectSetStubCallback<Q, T>): StubBuilderFor<T>;
     	// Warning: (ae-forgotten-export) The symbol "QueryParamsFromDef" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "QueryReturnTypeFromDef" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
     whenQuery<Q extends QueryDefinition>(query: Q, params?: QueryParamsFromDef<Q>): QueryStubBuilder<QueryReturnTypeFromDef<Q>>;
+    	// Warning: (ae-forgotten-export) The symbol "QueryImplFromDef" needs to be exported by the entry point index.d.ts
+    whenQuery<Q extends QueryDefinition>(query: Q, impl: QueryImplFromDef<Q>): void;
 }
 
 // @public

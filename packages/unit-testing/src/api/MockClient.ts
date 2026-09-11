@@ -25,15 +25,19 @@ import type { Client } from "@osdk/client";
 import type { QueryStubBuilder, StubBuilderFor } from "./StubBuilders.js";
 import type { StubClient } from "./StubClient.js";
 
-type QueryReturnTypeFromDef<Q extends QueryDefinition> =
+export type QueryReturnTypeFromDef<Q extends QueryDefinition> =
   ReturnType<CompileTimeMetadata<Q>["signature"]> extends Promise<infer R>
     ? R
     : never;
 
-type QueryParamsFromDef<Q extends QueryDefinition> =
+export type QueryParamsFromDef<Q extends QueryDefinition> =
   Parameters<CompileTimeMetadata<Q>["signature"]> extends [infer P]
     ? P
     : undefined;
+
+export type QueryImplFromDef<Q extends QueryDefinition> = (
+  args: QueryParamsFromDef<Q>,
+) => QueryReturnTypeFromDef<Q> | Promise<QueryReturnTypeFromDef<Q>>;
 
 export type StubPatternCallback<T> = (client: StubClient) => T;
 
@@ -47,9 +51,22 @@ export interface MockClient extends Client {
     objectSet: ObjectSet<Q>,
     callback: ObjectSetStubCallback<Q, T>,
   ): StubBuilderFor<T>;
+  /**
+   * Registers a stub matched against `params`, to be completed with
+   * `.thenReturn()` / `.thenThrow()`.
+   */
   whenQuery<Q extends QueryDefinition>(
     query: Q,
     params?: QueryParamsFromDef<Q>,
   ): QueryStubBuilder<QueryReturnTypeFromDef<Q>>;
+  /**
+   * Registers a dynamic implementation, invoked with the caller's params to
+   * compute the result. May be async. Returns nothing: there is no result to
+   * stub.
+   */
+  whenQuery<Q extends QueryDefinition>(
+    query: Q,
+    impl: QueryImplFromDef<Q>,
+  ): void;
   clearStubs(): void;
 }
