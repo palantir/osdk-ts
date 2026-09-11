@@ -23,6 +23,7 @@ import type {
   FilterComponentType,
   FilterState,
   NumberRangeFilterState,
+  RelativeDateBound,
   SelectFilterState,
   ToggleFilterState,
 } from "../FilterListItemApi.js";
@@ -195,7 +196,13 @@ export function createNumberRangeState(
 export function createDateRangeState(
   minValue?: Date,
   maxValue?: Date,
-  options?: { includeNull?: boolean; isExcluding?: boolean },
+  options?: {
+    includeNull?: boolean;
+    isExcluding?: boolean;
+    isRelative?: boolean;
+    relativeMin?: RelativeDateBound;
+    relativeMax?: RelativeDateBound;
+  },
 ): DateRangeFilterState {
   return {
     type: "DATE_RANGE",
@@ -203,6 +210,9 @@ export function createDateRangeState(
     maxValue,
     includeNull: options?.includeNull,
     isExcluding: options?.isExcluding,
+    isRelative: options?.isRelative,
+    relativeMin: options?.relativeMin,
+    relativeMax: options?.relativeMax,
   };
 }
 

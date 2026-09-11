@@ -62,6 +62,9 @@ export type FilterDefinitionControls = Stable.FilterDefinitionControls;
 export type FilterState = Stable.FilterState;
 
 /** @deprecated Import from `@osdk/react-components/filter-list` instead. */
+export type RelativeDateBound = Stable.RelativeDateBound;
+
+/** @deprecated Import from `@osdk/react-components/filter-list` instead. */
 export type PropertyFilterDefinition<
   Q extends Api.ObjectTypeDefinition,
   K extends Api.PropertyKeys<Q> = Api.PropertyKeys<Q>,
