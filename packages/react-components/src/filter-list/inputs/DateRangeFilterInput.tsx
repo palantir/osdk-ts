@@ -55,6 +55,22 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     filterState?.type === "DATE_RANGE" ? filterState : undefined;
   const includeNull = filterState?.includeNull;
 
+  if (process.env.NODE_ENV !== "production") {
+    if (!enableRelativeMode && dateRangeState?.relativeState != null) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        "[FilterList] relativeState is set on a DATE_RANGE filter but enableRelativeMode is false. " +
+          "The relative state will be ignored.",
+      );
+    }
+  }
+
+  // Strip relativeState when enableRelativeMode is off to prevent
+  // invisible filtering from misconfigured seed state.
+  const effectiveState = enableRelativeMode
+    ? dateRangeState
+    : { ...dateRangeState, relativeState: undefined };
+
   const handleNullChange = useCallback(
     (includeNull: boolean) => {
       onFilterStateChanged({
@@ -204,13 +220,13 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
       <DateRangeHistogramInput
         valueCountPairs={valueCountPairs}
         isLoading={isLoading}
-        minValue={dateRangeState?.minValue}
-        maxValue={dateRangeState?.maxValue}
+        minValue={effectiveState?.minValue}
+        maxValue={effectiveState?.maxValue}
         onChange={handleRangeChange}
         formatDate={formatDate}
         clickToFilter={clickToFilter}
         enableRelativeMode={enableRelativeMode}
-        relativeState={dateRangeState?.relativeState}
+        relativeState={effectiveState?.relativeState}
         onToggleRelative={handleToggleRelative}
         onRelativeChange={handleRelativeChange}
       />
