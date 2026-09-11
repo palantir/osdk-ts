@@ -33,6 +33,10 @@ import type * as Ontologies from "@osdk/foundry.ontologies";
 
 import invariant from "tiny-invariant";
 import type { ApiName } from "./ApiName.js";
+import {
+  convertValueType,
+  type ResolvedValueType,
+} from "./convertValueType.js";
 import { toStructFieldRid } from "./ridUtils.js";
 
 export class OntologyBlockDataToFullMetadataConverter {
@@ -40,6 +44,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     blockData: OntologyBlockDataV2,
     importedTypes?: Ontologies.OntologyFullMetadata,
     transitiveImportedBlockData?: OntologyBlockDataV2,
+    valueTypes: readonly ResolvedValueType[] = [],
   ): Ontologies.OntologyFullMetadata {
     const objectTypeLookup = buildBlockDataObjectTypeLookup(
       blockData,
@@ -94,7 +99,11 @@ export class OntologyBlockDataToFullMetadataConverter {
         displayName: "ontology",
         description: "",
       },
-      valueTypes: {},
+      valueTypes: Object.fromEntries(
+        valueTypes.map(
+          valueType => [valueType.apiName, convertValueType(valueType)],
+        ),
+      ),
     };
   }
 
