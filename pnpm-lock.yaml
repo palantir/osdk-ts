@@ -13,35 +13,35 @@ catalogs:
       specifier: 0.17.0
       version: 0.17.0
     '@osdk/foundry':
-      specifier: 2.75.0
-      version: 2.75.0
+      specifier: 2.78.0
+      version: 2.78.0
     '@osdk/foundry.admin':
-      specifier: 2.75.0
-      version: 2.75.0
+      specifier: 2.78.0
+      version: 2.78.0
     '@osdk/foundry.core':
-      specifier: 2.75.0
-      version: 2.75.0
+      specifier: 2.78.0
+      version: 2.78.0
     '@osdk/foundry.datasets':
       specifier: ~2.5.0
       version: 2.5.0
     '@osdk/foundry.functions':
-      specifier: 2.75.0
-      version: 2.75.0
+      specifier: 2.78.0
+      version: 2.78.0
     '@osdk/foundry.geo':
-      specifier: 2.75.0
-      version: 2.75.0
+      specifier: 2.78.0
+      version: 2.78.0
     '@osdk/foundry.mediasets':
-      specifier: 2.75.0
-      version: 2.75.0
+      specifier: 2.78.0
+      version: 2.78.0
     '@osdk/foundry.ontologies':
-      specifier: 2.75.0
-      version: 2.75.0
+      specifier: 2.78.0
+      version: 2.78.0
     '@osdk/foundry.thirdpartyapplications':
-      specifier: 2.75.0
-      version: 2.75.0
+      specifier: 2.78.0
+      version: 2.78.0
     '@osdk/internal.foundry.ontologies':
-      specifier: 2.75.0
-      version: 2.75.0
+      specifier: 2.78.0
+      version: 2.78.0
 
 overrides:
   trim@0.0.1: 0.0.3
@@ -310,13 +310,13 @@ importers:
     dependencies:
       '@docusaurus/core':
         specifier: 3.4.0
-        version: 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+        version: 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       '@docusaurus/plugin-content-docs':
         specifier: 3.4.0
-        version: 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+        version: 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       '@docusaurus/preset-classic':
         specifier: 3.4.0
-        version: 3.4.0(@algolia/client-search@5.46.0)(@rspack/core@1.6.7)(@swc/core@1.7.39)(@types/react@18.3.24)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(typescript@5.8.3)
+        version: 3.4.0(@algolia/client-search@5.46.0)(@rspack/core@1.6.7)(@swc/core@1.7.39)(@types/react@18.3.24)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(typescript@5.5.4)
       '@mdx-js/react':
         specifier: ^3.0.0
         version: 3.1.1(@types/react@18.3.24)(react@18.3.1)
@@ -1887,7 +1887,7 @@ importers:
         version: link:../cli.common
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/generator':
         specifier: workspace:~
         version: link:../generator
@@ -1973,16 +1973,16 @@ importers:
         version: link:../client.unstable
       '@osdk/foundry.core':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/foundry.functions':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/foundry.mediasets':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/generator-converters':
         specifier: workspace:*
         version: link:../generator-converters
@@ -3259,7 +3259,7 @@ importers:
         version: link:../client
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: ^0.17.4
@@ -3296,7 +3296,7 @@ importers:
         version: link:../e2e.generated.catchall
       '@osdk/foundry':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/functions':
         specifier: workspace:~
         version: link:../functions
@@ -3849,25 +3849,25 @@ importers:
         version: link:../api
       '@osdk/foundry.admin':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/foundry.core':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/foundry.geo':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/foundry.mediasets':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/generator-converters':
         specifier: workspace:~
         version: link:../generator-converters
       '@osdk/internal.foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -3962,10 +3962,10 @@ importers:
         version: link:../client.unstable.tpsa
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/foundry.thirdpartyapplications':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/generator':
         specifier: workspace:*
         version: link:../generator
@@ -4084,7 +4084,7 @@ importers:
         version: link:../api
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/generator-converters':
         specifier: workspace:~
         version: link:../generator-converters
@@ -4133,7 +4133,7 @@ importers:
         version: link:../api
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
@@ -4158,7 +4158,7 @@ importers:
         version: link:../client.unstable
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       consola:
         specifier: ^3.4.2
         version: 3.4.2
@@ -4192,7 +4192,7 @@ importers:
         version: link:../client.unstable
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/generator':
         specifier: workspace:~
         version: link:../generator
@@ -4260,7 +4260,7 @@ importers:
     dependencies:
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/generator-converters.preview':
         specifier: workspace:~
         version: link:../generator-converters.preview
@@ -4410,7 +4410,7 @@ importers:
         version: link:../client.unstable
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/generator-converters.ontologyir':
         specifier: workspace:~
         version: link:../generator-converters.ontologyir
@@ -4459,7 +4459,7 @@ importers:
         version: link:../client.unstable
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/maker':
         specifier: workspace:~
         version: link:../maker
@@ -4730,10 +4730,10 @@ importers:
         version: link:../client.test.ontology
       '@osdk/foundry.admin':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/foundry.core':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -5121,7 +5121,7 @@ importers:
     dependencies:
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/seed-helpers':
         specifier: workspace:~
         version: link:../seed-helpers
@@ -5173,7 +5173,7 @@ importers:
         version: link:../client
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       consola:
         specifier: ^3.4.2
         version: 3.4.2
@@ -5291,19 +5291,19 @@ importers:
         version: link:../api
       '@osdk/foundry.core':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/foundry.geo':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/generator-converters':
         specifier: workspace:~
         version: link:../generator-converters
       '@osdk/internal.foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -5653,7 +5653,7 @@ importers:
         version: link:../client.test.ontology
       '@osdk/foundry.admin':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/functions':
         specifier: workspace:~
         version: link:../functions
@@ -5751,7 +5751,7 @@ importers:
         version: link:../faux
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
-        version: 2.75.0
+        version: 2.78.0
       '@osdk/generator-converters.ontologyir':
         specifier: workspace:*
         version: link:../generator-converters.ontologyir
@@ -8359,7 +8359,7 @@ packages:
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
-    engines: {'0': node >=0.10.0}
+    engines: {node: '>=0.10.0'}
 
   '@expo/cli@0.22.26':
     resolution: {integrity: sha512-I689wc8Fn/AX7aUGiwrh3HnssiORMJtR2fpksX+JIe8Cj/EDleblYMSwRPd0025wrwOV9UN1KM/RuEt/QjCS3Q==}
@@ -9019,35 +9019,35 @@ packages:
   '@osdk/docs-spec-sdk@0.17.0':
     resolution: {integrity: sha512-uiC2wfUf3i2tQ9wQlcgwLOxHObdjxfwwvy4X04N0tZnpnXEIn7zIIa7WJqpcNUMH3g07tJLEu/wZNdUgxCnS2Q==}
 
-  '@osdk/foundry.admin@2.73.0':
-    resolution: {integrity: sha512-R8YvY1W4m0XtxWFPzTTbK9F9AGwXGw9/AKDC/LYwIWSMuFNhT2KL8wLA67MURIWxLniXt7vrnihwUoDe0O+p8g==}
-
   '@osdk/foundry.admin@2.75.0':
     resolution: {integrity: sha512-gpTVv25I0Y4DJ5O+pkvD6KXnyAN+IUKpapymCWpk4TDF5vaz4aIlCfOKdjivFYm2U6xGxGc/OfKkjhnCrGX6rw==}
 
-  '@osdk/foundry.aipagents@2.73.0':
-    resolution: {integrity: sha512-05MYhhNsvmtSC2jFLYPMNkYaLHhZ2aDmOeQOumI3w6i5ZqwVT7uDrt5lPOlmfjDhFEdvxn2xa89Ihgwi0ZYbvw==}
+  '@osdk/foundry.admin@2.78.0':
+    resolution: {integrity: sha512-Q3aTak4xwySOdEjYgdOrP5/vc4WQ9pVPipHYUt4FZzJyo7dGH44ffz2xTQyzQbxJEgGTFG2/lYaeo1DfjgTtGQ==}
 
   '@osdk/foundry.aipagents@2.75.0':
     resolution: {integrity: sha512-tGJPgY3zA+9n4O6eLk4105Mx1e6rnSmHciFFtc16DnXyGK4vJMOnEu0xjtx9Kz45x0ND5jL1KNJhYRsQ4qFNvg==}
 
-  '@osdk/foundry.audit@2.73.0':
-    resolution: {integrity: sha512-IKXpZcNqeIwZjj3y9BBe1VgwHMd9eic9ywTmajP4i1CdumXhFGZpqaNCjMYWvMZB57HdM/16OtYr05XLcDO9eg==}
+  '@osdk/foundry.aipagents@2.78.0':
+    resolution: {integrity: sha512-sAVNISKi5sTVGcs73gO/DEhG/MAVhDB1avfecgJNdmn2jLqXcHdM4TdzSnRSNtyrPTngerJIz416n+6HtCV2VQ==}
 
   '@osdk/foundry.audit@2.75.0':
     resolution: {integrity: sha512-xGBUnMAiSbO32cC8/e7YxSEVmRImT9Hi0WjOCsu1TvwDvj9goPrLktmTlCyGcWYpJZ8i8/+mKs/IpOY4F14Ahg==}
 
-  '@osdk/foundry.checkpoints@2.73.0':
-    resolution: {integrity: sha512-mzgwW3MqP0LyF+kwbTQUZUiEm7q6kUmwy+Zecyom/ORvUdvNEKYTtbWUQ3fr6QGdBYpNgsEkg1I+uP87Pvxj0g==}
+  '@osdk/foundry.audit@2.78.0':
+    resolution: {integrity: sha512-MGB+Dwg7FxekmXvdLel1SwDu3iyOmWbBNDdu/DyF4jb1yRHPQWgs/yS9CrS/593K5a2RPb0S0zA1CvtG+DVpSA==}
 
   '@osdk/foundry.checkpoints@2.75.0':
     resolution: {integrity: sha512-32igKvro8f/5WWak1m87dFZlX+8uLNkbZyUVDviKOTh5fwwFRf5HaRFMNqGHSTbSBoQ/YtGX+0THH7a6PRCYtQ==}
 
-  '@osdk/foundry.connectivity@2.73.0':
-    resolution: {integrity: sha512-6t537UwFIzkOWbKjzRrdZZr/1rb4PYgDrKpiQo0C3jCswnpeO0g77QqCpGbNN0Fjtz5YT2mXR4tVSsUM+P/3Ag==}
+  '@osdk/foundry.checkpoints@2.78.0':
+    resolution: {integrity: sha512-i6igcgKJqDAP1yagqDdetF7ud5YiJP1UKPx+V0QfddmRxtjW1ZaKNpLep/kYtN6QO8p6bytaRMPT1Dc2YC5xXw==}
 
   '@osdk/foundry.connectivity@2.75.0':
     resolution: {integrity: sha512-CYsVGQEtLo/Spp2y/lGHJzSS81vKmXPCilulJ8zfTrl5CRGCeP0Fs5jsfLZe3FEVzPWOyTBKZX6QMuwABbmf7A==}
+
+  '@osdk/foundry.connectivity@2.78.0':
+    resolution: {integrity: sha512-XAqd1ITQAc0LzwFYlEXFayb223ju8Gsm3URSTSDQckTIXdBrj871oz2XR++i2sFE1Z1Pu69sMbXiopGxfl0Jsw==}
 
   '@osdk/foundry.core@2.44.0':
     resolution: {integrity: sha512-fdDAm2pdf67DWo32sXBcfwujAxb7YOKI4iUQ99C1JW92SQRqNBbQZQlM10RJYQ7LMq6S9P1Gz6Gx7KRV7I5Zpw==}
@@ -9055,41 +9055,41 @@ packages:
   '@osdk/foundry.core@2.5.0':
     resolution: {integrity: sha512-LV+m6/3Y+Q0lN16PAwQvoWtutY0xXdntuwOQjMR2ZqdLRlZOK2KSvfwNZnX4q8EKuvF1mJC8iaTtWh3lChpU1Q==}
 
-  '@osdk/foundry.core@2.73.0':
-    resolution: {integrity: sha512-wqgDfR+CnuuxeZc1CXcH2cfghkqA0jGOh2Wf7V363GK0kRb1QM+xoGmfbCB4Q9ebc8FEfSrD0k/r1PsFLyxDbw==}
-
   '@osdk/foundry.core@2.75.0':
     resolution: {integrity: sha512-I1Vs037q7q03gM0Gvi3lIuqPrmL0OiBCSA70aLDbTBChKIc4/cS8ehT+ovHfU/BMIuqoXhn3Wzb8yTiQS+esAA==}
 
-  '@osdk/foundry.datahealth@2.73.0':
-    resolution: {integrity: sha512-CAhWjDBh1N4cCVdzgIIoG7h43LDldvZwmpetWAVnCLpmHmkbIk062xkZMPeqi2F58l32EG4E2Z8YhfYnrbb0cg==}
+  '@osdk/foundry.core@2.78.0':
+    resolution: {integrity: sha512-kLIAjSj1NBDmmXlr1rSRxPTkhiEdVHmWFqopPBR5JmASU4/VqLSHRMmUuz8UADE9rerfvB/7jSmTcgcwXHcoag==}
 
   '@osdk/foundry.datahealth@2.75.0':
     resolution: {integrity: sha512-x6UF5065V7fKmlPQGfNDu++P7Db8H1vOy3Xk6zwtt6ewzkMXQXy9xu82JL6FpPJ5KeGb+6sG3isARFCn4t7FhA==}
 
+  '@osdk/foundry.datahealth@2.78.0':
+    resolution: {integrity: sha512-x4Ej4PIgWYgoWdw71JWap0lBnenM8HTLk7BYpIt+oGdqRXpfQ9edmDWY7YRiVPK+85DeR8KddLMEgGGg5YjDAg==}
+
   '@osdk/foundry.datasets@2.5.0':
     resolution: {integrity: sha512-W82xleLQgQFUTVnAQS54n26xUFEALayotl1f3LGeRLN6r+2G1dNp+UgRU7/IHc/xzOqgulEOGwwr6ENFcsNP2A==}
-
-  '@osdk/foundry.datasets@2.73.0':
-    resolution: {integrity: sha512-dCtezCUDmkDb/friCTgkHa14zTH2z5q0XBiPvSYWXbVzBS0SoWfGxnDxrWELhoxzKdT3eTOARh+E1kgK816KUg==}
 
   '@osdk/foundry.datasets@2.75.0':
     resolution: {integrity: sha512-wYaZmabfbSubDZfYLbtTjjU+f8wVDUPOVubo1xeMElXyjpjBxETtLRJwVqMEllmtNDR/O3fBe2GYvPciE7MITg==}
 
+  '@osdk/foundry.datasets@2.78.0':
+    resolution: {integrity: sha512-u097hymumJCT5mLM5yfAUQKVR1lmzcBmsWI7ANMQrFxfQZrkQDfH3JGklipivmwblPqyuOBcDkQb4sCOEeIToA==}
+
   '@osdk/foundry.filesystem@2.5.0':
     resolution: {integrity: sha512-SJKZSfBc7CroyoIVW3D2SpVyaCCnhv8onzIwHcJWOnufFgSbQ3kqyWoqNiStGlymmnoSbniK3rfUFFYeUbxhDQ==}
-
-  '@osdk/foundry.filesystem@2.73.0':
-    resolution: {integrity: sha512-bGm6UtfiA0KlxZbP5gdZ70HtfMZ5VcJtabnfoCxTorA1zX4YPP0WOyTJ+J/e19JF1IUaSLgw07ea2ZH+uv2rCw==}
 
   '@osdk/foundry.filesystem@2.75.0':
     resolution: {integrity: sha512-IFctl2hzaBFm/mAHJNNL9UAcXXo4vwxlzW+3GEHstrgMef3zvcn7UIFBEgXmLhvCLoVzwAlySuce+Xhnvb6xpg==}
 
-  '@osdk/foundry.functions@2.73.0':
-    resolution: {integrity: sha512-gp8Tk4mgQAYp5uW0vNNq9V/ICTog55iqJhGddssSuu1wAwTQs62FbVXOeqSI1p4qMfAxsdWuQSJ+3uYZCq6Jpg==}
+  '@osdk/foundry.filesystem@2.78.0':
+    resolution: {integrity: sha512-gty3sOrMA7h3SsgsBwsYoq9fHSBAxod0/jF3AHNphdhE0JJChafKbGrd+ntvS3wLHR0fsVR+DYqCtwzSwZB0PQ==}
 
   '@osdk/foundry.functions@2.75.0':
     resolution: {integrity: sha512-WNLVx+uCVmAVCiUkbQwln6rijrW7S3Uae8IOd0nJk8lDJZWu2wxpYbwJhvDKmi6YKZEpEoEVijm8ikx5oL2eMw==}
+
+  '@osdk/foundry.functions@2.78.0':
+    resolution: {integrity: sha512-9oLsBoOI9mFv347CjbMDxvTGgx5NvfTymPOyA50uksWYdcaan2DUC45z5gxK40azjdI/oVZT9WTLzw12jK6lFg==}
 
   '@osdk/foundry.geo@2.44.0':
     resolution: {integrity: sha512-eXiBR2YAesPJe5amQy6G/pz0i4kmgJXiCAocMSYsgVKm/8kuMaqDUn5UJIFYo7EdjLVJueiMAFyCdN0wpK3SZA==}
@@ -9097,107 +9097,107 @@ packages:
   '@osdk/foundry.geo@2.5.0':
     resolution: {integrity: sha512-kL615eqHvn1MkP0le2r6vx/ub+lit5bKdmoWNRELMqi9s2BlLuoKAQW5H9YDQPqhHuJDjrBJAWiviOin9mUKqw==}
 
-  '@osdk/foundry.geo@2.73.0':
-    resolution: {integrity: sha512-map1LI7ic4s93u16mian0hj1QTads3M/nEa+sgJBh2u6rAdal56hK3YKblgvc9NvE7Bg5urAKIohly+f5RAC6g==}
-
   '@osdk/foundry.geo@2.75.0':
     resolution: {integrity: sha512-iLAd0ZAFMujM77MAMGO/AvkIgDuGVT15huDX81Lw56UeLOwZyVsrL/KX0v8LTsfgnCXRaoYHwDJ4AGNmpSkARg==}
 
-  '@osdk/foundry.geojson@2.73.0':
-    resolution: {integrity: sha512-huWeBypQ3H4RpkPiuhw7mX5kCaDb3KZupUi4IQmb0T1U6Shv+GZsT590lRLqFOoffXvlTXS221vU47hbMG46BA==}
+  '@osdk/foundry.geo@2.78.0':
+    resolution: {integrity: sha512-XHPpLotKBTGeSJpfEIt6l+6AonnrxdKDkGHVXURVHVVsNO02Kyjxpz8eMLSN+vsxWN3+NyLtOwEJTWpmTc+zJA==}
 
   '@osdk/foundry.geojson@2.75.0':
     resolution: {integrity: sha512-Uf4pXFSNwoGhgfHMD5+0OsarG3v4Fd7p94vEH23vL7Oa+u44kKJmRzZLoQQ23K0ySu5lCXy8HmqFcxxAQ9ADbw==}
 
-  '@osdk/foundry.languagemodels@2.73.0':
-    resolution: {integrity: sha512-HPOQSmfrzMPUS4M0fWr5lH9pT1/fXhRM0e2IpkcmT/gK/48UibK0sp9jl2ZXuw9pjqNg7YP/rPMU6vGx9TyBqA==}
+  '@osdk/foundry.geojson@2.78.0':
+    resolution: {integrity: sha512-orNJEXRJsS03KY7Un+gj7lQvKHcihvfMkAiwCwA2L/i23uSZ2TPY2eCdfS0bJlcRicks1zMMIM8u2+d79157hg==}
 
   '@osdk/foundry.languagemodels@2.75.0':
     resolution: {integrity: sha512-tz0vi/SVuORFZHg42dm43+GlLeT2ZA3WCFGS79sNytGlQ8mlNx0gyMJbS/RZu/MJHtcbL282udH6Qxplu+MeiQ==}
 
+  '@osdk/foundry.languagemodels@2.78.0':
+    resolution: {integrity: sha512-jpfIse4usNbVtwQlzmPOX3ELX8/W/MVQHB72wAHb+pylFNGgkVfBno/Xgq+PbPAKUAYlzcXrElfnV+3Bx2W2ug==}
+
   '@osdk/foundry.mediasets@2.44.0':
     resolution: {integrity: sha512-l378lxKUdIMmb1txFs/hOKyPO3bc10OWU4BvaP/LMZjXLbUZPNI/DYAmKrzKTeSMGBnZ2luhqEyfPfZYMGmrhw==}
-
-  '@osdk/foundry.mediasets@2.73.0':
-    resolution: {integrity: sha512-ztLsK3QQsSvnkUkzMApZLsf8h38Q4fNFY9pS2Bap/feMHx4vsi+SxMRdcZSgJ9DYuAwNWfYsPcgf7aZNU61C1Q==}
 
   '@osdk/foundry.mediasets@2.75.0':
     resolution: {integrity: sha512-1kZqBwiz8r7ETkNLkEfwUfovVEl7/B/DWK6j3TdGJ4eGLXVwcV1rGR2oAmX/gl3pDRlnjqbGEy3GRHNiSwz9/w==}
 
-  '@osdk/foundry.models@2.73.0':
-    resolution: {integrity: sha512-q69O4yr7sJNTo0UCHMAkHgwEa+QKPuqsahF9tCGXVNcYPm8rFxznuP/bjMbwVFmfOJfUR5M3opvwo+qnWSg0fg==}
+  '@osdk/foundry.mediasets@2.78.0':
+    resolution: {integrity: sha512-AV8PFEkFozbzt8RXGAtY+QYiBd6mflOo/6TJIViCqxifnZAMOSfornMO5ZWgeym12hO+HSdSqq0HSRqZTpuX6Q==}
 
   '@osdk/foundry.models@2.75.0':
     resolution: {integrity: sha512-wM3G+KQabbkvL+Vu64ZjOXlfXfFFBTR71d3ck9ww6nUnDGJypAmMkOA15VN12Ag5/RyysguKt/W6BbyDTQKKXg==}
 
-  '@osdk/foundry.notepad@2.73.0':
-    resolution: {integrity: sha512-+M4/sTtdKxOfNS3tAPZougw8QFCwW1p7dHztpwYX9dGFdM/he4SzQtuZFv3EgJdsAa+H/PNnuKaMAvgE0MY2bA==}
+  '@osdk/foundry.models@2.78.0':
+    resolution: {integrity: sha512-089iDo0BK6yRIvrowjRKNQ1nDaiZFqeihdd4Keqk93vKAJm/ytMc6OLBxfwNcxPAiB4liOtC2KIqJ+Kpz9CEIw==}
 
   '@osdk/foundry.notepad@2.75.0':
     resolution: {integrity: sha512-SWSYOaDbbCpOzQFDxLSD3fM4qYU+J7hElE8eX01Ters0DJLkVJ0uOv8rCfufjJrSJ/07ox4lZDrfG0SxyxSa+Q==}
 
+  '@osdk/foundry.notepad@2.78.0':
+    resolution: {integrity: sha512-N6k6aZSwwKBQJA9oSkzV94AuLLNIrXVeN5fISY547E5uMQ2fSjPm0gTc9QMiKCfrjuUHPdP2IlocS4h2t/jJfg==}
+
   '@osdk/foundry.ontologies@2.44.0':
     resolution: {integrity: sha512-A74NrG3tDiLNC5VW+plchrrMDf5gLekavrdyVnmVqQAkcBc6Z8/Jl+92rJbQ/v6TJnXWpCwuCkc+QQXaYlhHKQ==}
-
-  '@osdk/foundry.ontologies@2.73.0':
-    resolution: {integrity: sha512-eoViI7iiR1PRRpS88/rIkYAIbVMKnVCHDa7TFYtxc6lQbEGVazkHL5OZ8eqnX4n5fPK/KIAk1mGgi4wUVOhHcA==}
 
   '@osdk/foundry.ontologies@2.75.0':
     resolution: {integrity: sha512-5FLjpxBLez0wFBqEf0iH3lgxFpWhM+CSNZbfAhWy7//3Pse+tsnWaRGh3beOZUAt90FGC0mxPowTl5FD+JIyLQ==}
 
-  '@osdk/foundry.operations@2.73.0':
-    resolution: {integrity: sha512-B99kU3E/l1eIFcEDzbtsFSIAHAAeTI7rkAwkzCeGqDm61zzw4k87fFzlRrFbPScbmuHngHvA8QMFfS9JK5qpFg==}
+  '@osdk/foundry.ontologies@2.78.0':
+    resolution: {integrity: sha512-lt06HHowDsEdq6dNEAVhE2B0QJaVsDAKmL1Hb6dZpveDDaqNvpiwCyhCaP6ogMA8l5vJTLGEJF86WJBHaRa+Bg==}
 
   '@osdk/foundry.operations@2.75.0':
     resolution: {integrity: sha512-gBpIjw5O3GDCPqwzAPfVmN0rmJ/4w/niRrozVLo24dYI9LonPL4QtDdbasqFxsRqldcICujP/ObbC5mN382ncA==}
 
-  '@osdk/foundry.orchestration@2.73.0':
-    resolution: {integrity: sha512-a91+YtbyLsnWMOG2EfcastBxf9kF6ZFseth/EuC99P1A1/TTS0ovkGXlK6HNQFHF+R8xK8gYMdtfY3zgjoWeBQ==}
+  '@osdk/foundry.operations@2.78.0':
+    resolution: {integrity: sha512-PHd5uvtQoeHXeeBSNF0bi5nfmniyMx+uNOA9+6dyuSxO+SCgEAS7ny+uusScDsBEhf+VU3owGtR2aGMj/2kZRA==}
 
   '@osdk/foundry.orchestration@2.75.0':
     resolution: {integrity: sha512-feW4kGEO6pu/0iCsHAOv6MPwxaItnLnO5swccB3j1SIOz38yFKSBG2F4YlWk01E3CIUgZgrMPZB53Ggh8qnsyg==}
 
-  '@osdk/foundry.pack@2.73.0':
-    resolution: {integrity: sha512-CPt0RX8ai/UQc8GqPV8AzqtxfmG66Yo84KUZGWpvsQRAfcvJ70X/jDD1FncRqLCetlY1q3tK8j11/5SRt9v1eQ==}
+  '@osdk/foundry.orchestration@2.78.0':
+    resolution: {integrity: sha512-3iavuFrMYUOugA7xLrFc5PCU9yiNr0JWMPzGn9z7V4dLLEU7bkNM307soKuXC8t2U77m/m2eOavkS7IkTkVkXg==}
 
   '@osdk/foundry.pack@2.75.0':
     resolution: {integrity: sha512-bGFRqUrgWzKJZCZ6+UEX+6vUV9RcjphIJlhfFN3q5e+Sn4tY0Fz3qGt4KXUs1/1JZfx5VpbSmGNXo4GyHPrtqA==}
 
-  '@osdk/foundry.publicapis@2.73.0':
-    resolution: {integrity: sha512-SjMCayouoNFVeHFcMrFsmts/17ADZ59t1TWzJBn6ZKTlwJ6p66ozdnWQC14YY/+3TMXKZEckHuoLp6wYndDdvQ==}
+  '@osdk/foundry.pack@2.78.0':
+    resolution: {integrity: sha512-DrPYDpZoGmW8uT9ClhEGUG3hSHaqfIz+pdT+C+hXUHRzUVVdXSYQZW6rrnYocQDVC02fZNOYjYIztfAEEA6XZQ==}
 
   '@osdk/foundry.publicapis@2.75.0':
     resolution: {integrity: sha512-aud3UK4hC5JKTAnxJH/Vkf4/CH9JbB+feyWbMMEvWLt82+tX7aatFbbm5Zr+4bMf7v2dJZHU55qX8TWhtwwWZg==}
 
-  '@osdk/foundry.sqlqueries@2.73.0':
-    resolution: {integrity: sha512-xFI95P5gF0nM/3VVtL5kDkczaLeDnA/KmvZ4hjQLrjZRqgdgnXvzmA1KEe1aDWQyDSVezSlKp77BYo8SVeMFWw==}
+  '@osdk/foundry.publicapis@2.78.0':
+    resolution: {integrity: sha512-1KAovCT074o8ZDn3Zem0PAYTjmU6Lr5wnekdAqI5j7DvnCraODBpWzunsKttgoutTH7F99xZ+vl/0xihaJRK0g==}
 
   '@osdk/foundry.sqlqueries@2.75.0':
     resolution: {integrity: sha512-gk3wOzxJj5QJMs9gdpf1hV0yd8gnOrDRlPLd5xdU1wASbjwkBmiq8OVzR2+eSU5m29Qdfr8CopCVU7o6LWwRLQ==}
 
-  '@osdk/foundry.streams@2.73.0':
-    resolution: {integrity: sha512-gWqAkt2ydzKdkP4bSQR9U1RIfArwmi8bxYQolVEuF7vQ6s5ufqp5H04URoKHspBppgc2+vgmq+qZj5QJC7GMUw==}
+  '@osdk/foundry.sqlqueries@2.78.0':
+    resolution: {integrity: sha512-SVhOn2ybPOMnJMcaPl6crLRVLYZz5yRuyc9kuhsApJqFOibDLiiMfOoPVhwPb9tydMjSfBA3s1Mft4xxPkfP3w==}
 
   '@osdk/foundry.streams@2.75.0':
     resolution: {integrity: sha512-eGH8AQsb2A09/aONRcG2aSFYONJfgjO9cZNF2fKVxdTTTPwTsAJG5QxDY/0LNrr180IaMysbeu9+hh9r/wDyIg==}
 
-  '@osdk/foundry.thirdpartyapplications@2.73.0':
-    resolution: {integrity: sha512-fLb16QgG17gIWFI8ZdQiyUEfZXQN2Kpm/IMEcFOFmUI+s9FjP9lF2UWfljYRFUgdj5STL07LRHPy9DgKDRtEGg==}
+  '@osdk/foundry.streams@2.78.0':
+    resolution: {integrity: sha512-WR+b2jEflC1dVzQbNcQ2PTCAPRtQB4eZiNPUZ6ljIGXS4h0zUAcy/9bjY96x0TNAC3YkJP5I9At1PjlsI6CYyA==}
 
   '@osdk/foundry.thirdpartyapplications@2.75.0':
     resolution: {integrity: sha512-gKnvhloG31GX3UomVjCwEQ89/LLdl18ELWf5+Pof7/RAiTmfWq0IM06EjJD7Rngc6O1bnIu7F9wNPfa0rL2nvw==}
 
-  '@osdk/foundry.widgets@2.73.0':
-    resolution: {integrity: sha512-tGhg4+F5/0Fs8leKKkB4jGr9z5jZ777yu1tVx/9tJByMYQG7ghkeqG6TJDEYWIBYwUVlwg1/geX0dOrsdWthVA==}
+  '@osdk/foundry.thirdpartyapplications@2.78.0':
+    resolution: {integrity: sha512-Xl+Zaylyr03fyBIPm1mKY8UW+TaGTP7EB32heIOYETPpXji55S1FYX/osmI9YnwROPd/yGQbepoJqacIqw+GOQ==}
 
   '@osdk/foundry.widgets@2.75.0':
     resolution: {integrity: sha512-djsdxCHpPGUwwfzEVGVK+UeU46ieP2D/pLdgPuCALt9JZjOiODwTPft+tNWR1+23Nmr2DEIzUFjxyocg8IqgKw==}
 
-  '@osdk/foundry@2.73.0':
-    resolution: {integrity: sha512-RzZ4mjo66llOQasGnOyHIMNIQAU0imyiWhpGrnMLLQQFyCB1sbSc5wWk1mLDYeda7rHKXGrjqtzdVCfwZO3w9w==}
+  '@osdk/foundry.widgets@2.78.0':
+    resolution: {integrity: sha512-OhAzPPlP2ZvkcnBReVVOG/1ixfx/G1sffhhhveB3oGKh/aHl6s2rG9q3XpvdZNJIOr1PTjRtH/9gKnuHrj7IWw==}
 
   '@osdk/foundry@2.75.0':
     resolution: {integrity: sha512-ZsWmrQxPddnD5j0y+pjshsAoMsPqkClEooWynFjnpAsXlX/LtXpn3Wr8gWe20WA/senvcd6U6XtAyxQzaDhDqA==}
+
+  '@osdk/foundry@2.78.0':
+    resolution: {integrity: sha512-w/hOhfdFwnqHCnOk9lhhBOYNdFyK1s9P+3ivMhTH32DNMacdPwAacWcckUKLIlPFC1bspGyoMCHhDU/wcKaSCA==}
 
   '@osdk/gateway@2.4.2':
     resolution: {integrity: sha512-A2WmRHxzCiZKyviYKAQEq9KZwL5DEkhXADLt36lMn2tGixO5qOTU7rLsE+OAA4va+evmd44TfzipJs8ieffP6g==}
@@ -9205,17 +9205,17 @@ packages:
   '@osdk/generator-converters@2.7.5':
     resolution: {integrity: sha512-dtvqVN3ufdwgsz2BlQwoTpCHuftnAQMbjAqDA/cT1wnW5wCWeo8ctxhl0ArCfM4jbGhiz9OcspHajuDC07IStw==}
 
-  '@osdk/internal.foundry.core@2.75.0':
-    resolution: {integrity: sha512-sNUGtMzdii2WWeLi/lhPHfw1qrBlJo3w6esUqN4PDSGF1IfHpKAFjaMj9dTeDWP80IK5gNxGxNEXCgmr/AwdbA==}
+  '@osdk/internal.foundry.core@2.78.0':
+    resolution: {integrity: sha512-K1OqS5EAXbAklXEwECGAj4gb34Vb+rNExZ3SyaLBncc95HV4LlDIABTNvzJCbJLY4UTvTi7kCB6YgnAJ5uaRSQ==}
 
-  '@osdk/internal.foundry.datasets@2.75.0':
-    resolution: {integrity: sha512-ePK+aGEiKC3cqrn6nk8rPNfqQhVbPgp928AaRRkKlqScqlzJQoNWuUBYGcCoWwD4DeGM9yBLY+7vo4x3BT9/RQ==}
+  '@osdk/internal.foundry.datasets@2.78.0':
+    resolution: {integrity: sha512-fU2V8UpBLLWVwHFE83EqEZRlgLtk+Ilp9NGVvHDRDQc9NV1GO6+K6eKjlqVEkvr7/lPJzdQSNxkVXZjSdhM41w==}
 
-  '@osdk/internal.foundry.geo@2.75.0':
-    resolution: {integrity: sha512-FYTtyjNBqKjvcmtqPiMJgHKgsaHdayGm/0I0qTPa1ObdOt+x+k4Raisc4PmR/Zk/SlPnHFc2s+bBBmsBVU+Ocg==}
+  '@osdk/internal.foundry.geo@2.78.0':
+    resolution: {integrity: sha512-E07wutxRjjNq4XUA5ud3YEaM1Nc1M5HRzABUyTC505cIzS9rajX67gCFAbZ5tg5qGHjBILat2w74vZt4zUWUXg==}
 
-  '@osdk/internal.foundry.ontologies@2.75.0':
-    resolution: {integrity: sha512-H6YH/excjt6vwdxWxV5ajyEQ405BWJjqBd36jY9dtO+umYdieRZOyglJtALywaBhk13j5KyrT+Q4SiqHA8EDJA==}
+  '@osdk/internal.foundry.ontologies@2.78.0':
+    resolution: {integrity: sha512-KnBTBfXX/DzxoyJpyJtfGpFpM4t7OtPDo6DtuLJWpqJA/mcnrWzE83LUCmC06Rjw0S4bK7qREQsf4Sd8Zbmppg==}
 
   '@osdk/legacy-client@2.5.6':
     resolution: {integrity: sha512-QPeCcuqCv+s6toIxWMRArKJx35bzvcpoKAqsQ6YYiFEiGn43vLoQQGbeMlnqcGYfdbljyzeOoDxZtgVIn6a8HA==}
@@ -9255,9 +9255,6 @@ packages:
 
   '@osdk/shared.net.platformapi@1.5.0':
     resolution: {integrity: sha512-G/lmUsKPrR6mmfLUzdgoAWLkxNokBv9QV1CftmpPq9XohCaKaTyP2/xbR9wBberebQlpAU35bQL6vgPajTHhWg==}
-
-  '@osdk/shared.net.platformapi@1.7.0':
-    resolution: {integrity: sha512-11pbEVkQ5fbNcYOXfRDcVcbu5UVAHYp612a0WzGwUDV7IoHo5P4vFH8HtzvzfElyejrvXfO/MJHHb5WXbnk2sw==}
 
   '@osdk/shared.net.platformapi@1.8.0':
     resolution: {integrity: sha512-u9kqyKxRpffVSiJOo7O7pFQbL6JlbcbOM4b6Gpvjt2WRlTgyX+K/Ssr399xu2iSTPOC/7QPygUGyiSHzVApAEA==}
@@ -14697,6 +14694,7 @@ packages:
   eslint@9.35.0:
     resolution: {integrity: sha512-QePbBFMJFjgmlE+cXAlbHZbHpdFVS2E/6vzCy7aKlebddvl1vadiC4JFV5u/wqTkNUwEV8WrQi257jf5f06hrg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -24109,7 +24107,7 @@ snapshots:
     transitivePeerDependencies:
       - '@algolia/client-search'
 
-  '@docusaurus/core@3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)':
+  '@docusaurus/core@3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)':
     dependencies:
       '@babel/core': 7.28.4
       '@babel/generator': 7.28.3
@@ -24123,10 +24121,10 @@ snapshots:
       '@babel/traverse': 7.28.4
       '@docusaurus/cssnano-preset': 3.4.0
       '@docusaurus/logger': 3.4.0
-      '@docusaurus/mdx-loader': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/mdx-loader': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       '@docusaurus/utils-common': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       autoprefixer: 10.4.22(postcss@8.5.6)
       babel-loader: 9.2.1(@babel/core@7.28.4)(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3))
       babel-plugin-dynamic-import-node: 2.3.3
@@ -24157,10 +24155,10 @@ snapshots:
       mini-css-extract-plugin: 2.9.4(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3))
       p-map: 4.0.0
       postcss: 8.5.6
-      postcss-loader: 7.3.4(postcss@8.5.6)(typescript@5.8.3)(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3))
+      postcss-loader: 7.3.4(postcss@8.5.6)(typescript@5.5.4)(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3))
       prompts: 2.4.2
       react: 18.3.1
-      react-dev-utils: 12.0.1(eslint@9.35.0(jiti@2.5.1))(typescript@5.8.3)(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3))
+      react-dev-utils: 12.0.1(eslint@9.35.0(jiti@2.5.1))(typescript@5.5.4)(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3))
       react-dom: 18.3.1(react@18.3.1)
       react-helmet-async: 1.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-loadable: '@docusaurus/react-loadable@6.0.0(react@18.3.1)'
@@ -24212,11 +24210,11 @@ snapshots:
       chalk: 4.1.2
       tslib: 2.8.1
 
-  '@docusaurus/mdx-loader@3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)':
+  '@docusaurus/mdx-loader@3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)':
     dependencies:
       '@docusaurus/logger': 3.4.0
-      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
-      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
+      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       '@mdx-js/mdx': 3.1.1
       '@slorber/remark-comment': 1.0.0
       escape-html: 1.0.3
@@ -24267,15 +24265,15 @@ snapshots:
       - uglify-js
       - webpack-cli
 
-  '@docusaurus/plugin-content-blog@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)':
+  '@docusaurus/plugin-content-blog@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)':
     dependencies:
-      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       '@docusaurus/logger': 3.4.0
-      '@docusaurus/mdx-loader': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+      '@docusaurus/mdx-loader': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       '@docusaurus/types': 3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       '@docusaurus/utils-common': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       cheerio: 1.0.0-rc.12
       feed: 4.2.2
       fs-extra: 11.3.1
@@ -24306,16 +24304,16 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/plugin-content-docs@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)':
+  '@docusaurus/plugin-content-docs@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)':
     dependencies:
-      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       '@docusaurus/logger': 3.4.0
-      '@docusaurus/mdx-loader': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+      '@docusaurus/mdx-loader': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       '@docusaurus/module-type-aliases': 3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@docusaurus/types': 3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       '@docusaurus/utils-common': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       '@types/react-router-config': 5.0.11
       combine-promises: 1.2.0
       fs-extra: 11.3.1
@@ -24344,13 +24342,13 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/plugin-content-pages@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)':
+  '@docusaurus/plugin-content-pages@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)':
     dependencies:
-      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/mdx-loader': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/mdx-loader': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       '@docusaurus/types': 3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
-      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
+      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       fs-extra: 11.3.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -24374,11 +24372,11 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/plugin-debug@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)':
+  '@docusaurus/plugin-debug@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)':
     dependencies:
-      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       '@docusaurus/types': 3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       fs-extra: 11.3.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -24402,11 +24400,11 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/plugin-google-analytics@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)':
+  '@docusaurus/plugin-google-analytics@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)':
     dependencies:
-      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       '@docusaurus/types': 3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       tslib: 2.8.1
@@ -24428,11 +24426,11 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/plugin-google-gtag@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)':
+  '@docusaurus/plugin-google-gtag@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)':
     dependencies:
-      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       '@docusaurus/types': 3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       '@types/gtag.js': 0.0.12
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -24455,11 +24453,11 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/plugin-google-tag-manager@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)':
+  '@docusaurus/plugin-google-tag-manager@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)':
     dependencies:
-      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       '@docusaurus/types': 3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       tslib: 2.8.1
@@ -24481,14 +24479,14 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/plugin-sitemap@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)':
+  '@docusaurus/plugin-sitemap@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)':
     dependencies:
-      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       '@docusaurus/logger': 3.4.0
       '@docusaurus/types': 3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       '@docusaurus/utils-common': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       fs-extra: 11.3.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -24512,20 +24510,20 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/preset-classic@3.4.0(@algolia/client-search@5.46.0)(@rspack/core@1.6.7)(@swc/core@1.7.39)(@types/react@18.3.24)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(typescript@5.8.3)':
+  '@docusaurus/preset-classic@3.4.0(@algolia/client-search@5.46.0)(@rspack/core@1.6.7)(@swc/core@1.7.39)(@types/react@18.3.24)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(typescript@5.5.4)':
     dependencies:
-      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/plugin-content-blog': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/plugin-content-docs': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/plugin-content-pages': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/plugin-debug': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/plugin-google-analytics': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/plugin-google-gtag': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/plugin-google-tag-manager': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/plugin-sitemap': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/theme-classic': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(@types/react@18.3.24)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/theme-common': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/theme-search-algolia': 3.4.0(@algolia/client-search@5.46.0)(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(@types/react@18.3.24)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(typescript@5.8.3)
+      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/plugin-content-blog': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/plugin-content-docs': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/plugin-content-pages': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/plugin-debug': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/plugin-google-analytics': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/plugin-google-gtag': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/plugin-google-tag-manager': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/plugin-sitemap': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/theme-classic': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(@types/react@18.3.24)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/theme-common': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/theme-search-algolia': 3.4.0(@algolia/client-search@5.46.0)(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(@types/react@18.3.24)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(typescript@5.5.4)
       '@docusaurus/types': 3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -24555,20 +24553,20 @@ snapshots:
       '@types/react': 18.3.24
       react: 18.3.1
 
-  '@docusaurus/theme-classic@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(@types/react@18.3.24)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)':
+  '@docusaurus/theme-classic@3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(@types/react@18.3.24)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)':
     dependencies:
-      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/mdx-loader': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/mdx-loader': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       '@docusaurus/module-type-aliases': 3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@docusaurus/plugin-content-blog': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/plugin-content-docs': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/plugin-content-pages': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/theme-common': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+      '@docusaurus/plugin-content-blog': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/plugin-content-docs': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/plugin-content-pages': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/theme-common': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       '@docusaurus/theme-translations': 3.4.0
       '@docusaurus/types': 3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       '@docusaurus/utils-common': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       '@mdx-js/react': 3.1.1(@types/react@18.3.24)(react@18.3.1)
       clsx: 2.1.1
       copy-text-to-clipboard: 3.2.2
@@ -24603,14 +24601,14 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/theme-common@3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)':
+  '@docusaurus/theme-common@3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)':
     dependencies:
-      '@docusaurus/mdx-loader': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+      '@docusaurus/mdx-loader': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       '@docusaurus/module-type-aliases': 3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@docusaurus/plugin-content-blog': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/plugin-content-docs': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/plugin-content-pages': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/plugin-content-blog': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/plugin-content-docs': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/plugin-content-pages': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       '@docusaurus/utils-common': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@types/history': 4.7.11
       '@types/react': 18.3.24
@@ -24641,16 +24639,16 @@ snapshots:
       - vue-template-compiler
       - webpack-cli
 
-  '@docusaurus/theme-search-algolia@3.4.0(@algolia/client-search@5.46.0)(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(@types/react@18.3.24)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(typescript@5.8.3)':
+  '@docusaurus/theme-search-algolia@3.4.0(@algolia/client-search@5.46.0)(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(@types/react@18.3.24)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(typescript@5.5.4)':
     dependencies:
       '@docsearch/react': 3.9.0(@algolia/client-search@5.46.0)(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)
-      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+      '@docusaurus/core': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       '@docusaurus/logger': 3.4.0
-      '@docusaurus/plugin-content-docs': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
-      '@docusaurus/theme-common': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+      '@docusaurus/plugin-content-docs': 3.4.0(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
+      '@docusaurus/theme-common': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@rspack/core@1.6.7)(@swc/core@1.7.39)(esbuild@0.27.3)(eslint@9.35.0(jiti@2.5.1))(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       '@docusaurus/theme-translations': 3.4.0
-      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
-      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
+      '@docusaurus/utils-validation': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       algoliasearch: 4.25.3
       algoliasearch-helper: 3.26.1(algoliasearch@4.25.3)
       clsx: 2.1.1
@@ -24714,10 +24712,10 @@ snapshots:
     optionalDependencies:
       '@docusaurus/types': 3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
-  '@docusaurus/utils-validation@3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)':
+  '@docusaurus/utils-validation@3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)':
     dependencies:
       '@docusaurus/logger': 3.4.0
-      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)
+      '@docusaurus/utils': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)
       '@docusaurus/utils-common': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       fs-extra: 11.3.1
       joi: 17.13.3
@@ -24733,11 +24731,11 @@ snapshots:
       - uglify-js
       - webpack-cli
 
-  '@docusaurus/utils@3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.8.3)':
+  '@docusaurus/utils@3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@swc/core@1.7.39)(esbuild@0.27.3)(typescript@5.5.4)':
     dependencies:
       '@docusaurus/logger': 3.4.0
       '@docusaurus/utils-common': 3.4.0(@docusaurus/types@3.4.0(@swc/core@1.7.39)(esbuild@0.27.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@svgr/webpack': 8.1.0(typescript@5.8.3)
+      '@svgr/webpack': 8.1.0(typescript@5.5.4)
       escape-string-regexp: 4.0.0
       file-loader: 6.2.0(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3))
       fs-extra: 11.3.1
@@ -26409,13 +26407,6 @@ snapshots:
     dependencies:
       '@osdk/docs-spec-core': 0.6.0
 
-  '@osdk/foundry.admin@2.73.0':
-    dependencies:
-      '@osdk/foundry.core': 2.73.0
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
-
   '@osdk/foundry.admin@2.75.0':
     dependencies:
       '@osdk/foundry.core': 2.75.0
@@ -26423,14 +26414,12 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.aipagents@2.73.0':
+  '@osdk/foundry.admin@2.78.0':
     dependencies:
-      '@osdk/foundry.core': 2.73.0
-      '@osdk/foundry.functions': 2.73.0
-      '@osdk/foundry.ontologies': 2.73.0
+      '@osdk/foundry.core': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.aipagents@2.75.0':
     dependencies:
@@ -26441,12 +26430,14 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.audit@2.73.0':
+  '@osdk/foundry.aipagents@2.78.0':
     dependencies:
-      '@osdk/foundry.core': 2.73.0
+      '@osdk/foundry.core': 2.78.0
+      '@osdk/foundry.functions': 2.78.0
+      '@osdk/foundry.ontologies': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.audit@2.75.0':
     dependencies:
@@ -26455,12 +26446,12 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.checkpoints@2.73.0':
+  '@osdk/foundry.audit@2.78.0':
     dependencies:
-      '@osdk/foundry.core': 2.73.0
+      '@osdk/foundry.core': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.checkpoints@2.75.0':
     dependencies:
@@ -26469,18 +26460,25 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.connectivity@2.73.0':
+  '@osdk/foundry.checkpoints@2.78.0':
     dependencies:
-      '@osdk/foundry.core': 2.73.0
-      '@osdk/foundry.filesystem': 2.73.0
+      '@osdk/foundry.core': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.connectivity@2.75.0':
     dependencies:
       '@osdk/foundry.core': 2.75.0
       '@osdk/foundry.filesystem': 2.75.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.platformapi': 1.8.0
+
+  '@osdk/foundry.connectivity@2.78.0':
+    dependencies:
+      '@osdk/foundry.core': 2.78.0
+      '@osdk/foundry.filesystem': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
@@ -26499,13 +26497,6 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.1.0
 
-  '@osdk/foundry.core@2.73.0':
-    dependencies:
-      '@osdk/foundry.geo': 2.73.0
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
-
   '@osdk/foundry.core@2.75.0':
     dependencies:
       '@osdk/foundry.geo': 2.75.0
@@ -26513,16 +26504,23 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.datahealth@2.73.0':
+  '@osdk/foundry.core@2.78.0':
     dependencies:
-      '@osdk/foundry.core': 2.73.0
+      '@osdk/foundry.geo': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.datahealth@2.75.0':
     dependencies:
       '@osdk/foundry.core': 2.75.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.platformapi': 1.8.0
+
+  '@osdk/foundry.datahealth@2.78.0':
+    dependencies:
+      '@osdk/foundry.core': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
@@ -26535,20 +26533,20 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.1.0
 
-  '@osdk/foundry.datasets@2.73.0':
-    dependencies:
-      '@osdk/foundry.core': 2.73.0
-      '@osdk/foundry.datahealth': 2.73.0
-      '@osdk/foundry.filesystem': 2.73.0
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
-
   '@osdk/foundry.datasets@2.75.0':
     dependencies:
       '@osdk/foundry.core': 2.75.0
       '@osdk/foundry.datahealth': 2.75.0
       '@osdk/foundry.filesystem': 2.75.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.platformapi': 1.8.0
+
+  '@osdk/foundry.datasets@2.78.0':
+    dependencies:
+      '@osdk/foundry.core': 2.78.0
+      '@osdk/foundry.datahealth': 2.78.0
+      '@osdk/foundry.filesystem': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
@@ -26560,13 +26558,6 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.1.0
 
-  '@osdk/foundry.filesystem@2.73.0':
-    dependencies:
-      '@osdk/foundry.core': 2.73.0
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
-
   '@osdk/foundry.filesystem@2.75.0':
     dependencies:
       '@osdk/foundry.core': 2.75.0
@@ -26574,18 +26565,25 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.functions@2.73.0':
+  '@osdk/foundry.filesystem@2.78.0':
     dependencies:
-      '@osdk/foundry.core': 2.73.0
-      '@osdk/foundry.ontologies': 2.73.0
+      '@osdk/foundry.core': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.functions@2.75.0':
     dependencies:
       '@osdk/foundry.core': 2.75.0
       '@osdk/foundry.ontologies': 2.75.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.platformapi': 1.8.0
+
+  '@osdk/foundry.functions@2.78.0':
+    dependencies:
+      '@osdk/foundry.core': 2.78.0
+      '@osdk/foundry.ontologies': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
@@ -26602,23 +26600,17 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.1.0
 
-  '@osdk/foundry.geo@2.73.0':
-    dependencies:
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
-
   '@osdk/foundry.geo@2.75.0':
     dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.geojson@2.73.0':
+  '@osdk/foundry.geo@2.78.0':
     dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.geojson@2.75.0':
     dependencies:
@@ -26626,16 +26618,22 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.languagemodels@2.73.0':
+  '@osdk/foundry.geojson@2.78.0':
     dependencies:
-      '@osdk/foundry.core': 2.73.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.languagemodels@2.75.0':
     dependencies:
       '@osdk/foundry.core': 2.75.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.platformapi': 1.8.0
+
+  '@osdk/foundry.languagemodels@2.78.0':
+    dependencies:
+      '@osdk/foundry.core': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
@@ -26647,13 +26645,6 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.5.0
 
-  '@osdk/foundry.mediasets@2.73.0':
-    dependencies:
-      '@osdk/foundry.core': 2.73.0
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
-
   '@osdk/foundry.mediasets@2.75.0':
     dependencies:
       '@osdk/foundry.core': 2.75.0
@@ -26661,15 +26652,12 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.models@2.73.0':
+  '@osdk/foundry.mediasets@2.78.0':
     dependencies:
-      '@osdk/foundry.core': 2.73.0
-      '@osdk/foundry.filesystem': 2.73.0
-      '@osdk/foundry.ontologies': 2.73.0
-      '@osdk/foundry.orchestration': 2.73.0
+      '@osdk/foundry.core': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.models@2.75.0':
     dependencies:
@@ -26681,20 +26669,31 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.notepad@2.73.0':
+  '@osdk/foundry.models@2.78.0':
     dependencies:
-      '@osdk/foundry.core': 2.73.0
-      '@osdk/foundry.filesystem': 2.73.0
-      '@osdk/foundry.ontologies': 2.73.0
+      '@osdk/foundry.connectivity': 2.78.0
+      '@osdk/foundry.core': 2.78.0
+      '@osdk/foundry.filesystem': 2.78.0
+      '@osdk/foundry.ontologies': 2.78.0
+      '@osdk/foundry.orchestration': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.notepad@2.75.0':
     dependencies:
       '@osdk/foundry.core': 2.75.0
       '@osdk/foundry.filesystem': 2.75.0
       '@osdk/foundry.ontologies': 2.75.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.platformapi': 1.8.0
+
+  '@osdk/foundry.notepad@2.78.0':
+    dependencies:
+      '@osdk/foundry.core': 2.78.0
+      '@osdk/foundry.filesystem': 2.78.0
+      '@osdk/foundry.ontologies': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
@@ -26707,15 +26706,6 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.5.0
 
-  '@osdk/foundry.ontologies@2.73.0':
-    dependencies:
-      '@osdk/foundry.core': 2.73.0
-      '@osdk/foundry.datasets': 2.73.0
-      '@osdk/foundry.geo': 2.73.0
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
-
   '@osdk/foundry.ontologies@2.75.0':
     dependencies:
       '@osdk/foundry.core': 2.75.0
@@ -26725,13 +26715,14 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.operations@2.73.0':
+  '@osdk/foundry.ontologies@2.78.0':
     dependencies:
-      '@osdk/foundry.core': 2.73.0
-      '@osdk/foundry.ontologies': 2.73.0
+      '@osdk/foundry.core': 2.78.0
+      '@osdk/foundry.datasets': 2.78.0
+      '@osdk/foundry.geo': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.operations@2.75.0':
     dependencies:
@@ -26741,14 +26732,13 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.orchestration@2.73.0':
+  '@osdk/foundry.operations@2.78.0':
     dependencies:
-      '@osdk/foundry.core': 2.73.0
-      '@osdk/foundry.datasets': 2.73.0
-      '@osdk/foundry.filesystem': 2.73.0
+      '@osdk/foundry.core': 2.78.0
+      '@osdk/foundry.ontologies': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.orchestration@2.75.0':
     dependencies:
@@ -26759,13 +26749,14 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.pack@2.73.0':
+  '@osdk/foundry.orchestration@2.78.0':
     dependencies:
-      '@osdk/foundry.core': 2.73.0
-      '@osdk/foundry.filesystem': 2.73.0
+      '@osdk/foundry.core': 2.78.0
+      '@osdk/foundry.datasets': 2.78.0
+      '@osdk/foundry.filesystem': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.pack@2.75.0':
     dependencies:
@@ -26775,12 +26766,13 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.publicapis@2.73.0':
+  '@osdk/foundry.pack@2.78.0':
     dependencies:
-      '@osdk/foundry.core': 2.73.0
+      '@osdk/foundry.core': 2.78.0
+      '@osdk/foundry.filesystem': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.publicapis@2.75.0':
     dependencies:
@@ -26789,14 +26781,12 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.sqlqueries@2.73.0':
+  '@osdk/foundry.publicapis@2.78.0':
     dependencies:
-      '@osdk/foundry.core': 2.73.0
-      '@osdk/foundry.datasets': 2.73.0
-      '@osdk/foundry.ontologies': 2.73.0
+      '@osdk/foundry.core': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.sqlqueries@2.75.0':
     dependencies:
@@ -26807,14 +26797,14 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.streams@2.73.0':
+  '@osdk/foundry.sqlqueries@2.78.0':
     dependencies:
-      '@osdk/foundry.core': 2.73.0
-      '@osdk/foundry.datasets': 2.73.0
-      '@osdk/foundry.filesystem': 2.73.0
+      '@osdk/foundry.core': 2.78.0
+      '@osdk/foundry.datasets': 2.78.0
+      '@osdk/foundry.ontologies': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.streams@2.75.0':
     dependencies:
@@ -26825,12 +26815,14 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.thirdpartyapplications@2.73.0':
+  '@osdk/foundry.streams@2.78.0':
     dependencies:
-      '@osdk/foundry.core': 2.73.0
+      '@osdk/foundry.core': 2.78.0
+      '@osdk/foundry.datasets': 2.78.0
+      '@osdk/foundry.filesystem': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.thirdpartyapplications@2.75.0':
     dependencies:
@@ -26839,12 +26831,12 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry.widgets@2.73.0':
+  '@osdk/foundry.thirdpartyapplications@2.78.0':
     dependencies:
-      '@osdk/foundry.core': 2.73.0
+      '@osdk/foundry.core': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry.widgets@2.75.0':
     dependencies:
@@ -26853,36 +26845,12 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/foundry@2.73.0':
+  '@osdk/foundry.widgets@2.78.0':
     dependencies:
-      '@osdk/foundry.admin': 2.73.0
-      '@osdk/foundry.aipagents': 2.73.0
-      '@osdk/foundry.audit': 2.73.0
-      '@osdk/foundry.checkpoints': 2.73.0
-      '@osdk/foundry.connectivity': 2.73.0
-      '@osdk/foundry.core': 2.73.0
-      '@osdk/foundry.datahealth': 2.73.0
-      '@osdk/foundry.datasets': 2.73.0
-      '@osdk/foundry.filesystem': 2.73.0
-      '@osdk/foundry.functions': 2.73.0
-      '@osdk/foundry.geo': 2.73.0
-      '@osdk/foundry.geojson': 2.73.0
-      '@osdk/foundry.languagemodels': 2.73.0
-      '@osdk/foundry.mediasets': 2.73.0
-      '@osdk/foundry.models': 2.73.0
-      '@osdk/foundry.notepad': 2.73.0
-      '@osdk/foundry.ontologies': 2.73.0
-      '@osdk/foundry.operations': 2.73.0
-      '@osdk/foundry.orchestration': 2.73.0
-      '@osdk/foundry.pack': 2.73.0
-      '@osdk/foundry.publicapis': 2.73.0
-      '@osdk/foundry.sqlqueries': 2.73.0
-      '@osdk/foundry.streams': 2.73.0
-      '@osdk/foundry.thirdpartyapplications': 2.73.0
-      '@osdk/foundry.widgets': 2.73.0
+      '@osdk/foundry.core': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.7.0
+      '@osdk/shared.net.platformapi': 1.8.0
 
   '@osdk/foundry@2.75.0':
     dependencies:
@@ -26915,6 +26883,37 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
+  '@osdk/foundry@2.78.0':
+    dependencies:
+      '@osdk/foundry.admin': 2.78.0
+      '@osdk/foundry.aipagents': 2.78.0
+      '@osdk/foundry.audit': 2.78.0
+      '@osdk/foundry.checkpoints': 2.78.0
+      '@osdk/foundry.connectivity': 2.78.0
+      '@osdk/foundry.core': 2.78.0
+      '@osdk/foundry.datahealth': 2.78.0
+      '@osdk/foundry.datasets': 2.78.0
+      '@osdk/foundry.filesystem': 2.78.0
+      '@osdk/foundry.functions': 2.78.0
+      '@osdk/foundry.geo': 2.78.0
+      '@osdk/foundry.geojson': 2.78.0
+      '@osdk/foundry.languagemodels': 2.78.0
+      '@osdk/foundry.mediasets': 2.78.0
+      '@osdk/foundry.models': 2.78.0
+      '@osdk/foundry.notepad': 2.78.0
+      '@osdk/foundry.ontologies': 2.78.0
+      '@osdk/foundry.operations': 2.78.0
+      '@osdk/foundry.orchestration': 2.78.0
+      '@osdk/foundry.pack': 2.78.0
+      '@osdk/foundry.publicapis': 2.78.0
+      '@osdk/foundry.sqlqueries': 2.78.0
+      '@osdk/foundry.streams': 2.78.0
+      '@osdk/foundry.thirdpartyapplications': 2.78.0
+      '@osdk/foundry.widgets': 2.78.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.platformapi': 1.8.0
+
   '@osdk/gateway@2.4.2':
     dependencies:
       fetch-retry: 6.0.0
@@ -26925,31 +26924,31 @@ snapshots:
       '@osdk/api': 2.7.5
       '@osdk/foundry.ontologies': 2.44.0
 
-  '@osdk/internal.foundry.core@2.75.0':
+  '@osdk/internal.foundry.core@2.78.0':
     dependencies:
-      '@osdk/internal.foundry.geo': 2.75.0
+      '@osdk/internal.foundry.geo': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/internal.foundry.datasets@2.75.0':
+  '@osdk/internal.foundry.datasets@2.78.0':
     dependencies:
-      '@osdk/internal.foundry.core': 2.75.0
+      '@osdk/internal.foundry.core': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/internal.foundry.geo@2.75.0':
+  '@osdk/internal.foundry.geo@2.78.0':
     dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
 
-  '@osdk/internal.foundry.ontologies@2.75.0':
+  '@osdk/internal.foundry.ontologies@2.78.0':
     dependencies:
-      '@osdk/internal.foundry.core': 2.75.0
-      '@osdk/internal.foundry.datasets': 2.75.0
-      '@osdk/internal.foundry.geo': 2.75.0
+      '@osdk/internal.foundry.core': 2.78.0
+      '@osdk/internal.foundry.datasets': 2.78.0
+      '@osdk/internal.foundry.geo': 2.78.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.8.0
@@ -27006,12 +27005,6 @@ snapshots:
       '@osdk/shared.net.errors': 2.7.0
 
   '@osdk/shared.net.platformapi@1.5.0':
-    dependencies:
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.errors': 2.5.0-beta.2
-
-  '@osdk/shared.net.platformapi@1.7.0':
     dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
@@ -29010,17 +29003,6 @@ snapshots:
       - supports-color
       - typescript
 
-  '@svgr/core@8.1.0(typescript@5.8.3)':
-    dependencies:
-      '@babel/core': 7.28.4
-      '@svgr/babel-preset': 8.1.0(@babel/core@7.28.4)
-      camelcase: 6.3.0
-      cosmiconfig: 8.3.6(typescript@5.8.3)
-      snake-case: 3.0.4
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
-
   '@svgr/hast-util-to-babel-ast@8.0.0':
     dependencies:
       '@babel/types': 7.28.4
@@ -29036,16 +29018,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@svgr/plugin-jsx@8.1.0(@svgr/core@8.1.0(typescript@5.8.3))':
-    dependencies:
-      '@babel/core': 7.28.4
-      '@svgr/babel-preset': 8.1.0(@babel/core@7.28.4)
-      '@svgr/core': 8.1.0(typescript@5.8.3)
-      '@svgr/hast-util-to-babel-ast': 8.0.0
-      svg-parser: 2.0.4
-    transitivePeerDependencies:
-      - supports-color
-
   '@svgr/plugin-svgo@8.1.0(@svgr/core@8.1.0(typescript@5.5.4))(typescript@5.5.4)':
     dependencies:
       '@svgr/core': 8.1.0(typescript@5.5.4)
@@ -29055,25 +29027,16 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@svgr/plugin-svgo@8.1.0(@svgr/core@8.1.0(typescript@5.8.3))(typescript@5.8.3)':
-    dependencies:
-      '@svgr/core': 8.1.0(typescript@5.8.3)
-      cosmiconfig: 8.3.6(typescript@5.8.3)
-      deepmerge: 4.3.1
-      svgo: 3.3.3
-    transitivePeerDependencies:
-      - typescript
-
-  '@svgr/webpack@8.1.0(typescript@5.8.3)':
+  '@svgr/webpack@8.1.0(typescript@5.5.4)':
     dependencies:
       '@babel/core': 7.28.4
       '@babel/plugin-transform-react-constant-elements': 7.27.1(@babel/core@7.28.4)
       '@babel/preset-env': 7.26.0(@babel/core@7.28.4)
       '@babel/preset-react': 7.25.9(@babel/core@7.28.4)
       '@babel/preset-typescript': 7.27.1(@babel/core@7.28.4)
-      '@svgr/core': 8.1.0(typescript@5.8.3)
-      '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.8.3))
-      '@svgr/plugin-svgo': 8.1.0(@svgr/core@8.1.0(typescript@5.8.3))(typescript@5.8.3)
+      '@svgr/core': 8.1.0(typescript@5.5.4)
+      '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.5.4))
+      '@svgr/plugin-svgo': 8.1.0(@svgr/core@8.1.0(typescript@5.5.4))(typescript@5.5.4)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -32210,15 +32173,6 @@ snapshots:
     optionalDependencies:
       typescript: 5.5.4
 
-  cosmiconfig@8.3.6(typescript@5.8.3):
-    dependencies:
-      import-fresh: 3.3.1
-      js-yaml: 4.1.1
-      parse-json: 5.2.0
-      path-type: 4.0.0
-    optionalDependencies:
-      typescript: 5.8.3
-
   crc-32@1.2.2: {}
 
   crc32-stream@6.0.0:
@@ -34146,7 +34100,7 @@ snapshots:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
 
-  fork-ts-checker-webpack-plugin@6.5.3(eslint@9.35.0(jiti@2.5.1))(typescript@5.8.3)(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3)):
+  fork-ts-checker-webpack-plugin@6.5.3(eslint@9.35.0(jiti@2.5.1))(typescript@5.5.4)(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3)):
     dependencies:
       '@babel/code-frame': 7.27.1
       '@types/json-schema': 7.0.15
@@ -34161,7 +34115,7 @@ snapshots:
       schema-utils: 2.7.0
       semver: 7.7.4
       tapable: 1.1.3
-      typescript: 5.8.3
+      typescript: 5.5.4
       webpack: 5.106.1(@swc/core@1.7.39)(esbuild@0.27.3)
     optionalDependencies:
       eslint: 9.35.0(jiti@2.5.1)
@@ -38293,9 +38247,9 @@ snapshots:
       tsx: 4.20.5
       yaml: 2.9.0
 
-  postcss-loader@7.3.4(postcss@8.5.6)(typescript@5.8.3)(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3)):
+  postcss-loader@7.3.4(postcss@8.5.6)(typescript@5.5.4)(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3)):
     dependencies:
-      cosmiconfig: 8.3.6(typescript@5.8.3)
+      cosmiconfig: 8.3.6(typescript@5.5.4)
       jiti: 1.21.7
       postcss: 8.5.6
       semver: 7.7.4
@@ -39009,7 +38963,7 @@ snapshots:
       date-fns: 2.30.0
       react: 18.3.1
 
-  react-dev-utils@12.0.1(eslint@9.35.0(jiti@2.5.1))(typescript@5.8.3)(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3)):
+  react-dev-utils@12.0.1(eslint@9.35.0(jiti@2.5.1))(typescript@5.5.4)(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3)):
     dependencies:
       '@babel/code-frame': 7.27.1
       address: 1.2.2
@@ -39020,7 +38974,7 @@ snapshots:
       escape-string-regexp: 4.0.0
       filesize: 8.0.7
       find-up: 5.0.0
-      fork-ts-checker-webpack-plugin: 6.5.3(eslint@9.35.0(jiti@2.5.1))(typescript@5.8.3)(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3))
+      fork-ts-checker-webpack-plugin: 6.5.3(eslint@9.35.0(jiti@2.5.1))(typescript@5.5.4)(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3))
       global-modules: 2.0.0
       globby: 11.1.0
       gzip-size: 6.0.0
@@ -39037,7 +38991,7 @@ snapshots:
       text-table: 0.2.0
       webpack: 5.106.1(@swc/core@1.7.39)(esbuild@0.27.3)
     optionalDependencies:
-      typescript: 5.8.3
+      typescript: 5.5.4
     transitivePeerDependencies:
       - eslint
       - supports-color
@@ -41574,7 +41528,8 @@ snapshots:
 
   typescript@5.8.2: {}
 
-  typescript@5.8.3: {}
+  typescript@5.8.3:
+    optional: true
 
   typewise-core@1.2.0: {}
 

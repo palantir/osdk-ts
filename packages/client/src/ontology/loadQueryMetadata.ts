@@ -33,12 +33,10 @@ export async function loadQueryMetadata(
       ? undefined
       : queryTypeApiNameAndVersion.slice(separatorIndex + 1);
 
-  // `branch` is part of the API Gateway contract but has not yet been
-  // published in @osdk/foundry.ontologies.
   const queryParameters = {
     version,
     branch: client.branch,
-  } as Parameters<typeof QueryTypes.get>[3] & { branch?: string };
+  };
   const r = await QueryTypes.get(
     client,
     await client.ontologyRid,
