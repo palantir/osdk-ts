@@ -28,9 +28,30 @@ import {
 import { resetPublishedCache } from "./loaders.js";
 import { mediaset } from "./mediaset.js";
 import { model } from "./model.js";
+import * as node from "./public/node.js";
 import { source } from "./source.js";
 import { stream } from "./stream.js";
 import { AliasEnvironment } from "./types.js";
+
+const BUILT_IN_OBJECT_PROPERTY_NAMES = [
+  "toString",
+  "constructor",
+  "__proto__",
+  "hasOwnProperty",
+  "valueOf",
+];
+
+const ALIAS_READERS: ReadonlyArray<{
+  type: string;
+  read: (alias: string) => unknown;
+}> = [
+  { type: "Custom", read: custom },
+  { type: "Model", read: model },
+  { type: "Source", read: source },
+  { type: "Dataset", read: dataset },
+  { type: "Mediaset", read: mediaset },
+  { type: "Stream", read: stream },
+];
 
 // Read test data before mocking fs - use node:fs which is not affected by vi.mock("fs")
 const { testAliasesData, testResourcesData } = vi.hoisted(() => {
@@ -81,6 +102,19 @@ describe("environment detection", () => {
   });
 });
 
+describe("Node entry point", () => {
+  it("exports every filesystem alias reader", () => {
+    expect(Object.keys(node).sort()).toEqual([
+      "custom",
+      "dataset",
+      "mediaset",
+      "model",
+      "source",
+      "stream",
+    ]);
+  });
+});
+
 describe("published mode aliases", () => {
   beforeEach(() => {
     resetPublishedCache();
@@ -112,7 +146,26 @@ describe("published mode aliases", () => {
       expect(custom("myCustomAlias")).toBe("myCustomValue");
       expect(custom("anotherCustomAlias")).toBe("anotherCustomValue");
     });
+
+    it("resolves a real alias named toString", () => {
+      const aliases = JSON.parse(testAliasesData) as {
+        defaults: { custom: Record<string, string> };
+      };
+      aliases.defaults.custom["toString"] = "real-value";
+      vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(aliases));
+
+      expect(custom("toString")).toBe("real-value");
+    });
   });
+
+  it.each(ALIAS_READERS)(
+    "does not treat built-in object properties as declared $type aliases",
+    ({ type, read }) => {
+      for (const name of BUILT_IN_OBJECT_PROPERTY_NAMES) {
+        expect(() => read(name)).toThrow(`${type} alias '${name}' not found`);
+      }
+    },
+  );
 
   describe("model", () => {
     it("loads alias successfully and returns rid", () => {

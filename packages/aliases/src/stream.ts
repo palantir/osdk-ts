@@ -21,7 +21,7 @@ export type { Stream } from "./types.js";
 export function stream(alias: string): Stream {
   const resolvedAliases = loadResolvedAliases();
 
-  if (!(alias in resolvedAliases.streams)) {
+  if (!Object.hasOwn(resolvedAliases.streams, alias)) {
     const available = Object.keys(resolvedAliases.streams);
     throw new Error(
       `Stream alias '${alias}' not found. Available aliases: [${available.join(

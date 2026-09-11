@@ -21,7 +21,7 @@ export type { Custom } from "./types.js";
 export function custom(alias: string): Custom {
   const resolvedAliases = loadResolvedAliases();
 
-  if (!(alias in resolvedAliases.custom)) {
+  if (!Object.hasOwn(resolvedAliases.custom, alias)) {
     const available = Object.keys(resolvedAliases.custom);
     throw new Error(
       `Custom alias '${alias}' not found. Available aliases: [${available.join(

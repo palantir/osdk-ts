@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-// The root API is reserved. Use "@osdk/aliases/node" for Functions aliases.
+// No stable API yet. Use "@osdk/aliases/experimental" or "@osdk/aliases/node".

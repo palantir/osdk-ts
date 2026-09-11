@@ -21,7 +21,7 @@ export type { Mediaset } from "./types.js";
 export function mediaset(alias: string): Mediaset {
   const resolvedAliases = loadResolvedAliases();
 
-  if (!(alias in resolvedAliases.mediasets)) {
+  if (!Object.hasOwn(resolvedAliases.mediasets, alias)) {
     const available = Object.keys(resolvedAliases.mediasets);
     throw new Error(
       `Mediaset alias '${alias}' not found. Available aliases: [${available.join(
