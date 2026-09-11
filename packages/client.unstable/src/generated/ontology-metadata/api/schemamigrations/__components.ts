@@ -89,10 +89,20 @@ export interface CastStructFieldMigrationModification {
   target: _api_StructPropertyFieldType;
 }
 /**
- * Delete an existing InterfaceType schema transition by ID.
+ * Creates an InterfaceType schema transition.
+ */
+export interface CreateInterfaceTypeSchemaTransitionModification {
+  description?: string | null | undefined;
+  gracePeriod: GracePeriod;
+  id: InterfaceTypeSchemaTransitionId;
+  migrations: Array<InterfaceTypeSchemaMigrationInstructionModification>;
+  title?: string | null | undefined;
+}
+/**
+ * Delete an existing InterfaceType schema transition by RID.
  */
 export interface DeleteInterfaceTypeSchemaTransitionModification {
-  id: InterfaceTypeSchemaTransitionId;
+  rid: _api_InterfaceTypeSchemaTransitionRid;
 }
 /**
  * Delete existing transition from given source schema version.
@@ -133,10 +143,10 @@ export interface EditsWinToLatestTimestamp {
   timestampValue: any;
 }
 /**
- * Finalize an InterfaceType schema transition after enforcement has completed.
+ * Finalize an InterfaceType schema transition by RID after enforcement has completed.
  */
 export interface FinalizeInterfaceTypeSchemaTransitionModification {
-  id: InterfaceTypeSchemaTransitionId;
+  rid: _api_InterfaceTypeSchemaTransitionRid;
 }
 export interface GracePeriod_daysAfterActivation {
   type: "daysAfterActivation";
@@ -234,9 +244,9 @@ export interface InterfaceTypeSchemaTransition {
  */
 export type InterfaceTypeSchemaTransitionId = string;
 
-export interface InterfaceTypeSchemaTransitionModification_newVersion {
-  type: "newVersion";
-  newVersion: NewVersionInterfaceTypeSchemaTransitionModification;
+export interface InterfaceTypeSchemaTransitionModification_create {
+  type: "create";
+  create: CreateInterfaceTypeSchemaTransitionModification;
 }
 
 export interface InterfaceTypeSchemaTransitionModification_delete {
@@ -249,12 +259,10 @@ export interface InterfaceTypeSchemaTransitionModification_finalize {
   finalize: FinalizeInterfaceTypeSchemaTransitionModification;
 }
 /**
- * Type to represent an InterfaceType schema transition modification. Either to delete or create a new SchemaTransition where
- * the target version is either the schema version that will be created as a result of the current modification,
- * or a past schema version.
+ * A modification that creates, deletes, or finalizes an InterfaceType schema transition.
  */
 export type InterfaceTypeSchemaTransitionModification =
-  | InterfaceTypeSchemaTransitionModification_newVersion
+  | InterfaceTypeSchemaTransitionModification_create
   | InterfaceTypeSchemaTransitionModification_delete
   | InterfaceTypeSchemaTransitionModification_finalize;
 
@@ -297,16 +305,6 @@ export interface LoadObjectTypeSchemaMigrationsResponse {
 }
 export type LoadSchemaMigrationsPagingToken = string;
 
-/**
- * Instructions on how to transition from one InterfaceType schema version to the version that will be created.
- */
-export interface NewVersionInterfaceTypeSchemaTransitionModification {
-  description?: string | null | undefined;
-  gracePeriod: GracePeriod;
-  id: InterfaceTypeSchemaTransitionId;
-  migrations: Array<InterfaceTypeSchemaMigrationInstructionModification>;
-  title?: string | null | undefined;
-}
 /**
  * Instructions on how to transition from one schema version to the version that will be created.
  */
@@ -444,7 +442,6 @@ export interface OntologyIrInterfaceTypeSchemaTransition {
   gracePeriod: GracePeriod;
   id: InterfaceTypeSchemaTransitionId;
   migrations: Array<OntologyIrInterfaceTypeSchemaMigrationInstruction>;
-  rid: _api_InterfaceTypeSchemaTransitionRid;
   title?: string | null | undefined;
 }
 /**

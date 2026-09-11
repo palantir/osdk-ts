@@ -59,17 +59,29 @@ export function convertInterfaceSchemaMigrations(
               transition.gracePeriod,
             ),
             migrations: transition.instructions.map((instruction) => {
-              const { property: propertyApiName } = instruction;
-              const property = propertiesV3[propertyApiName];
-              const propertyTypeRid = interfacePropertyWireRid(
-                property,
-                propertyApiName,
-                interfaceType.apiName,
-                ridGenerator,
+              const { migration, referencedProperties } = convertInstruction(
+                instruction,
+                (propertyApiName) => {
+                  const property = propertiesV3[propertyApiName];
+                  return {
+                    rid: interfacePropertyWireRid(
+                      property,
+                      propertyApiName,
+                      interfaceType.apiName,
+                      ridGenerator,
+                    ),
+                    apiName: interfacePropertyWireApiName(
+                      property,
+                      propertyApiName,
+                    ),
+                  };
+                },
               );
-              interfacePropertyTypeRidsToApiNames[propertyTypeRid] =
-                interfacePropertyWireApiName(property, propertyApiName);
-              return convertInstruction(instruction, propertyTypeRid);
+              for (const property of referencedProperties) {
+                interfacePropertyTypeRidsToApiNames[property.rid] =
+                  property.apiName;
+              }
+              return migration;
             }),
           },
         ];
@@ -80,16 +92,33 @@ export function convertInterfaceSchemaMigrations(
   return { interfacePropertyTypeRidsToApiNames, schemaTransitions };
 }
 
+/** How a property the instruction names is identified on the wire. */
+interface WireProperty {
+  rid: string;
+  apiName: string;
+}
+
+/** A converted instruction, alongside the properties it came out referencing. */
+interface ConvertedInstruction {
+  migration: InterfaceTypeSchemaMigrationInstruction;
+  referencedProperties: readonly WireProperty[];
+}
+
 function convertInstruction(
   instruction: InterfaceSchemaMigrationInstruction,
-  propertyTypeRid: string,
-): InterfaceTypeSchemaMigrationInstruction {
+  resolveProperty: (propertyApiName: string) => WireProperty,
+): ConvertedInstruction {
   switch (instruction.type) {
-    case "addRequiredProperty":
+    case "addRequiredProperty": {
+      const property = resolveProperty(instruction.property);
       return {
-        type: "addRequiredProperty",
-        addRequiredProperty: { propertyTypeRid },
+        migration: {
+          type: "addRequiredProperty",
+          addRequiredProperty: { propertyTypeRid: property.rid },
+        },
+        referencedProperties: [property],
       };
+    }
     default:
       // TODO: add a never exhaustiveness check once there's more than one instruction type
       throw new Error(

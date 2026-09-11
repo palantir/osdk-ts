@@ -129,6 +129,7 @@ import type {
 import type { RuleSet as _api_formatting_RuleSet } from "../formatting/__components.js";
 import type {
   InterfaceTypeSchemaTransition as _api_schemamigrations_InterfaceTypeSchemaTransition,
+  InterfaceTypeSchemaTransitionId as _api_schemamigrations_InterfaceTypeSchemaTransitionId,
   OntologyIrInterfaceTypeSchemaTransition as _api_schemamigrations_OntologyIrInterfaceTypeSchemaTransition,
   OntologyIrSchemaTransition as _api_schemamigrations_OntologyIrSchemaTransition,
   SchemaTransition as _api_schemamigrations_SchemaTransition,
@@ -271,8 +272,8 @@ export interface KnownMarketplaceIdentifiers {
   >;
   interfaceTypes: Record<_api_InterfaceTypeRid, BlockInternalId>;
   interfaceTypeSchemaTransitions: Record<
-    _api_InterfaceTypeRid,
-    Record<_api_InterfaceTypeSchemaTransitionRid, BlockInternalId>
+    _api_InterfaceTypeSchemaTransitionRid,
+    BlockInternalId
   >;
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeRid, BlockInternalId>;
@@ -595,12 +596,8 @@ export interface OntologyIrInterfaceTypeBlockDataV2 {
     | undefined;
 }
 export interface OntologyIrInterfaceTypeSchemaMigrationBlockData {
-  interfacePropertyTypeRidsToApiNames: Record<
-    _api_InterfacePropertyTypeApiName,
-    _api_InterfacePropertyTypeApiName
-  >;
   schemaTransitions: Record<
-    _api_InterfaceTypeSchemaTransitionRid,
+    _api_schemamigrations_InterfaceTypeSchemaTransitionId,
     _api_schemamigrations_OntologyIrInterfaceTypeSchemaTransition
   >;
 }
@@ -635,8 +632,8 @@ export interface OntologyIrKnownMarketplaceIdentifiers {
   >;
   interfaceTypes: Record<_api_InterfaceTypeApiName, BlockInternalId>;
   interfaceTypeSchemaTransitions: Record<
-    _api_InterfaceTypeApiName,
-    Record<_api_InterfaceTypeSchemaTransitionRid, BlockInternalId>
+    _api_schemamigrations_InterfaceTypeSchemaTransitionId,
+    BlockInternalId
   >;
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeId, BlockInternalId>;
