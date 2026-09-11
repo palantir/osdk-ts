@@ -1,5 +1,12 @@
 # @osdk/react-components-storybook
 
+## 0.55.0
+
+### Patch Changes
+
+- Updated dependencies [488376f]
+  - @osdk/faux@0.51.0
+
 ## 0.54.0
 
 ### Patch Changes

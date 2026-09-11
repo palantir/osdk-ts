@@ -1,5 +1,11 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.66.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
 ## 3.65.0
 
 ## 3.64.0
