@@ -79,7 +79,7 @@ function transition(
 
 describe("interface type schema migrations", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, "/tmp/");
+    await defineOntology("com.palantir.", () => {}, undefined);
   });
 
   it("omits the migration block when not opted in", async () => {
