@@ -45,6 +45,7 @@ import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
 import { convertAction } from "./convertActionHelpers.js";
 import { convertInterface } from "./convertInterface.js";
+import { convertInterfaceSchemaMigrations } from "./convertInterfaceSchemaMigrations.js";
 import { convertLink } from "./convertLink.js";
 import { convertObject } from "./convertObject.js";
 import { convertSpt } from "./convertSpt.js";
@@ -138,10 +139,15 @@ export function convertOntologyDefinitionToWireBlockData(
     Object.entries(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE]).map<
       [string, InterfaceTypeBlockDataV2]
     >(([apiName, interfaceType]) => {
+      const schemaMigrations = convertInterfaceSchemaMigrations(
+        interfaceType,
+        ridGenerator,
+      );
       return [
         ridGenerator.generateRidForInterface(apiName),
         {
           interfaceType: convertInterface(interfaceType, ridGenerator),
+          ...(schemaMigrations !== undefined ? { schemaMigrations } : {}),
         },
       ];
     }),
@@ -313,6 +319,28 @@ function buildKnownIdentifiers(
       rid,
       ridGenerator.toBlockInternalId(readableId),
     ]),
+  );
+
+  // Interface type schema transitions: InterfaceTypeRid -> TransitionId -> BlockInternalId
+  const interfaceSchemaTransitionMappings = Object.fromEntries(
+    Object.entries(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE])
+      .filter(([_, interfaceType]) => interfaceType.schemaMigrations != null)
+      .map<[string, Record<string, string>]>(([apiName, interfaceType]) => [
+        ridGenerator.generateRidForInterface(apiName),
+        Object.fromEntries(
+          interfaceType.schemaMigrations!.transitions.map<[string, string]>(
+            (transition) => [
+              transition.id,
+              ridGenerator.toBlockInternalId(
+                ReadableIdGenerator.getForInterfaceSchemaTransition(
+                  apiName,
+                  transition.id,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ]),
   );
 
   // Interface link types: InterfaceLinkTypeRid -> BlockInternalId
@@ -627,8 +655,7 @@ function buildKnownIdentifiers(
     interfaceParameterConstraints: interfaceParameterConstraintMappings,
     interfacePropertyTypes: interfacePropertyMappings,
     interfaceTypes: interfaceMappings,
-    // Cannot yet author interface type schema migrations.
-    interfaceTypeSchemaTransitions: {},
+    interfaceTypeSchemaTransitions: interfaceSchemaTransitionMappings,
     linkTypeIds,
     linkTypes: linkTypeRids,
     markings: markingsMappings,

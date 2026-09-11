@@ -41,6 +41,7 @@ import {
   convertAction,
 } from "../../api/defineOntology.js";
 import { convertInterface } from "./convertInterface.js";
+import { convertInterfaceSchemaMigrations } from "./convertInterfaceSchemaMigrations.js";
 import { convertLink } from "./convertLink.js";
 import { convertObject } from "./convertObject.js";
 import { convertSpt } from "./convertSpt.js";
@@ -115,10 +116,13 @@ export function convertOntologyDefinitionToWireBlockData(
       Object.entries(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE]).map<
         [string, OntologyIrInterfaceTypeBlockDataV2]
       >(([apiName, interfaceType]) => {
+        const schemaMigrations =
+          convertInterfaceSchemaMigrations(interfaceType);
         return [
           apiName,
           {
             interfaceType: convertInterface(interfaceType),
+            ...(schemaMigrations !== undefined ? { schemaMigrations } : {}),
           },
         ];
       }),

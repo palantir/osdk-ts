@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import invariant from "tiny-invariant";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import type { InterfaceTypeDefinition } from "../defineInterface.js";
@@ -606,6 +607,180 @@ describe("Interface schema migrations", () => {
       ).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo has 501 instructions, which exceeds the maximum of 500.]`,
       );
+    });
+  });
+
+  describe("conversion to wire block data", () => {
+    function blockData() {
+      return dumpOntologyFullMetadata().ontology.interfaceTypes[
+        "com.palantir.Foo"
+      ];
+    }
+
+    function transitions() {
+      const { schemaMigrations } = blockData();
+      invariant(schemaMigrations != null, "expected schema migrations");
+      return schemaMigrations.schemaTransitions;
+    }
+
+    it("omits the migration block when not opted in", () => {
+      defineInterface({ apiName: "Foo" });
+
+      expect(blockData().schemaMigrations).toBeUndefined();
+      expect(blockData().interfaceType).not.toHaveProperty(
+        "schemaMigrationsEnabled",
+      );
+    });
+
+    it("sets schemaMigrationsEnabled when opted in with no transitions", () => {
+      defineInterface({
+        apiName: "Foo",
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(blockData().interfaceType.schemaMigrationsEnabled).toBe(true);
+      expect(blockData().schemaMigrations).toEqual({
+        interfacePropertyTypeRidsToApiNames: {},
+        schemaTransitions: {},
+      });
+    });
+
+    it("keys transitions by their id", () => {
+      defineWithMigrations([
+        transition({ id: "t0", instructions: [addRequiredProperty("a")] }),
+        transition({ id: "t1", instructions: [addRequiredProperty("b")] }),
+      ]);
+
+      expect(Object.keys(transitions())).toEqual(["t0", "t1"]);
+    });
+
+    it("maps each targeted property to its published api name", () => {
+      const spt = defineSharedPropertyType({
+        apiName: "ownerSpt",
+        type: "string",
+      });
+
+      defineInterface({
+        apiName: "Foo",
+        properties: {
+          optional0: OPTIONAL_STRING,
+          ownerSpt: { sharedPropertyType: spt, required: false },
+        },
+        schemaMigrations: {
+          transitions: [
+            transition({
+              instructions: [
+                addRequiredProperty("optional0"),
+                addRequiredProperty("ownerSpt"),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expect(
+        blockData().schemaMigrations?.interfacePropertyTypeRidsToApiNames,
+      ).toEqual({
+        optional0: "optional0",
+        "com.palantir.ownerSpt": "com.palantir.ownerSpt",
+      });
+    });
+
+    it("translates an afterInstall transition to daysAfterActivation", () => {
+      defineWithMigrations([
+        transition({
+          id: "add-owner",
+          title: "Require owner",
+          description: "some description",
+          gracePeriod: { type: "afterInstall", days: 30 },
+        }),
+      ]);
+
+      expect(transitions()).toEqual({
+        "add-owner": {
+          id: "add-owner",
+          title: "Require owner",
+          description: "some description",
+          gracePeriod: { type: "daysAfterActivation", daysAfterActivation: 30 },
+          migrations: [
+            {
+              type: "addRequiredProperty",
+              addRequiredProperty: { propertyTypeRid: "optional0" },
+            },
+          ],
+        },
+      });
+    });
+
+    it("translates a deadline transition", () => {
+      defineWithMigrations([
+        transition({
+          gracePeriod: { type: "deadline", deadline: "2026-01-31T12:34:56Z" },
+        }),
+      ]);
+
+      expect(transitions().t1.gracePeriod).toEqual({
+        type: "deadline",
+        deadline: "2026-01-31T12:34:56Z",
+      });
+    });
+
+    it("strips zero milliseconds from a deadline", () => {
+      defineWithMigrations([
+        transition({
+          gracePeriod: {
+            type: "deadline",
+            deadline: "2026-01-31T12:34:56.000Z",
+          },
+        }),
+      ]);
+
+      expect(transitions().t1.gracePeriod).toEqual({
+        type: "deadline",
+        deadline: "2026-01-31T12:34:56Z",
+      });
+    });
+
+    it("preserves non-zero milliseconds on a deadline", () => {
+      defineWithMigrations([
+        transition({
+          gracePeriod: {
+            type: "deadline",
+            deadline: "2026-01-31T12:34:56.789Z",
+          },
+        }),
+      ]);
+
+      expect(transitions().t1.gracePeriod).toEqual({
+        type: "deadline",
+        deadline: "2026-01-31T12:34:56.789Z",
+      });
+    });
+
+    it("resolves an SPT-backed property to the shared property type's api name", () => {
+      const spt = defineSharedPropertyType({
+        apiName: "ownerSpt",
+        type: "string",
+      });
+
+      defineInterface({
+        apiName: "Foo",
+        properties: { ownerSpt: { sharedPropertyType: spt, required: false } },
+        schemaMigrations: {
+          transitions: [
+            transition({
+              instructions: [addRequiredProperty("ownerSpt")],
+            }),
+          ],
+        },
+      });
+
+      expect(transitions().t1.migrations).toEqual([
+        {
+          type: "addRequiredProperty",
+          addRequiredProperty: { propertyTypeRid: "com.palantir.ownerSpt" },
+        },
+      ]);
     });
   });
 
