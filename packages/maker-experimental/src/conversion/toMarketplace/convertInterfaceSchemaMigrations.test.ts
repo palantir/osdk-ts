@@ -117,7 +117,7 @@ describe("interface type schema migrations", () => {
 
     const [[rid, only]] = Object.entries(transitionsOf(block));
     expect(rid).toMatch(
-      /^ri\.ontology-metadata\.temp\.interface-schema-transition\./u,
+      /^ri\.ontology-metadata\.temp\.interface-type-schema-transition\./u,
     );
     expect(only.rid).toBe(rid);
     expect(only.id).toBe("add-owner");

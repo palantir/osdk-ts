@@ -183,7 +183,8 @@ function createMockRidGenerator(
     generateRidForInterfaceSchemaTransition: (
       transitionId: string,
       interfaceTypeApiName: string,
-    ) => `interface-schema-transition.${interfaceTypeApiName}.${transitionId}`,
+    ) =>
+      `interface-type-schema-transition.${interfaceTypeApiName}.${transitionId}`,
     getInterfaceActionTypeConstraintRids: () => new MockBiMap([]) as any,
     getInterfaceParameterConstraintRids: () => new MockBiMap([]) as any,
     ...overrides,
