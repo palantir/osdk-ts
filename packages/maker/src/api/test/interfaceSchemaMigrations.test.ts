@@ -653,10 +653,7 @@ describe("Interface schema migrations", () => {
       });
 
       expect(blockData().interfaceType.schemaMigrationsEnabled).toBe(true);
-      expect(blockData().schemaMigrations).toEqual({
-        interfacePropertyTypeRidsToApiNames: {},
-        schemaTransitions: {},
-      });
+      expect(blockData().schemaMigrations).toEqual({ schemaTransitions: {} });
     });
 
     it("keys transitions by their id", () => {
@@ -668,7 +665,7 @@ describe("Interface schema migrations", () => {
       expect(Object.keys(transitions())).toEqual(["t0", "t1"]);
     });
 
-    it("maps each targeted property to its published api name", () => {
+    it("resolves every targeted property to its published api name", () => {
       const spt = defineSharedPropertyType({
         apiName: "ownerSpt",
         type: "string",
@@ -692,12 +689,16 @@ describe("Interface schema migrations", () => {
         },
       });
 
-      expect(
-        blockData().schemaMigrations?.interfacePropertyTypeRidsToApiNames,
-      ).toEqual({
-        optional0: "optional0",
-        "com.palantir.ownerSpt": "com.palantir.ownerSpt",
-      });
+      expect(transitions().t1.migrations).toEqual([
+        {
+          type: "addRequiredProperty",
+          addRequiredProperty: { propertyTypeRid: "optional0" },
+        },
+        {
+          type: "addRequiredProperty",
+          addRequiredProperty: { propertyTypeRid: "com.palantir.ownerSpt" },
+        },
+      ]);
     });
 
     it("translates an afterInstall transition to daysAfterActivation", () => {
@@ -712,7 +713,6 @@ describe("Interface schema migrations", () => {
 
       expect(transitions()).toEqual({
         "add-owner": {
-          rid: "add-owner",
           id: "add-owner",
           title: "Require owner",
           description: "some description",

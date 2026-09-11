@@ -444,7 +444,6 @@ export interface OntologyIrInterfaceTypeSchemaTransition {
   gracePeriod: GracePeriod;
   id: InterfaceTypeSchemaTransitionId;
   migrations: Array<OntologyIrInterfaceTypeSchemaMigrationInstruction>;
-  rid: _api_InterfaceTypeSchemaTransitionRid;
   title?: string | null | undefined;
 }
 /**
