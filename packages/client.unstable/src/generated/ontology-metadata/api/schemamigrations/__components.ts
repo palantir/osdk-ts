@@ -21,6 +21,7 @@ import type {
   InterfacePropertyTypeRid as _api_InterfacePropertyTypeRid,
   InterfacePropertyTypeRidOrIdInRequest as _api_InterfacePropertyTypeRidOrIdInRequest,
   InterfaceTypeRid as _api_InterfaceTypeRid,
+  InterfaceTypeSchemaTransitionRid as _api_InterfaceTypeSchemaTransitionRid,
   ObjectTypeApiName as _api_ObjectTypeApiName,
   ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
   ObjectTypeRid as _api_ObjectTypeRid,
@@ -225,10 +226,11 @@ export interface InterfaceTypeSchemaTransition {
   gracePeriod: GracePeriod;
   id: InterfaceTypeSchemaTransitionId;
   migrations: Array<InterfaceTypeSchemaMigrationInstruction>;
+  rid: _api_InterfaceTypeSchemaTransitionRid;
   title?: string | null | undefined;
 }
 /**
- * A unique, immutable identifier for an Interface Type schema transition.
+ * A unique, immutable identifier for an Interface Type schema transition. Can be user defined.
  */
 export type InterfaceTypeSchemaTransitionId = string;
 
@@ -442,6 +444,7 @@ export interface OntologyIrInterfaceTypeSchemaTransition {
   gracePeriod: GracePeriod;
   id: InterfaceTypeSchemaTransitionId;
   migrations: Array<OntologyIrInterfaceTypeSchemaMigrationInstruction>;
+  rid: _api_InterfaceTypeSchemaTransitionRid;
   title?: string | null | undefined;
 }
 /**

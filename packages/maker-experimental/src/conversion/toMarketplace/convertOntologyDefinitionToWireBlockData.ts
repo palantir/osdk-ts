@@ -321,7 +321,7 @@ function buildKnownIdentifiers(
     ]),
   );
 
-  // Interface type schema transitions: InterfaceTypeRid -> TransitionId -> BlockInternalId
+  // Interface type schema transitions: InterfaceTypeRid -> TransitionRid -> BlockInternalId
   const interfaceSchemaTransitionMappings = Object.fromEntries(
     Object.entries(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE])
       .filter(([_, interfaceType]) => interfaceType.schemaMigrations != null)
@@ -330,7 +330,10 @@ function buildKnownIdentifiers(
         Object.fromEntries(
           interfaceType.schemaMigrations!.transitions.map<[string, string]>(
             (transition) => [
-              transition.id,
+              ridGenerator.generateRidForInterfaceSchemaTransition(
+                transition.id,
+                apiName,
+              ),
               ridGenerator.toBlockInternalId(
                 ReadableIdGenerator.getForInterfaceSchemaTransition(
                   apiName,

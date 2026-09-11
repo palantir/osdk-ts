@@ -55,6 +55,16 @@ function transitionsOf(
   return schemaMigrations.schemaTransitions;
 }
 
+/** Block data keys transitions by their generated rid, not their authored id. */
+function transitionById(
+  block: InterfaceTypeBlockDataV2,
+  id: string,
+): InterfaceTypeSchemaTransition {
+  const found = Object.values(transitionsOf(block)).find((t) => t.id === id);
+  invariant(found != null, `expected a transition with id ${id}`);
+  return found;
+}
+
 function transition(
   overrides: Partial<InterfaceSchemaTransition> = {},
 ): InterfaceSchemaTransition {
@@ -96,6 +106,23 @@ describe("interface type schema migrations", () => {
     });
   });
 
+  it("keys transitions by their generated rid", async () => {
+    const block = await convertInterfaces(() => {
+      defineInterface({
+        apiName: "Foo",
+        properties: { optional: { required: false, type: "string" } },
+        schemaMigrations: { transitions: [transition({ id: "add-owner" })] },
+      });
+    });
+
+    const [[rid, only]] = Object.entries(transitionsOf(block));
+    expect(rid).toMatch(
+      /^ri\.ontology-metadata\.temp\.interface-schema-transition\./u,
+    );
+    expect(only.rid).toBe(rid);
+    expect(only.id).toBe("add-owner");
+  });
+
   it("records each transition in the block's known identifiers", async () => {
     const ontology = await convertOntology(() => {
       defineInterface({
@@ -120,12 +147,15 @@ describe("interface type schema migrations", () => {
 
     const [interfaceRid] = Object.keys(ontology.interfaceTypes);
     const { interfaceTypeSchemaTransitions } = ontology.knownIdentifiers;
+    const transitionRids = Object.keys(
+      transitionsOf(ontology.interfaceTypes[interfaceRid]),
+    );
 
     expect(Object.keys(interfaceTypeSchemaTransitions)).toEqual([interfaceRid]);
-    expect(interfaceTypeSchemaTransitions[interfaceRid]).toEqual({
-      t1: expect.any(String),
-      t2: expect.any(String),
-    });
+    expect(transitionRids).toHaveLength(2);
+    expect(
+      Object.keys(interfaceTypeSchemaTransitions[interfaceRid]).sort(),
+    ).toEqual([...transitionRids].sort());
     // Each transition gets its own block internal id
     expect(
       new Set(Object.values(interfaceTypeSchemaTransitions[interfaceRid])),
@@ -161,19 +191,18 @@ describe("interface type schema migrations", () => {
     });
 
     expect(block.interfaceType.schemaMigrationsEnabled).toBe(true);
-    expect(transitionsOf(block)).toEqual({
-      "add-owner": {
-        id: "add-owner",
-        title: "Require owner",
-        description: "some description",
-        gracePeriod: { type: "daysAfterActivation", daysAfterActivation: 30 },
-        migrations: [
-          {
-            type: "addRequiredProperty",
-            addRequiredProperty: { propertyTypeRid: expect.any(String) },
-          },
-        ],
-      },
+    expect(transitionById(block, "add-owner")).toEqual({
+      rid: expect.any(String),
+      id: "add-owner",
+      title: "Require owner",
+      description: "some description",
+      gracePeriod: { type: "daysAfterActivation", daysAfterActivation: 30 },
+      migrations: [
+        {
+          type: "addRequiredProperty",
+          addRequiredProperty: { propertyTypeRid: expect.any(String) },
+        },
+      ],
     });
   });
 
@@ -192,7 +221,7 @@ describe("interface type schema migrations", () => {
       });
     });
 
-    expect(transitionsOf(block).t1.gracePeriod).toEqual({
+    expect(transitionById(block, "t1").gracePeriod).toEqual({
       type: "deadline",
       deadline: DEADLINE,
     });
@@ -216,7 +245,7 @@ describe("interface type schema migrations", () => {
       });
     });
 
-    expect(transitionsOf(block).t1.gracePeriod).toEqual({
+    expect(transitionById(block, "t1").gracePeriod).toEqual({
       type: "deadline",
       deadline: "2026-01-31T12:34:56Z",
     });
@@ -231,7 +260,7 @@ describe("interface type schema migrations", () => {
       });
     });
 
-    const [migration] = transitionsOf(block).t1.migrations;
+    const [migration] = transitionById(block, "t1").migrations;
     invariant(migration.type === "addRequiredProperty");
     const { propertyTypeRid } = migration.addRequiredProperty;
 
@@ -265,7 +294,7 @@ describe("interface type schema migrations", () => {
       });
     });
 
-    const [migration] = transitionsOf(block).t1.migrations;
+    const [migration] = transitionById(block, "t1").migrations;
     invariant(migration.type === "addRequiredProperty");
     const { propertyTypeRid } = migration.addRequiredProperty;
 

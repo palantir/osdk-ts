@@ -43,30 +43,37 @@ export function convertInterfaceSchemaMigrations(
   const interfacePropertyTypeRidsToApiNames: Record<string, string> = {};
   const schemaTransitions = Object.fromEntries(
     schemaMigrations.transitions.map(
-      (transition): [string, InterfaceTypeSchemaTransition] => [
-        transition.id,
-        {
-          id: transition.id,
-          title: transition.title,
-          description: transition.description,
-          gracePeriod: convertInterfaceSchemaGracePeriod(
-            transition.gracePeriod,
-          ),
-          migrations: transition.instructions.map((instruction) => {
-            const { property: propertyApiName } = instruction;
-            const property = propertiesV3[propertyApiName];
-            const propertyTypeRid = interfacePropertyWireRid(
-              property,
-              propertyApiName,
-              interfaceType.apiName,
-              ridGenerator,
-            );
-            interfacePropertyTypeRidsToApiNames[propertyTypeRid] =
-              interfacePropertyWireApiName(property, propertyApiName);
-            return convertInstruction(instruction, propertyTypeRid);
-          }),
-        },
-      ],
+      (transition): [string, InterfaceTypeSchemaTransition] => {
+        const rid = ridGenerator.generateRidForInterfaceSchemaTransition(
+          transition.id,
+          interfaceType.apiName,
+        );
+        return [
+          rid,
+          {
+            rid,
+            id: transition.id,
+            title: transition.title,
+            description: transition.description,
+            gracePeriod: convertInterfaceSchemaGracePeriod(
+              transition.gracePeriod,
+            ),
+            migrations: transition.instructions.map((instruction) => {
+              const { property: propertyApiName } = instruction;
+              const property = propertiesV3[propertyApiName];
+              const propertyTypeRid = interfacePropertyWireRid(
+                property,
+                propertyApiName,
+                interfaceType.apiName,
+                ridGenerator,
+              );
+              interfacePropertyTypeRidsToApiNames[propertyTypeRid] =
+                interfacePropertyWireApiName(property, propertyApiName);
+              return convertInstruction(instruction, propertyTypeRid);
+            }),
+          },
+        ];
+      },
     ),
   );
 

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { ValueTypeReference } from "@osdk/client.unstable";
+import type {
+  InterfaceTypeSchemaTransitionRid,
+  ValueTypeReference,
+} from "@osdk/client.unstable";
 import type {
   ActionTypeRid,
   DatasourceLocator,
@@ -125,6 +128,10 @@ export interface OntologyRidGenerator {
     interfaceTypeApiName: string,
     paramApiName: string,
   ): InterfaceParameterConstraintRid;
+  generateRidForInterfaceSchemaTransition(
+    transitionId: string,
+    interfaceTypeApiName: string,
+  ): InterfaceTypeSchemaTransitionRid;
   getInterfaceActionTypeConstraintRids(): BiMap<
     ReadableId,
     InterfaceActionTypeConstraintRid
@@ -754,6 +761,20 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
       )}` as InterfaceParameterConstraintRid;
     this.interfaceParameterConstraintRids.put(readableId, rid);
     return rid;
+  }
+
+  // Interface Schema Transitions
+  generateRidForInterfaceSchemaTransition(
+    transitionId: string,
+    interfaceTypeApiName: string,
+  ): InterfaceTypeSchemaTransitionRid {
+    const readableId = ReadableIdGenerator.getForInterfaceSchemaTransition(
+      interfaceTypeApiName,
+      transitionId,
+    );
+    return `ri.ontology-metadata.temp.interface-schema-transition.${this.hashString(
+      readableId,
+    )}` as InterfaceTypeSchemaTransitionRid;
   }
 
   // Object Types

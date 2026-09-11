@@ -698,6 +698,7 @@ describe("Interface schema migrations", () => {
 
       expect(transitions()).toEqual({
         "add-owner": {
+          rid: "add-owner",
           id: "add-owner",
           title: "Require owner",
           description: "some description",
