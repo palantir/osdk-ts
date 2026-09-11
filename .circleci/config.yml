@@ -22,9 +22,9 @@ executors:
   node:
     parameters:
       node-version:
-        description: cimg/node tag; MAJOR.MINOR, or a variant like 24.19-browsers.
+        description: cimg/node tag; MAJOR.MINOR.PATCH, or a variant like 24.19.0-browsers.
         type: string
-        default: "24.19"
+        default: "24.19.0"
       resource-class:
         type: string
         default: large
@@ -35,8 +35,8 @@ executors:
 
   node-with-verdaccio:
     docker:
-      - image: cimg/node:24.19
-      - image: verdaccio/verdaccio:6
+      - image: cimg/node:24.19.0
+      - image: verdaccio/verdaccio:6.10.3
         command:
           - sh
           - -ec
@@ -59,12 +59,13 @@ executors:
 
 commands:
   activate-pnpm:
-    description: Make PNPM available on PATH.
+    description: Make the repo's pinned pnpm available on PATH.
     steps:
       - run:
           name: Install pnpm
           command: |
-            sudo npm install --global --silent pnpm@10
+            pnpm_spec="$(node -p "require('./package.json').packageManager")"
+            sudo npm install --global --silent "$pnpm_spec"
             pnpm --version
 
   install-deps:
@@ -78,21 +79,6 @@ commands:
       - run:
           name: Install dependencies
           command: pnpm install --frozen-lockfile --store-dir "$PNPM_STORE_DIR"
-
-  attach-deps:
-    description: >
-      Take node_modules from the workspace instead of reinstalling. Jobs
-      downstream of `build` pick up its turbo cache this way too.
-    steps:
-      - attach_workspace:
-          at: .
-
-  prepare:
-    description: Checkout, put pnpm on PATH, and attach the workspace.
-    steps:
-      - checkout
-      - activate-pnpm
-      - attach-deps
 
   save-pnpm-store:
     description: >
@@ -108,6 +94,19 @@ commands:
           paths:
             - /home/circleci/.pnpm-store
 
+  attach-workspace:
+    description: Attach dependencies and any upstream build cache from the workspace.
+    steps:
+      - attach_workspace:
+          at: .
+
+  prepare:
+    description: Checkout, put pnpm on PATH, and attach the workspace.
+    steps:
+      - checkout
+      - activate-pnpm
+      - attach-workspace
+
   restore-turbo-cache:
     description: >
       Keys carry CIRCLE_NODE_INDEX because a save_cache against an existing key
@@ -120,11 +119,11 @@ commands:
       - restore_cache:
           name: Restore turbo cache (<< parameters.scope >>)
           keys:
-            - turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
-            - turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-
+            - v1-turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
+            - v1-turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-
             # `build` is never parallel, so its cache is always at index 0.
-            - turbo-{{ arch }}-build-0-{{ .Revision }}
-            - turbo-{{ arch }}-build-0-
+            - v1-turbo-{{ arch }}-build-0-{{ .Revision }}
+            - v1-turbo-{{ arch }}-build-0-
 
   save-turbo-cache:
     parameters:
@@ -133,7 +132,8 @@ commands:
     steps:
       - save_cache:
           name: Save turbo cache (<< parameters.scope >>)
-          key: turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
+          when: always
+          key: v1-turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
           paths:
             - .turbo/cache
 
@@ -162,6 +162,7 @@ jobs:
       - checkout
       - activate-pnpm
       - install-deps
+      - verify-working-tree-clean
       - save-pnpm-store
       - persist_to_workspace:
           root: .
@@ -180,9 +181,7 @@ jobs:
       name: node
       resource-class: medium
     steps:
-      - checkout
-      - activate-pnpm
-      - attach-deps
+      - prepare
       - run:
           name: Check for changesets
           command: |
@@ -190,6 +189,7 @@ jobs:
             # how checkout configured the remote.
             git fetch origin "+refs/heads/main:refs/remotes/origin/main"
             pnpm exec changeset status --since=origin/main
+      - verify-working-tree-clean
 
   # Build on Node24 only (output tested on Node18-24)
   build:
@@ -258,6 +258,7 @@ jobs:
       - run:
           name: Check spelling
           command: pnpm exec turbo run ci:cspell
+      - verify-working-tree-clean
 
   # Runs the suites against the build job's artifacts under every supported Nodde version (18-24)
   test:
@@ -295,10 +296,8 @@ jobs:
           command: pnpm exec turbo run transpile transpileTypes $TURBO_FILTERS
       - run:
           # No `--` args: turbo hashes them globally, so the whole run misses.
-          # Exit deferred: store_test_results has no `when: always`.
           name: Run this container's share of the tests
           command: |
-            set +e
             case "$CIRCLE_NODE_INDEX" in
               0)
                 pnpm exec turbo run test --filter='!@osdk/react-components' $TURBO_FILTERS
@@ -307,31 +306,20 @@ jobs:
                 pnpm exec turbo run test --filter=@osdk/react-components
                 ;;
               *)
-                # A config error rather than a test failure, so it fails here
-                # instead of being deferred.
                 echo "No tests assigned to container $CIRCLE_NODE_INDEX." >&2
                 echo "\`parallelism\` and this case statement have to agree." >&2
                 exit 1
                 ;;
             esac
-            status=$?
-            echo "$status" > /tmp/test-exit-code
-            if [ "$status" -ne 0 ]; then
-              echo "Tests exited $status. Reports upload first; the job fails at the end."
-            fi
       - run:
           name: Collect JUnit reports
           when: always
           command: .circleci/scripts/collect-test-results.sh /tmp/test-results
       - store_test_results:
           path: /tmp/test-results
+      - verify-working-tree-clean
       - save-turbo-cache:
           scope: test-node<< parameters.node-version >>
-      - run:
-          name: Fail the job if the tests failed
-          command: |
-            status="$(cat /tmp/test-exit-code 2>/dev/null || echo 1)"
-            exit "$status"
 
   # The app/site packages have no transpile/typecheck task, so `turbo run build`
   # is what proves they still compile. Storybook is excluded because
@@ -404,6 +392,7 @@ jobs:
       - run:
           name: Build Storybook
           command: pnpm exec turbo run build --filter=@osdk/react-components-storybook
+      - verify-working-tree-clean
       # No persist_to_workspace: the artifact is the deliverable.
       - store_artifacts:
           path: packages/react-components-storybook/storybook-static
@@ -416,7 +405,7 @@ jobs:
       name: node
       # The -browsers variant ships Chromium's system libraries, so
       # `playwright install` does not need --with-deps.
-      node-version: "24.19-browsers"
+      node-version: "24.19.0-browsers"
       resource-class: xlarge
     steps:
       - prepare
@@ -439,51 +428,37 @@ jobs:
       - restore_cache:
           name: Restore the Playwright browser cache
           keys:
-            - playwright-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
+            - v1-playwright-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
       - run:
           # A no-op that just verifies on a cache hit.
           name: Install Playwright Chromium
           command: pnpm --filter @osdk/react-components-storybook exec playwright install chromium
       - save_cache:
           name: Save the Playwright browser cache
-          key: playwright-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
+          key: v1-playwright-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
           paths:
             - /home/circleci/.cache/ms-playwright
       - run:
-          # Exit code deferred as in the test matrix. This is the flakiest suite
-          # here, so losing its report on a red run is the worst case.
           name: Run interaction tests
           command: |
-            set +e
             pnpm --filter @osdk/react-components-storybook run test-storybook \
               --reporter=default \
               --reporter=junit \
               --outputFile.junit=reports/junit.xml
-            status=$?
-            echo "$status" > /tmp/test-exit-code
-            if [ "$status" -ne 0 ]; then
-              echo "Interaction tests exited $status. Report uploads first; the job fails at the end."
-            fi
       - run:
           name: Collect JUnit reports
           when: always
           command: .circleci/scripts/collect-test-results.sh /tmp/test-results
       - store_test_results:
           path: /tmp/test-results
-      - run:
-          name: Fail the job if the tests failed
-          command: |
-            status="$(cat /tmp/test-exit-code 2>/dev/null || echo 1)"
-            exit "$status"
+      - verify-working-tree-clean
 
   bundle-size:
     executor:
       name: node
       resource-class: large
     steps:
-      - checkout
-      - activate-pnpm
-      - attach-deps
+      - prepare
       - restore-turbo-cache:
           scope: build
       - run:
@@ -504,7 +479,7 @@ jobs:
       - restore_cache:
           name: Restore the base-branch measurement
           keys:
-            - size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
+            - v1-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
       - run:
           name: Build and measure the base branch
           command: |
@@ -519,7 +494,7 @@ jobs:
             npx size-limit --json > /tmp/base.json || true
       - save_cache:
           name: Save the base-branch measurement
-          key: size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
+          key: v1-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
           paths:
             - /tmp/base.json
       - run:
@@ -575,7 +550,7 @@ workflows:
       - test:
           matrix:
             parameters:
-              node-version: ["18.20", "20.20", "22.23", "24.19"]
+              node-version: ["18.20.8", "20.20.2", "22.23.2", "24.19.0"]
           requires: [build]
       - build-storybook:
           requires: [build]
