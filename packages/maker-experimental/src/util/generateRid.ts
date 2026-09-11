@@ -389,7 +389,7 @@ export class ReadableIdGenerator {
     interfaceApiName: string,
     transitionId: string,
   ): ReadableId {
-    return `interface-type-schema-transition-${interfaceApiName}-${transitionId}` as ReadableId;
+    return `interface-schema-transition-${interfaceApiName}-${transitionId}` as ReadableId;
   }
 
   static getForInterfaceParameterConstraint(
@@ -772,7 +772,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
       interfaceTypeApiName,
       transitionId,
     );
-    return `ri.ontology-metadata.temp.interface-type-schema-transition.${this.hashString(
+    return `ri.ontology-metadata.temp.interface-schema-transition.${this.hashString(
       readableId,
     )}` as InterfaceTypeSchemaTransitionRid;
   }
