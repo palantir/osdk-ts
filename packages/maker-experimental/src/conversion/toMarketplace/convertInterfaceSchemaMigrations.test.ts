@@ -151,15 +151,14 @@ describe("interface type schema migrations", () => {
       transitionsOf(ontology.interfaceTypes[interfaceRid]),
     );
 
-    expect(Object.keys(interfaceTypeSchemaTransitions)).toEqual([interfaceRid]);
     expect(transitionRids).toHaveLength(2);
-    expect(
-      Object.keys(interfaceTypeSchemaTransitions[interfaceRid]).sort(),
-    ).toEqual([...transitionRids].sort());
+    expect(Object.keys(interfaceTypeSchemaTransitions).sort()).toEqual(
+      [...transitionRids].sort(),
+    );
     // Each transition gets its own block internal id
-    expect(
-      new Set(Object.values(interfaceTypeSchemaTransitions[interfaceRid])),
-    ).toHaveLength(2);
+    expect(new Set(Object.values(interfaceTypeSchemaTransitions))).toHaveLength(
+      2,
+    );
   });
 
   it("records no known identifiers for an interface without migrations", async () => {
