@@ -23,6 +23,7 @@ import type { InputShape, OutputShape } from "@osdk/client.unstable/api";
 import { typeToMarketplaceBaseType } from "../conversion/toMarketplace/typeVisitors.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
+import { toBlockShapeId } from "./marketplaceSerialization/CodeBlockSpec.js";
 import type { InputMappingEntry } from "./marketplaceSerialization/supportingTypes.js";
 
 /**
@@ -32,6 +33,7 @@ import type { InputMappingEntry } from "./marketplaceSerialization/supportingTyp
 export async function generateValueTypeBlockResults(
   bulkValueTypeBlockData: ValueTypeBlockData[],
   buildDir: string,
+  randomnessKey?: string,
 ): Promise<BlockGeneratorResult[]> {
   const results: BlockGeneratorResult[] = [];
 
@@ -49,6 +51,12 @@ export async function generateValueTypeBlockResults(
     );
 
     const outputs = buildOutputShapes(entry);
+    const idToBlockShapeId = Object.fromEntries(
+      Array.from(outputs.keys(), (readableId) => [
+        readableId,
+        toBlockShapeId(readableId, randomnessKey),
+      ]),
+    );
 
     results.push({
       block_identifier: blockIdentifier,
@@ -59,7 +67,11 @@ export async function generateValueTypeBlockResults(
       outputs: Object.fromEntries(outputs),
       input_mapping_entries: [],
       external_recommendations: [],
-      add_on_override: undefined,
+      add_on_override: {
+        idToBlockShapeId,
+        idToInputGroupId: {},
+        outputToLocationInput: {},
+      },
       input_shape_metadata: {},
       block_type: "VALUE_TYPE",
     });
