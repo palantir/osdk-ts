@@ -830,9 +830,10 @@ describe("getActiveLinkedFilters", () => {
         createDateRangeState(),
       );
       const state = createDateRangeState(undefined, undefined, {
-        isRelative: true,
-        relativeMin: { count: 7, unit: "days", direction: "ago" },
-        relativeMax: { count: 0, unit: "days", direction: "fromNow" },
+        relativeState: {
+          relativeMin: { count: 7, unit: "days", direction: "ago" },
+          relativeMax: { count: 0, unit: "days", direction: "fromNow" },
+        },
       });
       const filterStates = stateMap([def, state]);
       const result = buildWhereClause(
@@ -870,8 +871,10 @@ describe("getActiveLinkedFilters", () => {
         createDateRangeState(),
       );
       const state = createDateRangeState(undefined, undefined, {
-        isRelative: true,
-        relativeMax: { count: 0, unit: "days", direction: "fromNow" },
+        relativeState: {
+          relativeMin: null,
+          relativeMax: { count: 0, unit: "days", direction: "fromNow" },
+        },
       });
       const filterStates = stateMap([def, state]);
       const result = buildWhereClause(
@@ -888,7 +891,7 @@ describe("getActiveLinkedFilters", () => {
       expect(resolved.getMilliseconds()).toBe(999);
     });
 
-    it("ignores stale minValue when isRelative is true and relativeMin is absent", () => {
+    it("ignores stale minValue when relativeState is present and relativeMin is null", () => {
       const def = createPropertyFilterDef(
         "createdAt",
         "DATE_RANGE",
@@ -896,9 +899,10 @@ describe("getActiveLinkedFilters", () => {
       );
       const staleDate = new Date("2020-01-01T00:00:00.000Z");
       const state = createDateRangeState(staleDate, undefined, {
-        isRelative: true,
-        // relativeMin absent = Indefinitely, should NOT use staleDate
-        relativeMax: { count: 0, unit: "days", direction: "fromNow" },
+        relativeState: {
+          relativeMin: null, // Indefinitely, should NOT use staleDate
+          relativeMax: { count: 0, unit: "days", direction: "fromNow" },
+        },
       });
       const filterStates = stateMap([def, state]);
       const result = buildWhereClause(
@@ -926,7 +930,7 @@ describe("getActiveLinkedFilters", () => {
         createDateRangeState(),
       );
       const state = createDateRangeState(undefined, undefined, {
-        isRelative: true,
+        relativeState: { relativeMin: null, relativeMax: null },
       });
       const filterStates = stateMap([def, state]);
       const result = buildWhereClause([def], filterStates, mockPropertyTypes);

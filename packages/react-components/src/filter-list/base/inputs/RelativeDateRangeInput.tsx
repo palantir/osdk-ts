@@ -16,47 +16,44 @@
 
 import React, { memo, useCallback } from "react";
 
-import type { RelativeDateBound } from "../../FilterListItemApi.js";
+import type {
+  RelativeDateBound,
+  RelativeDateState,
+} from "../../FilterListItemApi.js";
 import { RelativeDateBoundInput } from "./RelativeDateBoundInput.js";
 
 import styles from "./RelativeDateBoundInput.module.css";
 
 interface RelativeDateRangeInputProps {
-  /** Relative definition for the From bound. `undefined` = Indefinitely. */
-  relativeMin: RelativeDateBound | undefined;
-  /** Relative definition for the To bound. `undefined` = Indefinitely. */
-  relativeMax: RelativeDateBound | undefined;
-  /** Called when either bound changes, with both current values. */
-  onRelativeChange: (
-    relativeMin: RelativeDateBound | undefined,
-    relativeMax: RelativeDateBound | undefined,
-  ) => void;
+  /** Current relative state. */
+  relativeState: RelativeDateState;
+  /** Called when either bound changes. */
+  onRelativeChange: (relativeState: RelativeDateState) => void;
 }
 
 function RelativeDateRangeInputInner({
-  relativeMin,
-  relativeMax,
+  relativeState,
   onRelativeChange,
 }: RelativeDateRangeInputProps): React.ReactElement {
   const handleMinChange = useCallback(
-    (nextMin: RelativeDateBound | undefined) => {
-      onRelativeChange(nextMin, relativeMax);
+    (nextMin: RelativeDateBound | null) => {
+      onRelativeChange({ ...relativeState, relativeMin: nextMin });
     },
-    [onRelativeChange, relativeMax],
+    [onRelativeChange, relativeState],
   );
 
   const handleMaxChange = useCallback(
-    (nextMax: RelativeDateBound | undefined) => {
-      onRelativeChange(relativeMin, nextMax);
+    (nextMax: RelativeDateBound | null) => {
+      onRelativeChange({ ...relativeState, relativeMax: nextMax });
     },
-    [onRelativeChange, relativeMin],
+    [onRelativeChange, relativeState],
   );
 
   return (
     <div className={styles.rangeRoot}>
       <RelativeDateBoundInput
         placeholder="From"
-        value={relativeMin}
+        value={relativeState.relativeMin}
         onChange={handleMinChange}
       />
       <span className={styles.separator} aria-hidden="true">
@@ -64,7 +61,7 @@ function RelativeDateRangeInputInner({
       </span>
       <RelativeDateBoundInput
         placeholder="To"
-        value={relativeMax}
+        value={relativeState.relativeMax}
         onChange={handleMaxChange}
       />
     </div>

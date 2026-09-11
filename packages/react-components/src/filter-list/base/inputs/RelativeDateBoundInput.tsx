@@ -49,10 +49,10 @@ const DEFAULT_BOUND: RelativeDateBound = {
 };
 
 interface RelativeDateBoundInputProps {
-  /** Current bound value, or undefined for "Indefinitely". */
-  value: RelativeDateBound | undefined;
-  /** Callback when the bound changes. `undefined` means "Indefinitely". */
-  onChange: (value: RelativeDateBound | undefined) => void;
+  /** Current bound value, or `null` for "Indefinitely". */
+  value: RelativeDateBound | null;
+  /** Callback when the bound changes. `null` means "Indefinitely". */
+  onChange: (value: RelativeDateBound | null) => void;
   /** Placeholder shown when no value is set, e.g. "From" or "To". */
   placeholder: string;
 }
@@ -73,11 +73,11 @@ function RelativeDateBoundInputInner({
   const handleModeChange = useCallback(
     (nextMode: unknown) => {
       if (nextMode === "indefinitely") {
-        onChange(undefined);
+        onChange(null);
       } else {
         // Intentional: switching from Indefinitely to Custom resets to
         // DEFAULT_BOUND. The previous custom value is not preserved because
-        // Indefinitely clears the bound (value becomes undefined).
+        // Indefinitely clears the bound (value becomes null).
         onChange(currentBound);
       }
     },
