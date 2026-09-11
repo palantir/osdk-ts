@@ -1,3 +1,4 @@
+import { Aliases as ExperimentalAliases } from "@osdk/aliases/experimental";
 import * as NodeAliases from "@osdk/aliases/node";
 import * as Client from "@osdk/client";
 import * as oauth from "@osdk/oauth";
@@ -35,3 +36,21 @@ try {
     throw error;
   }
 }
+
+async function verifyAliasesNodeEntry(): Promise<void> {
+  try {
+    await ExperimentalAliases.custom("missing");
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message.includes("Unknown alias environment")
+    ) {
+      return;
+    }
+    throw error;
+  }
+
+  throw new Error("Expected the Node alias resolver to reject");
+}
+
+void verifyAliasesNodeEntry();

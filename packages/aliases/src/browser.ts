@@ -1,0 +1,213 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { Custom } from "./types.js";
+
+export type { Custom } from "./types.js";
+
+/**
+ * `resources.json` contains author defaults during local development and
+ * installer-resolved values on an installed site.
+ */
+export const DEFAULT_RESOURCES_PATH = "resources.json";
+
+interface InitAliasesOptions {
+  fetch?: typeof globalThis.fetch;
+}
+
+let cachedCustomAliases: Record<string, string> | undefined;
+let inFlight: Promise<void> | undefined;
+
+/**
+ * Website implementation of `Aliases.custom`. Loads aliases from the
+ * `resources.json` served with the website, then returns the resolved value.
+ * Repeated and concurrent calls share the same load.
+ */
+export async function custom(alias: string): Promise<Custom> {
+  await initAliases();
+  const aliases = cachedCustomAliases;
+  if (aliases === undefined) {
+    throw new Error("Aliases failed to initialize.");
+  }
+
+  if (!Object.hasOwn(aliases, alias)) {
+    const available = Object.keys(aliases);
+    throw new Error(
+      `Custom alias '${alias}' not found. Available aliases: [${available.join(
+        ", ",
+      )}]`,
+    );
+  }
+  return aliases[alias] as Custom;
+}
+
+/** Deduplicates concurrent loads; a later call can retry if failure occurs. */
+export async function initAliases(options?: InitAliasesOptions): Promise<void> {
+  if (cachedCustomAliases !== undefined) {
+    return;
+  }
+  if (inFlight === undefined) {
+    inFlight = loadAliases(options).catch((error: unknown) => {
+      inFlight = undefined;
+      throw error;
+    });
+  }
+  await inFlight;
+}
+
+async function loadAliases(options?: InitAliasesOptions): Promise<void> {
+  const fetchImpl = options?.fetch ?? globalThis.fetch;
+  const declarations = await fetchJson(fetchImpl, DEFAULT_RESOURCES_PATH);
+  cachedCustomAliases =
+    declarations === undefined
+      ? {}
+      : extractCustomAliases(declarations.value, declarations.url);
+}
+
+interface FetchedJson {
+  value: unknown;
+  url: string;
+}
+
+async function fetchJson(
+  fetchImpl: typeof globalThis.fetch,
+  path: string,
+): Promise<FetchedJson | undefined> {
+  const url = resolveUrl(path);
+  const response = await fetchImpl(url);
+  if (response.status === 404) {
+    return undefined;
+  }
+  if (!response.ok) {
+    throw new Error(
+      `Failed to load aliases from ${url}: ${response.status} ${response.statusText}`,
+    );
+  }
+
+  const body = await response.text();
+
+  if (isHtmlDocument(body)) {
+    return undefined;
+  }
+
+  return { value: parseJson(body, url), url };
+}
+
+function resolveUrl(path: string): string {
+  if (typeof document !== "undefined" && document.baseURI) {
+    return new URL(path, document.baseURI).toString();
+  }
+  return path;
+}
+
+/** A missing `resources.json` may return the website's HTML page instead of a 404. */
+function isHtmlDocument(body: string): boolean {
+  const start = body.trimStart().slice(0, 32).toLowerCase();
+  return start.startsWith("<!doctype html") || start.startsWith("<html");
+}
+
+function parseJson(body: string, url: string): unknown {
+  try {
+    return JSON.parse(body) as unknown;
+  } catch (error) {
+    throw new Error(`Failed to read aliases from ${url}: not valid JSON.`, {
+      cause: error,
+    });
+  }
+}
+
+function extractCustomAliases(
+  config: unknown,
+  url: string,
+): Record<string, string> {
+  const aliases = getAliasesField(config, url);
+  if (aliases == null) {
+    return {};
+  }
+  if (!isJsonObject(aliases)) {
+    throw new TypeError(
+      `Failed to read aliases from ${url}: expected 'aliases' to look like ` +
+        `{ "custom": { "myAlias": { "value": "..." } } } in resources.json.`,
+    );
+  }
+
+  const declarations = aliases.custom;
+  if (declarations == null) {
+    return {};
+  }
+  if (!isJsonObject(declarations)) {
+    throw new TypeError(
+      `Failed to read aliases from ${url}: expected 'aliases.custom' to map ` +
+        `alias names to declarations, for example ` +
+        `{ "myAlias": { "value": "..." } }.`,
+    );
+  }
+  return toStringRecord(
+    Object.fromEntries(
+      Object.entries(declarations).map(([key, declaration]) => {
+        if (!isJsonObject(declaration)) {
+          throw new TypeError(
+            `Failed to read alias '${key}' from ${url}: expected its declaration ` +
+              `to be an object, for example { "value": "..." }.`,
+          );
+        }
+        if (!Object.hasOwn(declaration, "value")) {
+          throw new TypeError(
+            `Failed to read alias '${key}' from ${url}: expected its declaration ` +
+              `to include a string 'value'.`,
+          );
+        }
+        return [key, declaration.value];
+      }),
+    ),
+  );
+}
+
+function getAliasesField(config: unknown, url: string): unknown {
+  if (!isJsonObject(config)) {
+    throw new TypeError(
+      `Failed to read aliases from ${url}: expected a JSON object.`,
+    );
+  }
+  return config.aliases;
+}
+
+function isJsonObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value != null && !Array.isArray(value);
+}
+
+/** Validates that alias values are strings and preserves names that match built-in object properties. */
+function toStringRecord(
+  parsed: Record<string, unknown>,
+): Record<string, string> {
+  const result = Object.create(null) as Record<string, string>;
+  for (const [key, value] of Object.entries(parsed)) {
+    if (typeof value !== "string") {
+      throw new TypeError(
+        `Alias '${key}' must be a string, got ${
+          Array.isArray(value) ? "array" : typeof value
+        }.`,
+      );
+    }
+    result[key] = value;
+  }
+  return result;
+}
+
+export function resetAliasesCache(): void {
+  cachedCustomAliases = undefined;
+  inFlight = undefined;
+}

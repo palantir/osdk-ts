@@ -6388,6 +6388,9 @@ importers:
 
   tests/verify-webpack-bundling:
     dependencies:
+      '@osdk/aliases':
+        specifier: workspace:~
+        version: link:../../packages/aliases
       '@osdk/api':
         specifier: workspace:~
         version: link:../../packages/api
