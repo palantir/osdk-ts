@@ -43,6 +43,7 @@ export interface UseOsdkObjectOptions<Q extends ObjectOrInterfaceDefinition> {
   $select?: readonly PropertyKeys<Q>[];
   enabled?: boolean;
   $loadPropertySecurityMetadata?: boolean;
+  $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
 
   /**
    * When true, includes all properties of the underlying concrete object type
@@ -76,8 +77,8 @@ export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
  *
  * @param type The object type or interface definition
  * @param primaryKey The primary key of the object
- * @param options Options including $select, enabled, $loadPropertySecurityMetadata,
- *                and $includeAllBaseObjectProperties
+ * @param options Options including $select, enabled, property metadata, and
+ *                ontology-defined derived property loading
  */
 export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
   type: Q,
@@ -124,6 +125,8 @@ export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
   const selectArg = optionsArg?.$select;
   const loadPropertySecurityMetadata =
     optionsArg?.$loadPropertySecurityMetadata;
+  const loadOntologyDefinedDerivedProperties =
+    optionsArg?.$UNSTABLE_loadOntologyDefinedDerivedProperties;
   const includeAllBaseObjectProperties =
     optionsArg?.$includeAllBaseObjectProperties;
 
@@ -170,6 +173,12 @@ export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
                   $loadPropertySecurityMetadata: loadPropertySecurityMetadata,
                 }
               : {}),
+            ...(loadOntologyDefinedDerivedProperties != null
+              ? {
+                  $UNSTABLE_loadOntologyDefinedDerivedProperties:
+                    loadOntologyDefinedDerivedProperties,
+                }
+              : {}),
           },
           observer,
         ),
@@ -188,6 +197,7 @@ export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
     mode,
     stableSelect,
     loadPropertySecurityMetadata,
+    loadOntologyDefinedDerivedProperties,
     includeAllBaseObjectProperties,
   ]);
 

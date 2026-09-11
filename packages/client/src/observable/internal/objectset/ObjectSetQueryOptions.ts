@@ -87,6 +87,12 @@ export interface ObserveObjectSetOptions<
    * populated with conjunctive/disjunctive marking requirements per property.
    */
   $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * Controls whether ontology-defined derived properties are loaded. When
+   * omitted, the server's default behavior is used.
+   */
+  $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
 }
 
 export interface ObjectSetQueryOptions extends ObserveObjectSetOptions<

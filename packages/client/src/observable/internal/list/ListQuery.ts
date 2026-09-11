@@ -59,6 +59,7 @@ import { EMPTY_RDP_SET } from "../utils/rdpFieldOperations.js";
 import {
   INCLUDE_ALL_BASE_PROPERTIES_IDX,
   INTERSECT_IDX,
+  LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX,
   type ListCacheKey,
   ORDER_BY_IDX,
   PIVOT_IDX,
@@ -205,6 +206,14 @@ export abstract class ListQuery extends BaseListQuery<
     return this.cacheKey.otherKeys[INCLUDE_ALL_BASE_PROPERTIES_IDX] === true;
   }
 
+  public override get loadOntologyDefinedDerivedProperties():
+    | boolean
+    | undefined {
+    return this.cacheKey.otherKeys[
+      LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX
+    ];
+  }
+
   get objectTypes(): ReadonlySet<string> {
     return this.#objectTypesCache ?? new Set([this.apiName]);
   }
@@ -345,6 +354,12 @@ export abstract class ListQuery extends BaseListQuery<
         : {}),
       ...(this.includeAllBaseObjectProperties
         ? { $includeAllBaseObjectProperties: true }
+        : {}),
+      ...(this.loadOntologyDefinedDerivedProperties != null
+        ? {
+            $UNSTABLE_loadOntologyDefinedDerivedProperties:
+              this.loadOntologyDefinedDerivedProperties,
+          }
         : {}),
     });
 
@@ -629,6 +644,7 @@ export abstract class ListQuery extends BaseListQuery<
           undefined,
           this.includeAllBaseObjectProperties,
           EMPTY_RDP_SET,
+          this.loadOntologyDefinedDerivedProperties,
         );
       });
     } else if (state === "REMOVED") {
@@ -708,6 +724,10 @@ export abstract class ListQuery extends BaseListQuery<
       obj.$objectType,
       pk,
       this.rdpConfig ?? undefined,
+      undefined,
+      undefined,
+      this.includeAllBaseObjectProperties ? true : undefined,
+      this.loadOntologyDefinedDerivedProperties,
     );
   }
 }

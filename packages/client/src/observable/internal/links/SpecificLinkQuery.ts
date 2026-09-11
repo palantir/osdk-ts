@@ -48,6 +48,7 @@ import { tombstone } from "../tombstone.js";
 import { reloadDataAsFullObjects } from "../utils/reloadDataAsFullObjects.js";
 import {
   INCLUDE_ALL_BASE_PROPERTIES_IDX as LINK_INCLUDE_ALL_BASE_PROPERTIES_IDX,
+  LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX as LINK_LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX,
   RESOLVE_TO_OBJECT_TYPE_IDX as LINK_RESOLVE_TO_OBJECT_TYPE_IDX,
   SELECT_IDX as LINK_SELECT_IDX,
   type SpecificLinkCacheKey,
@@ -144,6 +145,14 @@ export class SpecificLinkQuery extends BaseListQuery<
     return (
       this.cacheKey.otherKeys[LINK_INCLUDE_ALL_BASE_PROPERTIES_IDX] === true
     );
+  }
+
+  public override get loadOntologyDefinedDerivedProperties():
+    | boolean
+    | undefined {
+    return this.cacheKey.otherKeys[
+      LINK_LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX
+    ];
   }
 
   /**
@@ -253,6 +262,7 @@ export class SpecificLinkQuery extends BaseListQuery<
       $where?: Record<string, unknown>;
       $select?: readonly string[];
       $includeAllBaseObjectProperties?: true;
+      $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
     } = {
       $pageSize: this.getEffectiveFetchPageSize(),
       $nextPageToken: this.nextPageToken,
@@ -277,6 +287,11 @@ export class SpecificLinkQuery extends BaseListQuery<
       queryParams.$includeAllBaseObjectProperties = true;
     }
 
+    if (this.loadOntologyDefinedDerivedProperties != null) {
+      queryParams.$UNSTABLE_loadOntologyDefinedDerivedProperties =
+        this.loadOntologyDefinedDerivedProperties;
+    }
+
     const response = await linkQuery.fetchPage(queryParams);
 
     // Store the next page token for pagination
@@ -285,7 +300,11 @@ export class SpecificLinkQuery extends BaseListQuery<
     // Honor resolveToObjectType only when the link target is an interface —
     // for concrete object targets the data is already in object form.
     if (this.#resolveToObjectType && target?.kind === "interface") {
-      const fullData = await reloadDataAsFullObjects(client, response.data);
+      const fullData = await reloadDataAsFullObjects(
+        client,
+        response.data,
+        this.loadOntologyDefinedDerivedProperties,
+      );
       return { ...response, data: fullData };
     }
 

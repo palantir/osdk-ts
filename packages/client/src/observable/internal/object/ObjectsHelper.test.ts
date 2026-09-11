@@ -25,7 +25,9 @@ import {
   InterfaceDefRef,
   ObjectDefRef,
 } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
+import { OptimisticJob } from "../actions/OptimisticJob.js";
 import type { Canonical } from "../Canonical.js";
+import { createOptimisticId } from "../OptimisticId.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import { Store } from "../Store.js";
 import {
@@ -746,6 +748,73 @@ describe("ObjectsHelper variant cache keys", () => {
 
     expect(q1).not.toBe(q2);
     expect(q1.cacheKey).not.toBe(q2.cacheKey);
+  });
+
+  it("isolates fetched and optimistic writes across settings", async () => {
+    const disabledValue = emp.$clone({ fullName: "Disabled" });
+    const enabledValue = emp.$clone({
+      fullName: "Enabled",
+      office: "Derived value",
+    });
+    const serverDefault = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    });
+    const explicitlyDisabled = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      $UNSTABLE_loadOntologyDefinedDerivedProperties: false,
+    });
+    const explicitlyEnabled = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      $UNSTABLE_loadOntologyDefinedDerivedProperties: true,
+    });
+
+    const subscriptions = [
+      serverDefault,
+      explicitlyDisabled,
+      explicitlyEnabled,
+    ].map((query) => store.subjects.get(query.cacheKey).subscribe(() => {}));
+
+    store.batch({}, (batch) => {
+      serverDefault.writeToStore(emp as any, "loaded", batch);
+      explicitlyDisabled.writeToStore(disabledValue as any, "loaded", batch);
+      explicitlyEnabled.writeToStore(enabledValue as any, "loaded", batch);
+    });
+
+    expect(store.getValue(serverDefault.cacheKey)?.value?.fullName).toBe(
+      "Alice",
+    );
+    expect(store.getValue(explicitlyDisabled.cacheKey)?.value?.fullName).toBe(
+      "Disabled",
+    );
+    expect(store.getValue(explicitlyEnabled.cacheKey)?.value?.fullName).toBe(
+      "Enabled",
+    );
+
+    const fromEnabled = createOptimisticId();
+    const enabledJob = new OptimisticJob(store, fromEnabled);
+    enabledJob.context.updateObject(
+      enabledValue.$clone({ fullName: "From enabled" }),
+    );
+    await enabledJob.getResult();
+
+    expect(
+      [serverDefault, explicitlyDisabled, explicitlyEnabled].map(
+        (query) => store.getValue(query.cacheKey)?.value?.fullName,
+      ),
+    ).toEqual(["From enabled", "Disabled", "Enabled"]);
+    expect(store.getValue(explicitlyDisabled.cacheKey)?.value?.office).toBe(
+      undefined,
+    );
+    expect(store.getValue(serverDefault.cacheKey)?.value?.office).toBe(
+      "Derived value",
+    );
+
+    store.layers.remove(fromEnabled);
+
+    subscriptions.forEach((subscription) => subscription.unsubscribe());
   });
 
   it("treats no-select and empty-select as the same cache key", () => {

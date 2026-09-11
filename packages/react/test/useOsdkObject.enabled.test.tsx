@@ -135,4 +135,19 @@ describe("useOsdkObject enabled option", () => {
     const options = mockObserveObject.mock.calls[0][2];
     expect(options.$includeAllBaseObjectProperties).toBe(true);
   });
+
+  it("should forward explicit false for ontology-defined derived properties", () => {
+    const wrapper = createWrapper();
+
+    renderHook(
+      () =>
+        useOsdkObject(MockObjectType, "pk-888", {
+          $UNSTABLE_loadOntologyDefinedDerivedProperties: false,
+        }),
+      { wrapper },
+    );
+
+    const options = mockObserveObject.mock.calls[0][2];
+    expect(options.$UNSTABLE_loadOntologyDefinedDerivedProperties).toBe(false);
+  });
 });
