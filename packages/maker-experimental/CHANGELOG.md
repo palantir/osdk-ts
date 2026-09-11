@@ -1,5 +1,27 @@
 # @osdk/maker-experimental
 
+## 0.61.0
+
+### Minor Changes
+
+- 43bfe44: Sync the generated ontology-metadata interface type schema migration types.
+- 595621c: Adds isInterfacePropertyRequired, resolving whether implementing object types must provide a property across interface-defined and shared-property-backed properties on an interface type.
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+- 192d1cb: Add support for more types to function backed actions
+
+### Patch Changes
+
+- Updated dependencies [43bfe44]
+- Updated dependencies [595621c]
+- Updated dependencies [488376f]
+- Updated dependencies [7681809]
+- Updated dependencies [192d1cb]
+  - @osdk/client.unstable@2.67.0
+  - @osdk/maker@0.67.0
+  - @osdk/api@2.67.0
+  - @osdk/generator-converters.ontologyir@2.67.0
+  - @osdk/generator-converters.preview@0.45.0
+
 ## 0.60.0
 
 ### Patch Changes

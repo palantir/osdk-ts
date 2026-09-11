@@ -1,5 +1,18 @@
 # @osdk/cli.cmd.typescript
 
+## 0.93.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [488376f]
+  - @osdk/cli.common@0.93.0
+  - @osdk/generator@2.67.0
+  - @osdk/shared.client.impl@1.14.0
+
 ## 0.92.0
 
 ### Patch Changes

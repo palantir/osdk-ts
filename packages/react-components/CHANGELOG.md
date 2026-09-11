@@ -1,5 +1,17 @@
 # @osdk/react-components
 
+## 0.58.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+- 0053052: Preserve scalar action parameter types and align action form submission callback types with form state.
+
+### Patch Changes
+
+- Updated dependencies [488376f]
+  - @osdk/aip-core@0.11.0
+
 ## 0.57.0
 
 ### Minor Changes
