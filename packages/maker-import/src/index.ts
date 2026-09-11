@@ -15,4 +15,7 @@
  */
 
 export { default as default } from "./cli/main.js";
-export { writeImportedOntology } from "./generate/writeImportedOntology.js";
+export {
+  convertOntologyFullMetadata,
+  writeImportedOntology,
+} from "./generate/writeImportedOntology.js";
