@@ -111,6 +111,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           whereClause={whereClause}
           formatDate={definition.formatDate}
           clickToFilter={definition.clickToFilter}
+          enableRelativeMode={definition.enableRelativeMode}
         />
       );
 

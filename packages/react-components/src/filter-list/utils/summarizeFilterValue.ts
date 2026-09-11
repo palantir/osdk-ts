@@ -21,6 +21,7 @@ import { formatDateForInput } from "../../shared/dateUtils.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { NO_VALUE } from "./filterValues.js";
+import { formatRelativeBound } from "./resolveRelativeDate.js";
 
 // Em-dash reads naturally as an unbounded range half (e.g. "— – Jan 1").
 const NO_VALUE_PLACEHOLDER = "—";
@@ -93,6 +94,15 @@ export function summarizeFilterValue<Q extends ObjectTypeDefinition>(
       return formatRange(minValue, maxValue, String, "−∞", "∞");
     }
     case "DATE_RANGE": {
+      if (state.isRelative === true) {
+        const minLabel = state.relativeMin
+          ? formatRelativeBound(state.relativeMin)
+          : "Indefinitely";
+        const maxLabel = state.relativeMax
+          ? formatRelativeBound(state.relativeMax)
+          : "Indefinitely";
+        return `${minLabel} – ${maxLabel}`;
+      }
       const { minValue, maxValue, includeNull } = state;
       if (minValue == null && maxValue == null) {
         return includeNull ? "Includes empty" : "";
