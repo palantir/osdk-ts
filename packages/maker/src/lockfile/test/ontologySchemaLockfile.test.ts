@@ -238,7 +238,7 @@ describe("interface schema migration scenarios", () => {
           { writeLocks: true },
         ),
       ).rejects.toThrowError(
-        /schema migration "requireLastName" changed its instructions from \[addRequiredProperty\("lastName"\)\] to \[addRequiredProperty\("nickname"\)\][\s\S]*instructions are immutable/u,
+        /schema migration "requireLastName" changed its instructions from \[addRequiredProperty\("lastName"\)\] to \[addRequiredProperty\("nickname"\)\][\s\S]*instructions may not be changed/u,
       );
     });
 
