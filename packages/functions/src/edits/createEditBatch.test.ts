@@ -502,6 +502,64 @@ describe(createEditBatch, () => {
     editBatch.update({ $apiName: "Task", $primaryKey: 2 }, { capacity: 4 }); // Using Office properties
   });
 
+  it("requires only properties listed in create metadata", () => {
+    interface CreateCheckedObject extends ObjectTypeDefinition {
+      type: "object";
+      apiName: "CreateCheckedObject";
+      __DefinitionMetadata?: {
+        apiName: "CreateCheckedObject";
+        displayName: "Create checked object";
+        pluralDisplayName: "Create checked objects";
+        description: undefined;
+        rid: "ri.object.create-checked";
+        type: "object";
+        primaryKeyApiName: "id";
+        primaryKeyType: "integer";
+        titleProperty: "id";
+        status: "ACTIVE";
+        icon: undefined;
+        visibility: undefined;
+        implements: [];
+        interfaceMap: {};
+        inverseInterfaceMap: {};
+        links: {};
+        createMetadata: {
+          requiredProperties: ["id", "writeRequired"];
+        };
+        properties: {
+          id: PropertyDef<"integer", "non-nullable", "single">;
+          writeRequired: PropertyDef<"string", "non-nullable", "single">;
+          backingRequired: PropertyDef<"string", "non-nullable", "single">;
+          optional: PropertyDef<"string", "nullable", "single">;
+        };
+        objectSet: any;
+        props: any;
+        strictProps: any;
+        linksType: any;
+      };
+    }
+
+    function _typeCheck(
+      batch: EditBatch<Edits.Object<CreateCheckedObject>>,
+      objectType: CreateCheckedObject,
+    ) {
+      batch.create(objectType, { id: 1, writeRequired: "required" });
+      batch.create(objectType, {
+        id: 2,
+        writeRequired: "required",
+        backingRequired: "optional during create",
+      });
+
+      // @ts-expect-error writeRequired is required on the create write path
+      batch.create(objectType, { id: 3 });
+
+      // @ts-expect-error id is always required when creating an object
+      batch.create(objectType, { writeRequired: "required" });
+    }
+
+    expect(_typeCheck).toBeDefined();
+  });
+
   it("disambiguates an object and interface that share an apiName", () => {
     interface SharedObj extends ObjectTypeDefinition {
       type: "object";
