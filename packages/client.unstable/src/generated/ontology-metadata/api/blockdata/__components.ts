@@ -272,8 +272,8 @@ export interface KnownMarketplaceIdentifiers {
   >;
   interfaceTypes: Record<_api_InterfaceTypeRid, BlockInternalId>;
   interfaceTypeSchemaTransitions: Record<
-    _api_InterfaceTypeRid,
-    Record<_api_InterfaceTypeSchemaTransitionRid, BlockInternalId>
+    _api_InterfaceTypeSchemaTransitionRid,
+    BlockInternalId
   >;
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeRid, BlockInternalId>;
@@ -632,11 +632,8 @@ export interface OntologyIrKnownMarketplaceIdentifiers {
   >;
   interfaceTypes: Record<_api_InterfaceTypeApiName, BlockInternalId>;
   interfaceTypeSchemaTransitions: Record<
-    _api_InterfaceTypeApiName,
-    Record<
-      _api_schemamigrations_InterfaceTypeSchemaTransitionId,
-      BlockInternalId
-    >
+    _api_schemamigrations_InterfaceTypeSchemaTransitionId,
+    BlockInternalId
   >;
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeId, BlockInternalId>;
