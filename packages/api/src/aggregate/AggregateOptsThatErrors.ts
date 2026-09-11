@@ -29,6 +29,7 @@ export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
     ? {
         $groupBy: AO["$groupBy"];
         $select: UnorderedAggregationClause<Q>;
+        $accuracy?: AO["$accuracy"];
       }
     : SingleKeyObject<AO["$groupBy"]> extends never
       ? AO["$select"] extends UnorderedAggregationClause<Q>
@@ -38,6 +39,7 @@ export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
           : {
               $groupBy: AO["$groupBy"];
               $select: UnorderedAggregationClause<Q>;
+              $accuracy?: AO["$accuracy"];
             }
       : AggregateOptsThatErrors<Q, AO>;
 

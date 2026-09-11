@@ -482,7 +482,8 @@ interface Aggregate<Q extends ObjectOrInterfaceDefinition> {
   /**
    * Aggregate on a field in an object type
    * @param req - an aggregation request where you can select fields and choose how to aggregate, e.g., max, min, avg, and also choose
-   * whether or not you order your results. You can also specify a groupBy field to group your aggregations
+   * whether or not you order your results. You can also specify a groupBy field to group your aggregations. Use `$accuracy` to control
+   * whether the backend may return an approximate result (`"ALLOW_APPROXIMATE"`) or must compute it exactly (`"REQUIRE_ACCURATE"`)
    * @example
    * ```ts
    * const testAggregateCountWithGroups = await client(BoundariesUsState)
