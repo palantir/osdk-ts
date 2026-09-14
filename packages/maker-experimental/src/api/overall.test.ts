@@ -36,6 +36,7 @@ import {
   defineSharedPropertyType,
   defineValueType,
   dumpOntologyFullMetadata,
+  implementInterface,
   importOntologyEntity,
   importSharedPropertyType,
   OntologyEntityTypeEnum,
@@ -133,23 +134,8 @@ describe("Experimental Test Suite", () => {
         titlePropertyApiName: "id",
         primaryKeyPropertyApiName: "id",
         properties: { id: { type: "string" } },
-        implementsInterfaces: [
-          { implements: employerInterface, propertyMapping: [] },
-        ],
       });
-      const employeeEmployer = defineLink({
-        apiName: "employee-employer",
-        one: {
-          object: employer,
-          metadata: { apiName: "employees" },
-        },
-        toMany: {
-          object: "com.palantir.employee",
-          metadata: { apiName: "employer" },
-        },
-        manyForeignKeyProperty: "employerId",
-      });
-      defineObject({
+      const employee = defineObject({
         apiName: "employee",
         displayName: "Employee",
         pluralDisplayName: "Employees",
@@ -159,20 +145,32 @@ describe("Experimental Test Suite", () => {
           id: { type: "string" },
           employerId: { type: "string" },
         },
-        implementsInterfaces: [
-          {
-            implements: employeeInterface,
-            propertyMapping: [],
-            linkImplementations: {
-              [employerConstraint.apiName]: [
-                {
-                  linkType: employeeEmployer,
-                  sideApiName: "employer",
-                },
-              ],
-            },
-          },
-        ],
+      });
+      const employeeEmployer = defineLink({
+        apiName: "employee-employer",
+        one: {
+          object: employer,
+          metadata: { apiName: "employees" },
+        },
+        toMany: {
+          object: employee,
+          metadata: { apiName: "employer" },
+        },
+        manyForeignKeyProperty: "employerId",
+      });
+
+      implementInterface({
+        interfaceType: employerInterface,
+        objectType: employer,
+      });
+      implementInterface({
+        interfaceType: employeeInterface,
+        objectType: employee,
+        linkImplementations: {
+          [employerConstraint.apiName]: [
+            { linkType: employeeEmployer, sideApiName: "employer" },
+          ],
+        },
       });
     });
 
