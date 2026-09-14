@@ -172,7 +172,7 @@ export default async function main(
     );
   }
 
-  const importedOntologyMetadata =
+  const externalImportedMetadata =
     commandLineOpts.importJson && fs.existsSync(commandLineOpts.importJson)
       ? (JSON.parse(
           await fs.promises.readFile(commandLineOpts.importJson, "utf-8"),
@@ -202,7 +202,7 @@ export default async function main(
         blockDataJson as Parameters<
           typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData
         >[0],
-        importedOntologyMetadata,
+        externalImportedMetadata,
       );
     invariant(
       commandLineOpts.functionsDir && commandLineOpts.nodeModulesDir,
@@ -233,8 +233,8 @@ export default async function main(
     await fs.promises.mkdir(commandLineOpts.buildDir, { recursive: true });
   }
 
-  const importedLinkTypeIdsByApiName = importedOntologyMetadata
-    ? getImportedLinkTypeIdsByApiName(importedOntologyMetadata)
+  const importedLinkTypeIdsByApiName = externalImportedMetadata
+    ? getImportedLinkTypeIdsByApiName(externalImportedMetadata)
     : undefined;
 
   const {
@@ -253,6 +253,7 @@ export default async function main(
     functionsIrFile,
     commandLineOpts.randomnessKey,
     importedLinkTypeIdsByApiName,
+    externalImportedMetadata,
   );
 
   // Create temp directory for block data
@@ -534,6 +535,7 @@ async function loadOntology(
   functionsIrFile?: string,
   randomnessKey?: string,
   importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
+  externalImportedMetadata?: ImportedOntologyMetadata,
 ) {
   const result = await defineOntologyV2(
     apiNamespace,
@@ -543,6 +545,7 @@ async function loadOntology(
     functionsIrFile,
     randomnessKey,
     importedLinkTypeIdsByApiName,
+    externalImportedMetadata,
   );
   return result;
 }
