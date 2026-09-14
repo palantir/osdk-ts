@@ -20,11 +20,11 @@ import type {
   Osdk,
   QueryDefinition,
 } from "@osdk/api";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import type {
   ColumnDefinition,
   ObjectTableProps,
-} from "@osdk/react-components/experimental/object-table";
+} from "@osdk/react-components/object-table";
 import type { Meta } from "@storybook/react-vite";
 import { screen, type within, userEvent } from "storybook/test";
 

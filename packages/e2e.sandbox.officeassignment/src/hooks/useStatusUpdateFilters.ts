@@ -19,7 +19,7 @@ import { useOsdkClient } from "@osdk/react";
 import type {
   FilterDefinitionUnion,
   FilterState,
-} from "@osdk/react-components/experimental/filter-list";
+} from "@osdk/react-components/filter-list";
 import React from "react";
 
 import { StatusUpdate } from "../generatedNoCheck2/index.js";

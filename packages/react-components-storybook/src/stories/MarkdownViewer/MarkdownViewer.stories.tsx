@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BaseMarkdownViewerProps } from "@osdk/react-components/experimental/markdown-renderer";
-import { BaseMarkdownViewer } from "@osdk/react-components/experimental/markdown-renderer";
+import type { BaseMarkdownViewerProps } from "@osdk/react-components/markdown-viewer";
+import { BaseMarkdownViewer } from "@osdk/react-components/markdown-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const SAMPLE_MARKDOWN = `# Sample Document
@@ -39,7 +39,7 @@ This is a **sample markdown** document that demonstrates the *BaseMarkdownViewer
 ## Code Example
 
 \`\`\`typescript
-import { BaseMarkdownViewer } from "@osdk/react-components/experimental/markdown-renderer";
+import { BaseMarkdownViewer } from "@osdk/react-components/markdown-viewer";
 
 function App() {
   return <BaseMarkdownViewer content="# Hello World" />;

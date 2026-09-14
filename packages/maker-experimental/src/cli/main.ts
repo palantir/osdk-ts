@@ -240,6 +240,7 @@ export default async function main(
   const {
     ontologyIr,
     shapes,
+    blockDataAddOn,
     importedInputPresets,
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
@@ -295,6 +296,7 @@ export default async function main(
     valueTypeResults = await generateValueTypeBlockResults(
       ontologyIr.valueTypes,
       commandLineOpts.buildDir,
+      commandLineOpts.randomnessKey,
     );
   }
 
@@ -491,7 +493,7 @@ export default async function main(
       ontologyIr.importedValueTypes,
       shapes.inputShapes,
     ),
-    add_on_override: undefined,
+    add_on_override: blockDataAddOn,
     input_shape_metadata: Object.fromEntries(shapes.inputShapeMetadata),
     block_type: "ONTOLOGY",
   };

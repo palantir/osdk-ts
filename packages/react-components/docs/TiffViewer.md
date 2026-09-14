@@ -5,10 +5,7 @@ A React component for rendering TIFF images from raw byte arrays. Also provides 
 ## Import
 
 ```tsx
-import {
-  BaseTiffViewer,
-  TiffViewer,
-} from "@osdk/react-components/experimental/tiff-renderer";
+import { BaseTiffViewer, TiffViewer } from "@osdk/react-components/tiff-viewer";
 ```
 
 - **`TiffViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the TIFF contents, and renders via `BaseTiffViewer`.
@@ -19,7 +16,7 @@ import {
 ### With OSDK Media
 
 ```tsx
-import { TiffViewer } from "@osdk/react-components/experimental/tiff-renderer";
+import { TiffViewer } from "@osdk/react-components/tiff-viewer";
 
 <TiffViewer media={scan.tiffImage} />;
 ```
@@ -27,7 +24,7 @@ import { TiffViewer } from "@osdk/react-components/experimental/tiff-renderer";
 ### With raw bytes
 
 ```tsx
-import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-renderer";
+import { BaseTiffViewer } from "@osdk/react-components/tiff-viewer";
 
 <BaseTiffViewer src={tiffBytes} />;
 ```

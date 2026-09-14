@@ -36,21 +36,26 @@ See `@osdk/react`'s `AGENTS.md` for optional peers (`@osdk/foundry.admin`, `@osd
 
 ## Components
 
-Components are imported from their individual entry points under `@osdk/react-components/experimental/`:
+Promoted components are imported from stable individual entry points:
 
-- `@osdk/react-components/experimental/object-table` — ObjectTable, BaseTable, ColumnConfigDialog
-- `@osdk/react-components/experimental/filter-list` — FilterList, BaseFilterList
-- `@osdk/react-components/experimental/action-form` — ActionForm, BaseForm, and form field definitions
-- `@osdk/react-components/experimental/pdf-viewer` — PdfViewer, BasePdfViewer, and building blocks/hooks
-- `@osdk/react-components/experimental/tiff-renderer` — TiffViewer, BaseTiffViewer
-- `@osdk/react-components/experimental/markdown-renderer` — MarkdownViewer, BaseMarkdownViewer
+- `@osdk/react-components/object-table` — ObjectTable, BaseTable, ColumnConfigDialog
+- `@osdk/react-components/filter-list` — FilterList, BaseFilterList
+- `@osdk/react-components/action-form` — ActionForm, BaseForm, and form field definitions
+- `@osdk/react-components/pdf-viewer` — PdfViewer, BasePdfViewer, and building blocks/hooks
+- `@osdk/react-components/tiff-viewer` — TiffViewer, BaseTiffViewer
+- `@osdk/react-components/markdown-viewer` — MarkdownViewer, BaseMarkdownViewer
+- `@osdk/react-components/document-viewer` — DocumentViewer
+- `@osdk/react-components/email-viewer` — EmailViewer, BaseEmailViewer
+- `@osdk/react-components/spreadsheet-viewer` — SpreadsheetViewer, BaseSpreadsheetViewer
+- `@osdk/react-components/image-viewer` — ImageViewer, BaseImageViewer
+- `@osdk/react-components/video-viewer` — VideoViewer, BaseVideoViewer
+- `@osdk/react-components/xml-viewer` — XmlViewer, BaseXmlViewer
+
+Components not yet promoted remain under `experimental/`:
+
 - `@osdk/react-components/experimental/aip-agent-chat` — AipAgentChat, BaseAipAgentChat
-- `@osdk/react-components/experimental/document-viewer` — DocumentViewer
-- `@osdk/react-components/experimental/email-viewer` — EmailViewer, BaseEmailViewer
-- `@osdk/react-components/experimental/spreadsheet-viewer` — SpreadsheetViewer, BaseSpreadsheetViewer
-- `@osdk/react-components/experimental/image-viewer` — ImageViewer, BaseImageViewer
-- `@osdk/react-components/experimental/video-viewer` — VideoViewer, BaseVideoViewer
-- `@osdk/react-components/experimental/xml-viewer` — XmlViewer, BaseXmlViewer
+- `@osdk/react-components/experimental/cbac-picker` — CbacPicker
+- `@osdk/react-components/experimental/theme` — OsdkThemeProvider
 
 | Component                  | Description                                                                                                                                       |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |

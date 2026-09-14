@@ -1,5 +1,52 @@
 # @osdk/client
 
+## 2.67.0
+
+### Minor Changes
+
+- aec9d54: Inject the current Foundry branch into a CSP-safe HTML meta tag so switching git branches cannot reuse a stale branch from Vite's optimized dependency cache. The client reads this runtime value from the document, while the Vite plugin accepts the server-only `FOUNDRY_BRANCH_RID` override during development and production builds. Replace any `VITE_FOUNDRY_BRANCH_RID` override with `FOUNDRY_BRANCH_RID`.
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [43bfe44]
+- Updated dependencies [488376f]
+  - @osdk/client.unstable@2.67.0
+  - @osdk/api@2.67.0
+  - @osdk/generator-converters@2.67.0
+  - @osdk/shared.client.impl@1.14.0
+  - @osdk/shared.net.errors@2.13.0
+  - @osdk/shared.net.fetch@1.13.0
+  - @osdk/shared.test@2.46.0
+
+## 2.66.0
+
+### Minor Changes
+
+- 3404eda: Allow `createScenario` to accept an optional `expireAfter` timestamp
+
+### Patch Changes
+
+- @osdk/api@2.66.0
+- @osdk/client.unstable@2.66.0
+- @osdk/generator-converters@2.66.0
+- @osdk/shared.test@2.45.0
+
+## 2.65.0
+
+### Minor Changes
+
+- e3a381d: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.77.0`. Generated experimental ontology metadata now includes full action type metadata and logic rules.
+- b1bb84a: Fix multiple useOsdkObjects hooks that share the same query incorrectly sharing a page size. Each hook now respects its configured pageSize, or the default of 100, regardless of subscription order.
+- aacb86b: Honor expected value of $isNull in client-side where matching
+
+### Patch Changes
+
+- Updated dependencies [e3a381d]
+  - @osdk/api@2.65.0
+  - @osdk/generator-converters@2.65.0
+  - @osdk/client.unstable@2.65.0
+
 ## 2.64.0
 
 ### Minor Changes

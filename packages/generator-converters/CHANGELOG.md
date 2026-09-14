@@ -1,5 +1,33 @@
 # @osdk/generator-converters
 
+## 2.67.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [488376f]
+  - @osdk/api@2.67.0
+
+## 2.66.0
+
+### Patch Changes
+
+- @osdk/api@2.66.0
+
+## 2.65.0
+
+### Minor Changes
+
+- e3a381d: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.77.0`. Generated experimental ontology metadata now includes full action type metadata and logic rules.
+
+### Patch Changes
+
+- Updated dependencies [e3a381d]
+  - @osdk/api@2.65.0
+
 ## 2.64.0
 
 ### Patch Changes

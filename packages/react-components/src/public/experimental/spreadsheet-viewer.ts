@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-// BaseSpreadsheetViewer
-export { BaseSpreadsheetViewer } from "../../spreadsheet-viewer/BaseSpreadsheetViewer.js";
-export type {
-  BaseSpreadsheetViewerProps,
-  ParsedSpreadsheet,
-  SheetData,
-  SpreadsheetViewerProps,
-} from "../../spreadsheet-viewer/SpreadsheetViewerApi.js";
+import * as Stable from "../spreadsheet-viewer.js";
 
-// SpreadsheetViewer (Media wrapper)
-import { SpreadsheetViewer as _SpreadsheetViewer } from "../../spreadsheet-viewer/SpreadsheetViewer.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const SpreadsheetViewer: typeof _SpreadsheetViewer = withOsdkMetrics(
-  _SpreadsheetViewer,
-  "SpreadsheetViewer",
-);
+/** @deprecated Import from `@osdk/react-components/spreadsheet-viewer` instead. */
+export const BaseSpreadsheetViewer: typeof Stable.BaseSpreadsheetViewer =
+  Stable.BaseSpreadsheetViewer;
+
+/** @deprecated Import from `@osdk/react-components/spreadsheet-viewer` instead. */
+export type BaseSpreadsheetViewerProps = Stable.BaseSpreadsheetViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/spreadsheet-viewer` instead. */
+export type ParsedSpreadsheet = Stable.ParsedSpreadsheet;
+
+/** @deprecated Import from `@osdk/react-components/spreadsheet-viewer` instead. */
+export type SheetData = Stable.SheetData;
+
+/** @deprecated Import from `@osdk/react-components/spreadsheet-viewer` instead. */
+export type SpreadsheetViewerProps = Stable.SpreadsheetViewerProps;
+
+/** @deprecated Import from `@osdk/react-components/spreadsheet-viewer` instead. */
+export const SpreadsheetViewer: typeof Stable.SpreadsheetViewer =
+  Stable.SpreadsheetViewer;

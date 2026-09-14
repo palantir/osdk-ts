@@ -3,7 +3,7 @@ title: FilterList
 description: An OSDK-aware filter panel for ontology objects. Renders a list of filter controls — listogram, select, range, keyword search, and more — driven by aggregations against an object type or ObjectSet, and emits a composed where clause or filtered ObjectSet.
 ---
 
-> **Beta** — exported from `@osdk/react-components/experimental/filter-list`.
+> **Beta** — exported from `@osdk/react-components/filter-list`.
 
 ## Usage
 
@@ -13,7 +13,7 @@ FilterList fetches its own facet data. Wrap your app in `OsdkProvider` and impor
 
 ```tsx
 import { Employee } from "@my/osdk";
-import { FilterList } from "@osdk/react-components/experimental/filter-list";
+import { FilterList } from "@osdk/react-components/filter-list";
 
 function EmployeeFilters() {
   return (
@@ -108,7 +108,7 @@ See the [**Filter List**](./CSSVariables.md#filter-list) section of [CSSVariable
 
 ## Advanced
 
-`FilterList` is the OSDK-aware component most consumers should use. For cases where you need to bring your own data fetching or assemble the panel from smaller pieces, the package also exports the OSDK-agnostic base component, the individual building blocks, and the headless hook that backs them. All are available from `@osdk/react-components/experimental/filter-list`.
+`FilterList` is the OSDK-aware component most consumers should use. For cases where you need to bring your own data fetching or assemble the panel from smaller pieces, the package also exports the OSDK-agnostic base component, the individual building blocks, and the headless hook that backs them. All are available from `@osdk/react-components/filter-list`.
 
 ### BaseFilterList
 

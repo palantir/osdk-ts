@@ -236,7 +236,7 @@ src/
 
 ### Export Strategy
 
-- **OSDK Components**: Exported through individual entry points under `experimental/` (e.g., `experimental/object-table`, `experimental/filter-list`)
+- **OSDK Components**: Exported through individual entry points (e.g., `object-table`, `filter-list`); components not yet promoted remain under `experimental/`
 - **Base Components**: Select base components are exported for advanced use cases (e.g., `BaseTable`, `BaseFilterList`)
 - **UI Primitives**: The `base-components/` folder contains internal UI primitives that are **NOT exported**
 
@@ -253,7 +253,7 @@ This package focuses on complex, Ontology-aware components with built-in data fe
 
 Every OSDK component (the outermost data-fetching layer, **not** the Base component) must register a user agent string so that network requests include a `Fetch-User-Agent` header identifying which component initiated them. This enables usage tracking and debugging.
 
-This is handled automatically by the `withOsdkMetrics` HOC. Wrap your component at the **export barrel** (`public/experimental/*.ts`), not inside the component body:
+This is handled automatically by the `withOsdkMetrics` HOC. Wrap your component at its canonical **export barrel** (`public/experimental/*.ts` before promotion, or `public/*.ts` after promotion), not inside the component body:
 
 ```ts
 // public/experimental/my-component.ts
@@ -283,7 +283,7 @@ See the [CSS Variables Reference](https://github.com/palantir/osdk-ts/blob/main/
 ### Object Table
 
 ```ts
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import { Employee } from "@your-osdk-package";
 
 function EmployeeDirectory() {

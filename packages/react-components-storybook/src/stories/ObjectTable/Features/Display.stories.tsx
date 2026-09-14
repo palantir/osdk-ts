@@ -17,7 +17,7 @@
 import { NonIdealState } from "@blueprintjs/core";
 import type { Osdk } from "@osdk/api";
 import { useOsdkClient } from "@osdk/react";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ActionForm } from "@osdk/react-components/experimental";
+import { ActionForm } from "@osdk/react-components/action-form";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 
@@ -62,7 +62,7 @@ export const Default: Story = {
           "Shows ActionForm's default behavior: it maps action metadata to generated field components when no formFieldDefinitions are provided.",
       },
       source: {
-        code: `import { ActionForm } from "@osdk/react-components/experimental";
+        code: `import { ActionForm } from "@osdk/react-components/action-form";
 
 // ActionForm reads the action definition metadata and chooses default
 // field components for supported parameter types.

@@ -18,6 +18,8 @@ import type { OntologyIrMarketplaceInterfacePropertyType } from "@osdk/client.un
 
 import {
   type InterfacePropertyType,
+  interfacePropertyWireApiName,
+  isInterfacePropertyRequired,
   isInterfaceSharedPropertyType,
 } from "../../api/interface/InterfacePropertyType.js";
 import {
@@ -34,11 +36,11 @@ export function convertInterfaceProperty(
 ): [string, OntologyIrMarketplaceInterfacePropertyType] {
   if (isInterfaceSharedPropertyType(prop)) {
     return [
-      prop.sharedPropertyType.apiName,
+      interfacePropertyWireApiName(prop, apiName),
       {
         type: "sharedPropertyBasedPropertyType",
         sharedPropertyBasedPropertyType: {
-          requireImplementation: prop.required,
+          requireImplementation: isInterfacePropertyRequired(prop),
           sharedPropertyType: convertSpt(prop.sharedPropertyType),
         },
       },
@@ -66,7 +68,7 @@ export function convertInterfaceProperty(
             : propertyTypeTypeToOntologyIrInterfaceType(prop.type),
           constraints: {
             primaryKeyConstraint: prop.primaryKeyConstraint ?? "NO_RESTRICTION",
-            requireImplementation: prop.required ?? true,
+            requireImplementation: isInterfacePropertyRequired(prop),
             indexedForSearch: shouldBeIndexedForSearch(prop.type),
             typeClasses: prop.typeClasses ?? [],
             dataConstraints: convertNullabilityToDataConstraint({

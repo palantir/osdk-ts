@@ -5,10 +5,7 @@ A React component for displaying XML content in a styled `<pre><code>` block wit
 ## Import
 
 ```tsx
-import {
-  BaseXmlViewer,
-  XmlViewer,
-} from "@osdk/react-components/experimental/xml-viewer";
+import { BaseXmlViewer, XmlViewer } from "@osdk/react-components/xml-viewer";
 ```
 
 - **`XmlViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, fetches the XML text, and renders it.
@@ -19,7 +16,7 @@ import {
 ### With OSDK Media
 
 ```tsx
-import { XmlViewer } from "@osdk/react-components/experimental/xml-viewer";
+import { XmlViewer } from "@osdk/react-components/xml-viewer";
 
 <XmlViewer media={config.xmlFile} />;
 ```
@@ -27,7 +24,7 @@ import { XmlViewer } from "@osdk/react-components/experimental/xml-viewer";
 ### With a string
 
 ```tsx
-import { BaseXmlViewer } from "@osdk/react-components/experimental/xml-viewer";
+import { BaseXmlViewer } from "@osdk/react-components/xml-viewer";
 
 <BaseXmlViewer content='<?xml version="1.0"?><root><item>Hello</item></root>' />;
 ```

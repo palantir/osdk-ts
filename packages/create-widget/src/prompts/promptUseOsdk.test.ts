@@ -30,7 +30,6 @@ function template(supportsOsdk: boolean): Template {
   return {
     id: "template-widget-test",
     label: "Test",
-    envPrefix: "VITE_",
     buildDirectory: "./dist",
     supportsOsdk,
     files: {},

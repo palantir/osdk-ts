@@ -20,8 +20,8 @@ import type {
   BaseFormFieldProps,
   FormContentItem,
   RendererFieldDefinition,
-} from "@osdk/react-components/experimental";
-import { BaseForm } from "@osdk/react-components/experimental";
+} from "@osdk/react-components/action-form";
+import { BaseForm } from "@osdk/react-components/action-form";
 import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useCallback, useMemo, useState } from "react";
@@ -300,7 +300,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseForm } from "@osdk/react-components/experimental";
+        code: `import { BaseForm } from "@osdk/react-components/action-form";
 import {
   THEMED_SLIDER_DEFAULT_VALUE,
   ThemedSliderField,

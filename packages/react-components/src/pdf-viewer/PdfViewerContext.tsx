@@ -135,9 +135,13 @@ export function usePdfViewerInstance(
 ): PdfViewerContextValue {
   const viewer = usePdfViewerState({
     src: options.src,
+    defaultPage: options.defaultPage,
     initialPage: options.initialPage,
+    defaultScale: options.defaultScale,
     initialScale: options.initialScale,
+    defaultAutoSize: options.defaultAutoSize,
     initialAutoSize: options.initialAutoSize,
+    defaultSidebarOpen: options.defaultSidebarOpen,
     initialSidebarOpen: options.initialSidebarOpen,
     sidebarMode: options.sidebarMode,
     onDownload: options.onDownload,

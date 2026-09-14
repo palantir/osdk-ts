@@ -34,6 +34,20 @@ export default defineConfig({
         "**/index.ts",
       ],
     },
+    // Classnames are package-prefixed: test paths repeat across packages.
+    reporters: process.env.CI
+      ? [
+        "default",
+        [
+          "junit",
+          {
+            classnameTemplate: (v) =>
+              v.filepath.split("/packages/").pop() ?? v.filepath,
+          },
+        ],
+      ]
+      : ["default"],
+    outputFile: { junit: "reports/junit.xml" },
     fakeTimers: {
       toFake: ["setTimeout", "clearTimeout", "Date"],
     },

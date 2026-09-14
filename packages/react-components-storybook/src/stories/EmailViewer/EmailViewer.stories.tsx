@@ -19,11 +19,11 @@ import type {
   BaseEmailViewerProps,
   EmailViewerProps,
   ParsedEmail,
-} from "@osdk/react-components/experimental/email-viewer";
+} from "@osdk/react-components/email-viewer";
 import {
   BaseEmailViewer,
   EmailViewer,
-} from "@osdk/react-components/experimental/email-viewer";
+} from "@osdk/react-components/email-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const SAMPLE_EMAIL: ParsedEmail = {

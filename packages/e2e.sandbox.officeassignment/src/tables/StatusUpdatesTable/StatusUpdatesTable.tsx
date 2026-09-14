@@ -15,7 +15,7 @@
  */
 
 import type { ObjectSet, WhereClause } from "@osdk/api";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import React from "react";
 
 import { StatusUpdate } from "../../generatedNoCheck2/index.js";

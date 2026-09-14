@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LoadingCellContent } from "@osdk/react-components/experimental/object-table";
+import { LoadingCellContent } from "@osdk/react-components/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta: Meta<typeof LoadingCellContent> = {
@@ -45,7 +45,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { LoadingCellContent } from "@osdk/react-components/experimental/object-table";
+        code: `import { LoadingCellContent } from "@osdk/react-components/object-table";
 
 <td>
   <LoadingCellContent />

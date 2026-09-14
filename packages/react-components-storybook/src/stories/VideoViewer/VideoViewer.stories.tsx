@@ -15,8 +15,8 @@
  */
 
 import type { Media } from "@osdk/api";
-import type { VideoViewerProps } from "@osdk/react-components/experimental/video-viewer";
-import { VideoViewer } from "@osdk/react-components/experimental/video-viewer";
+import type { VideoViewerProps } from "@osdk/react-components/video-viewer";
+import { VideoViewer } from "@osdk/react-components/video-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { http, passthrough } from "msw";
 import { fn } from "storybook/test";

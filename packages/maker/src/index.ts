@@ -100,7 +100,17 @@ export type {
   InterfaceDefinedProperty,
   InterfacePropertyType,
 } from "./api/interface/InterfacePropertyType.js";
-export { isInterfaceSharedPropertyType } from "./api/interface/InterfacePropertyType.js";
+export {
+  interfacePropertyWireApiName,
+  isInterfacePropertyRequired,
+  isInterfaceSharedPropertyType,
+} from "./api/interface/InterfacePropertyType.js";
+export type {
+  InterfaceSchemaGracePeriod,
+  InterfaceSchemaMigrationInstruction,
+  InterfaceSchemaMigrations,
+  InterfaceSchemaTransition,
+} from "./api/interface/InterfaceSchemaMigrations.js";
 export type { InterfaceType } from "./api/interface/InterfaceType.js";
 export type {
   LinkType,
@@ -137,4 +147,5 @@ export {
 export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";
 export { default } from "./cli/main.js";
+export { convertInterfaceSchemaGracePeriod } from "./conversion/toMarketplace/convertInterfaceSchemaMigrations.js";
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";

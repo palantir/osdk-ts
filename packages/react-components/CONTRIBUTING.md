@@ -151,7 +151,7 @@ Components in this package favour **minimum configuration**. A consumer should b
 5. Keep the Base component API simple using primitive types.
 6. For complex components, consider a building blocks tier with sub-components and hooks.
 7. **Reuse before writing.** Check `src/base-components/` for existing primitives, and consult `src/public/primitives.ts` (the sanctioned-reuse barrel) before creating new UI primitives. If a primitive is reusable across components, add it to `src/base-components/` rather than co-locating it in the component folder.
-8. Export the OSDK component (and optionally the Base component) from `src/public/experimental/<name>.ts`.
+8. New components start under `src/public/experimental/<name>.ts`. Add an explicit `./experimental/<name>` package export; there is no experimental wildcard. Components move to `src/public/<name>.ts` only when deliberately promoted to a stable entry point.
 9. **Update documentation:**
    - Add `docs/<Name>.md` with usage and a minimal example, matching the structure of existing per-component docs
    - **Add an auto-generated props table.** Drop a `<!-- AUTOGEN:props START src=... interface=... -->` / `END` marker block into the doc and run `pnpm --filter @osdk/react-components gen-props`. See [Props reference tables (auto-generated)](./README.md#props-reference-tables-auto-generated) in the README. Don't hand-author the props table
@@ -175,7 +175,7 @@ src/my-component/
 
 ### Export Rules
 
-- **OSDK components** are exported through per-component files in `src/public/experimental/<name>.ts`. Check `package.json` `exports` first — the existing wildcard pattern (`"./experimental/*"`) may already cover the new sub-path; only add an explicit entry if the wildcard doesn't resolve to it
+- **OSDK components** start in per-component files under `src/public/experimental/`. Add an explicit package export for each experimental entry point. Promoted components use `src/public/<name>.ts`, which is covered by the `"./*"` package export fallback
 - **Base components** may be exported for advanced use cases
 - **UI primitives** in `src/base-components/` are internal and must **not** be exported. The sanctioned reuse list is `src/public/primitives.ts`
 

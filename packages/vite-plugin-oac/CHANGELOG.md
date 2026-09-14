@@ -1,5 +1,54 @@
 # @osdk/vite-plugin-oac
 
+## 0.67.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [43bfe44]
+- Updated dependencies [595621c]
+- Updated dependencies [488376f]
+- Updated dependencies [7681809]
+- Updated dependencies [192d1cb]
+  - @osdk/client.unstable@2.67.0
+  - @osdk/maker@0.67.0
+  - @osdk/api@2.67.0
+  - @osdk/cli@0.93.0
+  - @osdk/faux@0.51.0
+  - @osdk/generator-converters.ontologyir@2.67.0
+
+## 0.66.0
+
+### Patch Changes
+
+- @osdk/api@2.66.0
+- @osdk/client.unstable@2.66.0
+- @osdk/generator-converters.ontologyir@2.66.0
+- @osdk/faux@0.50.0
+- @osdk/maker@0.66.0
+- @osdk/cli@0.92.0
+
+## 0.65.0
+
+### Minor Changes
+
+- e3a381d: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.77.0`. Generated experimental ontology metadata now includes full action type metadata and logic rules.
+
+### Patch Changes
+
+- Updated dependencies [84bcd53]
+- Updated dependencies [eb0c920]
+- Updated dependencies [e3a381d]
+  - @osdk/maker@0.65.0
+  - @osdk/api@2.65.0
+  - @osdk/faux@0.49.0
+  - @osdk/generator-converters.ontologyir@2.65.0
+  - @osdk/cli@0.91.0
+  - @osdk/client.unstable@2.65.0
+
 ## 0.64.0
 
 ### Patch Changes

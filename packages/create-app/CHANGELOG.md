@@ -1,5 +1,32 @@
 # @osdk/create-app
 
+## 2.67.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [488376f]
+  - @osdk/generator-utils@2.67.0
+
+## 2.66.0
+
+### Minor Changes
+
+- 44fbc5d: Add React (Public) template for authless, public-facing applications. Select the React (Public) template from the framework prompt to scaffold an app that talks to Foundry through a public proxy without OAuth.
+
+### Patch Changes
+
+- @osdk/generator-utils@2.66.0
+
+## 2.65.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.65.0
+
 ## 2.64.0
 
 ### Minor Changes

@@ -32,6 +32,7 @@ export function convertInterface(
     __type,
     status,
     linkedInterfaces: _linkedInterfaces,
+    schemaMigrations,
     ...other
   } = interfaceType;
   // Normalize deprecated deadline format to match Java (strip .000 milliseconds)
@@ -47,6 +48,12 @@ export function convertInterface(
       : status;
   return {
     ...other,
+    // schema migrations travel in their own block data section rather than on the interface type
+    // directly; we only use the declared object to determine if the IT is opted in,
+    // but exclude the migrations themselves from the IT definition
+    ...(schemaMigrations !== undefined
+      ? { schemaMigrationsEnabled: true }
+      : {}),
     status: normalizedStatus,
     // TODO: Generate proper RID based on apiName
     rid: ridGenerator.generateRidForInterface(interfaceType.apiName),

@@ -15,8 +15,8 @@
  */
 
 import { Button, Dialog as BlueprintDialog, Drawer } from "@blueprintjs/core";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import type { ObjectTableProps } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
+import type { ObjectTableProps } from "@osdk/react-components/object-table";
 import { Dialog as BaseUIDialog } from "@osdk/react-components/primitives";
 import React, { memo, useCallback, useState } from "react";
 

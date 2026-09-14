@@ -95,14 +95,16 @@ function createMockSearchResult() {
 describe("usePdfViewerState", () => {
   function setup(
     options: {
+      defaultScale?: number;
       initialScale?: number;
+      defaultSidebarOpen?: boolean;
       initialSidebarOpen?: boolean;
       sidebarMode?: "thumbnails" | "outline";
       coreScale?: number;
     } = {},
   ) {
     const coreResult = createMockCoreResult({
-      scale: options.coreScale ?? options.initialScale,
+      scale: options.coreScale ?? options.defaultScale ?? options.initialScale,
     });
     const searchResult = createMockSearchResult();
     const outlineItems = [
@@ -115,7 +117,9 @@ describe("usePdfViewerState", () => {
 
     const { result, rerender } = renderHook(
       (props: {
+        defaultScale?: number;
         initialScale?: number;
+        defaultSidebarOpen?: boolean;
         initialSidebarOpen?: boolean;
         sidebarMode?: "thumbnails" | "outline";
       }) =>
@@ -125,7 +129,9 @@ describe("usePdfViewerState", () => {
         }),
       {
         initialProps: {
+          defaultScale: options.defaultScale,
           initialScale: options.initialScale,
+          defaultSidebarOpen: options.defaultSidebarOpen,
           initialSidebarOpen: options.initialSidebarOpen,
           sidebarMode: options.sidebarMode,
         },
@@ -289,6 +295,20 @@ describe("usePdfViewerState", () => {
   it("should respect initialSidebarOpen", () => {
     const { result } = setup({ initialSidebarOpen: true });
     expect(result.current.sidebarOpen).toBe(true);
+  });
+
+  it("prefers default props over deprecated initial props", () => {
+    const { result } = setup({
+      defaultScale: 2,
+      initialScale: 3,
+      defaultSidebarOpen: false,
+      initialSidebarOpen: true,
+    });
+
+    expect(mockedUsePdfViewerCore).toHaveBeenCalledWith(
+      expect.objectContaining({ defaultScale: 2, initialScale: 3 }),
+    );
+    expect(result.current.sidebarOpen).toBe(false);
   });
 
   it("should respect sidebarMode prop", () => {

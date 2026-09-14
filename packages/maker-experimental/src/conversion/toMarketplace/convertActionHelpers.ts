@@ -20,6 +20,7 @@ import type {
   ObjectTypeDatasource,
   ObjectTypeDatasourceDefinition,
   OntologyIrAllowedParameterValues,
+  OntologyIrStructFieldBaseParameterType,
   Parameter,
   ParameterId,
   ParameterRenderHint,
@@ -27,7 +28,9 @@ import type {
   SectionId,
 } from "@osdk/client.unstable";
 import type {
+  IAnonymousCustomDataType,
   IDataType,
+  IFunctionCustomDataType,
   IInterfaceDataType,
   IInterfaceObjectSetDataType,
   IListDataType,
@@ -36,6 +39,7 @@ import type {
   IOptionalDataType,
   ISetDataType,
 } from "@osdk/generator-converters.ontologyir";
+import { isInjectedRuntimeInput } from "@osdk/generator-converters.ontologyir";
 import type {
   ActionParameter,
   ActionParameterAllowedValues,
@@ -379,7 +383,7 @@ function convertFunctionBackedAction(
   for (const input of discoveredFunction.inputs) {
     if (
       input.dataType.type === "ontologyEdit" ||
-      input.dataType.type === "client"
+      isInjectedRuntimeInput(input.dataType)
     )
       continue;
 
@@ -390,7 +394,14 @@ function convertFunctionBackedAction(
       parameterId: paramId,
     };
 
-    const paramType = dataTypeToActionParameterType(input.dataType);
+    const paramType = dataTypeToActionParameterType(
+      input.dataType,
+      discoveredFunction.customTypes,
+    );
+    const structFieldValidations = dataTypeToActionStructFieldValidations(
+      input.dataType,
+      discoveredFunction.customTypes,
+    );
     const listTypes = [
       ...Object.values(PRIMITIVE_LIST_TYPES),
       "objectReferenceList",
@@ -408,9 +419,13 @@ function convertFunctionBackedAction(
             ? {
                 listLength: {},
               }
-            : input.required,
+            : (input.required ?? true),
         defaultVisibility: "editable",
-        allowedValues: extractAllowedValuesFromActionParameterType(paramType),
+        allowedValues: dataTypeToActionParameterAllowedValues(
+          input.dataType,
+          paramType,
+        ),
+        ...(structFieldValidations == null ? {} : { structFieldValidations }),
       },
     });
   }
@@ -478,8 +493,9 @@ function convertFunctionBackedAction(
   };
 }
 
-function dataTypeToActionParameterType(
+export function dataTypeToActionParameterType(
   dataType: IDataType,
+  customTypes: Record<string, unknown> = {},
 ): ActionParameter["type"] {
   switch (dataType.type) {
     case "object": {
@@ -521,18 +537,41 @@ function dataTypeToActionParameterType(
     }
     case "list": {
       const listData = dataType as IListDataType;
-      return dataTypeToActionParameterListType(listData.list.elementsType);
+      return dataTypeToActionParameterListType(
+        listData.list.elementsType,
+        customTypes,
+      );
     }
     case "set": {
       const setData = dataType as ISetDataType;
-      return dataTypeToActionParameterListType(setData.set.elementsType);
+      return dataTypeToActionParameterListType(
+        setData.set.elementsType,
+        customTypes,
+      );
     }
     case "optionalType": {
       const optionalData = dataType as IOptionalDataType;
       return dataTypeToActionParameterType(
         optionalData.optionalType.wrappedType,
+        customTypes,
       );
     }
+    case "anonymousCustomType": {
+      const anonymousData = dataType as IAnonymousCustomDataType;
+      return dataTypeToActionStructType(
+        anonymousData.anonymousCustomType,
+        false,
+      );
+    }
+    case "functionCustomType": {
+      const customTypeData = dataType as IFunctionCustomDataType;
+      return dataTypeToActionStructType(
+        getFunctionCustomType(customTypeData.functionCustomType, customTypes),
+        false,
+      );
+    }
+    case "geoShape":
+      return geoShapeToActionParameterType(dataType);
     default: {
       if (isActionParameterTypePrimitive(dataType.type)) {
         return dataType.type;
@@ -561,6 +600,7 @@ const PRIMITIVE_LIST_TYPES: Record<string, ActionParameter["type"]> = {
 
 function dataTypeToActionParameterListType(
   elementType: IDataType,
+  customTypes: Record<string, unknown>,
 ): ActionParameter["type"] {
   if (elementType.type === "object") {
     const objectData = elementType as IObjectDataType;
@@ -580,6 +620,28 @@ function dataTypeToActionParameterListType(
       },
     };
   }
+  if (elementType.type === "optionalType") {
+    const optionalData = elementType as IOptionalDataType;
+    return dataTypeToActionParameterListType(
+      optionalData.optionalType.wrappedType,
+      customTypes,
+    );
+  }
+  if (elementType.type === "anonymousCustomType") {
+    const anonymousData = elementType as IAnonymousCustomDataType;
+    return dataTypeToActionStructType(anonymousData.anonymousCustomType, true);
+  }
+  if (elementType.type === "functionCustomType") {
+    const customTypeData = elementType as IFunctionCustomDataType;
+    return dataTypeToActionStructType(
+      getFunctionCustomType(customTypeData.functionCustomType, customTypes),
+      true,
+    );
+  }
+  if (elementType.type === "geoShape") {
+    const type = geoShapeToActionParameterType(elementType);
+    return type === "geohash" ? "geohashList" : "geoshapeList";
+  }
   const listType = PRIMITIVE_LIST_TYPES[elementType.type];
   if (listType != null) {
     return listType;
@@ -587,6 +649,183 @@ function dataTypeToActionParameterListType(
   throw new Error(
     `Unsupported list element data type for action parameter: ${elementType.type}`,
   );
+}
+
+interface IFunctionCustomTypeShape {
+  fieldMetadata?: Record<string, { required?: boolean }> | null;
+  fields: Record<string, IDataType>;
+}
+
+function isFunctionCustomTypeShape(
+  value: unknown,
+): value is IFunctionCustomTypeShape {
+  return (
+    value != null &&
+    typeof value === "object" &&
+    "fields" in value &&
+    (value as { fields?: unknown }).fields != null &&
+    typeof (value as { fields: unknown }).fields === "object"
+  );
+}
+
+function getFunctionCustomType(
+  id: string,
+  customTypes: Record<string, unknown>,
+): IFunctionCustomTypeShape {
+  const customType = customTypes[id];
+  if (customType == null) {
+    throw new Error(
+      `Unknown function custom type: '${id}' not found in customTypes`,
+    );
+  }
+  if (!isFunctionCustomTypeShape(customType)) {
+    throw new Error(
+      `Invalid custom type structure for '${id}': expected a 'fields' property`,
+    );
+  }
+  return customType;
+}
+
+function dataTypeToActionStructType(
+  customType: IFunctionCustomTypeShape,
+  isList: boolean,
+): ActionParameter["type"] {
+  const structFieldTypes = Object.fromEntries(
+    Object.entries(customType.fields).map(([name, fieldType]) => [
+      name,
+      dataTypeToActionStructFieldType(fieldType),
+    ]),
+  );
+
+  return isList
+    ? { type: "structList", structList: { structFieldTypes } }
+    : { type: "struct", struct: { structFieldTypes } };
+}
+
+function dataTypeToActionStructFieldType(
+  dataType: IDataType,
+): OntologyIrStructFieldBaseParameterType {
+  switch (dataType.type) {
+    case "boolean":
+      return { type: "boolean", boolean: {} };
+    case "integer":
+      return { type: "integer", integer: {} };
+    case "long":
+      return { type: "long", long: {} };
+    case "double":
+      return { type: "double", double: {} };
+    case "string":
+      return { type: "string", string: {} };
+    case "timestamp":
+      return { type: "timestamp", timestamp: {} };
+    case "date":
+      return { type: "date", date: {} };
+    case "object": {
+      const objectData = dataType as IObjectDataType;
+      return {
+        type: "objectReference",
+        objectReference: {
+          objectTypeId: objectData.object.objectTypeId,
+          maybeCreateObjectOption: null,
+        },
+      };
+    }
+    case "optionalType": {
+      const optionalData = dataType as IOptionalDataType;
+      return dataTypeToActionStructFieldType(
+        optionalData.optionalType.wrappedType,
+      );
+    }
+    default:
+      throw new Error(
+        `Unsupported function custom type field data type for action parameter: ${dataType.type}`,
+      );
+  }
+}
+
+function geoShapeToActionParameterType(
+  dataType: IDataType,
+): "geohash" | "geoshape" {
+  const geoShape = dataType.geoShape as
+    | { subType?: { type?: string } | null }
+    | undefined;
+  return geoShape?.subType?.type === "geoPoint" ? "geohash" : "geoshape";
+}
+
+export function dataTypeToActionParameterAllowedValues(
+  dataType: IDataType,
+  parameterType: ActionParameter["type"],
+): ActionParameterAllowedValues {
+  const unwrappedDataType = unwrapFunctionInputDataType(dataType);
+  if (unwrappedDataType.type !== "marking") {
+    return extractAllowedValuesFromActionParameterType(parameterType);
+  }
+
+  const marking = unwrappedDataType.marking as
+    | { subType?: { type?: string } }
+    | undefined;
+  switch (marking?.subType?.type) {
+    case "classificationMarking":
+      return { type: "cbacMarking" };
+    case "mandatoryMarking":
+      return { type: "mandatoryMarking" };
+    default:
+      throw new Error(
+        `Unsupported marking subtype for action parameter: ${marking?.subType?.type ?? "missing"}`,
+      );
+  }
+}
+
+export function dataTypeToActionStructFieldValidations(
+  dataType: IDataType,
+  customTypes: Record<string, unknown>,
+):
+  | NonNullable<ActionParameter["validation"]["structFieldValidations"]>
+  | undefined {
+  const unwrappedDataType = unwrapFunctionInputDataType(dataType);
+  let customType: IFunctionCustomTypeShape | undefined;
+  if (unwrappedDataType.type === "anonymousCustomType") {
+    customType = (unwrappedDataType as IAnonymousCustomDataType)
+      .anonymousCustomType;
+  } else if (unwrappedDataType.type === "functionCustomType") {
+    customType = getFunctionCustomType(
+      (unwrappedDataType as IFunctionCustomDataType).functionCustomType,
+      customTypes,
+    );
+  }
+  if (customType == null) {
+    return undefined;
+  }
+
+  return Object.fromEntries(
+    Object.entries(customType.fields).map(([name, fieldType]) => [
+      name,
+      {
+        required:
+          customType.fieldMetadata?.[name]?.required ??
+          fieldType.type !== "optionalType",
+      },
+    ]),
+  );
+}
+
+function unwrapFunctionInputDataType(dataType: IDataType): IDataType {
+  switch (dataType.type) {
+    case "optionalType":
+      return unwrapFunctionInputDataType(
+        (dataType as IOptionalDataType).optionalType.wrappedType,
+      );
+    case "list":
+      return unwrapFunctionInputDataType(
+        (dataType as IListDataType).list.elementsType,
+      );
+    case "set":
+      return unwrapFunctionInputDataType(
+        (dataType as ISetDataType).set.elementsType,
+      );
+    default:
+      return dataType;
+  }
 }
 
 /**

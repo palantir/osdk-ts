@@ -1,5 +1,43 @@
 # @osdk/maker
 
+## 0.67.0
+
+### Minor Changes
+
+- 43bfe44: Sync the generated ontology-metadata interface type schema migration types.
+- 595621c: Adds isInterfacePropertyRequired, resolving whether implementing object types must provide a property across interface-defined and shared-property-backed properties on an interface type.
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+- 7681809: Validate display name and description lengths during ontology compilation to catch errors before installation.
+
+### Patch Changes
+
+- Updated dependencies [488376f]
+- Updated dependencies [192d1cb]
+  - @osdk/api@2.67.0
+  - @osdk/generator-converters.ontologyir@2.67.0
+  - @osdk/typescript-sdk-docs@0.25.0
+
+## 0.66.0
+
+### Patch Changes
+
+- @osdk/api@2.66.0
+- @osdk/generator-converters.ontologyir@2.66.0
+
+## 0.65.0
+
+### Minor Changes
+
+- 84bcd53: Allow actions to upload media for properties backed by Maker-created Media Sets.
+- eb0c920: Allow dots in namespaced api names
+
+### Patch Changes
+
+- Updated dependencies [e3a381d]
+  - @osdk/api@2.65.0
+  - @osdk/generator-converters.ontologyir@2.65.0
+  - @osdk/typescript-sdk-docs@0.24.0
+
 ## 0.64.0
 
 ### Patch Changes

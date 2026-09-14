@@ -321,7 +321,7 @@ jobs:
       # that `codegen` does not cache. This runs to completion before the tests.
       - name: Restore build artifacts from cache (excluding Vite 7/Storybook packages on Node 18)
         if: matrix.node == 18
-        run: pnpm exec turbo run transpile transpileTypes --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/ontology-explorer-app" --filter="!@osdk/react-components-storybook"
+        run: pnpm exec turbo run transpile transpileTypes --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/ontology-explorer-app" --filter="!@osdk/react-components-storybook"
 
       - name: Restore build artifacts from cache
         if: matrix.node != 18
@@ -335,7 +335,7 @@ jobs:
       # The other --filter exclusions are Vite 7+/Storybook packages that need Node 20+.
       - name: Test (excluding Vite 7/Storybook packages on Node 18, and react-components)
         if: matrix.node == 18
-        run: pnpm exec turbo run test --filter="!@osdk/react-components" --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/ontology-explorer-app" --filter="!@osdk/react-components-storybook"
+        run: pnpm exec turbo run test --filter="!@osdk/react-components" --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/ontology-explorer-app" --filter="!@osdk/react-components-storybook"
 
       - name: Test (excluding react-components)
         if: matrix.node != 18

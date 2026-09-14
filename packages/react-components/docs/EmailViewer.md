@@ -10,7 +10,7 @@ A React component for rendering email (.eml) files. Parses email content using [
 import {
   BaseEmailViewer,
   EmailViewer,
-} from "@osdk/react-components/experimental/email-viewer";
+} from "@osdk/react-components/email-viewer";
 ```
 
 - **`EmailViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, parses the .eml contents, and renders the email.
@@ -21,7 +21,7 @@ import {
 ### With OSDK Media
 
 ```tsx
-import { EmailViewer } from "@osdk/react-components/experimental/email-viewer";
+import { EmailViewer } from "@osdk/react-components/email-viewer";
 
 <EmailViewer media={ticket.emailAttachment} />;
 ```
@@ -29,7 +29,7 @@ import { EmailViewer } from "@osdk/react-components/experimental/email-viewer";
 ### With parsed email data
 
 ```tsx
-import { BaseEmailViewer } from "@osdk/react-components/experimental/email-viewer";
+import { BaseEmailViewer } from "@osdk/react-components/email-viewer";
 
 <BaseEmailViewer
   content={{

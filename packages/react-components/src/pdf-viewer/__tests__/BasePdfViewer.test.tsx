@@ -85,6 +85,58 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
+describe("BasePdfViewer default props", () => {
+  it("prefers default props over deprecated initial props", () => {
+    mockedUsePdfViewerState.mockReturnValue(createViewer(vi.fn()));
+
+    render(
+      <BasePdfViewer
+        src="x.pdf"
+        defaultPage={2}
+        initialPage={3}
+        defaultScale={1.5}
+        initialScale={2}
+        defaultAutoSize={false}
+        initialAutoSize={true}
+        defaultSidebarOpen={false}
+        initialSidebarOpen={true}
+      />,
+    );
+
+    expect(mockedUsePdfViewerState).toHaveBeenCalledWith(
+      expect.objectContaining({
+        defaultPage: 2,
+        defaultScale: 1.5,
+        defaultAutoSize: false,
+        defaultSidebarOpen: false,
+      }),
+    );
+  });
+
+  it("supports the deprecated initial props", () => {
+    mockedUsePdfViewerState.mockReturnValue(createViewer(vi.fn()));
+
+    render(
+      <BasePdfViewer
+        src="x.pdf"
+        initialPage={3}
+        initialScale={2}
+        initialAutoSize={true}
+        initialSidebarOpen={true}
+      />,
+    );
+
+    expect(mockedUsePdfViewerState).toHaveBeenCalledWith(
+      expect.objectContaining({
+        defaultPage: 3,
+        defaultScale: 2,
+        defaultAutoSize: true,
+        defaultSidebarOpen: true,
+      }),
+    );
+  });
+});
+
 describe("BasePdfViewer download wiring", () => {
   it("forwards downloadFileName to viewer.download when the toolbar button is clicked", () => {
     const download = vi.fn();

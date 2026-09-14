@@ -23,7 +23,7 @@ Before using FilterList, make sure you have completed the library setup describe
 ## Import
 
 ```typescript
-import { FilterList } from "@osdk/react-components/experimental/filter-list";
+import { FilterList } from "@osdk/react-components/filter-list";
 ```
 
 ## Basic Usage
@@ -36,7 +36,7 @@ The simplest way to use FilterList is with an objectSet and a few filter definit
 
 ```typescript
 import { Employee } from "@my/osdk";
-import { FilterList } from "@osdk/react-components/experimental/filter-list";
+import { FilterList } from "@osdk/react-components/filter-list";
 import client from "./client";
 
 function EmployeeFilters() {
@@ -324,8 +324,8 @@ FilterList owns its filter state. Read the clause out with `onFilterClauseChange
 ```typescript
 import { Employee } from "@my/osdk";
 import type { WhereClause } from "@osdk/api";
-import { FilterList } from "@osdk/react-components/experimental/filter-list";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { FilterList } from "@osdk/react-components/filter-list";
+import { ObjectTable } from "@osdk/react-components/object-table";
 import { useMemo, useState } from "react";
 import client from "./client";
 
@@ -379,7 +379,7 @@ state), so you don't need to wire up `onFilterStateChanged`,
 their firings:
 
 ```typescript
-import type { FilterChangeEvent } from "@osdk/react-components/experimental/filter-list";
+import type { FilterChangeEvent } from "@osdk/react-components/filter-list";
 
 <FilterList
   objectType={Employee}
@@ -504,7 +504,7 @@ Pass a `.where()` objectSet to scope filter dropdown values. For example, to onl
 
 ```typescript
 import { Employee } from "@my/osdk";
-import { FilterList } from "@osdk/react-components/experimental/filter-list";
+import { FilterList } from "@osdk/react-components/filter-list";
 import { useMemo } from "react";
 import client from "./client";
 

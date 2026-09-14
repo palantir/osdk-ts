@@ -30,6 +30,13 @@ export const TEMPLATES = [
     buildDirectory: "./dist",
   },
   {
+    id: "react-public",
+    label: "React (Public)",
+    envPrefix: "VITE_",
+    buildDirectory: "./dist",
+    authless: true,
+  },
+  {
     id: "expo",
     label: "Expo",
     envPrefix: "EXPO_PUBLIC_",
@@ -97,6 +104,7 @@ fs.writeFileSync(
             envPrefix: "${template.envPrefix}",
             buildDirectory: "${template.buildDirectory}",
             hidden: ${template.hidden || false},
+            authless: ${template.authless || false},
             files: {
               ${v1Name ? `"1.x": getPackageFiles(import("${v1Name}")),` : ""}
               ${v2Name ? `"2.x": getPackageFiles(import("${v2Name}")),` : ""}

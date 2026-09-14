@@ -127,6 +127,17 @@ describe("evaluateFilter", () => {
       expect(evaluateFilter("$isNull", "value", true, true)).toBe(false);
       expect(evaluateFilter("$isNull", 0, true, true)).toBe(false);
     });
+
+    it("$isNull: false matches non-null values", () => {
+      expect(evaluateFilter("$isNull", "value", false, true)).toBe(true);
+      expect(evaluateFilter("$isNull", 0, false, true)).toBe(true);
+      expect(evaluateFilter("$isNull", false, false, true)).toBe(true);
+    });
+
+    it("$isNull: false does not match null values", () => {
+      expect(evaluateFilter("$isNull", null, false, true)).toBe(false);
+      expect(evaluateFilter("$isNull", undefined, false, true)).toBe(false);
+    });
   });
 
   describe("strict vs loose mode", () => {

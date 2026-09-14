@@ -15,8 +15,8 @@
  */
 
 import type { DerivedProperty, ObjectSet, Osdk, WhereClause } from "@osdk/api";
-import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/object-table";
+import type { ColumnDefinition } from "@osdk/react-components/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, waitFor, within } from "storybook/test";
 

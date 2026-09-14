@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BaseTiffViewerProps } from "@osdk/react-components/experimental/tiff-renderer";
-import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-renderer";
+import type { BaseTiffViewerProps } from "@osdk/react-components/tiff-viewer";
+import { BaseTiffViewer } from "@osdk/react-components/tiff-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
