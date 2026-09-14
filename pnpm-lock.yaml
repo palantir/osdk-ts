@@ -6333,7 +6333,7 @@ importers:
   tests/verify-cjs-node16:
     dependencies:
       '@osdk/aliases':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../../packages/aliases
       '@osdk/api':
         specifier: workspace:~
@@ -6358,7 +6358,7 @@ importers:
   tests/verify-esm-node16:
     dependencies:
       '@osdk/aliases':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../../packages/aliases
       '@osdk/api':
         specifier: workspace:~
