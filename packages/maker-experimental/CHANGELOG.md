@@ -1,5 +1,30 @@
 # @osdk/maker-experimental
 
+## 0.62.0
+
+### Minor Changes
+
+- 8c2c988: Fix TypeScript function discovery for functions that edit imported ontology types.
+- 1dc6b40: Fix CBAC marking generation
+- d67b69f: Adds the interface type schema migration authoring DSL, enabling defineInterface to specify a schemaMigrations block declaring in-flight schema migrations.
+- 6c8152a: Interface schema migrations are now included in the ontology block data.
+- 8f47483: Interface schema transitions now carry a rid, adopting the latest bindings.
+- ba7b5ce: Preserve readable-to-internal block identities in generated ontology and value type block results.
+- 57c2087: Include imported ontology metadata when discovering TypeScript Function signatures.
+
+### Patch Changes
+
+- Updated dependencies [8c2c988]
+- Updated dependencies [d67b69f]
+- Updated dependencies [6c8152a]
+- Updated dependencies [8f47483]
+  - @osdk/generator-converters.ontologyir@2.68.0
+  - @osdk/generator-converters.preview@0.46.0
+  - @osdk/maker-import@0.38.0
+  - @osdk/maker@0.68.0
+  - @osdk/client.unstable@2.68.0
+  - @osdk/api@2.68.0
+
 ## 0.61.0
 
 ### Minor Changes

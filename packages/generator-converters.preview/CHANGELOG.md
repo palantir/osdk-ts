@@ -1,5 +1,19 @@
 # @osdk/generator-converters.preview
 
+## 0.46.0
+
+### Minor Changes
+
+- 8c2c988: Fix TypeScript function discovery for functions that edit imported ontology types.
+
+### Patch Changes
+
+- Updated dependencies [8c2c988]
+- Updated dependencies [8f47483]
+  - @osdk/generator-converters.ontologyir@2.68.0
+  - @osdk/client.unstable@2.68.0
+  - @osdk/generator@2.68.0
+
 ## 0.45.0
 
 ### Minor Changes
