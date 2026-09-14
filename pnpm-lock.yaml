@@ -4346,7 +4346,7 @@ importers:
   packages/functions:
     dependencies:
       '@osdk/aliases':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../aliases
       '@osdk/client':
         specifier: workspace:^

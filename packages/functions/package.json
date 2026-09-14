@@ -70,7 +70,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/aliases": "workspace:~",
+    "@osdk/aliases": "workspace:*",
     "@osdk/foundry.core": "^2.44.0",
     "@osdk/foundry.mediasets": "^2.44.0",
     "@osdk/foundry.ontologies": "^2.44.0",
