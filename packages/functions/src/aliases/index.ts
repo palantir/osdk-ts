@@ -17,15 +17,17 @@
 // API Extractor cannot represent a namespace that re-exports `export *` from
 // another package, so each export is listed explicitly.
 
-export { custom } from "@osdk/aliases/internal";
-export type { Custom } from "@osdk/aliases/internal";
-export { dataset } from "@osdk/aliases/internal";
-export type { Dataset } from "@osdk/aliases/internal";
-export { mediaset } from "@osdk/aliases/internal";
-export type { Mediaset } from "@osdk/aliases/internal";
-export { model } from "@osdk/aliases/internal";
-export type { Model } from "@osdk/aliases/internal";
-export { source } from "@osdk/aliases/internal";
-export type { Source } from "@osdk/aliases/internal";
-export { stream } from "@osdk/aliases/internal";
-export type { Stream } from "@osdk/aliases/internal";
+export {
+  custom,
+  type Custom,
+  dataset,
+  type Dataset,
+  mediaset,
+  type Mediaset,
+  model,
+  type Model,
+  source,
+  type Source,
+  stream,
+  type Stream,
+} from "@osdk/aliases/internal";
