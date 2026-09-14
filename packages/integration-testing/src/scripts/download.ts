@@ -106,6 +106,11 @@ export const installFoundryCli = async (
   const env = options.env ?? process.env;
   const isWindows = process.platform === "win32";
 
+  invariant(
+    !isWindows || !env.FOUNDRY_SERVICE_DISCOVERY_V2,
+    "Foundry CLI installation using FOUNDRY_SERVICE_DISCOVERY_V2 is not supported on Windows.",
+  );
+
   const [{ codeUrl, installerBaseUrl }, token] = await Promise.all([
     resolveFoundryServices(options),
     getFoundryToken(options),

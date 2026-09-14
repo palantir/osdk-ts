@@ -101,6 +101,16 @@ artifacts:
   });
   expect(stdinEnd).toHaveBeenCalledWith("installer script");
   if (discovery) {
+    vi.spyOn(process, "platform", "get").mockReturnValue("win32");
+    await expect(
+      installFoundryCli({
+        env: { FOUNDRY_SERVICE_DISCOVERY_V2: discoveryPath },
+      }),
+    ).rejects.toThrow(
+      "Foundry CLI installation using FOUNDRY_SERVICE_DISCOVERY_V2 is not supported on Windows.",
+    );
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(spawn).toHaveBeenCalledTimes(1);
     expect(readGitRemoteUrl).not.toHaveBeenCalled();
   }
 });
