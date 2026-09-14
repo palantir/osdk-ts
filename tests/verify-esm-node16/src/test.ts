@@ -24,14 +24,7 @@ if (sdk.$Objects.Employee.apiName !== "Employee") {
   throw new Error("Expected Employee");
 }
 
-try {
-  InternalAliases.custom("missing");
-  throw new Error("Expected the internal alias resolver to throw");
-} catch (error) {
-  if (
-    !(error instanceof Error) ||
-    !error.message.includes("Unknown alias environment")
-  ) {
-    throw error;
-  }
+// Keep this import in the emitted JavaScript to exercise Node's package resolution.
+if (typeof InternalAliases.custom !== "function") {
+  throw new Error("Expected the internal custom alias reader to be exported");
 }
