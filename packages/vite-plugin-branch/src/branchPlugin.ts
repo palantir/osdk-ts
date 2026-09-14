@@ -86,17 +86,13 @@ export function branchPlugin(options: BranchPluginOptions = {}): Plugin[] {
       },
 
       async transformIndexHtml() {
-        const branchOverride = readBranchOverride(config);
         const branch =
-          branchOverride ?? (await readBranchFromGit(config, readGitBranch));
+          readBranchOverride(config) ??
+          (await readBranchFromGit(config, readGitBranch));
 
         if (branch !== lastReportedBranch) {
           lastReportedBranch = branch;
-          reportBranch(
-            config.logger,
-            branch,
-            branchOverride === undefined ? "Git" : FOUNDRY_BRANCH_ENV_VAR,
-          );
+          reportBranch(config.logger, branch);
         }
 
         return [
@@ -140,27 +136,19 @@ async function readBranchFromGit(
   return DEFAULT_BRANCH_ALIASES.has(branch) ? DEFAULT_FOUNDRY_BRANCH : branch;
 }
 
-function describeBranch(branch: string): string {
-  return branch === DEFAULT_FOUNDRY_BRANCH
-    ? `${JSON.stringify(branch)} (the default Foundry branch)`
-    : JSON.stringify(branch);
-}
-
-function reportBranch(logger: Logger, branch: string, source: string): void {
-  const resolution =
-    `[osdk-branch] Foundry branch RID resolved to ${describeBranch(branch)} ` +
-    `from ${source}.`;
+function reportBranch(logger: Logger, branch: string): void {
   const override = `Set ${FOUNDRY_BRANCH_ENV_VAR} to override.`;
 
   if (branch === UNRESOLVABLE_BRANCH_RID) {
     logger.warn(
-      `${resolution} ` +
-        `Could not read a git branch, so Foundry requests will fail rather than ` +
+      `Could not read a git branch, so Foundry requests will fail rather than ` +
         `read the default branch. Check out a branch, or set ` +
         `${FOUNDRY_BRANCH_ENV_VAR}.`,
     );
+  } else if (branch === DEFAULT_FOUNDRY_BRANCH) {
+    logger.info(`Using the default Foundry branch. ${override}`);
   } else {
-    logger.info(`${resolution} ${override}`);
+    logger.info(`Using Foundry branch "${branch}". ${override}`);
   }
 }
 
@@ -196,26 +184,13 @@ async function reloadOnBranchChange(
   readGitBranch: ReadGitBranch,
   stopped: AbortSignal,
 ): Promise<void> {
-  const { config, hot, logger } = environment;
+  const { config, hot } = environment;
 
   // Vite restarts the dev server when a .env file changes, so an override
   // cannot change underneath a running poller.
-  const branchOverride = readBranchOverride(config);
-  if (branchOverride !== undefined) {
-    logger.info(
-      `[osdk-branch] ${FOUNDRY_BRANCH_ENV_VAR} pins the Foundry branch RID to ` +
-        `${describeBranch(branchOverride)}. Git branch polling is disabled.`,
-    );
-    return;
-  }
+  if (readBranchOverride(config) !== undefined) return;
 
   let injectedBranch = await readBranchFromGit(config, readGitBranch);
-  if (stopped.aborted) return;
-
-  logger.info(
-    `[osdk-branch] Polling Git in ${JSON.stringify(config.root)} every ` +
-      `${POLL_INTERVAL_MS}ms. Resolved Foundry branch RID: ${describeBranch(injectedBranch)}.`,
-  );
 
   while (!stopped.aborted) {
     await sleep(POLL_INTERVAL_MS);
@@ -225,10 +200,6 @@ async function reloadOnBranchChange(
     if (stopped.aborted) return;
     if (branch === injectedBranch) continue;
 
-    logger.info(
-      `[osdk-branch] Foundry branch RID changed from ${describeBranch(injectedBranch)} ` +
-        `to ${describeBranch(branch)}. Reloading connected pages.`,
-    );
     injectedBranch = branch;
     hot.send({ type: "full-reload" });
   }
