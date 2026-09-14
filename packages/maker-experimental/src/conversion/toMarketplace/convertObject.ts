@@ -18,6 +18,7 @@ import type {
   DerivedPropertiesDefinition,
   DerivedPropertyAggregation as DerivedPropertyAggregationWire,
   EditsHistory,
+  ImplementingActionType,
   ImplementingLinkType,
   MarketplaceObjectTypeEntityMetadata,
   ObjectTypeBlockDataV2,
@@ -26,6 +27,7 @@ import type {
   PropertyType,
 } from "@osdk/client.unstable";
 import type {
+  ActionType,
   DerivedPropertyAggregation,
   EditsHistoryConfig,
   InterfacePropertyType,
@@ -276,7 +278,32 @@ export function convertObject(
             }),
           ),
           properties: {},
-          actionTypes: {},
+          actionTypes: Object.fromEntries(
+            Object.entries(impl.actionTypeImplementations ?? {}).map(
+              ([constraintApiName, implementation]) => {
+                const sourceInterface =
+                  allParents.find((parentInterface) =>
+                    (parentInterface.actionTypeConstraints ?? []).some(
+                      (constraint) =>
+                        constraint.metadata.apiName === constraintApiName,
+                    ),
+                  ) ?? impl.implements;
+                return [
+                  ridGenerator.generateRidForInterfaceActionTypeConstraint(
+                    constraintApiName,
+                    sourceInterface.apiName,
+                  ),
+                  convertImplementingActionType(
+                    constraintApiName,
+                    sourceInterface,
+                    implementation.actionType,
+                    implementation.parameterMapping ?? {},
+                    ridGenerator,
+                  ),
+                ];
+              },
+            ),
+          ),
         };
       }),
       allImplementsInterfaces: {},
@@ -293,6 +320,33 @@ export function convertObject(
     schemaMigrations: undefined,
     writebackDatasets: [],
   } as ObjectTypeBlockDataV2;
+}
+
+function convertImplementingActionType(
+  constraintApiName: string,
+  sourceInterface: InterfaceType,
+  actionType: ActionType,
+  parameterMapping: Record<string, string>,
+  ridGenerator: OntologyRidGenerator,
+): ImplementingActionType {
+  return {
+    actionTypeRid: ridGenerator.generateRidForActionType(actionType.apiName),
+    parameters: Object.fromEntries(
+      Object.entries(parameterMapping).map(
+        ([constraintParameterApiName, actionParameterId]) => [
+          ridGenerator.generateRidForInterfaceParameterConstraint(
+            constraintApiName,
+            sourceInterface.apiName,
+            constraintParameterApiName,
+          ),
+          ridGenerator.generateRidForParameter(
+            actionType.apiName,
+            actionParameterId,
+          ),
+        ],
+      ),
+    ),
+  };
 }
 
 function resolveInterfaceProperty(

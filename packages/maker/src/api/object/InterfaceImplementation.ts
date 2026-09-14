@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+import type { ActionType } from "../action/ActionType.js";
 import type { InterfaceType } from "../interface/InterfaceType.js";
 import type { LinkType } from "../links/LinkType.js";
 
+type ActionParameterId = string;
+type InterfaceActionTypeConstraintApiName = string;
+type InterfaceParameterConstraintApiName = string;
 type InterfaceLinkTypeApiName = string;
 type LinkTypeApiName = string;
 
@@ -26,5 +30,15 @@ export type InterfaceImplementation = {
   linkImplementations?: Record<
     InterfaceLinkTypeApiName,
     Array<{ linkType: LinkType; sideApiName: LinkTypeApiName }>
+  >;
+  actionTypeImplementations?: Record<
+    InterfaceActionTypeConstraintApiName,
+    {
+      actionType: ActionType;
+      parameterMapping?: Record<
+        InterfaceParameterConstraintApiName,
+        ActionParameterId
+      >;
+    }
   >;
 };

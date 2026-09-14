@@ -42,6 +42,9 @@ export type InterfaceImplementationDefinition = {
   linkImplementations?: NonNullable<
     InterfaceImplementation["linkImplementations"]
   >;
+  actionTypeImplementations?: NonNullable<
+    InterfaceImplementation["actionTypeImplementations"]
+  >;
 };
 
 export function implementInterface({
@@ -49,6 +52,7 @@ export function implementInterface({
   objectType,
   propertyMapping = [],
   linkImplementations = {},
+  actionTypeImplementations = {},
 }: InterfaceImplementationDefinition): void {
   validateInterfaceProperties(interfaceType, objectType, propertyMapping);
 
@@ -64,6 +68,7 @@ export function implementInterface({
     implements: interfaceType,
     propertyMapping,
     linkImplementations,
+    actionTypeImplementations,
   });
   objectType.implementsInterfaces = storedObject.implementsInterfaces;
 }

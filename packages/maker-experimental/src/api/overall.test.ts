@@ -117,14 +117,30 @@ describe("Experimental Test Suite", () => {
     });
   });
 
-  it("applies interface link constraints to concrete link types", async () => {
+  it("applies interface constraints to concrete links and actions", async () => {
     const result = await defineOntologyV2("com.palantir.", () => {
+      const createEmployeeConstraintApiName = "com.palantir.createEmployee";
       const employerInterface = defineInterface({ apiName: "Employer" });
       const employeeInterface = defineInterface({ apiName: "Employee" });
       const employerConstraint = defineInterfaceLinkConstraint({
         apiName: "employer",
         from: employeeInterface,
         toOne: employerInterface,
+      });
+      defineInterfaceActionTypeConstraint({
+        interfaceType: employeeInterface,
+        apiName: "createEmployee",
+        displayName: "Create Employee",
+        description: "Create an employee",
+        requireImplementation: true,
+        parameters: [
+          {
+            apiName: "employeeId",
+            displayName: "Employee ID",
+            type: { type: "string", string: {} },
+            requireImplementation: true,
+          },
+        ],
       });
 
       const employer = defineObject({
@@ -158,6 +174,9 @@ describe("Experimental Test Suite", () => {
         },
         manyForeignKeyProperty: "employerId",
       });
+      const createEmployee = defineCreateObjectAction({
+        objectType: employee,
+      });
 
       implementInterface({
         interfaceType: employerInterface,
@@ -170,6 +189,12 @@ describe("Experimental Test Suite", () => {
           [employerConstraint.apiName]: [
             { linkType: employeeEmployer, sideApiName: "employer" },
           ],
+        },
+        actionTypeImplementations: {
+          [createEmployeeConstraintApiName]: {
+            actionType: createEmployee,
+            parameterMapping: { employeeId: "id" },
+          },
         },
       });
     });
@@ -190,6 +215,34 @@ describe("Experimental Test Suite", () => {
           },
         },
       ],
+    ]);
+
+    const createEmployee = Object.values(
+      result.ontologyIr.ontology.actionTypes,
+    )[0];
+    const actionTypeImplementations = Object.values(
+      employee!.objectType.implementsInterfaces2[0].actionTypes,
+    );
+    const employeeInterface = Object.values(
+      result.ontologyIr.ontology.interfaceTypes,
+    ).find(
+      (interfaceType) =>
+        interfaceType.interfaceType.apiName === "com.palantir.Employee",
+    );
+    const actionConstraint =
+      employeeInterface!.interfaceType.actionTypeConstraints[0];
+    expect(
+      Object.keys(employee!.objectType.implementsInterfaces2[0].actionTypes),
+    ).toEqual([actionConstraint.rid]);
+    expect(actionTypeImplementations).toHaveLength(1);
+    expect(actionTypeImplementations[0].actionTypeRid).toBe(
+      createEmployee.actionType.metadata.rid,
+    );
+    expect(Object.values(actionTypeImplementations[0].parameters)).toEqual([
+      createEmployee.actionType.metadata.parameters.id.rid,
+    ]);
+    expect(Object.keys(actionTypeImplementations[0].parameters)).toEqual([
+      Object.keys(actionConstraint.parameters)[0],
     ]);
   });
 
