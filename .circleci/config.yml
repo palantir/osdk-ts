@@ -33,6 +33,7 @@ executors:
     resource_class: << parameters.resource-class >>
     environment: *ci-environment
 
+  # The config is to disable verdaccio reaching the internet (by default its a proxy to the real npm registry)
   node-with-verdaccio:
     docker:
       - image: cimg/node:24.19.0
@@ -220,6 +221,9 @@ jobs:
       - prepare
       - restore-turbo-cache:
           scope: typecheck
+      # Materialize build/{esm,cjs,browser,types} from the build cache (cache
+      # hits) so check-attw (which packs them) finds everything, avoiding a race
+      # with the tasks that produce them.
       - run:
           name: Restore build artifacts from cache
           command: pnpm exec turbo run transpile transpileTypes
@@ -238,6 +242,8 @@ jobs:
       - prepare
       - restore-turbo-cache:
           scope: lint
+      # lint dependsOn ^transpileTypes (deps' .d.ts for type-aware rules); restore
+      # the build artifacts from cache so those are present.
       - run:
           name: Restore build artifacts from cache
           command: pnpm exec turbo run transpile transpileTypes
