@@ -18,6 +18,7 @@ import type {
   DerivedPropertiesDefinition,
   DerivedPropertyAggregation as DerivedPropertyAggregationWire,
   EditsHistory,
+  ImplementingLinkType,
   MarketplaceObjectTypeEntityMetadata,
   ObjectTypeBlockDataV2,
   ObjectTypeDatasource,
@@ -29,6 +30,7 @@ import type {
   EditsHistoryConfig,
   InterfacePropertyType,
   InterfaceType,
+  LinkType,
   ObjectPropertyType,
   ObjectType,
   ObjectTypeDatasourceDefinition_derived,
@@ -46,6 +48,60 @@ import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { buildDatasource } from "./convertActionHelpers.js";
 import { convertDatasourceDefinition } from "./convertDatasourceDefinition.js";
 import { convertObjectPropertyType } from "./convertObjectPropertyType.js";
+
+/**
+ * Maps the selected side of a concrete link type to its wire representation.
+ * The side identifies where traversal of the implemented interface link begins.
+ */
+function convertImplementingLinkTypeSide(
+  linkType: LinkType,
+  sideApiName: string,
+): ImplementingLinkType["startingFromLinkTypeSide"] {
+  if ("one" in linkType) {
+    if (sideApiName === linkType.one.metadata.apiName) {
+      return {
+        type: "oneToManyLinkTypeSide",
+        oneToManyLinkTypeSide: "ONE_SIDE",
+      };
+    }
+    if (sideApiName === linkType.toMany.metadata.apiName) {
+      return {
+        type: "oneToManyLinkTypeSide",
+        oneToManyLinkTypeSide: "MANY_SIDE",
+      };
+    }
+  } else if ("intermediaryObjectType" in linkType) {
+    if (sideApiName === linkType.many.metadata.apiName) {
+      return {
+        type: "intermediaryLinkTypeSide",
+        intermediaryLinkTypeSide: "A_SIDE",
+      };
+    }
+    if (sideApiName === linkType.toMany.metadata.apiName) {
+      return {
+        type: "intermediaryLinkTypeSide",
+        intermediaryLinkTypeSide: "B_SIDE",
+      };
+    }
+  } else {
+    if (sideApiName === linkType.many.metadata.apiName) {
+      return {
+        type: "manyToManyLinkTypeSide",
+        manyToManyLinkTypeSide: "A_SIDE",
+      };
+    }
+    if (sideApiName === linkType.toMany.metadata.apiName) {
+      return {
+        type: "manyToManyLinkTypeSide",
+        manyToManyLinkTypeSide: "B_SIDE",
+      };
+    }
+  }
+  throw new Error(
+    `Interface link implementation references link side "${sideApiName}" ` +
+      `which does not exist on link type "${linkType.apiName}".`,
+  );
+}
 
 export function convertObject(
   objectType: ObjectType,
@@ -156,7 +212,35 @@ export function convertObject(
           ),
           interfaceTypeApiName: impl.implements.apiName,
           links: {},
-          linksV2: {},
+          linksV2: Object.fromEntries(
+            Object.entries(impl.linkImplementations ?? {}).map(
+              ([interfaceLinkApiName, implementingLinks]) => {
+                const sourceInterface =
+                  allParents.find((parentInterface) =>
+                    (parentInterface.links ?? []).some(
+                      (link) => link.metadata.apiName === interfaceLinkApiName,
+                    ),
+                  ) ?? impl.implements;
+                return [
+                  ridGenerator.generateRidForInterfaceLinkType(
+                    interfaceLinkApiName,
+                    sourceInterface.apiName,
+                  ),
+                  implementingLinks.map((implementingLink) => ({
+                    linkTypeRid: ridGenerator.generateRidForLinkType(
+                      cleanAndValidateLinkTypeId(
+                        implementingLink.linkType.apiName,
+                      ),
+                    ),
+                    startingFromLinkTypeSide: convertImplementingLinkTypeSide(
+                      implementingLink.linkType,
+                      implementingLink.sideApiName,
+                    ),
+                  })),
+                ];
+              },
+            ),
+          ),
           propertiesV2: Object.fromEntries(
             impl.propertyMapping.map((mappings) => {
               const resolvedProperty = resolveInterfaceProperty(

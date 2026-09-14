@@ -29,6 +29,7 @@ import {
   defineCreateObjectAction,
   defineInterface,
   defineInterfaceActionTypeConstraint,
+  defineInterfaceLinkConstraint,
   defineLink,
   defineObject,
   defineOntology,
@@ -113,6 +114,85 @@ describe("Experimental Test Suite", () => {
         },
       });
     });
+  });
+
+  it("applies interface link constraints to concrete link types", async () => {
+    const result = await defineOntologyV2("com.palantir.", () => {
+      const employerInterface = defineInterface({ apiName: "Employer" });
+      const employeeInterface = defineInterface({ apiName: "Employee" });
+      const employerConstraint = defineInterfaceLinkConstraint({
+        apiName: "employer",
+        from: employeeInterface,
+        toOne: employerInterface,
+      });
+
+      const employer = defineObject({
+        apiName: "employer",
+        displayName: "Employer",
+        pluralDisplayName: "Employers",
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+        implementsInterfaces: [
+          { implements: employerInterface, propertyMapping: [] },
+        ],
+      });
+      const employeeEmployer = defineLink({
+        apiName: "employee-employer",
+        one: {
+          object: employer,
+          metadata: { apiName: "employees" },
+        },
+        toMany: {
+          object: "com.palantir.employee",
+          metadata: { apiName: "employer" },
+        },
+        manyForeignKeyProperty: "employerId",
+      });
+      defineObject({
+        apiName: "employee",
+        displayName: "Employee",
+        pluralDisplayName: "Employees",
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: {
+          id: { type: "string" },
+          employerId: { type: "string" },
+        },
+        implementsInterfaces: [
+          {
+            implements: employeeInterface,
+            propertyMapping: [],
+            linkImplementations: {
+              [employerConstraint.apiName]: [
+                {
+                  linkType: employeeEmployer,
+                  sideApiName: "employer",
+                },
+              ],
+            },
+          },
+        ],
+      });
+    });
+
+    const employee = Object.values(result.ontologyIr.ontology.objectTypes).find(
+      (objectType) => objectType.objectType.apiName === "com.palantir.employee",
+    );
+    const linkTypeRid = Object.keys(result.ontologyIr.ontology.linkTypes)[0];
+    expect(
+      Object.values(employee!.objectType.implementsInterfaces2[0].linksV2),
+    ).toEqual([
+      [
+        {
+          linkTypeRid,
+          startingFromLinkTypeSide: {
+            type: "oneToManyLinkTypeSide",
+            oneToManyLinkTypeSide: "MANY_SIDE",
+          },
+        },
+      ],
+    ]);
   });
 
   describe("Dependencies", () => {
