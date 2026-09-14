@@ -36,7 +36,6 @@ import {
   defineSharedPropertyType,
   defineValueType,
   dumpOntologyFullMetadata,
-  implementInterface,
   importOntologyEntity,
   importSharedPropertyType,
   OntologyEntityTypeEnum,
@@ -45,6 +44,7 @@ import invariant from "tiny-invariant";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { ReadableIdGenerator } from "../util/generateRid.js";
+import { defineInterfaceImplementation } from "./defineInterfaceImplementation.js";
 import { defineOntologyV2 } from "./defineOntologyV2.js";
 import { defineImportObject } from "./importObjectType.js";
 
@@ -178,11 +178,11 @@ describe("Experimental Test Suite", () => {
         objectType: employee,
       });
 
-      implementInterface({
+      defineInterfaceImplementation({
         interfaceType: employerInterface,
         objectType: employer,
       });
-      implementInterface({
+      defineInterfaceImplementation({
         interfaceType: employeeInterface,
         objectType: employee,
         linkImplementations: {

@@ -14,40 +14,44 @@
  * limitations under the License.
  */
 
-import invariant from "tiny-invariant";
-
-import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
+import type {
+  ActionType,
+  InterfacePropertyType,
+  InterfaceType,
+  LinkType,
+  ObjectTypeDefinition,
+} from "@osdk/maker";
 import {
   addNamespaceIfNone,
-  ontologyDefinition,
-  withoutNamespace,
-} from "./defineOntology.js";
-import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfaceProperties.js";
-import {
-  getInterfacePropertyTypeType,
-  type InterfacePropertyType,
+  getOntologyDefinition,
+  interfacePropertyWireApiName,
   isInterfacePropertyRequired,
   isInterfaceSharedPropertyType,
-} from "./interface/InterfacePropertyType.js";
-import type { InterfaceType } from "./interface/InterfaceType.js";
-import type { InterfaceImplementation } from "./object/InterfaceImplementation.js";
-import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
+  OntologyEntityTypeEnum,
+  withoutNamespace,
+} from "@osdk/maker";
+import invariant from "tiny-invariant";
 
 type ValidationResult = { type: "valid" } | { type: "invalid"; reason: string };
 
 export type InterfaceImplementationDefinition = {
   interfaceType: InterfaceType;
   objectType: ObjectTypeDefinition;
-  propertyMapping?: InterfaceImplementation["propertyMapping"];
-  linkImplementations?: NonNullable<
-    InterfaceImplementation["linkImplementations"]
+  propertyMapping?: Array<{ interfaceProperty: string; mapsTo: string }>;
+  linkImplementations?: Record<
+    string,
+    Array<{ linkType: LinkType; sideApiName: string }>
   >;
-  actionTypeImplementations?: NonNullable<
-    InterfaceImplementation["actionTypeImplementations"]
+  actionTypeImplementations?: Record<
+    string,
+    {
+      actionType: ActionType;
+      parameterMapping?: Record<string, string>;
+    }
   >;
 };
 
-export function implementInterface({
+export function defineInterfaceImplementation({
   interfaceType,
   objectType,
   propertyMapping = [],
@@ -57,7 +61,9 @@ export function implementInterface({
   validateInterfaceProperties(interfaceType, objectType, propertyMapping);
 
   const storedObject =
-    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][objectType.apiName];
+    getOntologyDefinition()[OntologyEntityTypeEnum.OBJECT_TYPE][
+      objectType.apiName
+    ];
   invariant(
     storedObject !== undefined,
     `Object ${objectType.apiName} must be defined before implementing an interface`,
@@ -76,7 +82,7 @@ export function implementInterface({
 function validateInterfaceProperties(
   interfaceType: InterfaceType,
   objectType: ObjectTypeDefinition,
-  propertyMapping: InterfaceImplementation["propertyMapping"],
+  propertyMapping: Array<{ interfaceProperty: string; mapsTo: string }>,
 ): void {
   const allInterfaceProperties = getFlattenedInterfaceProperties(interfaceType);
   const nonExistentInterfaceProperties: ValidationResult[] = propertyMapping
@@ -124,6 +130,29 @@ function validateInterfaceProperties(
   );
 }
 
+function getFlattenedInterfaceProperties(
+  interfaceType: InterfaceType,
+): Record<string, InterfacePropertyType> {
+  let properties = Object.fromEntries(
+    Object.entries(interfaceType.propertiesV3).map(([apiName, property]) => [
+      interfacePropertyWireApiName(property, apiName),
+      property,
+    ]),
+  );
+  for (const [apiName, property] of Object.entries(
+    interfaceType.propertiesV2,
+  )) {
+    properties[apiName] ??= property;
+  }
+  for (const parentInterface of interfaceType.extendsInterfaces) {
+    properties = Object.assign(
+      getFlattenedInterfaceProperties(parentInterface),
+      properties,
+    );
+  }
+  return properties;
+}
+
 function validateInterfaceProperty(
   interfacePropertyApiName: string,
   interfaceProperty: InterfacePropertyType,
@@ -142,8 +171,13 @@ function validateInterfaceProperty(
         reason: `Object property mapped to interface does not exist. Object Property Mapped: ${interfaceToObjectProperties[apiName]}`,
       };
     }
+    const interfacePropertyType = isInterfaceSharedPropertyType(
+      interfaceProperty,
+    )
+      ? interfaceProperty.sharedPropertyType.type
+      : interfaceProperty.type;
     if (
-      JSON.stringify(getInterfacePropertyTypeType(interfaceProperty)) !==
+      JSON.stringify(interfacePropertyType) !==
       JSON.stringify(mappedObjectProperty.type)
     ) {
       return {
