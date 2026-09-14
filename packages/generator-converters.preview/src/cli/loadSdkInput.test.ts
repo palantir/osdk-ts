@@ -180,6 +180,127 @@ describe("loadSdkInput", () => {
     expect(fs.readFile).toHaveBeenNthCalledWith(3, definitionFile, "utf-8");
   });
 
+  it("carries local value type associations into generated property types", async () => {
+    const output = "produced-value-type-classification-1.0.0";
+    const definitionFile = path.resolve(
+      "build/classification/value-types.json",
+    );
+    mockFiles({
+      [inputFile]: [
+        {
+          ...ontologyBlock,
+          inputs: { classification: { type: "valueType" } },
+          input_mapping_entries: [{ input: "classification", output }],
+          add_on_override: {
+            idToBlockShapeId: { classification: "generated-id" },
+          },
+        },
+        {
+          block_type: "VALUE_TYPE",
+          block_data_directory: "classification",
+          outputs: { [output]: { type: "valueType" } },
+        },
+      ],
+      [ontologyFile]: {
+        ...ontology,
+        objectTypes: {
+          "item-rid": {
+            datasources: [],
+            writebackDatasets: [],
+            objectType: {
+              rid: "item-rid",
+              id: "item",
+              apiName: "Item",
+              displayMetadata: {
+                displayName: "Item",
+                pluralDisplayName: "Items",
+                visibility: "NORMAL",
+                icon: {
+                  type: "blueprint",
+                  blueprint: { locator: "cube", color: "blue" },
+                },
+              },
+              status: { type: "active", active: {} },
+              primaryKeys: ["property-rid"],
+              titlePropertyTypeRid: "property-rid",
+              propertyTypes: {
+                "property-rid": {
+                  rid: "property-rid",
+                  id: "id",
+                  apiName: "id",
+                  displayMetadata: { displayName: "Id", visibility: "NORMAL" },
+                  type: {
+                    type: "string",
+                    string: { isLongText: false, supportsExactMatching: true },
+                  },
+                  status: { type: "active", active: {} },
+                  indexedForSearch: false,
+                  typeClasses: [],
+                  valueType: { rid: "value-type-rid", versionId: "version-id" },
+                },
+              },
+              implementsInterfaces: [],
+              implementsInterfaces2: [],
+              allImplementsInterfaces: {},
+              traits: { workflowObjectTypeTraits: {} },
+              typeGroups: [],
+            },
+          },
+        },
+      },
+      [definitionFile]: {
+        metadata: {
+          apiName: "classification",
+          displayMetadata: { displayName: "Classification" },
+          baseType: { type: "string", string: {} },
+          status: { type: "active", active: {} },
+        },
+        versions: [{
+          version: "1.0.0",
+          constraints: [{
+            constraint: {
+              constraint: {
+                type: "string",
+                string: { type: "oneOf", oneOf: { values: ["A", "B"] } },
+              },
+            },
+          }],
+        }],
+      },
+    });
+
+    const loaded = await loadSdkInput({ blockResultsInput: inputFile });
+    const metadata = PreviewOntologyIrConverter
+      .getPreviewFullMetadataFromBlockData(
+        loaded.ontology,
+        undefined,
+        loaded.valueTypes,
+      );
+    expect.soft(
+      metadata.objectTypes.Item.objectType.properties.id.valueTypeApiName,
+    )
+      .toBe("classification");
+    const writeFile = vi.fn<(file: string, contents: string) => Promise<void>>()
+      .mockResolvedValue(undefined);
+    await generateClientSdkVersionTwoPointZero(
+      { ...metadata, actionTypes: {} },
+      "test",
+      {
+        readdir: () => Promise.resolve([]),
+        mkdir: () => Promise.resolve(),
+        writeFile,
+      },
+      "/virtual-sdk",
+      "module",
+    );
+    expect(
+      Object.fromEntries(
+        writeFile.mock.calls,
+      )["/virtual-sdk/ontology/objects/Item.ts"],
+    )
+      .toContain("readonly id: 'A' | 'B';");
+  });
+
   it("preserves generation for imported properties with multiple value type constraints", async () => {
     mockFiles({ [inputFile]: ontology });
     const loaded = await loadSdkInput({ input: inputFile });

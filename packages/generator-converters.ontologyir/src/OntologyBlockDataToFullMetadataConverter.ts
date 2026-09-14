@@ -63,14 +63,17 @@ export class OntologyBlockDataToFullMetadataConverter {
       },
       interfaceTypeLookup,
       importedTypes?.interfaceTypes,
+      valueTypes,
     );
     const sharedPropertyTypes = this.getOsdkSharedPropertyTypesFromBlockData(
       blockData.sharedPropertyTypes,
+      valueTypes,
     );
     const objectTypes = this.getOsdkObjectTypesFromBlockData(
       blockData.objectTypes,
       blockData.linkTypes,
       objectTypeLookup,
+      valueTypes,
     );
     const actionTypes = this.getOsdkActionTypesFromBlockData(
       blockData,
@@ -111,6 +114,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     objects: Record<string, ObjectTypeBlockDataV2>,
     links: Record<string, LinkTypeBlockDataV2>,
     objectTypeLookup: BlockDataApiNameLookup | undefined,
+    valueTypes: readonly ResolvedValueType[] = [],
   ): Record<ApiName, Ontologies.ObjectTypeFullMetadata> {
     const result: Record<ApiName, Ontologies.ObjectTypeFullMetadata> = {};
     const propRidToApiName: Record<string, string> = {};
@@ -180,6 +184,9 @@ export class OntologyBlockDataToFullMetadataConverter {
             description: prop.displayMetadata.description ?? undefined,
             visibility: visibilityEnum,
             dataType,
+            valueTypeApiName: valueTypes.find(
+              valueType => valueType.rid === prop.valueType?.rid,
+            )?.apiName,
             typeClasses: [],
           };
         }
@@ -785,6 +792,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     interfaceBlockData: Record<string, InterfaceTypeBlockDataV2>,
     interfaceTypeLookup: BlockDataApiNameLookup | undefined,
     importedInterfaceTypes: Record<ApiName, Ontologies.InterfaceType> = {},
+    valueTypes: readonly ResolvedValueType[] = [],
   ): Record<ApiName, Ontologies.InterfaceType> {
     const result: Record<ApiName, Ontologies.InterfaceType> = {};
 
@@ -808,6 +816,9 @@ export class OntologyBlockDataToFullMetadataConverter {
             displayName: spt.displayMetadata.displayName,
             description: spt.displayMetadata.description ?? undefined,
             dataType,
+            valueTypeApiName: valueTypes.find(
+              valueType => valueType.rid === spt.valueType?.rid,
+            )?.apiName,
             required: false, // Default to false for now - this should come from IR if available
             typeClasses: [],
           };
@@ -837,6 +848,9 @@ export class OntologyBlockDataToFullMetadataConverter {
                 displayName: idp.displayMetadata.displayName,
                 description: idp.displayMetadata.description ?? undefined,
                 dataType: idpDataType,
+                valueTypeApiName: valueTypes.find(
+                  valueType => valueType.rid === idp.constraints.valueType?.rid,
+                )?.apiName,
                 requireImplementation: idp.constraints.requireImplementation,
               };
               propertiesV2[idp.apiName] = {
@@ -858,6 +872,9 @@ export class OntologyBlockDataToFullMetadataConverter {
                 displayName: spt.displayMetadata.displayName,
                 description: spt.displayMetadata.description ?? undefined,
                 dataType: sptDataType,
+                valueTypeApiName: valueTypes.find(
+                  valueType => valueType.rid === spt.valueType?.rid,
+                )?.apiName,
                 requireImplementation: propValue.sharedPropertyBasedPropertyType
                   .requireImplementation,
               };
@@ -996,6 +1013,7 @@ export class OntologyBlockDataToFullMetadataConverter {
 
   static getOsdkSharedPropertyTypesFromBlockData(
     spts: Record<string, SharedPropertyTypeBlockDataV2>,
+    valueTypes: readonly ResolvedValueType[] = [],
   ): Record<ApiName, Ontologies.SharedPropertyType> {
     const result: Record<ApiName, Ontologies.SharedPropertyType> = {};
 
@@ -1012,6 +1030,10 @@ export class OntologyBlockDataToFullMetadataConverter {
           description: spt.sharedPropertyType.displayMetadata.description
             ?? undefined,
           dataType,
+          valueTypeApiName: valueTypes.find(
+            valueType =>
+              valueType.rid === spt.sharedPropertyType.valueType?.rid,
+          )?.apiName,
           typeClasses: [],
         };
 
