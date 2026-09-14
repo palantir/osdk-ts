@@ -30,7 +30,13 @@ import { devNull, tmpdir } from "node:os";
 import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 
-import { build, createServer, type Plugin, type ViteDevServer } from "vite";
+import {
+  build,
+  createServer,
+  type Logger,
+  type Plugin,
+  type ViteDevServer,
+} from "vite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { branchPlugin, FOUNDRY_BRANCH_ENV_VAR } from "./branchPlugin.js";
@@ -87,17 +93,37 @@ async function startServer({
   plugin = branchPlugin(),
   listen = true,
   middlewareMode = false,
+  warnings,
+}: {
+  root?: string;
+  plugin?: Plugin[];
+  listen?: boolean;
+  middlewareMode?: boolean;
+  warnings?: string[];
 } = {}): Promise<ViteDevServer> {
   const server = await createServer({
     root,
     configFile: false,
     logLevel: "silent",
+    customLogger: warnings == null ? undefined : collectWarnings(warnings),
     plugins: [plugin],
     server: { host: "127.0.0.1", port: 0, watch: null, middlewareMode },
   });
   servers.push(server);
   if (listen && !middlewareMode) await server.listen();
   return server;
+}
+
+function collectWarnings(warnings: string[]): Logger {
+  return {
+    info: () => {},
+    warn: (message: string) => void warnings.push(message),
+    warnOnce: (message: string) => void warnings.push(message),
+    error: () => {},
+    clearScreen: () => {},
+    hasErrorLogged: () => false,
+    hasWarned: false,
+  };
 }
 
 async function readServedHtml(server: ViteDevServer): Promise<string> {
@@ -112,29 +138,35 @@ function transformHtml(server: ViteDevServer): Promise<string> {
   return server.transformIndexHtml("/", "<html></html>");
 }
 
+/**
+ * Configures the plugin as a production build would, and returns the branch
+ * reports it writes to Vite's logger.
+ */
 function configurePlugin(
-  plugin: Plugin,
+  plugins: Plugin[],
   root: string,
   options: { envDir?: string | false; mode?: string } = {},
 ): string[] {
-  const hook = plugin.configResolved;
+  const hook = plugins[0].configResolved;
   if (typeof hook !== "function") {
     throw new TypeError("expected configResolved to be a function hook");
   }
   const messages: string[] = [];
+  const report = (message: string): number => messages.push(message);
   Reflect.apply(hook, undefined, [
     {
       root,
       envDir: options.envDir ?? root,
       mode: options.mode ?? "development",
-      logger: { info: (message: string) => messages.push(message) },
+      command: "build",
+      logger: { info: report, warn: report },
     },
   ]);
   return messages;
 }
 
-async function readInjectedMetaContent(plugin: Plugin): Promise<string> {
-  const hook = plugin.transformIndexHtml;
+async function readInjectedMetaContent(plugins: Plugin[]): Promise<string> {
+  const hook = plugins[0].transformIndexHtml;
   if (typeof hook !== "function") {
     throw new TypeError("expected transformIndexHtml to be a function hook");
   }
@@ -154,7 +186,7 @@ async function readInjectedMetaContent(plugin: Plugin): Promise<string> {
   return tag.attrs.content;
 }
 
-function pluginOn(gitBranch: string | undefined): Plugin {
+function pluginOn(gitBranch: string | undefined): Plugin[] {
   return branchPlugin({ readGitBranch: () => Promise.resolve(gitBranch) });
 }
 
@@ -173,8 +205,8 @@ afterEach(async () => {
 });
 
 describe(branchPlugin, () => {
-  it.each(["main", "master", "HEAD", "", undefined])(
-    "injects an empty value for the default branch state %s in builds",
+  it.each(["main", "master", "", "   ", undefined])(
+    "injects an empty value for the default branch state %j in builds",
     async (gitBranch) => {
       const plugin = pluginOn(gitBranch);
       configurePlugin(plugin, makeProjectDir());
@@ -182,6 +214,20 @@ describe(branchPlugin, () => {
       expect(await readInjectedMetaContent(plugin)).toBe("");
     },
   );
+
+  it("treats a branch that merely looks like a default as a real branch", async () => {
+    for (const gitBranch of [
+      "HEAD",
+      "mainline",
+      "zka/main-fix",
+      "  main-x  ",
+    ]) {
+      const plugin = pluginOn(gitBranch);
+      configurePlugin(plugin, makeProjectDir());
+
+      expect(await readInjectedMetaContent(plugin)).toBe(gitBranch.trim());
+    }
+  });
 
   it("uses the default branch in builds when the Git read rejects", async () => {
     const plugin = branchPlugin({
@@ -263,17 +309,17 @@ describe(branchPlugin, () => {
     }
 
     expect(messages).toEqual([
-      expect.stringContaining('"main"'),
+      expect.stringContaining("the default Foundry branch"),
       expect.stringContaining('"first"'),
       expect.stringContaining('"second"'),
-      expect.stringContaining('"main"'),
+      expect.stringContaining("the default Foundry branch"),
     ]);
   });
 });
 
 describe("Vite integration", () => {
   it.each([false, true])(
-    "starts and serves an unknown branch when Git cannot identify a branch (detached: %s)",
+    "starts, warns, and serves an unknown branch when Git cannot identify a branch (detached: %s)",
     async (detached) => {
       let root: string;
       if (detached) {
@@ -285,13 +331,46 @@ describe("Vite integration", () => {
           "index.html": "<html><head></head><body></body></html>",
         });
       }
-      const server = await startServer({ root });
+      const warnings: string[] = [];
+      const server = await startServer({ root, warnings });
 
       expect(await readServedHtml(server)).toContain(
         `content="${UNKNOWN_BRANCH_RID}"`,
       );
+      expect(warnings).toEqual([
+        expect.stringContaining(FOUNDRY_BRANCH_ENV_VAR),
+      ]);
     },
   );
+
+  it("keeps the HTML plugin in every environment and polls only the client", async () => {
+    const server = await startServer({ listen: false });
+    const osdkPlugins = (environment: keyof typeof server.environments) =>
+      server.environments[environment].plugins
+        .map(({ name }) => name)
+        .filter((name) => name.startsWith("osdk-"));
+
+    expect(osdkPlugins("client")).toEqual([
+      "osdk-branch",
+      "osdk-branch-reload:client",
+    ]);
+    expect(osdkPlugins("ssr")).toEqual(["osdk-branch"]);
+  });
+
+  it("does not block the dev server on the first Git read", async () => {
+    let finishRead!: () => void;
+    const server = await startServer({
+      plugin: branchPlugin({
+        readGitBranch: () =>
+          new Promise<string>((resolve) => {
+            finishRead = () => resolve(GIT_BRANCH);
+          }),
+      }),
+    });
+
+    expect(server.httpServer?.listening).toBe(true);
+    finishRead();
+  });
 
   it("prepends escaped branch metadata before application scripts", async () => {
     const gitBranch = 'feature/"quote"><script>bad()</script>&suffix';
@@ -395,7 +474,7 @@ describe("branch change reloads", () => {
 
 describe("branch polling lifecycle", () => {
   const readGitBranch = vi.fn<(cwd: string) => Promise<string | undefined>>();
-  let branch = GIT_BRANCH;
+  let branch: string | undefined = GIT_BRANCH;
 
   beforeEach(() => {
     vi.useFakeTimers();
@@ -455,25 +534,29 @@ describe("branch polling lifecycle", () => {
     expect(reload).toHaveBeenCalledExactlyOnceWith({ type: "full-reload" });
   });
 
-  it.each([
-    ["main", "master", undefined, ""],
-    [GIT_BRANCH, "feature/next", PINNED_BRANCH, PINNED_BRANCH],
-  ] as const)(
-    "reloads from %s to %s even when the injected metadata stays unchanged",
-    async (initial, next, override, expected) => {
-      branch = initial;
-      if (override !== undefined)
-        process.env[FOUNDRY_BRANCH_ENV_VAR] = override;
-      const server = await start();
-      const reload = vi.spyOn(server.ws, "send");
-      expect(await transformHtml(server)).toContain(`content="${expected}"`);
+  it("does not reload when a branch switch leaves the injected branch unchanged", async () => {
+    branch = "main";
+    const server = await start();
+    const reload = vi.spyOn(server.ws, "send");
+    expect(await transformHtml(server)).toContain('content=""');
 
-      branch = next;
-      await vi.advanceTimersByTimeAsync(1000);
-      expect(reload).toHaveBeenCalledExactlyOnceWith({ type: "full-reload" });
-      expect(await transformHtml(server)).toContain(`content="${expected}"`);
-    },
-  );
+    branch = "master";
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(reload).not.toHaveBeenCalled();
+    expect(await transformHtml(server)).toContain('content=""');
+  });
+
+  it("never reads Git while the .env override pins the branch", async () => {
+    process.env[FOUNDRY_BRANCH_ENV_VAR] = PINNED_BRANCH;
+    const server = await start();
+    const reload = vi.spyOn(server.ws, "send");
+    expect(await transformHtml(server)).toContain(`content="${PINNED_BRANCH}"`);
+
+    branch = "feature/next";
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(reload).not.toHaveBeenCalled();
+    expect(readGitBranch).not.toHaveBeenCalled();
+  });
 
   it("does not poll when closed before listening", async () => {
     const server = await start(false);
@@ -532,36 +615,36 @@ describe("branch polling lifecycle", () => {
     expect(reload).toHaveBeenCalledExactlyOnceWith({ type: "full-reload" });
   });
 
-  it("reloads once when reads become unknown and again on recovery", async () => {
+  it("reloads once for a run of unreadable branches and again on recovery", async () => {
     const server = await start();
     const reload = vi.spyOn(server.ws, "send");
-    readGitBranch
-      .mockResolvedValueOnce(GIT_BRANCH)
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce("")
-      .mockResolvedValueOnce("HEAD");
-    await vi.advanceTimersByTimeAsync(1000);
-    expect(reload).not.toHaveBeenCalled();
-    await vi.advanceTimersByTimeAsync(1000);
-    expect(reload).toHaveBeenCalledExactlyOnceWith({ type: "full-reload" });
+    const pollWith = async (next: string | undefined): Promise<void> => {
+      branch = next;
+      await vi.advanceTimersByTimeAsync(1000);
+    };
 
-    reload.mockClear();
-    await vi.advanceTimersByTimeAsync(2000);
+    await pollWith(GIT_BRANCH);
     expect(reload).not.toHaveBeenCalled();
-    await vi.advanceTimersByTimeAsync(1000);
-    expect(reload).toHaveBeenCalledExactlyOnceWith({ type: "full-reload" });
+
+    await pollWith(undefined);
+    expect(reload).toHaveBeenCalledTimes(1);
+
+    await pollWith("");
+    await pollWith("   ");
+    expect(reload).toHaveBeenCalledTimes(1);
+
+    await pollWith(GIT_BRANCH);
+    expect(reload).toHaveBeenCalledTimes(2);
+    expect(reload).toHaveBeenLastCalledWith({ type: "full-reload" });
   });
 
-  it("reports rejected Git reads, reloads once, and keeps polling through recovery", async () => {
+  it("treats a rejected Git read as an unreadable branch and keeps polling", async () => {
     const server = await start();
     const reload = vi.spyOn(server.ws, "send");
     const error = vi.spyOn(server.environments.client.logger, "error");
     readGitBranch.mockRejectedValue(new Error("Git unavailable"));
 
     await vi.advanceTimersByTimeAsync(1000);
-    expect(error).toHaveBeenCalledExactlyOnceWith(
-      expect.stringContaining("Git unavailable"),
-    );
     expect(reload).toHaveBeenCalledExactlyOnceWith({ type: "full-reload" });
 
     reload.mockClear();
@@ -570,6 +653,7 @@ describe("branch polling lifecycle", () => {
     readGitBranch.mockImplementation(() => Promise.resolve(branch));
     await vi.advanceTimersByTimeAsync(1000);
     expect(reload).toHaveBeenCalledExactlyOnceWith({ type: "full-reload" });
+    expect(error).not.toHaveBeenCalled();
   });
 
   it("waits for each Git read before scheduling another poll", async () => {
