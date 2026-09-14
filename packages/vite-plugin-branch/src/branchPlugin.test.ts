@@ -44,7 +44,7 @@ import { branchPlugin, FOUNDRY_BRANCH_ENV_VAR } from "./branchPlugin.js";
 const GIT_BRANCH = "zka/my-branch";
 const PINNED_BRANCH = "ri.foundry.main.branch.pinned";
 const META_NAME = "osdk-foundry-branch-rid";
-const UNKNOWN_BRANCH_RID = "ri.branch..branch.unknown";
+const UNRESOLVABLE_BRANCH_RID = "ri.branch..branch.unknown";
 
 const tempDirs: string[] = [];
 const servers: ViteDevServer[] = [];
@@ -71,7 +71,6 @@ function makeGitProject(files: Record<string, string> = {}) {
       cwd: root,
       env: {
         ...process.env,
-        // Test repositories must not inherit a developer's hooks or identity.
         GIT_CONFIG_GLOBAL: devNull,
         GIT_CONFIG_NOSYSTEM: "1",
         GIT_AUTHOR_NAME: "OSDK test",
@@ -138,11 +137,7 @@ function transformHtml(server: ViteDevServer): Promise<string> {
   return server.transformIndexHtml("/", "<html></html>");
 }
 
-/**
- * Configures the plugin as a production build would, and returns the branch
- * reports it writes to Vite's logger.
- */
-function configurePlugin(
+function configurePluginForBuild(
   plugins: Plugin[],
   root: string,
   options: { envDir?: string | false; mode?: string } = {},
@@ -209,7 +204,7 @@ describe(branchPlugin, () => {
     "injects an empty value for the default branch state %j in builds",
     async (gitBranch) => {
       const plugin = pluginOn(gitBranch);
-      configurePlugin(plugin, makeProjectDir());
+      configurePluginForBuild(plugin, makeProjectDir());
 
       expect(await readInjectedMetaContent(plugin)).toBe("");
     },
@@ -223,7 +218,7 @@ describe(branchPlugin, () => {
       "  main-x  ",
     ]) {
       const plugin = pluginOn(gitBranch);
-      configurePlugin(plugin, makeProjectDir());
+      configurePluginForBuild(plugin, makeProjectDir());
 
       expect(await readInjectedMetaContent(plugin)).toBe(gitBranch.trim());
     }
@@ -233,7 +228,7 @@ describe(branchPlugin, () => {
     const plugin = branchPlugin({
       readGitBranch: () => Promise.reject(new Error("Git unavailable")),
     });
-    configurePlugin(plugin, makeProjectDir());
+    configurePluginForBuild(plugin, makeProjectDir());
 
     expect(await readInjectedMetaContent(plugin)).toBe("");
   });
@@ -267,7 +262,7 @@ describe(branchPlugin, () => {
     });
     const readGitBranch = vi.fn(() => Promise.resolve(GIT_BRANCH));
     const plugin = branchPlugin({ readGitBranch });
-    configurePlugin(plugin, root);
+    configurePluginForBuild(plugin, root);
 
     expect(await readInjectedMetaContent(plugin)).toBe(processBranch);
     expect(readGitBranch).not.toHaveBeenCalled();
@@ -279,7 +274,7 @@ describe(branchPlugin, () => {
     });
     const envDir = path.join(root, "config");
     const plugin = pluginOn(GIT_BRANCH);
-    configurePlugin(plugin, root, { envDir });
+    configurePluginForBuild(plugin, root, { envDir });
 
     expect(await readInjectedMetaContent(plugin)).toBe(PINNED_BRANCH);
   });
@@ -289,7 +284,7 @@ describe(branchPlugin, () => {
     const plugin = branchPlugin({
       readGitBranch: () => Promise.resolve(gitBranch),
     });
-    configurePlugin(plugin, makeProjectDir());
+    configurePluginForBuild(plugin, makeProjectDir());
 
     expect(await readInjectedMetaContent(plugin)).toBe("first-branch");
     gitBranch = "second-branch";
@@ -301,7 +296,7 @@ describe(branchPlugin, () => {
     const plugin = branchPlugin({
       readGitBranch: () => Promise.resolve(gitBranch),
     });
-    const messages = configurePlugin(plugin, makeProjectDir());
+    const messages = configurePluginForBuild(plugin, makeProjectDir());
 
     for (const next of ["main", "first", "first", "second", "main"]) {
       gitBranch = next;
@@ -335,7 +330,7 @@ describe("Vite integration", () => {
       const server = await startServer({ root, warnings });
 
       expect(await readServedHtml(server)).toContain(
-        `content="${UNKNOWN_BRANCH_RID}"`,
+        `content="${UNRESOLVABLE_BRANCH_RID}"`,
       );
       expect(warnings).toEqual([
         expect.stringContaining(FOUNDRY_BRANCH_ENV_VAR),
@@ -507,7 +502,7 @@ describe("branch polling lifecycle", () => {
     const reload = vi.spyOn(server.ws, "send");
 
     expect(await transformHtml(server)).toContain(
-      `content="${UNKNOWN_BRANCH_RID}"`,
+      `content="${UNRESOLVABLE_BRANCH_RID}"`,
     );
     await vi.advanceTimersByTimeAsync(2000);
     expect(reload).not.toHaveBeenCalled();
@@ -526,7 +521,7 @@ describe("branch polling lifecycle", () => {
     expect(await transformHtml(server)).toContain('content="feature/next"');
     readGitBranch.mockRejectedValueOnce(new Error("Git unavailable"));
     expect(await transformHtml(server)).toContain(
-      `content="${UNKNOWN_BRANCH_RID}"`,
+      `content="${UNRESOLVABLE_BRANCH_RID}"`,
     );
     expect(await transformHtml(server)).toContain('content="feature/next"');
 

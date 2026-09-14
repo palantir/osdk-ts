@@ -35,11 +35,8 @@ const FOUNDRY_BRANCH_META_NAME = "osdk-foundry-branch-rid";
 /** `@osdk/client` reads empty metadata as "use the default Foundry branch". */
 const DEFAULT_FOUNDRY_BRANCH = "";
 
-/**
- * Deliberately not a resolvable rid, so a development server that cannot name
- * its branch fails loudly instead of quietly reading the default branch.
- */
-const UNKNOWN_BRANCH_RID = "ri.branch..branch.unknown";
+// Fail dev requests on unknown Git branches to avoid reading the default branch.
+const UNRESOLVABLE_BRANCH_RID = "ri.branch..branch.unknown";
 
 const DEFAULT_BRANCH_ALIASES: ReadonlySet<string> = new Set(["main", "master"]);
 
@@ -133,7 +130,7 @@ async function readBranchFromGit(
 
   if (branch == null || branch === "") {
     return config.command === "serve"
-      ? UNKNOWN_BRANCH_RID
+      ? UNRESOLVABLE_BRANCH_RID
       : DEFAULT_FOUNDRY_BRANCH;
   }
   return DEFAULT_BRANCH_ALIASES.has(branch) ? DEFAULT_FOUNDRY_BRANCH : branch;
@@ -142,7 +139,7 @@ async function readBranchFromGit(
 function reportBranch(logger: Logger, branch: string): void {
   const override = `Set ${FOUNDRY_BRANCH_ENV_VAR} to override.`;
 
-  if (branch === UNKNOWN_BRANCH_RID) {
+  if (branch === UNRESOLVABLE_BRANCH_RID) {
     logger.warn(
       `Could not read a git branch, so Foundry requests will fail rather than ` +
         `read the default branch. Check out a branch, or set ` +
