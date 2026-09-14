@@ -14,12 +14,4 @@
  * limitations under the License.
  */
 
-// These synchronous readers back the existing @osdk/functions Aliases API.
-// Keep them available so extracting the implementation does not require callers
-// to change their return types or error handling.
-export * from "../custom.js";
-export * from "../dataset.js";
-export * from "../mediaset.js";
-export * from "../model.js";
-export * from "../source.js";
-export * from "../stream.js";
+export * from "./build/cjs/public/internal.cjs";

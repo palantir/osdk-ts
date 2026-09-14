@@ -16,14 +16,14 @@
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
     },
-    "./node": {
-      "browser": "./build/browser/public/node.js",
+    "./internal": {
+      "browser": "./build/browser/public/internal.js",
       "import": {
-        "types": "./build/types/public/node.d.ts",
-        "default": "./build/esm/public/node.js"
+        "types": "./build/types/public/internal.d.ts",
+        "default": "./build/esm/public/internal.js"
       },
-      "require": "./build/cjs/public/node.cjs",
-      "default": "./build/browser/public/node.js"
+      "require": "./build/cjs/public/internal.cjs",
+      "default": "./build/browser/public/internal.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",

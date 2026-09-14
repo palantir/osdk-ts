@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
-export * from "./build/cjs/public/node.cjs";
+// Internal compatibility entry point for the synchronous @osdk/functions Aliases
+// API. Direct imports from application code are unsupported.
+export * from "../custom.js";
+export * from "../dataset.js";
+export * from "../mediaset.js";
+export * from "../model.js";
+export * from "../source.js";
+export * from "../stream.js";

@@ -1,4 +1,4 @@
-import * as NodeAliases from "@osdk/aliases/node";
+import * as InternalAliases from "@osdk/aliases/internal";
 import * as Client from "@osdk/client";
 import * as oauth from "@osdk/oauth";
 import * as sdk from "@test-app2/osdk";
@@ -25,8 +25,8 @@ if (sdk.$Objects.Employee.apiName !== "Employee") {
 }
 
 try {
-  NodeAliases.custom("missing");
-  throw new Error("Expected the Node alias resolver to throw");
+  InternalAliases.custom("missing");
+  throw new Error("Expected the internal alias resolver to throw");
 } catch (error) {
   if (
     !(error instanceof Error) ||

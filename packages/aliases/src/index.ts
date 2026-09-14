@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-// The root API is reserved. Use "@osdk/aliases/node" for Functions aliases.
+// The root API is reserved for the async API. Functions callers should use
+// Aliases from "@osdk/functions".
