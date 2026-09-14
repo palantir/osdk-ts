@@ -54,6 +54,7 @@ export async function getObjectTypesThatInvalidate(
     counts,
     methodInput: undefined,
     ontologyProvider: mc.ontologyProvider,
+    narrowTypeInterfaceOrObjectMapping: mc.narrowTypeInterfaceOrObjectMapping,
   });
 
   // we need to uncount the final result type
@@ -77,6 +78,7 @@ interface Ctx {
   counts: Record<string, number>;
   methodInput: WireObjectSet | undefined;
   ontologyProvider: OntologyProvider;
+  narrowTypeInterfaceOrObjectMapping: MinimalClient["narrowTypeInterfaceOrObjectMapping"];
 }
 
 async function calcObjectSet(
@@ -215,7 +217,16 @@ async function calcObjectSet(
       // otherwise it will double count everything
       return await calcObjectSet(ctx.methodInput, { ...ctx, counts: {} });
 
-    case "asType":
+    case "asType": {
+      await calcObjectSet(os.objectSet, ctx);
+      if (
+        ctx.narrowTypeInterfaceOrObjectMapping[os.entityType] === "interface"
+      ) {
+        return await bumpInterface(os.entityType);
+      }
+      return await bumpObject(os.entityType);
+    }
+
     // we don't currently support this anywhere.
     case "asBaseObjectTypes":
     // We don't currently support this because it could return multiple object types conceptually

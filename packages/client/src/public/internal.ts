@@ -18,6 +18,7 @@ export { createMediaFromReference } from "../createMediaFromReference.js";
 export { createAndFetchTempObjectSetRid } from "../public-utils/createAndFetchTempObjectSetRid.js";
 export { hydrateAttachmentFromRid } from "../public-utils/hydrateAttachmentFromRid.js";
 export { hydrateObjectSetFromObjectRids } from "../public-utils/hydrateObjectSetFromObjectRids.js";
+export { hydrateObjectSetFromObjectRidsNoType } from "../public-utils/hydrateObjectSetFromObjectRidsNoType.js";
 export { hydrateObjectSetFromRid } from "../public-utils/hydrateObjectSetFromRid.js";
 
 export { BrowserLogger } from "../logger/BrowserLogger.js";

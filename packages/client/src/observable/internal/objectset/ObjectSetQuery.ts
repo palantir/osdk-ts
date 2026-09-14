@@ -22,6 +22,7 @@ import { additionalContext } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
+import { hasUntypedObjectSet } from "../../../objectSet/untypedObjectSet.js";
 import { extractRdpDefinition } from "../../../util/extractRdpDefinition.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
@@ -60,6 +61,11 @@ export class ObjectSetQuery extends BaseListQuery<
   #objectTypes: Set<string>;
   #requiresServerEvaluation: boolean;
   #resultTypeApiName: string;
+  #containsStaticObjectSet: boolean;
+  #objectTypesInitialization: Promise<void> | undefined;
+  #pendingRidInvalidation: Promise<void> | undefined;
+  #ridInvalidationVersion = 0;
+  readonly hasUnknownDependencies: boolean;
 
   // Object types this query's RDPs traverse; an edit to any of these triggers
   // revalidation. Lazily populated on first fetch when `withProperties` is set.
@@ -93,11 +99,19 @@ export class ObjectSetQuery extends BaseListQuery<
     this.#baseObjectSetWire = baseObjectSetWire;
     this.#operations = operations;
     this.#composedObjectSet = this.#composeObjectSet(opts);
+    this.#containsStaticObjectSet = containsStaticObjectSet(
+      getWireObjectSet(this.#composedObjectSet),
+    );
+
+    this.hasUnknownDependencies = hasUntypedObjectSet(
+      getWireObjectSet(this.#composedObjectSet),
+    );
 
     const baseWire: WireObjectSet = JSON.parse(baseObjectSetWire);
     this.#objectTypes = this.#extractObjectTypes(baseWire, opts);
 
     this.#requiresServerEvaluation = !!(
+      this.#containsStaticObjectSet ||
       operations.pivotTo ||
       (operations.union && operations.union.length > 0) ||
       (operations.intersect && operations.intersect.length > 0) ||
@@ -201,6 +215,26 @@ export class ObjectSetQuery extends BaseListQuery<
     return undefined;
   }
 
+  #initializeObjectTypes(): Promise<void> | undefined {
+    if (!this.#containsStaticObjectSet || this.hasUnknownDependencies) {
+      return undefined;
+    }
+
+    return (this.#objectTypesInitialization ??= getObjectTypesThatInvalidate(
+      this.store.client[additionalContext],
+      getWireObjectSet(this.#composedObjectSet),
+    )
+      .then(({ resultType, invalidationSet }) => {
+        this.#objectTypes = new Set([resultType.apiName, ...invalidationSet]);
+        this.#resultTypeApiName = resultType.apiName;
+        this.#rdpInvalidationSet = invalidationSet;
+      })
+      .catch((error: unknown) => {
+        this.#objectTypesInitialization = undefined;
+        throw error;
+      }));
+  }
+
   /**
    * Register changes to the cache specific to ObjectSetQuery
    */
@@ -215,7 +249,12 @@ export class ObjectSetQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
+    if (this.#containsStaticObjectSet) {
+      await this.#initializeObjectTypes();
+    }
+
     if (
+      !this.hasUnknownDependencies &&
       this.#operations.orderBy &&
       Object.keys(this.#operations.orderBy).length > 0 &&
       !(this.sortingStrategy instanceof OrderBySortingStrategy)
@@ -238,6 +277,7 @@ export class ObjectSetQuery extends BaseListQuery<
     }
 
     if (
+      !this.hasUnknownDependencies &&
       this.#rdpInvalidationSet == null &&
       this.#operations.withProperties != null
     ) {
@@ -269,6 +309,11 @@ export class ObjectSetQuery extends BaseListQuery<
     }
 
     this.nextPageToken = resp.nextPageToken;
+    if (this.hasUnknownDependencies) {
+      for (const object of resp.data) {
+        this.#objectTypes.add(object.$objectType);
+      }
+    }
 
     return resp;
   }
@@ -330,6 +375,17 @@ export class ObjectSetQuery extends BaseListQuery<
   };
 
   #handleServerRevalidation(changes: Changes): Promise<void> | undefined {
+    if (this.hasUnknownDependencies) {
+      const members = this.store.layers.truth.get(this.cacheKey)?.value?.data;
+      if (
+        members?.some(
+          (key) => changes.modified.has(key) || changes.deleted.has(key),
+        )
+      ) {
+        return this.revalidate(true);
+      }
+      return undefined;
+    }
     for (const objectType of this.#objectTypes) {
       const added = changes.addedObjects.get(objectType);
       const modified = changes.modifiedObjects.get(objectType);
@@ -496,12 +552,39 @@ export class ObjectSetQuery extends BaseListQuery<
     );
   }
 
-  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
-  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
-  invalidateObjectType = async (
+  override revalidate(force?: boolean): Promise<void> {
+    if (!force || !this.#containsStaticObjectSet) {
+      return super.revalidate(force);
+    }
+    this.#ridInvalidationVersion++;
+    return (this.#pendingRidInvalidation ??= this.#revalidateRidSet());
+  }
+
+  async #revalidateRidSet(): Promise<void> {
+    try {
+      if (this.pendingFetch) {
+        await this.pendingFetch.catch(() => undefined);
+      }
+      let version: number;
+      do {
+        version = this.#ridInvalidationVersion;
+        try {
+          await super.revalidate(true);
+        } catch (error: unknown) {
+          if (version === this.#ridInvalidationVersion) {
+            throw error;
+          }
+        }
+      } while (version !== this.#ridInvalidationVersion);
+    } finally {
+      this.#pendingRidInvalidation = undefined;
+    }
+  }
+
+  #invalidateObjectType(
     objectType: string,
     changes: Changes | undefined,
-  ): Promise<void> => {
+  ): Promise<void> {
     if (
       this.#objectTypes.has(objectType) ||
       (this.#rdpInvalidationSet?.has(objectType) ?? false)
@@ -510,6 +593,25 @@ export class ObjectSetQuery extends BaseListQuery<
       return this.revalidate(true);
     }
     return Promise.resolve();
+  }
+
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
+  invalidateObjectType = async (
+    objectType: string,
+    changes: Changes | undefined,
+  ): Promise<void> => {
+    if (this.hasUnknownDependencies) {
+      changes?.modified.add(this.cacheKey);
+      return this.revalidate(true);
+    }
+    const initialization = this.#initializeObjectTypes();
+    if (initialization) {
+      return initialization.then(() =>
+        this.#invalidateObjectType(objectType, changes),
+      );
+    }
+    return this.#invalidateObjectType(objectType, changes);
   };
 
   protected createPayload(params: {
@@ -529,6 +631,27 @@ export class ObjectSetQuery extends BaseListQuery<
       objectSet: this.#composedObjectSet,
       totalCount: params.totalCount,
     };
+  }
+}
+
+function containsStaticObjectSet(wire: WireObjectSet): boolean {
+  switch (wire.type) {
+    case "static":
+      return true;
+    case "union":
+    case "intersect":
+    case "subtract":
+      return wire.objectSets.some(containsStaticObjectSet);
+    case "filter":
+    case "searchAround":
+    case "interfaceLinkSearchAround":
+    case "asType":
+    case "asBaseObjectTypes":
+    case "withProperties":
+    case "nearestNeighbors":
+      return containsStaticObjectSet(wire.objectSet);
+    default:
+      return false;
   }
 }
 
