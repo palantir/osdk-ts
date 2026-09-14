@@ -1,5 +1,19 @@
 # @osdk/maker
 
+## 0.68.0
+
+### Minor Changes
+
+- d67b69f: Adds the interface type schema migration authoring DSL, enabling defineInterface to specify a schemaMigrations block declaring in-flight schema migrations.
+- 6c8152a: Interface schema migrations are now included in the ontology block data.
+- 8f47483: Interface schema transitions now carry a rid, adopting the latest bindings.
+
+### Patch Changes
+
+- Updated dependencies [8c2c988]
+  - @osdk/generator-converters.ontologyir@2.68.0
+  - @osdk/api@2.68.0
+
 ## 0.67.0
 
 ### Minor Changes

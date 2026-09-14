@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.68.0
+
+### Minor Changes
+
+- e37d2eb: invalidateAll() flips the order of objects because of a clientSort, this change removes that behavior
+
+### Patch Changes
+
+- Updated dependencies [8f47483]
+  - @osdk/client.unstable@2.68.0
+  - @osdk/api@2.68.0
+  - @osdk/generator-converters@2.68.0
+  - @osdk/shared.test@2.47.0
+
 ## 2.67.0
 
 ### Minor Changes

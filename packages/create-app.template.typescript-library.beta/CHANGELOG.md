@@ -1,5 +1,7 @@
 # @osdk/create-app.template.typescript-library.beta
 
+## 2.68.0
+
 ## 2.67.0
 
 ### Minor Changes

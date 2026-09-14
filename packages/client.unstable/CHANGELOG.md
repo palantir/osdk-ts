@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.68.0
+
+### Minor Changes
+
+- 8f47483: Interface schema transitions now carry a rid, adopting the latest bindings.
+
 ## 2.67.0
 
 ### Minor Changes

@@ -1,5 +1,19 @@
 # @osdk/maker-import
 
+## 0.38.0
+
+### Minor Changes
+
+- 8c2c988: Fix TypeScript function discovery for functions that edit imported ontology types.
+
+### Patch Changes
+
+- Updated dependencies [d67b69f]
+- Updated dependencies [6c8152a]
+- Updated dependencies [8f47483]
+  - @osdk/maker@0.68.0
+  - @osdk/client.unstable@2.68.0
+
 ## 0.37.0
 
 ### Minor Changes

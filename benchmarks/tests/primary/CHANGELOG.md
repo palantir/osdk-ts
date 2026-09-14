@@ -1,5 +1,12 @@
 # @osdk/benchmarks.primary
 
+## 0.61.0
+
+### Patch Changes
+
+- Updated dependencies [e37d2eb]
+  - @osdk/client@2.68.0
+
 ## 0.60.0
 
 ### Patch Changes
