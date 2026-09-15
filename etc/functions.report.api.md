@@ -50,16 +50,16 @@ import type { UserId as UserId_2 } from '@osdk/foundry.core';
 declare namespace Aliases {
     export {
         custom,
-        Custom,
         dataset,
-        Dataset,
         mediaset,
-        Mediaset,
         model,
-        Model,
         source,
-        Source,
         stream,
+        Custom,
+        Dataset,
+        Mediaset,
+        Model,
+        Source,
         Stream
     }
 }

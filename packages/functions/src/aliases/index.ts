@@ -19,15 +19,18 @@
 
 export {
   custom,
-  type Custom,
   dataset,
-  type Dataset,
   mediaset,
-  type Mediaset,
   model,
-  type Model,
   source,
-  type Source,
   stream,
-  type Stream,
+} from "@osdk/aliases/internal";
+
+export type {
+  Custom,
+  Dataset,
+  Mediaset,
+  Model,
+  Source,
+  Stream,
 } from "@osdk/aliases/internal";
