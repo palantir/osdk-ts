@@ -16,7 +16,34 @@
 
 import type { InterfaceType } from "../interface/InterfaceType.js";
 
+type ActionParameterId = string;
+type ActionTypeApiName = string;
+type InterfaceActionTypeConstraintApiName = string;
+type InterfaceParameterConstraintApiName = string;
+type InterfaceLinkTypeApiName = string;
+type LinkTypeApiName = string;
+type LinkTypeSideApiName = string;
+
 export type InterfaceImplementation = {
   implements: InterfaceType;
   propertyMapping: { interfaceProperty: string; mapsTo: string }[];
+  /** Link references are stored by API name to remain serializable. */
+  linkImplementations?: Record<
+    InterfaceLinkTypeApiName,
+    Array<{
+      linkTypeApiName: LinkTypeApiName;
+      sideApiName: LinkTypeSideApiName;
+    }>
+  >;
+  /** Action references are stored by API name to remain serializable. */
+  actionTypeImplementations?: Record<
+    InterfaceActionTypeConstraintApiName,
+    {
+      actionTypeApiName: ActionTypeApiName;
+      parameterMapping?: Record<
+        InterfaceParameterConstraintApiName,
+        ActionParameterId
+      >;
+    }
+  >;
 };
