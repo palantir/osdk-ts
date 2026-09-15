@@ -23,10 +23,7 @@ import type {
   ValueTypeApiName,
   ValueTypeConstraint,
 } from "@osdk/foundry.ontologies";
-import {
-  GeneratorError,
-  wireObjectTypeFullMetadataToSdkObjectMetadata,
-} from "@osdk/generator-converters";
+import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
 import consola from "consola";
 import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
@@ -462,34 +459,29 @@ function getPropTypeOrValueTypeEnum(
     return defaultPropString;
   }
   const valueType = valueTypeMetadata[propertyDefinition.valueTypeApiName];
-  if (valueType == null || valueType.constraints.length === 0) {
+  if (valueType == null) {
     return defaultPropString;
   }
-  if (valueType.constraints.length !== 1) {
-    throw new GeneratorError(
-      "Expected exactly one constraint for value type",
-      { valueTypeApiName: propertyDefinition.valueTypeApiName },
-      { constraintCount: valueType.constraints.length },
+
+  for (let constraint of valueType.constraints) {
+    let shouldWrapWithParentheses = false;
+    if (constraint.type === "array" && constraint.valueConstraint) {
+      constraint = constraint.valueConstraint;
+      shouldWrapWithParentheses = true;
+    }
+
+    const maybeEnumString = maybeGetEnumString(
+      propertyDefinition,
+      constraint,
     );
+    if (maybeEnumString) {
+      return shouldWrapWithParentheses
+        ? `(${maybeEnumString})`
+        : maybeEnumString;
+    }
   }
 
-  let shouldWrapWithParentheses = false;
-  let constraint = valueType.constraints[0];
-  if (constraint.type === "array" && constraint.valueConstraint) {
-    constraint = constraint.valueConstraint;
-    shouldWrapWithParentheses = true;
-  }
-
-  const maybeEnumString = maybeGetEnumString(
-    propertyDefinition,
-    constraint,
-  );
-
-  return maybeEnumString
-    ? (
-      shouldWrapWithParentheses ? `(${maybeEnumString})` : maybeEnumString
-    )
-    : defaultPropString;
+  return defaultPropString;
 }
 
 function maybeGetEnumString(
