@@ -68,6 +68,13 @@ export function defineInterfaceImplementation({
     storedObject !== undefined,
     `Object ${objectType.apiName} must be defined before implementing an interface`,
   );
+  invariant(
+    !storedObject.implementsInterfaces?.some(
+      (implementation) =>
+        implementation.implements.apiName === interfaceType.apiName,
+    ),
+    `Object "${objectType.apiName}" already implements interface "${interfaceType.apiName}"`,
+  );
 
   storedObject.implementsInterfaces ??= [];
   storedObject.implementsInterfaces.push({

@@ -254,6 +254,26 @@ describe("Experimental Test Suite", () => {
     ]);
   });
 
+  it("rejects duplicate implementations of the same interface", () => {
+    const interfaceType = defineInterface({ apiName: "Employee" });
+    const objectType = defineObject({
+      apiName: "employee",
+      displayName: "Employee",
+      pluralDisplayName: "Employees",
+      titlePropertyApiName: "id",
+      primaryKeyPropertyApiName: "id",
+      properties: { id: { type: "string" } },
+    });
+
+    defineInterfaceImplementation({ interfaceType, objectType });
+
+    expect(() =>
+      defineInterfaceImplementation({ interfaceType, objectType }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Object "com.palantir.employee" already implements interface "com.palantir.Employee"]`,
+    );
+  });
+
   describe("Dependencies", () => {
     it("writes dependencies to the configured file", async () => {
       const outputDir = fs.mkdtempSync(
