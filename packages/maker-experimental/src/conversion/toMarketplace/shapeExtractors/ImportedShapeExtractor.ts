@@ -50,7 +50,10 @@ import type {
 } from "../../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../../util/generateRid.js";
 import { typeToMarketplaceObjectPropertyType } from "../typeVisitors.js";
-import { extractValueTypeInputShapeIfPresent } from "./IrShapeExtractor.js";
+import {
+  convertParameterConstraintTypeReferencesToShape,
+  extractValueTypeInputShapeIfPresent,
+} from "./IrShapeExtractor.js";
 
 interface ImportedBlockShapes extends BlockShapes {
   inputPresets: Map<ReadableId, InputPreset>;
@@ -590,7 +593,10 @@ function extractImportedInterfaceTypes(
           actionTypeConstraint:
             ridGenerator.toBlockInternalId(constraintReadableId),
           requireImplementation: paramConstraint.requireImplementation,
-          type: paramConstraint.type,
+          type: convertParameterConstraintTypeReferencesToShape(
+            paramConstraint.type,
+            knownIdentifiers,
+          ),
         };
 
         blockShapes.inputShapes.set(paramReadableId, {
