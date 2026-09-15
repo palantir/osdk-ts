@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.69.0
+
+### Minor Changes
+
+- 688dd40: Prefetch interface metadata while loading object set pages
+- e108284: Support batch action application on scenario clients
+
+### Patch Changes
+
+- @osdk/api@2.69.0
+- @osdk/client.unstable@2.69.0
+- @osdk/generator-converters@2.69.0
+- @osdk/shared.test@2.48.0
+
 ## 2.68.0
 
 ### Minor Changes
