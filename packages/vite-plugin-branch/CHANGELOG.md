@@ -1,5 +1,11 @@
 # @osdk/vite-plugin-branch
 
+## 2.69.0
+
+### Minor Changes
+
+- f39ea7a: OSDK apps using the Vite plugin are now reloaded when the Foundry branch changes. Requires Vite 6+.
+
 ## 2.68.0
 
 ## 2.67.0

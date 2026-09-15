@@ -1,5 +1,20 @@
 # @osdk/integration-testing
 
+## 0.6.0
+
+### Minor Changes
+
+- 5c8bdb0: Read the code and artifacts service URLs from FOUNDRY_SERVICE_DISCOVERY_V2 when installing the Foundry CLI, preserving routing paths and retaining the existing Foundry host fallback when discovery is not configured.
+
+### Patch Changes
+
+- Updated dependencies [688dd40]
+- Updated dependencies [e108284]
+  - @osdk/client@2.69.0
+  - @osdk/api@2.69.0
+  - @osdk/unit-testing@0.26.0
+  - @osdk/generator-converters.preview@0.47.0
+
 ## 0.5.0
 
 ### Minor Changes
