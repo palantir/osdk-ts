@@ -59,6 +59,9 @@ export interface WeatherStation extends $ObjectTypeDefinition {
     linksType: WeatherStation.Links;
     strictProps: WeatherStation.StrictProps;
     apiName: 'WeatherStation';
+    createMetadata: {
+      requiredProperties: ['stationId'];
+    };
     description: 'Weather Station';
     displayName: 'Weather Station';
     icon: {

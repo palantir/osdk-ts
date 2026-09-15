@@ -142,6 +142,9 @@ export interface StatusUpdate extends $ObjectTypeDefinition {
     linksType: StatusUpdate.Links;
     strictProps: StatusUpdate.StrictProps;
     apiName: 'StatusUpdate';
+    createMetadata: {
+      requiredProperties: ['statusUpdateId'];
+    };
     description: 'A typed, timestamped status row hung off an Assignment (the one-to-many timeline being stress-tested). The latest value per type is derived by max-aggregating timestampEpochMs over this link.';
     displayName: 'Status Update';
     icon: {

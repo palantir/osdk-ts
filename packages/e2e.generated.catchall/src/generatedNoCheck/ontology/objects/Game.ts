@@ -61,6 +61,9 @@ export interface Game extends $ObjectTypeDefinition {
     linksType: Game.Links;
     strictProps: Game.StrictProps;
     apiName: 'Game';
+    createMetadata: {
+      requiredProperties: ['id'];
+    };
     description: '';
     displayName: 'Game';
     icon: {

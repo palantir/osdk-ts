@@ -57,6 +57,9 @@ export interface Task extends $ObjectTypeDefinition {
     linksType: Task.Links;
     strictProps: Task.StrictProps;
     apiName: 'com.example.dep.Task';
+    createMetadata: {
+      requiredProperties: ['taskId'];
+    };
     description: 'Task description';
     displayName: 'Task';
     icon: {

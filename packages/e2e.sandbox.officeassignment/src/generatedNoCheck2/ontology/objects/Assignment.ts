@@ -168,6 +168,9 @@ export interface Assignment extends $ObjectTypeDefinition {
     linksType: Assignment.Links;
     strictProps: Assignment.StrictProps;
     apiName: 'Assignment';
+    createMetadata: {
+      requiredProperties: ['assignmentId'];
+    };
     description: 'The central hub object: a placement of an Employee into an Office/Floor under a Manager. Owns the one-to-many timeline of Status Updates that drives the latest-value-of-type derivation. Base app filter: assignmentType == Permanent AND assignmentStatus == Active.';
     displayName: 'Assignment';
     icon: {

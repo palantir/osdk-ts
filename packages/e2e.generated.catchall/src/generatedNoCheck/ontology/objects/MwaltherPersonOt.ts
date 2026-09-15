@@ -73,6 +73,9 @@ export interface MwaltherPersonOt extends $ObjectTypeDefinition {
     linksType: MwaltherPersonOt.Links;
     strictProps: MwaltherPersonOt.StrictProps;
     apiName: 'MwaltherPersonOt';
+    createMetadata: {
+      requiredProperties: ['id'];
+    };
     description: 'asd';
     displayName: '[mwalther] Person';
     icon: {

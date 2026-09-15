@@ -125,6 +125,9 @@ export interface EsongIssues extends $ObjectTypeDefinition {
     linksType: EsongIssues.Links;
     strictProps: EsongIssues.StrictProps;
     apiName: 'EsongIssues';
+    createMetadata: {
+      requiredProperties: ['id'];
+    };
     description: '';
     displayName: '[esong] Issues';
     icon: {

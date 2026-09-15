@@ -75,6 +75,9 @@ export interface BoundariesUsState extends $ObjectTypeDefinition {
     linksType: BoundariesUsState.Links;
     strictProps: BoundariesUsState.StrictProps;
     apiName: 'BoundariesUsState';
+    createMetadata: {
+      requiredProperties: ['usState'];
+    };
     description: 'Boundaries US State';
     displayName: 'Boundaries US State';
     icon: {

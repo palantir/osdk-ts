@@ -68,6 +68,9 @@ export interface NihalbCastingObjectTypeB extends $ObjectTypeDefinition {
     linksType: NihalbCastingObjectTypeB.Links;
     strictProps: NihalbCastingObjectTypeB.StrictProps;
     apiName: 'NihalbCastingObjectTypeB';
+    createMetadata: {
+      requiredProperties: ['primaryKey_'];
+    };
     description: '';
     displayName: '(nihalb) Casting Object Type B';
     icon: {

@@ -97,6 +97,9 @@ export interface MasonMovie extends $ObjectTypeDefinition {
     linksType: MasonMovie.Links;
     strictProps: MasonMovie.StrictProps;
     apiName: 'MasonMovie';
+    createMetadata: {
+      requiredProperties: ['movie'];
+    };
     description: '';
     displayName: '[mason] movie';
     icon: {

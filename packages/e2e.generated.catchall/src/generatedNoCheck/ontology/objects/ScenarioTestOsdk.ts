@@ -73,6 +73,9 @@ export interface ScenarioTestOsdk extends $ObjectTypeDefinition {
     linksType: ScenarioTestOsdk.Links;
     strictProps: ScenarioTestOsdk.StrictProps;
     apiName: 'ScenarioTestOsdk';
+    createMetadata: {
+      requiredProperties: ['primaryKey_'];
+    };
     description: '';
     displayName: 'Scenario Test Osdk';
     icon: {

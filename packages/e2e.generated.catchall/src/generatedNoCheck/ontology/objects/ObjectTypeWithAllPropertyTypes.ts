@@ -205,6 +205,9 @@ export interface ObjectTypeWithAllPropertyTypes extends $ObjectTypeDefinition {
     linksType: ObjectTypeWithAllPropertyTypes.Links;
     strictProps: ObjectTypeWithAllPropertyTypes.StrictProps;
     apiName: 'ObjectTypeWithAllPropertyTypes';
+    createMetadata: {
+      requiredProperties: ['id'];
+    };
     description: 'A type with all property types';
     displayName: 'ObjectTypeWithAllPropertyTypes';
     icon: {

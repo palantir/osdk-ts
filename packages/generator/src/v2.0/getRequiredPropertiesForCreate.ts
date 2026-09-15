@@ -14,29 +14,13 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeFullMetadata,
-  PropertyApiName,
-  PropertyV2,
-} from "@osdk/foundry.ontologies";
-
-type PropertyV2WithDataConstraints = PropertyV2 & {
-  dataConstraints?: {
-    nullability?: "NULLABLE" | "NOT_NULLABLE";
-  };
-};
-
-type ObjectTypeMetadataWithDataConstraints =
-  & ObjectTypeFullMetadata["objectType"]
-  & {
-    properties: Record<PropertyApiName, PropertyV2WithDataConstraints>;
-  };
+import type { ObjectTypeFullMetadata } from "@osdk/foundry.ontologies";
 
 export function getRequiredPropertiesForCreate(
-  objectType: ObjectTypeMetadataWithDataConstraints,
+  objectType: ObjectTypeFullMetadata["objectType"],
 ): ReadonlyArray<string> {
   const required = new Set<string>([objectType.primaryKey]);
-  const editableDatasourceProperties = objectType.datasources
+  const editableDatasourceProperties = (objectType.datasources ?? [])
     .map((datasource) => {
       switch (datasource.definition.type) {
         case "dataset":

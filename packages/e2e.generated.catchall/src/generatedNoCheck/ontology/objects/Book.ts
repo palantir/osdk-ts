@@ -73,6 +73,9 @@ export interface Book extends $ObjectTypeDefinition {
     linksType: Book.Links;
     strictProps: Book.StrictProps;
     apiName: 'Book';
+    createMetadata: {
+      requiredProperties: ['id'];
+    };
     description: '';
     displayName: 'Book';
     icon: {

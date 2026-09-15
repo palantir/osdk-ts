@@ -84,6 +84,9 @@ export interface Manager extends $ObjectTypeDefinition {
     linksType: Manager.Links;
     strictProps: Manager.StrictProps;
     apiName: 'Manager';
+    createMetadata: {
+      requiredProperties: ['managerId'];
+    };
     description: 'A manager / team lead responsible for one or more Assignments.';
     displayName: 'Manager';
     icon: {

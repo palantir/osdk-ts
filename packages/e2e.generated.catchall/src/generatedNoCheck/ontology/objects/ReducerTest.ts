@@ -107,6 +107,9 @@ export interface ReducerTest extends $ObjectTypeDefinition {
     linksType: ReducerTest.Links;
     strictProps: ReducerTest.StrictProps;
     apiName: 'ReducerTest';
+    createMetadata: {
+      requiredProperties: ['primaryKey_'];
+    };
     description: '';
     displayName: 'Reducer Test';
     icon: {

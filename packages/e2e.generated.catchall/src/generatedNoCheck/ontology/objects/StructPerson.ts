@@ -57,6 +57,9 @@ export interface StructPerson extends $ObjectTypeDefinition {
     linksType: StructPerson.Links;
     strictProps: StructPerson.StrictProps;
     apiName: 'StructPerson';
+    createMetadata: {
+      requiredProperties: ['name'];
+    };
     description: 'StructPerson';
     displayName: 'StructPerson';
     icon: {

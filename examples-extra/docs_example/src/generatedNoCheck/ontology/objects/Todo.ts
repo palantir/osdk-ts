@@ -63,6 +63,9 @@ export interface Todo extends $ObjectTypeDefinition {
     linksType: Todo.Links;
     strictProps: Todo.StrictProps;
     apiName: 'Todo';
+    createMetadata: {
+      requiredProperties: ['id'];
+    };
     description: 'Its a todo item.';
     displayName: 'Todo';
     icon: {

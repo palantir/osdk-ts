@@ -770,6 +770,9 @@ export interface GraphqlFormatting extends $ObjectTypeDefinition {
     linksType: GraphqlFormatting.Links;
     strictProps: GraphqlFormatting.StrictProps;
     apiName: 'GraphqlFormatting';
+    createMetadata: {
+      requiredProperties: ['stringPlain'];
+    };
     description: '';
     displayName: 'Graphql Formatting';
     icon: {

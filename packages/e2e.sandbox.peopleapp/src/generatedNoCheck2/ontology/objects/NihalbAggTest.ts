@@ -76,6 +76,9 @@ export interface NihalbAggTest extends $ObjectTypeDefinition {
     linksType: NihalbAggTest.Links;
     strictProps: NihalbAggTest.StrictProps;
     apiName: 'NihalbAggTest';
+    createMetadata: {
+      requiredProperties: ['primaryKey_'];
+    };
     description: '';
     displayName: '(nihalb)AggTest';
     icon: {

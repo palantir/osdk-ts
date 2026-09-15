@@ -128,4 +128,13 @@ describe(getRequiredPropertiesForCreate, () => {
       "id",
     ]);
   });
+
+  it("requires only the primary key when datasources are absent", () => {
+    const objectType = createObjectTypeMetadata([]);
+    // Metadata loaded without datasources omits the field entirely, even
+    // though the wire type declares it as required.
+    delete (objectType as { datasources?: unknown }).datasources;
+
+    expect(getRequiredPropertiesForCreate(objectType)).toEqual(["id"]);
+  });
 });

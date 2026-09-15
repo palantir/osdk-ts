@@ -73,6 +73,9 @@ export interface CipherTextTest extends $ObjectTypeDefinition {
     linksType: CipherTextTest.Links;
     strictProps: CipherTextTest.StrictProps;
     apiName: 'CipherTextTest';
+    createMetadata: {
+      requiredProperties: ['pk'];
+    };
     description: '';
     displayName: 'CipherTextTest';
     icon: {

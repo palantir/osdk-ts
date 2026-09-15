@@ -57,6 +57,9 @@ export interface equipment extends $ObjectTypeDefinition {
     linksType: equipment.Links;
     strictProps: equipment.StrictProps;
     apiName: 'equipment';
+    createMetadata: {
+      requiredProperties: ['equipmentId'];
+    };
     description: undefined;
     displayName: 'Equipment';
     icon: {

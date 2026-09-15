@@ -84,6 +84,9 @@ export interface ExampleEw03osdkTodoProject extends $ObjectTypeDefinition {
     linksType: ExampleEw03osdkTodoProject.Links;
     strictProps: ExampleEw03osdkTodoProject.StrictProps;
     apiName: 'ExampleEw03osdkTodoProject';
+    createMetadata: {
+      requiredProperties: ['pk'];
+    };
     description: 'Osdk Project is a collection of tasks which are managed together';
     displayName: '[Example ew03] Osdk Todo Project';
     icon: {

@@ -75,6 +75,9 @@ export interface McAirportStruct extends $ObjectTypeDefinition {
     linksType: McAirportStruct.Links;
     strictProps: McAirportStruct.StrictProps;
     apiName: 'McAirportStruct';
+    createMetadata: {
+      requiredProperties: ['airportName'];
+    };
     description: 'McAirportStruct';
     displayName: 'McAirportStruct';
     icon: {

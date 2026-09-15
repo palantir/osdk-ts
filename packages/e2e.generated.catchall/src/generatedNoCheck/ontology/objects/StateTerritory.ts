@@ -64,6 +64,9 @@ export interface StateTerritory extends $ObjectTypeDefinition {
     linksType: StateTerritory.Links;
     strictProps: StateTerritory.StrictProps;
     apiName: 'StateTerritory';
+    createMetadata: {
+      requiredProperties: ['airportStateName'];
+    };
     description: '';
     displayName: 'State/Territory';
     icon: {
