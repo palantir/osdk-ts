@@ -77,6 +77,9 @@ export interface FintrafficAis extends $ObjectTypeDefinition {
     linksType: FintrafficAis.Links;
     strictProps: FintrafficAis.StrictProps;
     apiName: 'FintrafficAis';
+    createMetadata: {
+      requiredProperties: ['mmsi'];
+    };
     description: 'Fintraffic AIS';
     displayName: 'Fintraffic AIS';
     icon: {

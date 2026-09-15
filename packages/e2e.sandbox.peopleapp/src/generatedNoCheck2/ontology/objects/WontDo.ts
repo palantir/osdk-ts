@@ -61,6 +61,9 @@ export interface WontDo extends $ObjectTypeDefinition {
     linksType: WontDo.Links;
     strictProps: WontDo.StrictProps;
     apiName: 'WontDo';
+    createMetadata: {
+      requiredProperties: ['wontDoName'];
+    };
     description: '';
     displayName: 'Wont Do';
     icon: {

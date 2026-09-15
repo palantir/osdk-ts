@@ -79,6 +79,9 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
     linksType: OsdkTestObject.Links;
     strictProps: OsdkTestObject.StrictProps;
     apiName: 'OsdkTestObject';
+    createMetadata: {
+      requiredProperties: ['primaryKey_'];
+    };
     description: '';
     displayName: 'Osdk Test Object';
     icon: {

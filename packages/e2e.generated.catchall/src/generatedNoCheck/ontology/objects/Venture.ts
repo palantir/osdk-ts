@@ -64,6 +64,9 @@ export interface Venture extends $ObjectTypeDefinition {
     linksType: Venture.Links;
     strictProps: Venture.StrictProps;
     apiName: 'Venture';
+    createMetadata: {
+      requiredProperties: ['ventureId'];
+    };
     description: 'A venture';
     displayName: 'Venture';
     icon: {

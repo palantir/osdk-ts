@@ -61,6 +61,9 @@ export interface GtfsTripTrackObject extends $ObjectTypeDefinition {
     linksType: GtfsTripTrackObject.Links;
     strictProps: GtfsTripTrackObject.StrictProps;
     apiName: 'GtfsTripTrackObject';
+    createMetadata: {
+      requiredProperties: ['entityId'];
+    };
     description: 'GtfsTripTrackObject';
     displayName: 'GtfsTripTrackObject';
     icon: {

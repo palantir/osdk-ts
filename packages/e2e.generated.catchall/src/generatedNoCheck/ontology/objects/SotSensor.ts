@@ -69,6 +69,9 @@ export interface SotSensor extends $ObjectTypeDefinition {
     linksType: SotSensor.Links;
     strictProps: SotSensor.StrictProps;
     apiName: 'SotSensor';
+    createMetadata: {
+      requiredProperties: ['seriesId'];
+    };
     description: 'SOT-Sensor';
     displayName: 'SOT-Sensor';
     icon: {

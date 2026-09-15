@@ -69,6 +69,9 @@ export interface Country_1 extends $ObjectTypeDefinition {
     linksType: Country_1.Links;
     strictProps: Country_1.StrictProps;
     apiName: 'Country_1';
+    createMetadata: {
+      requiredProperties: ['airportCountryName'];
+    };
     description: '';
     displayName: 'Country';
     icon: {

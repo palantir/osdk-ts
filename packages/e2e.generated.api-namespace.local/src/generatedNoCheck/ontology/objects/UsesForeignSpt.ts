@@ -57,6 +57,9 @@ export interface UsesForeignSpt extends $ObjectTypeDefinition {
     linksType: UsesForeignSpt.Links;
     strictProps: UsesForeignSpt.StrictProps;
     apiName: 'UsesForeignSpt';
+    createMetadata: {
+      requiredProperties: ['id'];
+    };
     description: undefined;
     displayName: 'Uses Foreign Spt';
     icon: {

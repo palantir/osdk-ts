@@ -142,6 +142,9 @@ export interface ExampleEw03osdkTodoTask extends $ObjectTypeDefinition {
     linksType: ExampleEw03osdkTodoTask.Links;
     strictProps: ExampleEw03osdkTodoTask.StrictProps;
     apiName: 'ExampleEw03osdkTodoTask';
+    createMetadata: {
+      requiredProperties: ['pk'];
+    };
     description: 'Osdk task is an activity I have to complete in the given timeframe';
     displayName: '[Example ew03] Osdk Todo Task';
     icon: {

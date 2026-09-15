@@ -61,6 +61,9 @@ export interface UnstructuredImageExample extends $ObjectTypeDefinition {
     linksType: UnstructuredImageExample.Links;
     strictProps: UnstructuredImageExample.StrictProps;
     apiName: 'UnstructuredImageExample';
+    createMetadata: {
+      requiredProperties: ['mediaItemRid'];
+    };
     description: 'Media OT for OSDK e2e testing';
     displayName: 'Unstructured Image Example';
     icon: {

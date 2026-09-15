@@ -342,6 +342,9 @@ export interface Employee extends $ObjectTypeDefinition {
     linksType: Employee.Links;
     strictProps: Employee.StrictProps;
     apiName: 'Employee';
+    createMetadata: {
+      requiredProperties: ['employeeNumber'];
+    };
     description: '';
     displayName: 'Employee';
     icon: {

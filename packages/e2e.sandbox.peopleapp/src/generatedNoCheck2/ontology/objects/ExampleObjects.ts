@@ -63,6 +63,9 @@ export interface ExampleObjects extends $ObjectTypeDefinition {
     linksType: ExampleObjects.Links;
     strictProps: ExampleObjects.StrictProps;
     apiName: 'ExampleObjects';
+    createMetadata: {
+      requiredProperties: ['primaryKey_'];
+    };
     description: '';
     displayName: 'Example Objects';
     icon: {

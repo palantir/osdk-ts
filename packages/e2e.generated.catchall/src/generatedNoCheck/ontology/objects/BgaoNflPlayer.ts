@@ -81,6 +81,9 @@ export interface BgaoNflPlayer extends $ObjectTypeDefinition {
     linksType: BgaoNflPlayer.Links;
     strictProps: BgaoNflPlayer.StrictProps;
     apiName: 'BgaoNflPlayer';
+    createMetadata: {
+      requiredProperties: ['id'];
+    };
     description: 'BgaoNflPlayer';
     displayName: 'BgaoNflPlayer';
     icon: {

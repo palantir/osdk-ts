@@ -70,6 +70,9 @@ export interface RhemmingsObjectWithGtsrProperty2 extends $ObjectTypeDefinition 
     linksType: RhemmingsObjectWithGtsrProperty2.Links;
     strictProps: RhemmingsObjectWithGtsrProperty2.StrictProps;
     apiName: 'RhemmingsObjectWithGtsrProperty2';
+    createMetadata: {
+      requiredProperties: ['id'];
+    };
     description: '(rhemmings) Object with GTSR property 2';
     displayName: '(rhemmings) Object with GTSR property 2';
     icon: {

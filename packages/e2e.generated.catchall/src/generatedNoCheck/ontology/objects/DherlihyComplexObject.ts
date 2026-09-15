@@ -61,6 +61,9 @@ export interface DherlihyComplexObject extends $ObjectTypeDefinition {
     linksType: DherlihyComplexObject.Links;
     strictProps: DherlihyComplexObject.StrictProps;
     apiName: 'DherlihyComplexObject';
+    createMetadata: {
+      requiredProperties: ['id'];
+    };
     description: 'Dherlihy Complex Object';
     displayName: 'Dherlihy Complex Object';
     icon: {

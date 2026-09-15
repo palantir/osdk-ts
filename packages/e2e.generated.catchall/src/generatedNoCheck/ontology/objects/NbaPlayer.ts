@@ -69,6 +69,9 @@ export interface NbaPlayer extends $ObjectTypeDefinition {
     linksType: NbaPlayer.Links;
     strictProps: NbaPlayer.StrictProps;
     apiName: 'NbaPlayer';
+    createMetadata: {
+      requiredProperties: ['id'];
+    };
     description: 'NbaPlayer';
     displayName: 'NbaPlayer';
     icon: {

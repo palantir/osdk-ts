@@ -86,6 +86,9 @@ export interface Office extends $ObjectTypeDefinition {
     linksType: Office.Links;
     strictProps: Office.StrictProps;
     apiName: 'Office';
+    createMetadata: {
+      requiredProperties: ['officeId'];
+    };
     description: 'A top-level company location (building/campus). Contains Floors and hosts Assignments.';
     displayName: 'Office';
     icon: {

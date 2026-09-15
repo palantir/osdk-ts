@@ -101,6 +101,9 @@ export interface EsongPds extends $ObjectTypeDefinition {
     linksType: EsongPds.Links;
     strictProps: EsongPds.StrictProps;
     apiName: 'EsongPds';
+    createMetadata: {
+      requiredProperties: ['id'];
+    };
     description: 'asdaaaaa';
     displayName: '[esong] Pds';
     icon: {

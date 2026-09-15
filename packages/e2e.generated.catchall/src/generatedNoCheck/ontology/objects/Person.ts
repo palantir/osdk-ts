@@ -58,6 +58,9 @@ export interface Person extends $ObjectTypeDefinition {
     linksType: Person.Links;
     strictProps: Person.StrictProps;
     apiName: 'Person';
+    createMetadata: {
+      requiredProperties: ['email'];
+    };
     description: 'A person';
     displayName: 'Person';
     icon: {

@@ -65,6 +65,9 @@ export interface TestGeoAction extends $ObjectTypeDefinition {
     linksType: TestGeoAction.Links;
     strictProps: TestGeoAction.StrictProps;
     apiName: 'TestGeoAction';
+    createMetadata: {
+      requiredProperties: ['geoPk'];
+    };
     description: 'Test Geo Object';
     displayName: 'Test Geo Object';
     icon: {
