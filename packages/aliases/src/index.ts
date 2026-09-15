@@ -14,20 +14,5 @@
  * limitations under the License.
  */
 
-export {
-  custom,
-  dataset,
-  mediaset,
-  model,
-  source,
-  stream,
-} from "@osdk/aliases/internal";
-
-export type {
-  Custom,
-  Dataset,
-  Mediaset,
-  Model,
-  Source,
-  Stream,
-} from "@osdk/aliases/internal";
+// The root API is reserved for the async API. Functions callers should use
+// Aliases from "@osdk/functions".

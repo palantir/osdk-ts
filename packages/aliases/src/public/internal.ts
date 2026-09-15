@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-export {
-  custom,
-  dataset,
-  mediaset,
-  model,
-  source,
-  stream,
-} from "@osdk/aliases/internal";
-
-export type {
-  Custom,
-  Dataset,
-  Mediaset,
-  Model,
-  Source,
-  Stream,
-} from "@osdk/aliases/internal";
+// Internal compatibility entry point for the synchronous @osdk/functions Aliases
+// API. Direct imports from application code are unsupported.
+export * from "../custom.js";
+export * from "../dataset.js";
+export * from "../mediaset.js";
+export * from "../model.js";
+export * from "../source.js";
+export * from "../stream.js";

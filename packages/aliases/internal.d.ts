@@ -14,20 +14,4 @@
  * limitations under the License.
  */
 
-export {
-  custom,
-  dataset,
-  mediaset,
-  model,
-  source,
-  stream,
-} from "@osdk/aliases/internal";
-
-export type {
-  Custom,
-  Dataset,
-  Mediaset,
-  Model,
-  Source,
-  Stream,
-} from "@osdk/aliases/internal";
+export * from "./build/cjs/public/internal.cjs";

@@ -1,3 +1,4 @@
+import * as InternalAliases from "@osdk/aliases/internal";
 import * as Client from "@osdk/client";
 import * as oauth from "@osdk/oauth";
 import * as sdk from "@test-app2/osdk";
@@ -21,4 +22,9 @@ Unstable.augment({ type: "object", apiName: "foo" } as any);
 
 if (sdk.$Objects.Employee.apiName !== "Employee") {
   throw new Error("Expected Employee");
+}
+
+// Keep this import in the emitted JavaScript to exercise Node's package resolution.
+if (typeof InternalAliases.custom !== "function") {
+  throw new Error("Expected the internal custom alias reader to be exported");
 }
