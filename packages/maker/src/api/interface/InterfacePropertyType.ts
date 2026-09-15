@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { OntologyIrBaseFormatter } from "@osdk/client.unstable";
+import type {
+  OntologyIrBaseFormatter,
+  OntologyIrValueTypeReferenceWithMetadata,
+} from "@osdk/client.unstable";
 
 import type { TypeClass } from "../common/TypeClass.js";
 import type { Nullability } from "../properties/Nullability.js";
@@ -83,6 +86,20 @@ export function interfacePropertyTypeClasses(
     ? interfacePropertyType.sharedPropertyType
     : interfacePropertyType;
   return typeClasses;
+}
+
+/**
+ * The value type this property is an instance of, or `undefined` if it is not.
+ *
+ * A value type carries its own constraints, which an implementing object type's data has to
+ * satisfy, so the reference is part of the contract rather than metadata about it.
+ */
+export function interfacePropertyValueType(
+  interfacePropertyType: InterfacePropertyType,
+): OntologyIrValueTypeReferenceWithMetadata | undefined {
+  return isInterfaceSharedPropertyType(interfacePropertyType)
+    ? interfacePropertyType.sharedPropertyType.valueType
+    : interfacePropertyType.valueType;
 }
 
 /** The nullability requirements for a marking property. */

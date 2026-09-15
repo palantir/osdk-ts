@@ -267,6 +267,31 @@ describe("parseLockfile", () => {
     );
   });
 
+  it("accepts a property that records a value type", () => {
+    const valueType = {
+      packageNamespace: "com.example",
+      apiName: "Ssn",
+      version: "1.0.0",
+    };
+    const parsed = parse(withPropertyDefinition({ ...property, valueType }));
+    expect(
+      parsed.interfaces.Person.schema.properties.lastName.valueType,
+    ).toEqual(valueType);
+  });
+
+  it("rejects a value type missing its `version`", () => {
+    expect(() =>
+      parse(
+        withPropertyDefinition({
+          ...property,
+          valueType: { packageNamespace: "com.example", apiName: "Ssn" },
+        }),
+      ),
+    ).toThrowError(
+      /properties\.lastName\.valueType\.version: Expected a value type version/u,
+    );
+  });
+
   it("rejects a type class missing its `name`", () => {
     expect(() =>
       parse(

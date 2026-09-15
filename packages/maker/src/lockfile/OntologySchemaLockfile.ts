@@ -69,6 +69,13 @@ export interface LockedInterfaceSchema {
 /** Where a property's definition comes from. */
 export type PropertyDeclaration = "interface" | "sharedPropertyType";
 
+/** What identifies the value type a property is an instance of. */
+export interface LockedValueType {
+  packageNamespace: string;
+  apiName: string;
+  version: string;
+}
+
 export interface LockedProperty {
   type: LockedPropertyType;
   required: boolean;
@@ -84,6 +91,13 @@ export interface LockedProperty {
    * when undeclared).
    */
   nullability?: Nullability;
+  /**
+   * The value type this property is an instance of. Absent when it is not one.
+   *
+   * Only the three fields that identify the value type; `displayMetadata` rides along on the wire
+   * reference but is presentation, and is dropped the way `PRESENTATION_KEYS` drops it elsewhere.
+   */
+  valueType?: LockedValueType;
   /** The property's (sorted) type classes. Absent when it declares none. */
   typeClasses?: TypeClass[];
 }

@@ -214,6 +214,41 @@ describe("describeFinding", () => {
         expected: 'Restore "name" to no nulls.',
       },
       {
+        name: "a property newly bound to a value type",
+        finding: {
+          code: "valueTypeChanged",
+          interfaceApiName: "Person",
+          property: "ssn",
+          previousValueType: undefined,
+          nextValueType: {
+            packageNamespace: "com.example",
+            apiName: "Ssn",
+            version: "1.0.0",
+          },
+        },
+        expected:
+          'property "ssn" changed its value type from none to com.example/Ssn@1.0.0',
+      },
+      {
+        name: "a value type version bump",
+        finding: {
+          code: "valueTypeChanged",
+          interfaceApiName: "Person",
+          property: "ssn",
+          previousValueType: {
+            packageNamespace: "com.example",
+            apiName: "Ssn",
+            version: "1.0.0",
+          },
+          nextValueType: {
+            packageNamespace: "com.example",
+            apiName: "Ssn",
+            version: "2.0.0",
+          },
+        },
+        expected: 'Restore "ssn" to com.example/Ssn@1.0.0.',
+      },
+      {
         name: "a property that gained a type class",
         finding: {
           code: "propertyTypeClassesChanged",
@@ -381,6 +416,31 @@ describe("describeWarning", () => {
     it("says who is affected rather than demanding a fix", () => {
       expect(relaxed).toContain("will start seeing it absent");
       expect(relaxed).toContain("Nothing to do if that was intended");
+    });
+  });
+
+  describe("a dropped value type reference", () => {
+    const removed = describeWarning({
+      code: "valueTypeRemoved",
+      interfaceApiName: "Person",
+      property: "com.example.ssn",
+      previousValueType: {
+        packageNamespace: "com.example",
+        apiName: "Ssn",
+        version: "1.0.0",
+      },
+    });
+
+    it("names the value type that was dropped, and the authored key", () => {
+      expect(removed).toContain(
+        'property "ssn" no longer references value type com.example/Ssn@1.0.0',
+      );
+      expect(removed).not.toContain("com.example.ssn");
+    });
+
+    it("says who is affected rather than demanding a fix", () => {
+      expect(removed).toContain("will start seeing values it rejected");
+      expect(removed).toContain("Nothing to do if that was intended");
     });
   });
 

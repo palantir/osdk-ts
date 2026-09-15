@@ -181,6 +181,23 @@ const propertySchema = z
           },
         )
         .optional(),
+      valueType: z
+        .object(
+          {
+            packageNamespace: z.string({
+              message: "Expected a value type package namespace.",
+            }),
+            apiName: z.string({ message: "Expected a value type api name." }),
+            version: z.string({ message: "Expected a value type version." }),
+          },
+          {
+            message:
+              `Expected an object identifying a value type. Restore the value type the last ` +
+              `published release declared.`,
+          },
+        )
+        .passthrough()
+        .optional(),
     },
     {
       message:

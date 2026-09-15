@@ -32,6 +32,7 @@ import type {
   LockedInterfaceType,
   LockedProperty,
   LockedTransition,
+  LockedValueType,
   OntologySchemaLockfile,
   PropertyDeclaration,
 } from "./OntologySchemaLockfile.js";
@@ -121,6 +122,20 @@ export type LockfileFinding =
       previousNullability: Nullability;
       nextNullability: Nullability;
     }
+  /**
+   * A property references a value type it did not, or references a different one. Dropping the
+   * reference outright is a warning instead.
+   *
+   * A new version of the same value type counts: its constraints are resolved elsewhere, so
+   * whether the bump tightens or loosens them cannot be told from the reference.
+   */
+  | {
+      code: "valueTypeChanged";
+      interfaceApiName: string;
+      property: string;
+      previousValueType: LockedValueType | undefined;
+      nextValueType: LockedValueType;
+    }
   | {
       code: "propertyBecameRequired";
       interfaceApiName: string;
@@ -154,6 +169,16 @@ export type LockfileWarning =
       property: string;
       previousNullability: Nullability;
       nextNullability: Nullability;
+    }
+  /**
+   * A property no longer references a value type. Safe for the same reason as the other
+   * relaxations: data that satisfied the value type's constraints satisfies no constraints.
+   */
+  | {
+      code: "valueTypeRemoved";
+      interfaceApiName: string;
+      property: string;
+      previousValueType: LockedValueType;
     };
 
 export interface LockfileValidationResult {
@@ -413,6 +438,18 @@ function validateSchemaDiff(
       });
     }
 
+    if (
+      previousProperty.valueType !== undefined &&
+      nextProperty.valueType === undefined
+    ) {
+      warnings.push({
+        code: "valueTypeRemoved",
+        interfaceApiName,
+        property: propertyApiName,
+        previousValueType: previousProperty.valueType,
+      });
+    }
+
     // Ahead of the type check: when the binding itself was swapped, the types are incidental, and
     // reporting them would point the author at the wrong thing to restore.
     const previousDeclaration = declarationOf(previousProperty);
@@ -475,6 +512,22 @@ function validateSchemaDiff(
         property: propertyApiName,
         previousNullability,
         nextNullability,
+      });
+      continue;
+    }
+
+    // `nextValueType` defined by construction: dropping the reference warned above instead.
+    const nextValueType = nextProperty.valueType;
+    if (
+      nextValueType !== undefined &&
+      !isDeepStrictEqual(previousProperty.valueType, nextValueType)
+    ) {
+      findings.push({
+        code: "valueTypeChanged",
+        interfaceApiName,
+        property: propertyApiName,
+        previousValueType: previousProperty.valueType,
+        nextValueType,
       });
       continue;
     }
