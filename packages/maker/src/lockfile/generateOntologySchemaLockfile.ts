@@ -16,10 +16,12 @@
 
 import type { OntologyDefinition } from "../api/common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../api/common/OntologyEntityTypeEnum.js";
+import type { TypeClass } from "../api/common/TypeClass.js";
 import { mapPropertyNames } from "../api/interface/describeInterfaceSchemaMigrationInstruction.js";
 import {
   getInterfacePropertyTypeType,
   type InterfacePropertyType,
+  interfacePropertyTypeClasses,
   interfacePropertyWireApiName,
   isInterfacePropertyArray,
   isInterfacePropertyRequired,
@@ -29,6 +31,7 @@ import { normalizePropertyType } from "./LockedPropertyType.js";
 import type {
   LockedInterfaceSchema,
   LockedInterfaceType,
+  LockedProperty,
   LockedTransition,
   OntologySchemaLockfile,
 } from "./OntologySchemaLockfile.js";
@@ -97,17 +100,40 @@ function lockInterfaceSchema(
       ([propertyApiName, property]) =>
         [
           interfacePropertyWireApiName(property, propertyApiName),
-          {
-            type: normalizePropertyType(
-              getInterfacePropertyTypeType(property),
-              isInterfacePropertyArray(property),
-            ),
-            required: isInterfacePropertyRequired(property),
-          },
+          lockProperty(property),
         ] as const,
     )
     .sort(([a], [b]) => compare(a, b));
   return { properties: Object.fromEntries(locked) };
+}
+
+function lockProperty(property: InterfacePropertyType): LockedProperty {
+  const typeClasses = lockTypeClasses(interfacePropertyTypeClasses(property));
+  return {
+    type: normalizePropertyType(
+      getInterfacePropertyTypeType(property),
+      isInterfacePropertyArray(property),
+    ),
+    required: isInterfacePropertyRequired(property),
+    // Spread rather than assign `undefined`: a lockfile read back from disk has no key at all for
+    // a property that declares none, and the two have to compare equal.
+    ...(typeClasses !== undefined && { typeClasses }),
+  };
+}
+
+/**
+ * The canonical form of a property's type classes: sorted, and `undefined` rather than empty when
+ * there are none.
+ */
+function lockTypeClasses(
+  typeClasses: TypeClass[] | undefined,
+): TypeClass[] | undefined {
+  if (typeClasses === undefined || typeClasses.length === 0) {
+    return undefined;
+  }
+  return [...typeClasses].sort(
+    (a, b) => compare(a.kind, b.kind) || compare(a.name, b.name),
+  );
 }
 
 function lockInterfaceSchemaMigrationTransitions(

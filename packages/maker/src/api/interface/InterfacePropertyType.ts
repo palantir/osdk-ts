@@ -16,6 +16,7 @@
 
 import type { OntologyIrBaseFormatter } from "@osdk/client.unstable";
 
+import type { TypeClass } from "../common/TypeClass.js";
 import type { PropertyTypeType } from "../properties/PropertyTypeType.js";
 import type {
   PropertyType,
@@ -61,6 +62,21 @@ export function isInterfacePropertyArray(
     ? interfacePropertyType.sharedPropertyType
     : interfacePropertyType;
   return array ?? false;
+}
+
+/**
+ * The type classes this property carries, or `undefined` if it declares none.
+ *
+ * Type classes drive render hints like sorting and filtering, so they are part of what an
+ * implementing object type has to satisfy rather than presentation-only metadata.
+ */
+export function interfacePropertyTypeClasses(
+  interfacePropertyType: InterfacePropertyType,
+): TypeClass[] | undefined {
+  const { typeClasses } = isInterfaceSharedPropertyType(interfacePropertyType)
+    ? interfacePropertyType.sharedPropertyType
+    : interfacePropertyType;
+  return typeClasses;
 }
 
 /**
