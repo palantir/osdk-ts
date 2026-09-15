@@ -1,5 +1,24 @@
 # @osdk/maker
 
+## 0.70.0
+
+### Minor Changes
+
+- 61756f1: Concrete link + action constraint interface implementations
+- e13da8f: Make more consistent how interface schema migration instructions handle target properties, and adopt latest bindings.
+- 901a334: Add the interface schema lockfile data model and its generation from a source ontology.
+- 25ddf83: Parse persisted ontology schema lockfiles.
+- 0aba00e: Add applying an interface schema migration transition to a locked schema.
+- abff5c0: Diff a generated ontology schema lockfile against the persisted one, reporting changes that would be rejected at installation-time.
+- 4109d2d: Fix maker and maker-experimental test flakes from re-using the same output directory for their defineOntology calls.
+
+### Patch Changes
+
+- Updated dependencies [9589f03]
+- Updated dependencies [27e9994]
+  - @osdk/generator-converters.ontologyir@2.70.0
+  - @osdk/api@2.70.0
+
 ## 0.69.0
 
 ### Patch Changes
