@@ -34,6 +34,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
 import { PreviewOntologyIrConverter } from "../PreviewOntologyIrConverter.js";
+import { loadSdkInput } from "./loadSdkInput.js";
 
 const PYTHON_SDK_PACKAGE_NAME = "ontology_sdk";
 
@@ -153,14 +154,18 @@ async function main(): Promise<void> {
     .help()
     .version(false) // so that we can use --version argument for the package version
     .usage(
-      "$0 --input <path> --package-name <name> --version <ver> --output-dir <dir>",
+      "$0 (--input <path> | --block-results-input <path>) --package-name <name> --version <ver> --output-dir <dir>",
     )
     .options({
       input: {
         describe: "Path to the OntologyIR JSON file",
         type: "string",
-        demandOption: true,
         coerce: path.resolve,
+      },
+      "block-results-input": {
+        describe: "Path to the block result JSON collection",
+        type: "string",
+        coerce: (input: string) => path.resolve(input),
       },
       "package-name": {
         describe: "Name for the generated SDK package",
@@ -222,45 +227,15 @@ async function main(): Promise<void> {
     })
     .parse();
 
-  const inputFile = argv.input;
   const packageName = argv.packageName;
   const packageVersion = argv.version;
   const outputDir = argv.outputDir;
 
-  // Validate input file exists
-  try {
-    await fs.access(inputFile);
-  } catch {
-    consola.error(`Input file does not exist: ${inputFile}`);
-    process.exit(1);
-  }
-
-  consola.info(`Converting ${inputFile}...`);
-
-  const fileContent = await fs.readFile(inputFile, "utf-8");
-  let blockDataJson: unknown;
-  try {
-    const parsed = JSON.parse(fileContent);
-    // Handle both wrapped (ontology.objectTypes) and unwrapped (objectTypes) formats
-    blockDataJson = parsed.ontology ?? parsed;
-  } catch {
-    consola.error(`Failed to parse JSON from ${inputFile}`);
-    process.exit(1);
-  }
-
-  // Basic structural validation before passing to converter
-  const blockData = blockDataJson as Record<string, unknown>;
-  if (
-    !blockData
-    || typeof blockData !== "object"
-    || !("objectTypes" in blockData)
-    || !("actionTypes" in blockData)
-  ) {
-    consola.error(
-      `Invalid Ontology structure in ${inputFile}. Expected objectTypes and actionTypes fields.`,
-    );
-    process.exit(1);
-  }
+  const { ontology, valueTypes } = await loadSdkInput({
+    input: argv.input,
+    blockResultsInput: argv.blockResultsInput,
+  });
+  consola.info(`Converting ${argv.input ?? argv.blockResultsInput}...`);
 
   const importJson = argv.importJson
     ? JSON.parse(await fs.readFile(argv.importJson, "utf-8"))
@@ -268,10 +243,9 @@ async function main(): Promise<void> {
 
   const previewMetadata = PreviewOntologyIrConverter
     .getPreviewFullMetadataFromBlockData(
-      blockDataJson as Parameters<
-        typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData
-      >[0],
+      ontology,
       importJson,
+      valueTypes,
     );
 
   // Generate the Python SDK before function discovery so that Python functions
