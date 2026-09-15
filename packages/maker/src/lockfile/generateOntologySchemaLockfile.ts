@@ -21,6 +21,7 @@ import {
   getInterfacePropertyTypeType,
   type InterfacePropertyType,
   interfacePropertyWireApiName,
+  isInterfacePropertyArray,
   isInterfacePropertyRequired,
 } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceType } from "../api/interface/InterfaceType.js";
@@ -97,7 +98,10 @@ function lockInterfaceSchema(
         [
           interfacePropertyWireApiName(property, propertyApiName),
           {
-            type: normalizePropertyType(getInterfacePropertyTypeType(property)),
+            type: normalizePropertyType(
+              getInterfacePropertyTypeType(property),
+              isInterfacePropertyArray(property),
+            ),
             required: isInterfacePropertyRequired(property),
           },
         ] as const,

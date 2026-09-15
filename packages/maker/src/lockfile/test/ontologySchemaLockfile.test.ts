@@ -340,6 +340,61 @@ describe("interface schema migration scenarios", () => {
       );
     });
 
+    it("rejects making a property arrayed", async () => {
+      await published(lastNameFinalized);
+      await expect(
+        maker(
+          person(
+            {
+              firstName: REQUIRED_STRING,
+              lastName: { type: "string", array: true },
+            },
+            { transitions: [] },
+          ),
+          { writeLocks: true },
+        ),
+      ).rejects.toThrowError(
+        /property "lastName" changed type from "string" to "string"\[\]/u,
+      );
+    });
+
+    it("rejects dropping the arrayedness of a property", async () => {
+      await published(
+        person(
+          {
+            firstName: REQUIRED_STRING,
+            nicknames: { type: "string", array: true },
+          },
+          { transitions: [] },
+        ),
+      );
+      await expect(
+        maker(
+          person(
+            { firstName: REQUIRED_STRING, nicknames: { type: "string" } },
+            { transitions: [] },
+          ),
+          { writeLocks: true },
+        ),
+      ).rejects.toThrowError(
+        /property "nicknames" changed type from "string"\[\] to "string"/u,
+      );
+    });
+
+    it("accepts an arrayed property that did not change", async () => {
+      const arrayed = person(
+        {
+          firstName: REQUIRED_STRING,
+          nicknames: { type: "string", array: true },
+        },
+        { transitions: [] },
+      );
+      await published(arrayed);
+      await expect(
+        maker(arrayed, { writeLocks: true }),
+      ).resolves.toBeUndefined();
+    });
+
     it("accepts relaxing a required property to optional", async () => {
       await published(lastNameFinalized);
       await expect(

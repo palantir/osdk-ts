@@ -21,11 +21,15 @@ import {
   defineOntology,
   getOntologyDefinition,
 } from "../../api/defineOntology.js";
+import { defineSharedPropertyType } from "../../api/defineSpt.js";
 import {
   censusOfSource,
   generateOntologySchemaLockfile,
 } from "../generateOntologySchemaLockfile.js";
-import type { OntologySchemaLockfile } from "../OntologySchemaLockfile.js";
+import type {
+  LockedProperty,
+  OntologySchemaLockfile,
+} from "../OntologySchemaLockfile.js";
 
 async function lockAddressStruct(
   displayName: string,
@@ -81,6 +85,61 @@ describe("generateOntologySchemaLockfile", () => {
     expect(await lockNameProperty("Name")).toEqual(
       await lockNameProperty("Full name"),
     );
+  });
+
+  describe("arrayedness", () => {
+    function lockedProperty(apiName: string): LockedProperty {
+      const { interfaces } = generateOntologySchemaLockfile(
+        getOntologyDefinition(),
+      );
+      return interfaces["com.palantir.Person"].schema.properties[apiName];
+    }
+
+    it("records an arrayed interface-defined property as an array type", () => {
+      defineInterface({
+        apiName: "Person",
+        properties: { nicknames: { type: "string", array: true } },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(lockedProperty("nicknames")).toEqual({
+        type: { type: "array", subtype: "string" },
+        required: true,
+      });
+    });
+
+    it("records an arrayed shared property type as an array type", () => {
+      const nicknames = defineSharedPropertyType({
+        apiName: "nicknames",
+        type: "string",
+        array: true,
+      });
+      defineInterface({
+        apiName: "Person",
+        properties: {
+          nicknames: { sharedPropertyType: nicknames, required: false },
+        },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(lockedProperty("com.palantir.nicknames")).toEqual({
+        type: { type: "array", subtype: "string" },
+        required: false,
+      });
+    });
+
+    it("records a property that is not arrayed as its bare type", () => {
+      defineInterface({
+        apiName: "Person",
+        properties: { nickname: { type: "string", array: false } },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(lockedProperty("nickname")).toEqual({
+        type: "string",
+        required: true,
+      });
+    });
   });
 });
 
