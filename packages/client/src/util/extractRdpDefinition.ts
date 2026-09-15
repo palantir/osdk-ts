@@ -45,6 +45,33 @@ export function hasWithProperties(objectSet: ObjectSet): boolean {
 }
 
 /* @internal
+ * An interface link can target another interface, so the type a pivotTo chain lands on is not
+ * guaranteed to be an object type. Selecting a property across such a link is unsupported, so say
+ * that outright instead of surfacing it as a missing object definition.
+ */
+async function getSelectedPropertyObjectDefinition(
+  clientCtx: MinimalClient,
+  apiName: string,
+) {
+  try {
+    return await clientCtx.ontologyProvider.getObjectDefinition(apiName);
+  } catch (e) {
+    let isInterface = false;
+    try {
+      await clientCtx.ontologyProvider.getInterfaceDefinition(apiName);
+      isInterface = true;
+    } catch {
+      // Not an interface either, so the original lookup failure is the real error.
+    }
+    invariant(
+      !isInterface,
+      `Runtime Derived Properties are not supported for a property selected across a link that targets an interface ('${apiName}')`,
+    );
+    throw e;
+  }
+}
+
+/* @internal
  * Returns a tuple of the derived property definitions and the object type that the derived property is defined on.
  */
 async function extractRdpDefinitionInternal(
@@ -74,6 +101,44 @@ async function extractRdpDefinitionInternal(
       return {
         definitions,
         childObjectType: objDef.links[objectSet.link].targetType,
+      };
+    }
+    case "interfaceLinkSearchAround": {
+      const { definitions, childObjectType } =
+        await extractRdpDefinitionInternal(
+          clientCtx,
+          objectSet.objectSet,
+          methodInputObjectType,
+        );
+
+      if (childObjectType === undefined || childObjectType === "") {
+        return { definitions: {} };
+      }
+
+      let objOrInterfaceDef;
+      try {
+        objOrInterfaceDef =
+          await clientCtx.ontologyProvider.getObjectDefinition(childObjectType);
+      } catch {
+        objOrInterfaceDef =
+          await clientCtx.ontologyProvider.getInterfaceDefinition(
+            childObjectType,
+          );
+      }
+
+      const linkDef = objOrInterfaceDef.links[objectSet.interfaceLink];
+      invariant(
+        linkDef,
+        `Missing link definition for '${objectSet.interfaceLink}'`,
+      );
+
+      return {
+        definitions,
+        childObjectType:
+          objOrInterfaceDef.type === "object"
+            ? objOrInterfaceDef.links[objectSet.interfaceLink].targetType
+            : objOrInterfaceDef.links[objectSet.interfaceLink]
+                .targetTypeApiName,
       };
     }
     case "withProperties": {
@@ -118,7 +183,8 @@ async function extractRdpDefinitionInternal(
             ) {
               return { definitions: {} };
             }
-            const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
+            const objDef = await getSelectedPropertyObjectDefinition(
+              clientCtx,
               operationLevelObjectType,
             );
 
@@ -194,11 +260,6 @@ async function extractRdpDefinitionInternal(
       // Static and reference object sets are always intersected with a base object set, so we can just return no child object type.
       return { definitions: {} };
     // We don't have to worry about new object sets being added and doing a runtime break and breaking people since the OSDK is always constructing these.
-    case "interfaceLinkSearchAround":
-      invariant(
-        false,
-        `Unsupported object set type for Runtime Derived Properties`,
-      );
     default:
       const _: never = objectSet;
       invariant(

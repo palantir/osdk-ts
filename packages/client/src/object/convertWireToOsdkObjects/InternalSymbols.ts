@@ -42,6 +42,11 @@ export const PropertySecuritiesRef = Symbol(
   process.env.MODE !== "production" ? "Property Securities" : undefined,
 );
 
+/** @internal */
+export const DerivedPropertiesRef = Symbol(
+  process.env.MODE !== "production" ? "Derived Properties" : undefined,
+);
+
 export interface HolderBase<T extends ObjectOrInterfaceDefinition> {
   [UnderlyingOsdkObject]: OsdkBase<any>;
   [ObjectDefRef]?: T;
