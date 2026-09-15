@@ -102,7 +102,7 @@ describe("censusOfSource", () => {
     ).toEqual(["com.palantir.Enrolled"]);
   });
 
-  it("records the schema of an interface that opted back out", () => {
+  it("includes the schema of an interface that isn't opted in", () => {
     defineInterface({
       apiName: "Unenrolled",
       properties: { lastName: { type: "string", required: false } },
