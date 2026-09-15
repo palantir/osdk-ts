@@ -23,6 +23,7 @@ import * as OntologyObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet"
 
 import { additionalContext, type Client } from "../Client.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
+import { normalizeInterfaceLinkSearchArounds } from "../util/normalizeInterfaceLinkSearchArounds.js";
 
 /**
  * Fetches a temporary object set RID from the Foundry stack for the given object set.
@@ -43,7 +44,13 @@ export async function createAndFetchTempObjectSetRid<
     client,
     await client[additionalContext].ontologyRid,
     {
-      objectSet: getWireObjectSet(objectSet),
+      // See normalizeInterfaceLinkSearchArounds: `pivotTo` can emit
+      // `interfaceLinkSearchAround` for a chain that has already landed on an
+      // object type, which the gateway rejects.
+      objectSet: await normalizeInterfaceLinkSearchArounds(
+        client[additionalContext],
+        getWireObjectSet(objectSet),
+      ),
     },
   );
   return response.objectSetRid;
