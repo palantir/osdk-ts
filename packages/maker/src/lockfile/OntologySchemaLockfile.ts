@@ -23,6 +23,7 @@ import type {
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
 } from "../api/interface/InterfaceSchemaMigrations.js";
+import type { Nullability } from "../api/properties/Nullability.js";
 import type { LockedPropertyType } from "./LockedPropertyType.js";
 
 export const ONTOLOGY_SCHEMA_LOCKFILE_VERSION = 1;
@@ -79,6 +80,15 @@ export interface LockedProperty {
    * there is no restriction.
    */
   primaryKeyConstraint?: Exclude<PrimaryKeyConstraint, "NO_RESTRICTION">;
+  /**
+   * What the property constrains about nulls and empty collections. Absent when it constrains
+   * neither, which covers both declaring no nullability and declaring one with every flag off.
+   *
+   * Those two publish slightly differently - an empty `dataConstraints` block versus none - but
+   * neither obliges an implementing object type to do anything, and the lockfile exists to record
+   * what installation would reject.
+   */
+  nullability?: Nullability;
   /** The property's (sorted) type classes. Absent when it declares none. */
   typeClasses?: TypeClass[];
 }
@@ -97,6 +107,33 @@ export function primaryKeyConstraintOf(
   property: LockedProperty,
 ): PrimaryKeyConstraint {
   return property.primaryKeyConstraint ?? "NO_RESTRICTION";
+}
+
+/** Constrains nothing: what an absent `nullability` amounts to. */
+export const UNCONSTRAINED_NULLABILITY: Nullability = {
+  noNulls: false,
+  noEmptyCollections: false,
+};
+
+/** A property's nullability, resolving the absent-means-unconstrained default. */
+export function nullabilityOf(property: LockedProperty): Nullability {
+  return property.nullability ?? UNCONSTRAINED_NULLABILITY;
+}
+
+/**
+ * Whether `next` obliges implementing object types to satisfy something `previous` did not.
+ *
+ * Only this direction is a break. Turning a flag off asks nothing new of anyone, so a change that
+ * tightens nothing is a relaxation however many flags moved.
+ */
+export function tightensNullability(
+  previous: Nullability,
+  next: Nullability,
+): boolean {
+  return (
+    (!previous.noNulls && next.noNulls) ||
+    (!previous.noEmptyCollections && next.noEmptyCollections)
+  );
 }
 
 /**

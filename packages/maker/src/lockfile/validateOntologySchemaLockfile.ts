@@ -19,6 +19,7 @@ import { isDeepStrictEqual } from "node:util";
 import type { TypeClass } from "../api/common/TypeClass.js";
 import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
+import type { Nullability } from "../api/properties/Nullability.js";
 import {
   applyTransition,
   reproduces,
@@ -37,8 +38,10 @@ import type {
 import {
   authoredKeyOf,
   declarationOf,
+  nullabilityOf,
   own,
   primaryKeyConstraintOf,
+  tightensNullability,
 } from "./OntologySchemaLockfile.js";
 
 /**
@@ -123,6 +126,17 @@ export type LockfileFinding =
       previousConstraint: PrimaryKeyConstraint;
       nextConstraint: PrimaryKeyConstraint;
     }
+  /**
+   * A property now forbids nulls or empty collections where it did not. Loosening either flag is a
+   * warning instead.
+   */
+  | {
+      code: "nullabilityTightened";
+      interfaceApiName: string;
+      property: string;
+      previousNullability: Nullability;
+      nextNullability: Nullability;
+    }
   | {
       code: "propertyBecameRequired";
       interfaceApiName: string;
@@ -149,6 +163,17 @@ export type LockfileWarning =
       interfaceApiName: string;
       property: string;
       previousConstraint: PrimaryKeyConstraint;
+    }
+  /**
+   * A property stopped forbidding nulls or empty collections. Safe for the same reason as the
+   * other two relaxations: data that satisfied the old constraint satisfies the weaker one.
+   */
+  | {
+      code: "nullabilityRelaxed";
+      interfaceApiName: string;
+      property: string;
+      previousNullability: Nullability;
+      nextNullability: Nullability;
     };
 
 export interface LockfileValidationResult {
@@ -411,6 +436,21 @@ function validateSchemaDiff(
       });
     }
 
+    const previousNullability = nullabilityOf(previous.property);
+    const nextNullability = nullabilityOf(next.property);
+    if (
+      !isDeepStrictEqual(previousNullability, nextNullability) &&
+      !tightensNullability(previousNullability, nextNullability)
+    ) {
+      warnings.push({
+        code: "nullabilityRelaxed",
+        interfaceApiName,
+        property: previous.apiName,
+        previousNullability,
+        nextNullability,
+      });
+    }
+
     validatePropertyDiff(interfaceApiName, previous, next, findings);
   }
 
@@ -503,6 +543,20 @@ function validatePropertyDiff(
       property,
       previousConstraint,
       nextConstraint,
+    });
+    return;
+  }
+
+  // Only the tightening direction: loosening a flag warns instead.
+  const previousNullability = nullabilityOf(previous.property);
+  const nextNullability = nullabilityOf(next.property);
+  if (tightensNullability(previousNullability, nextNullability)) {
+    findings.push({
+      code: "nullabilityTightened",
+      interfaceApiName,
+      property,
+      previousNullability,
+      nextNullability,
     });
     return;
   }

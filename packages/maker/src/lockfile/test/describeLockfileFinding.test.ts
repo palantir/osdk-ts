@@ -190,6 +190,29 @@ describe("describeFinding", () => {
         expected: 'Back "lastName" with "com.palantir.lastName" again.',
       },
       {
+        name: "a property that started forbidding nulls",
+        finding: {
+          code: "nullabilityTightened",
+          interfaceApiName: "Person",
+          property: "name",
+          previousNullability: { noNulls: false, noEmptyCollections: false },
+          nextNullability: { noNulls: true, noEmptyCollections: false },
+        },
+        expected:
+          'property "name" tightened its nullability from unconstrained to no nulls',
+      },
+      {
+        name: "a property that started forbidding both",
+        finding: {
+          code: "nullabilityTightened",
+          interfaceApiName: "Person",
+          property: "name",
+          previousNullability: { noNulls: true, noEmptyCollections: false },
+          nextNullability: { noNulls: true, noEmptyCollections: true },
+        },
+        expected: 'Restore "name" to no nulls.',
+      },
+      {
         name: "a property that gained a type class",
         finding: {
           code: "propertyTypeClassesChanged",
@@ -379,6 +402,29 @@ describe("describeWarning", () => {
 
     it("says who is affected rather than demanding a fix", () => {
       expect(relaxed).toContain("will start seeing it absent");
+      expect(relaxed).toContain("Nothing to do if that was intended");
+    });
+  });
+
+  describe("a loosened nullability", () => {
+    const relaxed = describeWarning({
+      code: "nullabilityRelaxed",
+      interfaceApiName: "Person",
+      property: "com.example.name",
+      previousNullability: { noNulls: true, noEmptyCollections: true },
+      nextNullability: { noNulls: false, noEmptyCollections: false },
+    });
+
+    it("names both ends, and the authored key", () => {
+      expect(relaxed).toContain(
+        'property "name" relaxed its nullability from no nulls, no empty collections to ' +
+          "unconstrained",
+      );
+      expect(relaxed).not.toContain("com.example.name");
+    });
+
+    it("says who is affected rather than demanding a fix", () => {
+      expect(relaxed).toContain("values it previously rejected");
       expect(relaxed).toContain("Nothing to do if that was intended");
     });
   });

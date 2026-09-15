@@ -17,6 +17,7 @@
 import type { OntologyIrBaseFormatter } from "@osdk/client.unstable";
 
 import type { TypeClass } from "../common/TypeClass.js";
+import type { Nullability } from "../properties/Nullability.js";
 import type { PropertyTypeType } from "../properties/PropertyTypeType.js";
 import type {
   PropertyType,
@@ -82,6 +83,32 @@ export function interfacePropertyTypeClasses(
     ? interfacePropertyType.sharedPropertyType
     : interfacePropertyType;
   return typeClasses;
+}
+
+/** What a marking property constrains when it declares no nullability of its own. */
+const MARKING_NULLABILITY: Nullability = {
+  noNulls: true,
+  noEmptyCollections: true,
+};
+
+/**
+ * What this property constrains about nulls and empty collections, or `undefined` if it declares
+ * nothing.
+ *
+ * Resolves the default the wire conversion applies, which is type-dependent: a marking property
+ * that says nothing is published as non-null and non-empty, every other type as unconstrained.
+ * See `convertNullabilityToDataConstraint`.
+ */
+export function interfacePropertyNullability(
+  interfacePropertyType: InterfacePropertyType,
+): Nullability | undefined {
+  const source = isInterfaceSharedPropertyType(interfacePropertyType)
+    ? interfacePropertyType.sharedPropertyType
+    : interfacePropertyType;
+  if (typeof source.type === "object" && source.type.type === "marking") {
+    return source.nullability ?? MARKING_NULLABILITY;
+  }
+  return source.nullability;
 }
 
 export function interfacePropertyPrimaryKeyConstraint(
