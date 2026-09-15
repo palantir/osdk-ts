@@ -21,7 +21,10 @@ import type {
   OntologyIrInterfaceTypeSchemaTransition,
 } from "@osdk/client.unstable";
 
-import { interfacePropertyWireApiName } from "../../api/interface/InterfacePropertyType.js";
+import {
+  type InterfacePropertyType,
+  interfacePropertyWireApiName,
+} from "../../api/interface/InterfacePropertyType.js";
 import type {
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
@@ -36,36 +39,26 @@ export function convertInterfaceSchemaMigrations(
     return undefined;
   }
 
-  // NB: Ontology-ir keys by API name rather than rid, making it an identity map
-  const interfacePropertyTypeRidsToApiNames: Record<string, string> = {};
   const schemaTransitions = Object.fromEntries(
     schemaMigrations.transitions.map(
       (transition): [string, OntologyIrInterfaceTypeSchemaTransition] => [
         transition.id,
         {
-          // Ontology-ir uses the ID for all identifiers (even RID, despite the name)
-          rid: transition.id,
           id: transition.id,
           title: transition.title,
           description: transition.description,
           gracePeriod: convertInterfaceSchemaGracePeriod(
             transition.gracePeriod,
           ),
-          migrations: transition.instructions.map((instruction) => {
-            const propertyApiName = interfacePropertyWireApiName(
-              propertiesV3[instruction.property],
-              instruction.property,
-            );
-            interfacePropertyTypeRidsToApiNames[propertyApiName] =
-              propertyApiName;
-            return convertInstruction(instruction, propertyApiName);
-          }),
+          migrations: transition.instructions.map((instruction) =>
+            convertInstruction(instruction, propertiesV3),
+          ),
         },
       ],
     ),
   );
 
-  return { interfacePropertyTypeRidsToApiNames, schemaTransitions };
+  return { schemaTransitions };
 }
 
 export function convertInterfaceSchemaGracePeriod(
@@ -96,7 +89,7 @@ export function convertInterfaceSchemaGracePeriod(
 
 function convertInstruction(
   instruction: InterfaceSchemaMigrationInstruction,
-  propertyApiName: string,
+  propertiesV3: Record<string, InterfacePropertyType>,
 ): OntologyIrInterfaceTypeSchemaMigrationInstruction {
   switch (instruction.type) {
     case "addRequiredProperty":
@@ -104,7 +97,10 @@ function convertInstruction(
         type: "addRequiredProperty",
         addRequiredProperty: {
           // Ontology-ir types this as an API name despite the field name
-          propertyTypeRid: propertyApiName,
+          propertyTypeRid: interfacePropertyWireApiName(
+            propertiesV3[instruction.property],
+            instruction.property,
+          ),
         },
       };
     default:

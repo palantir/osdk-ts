@@ -321,29 +321,25 @@ function buildKnownIdentifiers(
     ]),
   );
 
-  // Interface type schema transitions: InterfaceTypeRid -> TransitionRid -> BlockInternalId
+  // Interface type schema transitions: TransitionRid -> BlockInternalId
   const interfaceSchemaTransitionMappings = Object.fromEntries(
-    Object.entries(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE])
-      .filter(([_, interfaceType]) => interfaceType.schemaMigrations != null)
-      .map<[string, Record<string, string>]>(([apiName, interfaceType]) => [
-        ridGenerator.generateRidForInterface(apiName),
-        Object.fromEntries(
-          interfaceType.schemaMigrations!.transitions.map<[string, string]>(
-            (transition) => [
-              ridGenerator.generateRidForInterfaceSchemaTransition(
-                transition.id,
-                apiName,
-              ),
-              ridGenerator.toBlockInternalId(
-                ReadableIdGenerator.getForInterfaceSchemaTransition(
-                  apiName,
-                  transition.id,
-                ),
-              ),
-            ],
+    Object.entries(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE]).flatMap(
+      ([apiName, interfaceType]) =>
+        (interfaceType.schemaMigrations?.transitions ?? []).map<
+          [string, string]
+        >((transition) => [
+          ridGenerator.generateRidForInterfaceSchemaTransition(
+            transition.id,
+            apiName,
           ),
-        ),
-      ]),
+          ridGenerator.toBlockInternalId(
+            ReadableIdGenerator.getForInterfaceSchemaTransition(
+              apiName,
+              transition.id,
+            ),
+          ),
+        ]),
+    ),
   );
 
   // Interface link types: InterfaceLinkTypeRid -> BlockInternalId

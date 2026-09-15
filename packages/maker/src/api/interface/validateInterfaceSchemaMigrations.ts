@@ -16,6 +16,7 @@
 
 import invariant from "tiny-invariant";
 
+import { describeInstruction } from "./describeInterfaceSchemaMigrationInstruction.js";
 import {
   type InterfacePropertyType,
   isInterfacePropertyRequired,
@@ -40,7 +41,7 @@ const MAX_GRACE_PERIOD_DAYS = 180;
  * Structural validation for authored Interface Type Schema Migrations.
  */
 export function validateInterfaceSchemaMigrations(
-  apiName: string,
+  interfaceApiName: string,
   schemaMigrations: InterfaceSchemaMigrations,
   // The interface type's locally-defined properties; inherited properties are not included
   // (since migrations for those should occur in the interface that defines them)
@@ -50,63 +51,70 @@ export function validateInterfaceSchemaMigrations(
 
   invariant(
     transitions.length <= MAX_TRANSITIONS,
-    `Interface ${apiName} has ${transitions.length} schema migration transitions, which exceeds the maximum of ${MAX_TRANSITIONS}.`,
+    `Interface ${interfaceApiName} has ${transitions.length} schema migration transitions, which exceeds the maximum of ${MAX_TRANSITIONS}.`,
   );
 
   const seenIds = new Set<string>();
-  // Maps (instruction type + target property) to the transition that first declared it,
-  // across ALL transitions.
-  const seenInstructions = new Map<string, string>();
+  // Which transition owns a claim, to prevent conflicting migrations.
+  const claimedBy = new Map<
+    string,
+    { transitionId: string; description: string }
+  >();
 
   for (const transition of transitions) {
     const { id, title, description, gracePeriod, instructions } = transition;
 
     invariant(
       id.length > 0 && id.length <= MAX_ID_LENGTH,
-      `Schema migration transition id "${id}" on interface ${apiName} must be between 1 and ${MAX_ID_LENGTH} characters, but was ${id.length}.`,
+      `Schema migration transition id "${id}" on interface ${interfaceApiName} must be between 1 and ${MAX_ID_LENGTH} characters, but was ${id.length}.`,
     );
     invariant(
       ID_PATTERN.test(id),
-      `Schema migration transition id "${id}" on interface ${apiName} must match ${ID_PATTERN.source}: a letter or digit followed by letters, digits, underscores, or dashes.`,
+      `Schema migration transition id "${id}" on interface ${interfaceApiName} must match ${ID_PATTERN.source}: a letter or digit followed by letters, digits, underscores, or dashes.`,
     );
     invariant(
       !seenIds.has(id),
-      `Duplicate schema migration transition id "${id}" on interface ${apiName}.`,
+      `Duplicate schema migration transition id "${id}" on interface ${interfaceApiName}.`,
     );
     seenIds.add(id);
 
     invariant(
       title.length > 0 && title.length <= MAX_TITLE_LENGTH,
-      `Schema migration transition "${id}" on interface ${apiName} must have a title between 1 and ${MAX_TITLE_LENGTH} characters, but was ${title.length}.`,
+      `Schema migration transition "${id}" on interface ${interfaceApiName} must have a title between 1 and ${MAX_TITLE_LENGTH} characters, but was ${title.length}.`,
     );
     if (description !== undefined) {
       invariant(
         description.length <= MAX_DESCRIPTION_LENGTH,
-        `Schema migration transition "${id}" on interface ${apiName} has a description of length ${description.length}, which exceeds the maximum of ${MAX_DESCRIPTION_LENGTH}.`,
+        `Schema migration transition "${id}" on interface ${interfaceApiName} has a description of length ${description.length}, which exceeds the maximum of ${MAX_DESCRIPTION_LENGTH}.`,
       );
     }
 
     invariant(
       instructions.length > 0,
-      `Schema migration transition "${id}" on interface ${apiName} must have at least one instruction.`,
+      `Schema migration transition "${id}" on interface ${interfaceApiName} must have at least one instruction.`,
     );
     invariant(
       instructions.length <= MAX_INSTRUCTIONS,
-      `Schema migration transition "${id}" on interface ${apiName} has ${instructions.length} instructions, which exceeds the maximum of ${MAX_INSTRUCTIONS}.`,
+      `Schema migration transition "${id}" on interface ${interfaceApiName} has ${instructions.length} instructions, which exceeds the maximum of ${MAX_INSTRUCTIONS}.`,
     );
 
-    validateGracePeriod(apiName, id, gracePeriod);
+    validateGracePeriod(interfaceApiName, id, gracePeriod);
 
     for (const instruction of instructions) {
-      const instructionKey = `${instruction.type}:${instruction.property}`;
-      const alreadyDeclaredBy = seenInstructions.get(instructionKey);
-      invariant(
-        alreadyDeclaredBy === undefined,
-        `Schema migration transition "${id}" on interface ${apiName} repeats the instruction ${instruction.type} for property "${instruction.property}", which transition "${alreadyDeclaredBy}" already declares.`,
-      );
-      seenInstructions.set(instructionKey, id);
+      const instructionDescription = describeInstruction(instruction);
+      for (const claim of getClaims(instruction)) {
+        const conflict = claimedBy.get(claim);
+        invariant(
+          conflict === undefined,
+          `Schema migration transition "${id}" on interface ${interfaceApiName} declares ${instructionDescription}, which conflicts with ${conflict?.description} already declared by transition "${conflict?.transitionId}". A property may be migrated by at most one in-flight transition.`,
+        );
+        claimedBy.set(claim, {
+          transitionId: id,
+          description: instructionDescription,
+        });
+      }
 
-      validateInstruction(apiName, id, instruction, propertiesV3);
+      validateInstruction(interfaceApiName, id, instruction, propertiesV3);
     }
   }
 }
@@ -155,24 +163,44 @@ function validateGracePeriod(
 }
 
 function validateInstruction(
-  apiName: string,
+  interfaceApiName: string,
   transitionId: string,
   instruction: InterfaceSchemaMigrationInstruction,
   propertiesV3: Record<string, InterfacePropertyType>,
 ): void {
-  const { property: propertyApiName } = instruction;
-  invariant(
-    Object.hasOwn(propertiesV3, propertyApiName),
-    `Schema migration transition "${transitionId}" on interface ${apiName} references property "${propertyApiName}" via ${instruction.type}, but interface ${apiName} does not declare that property. Properties inherited from an extended interface must be migrated by a transition on the interface that declares them.`,
-  );
-
   switch (instruction.type) {
-    case "addRequiredProperty":
+    case "addRequiredProperty": {
+      const { property: propertyApiName } = instruction;
+      invariant(
+        Object.hasOwn(propertiesV3, propertyApiName),
+        `Schema migration transition "${transitionId}" on interface ${interfaceApiName} references property "${propertyApiName}" via ${instruction.type}, but interface ${interfaceApiName} does not declare that property. Properties inherited from an extended interface must be migrated by a transition on the interface that declares them.`,
+      );
       invariant(
         !isInterfacePropertyRequired(propertiesV3[propertyApiName]),
-        `Schema migration transition "${transitionId}" on interface ${apiName} targets property "${propertyApiName}" via ${instruction.type}, but that property is required. Only properties declared required: false may be targeted.`,
+        `Schema migration transition "${transitionId}" on interface ${interfaceApiName} targets property "${propertyApiName}" via ${instruction.type}, but that property is required. Only properties declared required: false may be targeted.`,
       );
       return;
+    }
+    default:
+      // TODO: add a never exhaustiveness check once there's more than one instruction type
+      throw new Error(
+        `Unknown schema migration instruction type: ${instruction.type}`,
+      );
+  }
+}
+
+/**
+ * What an instruction claims exclusive use of for the duration of its transition.
+ *
+ * Stacked migrations (i.e. those which operate against the same property, etc.) are not allowed today,
+ * so we reject any conflicting migrations that try to claim the same thing,
+ */
+function getClaims(
+  instruction: InterfaceSchemaMigrationInstruction,
+): readonly string[] {
+  switch (instruction.type) {
+    case "addRequiredProperty":
+      return [`property:${instruction.property}`];
     default:
       // TODO: add a never exhaustiveness check once there's more than one instruction type
       throw new Error(
