@@ -49,9 +49,11 @@ import type {
   ReadableId,
 } from "../../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../../util/generateRid.js";
-import { convertParameterConstraintTypeReferencesToShape } from "../convertParameterConstraintTypeReferences.js";
 import { typeToMarketplaceObjectPropertyType } from "../typeVisitors.js";
-import { extractValueTypeInputShapeIfPresent } from "./IrShapeExtractor.js";
+import {
+  convertParameterConstraintTypeReferencesToShape,
+  extractValueTypeInputShapeIfPresent,
+} from "./IrShapeExtractor.js";
 
 interface ImportedBlockShapes extends BlockShapes {
   inputPresets: Map<ReadableId, InputPreset>;
