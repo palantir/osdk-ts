@@ -199,6 +199,21 @@ describe("parseLockfile", () => {
     );
   });
 
+  it("accepts a property a shared property type backs", () => {
+    const parsed = parse(
+      withPropertyDefinition({ ...property, declaredBy: "sharedPropertyType" }),
+    );
+    expect(parsed.interfaces.Person.schema.properties.lastName.declaredBy).toBe(
+      "sharedPropertyType",
+    );
+  });
+
+  it("rejects a property that spells out the inline default", () => {
+    expect(() =>
+      parse(withPropertyDefinition({ ...property, declaredBy: "interface" })),
+    ).toThrowError(/properties\.lastName\.declaredBy/u);
+  });
+
   it("rejects a type class missing its `name`", () => {
     expect(() =>
       parse(

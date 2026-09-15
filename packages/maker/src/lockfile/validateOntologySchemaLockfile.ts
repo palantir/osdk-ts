@@ -31,8 +31,9 @@ import type {
   LockedProperty,
   LockedTransition,
   OntologySchemaLockfile,
+  PropertyDeclaration,
 } from "./OntologySchemaLockfile.js";
-import { own } from "./OntologySchemaLockfile.js";
+import { declarationOf, own } from "./OntologySchemaLockfile.js";
 
 /**
  * NOTE ON CONVENTION: the rest of maker validates with `invariant`, failing on the first problem.
@@ -77,6 +78,13 @@ export type LockfileFinding =
       nextInstructions: readonly InterfaceSchemaMigrationInstruction[];
     }
   | { code: "propertyRemoved"; interfaceApiName: string; property: string }
+  | {
+      code: "propertyDeclarationChanged";
+      interfaceApiName: string;
+      property: string;
+      previousDeclaration: PropertyDeclaration;
+      nextDeclaration: PropertyDeclaration;
+    }
   | {
       code: "propertyTypeChanged";
       interfaceApiName: string;
@@ -317,6 +325,21 @@ function validateSchemaDiff(
         code: "propertyRemoved",
         interfaceApiName,
         property: propertyApiName,
+      });
+      continue;
+    }
+
+    // Ahead of the type check: when the binding itself was swapped, the types are incidental, and
+    // reporting them would point the author at the wrong thing to restore.
+    const previousDeclaration = declarationOf(previousProperty);
+    const nextDeclaration = declarationOf(nextProperty);
+    if (previousDeclaration !== nextDeclaration) {
+      findings.push({
+        code: "propertyDeclarationChanged",
+        interfaceApiName,
+        property: propertyApiName,
+        previousDeclaration,
+        nextDeclaration,
       });
       continue;
     }
