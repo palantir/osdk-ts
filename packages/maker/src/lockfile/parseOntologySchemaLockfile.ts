@@ -150,6 +150,16 @@ const propertySchema = z
             `defines itself. Restore what the last published release declared.`,
         })
         .optional(),
+      // `NO_RESTRICTION` is what the absent case already means, so recording it is redundant
+      // rather than wrong - but accepting it would give one state two spellings on disk.
+      primaryKeyConstraint: z
+        .enum(["MUST_BE_PK", "CANNOT_BE_PK"], {
+          message:
+            `Expected "MUST_BE_PK" or "CANNOT_BE_PK", or no value at all for a property that ` +
+            `does not constrain primary key mapping. Restore what the last published release ` +
+            `declared.`,
+        })
+        .optional(),
     },
     {
       message:

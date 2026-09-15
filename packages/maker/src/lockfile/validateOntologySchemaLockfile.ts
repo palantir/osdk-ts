@@ -17,6 +17,7 @@
 import { isDeepStrictEqual } from "node:util";
 
 import type { TypeClass } from "../api/common/TypeClass.js";
+import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import {
   applyTransition,
@@ -33,7 +34,12 @@ import type {
   OntologySchemaLockfile,
   PropertyDeclaration,
 } from "./OntologySchemaLockfile.js";
-import { authoredKeyOf, declarationOf, own } from "./OntologySchemaLockfile.js";
+import {
+  authoredKeyOf,
+  declarationOf,
+  own,
+  primaryKeyConstraintOf,
+} from "./OntologySchemaLockfile.js";
 
 /**
  * NOTE ON CONVENTION: the rest of maker validates with `invariant`, failing on the first problem.
@@ -110,6 +116,17 @@ export type LockfileFinding =
       previousTypeClasses: readonly TypeClass[];
       nextTypeClasses: readonly TypeClass[];
     }
+  /**
+   * A property's primary key constraint changed to one that implementing object types satisfying
+   * the old one need not satisfy. Relaxing it to `NO_RESTRICTION` is a warning instead.
+   */
+  | {
+      code: "primaryKeyConstraintChanged";
+      interfaceApiName: string;
+      property: string;
+      previousConstraint: PrimaryKeyConstraint;
+      nextConstraint: PrimaryKeyConstraint;
+    }
   | {
       code: "propertyBecameRequired";
       interfaceApiName: string;
@@ -130,6 +147,17 @@ export type LockfileWarning =
       code: "requirementRelaxed";
       interfaceApiName: string;
       property: string;
+    }
+  /**
+   * A property that constrained primary key mapping no longer constrains it. Safe for the same
+   * reason as `requirementRelaxed`: every object type that satisfied the old constraint satisfies
+   * no constraint at all, so nothing is rejected and nothing could phase it in.
+   */
+  | {
+      code: "primaryKeyConstraintRelaxed";
+      interfaceApiName: string;
+      property: string;
+      previousConstraint: PrimaryKeyConstraint;
     };
 
 export interface LockfileValidationResult {
@@ -378,6 +406,20 @@ function validateSchemaDiff(
       });
     }
 
+    const previousConstraint = primaryKeyConstraintOf(previous.property);
+    const nextConstraint = primaryKeyConstraintOf(next.property);
+    if (
+      previousConstraint !== nextConstraint &&
+      nextConstraint === "NO_RESTRICTION"
+    ) {
+      warnings.push({
+        code: "primaryKeyConstraintRelaxed",
+        interfaceApiName,
+        property: previous.apiName,
+        previousConstraint,
+      });
+    }
+
     validatePropertyDiff(interfaceApiName, previous, next, findings);
   }
 
@@ -454,6 +496,23 @@ function validatePropertyDiff(
       property,
       previousTypeClasses: previous.property.typeClasses ?? [],
       nextTypeClasses: next.property.typeClasses ?? [],
+    });
+    return;
+  }
+
+  // Only the non-relaxing direction: loosening to `NO_RESTRICTION` warns instead.
+  const previousConstraint = primaryKeyConstraintOf(previous.property);
+  const nextConstraint = primaryKeyConstraintOf(next.property);
+  if (
+    previousConstraint !== nextConstraint &&
+    nextConstraint !== "NO_RESTRICTION"
+  ) {
+    findings.push({
+      code: "primaryKeyConstraintChanged",
+      interfaceApiName,
+      property,
+      previousConstraint,
+      nextConstraint,
     });
     return;
   }
