@@ -27,7 +27,6 @@ import type {
   PropertyType,
 } from "@osdk/client.unstable";
 import type {
-  ActionType,
   DerivedPropertyAggregation,
   EditsHistoryConfig,
   InterfacePropertyType,
@@ -40,8 +39,10 @@ import type {
 import {
   cleanAndValidateLinkTypeId,
   convertObjectStatus,
+  getOntologyDefinition,
   isExotic,
   isInterfaceSharedPropertyType,
+  OntologyEntityTypeEnum,
   withoutNamespace,
 } from "@osdk/maker";
 import invariant from "tiny-invariant";
@@ -228,17 +229,27 @@ export function convertObject(
                     interfaceLinkApiName,
                     sourceInterface.apiName,
                   ),
-                  implementingLinks.map((implementingLink) => ({
-                    linkTypeRid: ridGenerator.generateRidForLinkType(
-                      cleanAndValidateLinkTypeId(
-                        implementingLink.linkType.apiName,
+                  implementingLinks.map((implementingLink) => {
+                    const linkType =
+                      getOntologyDefinition()[OntologyEntityTypeEnum.LINK_TYPE][
+                        implementingLink.linkTypeApiName
+                      ];
+                    invariant(
+                      linkType !== undefined,
+                      `Interface link implementation references link type "${implementingLink.linkTypeApiName}" which is not defined.`,
+                    );
+                    return {
+                      linkTypeRid: ridGenerator.generateRidForLinkType(
+                        cleanAndValidateLinkTypeId(
+                          implementingLink.linkTypeApiName,
+                        ),
                       ),
-                    ),
-                    startingFromLinkTypeSide: convertImplementingLinkTypeSide(
-                      implementingLink.linkType,
-                      implementingLink.sideApiName,
-                    ),
-                  })),
+                      startingFromLinkTypeSide: convertImplementingLinkTypeSide(
+                        linkType,
+                        implementingLink.sideApiName,
+                      ),
+                    };
+                  }),
                 ];
               },
             ),
@@ -296,7 +307,7 @@ export function convertObject(
                   convertImplementingActionType(
                     constraintApiName,
                     sourceInterface,
-                    implementation.actionType,
+                    implementation.actionTypeApiName,
                     implementation.parameterMapping ?? {},
                     ridGenerator,
                   ),
@@ -325,12 +336,12 @@ export function convertObject(
 function convertImplementingActionType(
   constraintApiName: string,
   sourceInterface: InterfaceType,
-  actionType: ActionType,
+  actionTypeApiName: string,
   parameterMapping: Record<string, string>,
   ridGenerator: OntologyRidGenerator,
 ): ImplementingActionType {
   return {
-    actionTypeRid: ridGenerator.generateRidForActionType(actionType.apiName),
+    actionTypeRid: ridGenerator.generateRidForActionType(actionTypeApiName),
     parameters: Object.fromEntries(
       Object.entries(parameterMapping).map(
         ([constraintParameterApiName, actionParameterId]) => [
@@ -340,7 +351,7 @@ function convertImplementingActionType(
             constraintParameterApiName,
           ),
           ridGenerator.generateRidForParameter(
-            actionType.apiName,
+            actionTypeApiName,
             actionParameterId,
           ),
         ],

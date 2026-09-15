@@ -73,8 +73,28 @@ export function defineInterfaceImplementation({
   storedObject.implementsInterfaces.push({
     implements: interfaceType,
     propertyMapping,
-    linkImplementations,
-    actionTypeImplementations,
+    linkImplementations: Object.fromEntries(
+      Object.entries(linkImplementations).map(
+        ([constraintApiName, implementations]) => [
+          constraintApiName,
+          implementations.map(({ linkType, sideApiName }) => ({
+            linkTypeApiName: linkType.apiName,
+            sideApiName,
+          })),
+        ],
+      ),
+    ),
+    actionTypeImplementations: Object.fromEntries(
+      Object.entries(actionTypeImplementations).map(
+        ([constraintApiName, implementation]) => [
+          constraintApiName,
+          {
+            actionTypeApiName: implementation.actionType.apiName,
+            parameterMapping: { ...implementation.parameterMapping },
+          },
+        ],
+      ),
+    ),
   });
   objectType.implementsInterfaces = storedObject.implementsInterfaces;
 }

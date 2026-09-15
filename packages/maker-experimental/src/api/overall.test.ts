@@ -39,9 +39,10 @@ import {
   importOntologyEntity,
   importSharedPropertyType,
   OntologyEntityTypeEnum,
+  writeStaticObjects,
 } from "@osdk/maker";
 import invariant from "tiny-invariant";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, onTestFinished } from "vitest";
 
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import { defineInterfaceImplementation } from "./defineInterfaceImplementation.js";
@@ -198,6 +199,13 @@ describe("Experimental Test Suite", () => {
         },
       });
     });
+    const outputDir = fs.mkdtempSync(
+      path.join(os.tmpdir(), "maker-experimental-interface-implementation-"),
+    );
+    onTestFinished(() =>
+      fs.rmSync(outputDir, { recursive: true, force: true }),
+    );
+    writeStaticObjects(outputDir);
 
     const employee = Object.values(result.ontologyIr.ontology.objectTypes).find(
       (objectType) => objectType.objectType.apiName === "com.palantir.employee",

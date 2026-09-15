@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionType } from "../action/ActionType.js";
 import type { InterfaceType } from "../interface/InterfaceType.js";
-import type { LinkType } from "../links/LinkType.js";
 
 type ActionParameterId = string;
 type InterfaceActionTypeConstraintApiName = string;
@@ -29,12 +27,13 @@ export type InterfaceImplementation = {
   propertyMapping: { interfaceProperty: string; mapsTo: string }[];
   linkImplementations?: Record<
     InterfaceLinkTypeApiName,
-    Array<{ linkType: LinkType; sideApiName: LinkTypeApiName }>
+    // use api names for links and actions to avoid circular representation of stored object types
+    Array<{ linkTypeApiName: LinkTypeApiName; sideApiName: LinkTypeApiName }>
   >;
   actionTypeImplementations?: Record<
     InterfaceActionTypeConstraintApiName,
     {
-      actionType: ActionType;
+      actionTypeApiName: string;
       parameterMapping?: Record<
         InterfaceParameterConstraintApiName,
         ActionParameterId
