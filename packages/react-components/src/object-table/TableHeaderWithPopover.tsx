@@ -143,12 +143,23 @@ export function TableHeaderWithPopover<TData extends RowData>({
     });
   }, [header.column.id, setColumnPinning]);
 
+  // Clicking the direction a column is already sorted by removes its sort.
+  // `clearSorting` drops only this column, so the remaining columns of a
+  // multi-column sort keep their direction and relative order.
   const handleSortAscending = useCallback(() => {
+    if (header.column.getIsSorted() === "asc") {
+      header.column.clearSorting();
+      return;
+    }
     header.column.toggleSorting(false);
     setSorting?.([{ id: header.column.id, desc: false }]);
   }, [header.column, setSorting]);
 
   const handleSortDescending = useCallback(() => {
+    if (header.column.getIsSorted() === "desc") {
+      header.column.clearSorting();
+      return;
+    }
     header.column.toggleSorting(true);
     setSorting?.([{ id: header.column.id, desc: true }]);
   }, [header.column, setSorting]);
