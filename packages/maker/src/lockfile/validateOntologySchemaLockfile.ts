@@ -124,7 +124,20 @@ export type LockfileFinding =
 /** Worth telling the author about, but not by itself a reason to reject the ontology. */
 export type LockfileWarning =
   /** The source still declares the interface, but has dropped its `schemaMigrations` block. */
-  { code: "optedOut"; interfaceApiName: string };
+  | { code: "optedOut"; interfaceApiName: string }
+  /**
+   * A property that implementing object types had to provide no longer has to be provided.
+   *
+   * A warning rather than a finding: installation does not reject it, and no schema migration
+   * could phase it in even in principle, since a migration only ever tightens the schema. The
+   * author still wants to know, because clients that expect the property to always be present
+   * will start seeing it absent.
+   */
+  | {
+      code: "requirementRelaxed";
+      interfaceApiName: string;
+      property: string;
+    };
 
 export interface LockfileValidationResult {
   /**
@@ -151,9 +164,11 @@ export function validateOntologySchemaLockfile(
   next: OntologySchemaLockfile,
   census: SourceCensus,
 ): LockfileValidationResult {
-  const findings: LockfileFinding[] = [];
-  const checkpoints: DetectedCheckpoint[] = [];
-  const warnings: LockfileWarning[] = [];
+  const result: LockfileValidationResult = {
+    findings: [],
+    checkpoints: [],
+    warnings: [],
+  };
 
   for (const [interfaceApiName, previousInterface] of Object.entries(
     previous.interfaces,
@@ -169,19 +184,18 @@ export function validateOntologySchemaLockfile(
     }
 
     if (enrolled === undefined) {
-      warnings.push({ code: "optedOut", interfaceApiName });
+      result.warnings.push({ code: "optedOut", interfaceApiName });
     }
 
     validateInterface(
       interfaceApiName,
       previousInterface,
       nextInterface,
-      findings,
-      checkpoints,
+      result,
     );
   }
 
-  return { findings, checkpoints, warnings };
+  return result;
 }
 
 /**
@@ -204,9 +218,9 @@ function validateInterface(
   interfaceApiName: string,
   previousInterface: LockedInterfaceType,
   nextInterface: LockedInterfaceType,
-  findings: LockfileFinding[],
-  checkpoints: DetectedCheckpoint[],
+  result: LockfileValidationResult,
 ): void {
+  const { findings, checkpoints } = result;
   const nextTransitions = new Map(
     nextInterface.transitions.map((transition) => [transition.id, transition]),
   );
@@ -260,7 +274,7 @@ function validateInterface(
     previousInterface.schema,
     nextInterface.schema,
     propertiesAccountedFor,
-    findings,
+    result,
   );
 }
 
@@ -343,7 +357,7 @@ function validateSchemaDiff(
   previousSchema: LockedInterfaceSchema,
   nextSchema: LockedInterfaceSchema,
   accountedFor: ReadonlySet<string>,
-  findings: LockfileFinding[],
+  { findings, warnings }: LockfileValidationResult,
 ): void {
   const previousProperties = byAuthoredKey(previousSchema);
   const nextProperties = byAuthoredKey(nextSchema);
@@ -361,6 +375,17 @@ function validateSchemaDiff(
         property: previous.apiName,
       });
       continue;
+    }
+
+    // Ahead of the findings below, and not subject to their one-per-property short-circuiting: a
+    // property that stopped being required is worth saying even when something else about it also
+    // changed, since the two affect different people.
+    if (previous.property.required && !next.property.required) {
+      warnings.push({
+        code: "requirementRelaxed",
+        interfaceApiName,
+        property: previous.apiName,
+      });
     }
 
     validatePropertyDiff(interfaceApiName, previous, next, findings);

@@ -425,6 +425,75 @@ describe("validateOntologySchemaLockfile", () => {
       expect(result.findings).toEqual([]);
     });
 
+    it("warns, rather than rejects, when a property stops being required", () => {
+      const result = validate(
+        person({ lastName: REQUIRED_STRING }),
+        person({ lastName: OPTIONAL_STRING }),
+      );
+      expect(result.findings).toEqual([]);
+      expect(result.warnings).toEqual([
+        {
+          code: "requirementRelaxed",
+          interfaceApiName: "Person",
+          property: "lastName",
+        },
+      ]);
+    });
+
+    it("does not warn about a property that was already optional", () => {
+      const optional = person({ lastName: OPTIONAL_STRING });
+      expect(validate(optional, optional).warnings).toEqual([]);
+    });
+
+    it("does not warn about a property that was removed outright", () => {
+      const result = validate(
+        person({ lastName: REQUIRED_STRING }),
+        person({}),
+      );
+      expect(result.findings.map(({ code }) => code)).toEqual([
+        "propertyRemoved",
+      ]);
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("still warns when a relaxed property also changed type", () => {
+      // The type change and the relaxation affect different people, so reporting one must not
+      // swallow the other.
+      const result = validate(
+        person({ lastName: REQUIRED_STRING }),
+        person({ lastName: { type: "integer", required: false } }),
+      );
+      expect(result.findings.map(({ code }) => code)).toEqual([
+        "propertyTypeChanged",
+      ]);
+      expect(result.warnings).toEqual([
+        {
+          code: "requirementRelaxed",
+          interfaceApiName: "Person",
+          property: "lastName",
+        },
+      ]);
+    });
+
+    it("still warns when a relaxed property also moved to a shared property type", () => {
+      const result = validate(
+        person({ lastName: REQUIRED_STRING }),
+        person({
+          lastName: {
+            type: "string",
+            required: false,
+            declaredBy: "sharedPropertyType",
+          },
+        }),
+      );
+      expect(result.findings.map(({ code }) => code)).toEqual([
+        "propertyDeclarationChanged",
+      ]);
+      expect(result.warnings.map(({ code }) => code)).toEqual([
+        "requirementRelaxed",
+      ]);
+    });
+
     it("rejects replacing an inline property with a shared property type", () => {
       const result = validate(
         person({ firstName: REQUIRED_STRING }),
