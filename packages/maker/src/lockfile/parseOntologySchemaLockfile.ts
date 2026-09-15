@@ -159,6 +159,30 @@ const propertySchema = z
             `declared.`,
         })
         .optional(),
+      // Absent already means "constrains neither", so an all-false value would be a second
+      // spelling of the same state.
+      nullability: z
+        .object(
+          {
+            noNulls: z.boolean({ message: "Expected a boolean." }),
+            noEmptyCollections: z.boolean({ message: "Expected a boolean." }),
+          },
+          {
+            message:
+              `Expected an object recording what the property forbids. Restore the nullability ` +
+              `the last published release declared.`,
+          },
+        )
+        .passthrough()
+        .refine(
+          ({ noNulls, noEmptyCollections }) => noNulls || noEmptyCollections,
+          {
+            message:
+              `Expected a nullability that forbids something, or no value at all for a property ` +
+              `that constrains neither nulls nor empty collections.`,
+          },
+        )
+        .optional(),
     },
     {
       message:

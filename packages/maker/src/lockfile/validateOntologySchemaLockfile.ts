@@ -19,6 +19,7 @@ import { isDeepStrictEqual } from "node:util";
 import type { TypeClass } from "../api/common/TypeClass.js";
 import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
+import type { Nullability } from "../api/properties/Nullability.js";
 import {
   applyTransition,
   reproduces,
@@ -36,8 +37,10 @@ import type {
 } from "./OntologySchemaLockfile.js";
 import {
   declarationOf,
+  nullabilityOf,
   own,
   primaryKeyConstraintOf,
+  tightensNullability,
 } from "./OntologySchemaLockfile.js";
 
 /**
@@ -111,6 +114,17 @@ export type LockfileFinding =
       previousConstraint: PrimaryKeyConstraint;
       nextConstraint: PrimaryKeyConstraint;
     }
+  /**
+   * A property now forbids nulls or empty collections where it did not. Loosening either flag is a
+   * warning instead.
+   */
+  | {
+      code: "nullabilityTightened";
+      interfaceApiName: string;
+      property: string;
+      previousNullability: Nullability;
+      nextNullability: Nullability;
+    }
   | {
       code: "propertyBecameRequired";
       interfaceApiName: string;
@@ -137,6 +151,17 @@ export type LockfileWarning =
       interfaceApiName: string;
       property: string;
       previousConstraint: PrimaryKeyConstraint;
+    }
+  /**
+   * A property stopped forbidding nulls or empty collections. Safe for the same reason as the
+   * other two relaxations: data that satisfied the old constraint satisfies the weaker one.
+   */
+  | {
+      code: "nullabilityRelaxed";
+      interfaceApiName: string;
+      property: string;
+      previousNullability: Nullability;
+      nextNullability: Nullability;
     };
 
 export interface LockfileValidationResult {
@@ -377,6 +402,25 @@ function validateSchemaDiff(
       });
     }
 
+    const previousNullability = nullabilityOf(previousProperty);
+    const nextNullability = nullabilityOf(nextProperty);
+    const nullabilityMoved = !isDeepStrictEqual(
+      previousNullability,
+      nextNullability,
+    );
+    if (
+      nullabilityMoved &&
+      !tightensNullability(previousNullability, nextNullability)
+    ) {
+      warnings.push({
+        code: "nullabilityRelaxed",
+        interfaceApiName,
+        property: propertyApiName,
+        previousNullability,
+        nextNullability,
+      });
+    }
+
     // Ahead of the type check: when the binding itself was swapped, the types are incidental, and
     // reporting them would point the author at the wrong thing to restore.
     const previousDeclaration = declarationOf(previousProperty);
@@ -428,6 +472,18 @@ function validateSchemaDiff(
         property: propertyApiName,
         previousConstraint,
         nextConstraint,
+      });
+      continue;
+    }
+
+    // Only the tightening direction: loosening a flag warned above instead.
+    if (tightensNullability(previousNullability, nextNullability)) {
+      findings.push({
+        code: "nullabilityTightened",
+        interfaceApiName,
+        property: propertyApiName,
+        previousNullability,
+        nextNullability,
       });
       continue;
     }

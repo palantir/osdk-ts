@@ -238,6 +238,36 @@ describe("parseLockfile", () => {
     ).toThrowError(/properties\.lastName\.primaryKeyConstraint/u);
   });
 
+  it("accepts a property that records what it forbids", () => {
+    const nullability = { noNulls: true, noEmptyCollections: false };
+    const parsed = parse(withPropertyDefinition({ ...property, nullability }));
+    expect(
+      parsed.interfaces.Person.schema.properties.lastName.nullability,
+    ).toEqual(nullability);
+  });
+
+  it("rejects a nullability that forbids nothing", () => {
+    // Absent already means "constrains neither"; accepting this would be a second spelling.
+    expect(() =>
+      parse(
+        withPropertyDefinition({
+          ...property,
+          nullability: { noNulls: false, noEmptyCollections: false },
+        }),
+      ),
+    ).toThrowError(/properties\.lastName\.nullability/u);
+  });
+
+  it("rejects a nullability missing a flag", () => {
+    expect(() =>
+      parse(
+        withPropertyDefinition({ ...property, nullability: { noNulls: true } }),
+      ),
+    ).toThrowError(
+      /properties\.lastName\.nullability\.noEmptyCollections: Expected a boolean/u,
+    );
+  });
+
   it("rejects a type class missing its `name`", () => {
     expect(() =>
       parse(
