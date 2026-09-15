@@ -31,6 +31,7 @@ import { getGitBranch } from "./getGitBranch.js";
 export const FOUNDRY_BRANCH_ENV_VAR = "FOUNDRY_BRANCH_RID";
 
 const FOUNDRY_BRANCH_META_NAME = "osdk-foundry-branch-rid";
+const BRANCH_EVENT = "osdk:branch";
 
 /** `@osdk/client` reads empty metadata as "use the default Foundry branch". */
 const DEFAULT_FOUNDRY_BRANCH = "";
@@ -108,6 +109,33 @@ export function branchPlugin(options: BranchPluginOptions = {}): Plugin[] {
       name: "osdk-branch-reload",
       apply: "serve",
 
+      transformIndexHtml: {
+        order: "pre",
+        handler() {
+          if (config.server.hmr === false) return [];
+
+          return [
+            {
+              tag: "script",
+              attrs: { type: "module" },
+              children: `
+if (import.meta.hot) {
+  const injectedBranch = document.querySelector('meta[name="${FOUNDRY_BRANCH_META_NAME}"]')?.getAttribute("content");
+  let reloading = false;
+  import.meta.hot.on("${BRANCH_EVENT}", (branch) => {
+    if (!reloading && injectedBranch != null && branch !== injectedBranch) {
+      reloading = true;
+      location.reload();
+    }
+  });
+}
+`,
+              injectTo: "head",
+            },
+          ];
+        },
+      },
+
       applyToEnvironment: (environment) =>
         environment.name === "client" && branchReloadPlugin(readGitBranch),
     },
@@ -162,15 +190,13 @@ function branchReloadPlugin(readGitBranch: ReadGitBranch): Plugin {
       const { environment } = this;
       if (environment.mode !== "dev") return;
 
-      void reloadOnBranchChange(
-        environment,
-        readGitBranch,
-        stopped.signal,
-      ).catch((error: unknown) => {
-        environment.logger.error(
-          `Stopped watching for git branch changes: ${String(error)}`,
-        );
-      });
+      void broadcastBranch(environment, readGitBranch, stopped.signal).catch(
+        (error: unknown) => {
+          environment.logger.error(
+            `Stopped watching for git branch changes: ${String(error)}`,
+          );
+        },
+      );
     },
 
     closeBundle() {
@@ -179,7 +205,7 @@ function branchReloadPlugin(readGitBranch: ReadGitBranch): Plugin {
   };
 }
 
-async function reloadOnBranchChange(
+async function broadcastBranch(
   environment: DevEnvironment,
   readGitBranch: ReadGitBranch,
   stopped: AbortSignal,
@@ -188,20 +214,15 @@ async function reloadOnBranchChange(
 
   // Vite restarts the dev server when a .env file changes, so an override
   // cannot change underneath a running poller.
-  if (readBranchOverride(config) !== undefined) return;
-
-  let injectedBranch = await readBranchFromGit(config, readGitBranch);
+  const configuredBranch = readBranchOverride(config);
 
   while (!stopped.aborted) {
+    const branch =
+      configuredBranch ?? (await readBranchFromGit(config, readGitBranch));
+    if (stopped.aborted) return;
+
+    hot.send(BRANCH_EVENT, branch);
     await sleep(POLL_INTERVAL_MS);
-    if (stopped.aborted) return;
-
-    const branch = await readBranchFromGit(config, readGitBranch);
-    if (stopped.aborted) return;
-    if (branch === injectedBranch) continue;
-
-    injectedBranch = branch;
-    hot.send({ type: "full-reload" });
   }
 }
 

@@ -6018,9 +6018,15 @@ importers:
       '@types/node':
         specifier: ^20.19.13
         version: 20.19.13
+      '@types/ws':
+        specifier: ^8.18.1
+        version: 8.18.1
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
+      ws:
+        specifier: ^8.20.1
+        version: 8.21.0
 
   packages/vite-plugin-code-workspace-preview:
     dependencies:
