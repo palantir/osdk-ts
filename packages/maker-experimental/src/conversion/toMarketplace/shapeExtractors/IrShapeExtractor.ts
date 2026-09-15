@@ -52,6 +52,7 @@ import {
   type ReadableId,
   ReadableIdGenerator,
 } from "../../../util/generateRid.js";
+import { convertParameterConstraintTypeReferencesToShape } from "../convertParameterConstraintTypeReferences.js";
 import {
   typeToMarketplaceBaseType,
   typeToMarketplaceObjectPropertyType,
@@ -617,7 +618,10 @@ function getInterfaceParameterConstraintOutputShape(
     ),
     actionTypeConstraint: actionTypeConstraintRef,
     requireImplementation: paramConstraint.requireImplementation,
-    type: paramConstraint.type,
+    type: convertParameterConstraintTypeReferencesToShape(
+      paramConstraint.type,
+      knownMarketplaceIdentifiers,
+    ),
   };
 
   const paramReadableId = ridGenerator

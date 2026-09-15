@@ -22,6 +22,7 @@ import type { InterfaceType } from "@osdk/maker";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertInterfaceProperty } from "./convertInterfacePropertyType.js";
+import { convertParameterConstraintTypeReferencesToBlockData } from "./convertParameterConstraintTypeReferences.js";
 import { convertSpt } from "./convertSpt.js";
 
 export function convertInterface(
@@ -121,7 +122,13 @@ export function convertInterface(
                   interfaceType.apiName,
                   paramDisplayApiName,
                 ),
-                paramConstraint,
+                {
+                  ...paramConstraint,
+                  type: convertParameterConstraintTypeReferencesToBlockData(
+                    paramConstraint.type,
+                    ridGenerator,
+                  ),
+                },
               ];
             },
           ),
