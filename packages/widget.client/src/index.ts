@@ -24,9 +24,12 @@ export type {
   AsyncValue,
   EventId,
   EventParameterValueMap,
+  MapTileSource,
+  MapTileSourceV0,
   ParameterConfig,
   ParameterValue,
   ParameterValueMap,
+  RasterTileSpec,
   WidgetConfig,
   WidgetMessage,
 } from "@osdk/widget.api";

@@ -25,6 +25,7 @@ import {
   type ParameterId,
   type ParameterValueMap,
 } from "./config.js";
+import type { MapTileSource } from "./index.js";
 import type {
   AllowedObjectSetParameterType,
   ParameterValue,
@@ -283,6 +284,38 @@ describe("WidgetConfig", () => {
       >().toMatchTypeOf<{
         test: boolean[];
         test2: string[];
+      }>();
+    });
+
+    it("should infer map tile layer values for parameters and events", () => {
+      const test = defineConfig({
+        id: "mapWidget",
+        name: "Map Widget",
+        type: "workshop",
+        parameters: {
+          tileLayer: {
+            displayName: "Tile Layer",
+            type: "mapTileLayer",
+          },
+        },
+        events: {
+          updateTileLayer: {
+            displayName: "Update Tile Layer",
+            parameterUpdateIds: ["tileLayer"],
+          },
+        },
+      });
+
+      expectTypeOf<ParameterValueMap<typeof test>>().toEqualTypeOf<{
+        tileLayer: MapTileSource;
+      }>();
+      expectTypeOf<AsyncParameterValueMap<typeof test>>().toEqualTypeOf<{
+        tileLayer: ParameterValue.MapTileLayer;
+      }>();
+      expectTypeOf<
+        EventParameterValueMap<typeof test, "updateTileLayer">
+      >().toEqualTypeOf<{
+        tileLayer: MapTileSource;
       }>();
     });
 
