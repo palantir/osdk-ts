@@ -52,6 +52,18 @@ export function getInterfacePropertyTypeType(
 }
 
 /**
+ * Whether this property holds a list of its declared type rather than a single value.
+ */
+export function isInterfacePropertyArray(
+  interfacePropertyType: InterfacePropertyType,
+): boolean {
+  const { array } = isInterfaceSharedPropertyType(interfacePropertyType)
+    ? interfacePropertyType.sharedPropertyType
+    : interfacePropertyType;
+  return array ?? false;
+}
+
+/**
  * Whether implementing object types must provide this property.
  */
 export function isInterfacePropertyRequired(

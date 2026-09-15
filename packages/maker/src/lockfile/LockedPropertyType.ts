@@ -28,8 +28,25 @@ function isPresentationKey(key: string): key is PresentationKey {
   return (PRESENTATION_KEYS as readonly string[]).includes(key);
 }
 
-/** A {@link PropertyTypeType} without fields that do not affect backwards-compatibility. */
-export type LockedPropertyType = StripPresentation<PropertyTypeType>;
+/** A property's published type, without fields that do not affect backwards-compatibility. */
+export type LockedPropertyType = LockedScalarType | LockedArrayType;
+
+/** A single value of a {@link PropertyTypeType}. */
+type LockedScalarType = StripPresentation<PropertyTypeType>;
+
+/**
+ * A list of values of a {@link PropertyTypeType}.
+ *
+ * Maker's DSL spells arrayedness as an `array: boolean` sibling of `type`, but a property declared
+ * that way is published as an array type wrapping the declared one. The lockfile records that
+ * published shape, so that adding or dropping `array` reads as the type change it is rather than
+ * slipping through as no change at all. `PropertyTypeType` has no `"array"` variant of its own, so
+ * the wrapper cannot collide with a type an author could declare directly.
+ */
+interface LockedArrayType {
+  type: "array";
+  subtype: LockedScalarType;
+}
 
 type StripPresentation<T> =
   T extends Array<infer E>
@@ -42,16 +59,28 @@ type StripPresentation<T> =
         }
       : T;
 
-/** Strips the parts of a type that carry no compatibility meaning. */
+/**
+ * Strips the parts of a type that carry no compatibility meaning.
+ *
+ * @param array whether the property holds a list of `type` rather than a single value
+ */
 export function normalizePropertyType(
   type: PropertyTypeType,
+  array: boolean,
 ): LockedPropertyType {
-  return strip(type) as LockedPropertyType;
+  const subtype = strip(type) as LockedScalarType;
+  return array ? { type: "array", subtype } : subtype;
 }
 
 /** How a property's type is named in error messages and in the rendered lockfile diff. */
 export function describeType(type: LockedPropertyType): string {
-  return JSON.stringify(type);
+  return isArrayType(type)
+    ? `${describeType(type.subtype)}[]`
+    : JSON.stringify(type);
+}
+
+function isArrayType(type: LockedPropertyType): type is LockedArrayType {
+  return typeof type === "object" && type.type === "array";
 }
 
 function strip(value: unknown): unknown {

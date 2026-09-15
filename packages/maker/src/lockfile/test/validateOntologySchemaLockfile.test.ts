@@ -30,6 +30,10 @@ import { validateOntologySchemaLockfile } from "../validateOntologySchemaLockfil
 
 const OPTIONAL_STRING: LockedProperty = { type: "string", required: false };
 const REQUIRED_STRING: LockedProperty = { type: "string", required: true };
+const REQUIRED_STRING_LIST: LockedProperty = {
+  type: { type: "array", subtype: "string" },
+  required: true,
+};
 const THIRTY_DAYS: InterfaceSchemaGracePeriod = {
   type: "afterInstall",
   days: 30,
@@ -338,6 +342,67 @@ describe("validateOntologySchemaLockfile", () => {
           nextType: "integer",
         },
       ]);
+    });
+
+    it("rejects making a property arrayed", () => {
+      const result = validate(
+        person({ firstName: REQUIRED_STRING }),
+        person({ firstName: REQUIRED_STRING_LIST }),
+      );
+      expect(result.findings).toEqual([
+        {
+          code: "propertyTypeChanged",
+          interfaceApiName: "Person",
+          property: "firstName",
+          previousType: "string",
+          nextType: { type: "array", subtype: "string" },
+        },
+      ]);
+    });
+
+    it("rejects dropping the arrayedness of a property", () => {
+      const result = validate(
+        person({ firstName: REQUIRED_STRING_LIST }),
+        person({ firstName: REQUIRED_STRING }),
+      );
+      expect(result.findings).toEqual([
+        {
+          code: "propertyTypeChanged",
+          interfaceApiName: "Person",
+          property: "firstName",
+          previousType: { type: "array", subtype: "string" },
+          nextType: "string",
+        },
+      ]);
+    });
+
+    it("rejects retyping the element type of an arrayed property", () => {
+      const result = validate(
+        person({ firstName: REQUIRED_STRING_LIST }),
+        person({
+          firstName: {
+            type: { type: "array", subtype: "integer" },
+            required: true,
+          },
+        }),
+      );
+      expect(result.findings).toEqual([
+        {
+          code: "propertyTypeChanged",
+          interfaceApiName: "Person",
+          property: "firstName",
+          previousType: { type: "array", subtype: "string" },
+          nextType: { type: "array", subtype: "integer" },
+        },
+      ]);
+    });
+
+    it("accepts an arrayed property that did not change", () => {
+      const result = validate(
+        person({ firstName: REQUIRED_STRING_LIST }),
+        person({ firstName: REQUIRED_STRING_LIST }),
+      );
+      expect(result.findings).toEqual([]);
     });
 
     it("rejects making an existing property required", () => {
