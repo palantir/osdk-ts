@@ -26,7 +26,7 @@ import { defineValueType } from "../defineValueType.js";
 
 describe("Value Types", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, "/tmp/");
+    await defineOntology("com.palantir.", () => {}, undefined);
   });
 
   it("validates metadata when defining a value type", () => {

@@ -65,7 +65,7 @@ function apiNamePreset(apiName: string) {
 
 describe("Experimental Test Suite", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, "/tmp/");
+    await defineOntology("com.palantir.", () => {}, undefined);
   });
 
   describe("Empty backing Media Sets", () => {

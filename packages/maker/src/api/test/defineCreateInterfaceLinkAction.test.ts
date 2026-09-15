@@ -24,7 +24,7 @@ import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 
 describe("defineCreateInterfaceLinkAction", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, "/tmp/");
+    await defineOntology("com.palantir.", () => {}, undefined);
   });
 
   it("defineInterfaceLinkConstraint returns a handle describing the constraint", () => {
@@ -629,7 +629,7 @@ describe("defineCreateInterfaceLinkAction", () => {
 
 describe("defineDeleteInterfaceLinkAction", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, "/tmp/");
+    await defineOntology("com.palantir.", () => {}, undefined);
   });
 
   it("creates a SINGLE interface-link delete action with singular params", () => {

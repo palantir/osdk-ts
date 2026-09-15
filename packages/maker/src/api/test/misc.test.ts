@@ -32,7 +32,7 @@ import { type SharedPropertyType } from "../properties/SharedPropertyType.js";
 
 describe("Miscellaneous Tests", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, "/tmp/");
+    await defineOntology("com.palantir.", () => {}, undefined);
   });
 
   describe("Imports", () => {

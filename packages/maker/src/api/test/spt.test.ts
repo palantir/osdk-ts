@@ -23,7 +23,7 @@ import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
 describe("SPTs", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, "/tmp/");
+    await defineOntology("com.palantir.", () => {}, undefined);
   });
 
   it("doesn't let you create the same spt twice", () => {
@@ -835,7 +835,7 @@ describe("SPTs", () => {
           ontologyPackageRid: null,
         });
       },
-      "/tmp/",
+      undefined,
     );
   });
 });

@@ -31,7 +31,7 @@ import { type InterfaceType } from "../interface/InterfaceType.js";
 
 describe("Link Types", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, "/tmp/");
+    await defineOntology("com.palantir.", () => {}, undefined);
   });
   describe("Object Links", () => {
     it("does not allow duplicate link API names", () => {
@@ -2376,7 +2376,7 @@ describe("Link Types", () => {
           ontologyPackageRid: null,
         });
       },
-      "/tmp/",
+      undefined,
     );
   });
 

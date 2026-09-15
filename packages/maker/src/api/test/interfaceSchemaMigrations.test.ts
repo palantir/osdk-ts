@@ -96,7 +96,7 @@ function defineWithMigrations(
 
 describe("Interface schema migrations", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, "/tmp/");
+    await defineOntology("com.palantir.", () => {}, undefined);
   });
 
   describe("opting in", () => {
