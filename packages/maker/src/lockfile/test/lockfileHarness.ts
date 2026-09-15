@@ -110,6 +110,17 @@ export const emailFinalized: () => void = person(
   { transitions: [] },
 );
 
+// A branch off the states above: two transitions in flight at once, on disjoint properties. Each
+// can be finalized or deleted without waiting on the other.
+export const bothInFlight: () => void = person(
+  {
+    firstName: REQUIRED_STRING,
+    lastName: OPTIONAL_STRING,
+    email: OPTIONAL_STRING,
+  },
+  { transitions: [requireLastName, requireEmail] },
+);
+
 export interface MakerOptions {
   writeLocks?: boolean;
   assumeYes?: boolean;
