@@ -25,7 +25,7 @@ import { Agent, fetch as undiciFetch } from "undici";
 
 import { CliServiceLauncher } from "./cli-service/CliServiceLauncher.js";
 import { OntologyServer } from "./cli-service/OntologyServer.js";
-import { createIntegrationClient } from "./createIntegrationClient.js";
+import { createIntegrationClientForRunningServer } from "./createIntegrationClient.js";
 import { createSeedClient } from "./createSeedClient.js";
 import type {
   IntegrationClient,
@@ -127,7 +127,7 @@ export async function createIntegrationServer(
       if (client !== undefined) return client;
       const baseUrl = ontology.getUrl();
       invariant(baseUrl, "Ontology server is not ready");
-      return (client = await createIntegrationClient({
+      return (client = await createIntegrationClientForRunningServer({
         baseUrl,
         metadata,
         caCertPath: ontology.getCaCertPath(),

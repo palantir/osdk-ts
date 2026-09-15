@@ -22,24 +22,22 @@ import { join } from "node:path";
 import consola from "consola";
 import invariant from "tiny-invariant";
 
-import { resolveFoundryHost } from "./foundry-host.js";
+import { resolveFoundryServices } from "./foundry-services.js";
 import {
   getFoundryToken,
   type ResolveBearerTokenOptions,
 } from "./foundry-token.js";
 
-const INSTALL_SCRIPT_PATH = "/code/api/extension/install-script";
-const INSTALL_BAT_PATH = "/code/api/extension/install-bat";
+const INSTALL_SCRIPT_PATH = "extension/install-script";
+const INSTALL_BAT_PATH = "extension/install-bat";
 
 const fetchInstallScript = async (
-  foundryUrl: string,
+  codeUrl: string,
   token: string,
   isWindows: boolean,
 ): Promise<string> => {
-  const url = new URL(
-    isWindows ? INSTALL_BAT_PATH : INSTALL_SCRIPT_PATH,
-    foundryUrl,
-  );
+  const scriptPath = isWindows ? INSTALL_BAT_PATH : INSTALL_SCRIPT_PATH;
+  const url = new URL(scriptPath, codeUrl);
   consola.start(`Fetching the Foundry CLI installer from ${url.href}`);
   const response = await fetch(url, {
     headers: { authorization: `Bearer ${token}` },
@@ -108,14 +106,19 @@ export const installFoundryCli = async (
   const env = options.env ?? process.env;
   const isWindows = process.platform === "win32";
 
-  const [host, token] = await Promise.all([
-    resolveFoundryHost(options),
+  if (isWindows && env.FOUNDRY_SERVICE_DISCOVERY_V2) {
+    throw new Error(
+      "Foundry CLI installation using FOUNDRY_SERVICE_DISCOVERY_V2 is not supported on Windows.",
+    );
+  }
+
+  const [{ codeUrl, installerBaseUrl }, token] = await Promise.all([
+    resolveFoundryServices(options),
     getFoundryToken(options),
   ]);
-  const foundryUrl = `https://${host}`;
 
-  const script = await fetchInstallScript(foundryUrl, token, isWindows);
-  const installerEnv = { ...env, FOUNDRY_URL: foundryUrl, TOKEN: token };
+  const script = await fetchInstallScript(codeUrl, token, isWindows);
+  const installerEnv = { ...env, FOUNDRY_URL: installerBaseUrl, TOKEN: token };
   if (isWindows) {
     await runInstallBat(script, installerEnv);
   } else {

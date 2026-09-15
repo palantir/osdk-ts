@@ -35,6 +35,7 @@ export interface Template {
   buildDirectory: string;
   hidden?: boolean;
   isBeta?: boolean;
+  authless?: boolean;
   files: {
     [K in SdkVersion]?: () => Promise<ModuleImportFiles>;
   };
@@ -50,4 +51,5 @@ export interface TemplateContext {
   corsProxy: boolean;
   scopes: string[] | undefined;
   unstableFeatures: boolean;
+  clientId: string | undefined;
 }

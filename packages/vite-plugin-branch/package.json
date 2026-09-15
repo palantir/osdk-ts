@@ -1,6 +1,6 @@
 {
   "name": "@osdk/vite-plugin-branch",
-  "version": "2.64.0",
+  "version": "2.69.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -44,13 +44,15 @@
     "execa": "^9.6.0"
   },
   "peerDependencies": {
-    "vite": "*"
+    "vite": "^6.0.0 || ^7.0.0 || ^8.0.0"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/node": "^20.19.13",
-    "typescript": "~5.5.4"
+    "@types/ws": "^8.18.1",
+    "typescript": "~5.5.4",
+    "ws": "^8.20.1"
   },
   "publishConfig": {
     "access": "public"

@@ -14,18 +14,36 @@
  * limitations under the License.
  */
 
-import path from "node:path";
-
-import { loadEnv, type Plugin } from "vite";
+import {
+  type DevEnvironment,
+  loadEnv,
+  type Logger,
+  type Plugin,
+  type ResolvedConfig,
+} from "vite";
 
 import { getGitBranch } from "./getGitBranch.js";
-import { normalizeGitBranch } from "./normalizeGitBranch.js";
 
 /**
- * The environment variable used to expose either a Foundry branch RID or a
- * local git branch name to `@osdk/client`.
+ * The server-only environment variable used to override the Foundry branch
+ * injected into the application HTML.
  */
-export const FOUNDRY_BRANCH_ENV_VAR: string = "VITE_FOUNDRY_BRANCH_RID";
+export const FOUNDRY_BRANCH_ENV_VAR = "FOUNDRY_BRANCH_RID";
+
+const FOUNDRY_BRANCH_META_NAME = "osdk-foundry-branch-rid";
+const BRANCH_EVENT = "osdk:branch";
+
+/** `@osdk/client` reads empty metadata as "use the default Foundry branch". */
+const DEFAULT_FOUNDRY_BRANCH = "";
+
+// Fail dev requests on unknown Git branches to avoid reading the default branch.
+const UNRESOLVABLE_BRANCH_RID = "ri.branch..branch.unknown";
+
+const DEFAULT_BRANCH_ALIASES: ReadonlySet<string> = new Set(["main", "master"]);
+
+const POLL_INTERVAL_MS = 1000;
+
+type ReadGitBranch = (cwd: string) => Promise<string | undefined>;
 
 export interface BranchPluginOptions {
   /**
@@ -34,58 +52,180 @@ export interface BranchPluginOptions {
    *
    * @internal
    */
-  readGitBranch?: (cwd: string) => Promise<string | undefined>;
+  readGitBranch?: ReadGitBranch;
 }
 
 /**
- * Makes the current global Foundry branch available to `@osdk/client` through
- * `import.meta.env.VITE_FOUNDRY_BRANCH_RID` during local development.
+ * Makes the current global Foundry branch available to `@osdk/client` by
+ * injecting it into the application HTML.
  *
- * An existing environment value takes precedence. Otherwise, the plugin uses
- * the checked-out git branch, except for `main`, `master`, a detached HEAD, or
- * a directory outside a git repository, which use the default Foundry branch.
+ * A server-side {@link FOUNDRY_BRANCH_ENV_VAR} value always wins. Otherwise
+ * the checked-out git branch is used, except that `main` and `master` mean the
+ * default Foundry branch. When git names no branch — a detached HEAD, or no
+ * repository at all — development servers use an unresolvable branch rid and
+ * production builds use the default Foundry branch.
+ *
+ * Switching git branches during development reloads connected pages so they
+ * pick up fresh HTML without restarting the dev server.
  *
  * @example
  * ```ts
  * export default defineConfig({ plugins: [react(), branchPlugin()] });
  * ```
  */
-export function branchPlugin(options: BranchPluginOptions = {}): Plugin {
+export function branchPlugin(options: BranchPluginOptions = {}): Plugin[] {
   const readGitBranch = options.readGitBranch ?? getGitBranch;
-  let injectedBranch: string | undefined;
+  let config: ResolvedConfig;
+  let lastReportedBranch: string | undefined;
+
+  return [
+    {
+      name: "osdk-branch",
+
+      configResolved(resolved) {
+        config = resolved;
+      },
+
+      async transformIndexHtml() {
+        const branch =
+          readBranchOverride(config) ??
+          (await readBranchFromGit(config, readGitBranch));
+
+        if (branch !== lastReportedBranch) {
+          lastReportedBranch = branch;
+          reportBranch(config.logger, branch);
+        }
+
+        return [
+          {
+            tag: "meta",
+            attrs: { name: FOUNDRY_BRANCH_META_NAME, content: branch },
+            injectTo: "head-prepend",
+          },
+        ];
+      },
+    },
+    {
+      name: "osdk-branch-reload",
+      apply: "serve",
+
+      transformIndexHtml: {
+        order: "pre",
+        handler() {
+          if (config.server.hmr === false) return [];
+
+          return [
+            {
+              tag: "script",
+              attrs: { type: "module" },
+              children: `
+if (import.meta.hot) {
+  const injectedBranch = document.querySelector('meta[name="${FOUNDRY_BRANCH_META_NAME}"]')?.getAttribute("content");
+  let reloading = false;
+  import.meta.hot.on("${BRANCH_EVENT}", (branch) => {
+    if (!reloading && injectedBranch != null && branch !== injectedBranch) {
+      reloading = true;
+      location.reload();
+    }
+  });
+}
+`,
+              injectTo: "head",
+            },
+          ];
+        },
+      },
+
+      applyToEnvironment: (environment) =>
+        environment.name === "client" && branchReloadPlugin(readGitBranch),
+    },
+  ];
+}
+
+function readBranchOverride(config: ResolvedConfig): string | undefined {
+  return loadEnv(config.mode, config.envDir, FOUNDRY_BRANCH_ENV_VAR)[
+    FOUNDRY_BRANCH_ENV_VAR
+  ]?.trim();
+}
+
+async function readBranchFromGit(
+  config: ResolvedConfig,
+  readGitBranch: ReadGitBranch,
+): Promise<string> {
+  const branch = (
+    await readGitBranch(config.root).catch(() => undefined)
+  )?.trim();
+
+  if (branch == null || branch === "") {
+    return config.command === "serve"
+      ? UNRESOLVABLE_BRANCH_RID
+      : DEFAULT_FOUNDRY_BRANCH;
+  }
+  return DEFAULT_BRANCH_ALIASES.has(branch) ? DEFAULT_FOUNDRY_BRANCH : branch;
+}
+
+function reportBranch(logger: Logger, branch: string): void {
+  const override = `Set ${FOUNDRY_BRANCH_ENV_VAR} to override.`;
+
+  if (branch === UNRESOLVABLE_BRANCH_RID) {
+    logger.warn(
+      `Could not read a git branch, so Foundry requests will fail rather than ` +
+        `read the default branch. Check out a branch, or set ` +
+        `${FOUNDRY_BRANCH_ENV_VAR}.`,
+    );
+  } else if (branch === DEFAULT_FOUNDRY_BRANCH) {
+    logger.info(`Using the default Foundry branch. ${override}`);
+  } else {
+    logger.info(`Using Foundry branch "${branch}". ${override}`);
+  }
+}
+
+function branchReloadPlugin(readGitBranch: ReadGitBranch): Plugin {
+  const stopped = new AbortController();
 
   return {
-    name: "osdk-branch",
-    apply: "serve",
+    name: "osdk-branch-reload:client",
 
-    async config(config, { mode }) {
-      const root = path.resolve(config.root ?? process.cwd());
-      const envDir =
-        config.envDir === false
-          ? false
-          : path.resolve(root, config.envDir ?? ".");
+    buildStart() {
+      const { environment } = this;
+      if (environment.mode !== "dev") return;
 
-      const configuredBranch = loadEnv(mode, envDir, "VITE_")[
-        FOUNDRY_BRANCH_ENV_VAR
-      ];
-      if (configuredBranch?.trim() != null) {
-        return;
-      }
-
-      injectedBranch = normalizeGitBranch(await readGitBranch(root));
-      if (injectedBranch == null) {
-        return;
-      }
-
-      process.env[FOUNDRY_BRANCH_ENV_VAR] = injectedBranch;
+      void broadcastBranch(environment, readGitBranch, stopped.signal).catch(
+        (error: unknown) => {
+          environment.logger.error(
+            `Stopped watching for git branch changes: ${String(error)}`,
+          );
+        },
+      );
     },
 
-    configResolved(config) {
-      if (injectedBranch != null) {
-        config.logger.info(
-          `Using Foundry branch "${injectedBranch}". Set ${FOUNDRY_BRANCH_ENV_VAR} to override.`,
-        );
-      }
+    closeBundle() {
+      stopped.abort();
     },
   };
+}
+
+async function broadcastBranch(
+  environment: DevEnvironment,
+  readGitBranch: ReadGitBranch,
+  stopped: AbortSignal,
+): Promise<void> {
+  const { config, hot } = environment;
+
+  // Vite restarts the dev server when a .env file changes, so an override
+  // cannot change underneath a running poller.
+  const configuredBranch = readBranchOverride(config);
+
+  while (!stopped.aborted) {
+    const branch =
+      configuredBranch ?? (await readBranchFromGit(config, readGitBranch));
+    if (stopped.aborted) return;
+
+    hot.send(BRANCH_EVENT, branch);
+    await sleep(POLL_INTERVAL_MS);
+  }
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => void setTimeout(resolve, ms).unref());
 }

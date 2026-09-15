@@ -123,10 +123,6 @@ export async function applyAction<
       client.transactionId == null,
       "Batch actions are not supported for staged edit functions or when supplying a transaction ID",
     );
-    invariant(
-      client.scenarioRid == null,
-      "Batch actions are not supported when scoped to a scenario",
-    );
     const response = await Actions.applyBatch(
       clientWithHeaders,
       await client.ontologyRid,
@@ -145,7 +141,7 @@ export async function applyAction<
           returnEdits: options?.$returnEdits ? "ALL" : "NONE",
         },
       },
-      { branch: client.branch },
+      { branch: client.branch, scenarioRid: client.scenarioRid },
     );
 
     const edits = response.edits;

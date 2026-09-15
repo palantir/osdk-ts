@@ -1,5 +1,24 @@
 # @osdk/client.unstable
 
+## 2.69.0
+
+## 2.68.0
+
+### Minor Changes
+
+- 8f47483: Interface schema transitions now carry a rid, adopting the latest bindings.
+
+## 2.67.0
+
+### Minor Changes
+
+- 43bfe44: Sync the generated ontology-metadata interface type schema migration types.
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+## 2.66.0
+
+## 2.65.0
+
 ## 2.64.0
 
 ## 2.63.0

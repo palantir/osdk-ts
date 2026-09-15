@@ -29,6 +29,18 @@ describe("Value Types", () => {
     await defineOntology("com.palantir.", () => {}, "/tmp/");
   });
 
+  it("validates metadata when defining a value type", () => {
+    expect(() =>
+      defineValueType({
+        apiName: "Example",
+        displayName: "Example",
+        description: "a".repeat(100_000),
+        type: { type: "string" },
+        version: "1.0.0",
+      }),
+    ).toThrowError('Value type "Example" version "1.0.0": description');
+  });
+
   it("Fails to define value type with incorrect semver", () => {
     expect(() =>
       defineValueType({

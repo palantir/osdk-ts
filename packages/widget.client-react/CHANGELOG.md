@@ -1,5 +1,53 @@
 # @osdk/widget.client-react
 
+## 3.68.0
+
+### Patch Changes
+
+- Updated dependencies [688dd40]
+- Updated dependencies [e108284]
+  - @osdk/client@2.69.0
+  - @osdk/widget.client@3.68.0
+
+## 3.67.0
+
+### Patch Changes
+
+- Updated dependencies [e37d2eb]
+  - @osdk/client@2.68.0
+  - @osdk/widget.client@3.67.0
+
+## 3.66.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [aec9d54]
+- Updated dependencies [488376f]
+  - @osdk/client@2.67.0
+  - @osdk/widget.client@3.66.0
+
+## 3.65.0
+
+### Patch Changes
+
+- Updated dependencies [3404eda]
+  - @osdk/client@2.66.0
+  - @osdk/widget.client@3.65.0
+
+## 3.64.0
+
+### Patch Changes
+
+- Updated dependencies [e3a381d]
+- Updated dependencies [b1bb84a]
+- Updated dependencies [aacb86b]
+  - @osdk/client@2.65.0
+  - @osdk/widget.client@3.64.0
+
 ## 3.63.0
 
 ### Patch Changes

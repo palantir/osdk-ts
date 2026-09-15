@@ -1,5 +1,38 @@
 # @osdk/shared.test
 
+## 2.48.0
+
+### Patch Changes
+
+- @osdk/api@2.69.0
+- @osdk/generator-converters@2.69.0
+
+## 2.47.0
+
+### Patch Changes
+
+- @osdk/api@2.68.0
+- @osdk/generator-converters@2.68.0
+
+## 2.46.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [488376f]
+  - @osdk/api@2.67.0
+  - @osdk/generator-converters@2.67.0
+
+## 2.45.0
+
+### Patch Changes
+
+- @osdk/api@2.66.0
+- @osdk/generator-converters@2.66.0
+
 ## 2.44.0
 
 ### Patch Changes

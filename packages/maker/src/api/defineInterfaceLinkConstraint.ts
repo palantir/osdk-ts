@@ -25,6 +25,7 @@ import {
 } from "./defineOntology.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
 import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
+import { validateDisplayMetadataLengths } from "./validateMetadataLengths.js";
 
 type Meta = { apiName: string; displayName?: string; description?: string };
 type ApiNameOrInterfaceType = string | InterfaceType;
@@ -68,6 +69,10 @@ export function defineInterfaceLinkConstraint(
   );
 
   const fromLinkMeta = getLinkMeta(linkDef);
+  validateDisplayMetadataLengths(
+    fromLinkMeta,
+    `Interface "${linkDef.from.apiName}", link "${fromLinkMeta.apiName}"`,
+  );
 
   invariant(
     linkDef.from.links.find(

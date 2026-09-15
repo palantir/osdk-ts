@@ -1,5 +1,65 @@
 # @osdk/integration-testing
 
+## 0.6.0
+
+### Minor Changes
+
+- 5c8bdb0: Read the code and artifacts service URLs from FOUNDRY_SERVICE_DISCOVERY_V2 when installing the Foundry CLI, preserving routing paths and retaining the existing Foundry host fallback when discovery is not configured.
+
+### Patch Changes
+
+- Updated dependencies [688dd40]
+- Updated dependencies [e108284]
+  - @osdk/client@2.69.0
+  - @osdk/api@2.69.0
+  - @osdk/unit-testing@0.26.0
+  - @osdk/generator-converters.preview@0.47.0
+
+## 0.5.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [aec9d54]
+- Updated dependencies [488376f]
+  - @osdk/client@2.67.0
+  - @osdk/api@2.67.0
+  - @osdk/generator-converters.preview@0.45.0
+  - @osdk/unit-testing@0.26.0
+
+## 0.4.0
+
+### Minor Changes
+
+- cde832a: Warn instead of failing package installation when automatic Foundry CLI installation fails, and validate that it is installed when creating an integration client.
+
+### Patch Changes
+
+- Updated dependencies [3404eda]
+  - @osdk/client@2.66.0
+  - @osdk/unit-testing@0.25.0
+  - @osdk/api@2.66.0
+  - @osdk/generator-converters.preview@0.44.0
+
+## 0.3.0
+
+### Minor Changes
+
+- e3a381d: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.77.0`. Generated experimental ontology metadata now includes full action type metadata and logic rules.
+
+### Patch Changes
+
+- Updated dependencies [e3a381d]
+- Updated dependencies [b1bb84a]
+- Updated dependencies [aacb86b]
+  - @osdk/api@2.65.0
+  - @osdk/client@2.65.0
+  - @osdk/generator-converters.preview@0.43.0
+  - @osdk/unit-testing@0.25.0
+
 ## 0.2.0
 
 ### Minor Changes

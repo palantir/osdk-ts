@@ -100,7 +100,18 @@ export type {
   InterfaceDefinedProperty,
   InterfacePropertyType,
 } from "./api/interface/InterfacePropertyType.js";
-export { isInterfaceSharedPropertyType } from "./api/interface/InterfacePropertyType.js";
+export {
+  interfacePropertyWireApiName,
+  isInterfacePropertyRequired,
+  isInterfaceSharedPropertyType,
+} from "./api/interface/InterfacePropertyType.js";
+export { getFlattenedInterfaceProperties } from "./api/interface/getFlattenedInterfaceProperties.js";
+export type {
+  InterfaceSchemaGracePeriod,
+  InterfaceSchemaMigrationInstruction,
+  InterfaceSchemaMigrations,
+  InterfaceSchemaTransition,
+} from "./api/interface/InterfaceSchemaMigrations.js";
 export type { InterfaceType } from "./api/interface/InterfaceType.js";
 export type {
   LinkType,
@@ -109,6 +120,7 @@ export type {
 } from "./api/links/LinkType.js";
 export type { InterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
 export type { EditsHistoryConfig } from "./api/object/EditsHistoryConfig.js";
+export type { InterfaceImplementation } from "./api/object/InterfaceImplementation.js";
 export type { ObjectPropertyType } from "./api/object/ObjectPropertyType.js";
 export type { ObjectType } from "./api/object/ObjectType.js";
 export type {
@@ -137,4 +149,5 @@ export {
 export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";
 export { default } from "./cli/main.js";
+export { convertInterfaceSchemaGracePeriod } from "./conversion/toMarketplace/convertInterfaceSchemaMigrations.js";
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";

@@ -69,6 +69,7 @@ describe("Load Ontologies Metadata", () => {
         "fixedVersionQueryTypes": [],
         "requestedMetadata": {
           "actionTypes": {},
+          "actionTypesFullMetadata": {},
           "interfaceTypes": {},
           "objectTypes": {},
           "ontology": {
@@ -255,6 +256,33 @@ describe("Load Ontologies Metadata", () => {
     expect(Object.keys(fullMetadata.actionTypes)).toHaveLength(1);
     expect(Object.keys(fullMetadata.interfaceTypes)).toHaveLength(1);
     expect(ontologyDefinitions.value).toMatchSnapshot();
+  });
+
+  it("Requests action type full metadata when requested", async () => {
+    let requestBody: Record<string, unknown> | undefined;
+    apiServer.use(
+      http.post(
+        "https://stack.palantir.com/api/v2/ontologies/:ontology/metadata",
+        async ({ request }) => {
+          requestBody = await request.clone().json();
+        },
+      ),
+    );
+
+    const ontologyDefinitions = await ontologyMetadataResolver
+      .getWireOntologyDefinition(
+        "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+        {
+          actionTypesApiNamesToLoad: ["promoteEmployee"],
+          includeActionTypeFullMetadata: true,
+        },
+      );
+
+    if (ontologyDefinitions.isErr()) {
+      throw new Error(ontologyDefinitions.error.join("\n"));
+    }
+
+    expect(requestBody).toMatchObject({ includeActionTypeFullMetadata: true });
   });
 
   it("Loads object and action types using only specified link types", async () => {

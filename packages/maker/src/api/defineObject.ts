@@ -37,6 +37,7 @@ import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfa
 import {
   getInterfacePropertyTypeType,
   type InterfacePropertyType,
+  isInterfacePropertyRequired,
   isInterfaceSharedPropertyType,
 } from "./interface/InterfacePropertyType.js";
 import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
@@ -51,6 +52,11 @@ import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 import type { ObjectTypeStatus } from "./object/ObjectTypeStatus.js";
 import type { PropertyTypeType } from "./properties/PropertyTypeType.js";
 import { isExotic, isStruct } from "./properties/PropertyTypeType.js";
+import {
+  OBJECT_PROPERTY_DISPLAY_NAME_LIMIT,
+  validateDisplayMetadataLengths,
+  validateStructFieldMetadata,
+} from "./validateMetadataLengths.js";
 // From https://stackoverflow.com/a/79288714
 const ISO_8601_DURATION =
   /^P(?!$)(?:(?:((?:\d+Y)|(?:\d+(?:\.|,)\d+Y$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+D)|(?:\d+(?:\.|,)\d+D$))?(T((?:\d+H)|(?:\d+(?:\.|,)\d+H$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+S)|(?:\d+(?:\.|,)\d+S$))?)?)|(?:\d+(?:(?:\.|,)\d+)?W))$/u;
@@ -250,7 +256,7 @@ export function defineObject(
           objectDef,
         );
       }
-      if (interfaceProp[1].required === false) {
+      if (!isInterfacePropertyRequired(interfaceProp[1])) {
         return { type: "valid" };
       }
       return {
@@ -282,6 +288,17 @@ export function defineObject(
     __type: OntologyEntityTypeEnum.OBJECT_TYPE,
     properties: flattenedProperties,
   };
+  const context = `Object type "${apiName}"`;
+  validateDisplayMetadataLengths(finalObject, context);
+  for (const property of flattenedProperties) {
+    const propertyContext = `${context}, property "${property.apiName}"`;
+    validateDisplayMetadataLengths(
+      property,
+      propertyContext,
+      OBJECT_PROPERTY_DISPLAY_NAME_LIMIT,
+    );
+    validateStructFieldMetadata(property.type, propertyContext);
+  }
   updateOntology(finalObject);
   objectDef.apiName = apiName;
   return objectDef;

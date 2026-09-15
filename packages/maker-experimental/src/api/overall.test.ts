@@ -911,6 +911,67 @@ describe("Experimental Test Suite", () => {
     ).toBe("The imported employee identifier");
   });
 
+  it.each([undefined, "123e4567-e89b-12d3-a456-426614174000"])(
+    "materializes consumed value type identities with randomness key %s",
+    async (randomnessKey) => {
+      const result = await defineOntologyV2(
+        "com.palantir.",
+        () => {
+          const classification = defineValueType({
+            apiName: "classification",
+            displayName: "Classification",
+            type: { type: "string" },
+            version: "1.0.0",
+          });
+
+          defineObject({
+            apiName: "classifiedObject",
+            displayName: "Classified Object",
+            pluralDisplayName: "Classified Objects",
+            titlePropertyApiName: "id",
+            primaryKeyPropertyApiName: "id",
+            properties: {
+              id: { type: "string" },
+              classification: {
+                type: "string",
+                valueType: classification,
+              },
+            },
+          });
+        },
+        undefined,
+        undefined,
+        undefined,
+        randomnessKey,
+      );
+
+      const objectType = Object.values(
+        result.ontologyIr.ontology.objectTypes,
+      )[0].objectType;
+      const classificationProperty = Object.values(
+        objectType.propertyTypes,
+      ).find((property) => property.apiName === "classification");
+      invariant(
+        classificationProperty?.valueType != null,
+        "Classification value type reference is missing",
+      );
+      const { rid, versionId } = classificationProperty.valueType;
+      const internalId =
+        result.ontologyIr.ontology.knownIdentifiers.valueTypes[rid]?.[
+          versionId
+        ];
+      const consumedId = ReadableIdGenerator.getForConsumedValueType(
+        "classification",
+        "1.0.0",
+      );
+
+      expect(internalId).toBeDefined();
+      expect(result.blockDataAddOn.idToBlockShapeId[consumedId]).toBe(
+        internalId,
+      );
+    },
+  );
+
   it("preserves required nullability for value-typed object properties", async () => {
     const result = await defineOntologyV2("com.palantir.", () => {
       const classification = defineValueType({

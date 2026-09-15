@@ -24,7 +24,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Client } from "../Client.js";
 import { createClient, createClientWithTransaction } from "../createClient.js";
-import { mockFetchResponse } from "../createClient.test.js";
+import {
+  mockFetchResponse,
+  mockInterfaceFetchPageResponse,
+} from "../createClient.test.js";
 import { createScenario } from "./createScenario.js";
 import { withScenario } from "./withScenario.js";
 
@@ -66,13 +69,58 @@ describe("createScenario", () => {
     const loadResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
       data: [],
     };
-    mockFetchResponse(fetchFunction, loadResponse);
+    mockInterfaceFetchPageResponse(fetchFunction, loadResponse);
     await scenario(BarInterface).fetchPage();
-    const url = new URL(
-      fetchFunction.mock.calls[1][0] as string,
-      "https://mock.com",
+    const loadCall = fetchFunction.mock.calls.find(([input]) =>
+      String(input).includes("objectSets/loadObjects"),
     );
+    const url = new URL(loadCall?.[0] as string, "https://mock.com");
     expect(url.searchParams.get("scenarioRid")).toBe(newScenarioRid);
+  });
+
+  it("creates scenario with expireAfter", async () => {
+    const expireAfter = new Date("2026-09-20T12:00:00.000Z");
+    const createResponse: CreateOntologyScenarioResponse = {
+      scenarioRid: "ri.actions..scenario.new",
+    };
+    mockFetchResponse(fetchFunction, createResponse);
+
+    await createScenario(client, { expireAfter });
+
+    expect(fetchFunction).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(fetchFunction.mock.calls[0][1]?.body as string)).toEqual({
+      expireAfter: expireAfter.toISOString(),
+    });
+  });
+
+  it("creates scenario with branch and expireAfter", async () => {
+    const branch = "my-branch";
+    const expireAfter = new Date("2026-09-20T12:00:00.000Z");
+    const newScenarioRid = "ri.actions..scenario.new";
+
+    client = createClient(
+      "https://mock.com",
+      ontologyRid,
+      () => "Token",
+      { UNSTABLE_DO_NOT_USE_BRANCH: branch },
+      fetchFunction,
+    );
+
+    const createResponse: CreateOntologyScenarioResponse = {
+      scenarioRid: newScenarioRid,
+    };
+    mockFetchResponse(fetchFunction, createResponse);
+
+    await createScenario(client, { expireAfter });
+
+    expect(fetchFunction).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(fetchFunction.mock.calls[0][1]?.body as string)).toEqual({
+      base: {
+        type: "branch",
+        branch,
+      },
+      expireAfter: expireAfter.toISOString(),
+    });
   });
 
   it("warns and ignores an active transaction, scoping to the new scenario", async () => {

@@ -40,6 +40,10 @@ import {
   hasRenderHints,
   shouldNotHaveRenderHints,
 } from "./propertyConversionUtils.js";
+import {
+  validateDisplayMetadataLengths,
+  validateStructFieldMetadata,
+} from "./validateMetadataLengths.js";
 
 export interface SharedPropertyTypeDefinition {
   apiName: string;
@@ -87,6 +91,9 @@ export function defineSharedPropertyType(
       (shouldNotHaveRenderHints(sptDef.type) ? [] : defaultTypeClasses),
     __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
   };
+  const context = `Shared property type "${apiName}"`;
+  validateDisplayMetadataLengths(fullSpt, context);
+  validateStructFieldMetadata(fullSpt.type, context);
   updateOntology(fullSpt);
   return fullSpt;
 }

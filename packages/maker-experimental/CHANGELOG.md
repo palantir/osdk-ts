@@ -1,5 +1,91 @@
 # @osdk/maker-experimental
 
+## 0.63.0
+
+### Patch Changes
+
+- @osdk/api@2.69.0
+- @osdk/client.unstable@2.69.0
+- @osdk/generator-converters.ontologyir@2.69.0
+- @osdk/maker@0.69.0
+- @osdk/generator-converters.preview@0.47.0
+- @osdk/maker-import@0.39.0
+
+## 0.62.0
+
+### Minor Changes
+
+- 8c2c988: Fix TypeScript function discovery for functions that edit imported ontology types.
+- 1dc6b40: Fix CBAC marking generation
+- d67b69f: Adds the interface type schema migration authoring DSL, enabling defineInterface to specify a schemaMigrations block declaring in-flight schema migrations.
+- 6c8152a: Interface schema migrations are now included in the ontology block data.
+- 8f47483: Interface schema transitions now carry a rid, adopting the latest bindings.
+- ba7b5ce: Preserve readable-to-internal block identities in generated ontology and value type block results.
+- 57c2087: Include imported ontology metadata when discovering TypeScript Function signatures.
+
+### Patch Changes
+
+- Updated dependencies [8c2c988]
+- Updated dependencies [d67b69f]
+- Updated dependencies [6c8152a]
+- Updated dependencies [8f47483]
+  - @osdk/generator-converters.ontologyir@2.68.0
+  - @osdk/generator-converters.preview@0.46.0
+  - @osdk/maker-import@0.38.0
+  - @osdk/maker@0.68.0
+  - @osdk/client.unstable@2.68.0
+  - @osdk/api@2.68.0
+
+## 0.61.0
+
+### Minor Changes
+
+- 43bfe44: Sync the generated ontology-metadata interface type schema migration types.
+- 595621c: Adds isInterfacePropertyRequired, resolving whether implementing object types must provide a property across interface-defined and shared-property-backed properties on an interface type.
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+- 192d1cb: Add support for more types to function backed actions
+
+### Patch Changes
+
+- Updated dependencies [43bfe44]
+- Updated dependencies [595621c]
+- Updated dependencies [488376f]
+- Updated dependencies [7681809]
+- Updated dependencies [192d1cb]
+  - @osdk/client.unstable@2.67.0
+  - @osdk/maker@0.67.0
+  - @osdk/api@2.67.0
+  - @osdk/generator-converters.ontologyir@2.67.0
+  - @osdk/generator-converters.preview@0.45.0
+
+## 0.60.0
+
+### Patch Changes
+
+- @osdk/api@2.66.0
+- @osdk/client.unstable@2.66.0
+- @osdk/generator-converters.ontologyir@2.66.0
+- @osdk/maker@0.66.0
+- @osdk/generator-converters.preview@0.44.0
+
+## 0.59.0
+
+### Minor Changes
+
+- 84bcd53: Allow actions to upload media for properties backed by Maker-created Media Sets.
+- e3a381d: Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.77.0`. Generated experimental ontology metadata now includes full action type metadata and logic rules.
+
+### Patch Changes
+
+- Updated dependencies [84bcd53]
+- Updated dependencies [eb0c920]
+- Updated dependencies [e3a381d]
+  - @osdk/maker@0.65.0
+  - @osdk/api@2.65.0
+  - @osdk/generator-converters.ontologyir@2.65.0
+  - @osdk/generator-converters.preview@0.43.0
+  - @osdk/client.unstable@2.65.0
+
 ## 0.58.0
 
 ### Minor Changes

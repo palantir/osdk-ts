@@ -53,7 +53,14 @@ export const postinstall = async (): Promise<void> => {
       return;
     case "not-found":
       consola.info(`Foundry CLI not found locally, attempting to install...`);
-      await installFoundryCli();
+      try {
+        await installFoundryCli();
+      } catch (error) {
+        consola.warn(
+          `Failed to install Foundry CLI. It must be installed before creating an integration client.`,
+          error,
+        );
+      }
       return;
   }
 };

@@ -14,14 +14,4 @@
  * limitations under the License.
  */
 
-const NON_BRANCH: ReadonlySet<string> = new Set(["main", "master", "HEAD"]);
-
-export function normalizeGitBranch(
-  branch: string | undefined,
-): string | undefined {
-  const trimmed = branch?.trim();
-  if (trimmed == null || trimmed === "" || NON_BRANCH.has(trimmed)) {
-    return undefined;
-  }
-  return trimmed;
-}
+export { files } from "./generatedNoCheck/index.js";

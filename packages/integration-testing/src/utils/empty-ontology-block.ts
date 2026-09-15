@@ -49,6 +49,7 @@ export const EMPTY_ONTOLOGY_BLOCK_DATA: OntologyBlockDataV2 = {
     interfaceParameterConstraints: {},
     interfacePropertyTypes: {},
     interfaceTypes: {},
+    interfaceTypeSchemaTransitions: {},
     linkTypeIds: {},
     linkTypes: {},
     markings: {},

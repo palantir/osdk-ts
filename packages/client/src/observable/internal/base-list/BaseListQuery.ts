@@ -224,7 +224,10 @@ export abstract class BaseListQuery<
           );
       }
       // Keep the same value but update status and lastUpdated
-      return batch.write(this.cacheKey, entry.value, status);
+      const statusOnly = batch.write(this.cacheKey, entry.value, status);
+
+      this.registerCacheChanges(batch);
+      return statusOnly;
     }
 
     if (process.env.NODE_ENV !== "production") {
