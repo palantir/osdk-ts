@@ -39,6 +39,11 @@ const THIRTY_DAYS: InterfaceSchemaGracePeriod = {
   type: "afterInstall",
   days: 30,
 };
+const SHARED_REQUIRED_STRING: LockedProperty = {
+  type: "string",
+  required: true,
+  declaredBy: "sharedPropertyType",
+};
 const SORTABLE: TypeClass = { kind: "render_hint", name: "SORTABLE" };
 const SELECTABLE: TypeClass = { kind: "render_hint", name: "SELECTABLE" };
 
@@ -406,6 +411,59 @@ describe("validateOntologySchemaLockfile", () => {
         person({ firstName: REQUIRED_STRING_LIST }),
       );
       expect(result.findings).toEqual([]);
+    });
+
+    it("rejects replacing an inline property with a shared property type", () => {
+      const result = validate(
+        person({ firstName: REQUIRED_STRING }),
+        person({ firstName: SHARED_REQUIRED_STRING }),
+      );
+      expect(result.findings).toEqual([
+        {
+          code: "propertyDeclarationChanged",
+          interfaceApiName: "Person",
+          property: "firstName",
+          previousDeclaration: "interface",
+          nextDeclaration: "sharedPropertyType",
+        },
+      ]);
+    });
+
+    it("rejects inlining a property a shared property type used to back", () => {
+      const result = validate(
+        person({ firstName: SHARED_REQUIRED_STRING }),
+        person({ firstName: REQUIRED_STRING }),
+      );
+      expect(result.findings).toEqual([
+        {
+          code: "propertyDeclarationChanged",
+          interfaceApiName: "Person",
+          property: "firstName",
+          previousDeclaration: "sharedPropertyType",
+          nextDeclaration: "interface",
+        },
+      ]);
+    });
+
+    it("reports a swapped binding once, not also as a type change", () => {
+      const result = validate(
+        person({ firstName: REQUIRED_STRING }),
+        person({
+          firstName: {
+            type: "integer",
+            required: true,
+            declaredBy: "sharedPropertyType",
+          },
+        }),
+      );
+      expect(result.findings.map(({ code }) => code)).toEqual([
+        "propertyDeclarationChanged",
+      ]);
+    });
+
+    it("accepts a shared-property-backed property that did not change", () => {
+      const backed = person({ firstName: SHARED_REQUIRED_STRING });
+      expect(validate(backed, backed).findings).toEqual([]);
     });
 
     it("rejects adding a type class to a property", () => {
