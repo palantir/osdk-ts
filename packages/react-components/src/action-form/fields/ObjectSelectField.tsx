@@ -65,6 +65,7 @@ const ObjectSelectInner: React.NamedExoticComponent<
   portalRef,
   portalContainer,
   disabled,
+  itemToStringLabel = defaultItemToStringLabel,
 }): React.ReactElement {
   // Tracks the user's search text. Cleared on selection so the selected
   // label (managed by base-ui) doesn't trigger a server-side search.
@@ -79,9 +80,8 @@ const ObjectSelectInner: React.NamedExoticComponent<
     [onChange],
   );
 
-  // Search by the object's title via the special `$title` filter so the where
-  // clause matches the same text displayed to the user via obj.$title, without
-  // resolving the underlying title property from metadata at runtime.
+  // Search remains title-based even when itemToStringLabel customizes rendering.
+  // The special `$title` filter avoids resolving title-property metadata at runtime.
   const where: WhereClause<ObjectTypeDefinition> | undefined = useMemo(() => {
     const trimmed = debouncedQuery.trim();
     if (trimmed === "") {
@@ -157,7 +157,7 @@ function resolveObjectSelectSource(
   return { kind: "objectType", objectType: props.objectType };
 }
 
-function itemToStringLabel(obj: ObjectSelectOsdkObject): string {
+function defaultItemToStringLabel(obj: ObjectSelectOsdkObject): string {
   return obj.$title ?? String(obj.$primaryKey);
 }
 
