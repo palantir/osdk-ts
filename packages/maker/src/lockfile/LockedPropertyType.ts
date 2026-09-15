@@ -49,6 +49,11 @@ export function normalizePropertyType(
   return strip(type) as LockedPropertyType;
 }
 
+/** How a property's type is named in error messages and in the rendered lockfile diff. */
+export function describeType(type: LockedPropertyType): string {
+  return JSON.stringify(type);
+}
+
 function strip(value: unknown): unknown {
   if (Array.isArray(value)) {
     return value.map(strip);

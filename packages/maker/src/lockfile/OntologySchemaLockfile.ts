@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { isDeepStrictEqual } from "node:util";
+
 import type {
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
@@ -82,6 +84,22 @@ export interface LockedTransition {
  */
 export function own<T>(record: Record<string, T>, key: string): T | undefined {
   return Object.hasOwn(record, key) ? record[key] : undefined;
+}
+
+/** The api names of every locked interface whose recorded shape no longer matches the source. */
+export function staleInterfaces(
+  previousLockfile: OntologySchemaLockfile,
+  nextLockfile: OntologySchemaLockfile,
+): string[] {
+  const previous = new Map(Object.entries(previousLockfile.interfaces));
+  const next = new Map(Object.entries(nextLockfile.interfaces));
+
+  const apiNames = [...new Set([...previous.keys(), ...next.keys()])].sort(
+    (a, b) => (a < b ? -1 : a > b ? 1 : 0),
+  );
+  return apiNames.filter(
+    (apiName) => !isDeepStrictEqual(previous.get(apiName), next.get(apiName)),
+  );
 }
 
 // JSON has no comment syntax, but a `"//"` key is a conventional stand-in for one.
