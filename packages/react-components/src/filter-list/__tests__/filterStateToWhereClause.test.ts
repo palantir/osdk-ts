@@ -821,4 +821,120 @@ describe("getActiveLinkedFilters", () => {
       ).toEqual([]);
     });
   });
+
+  describe("relative DATE_RANGE", () => {
+    it("resolves relative bounds to fresh dates", () => {
+      const def = createPropertyFilterDef(
+        "createdAt",
+        "DATE_RANGE",
+        createDateRangeState(),
+      );
+      const state = createDateRangeState(undefined, undefined, {
+        relativeState: {
+          relativeMin: { count: 7, unit: "days", direction: "ago" },
+          relativeMax: { count: 0, unit: "days", direction: "fromNow" },
+        },
+      });
+      const filterStates = stateMap([def, state]);
+      const result = buildWhereClause(
+        [def],
+        filterStates,
+        mockPropertyTypes,
+      ) as Record<string, unknown>;
+
+      expect(result).toHaveProperty("$and");
+      const clauses = (result as { $and: unknown[] }).$and;
+      expect(clauses).toHaveLength(2);
+
+      // $gte should be 7 days ago at midnight
+      const gteDate = new Date(
+        (clauses[0] as { createdAt: { $gte: string } }).createdAt.$gte,
+      );
+      expect(gteDate.getHours()).toBe(0);
+      expect(gteDate.getMinutes()).toBe(0);
+
+      // $lte should be today at end of day
+      const lteDate = new Date(
+        (clauses[1] as { createdAt: { $lte: string } }).createdAt.$lte,
+      );
+      expect(lteDate.getHours()).toBe(23);
+      expect(lteDate.getMinutes()).toBe(59);
+
+      // The min date should be before the max date
+      expect(gteDate.getTime()).toBeLessThan(lteDate.getTime());
+    });
+
+    it("applies endOfDay to the upper bound", () => {
+      const def = createPropertyFilterDef(
+        "createdAt",
+        "DATE_RANGE",
+        createDateRangeState(),
+      );
+      const state = createDateRangeState(undefined, undefined, {
+        relativeState: {
+          relativeMin: null,
+          relativeMax: { count: 0, unit: "days", direction: "fromNow" },
+        },
+      });
+      const filterStates = stateMap([def, state]);
+      const result = buildWhereClause(
+        [def],
+        filterStates,
+        mockPropertyTypes,
+      ) as Record<string, unknown>;
+      // Only maxDate set, should have $lte at end of day (23:59:59.999 local)
+      const lteClause = result.createdAt as { $lte: string };
+      const resolved = new Date(lteClause.$lte);
+      expect(resolved.getHours()).toBe(23);
+      expect(resolved.getMinutes()).toBe(59);
+      expect(resolved.getSeconds()).toBe(59);
+      expect(resolved.getMilliseconds()).toBe(999);
+    });
+
+    it("ignores stale minValue when relativeState is present and relativeMin is null", () => {
+      const def = createPropertyFilterDef(
+        "createdAt",
+        "DATE_RANGE",
+        createDateRangeState(),
+      );
+      const staleDate = new Date("2020-01-01T00:00:00.000Z");
+      const state = createDateRangeState(staleDate, undefined, {
+        relativeState: {
+          relativeMin: null, // Indefinitely, should NOT use staleDate
+          relativeMax: { count: 0, unit: "days", direction: "fromNow" },
+        },
+      });
+      const filterStates = stateMap([def, state]);
+      const result = buildWhereClause(
+        [def],
+        filterStates,
+        mockPropertyTypes,
+      ) as Record<string, unknown>;
+      // Should only have $lte (no $gte), stale minValue must not leak through
+      expect(result).toHaveProperty("createdAt");
+      const clause = result.createdAt as { $lte: string; $gte?: string };
+      expect(clause).toHaveProperty("$lte");
+      expect(clause).not.toHaveProperty("$gte");
+
+      // $lte should be today at end of day, not the stale 2020 date
+      const lteDate = new Date(clause.$lte);
+      expect(lteDate.getFullYear()).toBeGreaterThanOrEqual(2026);
+      expect(lteDate.getHours()).toBe(23);
+      expect(lteDate.getMinutes()).toBe(59);
+    });
+
+    it("returns empty clause when both relative bounds are absent", () => {
+      const def = createPropertyFilterDef(
+        "createdAt",
+        "DATE_RANGE",
+        createDateRangeState(),
+      );
+      const state = createDateRangeState(undefined, undefined, {
+        relativeState: { relativeMin: null, relativeMax: null },
+      });
+      const filterStates = stateMap([def, state]);
+      const result = buildWhereClause([def], filterStates, mockPropertyTypes);
+      expect(result).toEqual({});
+    });
+  });
 });

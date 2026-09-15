@@ -17,8 +17,11 @@
 import React, { memo, useMemo } from "react";
 
 import { formatDateForInput } from "../../../shared/dateUtils.js";
+import type { RelativeDateState } from "../../FilterListItemApi.js";
 import { createDateHistogramBuckets } from "./createDateHistogramBuckets.js";
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
+import { RelativeDateRangeInput } from "./RelativeDateRangeInput.js";
+import { RelativeModeToggle } from "./RelativeModeToggle.js";
 
 const defaultDateConfig: RangeInputConfig<Date> = {
   inputType: "date",
@@ -51,11 +54,27 @@ interface DateRangeHistogramInputProps {
    */
   formatDate?: (date: Date) => string;
   clickToFilter?: boolean;
+
+  /**
+   * When `true`, renders an Absolute / Relative toggle above the histogram.
+   * @default false
+   */
+  enableRelativeMode?: boolean;
+  /** Current relative state. Present = relative mode ON. */
+  relativeState?: RelativeDateState;
+  /** Called when the Absolute/Relative toggle changes. */
+  onToggleRelative?: (checked: boolean) => void;
+  /** Called when either relative bound changes. */
+  onRelativeChange?: (relativeState: RelativeDateState) => void;
 }
 
 function DateRangeHistogramInputInner({
   formatDate,
   valueCountPairs,
+  enableRelativeMode,
+  relativeState,
+  onToggleRelative,
+  onRelativeChange,
   ...rest
 }: DateRangeHistogramInputProps): React.ReactElement {
   const config = useMemo<RangeInputConfig<Date>>(
@@ -99,13 +118,31 @@ function DateRangeHistogramInputInner({
     return { buckets, subtitle };
   }, [valueCountPairs, formatDate]);
 
+  const showRelativeUI = enableRelativeMode === true && relativeState != null;
+
   return (
-    <RangeInput
-      {...rest}
-      valueCountPairs={valueCountPairs}
-      config={config}
-      histogramData={histogramData}
-    />
+    <>
+      {enableRelativeMode === true && onToggleRelative != null && (
+        <RelativeModeToggle
+          checked={relativeState != null}
+          onCheckedChange={onToggleRelative}
+        />
+      )}
+
+      {showRelativeUI && onRelativeChange ? (
+        <RelativeDateRangeInput
+          relativeState={relativeState}
+          onRelativeChange={onRelativeChange}
+        />
+      ) : (
+        <RangeInput
+          {...rest}
+          valueCountPairs={valueCountPairs}
+          config={config}
+          histogramData={histogramData}
+        />
+      )}
+    </>
   );
 }
 

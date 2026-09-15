@@ -62,6 +62,20 @@
   color: var(--osdk-filter-tag-color);
 }
 
+/* Inline toggle row used by filter inputs (e.g. Absolute / Relative switch) */
+.toggleRow {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--osdk-surface-spacing) * 2);
+  cursor: pointer;
+}
+
+.toggleRowLabel {
+  font-family: var(--osdk-filter-range-label-font-family);
+  font-size: var(--osdk-filter-range-label-font-size);
+  color: var(--osdk-filter-range-label-color);
+}
+
 .tagRemove {
   display: flex;
   align-items: center;

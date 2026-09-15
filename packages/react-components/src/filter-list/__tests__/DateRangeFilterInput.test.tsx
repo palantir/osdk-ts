@@ -113,4 +113,32 @@ describe("DateRangeFilterInput", () => {
     // null count query must fall back to the bare null-check predicate.
     expect(nullCountCall![1].where).toEqual({ createdAt: { $isNull: true } });
   });
+
+  it("strips relativeState when enableRelativeMode is off", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const whereClause = {} as WhereClause<typeof MockObjectType>;
+
+    render(
+      <DateRangeFilterInput
+        objectType={MockObjectType}
+        propertyKey="createdAt"
+        filterState={{
+          type: "DATE_RANGE",
+          relativeState: {
+            relativeMin: { count: 7, unit: "days", direction: "ago" },
+            relativeMax: null,
+          },
+        }}
+        onFilterStateChanged={vi.fn()}
+        whereClause={whereClause}
+      />,
+    );
+
+    // Dev warning should fire
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("relativeState is set"),
+    );
+
+    warnSpy.mockRestore();
+  });
 });
