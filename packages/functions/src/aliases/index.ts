@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-// API Extractor cannot represent a namespace that re-exports `export *` from
-// another package, so each export is listed explicitly.
-
 export {
   custom,
   dataset,
