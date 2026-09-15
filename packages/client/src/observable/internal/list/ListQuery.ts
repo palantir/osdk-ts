@@ -726,7 +726,7 @@ export abstract class ListQuery extends BaseListQuery<
       this.rdpConfig ?? undefined,
       undefined,
       undefined,
-      this.includeAllBaseObjectProperties ? true : undefined,
+      undefined,
       this.loadOntologyDefinedDerivedProperties,
     );
   }
