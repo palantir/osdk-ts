@@ -16,6 +16,7 @@
 
 import { isDeepStrictEqual } from "node:util";
 
+import type { TypeClass } from "../api/common/TypeClass.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import {
   applyTransition,
@@ -82,6 +83,13 @@ export type LockfileFinding =
       property: string;
       previousType: LockedPropertyType;
       nextType: LockedPropertyType;
+    }
+  | {
+      code: "propertyTypeClassesChanged";
+      interfaceApiName: string;
+      property: string;
+      previousTypeClasses: readonly TypeClass[];
+      nextTypeClasses: readonly TypeClass[];
     }
   | {
       code: "propertyBecameRequired";
@@ -322,6 +330,19 @@ function validateSchemaDiff(
         property: propertyApiName,
         previousType: previousProperty.type,
         nextType: nextProperty.type,
+      });
+      continue;
+    }
+
+    if (
+      !isDeepStrictEqual(previousProperty.typeClasses, nextProperty.typeClasses)
+    ) {
+      findings.push({
+        code: "propertyTypeClassesChanged",
+        interfaceApiName,
+        property: propertyApiName,
+        previousTypeClasses: previousProperty.typeClasses ?? [],
+        nextTypeClasses: nextProperty.typeClasses ?? [],
       });
       continue;
     }

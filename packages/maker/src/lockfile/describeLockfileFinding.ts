@@ -16,6 +16,7 @@
 
 import { isDeepStrictEqual } from "node:util";
 
+import type { TypeClass } from "../api/common/TypeClass.js";
 import { withoutNamespace } from "../api/defineOntology.js";
 import {
   describeFinalization,
@@ -87,6 +88,19 @@ export function describeFinding(finding: LockfileFinding): string {
       );
     }
 
+    case "propertyTypeClassesChanged": {
+      const property = authored(finding.property);
+      return (
+        `${where}: property "${property}" changed type classes from ` +
+        `${describeTypeClasses(finding.previousTypeClasses)} to ` +
+        `${describeTypeClasses(finding.nextTypeClasses)}. Type classes drive render hints like ` +
+        `sorting and filtering, so changing them breaks applications relying on those hints, and ` +
+        `blocks upgrades for implementing object types that lack the new ones. No ` +
+        `currently-supported interface schema migration can phase this in. Restore "${property}" ` +
+        `to ${describeTypeClasses(finding.previousTypeClasses)}.`
+      );
+    }
+
     case "propertyBecameRequired": {
       const property = authored(finding.property);
       return (
@@ -125,6 +139,14 @@ export function describeWarning(warning: LockfileWarning): string {
 /** The key the author wrote for a property, given the api name the lockfile records it under. */
 function authored(wireApiName: string): string {
   return withoutNamespace(wireApiName);
+}
+
+/** A property's type classes, as they read in a finding. */
+function describeTypeClasses(typeClasses: readonly TypeClass[]): string {
+  if (typeClasses.length === 0) {
+    return "none";
+  }
+  return typeClasses.map(({ kind, name }) => `${kind}/${name}`).join(", ");
 }
 
 /** A transition's instructions, named as the author wrote them. */

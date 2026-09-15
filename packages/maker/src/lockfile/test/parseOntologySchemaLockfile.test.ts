@@ -175,6 +175,43 @@ describe("parseLockfile", () => {
     );
   });
 
+  it("accepts a property that records type classes", () => {
+    const typeClasses = [{ kind: "render_hint", name: "SORTABLE" }];
+    const parsed = parse(withPropertyDefinition({ ...property, typeClasses }));
+    expect(
+      parsed.interfaces.Person.schema.properties.lastName.typeClasses,
+    ).toEqual(typeClasses);
+  });
+
+  it("accepts a property that records no type classes", () => {
+    const parsed = parse(withPropertyDefinition(property));
+    expect(
+      parsed.interfaces.Person.schema.properties.lastName,
+    ).not.toHaveProperty("typeClasses");
+  });
+
+  it.each([
+    ["not an array", { ...property, typeClasses: {} }],
+    ["an array of strings", { ...property, typeClasses: ["SORTABLE"] }],
+  ])("rejects a property whose `typeClasses` is %s", (_name, broken) => {
+    expect(() => parse(withPropertyDefinition(broken))).toThrowError(
+      /properties\.lastName\.typeClasses/u,
+    );
+  });
+
+  it("rejects a type class missing its `name`", () => {
+    expect(() =>
+      parse(
+        withPropertyDefinition({
+          ...property,
+          typeClasses: [{ kind: "render_hint" }],
+        }),
+      ),
+    ).toThrowError(
+      /properties\.lastName\.typeClasses\[0\]\.name: Expected a type class name/u,
+    );
+  });
+
   /** Builds a lockfile whose sole transition is `wellFormed`'s, overridden by `overrides`. */
   function withTransition(overrides: Record<string, unknown>) {
     return withInterface({
