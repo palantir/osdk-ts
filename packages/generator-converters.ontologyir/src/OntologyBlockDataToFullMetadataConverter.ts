@@ -166,7 +166,7 @@ export class OntologyBlockDataToFullMetadataConverter {
 
           properties[propApiName] = {
             displayName: prop.displayMetadata.displayName,
-            rid: `ri.ontology-metadata.temp.${object.apiName}.${propApiName}`,
+            rid: propRid,
             status,
             description: prop.displayMetadata.description ?? undefined,
             visibility: visibilityEnum,
@@ -268,8 +268,7 @@ export class OntologyBlockDataToFullMetadataConverter {
               linkDef.objectTypeRidB,
               objectTypeLookup,
             ),
-            linkTypeRid:
-              `ri.ontology-metadata.temp.${linkDef.objectTypeRidA}.${linkType.id}.${linkDef.objectTypeRidB}`,
+            linkTypeRid: linkType.rid,
             status: linkStatus,
           };
 
@@ -302,8 +301,7 @@ export class OntologyBlockDataToFullMetadataConverter {
           );
 
           const common = {
-            linkTypeRid:
-              `ri.ontology-metadata.temp.${linkDef.objectTypeRidOneSide}.${linkType.id}.${linkDef.objectTypeRidManySide}`,
+            linkTypeRid: linkType.rid,
             status: linkStatus,
           };
 
@@ -969,8 +967,7 @@ export class OntologyBlockDataToFullMetadataConverter {
       }
 
       const interfaceLinkType: Ontologies.InterfaceLinkType = {
-        rid:
-          `ri.ontology-metadata.temp.interfacelink.${linkedEntityApiName.apiName}.${ilt.metadata.apiName}`,
+        rid: ilt.rid,
         apiName: ilt.metadata.apiName,
         displayName: ilt.metadata.displayName,
         description: ilt.metadata.description,
@@ -996,8 +993,7 @@ export class OntologyBlockDataToFullMetadataConverter {
       );
       if (dataType) {
         const sharedPropertyType: Ontologies.SharedPropertyType = {
-          rid:
-            `ri.ontology-metadata.temp.spt.${spt.sharedPropertyType.apiName}`,
+          rid,
           apiName: spt.sharedPropertyType.apiName,
           displayName: spt.sharedPropertyType.displayMetadata.displayName,
           description: spt.sharedPropertyType.displayMetadata.description
