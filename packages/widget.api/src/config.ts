@@ -30,6 +30,11 @@ interface ArrayParameterDefinition<S extends ParameterValue.PrimitiveType> {
   displayName: string;
   subType: S;
 }
+interface MapTileLayerParameterDefinition {
+  // experimental - this allows us to hide the parameter type as a suggestion
+  type: "mapTileLayer" & Record<never, never>;
+  displayName: string;
+}
 interface ObjectSetParameterDefinition<
   T extends AllowedObjectSetParameterType,
 > {
@@ -42,6 +47,7 @@ interface ObjectSetParameterDefinition<
 export type ParameterDefinition =
   | PrimitiveParameterDefinition<ParameterValue.PrimitiveType>
   | ArrayParameterDefinition<ParameterValue.PrimitiveType>
+  | MapTileLayerParameterDefinition
   | ObjectSetParameterDefinition<AllowedObjectSetParameterType>;
 
 interface ManifestObjectSetParameterDefinition<
@@ -57,6 +63,7 @@ interface ManifestObjectSetParameterDefinition<
 export type ManifestParameterDefinition =
   | PrimitiveParameterDefinition<ParameterValue.PrimitiveType>
   | ArrayParameterDefinition<ParameterValue.PrimitiveType>
+  | MapTileLayerParameterDefinition
   | ManifestObjectSetParameterDefinition<AllowedObjectSetParameterType>;
 
 export interface EventDefinition<P extends ParameterConfig> {
