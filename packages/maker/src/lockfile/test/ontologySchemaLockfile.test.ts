@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
+import { consola } from "consola";
+import { describe, expect, it, vi } from "vitest";
 
 import { defineInterface } from "../../api/defineInterface.js";
 import { defineSharedPropertyType } from "../../api/defineSpt.js";
 import type { InterfaceSchemaTransition } from "../../api/interface/InterfaceSchemaMigrations.js";
 import {
+  bothInFlight,
   emailFinalized,
   emailInFlight,
   lastNameDeleted,
@@ -91,8 +93,8 @@ describe("interface schema migration scenarios", () => {
     });
   });
 
-  describe("a second migration and a superseding checkpoint", () => {
-    it("keeps the finalized property and records the new transition", async () => {
+  describe("a later migration", () => {
+    it("starts after the earlier one was finalized, keeping its property required", async () => {
       await published(lastNameFinalized);
       await maker(emailInFlight, { writeLocks: true });
       const lockfile = await readLockfile();
@@ -106,7 +108,29 @@ describe("interface schema migration scenarios", () => {
       ).toStrictEqual(["requireEmail"]);
     });
 
-    it("finalizes the second migration without disturbing the first", async () => {
+    it("starts in the same release that finalizes the earlier one", async () => {
+      const warn = vi.spyOn(consola, "warn");
+      await published(lastNameInFlight);
+      await maker(emailInFlight, { writeLocks: true });
+
+      // Only the departing transition is a checkpoint; opening a new one is not something the
+      // author has to confirm.
+      expect(warn).toHaveBeenCalledWith(
+        "Detected interface schema migration finalizations/deletions:\nPerson:" +
+          "\n  FINALIZE requireLastName",
+      );
+      const lockfile = await readLockfile();
+      expect(lockfile.interfaces.Person.schema.properties).toStrictEqual({
+        email: { type: "string", required: false },
+        firstName: { type: "string", required: true },
+        lastName: { type: "string", required: true },
+      });
+      expect(
+        lockfile.interfaces.Person.transitions.map(({ id }) => id),
+      ).toStrictEqual(["requireEmail"]);
+    });
+
+    it("finalizes it without disturbing what an earlier migration made required", async () => {
       await published(emailInFlight);
       await maker(emailFinalized, { writeLocks: true });
       const lockfile = await readLockfile();
@@ -115,6 +139,148 @@ describe("interface schema migration scenarios", () => {
         required: true,
       });
       expect(lockfile.interfaces.Person.transitions).toStrictEqual([]);
+    });
+  });
+
+  describe("two migrations in flight at once", () => {
+    it("finalizes one and leaves the other in flight", async () => {
+      await published(bothInFlight);
+      await maker(
+        person(
+          {
+            firstName: REQUIRED_STRING,
+            lastName: REQUIRED_STRING,
+            email: OPTIONAL_STRING,
+          },
+          { transitions: [requireEmail] },
+        ),
+        { writeLocks: true },
+      );
+      const lockfile = await readLockfile();
+      expect(lockfile.interfaces.Person.schema.properties).toStrictEqual({
+        email: { type: "string", required: false },
+        firstName: { type: "string", required: true },
+        lastName: { type: "string", required: true },
+      });
+      expect(
+        lockfile.interfaces.Person.transitions.map(({ id }) => id),
+      ).toStrictEqual(["requireEmail"]);
+    });
+
+    it("finalizes the later migration while the earlier one is still in flight", async () => {
+      await published(bothInFlight);
+      await maker(
+        person(
+          {
+            firstName: REQUIRED_STRING,
+            lastName: OPTIONAL_STRING,
+            email: REQUIRED_STRING,
+          },
+          { transitions: [requireLastName] },
+        ),
+        { writeLocks: true },
+      );
+      const lockfile = await readLockfile();
+      expect(lockfile.interfaces.Person.schema.properties).toStrictEqual({
+        email: { type: "string", required: true },
+        firstName: { type: "string", required: true },
+        lastName: { type: "string", required: false },
+      });
+      expect(
+        lockfile.interfaces.Person.transitions.map(({ id }) => id),
+      ).toStrictEqual(["requireLastName"]);
+    });
+
+    it("deletes one and leaves the other in flight", async () => {
+      await published(bothInFlight);
+      await maker(
+        person(
+          {
+            firstName: REQUIRED_STRING,
+            lastName: OPTIONAL_STRING,
+            email: OPTIONAL_STRING,
+          },
+          { transitions: [requireEmail] },
+        ),
+        { writeLocks: true },
+      );
+      const lockfile = await readLockfile();
+      expect(
+        lockfile.interfaces.Person.schema.properties.lastName,
+      ).toStrictEqual({ type: "string", required: false });
+      expect(
+        lockfile.interfaces.Person.transitions.map(({ id }) => id),
+      ).toStrictEqual(["requireEmail"]);
+    });
+
+    it("finalizes one and deletes the other in a single release", async () => {
+      const warn = vi.spyOn(consola, "warn");
+      await published(bothInFlight);
+      await maker(
+        person(
+          {
+            firstName: REQUIRED_STRING,
+            lastName: REQUIRED_STRING,
+            email: OPTIONAL_STRING,
+          },
+          { transitions: [] },
+        ),
+        { writeLocks: true },
+      );
+      expect(warn).toHaveBeenCalledWith(
+        "Detected interface schema migration finalizations/deletions:\nPerson:" +
+          "\n  DELETE requireEmail\n  FINALIZE requireLastName",
+      );
+      const lockfile = await readLockfile();
+      expect(lockfile.interfaces.Person.schema.properties).toStrictEqual({
+        email: { type: "string", required: false },
+        firstName: { type: "string", required: true },
+        lastName: { type: "string", required: true },
+      });
+      expect(lockfile.interfaces.Person.transitions).toStrictEqual([]);
+    });
+
+    // Each transition is classified by the properties it targets, not by whether the whole schema
+    // matches: here neither one alone accounts for the release's full diff.
+    it("finalizes both in a single release", async () => {
+      await published(bothInFlight);
+      await maker(
+        person(
+          {
+            firstName: REQUIRED_STRING,
+            lastName: REQUIRED_STRING,
+            email: REQUIRED_STRING,
+          },
+          { transitions: [] },
+        ),
+        { writeLocks: true },
+      );
+      const lockfile = await readLockfile();
+      expect(lockfile.interfaces.Person.schema.properties).toStrictEqual({
+        email: { type: "string", required: true },
+        firstName: { type: "string", required: true },
+        lastName: { type: "string", required: true },
+      });
+      expect(lockfile.interfaces.Person.transitions).toStrictEqual([]);
+    });
+
+    it("blames only the migration that reads as neither, not the one still in flight", async () => {
+      await published(bothInFlight);
+      const thrown = await maker(
+        person(
+          { firstName: REQUIRED_STRING, email: OPTIONAL_STRING },
+          { transitions: [requireEmail] },
+        ),
+        { writeLocks: true },
+      ).then(
+        () => undefined,
+        (error: Error) => error,
+      );
+
+      expect(thrown?.message).toMatch(
+        /schema migration "requireLastName" is no longer declared[\s\S]*"lastName" was removed from the interface\./u,
+      );
+      expect(thrown?.message).not.toContain("requireEmail");
     });
   });
 
