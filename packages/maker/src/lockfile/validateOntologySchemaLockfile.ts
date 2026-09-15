@@ -32,6 +32,7 @@ import type {
   LockedInterfaceType,
   LockedProperty,
   LockedTransition,
+  LockedValueType,
   OntologySchemaLockfile,
   PropertyDeclaration,
 } from "./OntologySchemaLockfile.js";
@@ -133,6 +134,20 @@ export type LockfileFinding =
       previousNullability: Nullability;
       nextNullability: Nullability;
     }
+  /**
+   * A property references a value type it did not, or references a different one. Dropping the
+   * reference outright is a warning instead.
+   *
+   * A new version of the same value type counts: its constraints are resolved elsewhere, so
+   * whether the bump tightens or loosens them cannot be told from the reference.
+   */
+  | {
+      code: "valueTypeChanged";
+      interfaceApiName: string;
+      property: string;
+      previousValueType: LockedValueType | undefined;
+      nextValueType: LockedValueType;
+    }
   | {
       code: "propertyBecameRequired";
       interfaceApiName: string;
@@ -166,6 +181,16 @@ export type LockfileWarning =
       property: string;
       previousNullability: Nullability;
       nextNullability: Nullability;
+    }
+  /**
+   * A property no longer references a value type. Safe for the same reason as the other
+   * relaxations: data that satisfied the value type's constraints satisfies no constraints.
+   */
+  | {
+      code: "valueTypeRemoved";
+      interfaceApiName: string;
+      property: string;
+      previousValueType: LockedValueType;
     };
 
 export interface LockfileValidationResult {
@@ -443,6 +468,18 @@ function validateSchemaDiff(
       });
     }
 
+    if (
+      previous.property.valueType !== undefined &&
+      next.property.valueType === undefined
+    ) {
+      warnings.push({
+        code: "valueTypeRemoved",
+        interfaceApiName,
+        property: previous.apiName,
+        previousValueType: previous.property.valueType,
+      });
+    }
+
     validatePropertyDiff(interfaceApiName, previous, next, findings);
   }
 
@@ -548,6 +585,22 @@ function validatePropertyDiff(
       property,
       previousNullability,
       nextNullability,
+    });
+    return;
+  }
+
+  // `nextValueType` defined by construction: dropping the reference warns instead.
+  const nextValueType = next.property.valueType;
+  if (
+    nextValueType !== undefined &&
+    !isDeepStrictEqual(previous.property.valueType, nextValueType)
+  ) {
+    findings.push({
+      code: "valueTypeChanged",
+      interfaceApiName,
+      property,
+      previousValueType: previous.property.valueType,
+      nextValueType,
     });
     return;
   }
