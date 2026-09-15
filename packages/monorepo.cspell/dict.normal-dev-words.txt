@@ -29,6 +29,7 @@ jsons
 Multimap
 objs
 onwarn
+parseable
 peopleapp
 pypi
 retryable
