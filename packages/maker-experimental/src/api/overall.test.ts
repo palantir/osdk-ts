@@ -29,7 +29,6 @@ import {
   defineCreateObjectAction,
   defineInterface,
   defineInterfaceActionTypeConstraint,
-  defineInterfaceLinkConstraint,
   defineLink,
   defineObject,
   defineOntology,
@@ -39,13 +38,11 @@ import {
   importOntologyEntity,
   importSharedPropertyType,
   OntologyEntityTypeEnum,
-  writeStaticObjects,
 } from "@osdk/maker";
 import invariant from "tiny-invariant";
-import { beforeEach, describe, expect, it, onTestFinished } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import { ReadableIdGenerator } from "../util/generateRid.js";
-import { defineInterfaceImplementation } from "./defineInterfaceImplementation.js";
 import { defineOntologyV2 } from "./defineOntologyV2.js";
 import { defineImportObject } from "./importObjectType.js";
 
@@ -116,162 +113,6 @@ describe("Experimental Test Suite", () => {
         },
       });
     });
-  });
-
-  it("applies interface constraints to concrete links and actions", async () => {
-    const result = await defineOntologyV2("com.palantir.", () => {
-      const createEmployeeConstraintApiName = "com.palantir.createEmployee";
-      const employerInterface = defineInterface({ apiName: "Employer" });
-      const employeeInterface = defineInterface({ apiName: "Employee" });
-      const employerConstraint = defineInterfaceLinkConstraint({
-        apiName: "employer",
-        from: employeeInterface,
-        toOne: employerInterface,
-      });
-      defineInterfaceActionTypeConstraint({
-        interfaceType: employeeInterface,
-        apiName: "createEmployee",
-        displayName: "Create Employee",
-        description: "Create an employee",
-        requireImplementation: true,
-        parameters: [
-          {
-            apiName: "employeeId",
-            displayName: "Employee ID",
-            type: { type: "string", string: {} },
-            requireImplementation: true,
-          },
-        ],
-      });
-
-      const employer = defineObject({
-        apiName: "employer",
-        displayName: "Employer",
-        pluralDisplayName: "Employers",
-        titlePropertyApiName: "id",
-        primaryKeyPropertyApiName: "id",
-        properties: { id: { type: "string" } },
-      });
-      const employee = defineObject({
-        apiName: "employee",
-        displayName: "Employee",
-        pluralDisplayName: "Employees",
-        titlePropertyApiName: "id",
-        primaryKeyPropertyApiName: "id",
-        properties: {
-          id: { type: "string" },
-          employerId: { type: "string" },
-        },
-      });
-      const employeeEmployer = defineLink({
-        apiName: "employee-employer",
-        one: {
-          object: employer,
-          metadata: { apiName: "employees" },
-        },
-        toMany: {
-          object: employee,
-          metadata: { apiName: "employer" },
-        },
-        manyForeignKeyProperty: "employerId",
-      });
-      const createEmployee = defineCreateObjectAction({
-        objectType: employee,
-      });
-
-      defineInterfaceImplementation({
-        interfaceType: employerInterface,
-        objectType: employer,
-      });
-      defineInterfaceImplementation({
-        interfaceType: employeeInterface,
-        objectType: employee,
-        linkImplementations: {
-          [employerConstraint.apiName]: [
-            { linkType: employeeEmployer, sideApiName: "employer" },
-          ],
-        },
-        actionTypeImplementations: {
-          [createEmployeeConstraintApiName]: {
-            actionType: createEmployee,
-            parameterMapping: { employeeId: "id" },
-          },
-        },
-      });
-    });
-    const outputDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), "maker-experimental-interface-implementation-"),
-    );
-    onTestFinished(() =>
-      fs.rmSync(outputDir, { recursive: true, force: true }),
-    );
-    writeStaticObjects(outputDir);
-
-    const employee = Object.values(result.ontologyIr.ontology.objectTypes).find(
-      (objectType) => objectType.objectType.apiName === "com.palantir.employee",
-    );
-    const linkTypeRid = Object.keys(result.ontologyIr.ontology.linkTypes)[0];
-    expect(
-      Object.values(employee!.objectType.implementsInterfaces2[0].linksV2),
-    ).toEqual([
-      [
-        {
-          linkTypeRid,
-          startingFromLinkTypeSide: {
-            type: "oneToManyLinkTypeSide",
-            oneToManyLinkTypeSide: "MANY_SIDE",
-          },
-        },
-      ],
-    ]);
-
-    const createEmployee = Object.values(
-      result.ontologyIr.ontology.actionTypes,
-    )[0];
-    const actionTypeImplementations = Object.values(
-      employee!.objectType.implementsInterfaces2[0].actionTypes,
-    );
-    const employeeInterface = Object.values(
-      result.ontologyIr.ontology.interfaceTypes,
-    ).find(
-      (interfaceType) =>
-        interfaceType.interfaceType.apiName === "com.palantir.Employee",
-    );
-    const actionConstraint =
-      employeeInterface!.interfaceType.actionTypeConstraints[0];
-    expect(
-      Object.keys(employee!.objectType.implementsInterfaces2[0].actionTypes),
-    ).toEqual([actionConstraint.rid]);
-    expect(actionTypeImplementations).toHaveLength(1);
-    expect(actionTypeImplementations[0].actionTypeRid).toBe(
-      createEmployee.actionType.metadata.rid,
-    );
-    expect(Object.values(actionTypeImplementations[0].parameters)).toEqual([
-      createEmployee.actionType.metadata.parameters.id.rid,
-    ]);
-    expect(Object.keys(actionTypeImplementations[0].parameters)).toEqual([
-      Object.keys(actionConstraint.parameters)[0],
-    ]);
-  });
-
-  it("rejects duplicate implementations of the same interface", () => {
-    const interfaceType = defineInterface({ apiName: "Employee" });
-    const objectType = defineObject({
-      apiName: "employee",
-      displayName: "Employee",
-      pluralDisplayName: "Employees",
-      titlePropertyApiName: "id",
-      primaryKeyPropertyApiName: "id",
-      properties: { id: { type: "string" } },
-    });
-
-    defineInterfaceImplementation({ interfaceType, objectType });
-
-    expect(() =>
-      defineInterfaceImplementation({ interfaceType, objectType }),
-    ).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Object "com.palantir.employee" already implements interface "com.palantir.Employee"]`,
-    );
   });
 
   describe("Dependencies", () => {

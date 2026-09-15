@@ -28,5 +28,7 @@ export type {
 export { defineFunctionBackedAction } from "./api/defineFunctionBackedAction.js";
 export {
   defineInterfaceImplementation,
+  type InterfaceActionTypeImplementationDefinition,
   type InterfaceImplementationDefinition,
+  type InterfaceLinkImplementationDefinition,
 } from "./api/defineInterfaceImplementation.js";

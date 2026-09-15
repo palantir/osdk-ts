@@ -105,6 +105,7 @@ export {
   isInterfacePropertyRequired,
   isInterfaceSharedPropertyType,
 } from "./api/interface/InterfacePropertyType.js";
+export { getFlattenedInterfaceProperties } from "./api/interface/getFlattenedInterfaceProperties.js";
 export type {
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
@@ -119,6 +120,7 @@ export type {
 } from "./api/links/LinkType.js";
 export type { InterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
 export type { EditsHistoryConfig } from "./api/object/EditsHistoryConfig.js";
+export type { InterfaceImplementation } from "./api/object/InterfaceImplementation.js";
 export type { ObjectPropertyType } from "./api/object/ObjectPropertyType.js";
 export type { ObjectType } from "./api/object/ObjectType.js";
 export type {

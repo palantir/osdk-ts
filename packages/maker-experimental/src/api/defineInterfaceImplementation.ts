@@ -16,15 +16,15 @@
 
 import type {
   ActionType,
-  InterfacePropertyType,
+  InterfaceImplementation,
   InterfaceType,
   LinkType,
   ObjectTypeDefinition,
 } from "@osdk/maker";
 import {
   addNamespaceIfNone,
+  getFlattenedInterfaceProperties,
   getOntologyDefinition,
-  interfacePropertyWireApiName,
   isInterfacePropertyRequired,
   isInterfaceSharedPropertyType,
   OntologyEntityTypeEnum,
@@ -32,56 +32,54 @@ import {
 } from "@osdk/maker";
 import invariant from "tiny-invariant";
 
-type ValidationResult = { type: "valid" } | { type: "invalid"; reason: string };
+export type InterfaceLinkImplementationDefinition = {
+  linkType: LinkType;
+  sideApiName: string;
+};
+
+export type InterfaceActionTypeImplementationDefinition = {
+  actionType: ActionType;
+  parameterMapping?: Record<string, string>;
+};
 
 export type InterfaceImplementationDefinition = {
   interfaceType: InterfaceType;
   objectType: ObjectTypeDefinition;
-  propertyMapping?: Array<{ interfaceProperty: string; mapsTo: string }>;
+  propertyMapping?: InterfaceImplementation["propertyMapping"];
   linkImplementations?: Record<
     string,
-    Array<{ linkType: LinkType; sideApiName: string }>
+    Array<InterfaceLinkImplementationDefinition>
   >;
   actionTypeImplementations?: Record<
     string,
-    {
-      actionType: ActionType;
-      parameterMapping?: Record<string, string>;
-    }
+    InterfaceActionTypeImplementationDefinition
   >;
 };
 
-export function defineInterfaceImplementation({
-  interfaceType,
-  objectType,
-  propertyMapping = [],
-  linkImplementations = {},
-  actionTypeImplementations = {},
-}: InterfaceImplementationDefinition): void {
-  validateInterfaceProperties(interfaceType, objectType, propertyMapping);
-
-  const storedObject =
+export function defineInterfaceImplementation(
+  def: InterfaceImplementationDefinition,
+): void {
+  const registeredObjectType =
     getOntologyDefinition()[OntologyEntityTypeEnum.OBJECT_TYPE][
-      objectType.apiName
+      def.objectType.apiName
     ];
   invariant(
-    storedObject !== undefined,
-    `Object ${objectType.apiName} must be defined before implementing an interface`,
+    registeredObjectType !== undefined,
+    `Object ${def.objectType.apiName} must be defined before implementing an interface`,
   );
   invariant(
-    !storedObject.implementsInterfaces?.some(
+    !registeredObjectType.implementsInterfaces?.some(
       (implementation) =>
-        implementation.implements.apiName === interfaceType.apiName,
+        implementation.implements.apiName === def.interfaceType.apiName,
     ),
-    `Object "${objectType.apiName}" already implements interface "${interfaceType.apiName}"`,
+    `Object "${def.objectType.apiName}" already implements interface "${def.interfaceType.apiName}"`,
   );
 
-  storedObject.implementsInterfaces ??= [];
-  storedObject.implementsInterfaces.push({
-    implements: interfaceType,
-    propertyMapping,
+  const implementation: InterfaceImplementation = {
+    implements: def.interfaceType,
+    propertyMapping: def.propertyMapping ?? [],
     linkImplementations: Object.fromEntries(
-      Object.entries(linkImplementations).map(
+      Object.entries(def.linkImplementations ?? {}).map(
         ([constraintApiName, implementations]) => [
           constraintApiName,
           implementations.map(({ linkType, sideApiName }) => ({
@@ -92,140 +90,88 @@ export function defineInterfaceImplementation({
       ),
     ),
     actionTypeImplementations: Object.fromEntries(
-      Object.entries(actionTypeImplementations).map(
-        ([constraintApiName, implementation]) => [
+      Object.entries(def.actionTypeImplementations ?? {}).map(
+        ([constraintApiName, actionImplementation]) => [
           constraintApiName,
           {
-            actionTypeApiName: implementation.actionType.apiName,
-            parameterMapping: { ...implementation.parameterMapping },
+            actionTypeApiName: actionImplementation.actionType.apiName,
+            parameterMapping: { ...actionImplementation.parameterMapping },
           },
         ],
       ),
     ),
-  });
-  objectType.implementsInterfaces = storedObject.implementsInterfaces;
+  };
+  validateInterfaceImplementation(def.objectType, implementation);
+
+  const implementations = [
+    ...(registeredObjectType.implementsInterfaces ?? []),
+    implementation,
+  ];
+  registeredObjectType.implementsInterfaces = implementations;
+  def.objectType.implementsInterfaces = implementations;
 }
 
-function validateInterfaceProperties(
-  interfaceType: InterfaceType,
+function validateInterfaceImplementation(
   objectType: ObjectTypeDefinition,
-  propertyMapping: Array<{ interfaceProperty: string; mapsTo: string }>,
+  implementation: InterfaceImplementation,
 ): void {
-  const allInterfaceProperties = getFlattenedInterfaceProperties(interfaceType);
-  const nonExistentInterfaceProperties: ValidationResult[] = propertyMapping
+  const interfaceProperties = getFlattenedInterfaceProperties(
+    implementation.implements,
+  );
+  const nonExistentInterfaceProperties = implementation.propertyMapping
     .map((mapping) => mapping.interfaceProperty)
     .filter(
       (interfaceProperty) =>
-        allInterfaceProperties[addNamespaceIfNone(interfaceProperty)] ===
+        interfaceProperties[addNamespaceIfNone(interfaceProperty)] ===
           undefined &&
-        allInterfaceProperties[withoutNamespace(interfaceProperty)] ===
-          undefined,
+        interfaceProperties[withoutNamespace(interfaceProperty)] === undefined,
     )
-    .map((interfaceProperty) => ({
-      type: "invalid",
-      reason: `Interface property ${interfaceProperty} referenced in ${objectType.apiName} object does not exist`,
-    }));
-
-  const interfaceToObjectProperties = Object.fromEntries(
-    propertyMapping.map((mapping) => {
-      const namespacedInterfaceProperty = addNamespaceIfNone(
-        mapping.interfaceProperty,
-      );
-      const interfaceProperty =
-        allInterfaceProperties[namespacedInterfaceProperty] !== undefined
-          ? namespacedInterfaceProperty
+    .map(
+      (interfaceProperty) =>
+        `Interface property ${interfaceProperty} referenced in ${objectType.apiName} object does not exist`,
+    );
+  const propertyMapping = Object.fromEntries(
+    implementation.propertyMapping.map((mapping) => {
+      const namespacedApiName = addNamespaceIfNone(mapping.interfaceProperty);
+      const interfacePropertyApiName =
+        interfaceProperties[namespacedApiName] !== undefined
+          ? namespacedApiName
           : withoutNamespace(mapping.interfaceProperty);
-      return [interfaceProperty, mapping.mapsTo];
+      return [interfacePropertyApiName, mapping.mapsTo];
     }),
   );
 
-  const validations = Object.entries(allInterfaceProperties).map(
-    ([interfacePropertyApiName, interfaceProperty]) =>
-      validateInterfaceProperty(
-        interfacePropertyApiName,
-        interfaceProperty,
-        interfaceToObjectProperties,
-        objectType,
-      ),
-  );
-  const allFailedValidations = validations
-    .concat(nonExistentInterfaceProperties)
-    .filter((validation) => validation.type === "invalid");
-  invariant(
-    allFailedValidations.length === 0,
-    "\n" + allFailedValidations.map(formatValidationError).join("\n"),
-  );
-}
-
-function getFlattenedInterfaceProperties(
-  interfaceType: InterfaceType,
-): Record<string, InterfacePropertyType> {
-  let properties = Object.fromEntries(
-    Object.entries(interfaceType.propertiesV3).map(([apiName, property]) => [
-      interfacePropertyWireApiName(property, apiName),
-      property,
-    ]),
-  );
-  for (const [apiName, property] of Object.entries(
-    interfaceType.propertiesV2,
+  const validationErrors: string[] = [];
+  for (const [apiName, interfaceProperty] of Object.entries(
+    interfaceProperties,
   )) {
-    properties[apiName] ??= property;
-  }
-  for (const parentInterface of interfaceType.extendsInterfaces) {
-    properties = Object.assign(
-      getFlattenedInterfaceProperties(parentInterface),
-      properties,
-    );
-  }
-  return properties;
-}
-
-function validateInterfaceProperty(
-  interfacePropertyApiName: string,
-  interfaceProperty: InterfacePropertyType,
-  interfaceToObjectProperties: Record<string, string>,
-  objectType: ObjectTypeDefinition,
-): ValidationResult {
-  const apiName = isInterfaceSharedPropertyType(interfaceProperty)
-    ? interfaceProperty.sharedPropertyType.apiName
-    : interfacePropertyApiName;
-  if (apiName in interfaceToObjectProperties) {
-    const mappedObjectProperty =
-      objectType.properties?.[interfaceToObjectProperties[apiName]];
-    if (mappedObjectProperty === undefined) {
-      return {
-        type: "invalid",
-        reason: `Object property mapped to interface does not exist. Object Property Mapped: ${interfaceToObjectProperties[apiName]}`,
-      };
-    }
-    const interfacePropertyType = isInterfaceSharedPropertyType(
+    const interfacePropertyApiName = isInterfaceSharedPropertyType(
       interfaceProperty,
     )
-      ? interfaceProperty.sharedPropertyType.type
-      : interfaceProperty.type;
-    if (
-      JSON.stringify(interfacePropertyType) !==
-      JSON.stringify(mappedObjectProperty.type)
-    ) {
-      return {
-        type: "invalid",
-        reason: `Object property type does not match the interface property it is mapped to. Interface Property: ${apiName}, objectProperty: ${interfaceToObjectProperties[apiName]}`,
-      };
+      ? interfaceProperty.sharedPropertyType.apiName
+      : apiName;
+    const mappedObjectPropertyApiName =
+      propertyMapping[interfacePropertyApiName];
+    if (mappedObjectPropertyApiName !== undefined) {
+      const objectProperty =
+        objectType.properties?.[mappedObjectPropertyApiName];
+      if (objectProperty === undefined) {
+        validationErrors.push(
+          `Object property mapped to interface does not exist. Object Property Mapped: ${mappedObjectPropertyApiName}`,
+        );
+      }
+    } else if (isInterfacePropertyRequired(interfaceProperty)) {
+      validationErrors.push(
+        `Interface property ${interfacePropertyApiName} not implemented by ${objectType.apiName} object definition`,
+      );
     }
-    return { type: "valid" };
   }
-  if (!isInterfacePropertyRequired(interfaceProperty)) {
-    return { type: "valid" };
-  }
-  return {
-    type: "invalid",
-    reason: `Interface spt ${apiName} not implemented by ${objectType.apiName} object definition`,
-  };
-}
-
-function formatValidationError(error: {
-  type: "invalid";
-  reason: string;
-}): string {
-  return `Ontology Definition Error: ${error.reason}\n`;
+  validationErrors.push(...nonExistentInterfaceProperties);
+  invariant(
+    validationErrors.length === 0,
+    "\n" +
+      validationErrors
+        .map((error) => `Ontology Definition Error: ${error}\n`)
+        .join("\n"),
+  );
 }
