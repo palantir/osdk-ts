@@ -72,6 +72,18 @@ export interface LockedTransition {
   instructions: InterfaceSchemaMigrationInstruction[];
 }
 
+/**
+ * `record`'s own value for `key`, or `undefined`.
+ *
+ * Every record in a lockfile is keyed by an author-chosen api name, and `API_NAME_PATTERN` admits
+ * `constructor`, `toString` and friends. A persisted lockfile also arrives from `JSON.parse`, so
+ * its records inherit from `Object.prototype`. A bare index read for one of those names would find
+ * the inherited function instead of `undefined` and mistake it for a recorded entry.
+ */
+export function own<T>(record: Record<string, T>, key: string): T | undefined {
+  return Object.hasOwn(record, key) ? record[key] : undefined;
+}
+
 // JSON has no comment syntax, but a `"//"` key is a conventional stand-in for one.
 export const LOCKFILE_HEADER_KEY = "//";
 

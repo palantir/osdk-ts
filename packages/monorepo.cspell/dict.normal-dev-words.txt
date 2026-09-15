@@ -26,6 +26,7 @@ hideable
 inbetween
 isModifierable
 jsons
+lockfiles
 Multimap
 objs
 onwarn
@@ -52,4 +53,6 @@ ungroup
 unioned
 unresolve
 Unsubscribable
+upgrader
+upgraders
 webapi
