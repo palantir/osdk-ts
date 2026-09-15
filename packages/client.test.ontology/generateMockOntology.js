@@ -94,5 +94,7 @@ await generateClientSdkVersionTwoPointZero(
   undefined,
   undefined,
   true,
-  ["addOne"],
+  new Map([
+    ["addOne", ontologyWithoutUnsupportedAction.queryTypes.addOne.version],
+  ]),
 );

@@ -84,7 +84,7 @@ export async function generatePackage(
     ontologyInfo.externalInterfaces,
     new Map(),
     false,
-    ontologyInfo.fixedVersionQueryTypes,
+    ontologyInfo.queryVersionReferences,
     options.exportOntologyMetadata,
   );
 

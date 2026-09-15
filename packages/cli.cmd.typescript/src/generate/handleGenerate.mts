@@ -365,7 +365,7 @@ async function generateSourceFiles(
     args.externalInterfaces,
     undefined, // externalSpts
     undefined, // forInternalUse
-    undefined, // fixedVersionQueryTypes
+    undefined, // queryVersionReferences
     args.experimentalOntologyMetadata ?? false,
   );
 }
