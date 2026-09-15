@@ -21,6 +21,7 @@ import { mapPropertyNames } from "../api/interface/describeInterfaceSchemaMigrat
 import {
   getInterfacePropertyTypeType,
   type InterfacePropertyType,
+  interfacePropertyPrimaryKeyConstraint,
   interfacePropertyTypeClasses,
   interfacePropertyWireApiName,
   isInterfacePropertyArray,
@@ -110,6 +111,7 @@ function lockInterfaceSchema(
 
 function lockProperty(property: InterfacePropertyType): LockedProperty {
   const typeClasses = lockTypeClasses(interfacePropertyTypeClasses(property));
+  const primaryKeyConstraint = interfacePropertyPrimaryKeyConstraint(property);
   return {
     type: normalizePropertyType(
       getInterfacePropertyTypeType(property),
@@ -122,6 +124,8 @@ function lockProperty(property: InterfacePropertyType): LockedProperty {
     ...(isInterfaceSharedPropertyType(property) && {
       declaredBy: "sharedPropertyType" as const,
     }),
+    // Resolved first, so that omitting the constraint and writing `NO_RESTRICTION` lock the same.
+    ...(primaryKeyConstraint !== "NO_RESTRICTION" && { primaryKeyConstraint }),
   };
 }
 
