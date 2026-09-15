@@ -88,7 +88,6 @@ describe("generateOntologySchemaLockfile", () => {
   });
 
   describe("arrayedness", () => {
-    /** The one property of the single locked interface the source declares. */
     function lockedProperty(apiName: string): LockedProperty {
       const { interfaces } = generateOntologySchemaLockfile(
         getOntologyDefinition(),

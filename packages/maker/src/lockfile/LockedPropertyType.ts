@@ -28,21 +28,11 @@ function isPresentationKey(key: string): key is PresentationKey {
   return (PRESENTATION_KEYS as readonly string[]).includes(key);
 }
 
-/** A property's published type, without fields that do not affect backwards-compatibility. */
+/** A property's locked type, without fields that do not affect backwards-compatibility. */
 export type LockedPropertyType = LockedScalarType | LockedArrayType;
 
-/** A single value of a {@link PropertyTypeType}. */
 type LockedScalarType = StripPresentation<PropertyTypeType>;
 
-/**
- * A list of values of a {@link PropertyTypeType}.
- *
- * Maker's DSL spells arrayedness as an `array: boolean` sibling of `type`, but a property declared
- * that way is published as an array type wrapping the declared one. The lockfile records that
- * published shape, so that adding or dropping `array` reads as the type change it is rather than
- * slipping through as no change at all. `PropertyTypeType` has no `"array"` variant of its own, so
- * the wrapper cannot collide with a type an author could declare directly.
- */
 interface LockedArrayType {
   type: "array";
   subtype: LockedScalarType;
