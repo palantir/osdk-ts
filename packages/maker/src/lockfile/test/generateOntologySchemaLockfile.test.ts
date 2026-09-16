@@ -23,6 +23,7 @@ import {
   getOntologyDefinition,
 } from "../../api/defineOntology.js";
 import { defineSharedPropertyType } from "../../api/defineSpt.js";
+import type { InterfaceType } from "../../api/interface/InterfaceType.js";
 import { defaultTypeClasses } from "../../api/propertyConversionUtils.js";
 import {
   censusOfSource,
@@ -479,6 +480,15 @@ describe("generateOntologySchemaLockfile", () => {
   });
 
   describe("extended interfaces", () => {
+    // Every interface here opts in, parents included: a hierarchy opts in as a whole (see
+    // validateSchemaMigrationsFamilyOptIn), so a locked interface's parents are locked too.
+    function optedInInterface(apiName: string): InterfaceType {
+      return defineInterface({
+        apiName,
+        schemaMigrations: { transitions: [] },
+      });
+    }
+
     function lockedSchema(): LockedInterfaceSchema {
       return generateOntologySchemaLockfile(getOntologyDefinition()).interfaces[
         "com.palantir.Person"
@@ -486,8 +496,8 @@ describe("generateOntologySchemaLockfile", () => {
     }
 
     it("records the api names of the interfaces extended", () => {
-      const named = defineInterface({ apiName: "Named" });
-      const located = defineInterface({ apiName: "Located" });
+      const named = optedInInterface("Named");
+      const located = optedInInterface("Located");
       defineInterface({
         apiName: "Person",
         extends: [named, located],
@@ -501,10 +511,11 @@ describe("generateOntologySchemaLockfile", () => {
     });
 
     it("records only the direct parents, not the whole ancestry", () => {
-      const grandparent = defineInterface({ apiName: "Grandparent" });
+      const grandparent = optedInInterface("Grandparent");
       const parent = defineInterface({
         apiName: "Parent",
         extends: grandparent,
+        schemaMigrations: { transitions: [] },
       });
       defineInterface({
         apiName: "Person",
@@ -519,6 +530,7 @@ describe("generateOntologySchemaLockfile", () => {
       const named = defineInterface({
         apiName: "Named",
         properties: { name: { type: "string" } },
+        schemaMigrations: { transitions: [] },
       });
       defineInterface({
         apiName: "Person",
@@ -532,8 +544,8 @@ describe("generateOntologySchemaLockfile", () => {
 
     it("sorts the parents, so reordering them in source is not a change", async () => {
       function lockOrder(order: "ascending" | "descending"): string[] {
-        const named = defineInterface({ apiName: "Named" });
-        const located = defineInterface({ apiName: "Located" });
+        const named = optedInInterface("Named");
+        const located = optedInInterface("Located");
         defineInterface({
           apiName: "Person",
           extends: order === "ascending" ? [located, named] : [named, located],
@@ -550,7 +562,7 @@ describe("generateOntologySchemaLockfile", () => {
     });
 
     it("records a parent named twice once", () => {
-      const named = defineInterface({ apiName: "Named" });
+      const named = optedInInterface("Named");
       defineInterface({
         apiName: "Person",
         extends: [named, named],

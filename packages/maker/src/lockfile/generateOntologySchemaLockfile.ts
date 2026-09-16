@@ -122,6 +122,13 @@ function lockInterfaceSchema(
   };
 }
 
+/**
+ * The api names of the direct parents, and not what they contribute.
+ *
+ * A locked interface's parents are themselves locked (`validateSchemaMigrationsFamilyOptIn` makes a
+ * whole hierarchy opt in together), so a change to an inherited property is caught by the entry of
+ * the interface declaring it. Only gaining or losing a parent is this interface's own business.
+ */
 function lockExtensions(interfaceType: InterfaceType): string[] | undefined {
   const extended = new Set(
     interfaceType.extendsInterfaces.map((parent) => parent.apiName),
