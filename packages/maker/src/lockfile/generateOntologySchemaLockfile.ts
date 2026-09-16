@@ -115,22 +115,19 @@ function lockProperty(property: InterfacePropertyType): LockedProperty {
       isInterfacePropertyArray(property),
     ),
     required: isInterfacePropertyRequired(property),
-    // Spread rather than assign `undefined`: a lockfile read back from disk has no key at all for
-    // a property that declares none, and the two have to compare equal.
+    // NB: spread rather than assigned `undefined` so a lockfile read back from disk (where absents
+    // have no key at all) still compare equal.
     ...(typeClasses !== undefined && { typeClasses }),
   };
 }
 
-/**
- * The canonical form of a property's type classes: sorted, and `undefined` rather than empty when
- * there are none.
- */
 function lockTypeClasses(
   typeClasses: TypeClass[] | undefined,
 ): TypeClass[] | undefined {
   if (typeClasses === undefined || typeClasses.length === 0) {
     return undefined;
   }
+
   return [...typeClasses].sort(
     (a, b) => compare(a.kind, b.kind) || compare(a.name, b.name),
   );

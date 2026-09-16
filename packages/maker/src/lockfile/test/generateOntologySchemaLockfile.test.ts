@@ -127,8 +127,6 @@ describe("generateOntologySchemaLockfile", () => {
       expect(lockedProperty("com.palantir.nicknames")).toEqual({
         type: { type: "array", subtype: "string" },
         required: false,
-        // `defineSharedPropertyType` gives an spt the default render hints unless told otherwise,
-        // and the lockfile records what is published rather than what was written.
         typeClasses: defaultTypeClasses,
       });
     });
@@ -150,7 +148,7 @@ describe("generateOntologySchemaLockfile", () => {
   describe("type classes", () => {
     const SORTABLE: TypeClass = { kind: "render_hint", name: "SORTABLE" };
     const SELECTABLE: TypeClass = { kind: "render_hint", name: "SELECTABLE" };
-    const TITLE: TypeClass = { kind: "display", name: "TITLE" };
+    const GEO: TypeClass = { kind: "geo", name: "geojson" };
 
     function lockedProperty(apiName: string): LockedProperty {
       const { interfaces } = generateOntologySchemaLockfile(
@@ -199,8 +197,6 @@ describe("generateOntologySchemaLockfile", () => {
         schemaMigrations: { transitions: [] },
       });
 
-      // Not `typeClasses: undefined`: a lockfile read back from disk has no key at all, and
-      // `isDeepStrictEqual` tells the two apart.
       expect(Object.keys(lockedProperty("name"))).toEqual(["type", "required"]);
     });
 
@@ -224,12 +220,12 @@ describe("generateOntologySchemaLockfile", () => {
         return lockedProperty("name");
       }
 
-      const ascending = lockOrder([SELECTABLE, SORTABLE, TITLE]);
+      const ascending = lockOrder([GEO, SELECTABLE, SORTABLE]);
       await defineOntology("com.palantir.", () => {}, undefined);
-      const shuffled = lockOrder([TITLE, SORTABLE, SELECTABLE]);
+      const shuffled = lockOrder([SORTABLE, SELECTABLE, GEO]);
 
       expect(ascending).toEqual(shuffled);
-      expect(ascending.typeClasses).toEqual([TITLE, SELECTABLE, SORTABLE]);
+      expect(ascending.typeClasses).toEqual([GEO, SELECTABLE, SORTABLE]);
     });
   });
 });
