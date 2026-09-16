@@ -163,9 +163,10 @@ export function describeFinding(finding: LockfileFinding): string {
         `${where}: property "${property}" changed its value type from ` +
         `${previous === undefined ? "none" : describeValueType(previous)} to ` +
         `${describeValueType(finding.nextValueType)}. A value type carries constraints that ` +
-        `implementing object types' data has to satisfy - a new version of the same one ` +
-        `included, since whether it tightens them cannot be told from here - and no ` +
-        `currently-supported interface schema migration can phase that in. ` +
+        `implementing object types' data has to satisfy, and no currently-supported interface ` +
+        `schema migration can phase that in. Installing this will not fail: it leaves object ` +
+        `types bound to the value type they already had, and the next change to this interface ` +
+        `made outside marketplace is what gets rejected. ` +
         (previous === undefined
           ? `Drop the reference from "${property}".`
           : `Restore "${property}" to ${describeValueType(previous)}.`)
@@ -251,13 +252,11 @@ export function describeWarning(warning: LockfileWarning): string {
   }
 }
 
-/** A value type reference, as `namespace/apiName@version`. */
+/** A value type reference, as `namespace/apiName`. */
 function describeValueType(valueType: LockedValueType): string {
-  const qualified =
-    valueType.packageNamespace === ""
-      ? valueType.apiName
-      : `${valueType.packageNamespace}/${valueType.apiName}`;
-  return `${qualified}@${valueType.version}`;
+  return valueType.packageNamespace === ""
+    ? valueType.apiName
+    : `${valueType.packageNamespace}/${valueType.apiName}`;
 }
 
 /** What a nullability forbids, as a noun phrase. */

@@ -181,6 +181,7 @@ const propertySchema = z
           },
         )
         .optional(),
+      // No `version`: see `LockedValueType` for why the lockfile does not record one.
       valueType: z
         .object(
           {
@@ -188,7 +189,6 @@ const propertySchema = z
               message: "Expected a value type package namespace.",
             }),
             apiName: z.string({ message: "Expected a value type api name." }),
-            version: z.string({ message: "Expected a value type version." }),
           },
           {
             message:

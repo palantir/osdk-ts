@@ -262,8 +262,34 @@ describe("generateOntologySchemaLockfile", () => {
       expect(lockedProperty("ssn").valueType).toEqual({
         packageNamespace: "com.example",
         apiName: "Ssn",
-        version: "1.2.0",
       });
+    });
+
+    it("locks the same whatever the version says", async () => {
+      // Deliberate: a bump's direction is only readable from the constraints, which maker does
+      // not have for imported value types, so the lockfile does not claim to know.
+      function lockWithVersion(version: string): LockedProperty {
+        defineInterface({
+          apiName: "Person",
+          properties: {
+            ssn: {
+              type: "string",
+              valueType: {
+                packageNamespace: "com.example",
+                apiName: "Ssn",
+                version,
+                displayMetadata: {},
+              },
+            },
+          },
+          schemaMigrations: { transitions: [] },
+        });
+        return lockedProperty("ssn");
+      }
+
+      const first = lockWithVersion("1.2.0");
+      await defineOntology("com.palantir.", () => {}, undefined);
+      expect(first).toEqual(lockWithVersion("2.0.0"));
     });
 
     it("locks the same whatever the display metadata says", async () => {
