@@ -1,5 +1,20 @@
 # @osdk/generator-converters.preview
 
+## 0.48.0
+
+### Minor Changes
+
+- 9589f03: Read connected value type blocks during SDK generation and preserve their definitions in ontology metadata.
+
+### Patch Changes
+
+- Updated dependencies [e13da8f]
+- Updated dependencies [9589f03]
+- Updated dependencies [27e9994]
+  - @osdk/client.unstable@2.70.0
+  - @osdk/generator-converters.ontologyir@2.70.0
+  - @osdk/generator@2.70.0
+
 ## 0.47.0
 
 ### Patch Changes

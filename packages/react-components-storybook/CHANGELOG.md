@@ -1,5 +1,11 @@
 # @osdk/react-components-storybook
 
+## 0.58.0
+
+### Minor Changes
+
+- f6bcb14: Adds Relative date functionality to the DATE_RANGE filter. Add optional props to enable the relative mode, and relevant API input changes.
+
 ## 0.57.0
 
 ### Patch Changes

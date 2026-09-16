@@ -1,5 +1,17 @@
 # @osdk/functions
 
+## 1.24.0
+
+### Minor Changes
+
+- ffb171d: Extract the existing Functions alias runtime into `@osdk/aliases/internal`, an internal compatibility entry point for `@osdk/functions`. All six alias readers remain available through `Aliases` in `@osdk/functions` with the same synchronous return types and error behavior.
+
+### Patch Changes
+
+- Updated dependencies [ffb171d]
+  - @osdk/aliases@0.2.0
+  - @osdk/client@2.70.0
+
 ## 1.23.0
 
 ### Minor Changes
