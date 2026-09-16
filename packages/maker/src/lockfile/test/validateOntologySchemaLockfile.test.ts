@@ -858,6 +858,135 @@ describe("validateOntologySchemaLockfile", () => {
     });
   });
 
+  describe("interfaces extended", () => {
+    const JUST_FIRST_NAME: Record<string, LockedProperty> = {
+      firstName: REQUIRED_STRING,
+    };
+
+    /** A single-interface lockfile whose interface extends the given ones. */
+    function personExtending(
+      extendsInterfaces: string[],
+      properties: Record<string, LockedProperty> = JUST_FIRST_NAME,
+    ): OntologySchemaLockfile {
+      return lockfile({
+        Person: {
+          schema: {
+            properties,
+            ...(extendsInterfaces.length > 0 && { extendsInterfaces }),
+          },
+          transitions: [],
+        },
+      });
+    }
+
+    it("rejects extending a new interface", () => {
+      const result = validate(personExtending([]), personExtending(["Named"]));
+      expect(result.findings).toEqual([
+        {
+          code: "interfaceExtensionAdded",
+          interfaceApiName: "Person",
+          extendedInterfaceApiName: "Named",
+        },
+      ]);
+    });
+
+    it("warns about no longer extending an interface, rather than rejecting it", () => {
+      // Installation does not reject it: OMS only forbids removing an interface's own properties
+      // from an active interface, and the inherited ones are not those.
+      const result = validate(personExtending(["Named"]), personExtending([]));
+      expect(result.findings).toEqual([]);
+      expect(result.warnings).toEqual([
+        {
+          code: "interfaceExtensionRemoved",
+          interfaceApiName: "Person",
+          extendedInterfaceApiName: "Named",
+        },
+      ]);
+    });
+
+    it("reports a swapped parent as both a removal and an addition", () => {
+      // Two separate changes to undo, and the author may have meant either one of them.
+      const result = validate(
+        personExtending(["Named"]),
+        personExtending(["Located"]),
+      );
+      expect(result.findings).toEqual([
+        {
+          code: "interfaceExtensionAdded",
+          interfaceApiName: "Person",
+          extendedInterfaceApiName: "Located",
+        },
+      ]);
+      expect(result.warnings).toEqual([
+        {
+          code: "interfaceExtensionRemoved",
+          interfaceApiName: "Person",
+          extendedInterfaceApiName: "Named",
+        },
+      ]);
+    });
+
+    it("reports one finding per parent added", () => {
+      const result = validate(
+        personExtending([]),
+        personExtending(["Located", "Named"]),
+      );
+      expect(
+        result.findings.map((finding) =>
+          finding.code === "interfaceExtensionAdded"
+            ? finding.extendedInterfaceApiName
+            : finding.code,
+        ),
+      ).toEqual(["Located", "Named"]);
+    });
+
+    it("accepts an unchanged extends list", () => {
+      const extending = personExtending(["Located", "Named"]);
+      expect(validate(extending, extending).findings).toEqual([]);
+      expect(validate(extending, extending).warnings).toEqual([]);
+    });
+
+    it("reports a parent gained alongside the property changes it did not explain", () => {
+      // The inherited properties are the parent's to record, so a local property that also moved
+      // is a separate change and still worth reporting.
+      const result = validate(
+        personExtending([], { firstName: REQUIRED_STRING }),
+        personExtending(["Named"], {
+          firstName: { type: "integer", required: true },
+        }),
+      );
+      expect(result.findings.map(({ code }) => code)).toEqual([
+        "interfaceExtensionAdded",
+        "propertyTypeChanged",
+      ]);
+    });
+
+    it("accepts an interface that extends nothing before and after", () => {
+      expect(
+        validate(
+          person({ firstName: REQUIRED_STRING }),
+          person({
+            firstName: REQUIRED_STRING,
+          }),
+        ).findings,
+      ).toEqual([]);
+    });
+
+    it("reports dropping the parent of an interface that opted out", () => {
+      // Opting out ends the checking from the next release on, not this one.
+      const result = validate(
+        personExtending(["Named"]),
+        lockfile({}),
+        censusOf(personExtending([])),
+      );
+      expect(result.warnings).toContainEqual({
+        code: "interfaceExtensionRemoved",
+        interfaceApiName: "Person",
+        extendedInterfaceApiName: "Named",
+      });
+    });
+  });
+
   describe("api names that collide with Object.prototype", () => {
     it("reports removing a property named toString as a removal", () => {
       const result = validate(

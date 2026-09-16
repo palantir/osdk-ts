@@ -325,6 +325,47 @@ describe("interface schema migration scenarios", () => {
       );
     });
 
+    /** `Person`, extending `Named` or not, as it would appear in a release's `ontology.ts`. */
+    function personExtendingNamed(extending: boolean): () => void {
+      return () => {
+        const named = defineInterface({
+          apiName: "Named",
+          properties: { name: REQUIRED_STRING },
+        });
+        defineInterface({
+          apiName: "Person",
+          properties: { firstName: REQUIRED_STRING },
+          schemaMigrations: { transitions: [] },
+          ...(extending && { extends: named }),
+        });
+      };
+    }
+
+    it("rejects extending a new interface", async () => {
+      await published(personExtendingNamed(false));
+      await expect(
+        maker(personExtendingNamed(true), { writeLocks: true }),
+      ).rejects.toThrowError(
+        /now extends "Named"[\s\S]*no currently-supported interface schema migration can phase that in/u,
+      );
+    });
+
+    it("warns about no longer extending an interface, rather than rejecting it", async () => {
+      // The properties `Named` contributed vanish from the published schema, and none of them are
+      // in `Person`'s own locked properties for the property checks to notice - but installation
+      // accepts it, so the author is told rather than stopped.
+      const warn = vi.spyOn(consola, "warn");
+      await published(personExtendingNamed(true));
+      await maker(personExtendingNamed(false), { writeLocks: true });
+
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('Interface Person no longer extends "Named"'),
+      );
+      expect(
+        (await readLockfile()).interfaces.Person.schema,
+      ).not.toHaveProperty("extendsInterfaces");
+    });
+
     it("rejects changing a property's type", async () => {
       await published(lastNameFinalized);
       await expect(

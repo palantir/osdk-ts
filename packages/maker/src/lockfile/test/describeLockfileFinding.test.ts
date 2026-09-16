@@ -119,6 +119,17 @@ describe("describeFinding", () => {
         expected: 'Restore "lastName" to the interface.',
       },
       {
+        name: "a newly extended interface",
+        finding: {
+          code: "interfaceExtensionAdded",
+          interfaceApiName: "Person",
+          extendedInterfaceApiName: "com.palantir.Named",
+        },
+        expected:
+          'Stop extending "com.palantir.Named"; to require its properties, declare them on the ' +
+          "interface itself and phase each one in through a migration.",
+      },
+      {
         name: "a changed property type",
         finding: {
           code: "propertyTypeChanged",
@@ -433,6 +444,25 @@ describe("describeWarning", () => {
 
     it("says who is affected rather than demanding a fix", () => {
       expect(removed).toContain("will start seeing values it rejected");
+      expect(removed).toContain("Nothing to do if that was intended");
+    });
+  });
+
+  describe("an interface no longer extended", () => {
+    const removed = describeWarning({
+      code: "interfaceExtensionRemoved",
+      interfaceApiName: "Person",
+      extendedInterfaceApiName: "com.palantir.Named",
+    });
+
+    it("names the interface that is no longer extended", () => {
+      expect(removed).toContain(
+        'Interface Person no longer extends "com.palantir.Named"',
+      );
+    });
+
+    it("says who is affected rather than demanding a fix", () => {
+      expect(removed).toContain("will stop seeing them");
       expect(removed).toContain("Nothing to do if that was intended");
     });
   });

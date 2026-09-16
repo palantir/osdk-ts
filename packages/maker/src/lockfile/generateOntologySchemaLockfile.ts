@@ -112,7 +112,26 @@ function lockInterfaceSchema(
         ] as const,
     )
     .sort(([a], [b]) => compare(a, b));
-  return { properties: Object.fromEntries(locked) };
+  const extendsInterfaces = lockExtensions(interfaceType);
+  return {
+    properties: Object.fromEntries(locked),
+    // Spread rather than assign `undefined`: a lockfile read back from disk has no key at all for
+    // an interface that extends nothing, and the two have to compare equal.
+    ...(extendsInterfaces !== undefined && { extendsInterfaces }),
+  };
+}
+
+/**
+ * The interfaces an interface directly extends, by api name: deduplicated and sorted, so that
+ * neither naming a parent twice nor reordering the `extends` clause reads as a change.
+ *
+ * `undefined` when it extends none, which is the state the lockfile stays quiet about.
+ */
+function lockExtensions(interfaceType: InterfaceType): string[] | undefined {
+  const extended = new Set(
+    interfaceType.extendsInterfaces.map((parent) => parent.apiName),
+  );
+  return extended.size === 0 ? undefined : [...extended].sort(compare);
 }
 
 function lockProperty(property: InterfacePropertyType): LockedProperty {

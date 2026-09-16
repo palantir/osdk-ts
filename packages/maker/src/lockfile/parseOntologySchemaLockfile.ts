@@ -214,6 +214,25 @@ const interfaceSchema = z
             properties: z.record(z.string(), propertySchema, {
               message: "Expected an object keyed by property api name.",
             }),
+            // Absent already means "extends nothing", so an empty array would be a second
+            // spelling of the same state.
+            extendsInterfaces: z
+              .array(
+                z.string({
+                  message: "Expected the api name of an extended interface.",
+                }),
+                {
+                  message:
+                    `Expected an array of extended interface api names. Restore the interfaces ` +
+                    `the last published release extended.`,
+                },
+              )
+              .nonempty({
+                message:
+                  `Expected a non-empty array of extended interface api names, or no value at ` +
+                  `all for an interface that extends none.`,
+              })
+              .optional(),
           },
           { message: 'Expected an object with a "properties" key.' },
         )

@@ -38,6 +38,7 @@ import type {
 } from "./OntologySchemaLockfile.js";
 import {
   declarationOf,
+  extensionsOf,
   nullabilityOf,
   own,
   primaryKeyConstraintOf,
@@ -85,6 +86,20 @@ export type LockfileFinding =
       transitionId: string;
       previousInstructions: readonly InterfaceSchemaMigrationInstruction[];
       nextInstructions: readonly InterfaceSchemaMigrationInstruction[];
+    }
+  /**
+   * The interface started extending another one, so implementing object types have to satisfy
+   * every property that one contributes.
+   *
+   * Reported whatever the extended interface declares, rather than only when it contributes a
+   * required property: which of its properties are required cannot be told from here, since the
+   * lockfile records an interface's own properties and leaves the inherited half to the parent's
+   * own entry - which exists only if the parent is enrolled too.
+   */
+  | {
+      code: "interfaceExtensionAdded";
+      interfaceApiName: string;
+      extendedInterfaceApiName: string;
     }
   | { code: "propertyRemoved"; interfaceApiName: string; property: string }
   | {
@@ -168,6 +183,21 @@ export type LockfileWarning =
       interfaceApiName: string;
       property: string;
       previousValueType: LockedValueType;
+    }
+  /**
+   * The interface stopped extending another one, dropping every property that one contributed
+   * from the published schema.
+   *
+   * A warning rather than a finding, even though it is the one direction of this change that asks
+   * less of nobody: installation does not reject it. OMS only forbids removing an interface's
+   * *own* properties from an active interface - it diffs `getPropertiesV3()`, the direct set - and
+   * nothing re-checks an object type that implemented the parent only by inheritance. The author
+   * still wants to know, because clients reading the inherited properties will stop seeing them.
+   */
+  | {
+      code: "interfaceExtensionRemoved";
+      interfaceApiName: string;
+      extendedInterfaceApiName: string;
     };
 
 export interface LockfileValidationResult {
@@ -300,6 +330,15 @@ function validateInterface(
     );
   }
 
+  // Ahead of the property diff: a parent gained or lost changes the published schema wholesale, and
+  // is what an author should read first when it is the reason properties moved.
+  validateExtensionsDiff(
+    interfaceApiName,
+    previousInterface.schema,
+    nextInterface.schema,
+    result,
+  );
+
   validateSchemaDiff(
     interfaceApiName,
     previousInterface.schema,
@@ -307,6 +346,45 @@ function validateInterface(
     propertiesAccountedFor,
     result,
   );
+}
+
+/**
+ * Reports every interface the schema started or stopped extending.
+ *
+ * Both directions are breaking, but for different people, and only one of them is rejected at
+ * installation-time: gaining a parent obliges implementing object types to satisfy the properties
+ * it contributes, while losing one only takes those properties away from clients already reading
+ * them. One report per parent, since each is its own change to undo, and a swap is reported as
+ * both - the author may have meant either half of it.
+ */
+function validateExtensionsDiff(
+  interfaceApiName: string,
+  previousSchema: LockedInterfaceSchema,
+  nextSchema: LockedInterfaceSchema,
+  { findings, warnings }: LockfileValidationResult,
+): void {
+  const previousExtensions = new Set(extensionsOf(previousSchema));
+  const nextExtensions = new Set(extensionsOf(nextSchema));
+
+  for (const extendedInterfaceApiName of nextExtensions) {
+    if (!previousExtensions.has(extendedInterfaceApiName)) {
+      findings.push({
+        code: "interfaceExtensionAdded",
+        interfaceApiName,
+        extendedInterfaceApiName,
+      });
+    }
+  }
+
+  for (const extendedInterfaceApiName of previousExtensions) {
+    if (!nextExtensions.has(extendedInterfaceApiName)) {
+      warnings.push({
+        code: "interfaceExtensionRemoved",
+        interfaceApiName,
+        extendedInterfaceApiName,
+      });
+    }
+  }
 }
 
 /** What a transition vanishing from the source turned out to mean. */
