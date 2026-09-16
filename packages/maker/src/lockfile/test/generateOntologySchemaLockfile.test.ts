@@ -74,6 +74,17 @@ async function lockNameProperty(
   return generateOntologySchemaLockfile(getOntologyDefinition());
 }
 
+/** How the lockfile records `apiName` on the `Person` the test just defined. */
+function lockedProperty(apiName: string): LockedProperty {
+  return lockedSchema().properties[apiName];
+}
+
+function lockedSchema(): LockedInterfaceSchema {
+  return generateOntologySchemaLockfile(getOntologyDefinition()).interfaces[
+    "com.palantir.Person"
+  ].schema;
+}
+
 beforeEach(async () => {
   await defineOntology("com.palantir.", () => {}, undefined);
 });
@@ -91,14 +102,20 @@ describe("generateOntologySchemaLockfile", () => {
     );
   });
 
-  describe("arrayedness", () => {
-    function lockedProperty(apiName: string): LockedProperty {
-      const { interfaces } = generateOntologySchemaLockfile(
-        getOntologyDefinition(),
-      );
-      return interfaces["com.palantir.Person"].schema.properties[apiName];
-    }
+  // Every optional attribute is left out when the source leaves it at its default, so that
+  // spelling the default out later is not recorded as a change. The blocks below each pin the
+  // one case where their attribute departs from this.
+  it("records nothing but the type of a bare property, and that it is required", () => {
+    defineInterface({
+      apiName: "Person",
+      properties: { name: { type: "string" } },
+      schemaMigrations: { transitions: [] },
+    });
 
+    expect(Object.keys(lockedProperty("name"))).toEqual(["type", "required"]);
+  });
+
+  describe("arrayedness", () => {
     it("records an arrayed interface-defined property as an array type", () => {
       defineInterface({
         apiName: "Person",
@@ -149,13 +166,6 @@ describe("generateOntologySchemaLockfile", () => {
   });
 
   describe("where a property is declared", () => {
-    function lockedProperty(apiName: string): LockedProperty {
-      const { interfaces } = generateOntologySchemaLockfile(
-        getOntologyDefinition(),
-      );
-      return interfaces["com.palantir.Person"].schema.properties[apiName];
-    }
-
     it("records that a shared property type backs the property", () => {
       const email = defineSharedPropertyType({
         apiName: "email",
@@ -174,29 +184,9 @@ describe("generateOntologySchemaLockfile", () => {
         declaredBy: "sharedPropertyType",
       });
     });
-
-    it("stays quiet about a property the interface defines itself", () => {
-      defineInterface({
-        apiName: "Person",
-        properties: { email: { type: "string" } },
-        schemaMigrations: { transitions: [] },
-      });
-
-      expect(Object.keys(lockedProperty("email"))).toEqual([
-        "type",
-        "required",
-      ]);
-    });
   });
 
   describe("primary key constraints", () => {
-    function lockedProperty(apiName: string): LockedProperty {
-      const { interfaces } = generateOntologySchemaLockfile(
-        getOntologyDefinition(),
-      );
-      return interfaces["com.palantir.Person"].schema.properties[apiName];
-    }
-
     it.each(["MUST_BE_PK", "CANNOT_BE_PK"] as const)(
       "records a %s constraint",
       (primaryKeyConstraint) => {
@@ -237,13 +227,6 @@ describe("generateOntologySchemaLockfile", () => {
   });
 
   describe("value types", () => {
-    function lockedProperty(apiName: string): LockedProperty {
-      const { interfaces } = generateOntologySchemaLockfile(
-        getOntologyDefinition(),
-      );
-      return interfaces["com.palantir.Person"].schema.properties[apiName];
-    }
-
     it("records what identifies the value type, without its display metadata", () => {
       defineInterface({
         apiName: "Person",
@@ -318,26 +301,9 @@ describe("generateOntologySchemaLockfile", () => {
       await defineOntology("com.palantir.", () => {}, undefined);
       expect(first).toEqual(lockWithDisplayName("SSN"));
     });
-
-    it("omits the key for a property that references no value type", () => {
-      defineInterface({
-        apiName: "Person",
-        properties: { ssn: { type: "string" } },
-        schemaMigrations: { transitions: [] },
-      });
-
-      expect(Object.keys(lockedProperty("ssn"))).toEqual(["type", "required"]);
-    });
   });
 
   describe("nullability", () => {
-    function lockedProperty(apiName: string): LockedProperty {
-      const { interfaces } = generateOntologySchemaLockfile(
-        getOntologyDefinition(),
-      );
-      return interfaces["com.palantir.Person"].schema.properties[apiName];
-    }
-
     it("records what a property forbids", () => {
       defineInterface({
         apiName: "Person",
@@ -399,13 +365,6 @@ describe("generateOntologySchemaLockfile", () => {
     const SELECTABLE: TypeClass = { kind: "render_hint", name: "SELECTABLE" };
     const GEO: TypeClass = { kind: "geo", name: "geojson" };
 
-    function lockedProperty(apiName: string): LockedProperty {
-      const { interfaces } = generateOntologySchemaLockfile(
-        getOntologyDefinition(),
-      );
-      return interfaces["com.palantir.Person"].schema.properties[apiName];
-    }
-
     it("records the type classes of an interface-defined property", () => {
       defineInterface({
         apiName: "Person",
@@ -438,16 +397,6 @@ describe("generateOntologySchemaLockfile", () => {
         typeClasses: [SORTABLE],
         declaredBy: "sharedPropertyType",
       });
-    });
-
-    it("omits the key entirely for a property that declares none", () => {
-      defineInterface({
-        apiName: "Person",
-        properties: { name: { type: "string" } },
-        schemaMigrations: { transitions: [] },
-      });
-
-      expect(Object.keys(lockedProperty("name"))).toEqual(["type", "required"]);
     });
 
     it("omits the key for a property that declares an empty list", () => {
@@ -485,12 +434,6 @@ describe("generateOntologySchemaLockfile", () => {
         apiName,
         schemaMigrations: { transitions: [] },
       });
-    }
-
-    function lockedSchema(): LockedInterfaceSchema {
-      return generateOntologySchemaLockfile(getOntologyDefinition()).interfaces[
-        "com.palantir.Person"
-      ].schema;
     }
 
     it("records the api names of the interfaces extended", () => {
