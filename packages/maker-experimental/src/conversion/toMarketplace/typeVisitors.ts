@@ -420,7 +420,12 @@ export function typeToMarketplaceBaseType(type: Type | IrBaseType): BaseType {
         );
       }
       if (itemBaseType.type === "structV2") {
-        throw new Error("Invalid base type: array of struct");
+        return {
+          type: "array",
+          array: {
+            elementType: { type: "structV2", structV2: VOID },
+          } as ArrayBaseType,
+        };
       }
       if (itemBaseType.type !== "primitive") {
         throw new Error("Array item must be primitive base type");
