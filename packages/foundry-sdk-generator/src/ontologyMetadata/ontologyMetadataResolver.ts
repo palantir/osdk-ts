@@ -72,12 +72,15 @@ export class OntologyMetadataResolver {
   }
 
   private getClientContext() {
+    const traceId = process.env.TRACE_ID;
     return createSharedClientContext(
       this.stackName.match(/^https?:\/\//)
         ? this.stackName
         : `https://${this.stackName}`,
       () => Promise.resolve(this.#authToken),
       `foundry-typescript-osdk-generator/${process.env.npm_package_version!}`,
+      undefined,
+      traceId ? { "X-B3-TraceId": traceId } : undefined,
     );
   }
 

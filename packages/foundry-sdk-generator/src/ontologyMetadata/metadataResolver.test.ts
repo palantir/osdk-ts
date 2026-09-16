@@ -22,7 +22,7 @@ import {
 } from "@osdk/shared.test";
 import { http, HttpResponse } from "msw";
 import type { SetupServerApi } from "msw/node";
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { OntologyMetadataResolver } from "./ontologyMetadataResolver.js";
 
 describe("Load Ontologies Metadata", () => {
@@ -41,6 +41,52 @@ describe("Load Ontologies Metadata", () => {
     return () => {
       testSetup.apiServer.close();
     };
+  });
+
+  describe("request trace propagation", () => {
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it.each(["0123456789abcdef", "", undefined])(
+      "uses the configured trace ID on ontology and metadata requests: %s",
+      async (traceId) => {
+        vi.stubEnv("TRACE_ID", traceId);
+        const requests: Request[] = [];
+        const onRequest = ({ request }: { request: Request }) => {
+          requests.push(request.clone());
+        };
+        apiServer.events.on("request:start", onRequest);
+        try {
+          const result = await ontologyMetadataResolver
+            .getWireOntologyDefinition(
+              "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+              { objectTypesApiNamesToLoad: ["Employee"] },
+            );
+          expect(result.isOk()).toBe(true);
+          expect(requests.map(request => request.method)).toEqual([
+            "GET",
+            "POST",
+          ]);
+          expect(new URL(requests[1].url).pathname).toMatch(/\/metadata$/);
+          for (const request of requests) {
+            expect(request.headers.get("X-B3-TraceId")).toBe(traceId || null);
+            expect(request.headers.get("Authorization")).toBe(
+              "Bearer myAccessToken",
+            );
+            expect(request.headers.get("Fetch-User-Agent")).toContain(
+              "foundry-typescript-osdk-generator/",
+            );
+            expect(request.headers.has("X-B3-Sampled")).toBe(false);
+          }
+          expect(await requests[1].clone().json()).toMatchObject({
+            objectTypes: ["Employee"],
+          });
+        } finally {
+          apiServer.events.removeListener("request:start", onRequest);
+        }
+      },
+    );
   });
 
   it("Loads no object types and action types", async () => {
