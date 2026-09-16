@@ -27,7 +27,6 @@ export type InterfacePropertyType =
   | InterfaceSharedPropertyType
   | InterfaceDefinedProperty;
 
-/** Whether an implementing object type may, must, or must not map a property to its primary key. */
 export type PrimaryKeyConstraint =
   | "MUST_BE_PK"
   | "CANNOT_BE_PK"
@@ -85,13 +84,6 @@ export function interfacePropertyTypeClasses(
   return typeClasses;
 }
 
-/**
- * Whether an implementing object type may, must, or must not map this property to its primary key.
- *
- * Resolves the default the wire conversion fills in, so that omitting the constraint and writing
- * `NO_RESTRICTION` give the same answer. A shared property type publishes no constraints block at
- * all, so one backing a property constrains nothing.
- */
 export function interfacePropertyPrimaryKeyConstraint(
   interfacePropertyType: InterfacePropertyType,
 ): PrimaryKeyConstraint {

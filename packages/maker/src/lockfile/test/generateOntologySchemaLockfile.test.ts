@@ -213,8 +213,6 @@ describe("generateOntologySchemaLockfile", () => {
     );
 
     it("locks an omitted constraint and an explicit NO_RESTRICTION the same", async () => {
-      // The wire conversion fills in `NO_RESTRICTION` for a property that omits the constraint,
-      // so the two publish identically and must not read as a change.
       defineInterface({
         apiName: "Person",
         properties: { id: { type: "string" } },
