@@ -1,5 +1,11 @@
 # @osdk/react-components
 
+## 0.59.0
+
+### Minor Changes
+
+- f6bcb14: Adds Relative date functionality to the DATE_RANGE filter. Add optional props to enable the relative mode, and relevant API input changes.
+
 ## 0.58.0
 
 ### Minor Changes

@@ -1,5 +1,17 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.70.0
+
+### Minor Changes
+
+- 9589f03: Read connected value type blocks during SDK generation and preserve their definitions in ontology metadata.
+- 27e9994: Preserve ontology block data RIDs when converting it to full metadata
+
+### Patch Changes
+
+- Updated dependencies [e13da8f]
+  - @osdk/client.unstable@2.70.0
+
 ## 2.69.0
 
 ### Patch Changes

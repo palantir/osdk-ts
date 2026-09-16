@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.70.0
+
+### Minor Changes
+
+- e13da8f: Make more consistent how interface schema migration instructions handle target properties, and adopt latest bindings.
+
 ## 2.69.0
 
 ## 2.68.0
