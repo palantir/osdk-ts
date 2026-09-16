@@ -164,9 +164,7 @@ export function describeFinding(finding: LockfileFinding): string {
         `${previous === undefined ? "none" : describeValueType(previous)} to ` +
         `${describeValueType(finding.nextValueType)}. A value type carries constraints that ` +
         `implementing object types' data has to satisfy, and no currently-supported interface ` +
-        `schema migration can phase that in. Installing this will not fail: it leaves object ` +
-        `types bound to the value type they already had, and the next change to this interface ` +
-        `made outside marketplace is what gets rejected. ` +
+        `schema migration can phase that in. ` +
         (previous === undefined
           ? `Drop the reference from "${property}".`
           : `Restore "${property}" to ${describeValueType(previous)}.`)
@@ -245,14 +243,13 @@ export function describeWarning(warning: LockfileWarning): string {
         `Interface ${warning.interfaceApiName}: property "${property}" no longer references ` +
         `value type ${describeValueType(warning.previousValueType)}. Implementing object types ` +
         `are no longer held to that value type's constraints, so clients that relied on them ` +
-        `will start seeing values it rejected. Nothing to do if that was intended; reference it ` +
-        `again if it was not.`
+        `will start seeing values it previously never expected. Nothing to do if that was intended; ` +
+        `reference it again if it was not.`
       );
     }
   }
 }
 
-/** A value type reference, as `namespace/apiName`. */
 function describeValueType(valueType: LockedValueType): string {
   return valueType.packageNamespace === ""
     ? valueType.apiName

@@ -70,14 +70,6 @@ export interface LockedInterfaceSchema {
 /** Where a property's definition comes from. */
 export type PropertyDeclaration = "interface" | "sharedPropertyType";
 
-/**
- * What identifies the value type a property is an instance of.
- *
- * The version is deliberately not part of it. Whether a new version of the same value type
- * tightens its constraints or loosens them is only answerable from the constraints themselves,
- * and maker does not have those for imported value types. Recording the version would reject
- * bumps it cannot evaluate, and rewrite the lock for bumps that changed nothing.
- */
 export interface LockedValueType {
   packageNamespace: string;
   apiName: string;
@@ -98,12 +90,7 @@ export interface LockedProperty {
    * when undeclared).
    */
   nullability?: Nullability;
-  /**
-   * The value type this property is an instance of. Absent when it is not one.
-   *
-   * Only what identifies the value type; `displayMetadata` rides along on the wire reference but
-   * is presentation, and is dropped the way `PRESENTATION_KEYS` drops it elsewhere.
-   */
+  /** The value type this property is an instance of, or absent if it's not backed by one. */
   valueType?: LockedValueType;
   /** The property's (sorted) type classes. Absent when it declares none. */
   typeClasses?: TypeClass[];

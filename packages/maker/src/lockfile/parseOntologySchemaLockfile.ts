@@ -181,7 +181,6 @@ const propertySchema = z
           },
         )
         .optional(),
-      // No `version`: see `LockedValueType` for why the lockfile does not record one.
       valueType: z
         .object(
           {

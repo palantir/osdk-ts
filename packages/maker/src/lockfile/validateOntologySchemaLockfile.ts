@@ -66,10 +66,7 @@ export interface TargetPropertyState {
   next: LockedProperty | undefined;
 }
 
-/**
- * A change that installation rejects, in machine-readable form - though not always the
- * installation that introduces it.
- */
+/** A change that would be rejected at installation-time, in machine-readable form. */
 export type LockfileFinding =
   /**
    * A transition vanished from the source, but neither finalizing nor deleting it reproduces the
@@ -137,17 +134,6 @@ export type LockfileFinding =
       previousNullability: Nullability;
       nextNullability: Nullability;
     }
-  /**
-   * A property references a value type it did not, or references a different one. Dropping the
-   * reference outright is a warning instead.
-   *
-   * The install that introduces this is not the one that rejects it. OMS skips its value type
-   * check for marketplace modifications, because the value type block may not be installed yet
-   * when the ontology block is processed, and records that skipping it "can produce inconsistent
-   * state". What that leaves behind is implementing object types still bound to the old value
-   * type. The rejection lands on whoever next modifies this interface outside marketplace: that
-   * path re-validates every implementor resolved from storage, and the mismatch left here fails.
-   */
   | {
       code: "valueTypeChanged";
       interfaceApiName: string;
@@ -189,11 +175,6 @@ export type LockfileWarning =
       previousNullability: Nullability;
       nextNullability: Nullability;
     }
-  /**
-   * A property no longer references a value type. Safe for a sharper reason than the other
-   * relaxations: the check keys on the interface's reference, so with none there is nothing for
-   * an implementation to fail, whatever value type it still declares itself.
-   */
   | {
       code: "valueTypeRemoved";
       interfaceApiName: string;
@@ -597,7 +578,6 @@ function validatePropertyDiff(
     return;
   }
 
-  // `nextValueType` defined by construction: dropping the reference warns instead.
   const nextValueType = next.property.valueType;
   if (
     nextValueType !== undefined &&
