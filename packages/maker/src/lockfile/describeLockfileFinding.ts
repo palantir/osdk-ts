@@ -243,8 +243,8 @@ export function describeWarning(warning: LockfileWarning): string {
         `Interface ${warning.interfaceApiName}: property "${property}" no longer references ` +
         `value type ${describeValueType(warning.previousValueType)}. Implementing object types ` +
         `are no longer held to that value type's constraints, so clients that relied on them ` +
-        `will start seeing values it previously never expected. Nothing to do if that was intended; ` +
-        `reference it again if it was not.`
+        `will start seeing values it rejected. Nothing to do if that was intended; reference it ` +
+        `again if it was not.`
       );
     }
   }
