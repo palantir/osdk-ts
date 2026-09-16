@@ -47,6 +47,12 @@ const sidebars: SidebarsConfig = {
       ],
     },
   ],
+  functionsTesting: [
+    "functions-testing/getting-started",
+    "functions-testing/mock-objects",
+    "functions-testing/stubbing-client-calls",
+    "functions-testing/platform-apis-with-msw",
+  ],
 };
 
 export default sidebars;
