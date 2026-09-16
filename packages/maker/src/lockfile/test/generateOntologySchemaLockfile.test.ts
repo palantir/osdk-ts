@@ -266,8 +266,8 @@ describe("generateOntologySchemaLockfile", () => {
     });
 
     it("locks the same whatever the version says", async () => {
-      // Deliberate: a bump's direction is only readable from the constraints, which maker does
-      // not have for imported value types, so the lockfile does not claim to know.
+      // A bump's direction is only readable from the constraints, which maker does not have
+      // for imported value types, so we make no determination in these cases.
       function lockWithVersion(version: string): LockedProperty {
         defineInterface({
           apiName: "Person",
