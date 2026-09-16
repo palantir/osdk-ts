@@ -1263,6 +1263,7 @@ describe("ObjectSet", () => {
         >().toEqualTypeOf<"fooIdp">();
 
         expectTypeOf<JustProps<Employee, "$all">>().toEqualTypeOf<
+          | "bonusHistory"
           | "class"
           | "fullName"
           | "office"
@@ -1294,6 +1295,7 @@ describe("ObjectSet", () => {
             "$allBaseProperties"
           >
         >().toEqualTypeOf<
+          | "bonusHistory"
           | "employeeId"
           | "fullName"
           | "office"

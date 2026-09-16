@@ -170,6 +170,7 @@ describe("intellisense", () => {
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
     expect(resp.body?.entries.map((e) => e.name)).toEqual([
+      "bonusHistory",
       "class",
       "employeeId",
       "employeeLocation",
