@@ -223,14 +223,13 @@ describe("describeFinding", () => {
           nextValueType: {
             packageNamespace: "com.example",
             apiName: "Ssn",
-            version: "1.0.0",
           },
         },
         expected:
-          'property "ssn" changed its value type from none to com.example/Ssn@1.0.0',
+          'property "ssn" changed its value type from none to com.example/Ssn',
       },
       {
-        name: "a value type version bump",
+        name: "a property rebound to a different value type",
         finding: {
           code: "valueTypeChanged",
           interfaceApiName: "Person",
@@ -238,15 +237,13 @@ describe("describeFinding", () => {
           previousValueType: {
             packageNamespace: "com.example",
             apiName: "Ssn",
-            version: "1.0.0",
           },
           nextValueType: {
             packageNamespace: "com.example",
-            apiName: "Ssn",
-            version: "2.0.0",
+            apiName: "Ein",
           },
         },
-        expected: 'Restore "ssn" to com.example/Ssn@1.0.0.',
+        expected: 'Restore "ssn" to com.example/Ssn.',
       },
       {
         name: "a property that gained a type class",
@@ -424,16 +421,12 @@ describe("describeWarning", () => {
       code: "valueTypeRemoved",
       interfaceApiName: "Person",
       property: "com.example.ssn",
-      previousValueType: {
-        packageNamespace: "com.example",
-        apiName: "Ssn",
-        version: "1.0.0",
-      },
+      previousValueType: { packageNamespace: "com.example", apiName: "Ssn" },
     });
 
     it("names the value type that was dropped, and the authored key", () => {
       expect(removed).toContain(
-        'property "ssn" no longer references value type com.example/Ssn@1.0.0',
+        'property "ssn" no longer references value type com.example/Ssn',
       );
       expect(removed).not.toContain("com.example.ssn");
     });

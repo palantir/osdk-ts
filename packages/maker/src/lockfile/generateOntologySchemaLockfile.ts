@@ -140,7 +140,7 @@ function lockProperty(property: InterfacePropertyType): LockedProperty {
 
 /**
  * The identity of the value type a property references, rebuilt field by field: the wire reference
- * also carries `displayMetadata`, which says nothing about what data has to satisfy.
+ * also carries `displayMetadata` and a `version`, neither of which `LockedValueType` records.
  */
 function lockValueType(
   valueType: OntologyIrValueTypeReferenceWithMetadata | undefined,
@@ -151,7 +151,6 @@ function lockValueType(
   return {
     packageNamespace: valueType.packageNamespace,
     apiName: valueType.apiName,
-    version: valueType.version,
   };
 }
 
