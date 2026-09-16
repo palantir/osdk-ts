@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">41/41 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">41/41 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">14/192 story errors</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">41/41 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">41/41 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">14/193 story errors</a></div>
   </div>
 </header>
 <main>
@@ -11436,7 +11436,7 @@ return (
       <div class="badges">
         <label for="c-18-components-filterlist-err" class="badge err as-toggle">prop type error</label>
         <label for="c-18-components-filterlist-info" class="badge info as-toggle">1 info</label>
-        <label for="c-18-components-filterlist-stories" class="badge ok as-toggle">30 stories</label>
+        <label for="c-18-components-filterlist-stories" class="badge ok as-toggle">31 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/FilterList/FilterList.stories.tsx">components-filterlist · ./src/stories/FilterList/FilterList.stories.tsx</div>
@@ -11458,13 +11458,13 @@ return (
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;FilterList&quot; component.
-  133 | );
-  134 |
-&gt; 135 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
+  173 | );
+  174 |
+&gt; 175 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
       | ^
-  136 |   title: &quot;Components/FilterList&quot;,
-  137 |   component: FilterList,
-  138 |   tags: [&quot;beta&quot;],
+  176 |   title: &quot;Components/FilterList&quot;,
+  177 |   component: FilterList,
+  178 |   tags: [&quot;beta&quot;],
 
 ./src/stories/FilterList/FilterList.stories.tsx:
 /*
@@ -11533,6 +11533,7 @@ const startDateFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   label: &quot;Start Date&quot;,
   filterComponent: &quot;DATE_RANGE&quot;,
   clickToFilter: true,
+  enableRelativeMode: true,
   formatDate: (date) =&gt;
     date.toLocaleDateString(&quot;en-US&quot;, {
       day: &quot;numeric&quot;,
@@ -11574,6 +11575,45 @@ const sharedFilterDefinitions: FilterDefinitionUnion&lt;Employee&gt;[] = [
   jobTitleMultiSelectFilter,
   employeeNumberFilter,
   locationCityFilter,
+];
+
+// -- Relative date filter story definitions --
+
+const relativeDateFilterDefinitions: Array&lt;FilterDefinitionUnion&lt;Employee&gt;&gt; = [
+  {
+    type: &quot;PROPERTY&quot;,
+    id: &quot;start-date-absolute&quot;,
+    key: &quot;firstFullTimeStartDate&quot;,
+    label: &quot;Absolute Only&quot;,
+    filterComponent: &quot;DATE_RANGE&quot;,
+  },
+  {
+    type: &quot;PROPERTY&quot;,
+    id: &quot;start-date-relative&quot;,
+    key: &quot;firstFullTimeStartDate&quot;,
+    label: &quot;Relative Enabled&quot;,
+    filterComponent: &quot;DATE_RANGE&quot;,
+    enableRelativeMode: true,
+  },
+  {
+    type: &quot;PROPERTY&quot;,
+    id: &quot;start-date-relative-default&quot;,
+    key: &quot;firstFullTimeStartDate&quot;,
+    label: &quot;Relative with Defaults&quot;,
+    filterComponent: &quot;DATE_RANGE&quot;,
+    enableRelativeMode: true,
+    defaultFilterState: {
+      type: &quot;DATE_RANGE&quot;,
+      relativeState: {
+        relativeMin: { count: 30, unit: &quot;years&quot;, direction: &quot;ago&quot; },
+        relativeMax: {
+          count: 0,
+          unit: &quot;days&quot;,
+          direction: &quot;fromNow&quot;,
+        },
+      },
+    },
+  },
 ];
 
 const SIDEBAR_STYLE = { width: 320, height: 600 } as const;
@@ -14392,6 +14432,60 @@ export const WithResetButtonNonEmptyInitial: Story = {
   },
   render: (args) =&gt; &lt;WithResetButtonNonEmptyInitialStory {...args} /&gt;,
 };
+
+// ---------------------------------------------------------------------------
+// Relative Date Filter
+// ---------------------------------------------------------------------------
+
+function RelativeDateFilterStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
+  const [filterClause, setFilterClause] = useState&lt;
+    WhereClause&lt;Employee&gt; | undefined
+  &gt;(undefined);
+
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
+  return (
+    &lt;div style={FLEX_ROW_STYLE}&gt;
+      &lt;div style={SIDEBAR_STYLE}&gt;
+        &lt;FilterList
+          objectType={Employee}
+          filterDefinitions={relativeDateFilterDefinitions}
+          {...args}
+          onFilterClauseChanged={handleFilterClauseChanged}
+        /&gt;
+      &lt;/div&gt;
+      &lt;div style={FLEX_FILL_STYLE}&gt;
+        &lt;strong&gt;Filter Clause (JSON):&lt;/strong&gt;
+        &lt;pre style={PRE_STYLE}&gt;
+          {filterClause
+            ? JSON.stringify(filterClause, null, 2)
+            : &quot;(no active filters)&quot;}
+        &lt;/pre&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+export const RelativeDateFilter: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          &quot;One FilterList with three DATE_RANGE filters on the same property (using unique ids): &quot; +
+          &quot;absolute only, relative enabled (empty), and relative with default bounds (30 days ago – Today). &quot; +
+          &quot;The combined where clause JSON is shown on the right.&quot;,
+      },
+    },
+  },
+  render: (args) =&gt; &lt;RelativeDateFilterStory {...args} /&gt;,
+};
 </code></pre></div>
     </div>
         </div>
@@ -15107,6 +15201,27 @@ export const WithResetButtonNonEmptyInitial: Story = {
     title=&quot;Filters&quot;
     enableSorting={false}
     showResetButton
+    showActiveFilterCount={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterListChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Relative Date Filter</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const RelativeDateFilter = () =&gt; &lt;RelativeDateFilterStory
+    title=&quot;Filters&quot;
+    enableSorting={false}
+    showResetButton={false}
     showActiveFilterCount={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
@@ -30721,7 +30836,7 @@ export const WithPdfViewerProps: Story = {
       <div class="badges">
         <label for="c-error-14-components-filterlist-err" class="badge err as-toggle">prop type error</label>
         <label for="c-error-14-components-filterlist-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-14-components-filterlist-stories" class="badge ok as-toggle">30 stories</label>
+        <label for="c-error-14-components-filterlist-stories" class="badge ok as-toggle">31 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/FilterList/FilterList.stories.tsx">components-filterlist · ./src/stories/FilterList/FilterList.stories.tsx</div>
@@ -30743,13 +30858,13 @@ export const WithPdfViewerProps: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;FilterList&quot; component.
-  133 | );
-  134 |
-&gt; 135 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
+  173 | );
+  174 |
+&gt; 175 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
       | ^
-  136 |   title: &quot;Components/FilterList&quot;,
-  137 |   component: FilterList,
-  138 |   tags: [&quot;beta&quot;],
+  176 |   title: &quot;Components/FilterList&quot;,
+  177 |   component: FilterList,
+  178 |   tags: [&quot;beta&quot;],
 
 ./src/stories/FilterList/FilterList.stories.tsx:
 /*
@@ -30818,6 +30933,7 @@ const startDateFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   label: &quot;Start Date&quot;,
   filterComponent: &quot;DATE_RANGE&quot;,
   clickToFilter: true,
+  enableRelativeMode: true,
   formatDate: (date) =&gt;
     date.toLocaleDateString(&quot;en-US&quot;, {
       day: &quot;numeric&quot;,
@@ -30859,6 +30975,45 @@ const sharedFilterDefinitions: FilterDefinitionUnion&lt;Employee&gt;[] = [
   jobTitleMultiSelectFilter,
   employeeNumberFilter,
   locationCityFilter,
+];
+
+// -- Relative date filter story definitions --
+
+const relativeDateFilterDefinitions: Array&lt;FilterDefinitionUnion&lt;Employee&gt;&gt; = [
+  {
+    type: &quot;PROPERTY&quot;,
+    id: &quot;start-date-absolute&quot;,
+    key: &quot;firstFullTimeStartDate&quot;,
+    label: &quot;Absolute Only&quot;,
+    filterComponent: &quot;DATE_RANGE&quot;,
+  },
+  {
+    type: &quot;PROPERTY&quot;,
+    id: &quot;start-date-relative&quot;,
+    key: &quot;firstFullTimeStartDate&quot;,
+    label: &quot;Relative Enabled&quot;,
+    filterComponent: &quot;DATE_RANGE&quot;,
+    enableRelativeMode: true,
+  },
+  {
+    type: &quot;PROPERTY&quot;,
+    id: &quot;start-date-relative-default&quot;,
+    key: &quot;firstFullTimeStartDate&quot;,
+    label: &quot;Relative with Defaults&quot;,
+    filterComponent: &quot;DATE_RANGE&quot;,
+    enableRelativeMode: true,
+    defaultFilterState: {
+      type: &quot;DATE_RANGE&quot;,
+      relativeState: {
+        relativeMin: { count: 30, unit: &quot;years&quot;, direction: &quot;ago&quot; },
+        relativeMax: {
+          count: 0,
+          unit: &quot;days&quot;,
+          direction: &quot;fromNow&quot;,
+        },
+      },
+    },
+  },
 ];
 
 const SIDEBAR_STYLE = { width: 320, height: 600 } as const;
@@ -33677,6 +33832,60 @@ export const WithResetButtonNonEmptyInitial: Story = {
   },
   render: (args) =&gt; &lt;WithResetButtonNonEmptyInitialStory {...args} /&gt;,
 };
+
+// ---------------------------------------------------------------------------
+// Relative Date Filter
+// ---------------------------------------------------------------------------
+
+function RelativeDateFilterStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
+  const [filterClause, setFilterClause] = useState&lt;
+    WhereClause&lt;Employee&gt; | undefined
+  &gt;(undefined);
+
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
+  return (
+    &lt;div style={FLEX_ROW_STYLE}&gt;
+      &lt;div style={SIDEBAR_STYLE}&gt;
+        &lt;FilterList
+          objectType={Employee}
+          filterDefinitions={relativeDateFilterDefinitions}
+          {...args}
+          onFilterClauseChanged={handleFilterClauseChanged}
+        /&gt;
+      &lt;/div&gt;
+      &lt;div style={FLEX_FILL_STYLE}&gt;
+        &lt;strong&gt;Filter Clause (JSON):&lt;/strong&gt;
+        &lt;pre style={PRE_STYLE}&gt;
+          {filterClause
+            ? JSON.stringify(filterClause, null, 2)
+            : &quot;(no active filters)&quot;}
+        &lt;/pre&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+export const RelativeDateFilter: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          &quot;One FilterList with three DATE_RANGE filters on the same property (using unique ids): &quot; +
+          &quot;absolute only, relative enabled (empty), and relative with default bounds (30 days ago – Today). &quot; +
+          &quot;The combined where clause JSON is shown on the right.&quot;,
+      },
+    },
+  },
+  render: (args) =&gt; &lt;RelativeDateFilterStory {...args} /&gt;,
+};
 </code></pre></div>
     </div>
         </div>
@@ -34392,6 +34601,27 @@ export const WithResetButtonNonEmptyInitial: Story = {
     title=&quot;Filters&quot;
     enableSorting={false}
     showResetButton
+    showActiveFilterCount={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterListChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Relative Date Filter</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const RelativeDateFilter = () =&gt; &lt;RelativeDateFilterStory
+    title=&quot;Filters&quot;
+    enableSorting={false}
+    showResetButton={false}
     showActiveFilterCount={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
