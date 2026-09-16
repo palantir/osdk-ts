@@ -75,9 +75,8 @@ export interface LockedProperty {
   /** Present when a SPT backs this property; absent when the interface defines it inline. */
   declaredBy?: "sharedPropertyType";
   /**
-   * The constraint on mapping this property to an implementing object type's primary key. Absent
-   * when there is none, which is both the default and what the wire conversion fills in for a
-   * property that omits it - so `NO_RESTRICTION` is deliberately not representable here.
+   * The constraint on mapping this property to an implementing object type's PK. Absent when
+   * there is no restriction.
    */
   primaryKeyConstraint?: Exclude<PrimaryKeyConstraint, "NO_RESTRICTION">;
   /** The property's (sorted) type classes. Absent when it declares none. */
@@ -94,7 +93,6 @@ export function declarationOf(property: LockedProperty): PropertyDeclaration {
   return property.declaredBy ?? "interface";
 }
 
-/** A property's primary key constraint, resolving the absent-means-unconstrained default. */
 export function primaryKeyConstraintOf(
   property: LockedProperty,
 ): PrimaryKeyConstraint {

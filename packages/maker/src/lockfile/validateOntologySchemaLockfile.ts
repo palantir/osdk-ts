@@ -116,10 +116,6 @@ export type LockfileFinding =
       previousTypeClasses: readonly TypeClass[];
       nextTypeClasses: readonly TypeClass[];
     }
-  /**
-   * A property's primary key constraint changed to one that implementing object types satisfying
-   * the old one need not satisfy. Relaxing it to `NO_RESTRICTION` is a warning instead.
-   */
   | {
       code: "primaryKeyConstraintChanged";
       interfaceApiName: string;
@@ -148,11 +144,6 @@ export type LockfileWarning =
       interfaceApiName: string;
       property: string;
     }
-  /**
-   * A property that constrained primary key mapping no longer constrains it. Safe for the same
-   * reason as `requirementRelaxed`: every object type that satisfied the old constraint satisfies
-   * no constraint at all, so nothing is rejected and nothing could phase it in.
-   */
   | {
       code: "primaryKeyConstraintRelaxed";
       interfaceApiName: string;
@@ -500,7 +491,6 @@ function validatePropertyDiff(
     return;
   }
 
-  // Only the non-relaxing direction: loosening to `NO_RESTRICTION` warns instead.
   const previousConstraint = primaryKeyConstraintOf(previous.property);
   const nextConstraint = primaryKeyConstraintOf(next.property);
   if (

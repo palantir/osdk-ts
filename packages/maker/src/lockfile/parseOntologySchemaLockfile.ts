@@ -150,8 +150,7 @@ const propertySchema = z
             `defines itself. Restore what the last published release declared.`,
         })
         .optional(),
-      // `NO_RESTRICTION` is what the absent case already means, so recording it is redundant
-      // rather than wrong - but accepting it would give one state two spellings on disk.
+      // NO_RESTRICTION is the absent/default case, so we don't record it in the lockfile
       primaryKeyConstraint: z
         .enum(["MUST_BE_PK", "CANNOT_BE_PK"], {
           message:

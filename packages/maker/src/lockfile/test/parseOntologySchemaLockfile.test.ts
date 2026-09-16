@@ -228,7 +228,6 @@ describe("parseLockfile", () => {
   );
 
   it("rejects a property that spells out the unconstrained default", () => {
-    // One state, one spelling: absent already means `NO_RESTRICTION`.
     expect(() =>
       parse(
         withPropertyDefinition({
