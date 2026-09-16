@@ -931,8 +931,6 @@ describe("validateOntologySchemaLockfile", () => {
     });
 
     it("warns about no longer extending an interface, rather than rejecting it", () => {
-      // Installation does not reject it: OMS only forbids removing an interface's own properties
-      // from an active interface, and the inherited ones are not those.
       const result = validate(personExtending(["Named"]), personExtending([]));
       expect(result.findings).toEqual([]);
       expect(result.warnings).toEqual([
@@ -945,7 +943,6 @@ describe("validateOntologySchemaLockfile", () => {
     });
 
     it("reports a swapped parent as both a removal and an addition", () => {
-      // Two separate changes to undo, and the author may have meant either one of them.
       const result = validate(
         personExtending(["Named"]),
         personExtending(["Located"]),
@@ -987,8 +984,6 @@ describe("validateOntologySchemaLockfile", () => {
     });
 
     it("reports a parent gained alongside the property changes it did not explain", () => {
-      // The inherited properties are the parent's to record, so a local property that also moved
-      // is a separate change and still worth reporting.
       const result = validate(
         personExtending([], { firstName: REQUIRED_STRING }),
         personExtending(["Named"], {

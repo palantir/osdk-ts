@@ -125,9 +125,7 @@ describe("describeFinding", () => {
           interfaceApiName: "Person",
           extendedInterfaceApiName: "com.palantir.Named",
         },
-        expected:
-          'Stop extending "com.palantir.Named"; to require its properties, declare them on the ' +
-          "interface itself and phase each one in through a migration.",
+        expected: 'Stop extending "com.palantir.Named".',
       },
       {
         name: "a changed property type",

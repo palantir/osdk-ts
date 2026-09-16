@@ -325,7 +325,6 @@ describe("interface schema migration scenarios", () => {
       );
     });
 
-    /** `Person`, extending `Named` or not, as it would appear in a release's `ontology.ts`. */
     function personExtendingNamed(extending: boolean): () => void {
       return () => {
         const named = defineInterface({
@@ -351,9 +350,6 @@ describe("interface schema migration scenarios", () => {
     });
 
     it("warns about no longer extending an interface, rather than rejecting it", async () => {
-      // The properties `Named` contributed vanish from the published schema, and none of them are
-      // in `Person`'s own locked properties for the property checks to notice - but installation
-      // accepts it, so the author is told rather than stopped.
       const warn = vi.spyOn(consola, "warn");
       await published(personExtendingNamed(true));
       await maker(personExtendingNamed(false), { writeLocks: true });
