@@ -445,8 +445,6 @@ describe("validateOntologySchemaLockfile", () => {
     });
 
     it("still warns when a relaxed property also changed type", () => {
-      // The type change and the relaxation affect different people, so reporting one must not
-      // swallow the other.
       const result = validate(
         person({ lastName: REQUIRED_STRING }),
         person({ lastName: { type: "integer", required: false } }),
