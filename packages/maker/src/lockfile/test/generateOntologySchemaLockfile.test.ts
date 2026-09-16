@@ -501,21 +501,21 @@ describe("generateOntologySchemaLockfile", () => {
     });
 
     it("records only the direct parents, not the whole ancestry", () => {
-      // An ancestor reached through a parent is that parent's own lockfile entry to record.
-      const named = defineInterface({ apiName: "Named" });
-      const titled = defineInterface({ apiName: "Titled", extends: named });
+      const grandparent = defineInterface({ apiName: "Grandparent" });
+      const parent = defineInterface({
+        apiName: "Parent",
+        extends: grandparent,
+      });
       defineInterface({
         apiName: "Person",
-        extends: titled,
+        extends: parent,
         schemaMigrations: { transitions: [] },
       });
 
-      expect(lockedSchema().extendsInterfaces).toEqual(["com.palantir.Titled"]);
+      expect(lockedSchema().extendsInterfaces).toEqual(["com.palantir.Parent"]);
     });
 
     it("does not record the properties an extended interface contributes", () => {
-      // The inherited half of the schema stays the parent's to record; recording it here would
-      // report the same change against both interfaces.
       const named = defineInterface({
         apiName: "Named",
         properties: { name: { type: "string" } },

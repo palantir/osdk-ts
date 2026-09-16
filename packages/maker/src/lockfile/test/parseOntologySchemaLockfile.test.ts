@@ -283,7 +283,6 @@ describe("parseLockfile", () => {
   });
 
   it("rejects an empty `extendsInterfaces`", () => {
-    // Absent already means "extends nothing"; accepting this would be a second spelling.
     expect(() =>
       parse(
         withInterface({

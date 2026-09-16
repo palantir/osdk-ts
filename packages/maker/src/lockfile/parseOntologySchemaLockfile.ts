@@ -214,8 +214,6 @@ const interfaceSchema = z
             properties: z.record(z.string(), propertySchema, {
               message: "Expected an object keyed by property api name.",
             }),
-            // Absent already means "extends nothing", so an empty array would be a second
-            // spelling of the same state.
             extendsInterfaces: z
               .array(
                 z.string({
@@ -227,6 +225,7 @@ const interfaceSchema = z
                     `the last published release extended.`,
                 },
               )
+              // Absent means "extends nothing", so a committed lockfile should only ever values
               .nonempty({
                 message:
                   `Expected a non-empty array of extended interface api names, or no value at ` +

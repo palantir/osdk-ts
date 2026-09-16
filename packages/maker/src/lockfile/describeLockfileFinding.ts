@@ -79,8 +79,7 @@ export function describeFinding(finding: LockfileFinding): string {
         `${where}: now extends "${extended}". Implementing object types have to satisfy every ` +
         `property "${extended}" contributes, so those that do not yet are blocked from upgrading, ` +
         `and no currently-supported interface schema migration can phase that in. Stop extending ` +
-        `"${extended}"; to require its properties, declare them on the interface itself and phase ` +
-        `each one in through a migration.`
+        `"${extended}".`
       );
     }
 
