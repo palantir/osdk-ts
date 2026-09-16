@@ -67,12 +67,7 @@ export interface LockedInterfaceSchema {
 export interface LockedProperty {
   type: LockedPropertyType;
   required: boolean;
-  /**
-   * The property's type classes, sorted canonically. Absent when it declares none.
-   *
-   * Type classes are a set rather than a list, so they are sorted on the way in: reordering them
-   * in source is not a change to the published schema, and should not read as one.
-   */
+  /** The property's (sorted) type classes. Absent when it declares none. */
   typeClasses?: TypeClass[];
 }
 

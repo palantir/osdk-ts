@@ -141,11 +141,11 @@ function authored(wireApiName: string): string {
   return withoutNamespace(wireApiName);
 }
 
-/** A property's type classes, as they read in a finding. */
 function describeTypeClasses(typeClasses: readonly TypeClass[]): string {
   if (typeClasses.length === 0) {
     return "none";
   }
+
   return typeClasses.map(({ kind, name }) => `${kind}/${name}`).join(", ");
 }
 
