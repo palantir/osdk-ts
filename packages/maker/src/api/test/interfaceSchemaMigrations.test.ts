@@ -296,8 +296,6 @@ describe("Interface schema migrations", () => {
     });
 
     it("says nothing about a parent imported from another ontology", () => {
-      // An imported interface is never registered in this ontology, and no imported
-      // representation carries whether it opted in, so there is nothing to compare against.
       const imported: InterfaceType = {
         apiName: "com.other.Imported",
         displayMetadata: { displayName: "Imported" },

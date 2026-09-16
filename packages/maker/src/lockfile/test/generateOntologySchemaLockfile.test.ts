@@ -480,8 +480,6 @@ describe("generateOntologySchemaLockfile", () => {
   });
 
   describe("extended interfaces", () => {
-    // Every interface here opts in, parents included: a hierarchy opts in as a whole (see
-    // validateSchemaMigrationsFamilyOptIn), so a locked interface's parents are locked too.
     function optedInInterface(apiName: string): InterfaceType {
       return defineInterface({
         apiName,
