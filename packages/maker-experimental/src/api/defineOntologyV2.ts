@@ -20,7 +20,7 @@ import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { InputPreset } from "@osdk/client.unstable/api";
 import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
-import type { LinkType, ObjectType } from "@osdk/maker";
+import type { LinkType, ObjectType, OntologyDefinition } from "@osdk/maker";
 import {
   getImportedTypes,
   getOntologyDefinition,
@@ -47,6 +47,7 @@ import {
 
 export interface OntologyV2Result {
   ontologyIr: OntologyIrV2;
+  importedTypes: OntologyDefinition;
   shapes: BlockShapes;
   blockDataAddOn: BlockDataAddOn;
   importedInputPresets: Map<ReadableId, InputPreset>;
@@ -99,6 +100,7 @@ export async function defineOntologyV2(
   }
 
   const ontologyDefinition = getOntologyDefinition();
+  const importedTypes = getImportedTypes();
 
   let functionsIr: FunctionsIr | undefined;
   if (functionsIrFile) {
@@ -106,7 +108,7 @@ export async function defineOntologyV2(
   }
 
   const ridGenerator = new OntologyRidGeneratorImpl(
-    getImportedTypes(),
+    importedTypes,
     randomnessKey,
   );
   const ontDef = convertOntologyDefinition(
@@ -205,6 +207,7 @@ export async function defineOntologyV2(
 
   return {
     ontologyIr: ontDef,
+    importedTypes,
     shapes,
     blockDataAddOn,
     importedInputPresets: importedShapes.inputPresets,
