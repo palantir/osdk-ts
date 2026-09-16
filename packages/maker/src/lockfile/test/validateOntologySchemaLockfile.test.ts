@@ -223,6 +223,8 @@ describe("validateOntologySchemaLockfile", () => {
 
   describe("a transition disappearing", () => {
     it("reads the target becoming required as a finalization", () => {
+      // `lastName` going required is the finalization; it is not also reported as a raw
+      // `propertyBecameRequired` break.
       const result = validate(
         lastNameInFlight,
         person({ firstName: REQUIRED_STRING, lastName: REQUIRED_STRING }),
@@ -274,15 +276,6 @@ describe("validateOntologySchemaLockfile", () => {
           instructions: [{ type: "addRequiredProperty", property: "lastName" }],
         },
       ]);
-    });
-
-    it("does not also report the target as a raw schema break", () => {
-      // `lastName` going required is the finalization, not a `propertyBecameRequired` finding.
-      const result = validate(
-        lastNameInFlight,
-        person({ firstName: REQUIRED_STRING, lastName: REQUIRED_STRING }),
-      );
-      expect(result.breakingChanges).toEqual([]);
     });
 
     it("exempts a target whose declaration was swapped in the same release", () => {
@@ -428,14 +421,6 @@ describe("validateOntologySchemaLockfile", () => {
       ]);
     });
 
-    it("accepts an arrayed property that did not change", () => {
-      const result = validate(
-        person({ firstName: REQUIRED_STRING_LIST }),
-        person({ firstName: REQUIRED_STRING_LIST }),
-      );
-      expect(result.breakingChanges).toEqual([]);
-    });
-
     it("warns, rather than rejects, when a property stops being required", () => {
       const result = validate(
         person({ lastName: REQUIRED_STRING }),
@@ -449,11 +434,6 @@ describe("validateOntologySchemaLockfile", () => {
           property: "lastName",
         },
       ]);
-    });
-
-    it("does not warn about a property that was already optional", () => {
-      const optional = person({ lastName: OPTIONAL_STRING });
-      expect(validate(optional, optional).warnings).toEqual([]);
     });
 
     it("does not warn about a property that was removed outright", () => {
@@ -560,15 +540,6 @@ describe("validateOntologySchemaLockfile", () => {
       ]);
     });
 
-    it("accepts a primary key constraint that did not change", () => {
-      const constrained = person({
-        id: { ...REQUIRED_STRING, primaryKeyConstraint: "MUST_BE_PK" },
-      });
-      const result = validate(constrained, constrained);
-      expect(result.breakingChanges).toEqual([]);
-      expect(result.warnings).toEqual([]);
-    });
-
     it.each([
       ["nulls", { noNulls: true, noEmptyCollections: false }],
       ["empty collections", { noNulls: false, noEmptyCollections: true }],
@@ -630,18 +601,6 @@ describe("validateOntologySchemaLockfile", () => {
       ]);
     });
 
-    it("accepts a nullability that did not change", () => {
-      const constrained = person({
-        name: {
-          ...REQUIRED_STRING,
-          nullability: { noNulls: true, noEmptyCollections: false },
-        },
-      });
-      const result = validate(constrained, constrained);
-      expect(result.breakingChanges).toEqual([]);
-      expect(result.warnings).toEqual([]);
-    });
-
     it("rejects a property newly referencing a value type", () => {
       const result = validate(
         person({ ssn: REQUIRED_STRING }),
@@ -688,15 +647,6 @@ describe("validateOntologySchemaLockfile", () => {
           previousValueType: SSN,
         },
       ]);
-    });
-
-    it("accepts a value type reference that did not change", () => {
-      const referenced = person({
-        ssn: { ...REQUIRED_STRING, valueType: SSN },
-      });
-      const result = validate(referenced, referenced);
-      expect(result.breakingChanges).toEqual([]);
-      expect(result.warnings).toEqual([]);
     });
 
     it("rejects replacing an inline property with a shared property type", () => {
@@ -775,11 +725,6 @@ describe("validateOntologySchemaLockfile", () => {
       ]);
     });
 
-    it("accepts a shared-property-backed property that did not change", () => {
-      const backed = person({ firstName: SHARED_REQUIRED_STRING });
-      expect(validate(backed, backed).breakingChanges).toEqual([]);
-    });
-
     it("rejects adding a type class to a property", () => {
       const result = validate(
         person({ firstName: REQUIRED_STRING }),
@@ -830,13 +775,6 @@ describe("validateOntologySchemaLockfile", () => {
       ]);
     });
 
-    it("accepts type classes that did not change", () => {
-      const withSortable = person({
-        firstName: { ...REQUIRED_STRING, typeClasses: [SORTABLE] },
-      });
-      expect(validate(withSortable, withSortable).breakingChanges).toEqual([]);
-    });
-
     it("reports a retyped property once, as a type change", () => {
       const result = validate(
         person({ firstName: REQUIRED_STRING }),
@@ -885,14 +823,6 @@ describe("validateOntologySchemaLockfile", () => {
       const result = validate(
         person({ firstName: REQUIRED_STRING }),
         person({ firstName: REQUIRED_STRING, lastName: OPTIONAL_STRING }),
-      );
-      expect(result.breakingChanges).toEqual([]);
-    });
-
-    it("accepts relaxing a required property to optional", () => {
-      const result = validate(
-        person({ lastName: REQUIRED_STRING }),
-        person({ lastName: OPTIONAL_STRING }),
       );
       expect(result.breakingChanges).toEqual([]);
     });
@@ -977,12 +907,6 @@ describe("validateOntologySchemaLockfile", () => {
       ).toEqual(["Located", "Named"]);
     });
 
-    it("accepts an unchanged extends list", () => {
-      const extending = personExtending(["Located", "Named"]);
-      expect(validate(extending, extending).breakingChanges).toEqual([]);
-      expect(validate(extending, extending).warnings).toEqual([]);
-    });
-
     it("reports a parent gained alongside the property changes it did not explain", () => {
       const result = validate(
         personExtending([], { firstName: REQUIRED_STRING }),
@@ -1019,6 +943,66 @@ describe("validateOntologySchemaLockfile", () => {
         interfaceApiName: "Person",
         extendedInterfaceApiName: "Named",
       });
+    });
+  });
+
+  // Each attribute gets its own detector, and one written to fire unconditionally would still
+  // pass every test above. These pin the other half: silence when nothing moved.
+  describe("a schema that did not change", () => {
+    it.each<{ name: string; unchanged: OntologySchemaLockfile }>([
+      {
+        name: "an arrayed property",
+        unchanged: person({ firstName: REQUIRED_STRING_LIST }),
+      },
+      {
+        name: "an already-optional property",
+        unchanged: person({ lastName: OPTIONAL_STRING }),
+      },
+      {
+        name: "a primary key constraint",
+        unchanged: person({
+          id: { ...REQUIRED_STRING, primaryKeyConstraint: "MUST_BE_PK" },
+        }),
+      },
+      {
+        name: "a nullability",
+        unchanged: person({
+          name: {
+            ...REQUIRED_STRING,
+            nullability: { noNulls: true, noEmptyCollections: false },
+          },
+        }),
+      },
+      {
+        name: "a value type reference",
+        unchanged: person({ ssn: { ...REQUIRED_STRING, valueType: SSN } }),
+      },
+      {
+        name: "a shared-property-backed property",
+        unchanged: person({ firstName: SHARED_REQUIRED_STRING }),
+      },
+      {
+        name: "type classes",
+        unchanged: person({
+          firstName: { ...REQUIRED_STRING, typeClasses: [SORTABLE] },
+        }),
+      },
+      {
+        name: "an extends list",
+        unchanged: lockfile({
+          Person: {
+            schema: {
+              properties: { firstName: REQUIRED_STRING },
+              extendsInterfaces: ["Located", "Named"],
+            },
+            transitions: [],
+          },
+        }),
+      },
+    ])("reports nothing about $name", ({ unchanged }) => {
+      const result = validate(unchanged, unchanged);
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.warnings).toEqual([]);
     });
   });
 

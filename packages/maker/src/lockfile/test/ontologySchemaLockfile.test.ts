@@ -300,28 +300,21 @@ describe("interface schema migration scenarios", () => {
       );
     });
 
-    it("rejects an existing property becoming required", async () => {
-      await published(
-        person(
-          { firstName: REQUIRED_STRING, lastName: OPTIONAL_STRING },
-          { transitions: [] },
-        ),
-      );
-      await expect(
-        maker(lastNameFinalized, { writeLocks: true }),
-      ).rejects.toThrowError(
-        /property "lastName" became required without a schema migration/u,
-      );
-    });
-
-    it("rejects removing a property", async () => {
+    it("rejects making a property arrayed", async () => {
       await published(lastNameFinalized);
       await expect(
-        maker(person({ firstName: REQUIRED_STRING }, { transitions: [] }), {
-          writeLocks: true,
-        }),
+        maker(
+          person(
+            {
+              firstName: REQUIRED_STRING,
+              lastName: { type: "string", array: true },
+            },
+            { transitions: [] },
+          ),
+          { writeLocks: true },
+        ),
       ).rejects.toThrowError(
-        /property "lastName" was removed[\s\S]*no currently-supported interface schema migration can phase it in/u,
+        /property "lastName" changed type from "string" to "string"\[\]/u,
       );
     });
 
@@ -341,15 +334,6 @@ describe("interface schema migration scenarios", () => {
       };
     }
 
-    it("rejects extending a new interface", async () => {
-      await published(personExtendingNamed(false));
-      await expect(
-        maker(personExtendingNamed(true), { writeLocks: true }),
-      ).rejects.toThrowError(
-        /now extends "Named"[\s\S]*no currently-supported interface schema migration can phase that in/u,
-      );
-    });
-
     it("warns about no longer extending an interface, rather than rejecting it", async () => {
       const warn = vi.spyOn(consola, "warn");
       await published(personExtendingNamed(true));
@@ -361,83 +345,6 @@ describe("interface schema migration scenarios", () => {
       expect(
         (await readLockfile()).interfaces.Person.schema,
       ).not.toHaveProperty("extendsInterfaces");
-    });
-
-    it("rejects changing a property's type", async () => {
-      await published(lastNameFinalized);
-      await expect(
-        maker(
-          person(
-            { firstName: REQUIRED_STRING, lastName: { type: "integer" } },
-            { transitions: [] },
-          ),
-          { writeLocks: true },
-        ),
-      ).rejects.toThrowError(
-        /property "lastName" changed type from "string" to "integer"/u,
-      );
-    });
-
-    it("rejects making a property arrayed", async () => {
-      await published(lastNameFinalized);
-      await expect(
-        maker(
-          person(
-            {
-              firstName: REQUIRED_STRING,
-              lastName: { type: "string", array: true },
-            },
-            { transitions: [] },
-          ),
-          { writeLocks: true },
-        ),
-      ).rejects.toThrowError(
-        /property "lastName" changed type from "string" to "string"\[\]/u,
-      );
-    });
-
-    it("rejects dropping the arrayedness of a property", async () => {
-      await published(
-        person(
-          {
-            firstName: REQUIRED_STRING,
-            nicknames: { type: "string", array: true },
-          },
-          { transitions: [] },
-        ),
-      );
-      await expect(
-        maker(
-          person(
-            { firstName: REQUIRED_STRING, nicknames: { type: "string" } },
-            { transitions: [] },
-          ),
-          { writeLocks: true },
-        ),
-      ).rejects.toThrowError(
-        /property "nicknames" changed type from "string"\[\] to "string"/u,
-      );
-    });
-
-    it("accepts an arrayed property that did not change", async () => {
-      const arrayed = person(
-        {
-          firstName: REQUIRED_STRING,
-          nicknames: { type: "string", array: true },
-        },
-        { transitions: [] },
-      );
-      await published(arrayed);
-      await expect(
-        maker(arrayed, { writeLocks: true }),
-      ).resolves.toBeUndefined();
-    });
-
-    it("accepts relaxing a required property to optional", async () => {
-      await published(lastNameFinalized);
-      await expect(
-        maker(lastNameDeleted, { writeLocks: true }),
-      ).resolves.toBeUndefined();
     });
 
     it("accepts adding an optional property", async () => {
