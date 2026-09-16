@@ -584,7 +584,6 @@ describe("validateOntologySchemaLockfile", () => {
     });
 
     it("rejects a change that tightens one flag while loosening the other", () => {
-      // The loosened flag asks nothing new of anyone; the tightened one does, so it is a break.
       const result = validate(
         person({
           name: {

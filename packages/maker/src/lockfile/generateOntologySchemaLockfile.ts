@@ -132,10 +132,6 @@ function lockProperty(property: InterfacePropertyType): LockedProperty {
   };
 }
 
-/**
- * The canonical form of a property's nullability: `undefined` when it constrains nothing, and
- * rebuilt field by field otherwise so that key order on disk does not depend on how it was written.
- */
 function lockNullability(
   nullability: Nullability | undefined,
 ): Nullability | undefined {
@@ -145,6 +141,8 @@ function lockNullability(
   ) {
     return undefined;
   }
+
+  // Rebuild to have firm key order
   return {
     noNulls: nullability.noNulls,
     noEmptyCollections: nullability.noEmptyCollections,

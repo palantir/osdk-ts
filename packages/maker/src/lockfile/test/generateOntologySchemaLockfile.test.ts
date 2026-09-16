@@ -273,14 +273,10 @@ describe("generateOntologySchemaLockfile", () => {
         schemaMigrations: { transitions: [] },
       });
 
-      // Publishes an empty `dataConstraints` rather than none, but obliges no implementing object
-      // type to do anything, so it locks the same as declaring no nullability at all.
       expect(Object.keys(lockedProperty("name"))).toEqual(["type", "required"]);
     });
 
     it("records the implicit non-nullability of a marking property", () => {
-      // `convertNullabilityToDataConstraint` publishes an undeclared marking property as non-null
-      // and non-empty, so the lockfile has to resolve that default rather than record silence.
       defineInterface({
         apiName: "Person",
         properties: {

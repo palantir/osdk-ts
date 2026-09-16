@@ -159,8 +159,6 @@ const propertySchema = z
             `declared.`,
         })
         .optional(),
-      // Absent already means "constrains neither", so an all-false value would be a second
-      // spelling of the same state.
       nullability: z
         .object(
           {
