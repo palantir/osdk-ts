@@ -120,7 +120,7 @@ describe("validateOntologySchemaLockfile", () => {
         lockfile({}),
         person({ firstName: REQUIRED_STRING }),
       );
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
       expect(result.checkpoints).toEqual([]);
       expect(result.warnings).toEqual([]);
     });
@@ -138,7 +138,7 @@ describe("validateOntologySchemaLockfile", () => {
         lockfile({}),
         optedOut({ firstName: REQUIRED_STRING, lastName: REQUIRED_STRING }),
       );
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
       expect(result.checkpoints).toEqual([
         {
           interfaceApiName: "Person",
@@ -154,7 +154,7 @@ describe("validateOntologySchemaLockfile", () => {
         lockfile({}),
         optedOut({ firstName: REQUIRED_STRING, lastName: OPTIONAL_STRING }),
       );
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
       expect(result.checkpoints).toEqual([
         {
           interfaceApiName: "Person",
@@ -171,9 +171,9 @@ describe("validateOntologySchemaLockfile", () => {
         optedOut({ firstName: REQUIRED_STRING }),
       );
       expect(result.checkpoints).toEqual([]);
-      expect(result.findings.map((finding) => finding.code)).toEqual([
-        "ambiguousDisappearance",
-      ]);
+      expect(
+        result.breakingChanges.map((breakingChange) => breakingChange.code),
+      ).toEqual(["ambiguousDisappearance"]);
     });
 
     it("still holds an opted-out interface to the last published schema", () => {
@@ -183,7 +183,7 @@ describe("validateOntologySchemaLockfile", () => {
         lockfile({}),
         optedOut({ firstName: REQUIRED_STRING, lastName: REQUIRED_STRING }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "propertyBecameRequired",
           interfaceApiName: "Person",
@@ -207,7 +207,7 @@ describe("validateOntologySchemaLockfile", () => {
       const result = validate(lastNameInFlight, lockfile({}), {
         interfaces: new Map(),
       });
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
       expect(result.checkpoints).toEqual([]);
       // Deleting the interface is not opting out of checking it; there is nothing left to check.
       expect(result.warnings).toEqual([]);
@@ -215,7 +215,7 @@ describe("validateOntologySchemaLockfile", () => {
 
     it("reports nothing for an unchanged lockfile", () => {
       const result = validate(lastNameInFlight, lastNameInFlight);
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
       expect(result.checkpoints).toEqual([]);
       expect(result.warnings).toEqual([]);
     });
@@ -227,7 +227,7 @@ describe("validateOntologySchemaLockfile", () => {
         lastNameInFlight,
         person({ firstName: REQUIRED_STRING, lastName: REQUIRED_STRING }),
       );
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
       expect(result.checkpoints).toEqual([
         {
           interfaceApiName: "Person",
@@ -242,7 +242,7 @@ describe("validateOntologySchemaLockfile", () => {
         lastNameInFlight,
         person({ firstName: REQUIRED_STRING, lastName: OPTIONAL_STRING }),
       );
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
       expect(result.checkpoints).toEqual([
         {
           interfaceApiName: "Person",
@@ -259,7 +259,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ firstName: REQUIRED_STRING }),
       );
       expect(result.checkpoints).toEqual([]);
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "ambiguousDisappearance",
           interfaceApiName: "Person",
@@ -282,7 +282,7 @@ describe("validateOntologySchemaLockfile", () => {
         lastNameInFlight,
         person({ firstName: REQUIRED_STRING, lastName: REQUIRED_STRING }),
       );
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
     });
 
     it("exempts a target whose declaration was swapped in the same release", () => {
@@ -292,7 +292,7 @@ describe("validateOntologySchemaLockfile", () => {
         ]),
         person({ lastName: REQUIRED_STRING }),
       );
-      expect(result.findings.map(({ code }) => code)).toEqual([
+      expect(result.breakingChanges.map(({ code }) => code)).toEqual([
         "ambiguousDisappearance",
       ]);
     });
@@ -308,7 +308,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ firstName: REQUIRED_STRING }),
       );
       expect(result.checkpoints).toEqual([]);
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "ambiguousDisappearance",
           interfaceApiName: "Person",
@@ -328,7 +328,7 @@ describe("validateOntologySchemaLockfile", () => {
           requireProperty("requireLastName", "firstName"),
         ]),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "instructionsChanged",
           interfaceApiName: "Person",
@@ -350,7 +350,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ firstName: REQUIRED_STRING, lastName: OPTIONAL_STRING }),
         person({ firstName: REQUIRED_STRING }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "propertyRemoved",
           interfaceApiName: "Person",
@@ -364,7 +364,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ firstName: REQUIRED_STRING }),
         person({ firstName: { type: "integer", required: true } }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "propertyTypeChanged",
           interfaceApiName: "Person",
@@ -380,7 +380,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ firstName: REQUIRED_STRING }),
         person({ firstName: REQUIRED_STRING_LIST }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "propertyTypeChanged",
           interfaceApiName: "Person",
@@ -396,7 +396,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ firstName: REQUIRED_STRING_LIST }),
         person({ firstName: REQUIRED_STRING }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "propertyTypeChanged",
           interfaceApiName: "Person",
@@ -417,7 +417,7 @@ describe("validateOntologySchemaLockfile", () => {
           },
         }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "propertyTypeChanged",
           interfaceApiName: "Person",
@@ -433,7 +433,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ firstName: REQUIRED_STRING_LIST }),
         person({ firstName: REQUIRED_STRING_LIST }),
       );
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
     });
 
     it("warns, rather than rejects, when a property stops being required", () => {
@@ -441,7 +441,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ lastName: REQUIRED_STRING }),
         person({ lastName: OPTIONAL_STRING }),
       );
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
       expect(result.warnings).toEqual([
         {
           code: "requirementRelaxed",
@@ -461,7 +461,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ lastName: REQUIRED_STRING }),
         person({}),
       );
-      expect(result.findings.map(({ code }) => code)).toEqual([
+      expect(result.breakingChanges.map(({ code }) => code)).toEqual([
         "propertyRemoved",
       ]);
       expect(result.warnings).toEqual([]);
@@ -472,7 +472,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ lastName: REQUIRED_STRING }),
         person({ lastName: { type: "integer", required: false } }),
       );
-      expect(result.findings.map(({ code }) => code)).toEqual([
+      expect(result.breakingChanges.map(({ code }) => code)).toEqual([
         "propertyTypeChanged",
       ]);
       expect(result.warnings).toEqual([
@@ -495,7 +495,7 @@ describe("validateOntologySchemaLockfile", () => {
           },
         }),
       );
-      expect(result.findings.map(({ code }) => code)).toEqual([
+      expect(result.breakingChanges.map(({ code }) => code)).toEqual([
         "propertyDeclarationChanged",
       ]);
       expect(result.warnings.map(({ code }) => code)).toEqual([
@@ -510,7 +510,7 @@ describe("validateOntologySchemaLockfile", () => {
           person({ id: REQUIRED_STRING }),
           person({ id: { ...REQUIRED_STRING, primaryKeyConstraint } }),
         );
-        expect(result.findings).toEqual([
+        expect(result.breakingChanges).toEqual([
           {
             code: "primaryKeyConstraintChanged",
             interfaceApiName: "Person",
@@ -531,7 +531,7 @@ describe("validateOntologySchemaLockfile", () => {
           id: { ...REQUIRED_STRING, primaryKeyConstraint: "CANNOT_BE_PK" },
         }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "primaryKeyConstraintChanged",
           interfaceApiName: "Person",
@@ -549,7 +549,7 @@ describe("validateOntologySchemaLockfile", () => {
         }),
         person({ id: REQUIRED_STRING }),
       );
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
       expect(result.warnings).toEqual([
         {
           code: "primaryKeyConstraintRelaxed",
@@ -565,7 +565,7 @@ describe("validateOntologySchemaLockfile", () => {
         id: { ...REQUIRED_STRING, primaryKeyConstraint: "MUST_BE_PK" },
       });
       const result = validate(constrained, constrained);
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
       expect(result.warnings).toEqual([]);
     });
 
@@ -578,7 +578,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ name: REQUIRED_STRING }),
         person({ name: { ...REQUIRED_STRING, nullability } }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "nullabilityTightened",
           interfaceApiName: "Person",
@@ -604,7 +604,7 @@ describe("validateOntologySchemaLockfile", () => {
           },
         }),
       );
-      expect(result.findings.map(({ code }) => code)).toEqual([
+      expect(result.breakingChanges.map(({ code }) => code)).toEqual([
         "nullabilityTightened",
       ]);
       expect(result.warnings).toEqual([]);
@@ -618,7 +618,7 @@ describe("validateOntologySchemaLockfile", () => {
         }),
         person({ name: REQUIRED_STRING }),
       );
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
       expect(result.warnings).toEqual([
         {
           code: "nullabilityRelaxed",
@@ -638,7 +638,7 @@ describe("validateOntologySchemaLockfile", () => {
         },
       });
       const result = validate(constrained, constrained);
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
       expect(result.warnings).toEqual([]);
     });
 
@@ -647,7 +647,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ ssn: REQUIRED_STRING }),
         person({ ssn: { ...REQUIRED_STRING, valueType: SSN } }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "valueTypeChanged",
           interfaceApiName: "Person",
@@ -663,7 +663,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ ssn: { ...REQUIRED_STRING, valueType: SSN } }),
         person({ ssn: { ...REQUIRED_STRING, valueType: EIN } }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "valueTypeChanged",
           interfaceApiName: "Person",
@@ -679,7 +679,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ ssn: { ...REQUIRED_STRING, valueType: SSN } }),
         person({ ssn: REQUIRED_STRING }),
       );
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
       expect(result.warnings).toEqual([
         {
           code: "valueTypeRemoved",
@@ -695,7 +695,7 @@ describe("validateOntologySchemaLockfile", () => {
         ssn: { ...REQUIRED_STRING, valueType: SSN },
       });
       const result = validate(referenced, referenced);
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
       expect(result.warnings).toEqual([]);
     });
 
@@ -704,7 +704,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ firstName: REQUIRED_STRING }),
         person({ "com.palantir.firstName": SHARED_REQUIRED_STRING }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "propertyDeclarationChanged",
           interfaceApiName: "Person",
@@ -720,7 +720,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ "com.palantir.firstName": SHARED_REQUIRED_STRING }),
         person({ firstName: REQUIRED_STRING }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "propertyDeclarationChanged",
           interfaceApiName: "Person",
@@ -742,7 +742,7 @@ describe("validateOntologySchemaLockfile", () => {
           },
         }),
       );
-      expect(result.findings.map(({ code }) => code)).toEqual([
+      expect(result.breakingChanges.map(({ code }) => code)).toEqual([
         "propertyDeclarationChanged",
       ]);
     });
@@ -752,7 +752,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ "com.palantir.firstName": SHARED_REQUIRED_STRING }),
         person({ "com.example.firstName": SHARED_REQUIRED_STRING }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "propertyNamespaceChanged",
           interfaceApiName: "Person",
@@ -770,14 +770,14 @@ describe("validateOntologySchemaLockfile", () => {
           lastName: REQUIRED_STRING,
         }),
       );
-      expect(result.findings.map(({ code }) => code)).toEqual([
+      expect(result.breakingChanges.map(({ code }) => code)).toEqual([
         "propertyDeclarationChanged",
       ]);
     });
 
     it("accepts a shared-property-backed property that did not change", () => {
       const backed = person({ firstName: SHARED_REQUIRED_STRING });
-      expect(validate(backed, backed).findings).toEqual([]);
+      expect(validate(backed, backed).breakingChanges).toEqual([]);
     });
 
     it("rejects adding a type class to a property", () => {
@@ -785,7 +785,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ firstName: REQUIRED_STRING }),
         person({ firstName: { ...REQUIRED_STRING, typeClasses: [SORTABLE] } }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "propertyTypeClassesChanged",
           interfaceApiName: "Person",
@@ -801,7 +801,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ firstName: { ...REQUIRED_STRING, typeClasses: [SORTABLE] } }),
         person({ firstName: REQUIRED_STRING }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "propertyTypeClassesChanged",
           interfaceApiName: "Person",
@@ -819,7 +819,7 @@ describe("validateOntologySchemaLockfile", () => {
           firstName: { ...REQUIRED_STRING, typeClasses: [SELECTABLE] },
         }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "propertyTypeClassesChanged",
           interfaceApiName: "Person",
@@ -834,7 +834,7 @@ describe("validateOntologySchemaLockfile", () => {
       const withSortable = person({
         firstName: { ...REQUIRED_STRING, typeClasses: [SORTABLE] },
       });
-      expect(validate(withSortable, withSortable).findings).toEqual([]);
+      expect(validate(withSortable, withSortable).breakingChanges).toEqual([]);
     });
 
     it("reports a retyped property once, as a type change", () => {
@@ -848,7 +848,7 @@ describe("validateOntologySchemaLockfile", () => {
           },
         }),
       );
-      expect(result.findings.map(({ code }) => code)).toEqual([
+      expect(result.breakingChanges.map(({ code }) => code)).toEqual([
         "propertyTypeChanged",
       ]);
     });
@@ -858,7 +858,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ lastName: OPTIONAL_STRING }),
         person({ lastName: REQUIRED_STRING }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "propertyBecameRequired",
           interfaceApiName: "Person",
@@ -872,7 +872,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ firstName: REQUIRED_STRING }),
         person({ firstName: REQUIRED_STRING, lastName: REQUIRED_STRING }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "requiredPropertyAdded",
           interfaceApiName: "Person",
@@ -886,7 +886,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ firstName: REQUIRED_STRING }),
         person({ firstName: REQUIRED_STRING, lastName: OPTIONAL_STRING }),
       );
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
     });
 
     it("accepts relaxing a required property to optional", () => {
@@ -894,7 +894,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ lastName: REQUIRED_STRING }),
         person({ lastName: OPTIONAL_STRING }),
       );
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
     });
   });
 
@@ -921,7 +921,7 @@ describe("validateOntologySchemaLockfile", () => {
 
     it("rejects extending a new interface", () => {
       const result = validate(personExtending([]), personExtending(["Named"]));
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "interfaceExtensionAdded",
           interfaceApiName: "Person",
@@ -932,7 +932,7 @@ describe("validateOntologySchemaLockfile", () => {
 
     it("warns about no longer extending an interface, rather than rejecting it", () => {
       const result = validate(personExtending(["Named"]), personExtending([]));
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
       expect(result.warnings).toEqual([
         {
           code: "interfaceExtensionRemoved",
@@ -947,7 +947,7 @@ describe("validateOntologySchemaLockfile", () => {
         personExtending(["Named"]),
         personExtending(["Located"]),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "interfaceExtensionAdded",
           interfaceApiName: "Person",
@@ -963,23 +963,23 @@ describe("validateOntologySchemaLockfile", () => {
       ]);
     });
 
-    it("reports one finding per parent added", () => {
+    it("reports one breaking change per parent added", () => {
       const result = validate(
         personExtending([]),
         personExtending(["Located", "Named"]),
       );
       expect(
-        result.findings.map((finding) =>
-          finding.code === "interfaceExtensionAdded"
-            ? finding.extendedInterfaceApiName
-            : finding.code,
+        result.breakingChanges.map((breakingChange) =>
+          breakingChange.code === "interfaceExtensionAdded"
+            ? breakingChange.extendedInterfaceApiName
+            : breakingChange.code,
         ),
       ).toEqual(["Located", "Named"]);
     });
 
     it("accepts an unchanged extends list", () => {
       const extending = personExtending(["Located", "Named"]);
-      expect(validate(extending, extending).findings).toEqual([]);
+      expect(validate(extending, extending).breakingChanges).toEqual([]);
       expect(validate(extending, extending).warnings).toEqual([]);
     });
 
@@ -990,7 +990,7 @@ describe("validateOntologySchemaLockfile", () => {
           firstName: { type: "integer", required: true },
         }),
       );
-      expect(result.findings.map(({ code }) => code)).toEqual([
+      expect(result.breakingChanges.map(({ code }) => code)).toEqual([
         "interfaceExtensionAdded",
         "propertyTypeChanged",
       ]);
@@ -1003,7 +1003,7 @@ describe("validateOntologySchemaLockfile", () => {
           person({
             firstName: REQUIRED_STRING,
           }),
-        ).findings,
+        ).breakingChanges,
       ).toEqual([]);
     });
 
@@ -1028,7 +1028,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({ toString: OPTIONAL_STRING }),
         person({}),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "propertyRemoved",
           interfaceApiName: "Person",
@@ -1042,7 +1042,7 @@ describe("validateOntologySchemaLockfile", () => {
         person({}),
         person({ constructor: REQUIRED_STRING }),
       );
-      expect(result.findings).toEqual([
+      expect(result.breakingChanges).toEqual([
         {
           code: "requiredPropertyAdded",
           interfaceApiName: "Person",
@@ -1066,7 +1066,7 @@ describe("validateOntologySchemaLockfile", () => {
           ]),
         },
       );
-      expect(result.findings).toEqual([]);
+      expect(result.breakingChanges).toEqual([]);
       expect(result.checkpoints).toEqual([
         {
           interfaceApiName: "toString",
@@ -1077,12 +1077,14 @@ describe("validateOntologySchemaLockfile", () => {
     });
   });
 
-  it("accumulates every finding rather than stopping at the first", () => {
+  it("accumulates every breaking change rather than stopping at the first", () => {
     const result = validate(
       person({ firstName: REQUIRED_STRING, lastName: OPTIONAL_STRING }),
       person({ lastName: REQUIRED_STRING, email: REQUIRED_STRING }),
     );
-    expect(result.findings.map((finding) => finding.code)).toEqual([
+    expect(
+      result.breakingChanges.map((breakingChange) => breakingChange.code),
+    ).toEqual([
       "propertyRemoved",
       "propertyBecameRequired",
       "requiredPropertyAdded",

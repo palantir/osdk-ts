@@ -19,7 +19,10 @@ import * as fs from "node:fs/promises";
 import { consola } from "consola";
 
 import type { OntologyDefinition } from "../api/common/OntologyDefinition.js";
-import { describeFinding, describeWarning } from "./describeLockfileFinding.js";
+import {
+  describeBreakingChange,
+  describeWarning,
+} from "./describeLockfileChange.js";
 import {
   censusOfSource,
   generateOntologySchemaLockfile,
@@ -34,7 +37,7 @@ import {
 import { parseLockfile } from "./parseOntologySchemaLockfile.js";
 import type {
   DetectedCheckpoint,
-  LockfileFinding,
+  LockfileBreakingChange,
 } from "./validateOntologySchemaLockfile.js";
 import { validateOntologySchemaLockfile } from "./validateOntologySchemaLockfile.js";
 
@@ -70,17 +73,14 @@ export async function reconcileOntologySchemaLockfile(
   }
 
   const persisted = parseLockfile(persistedContents, lockfilePath);
-  const { findings, checkpoints, warnings } = validateOntologySchemaLockfile(
-    persisted,
-    expected,
-    census,
-  );
+  const { breakingChanges, checkpoints, warnings } =
+    validateOntologySchemaLockfile(persisted, expected, census);
   for (const warning of warnings) {
     consola.warn(describeWarning(warning));
   }
 
-  if (findings.length > 0) {
-    throw new Error(formatFindings(findings, lockfilePath));
+  if (breakingChanges.length > 0) {
+    throw new Error(formatBreakingChanges(breakingChanges, lockfilePath));
   }
 
   if (!writeLocks) {
@@ -174,13 +174,15 @@ function formatStaleness(stale: string[], lockfilePath: string): string {
   );
 }
 
-function formatFindings(
-  findings: LockfileFinding[],
+function formatBreakingChanges(
+  breakingChanges: LockfileBreakingChange[],
   lockfilePath: string,
 ): string {
   return (
     `Interface schema migrations are not backwards compatible with ${lockfilePath}:\n\n` +
-    findings.map((finding) => `- ${describeFinding(finding)}`).join("\n\n")
+    breakingChanges
+      .map((breakingChange) => `- ${describeBreakingChange(breakingChange)}`)
+      .join("\n\n")
   );
 }
 
