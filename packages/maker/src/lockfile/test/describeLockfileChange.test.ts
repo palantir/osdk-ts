@@ -18,23 +18,23 @@ import { describe, expect, it } from "vitest";
 
 import type { InterfaceSchemaMigrationInstruction } from "../../api/interface/InterfaceSchemaMigrations.js";
 import {
-  describeFinding,
+  describeBreakingChange,
   describeWarning,
-} from "../describeLockfileFinding.js";
+} from "../describeLockfileChange.js";
 import type { LockedProperty } from "../OntologySchemaLockfile.js";
 import type {
-  LockfileFinding,
+  LockfileBreakingChange,
   TargetPropertyState,
 } from "../validateOntologySchemaLockfile.js";
 
 const OPTIONAL_STRING: LockedProperty = { type: "string", required: false };
 
-describe("describeFinding", () => {
+describe("describeBreakingChange", () => {
   function ambiguous(
     instructions: InterfaceSchemaMigrationInstruction[],
     targets: TargetPropertyState[],
   ): string {
-    return describeFinding({
+    return describeBreakingChange({
       code: "ambiguousDisappearance",
       interfaceApiName: "Person",
       transitionId: "requireLastName",
@@ -108,10 +108,14 @@ describe("describeFinding", () => {
   });
 
   describe("remediation", () => {
-    it.each<{ name: string; finding: LockfileFinding; expected: string }>([
+    it.each<{
+      name: string;
+      breakingChange: LockfileBreakingChange;
+      expected: string;
+    }>([
       {
         name: "a removed property",
-        finding: {
+        breakingChange: {
           code: "propertyRemoved",
           interfaceApiName: "Person",
           property: "lastName",
@@ -120,7 +124,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a newly extended interface",
-        finding: {
+        breakingChange: {
           code: "interfaceExtensionAdded",
           interfaceApiName: "Person",
           extendedInterfaceApiName: "com.palantir.Named",
@@ -129,7 +133,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a changed property type",
-        finding: {
+        breakingChange: {
           code: "propertyTypeChanged",
           interfaceApiName: "Person",
           property: "lastName",
@@ -142,7 +146,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property that became arrayed",
-        finding: {
+        breakingChange: {
           code: "propertyTypeChanged",
           interfaceApiName: "Person",
           property: "nicknames",
@@ -154,7 +158,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property handed over to a shared property type",
-        finding: {
+        breakingChange: {
           code: "propertyDeclarationChanged",
           interfaceApiName: "Person",
           property: "lastName",
@@ -167,7 +171,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property taken back from a shared property type",
-        finding: {
+        breakingChange: {
           code: "propertyDeclarationChanged",
           interfaceApiName: "Person",
           property: "lastName",
@@ -178,7 +182,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property newly constrained to the primary key",
-        finding: {
+        breakingChange: {
           code: "primaryKeyConstraintChanged",
           interfaceApiName: "Person",
           property: "id",
@@ -190,7 +194,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property whose primary key constraint was swapped",
-        finding: {
+        breakingChange: {
           code: "primaryKeyConstraintChanged",
           interfaceApiName: "Person",
           property: "id",
@@ -201,7 +205,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property that started forbidding nulls",
-        finding: {
+        breakingChange: {
           code: "nullabilityTightened",
           interfaceApiName: "Person",
           property: "name",
@@ -213,7 +217,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property that started forbidding both",
-        finding: {
+        breakingChange: {
           code: "nullabilityTightened",
           interfaceApiName: "Person",
           property: "name",
@@ -224,7 +228,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property newly bound to a value type",
-        finding: {
+        breakingChange: {
           code: "valueTypeChanged",
           interfaceApiName: "Person",
           property: "ssn",
@@ -239,7 +243,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property rebound to a different value type",
-        finding: {
+        breakingChange: {
           code: "valueTypeChanged",
           interfaceApiName: "Person",
           property: "ssn",
@@ -256,7 +260,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property that gained a type class",
-        finding: {
+        breakingChange: {
           code: "propertyTypeClassesChanged",
           interfaceApiName: "Person",
           property: "lastName",
@@ -269,7 +273,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property that lost a type class",
-        finding: {
+        breakingChange: {
           code: "propertyTypeClassesChanged",
           interfaceApiName: "Person",
           property: "lastName",
@@ -278,14 +282,17 @@ describe("describeFinding", () => {
         },
         expected: 'Restore "lastName" to render_hint/SORTABLE.',
       },
-    ])("tells the author what to do about $name", ({ finding, expected }) => {
-      expect(describeFinding(finding)).toContain(expected);
-    });
+    ])(
+      "tells the author what to do about $name",
+      ({ breakingChange, expected }) => {
+        expect(describeBreakingChange(breakingChange)).toContain(expected);
+      },
+    );
 
-    it.each<{ name: string; finding: LockfileFinding }>([
+    it.each<{ name: string; breakingChange: LockfileBreakingChange }>([
       {
         name: "an existing property becoming required",
-        finding: {
+        breakingChange: {
           code: "propertyBecameRequired",
           interfaceApiName: "Person",
           property: "lastName",
@@ -293,14 +300,14 @@ describe("describeFinding", () => {
       },
       {
         name: "a new required property",
-        finding: {
+        breakingChange: {
           code: "requiredPropertyAdded",
           interfaceApiName: "Person",
           property: "lastName",
         },
       },
-    ])("suggests a transition for $name", ({ finding }) => {
-      expect(describeFinding(finding)).toContain(
+    ])("suggests a transition for $name", ({ breakingChange }) => {
+      expect(describeBreakingChange(breakingChange)).toContain(
         '{ id: "require-lastName", title: "Require lastName", ' +
           'gracePeriod: { type: "afterInstall", days: 30 }, ' +
           'instructions: [{ type: "addRequiredProperty", property: "lastName" }] }',
@@ -315,7 +322,7 @@ describe("describeFinding", () => {
 
     it("suggests a transition the author can actually paste", () => {
       expect(
-        describeFinding({
+        describeBreakingChange({
           code: "requiredPropertyAdded",
           interfaceApiName: "Person",
           property: NAMESPACED,
@@ -328,7 +335,7 @@ describe("describeFinding", () => {
     });
 
     it("names the key the author wrote rather than the one the lockfile records", () => {
-      const message = describeFinding({
+      const message = describeBreakingChange({
         code: "propertyRemoved",
         interfaceApiName: "Person",
         property: NAMESPACED,
@@ -340,7 +347,7 @@ describe("describeFinding", () => {
 
     it("translates the instructions a vanished transition recorded", () => {
       expect(
-        describeFinding({
+        describeBreakingChange({
           code: "ambiguousDisappearance",
           interfaceApiName: "Person",
           transitionId: "requireLastName",
@@ -358,7 +365,7 @@ describe("describeFinding", () => {
 
     it("translates both sides of a changed instruction list", () => {
       expect(
-        describeFinding({
+        describeBreakingChange({
           code: "instructionsChanged",
           interfaceApiName: "Person",
           transitionId: "requireLastName",
