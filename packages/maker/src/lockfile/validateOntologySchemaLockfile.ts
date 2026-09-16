@@ -125,14 +125,7 @@ export type LockfileFinding =
 export type LockfileWarning =
   /** The source still declares the interface, but has dropped its `schemaMigrations` block. */
   | { code: "optedOut"; interfaceApiName: string }
-  /**
-   * A property that implementing object types had to provide no longer has to be provided.
-   *
-   * A warning rather than a finding: installation does not reject it, and no schema migration
-   * could phase it in even in principle, since a migration only ever tightens the schema. The
-   * author still wants to know, because clients that expect the property to always be present
-   * will start seeing it absent.
-   */
+  /** A property that implementing object types had to provide no longer has to be provided. */
   | {
       code: "requirementRelaxed";
       interfaceApiName: string;
@@ -377,15 +370,13 @@ function validateSchemaDiff(
       continue;
     }
 
-    // Ahead of the findings below, and not subject to their one-per-property short-circuiting: a
-    // property that stopped being required is worth saying even when something else about it also
-    // changed, since the two affect different people.
     if (previous.property.required && !next.property.required) {
       warnings.push({
         code: "requirementRelaxed",
         interfaceApiName,
         property: previous.apiName,
       });
+      // NB: explicitly doesn't short-circuit since this is just a warning
     }
 
     validatePropertyDiff(interfaceApiName, previous, next, findings);
