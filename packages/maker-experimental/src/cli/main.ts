@@ -239,6 +239,7 @@ export default async function main(
 
   const {
     ontologyIr,
+    importedTypes,
     shapes,
     blockDataAddOn,
     importedInputPresets,
@@ -490,7 +491,7 @@ export default async function main(
     external_recommendations: getExternalRecommendations(
       ontologyIr.importedOntology,
       ontologyIr.valueTypes,
-      ontologyIr.importedValueTypes,
+      importedTypes,
       shapes.inputShapes,
     ),
     add_on_override: blockDataAddOn,

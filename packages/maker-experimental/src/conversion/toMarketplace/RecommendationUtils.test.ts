@@ -35,7 +35,7 @@ function callGetExternalRecommendations(
   return getExternalRecommendations(
     result.ontologyIr.importedOntology,
     result.ontologyIr.valueTypes,
-    result.ontologyIr.importedValueTypes,
+    result.importedTypes,
     result.shapes.inputShapes,
   );
 }

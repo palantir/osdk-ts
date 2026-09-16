@@ -17,12 +17,14 @@
 import type {
   ActionType,
   OntologyBlockDataV2,
+  OntologyIrValueTypeReferenceWithMetadata,
   ValueTypeBlockData,
 } from "@osdk/client.unstable";
 import type {
   BlockSetVersionRange,
   InputShape,
 } from "@osdk/client.unstable/api";
+import type { OntologyDefinition } from "@osdk/maker";
 
 import type {
   GeneratedBlockExternalRecommendations,
@@ -270,13 +272,12 @@ function externalRecsForActionParams(
 /**
  * Build consumed value type references grouped by apiName.
  * Sources:
- * 1. Value type entries (produced + imported) that have consumed input shapes
+ * 1. Imported value type entries that have consumed input shapes
  * 2. Imported SPT value type references
  * 3. Imported property value type references
  */
 function getConsumedValueTypes(
-  producedValueTypes: ValueTypeBlockData[],
-  importedValueTypes: ValueTypeBlockData[],
+  importedTypes: OntologyDefinition,
   inputShapes: Map<string, InputShape>,
 ): Map<string, { version: string; packageNamespace: string }[]> {
   const consumed = new Map<
@@ -291,25 +292,59 @@ function getConsumedValueTypes(
   ): void {
     const existing = consumed.get(apiName);
     if (existing) {
-      existing.push({ version, packageNamespace });
+      if (
+        !existing.some(
+          (value) =>
+            value.version === version &&
+            value.packageNamespace === packageNamespace,
+        )
+      ) {
+        existing.push({ version, packageNamespace });
+      }
     } else {
       consumed.set(apiName, [{ version, packageNamespace }]);
     }
   }
 
-  for (const entry of [...producedValueTypes, ...importedValueTypes]) {
-    if (entry.versions.length === 0) continue;
-    const apiName = entry.metadata.apiName;
-    const firstVersion = entry.versions[0].version;
-    const consumedId = ReadableIdGenerator.getForConsumedValueType(
-      apiName,
-      firstVersion,
+  function addReference(
+    valueType: OntologyIrValueTypeReferenceWithMetadata | undefined,
+  ): void {
+    if (valueType === undefined) return;
+    addConsumed(
+      valueType.apiName,
+      valueType.version,
+      valueType.packageNamespace,
     );
-    if (inputShapes.has(consumedId)) {
-      const packageNamespace = getPackage(apiName);
-      for (const version of entry.versions) {
-        addConsumed(apiName, version.version, packageNamespace);
-      }
+  }
+
+  for (const versions of Object.values(importedTypes.VALUE_TYPE)) {
+    if (versions.length === 0) continue;
+    const firstVersion = versions[0];
+    const consumedId = ReadableIdGenerator.getForConsumedValueType(
+      firstVersion.apiName,
+      firstVersion.version,
+    );
+    if (!inputShapes.has(consumedId)) continue;
+    for (const valueType of versions) {
+      addReference(valueType);
+    }
+  }
+
+  const importedSpts = [
+    ...Object.values(importedTypes.SHARED_PROPERTY_TYPE),
+    ...Object.values(importedTypes.INTERFACE_TYPE).flatMap((interfaceType) =>
+      Object.values(interfaceType.propertiesV2).map(
+        (property) => property.sharedPropertyType,
+      ),
+    ),
+  ];
+  for (const spt of importedSpts) {
+    addReference(spt.valueType);
+  }
+
+  for (const objectType of Object.values(importedTypes.OBJECT_TYPE)) {
+    for (const property of objectType.properties ?? []) {
+      addReference(property.valueType);
     }
   }
 
@@ -318,18 +353,14 @@ function getConsumedValueTypes(
 
 function externalRecsForValueTypes(
   producedValueTypes: ValueTypeBlockData[],
-  importedValueTypes: ValueTypeBlockData[],
+  importedTypes: OntologyDefinition,
   inputShapes: Map<string, InputShape>,
 ): GeneratedBlockExternalRecommendations[] {
   const producedApiNames = new Set(
     producedValueTypes.map((vt) => vt.metadata.apiName as string),
   );
 
-  const consumed = getConsumedValueTypes(
-    producedValueTypes,
-    importedValueTypes,
-    inputShapes,
-  );
+  const consumed = getConsumedValueTypes(importedTypes, inputShapes);
 
   const results: GeneratedBlockExternalRecommendations[] = [];
 
@@ -364,7 +395,7 @@ function externalRecsForValueTypes(
 export function getExternalRecommendations(
   importedOntology: OntologyBlockDataV2,
   producedValueTypes: ValueTypeBlockData[],
-  importedValueTypes: ValueTypeBlockData[],
+  importedTypes: OntologyDefinition,
   inputShapes: Map<string, InputShape>,
 ): GeneratedBlockExternalRecommendations[] {
   return [
@@ -379,7 +410,7 @@ export function getExternalRecommendations(
     ...externalRecsForActionParams(importedOntology),
     ...externalRecsForValueTypes(
       producedValueTypes,
-      importedValueTypes,
+      importedTypes,
       inputShapes,
     ),
   ];
