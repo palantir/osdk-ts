@@ -25,7 +25,6 @@ import {
   FilterPopover,
   getFilterKey,
   getFilterLabel,
-  summarizeFilterValue,
   useFilterListState,
 } from "@osdk/react-components/filter-list";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -178,7 +177,7 @@ function PopoverFilterField({
   return (
     <FilterPopover
       label={getFilterLabel(definition)}
-      summary={summarizeFilterValue(definition, filterState)}
+      summary=""
       isActive={filterHasActiveState(filterState)}
       onRemove={handleRemove}
       labelPlacement="top"
@@ -285,7 +284,6 @@ export const HorizontalToolbar: Story = {
   FilterPopover,
   getFilterKey,
   getFilterLabel,
-  summarizeFilterValue,
   useFilterListState,
 } from "@osdk/react-components/filter-list";
 
@@ -305,7 +303,7 @@ function HorizontalFilterToolbar({ objectType, filterDefinitions }) {
           <FilterPopover
             key={key}
             label={getFilterLabel(definition)}
-            summary={summarizeFilterValue(definition, filterStates.get(key))}
+            summary=""
             isActive={filterHasActiveState(filterStates.get(key))}
             onRemove={() => clearFilterState(key)}
             labelPlacement="top"
