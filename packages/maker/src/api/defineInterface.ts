@@ -245,8 +245,6 @@ export function defineInterface(
   validateSchemaMigrationsFamilyOptIn(
     apiName,
     interfaceDef.schemaMigrations !== undefined,
-    // Resolved through the registry so parents imported from another ontology, which are never
-    // registered here, drop out: this ontology cannot see whether they opted in.
     extendsInterfaces.flatMap(
       (parent) =>
         ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][

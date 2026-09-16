@@ -327,8 +327,6 @@ describe("interface schema migration scenarios", () => {
 
     function personExtendingNamed(extending: boolean): () => void {
       return () => {
-        // Opted in even while unrelated to Person: a parent has to be opted in to be extended
-        // by one (see validateSchemaMigrationsFamilyOptIn).
         const named = defineInterface({
           apiName: "Named",
           properties: { name: REQUIRED_STRING },
