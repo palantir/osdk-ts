@@ -142,8 +142,7 @@ const propertySchema = z
             `release declared.`,
         })
         .optional(),
-      // Absent means the interface defines the property inline, so there is only the one literal
-      // to accept here.
+      // Absent means its an IDP, so we need only expect the SPT variant here
       declaredBy: z
         .literal("sharedPropertyType", {
           message:

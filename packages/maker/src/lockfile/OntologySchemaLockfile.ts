@@ -70,13 +70,7 @@ export type PropertyDeclaration = "interface" | "sharedPropertyType";
 export interface LockedProperty {
   type: LockedPropertyType;
   required: boolean;
-  /**
-   * Present when a shared property type backs this property. Absent when the interface defines it
-   * inline, which is the ordinary case and the one the lockfile stays quiet about.
-   *
-   * Recorded because the two are different bindings even when they resolve to the same type: an
-   * implementing object type satisfies a shared-property-backed property by mapping to that spt.
-   */
+  /** Present when a SPT backs this property; absent when the interface defines it inline. */
   declaredBy?: "sharedPropertyType";
   /** The property's (sorted) type classes. Absent when it declares none. */
   typeClasses?: TypeClass[];
@@ -88,7 +82,6 @@ export interface LockedTransition {
   instructions: InterfaceSchemaMigrationInstruction[];
 }
 
-/** How a property is declared, resolving the absent-means-inline default. */
 export function declarationOf(property: LockedProperty): PropertyDeclaration {
   return property.declaredBy ?? "interface";
 }
