@@ -323,6 +323,49 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
           "pluralDisplayName": "Employees",
           "primaryKey": "employeeId",
           "properties": {
+            "bonusHistory": {
+              "dataType": {
+                "reducers": [
+                  {
+                    "direction": "DESCENDING_NULLS_LAST",
+                    "field": "year",
+                  },
+                ],
+                "subType": {
+                  "mainValue": {
+                    "fields": [
+                      "amount",
+                    ],
+                    "mainValueType": {
+                      "type": "integer",
+                    },
+                  },
+                  "structFieldTypes": [
+                    {
+                      "apiName": "year",
+                      "dataType": {
+                        "type": "integer",
+                      },
+                      "rid": "ri.struct.year",
+                      "typeClasses": [],
+                    },
+                    {
+                      "apiName": "amount",
+                      "dataType": {
+                        "type": "integer",
+                      },
+                      "rid": "ri.struct.amount",
+                      "typeClasses": [],
+                    },
+                  ],
+                  "type": "struct",
+                },
+                "type": "array",
+              },
+              "description": "Bonus history with the latest amount as its main value",
+              "rid": "rid",
+              "typeClasses": [],
+            },
             "class": {
               "dataType": {
                 "type": "string",
@@ -673,6 +716,49 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
           "pluralDisplayName": "Employees",
           "primaryKey": "employeeId",
           "properties": {
+            "bonusHistory": {
+              "dataType": {
+                "reducers": [
+                  {
+                    "direction": "DESCENDING_NULLS_LAST",
+                    "field": "year",
+                  },
+                ],
+                "subType": {
+                  "mainValue": {
+                    "fields": [
+                      "amount",
+                    ],
+                    "mainValueType": {
+                      "type": "integer",
+                    },
+                  },
+                  "structFieldTypes": [
+                    {
+                      "apiName": "year",
+                      "dataType": {
+                        "type": "integer",
+                      },
+                      "rid": "ri.struct.year",
+                      "typeClasses": [],
+                    },
+                    {
+                      "apiName": "amount",
+                      "dataType": {
+                        "type": "integer",
+                      },
+                      "rid": "ri.struct.amount",
+                      "typeClasses": [],
+                    },
+                  ],
+                  "type": "struct",
+                },
+                "type": "array",
+              },
+              "description": "Bonus history with the latest amount as its main value",
+              "rid": "rid",
+              "typeClasses": [],
+            },
             "class": {
               "dataType": {
                 "type": "string",
@@ -1151,6 +1237,49 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
           "pluralDisplayName": "Employees",
           "primaryKey": "employeeId",
           "properties": {
+            "bonusHistory": {
+              "dataType": {
+                "reducers": [
+                  {
+                    "direction": "DESCENDING_NULLS_LAST",
+                    "field": "year",
+                  },
+                ],
+                "subType": {
+                  "mainValue": {
+                    "fields": [
+                      "amount",
+                    ],
+                    "mainValueType": {
+                      "type": "integer",
+                    },
+                  },
+                  "structFieldTypes": [
+                    {
+                      "apiName": "year",
+                      "dataType": {
+                        "type": "integer",
+                      },
+                      "rid": "ri.struct.year",
+                      "typeClasses": [],
+                    },
+                    {
+                      "apiName": "amount",
+                      "dataType": {
+                        "type": "integer",
+                      },
+                      "rid": "ri.struct.amount",
+                      "typeClasses": [],
+                    },
+                  ],
+                  "type": "struct",
+                },
+                "type": "array",
+              },
+              "description": "Bonus history with the latest amount as its main value",
+              "rid": "rid",
+              "typeClasses": [],
+            },
             "class": {
               "dataType": {
                 "type": "string",

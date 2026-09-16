@@ -274,6 +274,7 @@ describe("ObjectSetListenerWebsocket", () => {
 
       it("correctly requests regular object properties", () => {
         expect(subReq1.requests[0].propertySet).toEqual([
+          "bonusHistory",
           "class",
           "employeeId",
           "employeeProfile",
