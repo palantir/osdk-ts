@@ -45,6 +45,9 @@ export default defineConfig({
   // discovers them mid-run and reloads the browser page, which closes the
   // Vitest connection and reports "no tests" (especially on a cold CI cache).
   optimizeDeps: {
+    // Pre-bundling merges date-fns v2 (used in @osdk/react-components) and v4 (used in @osdk/faux)
+    // normal resolution keeps them separate.
+    exclude: ["date-fns"],
     include: [
       "react",
       "react-dom",
