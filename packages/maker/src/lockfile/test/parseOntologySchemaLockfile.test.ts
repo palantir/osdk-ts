@@ -247,7 +247,6 @@ describe("parseLockfile", () => {
   });
 
   it("rejects a nullability that forbids nothing", () => {
-    // Absent already means "constrains neither"; accepting this would be a second spelling.
     expect(() =>
       parse(
         withPropertyDefinition({

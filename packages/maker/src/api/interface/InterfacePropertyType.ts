@@ -85,20 +85,13 @@ export function interfacePropertyTypeClasses(
   return typeClasses;
 }
 
-/** What a marking property constrains when it declares no nullability of its own. */
+/** The nullability requirements for a marking property. */
 const MARKING_NULLABILITY: Nullability = {
   noNulls: true,
   noEmptyCollections: true,
 };
 
-/**
- * What this property constrains about nulls and empty collections, or `undefined` if it declares
- * nothing.
- *
- * Resolves the default the wire conversion applies, which is type-dependent: a marking property
- * that says nothing is published as non-null and non-empty, every other type as unconstrained.
- * See `convertNullabilityToDataConstraint`.
- */
+/** What this property constrains about nulls and empty collections, or `undefined` if it declares nothing. */
 export function interfacePropertyNullability(
   interfacePropertyType: InterfacePropertyType,
 ): Nullability | undefined {

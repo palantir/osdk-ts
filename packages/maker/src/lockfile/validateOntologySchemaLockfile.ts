@@ -114,10 +114,6 @@ export type LockfileFinding =
       previousConstraint: PrimaryKeyConstraint;
       nextConstraint: PrimaryKeyConstraint;
     }
-  /**
-   * A property now forbids nulls or empty collections where it did not. Loosening either flag is a
-   * warning instead.
-   */
   | {
       code: "nullabilityTightened";
       interfaceApiName: string;
@@ -152,10 +148,6 @@ export type LockfileWarning =
       property: string;
       previousConstraint: PrimaryKeyConstraint;
     }
-  /**
-   * A property stopped forbidding nulls or empty collections. Safe for the same reason as the
-   * other two relaxations: data that satisfied the old constraint satisfies the weaker one.
-   */
   | {
       code: "nullabilityRelaxed";
       interfaceApiName: string;
@@ -476,7 +468,6 @@ function validateSchemaDiff(
       continue;
     }
 
-    // Only the tightening direction: loosening a flag warned above instead.
     if (tightensNullability(previousNullability, nextNullability)) {
       findings.push({
         code: "nullabilityTightened",
