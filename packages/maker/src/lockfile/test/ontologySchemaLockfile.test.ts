@@ -330,6 +330,7 @@ describe("interface schema migration scenarios", () => {
         const named = defineInterface({
           apiName: "Named",
           properties: { name: REQUIRED_STRING },
+          schemaMigrations: { transitions: [] },
         });
         defineInterface({
           apiName: "Person",
