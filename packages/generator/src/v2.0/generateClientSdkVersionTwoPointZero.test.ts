@@ -561,19 +561,61 @@ describe("generator", () => {
         expectedType: "$PropType['string']",
       },
       {
-        name: "empty enum",
-        constraints: [emptyEnum, lengthConstraint],
+        name: "no constraints",
+        constraints: [],
         expectedType: "$PropType['string']",
       },
       {
-        name: "usable enum after an empty enum",
-        constraints: [emptyEnum, enumConstraint],
+        name: "one enum",
+        constraints: [enumConstraint],
         expectedType: "'A' | 'B'",
       },
       {
-        name: "first of multiple enums",
-        constraints: [enumConstraint, { type: "enum", options: ["B"] }],
+        name: "empty enum",
+        constraints: [emptyEnum, lengthConstraint],
+        expectedType: "never",
+      },
+      {
+        name: "empty enum before another enum",
+        constraints: [emptyEnum, enumConstraint],
+        expectedType: "never",
+      },
+      {
+        name: "empty enum after another enum",
+        constraints: [enumConstraint, emptyEnum],
+        expectedType: "never",
+      },
+      {
+        name: "overlapping enums",
+        constraints: [enumConstraint, { type: "enum", options: ["B", "C"] }],
+        expectedType: "'B'",
+      },
+      {
+        name: "overlapping enums in reverse order",
+        constraints: [{ type: "enum", options: ["B", "C"] }, enumConstraint],
+        expectedType: "'B'",
+      },
+      {
+        name: "an enum and a superset",
+        constraints: [enumConstraint, {
+          type: "enum",
+          options: ["A", "B", "C"],
+        }],
         expectedType: "'A' | 'B'",
+      },
+      {
+        name: "disjoint enums",
+        constraints: [enumConstraint, { type: "enum", options: ["C", "D"] }],
+        expectedType: "never",
+      },
+      {
+        name: "an empty intersection followed by another enum",
+        constraints: [
+          enumConstraint,
+          { type: "enum", options: ["C", "D"] },
+          enumConstraint,
+        ],
+        expectedType: "never",
       },
     ])("generates string properties with $name", async ({
       constraints,
@@ -592,34 +634,71 @@ describe("generator", () => {
         .toContain(`readonly email: ${expectedType};`);
     });
 
-    it("narrows boolean enums without changing property nullability", async () => {
-      const ontology = immer.produce(TodoWireOntology, draft => {
-        draft.objectTypes.Todo.objectType.properties.complete.valueTypeApiName =
-          "completeValueType";
-        draft.valueTypes.completeValueType = {
-          apiName: "completeValueType",
-          displayName: "Complete Value Type",
-          rid: "completeValueTypeRid",
-          version: "1.0.0",
-          fieldType: { type: "boolean" },
-          constraints: [
-            { type: "unsupported", unsupportedType: "custom", params: {} },
-            { type: "enum", options: [true, null] },
-          ],
-        };
-      });
-      await generateClientSdkVersionTwoPointZero(
-        ontology,
-        "",
-        helper.minimalFiles,
-        BASE_PATH,
-      );
-      expect(helper.getFiles()[`${BASE_PATH}/ontology/objects/Todo.ts`])
-        .toContain("readonly complete: true | undefined;");
-    });
+    it.each<{
+      name: string;
+      constraints: ValueTypeConstraint[];
+      expectedType: string;
+    }>([
+      {
+        name: "enum after an unsupported constraint",
+        constraints: [
+          { type: "unsupported", unsupportedType: "custom", params: {} },
+          { type: "enum", options: [true, null] },
+        ],
+        expectedType: "true",
+      },
+      {
+        name: "overlapping enums",
+        constraints: [
+          { type: "enum", options: [true, false] },
+          { type: "enum", options: [false, null] },
+        ],
+        expectedType: "false",
+      },
+      {
+        name: "disjoint enums",
+        constraints: [
+          { type: "enum", options: [true] },
+          { type: "enum", options: [false] },
+        ],
+        expectedType: "never",
+      },
+      {
+        name: "null-only enum",
+        constraints: [
+          { type: "enum", options: [null] },
+          { type: "enum", options: [false] },
+        ],
+        expectedType: "never",
+      },
+    ])(
+      "generates nullable boolean properties with $name",
+      async ({ constraints, expectedType }) => {
+        const ontology = immer.produce(TodoWireOntology, draft => {
+          draft.objectTypes.Todo.objectType.properties.complete
+            .valueTypeApiName = "completeValueType";
+          draft.valueTypes.completeValueType = {
+            apiName: "completeValueType",
+            displayName: "Complete Value Type",
+            rid: "completeValueTypeRid",
+            version: "1.0.0",
+            fieldType: { type: "boolean" },
+            constraints,
+          };
+        });
+        await generateClientSdkVersionTwoPointZero(
+          ontology,
+          "",
+          helper.minimalFiles,
+          BASE_PATH,
+        );
+        expect(helper.getFiles()[`${BASE_PATH}/ontology/objects/Todo.ts`])
+          .toContain(`readonly complete: ${expectedType} | undefined;`);
+      },
+    );
 
     it.each([false, true])(
-      "preserves array enum parentheses with size constraint first: %s",
+      "generates array enums with size constraint first %s",
       async (sizeFirst) => {
         const ontology = immer.produce(TodoWireOntology, draft => {
           const constraints = draft.valueTypes.arrayValueType.constraints;
@@ -643,13 +722,40 @@ describe("generator", () => {
       },
     );
 
-    it("narrows interface properties with multiple constraints", async () => {
+    it.each([
+      { options: ["a", "b\"c"], expectedType: `('a' | 'b"c')[]` },
+      { options: ["C", "D"], expectedType: "never[]" },
+    ])(
+      "intersects array enums as $expectedType",
+      async ({ options, expectedType }) => {
+        const ontology = immer.produce(TodoWireOntology, draft => {
+          draft.valueTypes.arrayValueType.constraints.push({
+            type: "array",
+            valueConstraint: { type: "enum", options },
+            uniqueValues: false,
+          });
+        });
+        await generateClientSdkVersionTwoPointZero(
+          ontology,
+          "",
+          helper.minimalFiles,
+          BASE_PATH,
+        );
+        expect(helper.getFiles()[`${BASE_PATH}/ontology/objects/Todo.ts`])
+          .toContain(`readonly array: ${expectedType} | undefined;`);
+      },
+    );
+
+    it("intersects interface property enums", async () => {
       const ontology = immer.produce(TodoWireOntology, draft => {
         draft.valueTypes.interfaceValueType = {
           ...draft.valueTypes.emailValueType,
           apiName: "interfaceValueType",
           rid: "interfaceValueTypeRid",
-          constraints: [lengthConstraint, enumConstraint],
+          constraints: [lengthConstraint, enumConstraint, {
+            type: "enum",
+            options: ["B", "C"],
+          }],
         };
         const interfaceType = draft.interfaceTypes.SomeInterface;
         interfaceType.properties.SomeProperty.valueTypeApiName =
@@ -668,7 +774,7 @@ describe("generator", () => {
       expect(
         helper.getFiles()[`${BASE_PATH}/ontology/interfaces/SomeInterface.ts`],
       )
-        .toContain("readonly SomeProperty: 'A' | 'B' | undefined;");
+        .toContain("readonly SomeProperty: 'B' | undefined;");
     });
   });
 

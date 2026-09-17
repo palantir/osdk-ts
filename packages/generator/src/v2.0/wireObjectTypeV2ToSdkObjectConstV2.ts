@@ -463,52 +463,49 @@ function getPropTypeOrValueTypeEnum(
     return defaultPropString;
   }
 
-  for (let constraint of valueType.constraints) {
-    let shouldWrapWithParentheses = false;
-    if (constraint.type === "array" && constraint.valueConstraint) {
-      constraint = constraint.valueConstraint;
-      shouldWrapWithParentheses = true;
-    }
+  let enumValues: string[] | undefined;
+  let shouldWrapWithParentheses = false;
+  for (const constraint of valueType.constraints) {
+    const isArrayConstraint = constraint.type === "array";
+    const enumConstraint = isArrayConstraint
+      ? constraint.valueConstraint
+      : constraint;
+    if (!enumConstraint) continue;
 
-    const maybeEnumString = maybeGetEnumString(
-      propertyDefinition,
-      constraint,
-    );
-    if (maybeEnumString) {
-      return shouldWrapWithParentheses
-        ? `(${maybeEnumString})`
-        : maybeEnumString;
+    const values = maybeGetEnumValues(propertyDefinition.type, enumConstraint);
+    if (values === undefined) continue;
+    shouldWrapWithParentheses ||= isArrayConstraint;
+
+    // Keep values allowed by every enum constraint.
+    if (enumValues === undefined) {
+      enumValues = values;
+    } else {
+      const allowedValues = new Set(values);
+      enumValues = enumValues.filter(value => allowedValues.has(value));
     }
   }
 
-  return defaultPropString;
+  if (enumValues === undefined) return defaultPropString;
+  const enumString = propertyDefinition.type === "string"
+    ? stringUnionFrom(enumValues)
+    : enumValues.join(" | ") || "never";
+  return shouldWrapWithParentheses ? `(${enumString})` : enumString;
 }
 
-function maybeGetEnumString(
-  propertyDefinition: ObjectMetadata.Property,
+function maybeGetEnumValues(
+  propertyType: "string" | "boolean",
   constraint: ValueTypeConstraint,
-) {
-  if (constraint.type !== "enum" || constraint.options.length === 0) {
-    return undefined;
+): string[] | undefined {
+  if (constraint.type !== "enum") return undefined;
+  if (propertyType === "string") {
+    return constraint.options.map(value => String(value));
   }
-  if (propertyDefinition.type === "string") {
-    return stringUnionFrom(constraint.options.map(x => String(x)));
-  }
-  if (propertyDefinition.type === "boolean") {
-    return constraint.options.map(value => {
-      if (value === true) {
-        return true;
-      } else if (value === false) {
-        return false;
-      } else if (value == null) {
-        // Always infer nullability from the property definition
-        return undefined;
-      } else {
-        consola.warn(`Unexpected boolean value in enum: ${value}. Ignoring.`);
-      }
-    }).filter(value => value != null).join(
-      " | ",
-    );
-  }
-  return undefined;
+  return constraint.options.flatMap(value => {
+    if (typeof value === "boolean") return [String(value)];
+    // Nullability comes from the property definition.
+    if (value != null) {
+      consola.warn(`Unexpected boolean value in enum: ${value}. Ignoring.`);
+    }
+    return [];
+  });
 }
