@@ -6164,12 +6164,6 @@ importers:
       '@maplibre/maplibre-gl-style-spec':
         specifier: ^23.3.0
         version: 23.3.0
-      '@microsoft/api-documenter':
-        specifier: ^7.26.32
-        version: 7.26.32(@types/node@26.1.1)
-      '@microsoft/api-extractor':
-        specifier: ^7.52.11
-        version: 7.52.11(@types/node@26.1.1)
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
