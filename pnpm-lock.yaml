@@ -6157,13 +6157,13 @@ importers:
 
   packages/widget.api:
     dependencies:
+      '@maplibre/maplibre-gl-style-spec':
+        specifier: ^23.3.0
+        version: 23.3.0
       '@osdk/api':
         specifier: workspace:*
         version: link:../api
     devDependencies:
-      '@maplibre/maplibre-gl-style-spec':
-        specifier: ^23.3.0
-        version: 23.3.0
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
