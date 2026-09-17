@@ -16,7 +16,7 @@
 
 import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 
-import type { MapTileSource } from "./mapTileSource.js";
+import type { MapTileLayerStyle } from "./mapTileLayerStyle.js";
 import type { AsyncValue } from "./utils/asyncValue.js";
 
 interface ObjectType extends ObjectTypeDefinition {
@@ -56,7 +56,7 @@ export interface AbstractParameterValue<T extends PrimitiveParameterType> {
 
 export interface MapTileLayerParameterValue {
   type: "mapTileLayer";
-  value: AsyncValue<MapTileSource>;
+  value: AsyncValue<MapTileLayerStyle>;
 }
 
 export interface ObjectSetParameterValue<
