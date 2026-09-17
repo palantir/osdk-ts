@@ -131,6 +131,18 @@ describe("describeFinding", () => {
           'Restore "lastName" to "string"; to publish the new type, declare it as a new property ' +
           "under a different api name.",
       },
+      {
+        name: "a property that became arrayed",
+        finding: {
+          code: "propertyTypeChanged",
+          interfaceApiName: "Person",
+          property: "nicknames",
+          previousType: "string",
+          nextType: { type: "array", subtype: "string" },
+        },
+        expected:
+          'property "nicknames" changed type from "string" to "string"[]',
+      },
     ])("tells the author what to do about $name", ({ finding, expected }) => {
       expect(describeFinding(finding)).toContain(expected);
     });
