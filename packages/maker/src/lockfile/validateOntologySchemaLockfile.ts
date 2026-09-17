@@ -38,6 +38,7 @@ import type {
 } from "./OntologySchemaLockfile.js";
 import {
   declarationOf,
+  extensionsOf,
   nullabilityOf,
   own,
   primaryKeyConstraintOf,
@@ -85,6 +86,11 @@ export type LockfileFinding =
       transitionId: string;
       previousInstructions: readonly InterfaceSchemaMigrationInstruction[];
       nextInstructions: readonly InterfaceSchemaMigrationInstruction[];
+    }
+  | {
+      code: "interfaceExtensionAdded";
+      interfaceApiName: string;
+      extendedInterfaceApiName: string;
     }
   | { code: "propertyRemoved"; interfaceApiName: string; property: string }
   | {
@@ -168,6 +174,11 @@ export type LockfileWarning =
       interfaceApiName: string;
       property: string;
       previousValueType: LockedValueType;
+    }
+  | {
+      code: "interfaceExtensionRemoved";
+      interfaceApiName: string;
+      extendedInterfaceApiName: string;
     };
 
 export interface LockfileValidationResult {
@@ -300,6 +311,13 @@ function validateInterface(
     );
   }
 
+  validateExtensionsDiff(
+    interfaceApiName,
+    previousInterface.schema,
+    nextInterface.schema,
+    result,
+  );
+
   validateSchemaDiff(
     interfaceApiName,
     previousInterface.schema,
@@ -307,6 +325,36 @@ function validateInterface(
     propertiesAccountedFor,
     result,
   );
+}
+
+function validateExtensionsDiff(
+  interfaceApiName: string,
+  previousSchema: LockedInterfaceSchema,
+  nextSchema: LockedInterfaceSchema,
+  { findings, warnings }: LockfileValidationResult,
+): void {
+  const previousExtensions = new Set(extensionsOf(previousSchema));
+  const nextExtensions = new Set(extensionsOf(nextSchema));
+
+  for (const extendedInterfaceApiName of nextExtensions) {
+    if (!previousExtensions.has(extendedInterfaceApiName)) {
+      findings.push({
+        code: "interfaceExtensionAdded",
+        interfaceApiName,
+        extendedInterfaceApiName,
+      });
+    }
+  }
+
+  for (const extendedInterfaceApiName of previousExtensions) {
+    if (!nextExtensions.has(extendedInterfaceApiName)) {
+      warnings.push({
+        code: "interfaceExtensionRemoved",
+        interfaceApiName,
+        extendedInterfaceApiName,
+      });
+    }
+  }
 }
 
 /** What a transition vanishing from the source turned out to mean. */

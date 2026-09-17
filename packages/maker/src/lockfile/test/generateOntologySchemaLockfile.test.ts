@@ -29,6 +29,7 @@ import {
   generateOntologySchemaLockfile,
 } from "../generateOntologySchemaLockfile.js";
 import type {
+  LockedInterfaceSchema,
   LockedProperty,
   OntologySchemaLockfile,
 } from "../OntologySchemaLockfile.js";
@@ -474,6 +475,99 @@ describe("generateOntologySchemaLockfile", () => {
 
       expect(ascending).toEqual(shuffled);
       expect(ascending.typeClasses).toEqual([GEO, SELECTABLE, SORTABLE]);
+    });
+  });
+
+  describe("extended interfaces", () => {
+    function lockedSchema(): LockedInterfaceSchema {
+      return generateOntologySchemaLockfile(getOntologyDefinition()).interfaces[
+        "com.palantir.Person"
+      ].schema;
+    }
+
+    it("records the api names of the interfaces extended", () => {
+      const named = defineInterface({ apiName: "Named" });
+      const located = defineInterface({ apiName: "Located" });
+      defineInterface({
+        apiName: "Person",
+        extends: [named, located],
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(lockedSchema().extendsInterfaces).toEqual([
+        "com.palantir.Located",
+        "com.palantir.Named",
+      ]);
+    });
+
+    it("records only the direct parents, not the whole ancestry", () => {
+      const grandparent = defineInterface({ apiName: "Grandparent" });
+      const parent = defineInterface({
+        apiName: "Parent",
+        extends: grandparent,
+      });
+      defineInterface({
+        apiName: "Person",
+        extends: parent,
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(lockedSchema().extendsInterfaces).toEqual(["com.palantir.Parent"]);
+    });
+
+    it("does not record the properties an extended interface contributes", () => {
+      const named = defineInterface({
+        apiName: "Named",
+        properties: { name: { type: "string" } },
+      });
+      defineInterface({
+        apiName: "Person",
+        extends: named,
+        properties: { age: { type: "integer" } },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(Object.keys(lockedSchema().properties)).toEqual(["age"]);
+    });
+
+    it("sorts the parents, so reordering them in source is not a change", async () => {
+      function lockOrder(order: "ascending" | "descending"): string[] {
+        const named = defineInterface({ apiName: "Named" });
+        const located = defineInterface({ apiName: "Located" });
+        defineInterface({
+          apiName: "Person",
+          extends: order === "ascending" ? [located, named] : [named, located],
+          schemaMigrations: { transitions: [] },
+        });
+        return lockedSchema().extendsInterfaces!;
+      }
+
+      const ascending = lockOrder("ascending");
+      await defineOntology("com.palantir.", () => {}, undefined);
+
+      expect(ascending).toEqual(lockOrder("descending"));
+      expect(ascending).toEqual(["com.palantir.Located", "com.palantir.Named"]);
+    });
+
+    it("records a parent named twice once", () => {
+      const named = defineInterface({ apiName: "Named" });
+      defineInterface({
+        apiName: "Person",
+        extends: [named, named],
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(lockedSchema().extendsInterfaces).toEqual(["com.palantir.Named"]);
+    });
+
+    it("omits the key for an interface that extends nothing", () => {
+      defineInterface({
+        apiName: "Person",
+        properties: { name: { type: "string" } },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(Object.keys(lockedSchema())).toEqual(["properties"]);
     });
   });
 });

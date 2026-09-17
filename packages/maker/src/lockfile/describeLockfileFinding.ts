@@ -73,6 +73,16 @@ export function describeFinding(finding: LockfileFinding): string {
         `declare a new one with a different id instead.`
       );
 
+    case "interfaceExtensionAdded": {
+      const extended = finding.extendedInterfaceApiName;
+      return (
+        `${where}: now extends "${extended}". Implementing object types have to satisfy every ` +
+        `property "${extended}" contributes, so those that do not yet are blocked from upgrading, ` +
+        `and no currently-supported interface schema migration can phase that in. Stop extending ` +
+        `"${extended}".`
+      );
+    }
+
     case "propertyRemoved": {
       const property = authored(finding.property);
       return (
@@ -231,6 +241,17 @@ export function describeWarning(warning: LockfileWarning): string {
         `value type ${describeValueType(warning.previousValueType)}. Implementing object types ` +
         `are no longer held to that value type's constraints, so clients that relied on them ` +
         `will start seeing values it rejected. Nothing to do if that was intended; reference it ` +
+        `again if it was not.`
+      );
+    }
+
+    case "interfaceExtensionRemoved": {
+      const extended = warning.extendedInterfaceApiName;
+      return (
+        `Interface ${warning.interfaceApiName} no longer extends "${extended}". Every property ` +
+        `"${extended}" contributed is dropped from the published schema, so clients reading them ` +
+        `will stop seeing them, and object types that implemented "${extended}" only by ` +
+        `inheritance no longer do. Nothing to do if that was intended; extend "${extended}" ` +
         `again if it was not.`
       );
     }
