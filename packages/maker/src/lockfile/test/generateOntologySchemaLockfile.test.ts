@@ -234,6 +234,100 @@ describe("generateOntologySchemaLockfile", () => {
     });
   });
 
+  describe("value types", () => {
+    function lockedProperty(apiName: string): LockedProperty {
+      const { interfaces } = generateOntologySchemaLockfile(
+        getOntologyDefinition(),
+      );
+      return interfaces["com.palantir.Person"].schema.properties[apiName];
+    }
+
+    it("records what identifies the value type, without its display metadata", () => {
+      defineInterface({
+        apiName: "Person",
+        properties: {
+          ssn: {
+            type: "string",
+            valueType: {
+              packageNamespace: "com.example",
+              apiName: "Ssn",
+              version: "1.2.0",
+              displayMetadata: { displayName: "Social security number" },
+            },
+          },
+        },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(lockedProperty("ssn").valueType).toEqual({
+        packageNamespace: "com.example",
+        apiName: "Ssn",
+      });
+    });
+
+    it("locks the same whatever the version says", async () => {
+      // A bump's direction is only readable from the constraints, which maker does not have
+      // for imported value types, so we make no determination in these cases.
+      function lockWithVersion(version: string): LockedProperty {
+        defineInterface({
+          apiName: "Person",
+          properties: {
+            ssn: {
+              type: "string",
+              valueType: {
+                packageNamespace: "com.example",
+                apiName: "Ssn",
+                version,
+                displayMetadata: {},
+              },
+            },
+          },
+          schemaMigrations: { transitions: [] },
+        });
+        return lockedProperty("ssn");
+      }
+
+      const first = lockWithVersion("1.2.0");
+      await defineOntology("com.palantir.", () => {}, undefined);
+      expect(first).toEqual(lockWithVersion("2.0.0"));
+    });
+
+    it("locks the same whatever the display metadata says", async () => {
+      function lockWithDisplayName(displayName: string): LockedProperty {
+        defineInterface({
+          apiName: "Person",
+          properties: {
+            ssn: {
+              type: "string",
+              valueType: {
+                packageNamespace: "com.example",
+                apiName: "Ssn",
+                version: "1.2.0",
+                displayMetadata: { displayName },
+              },
+            },
+          },
+          schemaMigrations: { transitions: [] },
+        });
+        return lockedProperty("ssn");
+      }
+
+      const first = lockWithDisplayName("Social security number");
+      await defineOntology("com.palantir.", () => {}, undefined);
+      expect(first).toEqual(lockWithDisplayName("SSN"));
+    });
+
+    it("omits the key for a property that references no value type", () => {
+      defineInterface({
+        apiName: "Person",
+        properties: { ssn: { type: "string" } },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(Object.keys(lockedProperty("ssn"))).toEqual(["type", "required"]);
+    });
+  });
+
   describe("nullability", () => {
     function lockedProperty(apiName: string): LockedProperty {
       const { interfaces } = generateOntologySchemaLockfile(

@@ -69,6 +69,11 @@ export interface LockedInterfaceSchema {
 /** Where a property's definition comes from. */
 export type PropertyDeclaration = "interface" | "sharedPropertyType";
 
+export interface LockedValueType {
+  packageNamespace: string;
+  apiName: string;
+}
+
 export interface LockedProperty {
   type: LockedPropertyType;
   required: boolean;
@@ -84,6 +89,8 @@ export interface LockedProperty {
    * when undeclared).
    */
   nullability?: Nullability;
+  /** The value type this property is an instance of, or absent if it's not backed by one. */
+  valueType?: LockedValueType;
   /** The property's (sorted) type classes. Absent when it declares none. */
   typeClasses?: TypeClass[];
 }

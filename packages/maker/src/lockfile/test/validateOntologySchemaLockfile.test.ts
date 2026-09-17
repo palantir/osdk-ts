@@ -24,6 +24,7 @@ import type {
   LockedInterfaceType,
   LockedProperty,
   LockedTransition,
+  LockedValueType,
   OntologySchemaLockfile,
 } from "../OntologySchemaLockfile.js";
 import { ONTOLOGY_SCHEMA_LOCKFILE_VERSION } from "../OntologySchemaLockfile.js";
@@ -49,6 +50,11 @@ const UNCONSTRAINED: Nullability = {
   noNulls: false,
   noEmptyCollections: false,
 };
+const SSN: LockedValueType = {
+  packageNamespace: "com.example",
+  apiName: "Ssn",
+};
+const EIN: LockedValueType = { ...SSN, apiName: "Ein" };
 const SORTABLE: TypeClass = { kind: "render_hint", name: "SORTABLE" };
 const SELECTABLE: TypeClass = { kind: "render_hint", name: "SELECTABLE" };
 
@@ -620,6 +626,63 @@ describe("validateOntologySchemaLockfile", () => {
         },
       });
       const result = validate(constrained, constrained);
+      expect(result.findings).toEqual([]);
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("rejects a property newly referencing a value type", () => {
+      const result = validate(
+        person({ ssn: REQUIRED_STRING }),
+        person({ ssn: { ...REQUIRED_STRING, valueType: SSN } }),
+      );
+      expect(result.findings).toEqual([
+        {
+          code: "valueTypeChanged",
+          interfaceApiName: "Person",
+          property: "ssn",
+          previousValueType: undefined,
+          nextValueType: SSN,
+        },
+      ]);
+    });
+
+    it("rejects a property bound to a different value type", () => {
+      const result = validate(
+        person({ ssn: { ...REQUIRED_STRING, valueType: SSN } }),
+        person({ ssn: { ...REQUIRED_STRING, valueType: EIN } }),
+      );
+      expect(result.findings).toEqual([
+        {
+          code: "valueTypeChanged",
+          interfaceApiName: "Person",
+          property: "ssn",
+          previousValueType: SSN,
+          nextValueType: EIN,
+        },
+      ]);
+    });
+
+    it("warns, rather than rejects, when the reference is dropped", () => {
+      const result = validate(
+        person({ ssn: { ...REQUIRED_STRING, valueType: SSN } }),
+        person({ ssn: REQUIRED_STRING }),
+      );
+      expect(result.findings).toEqual([]);
+      expect(result.warnings).toEqual([
+        {
+          code: "valueTypeRemoved",
+          interfaceApiName: "Person",
+          property: "ssn",
+          previousValueType: SSN,
+        },
+      ]);
+    });
+
+    it("accepts a value type reference that did not change", () => {
+      const referenced = person({
+        ssn: { ...REQUIRED_STRING, valueType: SSN },
+      });
+      const result = validate(referenced, referenced);
       expect(result.findings).toEqual([]);
       expect(result.warnings).toEqual([]);
     });
