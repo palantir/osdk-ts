@@ -200,6 +200,8 @@
       "dependsOn": [
         "//#babel-config",
         "@osdk/monorepo.tsconfig#typecheck",
+        // Some tasks bundle dependencies, so their ESM output must be built first to avoid race conditions (missing files).
+        "^transpileEsm",
         "codegen"
       ],
       "inputs": [
