@@ -176,6 +176,49 @@ describe(createClient, () => {
     });
   });
 
+  describe("tracing hooks", () => {
+    it("invokes onRequest and onResponse for every request", async () => {
+      const onRequest = vi.fn();
+      const onResponse = vi.fn();
+      const onError = vi.fn();
+      const tracedFetch = vi.fn<typeof globalThis.fetch>();
+      mockInterfaceFetchPageResponse(tracedFetch, { data: [] });
+
+      const tracedClient = createClient(
+        "https://mock.com",
+        ontologyRid,
+        () => "Token",
+        { tracing: { onRequest, onResponse, onError } },
+        tracedFetch,
+      );
+
+      await tracedClient(BarInterface).fetchPage();
+
+      expect(tracedFetch).toHaveBeenCalledTimes(2);
+      expect(onRequest).toHaveBeenCalledTimes(2);
+      expect(onResponse).toHaveBeenCalledTimes(2);
+      expect(onError).not.toHaveBeenCalled();
+
+      const loadObjectsRequest = onRequest.mock.calls.find(([info]) =>
+        info.url.includes("objectSets/loadObjects"),
+      )?.[0];
+      expect(loadObjectsRequest).toBeDefined();
+
+      for (const [responseInfo] of onResponse.mock.calls) {
+        expect(responseInfo.status).toBe(200);
+        expect(responseInfo.durationMs).toBeGreaterThanOrEqual(0);
+
+        const matchingRequest = onRequest.mock.calls.find(
+          ([requestInfo]) => requestInfo.requestId === responseInfo.requestId,
+        )?.[0];
+        expect(matchingRequest).toMatchObject({
+          url: responseInfo.url,
+          method: responseInfo.method,
+        });
+      }
+    });
+  });
+
   describe("client created with transactionId forwards to requests", () => {
     it("forwards transactionId in fetchPage", async () => {
       const transactionId = "test-transaction-id";
