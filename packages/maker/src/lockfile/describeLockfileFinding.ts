@@ -26,6 +26,7 @@ import {
 } from "../api/interface/describeInterfaceSchemaMigrationInstruction.js";
 import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
+import type { Nullability } from "../api/properties/Nullability.js";
 import { describeType } from "./LockedPropertyType.js";
 import type { PropertyDeclaration } from "./OntologySchemaLockfile.js";
 import type {
@@ -127,6 +128,18 @@ export function describeFinding(finding: LockfileFinding): string {
       );
     }
 
+    case "nullabilityTightened": {
+      const property = authored(finding.property);
+      return (
+        `${where}: property "${property}" tightened its nullability from ` +
+        `${describeNullability(finding.previousNullability)} to ` +
+        `${describeNullability(finding.nextNullability)}. Implementing object types whose data ` +
+        `does not already satisfy that are blocked from upgrading, and no currently-supported ` +
+        `interface schema migration can phase it in. Restore "${property}" to ` +
+        `${describeNullability(finding.previousNullability)}.`
+      );
+    }
+
     case "propertyBecameRequired": {
       const property = authored(finding.property);
       return (
@@ -180,7 +193,28 @@ export function describeWarning(warning: LockfileWarning): string {
         `the constraint again if it was not.`
       );
     }
+
+    case "nullabilityRelaxed": {
+      const property = authored(warning.property);
+      return (
+        `Interface ${warning.interfaceApiName}: property "${property}" relaxed its nullability ` +
+        `from ${describeNullability(warning.previousNullability)} to ` +
+        `${describeNullability(warning.nextNullability)}. Implementing object types may supply ` +
+        `values it previously rejected, so clients that relied on the old guarantee will start ` +
+        `seeing them. Nothing to do if that was intended; declare the constraint again if it ` +
+        `was not.`
+      );
+    }
   }
+}
+
+/** What a nullability forbids, as a noun phrase. */
+function describeNullability(nullability: Nullability): string {
+  const forbidden = [
+    nullability.noNulls && "no nulls",
+    nullability.noEmptyCollections && "no empty collections",
+  ].filter((clause): clause is string => clause !== false);
+  return forbidden.length === 0 ? "unconstrained" : forbidden.join(", ");
 }
 
 /** A primary key constraint, as it reads mid-sentence. */

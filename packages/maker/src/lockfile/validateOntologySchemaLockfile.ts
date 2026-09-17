@@ -19,6 +19,7 @@ import { isDeepStrictEqual } from "node:util";
 import type { TypeClass } from "../api/common/TypeClass.js";
 import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
+import type { Nullability } from "../api/properties/Nullability.js";
 import {
   applyTransition,
   reproduces,
@@ -36,8 +37,10 @@ import type {
 } from "./OntologySchemaLockfile.js";
 import {
   declarationOf,
+  nullabilityOf,
   own,
   primaryKeyConstraintOf,
+  tightensNullability,
 } from "./OntologySchemaLockfile.js";
 
 /**
@@ -112,6 +115,13 @@ export type LockfileFinding =
       nextConstraint: PrimaryKeyConstraint;
     }
   | {
+      code: "nullabilityTightened";
+      interfaceApiName: string;
+      property: string;
+      previousNullability: Nullability;
+      nextNullability: Nullability;
+    }
+  | {
       code: "propertyBecameRequired";
       interfaceApiName: string;
       property: string;
@@ -137,6 +147,13 @@ export type LockfileWarning =
       interfaceApiName: string;
       property: string;
       previousConstraint: PrimaryKeyConstraint;
+    }
+  | {
+      code: "nullabilityRelaxed";
+      interfaceApiName: string;
+      property: string;
+      previousNullability: Nullability;
+      nextNullability: Nullability;
     };
 
 export interface LockfileValidationResult {
@@ -377,6 +394,25 @@ function validateSchemaDiff(
       });
     }
 
+    const previousNullability = nullabilityOf(previousProperty);
+    const nextNullability = nullabilityOf(nextProperty);
+    const nullabilityMoved = !isDeepStrictEqual(
+      previousNullability,
+      nextNullability,
+    );
+    if (
+      nullabilityMoved &&
+      !tightensNullability(previousNullability, nextNullability)
+    ) {
+      warnings.push({
+        code: "nullabilityRelaxed",
+        interfaceApiName,
+        property: propertyApiName,
+        previousNullability,
+        nextNullability,
+      });
+    }
+
     // Ahead of the type check: when the binding itself was swapped, the types are incidental, and
     // reporting them would point the author at the wrong thing to restore.
     const previousDeclaration = declarationOf(previousProperty);
@@ -428,6 +464,17 @@ function validateSchemaDiff(
         property: propertyApiName,
         previousConstraint,
         nextConstraint,
+      });
+      continue;
+    }
+
+    if (tightensNullability(previousNullability, nextNullability)) {
+      findings.push({
+        code: "nullabilityTightened",
+        interfaceApiName,
+        property: propertyApiName,
+        previousNullability,
+        nextNullability,
       });
       continue;
     }

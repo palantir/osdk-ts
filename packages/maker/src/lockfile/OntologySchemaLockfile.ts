@@ -22,6 +22,7 @@ import type {
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
 } from "../api/interface/InterfaceSchemaMigrations.js";
+import type { Nullability } from "../api/properties/Nullability.js";
 import type { LockedPropertyType } from "./LockedPropertyType.js";
 
 export const ONTOLOGY_SCHEMA_LOCKFILE_VERSION = 1;
@@ -78,6 +79,11 @@ export interface LockedProperty {
    * there is no restriction.
    */
   primaryKeyConstraint?: Exclude<PrimaryKeyConstraint, "NO_RESTRICTION">;
+  /**
+   * Property nullability constraints; absent when it constraints neither (e.g. both false or
+   * when undeclared).
+   */
+  nullability?: Nullability;
   /** The property's (sorted) type classes. Absent when it declares none. */
   typeClasses?: TypeClass[];
 }
@@ -96,6 +102,26 @@ export function primaryKeyConstraintOf(
   property: LockedProperty,
 ): PrimaryKeyConstraint {
   return property.primaryKeyConstraint ?? "NO_RESTRICTION";
+}
+
+export const UNCONSTRAINED_NULLABILITY: Nullability = {
+  noNulls: false,
+  noEmptyCollections: false,
+};
+
+export function nullabilityOf(property: LockedProperty): Nullability {
+  return property.nullability ?? UNCONSTRAINED_NULLABILITY;
+}
+
+/** Whether `next` obliges implementing object types to satisfy something `previous` did not. */
+export function tightensNullability(
+  previous: Nullability,
+  next: Nullability,
+): boolean {
+  return (
+    (!previous.noNulls && next.noNulls) ||
+    (!previous.noEmptyCollections && next.noEmptyCollections)
+  );
 }
 
 /**

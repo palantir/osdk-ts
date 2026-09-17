@@ -234,6 +234,70 @@ describe("generateOntologySchemaLockfile", () => {
     });
   });
 
+  describe("nullability", () => {
+    function lockedProperty(apiName: string): LockedProperty {
+      const { interfaces } = generateOntologySchemaLockfile(
+        getOntologyDefinition(),
+      );
+      return interfaces["com.palantir.Person"].schema.properties[apiName];
+    }
+
+    it("records what a property forbids", () => {
+      defineInterface({
+        apiName: "Person",
+        properties: {
+          name: {
+            type: "string",
+            nullability: { noNulls: true, noEmptyCollections: false },
+          },
+        },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(lockedProperty("name")).toEqual({
+        type: "string",
+        required: true,
+        nullability: { noNulls: true, noEmptyCollections: false },
+      });
+    });
+
+    it("omits a nullability that forbids nothing", () => {
+      defineInterface({
+        apiName: "Person",
+        properties: {
+          name: {
+            type: "string",
+            nullability: { noNulls: false, noEmptyCollections: false },
+          },
+        },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(Object.keys(lockedProperty("name"))).toEqual(["type", "required"]);
+    });
+
+    it("records the implicit non-nullability of a marking property", () => {
+      defineInterface({
+        apiName: "Person",
+        properties: {
+          clearance: {
+            type: {
+              type: "marking",
+              markingType: "MANDATORY",
+              markingInputGroupName: "clearance",
+            },
+          },
+        },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(lockedProperty("clearance").nullability).toEqual({
+        noNulls: true,
+        noEmptyCollections: true,
+      });
+    });
+  });
+
   describe("type classes", () => {
     const SORTABLE: TypeClass = { kind: "render_hint", name: "SORTABLE" };
     const SELECTABLE: TypeClass = { kind: "render_hint", name: "SELECTABLE" };
