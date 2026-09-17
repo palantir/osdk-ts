@@ -17,6 +17,7 @@
 import { isDeepStrictEqual } from "node:util";
 
 import type { TypeClass } from "../api/common/TypeClass.js";
+import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
 import type {
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
@@ -72,6 +73,11 @@ export interface LockedProperty {
   required: boolean;
   /** Present when a SPT backs this property; absent when the interface defines it inline. */
   declaredBy?: "sharedPropertyType";
+  /**
+   * The constraint on mapping this property to an implementing object type's PK. Absent when
+   * there is no restriction.
+   */
+  primaryKeyConstraint?: Exclude<PrimaryKeyConstraint, "NO_RESTRICTION">;
   /** The property's (sorted) type classes. Absent when it declares none. */
   typeClasses?: TypeClass[];
 }
@@ -84,6 +90,12 @@ export interface LockedTransition {
 
 export function declarationOf(property: LockedProperty): PropertyDeclaration {
   return property.declaredBy ?? "interface";
+}
+
+export function primaryKeyConstraintOf(
+  property: LockedProperty,
+): PrimaryKeyConstraint {
+  return property.primaryKeyConstraint ?? "NO_RESTRICTION";
 }
 
 /**

@@ -168,6 +168,29 @@ describe("describeFinding", () => {
         expected: 'Declare "lastName" backed by a shared property type again.',
       },
       {
+        name: "a property newly constrained to the primary key",
+        finding: {
+          code: "primaryKeyConstraintChanged",
+          interfaceApiName: "Person",
+          property: "id",
+          previousConstraint: "NO_RESTRICTION",
+          nextConstraint: "MUST_BE_PK",
+        },
+        expected:
+          'property "id" changed its primary key constraint from unconstrained to `MUST_BE_PK`',
+      },
+      {
+        name: "a property whose primary key constraint was swapped",
+        finding: {
+          code: "primaryKeyConstraintChanged",
+          interfaceApiName: "Person",
+          property: "id",
+          previousConstraint: "MUST_BE_PK",
+          nextConstraint: "CANNOT_BE_PK",
+        },
+        expected: 'Restore "id" to `MUST_BE_PK`.',
+      },
+      {
         name: "a property that gained a type class",
         finding: {
           code: "propertyTypeClassesChanged",
@@ -334,6 +357,28 @@ describe("describeWarning", () => {
 
     it("says who is affected rather than demanding a fix", () => {
       expect(relaxed).toContain("will start seeing it absent");
+      expect(relaxed).toContain("Nothing to do if that was intended");
+    });
+  });
+
+  describe("a dropped primary key constraint", () => {
+    const relaxed = describeWarning({
+      code: "primaryKeyConstraintRelaxed",
+      interfaceApiName: "Person",
+      property: "com.example.id",
+      previousConstraint: "MUST_BE_PK",
+    });
+
+    it("names the constraint that was dropped, and the authored key", () => {
+      expect(relaxed).toContain(
+        'property "id" no longer constrains primary key mapping',
+      );
+      expect(relaxed).toContain("having been `MUST_BE_PK`");
+      expect(relaxed).not.toContain("com.example.id");
+    });
+
+    it("says who is affected rather than demanding a fix", () => {
+      expect(relaxed).toContain("free to map it either way");
       expect(relaxed).toContain("Nothing to do if that was intended");
     });
   });

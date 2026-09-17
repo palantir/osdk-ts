@@ -187,6 +187,53 @@ describe("generateOntologySchemaLockfile", () => {
     });
   });
 
+  describe("primary key constraints", () => {
+    function lockedProperty(apiName: string): LockedProperty {
+      const { interfaces } = generateOntologySchemaLockfile(
+        getOntologyDefinition(),
+      );
+      return interfaces["com.palantir.Person"].schema.properties[apiName];
+    }
+
+    it.each(["MUST_BE_PK", "CANNOT_BE_PK"] as const)(
+      "records a %s constraint",
+      (primaryKeyConstraint) => {
+        defineInterface({
+          apiName: "Person",
+          properties: { id: { type: "string", primaryKeyConstraint } },
+          schemaMigrations: { transitions: [] },
+        });
+
+        expect(lockedProperty("id")).toEqual({
+          type: "string",
+          required: true,
+          primaryKeyConstraint,
+        });
+      },
+    );
+
+    it("locks an omitted constraint and an explicit NO_RESTRICTION the same", async () => {
+      defineInterface({
+        apiName: "Person",
+        properties: { id: { type: "string" } },
+        schemaMigrations: { transitions: [] },
+      });
+      const omitted = lockedProperty("id");
+
+      await defineOntology("com.palantir.", () => {}, undefined);
+      defineInterface({
+        apiName: "Person",
+        properties: {
+          id: { type: "string", primaryKeyConstraint: "NO_RESTRICTION" },
+        },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(omitted).toEqual(lockedProperty("id"));
+      expect(Object.keys(omitted)).toEqual(["type", "required"]);
+    });
+  });
+
   describe("type classes", () => {
     const SORTABLE: TypeClass = { kind: "render_hint", name: "SORTABLE" };
     const SELECTABLE: TypeClass = { kind: "render_hint", name: "SELECTABLE" };

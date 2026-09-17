@@ -27,9 +27,14 @@ export type InterfacePropertyType =
   | InterfaceSharedPropertyType
   | InterfaceDefinedProperty;
 
+export type PrimaryKeyConstraint =
+  | "MUST_BE_PK"
+  | "CANNOT_BE_PK"
+  | "NO_RESTRICTION";
+
 export interface InterfaceDefinedProperty extends PropertyType {
   required?: boolean;
-  primaryKeyConstraint?: "MUST_BE_PK" | "CANNOT_BE_PK" | "NO_RESTRICTION";
+  primaryKeyConstraint?: PrimaryKeyConstraint;
   baseFormatter?: OntologyIrBaseFormatter;
 }
 
@@ -77,6 +82,14 @@ export function interfacePropertyTypeClasses(
     ? interfacePropertyType.sharedPropertyType
     : interfacePropertyType;
   return typeClasses;
+}
+
+export function interfacePropertyPrimaryKeyConstraint(
+  interfacePropertyType: InterfacePropertyType,
+): PrimaryKeyConstraint {
+  return isInterfaceSharedPropertyType(interfacePropertyType)
+    ? "NO_RESTRICTION"
+    : (interfacePropertyType.primaryKeyConstraint ?? "NO_RESTRICTION");
 }
 
 /**

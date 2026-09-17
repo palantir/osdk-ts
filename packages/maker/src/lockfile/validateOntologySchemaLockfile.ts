@@ -17,6 +17,7 @@
 import { isDeepStrictEqual } from "node:util";
 
 import type { TypeClass } from "../api/common/TypeClass.js";
+import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import {
   applyTransition,
@@ -33,7 +34,11 @@ import type {
   OntologySchemaLockfile,
   PropertyDeclaration,
 } from "./OntologySchemaLockfile.js";
-import { declarationOf, own } from "./OntologySchemaLockfile.js";
+import {
+  declarationOf,
+  own,
+  primaryKeyConstraintOf,
+} from "./OntologySchemaLockfile.js";
 
 /**
  * NOTE ON CONVENTION: the rest of maker validates with `invariant`, failing on the first problem.
@@ -100,6 +105,13 @@ export type LockfileFinding =
       nextTypeClasses: readonly TypeClass[];
     }
   | {
+      code: "primaryKeyConstraintChanged";
+      interfaceApiName: string;
+      property: string;
+      previousConstraint: PrimaryKeyConstraint;
+      nextConstraint: PrimaryKeyConstraint;
+    }
+  | {
       code: "propertyBecameRequired";
       interfaceApiName: string;
       property: string;
@@ -119,6 +131,12 @@ export type LockfileWarning =
       code: "requirementRelaxed";
       interfaceApiName: string;
       property: string;
+    }
+  | {
+      code: "primaryKeyConstraintRelaxed";
+      interfaceApiName: string;
+      property: string;
+      previousConstraint: PrimaryKeyConstraint;
     };
 
 export interface LockfileValidationResult {
@@ -345,6 +363,20 @@ function validateSchemaDiff(
       // NB: explicitly doesn't short-circuit since this is just a warning
     }
 
+    const previousConstraint = primaryKeyConstraintOf(previousProperty);
+    const nextConstraint = primaryKeyConstraintOf(nextProperty);
+    if (
+      previousConstraint !== nextConstraint &&
+      nextConstraint === "NO_RESTRICTION"
+    ) {
+      warnings.push({
+        code: "primaryKeyConstraintRelaxed",
+        interfaceApiName,
+        property: propertyApiName,
+        previousConstraint,
+      });
+    }
+
     // Ahead of the type check: when the binding itself was swapped, the types are incidental, and
     // reporting them would point the author at the wrong thing to restore.
     const previousDeclaration = declarationOf(previousProperty);
@@ -382,6 +414,20 @@ function validateSchemaDiff(
         property: propertyApiName,
         previousTypeClasses: previousProperty.typeClasses ?? [],
         nextTypeClasses: nextProperty.typeClasses ?? [],
+      });
+      continue;
+    }
+
+    if (
+      previousConstraint !== nextConstraint &&
+      nextConstraint !== "NO_RESTRICTION"
+    ) {
+      findings.push({
+        code: "primaryKeyConstraintChanged",
+        interfaceApiName,
+        property: propertyApiName,
+        previousConstraint,
+        nextConstraint,
       });
       continue;
     }
