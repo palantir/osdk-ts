@@ -26,6 +26,7 @@ import {
 } from "../api/interface/describeInterfaceSchemaMigrationInstruction.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import { describeType } from "./LockedPropertyType.js";
+import type { PropertyDeclaration } from "./OntologySchemaLockfile.js";
 import type {
   LockfileFinding,
   LockfileWarning,
@@ -73,6 +74,18 @@ export function describeFinding(finding: LockfileFinding): string {
         `${where}: property "${property}" was removed. Removing a property from an ` +
         `interface is a breaking change, and no currently-supported interface schema migration can ` +
         `phase it in. Restore "${property}" to the interface.`
+      );
+    }
+
+    case "propertyDeclarationChanged": {
+      const property = authored(finding.property);
+      return (
+        `${where}: property "${property}" moved from ` +
+        `${describeDeclaration(finding.previousDeclaration)} to ` +
+        `${describeDeclaration(finding.nextDeclaration)}. The two are different bindings even ` +
+        `when they resolve to the same type, so implementing object types would have to remap ` +
+        `the property, and no currently-supported interface schema migration can phase that in. ` +
+        `Declare "${property}" ${describeDeclaration(finding.previousDeclaration)} again.`
       );
     }
 
@@ -139,6 +152,16 @@ export function describeWarning(warning: LockfileWarning): string {
 /** The key the author wrote for a property, given the api name the lockfile records it under. */
 function authored(wireApiName: string): string {
   return withoutNamespace(wireApiName);
+}
+
+/** Where a property is declared, as it reads mid-sentence in a finding. */
+function describeDeclaration(declaration: PropertyDeclaration): string {
+  switch (declaration) {
+    case "interface":
+      return "defined on the interface";
+    case "sharedPropertyType":
+      return "backed by a shared property type";
+  }
 }
 
 function describeTypeClasses(typeClasses: readonly TypeClass[]): string {

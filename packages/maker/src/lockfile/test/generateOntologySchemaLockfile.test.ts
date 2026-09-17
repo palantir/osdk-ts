@@ -128,6 +128,7 @@ describe("generateOntologySchemaLockfile", () => {
         type: { type: "array", subtype: "string" },
         required: false,
         typeClasses: defaultTypeClasses,
+        declaredBy: "sharedPropertyType",
       });
     });
 
@@ -142,6 +143,47 @@ describe("generateOntologySchemaLockfile", () => {
         type: "string",
         required: true,
       });
+    });
+  });
+
+  describe("where a property is declared", () => {
+    function lockedProperty(apiName: string): LockedProperty {
+      const { interfaces } = generateOntologySchemaLockfile(
+        getOntologyDefinition(),
+      );
+      return interfaces["com.palantir.Person"].schema.properties[apiName];
+    }
+
+    it("records that a shared property type backs the property", () => {
+      const email = defineSharedPropertyType({
+        apiName: "email",
+        type: "string",
+        typeClasses: [],
+      });
+      defineInterface({
+        apiName: "Person",
+        properties: { email: { sharedPropertyType: email, required: false } },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(lockedProperty("com.palantir.email")).toEqual({
+        type: "string",
+        required: false,
+        declaredBy: "sharedPropertyType",
+      });
+    });
+
+    it("stays quiet about a property the interface defines itself", () => {
+      defineInterface({
+        apiName: "Person",
+        properties: { email: { type: "string" } },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(Object.keys(lockedProperty("email"))).toEqual([
+        "type",
+        "required",
+      ]);
     });
   });
 
@@ -187,6 +229,7 @@ describe("generateOntologySchemaLockfile", () => {
         type: "string",
         required: false,
         typeClasses: [SORTABLE],
+        declaredBy: "sharedPropertyType",
       });
     });
 

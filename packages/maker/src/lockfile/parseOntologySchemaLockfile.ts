@@ -142,6 +142,14 @@ const propertySchema = z
             `release declared.`,
         })
         .optional(),
+      // Absent means its an IDP, so we need only expect the SPT variant here
+      declaredBy: z
+        .literal("sharedPropertyType", {
+          message:
+            `Expected "sharedPropertyType", or no value at all for a property the interface ` +
+            `defines itself. Restore what the last published release declared.`,
+        })
+        .optional(),
     },
     {
       message:
