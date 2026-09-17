@@ -116,6 +116,16 @@ const transitionSchema = z
   )
   .passthrough();
 
+const typeClassSchema = z
+  .object(
+    {
+      kind: z.string({ message: "Expected a type class kind." }),
+      name: z.string({ message: "Expected a type class name." }),
+    },
+    { message: "Expected an object recording a type class." },
+  )
+  .passthrough();
+
 const propertySchema = z
   .object(
     {
@@ -125,6 +135,13 @@ const propertySchema = z
         message: `Expected a recorded property type. Restore the type the last published release declared.`,
       }),
       required: z.boolean({ message: "Expected a boolean." }),
+      typeClasses: z
+        .array(typeClassSchema, {
+          message:
+            `Expected an array of type classes. Restore the type classes the last published ` +
+            `release declared.`,
+        })
+        .optional(),
     },
     {
       message:

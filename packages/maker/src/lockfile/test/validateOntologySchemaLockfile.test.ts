@@ -16,6 +16,7 @@
 
 import { describe, expect, it } from "vitest";
 
+import type { TypeClass } from "../../api/common/TypeClass.js";
 import type { InterfaceSchemaGracePeriod } from "../../api/interface/InterfaceSchemaMigrations.js";
 import type { SourceCensus } from "../generateOntologySchemaLockfile.js";
 import type {
@@ -38,6 +39,8 @@ const THIRTY_DAYS: InterfaceSchemaGracePeriod = {
   type: "afterInstall",
   days: 30,
 };
+const SORTABLE: TypeClass = { kind: "render_hint", name: "SORTABLE" };
+const SELECTABLE: TypeClass = { kind: "render_hint", name: "SELECTABLE" };
 
 function lockfile(
   interfaces: Record<string, LockedInterfaceType>,
@@ -403,6 +406,79 @@ describe("validateOntologySchemaLockfile", () => {
         person({ firstName: REQUIRED_STRING_LIST }),
       );
       expect(result.findings).toEqual([]);
+    });
+
+    it("rejects adding a type class to a property", () => {
+      const result = validate(
+        person({ firstName: REQUIRED_STRING }),
+        person({ firstName: { ...REQUIRED_STRING, typeClasses: [SORTABLE] } }),
+      );
+      expect(result.findings).toEqual([
+        {
+          code: "propertyTypeClassesChanged",
+          interfaceApiName: "Person",
+          property: "firstName",
+          previousTypeClasses: [],
+          nextTypeClasses: [SORTABLE],
+        },
+      ]);
+    });
+
+    it("rejects dropping a type class from a property", () => {
+      const result = validate(
+        person({ firstName: { ...REQUIRED_STRING, typeClasses: [SORTABLE] } }),
+        person({ firstName: REQUIRED_STRING }),
+      );
+      expect(result.findings).toEqual([
+        {
+          code: "propertyTypeClassesChanged",
+          interfaceApiName: "Person",
+          property: "firstName",
+          previousTypeClasses: [SORTABLE],
+          nextTypeClasses: [],
+        },
+      ]);
+    });
+
+    it("rejects swapping one type class for another", () => {
+      const result = validate(
+        person({ firstName: { ...REQUIRED_STRING, typeClasses: [SORTABLE] } }),
+        person({
+          firstName: { ...REQUIRED_STRING, typeClasses: [SELECTABLE] },
+        }),
+      );
+      expect(result.findings).toEqual([
+        {
+          code: "propertyTypeClassesChanged",
+          interfaceApiName: "Person",
+          property: "firstName",
+          previousTypeClasses: [SORTABLE],
+          nextTypeClasses: [SELECTABLE],
+        },
+      ]);
+    });
+
+    it("accepts type classes that did not change", () => {
+      const withSortable = person({
+        firstName: { ...REQUIRED_STRING, typeClasses: [SORTABLE] },
+      });
+      expect(validate(withSortable, withSortable).findings).toEqual([]);
+    });
+
+    it("reports a retyped property once, as a type change", () => {
+      const result = validate(
+        person({ firstName: REQUIRED_STRING }),
+        person({
+          firstName: {
+            type: "integer",
+            required: true,
+            typeClasses: [SORTABLE],
+          },
+        }),
+      );
+      expect(result.findings.map(({ code }) => code)).toEqual([
+        "propertyTypeChanged",
+      ]);
     });
 
     it("rejects making an existing property required", () => {

@@ -16,6 +16,7 @@
 
 import { isDeepStrictEqual } from "node:util";
 
+import type { TypeClass } from "../api/common/TypeClass.js";
 import type {
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
@@ -66,6 +67,8 @@ export interface LockedInterfaceSchema {
 export interface LockedProperty {
   type: LockedPropertyType;
   required: boolean;
+  /** The property's (sorted) type classes. Absent when it declares none. */
+  typeClasses?: TypeClass[];
 }
 
 export interface LockedTransition {
