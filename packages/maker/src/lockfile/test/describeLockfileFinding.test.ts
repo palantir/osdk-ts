@@ -319,4 +319,22 @@ describe("describeWarning", () => {
       "Restore the `schemaMigrations` block to keep the interface checked.",
     );
   });
+
+  describe("a relaxed requirement", () => {
+    const relaxed = describeWarning({
+      code: "requirementRelaxed",
+      interfaceApiName: "Person",
+      property: "com.example.lastName",
+    });
+
+    it("names the key the author wrote", () => {
+      expect(relaxed).toContain('property "lastName" is no longer required');
+      expect(relaxed).not.toContain("com.example.lastName");
+    });
+
+    it("says who is affected rather than demanding a fix", () => {
+      expect(relaxed).toContain("will start seeing it absent");
+      expect(relaxed).toContain("Nothing to do if that was intended");
+    });
+  });
 });

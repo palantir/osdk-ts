@@ -146,6 +146,16 @@ export function describeWarning(warning: LockfileWarning): string {
         `only surface when the ontology is installed. Restore the \`schemaMigrations\` block to ` +
         `keep the interface checked.`
       );
+
+    case "requirementRelaxed": {
+      const property = authored(warning.property);
+      return (
+        `Interface ${warning.interfaceApiName}: property "${property}" is no longer required. ` +
+        `Implementing object types need not provide it from this release on, so clients that ` +
+        `expect it to always be present will start seeing it absent. Nothing to do if that was ` +
+        `intended; declare it \`required: true\` again if it was not.`
+      );
+    }
   }
 }
 

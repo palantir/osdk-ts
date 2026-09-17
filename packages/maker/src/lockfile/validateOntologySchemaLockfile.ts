@@ -113,7 +113,13 @@ export type LockfileFinding =
 /** Worth telling the author about, but not by itself a reason to reject the ontology. */
 export type LockfileWarning =
   /** The source still declares the interface, but has dropped its `schemaMigrations` block. */
-  { code: "optedOut"; interfaceApiName: string };
+  | { code: "optedOut"; interfaceApiName: string }
+  /** A property that implementing object types had to provide no longer has to be provided. */
+  | {
+      code: "requirementRelaxed";
+      interfaceApiName: string;
+      property: string;
+    };
 
 export interface LockfileValidationResult {
   /**
@@ -140,9 +146,11 @@ export function validateOntologySchemaLockfile(
   next: OntologySchemaLockfile,
   census: SourceCensus,
 ): LockfileValidationResult {
-  const findings: LockfileFinding[] = [];
-  const checkpoints: DetectedCheckpoint[] = [];
-  const warnings: LockfileWarning[] = [];
+  const result: LockfileValidationResult = {
+    findings: [],
+    checkpoints: [],
+    warnings: [],
+  };
 
   for (const [interfaceApiName, previousInterface] of Object.entries(
     previous.interfaces,
@@ -158,19 +166,18 @@ export function validateOntologySchemaLockfile(
     }
 
     if (enrolled === undefined) {
-      warnings.push({ code: "optedOut", interfaceApiName });
+      result.warnings.push({ code: "optedOut", interfaceApiName });
     }
 
     validateInterface(
       interfaceApiName,
       previousInterface,
       nextInterface,
-      findings,
-      checkpoints,
+      result,
     );
   }
 
-  return { findings, checkpoints, warnings };
+  return result;
 }
 
 /**
@@ -193,9 +200,9 @@ function validateInterface(
   interfaceApiName: string,
   previousInterface: LockedInterfaceType,
   nextInterface: LockedInterfaceType,
-  findings: LockfileFinding[],
-  checkpoints: DetectedCheckpoint[],
+  result: LockfileValidationResult,
 ): void {
+  const { findings, checkpoints } = result;
   const nextTransitions = new Map(
     nextInterface.transitions.map((transition) => [transition.id, transition]),
   );
@@ -249,7 +256,7 @@ function validateInterface(
     previousInterface.schema,
     nextInterface.schema,
     propertiesAccountedFor,
-    findings,
+    result,
   );
 }
 
@@ -310,7 +317,7 @@ function validateSchemaDiff(
   previousSchema: LockedInterfaceSchema,
   nextSchema: LockedInterfaceSchema,
   accountedFor: ReadonlySet<string>,
-  findings: LockfileFinding[],
+  { findings, warnings }: LockfileValidationResult,
 ): void {
   for (const [propertyApiName, previousProperty] of Object.entries(
     previousSchema.properties,
@@ -327,6 +334,15 @@ function validateSchemaDiff(
         property: propertyApiName,
       });
       continue;
+    }
+
+    if (previousProperty.required && !nextProperty.required) {
+      warnings.push({
+        code: "requirementRelaxed",
+        interfaceApiName,
+        property: propertyApiName,
+      });
+      // NB: explicitly doesn't short-circuit since this is just a warning
     }
 
     // Ahead of the type check: when the binding itself was swapped, the types are incidental, and
