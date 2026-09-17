@@ -168,17 +168,10 @@ describe("reconcileOntologySchemaLockfile", () => {
       });
     });
 
-    it("refuses to publish until the lockfile records the change", async () => {
+    it("refuses to publish, naming the entities --write-locks would update", async () => {
       await published(optedIn);
       await expect(maker(lastNameInFlight)).rejects.toThrowError(
-        /is out of date[\s\S]*Run maker again with --write-locks/u,
-      );
-    });
-
-    it("names the entities --write-locks would bring up to date", async () => {
-      await published(optedIn);
-      await expect(maker(lastNameInFlight)).rejects.toThrowError(
-        /have changed since it was written:\n {2}Person\n/u,
+        /is out of date[\s\S]*have changed since it was written:\n {2}Person\n[\s\S]*Run maker again with --write-locks/u,
       );
     });
 

@@ -47,9 +47,9 @@ import {
 
 /**
  * NOTE ON CONVENTION: the rest of maker validates with `invariant`, failing on the first problem.
- * This module instead accumulates findings and lets its caller throw one aggregate. An author
- * fixing a batch of breaking changes wants to see all of them, not to discover them one build at
- * a time.
+ * This module instead accumulates breaking changes and lets its caller throw one aggregate. An
+ * author fixing a batch of them wants to see all of them, not to discover them one build at a
+ * time.
  */
 
 /** A transition that the source no longer declares, along with what its disappearance meant. */
@@ -67,7 +67,7 @@ export interface TargetPropertyState {
 }
 
 /** A change that would be rejected at installation-time, in machine-readable form. */
-export type LockfileFinding =
+export type LockfileBreakingChange =
   /**
    * A transition vanished from the source, but neither finalizing nor deleting it reproduces the
    * new schema, so there is no way to read what the author meant.
@@ -186,7 +186,7 @@ export interface LockfileValidationResult {
    * Changes the author must resolve before the ontology can be published. Every entry is a change
    * that would be rejected at installation-time.
    */
-  findings: LockfileFinding[];
+  breakingChanges: LockfileBreakingChange[];
   /** Finalizations and deletions inferred from the diff, in lockfile order. */
   checkpoints: DetectedCheckpoint[];
   /** Changes the author probably wants to know they made, in lockfile order. */
@@ -207,7 +207,7 @@ export function validateOntologySchemaLockfile(
   census: SourceCensus,
 ): LockfileValidationResult {
   const result: LockfileValidationResult = {
-    findings: [],
+    breakingChanges: [],
     checkpoints: [],
     warnings: [],
   };
@@ -262,7 +262,7 @@ function validateInterface(
   nextInterface: LockedInterfaceType,
   result: LockfileValidationResult,
 ): void {
-  const { findings, checkpoints } = result;
+  const { breakingChanges, checkpoints } = result;
   const nextTransitions = new Map(
     nextInterface.transitions.map((transition) => [transition.id, transition]),
   );
@@ -280,7 +280,7 @@ function validateInterface(
         nextInterface.schema,
       );
       if (disappearance.kind === "ambiguous") {
-        findings.push({
+        breakingChanges.push({
           code: "ambiguousDisappearance",
           interfaceApiName,
           transitionId: previousTransition.id,
@@ -307,7 +307,7 @@ function validateInterface(
       interfaceApiName,
       previousTransition,
       nextTransition,
-      findings,
+      breakingChanges,
     );
   }
 
@@ -331,14 +331,14 @@ function validateExtensionsDiff(
   interfaceApiName: string,
   previousSchema: LockedInterfaceSchema,
   nextSchema: LockedInterfaceSchema,
-  { findings, warnings }: LockfileValidationResult,
+  { breakingChanges, warnings }: LockfileValidationResult,
 ): void {
   const previousExtensions = new Set(extensionsOf(previousSchema));
   const nextExtensions = new Set(extensionsOf(nextSchema));
 
   for (const extendedInterfaceApiName of nextExtensions) {
     if (!previousExtensions.has(extendedInterfaceApiName)) {
-      findings.push({
+      breakingChanges.push({
         code: "interfaceExtensionAdded",
         interfaceApiName,
         extendedInterfaceApiName,
@@ -392,10 +392,10 @@ function validateSurvivingTransition(
   interfaceApiName: string,
   previous: LockedTransition,
   next: LockedTransition,
-  findings: LockfileFinding[],
+  breakingChanges: LockfileBreakingChange[],
 ): void {
   if (!isDeepStrictEqual(previous.instructions, next.instructions)) {
-    findings.push({
+    breakingChanges.push({
       code: "instructionsChanged",
       interfaceApiName,
       transitionId: previous.id,
@@ -414,7 +414,7 @@ function validateSchemaDiff(
   previousSchema: LockedInterfaceSchema,
   nextSchema: LockedInterfaceSchema,
   accountedFor: ReadonlySet<string>,
-  { findings, warnings }: LockfileValidationResult,
+  { breakingChanges, warnings }: LockfileValidationResult,
 ): void {
   for (const [propertyApiName, previousProperty] of Object.entries(
     previousSchema.properties,
@@ -425,7 +425,7 @@ function validateSchemaDiff(
 
     const nextProperty = own(nextSchema.properties, propertyApiName);
     if (nextProperty === undefined) {
-      findings.push({
+      breakingChanges.push({
         code: "propertyRemoved",
         interfaceApiName,
         property: propertyApiName,
@@ -492,7 +492,7 @@ function validateSchemaDiff(
     const previousDeclaration = declarationOf(previousProperty);
     const nextDeclaration = declarationOf(nextProperty);
     if (previousDeclaration !== nextDeclaration) {
-      findings.push({
+      breakingChanges.push({
         code: "propertyDeclarationChanged",
         interfaceApiName,
         property: propertyApiName,
@@ -505,7 +505,7 @@ function validateSchemaDiff(
     // This is probably too strict; we might need to strip more things from the locked property
     // type to avoid false positives
     if (!isDeepStrictEqual(previousProperty.type, nextProperty.type)) {
-      findings.push({
+      breakingChanges.push({
         code: "propertyTypeChanged",
         interfaceApiName,
         property: propertyApiName,
@@ -518,7 +518,7 @@ function validateSchemaDiff(
     if (
       !isDeepStrictEqual(previousProperty.typeClasses, nextProperty.typeClasses)
     ) {
-      findings.push({
+      breakingChanges.push({
         code: "propertyTypeClassesChanged",
         interfaceApiName,
         property: propertyApiName,
@@ -532,7 +532,7 @@ function validateSchemaDiff(
       previousConstraint !== nextConstraint &&
       nextConstraint !== "NO_RESTRICTION"
     ) {
-      findings.push({
+      breakingChanges.push({
         code: "primaryKeyConstraintChanged",
         interfaceApiName,
         property: propertyApiName,
@@ -543,7 +543,7 @@ function validateSchemaDiff(
     }
 
     if (tightensNullability(previousNullability, nextNullability)) {
-      findings.push({
+      breakingChanges.push({
         code: "nullabilityTightened",
         interfaceApiName,
         property: propertyApiName,
@@ -558,7 +558,7 @@ function validateSchemaDiff(
       nextValueType !== undefined &&
       !isDeepStrictEqual(previousProperty.valueType, nextValueType)
     ) {
-      findings.push({
+      breakingChanges.push({
         code: "valueTypeChanged",
         interfaceApiName,
         property: propertyApiName,
@@ -569,7 +569,7 @@ function validateSchemaDiff(
     }
 
     if (!previousProperty.required && nextProperty.required) {
-      findings.push({
+      breakingChanges.push({
         code: "propertyBecameRequired",
         interfaceApiName,
         property: propertyApiName,
@@ -588,7 +588,7 @@ function validateSchemaDiff(
     }
 
     if (nextProperty.required) {
-      findings.push({
+      breakingChanges.push({
         code: "requiredPropertyAdded",
         interfaceApiName,
         property: propertyApiName,
