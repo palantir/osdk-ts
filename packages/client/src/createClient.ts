@@ -68,6 +68,8 @@ import { ObjectSetListenerWebsocket } from "./objectSet/ObjectSetListenerWebsock
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 import type { CreateSubscriptionConnectionFn } from "./SubscriptionConnection.js";
+import type { ClientTracingHooks } from "./util/createTracingFetch.js";
+import { createTracingFetch } from "./util/createTracingFetch.js";
 import { resolveBranch } from "./util/resolveBranch.js";
 
 // We import it this way to keep compatible with CJS. If we referenced the
@@ -120,6 +122,7 @@ export function createClientInternal(
         logger?: Logger;
         UNSTABLE_DO_NOT_USE_BRANCH?: string | null;
         headers?: Record<string, string>;
+        tracing?: ClientTracingHooks;
       }
     | undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
@@ -151,7 +154,7 @@ export function createClientInternal(
       branch: resolveBranch(options?.UNSTABLE_DO_NOT_USE_BRANCH),
       createSubscriptionConnection: subscribeConnectionFn,
     },
-    fetchFn,
+    options?.tracing ? createTracingFetch(fetchFn, options.tracing) : fetchFn,
     objectSetFactory,
   );
 
@@ -412,7 +415,8 @@ export function createClientFromContext(clientCtx: MinimalClient) {
  *   from `@osdk/oauth`, which handles caching and refresh; you can also provide a custom function if you
  *   manage tokens yourself.
  * @param options - Optional client configuration: a custom `logger`, an experimental `UNSTABLE_DO_NOT_USE_BRANCH`
- *   for branch-aware requests, and additional `headers` to include on every request.
+ *   for branch-aware requests, additional `headers` to include on every request, and `tracing` hooks
+ *   ({@link ClientTracingHooks}) observing every request for debugging and instrumentation.
  *
  *   The client is branch-aware without configuration. If `UNSTABLE_DO_NOT_USE_BRANCH` is not supplied, build
  *   tooling can inject the branch into the application HTML; objects, actions, and queries then read and write
@@ -458,6 +462,13 @@ export const createClient: (
          */
         UNSTABLE_DO_NOT_USE_BRANCH?: string | null;
         headers?: Record<string, string>;
+        /**
+         * Optional hooks (`onRequest`, `onResponse`, `onError`) that fire
+         * around every network request the client makes, for debugging,
+         * logging, and performance instrumentation. See
+         * {@link ClientTracingHooks} for details.
+         */
+        tracing?: ClientTracingHooks;
       }
     | undefined,
   fetchFn?: typeof fetch | undefined,
