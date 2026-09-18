@@ -4,6 +4,7 @@ node_modules/
 # Build outputs
 storybook-static/
 build/
+chromatic-diagnostics.json
 
 # IDE
 .vscode/
