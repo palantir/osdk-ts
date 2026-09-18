@@ -21,7 +21,7 @@ export type { Model } from "./types.js";
 export function model(alias: string): Model {
   const resolvedAliases = loadResolvedAliases();
 
-  if (!(alias in resolvedAliases.models)) {
+  if (!Object.hasOwn(resolvedAliases.models, alias)) {
     const available = Object.keys(resolvedAliases.models);
     throw new Error(
       `Model alias '${alias}' not found. Available aliases: [${available.join(
