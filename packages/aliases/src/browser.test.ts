@@ -190,7 +190,16 @@ describe("browser aliases", () => {
 
     it.each([
       { text: "{ not json" },
-      { body: { aliases: { custom: { invalid: { value: false } } } } },
+      {
+        body: {
+          aliases: {
+            custom: {
+              ...RESOURCES_JSON.aliases.custom,
+              invalid: { value: false },
+            },
+          },
+        },
+      },
     ])("retries after invalid configuration: %j", async (response) => {
       const fetchImpl = mockFetch({ body: RESOURCES_JSON });
       vi.mocked(fetchImpl).mockResolvedValueOnce(fakeResponse(response));
@@ -244,6 +253,31 @@ describe("browser aliases", () => {
   });
 
   describe("resources.json validation", () => {
+    it.each([null, {}, { value: false }])(
+      "rejects valid alias reads when another declaration is invalid: %j",
+      async (invalid) => {
+        const fetchImpl = mockFetch({
+          body: {
+            aliases: {
+              custom: {
+                ...RESOURCES_JSON.aliases.custom,
+                invalid,
+              },
+            },
+          },
+        });
+        vi.stubGlobal("fetch", fetchImpl);
+
+        await Promise.all([
+          expect(custom("apiBaseUrl")).rejects.toThrow(/alias 'invalid'/iu),
+          expect(custom("featureXEnabled")).rejects.toThrow(
+            /alias 'invalid'/iu,
+          ),
+        ]);
+        expect(fetchImpl).toHaveBeenCalledOnce();
+      },
+    );
+
     it("treats an absent aliases block as empty", async () => {
       await initAliases({ fetch: mockFetch({ body: {} }) });
 
