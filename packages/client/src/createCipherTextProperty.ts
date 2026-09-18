@@ -44,6 +44,7 @@ export class CipherTextPropertyImpl implements CipherText {
       this.#client,
       ontologyRid,
       ...this.#locator,
+      { branch: this.#client.branch },
     );
     invariant(
       Object.hasOwn(result, "plaintext"),

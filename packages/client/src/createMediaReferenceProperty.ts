@@ -52,6 +52,7 @@ export class MediaReferencePropertyImpl implements Media {
       await this.#client.ontologyRid,
       ...this.#triplet,
       {
+        branch: this.#client.branch,
         preview: true, // TODO: Can turn this back off when backend is no longer in beta.
       },
     );
@@ -63,6 +64,7 @@ export class MediaReferencePropertyImpl implements Media {
       await this.#client.ontologyRid,
       ...this.#triplet,
       {
+        branch: this.#client.branch,
         preview: true, // TODO: Can turn this back off when backend is no longer in beta.
       },
     );
