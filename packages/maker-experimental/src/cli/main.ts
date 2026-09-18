@@ -22,7 +22,6 @@ import type {
   LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
 } from "@osdk/client.unstable";
-import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import {
   OntologyBlockDataToFullMetadataConverter,
   OntologyIrToFullMetadataConverter,
@@ -36,7 +35,10 @@ import { hideBin } from "yargs/helpers";
 
 import { defineOntologyV2 } from "../api/defineOntologyV2.js";
 import { getExternalRecommendations } from "../conversion/toMarketplace/RecommendationUtils.js";
-import type { LinkTypeIdsByApiName } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
+import type {
+  ExternalImportedOntologyMetadata,
+  LinkTypeIdsByApiName,
+} from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
@@ -176,7 +178,7 @@ export default async function main(
     commandLineOpts.importJson && fs.existsSync(commandLineOpts.importJson)
       ? (JSON.parse(
           await fs.promises.readFile(commandLineOpts.importJson, "utf-8"),
-        ) as ImportedOntologyMetadata)
+        ) as ExternalImportedOntologyMetadata)
       : undefined;
 
   let functionsIrFile;
@@ -536,7 +538,7 @@ async function loadOntology(
   functionsIrFile?: string,
   randomnessKey?: string,
   importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
-  externalImportedMetadata?: ImportedOntologyMetadata,
+  externalImportedMetadata?: ExternalImportedOntologyMetadata,
 ) {
   const result = await defineOntologyV2(
     apiNamespace,
@@ -551,14 +553,8 @@ async function loadOntology(
   return result;
 }
 
-type ImportedOntologyMetadata = OntologyFullMetadata & {
-  actionTypeVersionsByRid?: Record<string, string>;
-  linkTypeIdsByRid?: Record<string, string>;
-  objectTypeIdsByRid?: Record<string, string>;
-};
-
 function getImportedLinkTypeIdsByApiName(
-  metadata: ImportedOntologyMetadata,
+  metadata: ExternalImportedOntologyMetadata,
 ): LinkTypeIdsByApiName {
   const result: Record<string, string> = {};
   for (const objectType of Object.values(metadata.objectTypes)) {

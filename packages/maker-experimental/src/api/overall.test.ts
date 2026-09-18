@@ -43,11 +43,9 @@ import {
 import invariant from "tiny-invariant";
 import { beforeEach, describe, expect, it } from "vitest";
 
+import type { ExternalImportedOntologyMetadata } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
-import {
-  defineOntologyV2,
-  type ExternalImportedOntologyMetadata,
-} from "./defineOntologyV2.js";
+import { defineOntologyV2 } from "./defineOntologyV2.js";
 import { defineImportObject } from "./importObjectType.js";
 
 function apiNamePreset(apiName: string) {
@@ -1187,6 +1185,12 @@ describe("Experimental Test Suite", () => {
           [actionTypeRid]: actionTypeVersion,
         },
         objectTypeIdsByRid: { [objectTypeRid]: objectTypeId },
+        resolvedShapePresetEntityRids: [
+          objectTypeRid,
+          actionTypeRid,
+          interfaceTypeRid,
+          sharedPropertyTypeRid,
+        ],
       } as unknown as ExternalImportedOntologyMetadata;
       const result = await defineOntologyV2(
         "com.palantir.",
@@ -1264,6 +1268,58 @@ describe("Experimental Test Suite", () => {
           },
         }),
       );
+
+      const ineligibleResult = await defineOntologyV2(
+        "com.palantir.",
+        () => {},
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        { ...externalImportedMetadata, resolvedShapePresetEntityRids: [] },
+      );
+      for (const [readableId, apiName] of [
+        [ReadableIdGenerator.getForObjectType("importedFoo"), "importedFoo"],
+        [
+          ReadableIdGenerator.getForInterface("importedInterface"),
+          "importedInterface",
+        ],
+        [ReadableIdGenerator.getForSpt("importedName"), "importedName"],
+        [
+          ReadableIdGenerator.getForActionType("importedAction"),
+          "importedAction",
+        ],
+      ] as const) {
+        expect(ineligibleResult.importedInputPresets.get(readableId)).toEqual(
+          apiNamePreset(apiName),
+        );
+      }
+
+      const missingEnrichmentResult = await defineOntologyV2(
+        "com.palantir.",
+        () => {},
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        {
+          ...externalImportedMetadata,
+          actionTypeVersionsByRid: {},
+          objectTypeIdsByRid: {},
+        },
+      );
+      expect(
+        missingEnrichmentResult.importedInputPresets.get(
+          ReadableIdGenerator.getForObjectType("importedFoo"),
+        ),
+      ).toEqual(apiNamePreset("importedFoo"));
+      expect(
+        missingEnrichmentResult.importedInputPresets.get(
+          ReadableIdGenerator.getForActionType("importedAction"),
+        ),
+      ).toEqual(apiNamePreset("importedAction"));
     });
 
     it("handles local links referencing imported objects", async () => {
