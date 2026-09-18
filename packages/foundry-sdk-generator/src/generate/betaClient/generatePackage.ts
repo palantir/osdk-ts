@@ -84,8 +84,9 @@ export async function generatePackage(
     ontologyInfo.externalInterfaces,
     new Map(),
     false,
-    ontologyInfo.queryVersionReferences,
+    [],
     options.exportOntologyMetadata,
+    ontologyInfo.queryVersionReferences,
   );
 
   // actually write file plus save contents

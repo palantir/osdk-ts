@@ -23,15 +23,7 @@ export async function loadQueryMetadata(
   client: MinimalClient,
   queryTypeApiNameAndVersion: string,
 ): Promise<QueryMetadata> {
-  const separatorIndex = queryTypeApiNameAndVersion.lastIndexOf(":");
-  const apiName =
-    separatorIndex === -1
-      ? queryTypeApiNameAndVersion
-      : queryTypeApiNameAndVersion.slice(0, separatorIndex);
-  const version =
-    separatorIndex === -1
-      ? undefined
-      : queryTypeApiNameAndVersion.slice(separatorIndex + 1);
+  const [apiName, version] = queryTypeApiNameAndVersion.split(":");
 
   const queryParameters = {
     version,
