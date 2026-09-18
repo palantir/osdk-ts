@@ -36,6 +36,7 @@ onwarn
 parseable
 peopleapp
 pypi
+renderable
 retryable
 revals
 rsort

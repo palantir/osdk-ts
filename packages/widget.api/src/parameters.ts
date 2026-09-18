@@ -16,6 +16,7 @@
 
 import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 
+import type { MapTileLayerStyle } from "./mapTileLayerStyle.js";
 import type { AsyncValue } from "./utils/asyncValue.js";
 
 interface ObjectType extends ObjectTypeDefinition {
@@ -53,6 +54,11 @@ export interface AbstractParameterValue<T extends PrimitiveParameterType> {
   value: AsyncValue<PrimitiveParameterTypes[T]>;
 }
 
+export interface MapTileLayerParameterValue {
+  type: "mapTileLayer";
+  value: AsyncValue<MapTileLayerStyle>;
+}
+
 export interface ObjectSetParameterValue<
   _T extends AllowedObjectSetParameterType,
 > {
@@ -78,6 +84,7 @@ export namespace ParameterValue {
   export type Date = AbstractParameterValue<"date">;
   export type Timestamp = AbstractParameterValue<"timestamp">;
   export type Scenario = AbstractParameterValue<"scenario">;
+  export type MapTileLayer = MapTileLayerParameterValue;
   export type ObjectSet<
     T extends AllowedObjectSetParameterType = AllowedObjectSetParameterType,
   > = ObjectSetParameterValue<T>;
@@ -106,5 +113,6 @@ export type ParameterValue =
   | ParameterValue.Date
   | ParameterValue.Timestamp
   | ParameterValue.Scenario
+  | ParameterValue.MapTileLayer
   | ParameterValue.ObjectSet
   | ParameterValue.Array;

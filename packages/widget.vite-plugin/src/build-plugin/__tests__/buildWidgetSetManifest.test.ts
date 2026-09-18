@@ -91,6 +91,27 @@ describe("buildWidgetManifestConfig", () => {
     expect(result.description).toBeUndefined();
   });
 
+  test("preserves map tile layer parameters in the manifest", () => {
+    const result = buildWidgetManifestConfig(
+      {
+        ...MOCK_WIDGET_CONFIG,
+        parameters: {
+          tileLayer: {
+            type: "mapTileLayer",
+            displayName: "Tile Layer",
+          },
+        },
+      },
+      ENTRYPOINT_JS,
+      ENTRYPOINT_CSS,
+    );
+
+    expect(result.parameters.tileLayer).toEqual({
+      type: "mapTileLayer",
+      displayName: "Tile Layer",
+    });
+  });
+
   test("converts object set parameters", () => {
     const result = buildWidgetManifestConfig(
       {
