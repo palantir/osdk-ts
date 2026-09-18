@@ -39,7 +39,7 @@ describe("generatePerQueryDataFiles", () => {
         outDir: BASE_PATH,
         importExt: ".js",
         forInternalUse: true,
-        fixedVersionQueryTypes: [],
+        queryVersionReferences: new Map(),
       },
       true,
     );
@@ -273,7 +273,7 @@ describe("generatePerQueryDataFiles", () => {
         outDir: BASE_PATH,
         importExt: ".js",
         forInternalUse: true,
-        fixedVersionQueryTypes: [],
+        queryVersionReferences: new Map(),
       },
       true,
     );
@@ -420,7 +420,7 @@ describe("generatePerQueryDataFiles", () => {
         outDir: BASE_PATH,
         importExt: ".js",
         forInternalUse: true,
-        fixedVersionQueryTypes: [],
+        queryVersionReferences: new Map(),
       },
       true,
     );
@@ -681,7 +681,7 @@ describe("generatePerQueryDataFiles", () => {
         outDir: BASE_PATH,
         importExt: ".js",
         forInternalUse: true,
-        fixedVersionQueryTypes: [],
+        queryVersionReferences: new Map(),
       },
       true,
     );
@@ -887,7 +887,7 @@ describe("generatePerQueryDataFiles", () => {
         outDir: BASE_PATH,
         importExt: ".js",
         forInternalUse: true,
-        fixedVersionQueryTypes: [],
+        queryVersionReferences: new Map(),
       },
       true,
     );
