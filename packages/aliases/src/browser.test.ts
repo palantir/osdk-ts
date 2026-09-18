@@ -127,16 +127,44 @@ describe("browser aliases", () => {
       expect(fetchImpl).toHaveBeenCalledWith(DEFAULT_RESOURCES_PATH);
     });
 
-    it("resolves resources.json relative to document.baseURI", async () => {
-      vi.stubGlobal("document", {
-        baseURI: "https://example.com/apps/my-app/",
+    it.each([
+      ["https://example.com/", "https://example.com/resources.json"],
+      ["https://example.com/reports/123", "https://example.com/resources.json"],
+      [
+        "https://example.com/reports/123/?view=summary#details",
+        "https://example.com/resources.json",
+      ],
+      [
+        "http://localhost:8080/reports/123",
+        "http://localhost:8080/resources.json",
+      ],
+    ])(
+      "fetches resources.json from the site origin at %s",
+      async (pageUrl, url) => {
+        vi.stubGlobal("window", { location: new URL(pageUrl) });
+        vi.stubGlobal("document", { baseURI: pageUrl });
+        const fetchImpl = mockFetch({ body: RESOURCES_JSON });
+
+        await initAliases({ fetch: fetchImpl });
+
+        expect(fetchImpl).toHaveBeenCalledWith(url);
+      },
+    );
+
+    it.each([
+      "https://example.com/apps/my-app/",
+      "https://cdn.example.com/assets/",
+    ])("ignores document.baseURI when it is %s", async (baseURI) => {
+      vi.stubGlobal("window", {
+        location: new URL("https://example.com/reports/123"),
       });
+      vi.stubGlobal("document", { baseURI });
       const fetchImpl = mockFetch({ body: RESOURCES_JSON });
 
       await initAliases({ fetch: fetchImpl });
 
       expect(fetchImpl).toHaveBeenCalledWith(
-        "https://example.com/apps/my-app/resources.json",
+        "https://example.com/resources.json",
       );
     });
 
@@ -380,7 +408,7 @@ describe("browser aliases", () => {
           }),
         }),
       ).rejects.toThrow(
-        `alias 'needsValue' from resources.json: expected its declaration ` +
+        `alias 'needsValue' from ${DEFAULT_RESOURCES_PATH}: expected its declaration ` +
           `to include a string 'value'`,
       );
     });

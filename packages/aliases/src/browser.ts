@@ -22,7 +22,7 @@ export type { Custom } from "./types.js";
  * `resources.json` contains author defaults during local development and
  * installer-resolved values on an installed site.
  */
-export const DEFAULT_RESOURCES_PATH = "resources.json";
+export const DEFAULT_RESOURCES_PATH = "/resources.json";
 
 interface InitAliasesOptions {
   fetch?: typeof globalThis.fetch;
@@ -107,8 +107,8 @@ async function fetchJson(
 }
 
 function resolveUrl(path: string): string {
-  if (typeof document !== "undefined" && document.baseURI) {
-    return new URL(path, document.baseURI).toString();
+  if (typeof window !== "undefined") {
+    return new URL(path, window.location.origin).toString();
   }
   return path;
 }
