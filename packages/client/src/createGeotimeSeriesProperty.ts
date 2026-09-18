@@ -50,6 +50,7 @@ export class GeotimeSeriesPropertyImpl<
       this.#client,
       await this.#client.ontologyRid,
       ...this.#triplet,
+      { branch: this.#client.branch },
     );
     latestPointPromise.then(
       (latestPoint) => (this.lastFetchedValue = latestPoint),
@@ -84,6 +85,7 @@ export class GeotimeSeriesPropertyImpl<
         await this.#client.ontologyRid,
         ...this.#triplet,
         query ? { range: getTimeRange(query) } : {},
+        { branch: this.#client.branch },
       );
 
     for await (const timeseriesPoint of asyncIterPointsHelper<T>(

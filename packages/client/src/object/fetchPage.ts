@@ -274,6 +274,7 @@ export async function fetchStaticRidPage<
     requestBody,
     {
       preview: true,
+      branch: client.branch,
       transactionId: client.transactionId,
       scenarioRid: client.scenarioRid,
     },

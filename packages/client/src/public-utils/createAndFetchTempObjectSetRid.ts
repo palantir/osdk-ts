@@ -45,6 +45,7 @@ export async function createAndFetchTempObjectSetRid<
     {
       objectSet: getWireObjectSet(objectSet),
     },
+    { branch: client[additionalContext].branch },
   );
   return response.objectSetRid;
 }
