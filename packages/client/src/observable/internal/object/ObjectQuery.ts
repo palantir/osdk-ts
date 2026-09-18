@@ -53,6 +53,7 @@ export class ObjectQuery extends Query<
   #select: readonly string[] | undefined;
   #loadPropertySecurityMetadata: boolean;
   #includeAllBaseObjectProperties: boolean;
+  #loadOntologyDefinedDerivedProperties: boolean | undefined;
   #implementingTypes: Set<string> | undefined;
 
   constructor(
@@ -66,6 +67,7 @@ export class ObjectQuery extends Query<
     select?: readonly string[],
     loadPropertySecurityMetadata?: boolean,
     includeAllBaseObjectProperties?: boolean,
+    loadOntologyDefinedDerivedProperties?: boolean,
   ) {
     super(
       store,
@@ -90,6 +92,8 @@ export class ObjectQuery extends Query<
     this.#loadPropertySecurityMetadata = loadPropertySecurityMetadata ?? false;
     this.#includeAllBaseObjectProperties =
       includeAllBaseObjectProperties ?? false;
+    this.#loadOntologyDefinedDerivedProperties =
+      loadOntologyDefinedDerivedProperties;
   }
 
   protected _createConnectable(
@@ -153,6 +157,12 @@ export class ObjectQuery extends Query<
           ...(this.#includeAllBaseObjectProperties
             ? { $includeAllBaseObjectProperties: true }
             : {}),
+          ...(this.#loadOntologyDefinedDerivedProperties != null
+            ? {
+                $UNSTABLE_loadOntologyDefinedDerivedProperties:
+                  this.#loadOntologyDefinedDerivedProperties,
+              }
+            : {}),
         });
       obj = fetched as ObjectHolder;
     } else {
@@ -164,6 +174,7 @@ export class ObjectQuery extends Query<
         this.#select,
         this.#loadPropertySecurityMetadata,
         this.#includeAllBaseObjectProperties,
+        this.#loadOntologyDefinedDerivedProperties,
       );
     }
 

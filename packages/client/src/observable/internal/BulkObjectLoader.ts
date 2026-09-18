@@ -40,6 +40,7 @@ interface LoadParams {
   select?: readonly string[];
   loadPropertySecurityMetadata?: boolean;
   includeAllBaseObjectProperties: true | undefined;
+  loadOntologyDefinedDerivedProperties?: boolean;
 }
 
 interface Accumulator extends Partial<LoadParams> {
@@ -80,12 +81,14 @@ export class BulkObjectLoader {
     select?: readonly string[],
     loadPropertySecurityMetadata?: boolean,
     includeAllBaseObjectProperties?: boolean,
+    loadOntologyDefinedDerivedProperties?: boolean,
   ): Promise<ObjectHolder> {
     const params: LoadParams = {
       apiName,
       defType,
       select,
       loadPropertySecurityMetadata,
+      loadOntologyDefinedDerivedProperties,
       // The flag is interface-only on the server. Drop it for object fetches
       // so they don't fragment batches or the cache.
       includeAllBaseObjectProperties:
@@ -110,6 +113,8 @@ export class BulkObjectLoader {
       entry.loadPropertySecurityMetadata = params.loadPropertySecurityMetadata;
       entry.includeAllBaseObjectProperties =
         params.includeAllBaseObjectProperties;
+      entry.loadOntologyDefinedDerivedProperties =
+        params.loadOntologyDefinedDerivedProperties;
     } else if (entry.defType !== defType) {
       deferred.reject(
         new PalantirApiError(
@@ -136,11 +141,17 @@ export class BulkObjectLoader {
   #buildSelectKey(params: LoadParams): string {
     const securitySuffix = params.loadPropertySecurityMetadata ? "\0sec" : "";
     const baseSuffix = params.includeAllBaseObjectProperties ? "\0base" : "";
+    const ontologyDefinedDerivedPropertiesSuffix =
+      params.loadOntologyDefinedDerivedProperties == null
+        ? ""
+        : `\0ontologyDefinedDerivedProperties:${params.loadOntologyDefinedDerivedProperties}`;
     return params.select && params.select.length > 0
       ? `${params.apiName}\0${[...params.select]
           .sort()
-          .join(",")}${securitySuffix}${baseSuffix}`
-      : `${params.apiName}${securitySuffix}${baseSuffix}`;
+          .join(
+            ",",
+          )}${securitySuffix}${baseSuffix}${ontologyDefinedDerivedPropertiesSuffix}`
+      : `${params.apiName}${securitySuffix}${baseSuffix}${ontologyDefinedDerivedPropertiesSuffix}`;
   }
 
   #loadObjects(arr: InternalValue[], params: LoadParams) {
@@ -192,6 +203,12 @@ export class BulkObjectLoader {
           params.loadPropertySecurityMetadata ?? false,
         ...(params.includeAllBaseObjectProperties
           ? { $includeAllBaseObjectProperties: true }
+          : {}),
+        ...(params.loadOntologyDefinedDerivedProperties != null
+          ? {
+              $UNSTABLE_loadOntologyDefinedDerivedProperties:
+                params.loadOntologyDefinedDerivedProperties,
+            }
           : {}),
       });
 
@@ -250,6 +267,12 @@ export class BulkObjectLoader {
             false) as boolean,
           ...(params.includeAllBaseObjectProperties
             ? { $includeAllBaseObjectProperties: true }
+            : {}),
+          ...(params.loadOntologyDefinedDerivedProperties != null
+            ? {
+                $UNSTABLE_loadOntologyDefinedDerivedProperties:
+                  params.loadOntologyDefinedDerivedProperties,
+              }
             : {}),
         });
 

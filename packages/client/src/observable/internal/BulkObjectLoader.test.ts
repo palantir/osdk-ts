@@ -437,4 +437,51 @@ describe(BulkObjectLoader, () => {
 
     vi.useRealTimers();
   });
+
+  it("splits batches and forwards ontology-defined derived properties settings", async () => {
+    const loader = new BulkObjectLoader(client, 25, 100);
+    vi.useFakeTimers();
+
+    const capturedArgs: Array<Record<string, unknown>> = [];
+    const captureMockSet = (data: unknown[]) => {
+      const objectSet: ObjectSet<ObjectTypeDefinition> = {
+        where: () => objectSet,
+        fetchPage: vi.fn((args: Record<string, unknown>) => {
+          capturedArgs.push(args);
+          return Promise.resolve({ data });
+        }),
+      } as Pick<
+        ObjectSet<ObjectTypeDefinition>,
+        "fetchPage" | "where"
+      > as ObjectSet<ObjectTypeDefinition>;
+      return objectSet;
+    };
+
+    client.mockImplementation(() =>
+      captureMockSet([employees[0], employees[1]]),
+    );
+
+    const serverDefault = loader.fetch("Employee", 0);
+    const explicitlyDisabled = loader.fetch(
+      "Employee",
+      1,
+      "object",
+      undefined,
+      false,
+      undefined,
+      false,
+    );
+
+    vi.advanceTimersByTime(26);
+    await Promise.all([serverDefault, explicitlyDisabled]);
+
+    expect(capturedArgs).toHaveLength(2);
+    expect(
+      capturedArgs.map(
+        (args) => args.$UNSTABLE_loadOntologyDefinedDerivedProperties,
+      ),
+    ).toEqual(expect.arrayContaining([undefined, false]));
+
+    vi.useRealTimers();
+  });
 });

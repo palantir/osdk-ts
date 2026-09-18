@@ -33,6 +33,7 @@ export interface ObjectSetOperations {
   select?: Canonical<readonly string[]>;
   pageSize?: number;
   loadPropertySecurity?: true;
+  loadOntologyDefinedDerivedProperties?: boolean;
 }
 
 export interface ObjectSetCacheKey extends CacheKey<

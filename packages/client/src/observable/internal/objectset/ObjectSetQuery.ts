@@ -128,6 +128,12 @@ export class ObjectSetQuery extends BaseListQuery<
     return this.#operations.select;
   }
 
+  public override get loadOntologyDefinedDerivedProperties():
+    | boolean
+    | undefined {
+    return this.#operations.loadOntologyDefinedDerivedProperties;
+  }
+
   protected get rawSelect(): Canonical<readonly string[]> | undefined {
     return this.#operations.select;
   }
@@ -261,6 +267,12 @@ export class ObjectSetQuery extends BaseListQuery<
         : {}),
       ...(this.options.$loadPropertySecurityMetadata
         ? { $loadPropertySecurityMetadata: true }
+        : {}),
+      ...(this.loadOntologyDefinedDerivedProperties != null
+        ? {
+            $UNSTABLE_loadOntologyDefinedDerivedProperties:
+              this.loadOntologyDefinedDerivedProperties,
+          }
         : {}),
     });
 
@@ -493,6 +505,10 @@ export class ObjectSetQuery extends BaseListQuery<
       obj.$objectType,
       pk,
       this.rdpConfig ?? undefined,
+      undefined,
+      undefined,
+      undefined,
+      this.loadOntologyDefinedDerivedProperties,
     );
   }
 

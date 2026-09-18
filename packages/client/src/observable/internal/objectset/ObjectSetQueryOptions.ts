@@ -87,6 +87,16 @@ export interface ObserveObjectSetOptions<
    * populated with conjunctive/disjunctive marking requirements per property.
    */
   $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * Controls whether ontology-defined derived properties are loaded. When
+   * omitted, the server's default behavior is used.
+   *
+   * Setting this explicitly gives the query its own cache entry, separate from
+   * queries that leave it unset. Optimistic updates are not applied to that
+   * entry; it refreshes once the action completes.
+   */
+  $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
 }
 
 export interface ObjectSetQueryOptions extends ObserveObjectSetOptions<
