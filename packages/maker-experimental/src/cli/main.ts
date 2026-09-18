@@ -552,7 +552,9 @@ async function loadOntology(
 }
 
 type ImportedOntologyMetadata = OntologyFullMetadata & {
+  actionTypeVersionsByRid?: Record<string, string>;
   linkTypeIdsByRid?: Record<string, string>;
+  objectTypeIdsByRid?: Record<string, string>;
 };
 
 function getImportedLinkTypeIdsByApiName(

@@ -36,6 +36,7 @@ import type { BlockDataAddOn } from "../cli/marketplaceSerialization/BlockGenera
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
 import {
   getImportedShapes,
+  type ImportedParentIdentifiers,
   type LinkTypeIdsByApiName,
 } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
@@ -60,6 +61,87 @@ export interface FunctionsIr {
   discoveredFunctions: Array<IDiscoveredFunction>;
 }
 
+export interface ExternalImportedOntologyMetadata extends OntologyFullMetadata {
+  actionTypeVersionsByRid?: Readonly<Record<string, string>>;
+  objectTypeIdsByRid?: Readonly<Record<string, string>>;
+}
+
+type GatewaySharedPropertyType =
+  ExternalImportedOntologyMetadata["sharedPropertyTypes"][string];
+
+function getImportedParentIdentifiers(
+  metadata: ExternalImportedOntologyMetadata,
+): ImportedParentIdentifiers {
+  const objectTypeIdsByRid = metadata.objectTypeIdsByRid ?? {};
+  const objectTypes = Object.fromEntries(
+    Object.values(metadata.objectTypes).map(({ objectType }) => {
+      const id = objectTypeIdsByRid[objectType.rid];
+      if (id === undefined) {
+        throw new Error(
+          `No object type ID was imported for RID ${objectType.rid}; rerun \`foundry import ontology\` to refresh the import metadata`,
+        );
+      }
+      return [objectType.apiName, { id, rid: objectType.rid }];
+    }),
+  );
+
+  const actionTypeVersionsByRid = metadata.actionTypeVersionsByRid ?? {};
+  const actionTypes = Object.fromEntries(
+    Object.values(metadata.actionTypes).map((actionType) => {
+      const version = actionTypeVersionsByRid[actionType.rid];
+      if (version === undefined) {
+        throw new Error(
+          `No action type version was imported for RID ${actionType.rid}; rerun \`foundry import ontology\` to refresh the import metadata`,
+        );
+      }
+      return [actionType.apiName, { rid: actionType.rid, version }];
+    }),
+  );
+
+  const interfaceTypes = Object.fromEntries(
+    Object.values(metadata.interfaceTypes).map((interfaceType) => [
+      interfaceType.apiName,
+      { rid: interfaceType.rid },
+    ]),
+  );
+
+  const sharedPropertyTypes: Record<
+    string,
+    { rid: string; structFieldRids: Record<string, string> }
+  > = {};
+  const addSharedPropertyType = (
+    sharedPropertyType: GatewaySharedPropertyType,
+  ) => {
+    sharedPropertyTypes[sharedPropertyType.apiName] = {
+      rid: sharedPropertyType.rid,
+      structFieldRids:
+        sharedPropertyType.dataType.type === "struct"
+          ? Object.fromEntries(
+              sharedPropertyType.dataType.structFieldTypes.map((field) => [
+                field.apiName,
+                field.rid,
+              ]),
+            )
+          : {},
+    };
+  };
+  Object.values(metadata.sharedPropertyTypes).forEach(addSharedPropertyType);
+  for (const interfaceType of Object.values(metadata.interfaceTypes)) {
+    Object.values(interfaceType.properties).forEach(addSharedPropertyType);
+    Object.values(interfaceType.propertiesV2)
+      .filter((property) => property.type === "interfaceSharedPropertyType")
+      .forEach(addSharedPropertyType);
+  }
+
+  return {
+    ontologyRid: metadata.ontology.rid,
+    objectTypes,
+    actionTypes,
+    interfaceTypes,
+    sharedPropertyTypes,
+  };
+}
+
 export async function defineOntologyV2(
   ns: string,
   body: () => void | Promise<void>,
@@ -68,7 +150,7 @@ export async function defineOntologyV2(
   functionsIrFile?: string,
   randomnessKey?: string,
   importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
-  externalImportedMetadata?: OntologyFullMetadata,
+  externalImportedMetadata?: ExternalImportedOntologyMetadata,
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
 
@@ -83,6 +165,9 @@ export async function defineOntologyV2(
     throw e;
   }
 
+  const importedParentIdentifiers = externalImportedMetadata
+    ? getImportedParentIdentifiers(externalImportedMetadata)
+    : undefined;
   if (externalImportedMetadata) {
     const importedOntology = convertOntologyFullMetadata(
       externalImportedMetadata,
@@ -130,6 +215,7 @@ export async function defineOntologyV2(
     ontDef.importedOntology,
     ridGenerator,
     importedLinkTypeIdsByApiName,
+    importedParentIdentifiers,
   );
   for (const [key, value] of importedShapes.inputShapes) {
     shapes.inputShapes.set(key, value);
