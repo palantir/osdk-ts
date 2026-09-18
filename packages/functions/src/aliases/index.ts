@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type * as InternalAliases from "@osdk/aliases/internal";
+
 export {
   custom,
   dataset,
@@ -23,11 +25,9 @@ export {
   stream,
 } from "@osdk/aliases/internal";
 
-export type {
-  Custom,
-  Dataset,
-  Mediaset,
-  Model,
-  Source,
-  Stream,
-} from "@osdk/aliases/internal";
+export type Custom = InternalAliases.Custom;
+export type Dataset = InternalAliases.Dataset;
+export type Mediaset = InternalAliases.Mediaset;
+export type Model = InternalAliases.Model;
+export type Source = InternalAliases.Source;
+export type Stream = InternalAliases.Stream;
