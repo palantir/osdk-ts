@@ -1,5 +1,0 @@
-type: improvement
-improvement:
-  description: Switch site commands to public API
-  links:
-  - https://github.com/palantir/osdk-ts/pull/166
