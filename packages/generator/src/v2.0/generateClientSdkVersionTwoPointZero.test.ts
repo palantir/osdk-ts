@@ -2385,7 +2385,9 @@ describe("generator", () => {
         new Map(),
         new Map(),
         false,
-        ["getCount"],
+        [],
+        false,
+        new Map([["getCount", "1.x"]]),
       );
 
       expect(tweakedFilesForSnapshotConsistency(helper.getFiles()))
@@ -2699,14 +2701,14 @@ describe("generator", () => {
           };
           apiName: 'getCount';
           type: 'query';
-          version: '1.1.0';
+          version: '1.x';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const getCount: getCount = {
           apiName: 'getCount',
           type: 'query',
-          version: '1.1.0',
+          version: '1.x',
           isFixedVersion: true,
           osdkMetadata: $osdkMetadata,
         };
@@ -2774,6 +2776,69 @@ describe("generator", () => {
         ",
         }
       `);
+    });
+
+    it("preserves fixed query versions supplied through the legacy API", async () => {
+      await generateClientSdkVersionTwoPointZero(
+        {
+          ontology: TodoWireOntology.ontology,
+          actionTypes: {},
+          actionTypesFullMetadata: {},
+          interfaceTypes: {},
+          objectTypes: TodoWireOntology.objectTypes,
+          queryTypes: {
+            "getCount:1.1.0": TodoWireOntology.queryTypes.getCount,
+          },
+          sharedPropertyTypes: {},
+          valueTypes: {},
+        },
+        "typescript-sdk/0.0.0 osdk-cli/0.0.0",
+        helper.minimalFiles,
+        BASE_PATH,
+        "module",
+        new Map(),
+        new Map(),
+        new Map(),
+        false,
+        ["getCount"],
+      );
+
+      expect(helper.getFiles()["/foo/ontology/queries/getCount.ts"])
+        .toContain(`export const getCount: getCount = {
+  apiName: 'getCount',
+  type: 'query',
+  version: '1.1.0',
+  isFixedVersion: true,`);
+    });
+
+    it("rejects query types supplied through both version APIs", async () => {
+      await expect(generateClientSdkVersionTwoPointZero(
+        {
+          ontology: TodoWireOntology.ontology,
+          actionTypes: {},
+          actionTypesFullMetadata: {},
+          interfaceTypes: {},
+          objectTypes: TodoWireOntology.objectTypes,
+          queryTypes: {
+            "getCount:1.1.0": TodoWireOntology.queryTypes.getCount,
+          },
+          sharedPropertyTypes: {},
+          valueTypes: {},
+        },
+        "typescript-sdk/0.0.0 osdk-cli/0.0.0",
+        helper.minimalFiles,
+        BASE_PATH,
+        "module",
+        new Map(),
+        new Map(),
+        new Map(),
+        false,
+        ["getCount"],
+        false,
+        new Map([["getCount", "1.x"]]),
+      )).rejects.toThrowError(
+        "Query type getCount was specified multiple times.",
+      );
     });
   });
 
