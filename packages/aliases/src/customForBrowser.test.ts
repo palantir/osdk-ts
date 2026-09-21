@@ -17,11 +17,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
-  custom,
+  customForBrowser as custom,
   DEFAULT_RESOURCES_PATH,
   initAliases,
   resetAliasesCache,
-} from "./browser.js";
+} from "./customForBrowser.js";
 
 interface FakeResponseInit {
   ok?: boolean;

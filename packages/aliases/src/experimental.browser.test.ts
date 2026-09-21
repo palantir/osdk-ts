@@ -22,7 +22,7 @@ const { originalTarget } = vi.hoisted(() => {
   return { originalTarget: previousTarget };
 });
 
-import { resetAliasesCache } from "./browser.js";
+import { resetAliasesCache } from "./customForBrowser.js";
 import * as experimental from "./public/experimental.js";
 import { Aliases } from "./public/experimental.js";
 

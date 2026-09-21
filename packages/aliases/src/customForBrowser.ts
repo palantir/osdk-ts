@@ -36,7 +36,7 @@ let inFlight: Promise<void> | undefined;
  * `resources.json` served with the website, then returns the resolved value.
  * Repeated and concurrent calls share the same load.
  */
-export async function custom(alias: string): Promise<Custom> {
+export async function customForBrowser(alias: string): Promise<Custom> {
   await initAliases();
   const aliases = cachedCustomAliases;
   if (aliases === undefined) {

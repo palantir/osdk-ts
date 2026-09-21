@@ -28,12 +28,12 @@ declare const process: {
  */
 const custom: (alias: string) => Promise<Custom> =
   process.env.TARGET === "browser"
-    ? async function customForBrowser(alias) {
-        const { custom: customFromResources } = await import("../browser.js");
-        return await customFromResources(alias);
+    ? async (alias) => {
+        const { customForBrowser } = await import("../customForBrowser.js");
+        return await customForBrowser(alias);
       }
-    : async function customForFunctions(alias) {
-        const { custom: customForNode } = await import("../custom.js");
+    : async (alias) => {
+        const { customForNode } = await import("../customForNode.js");
         return customForNode(alias);
       };
 

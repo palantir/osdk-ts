@@ -18,7 +18,7 @@ import * as fs from "fs";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { custom } from "./custom.js";
+import { customForNode as custom } from "./customForNode.js";
 import { dataset } from "./dataset.js";
 import {
   ALIASES_JSON_FILE_ENV_VAR,
