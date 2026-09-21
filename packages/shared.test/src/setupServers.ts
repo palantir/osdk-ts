@@ -16,7 +16,7 @@
 
 import { type FauxFoundry, msw } from "@osdk/faux";
 import { delay } from "msw";
-import type { SetupServerApi } from "msw/node";
+import type { SetupServer } from "msw/node";
 import { setupServer } from "msw/node";
 
 interface ClientFactory<C, A extends any[]> {
@@ -29,7 +29,7 @@ interface ClientFactory<C, A extends any[]> {
 }
 
 export interface TestSetup<C> {
-  apiServer: SetupServerApi;
+  apiServer: SetupServer;
   fauxFoundry: FauxFoundry;
   client: C;
   auth: () => Promise<string>;
