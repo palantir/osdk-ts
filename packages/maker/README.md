@@ -903,9 +903,9 @@ guidance for finalizing and deleting transitions.
 
 #### Defining a Transition
 
-A transition is a logical set of one or more related schema migrations. List each migration in
-`instructions`; all migrations in the transition share its metadata and grace period, and are
-finalized or deleted together. Use separate transitions for changes that should proceed independently.
+A transition groups one or more related schema migrations under shared metadata and a shared grace period.
+The migrations in a transition are finalized or deleted together. Use separate transitions for changes that
+should proceed independently.
 
 Each transition has the following fields:
 
