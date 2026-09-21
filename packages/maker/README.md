@@ -899,20 +899,13 @@ const personInterface = defineInterface({
 
 Run `maker --write-locks` to create the initial `ontology-schema-lock.json` file tracking enrolled interfaces,
 and commit the file. This lockfile is used during future builds to detect breaking changes and provide
-guidance for finalizing and deleting migrations.
+guidance for finalizing and deleting transitions.
 
-#### Finalizing or Deleting a Migration
+#### Defining a Transition
 
-Remove an active transition to end it, then run `maker --write-locks`. Maker compares the schema
-with the previously-persisted lockfile and asks you to confirm one of two outcomes:
-
-- **FINALIZE** — Enforce the migrated schema from this release onward.
-- **DELETE** — Abandon the migration and retain the previous schema.
-
-Maker rejects the change if the schema matches neither outcome. Declining the confirmation leaves
-both `ontology-schema-lock.json` and `ontology.json` unchanged.
-
-#### Supported Migrations
+A transition is a logical set of one or more related schema migrations. List each migration in
+`instructions`; all migrations in the transition share its metadata and grace period, and are
+finalized or deleted together. Use separate transitions for changes that should proceed independently.
 
 Each transition has the following fields:
 
@@ -922,7 +915,7 @@ Each transition has the following fields:
 | `title`        | Summary of the changes                                                        |
 | `description`  | Optional details                                                              |
 | `gracePeriod`  | Compliance window for implementing object types                               |
-| `instructions` | Schema changes bundled in the transition                                      |
+| `instructions` | Individual schema migrations grouped into the transition                      |
 
 A grace period can begin at installation or end at a fixed deadline:
 
@@ -933,6 +926,8 @@ gracePeriod: { type: "afterInstall", days: 45 }
 // A fixed ISO-8601 UTC datetime. Installation fails after this deadline.
 gracePeriod: { type: "deadline", deadline: "2026-01-31T00:00:00Z" }
 ```
+
+#### Supported Migration Instructions
 
 ##### `addRequiredProperty`
 
@@ -981,6 +976,18 @@ defineInterface({
 });
 ```
 
-Run `maker --write-locks` to confirm `FINALIZE requireShippedAt`. To abandon the migration, remove
+Run `maker --write-locks` to confirm `FINALIZE requireShippedAt`. To abandon the transition, remove
 the transition but leave the property optional (maker will flag this as `DELETE requireShippedAt` for
 confirmation).
+
+#### Finalizing or Deleting a Transition
+
+Remove an active transition to end it, then run `maker --write-locks`. Maker compares the schema
+with the previously-persisted lockfile and asks you to confirm one of two outcomes for the entire
+transition:
+
+- **FINALIZE** — Enforce all migrations in the transition from this release onward.
+- **DELETE** — Abandon all migrations in the transition and retain the previous schema.
+
+Maker rejects the change if the schema matches neither outcome. Declining the confirmation leaves
+both `ontology-schema-lock.json` and `ontology.json` unchanged.
