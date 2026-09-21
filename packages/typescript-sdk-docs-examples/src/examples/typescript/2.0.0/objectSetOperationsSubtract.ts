@@ -19,19 +19,16 @@
 
 // Example: objectSetOperationsSubtract
 
-import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
+import { Employee } from "../../../generatedNoCheck/index.js";
 
-const objectSetA = client(Employee).where({
-  fullName: { $containsAnyTerm: "a" },
-});
-const objectSetB = client(Employee).where({
-  fullName: { $containsAnyTerm: "b" },
-});
-const objectSetC = client(Employee).where({
-  fullName: { $containsAnyTerm: "c" },
-});
+const objectSetA = client(Employee).where({ fullName: { $containsAnyTerm: "a"}})
+const objectSetB = client(Employee).where({ fullName: { $containsAnyTerm: "b"}})
+const objectSetC = client(Employee).where({ fullName: { $containsAnyTerm: "c"}})
+
 
 // Return objects in objectSetA that are not present in either objectSetB or objectSetC
-const result = objectSetA.subtract(objectSetB).subtract(objectSetC); // alternatively: objectSetA.subtract(objectSetB, objectSetC)
+const result = objectSetA
+  .subtract(objectSetB)
+  .subtract(objectSetC) // alternatively: objectSetA.subtract(objectSetB, objectSetC)

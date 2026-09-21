@@ -23,7 +23,8 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const groupedEmployee = await client(Employee).aggregate({
-  $select: { $count: "unordered" },
-  $groupBy: { startDate: { $duration: [1, "days"] } },
-});
+const groupedEmployee = await client(Employee)
+    .aggregate({
+        $select: { $count: "unordered" },
+        $groupBy: { startDate: { $duration: [ 1, "days"] } }
+    });

@@ -20,9 +20,8 @@
 // Example: loadGeotimeSeriesPointsSnippet
 
 import type { Osdk } from "@osdk/client";
-
 import { type Employee } from "../../../generatedNoCheck/index.js";
 
 function getAllTimeSeriesPoints(obj: Osdk.Instance<Employee>) {
-  return obj.travelHistory?.getAllValues();
+    return obj.travelHistory?.getAllValues();
 }

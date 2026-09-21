@@ -25,13 +25,9 @@ import { client } from "./client.js";
 const result = await client(Equipment).fetchOne("mac-1234");
 // Fetch metadata of a media property
 const mediaMetadata = await result.trainingMaterial?.fetchMetadata();
-console.log(
-  mediaMetadata?.mediaType,
-  mediaMetadata?.sizeBytes,
-  mediaMetadata?.path,
-);
+console.log(mediaMetadata?.mediaType, mediaMetadata?.sizeBytes, mediaMetadata?.path);
 // Fetch contents of a media property
 const mediaContent = await result.trainingMaterial?.fetchContents();
 if (mediaContent?.ok) {
-  const data = await mediaContent.blob();
+    const data = await mediaContent.blob();
 }

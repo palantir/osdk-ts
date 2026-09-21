@@ -19,25 +19,16 @@
 
 // Example: executeFunction (Variation: #hasAttachmentProperty)
 
-import type { Osdk } from "@osdk/client";
-
-import {
-  calculateTotal,
-  type Equipment,
-} from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
+import type { Osdk } from "@osdk/client";
+import { calculateTotal, type Equipment } from "../../../generatedNoCheck/index.js";
 
-async function callFunctionWithAttachmentLoaded(
-  objectWithAttachment: Osdk.Instance<Equipment>,
-) {
-  const attachment = objectWithAttachment.invoice?.rid;
-  if (attachment == null) {
-    throw new Error("Attachment is required");
-  }
-  const result = await client(calculateTotal).executeFunction({
-    documentFile: attachment,
-    includeMetadata: true,
-  });
-  return result;
+async function callFunctionWithAttachmentLoaded(objectWithAttachment: Osdk.Instance<Equipment>) {
+    const attachment = objectWithAttachment.invoice?.rid;
+    if (attachment == null) {
+        throw new Error("Attachment is required");
+    }
+    const result = await client(calculateTotal).executeFunction({ documentFile: attachment, includeMetadata: true });
+    return result;
 }

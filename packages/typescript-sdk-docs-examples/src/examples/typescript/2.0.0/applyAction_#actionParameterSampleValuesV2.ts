@@ -19,20 +19,21 @@
 
 // Example: applyAction (Variation: #actionParameterSampleValuesV2)
 
-import { refreshData } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
+import { refreshData  } from "../../../generatedNoCheck/index.js";
 
 async function callAction() {
-  const result = await client(refreshData).applyAction(
-    {},
-    {
-      $returnEdits: true,
-    },
-  );
-  if (result.type === "edits") {
-    // use the result object to report back on action results
-    const updatedObject = result.editedObjectTypes[0];
-    console.log("Updated object", updatedObject);
-  }
+    const result = await client(refreshData).applyAction(
+        {
+        },
+        {
+            $returnEdits: true,
+        }
+    );
+    if (result.type === "edits") {
+        // use the result object to report back on action results
+        const updatedObject = result.editedObjectTypes[0];
+        console.log("Updated object", updatedObject);
+    }
 }
