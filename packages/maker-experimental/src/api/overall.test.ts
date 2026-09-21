@@ -115,6 +115,53 @@ describe("Experimental Test Suite", () => {
     });
   });
 
+  describe("Markings", () => {
+    it.each(["CBAC", "MANDATORY"] as const)(
+      "registers the combined %s datasource marking group as a known identifier",
+      async (markingType) => {
+        const result = await defineOntologyV2("com.palantir.", () => {
+          defineObject({
+            apiName: "document",
+            displayName: "Document",
+            pluralDisplayName: "Documents",
+            titlePropertyApiName: "id",
+            primaryKeyPropertyApiName: "id",
+            properties: {
+              id: { type: "string" },
+              maximumClassification: {
+                type: {
+                  type: "marking",
+                  markingType,
+                  markingInputGroupName: "classification",
+                },
+              },
+              minimumClassification: {
+                type: {
+                  type: "marking",
+                  markingType,
+                  markingInputGroupName: "classification",
+                },
+              },
+            },
+          });
+        });
+
+        const combinedMarkingId = "classification/classification";
+        expect(
+          result.shapes.inputShapes.get(
+            ReadableIdGenerator.getForMarking(combinedMarkingId, markingType),
+          ),
+        ).toMatchObject({
+          type: "markings",
+          markings: { stableId: combinedMarkingId },
+        });
+        expect(
+          Object.values(result.ontologyIr.ontology.knownIdentifiers.markings),
+        ).toEqual([[combinedMarkingId]]);
+      },
+    );
+  });
+
   describe("Dependencies", () => {
     it("writes dependencies to the configured file", async () => {
       const outputDir = fs.mkdtempSync(
