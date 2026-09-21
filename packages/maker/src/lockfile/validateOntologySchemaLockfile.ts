@@ -17,6 +17,7 @@
 import { isDeepStrictEqual } from "node:util";
 
 import type { TypeClass } from "../api/common/TypeClass.js";
+import { withoutNamespace } from "../api/defineOntology.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import {
   applyTransition,
@@ -312,6 +313,8 @@ function validateSchemaDiff(
   accountedFor: ReadonlySet<string>,
   findings: LockfileFinding[],
 ): void {
+  const matchedNextProperties = new Set<string>();
+
   for (const [propertyApiName, previousProperty] of Object.entries(
     previousSchema.properties,
   )) {
@@ -319,7 +322,19 @@ function validateSchemaDiff(
       continue;
     }
 
-    const nextProperty = own(nextSchema.properties, propertyApiName);
+    let nextPropertyApiName = propertyApiName;
+    let nextProperty = own(nextSchema.properties, propertyApiName);
+    if (nextProperty === undefined) {
+      const swappedDeclaration = Object.entries(nextSchema.properties).find(
+        ([candidateApiName, candidate]) =>
+          withoutNamespace(candidateApiName) ===
+            withoutNamespace(propertyApiName) &&
+          declarationOf(candidate) !== declarationOf(previousProperty),
+      );
+      if (swappedDeclaration !== undefined) {
+        [nextPropertyApiName, nextProperty] = swappedDeclaration;
+      }
+    }
     if (nextProperty === undefined) {
       findings.push({
         code: "propertyRemoved",
@@ -328,6 +343,7 @@ function validateSchemaDiff(
       });
       continue;
     }
+    matchedNextProperties.add(nextPropertyApiName);
 
     // Ahead of the type check: when the binding itself was swapped, the types are incidental, and
     // reporting them would point the author at the wrong thing to restore.
@@ -384,6 +400,7 @@ function validateSchemaDiff(
   )) {
     if (
       accountedFor.has(propertyApiName) ||
+      matchedNextProperties.has(propertyApiName) ||
       own(previousSchema.properties, propertyApiName) !== undefined
     ) {
       continue;

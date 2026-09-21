@@ -416,7 +416,7 @@ describe("validateOntologySchemaLockfile", () => {
     it("rejects replacing an inline property with a shared property type", () => {
       const result = validate(
         person({ firstName: REQUIRED_STRING }),
-        person({ firstName: SHARED_REQUIRED_STRING }),
+        person({ "com.palantir.firstName": SHARED_REQUIRED_STRING }),
       );
       expect(result.findings).toEqual([
         {
@@ -431,14 +431,14 @@ describe("validateOntologySchemaLockfile", () => {
 
     it("rejects inlining a property a shared property type used to back", () => {
       const result = validate(
-        person({ firstName: SHARED_REQUIRED_STRING }),
+        person({ "com.palantir.firstName": SHARED_REQUIRED_STRING }),
         person({ firstName: REQUIRED_STRING }),
       );
       expect(result.findings).toEqual([
         {
           code: "propertyDeclarationChanged",
           interfaceApiName: "Person",
-          property: "firstName",
+          property: "com.palantir.firstName",
           previousDeclaration: "sharedPropertyType",
           nextDeclaration: "interface",
         },
@@ -449,7 +449,7 @@ describe("validateOntologySchemaLockfile", () => {
       const result = validate(
         person({ firstName: REQUIRED_STRING }),
         person({
-          firstName: {
+          "com.palantir.firstName": {
             type: "integer",
             required: true,
             declaredBy: "sharedPropertyType",
@@ -458,6 +458,17 @@ describe("validateOntologySchemaLockfile", () => {
       );
       expect(result.findings.map(({ code }) => code)).toEqual([
         "propertyDeclarationChanged",
+      ]);
+    });
+
+    it("does not conflate two shared property types with the same un-namespaced name", () => {
+      const result = validate(
+        person({ "com.palantir.firstName": SHARED_REQUIRED_STRING }),
+        person({ "com.example.firstName": SHARED_REQUIRED_STRING }),
+      );
+      expect(result.findings.map(({ code }) => code)).toEqual([
+        "propertyRemoved",
+        "requiredPropertyAdded",
       ]);
     });
 
