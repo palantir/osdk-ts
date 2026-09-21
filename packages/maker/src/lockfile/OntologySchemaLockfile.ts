@@ -17,6 +17,7 @@
 import { isDeepStrictEqual } from "node:util";
 
 import type { TypeClass } from "../api/common/TypeClass.js";
+import { withoutNamespace } from "../api/defineOntology.js";
 import type {
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
@@ -84,6 +85,13 @@ export interface LockedTransition {
 
 export function declarationOf(property: LockedProperty): PropertyDeclaration {
   return property.declaredBy ?? "interface";
+}
+
+/**
+ * The key the author wrote for a property, given the api name the lockfile records it under.
+ */
+export function authoredKeyOf(wireApiName: string): string {
+  return withoutNamespace(wireApiName);
 }
 
 /**

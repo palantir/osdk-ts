@@ -17,7 +17,6 @@
 import { isDeepStrictEqual } from "node:util";
 
 import type { TypeClass } from "../api/common/TypeClass.js";
-import { withoutNamespace } from "../api/defineOntology.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import {
   applyTransition,
@@ -34,7 +33,7 @@ import type {
   OntologySchemaLockfile,
   PropertyDeclaration,
 } from "./OntologySchemaLockfile.js";
-import { declarationOf, own } from "./OntologySchemaLockfile.js";
+import { authoredKeyOf, declarationOf, own } from "./OntologySchemaLockfile.js";
 
 /**
  * NOTE ON CONVENTION: the rest of maker validates with `invariant`, failing on the first problem.
@@ -82,9 +81,20 @@ export type LockfileFinding =
   | {
       code: "propertyDeclarationChanged";
       interfaceApiName: string;
+      /** The api name the lockfile recorded, i.e. the one the property published under before. */
       property: string;
       previousDeclaration: PropertyDeclaration;
       nextDeclaration: PropertyDeclaration;
+    }
+  /**
+   * The property kept its authored key and its binding, but publishes under a different api name,
+   * which only a shared property type changing namespace can do.
+   */
+  | {
+      code: "propertyNamespaceChanged";
+      interfaceApiName: string;
+      previousApiName: string;
+      nextApiName: string;
     }
   | {
       code: "propertyTypeChanged";
@@ -201,7 +211,7 @@ function validateInterface(
     nextInterface.transitions.map((transition) => [transition.id, transition]),
   );
 
-  // Properties whose change is already explained by a finalization or deletion, and so must be
+  // Authored keys whose change is already explained by a finalization or deletion, and so must be
   // exempt from the general breaking-change checks below.
   const propertiesAccountedFor = new Set<string>();
 
@@ -232,7 +242,7 @@ function validateInterface(
       // Whether the disappearance was legal or not, its target properties have been reported on;
       // re-reporting them as raw schema breaks would only add noise.
       for (const property of targetPropertiesOf(previousTransition)) {
-        propertiesAccountedFor.add(property);
+        propertiesAccountedFor.add(authoredKeyOf(property));
       }
       continue;
     }
@@ -302,6 +312,28 @@ function validateSurvivingTransition(
   }
 }
 
+/** A property as the lockfile records it: the api name it publishes under, and its shape. */
+interface PublishedProperty {
+  apiName: string;
+  property: LockedProperty;
+}
+
+/**
+ * A schema's properties keyed by the name the author wrote rather than the one they publish under.
+ */
+function byAuthoredKey(
+  schema: LockedInterfaceSchema,
+): Map<string, PublishedProperty> {
+  // `Object.entries` yields only own enumerable keys, so unlike an index read this needs no guard
+  // against a lockfile parsed from disk inheriting `constructor` and friends from `Object.prototype`.
+  return new Map(
+    Object.entries(schema.properties).map(([apiName, property]) => [
+      authoredKeyOf(apiName),
+      { apiName, property },
+    ]),
+  );
+}
+
 /**
  * Reports every difference between the two schemas that would be rejected at installation-time, skipping
  * the properties already explained by a finalization or deletion.
@@ -313,105 +345,109 @@ function validateSchemaDiff(
   accountedFor: ReadonlySet<string>,
   findings: LockfileFinding[],
 ): void {
-  const matchedNextProperties = new Set<string>();
+  const previousProperties = byAuthoredKey(previousSchema);
+  const nextProperties = byAuthoredKey(nextSchema);
 
-  for (const [propertyApiName, previousProperty] of Object.entries(
-    previousSchema.properties,
-  )) {
-    if (accountedFor.has(propertyApiName)) {
+  for (const [authoredKey, previous] of previousProperties) {
+    if (accountedFor.has(authoredKey)) {
       continue;
     }
 
-    let nextPropertyApiName = propertyApiName;
-    let nextProperty = own(nextSchema.properties, propertyApiName);
-    if (nextProperty === undefined) {
-      const swappedDeclaration = Object.entries(nextSchema.properties).find(
-        ([candidateApiName, candidate]) =>
-          withoutNamespace(candidateApiName) ===
-            withoutNamespace(propertyApiName) &&
-          declarationOf(candidate) !== declarationOf(previousProperty),
-      );
-      if (swappedDeclaration !== undefined) {
-        [nextPropertyApiName, nextProperty] = swappedDeclaration;
-      }
-    }
-    if (nextProperty === undefined) {
+    const next = nextProperties.get(authoredKey);
+    if (next === undefined) {
       findings.push({
         code: "propertyRemoved",
         interfaceApiName,
-        property: propertyApiName,
-      });
-      continue;
-    }
-    matchedNextProperties.add(nextPropertyApiName);
-
-    // Ahead of the type check: when the binding itself was swapped, the types are incidental, and
-    // reporting them would point the author at the wrong thing to restore.
-    const previousDeclaration = declarationOf(previousProperty);
-    const nextDeclaration = declarationOf(nextProperty);
-    if (previousDeclaration !== nextDeclaration) {
-      findings.push({
-        code: "propertyDeclarationChanged",
-        interfaceApiName,
-        property: propertyApiName,
-        previousDeclaration,
-        nextDeclaration,
+        property: previous.apiName,
       });
       continue;
     }
 
-    // This is probably too strict; we might need to strip more things from the locked property
-    // type to avoid false positives
-    if (!isDeepStrictEqual(previousProperty.type, nextProperty.type)) {
-      findings.push({
-        code: "propertyTypeChanged",
-        interfaceApiName,
-        property: propertyApiName,
-        previousType: previousProperty.type,
-        nextType: nextProperty.type,
-      });
-      continue;
-    }
-
-    if (
-      !isDeepStrictEqual(previousProperty.typeClasses, nextProperty.typeClasses)
-    ) {
-      findings.push({
-        code: "propertyTypeClassesChanged",
-        interfaceApiName,
-        property: propertyApiName,
-        previousTypeClasses: previousProperty.typeClasses ?? [],
-        nextTypeClasses: nextProperty.typeClasses ?? [],
-      });
-      continue;
-    }
-
-    if (!previousProperty.required && nextProperty.required) {
-      findings.push({
-        code: "propertyBecameRequired",
-        interfaceApiName,
-        property: propertyApiName,
-      });
-    }
+    validatePropertyDiff(interfaceApiName, previous, next, findings);
   }
 
-  for (const [propertyApiName, nextProperty] of Object.entries(
-    nextSchema.properties,
-  )) {
-    if (
-      accountedFor.has(propertyApiName) ||
-      matchedNextProperties.has(propertyApiName) ||
-      own(previousSchema.properties, propertyApiName) !== undefined
-    ) {
+  for (const [authoredKey, next] of nextProperties) {
+    if (accountedFor.has(authoredKey) || previousProperties.has(authoredKey)) {
       continue;
     }
 
-    if (nextProperty.required) {
+    if (next.property.required) {
       findings.push({
         code: "requiredPropertyAdded",
         interfaceApiName,
-        property: propertyApiName,
+        property: next.apiName,
       });
     }
+  }
+}
+
+/** Reports what changed about a property the author kept. */
+function validatePropertyDiff(
+  interfaceApiName: string,
+  previous: PublishedProperty,
+  next: PublishedProperty,
+  findings: LockfileFinding[],
+): void {
+  const property = previous.apiName;
+
+  // Ahead of the type check: when the binding itself was swapped, the types are incidental, and
+  // reporting them would point the author at the wrong thing to restore.
+  const previousDeclaration = declarationOf(previous.property);
+  const nextDeclaration = declarationOf(next.property);
+  if (previousDeclaration !== nextDeclaration) {
+    findings.push({
+      code: "propertyDeclarationChanged",
+      interfaceApiName,
+      property,
+      previousDeclaration,
+      nextDeclaration,
+    });
+    return;
+  }
+
+  // Same authored key and same binding, but a different published name: the shared property type
+  // behind it moved namespace.
+  if (previous.apiName !== next.apiName) {
+    findings.push({
+      code: "propertyNamespaceChanged",
+      interfaceApiName,
+      previousApiName: previous.apiName,
+      nextApiName: next.apiName,
+    });
+    return;
+  }
+
+  // This is probably too strict; we might need to strip more things from the locked property
+  // type to avoid false positives
+  if (!isDeepStrictEqual(previous.property.type, next.property.type)) {
+    findings.push({
+      code: "propertyTypeChanged",
+      interfaceApiName,
+      property,
+      previousType: previous.property.type,
+      nextType: next.property.type,
+    });
+    return;
+  }
+
+  if (
+    !isDeepStrictEqual(previous.property.typeClasses, next.property.typeClasses)
+  ) {
+    findings.push({
+      code: "propertyTypeClassesChanged",
+      interfaceApiName,
+      property,
+      previousTypeClasses: previous.property.typeClasses ?? [],
+      nextTypeClasses: next.property.typeClasses ?? [],
+    });
+    return;
+  }
+
+  if (!previous.property.required && next.property.required) {
+    findings.push({
+      code: "propertyBecameRequired",
+      interfaceApiName,
+      property,
+    });
   }
 }

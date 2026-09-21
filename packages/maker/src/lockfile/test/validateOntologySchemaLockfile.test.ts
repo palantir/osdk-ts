@@ -274,6 +274,18 @@ describe("validateOntologySchemaLockfile", () => {
       expect(result.findings).toEqual([]);
     });
 
+    it("exempts a target whose declaration was swapped in the same release", () => {
+      const result = validate(
+        person({ "com.palantir.lastName": SHARED_REQUIRED_STRING }, [
+          requireProperty("requireLastName", "com.palantir.lastName"),
+        ]),
+        person({ lastName: REQUIRED_STRING }),
+      );
+      expect(result.findings.map(({ code }) => code)).toEqual([
+        "ambiguousDisappearance",
+      ]);
+    });
+
     it("reports a transition that touches no property rather than throwing", () => {
       const touchesNothing: LockedTransition = {
         id: "touchesNothing",
@@ -461,14 +473,31 @@ describe("validateOntologySchemaLockfile", () => {
       ]);
     });
 
-    it("does not conflate two shared property types with the same un-namespaced name", () => {
+    it("rejects moving the shared property type behind a property to another namespace", () => {
       const result = validate(
         person({ "com.palantir.firstName": SHARED_REQUIRED_STRING }),
         person({ "com.example.firstName": SHARED_REQUIRED_STRING }),
       );
+      expect(result.findings).toEqual([
+        {
+          code: "propertyNamespaceChanged",
+          interfaceApiName: "Person",
+          previousApiName: "com.palantir.firstName",
+          nextApiName: "com.example.firstName",
+        },
+      ]);
+    });
+
+    it("pairs a swapped binding even when the interface declares other properties", () => {
+      const result = validate(
+        person({ firstName: REQUIRED_STRING, lastName: REQUIRED_STRING }),
+        person({
+          "com.palantir.firstName": SHARED_REQUIRED_STRING,
+          lastName: REQUIRED_STRING,
+        }),
+      );
       expect(result.findings.map(({ code }) => code)).toEqual([
-        "propertyRemoved",
-        "requiredPropertyAdded",
+        "propertyDeclarationChanged",
       ]);
     });
 

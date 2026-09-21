@@ -531,5 +531,66 @@ describe("interface schema migration scenarios", () => {
         },
       ]);
     });
+
+    describe("swapping a property's declaration", () => {
+      const NAMESPACE = "com.example.";
+
+      /** `Person`, with `emailAddress` declared each of the two ways under the same author key. */
+      function personWithEmail(
+        declaredBy: "interface" | "sharedPropertyType",
+      ): () => void {
+        return () => {
+          defineInterface({
+            apiName: "Person",
+            properties: {
+              emailAddress:
+                declaredBy === "interface"
+                  ? REQUIRED_STRING
+                  : {
+                      sharedPropertyType: defineSharedPropertyType({
+                        apiName: "emailAddress",
+                        type: "string",
+                      }),
+                      required: true,
+                    },
+            },
+            schemaMigrations: { transitions: [] },
+          });
+        };
+      }
+
+      async function release(
+        declaredBy: "interface" | "sharedPropertyType",
+      ): Promise<void> {
+        await maker(personWithEmail(declaredBy), {
+          writeLocks: true,
+          namespace: NAMESPACE,
+        });
+      }
+
+      it("records an inline property under the un-namespaced authored key", async () => {
+        await release("interface");
+        expect(
+          Object.keys(
+            (await readLockfile()).interfaces["com.example.Person"].schema
+              .properties,
+          ),
+        ).toStrictEqual(["emailAddress"]);
+      });
+
+      it("rejects handing an inline property to a shared property type", async () => {
+        await release("interface");
+        await expect(release("sharedPropertyType")).rejects.toThrowError(
+          /property "emailAddress" moved from defined on the interface to backed by a shared property type/u,
+        );
+      });
+
+      it("rejects taking a property back from a shared property type", async () => {
+        await release("sharedPropertyType");
+        await expect(release("interface")).rejects.toThrowError(
+          /property "emailAddress" moved from backed by a shared property type to defined on the interface/u,
+        );
+      });
+    });
   });
 });
