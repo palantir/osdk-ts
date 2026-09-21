@@ -24,7 +24,7 @@ export interface GenerateContext {
   fs: MinimalFs;
 
   outDir: string;
-  fixedVersionQueryTypes: string[];
+  queryVersionReferences: ReadonlyMap<string, string>;
   ontologyApiNamespace?: string | undefined;
   apiNamespacePackageMap?: Map<string, string>;
   forInternalUse?: boolean;

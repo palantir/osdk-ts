@@ -1,5 +1,16 @@
 # @osdk/functions
 
+## 1.25.0
+
+### Minor Changes
+
+- b97182e: Fix export for cjs type declaration.
+
+### Patch Changes
+
+- Updated dependencies [528d0ca]
+  - @osdk/client@2.71.0
+
 ## 1.24.0
 
 ### Minor Changes

@@ -1,5 +1,17 @@
 # @osdk/maker-experimental
 
+## 0.65.0
+
+### Patch Changes
+
+- Updated dependencies [528d0ca]
+  - @osdk/generator-converters.preview@0.49.0
+  - @osdk/api@2.71.0
+  - @osdk/client.unstable@2.71.0
+  - @osdk/generator-converters.ontologyir@2.71.0
+  - @osdk/maker@0.71.0
+  - @osdk/maker-import@0.40.0
+
 ## 0.64.0
 
 ### Minor Changes

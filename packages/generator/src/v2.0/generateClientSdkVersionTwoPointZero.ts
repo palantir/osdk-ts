@@ -39,9 +39,20 @@ export async function generateClientSdkVersionTwoPointZero(
   externalInterfaces: Map<string, string> = new Map<string, string>(),
   externalSpts: Map<string, string> = new Map<string, string>(),
   forInternalUse: boolean = false,
+  // Retained for backwards compatibility. New callers should use queryVersionReferences.
   fixedVersionQueryTypes: string[] = [],
   exportOntologyMetadata: boolean = false,
+  queryVersionReferences: ReadonlyMap<string, string> = new Map(),
 ): Promise<void> {
+  const duplicateQueryType = fixedVersionQueryTypes.find(queryType =>
+    queryVersionReferences.has(queryType)
+  );
+  if (duplicateQueryType !== undefined) {
+    throw new Error(
+      `Query type ${duplicateQueryType} was specified multiple times.`,
+    );
+  }
+
   const importExt = ".js"; // turns out you can always use the extension
 
   // Structurally, we need to have multiple ontologies read in
@@ -57,6 +68,16 @@ export async function generateClientSdkVersionTwoPointZero(
     externalInterfaces,
     externalSpts,
   });
+  const normalizedQueryVersionReferences = new Map(queryVersionReferences);
+  const fixedVersionQueryTypeSet = new Set(fixedVersionQueryTypes);
+  Object.values(enhancedOntology.queryTypes)
+    .filter(query => fixedVersionQueryTypeSet.has(query.fullApiName))
+    .forEach(query =>
+      normalizedQueryVersionReferences.set(
+        query.fullApiName,
+        query.raw.version,
+      )
+    );
 
   const ctx: GenerateContext = {
     ontology: enhancedOntology,
@@ -64,7 +85,7 @@ export async function generateClientSdkVersionTwoPointZero(
     fs,
     outDir,
     forInternalUse,
-    fixedVersionQueryTypes,
+    queryVersionReferences: normalizedQueryVersionReferences,
   };
 
   await generateRootIndexTsFile(ctx);

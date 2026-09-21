@@ -357,6 +357,7 @@ async function main(): Promise<void> {
     false,
     [],
     true,
+    new Map(),
   );
 
   // Write package.json for module resolution. Points to compiled output in

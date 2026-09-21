@@ -1,5 +1,18 @@
 # @osdk/generator-converters.preview
 
+## 0.49.0
+
+### Minor Changes
+
+- 528d0ca: Add support for generating and executing query functions using semantic version ranges on ontology branches.
+
+### Patch Changes
+
+- Updated dependencies [528d0ca]
+  - @osdk/generator@2.71.0
+  - @osdk/client.unstable@2.71.0
+  - @osdk/generator-converters.ontologyir@2.71.0
+
 ## 0.48.0
 
 ### Minor Changes
