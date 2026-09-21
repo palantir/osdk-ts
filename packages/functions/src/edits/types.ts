@@ -95,6 +95,21 @@ type PartialForOptionalProperties<T> = {
   [K in keyof T as undefined extends T[K] ? never : K]-?: T[K];
 };
 
+type LegacyRequiredCreatePropertyKeys<S extends ObjectTypeDefinition> = {
+  [P in PropertyKeys<S>]: undefined extends OsdkObjectCreatePropertyType<
+    CompileTimeMetadata<S>["properties"][P]
+  >
+    ? never
+    : P;
+}[PropertyKeys<S>];
+
+type RequiredCreatePropertyKeys<S extends ObjectTypeDefinition> =
+  CompileTimeMetadata<S> extends {
+    requiredCreatePropertyKeys: infer P;
+  }
+    ? Extract<P, PropertyKeys<S>>
+    : LegacyRequiredCreatePropertyKeys<S>;
+
 // Property maps come in two flavors:
 //  - *InputProps  — the friendly type callers pass to `create`/`update`
 //  - *WireProps   — the backend-ready type stored on an edit and returned by
@@ -103,20 +118,26 @@ type PartialForOptionalProperties<T> = {
 // interfaces below store the wire variants.
 
 /** Friendly properties accepted by `create` for an object type. */
-export type CreateObjectInputProps<S extends ObjectTypeDefinition> =
-  PartialForOptionalProperties<{
-    [P in PropertyKeys<S>]: OsdkObjectCreatePropertyType<
-      CompileTimeMetadata<S>["properties"][P]
-    >;
-  }>;
+export type CreateObjectInputProps<S extends ObjectTypeDefinition> = {
+  [P in RequiredCreatePropertyKeys<S>]-?: NonNullable<
+    OsdkObjectCreatePropertyType<CompileTimeMetadata<S>["properties"][P]>
+  >;
+} & {
+  [P in Exclude<PropertyKeys<S>, RequiredCreatePropertyKeys<S>>]?: NonNullable<
+    OsdkObjectCreatePropertyType<CompileTimeMetadata<S>["properties"][P]>
+  >;
+};
 
 /** Backend wire properties stored/emitted by a `createObject` edit. */
-export type CreateObjectWireProps<S extends ObjectTypeDefinition> =
-  PartialForOptionalProperties<{
-    [P in PropertyKeys<S>]: OsdkObjectCreateWirePropertyType<
-      CompileTimeMetadata<S>["properties"][P]
-    >;
-  }>;
+export type CreateObjectWireProps<S extends ObjectTypeDefinition> = {
+  [P in RequiredCreatePropertyKeys<S>]-?: NonNullable<
+    OsdkObjectCreateWirePropertyType<CompileTimeMetadata<S>["properties"][P]>
+  >;
+} & {
+  [P in Exclude<PropertyKeys<S>, RequiredCreatePropertyKeys<S>>]?: NonNullable<
+    OsdkObjectCreateWirePropertyType<CompileTimeMetadata<S>["properties"][P]>
+  >;
+};
 
 /** Friendly properties accepted by `create` for an interface. */
 export type CreateInterfaceInputProps<S extends InterfaceDefinition> =

@@ -40,6 +40,65 @@ import { stringUnionFrom } from "../util/stringUnionFrom.js";
 
 type PropertyApiNameUnion = PropertyApiName | SharedPropertyTypeApiName;
 
+export function getRequiredCreatePropertyKeys(
+  objectType: ObjectTypeFullMetadata["objectType"],
+): string[] {
+  const properties = objectType.properties;
+  const requiredKeys = new Set<string>([objectType.primaryKey]);
+  const createWritePaths: Set<string>[] = [];
+
+  for (const datasource of objectType.datasources ?? []) {
+    const definition = datasource.definition;
+
+    switch (definition.type) {
+      case "editsOnly": {
+        const propertyNames: string[] = Object.keys(properties);
+
+        const editableProperties: Set<string> = new Set(propertyNames);
+
+        createWritePaths.push(editableProperties);
+        break;
+      }
+      case "dataset":
+      case "direct":
+      case "restrictedView":
+      case "stream":
+      case "table": {
+        const propertyMapping = definition.propertyMapping;
+
+        const propertyNames = Object.keys(propertyMapping);
+
+        const editableProperties: Set<string> = new Set(propertyNames);
+
+        createWritePaths.push(editableProperties);
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
+  if (createWritePaths.length !== 1) {
+    return [...requiredKeys];
+  }
+
+  const mappedProperties: Set<string> | undefined = createWritePaths[0];
+  if (mappedProperties === undefined) {
+    return [...requiredKeys];
+  }
+
+  for (const [propertyName, property] of Object.entries(properties)) {
+    if (
+      mappedProperties.has(propertyName)
+      && property.dataConstraints?.nullability === "NOT_NULLABLE"
+    ) {
+      requiredKeys.add(propertyName);
+    }
+  }
+
+  return [...requiredKeys].sort();
+}
+
 /** @internal */
 export function wireObjectTypeV2ToSdkObjectConstV2(
   wireObject: ObjectTypeFullMetadata,
@@ -290,6 +349,9 @@ export function createDefinition(
   }: Identifiers,
 ) {
   const definition = object.getCleanedUpDefinition(true);
+  const requiredCreatePropertyKeys = object instanceof EnhancedObjectType
+    ? getRequiredCreatePropertyKeys(object.raw.objectType)
+    : [];
   const propertyMetadata = object instanceof EnhancedObjectType
     ? object.raw.objectType.properties
     : object instanceof EnhancedInterfaceType
@@ -315,6 +377,13 @@ export function createDefinition(
       props: ${osdkObjectPropsIdentifier};
       linksType: ${osdkObjectLinksIdentifier};
       strictProps: ${osdkObjectStrictPropsIdentifier};
+      ${
+    object instanceof EnhancedObjectType
+      ? `requiredCreatePropertyKeys: ${
+        stringUnionFrom(requiredCreatePropertyKeys)
+      };`
+      : ""
+  }
       ${
     stringify(definition, {
       links: (_value) =>
@@ -342,6 +411,7 @@ export function createDefinition(
                 }, ${linkDefinition.multiplicity}>`,
             })
         }
+        
       }`,
       properties: (_value) => (`{
         ${
