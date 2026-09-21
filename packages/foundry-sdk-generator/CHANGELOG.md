@@ -1,5 +1,22 @@
 # @osdk/foundry-sdk-generator
 
+## 2.71.0
+
+### Minor Changes
+
+- 528d0ca: Add support for generating and executing query functions using semantic version ranges on ontology branches.
+
+### Patch Changes
+
+- Updated dependencies [ae55749]
+- Updated dependencies [528d0ca]
+  - @osdk/generator-converters@2.71.0
+  - @osdk/generator@2.71.0
+  - @osdk/client@2.71.0
+  - @osdk/api@2.71.0
+  - @osdk/client.unstable@2.71.0
+  - @osdk/generator-utils@2.71.0
+
 ## 2.70.0
 
 ### Patch Changes

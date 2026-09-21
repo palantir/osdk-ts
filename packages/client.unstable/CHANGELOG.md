@@ -1,5 +1,7 @@
 # @osdk/client.unstable
 
+## 2.71.0
+
 ## 2.70.0
 
 ### Minor Changes
