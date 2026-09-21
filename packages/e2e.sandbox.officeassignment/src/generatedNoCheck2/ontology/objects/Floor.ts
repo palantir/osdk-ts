@@ -93,6 +93,7 @@ export interface Floor extends $ObjectTypeDefinition {
     props: Floor.Props;
     linksType: Floor.Links;
     strictProps: Floor.StrictProps;
+    requiredCreatePropertyKeys: 'floorId';
     apiName: 'Floor';
     description: 'A floor (sub-location) within an Office. Reference/lookup data that Assignments point to.';
     displayName: 'Floor';

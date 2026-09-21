@@ -376,10 +376,10 @@ export function createDefinition(
       objectSet: ${objectSetIdentifier};
       props: ${osdkObjectPropsIdentifier};
       linksType: ${osdkObjectLinksIdentifier};
-      strictProps: ${osdkObjectStrictPropsIdentifier};
-      ${
+      strictProps: ${osdkObjectStrictPropsIdentifier};${
     object instanceof EnhancedObjectType
-      ? `requiredCreatePropertyKeys: ${
+      ? `
+      requiredCreatePropertyKeys: ${
         stringUnionFrom(requiredCreatePropertyKeys)
       };`
       : ""

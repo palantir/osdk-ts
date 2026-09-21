@@ -56,6 +56,7 @@ export interface Thing extends $ObjectTypeDefinition {
     props: Thing.Props;
     linksType: Thing.Links;
     strictProps: Thing.StrictProps;
+    requiredCreatePropertyKeys: 'id';
     apiName: 'Thing';
     description: undefined;
     displayName: 'Thing';

@@ -60,6 +60,7 @@ export interface Game extends $ObjectTypeDefinition {
     props: Game.Props;
     linksType: Game.Links;
     strictProps: Game.StrictProps;
+    requiredCreatePropertyKeys: 'id';
     apiName: 'Game';
     description: '';
     displayName: 'Game';
