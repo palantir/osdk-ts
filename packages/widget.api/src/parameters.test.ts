@@ -16,40 +16,22 @@
 
 import { describe, expectTypeOf, it } from "vitest";
 
-import type { MapTileLayerStyle } from "./index.js";
 import type { ParameterValue } from "./parameters.js";
 
 describe("Parameters", () => {
   describe("MapTileLayerParameterValue", () => {
-    it("should narrow a loaded map tile layer to its style", () => {
+    it("should narrow a loaded map tile layer to its style URL", () => {
       expectTypeOf(
         testMapTileLayerTypeNarrowing({
           type: "mapTileLayer",
           value: {
             type: "loaded",
             value: {
-              version: 8,
-              sources: {
-                "example-raster": {
-                  type: "raster",
-                  tiles: ["https://example.com/tiles/{z}/{x}/{y}.png"],
-                  minzoom: 0,
-                  maxzoom: 18,
-                  tileSize: 256,
-                  attribution: "Example attribution",
-                },
-              },
-              layers: [
-                {
-                  id: "example-raster",
-                  type: "raster",
-                  source: "example-raster",
-                },
-              ],
+              styleJsonUrl: "https://example.com/style.json?source=basemap",
             },
           },
         }),
-      ).toEqualTypeOf<MapTileLayerStyle | undefined>();
+      ).toEqualTypeOf<{ styleJsonUrl: string } | undefined>();
     });
   });
 

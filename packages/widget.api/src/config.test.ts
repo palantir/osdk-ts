@@ -25,7 +25,6 @@ import {
   type ParameterId,
   type ParameterValueMap,
 } from "./config.js";
-import type { MapTileLayerStyle } from "./index.js";
 import type {
   AllowedObjectSetParameterType,
   ParameterValue,
@@ -307,7 +306,7 @@ describe("WidgetConfig", () => {
       });
 
       expectTypeOf<ParameterValueMap<typeof test>>().toEqualTypeOf<{
-        tileLayer: MapTileLayerStyle;
+        tileLayer: { styleJsonUrl: string };
       }>();
       expectTypeOf<AsyncParameterValueMap<typeof test>>().toEqualTypeOf<{
         tileLayer: ParameterValue.MapTileLayer;
@@ -315,7 +314,7 @@ describe("WidgetConfig", () => {
       expectTypeOf<
         EventParameterValueMap<typeof test, "updateTileLayer">
       >().toEqualTypeOf<{
-        tileLayer: MapTileLayerStyle;
+        tileLayer: { styleJsonUrl: string };
       }>();
     });
 

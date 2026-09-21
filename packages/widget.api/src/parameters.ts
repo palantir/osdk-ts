@@ -16,7 +16,6 @@
 
 import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 
-import type { MapTileLayerStyle } from "./mapTileLayerStyle.js";
 import type { AsyncValue } from "./utils/asyncValue.js";
 
 interface ObjectType extends ObjectTypeDefinition {
@@ -56,7 +55,14 @@ export interface AbstractParameterValue<T extends PrimitiveParameterType> {
 
 export interface MapTileLayerParameterValue {
   type: "mapTileLayer";
-  value: AsyncValue<MapTileLayerStyle>;
+  /** A loaded value provides the URL; the widget's renderer loads the style. */
+  value: AsyncValue<{
+    /**
+     * URL of a complete GL style JSON document, including its sources and layers.
+     * Can be passed to a compatible map renderer's style option or setStyle method.
+     */
+    styleJsonUrl: string;
+  }>;
 }
 
 export interface ObjectSetParameterValue<

@@ -34,7 +34,6 @@ export type {
   WidgetSetManifestV1 as WidgetSetManifest,
 } from "./manifest.js";
 export { MANIFEST_FILE_LOCATION } from "./manifest.js";
-export type { MapTileLayerStyle } from "./mapTileLayerStyle.js";
 export {
   HostMessage,
   isHostParametersUpdatedMessage,

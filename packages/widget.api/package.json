@@ -42,7 +42,6 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@maplibre/maplibre-gl-style-spec": "^23.3.0",
     "@osdk/api": "workspace:*"
   },
   "devDependencies": {

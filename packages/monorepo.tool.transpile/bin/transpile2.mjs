@@ -262,26 +262,6 @@ async function transpileWithTsup(format, target) {
       })),
     ],
   });
-
-  if (
-    format === "cjs"
-    && pkgJson.dependencies?.["@maplibre/maplibre-gl-style-spec"]
-  ) {
-    // tsup drops type-only import attributes when bundling declarations.
-    // MapLibre exposes ESM declarations, so CJS consumers need import resolution.
-    for (const file of await readdir(outDir, { recursive: true })) {
-      if (!file.endsWith(".d.cts")) continue;
-      const declarationPath = path.join(outDir, file);
-      const declaration = await readFile(declarationPath, "utf-8");
-      const updated = declaration.replace(
-        /import \{([^}]+)\} from (["'])@maplibre\/maplibre-gl-style-spec\2;/g,
-        "import type {$1} from \"@maplibre/maplibre-gl-style-spec\" with { \"resolution-mode\": \"import\" };",
-      );
-      if (updated !== declaration) {
-        await writeFile(declarationPath, updated, "utf-8");
-      }
-    }
-  }
 }
 
 /**

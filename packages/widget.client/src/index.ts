@@ -24,7 +24,6 @@ export type {
   AsyncValue,
   EventId,
   EventParameterValueMap,
-  MapTileLayerStyle,
   ParameterConfig,
   ParameterValue,
   ParameterValueMap,
