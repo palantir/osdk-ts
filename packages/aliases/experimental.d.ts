@@ -14,13 +14,4 @@
  * limitations under the License.
  */
 
-import { getAlias } from "./getAlias.js";
-import { loadResolvedAliases } from "./loaders.js";
-import type { Mediaset } from "./types.js";
-export type { Mediaset } from "./types.js";
-
-export function mediaset(alias: string): Mediaset {
-  const resolvedAliases = loadResolvedAliases();
-
-  return getAlias(resolvedAliases.mediasets, alias, "Mediaset");
-}
+export * from "./build/cjs/public/experimental.cjs";

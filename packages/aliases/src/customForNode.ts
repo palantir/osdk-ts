@@ -16,11 +16,11 @@
 
 import { getAlias } from "./getAlias.js";
 import { loadResolvedAliases } from "./loaders.js";
-import type { Mediaset } from "./types.js";
-export type { Mediaset } from "./types.js";
+import type { Custom } from "./types.js";
+export type { Custom } from "./types.js";
 
-export function mediaset(alias: string): Mediaset {
+export function customForNode(alias: string): Custom {
   const resolvedAliases = loadResolvedAliases();
 
-  return getAlias(resolvedAliases.mediasets, alias, "Mediaset");
+  return getAlias(resolvedAliases.custom, alias, "Custom") as Custom;
 }

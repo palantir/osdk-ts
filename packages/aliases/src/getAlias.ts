@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-import { loadResolvedAliases } from "./loaders.js";
-import type { Custom } from "./types.js";
-export type { Custom } from "./types.js";
-
-export function custom(alias: string): Custom {
-  const resolvedAliases = loadResolvedAliases();
-
-  if (!(alias in resolvedAliases.custom)) {
-    const available = Object.keys(resolvedAliases.custom);
+export function getAlias<T>(
+  aliases: Record<string, T>,
+  alias: string,
+  aliasType: string,
+): T {
+  if (!Object.hasOwn(aliases, alias)) {
+    const available = Object.keys(aliases);
     throw new Error(
-      `Custom alias '${alias}' not found. Available aliases: [${available.join(
+      `${aliasType} alias '${alias}' not found. Available aliases: [${available.join(
         ", ",
       )}]`,
     );
   }
 
-  return resolvedAliases.custom[alias] as Custom;
+  return aliases[alias];
 }
