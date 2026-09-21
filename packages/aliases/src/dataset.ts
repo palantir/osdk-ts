@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getAlias } from "./getAlias.js";
 import { loadResolvedAliases } from "./loaders.js";
 import type { Dataset } from "./types.js";
 export type { Dataset } from "./types.js";
@@ -21,14 +22,5 @@ export type { Dataset } from "./types.js";
 export function dataset(alias: string): Dataset {
   const resolvedAliases = loadResolvedAliases();
 
-  if (!Object.hasOwn(resolvedAliases.datasets, alias)) {
-    const available = Object.keys(resolvedAliases.datasets);
-    throw new Error(
-      `Dataset alias '${alias}' not found. Available aliases: [${available.join(
-        ", ",
-      )}]`,
-    );
-  }
-
-  return resolvedAliases.datasets[alias];
+  return getAlias(resolvedAliases.datasets, alias, "Dataset");
 }

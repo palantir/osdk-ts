@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getAlias } from "./getAlias.js";
 import { loadResolvedAliases } from "./loaders.js";
 import type { Model } from "./types.js";
 export type { Model } from "./types.js";
@@ -21,14 +22,5 @@ export type { Model } from "./types.js";
 export function model(alias: string): Model {
   const resolvedAliases = loadResolvedAliases();
 
-  if (!Object.hasOwn(resolvedAliases.models, alias)) {
-    const available = Object.keys(resolvedAliases.models);
-    throw new Error(
-      `Model alias '${alias}' not found. Available aliases: [${available.join(
-        ", ",
-      )}]`,
-    );
-  }
-
-  return resolvedAliases.models[alias];
+  return getAlias(resolvedAliases.models, alias, "Model");
 }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getAlias } from "./getAlias.js";
 import type { Custom } from "./types.js";
 
 export type { Custom } from "./types.js";
@@ -43,15 +44,7 @@ export async function customForBrowser(alias: string): Promise<Custom> {
     throw new Error("Aliases failed to initialize.");
   }
 
-  if (!Object.hasOwn(aliases, alias)) {
-    const available = Object.keys(aliases);
-    throw new Error(
-      `Custom alias '${alias}' not found. Available aliases: [${available.join(
-        ", ",
-      )}]`,
-    );
-  }
-  return aliases[alias] as Custom;
+  return getAlias(aliases, alias, "Custom") as Custom;
 }
 
 /** Deduplicates concurrent loads; a later call can retry if failure occurs. */

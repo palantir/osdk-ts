@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getAlias } from "./getAlias.js";
 import { loadResolvedAliases } from "./loaders.js";
 import type { Custom } from "./types.js";
 export type { Custom } from "./types.js";
@@ -21,14 +22,5 @@ export type { Custom } from "./types.js";
 export function customForNode(alias: string): Custom {
   const resolvedAliases = loadResolvedAliases();
 
-  if (!Object.hasOwn(resolvedAliases.custom, alias)) {
-    const available = Object.keys(resolvedAliases.custom);
-    throw new Error(
-      `Custom alias '${alias}' not found. Available aliases: [${available.join(
-        ", ",
-      )}]`,
-    );
-  }
-
-  return resolvedAliases.custom[alias] as Custom;
+  return getAlias(resolvedAliases.custom, alias, "Custom") as Custom;
 }
