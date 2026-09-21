@@ -9,6 +9,7 @@ immer
 jiti
 luxon
 manypkg
+mapbox
 maplibre
 maxzoom
 mdast
