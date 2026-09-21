@@ -54,22 +54,54 @@ export class OntologyBlockDataToFullMetadataConverter {
       importedTypes,
       transitiveImportedBlockData,
     );
+    const interfaceBlockData = {
+      ...blockData.interfaceTypes,
+      ...transitiveImportedBlockData?.interfaceTypes,
+    };
+    const interfacePropertyLookup = buildInterfacePropertyLookup(
+      interfaceBlockData,
+      importedTypes?.interfaceTypes,
+    );
     const interfaceTypes = this.getOsdkInterfaceTypesFromBlockData(
-      {
-        ...blockData.interfaceTypes,
-        ...transitiveImportedBlockData?.interfaceTypes,
-      },
+      interfaceBlockData,
       interfaceTypeLookup,
       importedTypes?.interfaceTypes,
     );
+    for (
+      const [interfaceApiName, interfaceType] of Object.entries(
+        importedTypes?.interfaceTypes ?? {},
+      )
+    ) {
+      interfaceTypes[interfaceApiName] = {
+        ...interfaceType,
+        implementedByObjectTypes: [...interfaceType.implementedByObjectTypes],
+      };
+    }
     const sharedPropertyTypes = this.getOsdkSharedPropertyTypesFromBlockData(
       blockData.sharedPropertyTypes,
     );
-    const objectTypes = this.getOsdkObjectTypesFromBlockData(
-      blockData.objectTypes,
-      blockData.linkTypes,
-      objectTypeLookup,
-    );
+    const objectTypes = {
+      ...this.getOsdkObjectTypesFromBlockData(
+        blockData.objectTypes,
+        blockData.linkTypes,
+        objectTypeLookup,
+        interfacePropertyLookup,
+      ),
+      ...importedTypes?.objectTypes,
+    };
+    for (const [objectApiName, objectType] of Object.entries(objectTypes)) {
+      for (
+        const interfaceApiName of Object.keys(objectType.implementsInterfaces2)
+      ) {
+        const interfaceType = interfaceTypes[interfaceApiName];
+        if (
+          interfaceType
+          && !interfaceType.implementedByObjectTypes.includes(objectApiName)
+        ) {
+          interfaceType.implementedByObjectTypes.push(objectApiName);
+        }
+      }
+    }
     const actionTypes = this.getOsdkActionTypesFromBlockData(
       blockData,
       objectTypeLookup,
@@ -77,15 +109,11 @@ export class OntologyBlockDataToFullMetadataConverter {
     );
 
     return {
-      interfaceTypes: importedTypes
-        ? { ...interfaceTypes, ...importedTypes.interfaceTypes }
-        : interfaceTypes,
+      interfaceTypes,
       sharedPropertyTypes: importedTypes
         ? { ...sharedPropertyTypes, ...importedTypes.sharedPropertyTypes }
         : sharedPropertyTypes,
-      objectTypes: importedTypes
-        ? { ...objectTypes, ...importedTypes.objectTypes }
-        : objectTypes,
+      objectTypes,
       queryTypes: {},
       actionTypes: importedTypes
         ? { ...actionTypes, ...importedTypes.actionTypes }
@@ -110,6 +138,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     objects: Record<string, ObjectTypeBlockDataV2>,
     links: Record<string, LinkTypeBlockDataV2>,
     objectTypeLookup: BlockDataApiNameLookup | undefined,
+    interfacePropertyLookup: Record<string, string> = {},
   ): Record<ApiName, Ontologies.ObjectTypeFullMetadata> {
     const result: Record<ApiName, Ontologies.ObjectTypeFullMetadata> = {};
     const propRidToApiName: Record<string, string> = {};
@@ -223,9 +252,32 @@ export class OntologyBlockDataToFullMetadataConverter {
           sharedPropertyTypeMappings[sharedPropKey] = propertyApiName;
         }
 
+        const interfacePropertyMappings: Record<
+          ApiName,
+          Ontologies.InterfacePropertyTypeImplementation
+        > = {};
+        for (
+          const [interfacePropertyRid, propMapping] of Object.entries(
+            ii.propertiesV2,
+          )
+        ) {
+          if (propMapping.type !== "propertyTypeRid") {
+            continue;
+          }
+          const interfacePropertyApiName =
+            interfacePropertyLookup[interfacePropertyRid];
+          const propertyApiName = propRidToApiName[propMapping.propertyTypeRid];
+          if (interfacePropertyApiName && propertyApiName) {
+            interfacePropertyMappings[interfacePropertyApiName] = {
+              type: "localPropertyImplementation",
+              propertyApiName,
+            };
+          }
+        }
+
         implementsInterfaces2[interfaceApiName] = {
           properties: propertyMappings,
-          propertiesV2: {},
+          propertiesV2: interfacePropertyMappings,
           links: {},
           actionTypes: {},
         };
@@ -882,7 +934,7 @@ export class OntologyBlockDataToFullMetadataConverter {
         allExtendsInterfaces: interfaceType.extendsInterfaces.map(val =>
           resolveBlockDataApiName(val, interfaceTypeLookup)
         ),
-        implementedByObjectTypes: [], // Empty for now
+        implementedByObjectTypes: [],
         displayName: interfaceType.displayMetadata.displayName,
         description: interfaceType.displayMetadata.description ?? undefined,
         links: this.getOsdkInterfaceLinkTypesFromBlockData(
@@ -1345,6 +1397,31 @@ export function buildBlockDataInterfaceTypeLookup(
     }
   }
   return { byRid, byHyphenated };
+}
+
+function buildInterfacePropertyLookup(
+  interfaceTypes: Record<string, InterfaceTypeBlockDataV2>,
+  importedInterfaceTypes: Record<string, Ontologies.InterfaceType> = {},
+): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (const value of Object.values(interfaceTypes)) {
+    for (const property of Object.values(value.interfaceType.propertiesV3)) {
+      if (property.type === "interfaceDefinedPropertyType") {
+        const definition = property.interfaceDefinedPropertyType;
+        result[definition.rid] = definition.apiName;
+      } else if (property.type === "sharedPropertyBasedPropertyType") {
+        const definition = property.sharedPropertyBasedPropertyType
+          .sharedPropertyType;
+        result[definition.rid] = definition.apiName;
+      }
+    }
+  }
+  for (const value of Object.values(importedInterfaceTypes)) {
+    for (const property of Object.values(value.propertiesV2)) {
+      result[property.rid] = property.apiName;
+    }
+  }
+  return result;
 }
 
 export function buildBlockDataInterfaceLinkTypeLookup(
