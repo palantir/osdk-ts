@@ -927,6 +927,25 @@ gracePeriod: { type: "afterInstall", days: 45 }
 gracePeriod: { type: "deadline", deadline: "2026-01-31T00:00:00Z" }
 ```
 
+#### Finalizing or Deleting a Transition
+
+While a transition is listed in `schemaMigrations.transitions`, it is **active**: its migrations have
+been announced, but implementing object types are not yet required to comply with them. There are two
+ways to end an active transition:
+
+- **Finalization** completes the transition by adopting its target schema. All migrations in the
+  transition are enforced from that release onward.
+- **Deletion** cancels the transition and retains its current schema, so its migrations are
+  never enforced.
+
+To finalize or delete a transition, remove it from `schemaMigrations.transitions`, update the interface
+schema to the corresponding finalized or non-finalized state, and run `maker --write-locks`. Maker compares
+the schema with the previously persisted lockfile and asks you to confirm `FINALIZE` or `DELETE` for the
+entire transition.
+
+Maker rejects the change if the schema matches neither outcome. Declining the confirmation leaves
+both `ontology-schema-lock.json` and `ontology.json` unchanged.
+
 #### Supported Migration Instructions
 
 ##### `addRequiredProperty`
@@ -979,15 +998,3 @@ defineInterface({
 Run `maker --write-locks` to confirm `FINALIZE requireShippedAt`. To abandon the transition, remove
 the transition but leave the property optional (maker will flag this as `DELETE requireShippedAt` for
 confirmation).
-
-#### Finalizing or Deleting a Transition
-
-Remove an active transition to end it, then run `maker --write-locks`. Maker compares the schema
-with the previously-persisted lockfile and asks you to confirm one of two outcomes for the entire
-transition:
-
-- **FINALIZE** — Enforce all migrations in the transition from this release onward.
-- **DELETE** — Abandon all migrations in the transition and retain the previous schema.
-
-Maker rejects the change if the schema matches neither outcome. Declining the confirmation leaves
-both `ontology-schema-lock.json` and `ontology.json` unchanged.
