@@ -19,6 +19,7 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import type { ResolvedBlockSetInputShape } from "@osdk/client.unstable/api";
 import type {
   ActionType,
   InterfaceType,
@@ -42,6 +43,7 @@ import {
 import invariant from "tiny-invariant";
 import { beforeEach, describe, expect, it } from "vitest";
 
+import type { ExternalImportedOntologyMetadata } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import { defineOntologyV2 } from "./defineOntologyV2.js";
 import { defineImportObject } from "./importObjectType.js";
@@ -58,6 +60,23 @@ function apiNamePreset(apiName: string) {
       },
     },
     exportCompatibility: "COMPATIBLE",
+    enforcement: "SUGGESTED",
+    isDefault: false,
+  };
+}
+
+function resolvedShapePreset(resolvedShape: ResolvedBlockSetInputShape) {
+  return {
+    value: {
+      type: "fromSource",
+      fromSource: {
+        resolver: {
+          type: "resolvedShapeResolver",
+          resolvedShapeResolver: resolvedShape,
+        },
+      },
+    },
+    exportCompatibility: "INCOMPATIBLE",
     enforcement: "SUGGESTED",
     isDefault: false,
   };
@@ -1074,6 +1093,233 @@ describe("Experimental Test Suite", () => {
         result.shapes.outputShapes.entries(),
       ).filter(([_, shape]) => shape.type === "objectType");
       expect(objectOutputShapes.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("uses resolved presets for externally imported parent shapes", async () => {
+      const objectTypeRid = "ri.ontology.main.object-type.imported-foo";
+      const propertyTypeRid = "ri.ontology.main.property.imported-foo-name";
+      const actionTypeRid = "ri.ontology.main.action-type.imported-action";
+      const interfaceTypeRid =
+        "ri.ontology.main.interface-type.imported-interface";
+      const sharedPropertyTypeRid =
+        "ri.ontology.main.shared-property-type.imported-name";
+      const ontologyRid = "ri.ontology.main.ontology.source";
+      const objectTypeId = "source-object-type-id";
+      const actionTypeVersion = "7";
+      const externalImportedMetadata = {
+        actionTypes: {
+          importedAction: {
+            apiName: "importedAction",
+            description: "",
+            displayName: "Imported Action",
+            operations: [],
+            parameters: {},
+            rid: actionTypeRid,
+            status: "ACTIVE",
+          },
+        },
+        interfaceTypes: {
+          importedInterface: {
+            allExtendsInterfaces: [],
+            allLinks: {},
+            allProperties: {},
+            allPropertiesV2: {},
+            apiName: "importedInterface",
+            displayName: "Imported Interface",
+            extendsInterfaces: [],
+            implementedByObjectTypes: [],
+            links: {},
+            properties: {},
+            propertiesV2: {},
+            rid: interfaceTypeRid,
+          },
+        },
+        objectTypes: {
+          importedFoo: {
+            implementsInterfaces: [],
+            implementsInterfaces2: {},
+            linkTypes: [],
+            objectType: {
+              apiName: "importedFoo",
+              description: "",
+              displayName: "Imported Foo",
+              icon: { type: "blueprint", color: "#4C90F0", name: "cube" },
+              pluralDisplayName: "Imported Foos",
+              primaryKey: "name",
+              properties: {
+                name: {
+                  dataType: { type: "string" },
+                  displayName: "Name",
+                  rid: propertyTypeRid,
+                  status: { type: "experimental" },
+                  typeClasses: [],
+                  visibility: "NORMAL",
+                },
+              },
+              rid: objectTypeRid,
+              status: "EXPERIMENTAL",
+              titleProperty: "name",
+              visibility: "NORMAL",
+            },
+            sharedPropertyTypeMapping: {},
+          },
+        },
+        ontology: {
+          apiName: "source",
+          description: "",
+          displayName: "Source",
+          rid: ontologyRid,
+        },
+        queryTypes: {},
+        sharedPropertyTypes: {
+          importedName: {
+            apiName: "importedName",
+            dataType: { type: "string" },
+            displayName: "Imported Name",
+            rid: sharedPropertyTypeRid,
+            typeClasses: [],
+          },
+        },
+        valueTypes: {},
+        actionTypeVersionsByRid: {
+          [actionTypeRid]: actionTypeVersion,
+        },
+        objectTypeIdsByRid: { [objectTypeRid]: objectTypeId },
+        resolvedShapePresetEntityRids: [
+          objectTypeRid,
+          actionTypeRid,
+          interfaceTypeRid,
+          sharedPropertyTypeRid,
+        ],
+      } as unknown as ExternalImportedOntologyMetadata;
+      const result = await defineOntologyV2(
+        "com.palantir.",
+        () => {},
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        externalImportedMetadata,
+      );
+
+      expect(
+        result.importedInputPresets.get(
+          ReadableIdGenerator.getForObjectType("importedFoo"),
+        ),
+      ).toEqual(
+        resolvedShapePreset({
+          type: "objectType",
+          objectType: {
+            apiName: "importedFoo",
+            id: objectTypeId,
+            ontologyRid,
+            rid: objectTypeRid,
+          },
+        }),
+      );
+      expect(
+        result.importedInputPresets.get(
+          ReadableIdGenerator.getForObjectProperty("importedFoo", "name"),
+        ),
+      ).toEqual(apiNamePreset("name"));
+      expect(
+        result.importedInputPresets.get(
+          ReadableIdGenerator.getForInterface("importedInterface"),
+        ),
+      ).toEqual(
+        resolvedShapePreset({
+          type: "interfaceType",
+          interfaceType: {
+            apiName: "importedInterface",
+            ontologyRid,
+            rid: interfaceTypeRid,
+          },
+        }),
+      );
+      expect(
+        result.importedInputPresets.get(
+          ReadableIdGenerator.getForSpt("importedName"),
+        ),
+      ).toEqual(
+        resolvedShapePreset({
+          type: "sharedPropertyType",
+          sharedPropertyType: {
+            apiName: "importedName",
+            ontologyRid,
+            rid: sharedPropertyTypeRid,
+            structFieldRids: {},
+          },
+        }),
+      );
+      expect(
+        result.importedInputPresets.get(
+          ReadableIdGenerator.getForActionType("importedAction"),
+        ),
+      ).toEqual(
+        resolvedShapePreset({
+          type: "action",
+          action: {
+            apiName: "importedAction",
+            ontologyRid,
+            parameters: {},
+            rid: actionTypeRid,
+            version: actionTypeVersion,
+          },
+        }),
+      );
+
+      const ineligibleResult = await defineOntologyV2(
+        "com.palantir.",
+        () => {},
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        { ...externalImportedMetadata, resolvedShapePresetEntityRids: [] },
+      );
+      for (const [readableId, apiName] of [
+        [ReadableIdGenerator.getForObjectType("importedFoo"), "importedFoo"],
+        [
+          ReadableIdGenerator.getForInterface("importedInterface"),
+          "importedInterface",
+        ],
+        [ReadableIdGenerator.getForSpt("importedName"), "importedName"],
+        [
+          ReadableIdGenerator.getForActionType("importedAction"),
+          "importedAction",
+        ],
+      ] as const) {
+        expect(ineligibleResult.importedInputPresets.get(readableId)).toEqual(
+          apiNamePreset(apiName),
+        );
+      }
+
+      const missingEnrichmentResult = await defineOntologyV2(
+        "com.palantir.",
+        () => {},
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        {
+          ...externalImportedMetadata,
+          actionTypeVersionsByRid: {},
+          objectTypeIdsByRid: {},
+        },
+      );
+      expect(
+        missingEnrichmentResult.importedInputPresets.get(
+          ReadableIdGenerator.getForObjectType("importedFoo"),
+        ),
+      ).toEqual(apiNamePreset("importedFoo"));
+      expect(
+        missingEnrichmentResult.importedInputPresets.get(
+          ReadableIdGenerator.getForActionType("importedAction"),
+        ),
+      ).toEqual(apiNamePreset("importedAction"));
     });
 
     it("handles local links referencing imported objects", async () => {
