@@ -376,7 +376,6 @@ function validateSchemaDiff(
         interfaceApiName,
         property: previous.apiName,
       });
-      // NB: explicitly doesn't short-circuit since this is just a warning
     }
 
     validatePropertyDiff(interfaceApiName, previous, next, findings);
