@@ -59,7 +59,7 @@ export interface MapTileLayerParameterValue {
   /** A loaded value provides the URL; the widget's renderer loads the style. */
   value: AsyncValue<{
     /**
-     * URL of a Mapbox/Maplibre Style JSON document, including its sources and layers.
+     * URL of a Mapbox/Maplibre style JSON document.
      */
     styleJsonUrl: string;
   }>;
