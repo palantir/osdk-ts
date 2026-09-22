@@ -214,6 +214,24 @@ const interfaceSchema = z
             properties: z.record(z.string(), propertySchema, {
               message: "Expected an object keyed by property api name.",
             }),
+            extendsInterfaces: z
+              .array(
+                z.string({
+                  message: "Expected the api name of an extended interface.",
+                }),
+                {
+                  message:
+                    `Expected an array of extended interface api names. Restore the interfaces ` +
+                    `the last published release extended.`,
+                },
+              )
+              // Absent means "extends nothing", so a committed lockfile should only ever values
+              .nonempty({
+                message:
+                  `Expected a non-empty array of extended interface api names, or no value at ` +
+                  `all for an interface that extends none.`,
+              })
+              .optional(),
           },
           { message: 'Expected an object with a "properties" key.' },
         )

@@ -267,6 +267,48 @@ describe("parseLockfile", () => {
     );
   });
 
+  it("accepts an interface that records what it extends", () => {
+    const parsed = parse(
+      withInterface({
+        schema: {
+          properties: { lastName: property },
+          extendsInterfaces: ["com.palantir.Named"],
+        },
+        transitions: [],
+      }),
+    );
+    expect(parsed.interfaces.Person.schema.extendsInterfaces).toEqual([
+      "com.palantir.Named",
+    ]);
+  });
+
+  it("rejects an empty `extendsInterfaces`", () => {
+    expect(() =>
+      parse(
+        withInterface({
+          schema: { properties: { lastName: property }, extendsInterfaces: [] },
+          transitions: [],
+        }),
+      ),
+    ).toThrowError(/schema\.extendsInterfaces/u);
+  });
+
+  it("rejects an `extendsInterfaces` entry that is not an api name", () => {
+    expect(() =>
+      parse(
+        withInterface({
+          schema: {
+            properties: { lastName: property },
+            extendsInterfaces: [{ apiName: "com.palantir.Named" }],
+          },
+          transitions: [],
+        }),
+      ),
+    ).toThrowError(
+      /schema\.extendsInterfaces\[0\]: Expected the api name of an extended interface/u,
+    );
+  });
+
   it("accepts a property that records a value type", () => {
     const valueType = { packageNamespace: "com.example", apiName: "Ssn" };
     const parsed = parse(withPropertyDefinition({ ...property, valueType }));

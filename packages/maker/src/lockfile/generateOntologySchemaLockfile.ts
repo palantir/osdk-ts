@@ -112,7 +112,22 @@ function lockInterfaceSchema(
         ] as const,
     )
     .sort(([a], [b]) => compare(a, b));
-  return { properties: Object.fromEntries(locked) };
+  const extendsInterfaces = lockExtensions(interfaceType);
+
+  return {
+    properties: Object.fromEntries(locked),
+    // NB: spread rather than assigned `undefined` so a lockfile read back from disk (where absents
+    // have no key at all) still compare equal.
+    ...(extendsInterfaces !== undefined && { extendsInterfaces }),
+  };
+}
+
+function lockExtensions(interfaceType: InterfaceType): string[] | undefined {
+  const extended = new Set(
+    interfaceType.extendsInterfaces.map((parent) => parent.apiName),
+  );
+
+  return extended.size === 0 ? undefined : [...extended].sort(compare);
 }
 
 function lockProperty(property: InterfacePropertyType): LockedProperty {

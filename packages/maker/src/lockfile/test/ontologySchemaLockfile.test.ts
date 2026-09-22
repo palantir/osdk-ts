@@ -325,6 +325,43 @@ describe("interface schema migration scenarios", () => {
       );
     });
 
+    function personExtendingNamed(extending: boolean): () => void {
+      return () => {
+        const named = defineInterface({
+          apiName: "Named",
+          properties: { name: REQUIRED_STRING },
+        });
+        defineInterface({
+          apiName: "Person",
+          properties: { firstName: REQUIRED_STRING },
+          schemaMigrations: { transitions: [] },
+          ...(extending && { extends: named }),
+        });
+      };
+    }
+
+    it("rejects extending a new interface", async () => {
+      await published(personExtendingNamed(false));
+      await expect(
+        maker(personExtendingNamed(true), { writeLocks: true }),
+      ).rejects.toThrowError(
+        /now extends "Named"[\s\S]*no currently-supported interface schema migration can phase that in/u,
+      );
+    });
+
+    it("warns about no longer extending an interface, rather than rejecting it", async () => {
+      const warn = vi.spyOn(consola, "warn");
+      await published(personExtendingNamed(true));
+      await maker(personExtendingNamed(false), { writeLocks: true });
+
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('Interface Person no longer extends "Named"'),
+      );
+      expect(
+        (await readLockfile()).interfaces.Person.schema,
+      ).not.toHaveProperty("extendsInterfaces");
+    });
+
     it("rejects changing a property's type", async () => {
       await published(lastNameFinalized);
       await expect(

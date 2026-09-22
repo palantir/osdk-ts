@@ -65,6 +65,18 @@ export interface LockedInterfaceSchema {
    * The interface's locally-declared properties (i.e. non-inherited), keyed by the api name they are published under.
    */
   properties: Record<string, LockedProperty>;
+  /**
+   * The (sorted) api names of the interfaces this one directly extends. Absent when it extends none.
+   *
+   * Note this contains _only_ the direct parents: an ancestor reached through one of them is
+   * that parent's business to record, and recording the transitive closure here would report
+   * the same change twice.
+   *
+   * Recorded because `properties` above is deliberately local, so the inherited half of the
+   * published schema is otherwise invisible to the lockfile: dropping a parent silently drops every
+   * property it contributed.
+   */
+  extendsInterfaces?: string[];
 }
 
 /** Where a property's definition comes from. */
@@ -104,6 +116,10 @@ export interface LockedTransition {
 
 export function declarationOf(property: LockedProperty): PropertyDeclaration {
   return property.declaredBy ?? "interface";
+}
+
+export function extensionsOf(schema: LockedInterfaceSchema): readonly string[] {
+  return schema.extendsInterfaces ?? [];
 }
 
 export function primaryKeyConstraintOf(
