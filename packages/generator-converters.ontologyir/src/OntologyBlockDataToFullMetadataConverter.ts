@@ -26,6 +26,7 @@ import type {
   ObjectTypeStatus,
   OntologyBlockDataV2,
   OntologyIrStructFieldBaseParameterType,
+  SharedPropertyType,
   SharedPropertyTypeBlockDataV2,
   Type,
   ValueTypeBlockData,
@@ -66,6 +67,7 @@ export class OntologyBlockDataToFullMetadataConverter {
       interfaceBlockData,
       interfaceTypeLookup,
       importedTypes?.interfaceTypes,
+      valueTypes,
     );
     const interfaceTypes: Record<ApiName, Ontologies.InterfaceType> = {
       ...convertedInterfaceTypes,
@@ -82,6 +84,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     };
     const sharedPropertyTypes = this.getOsdkSharedPropertyTypesFromBlockData(
       blockData.sharedPropertyTypes,
+      valueTypes,
     );
     const objectTypes: Record<ApiName, Ontologies.ObjectTypeFullMetadata> = {
       ...this.getOsdkObjectTypesFromBlockData(
@@ -89,6 +92,7 @@ export class OntologyBlockDataToFullMetadataConverter {
         blockData.linkTypes,
         objectTypeLookup,
         interfacePropertyApiNames,
+        valueTypes,
       ),
       ...importedTypes?.objectTypes,
     };
@@ -142,6 +146,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     links: Record<string, LinkTypeBlockDataV2>,
     objectTypeLookup: BlockDataApiNameLookup | undefined,
     interfacePropertyApiNames: Record<string, ApiName> = {},
+    valueTypes: Record<string, ValueTypeBlockData> = {},
   ): Record<ApiName, Ontologies.ObjectTypeFullMetadata> {
     const result: Record<ApiName, Ontologies.ObjectTypeFullMetadata> = {};
     const propRidToApiName: Record<string, string> = {};
@@ -211,6 +216,7 @@ export class OntologyBlockDataToFullMetadataConverter {
             description: prop.displayMetadata.description ?? undefined,
             visibility: visibilityEnum,
             dataType,
+            valueTypeApiName: getValueTypeApiName(prop.valueType, valueTypes),
             typeClasses: [],
           };
         }
@@ -839,6 +845,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     interfaceBlockData: Record<string, InterfaceTypeBlockDataV2>,
     interfaceTypeLookup: BlockDataApiNameLookup | undefined,
     importedInterfaceTypes: Record<ApiName, Ontologies.InterfaceType> = {},
+    valueTypes: Record<string, ValueTypeBlockData> = {},
   ): Record<ApiName, Ontologies.InterfaceType> {
     const result: Record<ApiName, Ontologies.InterfaceType> = {};
 
@@ -862,6 +869,7 @@ export class OntologyBlockDataToFullMetadataConverter {
             displayName: spt.displayMetadata.displayName,
             description: spt.displayMetadata.description ?? undefined,
             dataType,
+            valueTypeApiName: getValueTypeApiName(spt.valueType, valueTypes),
             required: false, // Default to false for now - this should come from IR if available
             typeClasses: [],
           };
@@ -891,6 +899,10 @@ export class OntologyBlockDataToFullMetadataConverter {
                 displayName: idp.displayMetadata.displayName,
                 description: idp.displayMetadata.description ?? undefined,
                 dataType: idpDataType,
+                valueTypeApiName: getValueTypeApiName(
+                  idp.constraints.valueType,
+                  valueTypes,
+                ),
                 requireImplementation: idp.constraints.requireImplementation,
               };
               propertiesV2[idp.apiName] = {
@@ -915,6 +927,10 @@ export class OntologyBlockDataToFullMetadataConverter {
                 displayName: spt.displayMetadata.displayName,
                 description: spt.displayMetadata.description ?? undefined,
                 dataType: sptDataType,
+                valueTypeApiName: getValueTypeApiName(
+                  spt.valueType,
+                  valueTypes,
+                ),
                 requireImplementation: propValue.sharedPropertyBasedPropertyType
                   .requireImplementation,
               };
@@ -1055,6 +1071,7 @@ export class OntologyBlockDataToFullMetadataConverter {
 
   static getOsdkSharedPropertyTypesFromBlockData(
     spts: Record<string, SharedPropertyTypeBlockDataV2>,
+    valueTypes: Record<string, ValueTypeBlockData> = {},
   ): Record<ApiName, Ontologies.SharedPropertyType> {
     const result: Record<ApiName, Ontologies.SharedPropertyType> = {};
 
@@ -1070,6 +1087,10 @@ export class OntologyBlockDataToFullMetadataConverter {
           description: spt.sharedPropertyType.displayMetadata.description
             ?? undefined,
           dataType,
+          valueTypeApiName: getValueTypeApiName(
+            spt.sharedPropertyType.valueType,
+            valueTypes,
+          ),
           typeClasses: [],
         };
 
@@ -1217,6 +1238,13 @@ export class OntologyBlockDataToFullMetadataConverter {
         throw new Error(`Unknown link type status: ${status}`);
     }
   }
+}
+
+function getValueTypeApiName(
+  reference: SharedPropertyType["valueType"],
+  valueTypes: Record<string, ValueTypeBlockData>,
+): Ontologies.ValueTypeApiName | undefined {
+  return reference ? valueTypes[reference.rid]?.metadata.apiName : undefined;
 }
 
 function getAllAncestorInterfaceTypes(
