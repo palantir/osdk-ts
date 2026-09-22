@@ -31,7 +31,6 @@ objs
 onwarn
 peopleapp
 pypi
-renderable
 retryable
 revals
 rsort
