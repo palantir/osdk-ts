@@ -124,6 +124,32 @@ export interface Client extends SharedClient, OldSharedClient {
     	fetchMetadata<Q extends ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any>>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any> ? QueryMetadata : never>;
 }
 
+// @public
+export interface ClientTracingHooks {
+    	// (undocumented)
+    onError?: (info: {
+        		requestId: number
+        		url: string
+        		method: string
+        		durationMs: number
+        		error: unknown
+        	}) => void;
+    	// (undocumented)
+    onRequest?: (info: {
+        		requestId: number
+        		url: string
+        		method: string
+        	}) => void;
+    	// (undocumented)
+    onResponse?: (info: {
+        		requestId: number
+        		url: string
+        		method: string
+        		status: number
+        		durationMs: number
+        	}) => void;
+}
+
 export { CompileTimeMetadata }
 
 // @public (undocumented)
@@ -136,6 +162,7 @@ export const createClient: (baseUrl: string, ontologyRid: string | Promise<strin
     	logger?: Logger
     	UNSTABLE_DO_NOT_USE_BRANCH?: string | null
     	headers?: Record<string, string>
+    	tracing?: ClientTracingHooks
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
 
 // @public
