@@ -25,6 +25,40 @@ describe("validateWidgetConfig", () => {
     expect(() => validateWidgetConfig(validConfig)).not.toThrow();
   });
 
+  test("accepts map tile layers alongside writable and empty events", () => {
+    const validConfig = getValidConfig();
+    validConfig.parameters.tileLayer = {
+      displayName: "Tile Layer",
+      type: "mapTileLayer",
+    };
+    validConfig.events.mapClicked = {
+      displayName: "Map Clicked",
+      parameterUpdateIds: [],
+    };
+
+    expect(() => validateWidgetConfig(validConfig)).not.toThrow();
+  });
+
+  test.each([
+    { parameterUpdateIds: ["tileLayer"] },
+    { parameterUpdateIds: ["paramOne", "tileLayer"] },
+  ])(
+    "rejects map tile layer updates in $parameterUpdateIds",
+    ({ parameterUpdateIds }) => {
+      const invalidConfig = getValidConfig();
+      invalidConfig.parameters.tileLayer = {
+        displayName: "Tile Layer",
+        type: "mapTileLayer",
+      };
+      invalidConfig.events.updateParameters.parameterUpdateIds =
+        parameterUpdateIds;
+
+      expect(() => validateWidgetConfig(invalidConfig)).toThrow(
+        'Event "updateParameters" cannot update read-only map tile layer parameter "tileLayer"',
+      );
+    },
+  );
+
   test("throws for widget id that exceeds max length", () => {
     const invalidConfig = getValidConfig();
     invalidConfig.id = "a".repeat(101);

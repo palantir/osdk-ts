@@ -38,6 +38,10 @@ describe("FoundryWidgetClient", () => {
         displayName: "My boolean",
         type: "boolean",
       },
+      myTileLayer: {
+        displayName: "My tile layer",
+        type: "mapTileLayer",
+      },
     },
     events: {
       noParameters: {
@@ -128,5 +132,21 @@ describe("FoundryWidgetClient", () => {
   it("should not allow emit event type with an unknown event id", () => {
     // @ts-expect-error
     emitEvent("someOtherEventId", {});
+  });
+
+  it("should reject map tile layer updates in event payloads", () => {
+    emitEvent("noParameters", {
+      parameterUpdates: {
+        // @ts-expect-error Map tile layer parameters are read-only.
+        myTileLayer: { styleJsonUrl: "https://example.com/style.json" },
+      },
+    });
+    emitEvent("oneParameter", {
+      parameterUpdates: {
+        myString: "updated",
+        // @ts-expect-error Map tile layer parameters are read-only.
+        myTileLayer: { styleJsonUrl: "https://example.com/style.json" },
+      },
+    });
   });
 });

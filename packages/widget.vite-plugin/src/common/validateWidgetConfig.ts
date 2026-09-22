@@ -32,6 +32,15 @@ export function validateWidgetConfig(
   validateWidgetName(config.name);
   validateWidgetDescription(config.description);
   validateWidgetParameters(config.parameters);
+  for (const [eventId, event] of Object.entries(config.events)) {
+    for (const parameterId of event.parameterUpdateIds) {
+      if (config.parameters[parameterId]?.type === "mapTileLayer") {
+        throw new Error(
+          `Event "${eventId}" cannot update read-only map tile layer parameter "${parameterId}"`,
+        );
+      }
+    }
+  }
 }
 
 function validateWidgetId(id: string): void {

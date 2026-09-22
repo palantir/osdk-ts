@@ -53,13 +53,13 @@ export interface AbstractParameterValue<T extends PrimitiveParameterType> {
   value: AsyncValue<PrimitiveParameterTypes[T]>;
 }
 
+/** A read-only map tile layer selected by the host. */
 export interface MapTileLayerParameterValue {
   type: "mapTileLayer";
   /** A loaded value provides the URL; the widget's renderer loads the style. */
   value: AsyncValue<{
     /**
-     * URL of a complete GL style JSON document, including its sources and layers.
-     * Can be passed to a compatible map renderer's style option or setStyle method.
+     * URL of a Mapbox/Maplibre Style JSON document, including its sources and layers.
      */
     styleJsonUrl: string;
   }>;
