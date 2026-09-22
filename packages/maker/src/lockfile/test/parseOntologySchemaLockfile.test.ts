@@ -267,6 +267,27 @@ describe("parseLockfile", () => {
     );
   });
 
+  it("accepts a property that records a value type", () => {
+    const valueType = { packageNamespace: "com.example", apiName: "Ssn" };
+    const parsed = parse(withPropertyDefinition({ ...property, valueType }));
+    expect(
+      parsed.interfaces.Person.schema.properties.lastName.valueType,
+    ).toEqual(valueType);
+  });
+
+  it("rejects a value type missing its `apiName`", () => {
+    expect(() =>
+      parse(
+        withPropertyDefinition({
+          ...property,
+          valueType: { packageNamespace: "com.example" },
+        }),
+      ),
+    ).toThrowError(
+      /properties\.lastName\.valueType\.apiName: Expected a value type api name/u,
+    );
+  });
+
   it("rejects a type class missing its `name`", () => {
     expect(() =>
       parse(

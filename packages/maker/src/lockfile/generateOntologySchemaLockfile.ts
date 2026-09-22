@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { OntologyIrValueTypeReferenceWithMetadata } from "@osdk/client.unstable";
+
 import type { OntologyDefinition } from "../api/common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../api/common/OntologyEntityTypeEnum.js";
 import type { TypeClass } from "../api/common/TypeClass.js";
@@ -24,6 +26,7 @@ import {
   interfacePropertyNullability,
   interfacePropertyPrimaryKeyConstraint,
   interfacePropertyTypeClasses,
+  interfacePropertyValueType,
   interfacePropertyWireApiName,
   isInterfacePropertyArray,
   isInterfacePropertyRequired,
@@ -37,6 +40,7 @@ import type {
   LockedInterfaceType,
   LockedProperty,
   LockedTransition,
+  LockedValueType,
   OntologySchemaLockfile,
 } from "./OntologySchemaLockfile.js";
 import { ONTOLOGY_SCHEMA_LOCKFILE_VERSION } from "./OntologySchemaLockfile.js";
@@ -115,6 +119,7 @@ function lockProperty(property: InterfacePropertyType): LockedProperty {
   const typeClasses = lockTypeClasses(interfacePropertyTypeClasses(property));
   const primaryKeyConstraint = interfacePropertyPrimaryKeyConstraint(property);
   const nullability = lockNullability(interfacePropertyNullability(property));
+  const valueType = lockValueType(interfacePropertyValueType(property));
   return {
     type: normalizePropertyType(
       getInterfacePropertyTypeType(property),
@@ -129,6 +134,21 @@ function lockProperty(property: InterfacePropertyType): LockedProperty {
     }),
     ...(primaryKeyConstraint !== "NO_RESTRICTION" && { primaryKeyConstraint }),
     ...(nullability !== undefined && { nullability }),
+    ...(valueType !== undefined && { valueType }),
+  };
+}
+
+function lockValueType(
+  valueType: OntologyIrValueTypeReferenceWithMetadata | undefined,
+): LockedValueType | undefined {
+  if (valueType === undefined) {
+    return undefined;
+  }
+
+  // Re-built field-by-field so key order is stable
+  return {
+    packageNamespace: valueType.packageNamespace,
+    apiName: valueType.apiName,
   };
 }
 

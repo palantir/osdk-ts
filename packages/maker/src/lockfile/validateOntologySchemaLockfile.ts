@@ -32,6 +32,7 @@ import type {
   LockedInterfaceType,
   LockedProperty,
   LockedTransition,
+  LockedValueType,
   OntologySchemaLockfile,
   PropertyDeclaration,
 } from "./OntologySchemaLockfile.js";
@@ -134,6 +135,13 @@ export type LockfileFinding =
       nextNullability: Nullability;
     }
   | {
+      code: "valueTypeChanged";
+      interfaceApiName: string;
+      property: string;
+      previousValueType: LockedValueType | undefined;
+      nextValueType: LockedValueType;
+    }
+  | {
       code: "propertyBecameRequired";
       interfaceApiName: string;
       property: string;
@@ -166,6 +174,12 @@ export type LockfileWarning =
       property: string;
       previousNullability: Nullability;
       nextNullability: Nullability;
+    }
+  | {
+      code: "valueTypeRemoved";
+      interfaceApiName: string;
+      property: string;
+      previousValueType: LockedValueType;
     };
 
 export interface LockfileValidationResult {
@@ -443,6 +457,18 @@ function validateSchemaDiff(
       });
     }
 
+    if (
+      previous.property.valueType !== undefined &&
+      next.property.valueType === undefined
+    ) {
+      warnings.push({
+        code: "valueTypeRemoved",
+        interfaceApiName,
+        property: previous.apiName,
+        previousValueType: previous.property.valueType,
+      });
+    }
+
     validatePropertyDiff(interfaceApiName, previous, next, findings);
   }
 
@@ -548,6 +574,21 @@ function validatePropertyDiff(
       property,
       previousNullability,
       nextNullability,
+    });
+    return;
+  }
+
+  const nextValueType = next.property.valueType;
+  if (
+    nextValueType !== undefined &&
+    !isDeepStrictEqual(previous.property.valueType, nextValueType)
+  ) {
+    findings.push({
+      code: "valueTypeChanged",
+      interfaceApiName,
+      property,
+      previousValueType: previous.property.valueType,
+      nextValueType,
     });
     return;
   }

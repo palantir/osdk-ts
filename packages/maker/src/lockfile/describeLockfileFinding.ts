@@ -27,7 +27,10 @@ import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyTyp
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import type { Nullability } from "../api/properties/Nullability.js";
 import { describeType } from "./LockedPropertyType.js";
-import type { PropertyDeclaration } from "./OntologySchemaLockfile.js";
+import type {
+  LockedValueType,
+  PropertyDeclaration,
+} from "./OntologySchemaLockfile.js";
 import { authoredKeyOf } from "./OntologySchemaLockfile.js";
 import type {
   LockfileFinding,
@@ -153,6 +156,21 @@ export function describeFinding(finding: LockfileFinding): string {
       );
     }
 
+    case "valueTypeChanged": {
+      const property = authoredKeyOf(finding.property);
+      const previous = finding.previousValueType;
+      return (
+        `${where}: property "${property}" changed its value type from ` +
+        `${previous === undefined ? "none" : describeValueType(previous)} to ` +
+        `${describeValueType(finding.nextValueType)}. A value type carries constraints that ` +
+        `implementing object types' data has to satisfy, and no currently-supported interface ` +
+        `schema migration can phase that in. ` +
+        (previous === undefined
+          ? `Drop the reference from "${property}".`
+          : `Restore "${property}" to ${describeValueType(previous)}.`)
+      );
+    }
+
     case "propertyBecameRequired": {
       const property = authoredKeyOf(finding.property);
       return (
@@ -218,7 +236,24 @@ export function describeWarning(warning: LockfileWarning): string {
         `was not.`
       );
     }
+
+    case "valueTypeRemoved": {
+      const property = authoredKeyOf(warning.property);
+      return (
+        `Interface ${warning.interfaceApiName}: property "${property}" no longer references ` +
+        `value type ${describeValueType(warning.previousValueType)}. Implementing object types ` +
+        `are no longer held to that value type's constraints, so clients that relied on them ` +
+        `will start seeing values it rejected. Nothing to do if that was intended; reference it ` +
+        `again if it was not.`
+      );
+    }
   }
+}
+
+function describeValueType(valueType: LockedValueType): string {
+  return valueType.packageNamespace === ""
+    ? valueType.apiName
+    : `${valueType.packageNamespace}/${valueType.apiName}`;
 }
 
 /** What a nullability forbids, as a noun phrase. */
