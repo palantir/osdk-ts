@@ -874,10 +874,12 @@ const flight = defineObject({
 Every object type that implements an interface must satisfy its contract. Changing a published
 interface can therefore break existing object types and cause installation to fail.
 
-Interface schema migrations stage these contract changes over a grace period. During that period, the
-interface retains its previous shape, giving implementing object types time to comply with the impending change
-before it becomes required. Declaring `schemaMigrations` also enables build-time compatibility checks,
-catching incompatible changes before installation.
+Interface schema migrations stage these contract changes over a grace period. A staged change is announced
+but not yet enforced: the interface keeps its current shape, so object types that do not satisfy the new
+contract still install. Object type owners use the grace period to update their types. Finalizing the
+transition adopts the new interface shape, and object types that have not complied fail from that
+release onward. Declaring `schemaMigrations` also enables build-time compatibility checks, catching
+incompatible changes before installation.
 
 #### Opting in
 
@@ -935,7 +937,7 @@ ways to end an active transition:
 
 - **Finalization** completes the transition by adopting its target schema. All migrations in the
   transition are enforced from that release onward.
-- **Deletion** cancels the transition and retains its current schema, so its migrations are
+- **Deletion** cancels the transition and retains the current interface schema, so the migrations are
   never enforced.
 
 To finalize or delete a transition, remove it from `schemaMigrations.transitions`, update the interface
@@ -988,6 +990,7 @@ defineInterface({
   displayName: "Order",
   properties: {
     orderId: { type: "string" },
+    // Finalizing the transition moves the property to `required: true`.
     shippedAt: { type: "timestamp", required: true },
   },
   // Still opted in, with nothing in flight.
