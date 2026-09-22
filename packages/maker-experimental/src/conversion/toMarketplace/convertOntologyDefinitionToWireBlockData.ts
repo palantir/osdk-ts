@@ -585,12 +585,6 @@ function buildKnownIdentifiers(
         ridGenerator.toBlockInternalId(readableId);
     });
 
-  // Port of Java's MarkingShapeExtractor.getMarkingKnownIdentifiers().
-  // Read the marking identifiers from the converted datasource constraints, rather than
-  // reconstructing them from individual properties. Multiple marking properties can be
-  // combined into a single input group while converting the object (for example,
-  // "classification/classification"), and the known identifier must exactly match the
-  // marking shape emitted for that datasource constraint.
   const markingEntries: Array<{
     markingId: string;
     markingType: "CBAC" | "MANDATORY";
