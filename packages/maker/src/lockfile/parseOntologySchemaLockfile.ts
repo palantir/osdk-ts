@@ -150,6 +150,15 @@ const propertySchema = z
             `defines itself. Restore what the last published release declared.`,
         })
         .optional(),
+      // NO_RESTRICTION is the absent/default case, so we don't record it in the lockfile
+      primaryKeyConstraint: z
+        .enum(["MUST_BE_PK", "CANNOT_BE_PK"], {
+          message:
+            `Expected "MUST_BE_PK" or "CANNOT_BE_PK", or no value at all for a property that ` +
+            `does not constrain primary key mapping. Restore what the last published release ` +
+            `declared.`,
+        })
+        .optional(),
     },
     {
       message:

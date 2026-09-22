@@ -214,6 +214,30 @@ describe("parseLockfile", () => {
     ).toThrowError(/properties\.lastName\.declaredBy/u);
   });
 
+  it.each(["MUST_BE_PK", "CANNOT_BE_PK"])(
+    "accepts a property constrained to %s",
+    (primaryKeyConstraint) => {
+      const parsed = parse(
+        withPropertyDefinition({ ...property, primaryKeyConstraint }),
+      );
+      expect(
+        parsed.interfaces.Person.schema.properties.lastName
+          .primaryKeyConstraint,
+      ).toBe(primaryKeyConstraint);
+    },
+  );
+
+  it("rejects a property that spells out the unconstrained default", () => {
+    expect(() =>
+      parse(
+        withPropertyDefinition({
+          ...property,
+          primaryKeyConstraint: "NO_RESTRICTION",
+        }),
+      ),
+    ).toThrowError(/properties\.lastName\.primaryKeyConstraint/u);
+  });
+
   it("rejects a type class missing its `name`", () => {
     expect(() =>
       parse(

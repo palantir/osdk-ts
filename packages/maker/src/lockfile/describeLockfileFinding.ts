@@ -23,6 +23,7 @@ import {
   describeSuggestedTransition,
   mapPropertyNames,
 } from "../api/interface/describeInterfaceSchemaMigrationInstruction.js";
+import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import { describeType } from "./LockedPropertyType.js";
 import type { PropertyDeclaration } from "./OntologySchemaLockfile.js";
@@ -127,6 +128,18 @@ export function describeFinding(finding: LockfileFinding): string {
       );
     }
 
+    case "primaryKeyConstraintChanged": {
+      const property = authoredKeyOf(finding.property);
+      return (
+        `${where}: property "${property}" changed its primary key constraint from ` +
+        `${describeConstraint(finding.previousConstraint)} to ` +
+        `${describeConstraint(finding.nextConstraint)}. Implementing object types that satisfy ` +
+        `the old constraint need not satisfy the new one, so this blocks their upgrade, and no ` +
+        `currently-supported interface schema migration can phase it in. Restore ` +
+        `"${property}" to ${describeConstraint(finding.previousConstraint)}.`
+      );
+    }
+
     case "propertyBecameRequired": {
       const property = authoredKeyOf(finding.property);
       return (
@@ -169,6 +182,29 @@ export function describeWarning(warning: LockfileWarning): string {
         `intended; declare it \`required: true\` again if it was not.`
       );
     }
+
+    case "primaryKeyConstraintRelaxed": {
+      const property = authoredKeyOf(warning.property);
+      return (
+        `Interface ${warning.interfaceApiName}: property "${property}" no longer constrains ` +
+        `primary key mapping, having been ` +
+        `${describeConstraint(warning.previousConstraint)}. Implementing object types are free ` +
+        `to map it either way from this release on. Nothing to do if that was intended; declare ` +
+        `the constraint again if it was not.`
+      );
+    }
+  }
+}
+
+/** A primary key constraint, as it reads mid-sentence. */
+function describeConstraint(constraint: PrimaryKeyConstraint): string {
+  switch (constraint) {
+    case "MUST_BE_PK":
+      return "`MUST_BE_PK`";
+    case "CANNOT_BE_PK":
+      return "`CANNOT_BE_PK`";
+    case "NO_RESTRICTION":
+      return "unconstrained";
   }
 }
 

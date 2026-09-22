@@ -17,6 +17,7 @@
 import { isDeepStrictEqual } from "node:util";
 
 import type { TypeClass } from "../api/common/TypeClass.js";
+import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import {
   applyTransition,
@@ -33,7 +34,12 @@ import type {
   OntologySchemaLockfile,
   PropertyDeclaration,
 } from "./OntologySchemaLockfile.js";
-import { authoredKeyOf, declarationOf, own } from "./OntologySchemaLockfile.js";
+import {
+  authoredKeyOf,
+  declarationOf,
+  own,
+  primaryKeyConstraintOf,
+} from "./OntologySchemaLockfile.js";
 
 /**
  * NOTE ON CONVENTION: the rest of maker validates with `invariant`, failing on the first problem.
@@ -111,6 +117,13 @@ export type LockfileFinding =
       nextTypeClasses: readonly TypeClass[];
     }
   | {
+      code: "primaryKeyConstraintChanged";
+      interfaceApiName: string;
+      property: string;
+      previousConstraint: PrimaryKeyConstraint;
+      nextConstraint: PrimaryKeyConstraint;
+    }
+  | {
       code: "propertyBecameRequired";
       interfaceApiName: string;
       property: string;
@@ -130,6 +143,12 @@ export type LockfileWarning =
       code: "requirementRelaxed";
       interfaceApiName: string;
       property: string;
+    }
+  | {
+      code: "primaryKeyConstraintRelaxed";
+      interfaceApiName: string;
+      property: string;
+      previousConstraint: PrimaryKeyConstraint;
     };
 
 export interface LockfileValidationResult {
@@ -378,6 +397,20 @@ function validateSchemaDiff(
       });
     }
 
+    const previousConstraint = primaryKeyConstraintOf(previous.property);
+    const nextConstraint = primaryKeyConstraintOf(next.property);
+    if (
+      previousConstraint !== nextConstraint &&
+      nextConstraint === "NO_RESTRICTION"
+    ) {
+      warnings.push({
+        code: "primaryKeyConstraintRelaxed",
+        interfaceApiName,
+        property: previous.apiName,
+        previousConstraint,
+      });
+    }
+
     validatePropertyDiff(interfaceApiName, previous, next, findings);
   }
 
@@ -454,6 +487,22 @@ function validatePropertyDiff(
       property,
       previousTypeClasses: previous.property.typeClasses ?? [],
       nextTypeClasses: next.property.typeClasses ?? [],
+    });
+    return;
+  }
+
+  const previousConstraint = primaryKeyConstraintOf(previous.property);
+  const nextConstraint = primaryKeyConstraintOf(next.property);
+  if (
+    previousConstraint !== nextConstraint &&
+    nextConstraint !== "NO_RESTRICTION"
+  ) {
+    findings.push({
+      code: "primaryKeyConstraintChanged",
+      interfaceApiName,
+      property,
+      previousConstraint,
+      nextConstraint,
     });
     return;
   }

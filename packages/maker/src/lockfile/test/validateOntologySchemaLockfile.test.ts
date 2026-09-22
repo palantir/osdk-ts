@@ -492,6 +492,72 @@ describe("validateOntologySchemaLockfile", () => {
       ]);
     });
 
+    it.each(["MUST_BE_PK", "CANNOT_BE_PK"] as const)(
+      "rejects constraining a property to %s",
+      (primaryKeyConstraint) => {
+        const result = validate(
+          person({ id: REQUIRED_STRING }),
+          person({ id: { ...REQUIRED_STRING, primaryKeyConstraint } }),
+        );
+        expect(result.findings).toEqual([
+          {
+            code: "primaryKeyConstraintChanged",
+            interfaceApiName: "Person",
+            property: "id",
+            previousConstraint: "NO_RESTRICTION",
+            nextConstraint: primaryKeyConstraint,
+          },
+        ]);
+      },
+    );
+
+    it("rejects swapping one primary key constraint for the other", () => {
+      const result = validate(
+        person({
+          id: { ...REQUIRED_STRING, primaryKeyConstraint: "MUST_BE_PK" },
+        }),
+        person({
+          id: { ...REQUIRED_STRING, primaryKeyConstraint: "CANNOT_BE_PK" },
+        }),
+      );
+      expect(result.findings).toEqual([
+        {
+          code: "primaryKeyConstraintChanged",
+          interfaceApiName: "Person",
+          property: "id",
+          previousConstraint: "MUST_BE_PK",
+          nextConstraint: "CANNOT_BE_PK",
+        },
+      ]);
+    });
+
+    it("warns, rather than rejects, when a constraint is dropped", () => {
+      const result = validate(
+        person({
+          id: { ...REQUIRED_STRING, primaryKeyConstraint: "MUST_BE_PK" },
+        }),
+        person({ id: REQUIRED_STRING }),
+      );
+      expect(result.findings).toEqual([]);
+      expect(result.warnings).toEqual([
+        {
+          code: "primaryKeyConstraintRelaxed",
+          interfaceApiName: "Person",
+          property: "id",
+          previousConstraint: "MUST_BE_PK",
+        },
+      ]);
+    });
+
+    it("accepts a primary key constraint that did not change", () => {
+      const constrained = person({
+        id: { ...REQUIRED_STRING, primaryKeyConstraint: "MUST_BE_PK" },
+      });
+      const result = validate(constrained, constrained);
+      expect(result.findings).toEqual([]);
+      expect(result.warnings).toEqual([]);
+    });
+
     it("rejects replacing an inline property with a shared property type", () => {
       const result = validate(
         person({ firstName: REQUIRED_STRING }),
