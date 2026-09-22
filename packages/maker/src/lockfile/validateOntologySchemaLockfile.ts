@@ -19,6 +19,7 @@ import { isDeepStrictEqual } from "node:util";
 import type { TypeClass } from "../api/common/TypeClass.js";
 import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
+import type { Nullability } from "../api/properties/Nullability.js";
 import {
   applyTransition,
   reproduces,
@@ -37,8 +38,10 @@ import type {
 import {
   authoredKeyOf,
   declarationOf,
+  nullabilityOf,
   own,
   primaryKeyConstraintOf,
+  tightensNullability,
 } from "./OntologySchemaLockfile.js";
 
 /**
@@ -124,6 +127,13 @@ export type LockfileFinding =
       nextConstraint: PrimaryKeyConstraint;
     }
   | {
+      code: "nullabilityTightened";
+      interfaceApiName: string;
+      property: string;
+      previousNullability: Nullability;
+      nextNullability: Nullability;
+    }
+  | {
       code: "propertyBecameRequired";
       interfaceApiName: string;
       property: string;
@@ -149,6 +159,13 @@ export type LockfileWarning =
       interfaceApiName: string;
       property: string;
       previousConstraint: PrimaryKeyConstraint;
+    }
+  | {
+      code: "nullabilityRelaxed";
+      interfaceApiName: string;
+      property: string;
+      previousNullability: Nullability;
+      nextNullability: Nullability;
     };
 
 export interface LockfileValidationResult {
@@ -411,6 +428,21 @@ function validateSchemaDiff(
       });
     }
 
+    const previousNullability = nullabilityOf(previous.property);
+    const nextNullability = nullabilityOf(next.property);
+    if (
+      !isDeepStrictEqual(previousNullability, nextNullability) &&
+      !tightensNullability(previousNullability, nextNullability)
+    ) {
+      warnings.push({
+        code: "nullabilityRelaxed",
+        interfaceApiName,
+        property: previous.apiName,
+        previousNullability,
+        nextNullability,
+      });
+    }
+
     validatePropertyDiff(interfaceApiName, previous, next, findings);
   }
 
@@ -503,6 +535,19 @@ function validatePropertyDiff(
       property,
       previousConstraint,
       nextConstraint,
+    });
+    return;
+  }
+
+  const previousNullability = nullabilityOf(previous.property);
+  const nextNullability = nullabilityOf(next.property);
+  if (tightensNullability(previousNullability, nextNullability)) {
+    findings.push({
+      code: "nullabilityTightened",
+      interfaceApiName,
+      property,
+      previousNullability,
+      nextNullability,
     });
     return;
   }

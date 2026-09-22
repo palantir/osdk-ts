@@ -21,6 +21,7 @@ import { mapPropertyNames } from "../api/interface/describeInterfaceSchemaMigrat
 import {
   getInterfacePropertyTypeType,
   type InterfacePropertyType,
+  interfacePropertyNullability,
   interfacePropertyPrimaryKeyConstraint,
   interfacePropertyTypeClasses,
   interfacePropertyWireApiName,
@@ -29,6 +30,7 @@ import {
   isInterfaceSharedPropertyType,
 } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceType } from "../api/interface/InterfaceType.js";
+import type { Nullability } from "../api/properties/Nullability.js";
 import { normalizePropertyType } from "./LockedPropertyType.js";
 import type {
   LockedInterfaceSchema,
@@ -112,6 +114,7 @@ function lockInterfaceSchema(
 function lockProperty(property: InterfacePropertyType): LockedProperty {
   const typeClasses = lockTypeClasses(interfacePropertyTypeClasses(property));
   const primaryKeyConstraint = interfacePropertyPrimaryKeyConstraint(property);
+  const nullability = lockNullability(interfacePropertyNullability(property));
   return {
     type: normalizePropertyType(
       getInterfacePropertyTypeType(property),
@@ -125,6 +128,24 @@ function lockProperty(property: InterfacePropertyType): LockedProperty {
       declaredBy: "sharedPropertyType" as const,
     }),
     ...(primaryKeyConstraint !== "NO_RESTRICTION" && { primaryKeyConstraint }),
+    ...(nullability !== undefined && { nullability }),
+  };
+}
+
+function lockNullability(
+  nullability: Nullability | undefined,
+): Nullability | undefined {
+  if (
+    nullability === undefined ||
+    (!nullability.noNulls && !nullability.noEmptyCollections)
+  ) {
+    return undefined;
+  }
+
+  // Rebuild to have firm key order
+  return {
+    noNulls: nullability.noNulls,
+    noEmptyCollections: nullability.noEmptyCollections,
   };
 }
 

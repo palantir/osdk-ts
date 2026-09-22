@@ -18,6 +18,7 @@ import { describe, expect, it } from "vitest";
 
 import type { TypeClass } from "../../api/common/TypeClass.js";
 import type { InterfaceSchemaGracePeriod } from "../../api/interface/InterfaceSchemaMigrations.js";
+import type { Nullability } from "../../api/properties/Nullability.js";
 import type { SourceCensus } from "../generateOntologySchemaLockfile.js";
 import type {
   LockedInterfaceType,
@@ -43,6 +44,10 @@ const SHARED_REQUIRED_STRING: LockedProperty = {
   type: "string",
   required: true,
   declaredBy: "sharedPropertyType",
+};
+const UNCONSTRAINED: Nullability = {
+  noNulls: false,
+  noEmptyCollections: false,
 };
 const SORTABLE: TypeClass = { kind: "render_hint", name: "SORTABLE" };
 const SELECTABLE: TypeClass = { kind: "render_hint", name: "SELECTABLE" };
@@ -552,6 +557,79 @@ describe("validateOntologySchemaLockfile", () => {
     it("accepts a primary key constraint that did not change", () => {
       const constrained = person({
         id: { ...REQUIRED_STRING, primaryKeyConstraint: "MUST_BE_PK" },
+      });
+      const result = validate(constrained, constrained);
+      expect(result.findings).toEqual([]);
+      expect(result.warnings).toEqual([]);
+    });
+
+    it.each([
+      ["nulls", { noNulls: true, noEmptyCollections: false }],
+      ["empty collections", { noNulls: false, noEmptyCollections: true }],
+      ["both", { noNulls: true, noEmptyCollections: true }],
+    ] as const)("rejects newly forbidding %s", (_name, nullability) => {
+      const result = validate(
+        person({ name: REQUIRED_STRING }),
+        person({ name: { ...REQUIRED_STRING, nullability } }),
+      );
+      expect(result.findings).toEqual([
+        {
+          code: "nullabilityTightened",
+          interfaceApiName: "Person",
+          property: "name",
+          previousNullability: UNCONSTRAINED,
+          nextNullability: nullability,
+        },
+      ]);
+    });
+
+    it("rejects a change that tightens one flag while loosening the other", () => {
+      const result = validate(
+        person({
+          name: {
+            ...REQUIRED_STRING,
+            nullability: { noNulls: true, noEmptyCollections: false },
+          },
+        }),
+        person({
+          name: {
+            ...REQUIRED_STRING,
+            nullability: { noNulls: false, noEmptyCollections: true },
+          },
+        }),
+      );
+      expect(result.findings.map(({ code }) => code)).toEqual([
+        "nullabilityTightened",
+      ]);
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("warns, rather than rejects, when a constraint is loosened", () => {
+      const previousNullability = { noNulls: true, noEmptyCollections: true };
+      const result = validate(
+        person({
+          name: { ...REQUIRED_STRING, nullability: previousNullability },
+        }),
+        person({ name: REQUIRED_STRING }),
+      );
+      expect(result.findings).toEqual([]);
+      expect(result.warnings).toEqual([
+        {
+          code: "nullabilityRelaxed",
+          interfaceApiName: "Person",
+          property: "name",
+          previousNullability,
+          nextNullability: UNCONSTRAINED,
+        },
+      ]);
+    });
+
+    it("accepts a nullability that did not change", () => {
+      const constrained = person({
+        name: {
+          ...REQUIRED_STRING,
+          nullability: { noNulls: true, noEmptyCollections: false },
+        },
       });
       const result = validate(constrained, constrained);
       expect(result.findings).toEqual([]);
