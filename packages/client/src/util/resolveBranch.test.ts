@@ -83,6 +83,53 @@ describe(resolveBranch, () => {
     expect(resolveBranch(explicitBranch, injectedBranch)).toBe(expected);
   });
 
+  describe("window query parameters", () => {
+    it.each([
+      [
+        "?foundryBranchRid=ri.foundry.main.branch.from-url",
+        "ri.foundry.main.branch.from-url",
+      ],
+      [
+        `?other=value&foundryBranchRid=${encodeURIComponent("feature/my branch+test")}`,
+        "feature/my branch+test",
+      ],
+      ["?foundryBranchRid=%20my-branch%20", "my-branch"],
+      ["?foundryBranchRid=first&foundryBranchRid=second", "first"],
+      ["?foundryBranchRid=", INJECTED_BRANCH],
+      ["?foundryBranchRid=%20%09", INJECTED_BRANCH],
+      ["?other=value", INJECTED_BRANCH],
+      ["", INJECTED_BRANCH],
+    ])("resolves %s before the injected branch", (search, expected) => {
+      vi.stubGlobal("window", { location: { search } });
+      expect(resolveBranch(undefined, INJECTED_BRANCH)).toBe(expected);
+    });
+
+    it.each([EXPLICIT_BRANCH, null, "", "  "])(
+      "honors the explicit branch %s over the URL and meta tag",
+      (branch) => {
+        vi.stubGlobal("window", {
+          location: { search: "?foundryBranchRid=url-branch" },
+        });
+        expect(resolveBranch(branch, INJECTED_BRANCH)).toBe(
+          branch === EXPLICIT_BRANCH ? EXPLICIT_BRANCH : undefined,
+        );
+      },
+    );
+
+    it("reads the current window each time a branch is resolved", () => {
+      const location = { search: "?foundryBranchRid=first" };
+      vi.stubGlobal("window", { location });
+      expect(resolveBranch(undefined)).toBe("first");
+      location.search = "?foundryBranchRid=second";
+      expect(resolveBranch(undefined)).toBe("second");
+    });
+
+    it("falls back to HTML metadata without a window", () => {
+      vi.stubGlobal("window", undefined);
+      expect(resolveBranch(undefined, INJECTED_BRANCH)).toBe(INJECTED_BRANCH);
+    });
+  });
+
   it("reads the branch from HTML metadata by default", () => {
     const getAttribute = vi.fn(() => INJECTED_BRANCH);
     const querySelector = vi.fn(() => ({ getAttribute }));
