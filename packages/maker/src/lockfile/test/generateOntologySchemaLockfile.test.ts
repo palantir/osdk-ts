@@ -16,12 +16,14 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 
+import type { TypeClass } from "../../api/common/TypeClass.js";
 import { defineInterface } from "../../api/defineInterface.js";
 import {
   defineOntology,
   getOntologyDefinition,
 } from "../../api/defineOntology.js";
 import { defineSharedPropertyType } from "../../api/defineSpt.js";
+import { defaultTypeClasses } from "../../api/propertyConversionUtils.js";
 import {
   censusOfSource,
   generateOntologySchemaLockfile,
@@ -125,6 +127,7 @@ describe("generateOntologySchemaLockfile", () => {
       expect(lockedProperty("com.palantir.nicknames")).toEqual({
         type: { type: "array", subtype: "string" },
         required: false,
+        typeClasses: defaultTypeClasses,
       });
     });
 
@@ -139,6 +142,90 @@ describe("generateOntologySchemaLockfile", () => {
         type: "string",
         required: true,
       });
+    });
+  });
+
+  describe("type classes", () => {
+    const SORTABLE: TypeClass = { kind: "render_hint", name: "SORTABLE" };
+    const SELECTABLE: TypeClass = { kind: "render_hint", name: "SELECTABLE" };
+    const GEO: TypeClass = { kind: "geo", name: "geojson" };
+
+    function lockedProperty(apiName: string): LockedProperty {
+      const { interfaces } = generateOntologySchemaLockfile(
+        getOntologyDefinition(),
+      );
+      return interfaces["com.palantir.Person"].schema.properties[apiName];
+    }
+
+    it("records the type classes of an interface-defined property", () => {
+      defineInterface({
+        apiName: "Person",
+        properties: { name: { type: "string", typeClasses: [SORTABLE] } },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(lockedProperty("name")).toEqual({
+        type: "string",
+        required: true,
+        typeClasses: [SORTABLE],
+      });
+    });
+
+    it("records the type classes of a shared property type", () => {
+      const name = defineSharedPropertyType({
+        apiName: "name",
+        type: "string",
+        typeClasses: [SORTABLE],
+      });
+      defineInterface({
+        apiName: "Person",
+        properties: { name: { sharedPropertyType: name, required: false } },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(lockedProperty("com.palantir.name")).toEqual({
+        type: "string",
+        required: false,
+        typeClasses: [SORTABLE],
+      });
+    });
+
+    it("omits the key entirely for a property that declares none", () => {
+      defineInterface({
+        apiName: "Person",
+        properties: { name: { type: "string" } },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(Object.keys(lockedProperty("name"))).toEqual(["type", "required"]);
+    });
+
+    it("omits the key for a property that declares an empty list", () => {
+      defineInterface({
+        apiName: "Person",
+        properties: { name: { type: "string", typeClasses: [] } },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(Object.keys(lockedProperty("name"))).toEqual(["type", "required"]);
+    });
+
+    it("sorts type classes, so reordering them in source is not a change", async () => {
+      function lockOrder(typeClasses: TypeClass[]): LockedProperty {
+        defineInterface({
+          apiName: "Person",
+          properties: { name: { type: "string", typeClasses } },
+          schemaMigrations: { transitions: [] },
+        });
+        return lockedProperty("name");
+      }
+
+      const ascending = lockOrder([GEO, SELECTABLE, SORTABLE]);
+      await defineOntology("com.palantir.", () => {}, undefined);
+      const shuffled = lockOrder([SORTABLE, SELECTABLE, GEO]);
+
+      expect(ascending).toEqual(shuffled);
+      expect(ascending.typeClasses).toEqual([GEO, SELECTABLE, SORTABLE]);
     });
   });
 });

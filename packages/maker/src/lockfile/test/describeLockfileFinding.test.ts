@@ -143,6 +143,30 @@ describe("describeFinding", () => {
         expected:
           'property "nicknames" changed type from "string" to "string"[]',
       },
+      {
+        name: "a property that gained a type class",
+        finding: {
+          code: "propertyTypeClassesChanged",
+          interfaceApiName: "Person",
+          property: "lastName",
+          previousTypeClasses: [],
+          nextTypeClasses: [{ kind: "render_hint", name: "SORTABLE" }],
+        },
+        expected:
+          'property "lastName" changed type classes from none to ' +
+          "render_hint/SORTABLE",
+      },
+      {
+        name: "a property that lost a type class",
+        finding: {
+          code: "propertyTypeClassesChanged",
+          interfaceApiName: "Person",
+          property: "lastName",
+          previousTypeClasses: [{ kind: "render_hint", name: "SORTABLE" }],
+          nextTypeClasses: [],
+        },
+        expected: 'Restore "lastName" to render_hint/SORTABLE.',
+      },
     ])("tells the author what to do about $name", ({ finding, expected }) => {
       expect(describeFinding(finding)).toContain(expected);
     });
