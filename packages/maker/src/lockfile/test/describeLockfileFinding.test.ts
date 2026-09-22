@@ -144,6 +144,52 @@ describe("describeFinding", () => {
           'property "nicknames" changed type from "string" to "string"[]',
       },
       {
+        name: "a property handed over to a shared property type",
+        finding: {
+          code: "propertyDeclarationChanged",
+          interfaceApiName: "Person",
+          property: "lastName",
+          previousDeclaration: "interface",
+          nextDeclaration: "sharedPropertyType",
+        },
+        expected:
+          'property "lastName" moved from defined on the interface to backed by a shared ' +
+          "property type",
+      },
+      {
+        name: "a property taken back from a shared property type",
+        finding: {
+          code: "propertyDeclarationChanged",
+          interfaceApiName: "Person",
+          property: "lastName",
+          previousDeclaration: "sharedPropertyType",
+          nextDeclaration: "interface",
+        },
+        expected: 'Declare "lastName" backed by a shared property type again.',
+      },
+      {
+        name: "a property whose shared property type moved namespace",
+        finding: {
+          code: "propertyNamespaceChanged",
+          interfaceApiName: "Person",
+          previousApiName: "com.palantir.lastName",
+          nextApiName: "com.example.lastName",
+        },
+        expected:
+          'property "lastName" is now backed by shared property type ' +
+          '"com.example.lastName" rather than "com.palantir.lastName"',
+      },
+      {
+        name: "restoring a shared property type that moved namespace",
+        finding: {
+          code: "propertyNamespaceChanged",
+          interfaceApiName: "Person",
+          previousApiName: "com.palantir.lastName",
+          nextApiName: "com.example.lastName",
+        },
+        expected: 'Back "lastName" with "com.palantir.lastName" again.',
+      },
+      {
         name: "a property that gained a type class",
         finding: {
           code: "propertyTypeClassesChanged",

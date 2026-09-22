@@ -17,6 +17,7 @@
 import { isDeepStrictEqual } from "node:util";
 
 import type { TypeClass } from "../api/common/TypeClass.js";
+import { withoutNamespace } from "../api/defineOntology.js";
 import type {
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
@@ -64,9 +65,14 @@ export interface LockedInterfaceSchema {
   properties: Record<string, LockedProperty>;
 }
 
+/** Where a property's definition comes from. */
+export type PropertyDeclaration = "interface" | "sharedPropertyType";
+
 export interface LockedProperty {
   type: LockedPropertyType;
   required: boolean;
+  /** Present when a SPT backs this property; absent when the interface defines it inline. */
+  declaredBy?: "sharedPropertyType";
   /** The property's (sorted) type classes. Absent when it declares none. */
   typeClasses?: TypeClass[];
 }
@@ -75,6 +81,17 @@ export interface LockedTransition {
   id: string;
   gracePeriod: InterfaceSchemaGracePeriod;
   instructions: InterfaceSchemaMigrationInstruction[];
+}
+
+export function declarationOf(property: LockedProperty): PropertyDeclaration {
+  return property.declaredBy ?? "interface";
+}
+
+/**
+ * The key the author wrote for a property, given the api name the lockfile records it under.
+ */
+export function authoredKeyOf(wireApiName: string): string {
+  return withoutNamespace(wireApiName);
 }
 
 /**

@@ -39,6 +39,11 @@ const THIRTY_DAYS: InterfaceSchemaGracePeriod = {
   type: "afterInstall",
   days: 30,
 };
+const SHARED_REQUIRED_STRING: LockedProperty = {
+  type: "string",
+  required: true,
+  declaredBy: "sharedPropertyType",
+};
 const SORTABLE: TypeClass = { kind: "render_hint", name: "SORTABLE" };
 const SELECTABLE: TypeClass = { kind: "render_hint", name: "SELECTABLE" };
 
@@ -269,6 +274,18 @@ describe("validateOntologySchemaLockfile", () => {
       expect(result.findings).toEqual([]);
     });
 
+    it("exempts a target whose declaration was swapped in the same release", () => {
+      const result = validate(
+        person({ "com.palantir.lastName": SHARED_REQUIRED_STRING }, [
+          requireProperty("requireLastName", "com.palantir.lastName"),
+        ]),
+        person({ lastName: REQUIRED_STRING }),
+      );
+      expect(result.findings.map(({ code }) => code)).toEqual([
+        "ambiguousDisappearance",
+      ]);
+    });
+
     it("reports a transition that touches no property rather than throwing", () => {
       const touchesNothing: LockedTransition = {
         id: "touchesNothing",
@@ -406,6 +423,87 @@ describe("validateOntologySchemaLockfile", () => {
         person({ firstName: REQUIRED_STRING_LIST }),
       );
       expect(result.findings).toEqual([]);
+    });
+
+    it("rejects replacing an inline property with a shared property type", () => {
+      const result = validate(
+        person({ firstName: REQUIRED_STRING }),
+        person({ "com.palantir.firstName": SHARED_REQUIRED_STRING }),
+      );
+      expect(result.findings).toEqual([
+        {
+          code: "propertyDeclarationChanged",
+          interfaceApiName: "Person",
+          property: "firstName",
+          previousDeclaration: "interface",
+          nextDeclaration: "sharedPropertyType",
+        },
+      ]);
+    });
+
+    it("rejects inlining a property a shared property type used to back", () => {
+      const result = validate(
+        person({ "com.palantir.firstName": SHARED_REQUIRED_STRING }),
+        person({ firstName: REQUIRED_STRING }),
+      );
+      expect(result.findings).toEqual([
+        {
+          code: "propertyDeclarationChanged",
+          interfaceApiName: "Person",
+          property: "com.palantir.firstName",
+          previousDeclaration: "sharedPropertyType",
+          nextDeclaration: "interface",
+        },
+      ]);
+    });
+
+    it("reports a swapped binding once, not also as a type change", () => {
+      const result = validate(
+        person({ firstName: REQUIRED_STRING }),
+        person({
+          "com.palantir.firstName": {
+            type: "integer",
+            required: true,
+            declaredBy: "sharedPropertyType",
+          },
+        }),
+      );
+      expect(result.findings.map(({ code }) => code)).toEqual([
+        "propertyDeclarationChanged",
+      ]);
+    });
+
+    it("rejects moving the shared property type behind a property to another namespace", () => {
+      const result = validate(
+        person({ "com.palantir.firstName": SHARED_REQUIRED_STRING }),
+        person({ "com.example.firstName": SHARED_REQUIRED_STRING }),
+      );
+      expect(result.findings).toEqual([
+        {
+          code: "propertyNamespaceChanged",
+          interfaceApiName: "Person",
+          previousApiName: "com.palantir.firstName",
+          nextApiName: "com.example.firstName",
+        },
+      ]);
+    });
+
+    it("pairs a swapped binding even when the interface declares other properties", () => {
+      const result = validate(
+        person({ firstName: REQUIRED_STRING, lastName: REQUIRED_STRING }),
+        person({
+          "com.palantir.firstName": SHARED_REQUIRED_STRING,
+          lastName: REQUIRED_STRING,
+        }),
+      );
+      expect(result.findings.map(({ code }) => code)).toEqual([
+        "propertyDeclarationChanged",
+      ]);
+    });
+
+    it("accepts a shared-property-backed property that did not change", () => {
+      const backed = person({ firstName: SHARED_REQUIRED_STRING });
+      expect(validate(backed, backed).findings).toEqual([]);
     });
 
     it("rejects adding a type class to a property", () => {

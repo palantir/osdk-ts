@@ -25,6 +25,7 @@ import {
   interfacePropertyWireApiName,
   isInterfacePropertyArray,
   isInterfacePropertyRequired,
+  isInterfaceSharedPropertyType,
 } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceType } from "../api/interface/InterfaceType.js";
 import { normalizePropertyType } from "./LockedPropertyType.js";
@@ -118,6 +119,9 @@ function lockProperty(property: InterfacePropertyType): LockedProperty {
     // NB: spread rather than assigned `undefined` so a lockfile read back from disk (where absents
     // have no key at all) still compare equal.
     ...(typeClasses !== undefined && { typeClasses }),
+    ...(isInterfaceSharedPropertyType(property) && {
+      declaredBy: "sharedPropertyType" as const,
+    }),
   };
 }
 

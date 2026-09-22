@@ -17,7 +17,6 @@
 import { isDeepStrictEqual } from "node:util";
 
 import type { TypeClass } from "../api/common/TypeClass.js";
-import { withoutNamespace } from "../api/defineOntology.js";
 import {
   describeFinalization,
   describeInstruction,
@@ -26,6 +25,8 @@ import {
 } from "../api/interface/describeInterfaceSchemaMigrationInstruction.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import { describeType } from "./LockedPropertyType.js";
+import type { PropertyDeclaration } from "./OntologySchemaLockfile.js";
+import { authoredKeyOf } from "./OntologySchemaLockfile.js";
 import type {
   LockfileFinding,
   LockfileWarning,
@@ -47,7 +48,7 @@ export function describeFinding(finding: LockfileFinding): string {
       }
 
       const targets = finding.targets
-        .map(({ propertyApiName }) => `"${authored(propertyApiName)}"`)
+        .map(({ propertyApiName }) => `"${authoredKeyOf(propertyApiName)}"`)
         .join(", ");
       return (
         `${where}: schema migration "${finding.transitionId}" is no longer declared, but ` +
@@ -68,7 +69,7 @@ export function describeFinding(finding: LockfileFinding): string {
       );
 
     case "propertyRemoved": {
-      const property = authored(finding.property);
+      const property = authoredKeyOf(finding.property);
       return (
         `${where}: property "${property}" was removed. Removing a property from an ` +
         `interface is a breaking change, and no currently-supported interface schema migration can ` +
@@ -76,8 +77,33 @@ export function describeFinding(finding: LockfileFinding): string {
       );
     }
 
+    case "propertyDeclarationChanged": {
+      const property = authoredKeyOf(finding.property);
+      return (
+        `${where}: property "${property}" moved from ` +
+        `${describeDeclaration(finding.previousDeclaration)} to ` +
+        `${describeDeclaration(finding.nextDeclaration)}. The two are different bindings even ` +
+        `when they resolve to the same type, so implementing object types would have to remap ` +
+        `the property, and no currently-supported interface schema migration can phase that in. ` +
+        `Declare "${property}" ${describeDeclaration(finding.previousDeclaration)} again.`
+      );
+    }
+
+    case "propertyNamespaceChanged": {
+      const property = authoredKeyOf(finding.previousApiName);
+      return (
+        `${where}: property "${property}" is now backed by shared property type ` +
+        `"${finding.nextApiName}" rather than "${finding.previousApiName}". A property is ` +
+        `identified by the shared property type behind it, so this removes ` +
+        `"${finding.previousApiName}" from the interface rather than renaming it, and ` +
+        `implementing object types would have to take up "${finding.nextApiName}" in its place. ` +
+        `No currently-supported interface schema migration can phase that in. Back "${property}" ` +
+        `with "${finding.previousApiName}" again.`
+      );
+    }
+
     case "propertyTypeChanged": {
-      const property = authored(finding.property);
+      const property = authoredKeyOf(finding.property);
       return (
         `${where}: property "${property}" changed type from ` +
         `${describeType(finding.previousType)} to ${describeType(finding.nextType)}. Changing a ` +
@@ -89,7 +115,7 @@ export function describeFinding(finding: LockfileFinding): string {
     }
 
     case "propertyTypeClassesChanged": {
-      const property = authored(finding.property);
+      const property = authoredKeyOf(finding.property);
       return (
         `${where}: property "${property}" changed type classes from ` +
         `${describeTypeClasses(finding.previousTypeClasses)} to ` +
@@ -102,7 +128,7 @@ export function describeFinding(finding: LockfileFinding): string {
     }
 
     case "propertyBecameRequired": {
-      const property = authored(finding.property);
+      const property = authoredKeyOf(finding.property);
       return (
         `${where}: property "${property}" became required without a schema migration. ` +
         `Keep it declared \`required: false\` and phase it in instead through a migration like:\n` +
@@ -111,7 +137,7 @@ export function describeFinding(finding: LockfileFinding): string {
     }
 
     case "requiredPropertyAdded": {
-      const property = authored(finding.property);
+      const property = authoredKeyOf(finding.property);
       return (
         `${where}: property "${property}" was added as required. Existing implementing ` +
         `object types do not provide it yet, so this is a breaking change. Declare it ` +
@@ -136,9 +162,14 @@ export function describeWarning(warning: LockfileWarning): string {
   }
 }
 
-/** The key the author wrote for a property, given the api name the lockfile records it under. */
-function authored(wireApiName: string): string {
-  return withoutNamespace(wireApiName);
+/** Where a property is declared, as it reads mid-sentence in a finding. */
+function describeDeclaration(declaration: PropertyDeclaration): string {
+  switch (declaration) {
+    case "interface":
+      return "defined on the interface";
+    case "sharedPropertyType":
+      return "backed by a shared property type";
+  }
 }
 
 function describeTypeClasses(typeClasses: readonly TypeClass[]): string {
@@ -155,7 +186,7 @@ function describeInstructions(
 ): string {
   return `[${instructions
     .map((instruction) =>
-      describeInstruction(mapPropertyNames(instruction, authored)),
+      describeInstruction(mapPropertyNames(instruction, authoredKeyOf)),
     )
     .join(", ")}]`;
 }
@@ -163,7 +194,7 @@ function describeInstructions(
 /** Explains what actually happened to a transition's target properties, for the error message. */
 function describeTargetDrift(targets: readonly TargetPropertyState[]): string {
   const descriptions = targets.map(({ propertyApiName, previous, next }) => {
-    const authoredPropertyName = authored(propertyApiName);
+    const authoredPropertyName = authoredKeyOf(propertyApiName);
     if (next === undefined) {
       return `"${authoredPropertyName}" was removed from the interface`;
     }
@@ -189,7 +220,7 @@ function describeFinalizations(
 ): string {
   return instructions
     .map((instruction) =>
-      describeFinalization(mapPropertyNames(instruction, authored)),
+      describeFinalization(mapPropertyNames(instruction, authoredKeyOf)),
     )
     .join(", and ");
 }
