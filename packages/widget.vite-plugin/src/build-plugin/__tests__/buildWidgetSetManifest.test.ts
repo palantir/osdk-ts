@@ -35,6 +35,7 @@ const MOCK_WIDGET_CONFIG: WidgetConfig<ParameterConfig> = {
   type: "workshop",
   parameters: {
     stringParam: { type: "string", displayName: "String Parameter" },
+    tileLayer: { type: "mapTileLayer", displayName: "Tile Layer" },
   },
   events: {
     updateParameters: {
@@ -70,6 +71,7 @@ describe("buildWidgetManifestConfig", () => {
       entrypointCss: ENTRYPOINT_CSS,
       parameters: {
         stringParam: { type: "string", displayName: "String Parameter" },
+        tileLayer: { type: "mapTileLayer", displayName: "Tile Layer" },
       },
       events: {
         updateParameters: {
@@ -89,27 +91,6 @@ describe("buildWidgetManifestConfig", () => {
     );
 
     expect(result.description).toBeUndefined();
-  });
-
-  test("preserves map tile layer parameters in the manifest", () => {
-    const result = buildWidgetManifestConfig(
-      {
-        ...MOCK_WIDGET_CONFIG,
-        parameters: {
-          tileLayer: {
-            type: "mapTileLayer",
-            displayName: "Tile Layer",
-          },
-        },
-      },
-      ENTRYPOINT_JS,
-      ENTRYPOINT_CSS,
-    );
-
-    expect(result.parameters.tileLayer).toEqual({
-      type: "mapTileLayer",
-      displayName: "Tile Layer",
-    });
   });
 
   test("converts object set parameters", () => {

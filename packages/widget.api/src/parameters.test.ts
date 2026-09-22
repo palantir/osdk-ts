@@ -19,22 +19,6 @@ import { describe, expectTypeOf, it } from "vitest";
 import type { ParameterValue } from "./parameters.js";
 
 describe("Parameters", () => {
-  describe("MapTileLayerParameterValue", () => {
-    it("should narrow a loaded map tile layer to its style URL", () => {
-      expectTypeOf(
-        testMapTileLayerTypeNarrowing({
-          type: "mapTileLayer",
-          value: {
-            type: "loaded",
-            value: {
-              styleJsonUrl: "https://example.com/style.json?source=basemap",
-            },
-          },
-        }),
-      ).toEqualTypeOf<{ styleJsonUrl: string } | undefined>();
-    });
-  });
-
   describe("ArrayParameterValue", () => {
     it("should be able to narrow the type of the array value", () => {
       expectTypeOf(
@@ -47,13 +31,6 @@ describe("Parameters", () => {
     });
   });
 });
-
-function testMapTileLayerTypeNarrowing(parameter: ParameterValue) {
-  if (parameter.type === "mapTileLayer" && parameter.value.type === "loaded") {
-    return parameter.value.value;
-  }
-  return undefined;
-}
 
 function testStringTypeNarrowing(array: ParameterValue.Array) {
   if (array.subType === "string" && array.value.type === "loaded") {

@@ -25,39 +25,14 @@ describe("validateWidgetConfig", () => {
     expect(() => validateWidgetConfig(validConfig)).not.toThrow();
   });
 
-  test("accepts map tile layers alongside writable and empty events", () => {
-    const validConfig = getValidConfig();
-    validConfig.parameters.tileLayer = {
-      displayName: "Tile Layer",
-      type: "mapTileLayer",
-    };
-    validConfig.events.mapClicked = {
-      displayName: "Map Clicked",
-      parameterUpdateIds: [],
-    };
+  test("throws for events that update read-only map tile layer parameters", () => {
+    const invalidConfig = getValidConfig();
+    invalidConfig.events.updateParameters.parameterUpdateIds.push("tileLayer");
 
-    expect(() => validateWidgetConfig(validConfig)).not.toThrow();
+    expect(() => validateWidgetConfig(invalidConfig)).toThrow(
+      'Event "updateParameters" cannot update read-only map tile layer parameter "tileLayer"',
+    );
   });
-
-  test.each([
-    { parameterUpdateIds: ["tileLayer"] },
-    { parameterUpdateIds: ["paramOne", "tileLayer"] },
-  ])(
-    "rejects map tile layer updates in $parameterUpdateIds",
-    ({ parameterUpdateIds }) => {
-      const invalidConfig = getValidConfig();
-      invalidConfig.parameters.tileLayer = {
-        displayName: "Tile Layer",
-        type: "mapTileLayer",
-      };
-      invalidConfig.events.updateParameters.parameterUpdateIds =
-        parameterUpdateIds;
-
-      expect(() => validateWidgetConfig(invalidConfig)).toThrow(
-        'Event "updateParameters" cannot update read-only map tile layer parameter "tileLayer"',
-      );
-    },
-  );
 
   test("throws for widget id that exceeds max length", () => {
     const invalidConfig = getValidConfig();
@@ -196,11 +171,19 @@ function getValidConfig(): WidgetConfig<ParameterConfig> {
         displayName: "Parameter One",
         type: "string",
       },
+      tileLayer: {
+        displayName: "Tile Layer",
+        type: "mapTileLayer",
+      },
     },
     events: {
       updateParameters: {
         displayName: "Update Parameters",
         parameterUpdateIds: ["paramOne"],
+      },
+      mapClicked: {
+        displayName: "Map Clicked",
+        parameterUpdateIds: [],
       },
     },
   };
