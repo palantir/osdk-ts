@@ -86,14 +86,19 @@ export class OntologyBlockDataToFullMetadataConverter {
       blockData.sharedPropertyTypes,
       valueTypes,
     );
+    const convertedObjectTypes = this.getOsdkObjectTypesFromBlockData(
+      blockData.objectTypes,
+      blockData.linkTypes,
+      objectTypeLookup,
+      interfacePropertyApiNames,
+      valueTypes,
+    );
+    addInheritedInterfaceImplementations(
+      convertedObjectTypes,
+      interfaceTypes,
+    );
     const objectTypes: Record<ApiName, Ontologies.ObjectTypeFullMetadata> = {
-      ...this.getOsdkObjectTypesFromBlockData(
-        blockData.objectTypes,
-        blockData.linkTypes,
-        objectTypeLookup,
-        interfacePropertyApiNames,
-        valueTypes,
-      ),
+      ...convertedObjectTypes,
       ...importedTypes?.objectTypes,
     };
     for (const [objectApiName, objectType] of Object.entries(objectTypes)) {
@@ -249,7 +254,12 @@ export class OntologyBlockDataToFullMetadataConverter {
         Ontologies.ObjectTypeInterfaceImplementation
       > = {};
 
-      for (const ii of object.implementsInterfaces2) {
+      for (
+        const ii of [
+          ...Object.values(object.allImplementsInterfaces ?? {}),
+          ...object.implementsInterfaces2,
+        ]
+      ) {
         const interfaceApiName = ii.interfaceTypeApiName;
         const propertyMappings: Record<ApiName, ApiName> = {};
         const propertyMappingsV2: Record<
@@ -981,7 +991,28 @@ export class OntologyBlockDataToFullMetadataConverter {
       ...importedInterfaceTypes,
       ...result,
     };
-    for (const interfaceType of Object.values(result)) {
+    const resolvedInterfaceTypes = new Set<ApiName>(
+      Object.keys(importedInterfaceTypes ?? {}),
+    );
+    const resolvingInterfaceTypes = new Set<ApiName>();
+    const resolveInterfaceHierarchy = (interfaceApiName: ApiName): void => {
+      if (
+        resolvedInterfaceTypes.has(interfaceApiName)
+        || resolvingInterfaceTypes.has(interfaceApiName)
+      ) {
+        return;
+      }
+
+      const interfaceType = result[interfaceApiName];
+      if (interfaceType == null) {
+        return;
+      }
+
+      resolvingInterfaceTypes.add(interfaceApiName);
+      for (const parentApiName of interfaceType.extendsInterfaces) {
+        resolveInterfaceHierarchy(parentApiName);
+      }
+
       const ancestorInterfaceTypes = getAllAncestorInterfaceTypes(
         interfaceType.apiName,
         availableInterfaceTypes,
@@ -1005,6 +1036,13 @@ export class OntologyBlockDataToFullMetadataConverter {
         ...ancestorInterfaceTypes.map(ancestor => ancestor.allLinks),
         interfaceType.links,
       );
+
+      resolvingInterfaceTypes.delete(interfaceApiName);
+      resolvedInterfaceTypes.add(interfaceApiName);
+    };
+
+    for (const interfaceApiName of Object.keys(result)) {
+      resolveInterfaceHierarchy(interfaceApiName);
     }
 
     return result;
@@ -1468,6 +1506,70 @@ function buildInterfacePropertyApiNameLookup(
   }
 
   return result;
+}
+
+function addInheritedInterfaceImplementations(
+  objectTypes: Record<ApiName, Ontologies.ObjectTypeFullMetadata>,
+  interfaceTypes: Record<ApiName, Ontologies.InterfaceType>,
+): void {
+  for (const objectType of Object.values(objectTypes)) {
+    const implementations = objectType.implementsInterfaces2;
+    const pendingImplementations = new Map(Object.entries(implementations));
+
+    for (const [interfaceApiName, implementation] of pendingImplementations) {
+      const interfaceType = interfaceTypes[interfaceApiName];
+      if (interfaceType == null) {
+        continue;
+      }
+
+      for (const parentApiName of interfaceType.extendsInterfaces) {
+        const parentInterfaceType = interfaceTypes[parentApiName];
+        if (parentInterfaceType == null) {
+          continue;
+        }
+
+        const parentImplementation = implementations[parentApiName] ??=
+          createInheritedInterfaceImplementation(
+            implementation,
+            parentInterfaceType,
+          );
+        pendingImplementations.set(parentApiName, parentImplementation);
+      }
+    }
+    objectType.implementsInterfaces = Object.keys(implementations);
+  }
+}
+
+function createInheritedInterfaceImplementation(
+  implementation: Ontologies.ObjectTypeInterfaceImplementation,
+  interfaceType: Ontologies.InterfaceType,
+): Ontologies.ObjectTypeInterfaceImplementation {
+  return {
+    properties: filterImplementationMappings(
+      implementation.properties,
+      interfaceType.allProperties,
+    ),
+    propertiesV2: filterImplementationMappings(
+      implementation.propertiesV2,
+      interfaceType.allPropertiesV2,
+    ),
+    links: filterImplementationMappings(
+      implementation.links,
+      interfaceType.allLinks,
+    ),
+    actionTypes: {},
+  };
+}
+
+function filterImplementationMappings<TImplementation, TDefinition>(
+  implementations: Record<ApiName, TImplementation>,
+  availableDefinitions: Record<ApiName, TDefinition>,
+): Record<ApiName, TImplementation> {
+  return Object.fromEntries(
+    Object.entries(implementations).filter(([apiName]) =>
+      apiName in availableDefinitions
+    ),
+  );
 }
 
 export function buildBlockDataInterfaceLinkTypeLookup(

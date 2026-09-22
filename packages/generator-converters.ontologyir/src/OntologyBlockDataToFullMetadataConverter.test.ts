@@ -25,6 +25,16 @@ import { OntologyBlockDataToFullMetadataConverter } from "./OntologyBlockDataToF
 
 const interfaceApiName = "com.palantir.ontology.actionItem";
 const interfaceRid = "ri.ontology.main.interface-type.action-item";
+const parentInterfaceApiName = "com.palantir.ontology.workItem";
+const parentInterfaceRid = "ri.ontology.main.interface-type.work-item";
+const secondaryParentInterfaceApiName = "com.palantir.ontology.assignable";
+const secondaryParentInterfaceRid =
+  "ri.ontology.main.interface-type.assignable";
+const rootInterfaceApiName = "com.palantir.ontology.entity";
+const rootInterfaceRid = "ri.ontology.main.interface-type.entity";
+const idInterfacePropertyRid = "ri.ontology.main.interface-property-type.id";
+const assigneeInterfacePropertyRid =
+  "ri.ontology.main.interface-property-type.assignee";
 const titleInterfacePropertyRid =
   "ri.ontology.main.interface-property-type.title";
 const statusInterfacePropertyRid =
@@ -60,61 +70,81 @@ function createProperty(apiName: string): PropertyType {
   };
 }
 
-function createInterface(): InterfaceTypeBlockDataV2 {
+function createInterfaceDefinedProperty(rid: string, apiName: string) {
+  return {
+    type: "interfaceDefinedPropertyType" as const,
+    interfaceDefinedPropertyType: {
+      rid,
+      apiName,
+      displayMetadata: {
+        displayName: apiName,
+        visibility: "NORMAL" as const,
+      },
+      type: {
+        type: "string" as const,
+        string: { isLongText: false, supportsExactMatching: true },
+      },
+      constraints: {
+        requireImplementation: true,
+        indexedForSearch: true,
+        primaryKeyConstraint: "NO_RESTRICTION" as const,
+        typeClasses: [],
+      },
+    },
+  };
+}
+
+function createInterfaceBlock(
+  apiName: string,
+  rid: string,
+  propertiesV3: InterfaceTypeBlockDataV2["interfaceType"]["propertiesV3"],
+  extendsInterfaces: string[] = [],
+): InterfaceTypeBlockDataV2 {
   return {
     interfaceType: {
-      apiName: interfaceApiName,
-      rid: interfaceRid,
-      displayMetadata: { displayName: "Action item" },
+      apiName,
+      rid,
+      displayMetadata: { displayName: apiName },
       status: { type: "active", active: {} },
       actionTypeConstraints: [],
-      extendsInterfaces: [],
+      extendsInterfaces,
       links: [],
       properties: [],
       propertiesV2: {},
-      propertiesV3: {
-        [titleInterfacePropertyRid]: {
-          type: "interfaceDefinedPropertyType",
-          interfaceDefinedPropertyType: {
-            rid: titleInterfacePropertyRid,
-            apiName: "title",
+      propertiesV3,
+    },
+  };
+}
+
+function createInterface(): InterfaceTypeBlockDataV2 {
+  return createInterfaceBlock(
+    interfaceApiName,
+    interfaceRid,
+    {
+      [titleInterfacePropertyRid]: createInterfaceDefinedProperty(
+        titleInterfacePropertyRid,
+        "title",
+      ),
+      [statusInterfacePropertyRid]: {
+        type: "sharedPropertyBasedPropertyType",
+        sharedPropertyBasedPropertyType: {
+          requireImplementation: true,
+          sharedPropertyType: {
+            rid: statusSharedPropertyRid,
+            apiName: "status",
             displayMetadata: {
-              displayName: "Title",
+              displayName: "Status",
               visibility: "NORMAL",
             },
-            type: {
-              type: "string",
-              string: { isLongText: false, supportsExactMatching: true },
-            },
-            constraints: {
-              requireImplementation: true,
-              indexedForSearch: true,
-              primaryKeyConstraint: "NO_RESTRICTION",
-              typeClasses: [],
-            },
-          },
-        },
-        [statusInterfacePropertyRid]: {
-          type: "sharedPropertyBasedPropertyType",
-          sharedPropertyBasedPropertyType: {
-            requireImplementation: true,
-            sharedPropertyType: {
-              rid: statusSharedPropertyRid,
-              apiName: "status",
-              displayMetadata: {
-                displayName: "Status",
-                visibility: "NORMAL",
-              },
-              type: createProperty("unused").type,
-              aliases: [],
-              indexedForSearch: true,
-              typeClasses: [],
-            },
+            type: createProperty("unused").type,
+            aliases: [],
+            indexedForSearch: true,
+            typeClasses: [],
           },
         },
       },
     },
-  };
+  );
 }
 
 function createObject(): ObjectTypeBlockDataV2 {
@@ -191,6 +221,78 @@ function createBlockData(options: {
   };
 }
 
+function createHierarchyBlockData(): OntologyBlockDataV2 {
+  const blockData = createBlockData();
+  const statusProperty = createInterface().interfaceType.propertiesV3[
+    statusInterfacePropertyRid
+  ];
+  blockData.interfaceTypes = {
+    // Descendants intentionally come first to verify hierarchy resolution does
+    // not depend on the order of block data entries.
+    [interfaceRid]: createInterfaceBlock(
+      interfaceApiName,
+      interfaceRid,
+      {
+        [assigneeInterfacePropertyRid]: createInterfaceDefinedProperty(
+          assigneeInterfacePropertyRid,
+          "assigneeId",
+        ),
+      },
+      [parentInterfaceRid, secondaryParentInterfaceRid],
+    ),
+    [secondaryParentInterfaceRid]: createInterfaceBlock(
+      secondaryParentInterfaceApiName,
+      secondaryParentInterfaceRid,
+      { [statusInterfacePropertyRid]: statusProperty },
+      [rootInterfaceRid],
+    ),
+    [rootInterfaceRid]: createInterfaceBlock(
+      rootInterfaceApiName,
+      rootInterfaceRid,
+      {
+        [idInterfacePropertyRid]: createInterfaceDefinedProperty(
+          idInterfacePropertyRid,
+          "id",
+        ),
+      },
+    ),
+    [parentInterfaceRid]: createInterfaceBlock(
+      parentInterfaceApiName,
+      parentInterfaceRid,
+      {
+        [titleInterfacePropertyRid]: createInterfaceDefinedProperty(
+          titleInterfacePropertyRid,
+          "title",
+        ),
+      },
+      [rootInterfaceRid],
+    ),
+  };
+
+  const objectType = blockData.objectTypes[objectRid].objectType;
+  const assignee = createProperty("taskAssigneeId");
+  objectType.propertyTypes[assignee.rid] = assignee;
+  objectType.implementsInterfaces2[0].propertiesV2 = {
+    [idInterfacePropertyRid]: {
+      type: "propertyTypeRid",
+      propertyTypeRid: objectPropertyRid("id"),
+    },
+    [titleInterfacePropertyRid]: {
+      type: "propertyTypeRid",
+      propertyTypeRid: objectPropertyRid("taskTitle"),
+    },
+    [statusInterfacePropertyRid]: {
+      type: "propertyTypeRid",
+      propertyTypeRid: objectPropertyRid("taskStatus"),
+    },
+    [assigneeInterfacePropertyRid]: {
+      type: "propertyTypeRid",
+      propertyTypeRid: assignee.rid,
+    },
+  };
+  return blockData;
+}
+
 describe(OntologyBlockDataToFullMetadataConverter, () => {
   it("preserves direct interface property implementations", () => {
     const result = OntologyBlockDataToFullMetadataConverter
@@ -217,6 +319,33 @@ describe(OntologyBlockDataToFullMetadataConverter, () => {
       .toEqual([objectApiName]);
   });
 
+  it("preserves resolved block data interface implementations", () => {
+    const blockData = createBlockData();
+    const objectType = blockData.objectTypes[objectRid].objectType;
+    const implementation = objectType.implementsInterfaces2[0];
+    objectType.implementsInterfaces2 = [];
+    objectType.allImplementsInterfaces = {
+      [interfaceRid]: implementation,
+    };
+
+    const result = OntologyBlockDataToFullMetadataConverter
+      .getFullMetadataFromBlockData(blockData);
+
+    expect(
+      result.objectTypes[objectApiName].implementsInterfaces2[interfaceApiName]
+        .propertiesV2,
+    ).toEqual({
+      title: {
+        type: "localPropertyImplementation",
+        propertyApiName: "taskTitle",
+      },
+      status: {
+        type: "localPropertyImplementation",
+        propertyApiName: "taskStatus",
+      },
+    });
+  });
+
   it("uses interface property RIDs for resolved shared properties", () => {
     const result = OntologyBlockDataToFullMetadataConverter
       .getFullMetadataFromBlockData(createBlockData());
@@ -226,6 +355,74 @@ describe(OntologyBlockDataToFullMetadataConverter, () => {
     expect(interfaceType.allPropertiesV2.status.rid).toBe(
       statusInterfacePropertyRid,
     );
+  });
+
+  it("expands object implementations through an interface hierarchy", () => {
+    const result = OntologyBlockDataToFullMetadataConverter
+      .getFullMetadataFromBlockData(createHierarchyBlockData());
+    const objectType = result.objectTypes[objectApiName];
+
+    expect(objectType.implementsInterfaces).toHaveLength(4);
+    expect(objectType.implementsInterfaces).toEqual(expect.arrayContaining([
+      interfaceApiName,
+      parentInterfaceApiName,
+      secondaryParentInterfaceApiName,
+      rootInterfaceApiName,
+    ]));
+    expect(
+      objectType.implementsInterfaces2[interfaceApiName].propertiesV2,
+    ).toEqual({
+      id: { type: "localPropertyImplementation", propertyApiName: "id" },
+      title: {
+        type: "localPropertyImplementation",
+        propertyApiName: "taskTitle",
+      },
+      status: {
+        type: "localPropertyImplementation",
+        propertyApiName: "taskStatus",
+      },
+      assigneeId: {
+        type: "localPropertyImplementation",
+        propertyApiName: "taskAssigneeId",
+      },
+    });
+    expect(
+      objectType.implementsInterfaces2[parentInterfaceApiName].propertiesV2,
+    ).toEqual({
+      id: { type: "localPropertyImplementation", propertyApiName: "id" },
+      title: {
+        type: "localPropertyImplementation",
+        propertyApiName: "taskTitle",
+      },
+    });
+    expect(
+      objectType.implementsInterfaces2[secondaryParentInterfaceApiName]
+        .propertiesV2,
+    ).toEqual({
+      id: { type: "localPropertyImplementation", propertyApiName: "id" },
+      status: {
+        type: "localPropertyImplementation",
+        propertyApiName: "taskStatus",
+      },
+    });
+    expect(
+      objectType.implementsInterfaces2[rootInterfaceApiName].propertiesV2,
+    ).toEqual({
+      id: { type: "localPropertyImplementation", propertyApiName: "id" },
+    });
+
+    for (
+      const apiName of [
+        interfaceApiName,
+        parentInterfaceApiName,
+        secondaryParentInterfaceApiName,
+        rootInterfaceApiName,
+      ]
+    ) {
+      expect(result.interfaceTypes[apiName].implementedByObjectTypes).toEqual([
+        objectApiName,
+      ]);
+    }
   });
 
   it.each(["transitive block data", "imported metadata"] as const)(
