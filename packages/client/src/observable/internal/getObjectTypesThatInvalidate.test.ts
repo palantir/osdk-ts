@@ -15,7 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition, ObjectSet } from "@osdk/api";
-import { Employee, FooInterface } from "@osdk/client.test.ontology";
+import { Employee, FooInterface, Office } from "@osdk/client.test.ontology";
 import type { SetupServer } from "@osdk/shared.test";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
 import invariant from "tiny-invariant";
@@ -149,7 +149,7 @@ describe(getObjectTypesThatInvalidate, () => {
   });
 
   // Union/Intersect/Subtract Tests
-  it("supports union of same type", async () => {
+  it("resolves same-type unions and rejects mixed result types", async () => {
     const set1 = client(Employee).where({ employeeId: { $lt: 100 } });
     const set2 = client(Employee).where({ employeeId: { $gt: 200 } });
     const unionSet = set1.union(set2);
@@ -158,6 +158,9 @@ describe(getObjectTypesThatInvalidate, () => {
     console.log(counts);
     expect(resultType).toEqual("Employee");
     expect([...invalidationSet]).toEqual([]);
+    await expect(helper(set1.union(client(Office) as any))).rejects.toThrow(
+      "Incompatible context types found for set operation",
+    );
   });
 
   it("supports crazy unions union of same type", async () => {
@@ -236,6 +239,30 @@ describe(getObjectTypesThatInvalidate, () => {
     expect(resultType).toEqual("FooInterface");
     // Should bump counts for all implementing types
     expect(Object.keys(counts).length).toBeGreaterThan(0);
+  });
+
+  it("preserves pivot dependencies when narrowing to an object type", async () => {
+    const objectSet = client(Employee)
+      .pivotTo("officeLink")
+      .pivotTo("occupants")
+      .narrowToType(FooInterface)
+      .narrowToType(Employee);
+
+    const { resultType, invalidationSet } = await helper(objectSet);
+    expect(resultType).toEqual("Employee");
+    expect([...invalidationSet].sort()).toEqual([
+      "Employee",
+      "Office",
+      "Person",
+    ]);
+  });
+
+  it("tracks implementing types when narrowing to an interface", async () => {
+    const objectSet = client(Employee).narrowToType(FooInterface);
+
+    const { resultType, invalidationSet } = await helper(objectSet);
+    expect(resultType).toEqual("FooInterface");
+    expect([...invalidationSet].sort()).toEqual(["Employee", "Person"]);
   });
 
   it.skip("supports interface link search around", async () => {

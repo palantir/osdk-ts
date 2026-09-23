@@ -114,7 +114,6 @@ export class ObjectSetHelper extends AbstractHelper<
       return new ObjectSetQuery(
         this.store,
         this.store.subjects.get(objectSetCacheKey),
-        baseObjectSetWire,
         operations,
         objectSetCacheKey,
         options,

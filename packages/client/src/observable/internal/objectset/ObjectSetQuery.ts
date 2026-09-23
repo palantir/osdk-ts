@@ -15,11 +15,13 @@
  */
 
 import type { ObjectSet, Osdk, PageResult } from "@osdk/api";
-import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
+import type {
+  DerivedPropertyDefinition,
+  ObjectSet as WireObjectSet,
+} from "@osdk/foundry.ontologies";
 import type { Observable, Subscription } from "rxjs";
 
 import { additionalContext } from "../../../Client.js";
-import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import { extractRdpDefinition } from "../../../util/extractRdpDefinition.js";
@@ -27,22 +29,22 @@ import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
 import type { BatchContext } from "../BatchContext.js";
-import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
-import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
 import {
   API_NAME_IDX as OBJECT_API_NAME_IDX,
   type ObjectCacheKey,
 } from "../object/ObjectCacheKey.js";
-import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
-import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
+import {
+  analyzeObjectSet,
+  type ObjectSetAnalysis,
+} from "./analyzeObjectSet.js";
 import type {
   ObjectSetCacheKey,
   ObjectSetOperations,
@@ -54,21 +56,16 @@ export class ObjectSetQuery extends BaseListQuery<
   ObjectSetPayload,
   ObjectSetQueryOptions
 > {
-  #baseObjectSetWire: string;
   #operations: Canonical<ObjectSetOperations>;
   #composedObjectSet: ObjectSet<any, any>;
-  #objectTypes: Set<string>;
-  #requiresServerEvaluation: boolean;
-  #resultTypeApiName: string;
-
-  // Object types this query's RDPs traverse; an edit to any of these triggers
-  // revalidation. Lazily populated on first fetch when `withProperties` is set.
-  #rdpInvalidationSet: ReadonlySet<string> | undefined;
+  #objectTypes: ReadonlySet<string>;
+  #resolvedObjectTypes: Promise<ObjectSetAnalysis> | undefined;
+  #analysis: ObjectSetAnalysis | undefined;
+  #rdpConfig: Canonical<Rdp> | undefined;
 
   constructor(
     store: Store,
     subject: Observable<SubjectPayload<ObjectSetCacheKey>>,
-    baseObjectSetWire: string,
     operations: Canonical<ObjectSetOperations>,
     cacheKey: ObjectSetCacheKey,
     opts: ObjectSetQueryOptions,
@@ -90,22 +87,15 @@ export class ObjectSetQuery extends BaseListQuery<
         : undefined,
     );
 
-    this.#baseObjectSetWire = baseObjectSetWire;
     this.#operations = operations;
     this.#composedObjectSet = this.#composeObjectSet(opts);
-
-    const baseWire: WireObjectSet = JSON.parse(baseObjectSetWire);
-    this.#objectTypes = this.#extractObjectTypes(baseWire, opts);
-
-    this.#requiresServerEvaluation = !!(
-      operations.pivotTo ||
-      (operations.union && operations.union.length > 0) ||
-      (operations.intersect && operations.intersect.length > 0) ||
-      (operations.subtract && operations.subtract.length > 0)
-    );
-
-    this.#resultTypeApiName =
-      ObjectSetQuery.#extractTypeFromWireObjectSet(baseWire) ?? "";
+    const wire = getWireObjectSet(this.#composedObjectSet);
+    this.#objectTypes = new Set(wire.type === "base" ? [wire.objectType] : []);
+    const definitions = getResultDerivedProperties(wire);
+    this.#rdpConfig =
+      Object.keys(definitions).length > 0
+        ? store.rdpCanonicalizer.canonicalizeDefinitions(definitions)
+        : undefined;
 
     if (opts.autoFetchMore === true) {
       this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
@@ -121,7 +111,7 @@ export class ObjectSetQuery extends BaseListQuery<
   }
 
   public override get rdpConfig(): Canonical<Rdp> | undefined {
-    return this.#operations.withProperties;
+    return this.#rdpConfig;
   }
 
   public get selectFields(): Canonical<readonly string[]> | undefined {
@@ -130,6 +120,10 @@ export class ObjectSetQuery extends BaseListQuery<
 
   protected get rawSelect(): Canonical<readonly string[]> | undefined {
     return this.#operations.select;
+  }
+
+  get objectSet(): ObjectSet<any, any> {
+    return this.#composedObjectSet;
   }
 
   #composeObjectSet(opts: ObjectSetQueryOptions): ObjectSet<any, any> {
@@ -157,48 +151,20 @@ export class ObjectSetQuery extends BaseListQuery<
     return result;
   }
 
-  #extractObjectTypes(
-    baseWire: WireObjectSet,
-    opts: ObjectSetQueryOptions,
-  ): Set<string> {
-    const types = new Set<string>();
-    const baseTypeName = ObjectSetQuery.#extractTypeFromWireObjectSet(baseWire);
-    if (baseTypeName) {
-      types.add(baseTypeName);
-    }
-    ObjectSetQuery.#addTypesFromObjectSets(opts.union, types);
-    ObjectSetQuery.#addTypesFromObjectSets(opts.intersect, types);
-    ObjectSetQuery.#addTypesFromObjectSets(opts.subtract, types);
-    return types;
-  }
-
-  static #addTypesFromObjectSets(
-    sets: ReadonlyArray<ObjectSet<any, any>> | undefined,
-    types: Set<string>,
-  ): void {
-    if (!sets) {
-      return;
-    }
-    for (const os of sets) {
-      const typeName = ObjectSetQuery.#extractTypeFromWireObjectSet(
-        getWireObjectSet(os),
-      );
-      if (typeName) {
-        types.add(typeName);
-      }
-    }
-  }
-
-  static #extractTypeFromWireObjectSet(
-    wire: WireObjectSet,
-  ): string | undefined {
-    if (wire.type === "base") {
-      return wire.objectType;
-    }
-    if (wire.type === "interfaceBase") {
-      return wire.interfaceType;
-    }
-    return undefined;
+  #resolveObjectTypes(): Promise<ObjectSetAnalysis> {
+    return (this.#resolvedObjectTypes ??= analyzeObjectSet(
+      this.store.client[additionalContext],
+      getWireObjectSet(this.#composedObjectSet),
+    )
+      .then((analysis) => {
+        this.#analysis = analysis;
+        this.#objectTypes = analysis.objectTypes;
+        return analysis;
+      })
+      .catch((error: unknown) => {
+        this.#resolvedObjectTypes = undefined;
+        throw error;
+      }));
   }
 
   /**
@@ -215,46 +181,32 @@ export class ObjectSetQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
+    const { resultType } = await this.#resolveObjectTypes();
+
+    const derivedProperties = await extractRdpDefinition(
+      this.store.client[additionalContext],
+      getWireObjectSet(this.#composedObjectSet),
+    );
     if (
       this.#operations.orderBy &&
       Object.keys(this.#operations.orderBy).length > 0 &&
       !(this.sortingStrategy instanceof OrderBySortingStrategy)
     ) {
-      const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
-      const { resultType, invalidationSet } =
-        await getObjectTypesThatInvalidate(
-          this.store.client[additionalContext],
-          wireObjectSet,
-        );
       this.sortingStrategy = new OrderBySortingStrategy(
         resultType.apiName,
         this.#operations.orderBy,
-        await extractRdpDefinition(
-          this.store.client[additionalContext],
-          wireObjectSet,
-        ),
+        derivedProperties,
       );
-      this.#rdpInvalidationSet = invalidationSet;
-    }
-
-    if (
-      this.#rdpInvalidationSet == null &&
-      this.#operations.withProperties != null
-    ) {
-      const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
-      this.#rdpInvalidationSet =
-        await this.#computeInvalidationTypes(wireObjectSet);
     }
 
     // Fetch the data with pagination
-    const resp = await this.#composedObjectSet.fetchPage({
+    const args = {
       $nextPageToken: this.nextPageToken,
       $pageSize: this.getEffectiveFetchPageSize(),
       $includeRid: true,
       ...(this.#operations.select && this.#operations.select.length > 0
         ? { $select: this.#operations.select }
         : {}),
-      // OrderBy is already applied in the composed ObjectSet
       ...(this.#operations.orderBy &&
       Object.keys(this.#operations.orderBy).length > 0
         ? { $orderBy: this.#operations.orderBy }
@@ -262,7 +214,8 @@ export class ObjectSetQuery extends BaseListQuery<
       ...(this.options.$loadPropertySecurityMetadata
         ? { $loadPropertySecurityMetadata: true }
         : {}),
-    });
+    };
+    const resp = await this.#composedObjectSet.fetchPage(args);
 
     if (signal?.aborted) {
       throw new Error("Aborted");
@@ -316,7 +269,14 @@ export class ObjectSetQuery extends BaseListQuery<
     changes.modified.add(this.cacheKey);
 
     try {
-      if (this.#requiresServerEvaluation) {
+      if (
+        !this.#analysis ||
+        this.#hasChangesForTypes(changes, this.#analysis.revalidateTypes)
+      ) {
+        if (optimisticId) {
+          this.#removeOptimisticallyDeletedObjects(changes, optimisticId);
+          return;
+        }
         return this.#handleServerRevalidation(changes);
       }
       return this.#handleLocalUpdate(changes, optimisticId);
@@ -329,25 +289,52 @@ export class ObjectSetQuery extends BaseListQuery<
     }
   };
 
-  #handleServerRevalidation(changes: Changes): Promise<void> | undefined {
-    for (const objectType of this.#objectTypes) {
-      const added = changes.addedObjects.get(objectType);
-      const modified = changes.modifiedObjects.get(objectType);
-      if ((added && added.length > 0) || (modified && modified.length > 0)) {
-        return this.revalidate(true);
-      }
+  #removeOptimisticallyDeletedObjects(
+    changes: Changes,
+    optimisticId: OptimisticId,
+  ): void {
+    if (changes.deleted.size === 0) {
+      return;
     }
+    this.store.batch({ optimisticId, changes }, (batch) => {
+      const existing = batch.read(this.cacheKey)?.value;
+      if (!existing) {
+        return;
+      }
+      const remaining = existing.data.filter(
+        (key) => !changes.deleted.has(key),
+      );
+      if (remaining.length === existing.data.length) {
+        return;
+      }
+      this._updateList(
+        remaining,
+        "loading",
+        batch,
+        { type: "clientOrdered" },
+        existing.totalCount,
+      );
+    });
+  }
 
-    for (const deletedKey of changes.deleted) {
+  #hasChangesForTypes(changes: Changes, types: ReadonlySet<string>): boolean {
+    for (const type of types) {
       if (
-        deletedKey.type === "object" &&
-        this.#objectTypes.has(deletedKey.otherKeys[OBJECT_API_NAME_IDX])
-      ) {
-        return this.revalidate(true);
-      }
+        changes.addedObjects.get(type)?.length ||
+        changes.modifiedObjects.get(type)?.length
+      )
+        return true;
     }
+    return [...changes.deleted].some(
+      (key) =>
+        key.type === "object" && types.has(key.otherKeys[OBJECT_API_NAME_IDX]),
+    );
+  }
 
-    return undefined;
+  #handleServerRevalidation(changes: Changes): Promise<void> | undefined {
+    return this.#hasChangesForTypes(changes, this.#objectTypes)
+      ? this.revalidate(true)
+      : undefined;
   }
 
   #getRelevantChanges(
@@ -355,132 +342,62 @@ export class ObjectSetQuery extends BaseListQuery<
   ):
     | { addedObjects: ObjectHolder[]; modifiedObjects: ObjectHolder[] }
     | undefined {
-    const resultApiName = this.#resultTypeApiName;
-    const addedObjects = changes.addedObjects.get(resultApiName) ?? [];
-    const modifiedObjects = changes.modifiedObjects.get(resultApiName) ?? [];
-
-    let hasRelevantDeletions = false;
-    for (const key of changes.deleted) {
-      if (
-        key.type === "object" &&
-        key.otherKeys[OBJECT_API_NAME_IDX] === resultApiName
-      ) {
-        hasRelevantDeletions = true;
-        break;
-      }
-    }
-
-    if (
-      addedObjects.length === 0 &&
-      modifiedObjects.length === 0 &&
-      !hasRelevantDeletions
-    ) {
-      return undefined;
-    }
-
-    return { addedObjects, modifiedObjects };
+    if (!this.#hasChangesForTypes(changes, this.#objectTypes)) return undefined;
+    return {
+      addedObjects: [...this.#objectTypes].flatMap(
+        (type) => changes.addedObjects.get(type) ?? [],
+      ),
+      modifiedObjects: [...this.#objectTypes].flatMap(
+        (type) => changes.modifiedObjects.get(type) ?? [],
+      ),
+    };
   }
 
   #handleLocalUpdate(
     changes: Changes,
     optimisticId: OptimisticId | undefined,
   ): Promise<void> | undefined {
-    const whereClause = this.#operations.where as
-      | Canonical<SimpleWhereClause>
-      | undefined;
-    const effectiveWhere =
-      whereClause ?? this.store.whereCanonicalizer.canonicalize({ $and: [] });
-
     const relevant = this.#getRelevantChanges(changes);
-    if (!relevant) {
-      return undefined;
-    }
+    if (!relevant) return undefined;
+    const missingSortFields =
+      this.#operations.select &&
+      Object.keys(this.#operations.orderBy ?? {}).some(
+        (field) => !this.#operations.select!.includes(field),
+      );
+    if (!optimisticId && (this.nextPageToken != null || missingSortFields))
+      return this.revalidate(true);
 
-    const addedMatches = this.#classifyByWhereMatch(
-      relevant.addedObjects,
-      effectiveWhere,
+    const matches = new Map(
+      [...relevant.addedObjects, ...relevant.modifiedObjects].map(
+        (object) => [object, this.#analysis?.matches(object)] as const,
+      ),
     );
-    const modifiedMatches = this.#classifyByWhereMatch(
-      relevant.modifiedObjects,
-      effectiveWhere,
-    );
-
-    const status =
-      optimisticId ||
-      addedMatches.uncertain.size > 0 ||
-      modifiedMatches.uncertain.size > 0
-        ? "loading"
-        : "loaded";
-
-    const { retVal: needsRevalidation } = this.store.batch(
-      { optimisticId, changes },
-      (batch) => {
-        const existingKeys = new Set(batch.read(this.cacheKey)?.value?.data);
-
-        const { newList, needsRevalidation } = reconcileListChanges(
-          existingKeys,
-          addedMatches.definite,
-          relevant.modifiedObjects,
-          modifiedMatches,
-          changes.deleted,
-          batch.optimisticWrite,
-          (obj) => this.#getObjectCacheKey(obj),
-        );
-
-        const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
-        this._updateList(
-          newList,
-          status,
-          batch,
-          { type: "clientOrdered" },
-          existingTotalCount,
-        );
-
-        return needsRevalidation;
-      },
-    );
-
-    if (needsRevalidation) {
+    if (!optimisticId && [...matches.values()].includes(undefined)) {
       return this.revalidate(true);
     }
-    return undefined;
-  }
 
-  #classifyByWhereMatch(
-    objects: ReadonlyArray<ObjectHolder | InterfaceHolder>,
-    whereClause: Canonical<SimpleWhereClause>,
-  ): {
-    definite: ReadonlySet<ObjectHolder | InterfaceHolder>;
-    uncertain: ReadonlySet<ObjectHolder | InterfaceHolder>;
-  } {
-    const definite = new Set<ObjectHolder | InterfaceHolder>();
-    const uncertain = new Set<ObjectHolder | InterfaceHolder>();
-    for (const obj of objects) {
-      if (objectMatchesWhereClause(obj, whereClause, true)) {
-        definite.add(obj);
-      } else if (objectMatchesWhereClause(obj, whereClause, false)) {
-        uncertain.add(obj);
+    this.store.batch({ optimisticId, changes }, (batch) => {
+      const existing = batch.read(this.cacheKey)?.value;
+      const keys = new Set(existing?.data);
+      for (const key of keys) {
+        if (changes.deleted.has(key)) keys.delete(key);
       }
-    }
-    return { definite, uncertain };
-  }
-
-  async #computeInvalidationTypes(
-    wireObjectSet: WireObjectSet,
-  ): Promise<Set<string>> {
-    try {
-      const { invalidationSet } = await getObjectTypesThatInvalidate(
-        this.store.client[additionalContext],
-        wireObjectSet,
+      for (const [object, matchesQuery] of matches) {
+        const key = this.#getObjectCacheKey(object);
+        if (matchesQuery === true) keys.add(key);
+        else if (!optimisticId) keys.delete(key);
+      }
+      this._updateList(
+        [...keys],
+        optimisticId ? "loading" : "loaded",
+        batch,
+        { type: "clientOrdered" },
+        existing?.totalCount === undefined || this.nextPageToken != null
+          ? existing?.totalCount
+          : String(keys.size),
       );
-      return invalidationSet;
-    } catch (error) {
-      this.store.logger?.error(
-        "Failed to compute invalidation types for object set query, falling back to empty set",
-        error,
-      );
-      return new Set();
-    }
+    });
+    return undefined;
   }
 
   #getObjectCacheKey(obj: {
@@ -496,16 +413,12 @@ export class ObjectSetQuery extends BaseListQuery<
     );
   }
 
-  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
-  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   invalidateObjectType = async (
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (
-      this.#objectTypes.has(objectType) ||
-      (this.#rdpInvalidationSet?.has(objectType) ?? false)
-    ) {
+    await this.#resolveObjectTypes();
+    if (this.#objectTypes.has(objectType)) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }
@@ -532,46 +445,21 @@ export class ObjectSetQuery extends BaseListQuery<
   }
 }
 
-function reconcileListChanges(
-  existingKeys: ReadonlySet<ObjectCacheKey>,
-  addedDefiniteMatches: ReadonlySet<ObjectHolder | InterfaceHolder>,
-  modifiedObjects: ReadonlyArray<ObjectHolder>,
-  modifiedMatches: {
-    definite: ReadonlySet<ObjectHolder | InterfaceHolder>;
-    uncertain: ReadonlySet<ObjectHolder | InterfaceHolder>;
-  },
-  deleted: ReadonlySet<CacheKey>,
-  isOptimistic: boolean,
-  getObjectCacheKey: (obj: ObjectHolder | InterfaceHolder) => ObjectCacheKey,
-): { newList: ObjectCacheKey[]; needsRevalidation: boolean } {
-  const objectsToInsert = new Set<ObjectHolder | InterfaceHolder>(
-    addedDefiniteMatches,
-  );
-  const keysToRemove = new Set<CacheKey>(deleted);
-
-  let needsRevalidation = false;
-  for (const obj of modifiedObjects) {
-    if (modifiedMatches.definite.has(obj)) {
-      if (!existingKeys.has(getObjectCacheKey(obj))) {
-        objectsToInsert.add(obj);
-      }
-    } else if (!isOptimistic) {
-      keysToRemove.add(getObjectCacheKey(obj));
-      if (modifiedMatches.uncertain.has(obj)) {
-        needsRevalidation = true;
-      }
-    }
+function getResultDerivedProperties(
+  wire: WireObjectSet,
+): Record<string, DerivedPropertyDefinition> {
+  switch (wire.type) {
+    case "withProperties":
+      return {
+        ...getResultDerivedProperties(wire.objectSet),
+        ...wire.derivedProperties,
+      };
+    case "filter":
+    case "asType":
+    case "asBaseObjectTypes":
+    case "nearestNeighbors":
+      return getResultDerivedProperties(wire.objectSet);
+    default:
+      return {};
   }
-
-  const newList: ObjectCacheKey[] = [];
-  for (const key of existingKeys) {
-    if (!keysToRemove.has(key)) {
-      newList.push(key);
-    }
-  }
-  for (const obj of objectsToInsert) {
-    newList.push(getObjectCacheKey(obj));
-  }
-
-  return { newList, needsRevalidation };
 }

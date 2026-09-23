@@ -21,7 +21,10 @@ import type {
 } from "@osdk/api";
 import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 
-import { createWithPropertiesObjectSet } from "../../derivedProperties/createWithPropertiesObjectSet.js";
+import {
+  createDerivedPropertyFromDefinition,
+  createWithPropertiesObjectSet,
+} from "../../derivedProperties/createWithPropertiesObjectSet.js";
 import type { Canonical } from "./Canonical.js";
 import { CachingCanonicalizer } from "./Canonicalizer.js";
 
@@ -29,6 +32,20 @@ export type Rdp = DerivedProperty.Clause<ObjectOrInterfaceDefinition>;
 
 export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
   private structuralCache = new Map<string, Canonical<Rdp>>();
+
+  canonicalizeDefinitions(
+    definitions: Record<string, DerivedPropertyDefinition>,
+  ): Canonical<Rdp> {
+    return this.canonicalize(
+      Object.fromEntries(
+        Object.entries(definitions).map(([name, definition]) => [
+          name,
+          (builder: object) =>
+            createDerivedPropertyFromDefinition(builder, definition),
+        ]),
+      ) as Rdp,
+    );
+  }
 
   protected lookupOrCreate(rdp: Rdp): Canonical<Rdp> {
     // Map from builder result symbols to their definitions
