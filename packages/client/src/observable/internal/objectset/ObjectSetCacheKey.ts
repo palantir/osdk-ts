@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
+import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
+
 import type { CollectionStorageData } from "../base-list/BaseCollectionQuery.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
-import type { Rdp } from "../RdpCanonicalizer.js";
 import type { ObjectSetQuery } from "./ObjectSetQuery.js";
 
 export interface ObjectSetStorageData extends CollectionStorageData {}
 
 export interface ObjectSetOperations {
-  where?: Canonical<any>;
-  withProperties?: Canonical<Rdp>;
-  union?: string[];
-  intersect?: string[];
-  subtract?: string[];
-  pivotTo?: string;
   orderBy?: Canonical<Record<string, "asc" | "desc" | undefined>>;
   select?: Canonical<readonly string[]>;
   pageSize?: number;
@@ -39,5 +34,8 @@ export interface ObjectSetCacheKey extends CacheKey<
   "objectSet",
   ObjectSetStorageData,
   ObjectSetQuery,
-  [baseObjectSetWire: string, operations: Canonical<ObjectSetOperations>]
+  [
+    objectSet: Canonical<WireObjectSet>,
+    operations: Canonical<ObjectSetOperations>,
+  ]
 > {}

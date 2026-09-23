@@ -40,20 +40,30 @@ import type {
 // For now we are keeping things conservative and just invalidating A either way,
 // but we can make this better.
 
-export async function getObjectTypesThatInvalidate(
-  mc: MinimalClient,
-  objectSet: WireObjectSet,
-): Promise<{
+export interface ObjectSetDependencies {
   resultType: FetchedObjectTypeDefinition | InterfaceMetadata;
   counts: Record<string, number>;
   invalidationSet: Set<string>;
-}> {
+  objectTypes: ReadonlySet<string>;
+  revalidateTypes: ReadonlySet<string>;
+}
+
+export async function getObjectTypesThatInvalidate(
+  mc: MinimalClient,
+  objectSet: WireObjectSet,
+): Promise<ObjectSetDependencies> {
   const counts: Record<string, number> = {};
+  const objectTypes = new Set<string>();
+  const revalidateTypes = new Set<string>();
 
   const resultType = await calcObjectSet(objectSet, {
     counts,
+    objectTypes,
+    revalidateTypes,
+    conservative: false,
     methodInput: undefined,
     ontologyProvider: mc.ontologyProvider,
+    narrowTypeInterfaceOrObjectMapping: mc.narrowTypeInterfaceOrObjectMapping,
   });
 
   // we need to uncount the final result type
@@ -65,6 +75,8 @@ export async function getObjectTypesThatInvalidate(
   return {
     resultType,
     counts,
+    objectTypes,
+    revalidateTypes,
     invalidationSet: new Set(
       Object.entries(tweaked)
         .filter(([, v]) => v > 0)
@@ -74,28 +86,47 @@ export async function getObjectTypesThatInvalidate(
 }
 
 interface Ctx {
+  objectTypes: Set<string>;
+  revalidateTypes: Set<string>;
+  conservative: boolean;
   counts: Record<string, number>;
   methodInput: WireObjectSet | undefined;
   ontologyProvider: OntologyProvider;
+  narrowTypeInterfaceOrObjectMapping: MinimalClient["narrowTypeInterfaceOrObjectMapping"];
 }
 
 async function calcObjectSet(
   os: WireObjectSet,
   ctx: Ctx,
 ): Promise<FetchedObjectTypeDefinition | InterfaceMetadata> {
+  if (
+    os.type === "searchAround" ||
+    os.type === "interfaceLinkSearchAround" ||
+    os.type === "withProperties" ||
+    os.type === "asType" ||
+    os.type === "nearestNeighbors"
+  ) {
+    ctx = { ...ctx, conservative: true };
+  }
   const op = ctx.ontologyProvider;
 
   async function bumpObject(apiName: string) {
     const objectType = await op.getObjectDefinition(apiName);
     ctx.counts[apiName] = (ctx.counts[apiName] ?? 0) + 1;
+    ctx.objectTypes.add(apiName);
+    if (ctx.conservative) ctx.revalidateTypes.add(apiName);
 
     return objectType;
   }
 
   async function bumpInterface(apiName: string) {
     const interfaceDef = await op.getInterfaceDefinition(apiName);
+    ctx.objectTypes.add(apiName);
+    ctx.revalidateTypes.add(apiName);
     for (const s of interfaceDef.implementedBy ?? []) {
       ctx.counts[s] = (ctx.counts[s] ?? 0) + 1;
+      ctx.objectTypes.add(s);
+      ctx.revalidateTypes.add(s);
     }
     return interfaceDef;
   }
@@ -173,9 +204,15 @@ async function calcObjectSet(
       );
 
       const returnTypes = await Promise.all(
-        resolvableSets.map(async (os) => {
+        resolvableSets.map(async (operand) => {
           const counts: Record<string, number> = {};
-          const r = await calcObjectSet(os, { ...ctx, counts });
+          const r = await calcObjectSet(operand, {
+            ...ctx,
+            counts,
+            conservative:
+              ctx.conservative ||
+              resolvableSets.length !== os.objectSets.length,
+          });
           return { r, counts };
         }),
       );
@@ -215,8 +252,15 @@ async function calcObjectSet(
       // otherwise it will double count everything
       return await calcObjectSet(ctx.methodInput, { ...ctx, counts: {} });
 
-    case "asType":
-    // we don't currently support this anywhere.
+    case "asType": {
+      await calcObjectSet(os.objectSet, ctx);
+      const type = ctx.narrowTypeInterfaceOrObjectMapping[os.entityType];
+      invariant(type, `Unknown narrowed type ${os.entityType}`);
+      return type === "interface"
+        ? bumpInterface(os.entityType)
+        : bumpObject(os.entityType);
+    }
+
     case "asBaseObjectTypes":
     // We don't currently support this because it could return multiple object types conceptually
     // internally, we actually use it this way but we shouldn't be finding that object sets.

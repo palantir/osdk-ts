@@ -19,14 +19,44 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
+import type { SearchJsonQueryV2 } from "@osdk/foundry.ontologies";
 import { Trie } from "@wry/trie";
 import deepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
 
 import type { Canonical } from "./Canonical.js";
+import { GenericCanonicalizer } from "./GenericCanonicalizer.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 
 export class WhereClauseCanonicalizer {
+  #wireCache = new WeakMap<SearchJsonQueryV2, Canonical<SearchJsonQueryV2>>();
+  #wireValues = new GenericCanonicalizer();
+
+  canonicalizeWire(where: SearchJsonQueryV2): Canonical<SearchJsonQueryV2> {
+    const cached = this.#wireCache.get(where);
+    if (cached) return cached;
+
+    let normalized = where;
+    if (where.type === "not") {
+      normalized = { ...where, value: this.canonicalizeWire(where.value) };
+    } else if (where.type === "and" || where.type === "or") {
+      const children = where.value
+        .map((child) => this.canonicalizeWire(child))
+        .flatMap((child) =>
+          child.type === where.type ? child.value : [child],
+        );
+      const values = [...new Set(children)]
+        .map((value) => [JSON.stringify(value), value] as const)
+        .sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
+        .map(([, value]) => value);
+      normalized =
+        values.length === 1 ? values[0] : { ...where, value: values };
+    }
+    const canonical = this.#wireValues.canonicalize(normalized);
+    this.#wireCache.set(where, canonical);
+    return canonical;
+  }
+
   /**
    * This is a shortcut cache for any WhereClause's that we have
    * seen and already canonicalized. The theory behind this
