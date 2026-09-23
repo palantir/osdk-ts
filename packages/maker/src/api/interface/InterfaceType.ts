@@ -35,7 +35,8 @@ export interface InterfaceType
       OntologyIrMarketplaceInterfaceType,
       // we want our simplified representation
       | "properties"
-      // derived by conversion from the presence of `schemaMigrations`
+      // re-declared below as an optional input, since an imported interface reports its opt-in
+      // state here rather than through `schemaMigrations`
       | "schemaMigrationsEnabled"
       // these things don't need to exist as the system works fine without them (I'm told)
       | "propertiesV2"

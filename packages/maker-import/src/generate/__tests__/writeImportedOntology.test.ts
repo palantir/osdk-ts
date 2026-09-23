@@ -334,8 +334,13 @@ describe("writeImportedOntology", () => {
     expect(actionFile).toContain("export const createEmployee");
   });
 
-  it("preserves interface schema migration opt-in metadata", () => {
-    const metadata = {
+  // The `as unknown as` cast fakes `schemaMigrationsEnabled`, which the public v2 `InterfaceType`
+  // does not declare yet. Drop it once the `foundry-platform-typescript` catalog picks up the
+  // gateway release that adds the field.
+  function metadataWithInterface(
+    iface: Record<string, unknown>,
+  ): Ontologies.OntologyFullMetadata {
+    return {
       ...sampleMetadata,
       interfaceTypes: {
         "com.example.Named": {
@@ -351,18 +356,45 @@ describe("writeImportedOntology", () => {
           implementedByObjectTypes: [],
           links: {},
           allLinks: {},
-          schemaMigrationsEnabled: true,
+          ...iface,
         },
       },
     } as unknown as Ontologies.OntologyFullMetadata;
+  }
 
+  function generatedInterfaceFile(
+    metadata: Ontologies.OntologyFullMetadata,
+  ): string {
     writeImportedOntology(metadata, TEST_OUTPUT_DIR);
-
-    const interfaceFile = fs.readFileSync(
+    return fs.readFileSync(
       path.join(TEST_OUTPUT_DIR, "codegen/interface-types/named.ts"),
       "utf-8",
     );
+  }
+
+  it("preserves interface schema migration opt-in metadata", () => {
+    const interfaceFile = generatedInterfaceFile(
+      metadataWithInterface({ schemaMigrationsEnabled: true }),
+    );
+
     expect(interfaceFile).toContain('"schemaMigrationsEnabled": true');
+  });
+
+  it("preserves an explicit opt-out", () => {
+    const interfaceFile = generatedInterfaceFile(
+      metadataWithInterface({ schemaMigrationsEnabled: false }),
+    );
+
+    expect(interfaceFile).toContain('"schemaMigrationsEnabled": false');
+  });
+
+  // Absent means the source ontology never reported an opt-in state. Writing `false` here would
+  // turn "unknown" into a durable claim that the interface is opted out, which maker would then
+  // enforce against any local interface extending it.
+  it("omits the opt-in flag when the source metadata does not report one", () => {
+    const interfaceFile = generatedInterfaceFile(metadataWithInterface({}));
+
+    expect(interfaceFile).not.toContain("schemaMigrationsEnabled");
   });
 
   it("generates index.ts with re-exports", () => {

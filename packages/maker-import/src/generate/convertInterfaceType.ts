@@ -97,8 +97,15 @@ export function convertInterfaceType(
     propertiesV2,
     propertiesV3,
     searchable: true,
-    schemaMigrationsEnabled:
-      "schemaMigrationsEnabled" in iface &&
-      iface.schemaMigrationsEnabled === true,
-  } as InterfaceType;
+    // Metadata that predates the gateway reporting this field says nothing about the interface's
+    // opt-in state, so leave the key off rather than claiming it is opted out — maker treats an
+    // absent flag on an imported interface as unknown and an explicit `false` as a definite no.
+    //
+    // TODO: read `iface.schemaMigrationsEnabled` directly once the `foundry-platform-typescript`
+    // catalog picks up the gateway release that declares it on the public v2 `InterfaceType`.
+    ...("schemaMigrationsEnabled" in iface &&
+    typeof iface.schemaMigrationsEnabled === "boolean"
+      ? { schemaMigrationsEnabled: iface.schemaMigrationsEnabled }
+      : {}),
+  };
 }

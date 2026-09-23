@@ -17,12 +17,19 @@
 import invariant from "tiny-invariant";
 
 import type { InterfaceType } from "./InterfaceType.js";
+import {
+  isImported,
+  resolveSchemaMigrationsOptIn,
+} from "./schemaMigrationsOptIn.js";
 
 /**
  * Interface schema migrations are opted into by a whole family of interfaces, not by one interface
  * at a time: an object type implementing an interface has to implement everything that interface
  * inherits too, so the inherited half of its schema needs the same backwards-compatibility
  * guarantees as the locally-declared half.
+ *
+ * A parent whose opt-in state cannot be determined is skipped rather than assumed opted out — see
+ * {@link resolveSchemaMigrationsOptIn}.
  */
 export function validateSchemaMigrationsFamilyOptIn(
   interfaceApiName: string,
@@ -30,18 +37,36 @@ export function validateSchemaMigrationsFamilyOptIn(
   parents: readonly InterfaceType[],
 ): void {
   for (const parent of parents) {
-    const parentOptedIn =
-      parent.schemaMigrations !== undefined ||
-      parent.schemaMigrationsEnabled === true;
+    const parentOptedIn = resolveSchemaMigrationsOptIn(parent);
+    if (parentOptedIn === undefined) {
+      continue;
+    }
     invariant(
       parentOptedIn === optedIn,
       `${
         optedIn
           ? `Interface ${interfaceApiName} declares \`schemaMigrations\`, but the interface it extends, ${parent.apiName}, does not.`
           : `Interface ${interfaceApiName} extends ${parent.apiName}, which declares \`schemaMigrations\`, but ${interfaceApiName} does not.`
-      } Interface schema migrations must be enabled for an entire interface hierarchy, since an object type implementing ${interfaceApiName} must implement the properties it inherits from ${parent.apiName} too. Add \`schemaMigrations\` to ${
-        optedIn ? parent.apiName : interfaceApiName
-      }, or remove it from ${optedIn ? interfaceApiName : parent.apiName}.`,
+      } Interface schema migrations must be enabled for an entire interface hierarchy, since an object type implementing ${interfaceApiName} must implement the properties it inherits from ${parent.apiName} too. ${remedy(
+        interfaceApiName,
+        optedIn,
+        parent,
+      )}`,
     );
   }
+}
+
+function remedy(
+  interfaceApiName: string,
+  optedIn: boolean,
+  parent: InterfaceType,
+): string {
+  // An imported parent belongs to another ontology, so `schemaMigrations` cannot be added to it
+  // from here; the only local move is to drop the opt-in from the child.
+  if (optedIn && isImported(parent)) {
+    return `${parent.apiName} is imported from another ontology, so it must opt in there. Enable schema migrations on ${parent.apiName} in its own ontology and re-import it, or remove \`schemaMigrations\` from ${interfaceApiName}.`;
+  }
+  return `Add \`schemaMigrations\` to ${
+    optedIn ? parent.apiName : interfaceApiName
+  }, or remove it from ${optedIn ? interfaceApiName : parent.apiName}.`;
 }

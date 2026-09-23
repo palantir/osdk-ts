@@ -296,7 +296,7 @@ describe("Interface schema migrations", () => {
     });
 
     function importedInterface(
-      schemaMigrationsEnabled: boolean,
+      schemaMigrationsEnabled?: boolean,
     ): InterfaceType {
       const imported: InterfaceType = {
         apiName: "com.other.Imported",
@@ -307,7 +307,9 @@ describe("Interface schema migrations", () => {
         links: [],
         actionTypeConstraints: [],
         status: { type: "active", active: {} },
-        schemaMigrationsEnabled,
+        ...(schemaMigrationsEnabled !== undefined
+          ? { schemaMigrationsEnabled }
+          : {}),
         __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
       };
       importOntologyEntity(imported);
@@ -352,6 +354,39 @@ describe("Interface schema migrations", () => {
       expect(() =>
         defineInterface({ apiName: "Child", extends: imported }),
       ).toThrow(/extends com\.other\.Imported, which declares/u);
+    });
+
+    it("tells the author to opt in upstream when an imported parent has not", () => {
+      const imported = importedInterface(false);
+
+      expect(() =>
+        defineInterface({
+          apiName: "Child",
+          extends: imported,
+          schemaMigrations: { transitions: [] },
+        }),
+      ).toThrow(
+        /com\.other\.Imported is imported from another ontology, so it must opt in there\./u,
+      );
+    });
+
+    // Metadata generated before the ontology reported `schemaMigrationsEnabled` says nothing about
+    // the parent either way, and reading that silence as opted out would reject a hierarchy that is
+    // in fact opted in upstream.
+    it("says nothing about an imported parent whose opt-in state is unknown", () => {
+      const imported = importedInterface();
+
+      expect(() =>
+        defineInterface({
+          apiName: "OptedInChild",
+          extends: imported,
+          schemaMigrations: { transitions: [] },
+        }),
+      ).not.toThrow();
+
+      expect(() =>
+        defineInterface({ apiName: "OptedOutChild", extends: imported }),
+      ).not.toThrow();
     });
   });
 

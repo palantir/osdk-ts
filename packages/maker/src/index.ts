@@ -113,6 +113,7 @@ export type {
   InterfaceSchemaTransition,
 } from "./api/interface/InterfaceSchemaMigrations.js";
 export type { InterfaceType } from "./api/interface/InterfaceType.js";
+export { isSchemaMigrationsOptedIn } from "./api/interface/schemaMigrationsOptIn.js";
 export type {
   LinkType,
   OneToManyLinkTypeDefinition,
