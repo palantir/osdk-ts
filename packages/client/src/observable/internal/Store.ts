@@ -71,6 +71,7 @@ import {
 } from "./object/ObjectCacheKey.js";
 import { ObjectCacheKeyRegistry } from "./object/ObjectCacheKeyRegistry.js";
 import { ObjectsHelper } from "./object/ObjectsHelper.js";
+import { ObjectSetCanonicalizer } from "./objectset/ObjectSetCanonicalizer.js";
 import { ObjectSetHelper } from "./objectset/ObjectSetHelper.js";
 import { ObjectSetArrayCanonicalizer } from "./ObjectSetArrayCanonicalizer.js";
 import { type OptimisticId } from "./OptimisticId.js";
@@ -109,7 +110,11 @@ export class Store {
     new WhereClauseCanonicalizer();
   readonly orderByCanonicalizer: OrderByCanonicalizer =
     new OrderByCanonicalizer();
-  readonly rdpCanonicalizer: RdpCanonicalizer = new RdpCanonicalizer();
+  readonly objectSetCanonicalizer: ObjectSetCanonicalizer =
+    new ObjectSetCanonicalizer(this.whereCanonicalizer);
+  readonly rdpCanonicalizer: RdpCanonicalizer = new RdpCanonicalizer(
+    this.objectSetCanonicalizer,
+  );
   readonly intersectCanonicalizer: IntersectCanonicalizer =
     new IntersectCanonicalizer(this.whereCanonicalizer);
   readonly pivotCanonicalizer: PivotCanonicalizer = new PivotCanonicalizer();

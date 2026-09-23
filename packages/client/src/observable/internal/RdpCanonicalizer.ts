@@ -19,7 +19,10 @@ import type {
   ObjectOrInterfaceDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
+import type {
+  DerivedPropertyDefinition,
+  ObjectSet as WireObjectSet,
+} from "@osdk/foundry.ontologies";
 
 import {
   createDerivedPropertyFromDefinition,
@@ -27,11 +30,16 @@ import {
 } from "../../derivedProperties/createWithPropertiesObjectSet.js";
 import type { Canonical } from "./Canonical.js";
 import { CachingCanonicalizer } from "./Canonicalizer.js";
+import { ObjectSetCanonicalizer } from "./objectset/ObjectSetCanonicalizer.js";
 
 export type Rdp = DerivedProperty.Clause<ObjectOrInterfaceDefinition>;
 
 export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
-  private structuralCache = new Map<string, Canonical<Rdp>>();
+  private structuralCache = new Map<Canonical<WireObjectSet>, Canonical<Rdp>>();
+
+  constructor(private objectSetCanonicalizer = new ObjectSetCanonicalizer()) {
+    super();
+  }
 
   canonicalizeDefinitions(
     definitions: Record<string, DerivedPropertyDefinition>,
@@ -83,15 +91,19 @@ export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
     // Sort entries by key for consistent ordering
     const sortedKeys = Object.keys(computedProperties).sort();
 
-    // Create a serialized key for the computed definitions
+    // Create a canonical key for the computed definitions
     const sortedDefinitions: Record<string, DerivedPropertyDefinition> = {};
     for (const key of sortedKeys) {
       sortedDefinitions[key] = computedProperties[key];
     }
-    const definitionsKey = JSON.stringify(sortedDefinitions);
+    const canonicalObjectSet = this.objectSetCanonicalizer.canonicalize({
+      type: "withProperties",
+      objectSet: { type: "base", objectType: objectTypeHolder.apiName },
+      derivedProperties: sortedDefinitions,
+    });
 
     // Check if we already have a canonical RDP for these definitions
-    let canonical = this.structuralCache.get(definitionsKey);
+    let canonical = this.structuralCache.get(canonicalObjectSet);
 
     if (!canonical) {
       // Create a canonical RDP object with sorted keys
@@ -100,7 +112,7 @@ export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
         sortedRdp[key] = rdp[key];
       }
       canonical = sortedRdp as Canonical<Rdp>;
-      this.structuralCache.set(definitionsKey, canonical);
+      this.structuralCache.set(canonicalObjectSet, canonical);
     }
 
     return canonical;
