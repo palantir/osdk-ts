@@ -37,7 +37,7 @@ export interface UseMarkingCategoriesOptions {
   enabled?: boolean;
 
   /**
-   * The preferred page size (maximum 100).
+   * The preferred page size.
    * @default 100
    */
   pageSize?: number;
@@ -46,7 +46,8 @@ export interface UseMarkingCategoriesOptions {
    * Automatically fetch additional pages.
    * - `true`: Fetch all available pages.
    * - `number`: Fetch until at least this many items are loaded, or no pages remain.
-   * - `false` or `undefined` (default): Fetch only the first page; call `fetchMore()` for more.
+   * - `false` or `undefined`: Fetch only the first page; call `fetchMore()` for more.
+   * @default undefined
    */
   autoFetchMore?: boolean | number;
 }

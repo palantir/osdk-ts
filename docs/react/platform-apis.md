@@ -244,10 +244,10 @@ same pagination controls as `useOsdkObjects` and `useObjectSet`.
 ### Options
 
 - `enabled`: Enable automatic fetching (default: `true`).
-- `pageSize`: Preferred items per page (default and maximum: `100`).
+- `pageSize`: Preferred items per page (default: `100`).
 - `autoFetchMore`: `true` loads all pages; a number loads until at least that many
-  items are available or no pages remain. `false` or `undefined` (default) loads
-  one page and leaves subsequent pages to `fetchMore()`.
+  items are available or no pages remain. `false` or `undefined` loads one page
+  and leaves subsequent pages to `fetchMore()` (default: `undefined`).
 
 ### Manual pagination
 
@@ -305,10 +305,6 @@ page sets `error` and ends loading; it does not mark the catalogue complete.
 the current automatic-fetch setting. Changing the client, `pageSize`, or
 `autoFetchMore` also starts a new traversal. Superseded requests cannot replace the
 current result. Disabling the hook stops automatic continuation.
-
-The stock CBAC picker and banner popover use `autoFetchMore: true` and wait for
-complete catalogues before displaying their groups. Direct hook consumers can
-choose manual or automatic pagination.
 
 Large catalogues require multiple sequential requests per hook. Separate mounts
 fetch independently; shared in-flight requests and a catalogue cache remain

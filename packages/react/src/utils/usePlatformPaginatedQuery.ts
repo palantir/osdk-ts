@@ -140,7 +140,10 @@ export function usePlatformPaginatedQuery<T>({
           },
         };
       },
-      devToolsMetadata({ hookType: "usePlatformQuery", objectType: queryName }),
+      devToolsMetadata({
+        hookType: "usePlatformPaginatedQuery",
+        objectType: queryName,
+      }),
     );
     return { ...store, fetchMore, refetch };
   }, [query, queryName, enabled, autoFetchMore]);

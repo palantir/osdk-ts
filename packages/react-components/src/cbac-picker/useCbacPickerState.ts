@@ -62,6 +62,7 @@ function useStableArray(arr: string[]): string[] {
 
 export function useCbacPickerState(
   selectedIds: string[],
+  autoFetchMore?: boolean | number,
 ): UseCbacPickerStateResult {
   const stableSelectedIds = useStableArray(selectedIds);
   const {
@@ -69,13 +70,13 @@ export function useCbacPickerState(
     isLoading: categoriesLoading,
     error: categoriesError,
     refetch: refetchCategories,
-  } = useMarkingCategories({ autoFetchMore: true });
+  } = useMarkingCategories({ autoFetchMore });
   const {
     markings: rawMarkings,
     isLoading: markingsLoading,
     error: markingsError,
     refetch: refetchMarkings,
-  } = useMarkings({ autoFetchMore: true });
+  } = useMarkings({ autoFetchMore });
   const {
     banner: latestBanner,
     isLoading: bannerLoading,
