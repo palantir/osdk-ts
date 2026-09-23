@@ -21,15 +21,108 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { usePlatformPaginatedQuery } from "../src/utils/usePlatformPaginatedQuery.js";
 
-describe("usePlatformPaginatedQuery lifecycle", () => {
+describe("usePlatformPaginatedQuery", () => {
   afterEach(cleanup);
 
+  it.each([{ data: [] }, { data: ["first"] }])(
+    "stops without a continuation token ($data)",
+    async ({ data }) => {
+      const query = vi.fn().mockResolvedValue({ data });
+      const { result } = renderHook(() =>
+        usePlatformPaginatedQuery({
+          query,
+          queryName: "test",
+          autoFetchMore: true,
+        }),
+      );
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+      expect(result.current.data).toEqual(data);
+      expect(result.current.hasMore).toBe(false);
+      expect(result.current.fetchMore).toBeUndefined();
+      expect(query).toHaveBeenCalledExactlyOnceWith(undefined);
+    },
+  );
+
+  it.each([
+    ["A", "A"],
+    ["A", "B", "A"],
+  ])("rejects repeated token sequence %j", async (...tokens) => {
+    const query = vi.fn();
+    for (const nextPageToken of tokens) {
+      query.mockResolvedValueOnce({ data: ["item"], nextPageToken });
+    }
+    const { result } = renderHook(() =>
+      usePlatformPaginatedQuery({
+        query,
+        queryName: "test",
+        autoFetchMore: true,
+      }),
+    );
+    await waitFor(() =>
+      expect(result.current.error?.message).toMatch(/repeated.*page token/iu),
+    );
+    expect(result.current.isLoading).toBe(false);
+    expect(query).toHaveBeenCalledTimes(tokens.length);
+  });
+
+  it("continues beyond 100 pages instead of silently truncating", async () => {
+    const query = vi.fn();
+    for (let index = 0; index < 101; index++) {
+      query.mockResolvedValueOnce({ data: [], nextPageToken: `page-${index}` });
+    }
+    query.mockResolvedValueOnce({ data: ["last"] });
+    const { result } = renderHook(() =>
+      usePlatformPaginatedQuery({
+        query,
+        queryName: "test",
+        autoFetchMore: true,
+      }),
+    );
+    await waitFor(() => expect(result.current.data).toEqual(["last"]));
+    expect(query).toHaveBeenCalledTimes(102);
+  });
+
+  it("coalesces overlapping fetchMore calls and retries the failed page without duplicating items", async () => {
+    const pending = defer<{ data: string[] }>();
+    const error = new Error("next page failed");
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({ data: ["first"], nextPageToken: "next" })
+      .mockReturnValueOnce(pending.promise)
+      .mockResolvedValueOnce({ data: ["last"] });
+    const { result } = renderHook(() =>
+      usePlatformPaginatedQuery({ query, queryName: "test" }),
+    );
+    await waitFor(() => expect(result.current.hasMore).toBe(true));
+    let requests: Array<Promise<void> | undefined>;
+    act(() => {
+      requests = [result.current.fetchMore?.(), result.current.fetchMore?.()];
+    });
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.data).toEqual(["first"]);
+    await act(async () => {
+      pending.reject(error);
+      await Promise.all(requests);
+    });
+    expect(query).toHaveBeenCalledTimes(2);
+    expect(result.current.error).toBe(error);
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.data).toEqual(["first"]);
+    await act(async () => {
+      await result.current.fetchMore?.();
+    });
+    expect(result.current.data).toEqual(["first", "last"]);
+    expect(result.current.error).toBeUndefined();
+    expect(query.mock.calls).toEqual([[undefined], ["next"], ["next"]]);
+  });
+
   it.each(["resolve", "reject"])(
-    "ignores a superseded automatic request that %ss",
+    "ignores a superseded page request that %ss after refetch",
     async (settlement) => {
       const old = defer<{ data: string[]; nextPageToken?: string }>();
       const query = vi
         .fn()
+        .mockResolvedValueOnce({ data: ["first"], nextPageToken: "old" })
         .mockReturnValueOnce(old.promise)
         .mockResolvedValueOnce({ data: ["latest"] });
       const { result } = renderHook(() =>
@@ -39,7 +132,7 @@ describe("usePlatformPaginatedQuery lifecycle", () => {
           autoFetchMore: true,
         }),
       );
-      await waitFor(() => expect(query).toHaveBeenCalledTimes(1));
+      await waitFor(() => expect(query).toHaveBeenCalledTimes(2));
       act(() => result.current.refetch());
       await waitFor(() => expect(result.current.data).toEqual(["latest"]));
       await act(() => {
@@ -50,7 +143,8 @@ describe("usePlatformPaginatedQuery lifecycle", () => {
       expect(result.current.data).toEqual(["latest"]);
       expect(result.current.error).toBeUndefined();
       expect(result.current.isLoading).toBe(false);
-      expect(query).toHaveBeenCalledTimes(2);
+      expect(result.current.hasMore).toBe(false);
+      expect(query.mock.calls).toEqual([[undefined], ["old"], [undefined]]);
     },
   );
 
