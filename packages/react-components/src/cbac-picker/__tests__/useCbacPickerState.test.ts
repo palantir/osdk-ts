@@ -118,6 +118,32 @@ describe("useCbacPickerState", () => {
     expect(useMarkings).toHaveBeenLastCalledWith({ includeDeleted: false });
   });
 
+  it("opts both catalogues into automatic pagination", () => {
+    renderHook(() => useCbacPickerState([]));
+    expect(useMarkings).toHaveBeenCalledWith({ autoFetchMore: true });
+    expect(useMarkingCategories).toHaveBeenCalledWith({ autoFetchMore: true });
+  });
+
+  it("does not group incomplete catalogues while subsequent pages are loading or failed", () => {
+    setHooks({
+      categories: CATEGORIES,
+      markings: MARKINGS,
+      loading: { markings: true },
+    });
+    const { result, rerender } = renderHook(() => useCbacPickerState([]));
+    expect(result.current.categoryGroups).toEqual([]);
+    setHooks({
+      categories: CATEGORIES,
+      markings: MARKINGS,
+      errors: { markings: new Error("later page failed") },
+    });
+    rerender();
+    expect(result.current.categoryGroups).toEqual([]);
+    setHooks({ categories: CATEGORIES, markings: MARKINGS });
+    rerender();
+    expect(result.current.categoryGroups).toHaveLength(1);
+  });
+
   it("uses permissive defaults when restrictions have not loaded", () => {
     const { result } = renderHook(() => useCbacPickerState(["m1"]));
     expect(result.current.isValid).toBe(true);
