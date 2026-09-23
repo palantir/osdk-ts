@@ -51,6 +51,7 @@ export interface QueryResult<T> {
 interface QueryPayload<T> {
   data: T | undefined;
   status: "loading" | "success" | "error";
+  error?: Error;
 }
 
 export function usePlatformQuery<T>({
@@ -60,9 +61,15 @@ export function usePlatformQuery<T>({
 }: UseQueryOptions<T>): QueryResult<T> {
   const observerRef = React.useRef<Observer<QueryPayload<T> | undefined>>();
 
+  const requestIdRef = React.useRef(0);
+
   const handleQuery = React.useCallback(() => {
     const observer = observerRef.current;
     if (observer == null) return;
+
+    const requestId = ++requestIdRef.current;
+    const isCurrentRequest = () =>
+      observerRef.current === observer && requestIdRef.current === requestId;
 
     observer.next({
       status: "loading",
@@ -71,13 +78,19 @@ export function usePlatformQuery<T>({
 
     query()
       .then((data) => {
+        if (!isCurrentRequest()) return;
         observer.next({
           status: "success",
           data,
         });
       })
       .catch((err: unknown) => {
-        observer.error(err);
+        if (!isCurrentRequest()) return;
+        observer.next({
+          status: "error",
+          data: undefined,
+          error: err instanceof Error ? err : new Error(String(err)),
+        });
       });
   }, [query]);
 
