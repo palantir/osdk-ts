@@ -334,6 +334,37 @@ describe("writeImportedOntology", () => {
     expect(actionFile).toContain("export const createEmployee");
   });
 
+  it("preserves interface schema migration opt-in metadata", () => {
+    const metadata = {
+      ...sampleMetadata,
+      interfaceTypes: {
+        "com.example.Named": {
+          rid: "ri.ontology.main.interface.1",
+          apiName: "com.example.Named",
+          displayName: "Named",
+          properties: {},
+          allProperties: {},
+          propertiesV2: {},
+          allPropertiesV2: {},
+          extendsInterfaces: [],
+          allExtendsInterfaces: [],
+          implementedByObjectTypes: [],
+          links: {},
+          allLinks: {},
+          schemaMigrationsEnabled: true,
+        },
+      },
+    } as unknown as Ontologies.OntologyFullMetadata;
+
+    writeImportedOntology(metadata, TEST_OUTPUT_DIR);
+
+    const interfaceFile = fs.readFileSync(
+      path.join(TEST_OUTPUT_DIR, "codegen/interface-types/named.ts"),
+      "utf-8",
+    );
+    expect(interfaceFile).toContain('"schemaMigrationsEnabled": true');
+  });
+
   it("generates index.ts with re-exports", () => {
     writeImportedOntology(sampleMetadata, TEST_OUTPUT_DIR);
 

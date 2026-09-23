@@ -295,7 +295,9 @@ describe("Interface schema migrations", () => {
       ).toEqual(["com.palantir.Parent"]);
     });
 
-    it("says nothing about a parent imported from another ontology", () => {
+    function importedInterface(
+      schemaMigrationsEnabled: boolean,
+    ): InterfaceType {
       const imported: InterfaceType = {
         apiName: "com.other.Imported",
         displayMetadata: { displayName: "Imported" },
@@ -305,9 +307,15 @@ describe("Interface schema migrations", () => {
         links: [],
         actionTypeConstraints: [],
         status: { type: "active", active: {} },
+        schemaMigrationsEnabled,
         __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
       };
       importOntologyEntity(imported);
+      return imported;
+    }
+
+    it("accepts an imported parent when the whole family opts in", () => {
+      const imported = importedInterface(true);
 
       expect(() =>
         defineInterface({
@@ -316,6 +324,34 @@ describe("Interface schema migrations", () => {
           schemaMigrations: { transitions: [] },
         }),
       ).not.toThrow();
+    });
+
+    it("accepts an imported parent when the whole family stays opted out", () => {
+      const imported = importedInterface(false);
+
+      expect(() =>
+        defineInterface({ apiName: "Child", extends: imported }),
+      ).not.toThrow();
+    });
+
+    it("rejects opting in when an imported parent has not", () => {
+      const imported = importedInterface(false);
+
+      expect(() =>
+        defineInterface({
+          apiName: "Child",
+          extends: imported,
+          schemaMigrations: { transitions: [] },
+        }),
+      ).toThrow(/the interface it extends, com\.other\.Imported, does not/u);
+    });
+
+    it("rejects staying opted out when an imported parent opted in", () => {
+      const imported = importedInterface(true);
+
+      expect(() =>
+        defineInterface({ apiName: "Child", extends: imported }),
+      ).toThrow(/extends com\.other\.Imported, which declares/u);
     });
   });
 

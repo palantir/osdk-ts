@@ -30,7 +30,9 @@ export function validateSchemaMigrationsFamilyOptIn(
   parents: readonly InterfaceType[],
 ): void {
   for (const parent of parents) {
-    const parentOptedIn = parent.schemaMigrations !== undefined;
+    const parentOptedIn =
+      parent.schemaMigrations !== undefined ||
+      parent.schemaMigrationsEnabled === true;
     invariant(
       parentOptedIn === optedIn,
       `${

@@ -97,5 +97,8 @@ export function convertInterfaceType(
     propertiesV2,
     propertiesV3,
     searchable: true,
-  };
+    schemaMigrationsEnabled:
+      "schemaMigrationsEnabled" in iface &&
+      iface.schemaMigrationsEnabled === true,
+  } as InterfaceType;
 }
