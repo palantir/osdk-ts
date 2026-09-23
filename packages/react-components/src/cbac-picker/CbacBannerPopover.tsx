@@ -53,13 +53,13 @@ export function CbacBannerPopover({
     isLoading: categoriesLoading,
     error: categoriesError,
     refetch: refetchCategories,
-  } = useMarkingCategories();
+  } = useMarkingCategories({ autoFetchMore: true });
   const {
     markings,
     isLoading: markingsLoading,
     error: markingsError,
     refetch: refetchMarkings,
-  } = useMarkings();
+  } = useMarkings({ autoFetchMore: true });
 
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
@@ -74,8 +74,21 @@ export function CbacBannerPopover({
   }, [refetchBanner, refetchCategories, refetchMarkings]);
 
   const appliedMarkings = React.useMemo(
-    () => groupMarkingsByCategory(markingIds, categories, markings),
-    [markingIds, categories, markings],
+    () =>
+      groupMarkingsByCategory(
+        markingIds,
+        categoriesLoading || categoriesError ? undefined : categories,
+        markingsLoading || markingsError ? undefined : markings,
+      ),
+    [
+      markingIds,
+      categories,
+      markings,
+      categoriesLoading,
+      markingsLoading,
+      categoriesError,
+      markingsError,
+    ],
   );
 
   const resolved = resolveBannerDisplay(banner);

@@ -18,7 +18,7 @@ import type { MarkingCategory } from "@osdk/foundry.admin";
 import { MarkingCategories } from "@osdk/foundry.admin";
 import React from "react";
 
-import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
+import { usePlatformPaginatedQuery } from "../../../utils/usePlatformPaginatedQuery.js";
 import { OsdkContext } from "../../OsdkContext.js";
 
 export interface UseMarkingCategoriesOptions {
@@ -35,6 +35,20 @@ export interface UseMarkingCategoriesOptions {
    * @default true
    */
   enabled?: boolean;
+
+  /**
+   * The preferred page size (maximum 100).
+   * @default 100
+   */
+  pageSize?: number;
+
+  /**
+   * Automatically fetch additional pages.
+   * - `true`: Fetch all available pages.
+   * - `number`: Fetch until at least this many items are loaded, or no pages remain.
+   * - `false` or `undefined` (default): Fetch only the first page; call `fetchMore()` for more.
+   */
+  autoFetchMore?: boolean | number;
 }
 
 export interface UseMarkingCategoriesResult {
@@ -44,31 +58,47 @@ export interface UseMarkingCategoriesResult {
   error: Error | undefined;
 
   refetch: () => void;
+
+  /** Whether the server has more pages to fetch. */
+  hasMore: boolean;
+
+  /** Fetch the next page, appending to the list. Undefined when no more pages are available. */
+  fetchMore: (() => Promise<void>) | undefined;
 }
 
 /**
- * List all marking categories.
+ * List marking categories, fetching one page by default.
+ * Use `autoFetchMore` to load additional pages automatically, or call `fetchMore()`.
+ * Loaded pages remain available during loading and errors; check `hasMore` for completeness.
  * @param options Options to control the query.
  */
 export function useMarkingCategories({
   enabled = true,
+  pageSize = 100,
+  autoFetchMore,
 }: UseMarkingCategoriesOptions = {}): UseMarkingCategoriesResult {
   const { client } = React.useContext(OsdkContext);
 
-  const handleQuery = React.useCallback(() => {
-    return MarkingCategories.list(client);
-  }, [client]);
+  const handleQuery = React.useCallback(
+    (pageToken: string | undefined) => {
+      return MarkingCategories.list(client, { pageSize, pageToken });
+    },
+    [client, pageSize],
+  );
 
-  const query = usePlatformQuery({
+  const query = usePlatformPaginatedQuery({
     query: handleQuery,
     enabled,
+    autoFetchMore,
     queryName: "marking-categories",
   });
 
   return {
-    categories: query.data?.data,
+    categories: query.data,
     isLoading: query.isLoading,
     error: query.error,
     refetch: query.refetch,
+    hasMore: query.hasMore,
+    fetchMore: query.fetchMore,
   };
 }
