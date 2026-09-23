@@ -370,9 +370,6 @@ describe("Interface schema migrations", () => {
       );
     });
 
-    // Metadata generated before the ontology reported `schemaMigrationsEnabled` says nothing about
-    // the parent either way, and reading that silence as opted out would reject a hierarchy that is
-    // in fact opted in upstream.
     it("says nothing about an imported parent whose opt-in state is unknown", () => {
       const imported = importedInterface();
 

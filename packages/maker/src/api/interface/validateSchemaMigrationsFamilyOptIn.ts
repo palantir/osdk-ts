@@ -18,7 +18,7 @@ import invariant from "tiny-invariant";
 
 import type { InterfaceType } from "./InterfaceType.js";
 import {
-  isImported,
+  isImportedInterfaceType,
   resolveSchemaMigrationsOptIn,
 } from "./schemaMigrationsOptIn.js";
 
@@ -27,9 +27,6 @@ import {
  * at a time: an object type implementing an interface has to implement everything that interface
  * inherits too, so the inherited half of its schema needs the same backwards-compatibility
  * guarantees as the locally-declared half.
- *
- * A parent whose opt-in state cannot be determined is skipped rather than assumed opted out — see
- * {@link resolveSchemaMigrationsOptIn}.
  */
 export function validateSchemaMigrationsFamilyOptIn(
   interfaceApiName: string,
@@ -39,8 +36,11 @@ export function validateSchemaMigrationsFamilyOptIn(
   for (const parent of parents) {
     const parentOptedIn = resolveSchemaMigrationsOptIn(parent);
     if (parentOptedIn === undefined) {
+      // Unknown state; skip rather than use the "false" default, since imported ITs cannot yet carry
+      // signal during rollout (as the API doesn't exist)
       continue;
     }
+
     invariant(
       parentOptedIn === optedIn,
       `${
@@ -63,9 +63,10 @@ function remedy(
 ): string {
   // An imported parent belongs to another ontology, so `schemaMigrations` cannot be added to it
   // from here; the only local move is to drop the opt-in from the child.
-  if (optedIn && isImported(parent)) {
+  if (optedIn && isImportedInterfaceType(parent)) {
     return `${parent.apiName} is imported from another ontology, so it must opt in there. Enable schema migrations on ${parent.apiName} in its own ontology and re-import it, or remove \`schemaMigrations\` from ${interfaceApiName}.`;
   }
+
   return `Add \`schemaMigrations\` to ${
     optedIn ? parent.apiName : interfaceApiName
   }, or remove it from ${optedIn ? interfaceApiName : parent.apiName}.`;

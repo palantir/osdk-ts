@@ -19,13 +19,11 @@ import { importedTypes } from "../defineOntology.js";
 import type { InterfaceType } from "./InterfaceType.js";
 
 /**
- * Whether an interface has opted into schema migrations, as a definite yes or no.
+ * Whether an interface has definitely opted into schema migrations.
  *
- * A locally defined interface opts in by declaring `schemaMigrations`. An imported one carries the
- * upstream ontology's answer in `schemaMigrationsEnabled`, since its transitions are unavailable to
- * us. An unknown answer is reported as opted out, which is what the wire format requires.
+ * Unknown imported metadata is treated as not opted in, as required by the wire format.
  */
-export function isSchemaMigrationsOptedIn(
+export function isOptedIntoSchemaMigrations(
   interfaceType: InterfaceType,
 ): boolean {
   return (
@@ -35,11 +33,11 @@ export function isSchemaMigrationsOptedIn(
 }
 
 /**
- * Like {@link isSchemaMigrationsOptedIn}, but distinguishes "opted out" from "we cannot tell".
+ * Whether an interface has opted into schema migrations, preserving an unknown imported state.
  *
- * An imported interface only reports `schemaMigrationsEnabled` if the ontology metadata it was
- * generated from carried the field. Metadata predating it says nothing either way, and reading that
- * silence as opted out would reject hierarchies that are in fact opted in upstream.
+ * Imported interfaces rely on the upstream ontology's reported state because their transitions
+ * are unavailable locally. Older imported metadata does not report that state, so it remains
+ * unknown rather than being treated as opted out.
  */
 export function resolveSchemaMigrationsOptIn(
   interfaceType: InterfaceType,
@@ -50,10 +48,10 @@ export function resolveSchemaMigrationsOptIn(
   if (interfaceType.schemaMigrationsEnabled !== undefined) {
     return interfaceType.schemaMigrationsEnabled;
   }
-  return isImported(interfaceType) ? undefined : false;
+  return isImportedInterfaceType(interfaceType) ? undefined : false;
 }
 
-export function isImported(interfaceType: InterfaceType): boolean {
+export function isImportedInterfaceType(interfaceType: InterfaceType): boolean {
   return (
     importedTypes[OntologyEntityTypeEnum.INTERFACE_TYPE][
       interfaceType.apiName

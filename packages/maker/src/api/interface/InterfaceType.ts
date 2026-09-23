@@ -35,8 +35,7 @@ export interface InterfaceType
       OntologyIrMarketplaceInterfaceType,
       // we want our simplified representation
       | "properties"
-      // re-declared below as an optional input, since an imported interface reports its opt-in
-      // state here rather than through `schemaMigrations`
+      // re-declared below as an optional input, so we can include an "unknown" state during rollout
       | "schemaMigrationsEnabled"
       // these things don't need to exist as the system works fine without them (I'm told)
       | "propertiesV2"
@@ -50,7 +49,6 @@ export interface InterfaceType
   linkedInterfaces?: Array<InterfaceType | string>; // full metadata of linked entities used for X-OAC imports
   permission?: EntityPermission;
   status: InterfaceTypeStatus;
-  /** Whether an imported interface has schema migrations enabled when its transitions are unavailable. */
   schemaMigrationsEnabled?: boolean;
   schemaMigrations?: InterfaceSchemaMigrations;
   __type: OntologyEntityTypeEnum.INTERFACE_TYPE;

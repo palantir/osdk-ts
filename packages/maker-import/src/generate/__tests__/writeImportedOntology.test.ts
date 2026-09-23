@@ -334,9 +334,7 @@ describe("writeImportedOntology", () => {
     expect(actionFile).toContain("export const createEmployee");
   });
 
-  // The `as unknown as` cast fakes `schemaMigrationsEnabled`, which the public v2 `InterfaceType`
-  // does not declare yet. Drop it once the `foundry-platform-typescript` catalog picks up the
-  // gateway release that adds the field.
+  // TODO: once the public API picks up schemaMigrationsEnabled, we can drop the "as unknown as" cast
   function metadataWithInterface(
     iface: Record<string, unknown>,
   ): Ontologies.OntologyFullMetadata {
@@ -388,9 +386,8 @@ describe("writeImportedOntology", () => {
     expect(interfaceFile).toContain('"schemaMigrationsEnabled": false');
   });
 
-  // Absent means the source ontology never reported an opt-in state. Writing `false` here would
-  // turn "unknown" into a durable claim that the interface is opted out, which maker would then
-  // enforce against any local interface extending it.
+  // Until it's broadly reported, we take absent to mean "unknown" rather than forcing it to
+  // false which would prevent any local IT extending it from opting into interface schema migrations
   it("omits the opt-in flag when the source metadata does not report one", () => {
     const interfaceFile = generatedInterfaceFile(metadataWithInterface({}));
 
