@@ -2848,7 +2848,7 @@ describe(Store, () => {
           },
         );
 
-        it("preserves composed RDP recipes across plain object refreshes", async () => {
+        it("shares composed RDP recipes and preserves them across plain object refreshes", async () => {
           const dataStore = fauxFoundry.getDefaultDataStore();
           const employee = dataStore.registerObject(Employee, {
             employeeId: 1,
@@ -2865,6 +2865,12 @@ describe(Store, () => {
               base.pivotTo("officeLink").selectProperty("name"),
           };
           const objectSet = client(Employee).withProperties(withProperties);
+          expect(store.objectSets.getQuery({ baseObjectSet: objectSet })).toBe(
+            store.objectSets.getQuery({
+              baseObjectSet: client(Employee),
+              withProperties,
+            }),
+          );
           const observableClient = new ObservableClientImpl(store);
           const sub = mockObserver<ObserveObjectSetArgs<Employee>>();
           defer(
@@ -2929,7 +2935,7 @@ describe(Store, () => {
           });
         });
 
-        it("updates composed filter membership without refetching", async () => {
+        it("shares composed filters and updates their membership without refetching", async () => {
           const dataStore = fauxFoundry.getDefaultDataStore();
           const alice = dataStore.registerObject(Employee, {
             employeeId: 1,
@@ -2939,15 +2945,32 @@ describe(Store, () => {
             employeeId: 2,
             fullName: "Bob",
           });
+          const options = {
+            baseObjectSet: client(Employee),
+            where: {
+              $and: [{ fullName: "Alice" }, { employeeId: { $gt: 0 } }],
+            },
+          };
           const prebuilt = client(Employee)
             .where({ employeeId: { $gt: 0 } })
             .where({ fullName: { $eq: "Alice" } });
+          expect(store.objectSets.getQuery(options)).toBe(
+            store.objectSets.getQuery({ baseObjectSet: prebuilt }),
+          );
           const sub = mockObserver<ObserveObjectSetArgs<Employee>>();
           const bob = client(Employee).where({ fullName: "Bob" });
           const composed = prebuilt
             .union(bob)
             .intersect(client(Employee))
             .subtract(bob);
+          expect(
+            store.objectSets.getQuery({
+              baseObjectSet: prebuilt,
+              union: [bob],
+              intersect: [client(Employee)],
+              subtract: [bob],
+            }),
+          ).toBe(store.objectSets.getQuery({ baseObjectSet: composed }));
           defer(store.objectSets.observe({ baseObjectSet: composed }, sub));
           await vi.waitFor(() => {
             expect(sub.next).toHaveBeenLastCalledWith(
@@ -3448,7 +3471,10 @@ describe(Store, () => {
         // REMOVED update through onOswChange → onOswRemoved without
         // reaching protected internals.
         const subscribeSpy = vi
-          .spyOn(baseObjectSet, "subscribe")
+          .spyOn(
+            store.objectSets.getQuery({ baseObjectSet }).objectSet,
+            "subscribe",
+          )
           .mockReturnValue({ unsubscribe: () => {} });
 
         const sub = mockObserver<ObjectSetPayload | undefined>();

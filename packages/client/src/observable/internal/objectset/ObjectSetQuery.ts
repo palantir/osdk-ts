@@ -88,7 +88,7 @@ export class ObjectSetQuery extends BaseListQuery<
     );
 
     this.#operations = operations;
-    this.#composedObjectSet = this.#composeObjectSet(opts);
+    this.#composedObjectSet = opts.baseObjectSet;
     const wire = getWireObjectSet(this.#composedObjectSet);
     this.#objectTypes = new Set(wire.type === "base" ? [wire.objectType] : []);
     const definitions = getResultDerivedProperties(wire);
@@ -124,31 +124,6 @@ export class ObjectSetQuery extends BaseListQuery<
 
   get objectSet(): ObjectSet<any, any> {
     return this.#composedObjectSet;
-  }
-
-  #composeObjectSet(opts: ObjectSetQueryOptions): ObjectSet<any, any> {
-    let result = opts.baseObjectSet;
-
-    if (opts.withProperties) {
-      result = result.withProperties(opts.withProperties);
-    }
-    if (opts.where) {
-      result = result.where(opts.where);
-    }
-    if (opts.union && opts.union.length > 0) {
-      result = result.union(...opts.union);
-    }
-    if (opts.intersect && opts.intersect.length > 0) {
-      result = result.intersect(...opts.intersect);
-    }
-    if (opts.subtract && opts.subtract.length > 0) {
-      result = result.subtract(...opts.subtract);
-    }
-    if (opts.pivotTo) {
-      result = result.pivotTo(opts.pivotTo);
-    }
-
-    return result;
   }
 
   #resolveObjectTypes(): Promise<ObjectSetAnalysis> {

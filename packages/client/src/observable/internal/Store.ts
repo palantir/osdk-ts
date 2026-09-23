@@ -227,11 +227,8 @@ export class Store {
     this.objectSets = new ObjectSetHelper(
       this,
       this.cacheKeys,
-      this.whereCanonicalizer,
       this.orderByCanonicalizer,
-      this.rdpCanonicalizer,
       this.selectCanonicalizer,
-      this.objectSetArrayCanonicalizer,
     );
   }
 
