@@ -1,5 +1,17 @@
 # @osdk/foundry-sdk-generator
 
+## 2.72.0
+
+### Patch Changes
+
+- Updated dependencies [1172332]
+  - @osdk/client@2.72.0
+  - @osdk/api@2.72.0
+  - @osdk/client.unstable@2.72.0
+  - @osdk/generator-converters@2.72.0
+  - @osdk/generator-utils@2.72.0
+  - @osdk/generator@2.72.0
+
 ## 2.71.0
 
 ### Minor Changes

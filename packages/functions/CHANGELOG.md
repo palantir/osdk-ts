@@ -1,5 +1,14 @@
 # @osdk/functions
 
+## 1.26.0
+
+### Patch Changes
+
+- Updated dependencies [7b737e7]
+- Updated dependencies [1172332]
+  - @osdk/aliases@0.3.0
+  - @osdk/client@2.72.0
+
 ## 1.25.0
 
 ### Minor Changes

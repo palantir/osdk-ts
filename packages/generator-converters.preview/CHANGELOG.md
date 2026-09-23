@@ -1,5 +1,20 @@
 # @osdk/generator-converters.preview
 
+## 0.50.0
+
+### Minor Changes
+
+- 639e933: Fix property type serialization in local functions runtime metadata.
+
+### Patch Changes
+
+- Updated dependencies [10e859d]
+- Updated dependencies [7cfd651]
+- Updated dependencies [3ebe3d0]
+  - @osdk/generator-converters.ontologyir@2.72.0
+  - @osdk/client.unstable@2.72.0
+  - @osdk/generator@2.72.0
+
 ## 0.49.0
 
 ### Minor Changes

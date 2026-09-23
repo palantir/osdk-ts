@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.72.0
+
+### Minor Changes
+
+- 1172332: Forward the configured branch in untyped RID fetches, temporary object set creation, media and geotime series reads, ciphertext decryption, and object-set subscriptions.
+
+### Patch Changes
+
+- @osdk/api@2.72.0
+- @osdk/client.unstable@2.72.0
+- @osdk/generator-converters@2.72.0
+
 ## 2.71.0
 
 ### Minor Changes
