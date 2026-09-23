@@ -1,5 +1,32 @@
 # @osdk/maker-experimental
 
+## 0.66.0
+
+### Minor Changes
+
+- ef25a02: Fix markings ids
+
+### Patch Changes
+
+- Updated dependencies [10e859d]
+- Updated dependencies [639e933]
+- Updated dependencies [f6f9da0]
+- Updated dependencies [e5023d0]
+- Updated dependencies [88b0ce8]
+- Updated dependencies [00d9299]
+- Updated dependencies [b3b4987]
+- Updated dependencies [56136b6]
+- Updated dependencies [e51927c]
+- Updated dependencies [3d90eb7]
+- Updated dependencies [5221028]
+- Updated dependencies [7cfd651]
+- Updated dependencies [3ebe3d0]
+  - @osdk/generator-converters.ontologyir@2.72.0
+  - @osdk/generator-converters.preview@0.50.0
+  - @osdk/maker@0.72.0
+  - @osdk/api@2.72.0
+  - @osdk/client.unstable@2.72.0
+
 ## 0.65.0
 
 ### Patch Changes

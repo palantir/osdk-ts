@@ -1,5 +1,27 @@
 # @osdk/maker
 
+## 0.72.0
+
+### Minor Changes
+
+- f6f9da0: Record a property's arrayedness in the ontology schema lockfile, so that adding or dropping `array` on an interface property is reported as the breaking type change it is.
+- e5023d0: Record a property's type classes in the ontology schema lockfile, so that adding, dropping or swapping a render hint on an interface property is reported as the breaking change it is.
+- 88b0ce8: Record whether a shared property type backs an interface property, so that swapping it for an inline definition (or back) is reported as the breaking change it is.
+- 00d9299: Warn when an interface property stops being required, so that relaxing the schema is visible to the author without blocking the release.
+- b3b4987: Record an interface property's primary key constraint in the ontology schema lockfile, rejecting a change that implementing object types would have to be remapped to satisfy, and warning when one is dropped.
+- 56136b6: Record an interface property's nullability in the ontology schema lockfile, rejecting a change that newly forbids nulls or empty collections, and warning when one is loosened.
+- e51927c: Record the value type an interface property references in the ontology schema lockfile, rejecting a change to which value type it is and warning when the reference is dropped.
+- 3d90eb7: Record the interfaces an interface extends in the ontology schema lockfile, rejecting a newly extended interface and warning when one is dropped.
+- 5221028: Document interface schema migrations in the maker README.
+
+### Patch Changes
+
+- Updated dependencies [10e859d]
+- Updated dependencies [7cfd651]
+- Updated dependencies [3ebe3d0]
+  - @osdk/generator-converters.ontologyir@2.72.0
+  - @osdk/api@2.72.0
+
 ## 0.71.0
 
 ### Patch Changes

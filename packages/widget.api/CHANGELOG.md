@@ -1,5 +1,15 @@
 # @osdk/widget.api
 
+## 3.71.0
+
+### Minor Changes
+
+- 00e43a9: Add a mapTileLayer parameter type to widgets.
+
+### Patch Changes
+
+- @osdk/api@2.72.0
+
 ## 3.70.0
 
 ### Patch Changes

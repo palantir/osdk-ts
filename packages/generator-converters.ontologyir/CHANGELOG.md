@@ -1,5 +1,17 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.72.0
+
+### Minor Changes
+
+- 10e859d: Preserve direct interface property implementations and implementing object types when converting ontology block data to full metadata.
+- 7cfd651: Preserve value type associations on object, shared, and interface properties in generated SDK metadata.
+- 3ebe3d0: Preserve inherited interface implementations when converting ontology block data to full metadata.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.72.0
+
 ## 2.71.0
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @osdk/widget.vite-plugin
 
+## 3.71.0
+
+### Minor Changes
+
+- 00e43a9: Add a mapTileLayer parameter type to widgets.
+
+### Patch Changes
+
+- Updated dependencies [00e43a9]
+  - @osdk/widget.api@3.71.0
+
 ## 3.70.0
 
 ### Patch Changes
