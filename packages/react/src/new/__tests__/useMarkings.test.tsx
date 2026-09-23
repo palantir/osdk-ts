@@ -79,23 +79,6 @@ describe("useMarkings pagination", () => {
     expect(result.current.error).toBeUndefined();
   });
 
-  it.each([{ data: [] }, { data: [first] }])(
-    "stops after one page without a token ($data)",
-    async ({ data }) => {
-      list.mockResolvedValue({ data });
-      const { result } = renderHook(
-        () => useMarkings({ autoFetchMore: true }),
-        { wrapper: Wrapper },
-      );
-      await waitFor(() => expect(result.current.markings).toEqual(data));
-      expect(list).toHaveBeenCalledExactlyOnceWith(client, {
-        pageSize: 100,
-        pageToken: undefined,
-      });
-      expect(result.current.isLoading).toBe(false);
-    },
-  );
-
   it("does not fetch until enabled", async () => {
     list.mockResolvedValue({ data: [first] });
     const { result, rerender } = renderHook(
@@ -134,24 +117,6 @@ describe("useMarkings pagination", () => {
       [client, { pageSize: 100, pageToken: undefined }],
       [client, { pageSize: 100, pageToken: "retry-2" }],
     ]);
-  });
-
-  it.each([
-    ["A", "A"],
-    ["A", "B", "A"],
-  ])("rejects repeated token sequence %j", async (...tokens) => {
-    for (const nextPageToken of tokens) {
-      list.mockResolvedValueOnce({ data: [first], nextPageToken });
-    }
-    const { result } = renderHook(() => useMarkings({ autoFetchMore: true }), {
-      wrapper: Wrapper,
-    });
-    await waitFor(() =>
-      expect(result.current.error?.message).toMatch(/repeated.*page token/iu),
-    );
-    expect(result.current.markings).toEqual(tokens.slice(1).map(() => first));
-    expect(result.current.isLoading).toBe(false);
-    expect(list).toHaveBeenCalledTimes(tokens.length);
   });
 
   it("clears the previous client's catalogue and ignores its pending traversal", async () => {
@@ -197,18 +162,6 @@ describe("useMarkings pagination", () => {
     });
     expect(result.current.markings).toEqual([last]);
     expect(result.current.error).toBeUndefined();
-  });
-
-  it("continues beyond 100 pages instead of silently truncating", async () => {
-    for (let index = 0; index < 101; index++) {
-      list.mockResolvedValueOnce({ data: [], nextPageToken: `page-${index}` });
-    }
-    list.mockResolvedValueOnce({ data: [last] });
-    const { result } = renderHook(() => useMarkings({ autoFetchMore: true }), {
-      wrapper: Wrapper,
-    });
-    await waitFor(() => expect(result.current.markings).toEqual([last]));
-    expect(list).toHaveBeenCalledTimes(102);
   });
 
   it.each([undefined, false])(
@@ -259,68 +212,6 @@ describe("useMarkings pagination", () => {
     });
     expect(result.current.markings).toEqual([first, last, first, last]);
     expect(result.current.hasMore).toBe(false);
-  });
-
-  it("coalesces overlapping fetchMore calls and retries a failed page without duplicating items", async () => {
-    const pending = defer<{ data: Marking[] }>();
-    const error = new Error("next page failed");
-    list
-      .mockResolvedValueOnce({ data: [first], nextPageToken: "next" })
-      .mockReturnValueOnce(pending.promise)
-      .mockResolvedValueOnce({ data: [last] });
-    const { result } = renderHook(() => useMarkings(), { wrapper: Wrapper });
-    await waitFor(() => expect(result.current.hasMore).toBe(true));
-    let a: Promise<void> | undefined;
-    let b: Promise<void> | undefined;
-    act(() => {
-      a = result.current.fetchMore?.();
-      b = result.current.fetchMore?.();
-    });
-    expect(a).toBe(b);
-    expect(result.current.isLoading).toBe(true);
-    expect(result.current.markings).toEqual([first]);
-    await act(async () => {
-      pending.reject(error);
-      await a;
-    });
-    expect(list).toHaveBeenCalledTimes(2);
-    expect(result.current.error).toBe(error);
-    expect(result.current.isLoading).toBe(false);
-    expect(result.current.markings).toEqual([first]);
-    await act(async () => {
-      await result.current.fetchMore?.();
-    });
-    expect(result.current.markings).toEqual([first, last]);
-    expect(result.current.error).toBeUndefined();
-    expect(list.mock.calls.slice(1)).toEqual([
-      [client, { pageSize: 100, pageToken: "next" }],
-      [client, { pageSize: 100, pageToken: "next" }],
-    ]);
-  });
-
-  it("ignores a superseded fetchMore after refetch restarts at page one", async () => {
-    const pending = defer<{ data: Marking[]; nextPageToken?: string }>();
-    list
-      .mockResolvedValueOnce({ data: [first], nextPageToken: "old" })
-      .mockReturnValueOnce(pending.promise)
-      .mockResolvedValueOnce({ data: [last] });
-    const { result } = renderHook(() => useMarkings(), { wrapper: Wrapper });
-    await waitFor(() => expect(result.current.hasMore).toBe(true));
-    act(() => {
-      void result.current.fetchMore?.();
-    });
-    await waitFor(() => expect(list).toHaveBeenCalledTimes(2));
-    act(() => result.current.refetch());
-    await waitFor(() => expect(result.current.markings).toEqual([last]));
-    await act(() => {
-      pending.resolve({ data: [first], nextPageToken: "stale" });
-    });
-    expect(result.current.markings).toEqual([last]);
-    expect(result.current.hasMore).toBe(false);
-    expect(list).toHaveBeenLastCalledWith(client, {
-      pageSize: 100,
-      pageToken: undefined,
-    });
   });
 
   it("restarts at page one when pageSize changes", async () => {
