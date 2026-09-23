@@ -28,6 +28,8 @@ export const BrowserPermission = {
   ALLOW_DOWNLOADS: "allow-downloads",
   /** The sandbox allow-forms attribute value */
   ALLOW_FORMS: "allow-forms",
+  /** The sandbox allow-modals attribute value */
+  ALLOW_MODALS: "allow-modals",
   /** The sandbox allow-popups attribute value */
   ALLOW_POPUPS: "allow-popups",
 } as const;
