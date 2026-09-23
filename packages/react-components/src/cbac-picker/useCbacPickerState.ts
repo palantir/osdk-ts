@@ -37,6 +37,7 @@ import {
 const EMPTY_GROUPS: string[][] = [];
 
 export interface UseCbacPickerStateOptions {
+  autoFetchMore?: boolean | number;
   includeDeleted?: boolean;
 }
 
@@ -74,13 +75,13 @@ export function useCbacPickerState(
     isLoading: categoriesLoading,
     error: categoriesError,
     refetch: refetchCategories,
-  } = useMarkingCategories({ ...options, autoFetchMore: true });
+  } = useMarkingCategories(options);
   const {
     markings: rawMarkings,
     isLoading: markingsLoading,
     error: markingsError,
     refetch: refetchMarkings,
-  } = useMarkings({ ...options, autoFetchMore: true });
+  } = useMarkings(options);
   const {
     banner: latestBanner,
     isLoading: bannerLoading,

@@ -19,11 +19,12 @@ import {
   useMarkingCategories,
   useMarkings,
 } from "@osdk/react/platform-apis";
-import { cleanup, render } from "@testing-library/react";
+import { act, cleanup, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { BaseCbacBannerPopover } from "../base/BaseCbacBannerPopover.js";
 import { CbacBannerPopover } from "../CbacBannerPopover.js";
+import { CbacPickerDialog } from "../CbacPickerDialog.js";
 
 vi.mock("@osdk/react/platform-apis", () => ({
   useCbacBanner: vi.fn(),
@@ -44,6 +45,7 @@ const markingsResult: ReturnType<typeof useMarkings> = {
       id: "later",
       name: "Later marking",
       categoryId: "category",
+      deleted: false,
       createdTime: "2026-01-01T00:00:00Z",
     },
   ],
@@ -66,6 +68,7 @@ beforeEach(() => {
         categoryType: "CONJUNCTIVE",
         markingType: "CBAC",
         markings: markingIds,
+        deleted: false,
         createdTime: "2026-01-01T00:00:00Z",
       },
     ],
@@ -85,18 +88,43 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("CbacBannerPopover", () => {
-  it("requests complete catalogues to resolve applied marking names", () => {
-    render(<CbacBannerPopover markingIds={markingIds} onChange={vi.fn()} />);
-    expect(useMarkings).toHaveBeenCalledWith({ autoFetchMore: true });
-    expect(useMarkingCategories).toHaveBeenCalledWith({ autoFetchMore: true });
-    expect(
-      vi.mocked(BaseCbacBannerPopover).mock.lastCall?.[0].appliedMarkings,
-    ).toEqual([
-      { categoryName: "Classification", markingNames: ["Later marking"] },
-    ]);
-  });
+  it.each([undefined, false, true, 200])(
+    "passes autoFetchMore=%s to both catalogue hooks and the edit dialog",
+    (autoFetchMore) => {
+      render(
+        <CbacBannerPopover
+          markingIds={markingIds}
+          onChange={vi.fn()}
+          autoFetchMore={autoFetchMore}
+          includeDeleted={false}
+        />,
+      );
+      expect(useMarkings).toHaveBeenCalledWith({
+        autoFetchMore,
+        includeDeleted: false,
+      });
+      expect(useMarkingCategories).toHaveBeenCalledWith({
+        autoFetchMore,
+        includeDeleted: false,
+      });
+      act(() =>
+        vi.mocked(BaseCbacBannerPopover).mock.lastCall?.[0].onEditClick(),
+      );
+      expect(vi.mocked(CbacPickerDialog).mock.lastCall?.[0].autoFetchMore).toBe(
+        autoFetchMore,
+      );
+      expect(
+        vi.mocked(CbacPickerDialog).mock.lastCall?.[0].includeDeleted,
+      ).toBe(false);
+      expect(
+        vi.mocked(BaseCbacBannerPopover).mock.lastCall?.[0].appliedMarkings,
+      ).toEqual([
+        { categoryName: "Classification", markingNames: ["Later marking"] },
+      ]);
+    },
+  );
 
-  it("waits for the complete catalogue and hides incomplete data on failure", () => {
+  it("forwards loading and error states while hiding incomplete groups", () => {
     vi.mocked(useMarkings).mockReturnValue({
       ...markingsResult,
       isLoading: true,
@@ -108,6 +136,9 @@ describe("CbacBannerPopover", () => {
     expect(
       vi.mocked(BaseCbacBannerPopover).mock.lastCall?.[0].appliedMarkings,
     ).toEqual([]);
+    expect(vi.mocked(BaseCbacBannerPopover).mock.lastCall?.[0].isLoading).toBe(
+      true,
+    );
     const error = new Error("later page failed");
     vi.mocked(useMarkings).mockReturnValue({
       ...markingsResult,
@@ -118,6 +149,9 @@ describe("CbacBannerPopover", () => {
     expect(
       vi.mocked(BaseCbacBannerPopover).mock.lastCall?.[0].appliedMarkings,
     ).toEqual([]);
+    expect(vi.mocked(BaseCbacBannerPopover).mock.lastCall?.[0].isLoading).toBe(
+      false,
+    );
     expect(vi.mocked(BaseCbacBannerPopover).mock.lastCall?.[0].error).toBe(
       error,
     );

@@ -35,6 +35,7 @@ const item = (id: string): Marking => ({
   id,
   name: id,
   categoryId: "category",
+  deleted: false,
   createdTime: "2026-01-01T00:00:00Z",
 });
 const first = item("first");
@@ -54,30 +55,57 @@ describe("useMarkings pagination", () => {
   });
   afterEach(cleanup);
 
-  it("follows exact tokens through short and empty pages, preserving response order", async () => {
-    const finalPage = defer<{ data: Marking[] }>();
-    list
-      .mockResolvedValueOnce({ data: [first], nextPageToken: "short/+=" })
-      .mockResolvedValueOnce({ data: [], nextPageToken: "empty/+=" })
-      .mockReturnValueOnce(finalPage.promise);
-    const { result } = renderHook(() => useMarkings({ autoFetchMore: true }), {
-      wrapper: Wrapper,
-    });
-    await waitFor(() => expect(list).toHaveBeenCalledTimes(3));
-    expect(result.current.markings).toEqual([first]);
-    expect(result.current.isLoading).toBe(true);
-    expect(list.mock.calls).toEqual([
-      [client, { pageSize: 100, pageToken: undefined }],
-      [client, { pageSize: 100, pageToken: "short/+=" }],
-      [client, { pageSize: 100, pageToken: "empty/+=" }],
-    ]);
-    await act(() => {
-      finalPage.resolve({ data: [last, first] });
-    });
-    expect(result.current.markings).toEqual([first, last, first]);
-    expect(result.current.isLoading).toBe(false);
-    expect(result.current.error).toBeUndefined();
-  });
+  it.each([undefined, false, true])(
+    "follows exact tokens through short and empty pages with includeDeleted=%s, preserving response order",
+    async (includeDeleted) => {
+      const finalPage = defer<{ data: Marking[] }>();
+      list
+        .mockResolvedValueOnce({ data: [first], nextPageToken: "short/+=" })
+        .mockResolvedValueOnce({ data: [], nextPageToken: "empty/+=" })
+        .mockReturnValueOnce(finalPage.promise);
+      const { result } = renderHook(
+        () => useMarkings({ autoFetchMore: true, includeDeleted }),
+        {
+          wrapper: Wrapper,
+        },
+      );
+      await waitFor(() => expect(list).toHaveBeenCalledTimes(3));
+      expect(result.current.markings).toEqual([first]);
+      expect(result.current.isLoading).toBe(true);
+      expect(list.mock.calls).toEqual([
+        [
+          client,
+          {
+            includeDeleted: includeDeleted ?? true,
+            pageSize: 100,
+            pageToken: undefined,
+          },
+        ],
+        [
+          client,
+          {
+            includeDeleted: includeDeleted ?? true,
+            pageSize: 100,
+            pageToken: "short/+=",
+          },
+        ],
+        [
+          client,
+          {
+            includeDeleted: includeDeleted ?? true,
+            pageSize: 100,
+            pageToken: "empty/+=",
+          },
+        ],
+      ]);
+      await act(() => {
+        finalPage.resolve({ data: [last, first] });
+      });
+      expect(result.current.markings).toEqual([first, last, first]);
+      expect(result.current.isLoading).toBe(false);
+      expect(result.current.error).toBeUndefined();
+    },
+  );
 
   it("does not fetch until enabled", async () => {
     list.mockResolvedValue({ data: [first] });
@@ -114,8 +142,8 @@ describe("useMarkings pagination", () => {
     expect(result.current.isLoading).toBe(true);
     await waitFor(() => expect(result.current.markings).toEqual([last, first]));
     expect(list.mock.calls.slice(2)).toEqual([
-      [client, { pageSize: 100, pageToken: undefined }],
-      [client, { pageSize: 100, pageToken: "retry-2" }],
+      [client, { includeDeleted: true, pageSize: 100, pageToken: undefined }],
+      [client, { includeDeleted: true, pageSize: 100, pageToken: "retry-2" }],
     ]);
   });
 
@@ -152,6 +180,7 @@ describe("useMarkings pagination", () => {
     expect(result.current.markings).toBeUndefined();
     await waitFor(() =>
       expect(list).toHaveBeenLastCalledWith(activeClient, {
+        includeDeleted: true,
         pageSize: 100,
         pageToken: undefined,
       }),
@@ -178,6 +207,7 @@ describe("useMarkings pagination", () => {
       expect(result.current.markings).toEqual([first]);
       expect(result.current.hasMore).toBe(true);
       expect(list).toHaveBeenCalledExactlyOnceWith(client, {
+        includeDeleted: true,
         pageSize: 25,
         pageToken: undefined,
       });
@@ -186,6 +216,7 @@ describe("useMarkings pagination", () => {
       });
       expect(result.current.markings).toEqual([first, last]);
       expect(list).toHaveBeenLastCalledWith(client, {
+        includeDeleted: true,
         pageSize: 25,
         pageToken: "next/+=",
       });
@@ -214,24 +245,30 @@ describe("useMarkings pagination", () => {
     expect(result.current.hasMore).toBe(false);
   });
 
-  it("restarts at page one when pageSize changes", async () => {
-    list
-      .mockResolvedValueOnce({ data: [first], nextPageToken: "old" })
-      .mockResolvedValueOnce({ data: [last] });
-    const { result, rerender } = renderHook(
-      ({ pageSize }) => useMarkings({ pageSize }),
-      {
-        wrapper: Wrapper,
-        initialProps: { pageSize: 10 },
-      },
-    );
-    await waitFor(() => expect(result.current.markings).toEqual([first]));
-    rerender({ pageSize: 20 });
-    expect(result.current.markings).toBeUndefined();
-    await waitFor(() => expect(result.current.markings).toEqual([last]));
-    expect(list).toHaveBeenLastCalledWith(client, {
-      pageSize: 20,
-      pageToken: undefined,
-    });
-  });
+  it.each([
+    { pageSize: 20, includeDeleted: true },
+    { pageSize: 10, includeDeleted: false },
+  ])(
+    "restarts at page one when catalogue options change to %j",
+    async (options) => {
+      list
+        .mockResolvedValueOnce({ data: [first], nextPageToken: "old" })
+        .mockResolvedValueOnce({ data: [last] });
+      const { result, rerender } = renderHook(
+        (options) => useMarkings(options),
+        {
+          wrapper: Wrapper,
+          initialProps: { pageSize: 10, includeDeleted: true },
+        },
+      );
+      await waitFor(() => expect(result.current.markings).toEqual([first]));
+      rerender(options);
+      expect(result.current.markings).toBeUndefined();
+      await waitFor(() => expect(result.current.markings).toEqual([last]));
+      expect(list).toHaveBeenLastCalledWith(client, {
+        ...options,
+        pageToken: undefined,
+      });
+    },
+  );
 });

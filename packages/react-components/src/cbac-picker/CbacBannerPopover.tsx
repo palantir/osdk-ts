@@ -22,22 +22,17 @@ import {
 import React from "react";
 
 import { BaseCbacBannerPopover } from "./base/BaseCbacBannerPopover.js";
+import type { CbacBannerPopoverProps } from "./CbacPickerApi.js";
 import { CbacPickerDialog } from "./CbacPickerDialog.js";
-import type { MaxClassificationConstraint } from "./types.js";
 import {
   groupMarkingsByCategory,
   resolveBannerDisplay,
 } from "./utils/cbacPickerUtils.js";
 
-export interface CbacBannerPopoverProps {
-  markingIds: string[];
-  onChange: (markingIds: string[]) => void;
-  maxClassificationConstraint?: MaxClassificationConstraint;
-  includeDeleted?: boolean;
-  className?: string;
-}
+export type { CbacBannerPopoverProps } from "./CbacPickerApi.js";
 
 export function CbacBannerPopover({
+  autoFetchMore,
   markingIds,
   onChange,
   maxClassificationConstraint,
@@ -55,13 +50,13 @@ export function CbacBannerPopover({
     isLoading: categoriesLoading,
     error: categoriesError,
     refetch: refetchCategories,
-  } = useMarkingCategories({ includeDeleted, autoFetchMore: true });
+  } = useMarkingCategories({ includeDeleted, autoFetchMore });
   const {
     markings,
     isLoading: markingsLoading,
     error: markingsError,
     refetch: refetchMarkings,
-  } = useMarkings({ includeDeleted, autoFetchMore: true });
+  } = useMarkings({ includeDeleted, autoFetchMore });
 
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
@@ -132,6 +127,7 @@ export function CbacBannerPopover({
           onOpenChange={setIsDialogOpen}
           onConfirm={handleConfirm}
           initialMarkingIds={markingIds}
+          autoFetchMore={autoFetchMore}
           maxClassificationConstraint={maxClassificationConstraint}
           includeDeleted={includeDeleted}
         />
