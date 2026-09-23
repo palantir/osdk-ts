@@ -18,23 +18,23 @@ import { describe, expect, it } from "vitest";
 
 import type { InterfaceSchemaMigrationInstruction } from "../../api/interface/InterfaceSchemaMigrations.js";
 import {
-  describeFinding,
+  describeBreakingChange,
   describeWarning,
-} from "../describeLockfileFinding.js";
+} from "../describeLockfileChange.js";
 import type { LockedProperty } from "../OntologySchemaLockfile.js";
 import type {
-  LockfileFinding,
+  LockfileBreakingChange,
   TargetPropertyState,
 } from "../validateOntologySchemaLockfile.js";
 
 const OPTIONAL_STRING: LockedProperty = { type: "string", required: false };
 
-describe("describeFinding", () => {
+describe("describeBreakingChange", () => {
   function ambiguous(
     instructions: InterfaceSchemaMigrationInstruction[],
     targets: TargetPropertyState[],
   ): string {
-    return describeFinding({
+    return describeBreakingChange({
       code: "ambiguousDisappearance",
       interfaceApiName: "Person",
       transitionId: "requireLastName",
@@ -42,21 +42,6 @@ describe("describeFinding", () => {
       instructions,
     });
   }
-
-  it("derives the finalization advice from the instructions", () => {
-    expect(
-      ambiguous(
-        [{ type: "addRequiredProperty", property: "lastName" }],
-        [
-          {
-            propertyApiName: "lastName",
-            previous: OPTIONAL_STRING,
-            next: undefined,
-          },
-        ],
-      ),
-    ).toContain('To finalize it, set "lastName" to `required: true`.');
-  });
 
   it("names every instruction when a transition bundles several", () => {
     expect(
@@ -108,10 +93,14 @@ describe("describeFinding", () => {
   });
 
   describe("remediation", () => {
-    it.each<{ name: string; finding: LockfileFinding; expected: string }>([
+    it.each<{
+      name: string;
+      breakingChange: LockfileBreakingChange;
+      expected: string;
+    }>([
       {
         name: "a removed property",
-        finding: {
+        breakingChange: {
           code: "propertyRemoved",
           interfaceApiName: "Person",
           property: "lastName",
@@ -120,7 +109,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a newly extended interface",
-        finding: {
+        breakingChange: {
           code: "interfaceExtensionAdded",
           interfaceApiName: "Person",
           extendedInterfaceApiName: "com.palantir.Named",
@@ -129,7 +118,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a changed property type",
-        finding: {
+        breakingChange: {
           code: "propertyTypeChanged",
           interfaceApiName: "Person",
           property: "lastName",
@@ -142,7 +131,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property that became arrayed",
-        finding: {
+        breakingChange: {
           code: "propertyTypeChanged",
           interfaceApiName: "Person",
           property: "nicknames",
@@ -154,7 +143,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property handed over to a shared property type",
-        finding: {
+        breakingChange: {
           code: "propertyDeclarationChanged",
           interfaceApiName: "Person",
           property: "lastName",
@@ -167,7 +156,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property taken back from a shared property type",
-        finding: {
+        breakingChange: {
           code: "propertyDeclarationChanged",
           interfaceApiName: "Person",
           property: "lastName",
@@ -178,7 +167,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property whose shared property type moved namespace",
-        finding: {
+        breakingChange: {
           code: "propertyNamespaceChanged",
           interfaceApiName: "Person",
           previousApiName: "com.palantir.lastName",
@@ -190,7 +179,7 @@ describe("describeFinding", () => {
       },
       {
         name: "restoring a shared property type that moved namespace",
-        finding: {
+        breakingChange: {
           code: "propertyNamespaceChanged",
           interfaceApiName: "Person",
           previousApiName: "com.palantir.lastName",
@@ -200,7 +189,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property that started forbidding nulls",
-        finding: {
+        breakingChange: {
           code: "nullabilityTightened",
           interfaceApiName: "Person",
           property: "name",
@@ -212,7 +201,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property that started forbidding both",
-        finding: {
+        breakingChange: {
           code: "nullabilityTightened",
           interfaceApiName: "Person",
           property: "name",
@@ -223,7 +212,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property newly bound to a value type",
-        finding: {
+        breakingChange: {
           code: "valueTypeChanged",
           interfaceApiName: "Person",
           property: "ssn",
@@ -238,7 +227,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property rebound to a different value type",
-        finding: {
+        breakingChange: {
           code: "valueTypeChanged",
           interfaceApiName: "Person",
           property: "ssn",
@@ -255,7 +244,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property that gained a type class",
-        finding: {
+        breakingChange: {
           code: "propertyTypeClassesChanged",
           interfaceApiName: "Person",
           property: "lastName",
@@ -268,7 +257,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property that lost a type class",
-        finding: {
+        breakingChange: {
           code: "propertyTypeClassesChanged",
           interfaceApiName: "Person",
           property: "lastName",
@@ -279,7 +268,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property newly constrained to the primary key",
-        finding: {
+        breakingChange: {
           code: "primaryKeyConstraintChanged",
           interfaceApiName: "Person",
           property: "id",
@@ -291,7 +280,7 @@ describe("describeFinding", () => {
       },
       {
         name: "a property whose primary key constraint was swapped",
-        finding: {
+        breakingChange: {
           code: "primaryKeyConstraintChanged",
           interfaceApiName: "Person",
           property: "id",
@@ -300,14 +289,17 @@ describe("describeFinding", () => {
         },
         expected: 'Restore "id" to `MUST_BE_PK`.',
       },
-    ])("tells the author what to do about $name", ({ finding, expected }) => {
-      expect(describeFinding(finding)).toContain(expected);
-    });
+    ])(
+      "tells the author what to do about $name",
+      ({ breakingChange, expected }) => {
+        expect(describeBreakingChange(breakingChange)).toContain(expected);
+      },
+    );
 
-    it.each<{ name: string; finding: LockfileFinding }>([
+    it.each<{ name: string; breakingChange: LockfileBreakingChange }>([
       {
         name: "an existing property becoming required",
-        finding: {
+        breakingChange: {
           code: "propertyBecameRequired",
           interfaceApiName: "Person",
           property: "lastName",
@@ -315,14 +307,14 @@ describe("describeFinding", () => {
       },
       {
         name: "a new required property",
-        finding: {
+        breakingChange: {
           code: "requiredPropertyAdded",
           interfaceApiName: "Person",
           property: "lastName",
         },
       },
-    ])("suggests a transition for $name", ({ finding }) => {
-      expect(describeFinding(finding)).toContain(
+    ])("suggests a transition for $name", ({ breakingChange }) => {
+      expect(describeBreakingChange(breakingChange)).toContain(
         '{ id: "require-lastName", title: "Require lastName", ' +
           'gracePeriod: { type: "afterInstall", days: 30 }, ' +
           'instructions: [{ type: "addRequiredProperty", property: "lastName" }] }',
@@ -337,7 +329,7 @@ describe("describeFinding", () => {
 
     it("suggests a transition the author can actually paste", () => {
       expect(
-        describeFinding({
+        describeBreakingChange({
           code: "requiredPropertyAdded",
           interfaceApiName: "Person",
           property: NAMESPACED,
@@ -350,7 +342,7 @@ describe("describeFinding", () => {
     });
 
     it("names the key the author wrote rather than the one the lockfile records", () => {
-      const message = describeFinding({
+      const message = describeBreakingChange({
         code: "propertyRemoved",
         interfaceApiName: "Person",
         property: NAMESPACED,
@@ -362,7 +354,7 @@ describe("describeFinding", () => {
 
     it("translates the instructions a vanished transition recorded", () => {
       expect(
-        describeFinding({
+        describeBreakingChange({
           code: "ambiguousDisappearance",
           interfaceApiName: "Person",
           transitionId: "requireLastName",
@@ -380,7 +372,7 @@ describe("describeFinding", () => {
 
     it("translates both sides of a changed instruction list", () => {
       expect(
-        describeFinding({
+        describeBreakingChange({
           code: "instructionsChanged",
           interfaceApiName: "Person",
           transitionId: "requireLastName",
@@ -429,106 +421,109 @@ describe("describeWarning", () => {
     );
   });
 
-  describe("a relaxed requirement", () => {
-    const relaxed = describeWarning({
-      code: "requirementRelaxed",
-      interfaceApiName: "Person",
-      property: "com.example.lastName",
-    });
-
-    it("names the key the author wrote", () => {
-      expect(relaxed).toContain('property "lastName" is no longer required');
-      expect(relaxed).not.toContain("com.example.lastName");
-    });
-
-    it("says who is affected rather than demanding a fix", () => {
-      expect(relaxed).toContain("will start seeing it absent");
-      expect(relaxed).toContain("Nothing to do if that was intended");
-    });
+  const requirementRelaxed = describeWarning({
+    code: "requirementRelaxed",
+    interfaceApiName: "Person",
+    property: "com.example.lastName",
   });
 
-  describe("a dropped value type reference", () => {
-    const removed = describeWarning({
-      code: "valueTypeRemoved",
-      interfaceApiName: "Person",
-      property: "com.example.ssn",
-      previousValueType: { packageNamespace: "com.example", apiName: "Ssn" },
-    });
-
-    it("names the value type that was dropped, and the authored key", () => {
-      expect(removed).toContain(
-        'property "ssn" no longer references value type com.example/Ssn',
-      );
-      expect(removed).not.toContain("com.example.ssn");
-    });
-
-    it("says who is affected rather than demanding a fix", () => {
-      expect(removed).toContain("will start seeing values it rejected");
-      expect(removed).toContain("Nothing to do if that was intended");
-    });
+  const valueTypeRemoved = describeWarning({
+    code: "valueTypeRemoved",
+    interfaceApiName: "Person",
+    property: "com.example.ssn",
+    previousValueType: { packageNamespace: "com.example", apiName: "Ssn" },
   });
 
-  describe("an interface no longer extended", () => {
-    const removed = describeWarning({
-      code: "interfaceExtensionRemoved",
-      interfaceApiName: "Person",
-      extendedInterfaceApiName: "com.palantir.Named",
-    });
-
-    it("names the interface that is no longer extended", () => {
-      expect(removed).toContain(
-        'Interface Person no longer extends "com.palantir.Named"',
-      );
-    });
-
-    it("says who is affected rather than demanding a fix", () => {
-      expect(removed).toContain("will stop seeing them");
-      expect(removed).toContain("Nothing to do if that was intended");
-    });
+  const interfaceExtensionRemoved = describeWarning({
+    code: "interfaceExtensionRemoved",
+    interfaceApiName: "Person",
+    extendedInterfaceApiName: "com.palantir.Named",
   });
 
-  describe("a loosened nullability", () => {
-    const relaxed = describeWarning({
-      code: "nullabilityRelaxed",
-      interfaceApiName: "Person",
-      property: "com.example.name",
-      previousNullability: { noNulls: true, noEmptyCollections: true },
-      nextNullability: { noNulls: false, noEmptyCollections: false },
-    });
-
-    it("names both ends, and the authored key", () => {
-      expect(relaxed).toContain(
-        'property "name" relaxed its nullability from no nulls, no empty collections to ' +
-          "unconstrained",
-      );
-      expect(relaxed).not.toContain("com.example.name");
-    });
-
-    it("says who is affected rather than demanding a fix", () => {
-      expect(relaxed).toContain("values it previously rejected");
-      expect(relaxed).toContain("Nothing to do if that was intended");
-    });
+  const nullabilityRelaxed = describeWarning({
+    code: "nullabilityRelaxed",
+    interfaceApiName: "Person",
+    property: "com.example.name",
+    previousNullability: { noNulls: true, noEmptyCollections: true },
+    nextNullability: { noNulls: false, noEmptyCollections: false },
   });
 
-  describe("a dropped primary key constraint", () => {
-    const relaxed = describeWarning({
-      code: "primaryKeyConstraintRelaxed",
-      interfaceApiName: "Person",
-      property: "com.example.id",
-      previousConstraint: "MUST_BE_PK",
-    });
-
-    it("names the constraint that was dropped, and the authored key", () => {
-      expect(relaxed).toContain(
-        'property "id" no longer constrains primary key mapping',
-      );
-      expect(relaxed).toContain("having been `MUST_BE_PK`");
-      expect(relaxed).not.toContain("com.example.id");
-    });
-
-    it("says who is affected rather than demanding a fix", () => {
-      expect(relaxed).toContain("free to map it either way");
-      expect(relaxed).toContain("Nothing to do if that was intended");
-    });
+  const primaryKeyConstraintRelaxed = describeWarning({
+    code: "primaryKeyConstraintRelaxed",
+    interfaceApiName: "Person",
+    property: "com.example.id",
+    previousConstraint: "MUST_BE_PK",
   });
+
+  it("names the key the author wrote for a relaxed requirement", () => {
+    expect(requirementRelaxed).toContain(
+      'property "lastName" is no longer required',
+    );
+    expect(requirementRelaxed).not.toContain("com.example.lastName");
+  });
+
+  it("names the value type that was dropped, and the authored key", () => {
+    expect(valueTypeRemoved).toContain(
+      'property "ssn" no longer references value type com.example/Ssn',
+    );
+    expect(valueTypeRemoved).not.toContain("com.example.ssn");
+  });
+
+  it("names the interface that is no longer extended", () => {
+    expect(interfaceExtensionRemoved).toContain(
+      'Interface Person no longer extends "com.palantir.Named"',
+    );
+  });
+
+  it("names both ends of a loosened nullability, and the authored key", () => {
+    expect(nullabilityRelaxed).toContain(
+      'property "name" relaxed its nullability from no nulls, no empty collections to ' +
+        "unconstrained",
+    );
+    expect(nullabilityRelaxed).not.toContain("com.example.name");
+  });
+
+  it("names the primary key constraint that was dropped, and the authored key", () => {
+    expect(primaryKeyConstraintRelaxed).toContain(
+      'property "id" no longer constrains primary key mapping',
+    );
+    expect(primaryKeyConstraintRelaxed).toContain("having been `MUST_BE_PK`");
+    expect(primaryKeyConstraintRelaxed).not.toContain("com.example.id");
+  });
+
+  // A warning is a note, not a demand: every one names who notices the change and then closes by
+  // telling the author they need not act on it.
+  it.each<{ name: string; message: string; affected: string }>([
+    {
+      name: "a relaxed requirement",
+      message: requirementRelaxed,
+      affected: "will start seeing it absent",
+    },
+    {
+      name: "a dropped value type reference",
+      message: valueTypeRemoved,
+      affected: "will start seeing values it rejected",
+    },
+    {
+      name: "an interface no longer extended",
+      message: interfaceExtensionRemoved,
+      affected: "will stop seeing them",
+    },
+    {
+      name: "a loosened nullability",
+      message: nullabilityRelaxed,
+      affected: "values it previously rejected",
+    },
+    {
+      name: "a dropped primary key constraint",
+      message: primaryKeyConstraintRelaxed,
+      affected: "free to map it either way",
+    },
+  ])(
+    "says who is affected by $name without demanding a fix",
+    ({ message, affected }) => {
+      expect(message).toContain(affected);
+      expect(message).toContain("Nothing to do if that was intended");
+    },
+  );
 });

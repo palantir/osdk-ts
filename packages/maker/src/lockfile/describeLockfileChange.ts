@@ -33,48 +33,50 @@ import type {
 } from "./OntologySchemaLockfile.js";
 import { authoredKeyOf } from "./OntologySchemaLockfile.js";
 import type {
-  LockfileFinding,
+  LockfileBreakingChange,
   LockfileWarning,
   TargetPropertyState,
 } from "./validateOntologySchemaLockfile.js";
 
-/** Renders a finding as the report an author reads. */
-export function describeFinding(finding: LockfileFinding): string {
-  const where = `Interface ${finding.interfaceApiName}`;
-  switch (finding.code) {
+/** Renders a breaking change as the report an author reads. */
+export function describeBreakingChange(
+  breakingChange: LockfileBreakingChange,
+): string {
+  const where = `Interface ${breakingChange.interfaceApiName}`;
+  switch (breakingChange.code) {
     case "ambiguousDisappearance": {
-      if (finding.targets.length === 0) {
+      if (breakingChange.targets.length === 0) {
         return (
-          `${where}: schema migration "${finding.transitionId}" is no longer declared, but ` +
+          `${where}: schema migration "${breakingChange.transitionId}" is no longer declared, but ` +
           `it targets no property, so its disappearance cannot be read as either a ` +
           `finalization or a deletion. Restore it, or remove it from the lockfile by hand once ` +
           `the last published release no longer declares it.`
         );
       }
 
-      const targets = finding.targets
+      const targets = breakingChange.targets
         .map(({ propertyApiName }) => `"${authoredKeyOf(propertyApiName)}"`)
         .join(", ");
       return (
-        `${where}: schema migration "${finding.transitionId}" is no longer declared, but ` +
+        `${where}: schema migration "${breakingChange.transitionId}" is no longer declared, but ` +
         `the resulting schema is neither a finalization nor a deletion of it. ` +
-        `${describeTargetDrift(finding.targets)}\n` +
-        `  To finalize it, ${describeFinalizations(finding.instructions)}.\n` +
+        `${describeTargetDrift(breakingChange.targets)}\n` +
+        `  To finalize it, ${describeFinalizations(breakingChange.instructions)}.\n` +
         `  To delete it, leave ${targets} exactly as the lockfile records it.`
       );
     }
 
     case "instructionsChanged":
       return (
-        `${where}: schema migration "${finding.transitionId}" changed its instructions from ` +
-        `${describeInstructions(finding.previousInstructions)} to ` +
-        `${describeInstructions(finding.nextInstructions)}. An in-flight migration's instructions ` +
+        `${where}: schema migration "${breakingChange.transitionId}" changed its instructions from ` +
+        `${describeInstructions(breakingChange.previousInstructions)} to ` +
+        `${describeInstructions(breakingChange.nextInstructions)}. An in-flight migration's instructions ` +
         `may not be changed, since stacks may already be part-way through it. Delete this transition and ` +
         `declare a new one with a different id instead.`
       );
 
     case "interfaceExtensionAdded": {
-      const extended = finding.extendedInterfaceApiName;
+      const extended = breakingChange.extendedInterfaceApiName;
       return (
         `${where}: now extends "${extended}". Implementing object types have to satisfy every ` +
         `property "${extended}" contributes, so those that do not yet are blocked from upgrading, ` +
@@ -84,7 +86,7 @@ export function describeFinding(finding: LockfileFinding): string {
     }
 
     case "propertyRemoved": {
-      const property = authoredKeyOf(finding.property);
+      const property = authoredKeyOf(breakingChange.property);
       return (
         `${where}: property "${property}" was removed. Removing a property from an ` +
         `interface is a breaking change, and no currently-supported interface schema migration can ` +
@@ -93,86 +95,86 @@ export function describeFinding(finding: LockfileFinding): string {
     }
 
     case "propertyDeclarationChanged": {
-      const property = authoredKeyOf(finding.property);
+      const property = authoredKeyOf(breakingChange.property);
       return (
         `${where}: property "${property}" moved from ` +
-        `${describeDeclaration(finding.previousDeclaration)} to ` +
-        `${describeDeclaration(finding.nextDeclaration)}. The two are different bindings even ` +
+        `${describeDeclaration(breakingChange.previousDeclaration)} to ` +
+        `${describeDeclaration(breakingChange.nextDeclaration)}. The two are different bindings even ` +
         `when they resolve to the same type, so implementing object types would have to remap ` +
         `the property, and no currently-supported interface schema migration can phase that in. ` +
-        `Declare "${property}" ${describeDeclaration(finding.previousDeclaration)} again.`
+        `Declare "${property}" ${describeDeclaration(breakingChange.previousDeclaration)} again.`
       );
     }
 
     case "propertyNamespaceChanged": {
-      const property = authoredKeyOf(finding.previousApiName);
+      const property = authoredKeyOf(breakingChange.previousApiName);
       return (
         `${where}: property "${property}" is now backed by shared property type ` +
-        `"${finding.nextApiName}" rather than "${finding.previousApiName}". A property is ` +
+        `"${breakingChange.nextApiName}" rather than "${breakingChange.previousApiName}". A property is ` +
         `identified by the shared property type behind it, so this removes ` +
-        `"${finding.previousApiName}" from the interface rather than renaming it, and ` +
-        `implementing object types would have to take up "${finding.nextApiName}" in its place. ` +
+        `"${breakingChange.previousApiName}" from the interface rather than renaming it, and ` +
+        `implementing object types would have to take up "${breakingChange.nextApiName}" in its place. ` +
         `No currently-supported interface schema migration can phase that in. Back "${property}" ` +
-        `with "${finding.previousApiName}" again.`
+        `with "${breakingChange.previousApiName}" again.`
       );
     }
 
     case "propertyTypeChanged": {
-      const property = authoredKeyOf(finding.property);
+      const property = authoredKeyOf(breakingChange.property);
       return (
         `${where}: property "${property}" changed type from ` +
-        `${describeType(finding.previousType)} to ${describeType(finding.nextType)}. Changing a ` +
+        `${describeType(breakingChange.previousType)} to ${describeType(breakingChange.nextType)}. Changing a ` +
         `property's type is a breaking change, and no currently-supported interface schema ` +
         `migration can phase it in. Restore "${property}" to ` +
-        `${describeType(finding.previousType)}; to publish the new type, declare it as a new ` +
+        `${describeType(breakingChange.previousType)}; to publish the new type, declare it as a new ` +
         `property under a different api name.`
       );
     }
 
     case "propertyTypeClassesChanged": {
-      const property = authoredKeyOf(finding.property);
+      const property = authoredKeyOf(breakingChange.property);
       return (
         `${where}: property "${property}" changed type classes from ` +
-        `${describeTypeClasses(finding.previousTypeClasses)} to ` +
-        `${describeTypeClasses(finding.nextTypeClasses)}. Type classes drive render hints like ` +
+        `${describeTypeClasses(breakingChange.previousTypeClasses)} to ` +
+        `${describeTypeClasses(breakingChange.nextTypeClasses)}. Type classes drive render hints like ` +
         `sorting and filtering, so changing them breaks applications relying on those hints, and ` +
         `blocks upgrades for implementing object types that lack the new ones. No ` +
         `currently-supported interface schema migration can phase this in. Restore "${property}" ` +
-        `to ${describeTypeClasses(finding.previousTypeClasses)}.`
+        `to ${describeTypeClasses(breakingChange.previousTypeClasses)}.`
       );
     }
 
     case "primaryKeyConstraintChanged": {
-      const property = authoredKeyOf(finding.property);
+      const property = authoredKeyOf(breakingChange.property);
       return (
         `${where}: property "${property}" changed its primary key constraint from ` +
-        `${describeConstraint(finding.previousConstraint)} to ` +
-        `${describeConstraint(finding.nextConstraint)}. Implementing object types that satisfy ` +
+        `${describeConstraint(breakingChange.previousConstraint)} to ` +
+        `${describeConstraint(breakingChange.nextConstraint)}. Implementing object types that satisfy ` +
         `the old constraint need not satisfy the new one, so this blocks their upgrade, and no ` +
         `currently-supported interface schema migration can phase it in. Restore ` +
-        `"${property}" to ${describeConstraint(finding.previousConstraint)}.`
+        `"${property}" to ${describeConstraint(breakingChange.previousConstraint)}.`
       );
     }
 
     case "nullabilityTightened": {
-      const property = authoredKeyOf(finding.property);
+      const property = authoredKeyOf(breakingChange.property);
       return (
         `${where}: property "${property}" tightened its nullability from ` +
-        `${describeNullability(finding.previousNullability)} to ` +
-        `${describeNullability(finding.nextNullability)}. Implementing object types whose data ` +
+        `${describeNullability(breakingChange.previousNullability)} to ` +
+        `${describeNullability(breakingChange.nextNullability)}. Implementing object types whose data ` +
         `does not already satisfy that are blocked from upgrading, and no currently-supported ` +
         `interface schema migration can phase it in. Restore "${property}" to ` +
-        `${describeNullability(finding.previousNullability)}.`
+        `${describeNullability(breakingChange.previousNullability)}.`
       );
     }
 
     case "valueTypeChanged": {
-      const property = authoredKeyOf(finding.property);
-      const previous = finding.previousValueType;
+      const property = authoredKeyOf(breakingChange.property);
+      const previous = breakingChange.previousValueType;
       return (
         `${where}: property "${property}" changed its value type from ` +
         `${previous === undefined ? "none" : describeValueType(previous)} to ` +
-        `${describeValueType(finding.nextValueType)}. A value type carries constraints that ` +
+        `${describeValueType(breakingChange.nextValueType)}. A value type carries constraints that ` +
         `implementing object types' data has to satisfy, and no currently-supported interface ` +
         `schema migration can phase that in. ` +
         (previous === undefined
@@ -182,7 +184,7 @@ export function describeFinding(finding: LockfileFinding): string {
     }
 
     case "propertyBecameRequired": {
-      const property = authoredKeyOf(finding.property);
+      const property = authoredKeyOf(breakingChange.property);
       return (
         `${where}: property "${property}" became required without a schema migration. ` +
         `Keep it declared \`required: false\` and phase it in instead through a migration like:\n` +
@@ -191,7 +193,7 @@ export function describeFinding(finding: LockfileFinding): string {
     }
 
     case "requiredPropertyAdded": {
-      const property = authoredKeyOf(finding.property);
+      const property = authoredKeyOf(breakingChange.property);
       return (
         `${where}: property "${property}" was added as required. Existing implementing ` +
         `object types do not provide it yet, so this is a breaking change. Declare it ` +
@@ -202,7 +204,7 @@ export function describeFinding(finding: LockfileFinding): string {
   }
 }
 
-/** Renders a warning as the note an author reads alongside the finding report. */
+/** Renders a warning as the note an author reads alongside the breaking-change report. */
 export function describeWarning(warning: LockfileWarning): string {
   switch (warning.code) {
     case "optedOut":
@@ -298,7 +300,7 @@ function describeConstraint(constraint: PrimaryKeyConstraint): string {
   }
 }
 
-/** Where a property is declared, as it reads mid-sentence in a finding. */
+/** Where a property is declared, as it reads mid-sentence in a report. */
 function describeDeclaration(declaration: PropertyDeclaration): string {
   switch (declaration) {
     case "interface":
