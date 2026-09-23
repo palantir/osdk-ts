@@ -26,6 +26,7 @@ import { additionalContext } from "../../Client.js";
 import { createClient } from "../../createClient.js";
 import { TestLogger } from "../../logger/TestLogger.js";
 import { objectSetDefinitions } from "../../objectSet/createObjectSet.js";
+import { hydrateObjectSetFromObjectRids } from "../../public-utils/hydrateObjectSetFromObjectRids.js";
 import { getObjectTypesThatInvalidate } from "./getObjectTypesThatInvalidate.js";
 
 function setupOntology(fauxFoundry: FauxFoundry) {
@@ -79,6 +80,40 @@ describe(getObjectTypesThatInvalidate, () => {
     const { resultType, invalidationSet } = await helper(osdkObjectSet);
     expect(resultType).toEqual("Employee");
     expect([...invalidationSet]).toEqual([]);
+  });
+
+  it("resolves hydrated RID sets through filters and pivots", async () => {
+    const objectSet = hydrateObjectSetFromObjectRids(client, Employee, [])
+      .where({ employeeId: 1 })
+      .pivotTo("officeLink");
+
+    expect(await helper(objectSet)).toEqual({
+      resultType: "Office",
+      counts: { Employee: 1, Office: 1 },
+      invalidationSet: new Set(["Employee"]),
+    });
+  });
+
+  it("preserves source dependencies when narrowing an object type", async () => {
+    const objectSet = hydrateObjectSetFromObjectRids(client, Employee, [])
+      .pivotTo("officeLink")
+      .narrowToType({ type: "object", apiName: "Office" });
+
+    const { resultType, invalidationSet } = await helper(objectSet);
+    expect(resultType).toBe("Office");
+    expect(invalidationSet).toEqual(new Set(["Employee", "Office"]));
+  });
+
+  it("resolves interface narrowing and its concrete implementations", async () => {
+    const objectSet = hydrateObjectSetFromObjectRids(
+      client,
+      Employee,
+      [],
+    ).narrowToType(FooInterface);
+
+    const { resultType, invalidationSet } = await helper(objectSet);
+    expect(resultType).toBe("FooInterface");
+    expect(invalidationSet).toEqual(new Set(["Employee", "Person"]));
   });
 
   it("supports basic pivotTo another type", async () => {

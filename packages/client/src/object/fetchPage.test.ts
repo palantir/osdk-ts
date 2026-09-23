@@ -23,12 +23,23 @@ import type {
   PropertyKeys,
   SelectArgToKeys,
 } from "@osdk/api";
-import { Employee, FooInterface, Todo } from "@osdk/client.test.ontology";
+import {
+  BarInterface,
+  Employee,
+  FooInterface,
+  Todo,
+} from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/foundry.ontologies";
-import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import {
+  LegacyFauxFoundry,
+  MockOntologiesV2,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
 import pDefer from "p-defer";
 import { describe, expect, expectTypeOf, it, vi } from "vitest";
 
+import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import {
   buildSelectV2,
@@ -41,6 +52,7 @@ import {
   createObjectSet,
   getWireObjectSet,
 } from "../objectSet/createObjectSet.js";
+import { hydrateObjectSetFromObjectRidsNoType } from "../public-utils/hydrateObjectSetFromObjectRidsNoType.js";
 
 const metadata = {
   ontologyRid: "asdf",
@@ -215,6 +227,43 @@ describe(fetchPage, () => {
       },
       objectSet: { interfaceType: "FooInterface", type: "interfaceBase" },
     });
+  });
+
+  it("decodes the target interface after pivoting an untyped RID set", async () => {
+    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
+    testSetup.apiServer.use(
+      MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
+        testSetup.fauxFoundry.baseUrl,
+        () => ({
+          data: [stubData.employee50050],
+          interfaceToObjectTypeMappings: {
+            FooInterface: {
+              Employee: { fooSpt: "fullName", fooIdp: "office" },
+            },
+          },
+          totalCount: "1",
+          propertySecurities: [],
+        }),
+      ),
+    );
+
+    try {
+      const objectSet = hydrateObjectSetFromObjectRidsNoType(testSetup.client, [
+        "ri.phonograph2-objects.main.object.bar-1",
+      ])
+        .narrowToType(BarInterface)
+        .pivotTo("toFoo");
+      const { data } = await objectSet.fetchPage({ $includeRid: true });
+
+      expect(data).toHaveLength(1);
+      expect(data[0].$apiName).toBe(FooInterface.apiName);
+      expect(data[0].$objectType).toBe(Employee.apiName);
+      expect(data[0].$rid).toBe(stubData.employee50050.__rid);
+      expect(data[0].fooSpt).toBe(stubData.employee50050.fullName);
+      expect(data[0].fooIdp).toBe(stubData.employee50050.office);
+    } finally {
+      testSetup.apiServer.close();
+    }
   });
 
   it("where clause keys correctly typed", () => {
