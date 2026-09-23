@@ -19,25 +19,7 @@ import { importedTypes } from "../defineOntology.js";
 import type { InterfaceType } from "./InterfaceType.js";
 
 /**
- * Whether an interface has definitely opted into schema migrations.
- *
- * Unknown imported metadata is treated as not opted in, as required by the wire format.
- */
-export function isOptedIntoSchemaMigrations(
-  interfaceType: InterfaceType,
-): boolean {
-  return (
-    interfaceType.schemaMigrations !== undefined ||
-    interfaceType.schemaMigrationsEnabled === true
-  );
-}
-
-/**
  * Whether an interface has opted into schema migrations, preserving an unknown imported state.
- *
- * Imported interfaces rely on the upstream ontology's reported state because their transitions
- * are unavailable locally. Older imported metadata does not report that state, so it remains
- * unknown rather than being treated as opted out.
  */
 export function resolveSchemaMigrationsOptIn(
   interfaceType: InterfaceType,
@@ -45,9 +27,14 @@ export function resolveSchemaMigrationsOptIn(
   if (interfaceType.schemaMigrations !== undefined) {
     return true;
   }
+
   if (interfaceType.schemaMigrationsEnabled !== undefined) {
     return interfaceType.schemaMigrationsEnabled;
   }
+
+  // Imported types rely on the upstream ontology reporting the state (because their
+  // transitions are unavailable locally). Older imported metadata does not report that
+  // state, so we consider it unknown rather than treating it as opted out
   return isImportedInterfaceType(interfaceType) ? undefined : false;
 }
 
