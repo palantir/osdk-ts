@@ -80,6 +80,7 @@ function actionPropertyToSdkPropertyDefinition(
     case "string":
     case "boolean":
     case "attachment":
+    case "decimal":
     case "double":
     case "integer":
     case "long":

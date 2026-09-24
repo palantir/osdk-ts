@@ -638,6 +638,7 @@ export type FieldType =
   | "integer"
   | "long"
   | "double"
+  | "decimal"
   | "datetime"
   | "timestamp"
   | "attachment"
