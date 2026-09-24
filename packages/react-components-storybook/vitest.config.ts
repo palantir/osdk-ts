@@ -15,7 +15,9 @@
  */
 
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
-import { defineConfig } from "vitest/config";
+import { defineConfig, mergeConfig } from "vitest/config";
+
+import viteConfig from "./vite.config.js";
 
 // Runs every story as a Vitest test in a real (headless) browser:
 //  - stories without a play function get a render smoke test
@@ -25,35 +27,23 @@ import { defineConfig } from "vitest/config";
 // The storybookTest plugin reads .storybook (main.ts + preview.tsx), so the
 // MSW handlers, FauxFoundry client, and decorators that power the stories are
 // applied here exactly as they are in `storybook dev`.
-export default defineConfig({
-  plugins: [storybookTest({ configDir: ".storybook" })],
-  test: {
-    name: "storybook",
-    setupFiles: [".storybook/vitest.setup.ts"],
-    // Interaction tests drive real (MSW-mocked) async round-trips; give them
-    // room above Vitest's 5s default so a loaded CI runner doesn't trip the
-    // per-test timeout before a play function's own waitFor resolves.
-    testTimeout: 30_000,
-    browser: {
-      enabled: true,
-      provider: "playwright",
-      headless: true,
-      instances: [{ browser: "chromium" }],
+export default mergeConfig(
+  viteConfig,
+  defineConfig({
+    plugins: [storybookTest({ configDir: ".storybook" })],
+    test: {
+      name: "storybook",
+      setupFiles: [".storybook/vitest.setup.ts"],
+      // Interaction tests drive real (MSW-mocked) async round-trips; give them
+      // room above Vitest's 5s default so a loaded CI runner doesn't trip the
+      // per-test timeout before a play function's own waitFor resolves.
+      testTimeout: 30_000,
+      browser: {
+        enabled: true,
+        provider: "playwright",
+        headless: true,
+        instances: [{ browser: "chromium" }],
+      },
     },
-  },
-  // Pre-bundle the runtime deps the stories pull in. Without this, Vite
-  // discovers them mid-run and reloads the browser page, which closes the
-  // Vitest connection and reports "no tests" (especially on a cold CI cache).
-  optimizeDeps: {
-    // Pre-bundling merges date-fns v2 (used in @osdk/react-components) and v4 (used in @osdk/faux)
-    // normal resolution keeps them separate.
-    exclude: ["date-fns"],
-    include: [
-      "react",
-      "react-dom",
-      "react-dom/client",
-      "react/jsx-runtime",
-      "react/jsx-dev-runtime",
-    ],
-  },
-});
+  }),
+);
