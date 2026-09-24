@@ -35,6 +35,7 @@ export {
   OntologyBlockDataToFullMetadataConverter,
   resolveBlockDataApiName,
 } from "./OntologyBlockDataToFullMetadataConverter.js";
+export type { OntologyBlockDataWithValueTypes } from "./OntologyBlockDataWithValueTypes.js";
 export {
   type IDataType,
   type IDiscoveredFunction,

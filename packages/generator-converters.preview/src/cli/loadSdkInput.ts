@@ -22,6 +22,7 @@ import type {
   ValueTypeBlockData,
 } from "@osdk/client.unstable";
 import type { InputShape, OutputShape } from "@osdk/client.unstable/api";
+import type { OntologyBlockDataWithValueTypes } from "@osdk/generator-converters.ontologyir";
 
 type ValueTypeConnection = { rid: string; output: string };
 
@@ -44,7 +45,11 @@ export async function loadSdkInput(options: {
 
   const data = await readJson(inputFile);
   if (options.input !== undefined) {
-    return { ontology: getOntologyData(data, inputFile), valueTypes: {} };
+    const ontology = getOntologyData(
+      data,
+      inputFile,
+    ) as OntologyBlockDataWithValueTypes;
+    return { ontology, valueTypes: ontology.valueTypes };
   }
 
   const blocks = data as Record<string, unknown>[];

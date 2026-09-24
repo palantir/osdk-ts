@@ -49,6 +49,7 @@ import {
   generateValueTypeBlockResults,
   getValueTypeInternalMappings,
 } from "./generateValueTypeBlockResults.js";
+import { getOntologyBlockDataWithValueTypes } from "./getOntologyBlockDataWithValueTypes.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
 import type { InputMappingEntry } from "./marketplaceSerialization/supportingTypes.js";
 
@@ -265,7 +266,13 @@ export default async function main(
 
   // Write ontology.json to the block data directory
   const ontologyJsonPath = path.join(blockDataDir, "ontology.json");
-  const ontologyJson = JSON.stringify(ontologyIr.ontology, null, 2);
+  const ontologyBlockData = getOntologyBlockDataWithValueTypes(
+    ontologyIr.ontology,
+    ontologyIr.valueTypes,
+    importedTypes,
+    commandLineOpts.randomnessKey,
+  );
+  const ontologyJson = JSON.stringify(ontologyBlockData, null, 2);
   await fs.promises.writeFile(ontologyJsonPath, ontologyJson);
   consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
 
