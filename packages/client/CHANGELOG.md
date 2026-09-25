@@ -1,5 +1,13 @@
 # @osdk/client
 
+## 2.73.0
+
+### Patch Changes
+
+- @osdk/api@2.73.0
+- @osdk/client.unstable@2.73.0
+- @osdk/generator-converters@2.73.0
+
 ## 2.72.0
 
 ### Minor Changes
