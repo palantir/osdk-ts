@@ -115,6 +115,7 @@ export class ListsHelper extends AbstractHelper<
       rids,
       select,
       $loadPropertySecurityMetadata,
+      $UNSTABLE_loadOntologyDefinedDerivedProperties,
       resolveToObjectType,
     } = options;
     const { apiName, type } = typeDefinition;
@@ -164,6 +165,7 @@ export class ListsHelper extends AbstractHelper<
       $loadPropertySecurityMetadata ? true : undefined,
       $includeAllBaseObjectProperties,
       canonResolveToObjectType,
+      $UNSTABLE_loadOntologyDefinedDerivedProperties,
     );
 
     return this.store.queries.get(listCacheKey, () => {

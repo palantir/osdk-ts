@@ -112,4 +112,50 @@ describe("ObjectSetHelper RDP canonicalization", () => {
 
     expect(query.rdpConfig).toBeUndefined();
   });
+
+  it("includes the ontology-defined derived properties setting in collection cache keys", () => {
+    const baseObjectSet = client(Employee);
+    const baseOptions = {
+      srcType: Employee,
+      sourceUnderlyingObjectType: Employee.apiName,
+      pk: 1,
+      linkName: "lead" as const,
+    };
+    const settings = [undefined, false, true];
+
+    expect(
+      new Set(
+        settings.map(
+          (setting) =>
+            store.objectSets.getQuery({
+              baseObjectSet,
+              mode: "offline",
+              $UNSTABLE_loadOntologyDefinedDerivedProperties: setting,
+            }).cacheKey,
+        ),
+      ).size,
+    ).toBe(3);
+    expect(
+      new Set(
+        settings.map(
+          (setting) =>
+            store.lists.getQuery({
+              type: Employee,
+              $UNSTABLE_loadOntologyDefinedDerivedProperties: setting,
+            }).cacheKey,
+        ),
+      ).size,
+    ).toBe(3);
+    expect(
+      new Set(
+        settings.map(
+          (setting) =>
+            store.links.getQuery({
+              ...baseOptions,
+              $UNSTABLE_loadOntologyDefinedDerivedProperties: setting,
+            }).cacheKey,
+        ),
+      ).size,
+    ).toBe(3);
+  });
 });

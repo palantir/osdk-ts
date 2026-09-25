@@ -173,6 +173,16 @@ interface UseOsdkObjectsBaseOptions<
   $loadPropertySecurityMetadata?: boolean;
 
   /**
+   * Controls whether ontology-defined derived properties are loaded. When
+   * omitted, the server's default behavior is used.
+   *
+   * Setting this explicitly gives the query its own cache entry, separate from
+   * queries that leave it unset. Optimistic updates are not applied to that
+   * entry; it refreshes once the action completes.
+   */
+  $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
+
+  /**
    * When true, includes all properties of the underlying concrete object type
    * for interface queries. Has no effect for non-interface queries.
    */
@@ -305,6 +315,7 @@ export function useOsdkObjects<
     pivotTo,
     $select,
     $loadPropertySecurityMetadata,
+    $UNSTABLE_loadOntologyDefinedDerivedProperties,
     $includeAllBaseObjectProperties,
     resolveToObjectType,
   } = options ?? {};
@@ -352,6 +363,9 @@ export function useOsdkObjects<
             ...($loadPropertySecurityMetadata
               ? { $loadPropertySecurityMetadata }
               : {}),
+            ...($UNSTABLE_loadOntologyDefinedDerivedProperties != null
+              ? { $UNSTABLE_loadOntologyDefinedDerivedProperties }
+              : {}),
             ...(resolveToObjectType ? { resolveToObjectType: true } : {}),
           },
           observer,
@@ -381,6 +395,7 @@ export function useOsdkObjects<
     pivotTo,
     canonOptions.$select,
     $loadPropertySecurityMetadata,
+    $UNSTABLE_loadOntologyDefinedDerivedProperties,
     $includeAllBaseObjectProperties,
     !!resolveToObjectType,
   ]);

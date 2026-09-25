@@ -38,5 +38,6 @@ export interface ListQueryOptions<
   pivotTo?: string;
   $loadPropertySecurityMetadata?: boolean;
   $includeAllBaseObjectProperties?: boolean;
+  $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
   resolveToObjectType?: boolean;
 }

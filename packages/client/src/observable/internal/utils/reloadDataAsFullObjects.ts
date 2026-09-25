@@ -33,6 +33,7 @@ function groupBy<T>(arr: T[], fn: (item: T) => string): Record<string, T[]> {
 export async function reloadDataAsFullObjects(
   client: Client,
   data: Osdk.Instance<any>[],
+  loadOntologyDefinedDerivedProperties?: boolean,
 ): Promise<Osdk.Instance<any>[]> {
   if (data.length === 0) {
     return data;
@@ -64,7 +65,15 @@ export async function reloadDataAsFullObjects(
           .where(
             where as Parameters<ObjectSet<ObjectTypeDefinition>["where"]>[0],
           )
-          .fetchPage({ $includeRid: true });
+          .fetchPage({
+            $includeRid: true,
+            ...(loadOntologyDefinedDerivedProperties != null
+              ? {
+                  $UNSTABLE_loadOntologyDefinedDerivedProperties:
+                    loadOntologyDefinedDerivedProperties,
+                }
+              : {}),
+          });
         return [
           apiName,
           Object.fromEntries(result.data.map((x) => [x.$primaryKey, x])),

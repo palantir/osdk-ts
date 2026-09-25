@@ -35,7 +35,10 @@ import {
   mergeObjectFields,
   mergeSelectFields,
 } from "../utils/rdpFieldOperations.js";
-import { type ObjectCacheKey } from "./ObjectCacheKey.js";
+import {
+  LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX,
+  type ObjectCacheKey,
+} from "./ObjectCacheKey.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 
 function isSuperset(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
@@ -66,7 +69,12 @@ export class ObjectsHelper extends AbstractHelper<
       typeof options.apiName === "string"
         ? options.apiName
         : options.apiName.apiName;
-    const { pk, select, $loadPropertySecurityMetadata } = options;
+    const {
+      pk,
+      select,
+      $loadPropertySecurityMetadata,
+      $UNSTABLE_loadOntologyDefinedDerivedProperties,
+    } = options;
 
     const defType = getDefType(options.apiName);
     // The flag is interface-only on the server. Drop it for object queries so
@@ -89,6 +97,7 @@ export class ObjectsHelper extends AbstractHelper<
       canonSelect,
       $loadPropertySecurityMetadata ? true : undefined,
       $includeAllBaseObjectProperties,
+      $UNSTABLE_loadOntologyDefinedDerivedProperties,
     );
 
     return this.store.queries.get(
@@ -105,6 +114,7 @@ export class ObjectsHelper extends AbstractHelper<
           select,
           $loadPropertySecurityMetadata,
           $includeAllBaseObjectProperties,
+          $UNSTABLE_loadOntologyDefinedDerivedProperties,
         ),
     );
   }
@@ -125,6 +135,7 @@ export class ObjectsHelper extends AbstractHelper<
     selectFields?: ReadonlySet<string>,
     includeAllBaseObjectProperties?: boolean,
     computedRdpFields?: ReadonlySet<string>,
+    loadOntologyDefinedDerivedProperties?: boolean,
   ): ObjectCacheKey[] {
     const holders: ReadonlyArray<ObjectHolder | InterfaceHolder> =
       values as ReadonlyArray<ObjectHolder | InterfaceHolder>;
@@ -136,6 +147,8 @@ export class ObjectsHelper extends AbstractHelper<
           apiName: v.$objectType ?? v.$apiName,
           pk: v.$primaryKey,
           $includeAllBaseObjectProperties: includeAllBaseObjectProperties,
+          $UNSTABLE_loadOntologyDefinedDerivedProperties:
+            loadOntologyDefinedDerivedProperties,
         },
         rdpConfig,
       ).writeToStore(
@@ -227,6 +240,18 @@ export class ObjectsHelper extends AbstractHelper<
 
     for (const targetKey of relatedKeys) {
       if (targetKey === sourceCacheKey || !this.isKeyActive(targetKey)) {
+        continue;
+      }
+
+      const crossesDerivedPropertySetting =
+        targetKey.otherKeys[LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX] !==
+        sourceCacheKey.otherKeys[LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX];
+
+      // Values from one derived-property loading setting cannot populate a
+      // cache entry for another setting. This includes optimistic writes;
+      // explicit variants refresh after the action completes. Deletions remain
+      // safe to propagate to every variant.
+      if (value !== tombstone && crossesDerivedPropertySetting) {
         continue;
       }
 
