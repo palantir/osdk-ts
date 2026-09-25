@@ -17,20 +17,15 @@
 import React from "react";
 
 import { BaseCbacPickerDialog } from "./base/BaseCbacPickerDialog.js";
+import type { CbacPickerDialogProps } from "./CbacPickerApi.js";
 import { ConstraintCallout } from "./ConstraintCallout.js";
-import type { MaxClassificationConstraint } from "./types.js";
 import { useCbacSelection } from "./useCbacSelection.js";
 import { getSubmitDisabledReason } from "./utils/validationMessages.js";
 
-export interface CbacPickerDialogProps {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-  onConfirm: (markingIds: string[]) => void;
-  initialMarkingIds?: string[];
-  maxClassificationConstraint?: MaxClassificationConstraint;
-}
+export type { CbacPickerDialogProps } from "./CbacPickerApi.js";
 
 export function CbacPickerDialog({
+  autoFetchMore,
   isOpen,
   onOpenChange,
   onConfirm,
@@ -51,7 +46,7 @@ export function CbacPickerDialog({
     toggle,
     dismiss,
     reset,
-  } = useCbacSelection(initialMarkingIds);
+  } = useCbacSelection(initialMarkingIds, autoFetchMore);
 
   // Parent controls dialog close on confirm (e.g. to show a loading state)
   const handleConfirm = React.useCallback(() => {

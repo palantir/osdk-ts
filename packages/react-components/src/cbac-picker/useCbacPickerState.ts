@@ -62,6 +62,7 @@ function useStableArray(arr: string[]): string[] {
 
 export function useCbacPickerState(
   selectedIds: string[],
+  autoFetchMore?: boolean | number,
 ): UseCbacPickerStateResult {
   const stableSelectedIds = useStableArray(selectedIds);
   const {
@@ -69,13 +70,13 @@ export function useCbacPickerState(
     isLoading: categoriesLoading,
     error: categoriesError,
     refetch: refetchCategories,
-  } = useMarkingCategories();
+  } = useMarkingCategories({ autoFetchMore });
   const {
     markings: rawMarkings,
     isLoading: markingsLoading,
     error: markingsError,
     refetch: refetchMarkings,
-  } = useMarkings();
+  } = useMarkings({ autoFetchMore });
   const {
     banner: latestBanner,
     isLoading: bannerLoading,
@@ -131,11 +132,25 @@ export function useCbacPickerState(
   }, [refetchCategories, refetchMarkings, refetchBanner, refetchRestrictions]);
 
   const categoryGroups = React.useMemo((): CategoryMarkingGroup[] => {
-    if (rawCategories === undefined || rawMarkings === undefined) {
+    if (
+      rawCategories === undefined ||
+      rawMarkings === undefined ||
+      categoriesLoading ||
+      markingsLoading ||
+      categoriesError ||
+      markingsError
+    ) {
       return [];
     }
     return groupMarkingsByCategory(rawMarkings, rawCategories);
-  }, [rawMarkings, rawCategories]);
+  }, [
+    rawMarkings,
+    rawCategories,
+    categoriesLoading,
+    markingsLoading,
+    categoriesError,
+    markingsError,
+  ]);
 
   const markingStates = React.useMemo(
     () =>
