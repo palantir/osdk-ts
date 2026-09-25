@@ -1,5 +1,0 @@
-type: improvement
-improvement:
-  description: Partial interface down selection and conversion to object and back
-  links:
-  - https://github.com/palantir/osdk-ts/pull/107
