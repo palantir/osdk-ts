@@ -44,7 +44,12 @@ describe("parseLinkType", () => {
 
   it("throws error for link type without any dot", () => {
     expect(() => parseLinkType("InvalidLinkType")).toThrow(
-      "Invalid link type format: \"InvalidLinkType\". Expected format: \"ObjectTypeApiName.linkTypeApiName\"",
+      expect.objectContaining({
+        message:
+          `Invalid link type format. Expected format: "ObjectTypeApiName.linkTypeApiName"`,
+        params: undefined,
+        unsafeParams: { linkType: "InvalidLinkType" },
+      }),
     );
   });
 

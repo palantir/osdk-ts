@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { GeneratorError } from "@osdk/generator-converters";
 import {
   authHandlerMiddleware,
   LegacyFauxFoundry,
@@ -106,14 +107,32 @@ describe("Load Ontologies Metadata", () => {
       throw new Error();
     }
 
-    expect(ontologyDefinitions.error).toMatchInlineSnapshot(`
-      [
-        "Unable to find the following Object Types: objectDoesNotExist",
-        "Link types were specified for Object Type employee (doesNotExist), but it was not included in --objectTypes. Please add --objectTypes employee",
-        "Unable to find the following Query Types: queryDoesNotExist",
-        "Unable to find the following Action Types: action-does-not-exit",
-      ]
-    `);
+    expect(errorDetails(ontologyDefinitions.error)).toEqual([
+      {
+        message: "Unable to find the following object types",
+        params: undefined,
+        unsafeParams: { objectTypeApiNames: ["objectDoesNotExist"] },
+      },
+      {
+        message:
+          "Link types were specified for object type, but it was not included in --objectTypes. Please add --objectTypes <objectTypeApiName>",
+        params: undefined,
+        unsafeParams: {
+          linkTypeApiNames: ["doesNotExist"],
+          objectTypeApiName: "employee",
+        },
+      },
+      {
+        message: "Unable to find requested query types",
+        params: undefined,
+        unsafeParams: { queryTypeApiNames: ["queryDoesNotExist"] },
+      },
+      {
+        message: "Unable to find the following action types",
+        params: undefined,
+        unsafeParams: { actionTypeApiNames: ["action-does-not-exit"] },
+      },
+    ]);
   });
 
   it("Fails when link types reference object types not in --objectTypes", async () => {
@@ -138,11 +157,17 @@ describe("Load Ontologies Metadata", () => {
       throw new Error();
     }
 
-    expect(ontologyDefinitions.error).toMatchInlineSnapshot(`
-      [
-        "Link types were specified for Object Type invalid (invalid), but it was not included in --objectTypes. Please add --objectTypes invalid",
-      ]
-    `);
+    expect(errorDetails(ontologyDefinitions.error)).toEqual([
+      {
+        message:
+          "Link types were specified for object type, but it was not included in --objectTypes. Please add --objectTypes <objectTypeApiName>",
+        params: undefined,
+        unsafeParams: {
+          linkTypeApiNames: ["invalid"],
+          objectTypeApiName: "invalid",
+        },
+      },
+    ]);
   });
 
   it("Captures errors while loading wire ontology definition", async () => {
@@ -194,13 +219,36 @@ describe("Load Ontologies Metadata", () => {
       throw new Error();
     }
 
-    expect(ontologyDefinitions.error).toMatchInlineSnapshot(`
-      [
-        "Unable to load query returnsObject because it takes an unloaded object type as a parameter: Employee in parameter output. Make sure to specify it as an argument with --ontologyObjects Employee.}",
-        "Unable to load action unsupportedAction because it takes an unsupported parameter: {"type":"unsupportedType"} specify only the actions you want to load with the --actions argument.",
-        "Unable to load action unsupportedAction because it takes an unloaded object type as a parameter: unsupported make sure to specify it as an argument with --ontologyObjects unsupported)",
-      ]
-    `);
+    expect(errorDetails(ontologyDefinitions.error)).toEqual([
+      {
+        message:
+          "Unable to load query because it takes an unloaded object type as a parameter. Make sure to specify it as an argument with --ontologyObjects <objectTypeApiName>.",
+        params: undefined,
+        unsafeParams: {
+          objectTypeApiName: "Employee",
+          propertyName: "output",
+          queryApiName: "returnsObject",
+        },
+      },
+      {
+        message:
+          "Unable to load action because it takes an unsupported parameter. Specify only the actions you want to load with the --actions argument.",
+        params: undefined,
+        unsafeParams: {
+          actionApiName: "unsupportedAction",
+          actionParameterType: "{\"type\":\"unsupportedType\"}",
+        },
+      },
+      {
+        message:
+          "Unable to load action because it takes an unloaded object type as a parameter. Make sure to specify it as an argument with --ontologyObjects <objectTypeApiName>.",
+        params: undefined,
+        unsafeParams: {
+          actionApiName: "unsupportedAction",
+          objectTypeApiName: "unsupported",
+        },
+      },
+    ]);
   });
 
   it("Does not load any entity type using generatePackageV2", async () => {
@@ -365,11 +413,17 @@ describe("Load Ontologies Metadata", () => {
       throw new Error();
     }
 
-    expect(ontologyDefinitions.error).toMatchInlineSnapshot(`
-      [
-        "Unable to load action deleteFooInterface because it takes an unloaded interface type as a parameter: FooInterface make sure to specify it as an argument with --interfaceTypes FooInterface",
-      ]
-    `);
+    expect(errorDetails(ontologyDefinitions.error)).toEqual([
+      {
+        message:
+          "Unable to load action because it takes an unloaded interface type as a parameter. Make sure to specify it as an argument with --interfaceTypes <interfaceTypeApiName>.",
+        params: undefined,
+        unsafeParams: {
+          actionApiName: "deleteFooInterface",
+          interfaceTypeApiName: "FooInterface",
+        },
+      },
+    ]);
   });
 
   describe("Load ontology metadata with query types with versions", () => {
@@ -475,9 +529,21 @@ describe("Load Ontologies Metadata", () => {
       if (ontologyDefinitions.isOk()) {
         throw new Error("Expected duplicate query references to be rejected");
       }
-      expect(ontologyDefinitions.error).toEqual([
-        "Query type addOne was specified multiple times.",
+      expect(errorDetails(ontologyDefinitions.error)).toEqual([
+        {
+          message: "Query type was specified multiple times",
+          params: undefined,
+          unsafeParams: { queryTypeApiName: "addOne" },
+        },
       ]);
     });
   });
 });
+
+function errorDetails(errors: GeneratorError[]) {
+  return errors.map(({ message, params, unsafeParams }) => ({
+    message,
+    params,
+    unsafeParams,
+  }));
+}
