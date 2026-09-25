@@ -46,9 +46,10 @@
     "@osdk/shared.client2": "^1.0.0"
   },
   "peerDependencies": {
-    "@osdk/client": "workspace:^"
+    "@osdk/client": "^2.8.0"
   },
   "devDependencies": {
+    "@osdk/client": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/node": "^18.19.0",
