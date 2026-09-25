@@ -255,9 +255,19 @@ export class GeneratePackageCommand implements
         );
 
         if (wireOntologyDefinition.isErr()) {
-          logger.error("Failed loading ontology metadata", {
-            unsafeParams: { errors: wireOntologyDefinition.error },
-          });
+          logger.error(
+            `Encountered ${wireOntologyDefinition.error.length} errors loading or validating ontology metadata`,
+          );
+          for (const error of wireOntologyDefinition.error) {
+            logger.error(
+              error.message,
+              {
+                params: error.params,
+                unsafeParams: error.unsafeParams,
+              },
+              error,
+            );
+          }
           exit(1);
         }
 
