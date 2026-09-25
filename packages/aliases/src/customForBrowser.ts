@@ -19,6 +19,18 @@ import type { Custom } from "./types.js";
 
 export type { Custom } from "./types.js";
 
+declare global {
+  interface ImportMetaEnv {
+    DEV: boolean;
+    MODE: string;
+    BASE_URL: string;
+  }
+
+  interface ImportMeta {
+    readonly env: ImportMetaEnv;
+  }
+}
+
 /**
  * `resources.json` contains author defaults during local development and
  * installer-resolved values on an installed site.
@@ -101,6 +113,10 @@ async function fetchJson(
 
 function resolveUrl(path: string): string {
   if (typeof window !== "undefined") {
+    const env = import.meta.env;
+    if (env?.DEV && env.MODE === "code-workspaces" && env.BASE_URL) {
+      path = `${env.BASE_URL.replace(/\/$/u, "")}${path}`;
+    }
     return new URL(path, window.location.origin).toString();
   }
   return path;
