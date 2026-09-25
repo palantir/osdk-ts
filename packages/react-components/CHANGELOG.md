@@ -1,5 +1,12 @@
 # @osdk/react-components
 
+## 0.60.0
+
+### Patch Changes
+
+- Updated dependencies [458ea60]
+  - @osdk/aip-core@0.12.0
+
 ## 0.59.0
 
 ### Minor Changes

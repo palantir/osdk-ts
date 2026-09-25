@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.73.0
+
+### Minor Changes
+
+- a0d1f1a: Require a whole interface hierarchy to opt into interface schema migrations together, rather than one interface at a time.
+- a3d87ea: Clean up internal ontology schema lockfile validation terminology and tests.
+- 50a7d66: Return a render hint for struct and structList action parameters instead of throwing.
+
+### Patch Changes
+
+- @osdk/api@2.73.0
+- @osdk/generator-converters.ontologyir@2.73.0
+
 ## 0.72.0
 
 ### Minor Changes

@@ -1,5 +1,15 @@
 # @osdk/widget.api
 
+## 3.72.0
+
+### Minor Changes
+
+- d414a46: Add allow-modals to the supported widget browser permissions
+
+### Patch Changes
+
+- @osdk/api@2.73.0
+
 ## 3.71.0
 
 ### Minor Changes
