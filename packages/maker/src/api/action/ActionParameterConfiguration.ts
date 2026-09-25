@@ -22,6 +22,7 @@ import type {
 import type { ActionParameterAllowedValues } from "./ActionParameterAllowedValues.js";
 import type { ActionParameterConditionalOverride } from "./ActionParameterConditionalOverride.js";
 import type { ActionParameterType } from "./ActionParameterType.js";
+import type { StructFieldDefaultValue } from "./StructFieldDefaultValue.js";
 
 export interface ActionParameterConfiguration {
   allowedValues?: ActionParameterAllowedValues;
@@ -47,8 +48,14 @@ export type StructFieldValidationConfiguration = Omit<
   | "structFieldValidations"
 > & {
   conditionalOverrides?: Array<
-    Exclude<ActionParameterConditionalOverride, { type: "defaultValue" }>
+    | Exclude<ActionParameterConditionalOverride, { type: "defaultValue" }>
+    | (Omit<
+        Extract<ActionParameterConditionalOverride, { type: "defaultValue" }>,
+        "defaultValue"
+      > & { defaultValue: StructFieldDefaultValue })
   >;
+  /** Set to null to disable the default inferred by modify action helpers. */
+  defaultValue?: StructFieldDefaultValue | null;
   required?: boolean;
 };
 

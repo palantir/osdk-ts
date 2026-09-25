@@ -24,6 +24,7 @@ import type {
 import invariant from "tiny-invariant";
 
 import { convertConditionDefinition } from "../conversion/toMarketplace/convertConditionDefinition.js";
+import { getObject } from "../conversion/toMarketplace/convertLink.js";
 import type { ActionLevelValidationDefinition } from "./action/ActionLevelValidationDefinition.js";
 import { type ActionParameter } from "./action/ActionParameter.js";
 import type { ActionParameterAllowedValues } from "./action/ActionParameterAllowedValues.js";
@@ -40,6 +41,7 @@ import type { ActionValidationRule } from "./action/ActionValidationRule.js";
 import type { ConditionDefinition } from "./action/ConditionDefinition.js";
 import type { DefaultFormat } from "./action/DefaultFormat.js";
 import type { MappingValue } from "./action/MappingValue.js";
+import type { StructFieldDefaultValue } from "./action/StructFieldDefaultValue.js";
 import type { SubmissionMetadata } from "./action/SubmissionMetadata.js";
 import type { TableConfiguration } from "./action/TableConfiguration.js";
 import { cloneDefinition } from "./cloneDefinition.js";
@@ -1141,8 +1143,111 @@ function validateActionConfiguration(action: ActionType): void {
       action.parameters,
       param.defaultValue,
     );
+    for (const [fieldApiName, configuration] of Object.entries(
+      param.validation.structFieldValidations ?? {},
+    )) {
+      validateStructFieldDefaultValue(
+        param,
+        fieldApiName,
+        configuration.defaultValue,
+        seenParameterIds,
+        action.parameters,
+      );
+      for (const override of configuration.conditionalOverrides ?? []) {
+        validateParameterCondition(
+          override.condition,
+          param.id,
+          seenParameterIds,
+          action.parameters,
+        );
+        if (override.type === "defaultValue") {
+          validateStructFieldDefaultValue(
+            param,
+            fieldApiName,
+            override.defaultValue,
+            seenParameterIds,
+            action.parameters,
+          );
+        }
+      }
+    }
     seenParameterIds.add(param.id);
   });
+}
+
+function validateStructFieldDefaultValue(
+  parameter: ActionParameter,
+  fieldApiName: string,
+  defaultValue: StructFieldDefaultValue | null | undefined,
+  seenParameterIds: Set<ParameterId>,
+  parameters?: ActionParameter[],
+): void {
+  if (defaultValue == null) return;
+  const context = `Default value for struct field ${parameter.id}.${fieldApiName}`;
+  invariant(
+    typeof parameter.type !== "string" &&
+      (parameter.type.type === "struct" ||
+        parameter.type.type === "structList"),
+    `${context} requires a struct parameter`,
+  );
+  const targetFields =
+    parameter.type.type === "struct"
+      ? parameter.type.struct.structFieldTypes
+      : parameter.type.structList.structFieldTypes;
+  const targetField = targetFields[fieldApiName];
+  invariant(
+    targetField != null,
+    `${context} references an unknown target field`,
+  );
+  const reference =
+    defaultValue.type === "objectParameterStructFieldValue"
+      ? defaultValue.objectParameterStructFieldValue
+      : defaultValue.objectParameterStructListFieldValue;
+  const sourceParameter = parameters?.find(
+    (p) => p.id === reference.parameterId,
+  );
+  invariant(
+    sourceParameter != null,
+    `${context} is referencing unknown parameter ${reference.parameterId}`,
+  );
+  invariant(
+    seenParameterIds.has(reference.parameterId),
+    `${context} must reference an earlier parameter: ${reference.parameterId}`,
+  );
+  invariant(
+    typeof sourceParameter.type !== "string" &&
+      sourceParameter.type.type === "objectReference",
+    `${context} must reference a single object parameter`,
+  );
+  const sourceObject = getObject(
+    sourceParameter.type.objectReference.objectTypeId,
+  ).object;
+  const sourceProperty = getProperty(sourceObject, reference.propertyTypeId);
+  invariant(
+    sourceProperty != null && isStruct(sourceProperty.type),
+    `${context} references unknown or non-struct property ${reference.propertyTypeId}`,
+  );
+  const isList = defaultValue.type === "objectParameterStructListFieldValue";
+  invariant(
+    (sourceProperty.array === true) === isList &&
+      (parameter.type.type === "structList") === isList,
+    `${context} must match the source and target struct cardinality`,
+  );
+  const sourceField =
+    sourceProperty.type.structDefinition[reference.structFieldApiName];
+  invariant(
+    sourceField != null,
+    `${context} references unknown source field ${reference.structFieldApiName}`,
+  );
+  const sourceFieldType = extractStructFieldParameterType(
+    typeof sourceField === "object" && "fieldType" in sourceField
+      ? sourceField.fieldType
+      : sourceField,
+  );
+  invariant(
+    sourceFieldType.type === targetField.type,
+    `${context} has an incompatible source field type`,
+  );
 }
 
 function validateParameterCondition(
