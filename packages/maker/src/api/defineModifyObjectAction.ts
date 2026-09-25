@@ -36,7 +36,7 @@ import {
   getPropertyKeys,
   toPropertyMap,
 } from "./object/objectPropertyHelpers.js";
-import { isStruct } from "./properties/PropertyTypeType.js";
+import { setObjectPropertyDefaults } from "./setObjectPropertyDefaults.js";
 
 export function defineModifyObjectAction(
   defInput: ActionTypeUserDefinition,
@@ -74,19 +74,11 @@ export function defineModifyObjectAction(
     toPropertyMap(def.objectType),
     parameterNames,
   );
-  parameters.forEach((p) => {
-    // create prefilled parameters for object type properties unless overridden
-    const property = getProperty(def.objectType, p.id);
-    if (property && !isStruct(property.type) && p.defaultValue === undefined) {
-      p.defaultValue = {
-        type: "objectParameterPropertyValue",
-        objectParameterPropertyValue: {
-          parameterId: MODIFY_OBJECT_PARAMETER,
-          propertyTypeId: p.id,
-        },
-      };
-    }
-  });
+  setObjectPropertyDefaults(
+    parameters,
+    def.objectType,
+    MODIFY_OBJECT_PARAMETER,
+  );
 
   const mappings = Object.fromEntries(
     Object.entries(def.nonParameterMappings ?? {}).map(([id, value]) => [
