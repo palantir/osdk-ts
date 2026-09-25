@@ -72,6 +72,7 @@ export interface Book extends $ObjectTypeDefinition {
     props: Book.Props;
     linksType: Book.Links;
     strictProps: Book.StrictProps;
+    requiredCreatePropertyKeys: 'id';
     apiName: 'Book';
     description: '';
     displayName: 'Book';

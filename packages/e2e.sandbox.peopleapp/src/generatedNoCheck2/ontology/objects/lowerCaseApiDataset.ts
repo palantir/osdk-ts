@@ -56,6 +56,7 @@ export interface lowerCaseApiDataset extends $ObjectTypeDefinition {
     props: lowerCaseApiDataset.Props;
     linksType: lowerCaseApiDataset.Links;
     strictProps: lowerCaseApiDataset.StrictProps;
+    requiredCreatePropertyKeys: 'primaryKey_';
     apiName: 'lowerCaseApiDataset';
     description: 'lowerCase testing';
     displayName: 'lower Case Api Dataset';

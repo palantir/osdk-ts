@@ -21,13 +21,13 @@ import {
   stubData,
 } from "@osdk/shared.test";
 import { http, HttpResponse } from "msw";
-import type { SetupServerApi } from "msw/node";
+import type { SetupServer } from "msw/node";
 import { beforeAll, describe, expect, it } from "vitest";
 import { OntologyMetadataResolver } from "./ontologyMetadataResolver.js";
 
 describe("Load Ontologies Metadata", () => {
   let ontologyMetadataResolver: OntologyMetadataResolver;
-  let apiServer: SetupServerApi;
+  let apiServer: SetupServer;
 
   beforeAll(async () => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry());
