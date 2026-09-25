@@ -85,6 +85,7 @@ export function defineObject(
     isValidObjectApiName(objectDef.apiName),
     `Invalid API name ${objectDef.apiName}. API names must match the regex ${OBJECT_API_NAME_PATTERN}.`,
   );
+  const propertyBySharedPropertyType = new Map<string, string>();
   propertyApiNames.forEach((apiName) => {
     invariant(
       isValidApiName(apiName),
@@ -95,6 +96,18 @@ export function defineObject(
         objectDef.properties[apiName].type === "mediaReference",
       `Property ${apiName} on object ${objectDef.apiName} can only use includeEmptyBackingMediaSet when its type is mediaReference`,
     );
+    const sharedPropertyType =
+      objectDef.properties?.[apiName]?.sharedPropertyType;
+    if (sharedPropertyType !== undefined) {
+      const previousProperty = propertyBySharedPropertyType.get(
+        sharedPropertyType.apiName,
+      );
+      invariant(
+        previousProperty === undefined,
+        `Shared property type "${sharedPropertyType.apiName}" cannot back both "${previousProperty}" and "${apiName}" on object "${objectDef.apiName}". A shared property type can only back one property per object.`,
+      );
+      propertyBySharedPropertyType.set(sharedPropertyType.apiName, apiName);
+    }
   });
   invariant(
     propertyApiNames.includes(objectDef.titlePropertyApiName),
