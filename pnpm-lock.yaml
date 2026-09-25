@@ -1898,9 +1898,6 @@ importers:
 
   packages/aip-core:
     dependencies:
-      '@osdk/client':
-        specifier: workspace:^
-        version: link:../client
       '@osdk/language-models':
         specifier: workspace:*
         version: link:../language-models
@@ -1908,6 +1905,9 @@ importers:
       '@ai-sdk/provider':
         specifier: ^3.0.8
         version: 3.0.8
+      '@osdk/client':
+        specifier: workspace:*
+        version: link:../client
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -4643,9 +4643,6 @@ importers:
 
   packages/language-models:
     dependencies:
-      '@osdk/client':
-        specifier: workspace:^
-        version: link:../client
       '@osdk/shared.client':
         specifier: ^1.0.1
         version: 1.0.1
@@ -4653,6 +4650,9 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
     devDependencies:
+      '@osdk/client':
+        specifier: workspace:*
+        version: link:../client
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
