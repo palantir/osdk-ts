@@ -334,6 +334,66 @@ describe("writeImportedOntology", () => {
     expect(actionFile).toContain("export const createEmployee");
   });
 
+  // TODO: once the public API picks up schemaMigrationsEnabled, we can drop the "as unknown as" cast
+  function metadataWithInterface(
+    iface: Record<string, unknown>,
+  ): Ontologies.OntologyFullMetadata {
+    return {
+      ...sampleMetadata,
+      interfaceTypes: {
+        "com.example.Named": {
+          rid: "ri.ontology.main.interface.1",
+          apiName: "com.example.Named",
+          displayName: "Named",
+          properties: {},
+          allProperties: {},
+          propertiesV2: {},
+          allPropertiesV2: {},
+          extendsInterfaces: [],
+          allExtendsInterfaces: [],
+          implementedByObjectTypes: [],
+          links: {},
+          allLinks: {},
+          ...iface,
+        },
+      },
+    } as unknown as Ontologies.OntologyFullMetadata;
+  }
+
+  function generatedInterfaceFile(
+    metadata: Ontologies.OntologyFullMetadata,
+  ): string {
+    writeImportedOntology(metadata, TEST_OUTPUT_DIR);
+    return fs.readFileSync(
+      path.join(TEST_OUTPUT_DIR, "codegen/interface-types/named.ts"),
+      "utf-8",
+    );
+  }
+
+  it("preserves interface schema migration opt-in metadata", () => {
+    const interfaceFile = generatedInterfaceFile(
+      metadataWithInterface({ schemaMigrationsEnabled: true }),
+    );
+
+    expect(interfaceFile).toContain('"schemaMigrationsEnabled": true');
+  });
+
+  it("preserves an explicit opt-out", () => {
+    const interfaceFile = generatedInterfaceFile(
+      metadataWithInterface({ schemaMigrationsEnabled: false }),
+    );
+
+    expect(interfaceFile).toContain('"schemaMigrationsEnabled": false');
+  });
+
+  // Until it's broadly reported, we take absent to mean "unknown" rather than forcing it to
+  // false which would prevent any local IT extending it from opting into interface schema migrations
+  it("omits the opt-in flag when the source metadata does not report one", () => {
+    const interfaceFile = generatedInterfaceFile(metadataWithInterface({}));
+
+    expect(interfaceFile).not.toContain("schemaMigrationsEnabled");
+  });
+
   it("generates index.ts with re-exports", () => {
     writeImportedOntology(sampleMetadata, TEST_OUTPUT_DIR);
 
