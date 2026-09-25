@@ -20,6 +20,7 @@ import type {
   ActionParameterType,
   ObjectPropertyType,
   QueryDataType,
+  ValueTypeConstraint,
 } from "@osdk/foundry.ontologies";
 import { consola } from "consola";
 import * as immer from "immer";
@@ -522,6 +523,259 @@ describe("generator", () => {
   let helper: ReturnType<typeof createMockMinimalFiles>;
   beforeEach(async () => {
     helper = createMockMinimalFiles();
+  });
+
+  describe("value type constraints", () => {
+    const enumConstraint: ValueTypeConstraint = {
+      type: "enum",
+      options: ["A", "B"],
+    };
+    const lengthConstraint: ValueTypeConstraint = {
+      type: "length",
+      maximumLength: 10,
+    };
+    const emptyEnum: ValueTypeConstraint = { type: "enum", options: [] };
+
+    it.each<{
+      name: string;
+      constraints: ValueTypeConstraint[];
+      expectedType: string;
+    }>([
+      {
+        name: "enum before length",
+        constraints: [enumConstraint, lengthConstraint],
+        expectedType: "'A' | 'B'",
+      },
+      {
+        name: "enum after length",
+        constraints: [lengthConstraint, enumConstraint],
+        expectedType: "'A' | 'B'",
+      },
+      {
+        name: "no enum",
+        constraints: [lengthConstraint, {
+          type: "regex",
+          pattern: "[A-Z]+",
+          partialMatch: false,
+        }],
+        expectedType: "$PropType['string']",
+      },
+      {
+        name: "no constraints",
+        constraints: [],
+        expectedType: "$PropType['string']",
+      },
+      {
+        name: "one enum",
+        constraints: [enumConstraint],
+        expectedType: "'A' | 'B'",
+      },
+      {
+        name: "empty enum",
+        constraints: [emptyEnum, lengthConstraint],
+        expectedType: "never",
+      },
+      {
+        name: "empty enum before another enum",
+        constraints: [emptyEnum, enumConstraint],
+        expectedType: "never",
+      },
+      {
+        name: "empty enum after another enum",
+        constraints: [enumConstraint, emptyEnum],
+        expectedType: "never",
+      },
+      {
+        name: "overlapping enums",
+        constraints: [enumConstraint, { type: "enum", options: ["B", "C"] }],
+        expectedType: "'B'",
+      },
+      {
+        name: "overlapping enums in reverse order",
+        constraints: [{ type: "enum", options: ["B", "C"] }, enumConstraint],
+        expectedType: "'B'",
+      },
+      {
+        name: "an enum and a superset",
+        constraints: [enumConstraint, {
+          type: "enum",
+          options: ["A", "B", "C"],
+        }],
+        expectedType: "'A' | 'B'",
+      },
+      {
+        name: "disjoint enums",
+        constraints: [enumConstraint, { type: "enum", options: ["C", "D"] }],
+        expectedType: "never",
+      },
+      {
+        name: "an empty intersection followed by another enum",
+        constraints: [
+          enumConstraint,
+          { type: "enum", options: ["C", "D"] },
+          enumConstraint,
+        ],
+        expectedType: "never",
+      },
+    ])("generates string properties with $name", async ({
+      constraints,
+      expectedType,
+    }) => {
+      const ontology = immer.produce(TodoWireOntology, draft => {
+        draft.valueTypes.emailValueType.constraints = constraints;
+      });
+      await generateClientSdkVersionTwoPointZero(
+        ontology,
+        "",
+        helper.minimalFiles,
+        BASE_PATH,
+      );
+      expect(helper.getFiles()[`${BASE_PATH}/ontology/objects/Person.ts`])
+        .toContain(`readonly email: ${expectedType};`);
+    });
+
+    it.each<{
+      name: string;
+      constraints: ValueTypeConstraint[];
+      expectedType: string;
+    }>([
+      {
+        name: "enum after an unsupported constraint",
+        constraints: [
+          { type: "unsupported", unsupportedType: "custom", params: {} },
+          { type: "enum", options: [true, null] },
+        ],
+        expectedType: "true",
+      },
+      {
+        name: "overlapping enums",
+        constraints: [
+          { type: "enum", options: [true, false] },
+          { type: "enum", options: [false, null] },
+        ],
+        expectedType: "false",
+      },
+      {
+        name: "disjoint enums",
+        constraints: [
+          { type: "enum", options: [true] },
+          { type: "enum", options: [false] },
+        ],
+        expectedType: "never",
+      },
+      {
+        name: "null-only enum",
+        constraints: [
+          { type: "enum", options: [null] },
+          { type: "enum", options: [false] },
+        ],
+        expectedType: "never",
+      },
+    ])(
+      "generates nullable boolean properties with $name",
+      async ({ constraints, expectedType }) => {
+        const ontology = immer.produce(TodoWireOntology, draft => {
+          draft.objectTypes.Todo.objectType.properties.complete
+            .valueTypeApiName = "completeValueType";
+          draft.valueTypes.completeValueType = {
+            apiName: "completeValueType",
+            displayName: "Complete Value Type",
+            rid: "completeValueTypeRid",
+            version: "1.0.0",
+            fieldType: { type: "boolean" },
+            constraints,
+          };
+        });
+        await generateClientSdkVersionTwoPointZero(
+          ontology,
+          "",
+          helper.minimalFiles,
+          BASE_PATH,
+        );
+        expect(helper.getFiles()[`${BASE_PATH}/ontology/objects/Todo.ts`])
+          .toContain(`readonly complete: ${expectedType} | undefined;`);
+      },
+    );
+
+    it.each([false, true])(
+      "generates array enums with size constraint first %s",
+      async (sizeFirst) => {
+        const ontology = immer.produce(TodoWireOntology, draft => {
+          const constraints = draft.valueTypes.arrayValueType.constraints;
+          constraints.push({
+            type: "array",
+            uniqueValues: false,
+            minimumSize: 1,
+          });
+          if (sizeFirst) {
+            constraints.reverse();
+          }
+        });
+        await generateClientSdkVersionTwoPointZero(
+          ontology,
+          "",
+          helper.minimalFiles,
+          BASE_PATH,
+        );
+        expect(helper.getFiles()[`${BASE_PATH}/ontology/objects/Todo.ts`])
+          .toContain(`readonly array: ('a' | 'b"c' | "d'e")[] | undefined;`);
+      },
+    );
+
+    it.each([
+      { options: ["a", "b\"c"], expectedType: `('a' | 'b"c')[]` },
+      { options: ["C", "D"], expectedType: "never[]" },
+    ])(
+      "intersects array enums as $expectedType",
+      async ({ options, expectedType }) => {
+        const ontology = immer.produce(TodoWireOntology, draft => {
+          draft.valueTypes.arrayValueType.constraints.push({
+            type: "array",
+            valueConstraint: { type: "enum", options },
+            uniqueValues: false,
+          });
+        });
+        await generateClientSdkVersionTwoPointZero(
+          ontology,
+          "",
+          helper.minimalFiles,
+          BASE_PATH,
+        );
+        expect(helper.getFiles()[`${BASE_PATH}/ontology/objects/Todo.ts`])
+          .toContain(`readonly array: ${expectedType} | undefined;`);
+      },
+    );
+
+    it("intersects interface property enums", async () => {
+      const ontology = immer.produce(TodoWireOntology, draft => {
+        draft.valueTypes.interfaceValueType = {
+          ...draft.valueTypes.emailValueType,
+          apiName: "interfaceValueType",
+          rid: "interfaceValueTypeRid",
+          constraints: [lengthConstraint, enumConstraint, {
+            type: "enum",
+            options: ["B", "C"],
+          }],
+        };
+        const interfaceType = draft.interfaceTypes.SomeInterface;
+        interfaceType.properties.SomeProperty.valueTypeApiName =
+          "interfaceValueType";
+        interfaceType.allProperties.SomeProperty.valueTypeApiName =
+          "interfaceValueType";
+        draft.sharedPropertyTypes.SomeProperty.valueTypeApiName =
+          "interfaceValueType";
+      });
+      await generateClientSdkVersionTwoPointZero(
+        ontology,
+        "",
+        helper.minimalFiles,
+        BASE_PATH,
+      );
+      expect(
+        helper.getFiles()[`${BASE_PATH}/ontology/interfaces/SomeInterface.ts`],
+      )
+        .toContain("readonly SomeProperty: 'B' | undefined;");
+    });
   });
 
   test(
