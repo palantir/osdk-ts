@@ -525,10 +525,23 @@ async function main(): Promise<void> {
       }
     }
 
+    const interfaceTypeMetadata: Record<string, unknown> = {};
+    if (previewMetadata.interfaceTypes) {
+      for (
+        const [apiName, interfaceData] of Object.entries(
+          previewMetadata.interfaceTypes,
+        )
+      ) {
+        interfaceTypeMetadata[interfaceData.rid] = {
+          interfaceTypeApiName: apiName,
+        };
+      }
+    }
+
     const runtimeMetadata = {
       ontologyRid,
       objectTypeMetadata,
-      interfaceTypeMetadata: {},
+      interfaceTypeMetadata,
       magritteSourceMetadata: {},
     };
 
