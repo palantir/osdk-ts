@@ -16,6 +16,13 @@
 
 const FOUNDRY_BRANCH_META_SELECTOR = 'meta[name="osdk-foundry-branch-rid"]';
 
+/** Reads the runtime branch from the current window, including in an iframe. */
+function getQueryBranch(): string | null | undefined {
+  return typeof window === "undefined"
+    ? undefined
+    : new URLSearchParams(window.location.search).get("foundryBranchRid");
+}
+
 /** Reads the injected branch without requiring a browser environment. */
 function getInjectedBranch(): string | null | undefined {
   return typeof document === "undefined"
@@ -49,9 +56,10 @@ function normalizeBranch(
  *
  * `undefined` — including the `undefined` that a generated SDK's `$branch`
  * export carries when the SDK was generated against the default branch — falls
- * back to the branch injected into the application HTML. That fallback is the
- * point: a repository checked out on a branch reads that branch's data even if
- * its generated SDK predates the checkout.
+ * back to `foundryBranchRid` in the current window's query parameters, then to
+ * the branch injected into the application HTML. Blank query values are treated
+ * as absent. This lets an iframe host select a branch at runtime while retaining
+ * the build tooling's branch as the fallback.
  *
  * @param explicitBranch - the branch supplied by the caller, if any
  * @param injectedBranch - the branch injected by build tooling. Defaults to
@@ -64,5 +72,5 @@ export function resolveBranch(
 ): string | undefined {
   return explicitBranch !== undefined
     ? normalizeBranch(explicitBranch)
-    : normalizeBranch(injectedBranch);
+    : (normalizeBranch(getQueryBranch()) ?? normalizeBranch(injectedBranch));
 }
