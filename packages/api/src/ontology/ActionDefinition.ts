@@ -62,6 +62,7 @@ export namespace ActionMetadata {
       | "integer"
       | "long"
       | "double"
+      | "decimal"
       | "datetime"
       | "timestamp"
       | "attachment"

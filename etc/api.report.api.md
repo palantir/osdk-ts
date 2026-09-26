@@ -64,7 +64,7 @@ export namespace ActionMetadata {
     	// (undocumented)
     export namespace DataType {
         		// (undocumented)
-        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "scenarioReference" | "objectType" | "geoshape" | "geohash";
+        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "decimal" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "scenarioReference" | "objectType" | "geoshape" | "geohash";
         		// (undocumented)
         export interface Interface<T_Target extends InterfaceDefinition = never> {
             			// (undocumented)
