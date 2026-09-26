@@ -162,7 +162,8 @@ async function main(): Promise<void> {
     )
     .options({
       input: {
-        describe: "Path to the OntologyIR JSON file",
+        describe:
+          "Path to Maker ontology.json containing value type definitions",
         type: "string",
         coerce: path.resolve,
       },

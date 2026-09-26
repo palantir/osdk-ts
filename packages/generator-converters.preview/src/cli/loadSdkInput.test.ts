@@ -39,6 +39,7 @@ const ontology = {
     valueTypes: { "value-type-rid": { "version-id": "generated-id" } },
   },
 };
+const standaloneOntology = { ...ontology, valueTypes: {} };
 const ontologyBlock = {
   block_type: "ONTOLOGY",
   block_data_directory: "ontology",
@@ -59,19 +60,136 @@ beforeEach(() => {
 
 describe("loadSdkInput", () => {
   it.each([
-    { name: "unwrapped", data: ontology },
-    { name: "wrapped", data: { ontology } },
+    { name: "unwrapped", data: standaloneOntology },
+    { name: "wrapped", data: { ontology: standaloneOntology } },
   ])(
     "accepts $name ontology input",
     async ({ data }) => {
       mockFiles({ [inputFile]: data });
       await expect(loadSdkInput({ input: inputFile })).resolves.toEqual({
-        ontology,
+        ontology: standaloneOntology,
         valueTypes: {},
       });
       expect(fs.readFile).toHaveBeenCalledExactlyOnceWith(inputFile, "utf-8");
     },
   );
+
+  it("generates enum property types from standalone value type definitions", async () => {
+    const definition: ValueTypeBlockData = {
+      metadata: {
+        apiName: "classification",
+        displayMetadata: { displayName: "Classification" },
+        baseType: { type: "string", string: {} },
+        status: { type: "active", active: {} },
+      },
+      versions: [{
+        version: "1.0.0",
+        exampleValues: [],
+        constraints: [{
+          constraint: {
+            constraint: {
+              type: "string",
+              string: {
+                type: "oneOf",
+                oneOf: { values: ["A", "B"], useIgnoreCase: false },
+              },
+            },
+          },
+        }],
+      }],
+    };
+    const data = {
+      ...standaloneOntology,
+      objectTypes: {
+        "item-rid": {
+          datasources: [],
+          writebackDatasets: [],
+          objectType: {
+            rid: "item-rid",
+            id: "item",
+            apiName: "Item",
+            displayMetadata: {
+              displayName: "Item",
+              pluralDisplayName: "Items",
+              visibility: "NORMAL",
+              icon: {
+                type: "blueprint",
+                blueprint: { locator: "cube", color: "blue" },
+              },
+            },
+            status: { type: "active", active: {} },
+            primaryKeys: ["property-rid"],
+            titlePropertyTypeRid: "property-rid",
+            propertyTypes: {
+              "property-rid": {
+                rid: "property-rid",
+                id: "classification",
+                apiName: "classification",
+                displayMetadata: {
+                  displayName: "Classification",
+                  visibility: "NORMAL",
+                },
+                status: { type: "active", active: {} },
+                type: {
+                  type: "string",
+                  string: { isLongText: false, supportsExactMatching: true },
+                },
+                indexedForSearch: false,
+                typeClasses: [],
+                aliases: [],
+                valueType: { rid: "value-type-rid", versionId: "1.0.0" },
+              },
+            },
+            implementsInterfaces: [],
+            implementsInterfaces2: [],
+            allImplementsInterfaces: {},
+            traits: { workflowObjectTypeTraits: {} },
+            typeGroups: [],
+          },
+        },
+      },
+      valueTypes: { "value-type-rid": definition },
+    };
+    mockFiles({ [inputFile]: data });
+
+    const loaded = await loadSdkInput({ input: inputFile });
+    expect(loaded).toEqual({ ontology: data, valueTypes: data.valueTypes });
+    const metadata = PreviewOntologyIrConverter
+      .getPreviewFullMetadataFromBlockData(
+        loaded.ontology,
+        undefined,
+        loaded.valueTypes,
+      );
+    expect(metadata.objectTypes.Item.objectType.properties.classification)
+      .toMatchObject({ valueTypeApiName: "classification" });
+    expect(metadata.valueTypes).toEqual({
+      classification: {
+        apiName: "classification",
+        rid: "value-type-rid",
+        displayName: "Classification",
+        status: "ACTIVE",
+        version: "1.0.0",
+        fieldType: { type: "string" },
+        constraints: [{ type: "enum", options: ["A", "B"] }],
+      },
+    });
+    const writeFile = vi.fn<(file: string, contents: string) => Promise<void>>()
+      .mockResolvedValue(undefined);
+    await generateClientSdkVersionTwoPointZero(
+      { ...metadata, actionTypes: {} },
+      "test",
+      {
+        readdir: () => Promise.resolve([]),
+        mkdir: () => Promise.resolve(),
+        writeFile,
+      },
+      "/virtual-sdk",
+      "module",
+    );
+    const files = Object.fromEntries(writeFile.mock.calls);
+    expect(files["/virtual-sdk/ontology/objects/Item.ts"])
+      .toContain("readonly classification: 'A' | 'B';");
+  });
 
   it("requires exactly one input option", async () => {
     await expect(loadSdkInput({})).rejects.toThrow("Provide exactly one");
@@ -82,7 +200,7 @@ describe("loadSdkInput", () => {
   });
 
   it("rejects input missing objectTypes and actionTypes", async () => {
-    mockFiles({ [inputFile]: {} });
+    mockFiles({ [inputFile]: { valueTypes: {} } });
     await expect(loadSdkInput({ input: inputFile })).rejects.toThrow(
       "Invalid Ontology structure",
     );
@@ -187,7 +305,7 @@ describe("loadSdkInput", () => {
   });
 
   it("preserves generation for imported properties with multiple value type constraints", async () => {
-    mockFiles({ [inputFile]: ontology });
+    mockFiles({ [inputFile]: standaloneOntology });
     const loaded = await loadSdkInput({ input: inputFile });
     const imported: OntologyFullMetadata = {
       ...PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData(
