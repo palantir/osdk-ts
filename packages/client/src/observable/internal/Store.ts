@@ -359,6 +359,20 @@ export class Store {
       }
     }
 
+    for (const cacheKey of this.queries.keys()) {
+      if (cacheKey.type !== "objectSet") {
+        continue;
+      }
+      const query = this.queries.peek(cacheKey);
+      if (
+        query &&
+        "hasUnknownDependencies" in query &&
+        query.hasUnknownDependencies
+      ) {
+        promises.push(query.invalidateObjectType(apiName, undefined));
+      }
+    }
+
     // Per-PK invalidation doesn't propagate to specificLink queries (they're
     // keyed on srcType+srcPk+linkName, not the linked object's pk).
     promises.push(this.invalidateLinkQueriesForType(apiName));

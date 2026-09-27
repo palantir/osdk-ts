@@ -15,6 +15,7 @@
  */
 
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
+import { hasUntypedObjectSet } from "../../../objectSet/untypedObjectSet.js";
 import { hasWithProperties } from "../../../util/extractRdpDefinition.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Observer } from "../../ObservableClient/common.js";
@@ -126,6 +127,16 @@ export class ObjectSetHelper extends AbstractHelper<
     options: ObjectSetQueryOptions,
   ): Canonical<ObjectSetOperations> {
     const operations: ObjectSetOperations = {};
+    if (
+      hasUntypedObjectSet(getWireObjectSet(options.baseObjectSet)) ||
+      [options.union, options.intersect, options.subtract].some((sets) =>
+        sets?.some((objectSet) =>
+          hasUntypedObjectSet(getWireObjectSet(objectSet)),
+        ),
+      )
+    ) {
+      operations.unknownDependencies = true;
+    }
 
     if (options.where) {
       operations.where = this.whereCanonicalizer.canonicalize(options.where);

@@ -46,9 +46,13 @@ import invariant from "tiny-invariant";
 
 import { extractNamespace } from "../internal/conversions/extractNamespace.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import { hasUntypedObjectSet } from "../objectSet/untypedObjectSet.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
-import { extractRdpDefinition } from "../util/extractRdpDefinition.js";
+import {
+  extractRdpDefinition,
+  hasWithProperties,
+} from "../util/extractRdpDefinition.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
 /**
@@ -231,6 +235,8 @@ export async function fetchStaticRidPage<
     {},
     PROPERTY_SECURITIES
   >,
+  objectSet: ObjectSet = { type: "static", objects: [...rids] },
+  objectType: ObjectOrInterfaceDefinition = { type: "object", apiName: "" },
 ): Promise<
   FetchPageResult<
     ObjectOrInterfaceDefinition,
@@ -242,15 +248,22 @@ export async function fetchStaticRidPage<
     PROPERTY_SECURITIES
   >
 > {
+  if (
+    hasWithProperties(objectSet) ||
+    args.$includeAllBaseObjectProperties ||
+    args.$UNSTABLE_loadOntologyDefinedDerivedProperties ||
+    (args.$applyModifiers && Object.keys(args.$applyModifiers).length > 0)
+  ) {
+    throw new Error(
+      "Untyped object sets do not support derived properties, property modifiers, or base object property expansion",
+    );
+  }
   const shouldLoadPropertySecurities =
     args.$loadPropertySecurityMetadata ?? false;
   const requestBody = await applyFetchArgs(
     args,
     {
-      objectSet: {
-        type: "static",
-        objects: rids as string[],
-      },
+      objectSet,
       select: (args?.$select as string[] | undefined) ?? [],
       selectV2: [],
       excludeRid: !args?.$includeRid,
@@ -261,7 +274,7 @@ export async function fetchStaticRidPage<
       ),
     } satisfies LoadObjectSetV2MultipleObjectTypesRequest,
     client,
-    { type: "object", apiName: "" },
+    objectType,
   );
 
   if (client.flushEdits != null) {
@@ -284,7 +297,7 @@ export async function fetchStaticRidPage<
     data: await client.objectFactory(
       client,
       result.data,
-      undefined,
+      objectType.type === "interface" ? objectType.apiName : undefined,
       {},
       shouldLoadPropertySecurities ? result.propertySecurities : undefined,
       !args.$includeRid,
@@ -440,6 +453,28 @@ export async function fetchPageInternal<
 ): Promise<
   FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS, PROPERTY_SECURITIES>
 > {
+  if (hasUntypedObjectSet(objectSet)) {
+    const resultType =
+      objectType.type === "interface"
+        ? ((await extractObjectOrInterfaceType(client, objectSet)) ??
+          objectType)
+        : objectType;
+    return (await fetchStaticRidPage(
+      client,
+      [],
+      args as unknown as Parameters<typeof fetchStaticRidPage>[2],
+      objectSet,
+      resultType,
+    )) as unknown as FetchPageResult<
+      Q,
+      L,
+      R,
+      S,
+      T,
+      ORDER_BY_OPTIONS,
+      PROPERTY_SECURITIES
+    >;
+  }
   if (objectType.type === "interface") {
     return (await fetchInterfacePage(
       client,
