@@ -113,6 +113,8 @@ async function fetchJson(
 
 function resolveUrl(path: string): string {
   if (typeof window !== "undefined") {
+    // Code Workspaces live previews serve the app under a proxy path.
+    // Vite exposes that path as BASE_URL; published sites use the origin root.
     const env = import.meta.env;
     if (env?.DEV && env.MODE === "code-workspaces" && env.BASE_URL) {
       path = `${env.BASE_URL.replace(/\/$/u, "")}${path}`;
