@@ -19,7 +19,6 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { IDataType } from "@osdk/generator-converters.ontologyir";
 import type {
   ActionType,
   InterfaceType,
@@ -72,11 +71,11 @@ describe("Experimental Test Suite", () => {
   });
 
   describe("Function-backed action parameter requirements", () => {
-    const stringList: IDataType = {
+    const stringList = {
       type: "list",
       list: { elementsType: { type: "string" } },
     };
-    const objectList: IDataType = {
+    const objectList = {
       type: "list",
       list: {
         elementsType: {
@@ -85,11 +84,11 @@ describe("Experimental Test Suite", () => {
         },
       },
     };
-    const optionalStringList: IDataType = {
+    const optionalStringList = {
       type: "optionalType",
       optionalType: { wrappedType: stringList },
     };
-    const geoPointList: IDataType = {
+    const geoPointList = {
       type: "list",
       list: {
         elementsType: {
