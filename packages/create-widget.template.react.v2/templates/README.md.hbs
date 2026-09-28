@@ -11,10 +11,13 @@ This project was generated with [`@osdk/create-widget`](https://www.npmjs.com/pa
 Run the following commands (or equivalent with your preferred package manager) to start a local development server and follow the instructions printed to set up developer mode in Foundry:
 
 ```sh
+{{#if foundryUrl}}
 export FOUNDRY_TOKEN=<token>
+{{/if}}
 npm run dev
 ```
 
+{{#if widgetSet}}
 > **Note:** A widget no longer needs to be published before you can develop on it. Publishing a widget once (see [Deploying](#deploying)) is still required to use it in Workshop so that it becomes selectable in the **Widget setup** panel.
 
 ## Deploying
@@ -24,7 +27,9 @@ A `foundry.config.json` file is included in the root of this project containing 
 Run the following commands (or equivalent with your preferred package manager) to create a production build of your widgets:
 
 ```sh
+{{#if foundryUrl}}
 export FOUNDRY_TOKEN=<token>
+{{/if}}
 npm run build
 ```
 
@@ -46,3 +51,8 @@ If you prefer to infer the version from a git tag, you can use the `git-describe
   "tagPrefix": ""
 }
 ```
+{{else}}
+## Building and deployment
+
+Run `npm run build` to execute the build command configured in `package.json`. Deployment is managed outside this component, so no `foundry.config.json` is generated.
+{{/if}}

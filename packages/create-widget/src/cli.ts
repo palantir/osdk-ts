@@ -41,6 +41,10 @@ interface CliArgs {
   osdkPackage?: string;
   osdkRegistryUrl?: string;
   skipOsdk?: boolean;
+  osdkPath?: string;
+  viteConfig?: string;
+  buildCommand?: string;
+  skipFoundryConfig?: boolean;
 }
 
 export async function cli(args: string[] = process.argv): Promise<void> {
@@ -95,6 +99,27 @@ export async function cli(args: string[] = process.argv): Promise<void> {
           .option("skipOsdk", {
             type: "boolean",
             describe: "Skip filling in OSDK options",
+          })
+          .option("osdkPath", {
+            type: "string",
+            describe:
+              "Local SDK package path, relative to the generated project",
+            conflicts: ["osdkRegistryUrl", "skipOsdk"],
+          })
+          .option("viteConfig", {
+            type: "string",
+            describe:
+              "Vite configuration file to copy into the generated project",
+          })
+          .option("buildCommand", {
+            type: "string",
+            describe: "Command for the generated package's build script",
+          })
+          .option("skipFoundryConfig", {
+            type: "boolean",
+            describe:
+              "Omit foundry.config.json when deployment is managed elsewhere",
+            conflicts: ["widgetSet", "repository"],
           }),
     );
 
@@ -106,26 +131,36 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     ...parsed,
     template,
   });
-  const foundryUrl: string = await promptFoundryUrl(parsed);
-  const repository: string | undefined = parsed.repository;
   const useOsdk: boolean = await promptUseOsdk({ ...parsed, template });
   const osdkPackage: string | undefined = useOsdk
     ? await promptOsdkPackage(parsed)
     : undefined;
-  const osdkRegistryUrl: string | undefined = useOsdk
-    ? await promptOsdkRegistryUrl(parsed)
-    : undefined;
-  const widgetSet: string = await promptWidgetSetRid(parsed);
+  const osdkRegistryUrl: string | undefined =
+    useOsdk && parsed.osdkPath == null
+      ? await promptOsdkRegistryUrl(parsed)
+      : undefined;
+  const deployment = parsed.skipFoundryConfig
+    ? {
+        skipFoundryConfig: true as const,
+        foundryUrl:
+          osdkRegistryUrl == null ? undefined : await promptFoundryUrl(parsed),
+      }
+    : {
+        foundryUrl: await promptFoundryUrl(parsed),
+        widgetSet: await promptWidgetSetRid(parsed),
+        repository: parsed.repository,
+      };
 
   await run({
     project,
     overwrite,
     template,
     sdkVersion,
-    foundryUrl,
-    widgetSet,
-    repository,
+    ...deployment,
     osdkPackage,
     osdkRegistryUrl,
+    osdkPath: parsed.osdkPath,
+    viteConfig: parsed.viteConfig,
+    buildCommand: parsed.buildCommand,
   });
 }
