@@ -35,7 +35,7 @@ export namespace OsdkTestObject {
     /**
      *   display name: 'String Property'
      */
-    readonly stringProperty: 'brown' | 'found.com' | 'it\'s "cool"' | undefined;
+    readonly stringProperty: 'brown' | 'it\'s "cool"' | undefined;
     /**
      * @experimental
      *

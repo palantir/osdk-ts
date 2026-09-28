@@ -16,6 +16,7 @@
 
 import type { Osdk, PageResult } from "@osdk/api";
 import type { Client } from "@osdk/client";
+import type { OsdkTestObject } from "@osdk/e2e.generated.catchall";
 // import type { ObjectSet$Employee } from "@osdk/e2e.generated.catchall";
 import {
   Employee,
@@ -31,6 +32,14 @@ import { expectType } from "ts-expect";
  * @param client
  */
 export async function typeChecks(client: Client): Promise<void> {
+  // value type enums are intersected in generated property types
+  {
+    type StringProperty = Osdk.Instance<OsdkTestObject>["stringProperty"];
+    type ExpectedStringProperty = "brown" | 'it\'s "cool"' | undefined;
+    expectType<TypeOf<StringProperty, ExpectedStringProperty>>(true);
+    expectType<TypeOf<ExpectedStringProperty, StringProperty>>(true);
+  }
+
   // single link pivot types are correct
   {
     const objectSet = client(Employee).pivotTo("lead");
