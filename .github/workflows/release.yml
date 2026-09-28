@@ -9,8 +9,6 @@ on:
       - main
       - release/*
       - next
-      # TEMPORARY: enable branch snapshots. Remove before merging.
-      - jzhang/fix-preview-custom-aliases
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -52,9 +50,8 @@ jobs:
   snapshot:
     name: Snapshot
     needs: release
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
-    timeout-minutes: 25
     permissions:
       contents: read
       id-token: write
@@ -79,7 +76,7 @@ jobs:
         run: pnpm exec turbo run build
 
       - name: Update versions for snapshots
-        run: pnpm exec changeset version --snapshot pr-4096
+        run: pnpm exec changeset version --snapshot ${GITHUB_REF_NAME//\//__}
 
       - name: Make sure code is up to date
         run: pnpm exec turbo run postVersioning
@@ -88,4 +85,4 @@ jobs:
         run: pnpm exec turbo run build
 
       - name: Publish results
-        run: pnpm exec changeset publish --no-git-tag --tag pr-4096
+        run: pnpm exec changeset publish --no-git-tag --tag next-${GITHUB_REF_NAME//\//__}
