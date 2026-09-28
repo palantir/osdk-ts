@@ -41,6 +41,7 @@ import type {
   ObjectTypeInputShape,
   PropertyInputShape,
   ResolvedBlockSetInputShape,
+  ResolvedSharedPropertyTypeShape,
   SharedPropertyTypeInputShape,
 } from "@osdk/client.unstable/api";
 import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
@@ -916,14 +917,7 @@ function addSharedPropertyTypePreset(
         apiName,
         ontologyRid: externalImportedMetadata.ontology.rid,
         rid: sourceSharedPropertyType.rid,
-        structFieldRids:
-          sourceSharedPropertyType.dataType.type === "struct"
-            ? Object.fromEntries(
-                sourceSharedPropertyType.dataType.structFieldTypes.map(
-                  (field) => [field.apiName, field.rid],
-                ),
-              )
-            : {},
+        structFieldRids: getStructFieldRids(sourceSharedPropertyType.dataType),
       },
     });
   } else {
@@ -987,6 +981,40 @@ function getLinkTypeBlockId(
     throw new Error(`Link type RID not found: ${linkTypeRid}`);
   }
   return ridGenerator.toBlockInternalId(readableId);
+}
+
+export function getStructFieldRids(
+  dataType: GatewaySharedPropertyType["dataType"],
+): ResolvedSharedPropertyTypeShape["structFieldRids"] {
+  switch (dataType.type) {
+    case "array":
+      return getStructFieldRids(dataType.subType);
+    case "struct":
+      return Object.fromEntries(
+        dataType.structFieldTypes.map((field) => [field.apiName, field.rid]),
+      );
+    case "attachment":
+    case "boolean":
+    case "byte":
+    case "cipherText":
+    case "date":
+    case "decimal":
+    case "double":
+    case "float":
+    case "geopoint":
+    case "geoshape":
+    case "geotimeSeriesReference":
+    case "integer":
+    case "long":
+    case "marking":
+    case "mediaReference":
+    case "short":
+    case "string":
+    case "timeseries":
+    case "timestamp":
+    case "vector":
+      return {};
+  }
 }
 
 /**
