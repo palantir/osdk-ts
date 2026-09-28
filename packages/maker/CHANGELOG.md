@@ -1,5 +1,12 @@
 # @osdk/maker
 
+## 0.74.0
+
+### Minor Changes
+
+- 2c60601: Fix default geoshape type classes
+- 5e1b2c7: Check for same spt backing multiple props on an object
+
 ## 0.73.0
 
 ### Minor Changes

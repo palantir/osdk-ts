@@ -1,5 +1,11 @@
 # @osdk/generator-converters.preview
 
+## 0.51.0
+
+### Minor Changes
+
+- 9fa9a26: Support interface types in functions preview
+
 ## 0.50.0
 
 ### Minor Changes

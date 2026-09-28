@@ -1,5 +1,15 @@
 # @osdk/maker-experimental
 
+## 0.67.0
+
+### Patch Changes
+
+- Updated dependencies [2c60601]
+- Updated dependencies [5e1b2c7]
+- Updated dependencies [9fa9a26]
+  - @osdk/maker@0.74.0
+  - @osdk/generator-converters.preview@0.51.0
+
 ## 0.66.0
 
 ### Minor Changes
