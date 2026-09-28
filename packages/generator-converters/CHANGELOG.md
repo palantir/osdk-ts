@@ -1,5 +1,27 @@
 # @osdk/generator-converters
 
+## 2.73.0
+
+### Patch Changes
+
+- @osdk/api@2.73.0
+
+## 2.72.0
+
+### Patch Changes
+
+- @osdk/api@2.72.0
+
+## 2.71.0
+
+### Minor Changes
+
+- ae55749: Preserve struct main-value metadata for array properties
+
+### Patch Changes
+
+- @osdk/api@2.71.0
+
 ## 2.70.0
 
 ### Patch Changes

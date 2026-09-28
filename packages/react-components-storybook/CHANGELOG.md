@@ -1,5 +1,17 @@
 # @osdk/react-components-storybook
 
+## 0.60.0
+
+### Minor Changes
+
+- 4cae25e: Fix storybook dev mode run
+
+## 0.59.0
+
+### Patch Changes
+
+- @osdk/faux@0.54.0
+
 ## 0.58.0
 
 ### Minor Changes

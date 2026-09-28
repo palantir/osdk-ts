@@ -25,6 +25,15 @@ describe("validateWidgetConfig", () => {
     expect(() => validateWidgetConfig(validConfig)).not.toThrow();
   });
 
+  test("throws for events that update read-only map tile layer parameters", () => {
+    const invalidConfig = getValidConfig();
+    invalidConfig.events.updateParameters.parameterUpdateIds.push("tileLayer");
+
+    expect(() => validateWidgetConfig(invalidConfig)).toThrow(
+      'Event "updateParameters" cannot update read-only map tile layer parameter "tileLayer"',
+    );
+  });
+
   test("throws for widget id that exceeds max length", () => {
     const invalidConfig = getValidConfig();
     invalidConfig.id = "a".repeat(101);
@@ -162,11 +171,19 @@ function getValidConfig(): WidgetConfig<ParameterConfig> {
         displayName: "Parameter One",
         type: "string",
       },
+      tileLayer: {
+        displayName: "Tile Layer",
+        type: "mapTileLayer",
+      },
     },
     events: {
       updateParameters: {
         displayName: "Update Parameters",
         parameterUpdateIds: ["paramOne"],
+      },
+      mapClicked: {
+        displayName: "Map Clicked",
+        parameterUpdateIds: [],
       },
     },
   };

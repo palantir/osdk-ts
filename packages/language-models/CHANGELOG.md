@@ -1,5 +1,11 @@
 # @osdk/language-models
 
+## 0.11.0
+
+### Minor Changes
+
+- 458ea60: Fix peer dep of aip-core
+
 ## 0.10.0
 
 ### Minor Changes

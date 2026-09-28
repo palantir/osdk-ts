@@ -35,6 +35,10 @@ import { hideBin } from "yargs/helpers";
 
 import { PreviewOntologyIrConverter } from "../PreviewOntologyIrConverter.js";
 import { loadSdkInput } from "./loadSdkInput.js";
+import {
+  type RuntimePropertyType,
+  toRuntimePropertyType,
+} from "./toRuntimePropertyType.js";
 
 const PYTHON_SDK_PACKAGE_NAME = "ontology_sdk";
 
@@ -357,6 +361,7 @@ async function main(): Promise<void> {
     false,
     [],
     true,
+    new Map(),
   );
 
   // Write package.json for module resolution. Points to compiled output in
@@ -485,7 +490,7 @@ async function main(): Promise<void> {
         const objType = objData.objectType;
         const propertyTypeMetadata: Record<
           string,
-          { propertyTypeApiName: string; type?: unknown }
+          { propertyTypeApiName: string; type: RuntimePropertyType }
         > = {};
         if (objType.properties) {
           for (
@@ -495,7 +500,7 @@ async function main(): Promise<void> {
           ) {
             propertyTypeMetadata[propApiName] = {
               propertyTypeApiName: propApiName,
-              type: propDef.dataType,
+              type: toRuntimePropertyType(propDef.dataType),
             };
           }
         }
@@ -520,10 +525,23 @@ async function main(): Promise<void> {
       }
     }
 
+    const interfaceTypeMetadata: Record<string, unknown> = {};
+    if (previewMetadata.interfaceTypes) {
+      for (
+        const [apiName, interfaceData] of Object.entries(
+          previewMetadata.interfaceTypes,
+        )
+      ) {
+        interfaceTypeMetadata[interfaceData.rid] = {
+          interfaceTypeApiName: apiName,
+        };
+      }
+    }
+
     const runtimeMetadata = {
       ontologyRid,
       objectTypeMetadata,
-      interfaceTypeMetadata: {},
+      interfaceTypeMetadata,
       magritteSourceMetadata: {},
     };
 

@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import { loadResolvedAliases } from "./loaders.js";
-import type { Custom } from "./types.js";
-export type { Custom } from "./types.js";
+import { defineConfig } from "vite";
 
-export function custom(alias: string): Custom {
-  const resolvedAliases = loadResolvedAliases();
-
-  if (!(alias in resolvedAliases.custom)) {
-    const available = Object.keys(resolvedAliases.custom);
-    throw new Error(
-      `Custom alias '${alias}' not found. Available aliases: [${available.join(
-        ", ",
-      )}]`,
-    );
-  }
-
-  return resolvedAliases.custom[alias] as Custom;
-}
+export default defineConfig({
+  // Pre-bundle the runtime deps the stories pull in. Without this, Vite
+  // discovers them mid-run and reloads the browser page, which closes the
+  // Vitest connection and reports "no tests" (especially on a cold CI cache).
+  optimizeDeps: {
+    // Keep date-fns v2 (react-components) and v4 (faux) separate during resolution.
+    exclude: ["date-fns"],
+    include: [
+      "react",
+      "react-dom",
+      "react-dom/client",
+      "react/jsx-runtime",
+      "react/jsx-dev-runtime",
+    ],
+  },
+});

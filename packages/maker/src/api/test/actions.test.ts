@@ -6755,6 +6755,41 @@ describe("Action Types", () => {
       );
     });
 
+    it("Struct properties render as text inputs in auto-generated action parameters", () => {
+      const structDefinition = { simpleProperty: "string" } as const;
+      const objectType = defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: {
+          bar: { type: "string" },
+          metadata: { type: { type: "struct", structDefinition } },
+          metadataList: {
+            type: { type: "struct", structDefinition },
+            array: true,
+          },
+        },
+      });
+
+      const createAction = defineCreateObjectAction({ objectType });
+
+      const { metadata, actionTypeLogic } =
+        dumpOntologyFullMetadata().ontology.actionTypes[createAction.apiName]
+          .actionType;
+      const parameterValidations =
+        actionTypeLogic.validation.parameterValidations;
+
+      expect(metadata.parameters["metadata"].type.type).toBe("struct");
+      expect(metadata.parameters["metadataList"].type.type).toBe("structList");
+      for (const id of ["metadata", "metadataList"]) {
+        expect(
+          parameterValidations[id].defaultValidation.display.renderHint,
+        ).toEqual({ type: "textInput", textInput: {} });
+      }
+    });
+
     it("Simple concrete actions are properly defined", () => {
       const exampleObjectType = defineObject({
         titlePropertyApiName: "bar",

@@ -43,7 +43,7 @@ export async function generatePerQueryDataFilesV2(
     fs,
     outDir: rootOutDir,
     ontology,
-    fixedVersionQueryTypes,
+    queryVersionReferences,
     importExt = "",
     forInternalUse = false,
   }: Pick<
@@ -53,7 +53,7 @@ export async function generatePerQueryDataFilesV2(
     | "importExt"
     | "ontology"
     | "forInternalUse"
-    | "fixedVersionQueryTypes"
+    | "queryVersionReferences"
   >,
   v2: boolean,
 ): Promise<void> {
@@ -70,7 +70,7 @@ export async function generatePerQueryDataFilesV2(
         importExt,
         ontology,
         forInternalUse,
-        fixedVersionQueryTypes,
+        queryVersionReferences,
       );
     }),
   );
@@ -100,7 +100,7 @@ async function generateV2QueryFile(
   importExt: string,
   ontology: EnhancedOntologyDefinition,
   forInternalUse: boolean,
-  fixedVersionQueryTypes: string[],
+  queryVersionReferences: ReadonlyMap<string, string>,
 ) {
   const relFilePath = path.join(relOutDir, `${query.shortApiName}.ts`);
   const objectTypes = getObjectTypeApiNamesFromQuery(query);
@@ -127,9 +127,11 @@ async function generateV2QueryFile(
     wireQueryDataTypeToQueryDataTypeDefinition(query.output),
   );
 
-  const isUsingFixedVersion = fixedVersionQueryTypes.includes(
-    query.fullApiName,
-  );
+  const requestedVersion = queryVersionReferences.get(query.fullApiName);
+  const isUsingFixedVersion = requestedVersion !== undefined;
+  const runtimeProps = requestedVersion === undefined
+    ? baseProps
+    : { ...baseProps, version: requestedVersion };
 
   const typeRefs = query.raw.typeReferences ?? {};
   const customTypesNs = generateCustomTypesNamespace(ontology, typeRefs);
@@ -216,7 +218,7 @@ async function generateV2QueryFile(
             signature: ${query.shortApiName}.Signature;
         },
         ${
-      stringify(baseProps, {
+      stringify(runtimeProps, {
         "description": () => undefined,
         "displayName": () => undefined,
         "rid": () => undefined,
@@ -228,7 +230,7 @@ async function generateV2QueryFile(
         ${getDescriptionIfPresent(query.description)}
         export const ${query.shortApiName}: ${query.definitionIdentifier} = {
             ${
-      stringify(baseProps, {
+      stringify(runtimeProps, {
         "description": () => undefined,
         "displayName": () => undefined,
         "rid": () => undefined,

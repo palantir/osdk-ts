@@ -8,21 +8,18 @@ import type { ActionDefinition } from '@osdk/client';
 import { Attachment } from '@osdk/client';
 import type { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/client';
-import { Custom } from '@osdk/aliases/internal';
 import { custom } from '@osdk/aliases/internal';
-import { Dataset } from '@osdk/aliases/internal';
 import { dataset } from '@osdk/aliases/internal';
 import { Geometry } from 'geojson';
 import { GeometryCollection } from 'geojson';
 import type { GroupId as GroupId_2 } from '@osdk/foundry.core';
 import type { InterfaceDefinition } from '@osdk/client';
+import type * as InternalAliases from '@osdk/aliases/internal';
 import { LineString } from 'geojson';
 import type { Media } from '@osdk/client';
 import { MediaReference } from '@osdk/client';
-import { Mediaset } from '@osdk/aliases/internal';
 import { mediaset } from '@osdk/aliases/internal';
 import { MediaUpload } from '@osdk/client';
-import { Model } from '@osdk/aliases/internal';
 import { model } from '@osdk/aliases/internal';
 import { MultiLineString } from 'geojson';
 import { MultiPoint } from 'geojson';
@@ -39,9 +36,7 @@ import { Polygon } from 'geojson';
 import type { PropertyKeys } from '@osdk/client';
 import type { QueryDefinition } from '@osdk/client';
 import { Range as Range_2 } from '@osdk/client';
-import { Source } from '@osdk/aliases/internal';
 import { source } from '@osdk/aliases/internal';
-import { Stream } from '@osdk/aliases/internal';
 import { stream } from '@osdk/aliases/internal';
 import { ThreeDimensionalAggregation } from '@osdk/client';
 import { TwoDimensionalAggregation } from '@osdk/client';
@@ -86,6 +81,12 @@ export type ClassificationMarking<T extends string = string> = T & {
 //
 // @public (undocumented)
 export function createEditBatch<T extends AnyEdit = never>(_client: Client): EditBatch<T>;
+
+// @public (undocumented)
+type Custom = InternalAliases.Custom;
+
+// @public (undocumented)
+type Dataset = InternalAliases.Dataset;
 
 // @public (undocumented)
 export type DateISOString<T extends string = string> = T & {
@@ -214,7 +215,13 @@ export type MandatoryMarking<T extends string = string> = T & {
 
 export { MediaReference }
 
+// @public (undocumented)
+type Mediaset = InternalAliases.Mediaset;
+
 export { MediaUpload }
+
+// @public (undocumented)
+type Model = InternalAliases.Model;
 
 export { MultiLineString }
 
@@ -287,6 +294,12 @@ export interface RidLinkTarget {
 export type Short<T extends number = number> = T & {
     	_shortBrand?: void
 };
+
+// @public (undocumented)
+type Source = InternalAliases.Source;
+
+// @public (undocumented)
+type Stream = InternalAliases.Stream;
 
 export { ThreeDimensionalAggregation }
 

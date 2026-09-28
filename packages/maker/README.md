@@ -865,3 +865,139 @@ const flight = defineObject({
   ],
 });
 ```
+
+### Interface Schema Migrations (Beta)
+
+> [!NOTE]
+> Interface schema migrations are in the [beta](https://www.palantir.com/docs/foundry/platform-overview/development-life-cycle) phase of development and may not be available on your enrollment. Functionality may change during active development.
+
+Every object type that implements an interface must satisfy its contract. Changing a published
+interface can therefore break existing object types and cause installation to fail.
+
+Interface schema migrations stage these contract changes over a grace period. A staged change is announced
+but not yet enforced: the interface keeps its current shape, so object types that do not satisfy the new
+contract still install. Object type owners use the grace period to update their types. Finalizing the
+transition adopts the new interface shape, and object types that have not complied fail from that
+release onward. Declaring `schemaMigrations` also enables build-time compatibility checks, catching
+incompatible changes before installation.
+
+#### Opting in
+
+Add `schemaMigrations` to the interface. An empty `transitions` array enables compatibility checks
+without starting a migration:
+
+```typescript
+const personInterface = defineInterface({
+  apiName: "Person",
+  displayName: "Person",
+  properties: {
+    firstName: { type: "string" },
+    lastName: { type: "string", required: false },
+  },
+  // Compatibility checks enabled, with no active migrations.
+  schemaMigrations: { transitions: [] },
+});
+```
+
+Run `maker --write-locks` to create the initial `ontology-schema-lock.json` file tracking enrolled interfaces,
+and commit the file. This lockfile is used during future builds to detect breaking changes and provide
+guidance for finalizing and deleting transitions.
+
+#### Defining a Transition
+
+A transition groups one or more related schema migrations under shared metadata and a shared grace period.
+The migrations in a transition are finalized or deleted together. Use separate transitions for changes that
+should proceed independently.
+
+Each transition has the following fields:
+
+| Field          | Description                                                                   |
+| -------------- | ----------------------------------------------------------------------------- |
+| `id`           | Stable identifier, 1–150 characters, unique among the interface's transitions |
+| `title`        | Summary of the changes                                                        |
+| `description`  | Optional details                                                              |
+| `gracePeriod`  | Compliance window for implementing object types                               |
+| `instructions` | Individual schema migrations grouped into the transition                      |
+
+A grace period can begin at installation or end at a fixed deadline:
+
+```typescript
+// Preferred for Marketplace-distributed ontologies. Valid range: 7–180 days.
+gracePeriod: { type: "afterInstall", days: 45 }
+
+// A fixed ISO-8601 UTC datetime. Installation fails after this deadline.
+gracePeriod: { type: "deadline", deadline: "2026-01-31T00:00:00Z" }
+```
+
+#### Finalizing or Deleting a Transition
+
+While a transition is listed in `schemaMigrations.transitions`, it is **active**: its migrations have
+been announced, but implementing object types are not yet required to comply with them. There are two
+ways to end an active transition:
+
+- **Finalization** completes the transition by adopting its target schema. All migrations in the
+  transition are enforced from that release onward.
+- **Deletion** cancels the transition and retains the current interface schema, so the migrations are
+  never enforced.
+
+To finalize or delete a transition, remove it from `schemaMigrations.transitions`, update the interface
+schema to the corresponding finalized or non-finalized state, and run `maker --write-locks`. Maker compares
+the schema with the previously persisted lockfile and asks you to confirm `FINALIZE` or `DELETE` for the
+entire transition.
+
+Maker rejects the change if the schema matches neither outcome. Declining the confirmation leaves
+both `ontology-schema-lock.json` and `ontology.json` unchanged.
+
+#### Supported Migration Instructions
+
+##### `addRequiredProperty`
+
+Makes a new or currently-optional property required after the grace period.
+
+**Declare it.** Set the property to `required: false` while the migration is active. For a new
+property, add the property and transition in the same release.
+
+```typescript
+// Release N: `shippedAt` is optional, and a migration announces it becoming required.
+defineInterface({
+  apiName: "Order",
+  displayName: "Order",
+  properties: {
+    orderId: { type: "string" },
+    shippedAt: { type: "timestamp", required: false },
+  },
+  schemaMigrations: {
+    transitions: [
+      {
+        id: "requireShippedAt",
+        title: "Require shipped at",
+        description: "Every order must record when it shipped.",
+        gracePeriod: { type: "afterInstall", days: 45 },
+        instructions: [{ type: "addRequiredProperty", property: "shippedAt" }],
+      },
+    ],
+  },
+});
+```
+
+**Finalize it.** After the grace period, remove the transition and set the property to
+`required: true` in the same release:
+
+```typescript
+// Release N+1: the migration is finalized, and `shippedAt` is now enforced.
+defineInterface({
+  apiName: "Order",
+  displayName: "Order",
+  properties: {
+    orderId: { type: "string" },
+    // Finalizing the transition moves the property to `required: true`.
+    shippedAt: { type: "timestamp", required: true },
+  },
+  // Still opted in, with nothing in flight.
+  schemaMigrations: { transitions: [] },
+});
+```
+
+Run `maker --write-locks` to confirm `FINALIZE requireShippedAt`. To abandon the transition, remove
+the transition but leave the property optional (maker will flag this as `DELETE requireShippedAt` for
+confirmation).

@@ -21,6 +21,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { LockedProperty } from "../OntologySchemaLockfile.js";
 import {
+  lastNameDeleted,
   lastNameFinalized,
   lastNameInFlight,
   notOptedIn,
@@ -103,6 +104,19 @@ describe("reconcileOntologySchemaLockfile", () => {
       expect(warn).not.toHaveBeenCalled();
     });
 
+    it("warns but still writes when a property stops being required", async () => {
+      const warn = vi.spyOn(consola, "warn");
+      await published(lastNameFinalized);
+
+      await maker(lastNameDeleted, { writeLocks: true });
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('property "lastName" is no longer required'),
+      );
+
+      const { interfaces } = await readLockfile();
+      expect(interfaces.Person.schema.properties.lastName.required).toBe(false);
+    });
+
     it("accepts deleting an enrolled interface", async () => {
       await published(lastNameFinalized);
       await maker(() => {}, { writeLocks: true });
@@ -154,17 +168,10 @@ describe("reconcileOntologySchemaLockfile", () => {
       });
     });
 
-    it("refuses to publish until the lockfile records the change", async () => {
+    it("refuses to publish, naming the entities --write-locks would update", async () => {
       await published(optedIn);
       await expect(maker(lastNameInFlight)).rejects.toThrowError(
-        /is out of date[\s\S]*Run maker again with --write-locks/u,
-      );
-    });
-
-    it("names the entities --write-locks would bring up to date", async () => {
-      await published(optedIn);
-      await expect(maker(lastNameInFlight)).rejects.toThrowError(
-        /have changed since it was written:\n {2}Person\n/u,
+        /is out of date[\s\S]*have changed since it was written:\n {2}Person\n[\s\S]*Run maker again with --write-locks/u,
       );
     });
 

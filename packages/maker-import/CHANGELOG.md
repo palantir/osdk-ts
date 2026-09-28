@@ -1,5 +1,12 @@
 # @osdk/maker-import
 
+## 0.40.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.71.0
+- @osdk/maker@0.71.0
+
 ## 0.39.0
 
 ### Patch Changes

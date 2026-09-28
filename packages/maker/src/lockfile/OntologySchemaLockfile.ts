@@ -16,10 +16,14 @@
 
 import { isDeepStrictEqual } from "node:util";
 
+import type { TypeClass } from "../api/common/TypeClass.js";
+import { withoutNamespace } from "../api/defineOntology.js";
+import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
 import type {
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
 } from "../api/interface/InterfaceSchemaMigrations.js";
+import type { Nullability } from "../api/properties/Nullability.js";
 import type { LockedPropertyType } from "./LockedPropertyType.js";
 
 export const ONTOLOGY_SCHEMA_LOCKFILE_VERSION = 1;
@@ -61,17 +65,94 @@ export interface LockedInterfaceSchema {
    * The interface's locally-declared properties (i.e. non-inherited), keyed by the api name they are published under.
    */
   properties: Record<string, LockedProperty>;
+  /**
+   * The (sorted) api names of the interfaces this one directly extends. Absent when it extends none.
+   *
+   * Note this contains _only_ the direct parents: an ancestor reached through one of them is
+   * that parent's business to record, and recording the transitive closure here would report
+   * the same change twice.
+   *
+   * Recorded because `properties` above is deliberately local, so the inherited half of the
+   * published schema is otherwise invisible to the lockfile: dropping a parent silently drops every
+   * property it contributed.
+   */
+  extendsInterfaces?: string[];
+}
+
+/** Where a property's definition comes from. */
+export type PropertyDeclaration = "interface" | "sharedPropertyType";
+
+export interface LockedValueType {
+  packageNamespace: string;
+  apiName: string;
 }
 
 export interface LockedProperty {
   type: LockedPropertyType;
   required: boolean;
+  /** Present when a SPT backs this property; absent when the interface defines it inline. */
+  declaredBy?: "sharedPropertyType";
+  /**
+   * The constraint on mapping this property to an implementing object type's PK. Absent when
+   * there is no restriction.
+   */
+  primaryKeyConstraint?: Exclude<PrimaryKeyConstraint, "NO_RESTRICTION">;
+  /**
+   * Property nullability constraints; absent when it constraints neither (e.g. both false or
+   * when undeclared).
+   */
+  nullability?: Nullability;
+  /** The value type this property is an instance of, or absent if it's not backed by one. */
+  valueType?: LockedValueType;
+  /** The property's (sorted) type classes. Absent when it declares none. */
+  typeClasses?: TypeClass[];
 }
 
 export interface LockedTransition {
   id: string;
   gracePeriod: InterfaceSchemaGracePeriod;
   instructions: InterfaceSchemaMigrationInstruction[];
+}
+
+export function declarationOf(property: LockedProperty): PropertyDeclaration {
+  return property.declaredBy ?? "interface";
+}
+
+export function extensionsOf(schema: LockedInterfaceSchema): readonly string[] {
+  return schema.extendsInterfaces ?? [];
+}
+
+export function primaryKeyConstraintOf(
+  property: LockedProperty,
+): PrimaryKeyConstraint {
+  return property.primaryKeyConstraint ?? "NO_RESTRICTION";
+}
+
+export const UNCONSTRAINED_NULLABILITY: Nullability = {
+  noNulls: false,
+  noEmptyCollections: false,
+};
+
+export function nullabilityOf(property: LockedProperty): Nullability {
+  return property.nullability ?? UNCONSTRAINED_NULLABILITY;
+}
+
+/** Whether `next` obliges implementing object types to satisfy something `previous` did not. */
+export function tightensNullability(
+  previous: Nullability,
+  next: Nullability,
+): boolean {
+  return (
+    (!previous.noNulls && next.noNulls) ||
+    (!previous.noEmptyCollections && next.noEmptyCollections)
+  );
+}
+
+/**
+ * The key the author wrote for a property, given the api name the lockfile records it under.
+ */
+export function authoredKeyOf(wireApiName: string): string {
+  return withoutNamespace(wireApiName);
 }
 
 /**

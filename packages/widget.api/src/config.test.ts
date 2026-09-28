@@ -71,12 +71,17 @@ describe("WidgetConfig", () => {
             displayName: "Testing 2",
             type: "string",
           },
+          tileLayer: {
+            displayName: "Tile Layer",
+            type: "mapTileLayer",
+          },
         },
         events: {},
       });
-      expectTypeOf<AsyncParameterValueMap<typeof test>>().toMatchTypeOf<{
+      expectTypeOf<AsyncParameterValueMap<typeof test>>().toEqualTypeOf<{
         test: ParameterValue.Boolean;
         test2: ParameterValue.String;
+        tileLayer: ParameterValue.MapTileLayer;
       }>();
     });
 
@@ -132,13 +137,18 @@ describe("WidgetConfig", () => {
             displayName: "Testing 3",
             type: "number",
           },
+          tileLayer: {
+            displayName: "Tile Layer",
+            type: "mapTileLayer",
+          },
         },
         events: {},
       });
-      expectTypeOf<ParameterValueMap<typeof test>>().toMatchTypeOf<{
+      expectTypeOf<ParameterValueMap<typeof test>>().toEqualTypeOf<{
         test: boolean[];
         test2: string[];
         test3: number;
+        tileLayer: { styleJsonUrl: string };
       }>();
     });
 
@@ -176,8 +186,8 @@ describe("WidgetConfig", () => {
       >().toMatchTypeOf<["test"]>();
     });
 
-    it("will not extract an event that references a parameter ID that doesn't exist", () => {
-      const test = defineConfig({
+    it("should reject event definitions that reference unknown or read-only parameters", () => {
+      defineConfig({
         id: "widgetId",
         name: "Widget Name",
         description: "Widget Description",
@@ -197,18 +207,24 @@ describe("WidgetConfig", () => {
             displayName: "Testing 3",
             type: "number",
           },
+          tileLayer: {
+            displayName: "Tile Layer",
+            type: "mapTileLayer",
+          },
         },
         events: {
           myEvent: {
             displayName: "My Event",
+            // @ts-expect-error Events must reference an existing parameter.
             parameterUpdateIds: ["test4"],
+          },
+          updateTileLayer: {
+            displayName: "Update Tile Layer",
+            // @ts-expect-error Map tile layer parameters are read-only.
+            parameterUpdateIds: ["test3", "tileLayer"],
           },
         },
       });
-      expectTypeOf<
-        // @ts-expect-error
-        EventParameterIdList<typeof test, "myEvent">
-      >().toMatchTypeOf<never>();
     });
 
     it("should extract event IDs correctly", () => {
@@ -270,20 +286,31 @@ describe("WidgetConfig", () => {
             displayName: "Testing 3",
             type: "number",
           },
+          tileLayer: {
+            displayName: "Tile Layer",
+            type: "mapTileLayer",
+          },
         },
         events: {
           myEvent: {
             displayName: "My Event",
             parameterUpdateIds: ["test", "test2"],
           },
+          mapClicked: {
+            displayName: "Map Clicked",
+            parameterUpdateIds: [],
+          },
         },
       });
       expectTypeOf<
         EventParameterValueMap<typeof test, "myEvent">
-      >().toMatchTypeOf<{
+      >().toEqualTypeOf<{
         test: boolean[];
         test2: string[];
       }>();
+      expectTypeOf<
+        EventParameterValueMap<typeof test, "mapClicked">
+      >().toEqualTypeOf<Record<string, never>>();
     });
 
     it("should support objectSet parameter types with generic object type", () => {

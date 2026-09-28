@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid } from "@osdk/api/unstable";
 import { BarInterface } from "@osdk/client.test.ontology";
 import * as SharedClientContext from "@osdk/shared.client.impl";
 import { stubData } from "@osdk/shared.test";
@@ -173,6 +174,37 @@ describe(createClient, () => {
         conjureContextSpy.mock.results[0].value.baseUrl +
           conjureContextSpy.mock.results[0].value.servicePath,
       ).toBe("https://mock4.com/ontology-metadata/api");
+    });
+  });
+
+  describe("branch forwarding", () => {
+    it.each([
+      "ri.foundry.main.branch.test",
+      "feature/test branch",
+      undefined,
+      null,
+    ])("fetchPageByRidNoType forwards branch %s", async (branch) => {
+      const scopedClient = createClient(
+        "https://mock.com",
+        ontologyRid,
+        () => "Token",
+        { UNSTABLE_DO_NOT_USE_BRANCH: branch },
+        fetchFunction,
+      );
+      mockFetchResponse(fetchFunction, { data: [] });
+
+      await scopedClient(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+      ).fetchPageByRidNoType([stubData.employee1.__rid]);
+
+      expect(fetchFunction).toHaveBeenCalledTimes(1);
+      const [requestUrl] = fetchFunction.mock.calls[0];
+      const url = new URL(String(requestUrl));
+      expect(url.pathname).toContain(
+        "objectSets/loadObjectsMultipleObjectTypes",
+      );
+      expect(url.searchParams.get("branch")).toBe(branch ?? null);
+      expect(url.searchParams.get("preview")).toBe("true");
     });
   });
 

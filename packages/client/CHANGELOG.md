@@ -1,5 +1,39 @@
 # @osdk/client
 
+## 2.73.0
+
+### Patch Changes
+
+- @osdk/api@2.73.0
+- @osdk/client.unstable@2.73.0
+- @osdk/generator-converters@2.73.0
+
+## 2.72.0
+
+### Minor Changes
+
+- 1172332: Forward the configured branch in untyped RID fetches, temporary object set creation, media and geotime series reads, ciphertext decryption, and object-set subscriptions.
+
+### Patch Changes
+
+- @osdk/api@2.72.0
+- @osdk/client.unstable@2.72.0
+- @osdk/generator-converters@2.72.0
+
+## 2.71.0
+
+### Minor Changes
+
+- 528d0ca: Add support for generating and executing query functions using semantic version ranges on ontology branches.
+
+### Patch Changes
+
+- Updated dependencies [ae55749]
+  - @osdk/generator-converters@2.71.0
+  - @osdk/api@2.71.0
+  - @osdk/client.unstable@2.71.0
+  - @osdk/shared.test@2.49.0
+
 ## 2.70.0
 
 ### Patch Changes

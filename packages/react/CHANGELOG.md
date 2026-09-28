@@ -1,5 +1,16 @@
 # @osdkkit/react
 
+## 2.73.0
+
+### Patch Changes
+
+- Updated dependencies [458ea60]
+  - @osdk/aip-core@0.12.0
+
+## 2.72.0
+
+## 2.71.0
+
 ## 2.70.0
 
 ## 2.69.0

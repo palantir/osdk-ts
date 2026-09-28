@@ -16,7 +16,10 @@
 
 import { isDeepStrictEqual } from "node:util";
 
+import type { TypeClass } from "../api/common/TypeClass.js";
+import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
+import type { Nullability } from "../api/properties/Nullability.js";
 import {
   applyTransition,
   reproduces,
@@ -29,15 +32,25 @@ import type {
   LockedInterfaceType,
   LockedProperty,
   LockedTransition,
+  LockedValueType,
   OntologySchemaLockfile,
+  PropertyDeclaration,
 } from "./OntologySchemaLockfile.js";
-import { own } from "./OntologySchemaLockfile.js";
+import {
+  authoredKeyOf,
+  declarationOf,
+  extensionsOf,
+  nullabilityOf,
+  own,
+  primaryKeyConstraintOf,
+  tightensNullability,
+} from "./OntologySchemaLockfile.js";
 
 /**
  * NOTE ON CONVENTION: the rest of maker validates with `invariant`, failing on the first problem.
- * This module instead accumulates findings and lets its caller throw one aggregate. An author
- * fixing a batch of breaking changes wants to see all of them, not to discover them one build at
- * a time.
+ * This module instead accumulates breaking changes and lets its caller throw one aggregate. An
+ * author fixing a batch of them wants to see all of them, not to discover them one build at a
+ * time.
  */
 
 /** A transition that the source no longer declares, along with what its disappearance meant. */
@@ -55,7 +68,7 @@ export interface TargetPropertyState {
 }
 
 /** A change that would be rejected at installation-time, in machine-readable form. */
-export type LockfileFinding =
+export type LockfileBreakingChange =
   /**
    * A transition vanished from the source, but neither finalizing nor deleting it reproduces the
    * new schema, so there is no way to read what the author meant.
@@ -75,13 +88,64 @@ export type LockfileFinding =
       previousInstructions: readonly InterfaceSchemaMigrationInstruction[];
       nextInstructions: readonly InterfaceSchemaMigrationInstruction[];
     }
+  | {
+      code: "interfaceExtensionAdded";
+      interfaceApiName: string;
+      extendedInterfaceApiName: string;
+    }
   | { code: "propertyRemoved"; interfaceApiName: string; property: string }
+  | {
+      code: "propertyDeclarationChanged";
+      interfaceApiName: string;
+      /** The api name the lockfile recorded, i.e. the one the property published under before. */
+      property: string;
+      previousDeclaration: PropertyDeclaration;
+      nextDeclaration: PropertyDeclaration;
+    }
+  /**
+   * The property kept its authored key and its binding, but publishes under a different api name,
+   * which only a shared property type changing namespace can do.
+   */
+  | {
+      code: "propertyNamespaceChanged";
+      interfaceApiName: string;
+      previousApiName: string;
+      nextApiName: string;
+    }
   | {
       code: "propertyTypeChanged";
       interfaceApiName: string;
       property: string;
       previousType: LockedPropertyType;
       nextType: LockedPropertyType;
+    }
+  | {
+      code: "propertyTypeClassesChanged";
+      interfaceApiName: string;
+      property: string;
+      previousTypeClasses: readonly TypeClass[];
+      nextTypeClasses: readonly TypeClass[];
+    }
+  | {
+      code: "primaryKeyConstraintChanged";
+      interfaceApiName: string;
+      property: string;
+      previousConstraint: PrimaryKeyConstraint;
+      nextConstraint: PrimaryKeyConstraint;
+    }
+  | {
+      code: "nullabilityTightened";
+      interfaceApiName: string;
+      property: string;
+      previousNullability: Nullability;
+      nextNullability: Nullability;
+    }
+  | {
+      code: "valueTypeChanged";
+      interfaceApiName: string;
+      property: string;
+      previousValueType: LockedValueType | undefined;
+      nextValueType: LockedValueType;
     }
   | {
       code: "propertyBecameRequired";
@@ -97,14 +161,44 @@ export type LockfileFinding =
 /** Worth telling the author about, but not by itself a reason to reject the ontology. */
 export type LockfileWarning =
   /** The source still declares the interface, but has dropped its `schemaMigrations` block. */
-  { code: "optedOut"; interfaceApiName: string };
+  | { code: "optedOut"; interfaceApiName: string }
+  /** A property that implementing object types had to provide no longer has to be provided. */
+  | {
+      code: "requirementRelaxed";
+      interfaceApiName: string;
+      property: string;
+    }
+  | {
+      code: "primaryKeyConstraintRelaxed";
+      interfaceApiName: string;
+      property: string;
+      previousConstraint: PrimaryKeyConstraint;
+    }
+  | {
+      code: "nullabilityRelaxed";
+      interfaceApiName: string;
+      property: string;
+      previousNullability: Nullability;
+      nextNullability: Nullability;
+    }
+  | {
+      code: "valueTypeRemoved";
+      interfaceApiName: string;
+      property: string;
+      previousValueType: LockedValueType;
+    }
+  | {
+      code: "interfaceExtensionRemoved";
+      interfaceApiName: string;
+      extendedInterfaceApiName: string;
+    };
 
 export interface LockfileValidationResult {
   /**
    * Changes the author must resolve before the ontology can be published. Every entry is a change
    * that would be rejected at installation-time.
    */
-  findings: LockfileFinding[];
+  breakingChanges: LockfileBreakingChange[];
   /** Finalizations and deletions inferred from the diff, in lockfile order. */
   checkpoints: DetectedCheckpoint[];
   /** Changes the author probably wants to know they made, in lockfile order. */
@@ -124,9 +218,11 @@ export function validateOntologySchemaLockfile(
   next: OntologySchemaLockfile,
   census: SourceCensus,
 ): LockfileValidationResult {
-  const findings: LockfileFinding[] = [];
-  const checkpoints: DetectedCheckpoint[] = [];
-  const warnings: LockfileWarning[] = [];
+  const result: LockfileValidationResult = {
+    breakingChanges: [],
+    checkpoints: [],
+    warnings: [],
+  };
 
   for (const [interfaceApiName, previousInterface] of Object.entries(
     previous.interfaces,
@@ -142,19 +238,18 @@ export function validateOntologySchemaLockfile(
     }
 
     if (enrolled === undefined) {
-      warnings.push({ code: "optedOut", interfaceApiName });
+      result.warnings.push({ code: "optedOut", interfaceApiName });
     }
 
     validateInterface(
       interfaceApiName,
       previousInterface,
       nextInterface,
-      findings,
-      checkpoints,
+      result,
     );
   }
 
-  return { findings, checkpoints, warnings };
+  return result;
 }
 
 /**
@@ -177,14 +272,14 @@ function validateInterface(
   interfaceApiName: string,
   previousInterface: LockedInterfaceType,
   nextInterface: LockedInterfaceType,
-  findings: LockfileFinding[],
-  checkpoints: DetectedCheckpoint[],
+  result: LockfileValidationResult,
 ): void {
+  const { breakingChanges, checkpoints } = result;
   const nextTransitions = new Map(
     nextInterface.transitions.map((transition) => [transition.id, transition]),
   );
 
-  // Properties whose change is already explained by a finalization or deletion, and so must be
+  // Authored keys whose change is already explained by a finalization or deletion, and so must be
   // exempt from the general breaking-change checks below.
   const propertiesAccountedFor = new Set<string>();
 
@@ -197,7 +292,7 @@ function validateInterface(
         nextInterface.schema,
       );
       if (disappearance.kind === "ambiguous") {
-        findings.push({
+        breakingChanges.push({
           code: "ambiguousDisappearance",
           interfaceApiName,
           transitionId: previousTransition.id,
@@ -215,7 +310,7 @@ function validateInterface(
       // Whether the disappearance was legal or not, its target properties have been reported on;
       // re-reporting them as raw schema breaks would only add noise.
       for (const property of targetPropertiesOf(previousTransition)) {
-        propertiesAccountedFor.add(property);
+        propertiesAccountedFor.add(authoredKeyOf(property));
       }
       continue;
     }
@@ -224,17 +319,54 @@ function validateInterface(
       interfaceApiName,
       previousTransition,
       nextTransition,
-      findings,
+      breakingChanges,
     );
   }
+
+  validateExtensionsDiff(
+    interfaceApiName,
+    previousInterface.schema,
+    nextInterface.schema,
+    result,
+  );
 
   validateSchemaDiff(
     interfaceApiName,
     previousInterface.schema,
     nextInterface.schema,
     propertiesAccountedFor,
-    findings,
+    result,
   );
+}
+
+function validateExtensionsDiff(
+  interfaceApiName: string,
+  previousSchema: LockedInterfaceSchema,
+  nextSchema: LockedInterfaceSchema,
+  { breakingChanges, warnings }: LockfileValidationResult,
+): void {
+  const previousExtensions = new Set(extensionsOf(previousSchema));
+  const nextExtensions = new Set(extensionsOf(nextSchema));
+
+  for (const extendedInterfaceApiName of nextExtensions) {
+    if (!previousExtensions.has(extendedInterfaceApiName)) {
+      breakingChanges.push({
+        code: "interfaceExtensionAdded",
+        interfaceApiName,
+        extendedInterfaceApiName,
+      });
+    }
+  }
+
+  for (const extendedInterfaceApiName of previousExtensions) {
+    if (!nextExtensions.has(extendedInterfaceApiName)) {
+      warnings.push({
+        code: "interfaceExtensionRemoved",
+        interfaceApiName,
+        extendedInterfaceApiName,
+      });
+    }
+  }
 }
 
 /** What a transition vanishing from the source turned out to mean. */
@@ -272,10 +404,10 @@ function validateSurvivingTransition(
   interfaceApiName: string,
   previous: LockedTransition,
   next: LockedTransition,
-  findings: LockfileFinding[],
+  breakingChanges: LockfileBreakingChange[],
 ): void {
   if (!isDeepStrictEqual(previous.instructions, next.instructions)) {
-    findings.push({
+    breakingChanges.push({
       code: "instructionsChanged",
       interfaceApiName,
       transitionId: previous.id,
@@ -283,6 +415,28 @@ function validateSurvivingTransition(
       nextInstructions: next.instructions,
     });
   }
+}
+
+/** A property as the lockfile records it: the api name it publishes under, and its shape. */
+interface PublishedProperty {
+  apiName: string;
+  property: LockedProperty;
+}
+
+/**
+ * A schema's properties keyed by the name the author wrote rather than the one they publish under.
+ */
+function byAuthoredKey(
+  schema: LockedInterfaceSchema,
+): Map<string, PublishedProperty> {
+  // `Object.entries` yields only own enumerable keys, so unlike an index read this needs no guard
+  // against a lockfile parsed from disk inheriting `constructor` and friends from `Object.prototype`.
+  return new Map(
+    Object.entries(schema.properties).map(([apiName, property]) => [
+      authoredKeyOf(apiName),
+      { apiName, property },
+    ]),
+  );
 }
 
 /**
@@ -294,63 +448,204 @@ function validateSchemaDiff(
   previousSchema: LockedInterfaceSchema,
   nextSchema: LockedInterfaceSchema,
   accountedFor: ReadonlySet<string>,
-  findings: LockfileFinding[],
+  { breakingChanges, warnings }: LockfileValidationResult,
 ): void {
-  for (const [propertyApiName, previousProperty] of Object.entries(
-    previousSchema.properties,
-  )) {
-    if (accountedFor.has(propertyApiName)) {
+  const previousProperties = byAuthoredKey(previousSchema);
+  const nextProperties = byAuthoredKey(nextSchema);
+
+  for (const [authoredKey, previous] of previousProperties) {
+    if (accountedFor.has(authoredKey)) {
       continue;
     }
 
-    const nextProperty = own(nextSchema.properties, propertyApiName);
-    if (nextProperty === undefined) {
-      findings.push({
+    const next = nextProperties.get(authoredKey);
+    if (next === undefined) {
+      breakingChanges.push({
         code: "propertyRemoved",
         interfaceApiName,
-        property: propertyApiName,
+        property: previous.apiName,
       });
       continue;
     }
 
-    // This is probably too strict; we might need to strip more things from the locked property
-    // type to avoid false positives
-    if (!isDeepStrictEqual(previousProperty.type, nextProperty.type)) {
-      findings.push({
-        code: "propertyTypeChanged",
+    if (previous.property.required && !next.property.required) {
+      warnings.push({
+        code: "requirementRelaxed",
         interfaceApiName,
-        property: propertyApiName,
-        previousType: previousProperty.type,
-        nextType: nextProperty.type,
+        property: previous.apiName,
       });
+    }
+
+    const previousConstraint = primaryKeyConstraintOf(previous.property);
+    const nextConstraint = primaryKeyConstraintOf(next.property);
+    if (
+      previousConstraint !== nextConstraint &&
+      nextConstraint === "NO_RESTRICTION"
+    ) {
+      warnings.push({
+        code: "primaryKeyConstraintRelaxed",
+        interfaceApiName,
+        property: previous.apiName,
+        previousConstraint,
+      });
+    }
+
+    const previousNullability = nullabilityOf(previous.property);
+    const nextNullability = nullabilityOf(next.property);
+    if (
+      !isDeepStrictEqual(previousNullability, nextNullability) &&
+      !tightensNullability(previousNullability, nextNullability)
+    ) {
+      warnings.push({
+        code: "nullabilityRelaxed",
+        interfaceApiName,
+        property: previous.apiName,
+        previousNullability,
+        nextNullability,
+      });
+    }
+
+    if (
+      previous.property.valueType !== undefined &&
+      next.property.valueType === undefined
+    ) {
+      warnings.push({
+        code: "valueTypeRemoved",
+        interfaceApiName,
+        property: previous.apiName,
+        previousValueType: previous.property.valueType,
+      });
+    }
+
+    validatePropertyDiff(interfaceApiName, previous, next, breakingChanges);
+  }
+
+  for (const [authoredKey, next] of nextProperties) {
+    if (accountedFor.has(authoredKey) || previousProperties.has(authoredKey)) {
       continue;
     }
 
-    if (!previousProperty.required && nextProperty.required) {
-      findings.push({
-        code: "propertyBecameRequired",
+    if (next.property.required) {
+      breakingChanges.push({
+        code: "requiredPropertyAdded",
         interfaceApiName,
-        property: propertyApiName,
+        property: next.apiName,
       });
     }
   }
+}
 
-  for (const [propertyApiName, nextProperty] of Object.entries(
-    nextSchema.properties,
-  )) {
-    if (
-      accountedFor.has(propertyApiName) ||
-      own(previousSchema.properties, propertyApiName) !== undefined
-    ) {
-      continue;
-    }
+/** Reports what changed about a property the author kept. */
+function validatePropertyDiff(
+  interfaceApiName: string,
+  previous: PublishedProperty,
+  next: PublishedProperty,
+  breakingChanges: LockfileBreakingChange[],
+): void {
+  const property = previous.apiName;
 
-    if (nextProperty.required) {
-      findings.push({
-        code: "requiredPropertyAdded",
-        interfaceApiName,
-        property: propertyApiName,
-      });
-    }
+  // Ahead of the type check: when the binding itself was swapped, the types are incidental, and
+  // reporting them would point the author at the wrong thing to restore.
+  const previousDeclaration = declarationOf(previous.property);
+  const nextDeclaration = declarationOf(next.property);
+  if (previousDeclaration !== nextDeclaration) {
+    breakingChanges.push({
+      code: "propertyDeclarationChanged",
+      interfaceApiName,
+      property,
+      previousDeclaration,
+      nextDeclaration,
+    });
+    return;
+  }
+
+  // Same authored key and same binding, but a different published name: the shared property type
+  // behind it moved namespace.
+  if (previous.apiName !== next.apiName) {
+    breakingChanges.push({
+      code: "propertyNamespaceChanged",
+      interfaceApiName,
+      previousApiName: previous.apiName,
+      nextApiName: next.apiName,
+    });
+    return;
+  }
+
+  // This is probably too strict; we might need to strip more things from the locked property
+  // type to avoid false positives
+  if (!isDeepStrictEqual(previous.property.type, next.property.type)) {
+    breakingChanges.push({
+      code: "propertyTypeChanged",
+      interfaceApiName,
+      property,
+      previousType: previous.property.type,
+      nextType: next.property.type,
+    });
+    return;
+  }
+
+  if (
+    !isDeepStrictEqual(previous.property.typeClasses, next.property.typeClasses)
+  ) {
+    breakingChanges.push({
+      code: "propertyTypeClassesChanged",
+      interfaceApiName,
+      property,
+      previousTypeClasses: previous.property.typeClasses ?? [],
+      nextTypeClasses: next.property.typeClasses ?? [],
+    });
+    return;
+  }
+
+  const previousConstraint = primaryKeyConstraintOf(previous.property);
+  const nextConstraint = primaryKeyConstraintOf(next.property);
+  if (
+    previousConstraint !== nextConstraint &&
+    nextConstraint !== "NO_RESTRICTION"
+  ) {
+    breakingChanges.push({
+      code: "primaryKeyConstraintChanged",
+      interfaceApiName,
+      property,
+      previousConstraint,
+      nextConstraint,
+    });
+    return;
+  }
+
+  const previousNullability = nullabilityOf(previous.property);
+  const nextNullability = nullabilityOf(next.property);
+  if (tightensNullability(previousNullability, nextNullability)) {
+    breakingChanges.push({
+      code: "nullabilityTightened",
+      interfaceApiName,
+      property,
+      previousNullability,
+      nextNullability,
+    });
+    return;
+  }
+
+  const nextValueType = next.property.valueType;
+  if (
+    nextValueType !== undefined &&
+    !isDeepStrictEqual(previous.property.valueType, nextValueType)
+  ) {
+    breakingChanges.push({
+      code: "valueTypeChanged",
+      interfaceApiName,
+      property,
+      previousValueType: previous.property.valueType,
+      nextValueType,
+    });
+    return;
+  }
+
+  if (!previous.property.required && next.property.required) {
+    breakingChanges.push({
+      code: "propertyBecameRequired",
+      interfaceApiName,
+      property,
+    });
   }
 }

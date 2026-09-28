@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectSet } from "@osdk/api";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -35,6 +36,7 @@ vi.mock("@osdk/react", () => ({
   }),
   useOsdkMetadata: vi.fn(() => ({ loading: false, metadata: undefined })),
   useRegisterUserAgent: vi.fn(),
+  useStableObjectSet: vi.fn((os: unknown) => os),
 }));
 
 afterEach(cleanup);
@@ -303,6 +305,101 @@ describe("FilterList", () => {
         { filterKey: "age", isVisible: true },
         { filterKey: "name", isVisible: true },
       ]);
+    });
+  });
+
+  describe("onFilterListChanged on objectSet prop change", () => {
+    it("fires OBJECT_SET_CHANGED as external pre-filters narrow and widen the objectSet", () => {
+      const onFilterListChanged = vi.fn();
+
+      // Simulates a consumer applying upstream .where() pre-filters outside
+      // FilterList (e.g. "Meets Criteria to Reside", "Latest Patient Status
+      // Type") and passing the narrowed objectSet as a prop.
+      const baseObjectSet = {} as ObjectSet<typeof MockObjectType>;
+      const withPreFilterA = {} as ObjectSet<typeof MockObjectType>;
+      const withPreFilterAB = {} as ObjectSet<typeof MockObjectType>;
+
+      const shared = {
+        objectType: MockObjectType,
+        onFilterListChanged,
+      } as const;
+
+      // 1. Mount with the full base objectSet
+      const { rerender } = render(
+        <FilterList {...shared} objectSet={baseObjectSet} />,
+      );
+
+      expect(onFilterListChanged).toHaveBeenCalledOnce();
+      expect(onFilterListChanged.mock.lastCall?.[0].reason.type).toBe(
+        "FILTER_LIST_INITIALIZED",
+      );
+      expect(
+        onFilterListChanged.mock.lastCall?.[0].snapshot.filteredObjectSet,
+      ).toBe(baseObjectSet);
+
+      // 2. Consumer adds first external pre-filter → new narrowed objectSet
+      onFilterListChanged.mockClear();
+      rerender(<FilterList {...shared} objectSet={withPreFilterA} />);
+
+      expect(onFilterListChanged).toHaveBeenCalledOnce();
+      expect(onFilterListChanged.mock.lastCall?.[0].reason.type).toBe(
+        "OBJECT_SET_CHANGED",
+      );
+      expect(
+        onFilterListChanged.mock.lastCall?.[0].snapshot.filteredObjectSet,
+      ).toBe(withPreFilterA);
+
+      // 3. Consumer adds second external pre-filter → further narrowed objectSet
+      onFilterListChanged.mockClear();
+      rerender(<FilterList {...shared} objectSet={withPreFilterAB} />);
+
+      expect(onFilterListChanged).toHaveBeenCalledOnce();
+      expect(onFilterListChanged.mock.lastCall?.[0].reason.type).toBe(
+        "OBJECT_SET_CHANGED",
+      );
+      expect(
+        onFilterListChanged.mock.lastCall?.[0].snapshot.filteredObjectSet,
+      ).toBe(withPreFilterAB);
+
+      // 4. Consumer removes all external pre-filters → back to the full base
+      onFilterListChanged.mockClear();
+      rerender(<FilterList {...shared} objectSet={baseObjectSet} />);
+
+      expect(onFilterListChanged).toHaveBeenCalledOnce();
+      expect(onFilterListChanged.mock.lastCall?.[0].reason.type).toBe(
+        "OBJECT_SET_CHANGED",
+      );
+      expect(
+        onFilterListChanged.mock.lastCall?.[0].snapshot.filteredObjectSet,
+      ).toBe(baseObjectSet);
+    });
+
+    it("does not fire when rerendered with the same objectSet reference", () => {
+      const onFilterListChanged = vi.fn();
+      const objectSet = {} as ObjectSet<typeof MockObjectType>;
+
+      const { rerender } = render(
+        <FilterList
+          objectType={MockObjectType}
+          objectSet={objectSet}
+          onFilterListChanged={onFilterListChanged}
+        />,
+      );
+
+      // Init fires
+      expect(onFilterListChanged).toHaveBeenCalledOnce();
+      onFilterListChanged.mockClear();
+
+      // Same reference — should NOT fire
+      rerender(
+        <FilterList
+          objectType={MockObjectType}
+          objectSet={objectSet}
+          onFilterListChanged={onFilterListChanged}
+        />,
+      );
+
+      expect(onFilterListChanged).not.toHaveBeenCalled();
     });
   });
 });

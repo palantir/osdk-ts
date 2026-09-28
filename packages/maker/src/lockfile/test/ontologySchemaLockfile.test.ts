@@ -300,51 +300,51 @@ describe("interface schema migration scenarios", () => {
       );
     });
 
-    it("rejects an existing property becoming required", async () => {
-      await published(
-        person(
-          { firstName: REQUIRED_STRING, lastName: OPTIONAL_STRING },
-          { transitions: [] },
-        ),
-      );
-      await expect(
-        maker(lastNameFinalized, { writeLocks: true }),
-      ).rejects.toThrowError(
-        /property "lastName" became required without a schema migration/u,
-      );
-    });
-
-    it("rejects removing a property", async () => {
-      await published(lastNameFinalized);
-      await expect(
-        maker(person({ firstName: REQUIRED_STRING }, { transitions: [] }), {
-          writeLocks: true,
-        }),
-      ).rejects.toThrowError(
-        /property "lastName" was removed[\s\S]*no currently-supported interface schema migration can phase it in/u,
-      );
-    });
-
-    it("rejects changing a property's type", async () => {
+    it("rejects making a property arrayed", async () => {
       await published(lastNameFinalized);
       await expect(
         maker(
           person(
-            { firstName: REQUIRED_STRING, lastName: { type: "integer" } },
+            {
+              firstName: REQUIRED_STRING,
+              lastName: { type: "string", array: true },
+            },
             { transitions: [] },
           ),
           { writeLocks: true },
         ),
       ).rejects.toThrowError(
-        /property "lastName" changed type from "string" to "integer"/u,
+        /property "lastName" changed type from "string" to "string"\[\]/u,
       );
     });
 
-    it("accepts relaxing a required property to optional", async () => {
-      await published(lastNameFinalized);
-      await expect(
-        maker(lastNameDeleted, { writeLocks: true }),
-      ).resolves.toBeUndefined();
+    function personExtendingNamed(extending: boolean): () => void {
+      return () => {
+        const named = defineInterface({
+          apiName: "Named",
+          properties: { name: REQUIRED_STRING },
+          schemaMigrations: { transitions: [] },
+        });
+        defineInterface({
+          apiName: "Person",
+          properties: { firstName: REQUIRED_STRING },
+          schemaMigrations: { transitions: [] },
+          ...(extending && { extends: named }),
+        });
+      };
+    }
+
+    it("warns about no longer extending an interface, rather than rejecting it", async () => {
+      const warn = vi.spyOn(consola, "warn");
+      await published(personExtendingNamed(true));
+      await maker(personExtendingNamed(false), { writeLocks: true });
+
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('Interface Person no longer extends "Named"'),
+      );
+      expect(
+        (await readLockfile()).interfaces.Person.schema,
+      ).not.toHaveProperty("extendsInterfaces");
     });
 
     it("accepts adding an optional property", async () => {
@@ -475,6 +475,67 @@ describe("interface schema migration scenarios", () => {
           property: "com.example.emailAddress",
         },
       ]);
+    });
+
+    describe("swapping a property's declaration", () => {
+      const NAMESPACE = "com.example.";
+
+      /** `Person`, with `emailAddress` declared each of the two ways under the same author key. */
+      function personWithEmail(
+        declaredBy: "interface" | "sharedPropertyType",
+      ): () => void {
+        return () => {
+          defineInterface({
+            apiName: "Person",
+            properties: {
+              emailAddress:
+                declaredBy === "interface"
+                  ? REQUIRED_STRING
+                  : {
+                      sharedPropertyType: defineSharedPropertyType({
+                        apiName: "emailAddress",
+                        type: "string",
+                      }),
+                      required: true,
+                    },
+            },
+            schemaMigrations: { transitions: [] },
+          });
+        };
+      }
+
+      async function release(
+        declaredBy: "interface" | "sharedPropertyType",
+      ): Promise<void> {
+        await maker(personWithEmail(declaredBy), {
+          writeLocks: true,
+          namespace: NAMESPACE,
+        });
+      }
+
+      it("records an inline property under the un-namespaced authored key", async () => {
+        await release("interface");
+        expect(
+          Object.keys(
+            (await readLockfile()).interfaces["com.example.Person"].schema
+              .properties,
+          ),
+        ).toStrictEqual(["emailAddress"]);
+      });
+
+      it("rejects handing an inline property to a shared property type", async () => {
+        await release("interface");
+        await expect(release("sharedPropertyType")).rejects.toThrowError(
+          /property "emailAddress" moved from defined on the interface to backed by a shared property type/u,
+        );
+      });
+
+      it("rejects taking a property back from a shared property type", async () => {
+        await release("sharedPropertyType");
+        await expect(release("interface")).rejects.toThrowError(
+          /property "emailAddress" moved from backed by a shared property type to defined on the interface/u,
+        );
+      });
     });
   });
 });

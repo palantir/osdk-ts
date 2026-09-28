@@ -1,5 +1,12 @@
 # @osdk/integration-testing
 
+## 0.7.0
+
+### Patch Changes
+
+- Updated dependencies [9fa9a26]
+  - @osdk/generator-converters.preview@0.51.0
+
 ## 0.6.0
 
 ### Minor Changes

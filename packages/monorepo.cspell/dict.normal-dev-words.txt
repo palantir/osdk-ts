@@ -1,6 +1,7 @@
 ACMR
 aggregatable
 aimpoints
+arrayedness
 AUTOGEN
 BACKCOMPAT
 backlink

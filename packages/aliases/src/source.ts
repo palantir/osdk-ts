@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getAlias } from "./getAlias.js";
 import { loadResolvedAliases } from "./loaders.js";
 import type { Source } from "./types.js";
 export type { Source } from "./types.js";
@@ -21,14 +22,5 @@ export type { Source } from "./types.js";
 export function source(alias: string): Source {
   const resolvedAliases = loadResolvedAliases();
 
-  if (!(alias in resolvedAliases.sources)) {
-    const available = Object.keys(resolvedAliases.sources);
-    throw new Error(
-      `Source alias '${alias}' not found. Available aliases: [${available.join(
-        ", ",
-      )}]`,
-    );
-  }
-
-  return resolvedAliases.sources[alias];
+  return getAlias(resolvedAliases.sources, alias, "Source");
 }

@@ -1,5 +1,39 @@
 # @osdk/generator-converters.preview
 
+## 0.51.0
+
+### Minor Changes
+
+- 9fa9a26: Support interface types in functions preview
+
+## 0.50.0
+
+### Minor Changes
+
+- 639e933: Fix property type serialization in local functions runtime metadata.
+
+### Patch Changes
+
+- Updated dependencies [10e859d]
+- Updated dependencies [7cfd651]
+- Updated dependencies [3ebe3d0]
+  - @osdk/generator-converters.ontologyir@2.72.0
+  - @osdk/client.unstable@2.72.0
+  - @osdk/generator@2.72.0
+
+## 0.49.0
+
+### Minor Changes
+
+- 528d0ca: Add support for generating and executing query functions using semantic version ranges on ontology branches.
+
+### Patch Changes
+
+- Updated dependencies [528d0ca]
+  - @osdk/generator@2.71.0
+  - @osdk/client.unstable@2.71.0
+  - @osdk/generator-converters.ontologyir@2.71.0
+
 ## 0.48.0
 
 ### Minor Changes

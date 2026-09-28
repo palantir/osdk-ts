@@ -16,7 +16,8 @@
 
 // Internal compatibility entry point for the synchronous @osdk/functions Aliases
 // API. Direct imports from application code are unsupported.
-export * from "../custom.js";
+export { customForNode as custom } from "../customForNode.js";
+export type { Custom } from "../customForNode.js";
 export * from "../dataset.js";
 export * from "../mediaset.js";
 export * from "../model.js";

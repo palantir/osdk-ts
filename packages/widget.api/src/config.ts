@@ -30,6 +30,11 @@ interface ArrayParameterDefinition<S extends ParameterValue.PrimitiveType> {
   displayName: string;
   subType: S;
 }
+interface MapTileLayerParameterDefinition {
+  // experimental - this allows us to hide the parameter type as a suggestion
+  type: "mapTileLayer" & Record<never, never>;
+  displayName: string;
+}
 interface ObjectSetParameterDefinition<
   T extends AllowedObjectSetParameterType,
 > {
@@ -42,6 +47,7 @@ interface ObjectSetParameterDefinition<
 export type ParameterDefinition =
   | PrimitiveParameterDefinition<ParameterValue.PrimitiveType>
   | ArrayParameterDefinition<ParameterValue.PrimitiveType>
+  | MapTileLayerParameterDefinition
   | ObjectSetParameterDefinition<AllowedObjectSetParameterType>;
 
 interface ManifestObjectSetParameterDefinition<
@@ -57,11 +63,12 @@ interface ManifestObjectSetParameterDefinition<
 export type ManifestParameterDefinition =
   | PrimitiveParameterDefinition<ParameterValue.PrimitiveType>
   | ArrayParameterDefinition<ParameterValue.PrimitiveType>
+  | MapTileLayerParameterDefinition
   | ManifestObjectSetParameterDefinition<AllowedObjectSetParameterType>;
 
 export interface EventDefinition<P extends ParameterConfig> {
   displayName: string;
-  parameterUpdateIds: Array<ParameterId<P>>;
+  parameterUpdateIds: Array<EventParameterId<P>>;
 }
 
 export type ParameterConfig = Record<string, ParameterDefinition>;
@@ -82,6 +89,13 @@ export interface WidgetConfig<P extends ParameterConfig> {
  * Extracts the parameter ID strings as types from the given ParameterConfig.
  */
 export type ParameterId<C extends ParameterConfig> = Extract<keyof C, string>;
+
+/** Parameter IDs that events can update. Map tile layers are read-only. */
+type EventParameterId<C extends ParameterConfig> = {
+  [K in ParameterId<C>]: C[K] extends MapTileLayerParameterDefinition
+    ? never
+    : K;
+}[ParameterId<C>];
 
 /**
  * Extracts a map of parameter IDs to their async-wrapped value types from the given ParameterConfig.
@@ -149,14 +163,14 @@ export type EventId<C extends WidgetConfig<C["parameters"]>> =
 
 /**
  * Extracts a list of strongly-typed parameter IDs from the given WidgetConfig for a given event ID.
- * If a parameter ID is referenced by an event but does not exist, its type will be never
+ * If a parameter ID is missing or read-only, the list's type will be never.
  */
 export type EventParameterIdList<
   C extends WidgetConfig<C["parameters"]>,
   K extends EventId<C>,
 > =
   C["events"][K]["parameterUpdateIds"] extends Array<
-    ParameterId<C["parameters"]>
+    EventParameterId<C["parameters"]>
   >
     ? C["events"][K]["parameterUpdateIds"]
     : never;
@@ -174,6 +188,8 @@ export type EventParameterValueMap<
 type NotEmptyObject<T extends Record<string, any>> =
   T extends Record<string, never> ? Record<string, never> : T;
 
-export function defineConfig<const C extends WidgetConfig<any>>(c: C): C {
-  return c as any;
+export function defineConfig<const C extends WidgetConfig<C["parameters"]>>(
+  c: C,
+): C {
+  return c;
 }

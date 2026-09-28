@@ -134,7 +134,10 @@ export class MediaMetadataQuery extends Query<
           this.#objectType,
           String(this.#primaryKey),
           this.#propertyName,
-          { preview: this.#preview },
+          {
+            branch: this.store.client[additionalContext].branch,
+            preview: this.#preview,
+          },
         );
 
       const metadata: MediaMetadata = {

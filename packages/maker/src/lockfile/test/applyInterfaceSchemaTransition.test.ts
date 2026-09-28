@@ -41,29 +41,13 @@ const previousSchema: LockedInterfaceSchema = {
   },
 };
 
-function sourceSchema(
-  lastName: { required: boolean } | "absent",
-): LockedInterfaceSchema {
+function sourceSchema(lastName: { required: boolean }): LockedInterfaceSchema {
   return {
     properties: {
       firstName: { type: "string", required: true },
-      ...(lastName === "absent"
-        ? {}
-        : {
-            lastName: { type: "string" as const, required: lastName.required },
-          }),
+      lastName: { type: "string", required: lastName.required },
     },
   };
-}
-
-function agreesWithSource(
-  mode: "strict" | "lenient",
-  source: LockedInterfaceSchema,
-): boolean {
-  return reproduces(
-    applyTransition(requireLastName, previousSchema, mode),
-    source,
-  );
 }
 
 describe("applyTransition", () => {
@@ -236,39 +220,6 @@ describe("applyEdit", () => {
       ).toBe(false);
       expect(applyEdit(properties, "toString", { op: "remove" })).toBe(true);
       expect(Object.hasOwn(properties, "toString")).toBe(false);
-    });
-  });
-});
-
-describe("deletion vs finalization disambiguation", () => {
-  describe("addRequiredProperty", () => {
-    it("reads `required: false` as a deletion", () => {
-      const source = sourceSchema({ required: false });
-      expect(agreesWithSource("lenient", source)).toBe(true);
-      expect(agreesWithSource("strict", source)).toBe(false);
-    });
-
-    it("reads `required: true` as a finalization", () => {
-      const source = sourceSchema({ required: true });
-      expect(agreesWithSource("lenient", source)).toBe(false);
-      expect(agreesWithSource("strict", source)).toBe(true);
-    });
-
-    it("reads a removed property as neither", () => {
-      const source = sourceSchema("absent");
-      expect(agreesWithSource("lenient", source)).toBe(false);
-      expect(agreesWithSource("strict", source)).toBe(false);
-    });
-
-    it("reads a retyped property as neither", () => {
-      const source: LockedInterfaceSchema = {
-        properties: {
-          firstName: { type: "string", required: true },
-          lastName: { type: "integer", required: true },
-        },
-      };
-      expect(agreesWithSource("lenient", source)).toBe(false);
-      expect(agreesWithSource("strict", source)).toBe(false);
     });
   });
 });
