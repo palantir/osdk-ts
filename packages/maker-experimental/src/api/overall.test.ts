@@ -20,9 +20,14 @@ import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type {
+  OntologyIrSecurityGroupGranularCondition,
+  SecurityGroupComparisonValue,
+} from "@osdk/client.unstable";
+import type {
   ActionType,
   InterfaceType,
   PropertyTypeTypeVector,
+  SecurityConditionDefinition,
 } from "@osdk/maker";
 import {
   addDependency,
@@ -160,6 +165,172 @@ describe("Experimental Test Suite", () => {
         ).toEqual([[combinedMarkingId]]);
       },
     );
+  });
+
+  describe("Security group dependencies", () => {
+    const groupId = "00000000-0000-0000-0000-000000000001";
+    const otherGroupId = "00000000-0000-0000-0000-000000000002";
+    const userGroups: SecurityGroupComparisonValue = {
+      type: "userProperty",
+      userProperty: { type: "groupIds", groupIds: {} },
+    };
+    const groupConstant: SecurityGroupComparisonValue = {
+      type: "constant",
+      constant: { type: "strings", strings: [groupId, otherGroupId] },
+    };
+    const scalarConstant: SecurityGroupComparisonValue = {
+      type: "constant",
+      constant: { type: "string", string: groupId },
+    };
+
+    function comparison(
+      left: SecurityGroupComparisonValue,
+      right: SecurityGroupComparisonValue,
+    ): OntologyIrSecurityGroupGranularCondition {
+      return {
+        type: "comparison",
+        comparison: { operator: "INTERSECTS", left, right },
+      };
+    }
+
+    const rawCondition = comparison(userGroups, groupConstant);
+    const cases: Array<{
+      name: string;
+      condition: SecurityConditionDefinition;
+      groups: string[];
+    }> = [
+      {
+        name: "shorthand",
+        condition: { type: "group", name: groupId },
+        groups: [groupId],
+      },
+      {
+        name: "string set",
+        condition: rawCondition,
+        groups: [groupId, otherGroupId],
+      },
+      {
+        name: "scalar",
+        condition: comparison(userGroups, scalarConstant),
+        groups: [groupId],
+      },
+      {
+        name: "reversed string set",
+        condition: comparison(groupConstant, userGroups),
+        groups: [groupId, otherGroupId],
+      },
+      {
+        name: "reversed scalar",
+        condition: comparison(scalarConstant, userGroups),
+        groups: [groupId],
+      },
+      {
+        name: "nested conditions",
+        condition: {
+          type: "and",
+          and: {
+            conditions: [
+              {
+                type: "not",
+                not: {
+                  condition: { type: "or", or: { conditions: [rawCondition] } },
+                },
+              },
+            ],
+          },
+        },
+        groups: [groupId, otherGroupId],
+      },
+      {
+        name: "authored union containing raw comparisons",
+        condition: { type: "or", conditions: [rawCondition, rawCondition] },
+        groups: [groupId, otherGroupId],
+      },
+      {
+        name: "non-group constant",
+        condition: comparison(
+          { type: "property", property: "private" },
+          scalarConstant,
+        ),
+        groups: [],
+      },
+      {
+        name: "user ID constant",
+        condition: comparison(
+          {
+            type: "userProperty",
+            userProperty: { type: "userId", userId: {} },
+          },
+          scalarConstant,
+        ),
+        groups: [],
+      },
+    ];
+
+    describe.each(["object", "property"] as const)("%s policy", (placement) => {
+      function compilePolicy(granularPolicy: SecurityConditionDefinition) {
+        return defineOntologyV2("com.palantir.", () => {
+          defineObject({
+            apiName: "document",
+            displayName: "Document",
+            pluralDisplayName: "Documents",
+            titlePropertyApiName: "id",
+            primaryKeyPropertyApiName: "id",
+            properties: { id: { type: "string" }, private: { type: "string" } },
+            datasources: [
+              {
+                type: "dataset",
+                objectSecurityPolicy:
+                  placement === "object"
+                    ? { name: "restricted", granularPolicy }
+                    : undefined,
+                propertySecurityGroups:
+                  placement === "property"
+                    ? [
+                        {
+                          name: "restricted",
+                          properties: ["private"],
+                          granularPolicy,
+                        },
+                      ]
+                    : undefined,
+              },
+            ],
+          });
+        });
+      }
+
+      it.each(cases)(
+        "packages group dependencies for $name",
+        async ({ condition, groups }) => {
+          const result = await compilePolicy(condition);
+          expect(
+            Object.keys(result.ontologyIr.ontology.knownIdentifiers.groupIds),
+          ).toEqual(groups);
+          const groupInputs = [...result.shapes.inputShapes.entries()].filter(
+            ([, shape]) => shape.type === "multipassGroup",
+          );
+          expect(groupInputs.map(([readableId]) => readableId)).toEqual(
+            groups.map((id) => `group-${id}`),
+          );
+          expect(
+            Object.values(result.ontologyIr.ontology.knownIdentifiers.groupIds),
+          ).toEqual(groups.map(() => expect.any(String)));
+        },
+      );
+
+      it("packages equivalent shorthand and raw policies identically", async () => {
+        const shorthand = await compilePolicy({ type: "group", name: groupId });
+        const raw = await compilePolicy(
+          comparison(userGroups, {
+            type: "constant",
+            constant: { type: "strings", strings: [groupId] },
+          }),
+        );
+        expect(raw.ontologyIr).toStrictEqual(shorthand.ontologyIr);
+        expect(raw.shapes).toStrictEqual(shorthand.shapes);
+      });
+    });
   });
 
   describe("Dependencies", () => {
