@@ -19,6 +19,7 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import type { IDataType } from "@osdk/generator-converters.ontologyir";
 import type {
   ActionType,
   InterfaceType,
@@ -43,6 +44,8 @@ import invariant from "tiny-invariant";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { ReadableIdGenerator } from "../util/generateRid.js";
+import { defineFunctionBackedAction } from "./defineFunctionBackedAction.js";
+import type { FunctionsIr } from "./defineOntologyV2.js";
 import { defineOntologyV2 } from "./defineOntologyV2.js";
 import { defineImportObject } from "./importObjectType.js";
 
@@ -66,6 +69,106 @@ function apiNamePreset(apiName: string) {
 describe("Experimental Test Suite", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, undefined);
+  });
+
+  describe("Function-backed action parameter requirements", () => {
+    const stringList: IDataType = {
+      type: "list",
+      list: { elementsType: { type: "string" } },
+    };
+    const objectList: IDataType = {
+      type: "list",
+      list: {
+        elementsType: {
+          type: "object",
+          object: { objectTypeId: "com.palantir.TaggedObject" },
+        },
+      },
+    };
+    const optionalStringList: IDataType = {
+      type: "optionalType",
+      optionalType: { wrappedType: stringList },
+    };
+    const geoPointList: IDataType = {
+      type: "list",
+      list: {
+        elementsType: {
+          type: "geoShape",
+          geoShape: { subType: { type: "geoPoint", geoPoint: {} } },
+        },
+      },
+    };
+
+    it.each([
+      ["string", { type: "string" }, true, "required"],
+      ["string", { type: "string" }, false, "notRequired"],
+      ["stringList", stringList, true, "listLengthValidation"],
+      ["stringList", stringList, false, "listLengthValidation"],
+      ["stringList", stringList, undefined, "listLengthValidation"],
+      ["stringList", optionalStringList, false, "listLengthValidation"],
+      ["objectReferenceList", objectList, true, "listLengthValidation"],
+      ["geohashList", geoPointList, true, "listLengthValidation"],
+    ] as const)(
+      "uses %s-compatible requirements for %j with required=%s",
+      async (parameterType, dataType, required, requirementType) => {
+        const outputDir = fs.mkdtempSync(
+          path.join(os.tmpdir(), "maker-function-action-requirements-"),
+        );
+        const functionsIrFile = path.join(outputDir, "functions-ir.json");
+        const functionsIr: FunctionsIr = {
+          discoveredFunctions: [
+            {
+              locator: {
+                type: "typescript",
+                typescript: { functionName: "updateTags" },
+              },
+              inputs: [{ name: "tags", dataType, required }],
+              output: { type: "void" },
+              customTypes: {},
+              ontologyProvenance: {
+                editedObjects: { "com.palantir.TaggedObject": {} },
+                editedLinks: {},
+                editedInterfaces: {},
+              },
+            },
+          ],
+        };
+
+        try {
+          fs.writeFileSync(functionsIrFile, JSON.stringify(functionsIr));
+          const result = await defineOntologyV2(
+            "com.palantir.",
+            () => {
+              defineObject({
+                apiName: "TaggedObject",
+                displayName: "Tagged object",
+                pluralDisplayName: "Tagged objects",
+                titlePropertyApiName: "id",
+                primaryKeyPropertyApiName: "id",
+                properties: {
+                  id: { type: "string" },
+                  tags: { type: "string", array: true },
+                },
+              });
+              defineFunctionBackedAction({ functionApiName: "updateTags" });
+            },
+            undefined,
+            undefined,
+            functionsIrFile,
+          );
+          const actions = Object.values(result.ontologyIr.ontology.actionTypes);
+          expect(actions).toHaveLength(1);
+          const action = actions[0].actionType;
+          expect(action.metadata.parameters.tags.type.type).toBe(parameterType);
+          expect(
+            action.actionTypeLogic.validation.parameterValidations.tags
+              .defaultValidation.validation.required,
+          ).toEqual({ type: requirementType, [requirementType]: {} });
+        } finally {
+          fs.rmSync(outputDir, { recursive: true, force: true });
+        }
+      },
+    );
   });
 
   describe("Empty backing Media Sets", () => {
