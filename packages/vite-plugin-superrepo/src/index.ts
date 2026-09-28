@@ -27,6 +27,8 @@ import {
   inspectDiscovery,
 } from "./public/discovery.js";
 
+export { seedReloadPlugin } from "./seedReloadPlugin.js";
+
 /**
  * Each entry maps a path prefix served by the Vite dev server to a
  * local foundry-cli service published via its
