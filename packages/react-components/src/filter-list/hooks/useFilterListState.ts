@@ -15,7 +15,7 @@
  */
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import { useOsdkMetadata } from "@osdk/react";
+import { useOsdkMetadata, useStableObjectSet } from "@osdk/react";
 import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -106,7 +106,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
 ): UseFilterListStateResult<Q> {
   const {
     objectType,
-    objectSet,
+    objectSet: objectSetProp,
     filterDefinitions,
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat callback still supported
     onFilterStateChanged,
@@ -120,6 +120,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     initialFilterStates,
   } = props;
   const seededFilterStates = defaultFilterStates ?? initialFilterStates;
+  const objectSet = useStableObjectSet(objectSetProp);
   const { metadata, loading: metadataLoading } = useOsdkMetadata(objectType);
 
   const onFilterStateChangedRef = useRef(onFilterStateChanged);
@@ -267,6 +268,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   );
 
   const hasEmittedInit = useRef(false);
+  const prevObjectSetRef = useRef(objectSet);
   useEffect(() => {
     // We need to wait until metadata is loaded because we need
     // metadata to construct the filter clause
@@ -274,12 +276,11 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       return;
     }
     hasEmittedInit.current = true;
+    prevObjectSetRef.current = objectSetRef.current; // Already reported by init
     emitFilterListChanged(filterStatesRef.current, {
       type: "FILTER_LIST_INITIALIZED",
     });
   }, [metadataLoading, emitFilterListChanged]);
-
-  const prevObjectSetRef = useRef(objectSet);
   useEffect(() => {
     if (!hasEmittedInit.current || prevObjectSetRef.current === objectSet) {
       prevObjectSetRef.current = objectSet;

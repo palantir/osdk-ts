@@ -36,6 +36,7 @@ vi.mock("@osdk/react", () => ({
   }),
   useOsdkMetadata: vi.fn(() => ({ loading: false, metadata: undefined })),
   useRegisterUserAgent: vi.fn(),
+  useStableObjectSet: vi.fn((os: unknown) => os),
 }));
 
 afterEach(cleanup);
