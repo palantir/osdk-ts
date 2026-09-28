@@ -279,6 +279,18 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     });
   }, [metadataLoading, emitFilterListChanged]);
 
+  const prevObjectSetRef = useRef(objectSet);
+  useEffect(() => {
+    if (!hasEmittedInit.current || prevObjectSetRef.current === objectSet) {
+      prevObjectSetRef.current = objectSet;
+      return;
+    }
+    prevObjectSetRef.current = objectSet;
+    emitFilterListChanged(filterStatesRef.current, {
+      type: "OBJECT_SET_CHANGED",
+    });
+  }, [objectSet, emitFilterListChanged]);
+
   useEffect(() => {
     onFilterClauseChangedRef.current?.(whereClause);
   }, [whereClause]);
