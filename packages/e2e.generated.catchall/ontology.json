@@ -652,6 +652,7 @@
             "dataType": { "type": "string" },
             "rid": "ri.ontology.main.property.31a9e02d-fc02-5a44-8608-22db81587f0a",
             "status": { "type": "experimental" },
+            "dataConstraints": { "nullability": "NOT_NULLABLE" },
             "visibility": "NORMAL",
             "typeClasses": [
               { "kind": "render_hint", "name": "SELECTABLE" },
@@ -663,7 +664,12 @@
         "titleProperty": "title",
         "visibility": "NORMAL",
         "aliases": [],
-        "datasources": []
+        "datasources": [
+          {
+            "rid": "ri.ontology.main.datasource.316ef3e7-ce9b-43fa-9d2a-2787425606fa",
+            "definition": { "type": "editsOnly" }
+          }
+        ]
       },
       "linkTypes": [],
       "implementsInterfaces": ["LibraryItem"],

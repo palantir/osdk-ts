@@ -697,6 +697,9 @@
                         "status": {
                             "type": "experimental"
                         },
+                        "dataConstraints": {
+                            "nullability": "NOT_NULLABLE"
+                        },
                         "visibility": "NORMAL",
                         "typeClasses": [
                             {
@@ -714,7 +717,14 @@
                 "titleProperty": "title",
                 "visibility": "NORMAL",
                 "aliases": [],
-                "datasources": []
+                "datasources": [
+                    {
+                        "rid": "ri.ontology.main.datasource.316ef3e7-ce9b-43fa-9d2a-2787425606fa",
+                        "definition": {
+                            "type": "editsOnly"
+                        }
+                    }
+                ]
             },
             "linkTypes": [],
             "implementsInterfaces": [

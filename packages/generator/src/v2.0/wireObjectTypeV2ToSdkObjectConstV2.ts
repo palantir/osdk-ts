@@ -44,7 +44,6 @@ export function getRequiredCreatePropertyKeys(
   objectType: ObjectTypeFullMetadata["objectType"],
 ): string[] {
   const properties = objectType.properties;
-  const requiredKeys = new Set<string>([objectType.primaryKey]);
   const createWritePaths: Set<string>[] = [];
 
   for (const datasource of objectType.datasources ?? []) {
@@ -79,24 +78,26 @@ export function getRequiredCreatePropertyKeys(
   }
 
   if (createWritePaths.length !== 1) {
-    return [...requiredKeys];
+    return [objectType.primaryKey];
   }
 
   const mappedProperties: Set<string> | undefined = createWritePaths[0];
   if (mappedProperties === undefined) {
-    return [...requiredKeys];
+    return [objectType.primaryKey];
   }
 
+  const requiredKeys: string[] = [objectType.primaryKey];
   for (const [propertyName, property] of Object.entries(properties)) {
     if (
       mappedProperties.has(propertyName)
       && property.dataConstraints?.nullability === "NOT_NULLABLE"
+      && propertyName !== objectType.primaryKey
     ) {
-      requiredKeys.add(propertyName);
+      requiredKeys.push(propertyName);
     }
   }
 
-  return [...requiredKeys].sort();
+  return requiredKeys.sort();
 }
 
 /** @internal */
