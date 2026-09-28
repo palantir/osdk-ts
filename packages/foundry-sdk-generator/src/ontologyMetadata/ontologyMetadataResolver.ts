@@ -270,7 +270,6 @@ export class OntologyMetadataResolver {
           if (!ot) {
             throw new GeneratorError(
               "Could not find external object type with rid",
-              undefined,
               { objectTypeRid: rid },
             );
           }
@@ -286,7 +285,6 @@ export class OntologyMetadataResolver {
           if (!it) {
             throw new GeneratorError(
               "Could not find external interface type with rid",
-              undefined,
               { interfaceTypeRid: rid },
             );
           }
@@ -711,7 +709,7 @@ export class OntologyMetadataResolver {
         }
         return Result.err([
           new GeneratorError(
-            "Unable to load query because it takes an unloaded object type as a parameter. Make sure to specify it as an argument with --ontologyObjects <objectTypeApiName>.",
+            "Unable to load query because it takes an unloaded object type as a parameter. Make sure to specify it as an argument with --objectTypes <objectTypeApiName>.",
             {
               queryApiName,
               propertyName,
@@ -726,7 +724,7 @@ export class OntologyMetadataResolver {
         }
         return Result.err([
           new GeneratorError(
-            "Unable to load query because it takes an unloaded interface type as a parameter. Make sure to specify it as an argument with --ontologyInterfaces <interfaceTypeApiName>.",
+            "Unable to load query because it takes an unloaded interface type as a parameter. Make sure to specify it as an argument with --interfaceTypes <interfaceTypeApiName>.",
             {
               queryApiName,
               propertyName,
@@ -802,7 +800,7 @@ export class OntologyMetadataResolver {
       case "unsupported":
         return Result.err([
           new GeneratorError(
-            "Unable to load query because it takes an unsupported parameter type in parameter",
+            "Unable to load query because it takes an unsupported parameter type",
             {
               queryApiName,
               propertyName,
@@ -814,7 +812,7 @@ export class OntologyMetadataResolver {
         const _: never = baseType;
         return Result.err([
           new GeneratorError(
-            "Unable to load query because it takes an unsupported parameter type in parameter",
+            "Unable to load query because it takes an unsupported parameter type",
             {
               queryApiName,
               propertyName,
@@ -855,7 +853,7 @@ export class OntologyMetadataResolver {
         }
         return Result.err([
           new GeneratorError(
-            "Unable to load action because it takes an unloaded object type as a parameter. Make sure to specify it as an argument with --ontologyObjects <objectTypeApiName>.",
+            "Unable to load action because it takes an unloaded object type as a parameter. Make sure to specify it as an argument with --objectTypes <objectTypeApiName>.",
             {
               actionApiName,
               objectTypeApiName: actionTypeParameter.objectTypeApiName,
@@ -868,7 +866,7 @@ export class OntologyMetadataResolver {
         }
         return Result.err([
           new GeneratorError(
-            "Unable to load action because it takes an ObjectSet of unloaded object type as a parameter. Make sure to specify it as an argument with --ontologyObjects <objectTypeApiName>.",
+            "Unable to load action because it takes an ObjectSet of unloaded object type as a parameter. Make sure to specify it as an argument with --objectTypes <objectTypeApiName>.",
             {
               actionApiName,
               objectTypeApiName: actionTypeParameter.objectTypeApiName,
@@ -914,7 +912,7 @@ export class OntologyMetadataResolver {
       case "vector":
         return Result.err([
           new GeneratorError(
-            "Unable to load action because it takes an unsupported parameter. Specify only the actions you want to load with the --actions argument.",
+            "Unable to load action because it takes an unsupported parameter. Specify only the actions you want to load with the --actionTypes argument.",
             {
               actionApiName,
               actionParameterType: JSON.stringify(actionTypeParameter),
@@ -925,7 +923,7 @@ export class OntologyMetadataResolver {
         const _: never = actionTypeParameter;
         return Result.err([
           new GeneratorError(
-            "Unable to load action because it takes an unsupported parameter. Specify only the actions you want to load with the --actions argument.",
+            "Unable to load action because it takes an unsupported parameter. Specify only the actions you want to load with the --actionTypes argument.",
             {
               actionApiName,
               actionParameterType: JSON.stringify(actionTypeParameter),

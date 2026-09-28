@@ -222,7 +222,7 @@ describe("Load Ontologies Metadata", () => {
     expect(errorDetails(ontologyDefinitions.error)).toEqual([
       {
         message:
-          "Unable to load query because it takes an unloaded object type as a parameter. Make sure to specify it as an argument with --ontologyObjects <objectTypeApiName>.",
+          "Unable to load query because it takes an unloaded object type as a parameter. Make sure to specify it as an argument with --objectTypes <objectTypeApiName>.",
         params: undefined,
         unsafeParams: {
           objectTypeApiName: "Employee",
@@ -232,7 +232,7 @@ describe("Load Ontologies Metadata", () => {
       },
       {
         message:
-          "Unable to load action because it takes an unsupported parameter. Specify only the actions you want to load with the --actions argument.",
+          "Unable to load action because it takes an unsupported parameter. Specify only the actions you want to load with the --actionTypes argument.",
         params: undefined,
         unsafeParams: {
           actionApiName: "unsupportedAction",
@@ -241,7 +241,7 @@ describe("Load Ontologies Metadata", () => {
       },
       {
         message:
-          "Unable to load action because it takes an unloaded object type as a parameter. Make sure to specify it as an argument with --ontologyObjects <objectTypeApiName>.",
+          "Unable to load action because it takes an unloaded object type as a parameter. Make sure to specify it as an argument with --objectTypes <objectTypeApiName>.",
         params: undefined,
         unsafeParams: {
           actionApiName: "unsupportedAction",
