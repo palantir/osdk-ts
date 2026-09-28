@@ -528,12 +528,13 @@ function convertSecurityComparisonValue(
     otherValue.type === "userProperty" &&
     otherValue.userProperty.type === "groupIds"
   ) {
-    const groupIds =
-      value.constant.type === "string"
-        ? [value.constant.string]
-        : value.constant.type === "strings"
-          ? value.constant.strings
-          : [];
+    let groupIds: string[] = [];
+
+    if (value.constant.type === "string") {
+      groupIds = [value.constant.string];
+    } else if (value.constant.type === "strings") {
+      groupIds = value.constant.strings;
+    }
 
     for (const groupId of groupIds) {
       ridGenerator
