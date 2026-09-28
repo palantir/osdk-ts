@@ -101,6 +101,17 @@ describe("intellisense", () => {
     tsServer = undefined as any;
   });
 
+  it("generatedStructArrayMainValue", { timeout: 40_000 }, async () => {
+    const { resp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 30,
+      offset: 19,
+    });
+    expect(resp.body?.displayString).toBe(
+      "(property) bonusHistory: number | undefined",
+    );
+  });
+
   it("callsQueryAcceptsObject", { timeout: 40_000 }, async () => {
     const { resp } = await tsServer.sendQuickInfoRequest({
       file: intellisenseFilePath,
