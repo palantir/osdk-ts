@@ -245,6 +245,86 @@ describe("typeToFieldSchema", () => {
     expect(schema.scale).toBe(2);
   });
 
+  it.each([
+    [{}, 38, 0],
+    [{ precision: 12 }, 12, 0],
+    [{ scale: 2 }, 38, 2],
+    [{ precision: 1, scale: 0 }, 1, 0],
+    [{ precision: 38, scale: 38 }, 38, 38],
+  ] as const)(
+    "fills valid decimal parameters for %j",
+    (decimal, precision, scale) => {
+      expect(
+        typeToFieldSchema({ type: "decimal", decimal }, "amount"),
+      ).toMatchObject({
+        type: "DECIMAL",
+        precision,
+        scale,
+      });
+    },
+  );
+
+  it.each([
+    { precision: 0, scale: 0 },
+    { precision: 39, scale: 0 },
+    { precision: 10, scale: -1 },
+    { precision: 10, scale: 11 },
+  ])("rejects invalid decimal parameters %j", (decimal) => {
+    expect(() =>
+      typeToFieldSchema({ type: "decimal", decimal }, "amount"),
+    ).toThrow(/amount/u);
+  });
+
+  it("validates struct names and decimal parameters recursively", () => {
+    expect(() =>
+      typeToFieldSchema(
+        makeArrayType(
+          makeStructType([
+            { apiName: "bad name", fieldType: STRING_PROPERTY_TYPE },
+          ]),
+        ),
+        "metadata",
+      ),
+    ).toThrow(/metadata.*column name/u);
+    expect(() =>
+      typeToFieldSchema(
+        makeStructType([
+          { apiName: "id", fieldType: STRING_PROPERTY_TYPE },
+          { apiName: "ID", fieldType: STRING_PROPERTY_TYPE },
+        ]),
+        "metadata",
+      ),
+    ).toThrow(/metadata.*id.*ID/u);
+    expect(() =>
+      typeToFieldSchema(
+        makeArrayType(
+          makeStructType([
+            {
+              apiName: "amount",
+              fieldType: {
+                type: "decimal",
+                decimal: { precision: 1, scale: 2 },
+              },
+            },
+          ]),
+        ),
+        "metadata",
+      ),
+    ).toThrow(/metadata.*amount.scale/u);
+  });
+
+  it.each([
+    null,
+    { type: "array" },
+    { type: "array", array: {} },
+    { type: "struct", struct: {} },
+    { type: "decimal", decimal: null },
+  ])("rejects malformed nested schema %j", (type) => {
+    expect(() => typeToFieldSchema(type as Type, "metadata")).toThrow(
+      /metadata/u,
+    );
+  });
+
   it("describes array elements via arraySubtype with a null name", () => {
     const schema = typeToFieldSchema(
       makeArrayType(STRING_PROPERTY_TYPE),
@@ -350,6 +430,34 @@ describe("generateBackingDatasetBlockResult", () => {
 
   afterEach(async () => {
     await fs.promises.rm(buildDir, { recursive: true, force: true });
+  });
+
+  it("rejects an invalid schema before creating block files", async () => {
+    const blockData = createObjectTypeBlockData({
+      properties: [
+        {
+          apiName: "amount",
+          type: { type: "decimal", decimal: { precision: 0 } },
+        },
+      ],
+    });
+    await expect(
+      generateBackingDatasetBlockResult(blockData, buildDir),
+    ).rejects.toThrow(/TestObject.*amount.precision/u);
+    expect(await fs.promises.readdir(buildDir)).toEqual([]);
+  });
+
+  it("rejects backing columns that collide ignoring case", async () => {
+    const blockData = createObjectTypeBlockData({
+      properties: [
+        { apiName: "id", type: STRING_PROPERTY_TYPE },
+        { apiName: "ID", type: STRING_PROPERTY_TYPE },
+      ],
+    });
+    await expect(
+      generateBackingDatasetBlockResult(blockData, buildDir),
+    ).rejects.toThrow(/TestObject.*id.*ID/u);
+    expect(await fs.promises.readdir(buildDir)).toEqual([]);
   });
 
   it("generates correct result and files for default block data", async () => {

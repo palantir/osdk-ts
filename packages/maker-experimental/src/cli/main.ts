@@ -41,6 +41,7 @@ import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
   generateBackingDatasetBlockResultForLink,
+  generateDatasetBlockResult,
   getNonEditOnlyProperties,
 } from "./generateBackingDataset.js";
 import { generateBackingMediaSetBlockResult } from "./generateBackingMediaSet.js";
@@ -59,7 +60,7 @@ const uuidRegex =
 export default async function main(
   args: string[] = process.argv,
 ): Promise<void> {
-  consola.log("Generating BlockGeneratorResult for ontology...");
+  consola.log("Generating BlockGeneratorResults...");
 
   const commandLineOpts: {
     input: string;
@@ -89,7 +90,7 @@ export default async function main(
       },
       output: {
         alias: "o",
-        describe: "Output file for ontology BlockGeneratorResult JSON",
+        describe: "Output file for BlockGeneratorResult JSON",
         type: "string",
         default: "build/block_generator_result.json",
         coerce: path.resolve,
@@ -246,6 +247,7 @@ export default async function main(
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
+    datasets,
   } = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
@@ -300,6 +302,16 @@ export default async function main(
       commandLineOpts.randomnessKey,
     );
   }
+
+  const datasetGeneratorResults = await Promise.all(
+    datasets.map((dataset) =>
+      generateDatasetBlockResult(
+        dataset,
+        commandLineOpts.buildDir,
+        commandLineOpts.randomnessKey,
+      ),
+    ),
+  );
 
   const directDatasourceGeneratorResults = (
     await Promise.all(
@@ -500,13 +512,26 @@ export default async function main(
   };
 
   // Write BlockGeneratorResult to output file
+  const includeOntologyBlock =
+    datasets.length === 0 ||
+    Object.values(importedTypes).some(
+      (entities) => Object.keys(entities).length > 0,
+    ) ||
+    [
+      ontologyIr.ontology.objectTypes,
+      ontologyIr.ontology.linkTypes,
+      ontologyIr.ontology.interfaceTypes,
+      ontologyIr.ontology.actionTypes,
+      ontologyIr.ontology.sharedPropertyTypes,
+    ].some((entities) => Object.keys(entities).length > 0);
   const blockGeneratorResultJson = JSON.stringify(
     [
-      blockGeneratorResult,
+      ...(includeOntologyBlock ? [blockGeneratorResult] : []),
       ...directDatasourceGeneratorResults,
       ...backingDsGeneratorResults,
       ...backingDsLinkGeneratorResults,
       ...backingMediaSetGeneratorResults,
+      ...datasetGeneratorResults,
       ...valueTypeResults,
     ],
     null,
