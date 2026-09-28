@@ -69,9 +69,18 @@ export function FoundryWidgetBuildPlugin(
      * Write the manifest to the expected location in the dist directory.
      */
     async writeBundle(_, bundle) {
-      const foundryConfig = await loadFoundryConfig("widgetSet");
-      if (foundryConfig == null) {
-        throw new Error("foundry.config.json file not found.");
+      let buildContext = options?.build;
+      if (buildContext == null) {
+        const foundryConfig = await loadFoundryConfig("widgetSet");
+        if (foundryConfig == null) {
+          throw new Error(
+            "foundry.config.json file not found. Supply the widget plugin's build option to build without a Foundry widget set.",
+          );
+        }
+        buildContext = {
+          widgetSetRid: foundryConfig.foundryConfig.widgetSet.rid,
+          version: await computeWidgetSetVersion(foundryConfig),
+        };
       }
 
       // Create a Vite server to evaluate widget config modules
@@ -79,26 +88,35 @@ export function FoundryWidgetBuildPlugin(
 
       try {
         // Build widget set manifest
-        const widgetSetVersion = await computeWidgetSetVersion(foundryConfig);
         const widgetBuilds = await Promise.all(
           htmlEntrypoints.map((input) =>
-            getWidgetBuildOutputs(bundle, input, config.build.outDir, server),
+            getWidgetBuildOutputs(
+              bundle,
+              input,
+              path.resolve(config.root, config.build.outDir),
+              server,
+            ),
           ),
         );
-        const widgetSetInputSpec = await getWidgetSetInputSpec(
-          path.resolve(process.cwd(), "package.json"),
-          path.resolve(process.cwd(), "resources.json"),
-        );
+        const widgetSetInputSpec =
+          buildContext.inputSpec ??
+          (await getWidgetSetInputSpec(
+            path.resolve(config.root, "package.json"),
+            path.resolve(config.root, "resources.json"),
+          ));
         const widgetSetManifest = buildWidgetSetManifest(
-          foundryConfig.foundryConfig.widgetSet.rid,
-          widgetSetVersion,
+          buildContext.widgetSetRid,
+          buildContext.version,
           widgetBuilds,
           widgetSetInputSpec,
           options,
         );
 
         // Write the manifest to the dist directory
-        writeManifest(widgetSetManifest, config.build.outDir);
+        writeManifest(
+          widgetSetManifest,
+          path.resolve(config.root, config.build.outDir),
+        );
       } finally {
         await server.close();
       }
@@ -114,10 +132,13 @@ async function createModuleEvaluationServer(
   config: ResolvedConfig,
 ): Promise<ViteDevServer> {
   return await createServer({
+    ...config.inlineConfig,
+    root: config.root,
     // Reference the existing config file in order to respect any custom config
     configFile: config.configFile,
     // Custom mode to prevent dev plugin execution
     mode: MODULE_EVALUATION_MODE,
+    server: { middlewareMode: true, hmr: false, watch: null },
   });
 }
 
