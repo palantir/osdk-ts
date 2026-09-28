@@ -49,9 +49,6 @@ export const fetchLinksPage = async <
     .getObjectDefinition(objectType.apiName)
     .catch(() => {});
 
-  // See normalizeInterfaceLinkSearchArounds: `pivotTo` can emit
-  // `interfaceLinkSearchAround` for a chain that has already landed on an object
-  // type, which the gateway rejects.
   const normalizedObjectSet = await normalizeInterfaceLinkSearchArounds(
     client,
     objectSet,

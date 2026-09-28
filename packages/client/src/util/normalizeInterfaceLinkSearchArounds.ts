@@ -24,28 +24,17 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import { extractObjectOrInterfaceType } from "./extractObjectOrInterfaceType.js";
 
 /* @internal
- * `ObjectSet#pivotTo` cannot know synchronously whether a link's target is an
- * object type or an interface type -- link metadata is only reachable through
- * the async `ontologyProvider`. So `createSearchAround` guesses from the def the
- * object set was *constructed* with, which is stale for every derived object
- * set: once a chain is rooted at an interface, every subsequent pivot emits
- * `interfaceLinkSearchAround`, even after the chain has landed on a concrete
- * object type.
+ * `pivotTo` cannot resolve link targets synchronously, so interface-rooted chains
+ * can emit `interfaceLinkSearchAround` after reaching an object type. Resolve the
+ * metadata at request time and rewrite those nodes to `searchAround`.
  *
- * The gateway rejects that with `Api:UnsupportedObjectSet`, because an
- * interface link can only be resolved against an interface-typed object set.
- *
- * This pass rewrites those nodes to `searchAround` at request time, when we can
- * afford to resolve the metadata. Nodes are returned by identity when nothing in
- * their subtree changed, so an object set containing no `interfaceLinkSearchAround`
- * is a cheap no-op.
+ * Preserve unchanged nodes by identity so callers can avoid copying request bodies.
  */
 export async function normalizeInterfaceLinkSearchArounds(
   clientCtx: MinimalClient,
   objectSet: ObjectSet,
 ): Promise<ObjectSet> {
   switch (objectSet.type) {
-    // Leaves: no nested object sets.
     case "base":
     case "interfaceBase":
     case "static":
@@ -54,75 +43,67 @@ export async function normalizeInterfaceLinkSearchArounds(
       return objectSet;
 
     case "interfaceLinkSearchAround": {
-      const child = await normalizeInterfaceLinkSearchArounds(
+      const innerObjectSet = await normalizeInterfaceLinkSearchArounds(
         clientCtx,
         objectSet.objectSet,
       );
-      const sourceDef = await extractObjectOrInterfaceType(clientCtx, child);
+      const producedType = await extractObjectOrInterfaceType(
+        clientCtx,
+        innerObjectSet,
+      );
 
-      // The chain has already landed on a concrete object type, so `interfaceLink`
-      // is really a plain link traversal on that object type.
-      if (sourceDef?.type === "object") {
+      if (producedType?.type === "object") {
         return {
           type: "searchAround",
-          objectSet: child,
-          // `InterfaceLinkTypeApiName` and `LinkTypeApiName` are distinctly
-          // branded strings, but the underlying value is the same: the caller
-          // passed an object-type link name to `pivotTo` and it was placed in
-          // the wrong field. Only the field is wrong, not the name.
+          objectSet: innerObjectSet,
+          // Keep the link name while converting between branded string types.
           link: objectSet.interfaceLink as string,
         };
       }
 
-      return child === objectSet.objectSet
+      return innerObjectSet === objectSet.objectSet
         ? objectSet
-        : { ...objectSet, objectSet: child };
+        : { ...objectSet, objectSet: innerObjectSet };
     }
 
-    // Single-child containers.
     case "searchAround":
     case "filter":
     case "asType":
     case "asBaseObjectTypes":
     case "nearestNeighbors": {
-      const child = await normalizeInterfaceLinkSearchArounds(
+      const innerObjectSet = await normalizeInterfaceLinkSearchArounds(
         clientCtx,
         objectSet.objectSet,
       );
-      return child === objectSet.objectSet
+      return innerObjectSet === objectSet.objectSet
         ? objectSet
-        : { ...objectSet, objectSet: child };
+        : { ...objectSet, objectSet: innerObjectSet };
     }
 
-    // `withProperties` nests object sets twice: its own base, and one per
-    // derived property (`MethodObjectSet` is an alias for `ObjectSet`).
     case "withProperties": {
-      const child = await normalizeInterfaceLinkSearchArounds(
-        clientCtx,
-        objectSet.objectSet,
-      );
-      const derivedProperties = await normalizeDerivedProperties(
-        clientCtx,
-        objectSet.derivedProperties,
-      );
-      return child === objectSet.objectSet &&
+      const [innerObjectSet, derivedProperties] = await Promise.all([
+        normalizeInterfaceLinkSearchArounds(clientCtx, objectSet.objectSet),
+        normalizeDerivedProperties(clientCtx, objectSet.derivedProperties),
+      ]);
+      return innerObjectSet === objectSet.objectSet &&
         derivedProperties === objectSet.derivedProperties
         ? objectSet
-        : { ...objectSet, objectSet: child, derivedProperties };
+        : { ...objectSet, objectSet: innerObjectSet, derivedProperties };
     }
 
-    // Multi-child containers.
     case "intersect":
     case "union":
     case "subtract": {
-      const children = await Promise.all(
-        objectSet.objectSets.map((os) =>
-          normalizeInterfaceLinkSearchArounds(clientCtx, os),
+      const innerObjectSets = await Promise.all(
+        objectSet.objectSets.map((innerObjectSet) =>
+          normalizeInterfaceLinkSearchArounds(clientCtx, innerObjectSet),
         ),
       );
-      return children.every((c, i) => c === objectSet.objectSets[i])
+      return innerObjectSets.every(
+        (innerObjectSet, i) => innerObjectSet === objectSet.objectSets[i],
+      )
         ? objectSet
-        : { ...objectSet, objectSets: children };
+        : { ...objectSet, objectSets: innerObjectSets };
     }
 
     default: {

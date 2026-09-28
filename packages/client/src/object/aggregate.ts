@@ -63,9 +63,6 @@ export async function aggregate<
     await clientCtx.flushEdits();
   }
 
-  // See normalizeInterfaceLinkSearchArounds: `pivotTo` can emit
-  // `interfaceLinkSearchAround` for a chain that has already landed on an object
-  // type, which the gateway rejects.
   const normalizedObjectSet = await normalizeInterfaceLinkSearchArounds(
     clientCtx,
     objectSet,

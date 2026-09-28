@@ -44,9 +44,6 @@ export async function createAndFetchTempObjectSetRid<
     client,
     await client[additionalContext].ontologyRid,
     {
-      // See normalizeInterfaceLinkSearchArounds: `pivotTo` can emit
-      // `interfaceLinkSearchAround` for a chain that has already landed on an
-      // object type, which the gateway rejects.
       objectSet: await normalizeInterfaceLinkSearchArounds(
         client[additionalContext],
         getWireObjectSet(objectSet),

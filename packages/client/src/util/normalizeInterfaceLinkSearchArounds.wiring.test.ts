@@ -16,7 +16,6 @@
 
 import { Employee, FooInterface } from "@osdk/client.test.ontology";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
-import type { SetupServer } from "@osdk/shared.test";
 import {
   LegacyFauxFoundry,
   MockOntologiesV2,
@@ -24,20 +23,14 @@ import {
 } from "@osdk/shared.test";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { additionalContext, type Client } from "../Client.js";
+import { additionalContext } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { createAndFetchTempObjectSetRid } from "../public-utils/createAndFetchTempObjectSetRid.js";
 
 const baseUrl = "https://stack.palantir.com/";
 
-/**
- * The wire object set `pivotTo` produces today for
- * `client(SomeInterface).pivotTo(<link to an object type>).pivotTo(<object link>)`.
- * The outer node is wrong: by then the chain has landed on an object type, so it
- * must be a `searchAround`. The gateway rejects the inner form with
- * Api:UnsupportedObjectSet.
- */
+// An interface-to-object pivot followed by an object link needs an outer `searchAround`.
 const buggyObjectSet: WireObjectSet = {
   type: "interfaceLinkSearchAround",
   objectSet: {
@@ -59,16 +52,13 @@ const expectedNormalized = {
 };
 
 describe("normalizeInterfaceLinkSearchArounds wiring", () => {
-  let client: Client;
-  let apiServer: SetupServer;
+  const { client, apiServer } = startNodeApiServer(
+    new LegacyFauxFoundry(),
+    createClient,
+  );
 
   beforeAll(() => {
-    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
-    ({ client, apiServer } = testSetup);
-
-    // The shared test ontology has no interface link that targets an object
-    // type, so teach the provider about one rather than mutating fixtures that
-    // other packages snapshot.
+    // Add the missing interface-to-object link without changing shared fixtures.
     const ctx = client[additionalContext];
     const realGetInterface = ctx.ontologyProvider.getInterfaceDefinition.bind(
       ctx.ontologyProvider,
@@ -94,7 +84,7 @@ describe("normalizeInterfaceLinkSearchArounds wiring", () => {
     };
 
     return () => {
-      testSetup.apiServer.close();
+      apiServer.close();
     };
   });
 

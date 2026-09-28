@@ -542,9 +542,6 @@ async function buildAndRemapRequestBody<
 ): Promise<RequestBody> {
   const withArgs = await applyFetchArgs(args, baseBody, client, objectType);
 
-  // `pivotTo` cannot resolve link targets synchronously, so an interface-rooted
-  // chain emits `interfaceLinkSearchAround` even after it lands on an object
-  // type. Rewrite those before they reach the wire.
   const objectSet = await normalizeInterfaceLinkSearchArounds(
     client,
     withArgs.objectSet,
