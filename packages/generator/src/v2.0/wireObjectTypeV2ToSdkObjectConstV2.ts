@@ -377,15 +377,14 @@ export function createDefinition(
       objectSet: ${objectSetIdentifier};
       props: ${osdkObjectPropsIdentifier};
       linksType: ${osdkObjectLinksIdentifier};
-      strictProps: ${osdkObjectStrictPropsIdentifier};${
-    object instanceof EnhancedObjectType
-      ? `
-      requiredCreatePropertyKeys: ${
-        stringUnionFrom(requiredCreatePropertyKeys)
-      };`
-      : ""
-  }
+      strictProps: ${osdkObjectStrictPropsIdentifier};
       ${
+    object instanceof EnhancedObjectType
+      ? `requiredCreatePropertyKeys: ${
+        stringUnionFrom(requiredCreatePropertyKeys)
+      };\n      `
+      : ""
+  }${
     stringify(definition, {
       links: (_value) =>
         `{
