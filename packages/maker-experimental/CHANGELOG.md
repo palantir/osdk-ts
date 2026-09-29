@@ -1,5 +1,24 @@
 # @osdk/maker-experimental
 
+## 0.68.0
+
+### Minor Changes
+
+- c25e568: Fix primitive paramType matching for lists
+- 60fdae9: Include group dependencies from raw security policy comparisons in Marketplace packages.
+- 4f9768f: Use resolved shape presets for imported ontology parent shapes
+
+### Patch Changes
+
+- Updated dependencies [aa9fe40]
+- Updated dependencies [e316cb7]
+  - @osdk/generator-converters.ontologyir@2.74.0
+  - @osdk/generator-converters.preview@0.52.0
+  - @osdk/maker@0.75.0
+  - @osdk/api@2.74.0
+  - @osdk/client.unstable@2.74.0
+  - @osdk/maker-import@0.41.0
+
 ## 0.67.0
 
 ### Patch Changes
