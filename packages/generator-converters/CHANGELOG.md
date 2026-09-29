@@ -1,5 +1,11 @@
 # @osdk/generator-converters
 
+## 2.75.0
+
+### Patch Changes
+
+- @osdk/api@2.75.0
+
 ## 2.74.0
 
 ### Patch Changes

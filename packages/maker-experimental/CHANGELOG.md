@@ -1,5 +1,17 @@
 # @osdk/maker-experimental
 
+## 0.69.0
+
+### Minor Changes
+
+- e5da515: Set `includeData: false` for generated empty object and link backing datasets.
+
+### Patch Changes
+
+- @osdk/api@2.75.0
+- @osdk/client.unstable@2.75.0
+- @osdk/generator-converters.ontologyir@2.75.0
+
 ## 0.68.0
 
 ### Minor Changes
