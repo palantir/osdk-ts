@@ -16,6 +16,7 @@
 
 import type {
   InterfaceTypeBlockDataV2,
+  LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
   OntologyBlockDataV2,
   PropertyType,
@@ -294,6 +295,93 @@ function createHierarchyBlockData(): OntologyBlockDataV2 {
 }
 
 describe(OntologyBlockDataToFullMetadataConverter, () => {
+  it.each(
+    [
+      ["manyToMany", "Target"],
+      ["intermediary", "Target"],
+      ["intermediary", "Source"],
+    ] as const,
+  )("converts both directions of %s links to %s", (type, target) => {
+    const targetRid = target === "Source" ? "source-rid" : "target-rid";
+    const endpoints = {
+      objectTypeRidA: "source-rid",
+      objectTypeRidB: targetRid,
+      objectTypeAToBLinkMetadata: {
+        apiName: "targets",
+        displayMetadata: {
+          displayName: "Targets",
+          pluralDisplayName: "Targets",
+          visibility: "NORMAL" as const,
+        },
+        typeClasses: [],
+      },
+      objectTypeBToALinkMetadata: {
+        apiName: "sources",
+        displayMetadata: {
+          displayName: "Sources",
+          pluralDisplayName: "Sources",
+          visibility: "NORMAL" as const,
+        },
+        typeClasses: [],
+      },
+    };
+    const link: LinkTypeBlockDataV2 = {
+      linkType: {
+        rid: "link-rid",
+        id: "source-to-target",
+        status: { type: "active", active: {} },
+        definition: type === "intermediary"
+          ? {
+            type,
+            intermediary: {
+              ...endpoints,
+              intermediaryObjectTypeRid: "bridge-rid",
+              aToIntermediaryLinkTypeRid: "source-to-bridge-rid",
+              intermediaryToBLinkTypeRid: "target-to-bridge-rid",
+            },
+          }
+          : {
+            type,
+            manyToMany: {
+              ...endpoints,
+              objectTypeAPrimaryKeyPropertyMapping: {},
+              objectTypeBPrimaryKeyPropertyMapping: {},
+            },
+          },
+      },
+      datasources: [],
+    };
+    const result = OntologyBlockDataToFullMetadataConverter
+      .getLinkMappingsFromBlockData([link], {}, {
+        byRid: new Map([
+          ["source-rid", "Source"],
+          ["target-rid", "Target"],
+        ]),
+        byHyphenated: new Map(),
+      });
+    const forward = {
+      apiName: "targets",
+      displayName: "Targets",
+      cardinality: "MANY",
+      objectTypeApiName: target,
+      linkTypeRid: "link-rid",
+      status: "ACTIVE",
+    };
+    const reverse = {
+      apiName: "sources",
+      displayName: "Sources",
+      cardinality: "MANY",
+      objectTypeApiName: "Source",
+      linkTypeRid: "link-rid",
+      status: "ACTIVE",
+    };
+    expect(result).toEqual(
+      target === "Source"
+        ? { "source-rid": [forward, reverse] }
+        : { "source-rid": [forward], "target-rid": [reverse] },
+    );
+  });
+
   it("preserves direct interface property implementations", () => {
     const result = OntologyBlockDataToFullMetadataConverter
       .getFullMetadataFromBlockData(createBlockData());

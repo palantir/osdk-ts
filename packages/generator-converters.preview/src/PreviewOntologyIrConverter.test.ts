@@ -23,6 +23,7 @@ import type {
 } from "@osdk/client.unstable";
 import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { OntologyBlockDataToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
+import * as path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { PreviewOntologyIrConverter } from "./PreviewOntologyIrConverter.js";
 
@@ -201,6 +202,84 @@ function getBlockData(versionId: string): OntologyBlockDataV2 {
     },
   };
 }
+
+it("generates both directions of an intermediary link", async () => {
+  const blockData = getBlockData("1.0.0");
+  const item = blockData.objectTypes["item-rid"];
+  blockData.objectTypes["other-rid"] = {
+    ...item,
+    objectType: {
+      ...item.objectType,
+      rid: "other-rid",
+      id: "other",
+      apiName: "Other",
+    },
+  };
+  blockData.linkTypes["link-rid"] = {
+    linkType: {
+      rid: "link-rid",
+      id: "item-to-other",
+      status: { type: "active", active: {} },
+      definition: {
+        type: "intermediary",
+        intermediary: {
+          objectTypeRidA: "item-rid",
+          objectTypeRidB: "other-rid",
+          intermediaryObjectTypeRid: "bridge-rid",
+          aToIntermediaryLinkTypeRid: "item-to-bridge-rid",
+          intermediaryToBLinkTypeRid: "other-to-bridge-rid",
+          objectTypeAToBLinkMetadata: {
+            apiName: "others",
+            displayMetadata: {
+              displayName: "Others",
+              pluralDisplayName: "Others",
+              visibility: "NORMAL",
+            },
+            typeClasses: [],
+          },
+          objectTypeBToALinkMetadata: {
+            apiName: "items",
+            displayMetadata: {
+              displayName: "Items",
+              pluralDisplayName: "Items",
+              visibility: "NORMAL",
+            },
+            typeClasses: [],
+          },
+        },
+      },
+    },
+    datasources: [],
+  };
+  const metadata = PreviewOntologyIrConverter
+    .getPreviewFullMetadataFromBlockData(blockData);
+  const writeFile = vi.fn<(file: string, contents: string) => Promise<void>>()
+    .mockResolvedValue(undefined);
+  await generateClientSdkVersionTwoPointZero(
+    { ...metadata, actionTypes: {} },
+    "test",
+    {
+      readdir: () => Promise.resolve([]),
+      mkdir: () => Promise.resolve(),
+      writeFile,
+    },
+    "/virtual-sdk",
+    "module",
+  );
+  const files = Object.fromEntries(writeFile.mock.calls);
+  const itemSource = files[
+    path.join("/virtual-sdk", "ontology", "objects", "Item.ts")
+  ];
+  const otherSource = files[
+    path.join("/virtual-sdk", "ontology", "objects", "Other.ts")
+  ];
+  expect(itemSource).toContain("readonly others: Other.ObjectSet;");
+  expect(itemSource)
+    .toContain("others: $ObjectMetadata.Link<Other, true>;");
+  expect(otherSource).toContain("readonly items: Item.ObjectSet;");
+  expect(otherSource)
+    .toContain("items: $ObjectMetadata.Link<Item, true>;");
+});
 
 describe("property value type associations", () => {
   it.each(["1.0.0", "2.0.0"])(
