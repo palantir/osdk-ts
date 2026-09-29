@@ -31,12 +31,12 @@ import {
   writeStaticObjects,
 } from "@osdk/maker";
 import { convertOntologyFullMetadata } from "@osdk/maker-import";
-import invariant from "tiny-invariant";
 
 import type { DatasetBlockDefinition } from "../cli/generateBackingDataset.js";
 import type { BlockDataAddOn } from "../cli/marketplaceSerialization/BlockGeneratorResult.js";
+import type { GeneratedBlockExternalRecommendations } from "../cli/marketplaceSerialization/supportingTypes.js";
+import { convertDatasetDefinition } from "../conversion/toMarketplace/convertDatasetDefinition.js";
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
-import { propertyTypeTypeToOntologyIrType } from "../conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";
 import {
   getImportedShapes,
   type LinkTypeIdsByApiName,
@@ -47,11 +47,12 @@ import {
   OntologyRidGeneratorImpl,
   ReadableIdGenerator,
 } from "../util/generateRid.js";
-import { getDatasetInputMappings } from "./datasetInputMappings.js";
+import { getDatasetBindings } from "./datasetInputMappings.js";
 import {
   getDatasetDefinitions,
   initializeDatasetState,
 } from "./defineDataset.js";
+import { writeDatasetExports } from "./writeDatasetExports.js";
 
 export interface OntologyV2Result {
   ontologyIr: OntologyIrV2;
@@ -63,6 +64,7 @@ export interface OntologyV2Result {
   backingDatasourceLinkApiNames: string[];
   backingMediaSetNames: string[];
   datasets: DatasetBlockDefinition[];
+  datasetExternalRecommendations: GeneratedBlockExternalRecommendations[];
 }
 
 export interface FunctionsIr {
@@ -121,31 +123,8 @@ export async function defineOntologyV2(
     importedTypes,
     randomnessKey,
   );
-  const datasets = getDatasetDefinitions().map<DatasetBlockDefinition>(
-    (dataset) => {
-      invariant(
-        dataset.schemaType !== "none",
-        `Dataset "${dataset.name}" schemaType "none" is not supported for generation yet`,
-      );
-      return {
-        name: dataset.name,
-        inputType: dataset.inputType ?? "batch",
-        schemaType: dataset.schemaType ?? "tabular",
-        columns: Object.entries(dataset.columns).map(([columnName, column]) => {
-          const type = propertyTypeTypeToOntologyIrType(
-            column.type,
-            ridGenerator,
-            `dataset.${dataset.name}.${columnName}`,
-          );
-          return {
-            name: columnName,
-            type: column.array
-              ? { type: "array", array: { subtype: type, reducers: [] } }
-              : type,
-          };
-        }),
-      };
-    },
+  const datasets = getDatasetDefinitions().map((dataset) =>
+    convertDatasetDefinition(dataset, ridGenerator),
   );
   const ontDef = convertOntologyDefinition(
     ontologyDefinition,
@@ -161,13 +140,13 @@ export async function defineOntologyV2(
     randomnessKey,
   );
 
-  shapes.inputMappings.push(
-    ...getDatasetInputMappings(
-      ontologyDefinition,
-      ontDef.ontology.objectTypes,
-      datasets,
-    ),
+  const datasetBindings = getDatasetBindings(
+    ontologyDefinition,
+    ontDef.ontology.objectTypes,
+    datasets,
+    ridGenerator,
   );
+  shapes.inputMappings.push(...datasetBindings.inputMappings);
 
   // Generate input shapes for imported entities and merge into main shapes
   const importedShapes = getImportedShapes(
@@ -228,7 +207,13 @@ export async function defineOntologyV2(
   }
 
   if (outputDir) {
-    writeStaticObjects(outputDir);
+    const datasetExports = writeDatasetExports(
+      outputDir,
+      ns,
+      getDatasetDefinitions(),
+      randomnessKey,
+    );
+    writeStaticObjects(outputDir, datasetExports);
   }
   if (dependencyFile) {
     writeDependencyFile(dependencyFile);
@@ -259,5 +244,6 @@ export async function defineOntologyV2(
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
     datasets,
+    datasetExternalRecommendations: datasetBindings.externalRecommendations,
   };
 }

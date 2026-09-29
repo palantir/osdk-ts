@@ -74,14 +74,22 @@ let datasets = new Map<string, DatasetDefinition>();
 export function defineDataset(
   definition: DatasetDefinition,
 ): DatasetDefinition {
+  const dataset = normalizeDatasetDefinition(definition);
+  invariant(
+    !datasets.has(dataset.name),
+    `Dataset "${dataset.name}" is already defined`,
+  );
+  datasets.set(dataset.name, dataset);
+  return dataset;
+}
+
+export function normalizeDatasetDefinition(
+  definition: DatasetDefinition,
+): DatasetDefinition {
   invariant(isRecord(definition), "Dataset definition must be an object");
   invariant(
     typeof definition.name === "string" && definition.name.trim().length > 0,
     "Dataset name must be a non-empty string",
-  );
-  invariant(
-    !datasets.has(definition.name),
-    `Dataset "${definition.name}" is already defined`,
   );
   const path = `Dataset "${definition.name}"`;
   invariant(
@@ -99,13 +107,11 @@ export function defineDataset(
       definition.columns === undefined,
       `${path} cannot define columns when schemaType is "none"`,
     );
-    const dataset: DatasetDefinition = {
+    return {
       name: definition.name,
       inputType: "batch",
       schemaType: "none",
     };
-    datasets.set(dataset.name, dataset);
-    return dataset;
   }
   invariant(isRecord(definition.columns), `${path}.columns must be a record`);
   validateDatasetFieldNames(Object.keys(definition.columns), path);
@@ -118,13 +124,12 @@ export function defineDataset(
     );
     validateColumnType(column.type, columnPath);
   }
-  const dataset: DatasetDefinition = {
-    ...definition,
+  return {
+    name: definition.name,
+    columns: definition.columns,
     inputType: "batch",
     schemaType: "tabular",
   };
-  datasets.set(dataset.name, dataset);
-  return dataset;
 }
 
 function validateColumnType(type: unknown, path: string): void {

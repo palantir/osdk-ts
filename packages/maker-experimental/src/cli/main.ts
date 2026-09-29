@@ -248,6 +248,7 @@ export default async function main(
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
     datasets,
+    datasetExternalRecommendations,
   } = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
@@ -500,12 +501,15 @@ export default async function main(
     input_presets: Object.fromEntries(importedInputPresets),
     outputs: Object.fromEntries(shapes.outputShapes),
     input_mapping_entries: ontologyInputMappingEntries,
-    external_recommendations: getExternalRecommendations(
-      ontologyIr.importedOntology,
-      ontologyIr.valueTypes,
-      importedTypes,
-      shapes.inputShapes,
-    ),
+    external_recommendations: [
+      ...getExternalRecommendations(
+        ontologyIr.importedOntology,
+        ontologyIr.valueTypes,
+        importedTypes,
+        shapes.inputShapes,
+      ),
+      ...datasetExternalRecommendations,
+    ],
     add_on_override: blockDataAddOn,
     input_shape_metadata: Object.fromEntries(shapes.inputShapeMetadata),
     block_type: "ONTOLOGY",

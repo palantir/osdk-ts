@@ -22,6 +22,10 @@ export {
   type DatasetColumnDefinition,
   type DatasetDefinition,
 } from "./api/defineDataset.js";
+export {
+  importDataset,
+  type ImportedDatasetDefinition,
+} from "./api/importDataset.js";
 export type { BlockShapes, OntologyRidGenerator } from "./util/generateRid.js";
 
 export { defineImportObject } from "./api/importObjectType.js";

@@ -145,7 +145,10 @@ export async function defineOntology(
   return convertOntologyDefinition(ontologyDefinition, randomnessKey);
 }
 
-export function writeStaticObjects(outputDir: string): void {
+export function writeStaticObjects(
+  outputDir: string,
+  additionalExports: Record<string, string> = {},
+): void {
   const codegenDir = path.resolve(outputDir, "codegen");
   const typeDirs = {
     [OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE]: "shared-property-types",
@@ -168,7 +171,10 @@ export function writeStaticObjects(outputDir: string): void {
     fs.mkdirSync(currentTypeDirPath, { recursive: true });
   });
 
-  const topLevelExportStatements: string[] = [];
+  const topLevelExportStatements = Object.entries(additionalExports).map(
+    ([name, modulePath]) =>
+      `export { ${name} } from ${JSON.stringify(modulePath)};`,
+  );
 
   Object.entries(ontologyDefinition).forEach(
     ([ontologyTypeEnumKey, entities]) => {
@@ -186,6 +192,11 @@ export function writeStaticObjects(outputDir: string): void {
             OntologyEntityTypeEnum.VALUE_TYPE
               ? "ValueType"
               : "");
+          if (Object.hasOwn(additionalExports, entityFileNameBase)) {
+            throw new Error(
+              `Generated name "${entityFileNameBase}" conflicts with an additional export`,
+            );
+          }
           const filePath = path.join(typeDirPath, `${entityFileNameBase}.ts`);
           const entityTypeName = getEntityTypeName(ontologyTypeEnumKey);
           const entityJSON = JSON.stringify(
@@ -222,10 +233,14 @@ export const ${entityFileNameBase}: ${entityTypeName} = wrapWithProxy(${entityFi
     },
   );
 
-  if (topLevelExportStatements.length > 0) {
+  const mainIndexFilePath = path.join(outputDir, "index.ts");
+  if (topLevelExportStatements.length > 0 || fs.existsSync(mainIndexFilePath)) {
     const mainIndexContent =
-      dependencyInjectionString() + topLevelExportStatements.join("\n") + "\n";
-    const mainIndexFilePath = path.join(outputDir, "index.ts");
+      topLevelExportStatements.length > 0
+        ? dependencyInjectionString() +
+          topLevelExportStatements.join("\n") +
+          "\n"
+        : "";
     fs.writeFileSync(mainIndexFilePath, mainIndexContent, { flag: "w" });
   }
 }

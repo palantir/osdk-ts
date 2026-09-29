@@ -24,19 +24,39 @@ import invariant from "tiny-invariant";
 
 import type { DatasetBlockDefinition } from "../cli/generateBackingDataset.js";
 import { getStandaloneDatasetInternalName } from "../cli/generateBackingDataset.js";
-import type { InputMappingEntry } from "../cli/marketplaceSerialization/supportingTypes.js";
+import type {
+  GeneratedBlockExternalRecommendations,
+  InputMappingEntry,
+} from "../cli/marketplaceSerialization/supportingTypes.js";
+import { convertDatasetDefinition } from "../conversion/toMarketplace/convertDatasetDefinition.js";
+import { DEFAULT_VERSION_RANGE } from "../conversion/toMarketplace/RecommendationUtils.js";
 import { typeToConcreteDataType } from "../conversion/toMarketplace/typeVisitors.js";
-import { ReadableIdGenerator } from "../util/generateRid.js";
+import {
+  type OntologyRidGenerator,
+  ReadableIdGenerator,
+} from "../util/generateRid.js";
+import {
+  type ImportedDatasetDefinition,
+  importDataset,
+} from "./importDataset.js";
 
-export function getDatasetInputMappings(
+export function getDatasetBindings(
   ontologyDefinition: OntologyDefinition,
   objectTypes: Record<string, ObjectTypeBlockDataV2>,
   datasets: DatasetBlockDefinition[],
-): InputMappingEntry[] {
+  ridGenerator: OntologyRidGenerator,
+): {
+  inputMappings: InputMappingEntry[];
+  externalRecommendations: GeneratedBlockExternalRecommendations[];
+} {
   const datasetsByName = new Map(
     datasets.map((dataset) => [dataset.name, dataset]),
   );
   const inputMappings: InputMappingEntry[] = [];
+  const externalRecommendations = new Map<
+    string,
+    GeneratedBlockExternalRecommendations
+  >();
 
   for (const object of Object.values(objectTypes)) {
     const apiName = object.objectType.apiName!;
@@ -48,7 +68,14 @@ export function getDatasetInputMappings(
     );
     if (datasource?.dataset === undefined) continue;
 
-    const dataset = datasetsByName.get(datasource.dataset.name);
+    const imported =
+      "packageName" in datasource.dataset
+        ? importDataset(datasource.dataset as ImportedDatasetDefinition)
+        : undefined;
+    const dataset =
+      imported === undefined
+        ? datasetsByName.get(datasource.dataset.name)
+        : convertDatasetDefinition(imported, ridGenerator);
     invariant(
       dataset !== undefined,
       `Dataset "${datasource.dataset.name}" referenced by object "${apiName}" is not defined`,
@@ -96,12 +123,14 @@ export function getDatasetInputMappings(
       );
     }
 
-    inputMappings.push({
-      input: ReadableIdGenerator.getForDataset(apiName),
-      output: ReadableIdGenerator.getForDatasetOutput(internalName),
-    });
+    const mappings: InputMappingEntry[] = [
+      {
+        input: ReadableIdGenerator.getForDataset(apiName),
+        output: ReadableIdGenerator.getForDatasetOutput(internalName),
+      },
+    ];
     for (const columnName of mappedColumns) {
-      inputMappings.push({
+      mappings.push({
         input: ReadableIdGenerator.getForDatasetColumn(apiName, columnName),
         output: ReadableIdGenerator.getForDatasetColumnOutput(
           internalName,
@@ -109,8 +138,35 @@ export function getDatasetInputMappings(
         ),
       });
     }
+    if (imported === undefined) {
+      inputMappings.push(...mappings);
+    } else {
+      const key = JSON.stringify([
+        imported.packageName,
+        imported.randomnessKey,
+      ]);
+      let recommendation = externalRecommendations.get(key);
+      if (recommendation === undefined) {
+        recommendation = {
+          upstreamPackageName: imported.packageName,
+          upstreamVersionCompatibility: DEFAULT_VERSION_RANGE,
+          upstreamRandomnessKey: imported.randomnessKey,
+          mappings: [],
+        };
+        externalRecommendations.set(key, recommendation);
+      }
+      recommendation.mappings.push(
+        ...mappings.map(({ input, output }) => ({
+          targetInputReadableId: input,
+          upstreamOutputReadableId: output,
+        })),
+      );
+    }
   }
-  return inputMappings;
+  return {
+    inputMappings,
+    externalRecommendations: [...externalRecommendations.values()],
+  };
 }
 
 function normalizeType(type: ConcreteDataType): ConcreteDataType {
