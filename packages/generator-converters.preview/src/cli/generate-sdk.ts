@@ -445,7 +445,7 @@ async function main(): Promise<void> {
     }
 
     const runtimeMetadata = {
-      ontologyRid,
+      ontologyRids: [ontologyRid],
       objectTypeMetadata,
       interfaceTypeMetadata,
       magritteSourceMetadata: {},
