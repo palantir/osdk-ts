@@ -179,39 +179,129 @@ function transformParametersToLocal(
   return transformed;
 }
 
-interface TypedValue {
-  type: string;
-  double?: number;
-  integer?: number;
-  string?: string;
-  boolean?: boolean;
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value != null && typeof value === "object" && !Array.isArray(value);
 }
 
-interface ExecutionResult {
-  executionResult?: {
-    type: string;
-    success?: { returnValue?: TypedValue };
-    failed?: { runtimeError?: { message?: string } };
-  };
+function decodeRuntimeValue(value: unknown): unknown {
+  if (!isRecord(value) || typeof value.type !== "string") {
+    throw new Error("Unexpected return value from local runtime");
+  }
+
+  const payload = value[value.type];
+  switch (value.type) {
+    case "null":
+      // The executor represents absent optionals as tagged null values.
+      if (isRecord(payload)) {
+        return undefined;
+      }
+      break;
+    case "boolean":
+      if (typeof payload === "boolean") {
+        return payload;
+      }
+      break;
+    case "byte":
+    case "short":
+    case "integer":
+    case "long":
+      if (typeof payload === "number") {
+        return payload;
+      }
+      break;
+    case "float":
+    case "double":
+      if (
+        typeof payload === "number" ||
+        payload === "NaN" ||
+        payload === "Infinity" ||
+        payload === "-Infinity"
+      ) {
+        return payload;
+      }
+      break;
+    case "string":
+    case "date":
+    case "timestamp":
+    case "decimal":
+    case "binary":
+    case "attachment":
+    case "objectRid":
+    case "objectSetRid":
+    case "user":
+    case "group":
+    case "modelGraphRid":
+    case "timeSeriesRid":
+      if (typeof payload === "string") {
+        return payload;
+      }
+      break;
+    case "customType":
+      if (isRecord(payload)) {
+        return Object.fromEntries(
+          Object.entries(payload).map(([key, field]) => [
+            key,
+            decodeRuntimeValue(field),
+          ]),
+        );
+      }
+      break;
+    case "list":
+    case "set":
+      if (isRecord(payload) && Array.isArray(payload.values)) {
+        return payload.values.map(decodeRuntimeValue);
+      }
+      break;
+    case "map":
+      if (isRecord(payload) && Array.isArray(payload.entries)) {
+        return Object.fromEntries(
+          payload.entries.map((entry: unknown) => {
+            if (!isRecord(entry)) {
+              throw new Error("Unexpected map entry from local runtime");
+            }
+            const key = decodeRuntimeValue(entry.key);
+            if (typeof key !== "string" && typeof key !== "number") {
+              throw new Error(
+                "Unsupported map key from local runtime: expected a string or number",
+              );
+            }
+            return [key, decodeRuntimeValue(entry.value)];
+          }),
+        );
+      }
+      break;
+    default:
+      throw new Error(
+        `Unsupported return value type from local runtime: ${value.type}`,
+      );
+  }
+
+  throw new Error(`Unexpected ${value.type} value from local runtime`);
 }
 
 function transformResponseFromLocal(response: unknown): unknown {
-  const resp = response as ExecutionResult;
+  if (!isRecord(response) || !isRecord(response.executionResult)) {
+    throw new Error("Unexpected response format from local runtime");
+  }
+  const result = response.executionResult;
 
-  if (resp?.executionResult?.type === "success") {
-    const returnValue = resp.executionResult.success?.returnValue;
-    if (returnValue?.type != null && returnValue.type in returnValue) {
-      return returnValue[returnValue.type as keyof TypedValue];
-    }
-    return returnValue;
+  if (result.type === "success" && isRecord(result.success)) {
+    const { returnValue } = result.success;
+    return returnValue == null ? returnValue : decodeRuntimeValue(returnValue);
   }
 
-  if (resp?.executionResult?.type === "failed") {
-    const msg = resp.executionResult.failed?.runtimeError?.message;
-    if (!msg) {
-      throw new Error("Function execution failed with no error message");
-    }
-    throw new Error(msg);
+  if (
+    result.type === "failed" &&
+    isRecord(result.failed) &&
+    typeof result.failed.type === "string"
+  ) {
+    const failure = result.failed[result.failed.type];
+    const message = isRecord(failure) ? failure.message : undefined;
+    throw new Error(
+      typeof message === "string" && message.length > 0
+        ? message
+        : `Function execution failed with no error message (${result.failed.type})`,
+    );
   }
 
   throw new Error("Unexpected response format from local runtime");
