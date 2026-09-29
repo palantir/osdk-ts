@@ -1,5 +1,22 @@
 # @osdk/foundry-sdk-generator
 
+## 2.74.0
+
+### Minor Changes
+
+- e2539c9: Split safe compile time error messages during ontology metadata resolver
+
+### Patch Changes
+
+- Updated dependencies [6ca7442]
+- Updated dependencies [f2e0591]
+  - @osdk/client@2.74.0
+  - @osdk/generator@2.74.0
+  - @osdk/api@2.74.0
+  - @osdk/client.unstable@2.74.0
+  - @osdk/generator-converters@2.74.0
+  - @osdk/generator-utils@2.74.0
+
 ## 2.73.0
 
 ### Patch Changes

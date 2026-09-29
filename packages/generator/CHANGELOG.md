@@ -1,5 +1,16 @@
 # @osdk/generator
 
+## 2.74.0
+
+### Minor Changes
+
+- f2e0591: Intersect string and boolean enum constraints when narrowing value-type properties, using never for empty intersections.
+
+### Patch Changes
+
+- @osdk/api@2.74.0
+- @osdk/generator-converters@2.74.0
+
 ## 2.73.0
 
 ### Patch Changes

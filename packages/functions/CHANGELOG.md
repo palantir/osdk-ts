@@ -1,5 +1,16 @@
 # @osdk/functions
 
+## 1.27.0
+
+### Minor Changes
+
+- 5b570fa: Add experimental agent aliases to scope resources for functions and agents.
+
+### Patch Changes
+
+- Updated dependencies [6ca7442]
+  - @osdk/client@2.74.0
+
 ## 1.26.0
 
 ### Patch Changes
