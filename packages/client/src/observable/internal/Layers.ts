@@ -192,6 +192,10 @@ export class Layers {
           });
         }
 
+        if (cacheKey.type === "object") {
+          changes.writtenObjectCacheKeys.add(cacheKey);
+        }
+
         return newValue;
       },
       delete: (cacheKey, status) => {

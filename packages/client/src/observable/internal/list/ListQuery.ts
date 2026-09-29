@@ -501,7 +501,7 @@ export abstract class ListQuery extends BaseListQuery<
           obj: ObjectHolder | InterfaceHolder,
         ): ObjectCacheKey | undefined => {
           const key = this.peekObjectCacheKey(obj);
-          if (key == null) {
+          if (key == null || !changes.writtenObjectCacheKeys.has(key)) {
             return undefined;
           }
 

@@ -433,7 +433,7 @@ export class ObjectSetQuery extends BaseListQuery<
           getObjectCacheKey: (obj) => this.#getObjectCacheKey(obj),
           getCachedObjectKey: (obj) => {
             const key = this.#peekObjectCacheKey(obj);
-            if (key == null) {
+            if (key == null || changes.writtenObjectCacheKeys.has(key)) {
               return undefined;
             }
             const value = batch.read(key)?.value;
