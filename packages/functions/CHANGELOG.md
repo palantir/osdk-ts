@@ -1,5 +1,60 @@
 # @osdk/functions
 
+## 1.27.0
+
+### Minor Changes
+
+- 5b570fa: Add experimental agent aliases to scope resources for functions and agents.
+
+### Patch Changes
+
+- Updated dependencies [6ca7442]
+  - @osdk/client@2.74.0
+
+## 1.26.0
+
+### Patch Changes
+
+- Updated dependencies [7b737e7]
+- Updated dependencies [1172332]
+  - @osdk/aliases@0.3.0
+  - @osdk/client@2.72.0
+
+## 1.25.0
+
+### Minor Changes
+
+- b97182e: Fix export for cjs type declaration.
+
+### Patch Changes
+
+- Updated dependencies [528d0ca]
+  - @osdk/client@2.71.0
+
+## 1.24.0
+
+### Minor Changes
+
+- ffb171d: Extract the existing Functions alias runtime into `@osdk/aliases/internal`, an internal compatibility entry point for `@osdk/functions`. All six alias readers remain available through `Aliases` in `@osdk/functions` with the same synchronous return types and error behavior.
+
+### Patch Changes
+
+- Updated dependencies [ffb171d]
+  - @osdk/aliases@0.2.0
+  - @osdk/client@2.70.0
+
+## 1.23.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [aec9d54]
+- Updated dependencies [488376f]
+  - @osdk/client@2.67.0
+
 ## 1.22.0
 
 ### Minor Changes

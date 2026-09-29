@@ -414,11 +414,10 @@ export function createClientFromContext(clientCtx: MinimalClient) {
  * @param options - Optional client configuration: a custom `logger`, an experimental `UNSTABLE_DO_NOT_USE_BRANCH`
  *   for branch-aware requests, and additional `headers` to include on every request.
  *
- *   The client is branch-aware without configuration. If `UNSTABLE_DO_NOT_USE_BRANCH` is not supplied, the
- *   branch is read from the `VITE_FOUNDRY_BRANCH_RID` environment variable, which Foundry runtimes set to
- *   the branch the application is checked out on; objects, actions, and queries then read and write on that
- *   branch. An explicitly supplied branch always takes precedence, and `null` pins the client to the default
- *   branch even while checked out on a branch.
+ *   The client is branch-aware without configuration. If `UNSTABLE_DO_NOT_USE_BRANCH` is not supplied, build
+ *   tooling can inject the branch into the application HTML; objects, actions, and queries then read and write
+ *   on that branch. An explicitly supplied branch always takes precedence, and `null` pins the client to the
+ *   default branch even while checked out on a branch.
  * @param fetchFn - An optional `fetch` implementation to use for all requests. Defaults to the global `fetch`.
  * @example
  * ```ts
@@ -450,10 +449,10 @@ export const createClient: (
         /**
          * The Foundry branch to scope every request to.
          *
-         * When omitted (or `undefined`), the branch is read from the
-         * `VITE_FOUNDRY_BRANCH_RID` environment variable, which Foundry runtimes
-         * set to the branch the application is checked out on. Pass `null` to
-         * ignore the environment and use the default branch.
+         * When omitted (or `undefined`), the branch is read from runtime
+         * configuration injected into the application HTML by OSDK build
+         * tooling. Pass `null` to ignore the injected branch and use the
+         * default branch.
          *
          * @beta This is an experimental feature subject to change
          */

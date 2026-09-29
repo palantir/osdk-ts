@@ -23,6 +23,7 @@ import * as OntologyObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet"
 
 import { additionalContext, type Client } from "../Client.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
+import { normalizeInterfaceLinkSearchArounds } from "../util/normalizeInterfaceLinkSearchArounds.js";
 
 /**
  * Fetches a temporary object set RID from the Foundry stack for the given object set.
@@ -43,8 +44,12 @@ export async function createAndFetchTempObjectSetRid<
     client,
     await client[additionalContext].ontologyRid,
     {
-      objectSet: getWireObjectSet(objectSet),
+      objectSet: await normalizeInterfaceLinkSearchArounds(
+        client[additionalContext],
+        getWireObjectSet(objectSet),
+      ),
     },
+    { branch: client[additionalContext].branch },
   );
   return response.objectSetRid;
 }

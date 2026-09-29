@@ -1,5 +1,48 @@
 # @osdk/react-components-storybook
 
+## 0.61.0
+
+### Patch Changes
+
+- @osdk/faux@0.55.0
+
+## 0.60.0
+
+### Minor Changes
+
+- 4cae25e: Fix storybook dev mode run
+
+## 0.59.0
+
+### Patch Changes
+
+- @osdk/faux@0.54.0
+
+## 0.58.0
+
+### Minor Changes
+
+- f6bcb14: Adds Relative date functionality to the DATE_RANGE filter. Add optional props to enable the relative mode, and relevant API input changes.
+
+## 0.57.0
+
+### Patch Changes
+
+- @osdk/faux@0.53.0
+
+## 0.56.0
+
+### Patch Changes
+
+- @osdk/faux@0.52.0
+
+## 0.55.0
+
+### Patch Changes
+
+- Updated dependencies [488376f]
+  - @osdk/faux@0.51.0
+
 ## 0.54.0
 
 ### Patch Changes

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { OntologyIrLinkTypeBlockDataV2 } from "@osdk/client.unstable";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
 import { isInjectedRuntimeInput } from "./convertDataType.js";
@@ -22,10 +23,22 @@ import {
   OntologyIrToFullMetadataConverter,
 } from "./OntologyIrToFullMetadataConverter.js";
 
-const discoveredFunctions = vi.hoisted<IDiscoveredFunction[]>(() => []);
+const { discoveredFunctions, entityMetadataMappings } = vi.hoisted(() => ({
+  discoveredFunctions: [] as IDiscoveredFunction[],
+  entityMetadataMappings: [] as unknown[],
+}));
 
 vi.mock("@foundry/functions-typescript-osdk-discovery", () => ({
   FunctionDiscoverer: class {
+    constructor(
+      _program: unknown,
+      _entryPointPath: string,
+      _fullFilePath: string,
+      entityMetadataMapping?: unknown,
+    ) {
+      entityMetadataMappings.push(entityMetadataMapping);
+    }
+
     discover() {
       return { discoveredFunctions };
     }
@@ -33,6 +46,84 @@ vi.mock("@foundry/functions-typescript-osdk-discovery", () => ({
 }));
 
 describe(OntologyIrToFullMetadataConverter, () => {
+  it.each(
+    [
+      ["manyToMany", "Target"],
+      ["intermediary", "Target"],
+      ["intermediary", "Source"],
+    ] as const,
+  )("converts both directions of %s links to %s", (type, target) => {
+    const endpoints = {
+      objectTypeRidA: "Source",
+      objectTypeRidB: target,
+      objectTypeAToBLinkMetadata: {
+        apiName: "targets",
+        displayMetadata: {
+          displayName: "Targets",
+          pluralDisplayName: "Targets",
+          visibility: "NORMAL" as const,
+        },
+        typeClasses: [],
+      },
+      objectTypeBToALinkMetadata: {
+        apiName: "sources",
+        displayMetadata: {
+          displayName: "Sources",
+          pluralDisplayName: "Sources",
+          visibility: "NORMAL" as const,
+        },
+        typeClasses: [],
+      },
+    };
+    const link: OntologyIrLinkTypeBlockDataV2 = {
+      linkType: {
+        id: "source-to-target",
+        status: { type: "active", active: {} },
+        definition: type === "intermediary"
+          ? {
+            type,
+            intermediary: {
+              ...endpoints,
+              intermediaryObjectTypeRid: "Bridge",
+              aToIntermediaryLinkTypeRid: "source-to-bridge",
+              intermediaryToBLinkTypeRid: "target-to-bridge",
+            },
+          }
+          : {
+            type,
+            manyToMany: {
+              ...endpoints,
+              objectTypeAPrimaryKeyPropertyMapping: [],
+              objectTypeBPrimaryKeyPropertyMapping: [],
+            },
+          },
+      },
+      datasources: [],
+    };
+    const result = OntologyIrToFullMetadataConverter.getLinkMappings([link]);
+    const forward = {
+      apiName: "targets",
+      displayName: "Targets",
+      cardinality: "MANY",
+      objectTypeApiName: target,
+      linkTypeRid: `ri.Source.source-to-target.${target}`,
+      status: "ACTIVE",
+    };
+    const reverse = {
+      apiName: "sources",
+      displayName: "Sources",
+      cardinality: "MANY",
+      objectTypeApiName: "Source",
+      linkTypeRid: `ri.Source.source-to-target.${target}`,
+      status: "ACTIVE",
+    };
+    expect(result).toEqual(
+      target === "Source"
+        ? { Source: [forward, reverse] }
+        : { Source: [forward], Target: [reverse] },
+    );
+  });
+
   it("should convert ontology IR to full metadata", async () => {
     const result = OntologyIrToFullMetadataConverter
       .getFullMetadataFromIr(
@@ -3632,6 +3723,62 @@ describe(OntologyIrToFullMetadataConverter, () => {
           client: {
             dataType: { type: "string" },
             required: true,
+          },
+        },
+      ]);
+    } finally {
+      createProgramSpy.mockRestore();
+    }
+  });
+
+  it("uses canonical API names in function discovery entity metadata", async () => {
+    const createProgramSpy = vi.spyOn(
+      OntologyIrToFullMetadataConverter,
+      "createProgram",
+    ).mockReturnValue({} as never);
+    const ontologyRid = "ri.ontology.main.ontology.0";
+    const objectApiName = "com.palantir.ontology.pdfPage";
+    const interfaceApiName = "com.palantir.ontology.pdfDocument";
+    const interfaceRid = "ri.ontology.main.interface-type.pdf-document";
+    discoveredFunctions.splice(0);
+    entityMetadataMappings.splice(0);
+
+    try {
+      await OntologyIrToFullMetadataConverter.discoverTypeScriptFunctions(
+        fileURLToPath(new URL(".", import.meta.url)),
+        undefined,
+        undefined,
+        {
+          ontology: { rid: ontologyRid },
+          objectTypes: {
+            PdfPage: {
+              objectType: { apiName: objectApiName },
+              linkTypes: [],
+            },
+          },
+          interfaceTypes: {
+            PdfDocument: {
+              apiName: interfaceApiName,
+              rid: interfaceRid,
+            },
+          },
+        } as never,
+      );
+
+      expect(entityMetadataMappings).toEqual([
+        {
+          ontologies: {
+            [ontologyRid]: {
+              objectTypes: {
+                [objectApiName]: {
+                  objectTypeId: objectApiName,
+                  linkTypes: {},
+                },
+              },
+              interfaceTypes: {
+                [interfaceApiName]: { interfaceTypeRid: interfaceRid },
+              },
+            },
           },
         },
       ]);

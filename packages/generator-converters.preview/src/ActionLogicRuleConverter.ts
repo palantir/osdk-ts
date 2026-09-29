@@ -335,9 +335,16 @@ export function convertBlockDataLogicRulesToActionLogicRules(
   rules: LogicRule[],
   action: ActionTypeBlockDataV2,
   blockdata?: OntologyBlockDataV2,
+  importedTypes?: Ontologies.OntologyFullMetadata,
 ): Ontologies.ActionLogicRule[] {
-  const objectLookup = buildBlockDataObjectTypeLookup(blockdata);
-  const interfaceLookup = buildBlockDataInterfaceTypeLookup(blockdata);
+  const objectLookup = buildBlockDataObjectTypeLookup(
+    blockdata,
+    importedTypes,
+  );
+  const interfaceLookup = buildBlockDataInterfaceTypeLookup(
+    blockdata,
+    importedTypes,
+  );
   const interfaceLinkLookup = buildBlockDataInterfaceLinkTypeLookup(blockdata);
 
   return rules.map(rule =>

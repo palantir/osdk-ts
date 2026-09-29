@@ -19,21 +19,27 @@ import * as fs from "fs";
 import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { InputPreset } from "@osdk/client.unstable/api";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
-import type { LinkType, ObjectType } from "@osdk/maker";
+import type { LinkType, ObjectType, OntologyDefinition } from "@osdk/maker";
 import {
   getImportedTypes,
   getOntologyDefinition,
+  importOntologyEntity,
   initializeOntologyState,
   OntologyEntityTypeEnum,
   writeDependencyFile,
   writeStaticObjects,
 } from "@osdk/maker";
+import { convertOntologyFullMetadata } from "@osdk/maker-import";
 
+import type { BlockDataAddOn } from "../cli/marketplaceSerialization/BlockGeneratorResult.js";
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
 import {
+  type ExternalImportedOntologyMetadata,
   getImportedShapes,
   type LinkTypeIdsByApiName,
 } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
+
+export type { ExternalImportedOntologyMetadata } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
 import type { BlockShapes, ReadableId } from "../util/generateRid.js";
 import {
@@ -43,7 +49,9 @@ import {
 
 export interface OntologyV2Result {
   ontologyIr: OntologyIrV2;
+  importedTypes: OntologyDefinition;
   shapes: BlockShapes;
+  blockDataAddOn: BlockDataAddOn;
   importedInputPresets: Map<ReadableId, InputPreset>;
   backingDatasourceApiNames: string[];
   backingDatasourceLinkApiNames: string[];
@@ -62,6 +70,7 @@ export async function defineOntologyV2(
   functionsIrFile?: string,
   randomnessKey?: string,
   importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
+  externalImportedMetadata?: ExternalImportedOntologyMetadata,
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
 
@@ -76,7 +85,24 @@ export async function defineOntologyV2(
     throw e;
   }
 
+  if (externalImportedMetadata) {
+    const importedOntology = convertOntologyFullMetadata(
+      externalImportedMetadata,
+    );
+    for (const entityType of [
+      OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
+      OntologyEntityTypeEnum.INTERFACE_TYPE,
+      OntologyEntityTypeEnum.OBJECT_TYPE,
+      OntologyEntityTypeEnum.ACTION_TYPE,
+    ] as const) {
+      for (const entity of Object.values(importedOntology[entityType])) {
+        importOntologyEntity(entity);
+      }
+    }
+  }
+
   const ontologyDefinition = getOntologyDefinition();
+  const importedTypes = getImportedTypes();
 
   let functionsIr: FunctionsIr | undefined;
   if (functionsIrFile) {
@@ -84,7 +110,7 @@ export async function defineOntologyV2(
   }
 
   const ridGenerator = new OntologyRidGeneratorImpl(
-    getImportedTypes(),
+    importedTypes,
     randomnessKey,
   );
   const ontDef = convertOntologyDefinition(
@@ -106,6 +132,7 @@ export async function defineOntologyV2(
     ontDef.importedOntology,
     ridGenerator,
     importedLinkTypeIdsByApiName,
+    externalImportedMetadata,
   );
   for (const [key, value] of importedShapes.inputShapes) {
     shapes.inputShapes.set(key, value);
@@ -166,9 +193,26 @@ export async function defineOntologyV2(
     writeDependencyFile(dependencyFile);
   }
 
+  const readableIds = new Set([
+    ...shapes.inputShapes.keys(),
+    ...shapes.outputShapes.keys(),
+  ]);
+  const blockDataAddOn: BlockDataAddOn = {
+    idToBlockShapeId: Object.fromEntries(
+      Array.from(readableIds, (readableId) => [
+        readableId,
+        ridGenerator.toBlockInternalId(readableId),
+      ]),
+    ),
+    idToInputGroupId: {},
+    outputToLocationInput: {},
+  };
+
   return {
     ontologyIr: ontDef,
+    importedTypes,
     shapes,
+    blockDataAddOn,
     importedInputPresets: importedShapes.inputPresets,
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,

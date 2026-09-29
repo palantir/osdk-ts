@@ -26,6 +26,7 @@ import type {
   QueryDataType,
   QueryTypeV2,
 } from "@osdk/foundry.ontologies";
+import { GeneratorError } from "@osdk/generator-converters";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { Result } from "./Result.js";
 
@@ -42,8 +43,9 @@ export function parseLinkType(
 ): [objectTypeApiName: string, linkTypeApiName: string] {
   const lastDotIndex = linkType.lastIndexOf(".");
   if (lastDotIndex === -1) {
-    throw new Error(
-      `Invalid link type format: "${linkType}". Expected format: "ObjectTypeApiName.linkTypeApiName"`,
+    throw new GeneratorError(
+      "Invalid link type format. Expected format: \"ObjectTypeApiName.linkTypeApiName\"",
+      { linkType },
     );
   }
   return [
@@ -62,7 +64,7 @@ export interface OntologyInfo {
   requestedMetadata: OntologyFullMetadata;
   externalInterfaces: Map<string, string>;
   externalObjects: Map<string, string>;
-  fixedVersionQueryTypes: string[];
+  queryVersionReferences: ReadonlyMap<string, string>;
 }
 
 export class OntologyMetadataResolver {
@@ -207,7 +209,7 @@ export class OntologyMetadataResolver {
     extPackageInfo: PackageInfo = new Map(),
     branch: string | undefined = undefined,
   ): Promise<
-    Result<OntologyInfo, string[]>
+    Result<OntologyInfo, GeneratorError[]>
   > {
     let ontology: Ontology;
 
@@ -220,9 +222,10 @@ export class OntologyMetadataResolver {
       );
     } catch (e) {
       return Result.err([
-        `Unable to load the specified Ontology with network error: ${
-          JSON.stringify(e)
-        }`,
+        new GeneratorError(
+          "Unable to load the specified Ontology with network error",
+          { error: JSON.stringify(e) },
+        ),
       ]);
     }
 
@@ -241,9 +244,9 @@ export class OntologyMetadataResolver {
 
       if ((ontologyFullMetadata as any).errorName != null) {
         return Result.err([
-          `Unable to load the specified Ontology metadata.\n${
-            JSON.stringify(ontologyFullMetadata, null, 2)
-          }`,
+          new GeneratorError("Unable to load the specified Ontology metadata", {
+            error: JSON.stringify(ontologyFullMetadata, null, 2),
+          }),
         ]);
       }
 
@@ -252,7 +255,7 @@ export class OntologyMetadataResolver {
 
       for (const { sdk } of extPackageInfo.values()) {
         if (sdk.npm?.npmPackageName == null) {
-          throw new Error(
+          throw new GeneratorError(
             "External package is not generated as an npm package",
           );
         }
@@ -265,8 +268,9 @@ export class OntologyMetadataResolver {
           );
 
           if (!ot) {
-            throw new Error(
-              `Could not find external object type with rid ${rid}`,
+            throw new GeneratorError(
+              "Could not find external object type with rid",
+              { objectTypeRid: rid },
             );
           }
 
@@ -279,8 +283,9 @@ export class OntologyMetadataResolver {
           );
 
           if (!it) {
-            throw new Error(
-              `Could not find external interface type with rid ${rid}`,
+            throw new GeneratorError(
+              "Could not find external interface type with rid",
+              { interfaceTypeRid: rid },
             );
           }
           externalInterfaces.set(it.apiName, sdk.npm.npmPackageName);
@@ -292,8 +297,9 @@ export class OntologyMetadataResolver {
       const queryTypes = new Set(entities.queryTypesApiNamesToLoad);
       for (const queryType of entities.queryTypesApiNamesToLoad ?? []) {
         if (queryType.includes(":")) {
-          throw new Error(
-            `Query types with fixed versions are not supported with external packages: ${queryType}`,
+          throw new GeneratorError(
+            "Query types with fixed versions are not supported with external packages",
+            { queryType },
           );
         }
       }
@@ -323,7 +329,7 @@ export class OntologyMetadataResolver {
         extPackageInfo,
       );
 
-      const validData: Result<{}, string[]> = this
+      const validData: Result<{}, GeneratorError[]> = this
         .validateLoadedOntologyMetadata(
           filteredFullMetadata,
           {
@@ -344,7 +350,7 @@ export class OntologyMetadataResolver {
         requestedMetadata: filteredFullMetadata,
         externalInterfaces,
         externalObjects,
-        fixedVersionQueryTypes: [],
+        queryVersionReferences: new Map(),
       });
     } else {
       const objectTypes = new Set(entities.objectTypesApiNamesToLoad);
@@ -364,19 +370,29 @@ export class OntologyMetadataResolver {
       }
 
       const queryTypes = new Set<string>();
-      const fixedVersionQueryTypes = [];
+      const queryTypeApiNames = new Set<string>();
+      const queryVersionReferences = new Map<string, string>();
 
       for (const queryType of entities.queryTypesApiNamesToLoad ?? []) {
-        if (queryTypes.has(queryType)) {
+        const lastColonIndex = queryType.lastIndexOf(":");
+        const queryTypeApiName = lastColonIndex === -1
+          ? queryType
+          : queryType.substring(0, lastColonIndex);
+
+        if (queryTypeApiNames.has(queryTypeApiName)) {
           return Result.err([
-            `Query type ${queryType} was specified multiple times.`,
+            new GeneratorError("Query type was specified multiple times", {
+              queryTypeApiName,
+            }),
           ]);
         }
-        const lastColonIndex = queryType.lastIndexOf(":");
+        queryTypeApiNames.add(queryTypeApiName);
 
         if (lastColonIndex !== -1) {
-          const queryTypeApiName = queryType.substring(0, lastColonIndex);
-          fixedVersionQueryTypes.push(queryTypeApiName);
+          queryVersionReferences.set(
+            queryTypeApiName,
+            queryType.substring(lastColonIndex + 1),
+          );
         }
         queryTypes.add(queryType);
       }
@@ -400,7 +416,7 @@ export class OntologyMetadataResolver {
         },
       );
 
-      const validData: Result<{}, string[]> = this
+      const validData: Result<{}, GeneratorError[]> = this
         .validateLoadedOntologyMetadata(
           requestedMetadata,
           {
@@ -420,7 +436,7 @@ export class OntologyMetadataResolver {
         requestedMetadata,
         externalInterfaces: new Map(),
         externalObjects: new Map(),
-        fixedVersionQueryTypes,
+        queryVersionReferences,
       });
     }
   }
@@ -436,8 +452,8 @@ export class OntologyMetadataResolver {
     },
     packageInfo: PackageInfo,
     fullMetadata?: OntologyFullMetadata,
-  ): Result<{}, string[]> {
-    const errors: string[] = [];
+  ): Result<{}, GeneratorError[]> {
+    const errors: GeneratorError[] = [];
     const loadedObjectTypes = Object.fromEntries(
       Object.values(filteredFullMetadata.objectTypes).map(object => [
         object.objectType.apiName,
@@ -472,7 +488,10 @@ export class OntologyMetadataResolver {
       for (const expectedLink of expectedEntities.linkTypes.get(object) ?? []) {
         if (!loadedLinkTypes[object][expectedLink]) {
           errors.push(
-            `Unable to find link type ${expectedLink} for Object Type ${object}`,
+            new GeneratorError("Unable to find link type for object type", {
+              linkTypeApiName: expectedLink,
+              objectTypeApiName: object,
+            }),
           );
         }
       }
@@ -491,9 +510,14 @@ export class OntologyMetadataResolver {
           }
 
           errors.push(
-            `Unable to load link type ${link.apiName} for ${
-              loadedObjectTypes[object].objectType.apiName
-            }, because the target object type ${link.objectTypeApiName} is not loaded. Please specify the target Object type with --objectTypes ${link.objectTypeApiName}`,
+            new GeneratorError(
+              "Unable to load link type for object type because the target object type is not loaded. Please specify the target Object type with --objectTypes <targetObjectTypeApiName>",
+              {
+                linkTypeApiName: link.apiName,
+                objectTypeApiName: loadedObjectTypes[object].objectType.apiName,
+                targetObjectTypeApiName: link.objectTypeApiName,
+              },
+            ),
           );
         }
       }
@@ -501,18 +525,22 @@ export class OntologyMetadataResolver {
 
     if (missingObjectTypes.length > 0) {
       errors.push(
-        `Unable to find the following Object Types: ${
-          missingObjectTypes.join(", ")
-        }`,
+        new GeneratorError("Unable to find the following object types", {
+          objectTypeApiNames: missingObjectTypes,
+        }),
       );
     }
 
     for (const [objectApiName, linkNames] of expectedEntities.linkTypes) {
       if (!expectedEntities.objectTypes.has(objectApiName)) {
         errors.push(
-          `Link types were specified for Object Type ${objectApiName} (${
-            [...linkNames].join(", ")
-          }), but it was not included in --objectTypes. Please add --objectTypes ${objectApiName}`,
+          new GeneratorError(
+            "Link types were specified for object type, but it was not included in --objectTypes. Please add --objectTypes <objectTypeApiName>",
+            {
+              objectTypeApiName: objectApiName,
+              linkTypeApiNames: [...linkNames],
+            },
+          ),
         );
       }
     }
@@ -526,9 +554,9 @@ export class OntologyMetadataResolver {
     }
     if (missingInterfaceTypes.length > 0) {
       errors.push(
-        `Unable to find the following Interface Types: ${
-          missingInterfaceTypes.join(", ")
-        }`,
+        new GeneratorError("Unable to find the following interface types", {
+          interfaceTypeApiNames: missingInterfaceTypes,
+        }),
       );
     }
 
@@ -557,15 +585,15 @@ export class OntologyMetadataResolver {
         expectedEntities.interfaceTypes,
       );
       if (result.isErr()) {
-        for (const errorString of result.error) {
-          errors.push(errorString);
-        }
+        errors.push(...result.error);
       }
     }
 
     if (missingQueryTypes.length > 0) {
       errors.push(
-        `Unable to find the following Query Types: ${missingQueryTypes.join()}`,
+        new GeneratorError("Unable to find requested query types", {
+          queryTypeApiNames: missingQueryTypes,
+        }),
       );
     }
 
@@ -584,15 +612,15 @@ export class OntologyMetadataResolver {
         expectedEntities.interfaceTypes,
       );
       if (result.isErr()) {
-        for (const errorString of result.error) {
-          errors.push(errorString);
-        }
+        errors.push(...result.error);
       }
     }
 
     if (missingActionTypes.length > 0) {
       errors.push(
-        `Unable to find the following Action Types: ${missingActionTypes.join()}`,
+        new GeneratorError("Unable to find the following action types", {
+          actionTypeApiNames: missingActionTypes,
+        }),
       );
     }
 
@@ -606,19 +634,20 @@ export class OntologyMetadataResolver {
     query: QueryTypeV2,
     loadedObjectApiNames: Set<string>,
     loadedInterfaceApiNames: Set<string>,
-  ): Result<{}, string[]> {
-    const parameterValidation: Array<Result<{}, string[]>> = Object.entries(
-      query.parameters,
-    ).map(
-      ([paramName, paramData]) =>
-        this.visitSupportedQueryTypes(
-          query.apiName,
-          paramName,
-          paramData.dataType,
-          loadedObjectApiNames,
-          loadedInterfaceApiNames,
-        ),
-    );
+  ): Result<{}, GeneratorError[]> {
+    const parameterValidation: Array<Result<{}, GeneratorError[]>> = Object
+      .entries(
+        query.parameters,
+      ).map(
+        ([paramName, paramData]) =>
+          this.visitSupportedQueryTypes(
+            query.apiName,
+            paramName,
+            paramData.dataType,
+            loadedObjectApiNames,
+            loadedInterfaceApiNames,
+          ),
+      );
 
     parameterValidation.push(
       this.visitSupportedQueryTypes(
@@ -630,7 +659,7 @@ export class OntologyMetadataResolver {
       ),
     );
 
-    const results = Result.coalesce<{}, string>(parameterValidation);
+    const results = Result.coalesce<{}, GeneratorError>(parameterValidation);
 
     return results;
   }
@@ -639,20 +668,21 @@ export class OntologyMetadataResolver {
     actionType: ActionTypeV2,
     loadedObjectApiNames: Set<string>,
     loadedInterfaceApiNames: Set<string>,
-  ): Result<{}, string[]> {
-    const parameterValidation: Array<Result<{}, string[]>> = Object.entries(
-      actionType.parameters,
-    ).map(
-      ([_paramName, paramData]) =>
-        this.isSupportedActionTypeParameter(
-          actionType.apiName,
-          paramData.dataType,
-          loadedObjectApiNames,
-          loadedInterfaceApiNames,
-        ),
-    );
+  ): Result<{}, GeneratorError[]> {
+    const parameterValidation: Array<Result<{}, GeneratorError[]>> = Object
+      .entries(
+        actionType.parameters,
+      ).map(
+        ([_paramName, paramData]) =>
+          this.isSupportedActionTypeParameter(
+            actionType.apiName,
+            paramData.dataType,
+            loadedObjectApiNames,
+            loadedInterfaceApiNames,
+          ),
+      );
 
-    return Result.coalesce<{}, string>(parameterValidation);
+    return Result.coalesce<{}, GeneratorError>(parameterValidation);
   }
 
   private visitSupportedQueryTypes(
@@ -661,7 +691,7 @@ export class OntologyMetadataResolver {
     baseType: QueryDataType,
     loadedObjectApiNames: Set<string>,
     loadedInterfaceApiNames: Set<string>,
-  ): Result<{}, string[]> {
+  ): Result<{}, GeneratorError[]> {
     switch (baseType.type) {
       case "array":
       case "set":
@@ -678,10 +708,14 @@ export class OntologyMetadataResolver {
           return Result.ok({});
         }
         return Result.err([
-          `Unable to load query ${queryApiName} because it takes an unloaded object type as a parameter: ${baseType
-            .objectTypeApiName!} in parameter ${propertyName}. `
-          + `Make sure to specify it as an argument with --ontologyObjects ${baseType
-            .objectTypeApiName!}.}`,
+          new GeneratorError(
+            "Unable to load query because it takes an unloaded object type as a parameter. Make sure to specify it as an argument with --objectTypes <objectTypeApiName>.",
+            {
+              queryApiName,
+              propertyName,
+              objectTypeApiName: baseType.objectTypeApiName,
+            },
+          ),
         ]);
       case "interfaceObject":
       case "interfaceObjectSet":
@@ -689,10 +723,14 @@ export class OntologyMetadataResolver {
           return Result.ok({});
         }
         return Result.err([
-          `Unable to load query ${queryApiName} because it takes an unloaded interface type as a parameter: ${baseType
-            .interfaceTypeApiName!} in parameter ${propertyName}. `
-          + `Make sure to specify it as an argument with --ontologyInterfaces ${baseType
-            .interfaceTypeApiName!}.}`,
+          new GeneratorError(
+            "Unable to load query because it takes an unloaded interface type as a parameter. Make sure to specify it as an argument with --interfaceTypes <interfaceTypeApiName>.",
+            {
+              queryApiName,
+              propertyName,
+              interfaceTypeApiName: baseType.interfaceTypeApiName,
+            },
+          ),
         ]);
       case "struct":
         const results = baseType.fields?.map(field => {
@@ -717,11 +755,14 @@ export class OntologyMetadataResolver {
           return Result.ok({});
         }
         return Result.err([
-          `Unable to load query ${queryApiName} because it takes an unsupported parameter type: ${
-            JSON.stringify(
-              baseType,
-            )
-          } in parameter ${propertyName}`,
+          new GeneratorError(
+            "Unable to load query because it takes an unsupported parameter type",
+            {
+              queryApiName,
+              propertyName,
+              queryDataType: JSON.stringify(baseType),
+            },
+          ),
         ]);
       case "entrySet":
         return Result.coalesce([
@@ -758,20 +799,26 @@ export class OntologyMetadataResolver {
         return Result.ok({});
       case "unsupported":
         return Result.err([
-          `Unable to load query ${queryApiName} because it takes an unsupported parameter type: ${
-            JSON.stringify(
-              baseType,
-            )
-          } in parameter ${propertyName}`,
+          new GeneratorError(
+            "Unable to load query because it takes an unsupported parameter type",
+            {
+              queryApiName,
+              propertyName,
+              queryDataType: JSON.stringify(baseType),
+            },
+          ),
         ]);
       default:
         const _: never = baseType;
         return Result.err([
-          `Unable to load query ${queryApiName} because it takes an unsupported parameter type: ${
-            JSON.stringify(
-              baseType,
-            )
-          } in parameter ${propertyName}`,
+          new GeneratorError(
+            "Unable to load query because it takes an unsupported parameter type",
+            {
+              queryApiName,
+              propertyName,
+              queryDataType: JSON.stringify(baseType),
+            },
+          ),
         ]);
     }
   }
@@ -781,14 +828,17 @@ export class OntologyMetadataResolver {
     actionTypeParameter: ActionParameterType,
     loadedObjectApiNames: Set<string>,
     loadedInterfaceApiNames: Set<string>,
-  ): Result<{}, string[]> {
+  ): Result<{}, GeneratorError[]> {
     switch (actionTypeParameter.type) {
       case "array":
         if (
           actionTypeParameter.subType.type === "array"
         ) {
           return Result.err([
-            `Unable to load action ${actionApiName} because it takes a nested array as a parameter`,
+            new GeneratorError(
+              "Unable to load action because it takes a nested array as a parameter",
+              { actionApiName },
+            ),
           ]);
         }
         return this.isSupportedActionTypeParameter(
@@ -802,20 +852,26 @@ export class OntologyMetadataResolver {
           return Result.ok({});
         }
         return Result.err([
-          `Unable to load action ${actionApiName} because it takes an unloaded object type as a parameter: ${actionTypeParameter
-            .objectTypeApiName!} `
-          + `make sure to specify it as an argument with --ontologyObjects ${actionTypeParameter
-            .objectTypeApiName!})`,
+          new GeneratorError(
+            "Unable to load action because it takes an unloaded object type as a parameter. Make sure to specify it as an argument with --objectTypes <objectTypeApiName>.",
+            {
+              actionApiName,
+              objectTypeApiName: actionTypeParameter.objectTypeApiName,
+            },
+          ),
         ]);
       case "objectSet":
         if (loadedObjectApiNames.has(actionTypeParameter.objectTypeApiName!)) {
           return Result.ok({});
         }
         return Result.err([
-          `Unable to load action ${actionApiName} because it takes an ObjectSet of unloaded object type as a parameter: ${actionTypeParameter
-            .objectTypeApiName!} `
-          + `make sure to specify it as an argument with --ontologyObjects ${actionTypeParameter
-            .objectTypeApiName!})`,
+          new GeneratorError(
+            "Unable to load action because it takes an ObjectSet of unloaded object type as a parameter. Make sure to specify it as an argument with --objectTypes <objectTypeApiName>.",
+            {
+              actionApiName,
+              objectTypeApiName: actionTypeParameter.objectTypeApiName,
+            },
+          ),
         ]);
       case "interfaceObject":
         if (
@@ -827,8 +883,13 @@ export class OntologyMetadataResolver {
           return Result.ok({});
         }
         return Result.err([
-          `Unable to load action ${actionApiName} because it takes an unloaded interface type as a parameter: ${actionTypeParameter.interfaceTypeApiName} `
-          + `make sure to specify it as an argument with --interfaceTypes ${actionTypeParameter.interfaceTypeApiName}`,
+          new GeneratorError(
+            "Unable to load action because it takes an unloaded interface type as a parameter. Make sure to specify it as an argument with --interfaceTypes <interfaceTypeApiName>.",
+            {
+              actionApiName,
+              interfaceTypeApiName: actionTypeParameter.interfaceTypeApiName,
+            },
+          ),
         ]);
       case "string":
       case "boolean":
@@ -850,22 +911,24 @@ export class OntologyMetadataResolver {
 
       case "vector":
         return Result.err([
-          `Unable to load action ${actionApiName} because it takes an unsupported parameter: ${
-            JSON.stringify(
-              actionTypeParameter,
-            )
-          } `
-          + `specify only the actions you want to load with the --actions argument.`,
+          new GeneratorError(
+            "Unable to load action because it takes an unsupported parameter. Specify only the actions you want to load with the --actionTypes argument.",
+            {
+              actionApiName,
+              actionParameterType: JSON.stringify(actionTypeParameter),
+            },
+          ),
         ]);
       default:
         const _: never = actionTypeParameter;
         return Result.err([
-          `Unable to load action ${actionApiName} because it takes an unsupported parameter: ${
-            JSON.stringify(
-              actionTypeParameter,
-            )
-          } `
-          + `specify only the actions you want to load with the --actions argument.`,
+          new GeneratorError(
+            "Unable to load action because it takes an unsupported parameter. Specify only the actions you want to load with the --actionTypes argument.",
+            {
+              actionApiName,
+              actionParameterType: JSON.stringify(actionTypeParameter),
+            },
+          ),
         ]);
     }
   }

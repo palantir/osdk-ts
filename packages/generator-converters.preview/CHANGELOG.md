@@ -1,5 +1,106 @@
 # @osdk/generator-converters.preview
 
+## 0.52.0
+
+### Minor Changes
+
+- aa9fe40: Support intermediary link types
+- e316cb7: Write the TypeScript functions runtime metadata with the plural ontologyRids key required by functions-typescript-runtime 0.311.0 and above
+
+### Patch Changes
+
+- Updated dependencies [aa9fe40]
+- Updated dependencies [f2e0591]
+  - @osdk/generator-converters.ontologyir@2.74.0
+  - @osdk/generator@2.74.0
+  - @osdk/client.unstable@2.74.0
+
+## 0.51.0
+
+### Minor Changes
+
+- 9fa9a26: Support interface types in functions preview
+
+## 0.50.0
+
+### Minor Changes
+
+- 639e933: Fix property type serialization in local functions runtime metadata.
+
+### Patch Changes
+
+- Updated dependencies [10e859d]
+- Updated dependencies [7cfd651]
+- Updated dependencies [3ebe3d0]
+  - @osdk/generator-converters.ontologyir@2.72.0
+  - @osdk/client.unstable@2.72.0
+  - @osdk/generator@2.72.0
+
+## 0.49.0
+
+### Minor Changes
+
+- 528d0ca: Add support for generating and executing query functions using semantic version ranges on ontology branches.
+
+### Patch Changes
+
+- Updated dependencies [528d0ca]
+  - @osdk/generator@2.71.0
+  - @osdk/client.unstable@2.71.0
+  - @osdk/generator-converters.ontologyir@2.71.0
+
+## 0.48.0
+
+### Minor Changes
+
+- 9589f03: Read connected value type blocks during SDK generation and preserve their definitions in ontology metadata.
+
+### Patch Changes
+
+- Updated dependencies [e13da8f]
+- Updated dependencies [9589f03]
+- Updated dependencies [27e9994]
+  - @osdk/client.unstable@2.70.0
+  - @osdk/generator-converters.ontologyir@2.70.0
+  - @osdk/generator@2.70.0
+
+## 0.47.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.69.0
+- @osdk/generator-converters.ontologyir@2.69.0
+- @osdk/generator@2.69.0
+
+## 0.46.0
+
+### Minor Changes
+
+- 8c2c988: Fix TypeScript function discovery for functions that edit imported ontology types.
+
+### Patch Changes
+
+- Updated dependencies [8c2c988]
+- Updated dependencies [8f47483]
+  - @osdk/generator-converters.ontologyir@2.68.0
+  - @osdk/client.unstable@2.68.0
+  - @osdk/generator@2.68.0
+
+## 0.45.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [43bfe44]
+- Updated dependencies [488376f]
+- Updated dependencies [192d1cb]
+  - @osdk/client.unstable@2.67.0
+  - @osdk/generator@2.67.0
+  - @osdk/generator-converters.ontologyir@2.67.0
+
 ## 0.44.0
 
 ### Patch Changes

@@ -26,6 +26,7 @@ import type {
   InterfacePropertyType,
   InterfaceSharedPropertyType,
 } from "./InterfacePropertyType.js";
+import type { InterfaceSchemaMigrations } from "./InterfaceSchemaMigrations.js";
 
 export interface InterfaceType
   extends
@@ -34,6 +35,8 @@ export interface InterfaceType
       OntologyIrMarketplaceInterfaceType,
       // we want our simplified representation
       | "properties"
+      // derived by conversion from the presence of `schemaMigrations`
+      | "schemaMigrationsEnabled"
       // these things don't need to exist as the system works fine without them (I'm told)
       | "propertiesV2"
       | "propertiesV3"
@@ -46,5 +49,6 @@ export interface InterfaceType
   linkedInterfaces?: Array<InterfaceType | string>; // full metadata of linked entities used for X-OAC imports
   permission?: EntityPermission;
   status: InterfaceTypeStatus;
+  schemaMigrations?: InterfaceSchemaMigrations;
   __type: OntologyEntityTypeEnum.INTERFACE_TYPE;
 }

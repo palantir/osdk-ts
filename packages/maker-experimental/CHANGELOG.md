@@ -1,5 +1,163 @@
 # @osdk/maker-experimental
 
+## 0.68.0
+
+### Minor Changes
+
+- c25e568: Fix primitive paramType matching for lists
+- 60fdae9: Include group dependencies from raw security policy comparisons in Marketplace packages.
+- 4f9768f: Use resolved shape presets for imported ontology parent shapes
+
+### Patch Changes
+
+- Updated dependencies [aa9fe40]
+- Updated dependencies [e316cb7]
+  - @osdk/generator-converters.ontologyir@2.74.0
+  - @osdk/generator-converters.preview@0.52.0
+  - @osdk/maker@0.75.0
+  - @osdk/api@2.74.0
+  - @osdk/client.unstable@2.74.0
+  - @osdk/maker-import@0.41.0
+
+## 0.67.0
+
+### Patch Changes
+
+- Updated dependencies [2c60601]
+- Updated dependencies [5e1b2c7]
+- Updated dependencies [9fa9a26]
+  - @osdk/maker@0.74.0
+  - @osdk/generator-converters.preview@0.51.0
+
+## 0.66.0
+
+### Minor Changes
+
+- ef25a02: Fix markings ids
+
+### Patch Changes
+
+- Updated dependencies [10e859d]
+- Updated dependencies [639e933]
+- Updated dependencies [f6f9da0]
+- Updated dependencies [e5023d0]
+- Updated dependencies [88b0ce8]
+- Updated dependencies [00d9299]
+- Updated dependencies [b3b4987]
+- Updated dependencies [56136b6]
+- Updated dependencies [e51927c]
+- Updated dependencies [3d90eb7]
+- Updated dependencies [5221028]
+- Updated dependencies [7cfd651]
+- Updated dependencies [3ebe3d0]
+  - @osdk/generator-converters.ontologyir@2.72.0
+  - @osdk/generator-converters.preview@0.50.0
+  - @osdk/maker@0.72.0
+  - @osdk/api@2.72.0
+  - @osdk/client.unstable@2.72.0
+
+## 0.65.0
+
+### Patch Changes
+
+- Updated dependencies [528d0ca]
+  - @osdk/generator-converters.preview@0.49.0
+  - @osdk/api@2.71.0
+  - @osdk/client.unstable@2.71.0
+  - @osdk/generator-converters.ontologyir@2.71.0
+  - @osdk/maker@0.71.0
+  - @osdk/maker-import@0.40.0
+
+## 0.64.0
+
+### Minor Changes
+
+- 61756f1: Concrete link + action constraint interface implementations
+- b452773: Fix parameter constraint serialization
+- e13da8f: Make more consistent how interface schema migration instructions handle target properties, and adopt latest bindings.
+- 4109d2d: Fix maker and maker-experimental test flakes from re-using the same output directory for their defineOntology calls.
+- fe2777f: Get recs for value types from imported SPTs and object props
+- 9f9b4d9: add struct array value type shapes
+
+### Patch Changes
+
+- Updated dependencies [61756f1]
+- Updated dependencies [a8c8e82]
+- Updated dependencies [528f094]
+- Updated dependencies [f1b178d]
+- Updated dependencies [3e9cf79]
+- Updated dependencies [e13da8f]
+- Updated dependencies [901a334]
+- Updated dependencies [25ddf83]
+- Updated dependencies [0aba00e]
+- Updated dependencies [abff5c0]
+- Updated dependencies [4109d2d]
+- Updated dependencies [9589f03]
+- Updated dependencies [27e9994]
+  - @osdk/maker@0.70.0
+  - @osdk/client.unstable@2.70.0
+  - @osdk/generator-converters.preview@0.48.0
+  - @osdk/generator-converters.ontologyir@2.70.0
+  - @osdk/api@2.70.0
+
+## 0.63.0
+
+### Patch Changes
+
+- @osdk/api@2.69.0
+- @osdk/client.unstable@2.69.0
+- @osdk/generator-converters.ontologyir@2.69.0
+- @osdk/maker@0.69.0
+- @osdk/generator-converters.preview@0.47.0
+- @osdk/maker-import@0.39.0
+
+## 0.62.0
+
+### Minor Changes
+
+- 8c2c988: Fix TypeScript function discovery for functions that edit imported ontology types.
+- 1dc6b40: Fix CBAC marking generation
+- d67b69f: Adds the interface type schema migration authoring DSL, enabling defineInterface to specify a schemaMigrations block declaring in-flight schema migrations.
+- 6c8152a: Interface schema migrations are now included in the ontology block data.
+- 8f47483: Interface schema transitions now carry a rid, adopting the latest bindings.
+- ba7b5ce: Preserve readable-to-internal block identities in generated ontology and value type block results.
+- 57c2087: Include imported ontology metadata when discovering TypeScript Function signatures.
+
+### Patch Changes
+
+- Updated dependencies [8c2c988]
+- Updated dependencies [d67b69f]
+- Updated dependencies [6c8152a]
+- Updated dependencies [8f47483]
+  - @osdk/generator-converters.ontologyir@2.68.0
+  - @osdk/generator-converters.preview@0.46.0
+  - @osdk/maker-import@0.38.0
+  - @osdk/maker@0.68.0
+  - @osdk/client.unstable@2.68.0
+  - @osdk/api@2.68.0
+
+## 0.61.0
+
+### Minor Changes
+
+- 43bfe44: Sync the generated ontology-metadata interface type schema migration types.
+- 595621c: Adds isInterfacePropertyRequired, resolving whether implementing object types must provide a property across interface-defined and shared-property-backed properties on an interface type.
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+- 192d1cb: Add support for more types to function backed actions
+
+### Patch Changes
+
+- Updated dependencies [43bfe44]
+- Updated dependencies [595621c]
+- Updated dependencies [488376f]
+- Updated dependencies [7681809]
+- Updated dependencies [192d1cb]
+  - @osdk/client.unstable@2.67.0
+  - @osdk/maker@0.67.0
+  - @osdk/api@2.67.0
+  - @osdk/generator-converters.ontologyir@2.67.0
+  - @osdk/generator-converters.preview@0.45.0
+
 ## 0.60.0
 
 ### Patch Changes

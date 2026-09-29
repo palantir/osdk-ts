@@ -53,6 +53,18 @@ export interface AbstractParameterValue<T extends PrimitiveParameterType> {
   value: AsyncValue<PrimitiveParameterTypes[T]>;
 }
 
+/** A read-only map tile layer selected by the host. */
+export interface MapTileLayerParameterValue {
+  type: "mapTileLayer";
+  /** A loaded value provides the URL; the widget's renderer loads the style. */
+  value: AsyncValue<{
+    /**
+     * URL of a Mapbox/Maplibre style JSON document.
+     */
+    styleJsonUrl: string;
+  }>;
+}
+
 export interface ObjectSetParameterValue<
   _T extends AllowedObjectSetParameterType,
 > {
@@ -78,6 +90,7 @@ export namespace ParameterValue {
   export type Date = AbstractParameterValue<"date">;
   export type Timestamp = AbstractParameterValue<"timestamp">;
   export type Scenario = AbstractParameterValue<"scenario">;
+  export type MapTileLayer = MapTileLayerParameterValue;
   export type ObjectSet<
     T extends AllowedObjectSetParameterType = AllowedObjectSetParameterType,
   > = ObjectSetParameterValue<T>;
@@ -106,5 +119,6 @@ export type ParameterValue =
   | ParameterValue.Date
   | ParameterValue.Timestamp
   | ParameterValue.Scenario
+  | ParameterValue.MapTileLayer
   | ParameterValue.ObjectSet
   | ParameterValue.Array;

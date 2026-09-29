@@ -2,6 +2,7 @@
 // Imports all public browser-consumable packages to verify they can be
 // resolved and bundled by webpack without errors.
 
+import * as AliasesExperimental from "@osdk/aliases/experimental";
 import * as Api from "@osdk/api";
 import * as Client from "@osdk/client";
 import * as OAuth from "@osdk/oauth";
@@ -37,6 +38,7 @@ import * as WidgetClientReact from "@osdk/widget.client-react";
 
 // Re-export to prevent tree-shaking from removing the imports
 export {
+  AliasesExperimental,
   Api,
   Client,
   OAuth,

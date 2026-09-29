@@ -8503,6 +8503,14 @@
                         "found.com",
                         "it's \"cool\""
                     ]
+                },
+                {
+                    "type": "enum",
+                    "options": [
+                        "brown",
+                        "it's \"cool\"",
+                        "blue"
+                    ]
                 }
             ]
         },

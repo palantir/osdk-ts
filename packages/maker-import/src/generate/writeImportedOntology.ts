@@ -18,6 +18,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 
 import type * as Ontologies from "@osdk/foundry.ontologies";
+import type { OntologyDefinition } from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
 
 import { convertActionType } from "./convertActionType.js";
@@ -44,6 +45,42 @@ interface EntityEntry {
   apiName: string;
   entityType: OntologyEntityTypeEnum;
   entity: unknown;
+}
+
+export function convertOntologyFullMetadata(
+  metadata: Ontologies.OntologyFullMetadata,
+): OntologyDefinition {
+  const result: OntologyDefinition = {
+    [OntologyEntityTypeEnum.OBJECT_TYPE]: {},
+    [OntologyEntityTypeEnum.ACTION_TYPE]: {},
+    [OntologyEntityTypeEnum.LINK_TYPE]: {},
+    [OntologyEntityTypeEnum.INTERFACE_TYPE]: {},
+    [OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE]: {},
+    [OntologyEntityTypeEnum.VALUE_TYPE]: {},
+  };
+
+  for (const spt of Object.values(metadata.sharedPropertyTypes)) {
+    const converted = convertSharedPropertyType(spt);
+    if (converted) {
+      result[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][converted.apiName] =
+        converted;
+    }
+  }
+  for (const iface of Object.values(metadata.interfaceTypes)) {
+    const converted = convertInterfaceType(iface, metadata.interfaceTypes);
+    result[OntologyEntityTypeEnum.INTERFACE_TYPE][converted.apiName] =
+      converted;
+  }
+  for (const objectType of Object.values(metadata.objectTypes)) {
+    const converted = convertObjectType(objectType);
+    result[OntologyEntityTypeEnum.OBJECT_TYPE][converted.apiName] = converted;
+  }
+  for (const action of Object.values(metadata.actionTypes)) {
+    const converted = convertActionType(action);
+    result[OntologyEntityTypeEnum.ACTION_TYPE][converted.apiName] = converted;
+  }
+
+  return result;
 }
 
 /**
@@ -107,43 +144,21 @@ export function writeImportedOntology(
 
   // Pass 1: Convert all entities
   const entries: EntityEntry[] = [];
+  const convertedOntology = convertOntologyFullMetadata(metadata);
 
-  for (const [_apiName, spt] of Object.entries(metadata.sharedPropertyTypes)) {
-    const converted = convertSharedPropertyType(spt);
-    if (converted) {
+  for (const entityType of [
+    OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
+    OntologyEntityTypeEnum.INTERFACE_TYPE,
+    OntologyEntityTypeEnum.OBJECT_TYPE,
+    OntologyEntityTypeEnum.ACTION_TYPE,
+  ] as const) {
+    for (const entity of Object.values(convertedOntology[entityType])) {
       entries.push({
-        apiName: converted.apiName,
-        entityType: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
-        entity: converted,
+        apiName: entity.apiName,
+        entityType,
+        entity,
       });
     }
-  }
-
-  for (const [_apiName, iface] of Object.entries(metadata.interfaceTypes)) {
-    const converted = convertInterfaceType(iface, metadata.interfaceTypes);
-    entries.push({
-      apiName: converted.apiName,
-      entityType: OntologyEntityTypeEnum.INTERFACE_TYPE,
-      entity: converted,
-    });
-  }
-
-  for (const [_apiName, objFull] of Object.entries(metadata.objectTypes)) {
-    const converted = convertObjectType(objFull);
-    entries.push({
-      apiName: converted.apiName,
-      entityType: OntologyEntityTypeEnum.OBJECT_TYPE,
-      entity: converted,
-    });
-  }
-
-  for (const [_apiName, action] of Object.entries(metadata.actionTypes)) {
-    const converted = convertActionType(action);
-    entries.push({
-      apiName: converted.apiName,
-      entityType: OntologyEntityTypeEnum.ACTION_TYPE,
-      entity: converted,
-    });
   }
 
   // Pass 2: Resolve unique variable names across all entities

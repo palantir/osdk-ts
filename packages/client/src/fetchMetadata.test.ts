@@ -109,6 +109,24 @@ describe("FetchMetadata", () => {
         "primaryKeyApiName": "employeeId",
         "primaryKeyType": "integer",
         "properties": {
+          "bonusHistory": {
+            "description": "Bonus history with the latest amount as its main value",
+            "displayName": undefined,
+            "hasReducers": true,
+            "mainValue": {
+              "fields": [
+                "amount",
+              ],
+            },
+            "multiplicity": true,
+            "nullable": true,
+            "type": {
+              "amount": "integer",
+              "year": "integer",
+            },
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
+          },
           "class": {
             "description": "",
             "displayName": undefined,
@@ -175,6 +193,7 @@ describe("FetchMetadata", () => {
             "description": undefined,
             "displayName": undefined,
             "hasReducers": false,
+            "mainValue": undefined,
             "multiplicity": true,
             "nullable": true,
             "type": "string",
@@ -204,6 +223,7 @@ describe("FetchMetadata", () => {
             "description": "Array of performance scores with reducers",
             "displayName": undefined,
             "hasReducers": true,
+            "mainValue": undefined,
             "multiplicity": true,
             "nullable": true,
             "type": "double",
@@ -276,6 +296,7 @@ describe("FetchMetadata", () => {
             "description": "An array-valued Foo property",
             "displayName": "Foo Array",
             "hasReducers": false,
+            "mainValue": undefined,
             "multiplicity": true,
             "nullable": true,
             "type": "string",

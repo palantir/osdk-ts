@@ -1,5 +1,132 @@
 # @osdk/vite-plugin-oac
 
+## 0.74.0
+
+### Patch Changes
+
+- Updated dependencies [aa9fe40]
+  - @osdk/generator-converters.ontologyir@2.74.0
+  - @osdk/maker@0.75.0
+  - @osdk/api@2.74.0
+  - @osdk/client.unstable@2.74.0
+  - @osdk/faux@0.55.0
+  - @osdk/cli@0.100.0
+
+## 0.73.0
+
+### Patch Changes
+
+- Updated dependencies [a0d1f1a]
+- Updated dependencies [a3d87ea]
+- Updated dependencies [50a7d66]
+  - @osdk/maker@0.73.0
+  - @osdk/cli@0.99.0
+  - @osdk/api@2.73.0
+  - @osdk/client.unstable@2.73.0
+  - @osdk/generator-converters.ontologyir@2.73.0
+
+## 0.72.0
+
+### Patch Changes
+
+- Updated dependencies [10e859d]
+- Updated dependencies [f6f9da0]
+- Updated dependencies [e5023d0]
+- Updated dependencies [88b0ce8]
+- Updated dependencies [00d9299]
+- Updated dependencies [b3b4987]
+- Updated dependencies [56136b6]
+- Updated dependencies [e51927c]
+- Updated dependencies [3d90eb7]
+- Updated dependencies [5221028]
+- Updated dependencies [7cfd651]
+- Updated dependencies [3ebe3d0]
+  - @osdk/generator-converters.ontologyir@2.72.0
+  - @osdk/maker@0.72.0
+  - @osdk/cli@0.98.0
+  - @osdk/api@2.72.0
+  - @osdk/client.unstable@2.72.0
+
+## 0.71.0
+
+### Patch Changes
+
+- @osdk/api@2.71.0
+- @osdk/client.unstable@2.71.0
+- @osdk/generator-converters.ontologyir@2.71.0
+- @osdk/cli@0.97.0
+- @osdk/faux@0.54.0
+- @osdk/maker@0.71.0
+
+## 0.70.0
+
+### Patch Changes
+
+- Updated dependencies [61756f1]
+- Updated dependencies [a8c8e82]
+- Updated dependencies [528f094]
+- Updated dependencies [f1b178d]
+- Updated dependencies [3e9cf79]
+- Updated dependencies [e13da8f]
+- Updated dependencies [901a334]
+- Updated dependencies [25ddf83]
+- Updated dependencies [0aba00e]
+- Updated dependencies [abff5c0]
+- Updated dependencies [4109d2d]
+- Updated dependencies [9589f03]
+- Updated dependencies [27e9994]
+  - @osdk/maker@0.70.0
+  - @osdk/client.unstable@2.70.0
+  - @osdk/generator-converters.ontologyir@2.70.0
+  - @osdk/api@2.70.0
+  - @osdk/cli@0.96.0
+
+## 0.69.0
+
+### Patch Changes
+
+- @osdk/api@2.69.0
+- @osdk/client.unstable@2.69.0
+- @osdk/generator-converters.ontologyir@2.69.0
+- @osdk/faux@0.53.0
+- @osdk/maker@0.69.0
+- @osdk/cli@0.95.0
+
+## 0.68.0
+
+### Patch Changes
+
+- Updated dependencies [8c2c988]
+- Updated dependencies [d67b69f]
+- Updated dependencies [6c8152a]
+- Updated dependencies [8f47483]
+  - @osdk/generator-converters.ontologyir@2.68.0
+  - @osdk/maker@0.68.0
+  - @osdk/client.unstable@2.68.0
+  - @osdk/api@2.68.0
+  - @osdk/faux@0.52.0
+  - @osdk/cli@0.94.0
+
+## 0.67.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [43bfe44]
+- Updated dependencies [595621c]
+- Updated dependencies [488376f]
+- Updated dependencies [7681809]
+- Updated dependencies [192d1cb]
+  - @osdk/client.unstable@2.67.0
+  - @osdk/maker@0.67.0
+  - @osdk/api@2.67.0
+  - @osdk/cli@0.93.0
+  - @osdk/faux@0.51.0
+  - @osdk/generator-converters.ontologyir@2.67.0
+
 ## 0.66.0
 
 ### Patch Changes

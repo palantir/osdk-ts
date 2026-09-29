@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid } from "@osdk/api/unstable";
 import { BarInterface } from "@osdk/client.test.ontology";
 import * as SharedClientContext from "@osdk/shared.client.impl";
+import { stubData } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -35,6 +37,14 @@ export function mockFetchResponse(
     status: 200,
     ok: true,
   } as any);
+}
+
+export function mockInterfaceFetchPageResponse(
+  fetch: MockedFunction<typeof globalThis.fetch>,
+  response: any,
+): void {
+  mockFetchResponse(fetch, stubData.BarInterface);
+  mockFetchResponse(fetch, response);
 }
 
 describe(createClient, () => {
@@ -57,22 +67,24 @@ describe(createClient, () => {
       undefined,
       fetchFunction,
     );
-
-    mockFetchResponse(fetchFunction, { data: [] });
   });
 
   describe("user agent passing", () => {
-    function getUserAgentPartsFromMockedFetch() {
-      const userAgent = (
-        fetchFunction.mock.calls[0][1]?.headers as Headers
-      ).get("Fetch-User-Agent");
+    function getUserAgentPartsFromMockedFetch(fetch = fetchFunction) {
+      const loadCall = fetch.mock.calls.find(([input]) =>
+        String(input).includes("objectSets/loadObjects"),
+      );
+      const userAgent = (loadCall?.[1]?.headers as Headers).get(
+        "Fetch-User-Agent",
+      );
       const parts = userAgent?.split(" ") ?? [];
       return parts;
     }
 
     it("works for objects", async () => {
+      mockInterfaceFetchPageResponse(fetchFunction, { data: [] });
       await client(BarInterface).fetchPage();
-      expect(fetchFunction).toHaveBeenCalledTimes(1);
+      expect(fetchFunction).toHaveBeenCalledTimes(2);
 
       const parts = getUserAgentPartsFromMockedFetch();
       expect(parts).toEqual([
@@ -83,7 +95,7 @@ describe(createClient, () => {
 
     it("includes custom Fetch-User-Agent from headers option", async () => {
       const customFetch = vi.fn<typeof globalThis.fetch>();
-      mockFetchResponse(customFetch, { data: [] });
+      mockInterfaceFetchPageResponse(customFetch, { data: [] });
 
       const clientWithHeaders = createClient(
         "https://mock.com",
@@ -94,12 +106,9 @@ describe(createClient, () => {
       );
 
       await clientWithHeaders(BarInterface).fetchPage();
-      expect(customFetch).toHaveBeenCalledTimes(1);
+      expect(customFetch).toHaveBeenCalledTimes(2);
 
-      const userAgent = (customFetch.mock.calls[0][1]?.headers as Headers).get(
-        "Fetch-User-Agent",
-      );
-      const parts = userAgent?.split(" ") ?? [];
+      const parts = getUserAgentPartsFromMockedFetch(customFetch);
       expect(parts).toEqual([
         ...BarInterface.osdkMetadata!.extraUserAgent.split(" "),
         USER_AGENT,
@@ -168,6 +177,37 @@ describe(createClient, () => {
     });
   });
 
+  describe("branch forwarding", () => {
+    it.each([
+      "ri.foundry.main.branch.test",
+      "feature/test branch",
+      undefined,
+      null,
+    ])("fetchPageByRidNoType forwards branch %s", async (branch) => {
+      const scopedClient = createClient(
+        "https://mock.com",
+        ontologyRid,
+        () => "Token",
+        { UNSTABLE_DO_NOT_USE_BRANCH: branch },
+        fetchFunction,
+      );
+      mockFetchResponse(fetchFunction, { data: [] });
+
+      await scopedClient(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+      ).fetchPageByRidNoType([stubData.employee1.__rid]);
+
+      expect(fetchFunction).toHaveBeenCalledTimes(1);
+      const [requestUrl] = fetchFunction.mock.calls[0];
+      const url = new URL(String(requestUrl));
+      expect(url.pathname).toContain(
+        "objectSets/loadObjectsMultipleObjectTypes",
+      );
+      expect(url.searchParams.get("branch")).toBe(branch ?? null);
+      expect(url.searchParams.get("preview")).toBe("true");
+    });
+  });
+
   describe("client created with transactionId forwards to requests", () => {
     it("forwards transactionId in fetchPage", async () => {
       const transactionId = "test-transaction-id";
@@ -181,12 +221,14 @@ describe(createClient, () => {
         fetchFunction,
       );
 
-      mockFetchResponse(fetchFunction, { data: [] });
+      mockInterfaceFetchPageResponse(fetchFunction, { data: [] });
 
       await clientWithTransaction(BarInterface).fetchPage();
 
-      expect(fetchFunction).toHaveBeenCalledTimes(1);
-      const url = fetchFunction.mock.calls[0][0];
+      expect(fetchFunction).toHaveBeenCalledTimes(2);
+      const url = fetchFunction.mock.calls.find(([input]) =>
+        String(input).includes("objectSets/loadObjects"),
+      )?.[0];
       expect(url).toBeDefined();
 
       const parsedUrl = new URL(url as string, "https://mock.com");

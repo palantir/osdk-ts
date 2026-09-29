@@ -1,5 +1,123 @@
 # @osdk/maker
 
+## 0.75.0
+
+### Patch Changes
+
+- Updated dependencies [aa9fe40]
+  - @osdk/generator-converters.ontologyir@2.74.0
+  - @osdk/api@2.74.0
+
+## 0.74.0
+
+### Minor Changes
+
+- 2c60601: Fix default geoshape type classes
+- 5e1b2c7: Check for same spt backing multiple props on an object
+
+## 0.73.0
+
+### Minor Changes
+
+- a0d1f1a: Require a whole interface hierarchy to opt into interface schema migrations together, rather than one interface at a time.
+- a3d87ea: Clean up internal ontology schema lockfile validation terminology and tests.
+- 50a7d66: Return a render hint for struct and structList action parameters instead of throwing.
+
+### Patch Changes
+
+- @osdk/api@2.73.0
+- @osdk/generator-converters.ontologyir@2.73.0
+
+## 0.72.0
+
+### Minor Changes
+
+- f6f9da0: Record a property's arrayedness in the ontology schema lockfile, so that adding or dropping `array` on an interface property is reported as the breaking type change it is.
+- e5023d0: Record a property's type classes in the ontology schema lockfile, so that adding, dropping or swapping a render hint on an interface property is reported as the breaking change it is.
+- 88b0ce8: Record whether a shared property type backs an interface property, so that swapping it for an inline definition (or back) is reported as the breaking change it is.
+- 00d9299: Warn when an interface property stops being required, so that relaxing the schema is visible to the author without blocking the release.
+- b3b4987: Record an interface property's primary key constraint in the ontology schema lockfile, rejecting a change that implementing object types would have to be remapped to satisfy, and warning when one is dropped.
+- 56136b6: Record an interface property's nullability in the ontology schema lockfile, rejecting a change that newly forbids nulls or empty collections, and warning when one is loosened.
+- e51927c: Record the value type an interface property references in the ontology schema lockfile, rejecting a change to which value type it is and warning when the reference is dropped.
+- 3d90eb7: Record the interfaces an interface extends in the ontology schema lockfile, rejecting a newly extended interface and warning when one is dropped.
+- 5221028: Document interface schema migrations in the maker README.
+
+### Patch Changes
+
+- Updated dependencies [10e859d]
+- Updated dependencies [7cfd651]
+- Updated dependencies [3ebe3d0]
+  - @osdk/generator-converters.ontologyir@2.72.0
+  - @osdk/api@2.72.0
+
+## 0.71.0
+
+### Patch Changes
+
+- @osdk/api@2.71.0
+- @osdk/generator-converters.ontologyir@2.71.0
+
+## 0.70.0
+
+### Minor Changes
+
+- 61756f1: Concrete link + action constraint interface implementations
+- a8c8e82: Render ontology schema lockfile findings and warnings as author-facing prose
+- 528f094: Reconcile the interface schema lockfile on disk, checking it or bringing it up to date
+- f1b178d: Add `--lockfile`, `--write-locks`, `--yes` and `--verbose` to the maker CLI, checking interface schema migrations before any ontology is written
+- 3e9cf79: Test the interface schema migration lifecycle end to end
+- e13da8f: Make more consistent how interface schema migration instructions handle target properties, and adopt latest bindings.
+- 901a334: Add the interface schema lockfile data model and its generation from a source ontology.
+- 25ddf83: Parse persisted ontology schema lockfiles.
+- 0aba00e: Add applying an interface schema migration transition to a locked schema.
+- abff5c0: Diff a generated ontology schema lockfile against the persisted one, reporting changes that would be rejected at installation-time.
+- 4109d2d: Fix maker and maker-experimental test flakes from re-using the same output directory for their defineOntology calls.
+
+### Patch Changes
+
+- Updated dependencies [9589f03]
+- Updated dependencies [27e9994]
+  - @osdk/generator-converters.ontologyir@2.70.0
+  - @osdk/api@2.70.0
+
+## 0.69.0
+
+### Patch Changes
+
+- @osdk/api@2.69.0
+- @osdk/generator-converters.ontologyir@2.69.0
+
+## 0.68.0
+
+### Minor Changes
+
+- d67b69f: Adds the interface type schema migration authoring DSL, enabling defineInterface to specify a schemaMigrations block declaring in-flight schema migrations.
+- 6c8152a: Interface schema migrations are now included in the ontology block data.
+- 8f47483: Interface schema transitions now carry a rid, adopting the latest bindings.
+
+### Patch Changes
+
+- Updated dependencies [8c2c988]
+  - @osdk/generator-converters.ontologyir@2.68.0
+  - @osdk/api@2.68.0
+
+## 0.67.0
+
+### Minor Changes
+
+- 43bfe44: Sync the generated ontology-metadata interface type schema migration types.
+- 595621c: Adds isInterfacePropertyRequired, resolving whether implementing object types must provide a property across interface-defined and shared-property-backed properties on an interface type.
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+- 7681809: Validate display name and description lengths during ontology compilation to catch errors before installation.
+
+### Patch Changes
+
+- Updated dependencies [488376f]
+- Updated dependencies [192d1cb]
+  - @osdk/api@2.67.0
+  - @osdk/generator-converters.ontologyir@2.67.0
+  - @osdk/typescript-sdk-docs@0.25.0
+
 ## 0.66.0
 
 ### Patch Changes

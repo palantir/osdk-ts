@@ -1,5 +1,81 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.74.0
+
+### Minor Changes
+
+- aa9fe40: Support intermediary link types
+
+### Patch Changes
+
+- @osdk/client.unstable@2.74.0
+
+## 2.73.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.73.0
+
+## 2.72.0
+
+### Minor Changes
+
+- 10e859d: Preserve direct interface property implementations and implementing object types when converting ontology block data to full metadata.
+- 7cfd651: Preserve value type associations on object, shared, and interface properties in generated SDK metadata.
+- 3ebe3d0: Preserve inherited interface implementations when converting ontology block data to full metadata.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.72.0
+
+## 2.71.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.71.0
+
+## 2.70.0
+
+### Minor Changes
+
+- 9589f03: Read connected value type blocks during SDK generation and preserve their definitions in ontology metadata.
+- 27e9994: Preserve ontology block data RIDs when converting it to full metadata
+
+### Patch Changes
+
+- Updated dependencies [e13da8f]
+  - @osdk/client.unstable@2.70.0
+
+## 2.69.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.69.0
+
+## 2.68.0
+
+### Minor Changes
+
+- 8c2c988: Fix TypeScript function discovery for functions that edit imported ontology types.
+
+### Patch Changes
+
+- Updated dependencies [8f47483]
+  - @osdk/client.unstable@2.68.0
+
+## 2.67.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+- 192d1cb: Add support for more types to function backed actions
+
+### Patch Changes
+
+- Updated dependencies [43bfe44]
+- Updated dependencies [488376f]
+  - @osdk/client.unstable@2.67.0
+
 ## 2.66.0
 
 ### Patch Changes

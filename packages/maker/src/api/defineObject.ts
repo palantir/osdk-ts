@@ -52,6 +52,11 @@ import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 import type { ObjectTypeStatus } from "./object/ObjectTypeStatus.js";
 import type { PropertyTypeType } from "./properties/PropertyTypeType.js";
 import { isExotic, isStruct } from "./properties/PropertyTypeType.js";
+import {
+  OBJECT_PROPERTY_DISPLAY_NAME_LIMIT,
+  validateDisplayMetadataLengths,
+  validateStructFieldMetadata,
+} from "./validateMetadataLengths.js";
 // From https://stackoverflow.com/a/79288714
 const ISO_8601_DURATION =
   /^P(?!$)(?:(?:((?:\d+Y)|(?:\d+(?:\.|,)\d+Y$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+D)|(?:\d+(?:\.|,)\d+D$))?(T((?:\d+H)|(?:\d+(?:\.|,)\d+H$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+S)|(?:\d+(?:\.|,)\d+S$))?)?)|(?:\d+(?:(?:\.|,)\d+)?W))$/u;
@@ -80,6 +85,7 @@ export function defineObject(
     isValidObjectApiName(objectDef.apiName),
     `Invalid API name ${objectDef.apiName}. API names must match the regex ${OBJECT_API_NAME_PATTERN}.`,
   );
+  const propertyBySharedPropertyType = new Map<string, string>();
   propertyApiNames.forEach((apiName) => {
     invariant(
       isValidApiName(apiName),
@@ -90,6 +96,18 @@ export function defineObject(
         objectDef.properties[apiName].type === "mediaReference",
       `Property ${apiName} on object ${objectDef.apiName} can only use includeEmptyBackingMediaSet when its type is mediaReference`,
     );
+    const sharedPropertyType =
+      objectDef.properties?.[apiName]?.sharedPropertyType;
+    if (sharedPropertyType !== undefined) {
+      const previousProperty = propertyBySharedPropertyType.get(
+        sharedPropertyType.apiName,
+      );
+      invariant(
+        previousProperty === undefined,
+        `Shared property type "${sharedPropertyType.apiName}" cannot back both "${previousProperty}" and "${apiName}" on object "${objectDef.apiName}". A shared property type can only back one property per object.`,
+      );
+      propertyBySharedPropertyType.set(sharedPropertyType.apiName, apiName);
+    }
   });
   invariant(
     propertyApiNames.includes(objectDef.titlePropertyApiName),
@@ -283,6 +301,17 @@ export function defineObject(
     __type: OntologyEntityTypeEnum.OBJECT_TYPE,
     properties: flattenedProperties,
   };
+  const context = `Object type "${apiName}"`;
+  validateDisplayMetadataLengths(finalObject, context);
+  for (const property of flattenedProperties) {
+    const propertyContext = `${context}, property "${property.apiName}"`;
+    validateDisplayMetadataLengths(
+      property,
+      propertyContext,
+      OBJECT_PROPERTY_DISPLAY_NAME_LIMIT,
+    );
+    validateStructFieldMetadata(property.type, propertyContext);
+  }
   updateOntology(finalObject);
   objectDef.apiName = apiName;
   return objectDef;

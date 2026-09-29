@@ -49,6 +49,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
 import { extractRdpDefinition } from "../util/extractRdpDefinition.js";
+import { normalizeInterfaceLinkSearchArounds } from "../util/normalizeInterfaceLinkSearchArounds.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
 /**
@@ -274,6 +275,7 @@ export async function fetchStaticRidPage<
     requestBody,
     {
       preview: true,
+      branch: client.branch,
       transactionId: client.transactionId,
       scenarioRid: client.scenarioRid,
     },
@@ -342,6 +344,19 @@ async function fetchInterfacePage<
       interfaceType.apiName,
     );
     allProperties = ifaceDef ? Object.keys(ifaceDef.properties) : undefined;
+  } else {
+    // We have empty catches here so that if this call errors before we await later, we won't have an unhandled promise rejection that would crash the process
+    // Swallowing the error is ok because we await the metadata load in the objectFactory later anyways which eventually bubbles up the error to the user
+    void client.ontologyProvider
+      .getInterfaceDefinition(interfaceType.apiName)
+      .then((def) =>
+        Promise.allSettled(
+          def.implementedBy?.map((implementedBy) =>
+            client.ontologyProvider.getObjectDefinition(implementedBy),
+          ) ?? [],
+        ),
+      )
+      .catch(() => {});
   }
 
   const selectV2 = buildSelectV2(
@@ -538,6 +553,7 @@ async function buildAndRemapRequestBody<
   S extends NullabilityAdherence,
   T extends boolean,
   RequestBody extends {
+    objectSet: ObjectSet;
     orderBy?: SearchOrderByV2;
     pageToken?: PageToken;
     pageSize?: PageSize;
@@ -551,7 +567,14 @@ async function buildAndRemapRequestBody<
   client: MinimalClient,
   objectType: Q,
 ): Promise<RequestBody> {
-  const requestBody = await applyFetchArgs(args, baseBody, client, objectType);
+  const withArgs = await applyFetchArgs(args, baseBody, client, objectType);
+
+  const objectSet = await normalizeInterfaceLinkSearchArounds(
+    client,
+    withArgs.objectSet,
+  );
+  const requestBody =
+    objectSet === withArgs.objectSet ? withArgs : { ...withArgs, objectSet };
 
   if (requestBody.selectV2 != null && requestBody.selectV2.length > 0) {
     const remapped = remapSelectV2(objectType, requestBody.selectV2);

@@ -757,6 +757,49 @@ describe.each([
   });
 
   describe("$applyModifiers", () => {
+    it("applyReducersAndExtractMainValue on a generated struct array property", async () => {
+      await apiServer.boundary(async () => {
+        let capturedRequest: unknown;
+
+        apiServer.use(
+          MockOntologiesV2.OntologyObjectSets.load(
+            baseUrl,
+            async ({ request }) => {
+              capturedRequest = await request.json();
+              return {
+                data: [{ ...stubData.employee1, bonusHistory: 1500 }],
+                nextPageToken: undefined,
+                totalCount: "UNKNOWN",
+                propertySecurities: [],
+              };
+            },
+          ),
+        );
+
+        const result = await client(Employee).fetchPage({
+          $select: ["bonusHistory"],
+          $applyModifiers: {
+            bonusHistory: "applyReducersAndExtractMainValue",
+          },
+        });
+
+        expect(capturedRequest).toMatchObject({
+          select: [],
+          selectV2: [
+            {
+              type: "propertyWithLoadLevel",
+              propertyIdentifier: { type: "property", apiName: "bonusHistory" },
+              loadLevel: { type: "applyReducersAndExtractMainValue" },
+            },
+          ],
+        });
+        expect(result.data[0].bonusHistory).toBe(1500);
+        expectTypeOf(result.data[0].bonusHistory).toEqualTypeOf<
+          number | undefined
+        >();
+      })();
+    });
+
     it("applyMainValue", async () => {
       await apiServer.boundary(async () => {
         let capturedRequest: unknown;

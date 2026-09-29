@@ -1,5 +1,69 @@
 # @osdk/cli.cmd.typescript
 
+## 0.100.0
+
+### Patch Changes
+
+- Updated dependencies [f2e0591]
+  - @osdk/generator@2.74.0
+  - @osdk/cli.common@0.100.0
+
+## 0.99.0
+
+### Patch Changes
+
+- @osdk/generator@2.73.0
+- @osdk/cli.common@0.99.0
+
+## 0.98.0
+
+### Patch Changes
+
+- @osdk/generator@2.72.0
+- @osdk/cli.common@0.98.0
+
+## 0.97.0
+
+### Patch Changes
+
+- Updated dependencies [528d0ca]
+  - @osdk/generator@2.71.0
+  - @osdk/cli.common@0.97.0
+
+## 0.96.0
+
+### Patch Changes
+
+- @osdk/generator@2.70.0
+- @osdk/cli.common@0.96.0
+
+## 0.95.0
+
+### Patch Changes
+
+- @osdk/generator@2.69.0
+- @osdk/cli.common@0.95.0
+
+## 0.94.0
+
+### Patch Changes
+
+- @osdk/generator@2.68.0
+- @osdk/cli.common@0.94.0
+
+## 0.93.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [488376f]
+  - @osdk/cli.common@0.93.0
+  - @osdk/generator@2.67.0
+  - @osdk/shared.client.impl@1.14.0
+
 ## 0.92.0
 
 ### Patch Changes

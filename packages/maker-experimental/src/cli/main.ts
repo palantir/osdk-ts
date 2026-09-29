@@ -22,7 +22,6 @@ import type {
   LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
 } from "@osdk/client.unstable";
-import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import {
   OntologyBlockDataToFullMetadataConverter,
   OntologyIrToFullMetadataConverter,
@@ -36,7 +35,10 @@ import { hideBin } from "yargs/helpers";
 
 import { defineOntologyV2 } from "../api/defineOntologyV2.js";
 import { getExternalRecommendations } from "../conversion/toMarketplace/RecommendationUtils.js";
-import type { LinkTypeIdsByApiName } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
+import type {
+  ExternalImportedOntologyMetadata,
+  LinkTypeIdsByApiName,
+} from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
@@ -172,6 +174,13 @@ export default async function main(
     );
   }
 
+  const externalImportedMetadata =
+    commandLineOpts.importJson && fs.existsSync(commandLineOpts.importJson)
+      ? (JSON.parse(
+          await fs.promises.readFile(commandLineOpts.importJson, "utf-8"),
+        ) as ExternalImportedOntologyMetadata)
+      : undefined;
+
   let functionsIrFile;
   if (commandLineOpts.temporaryBlockDataFile) {
     consola.info(
@@ -195,6 +204,7 @@ export default async function main(
         blockDataJson as Parameters<
           typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData
         >[0],
+        externalImportedMetadata,
       );
     invariant(
       commandLineOpts.functionsDir && commandLineOpts.nodeModulesDir,
@@ -225,18 +235,15 @@ export default async function main(
     await fs.promises.mkdir(commandLineOpts.buildDir, { recursive: true });
   }
 
-  const importedLinkTypeIdsByApiName =
-    commandLineOpts.importJson && fs.existsSync(commandLineOpts.importJson)
-      ? getImportedLinkTypeIdsByApiName(
-          JSON.parse(
-            await fs.promises.readFile(commandLineOpts.importJson, "utf-8"),
-          ) as ImportedOntologyMetadata,
-        )
-      : undefined;
+  const importedLinkTypeIdsByApiName = externalImportedMetadata
+    ? getImportedLinkTypeIdsByApiName(externalImportedMetadata)
+    : undefined;
 
   const {
     ontologyIr,
+    importedTypes,
     shapes,
+    blockDataAddOn,
     importedInputPresets,
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
@@ -249,6 +256,7 @@ export default async function main(
     functionsIrFile,
     commandLineOpts.randomnessKey,
     importedLinkTypeIdsByApiName,
+    externalImportedMetadata,
   );
 
   // Create temp directory for block data
@@ -291,6 +299,7 @@ export default async function main(
     valueTypeResults = await generateValueTypeBlockResults(
       ontologyIr.valueTypes,
       commandLineOpts.buildDir,
+      commandLineOpts.randomnessKey,
     );
   }
 
@@ -484,10 +493,10 @@ export default async function main(
     external_recommendations: getExternalRecommendations(
       ontologyIr.importedOntology,
       ontologyIr.valueTypes,
-      ontologyIr.importedValueTypes,
+      importedTypes,
       shapes.inputShapes,
     ),
-    add_on_override: undefined,
+    add_on_override: blockDataAddOn,
     input_shape_metadata: Object.fromEntries(shapes.inputShapeMetadata),
     block_type: "ONTOLOGY",
   };
@@ -529,6 +538,7 @@ async function loadOntology(
   functionsIrFile?: string,
   randomnessKey?: string,
   importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
+  externalImportedMetadata?: ExternalImportedOntologyMetadata,
 ) {
   const result = await defineOntologyV2(
     apiNamespace,
@@ -538,16 +548,13 @@ async function loadOntology(
     functionsIrFile,
     randomnessKey,
     importedLinkTypeIdsByApiName,
+    externalImportedMetadata,
   );
   return result;
 }
 
-type ImportedOntologyMetadata = OntologyFullMetadata & {
-  linkTypeIdsByRid?: Record<string, string>;
-};
-
 function getImportedLinkTypeIdsByApiName(
-  metadata: ImportedOntologyMetadata,
+  metadata: ExternalImportedOntologyMetadata,
 ): LinkTypeIdsByApiName {
   const result: Record<string, string> = {};
   for (const objectType of Object.values(metadata.objectTypes)) {

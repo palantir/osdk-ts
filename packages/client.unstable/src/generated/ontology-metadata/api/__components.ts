@@ -5214,6 +5214,11 @@ export interface InterfaceTypeSchemaMigrationOnBranchError {
 export type InterfaceTypeSchemaMigrationRid = string;
 
 /**
+ * An immutable, randomly generated identifier for an InterfaceType schema transition.
+ */
+export type InterfaceTypeSchemaTransitionRid = string;
+
+/**
  * The InterfaceTypes were not found.
  */
 export interface InterfaceTypesNotFoundError {

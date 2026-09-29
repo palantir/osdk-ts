@@ -8,14 +8,19 @@ import type { ActionDefinition } from '@osdk/client';
 import { Attachment } from '@osdk/client';
 import type { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/client';
+import { custom } from '@osdk/aliases/internal';
+import { dataset } from '@osdk/aliases/internal';
 import { Geometry } from 'geojson';
 import { GeometryCollection } from 'geojson';
 import type { GroupId as GroupId_2 } from '@osdk/foundry.core';
 import type { InterfaceDefinition } from '@osdk/client';
+import type * as InternalAliases from '@osdk/aliases/internal';
 import { LineString } from 'geojson';
 import type { Media } from '@osdk/client';
 import { MediaReference } from '@osdk/client';
+import { mediaset } from '@osdk/aliases/internal';
 import { MediaUpload } from '@osdk/client';
+import { model } from '@osdk/aliases/internal';
 import { MultiLineString } from 'geojson';
 import { MultiPoint } from 'geojson';
 import { MultiPolygon } from 'geojson';
@@ -31,6 +36,8 @@ import { Polygon } from 'geojson';
 import type { PropertyKeys } from '@osdk/client';
 import type { QueryDefinition } from '@osdk/client';
 import { Range as Range_2 } from '@osdk/client';
+import { source } from '@osdk/aliases/internal';
+import { stream } from '@osdk/aliases/internal';
 import { ThreeDimensionalAggregation } from '@osdk/client';
 import { TwoDimensionalAggregation } from '@osdk/client';
 import type { UserId as UserId_2 } from '@osdk/foundry.core';
@@ -38,16 +45,16 @@ import type { UserId as UserId_2 } from '@osdk/foundry.core';
 declare namespace Aliases {
     export {
         custom,
-        Custom,
         dataset,
-        Dataset,
         mediaset,
-        Mediaset,
         model,
-        Model,
         source,
-        Source,
         stream,
+        Custom,
+        Dataset,
+        Mediaset,
+        Model,
+        Source,
         Stream
     }
 }
@@ -76,21 +83,10 @@ export type ClassificationMarking<T extends string = string> = T & {
 export function createEditBatch<T extends AnyEdit = never>(_client: Client): EditBatch<T>;
 
 // @public (undocumented)
-type Custom = string & {
-    	readonly __brand: "Custom"
-};
+type Custom = InternalAliases.Custom;
 
 // @public (undocumented)
-function custom(alias: string): Custom;
-
-// @public (undocumented)
-interface Dataset {
-    	// (undocumented)
-    rid: string;
-}
-
-// @public (undocumented)
-function dataset(alias: string): Dataset;
+type Dataset = InternalAliases.Dataset;
 
 // @public (undocumented)
 export type DateISOString<T extends string = string> = T & {
@@ -220,24 +216,12 @@ export type MandatoryMarking<T extends string = string> = T & {
 export { MediaReference }
 
 // @public (undocumented)
-interface Mediaset {
-    	// (undocumented)
-    rid: string;
-}
-
-// @public (undocumented)
-function mediaset(alias: string): Mediaset;
+type Mediaset = InternalAliases.Mediaset;
 
 export { MediaUpload }
 
 // @public (undocumented)
-interface Model {
-    	// (undocumented)
-    rid: string;
-}
-
-// @public (undocumented)
-function model(alias: string): Model;
+type Model = InternalAliases.Model;
 
 export { MultiLineString }
 
@@ -312,22 +296,10 @@ export type Short<T extends number = number> = T & {
 };
 
 // @public (undocumented)
-interface Source {
-    	// (undocumented)
-    rid: string;
-}
+type Source = InternalAliases.Source;
 
 // @public (undocumented)
-function source(alias: string): Source;
-
-// @public (undocumented)
-interface Stream {
-    	// (undocumented)
-    rid: string;
-}
-
-// @public (undocumented)
-function stream(alias: string): Stream;
+type Stream = InternalAliases.Stream;
 
 export { ThreeDimensionalAggregation }
 

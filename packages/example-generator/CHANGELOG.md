@@ -1,5 +1,54 @@
 # @osdk/example-generator
 
+## 0.60.0
+
+### Patch Changes
+
+- @osdk/create-app@2.74.0
+- @osdk/create-widget@3.73.0
+
+## 0.59.0
+
+### Patch Changes
+
+- @osdk/create-app@2.73.0
+- @osdk/create-widget@3.72.0
+
+## 0.58.0
+
+### Patch Changes
+
+- @osdk/create-app@2.71.0
+- @osdk/create-widget@3.70.0
+
+## 0.57.0
+
+### Patch Changes
+
+- @osdk/create-app@2.69.0
+- @osdk/create-widget@3.68.0
+
+## 0.56.0
+
+### Patch Changes
+
+- @osdk/create-app@2.68.0
+- @osdk/create-widget@3.67.0
+
+## 0.55.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+- 7af6ab2: Update examples to have a more accurate README and package name. Remove unused create-widget options.
+
+### Patch Changes
+
+- Updated dependencies [488376f]
+- Updated dependencies [7af6ab2]
+  - @osdk/create-app@2.67.0
+  - @osdk/create-widget@3.66.0
+
 ## 0.54.0
 
 ### Patch Changes

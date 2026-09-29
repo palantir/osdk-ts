@@ -43,7 +43,7 @@ import { type SharedPropertyType } from "../properties/SharedPropertyType.js";
 
 describe("Action Types", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, "/tmp/");
+    await defineOntology("com.palantir.", () => {}, undefined);
   });
   it("pairs a listLength interface target with listLengthValidation, not scalar required", () => {
     const person = defineInterface({
@@ -6753,6 +6753,41 @@ describe("Action Types", () => {
       }).toThrowErrorMatchingInlineSnapshot(
         `[Error: Vectors are not supported as action parameters yet]`,
       );
+    });
+
+    it("Struct properties render as text inputs in auto-generated action parameters", () => {
+      const structDefinition = { simpleProperty: "string" } as const;
+      const objectType = defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: {
+          bar: { type: "string" },
+          metadata: { type: { type: "struct", structDefinition } },
+          metadataList: {
+            type: { type: "struct", structDefinition },
+            array: true,
+          },
+        },
+      });
+
+      const createAction = defineCreateObjectAction({ objectType });
+
+      const { metadata, actionTypeLogic } =
+        dumpOntologyFullMetadata().ontology.actionTypes[createAction.apiName]
+          .actionType;
+      const parameterValidations =
+        actionTypeLogic.validation.parameterValidations;
+
+      expect(metadata.parameters["metadata"].type.type).toBe("struct");
+      expect(metadata.parameters["metadataList"].type.type).toBe("structList");
+      for (const id of ["metadata", "metadataList"]) {
+        expect(
+          parameterValidations[id].defaultValidation.display.renderHint,
+        ).toEqual({ type: "textInput", textInput: {} });
+      }
     });
 
     it("Simple concrete actions are properly defined", () => {
@@ -17020,7 +17055,7 @@ describe("Action Types", () => {
           ontologyPackageRid: null,
         });
       },
-      "/tmp/",
+      undefined,
     );
   });
 });

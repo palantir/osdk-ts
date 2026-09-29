@@ -35,14 +35,14 @@ function callGetExternalRecommendations(
   return getExternalRecommendations(
     result.ontologyIr.importedOntology,
     result.ontologyIr.valueTypes,
-    result.ontologyIr.importedValueTypes,
+    result.importedTypes,
     result.shapes.inputShapes,
   );
 }
 
 describe("RecommendationUtils", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, "/tmp/");
+    await defineOntology("com.palantir.", () => {}, undefined);
   });
 
   it("returns empty array when no imported entities", async () => {

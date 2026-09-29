@@ -1,5 +1,66 @@
 # @osdk/widget.api
 
+## 3.73.0
+
+### Patch Changes
+
+- @osdk/api@2.74.0
+
+## 3.72.0
+
+### Minor Changes
+
+- d414a46: Add allow-modals to the supported widget browser permissions
+
+### Patch Changes
+
+- @osdk/api@2.73.0
+
+## 3.71.0
+
+### Minor Changes
+
+- 00e43a9: Add a mapTileLayer parameter type to widgets.
+
+### Patch Changes
+
+- @osdk/api@2.72.0
+
+## 3.70.0
+
+### Patch Changes
+
+- @osdk/api@2.71.0
+
+## 3.69.0
+
+### Patch Changes
+
+- @osdk/api@2.70.0
+
+## 3.68.0
+
+### Patch Changes
+
+- @osdk/api@2.69.0
+
+## 3.67.0
+
+### Patch Changes
+
+- @osdk/api@2.68.0
+
+## 3.66.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [488376f]
+  - @osdk/api@2.67.0
+
 ## 3.65.0
 
 ### Patch Changes

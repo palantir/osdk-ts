@@ -1,5 +1,63 @@
 # @osdk/cli
 
+## 0.100.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.73.0
+
+## 0.99.0
+
+### Patch Changes
+
+- Updated dependencies [d414a46]
+  - @osdk/widget.api@3.72.0
+
+## 0.98.0
+
+### Patch Changes
+
+- Updated dependencies [00e43a9]
+  - @osdk/widget.api@3.71.0
+
+## 0.97.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.70.0
+
+## 0.96.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.69.0
+
+## 0.95.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.68.0
+
+## 0.94.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.67.0
+
+## 0.93.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [488376f]
+  - @osdk/foundry-config-json@1.13.0
+  - @osdk/shared.net.errors@2.13.0
+  - @osdk/shared.net.fetch@1.13.0
+  - @osdk/widget.api@3.66.0
+
 ## 0.92.0
 
 ### Patch Changes

@@ -1,5 +1,54 @@
 # @osdk/integration-testing
 
+## 0.8.0
+
+### Patch Changes
+
+- Updated dependencies [aa9fe40]
+- Updated dependencies [6ca7442]
+- Updated dependencies [e316cb7]
+  - @osdk/generator-converters.preview@0.52.0
+  - @osdk/client@2.74.0
+  - @osdk/unit-testing@0.26.0
+  - @osdk/api@2.74.0
+
+## 0.7.0
+
+### Patch Changes
+
+- Updated dependencies [9fa9a26]
+  - @osdk/generator-converters.preview@0.51.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 5c8bdb0: Read the code and artifacts service URLs from FOUNDRY_SERVICE_DISCOVERY_V2 when installing the Foundry CLI, preserving routing paths and retaining the existing Foundry host fallback when discovery is not configured.
+
+### Patch Changes
+
+- Updated dependencies [688dd40]
+- Updated dependencies [e108284]
+  - @osdk/client@2.69.0
+  - @osdk/api@2.69.0
+  - @osdk/unit-testing@0.26.0
+  - @osdk/generator-converters.preview@0.47.0
+
+## 0.5.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [aec9d54]
+- Updated dependencies [488376f]
+  - @osdk/client@2.67.0
+  - @osdk/api@2.67.0
+  - @osdk/generator-converters.preview@0.45.0
+  - @osdk/unit-testing@0.26.0
+
 ## 0.4.0
 
 ### Minor Changes

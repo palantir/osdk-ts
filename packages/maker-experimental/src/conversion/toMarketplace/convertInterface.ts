@@ -15,12 +15,15 @@
  */
 
 import type {
+  InterfaceParameterConstraint,
   MarketplaceInterfaceType,
+  OntologyIrBaseParameterConstraintType,
   OntologyIrInterfaceActionTypeConstraint,
 } from "@osdk/client.unstable";
 import type { InterfaceType } from "@osdk/maker";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
+import { resolveInterfaceTypeRid } from "./convertActionParameters.js";
 import { convertInterfaceProperty } from "./convertInterfacePropertyType.js";
 import { convertSpt } from "./convertSpt.js";
 
@@ -32,6 +35,7 @@ export function convertInterface(
     __type,
     status,
     linkedInterfaces: _linkedInterfaces,
+    schemaMigrations,
     ...other
   } = interfaceType;
   // Normalize deprecated deadline format to match Java (strip .000 milliseconds)
@@ -47,6 +51,12 @@ export function convertInterface(
       : status;
   return {
     ...other,
+    // schema migrations travel in their own block data section rather than on the interface type
+    // directly; we only use the declared object to determine if the IT is opted in,
+    // but exclude the migrations themselves from the IT definition
+    ...(schemaMigrations !== undefined
+      ? { schemaMigrationsEnabled: true }
+      : {}),
     status: normalizedStatus,
     // TODO: Generate proper RID based on apiName
     rid: ridGenerator.generateRidForInterface(interfaceType.apiName),
@@ -114,7 +124,13 @@ export function convertInterface(
                   interfaceType.apiName,
                   paramDisplayApiName,
                 ),
-                paramConstraint,
+                {
+                  ...paramConstraint,
+                  type: convertParameterConstraintTypeReferencesToBlockData(
+                    paramConstraint.type,
+                    ridGenerator,
+                  ),
+                },
               ];
             },
           ),
@@ -134,4 +150,77 @@ export function convertInterface(
       ),
     ),
   };
+}
+
+function convertParameterConstraintTypeReferencesToBlockData(
+  parameterType: OntologyIrBaseParameterConstraintType,
+  ridGenerator: OntologyRidGenerator,
+): InterfaceParameterConstraint["type"] {
+  switch (parameterType.type) {
+    case "objectReference":
+      return {
+        ...parameterType,
+        objectReference: {
+          ...parameterType.objectReference,
+          objectTypeId: ridGenerator.generateObjectTypeId(
+            parameterType.objectReference.objectTypeId,
+          ),
+        },
+      };
+    case "objectReferenceList":
+      return {
+        ...parameterType,
+        objectReferenceList: {
+          ...parameterType.objectReferenceList,
+          objectTypeId: ridGenerator.generateObjectTypeId(
+            parameterType.objectReferenceList.objectTypeId,
+          ),
+        },
+      };
+    case "objectSetRid":
+      return {
+        ...parameterType,
+        objectSetRid: {
+          ...parameterType.objectSetRid,
+          objectTypeId: ridGenerator.generateObjectTypeId(
+            parameterType.objectSetRid.objectTypeId,
+          ),
+        },
+      };
+    case "interfaceReference":
+      return {
+        ...parameterType,
+        interfaceReference: {
+          ...parameterType.interfaceReference,
+          interfaceTypeRid: resolveInterfaceTypeRid(
+            parameterType.interfaceReference.interfaceTypeRid,
+            ridGenerator,
+          ),
+        },
+      };
+    case "interfaceReferenceList":
+      return {
+        ...parameterType,
+        interfaceReferenceList: {
+          ...parameterType.interfaceReferenceList,
+          interfaceTypeRid: resolveInterfaceTypeRid(
+            parameterType.interfaceReferenceList.interfaceTypeRid,
+            ridGenerator,
+          ),
+        },
+      };
+    case "interfaceObjectSetRid":
+      return {
+        ...parameterType,
+        interfaceObjectSetRid: {
+          ...parameterType.interfaceObjectSetRid,
+          interfaceTypeRid: resolveInterfaceTypeRid(
+            parameterType.interfaceObjectSetRid.interfaceTypeRid,
+            ridGenerator,
+          ),
+        },
+      };
+    default:
+      return parameterType as InterfaceParameterConstraint["type"];
+  }
 }

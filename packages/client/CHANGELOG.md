@@ -1,5 +1,112 @@
 # @osdk/client
 
+## 2.74.0
+
+### Minor Changes
+
+- 6ca7442: Fix `pivotTo` emitting an object set the backend rejects with `Api:UnsupportedObjectSet`. On an object set rooted at an interface, every subsequent `pivotTo` emitted an `interfaceLinkSearchAround` node — even once the chain had already followed a link onto a concrete object type, at which point the traversal is an ordinary link and must be a `searchAround`. An interface link cannot be resolved against an object-typed object set, so the request failed.
+
+  Whether a link's target is an object type or an interface type is only known from ontology metadata, which `pivotTo` cannot read synchronously. The wire object set is therefore normalized just before it is sent: any `interfaceLinkSearchAround` whose source resolves to an object type is rewritten to `searchAround`. Chains that stay on interface types the whole way are unaffected, and object sets containing no interface-link traversal are passed through untouched.
+
+  This applies to every path that sends an object set: `fetchPage` (object and interface), `aggregate`, link loading, temporary object set creation, and object sets supplied as action or query parameters. The observable layer inherits the fix because it reads through `fetchPage`.
+
+### Patch Changes
+
+- @osdk/api@2.74.0
+- @osdk/client.unstable@2.74.0
+- @osdk/generator-converters@2.74.0
+- @osdk/shared.test@2.50.0
+
+## 2.73.0
+
+### Patch Changes
+
+- @osdk/api@2.73.0
+- @osdk/client.unstable@2.73.0
+- @osdk/generator-converters@2.73.0
+
+## 2.72.0
+
+### Minor Changes
+
+- 1172332: Forward the configured branch in untyped RID fetches, temporary object set creation, media and geotime series reads, ciphertext decryption, and object-set subscriptions.
+
+### Patch Changes
+
+- @osdk/api@2.72.0
+- @osdk/client.unstable@2.72.0
+- @osdk/generator-converters@2.72.0
+
+## 2.71.0
+
+### Minor Changes
+
+- 528d0ca: Add support for generating and executing query functions using semantic version ranges on ontology branches.
+
+### Patch Changes
+
+- Updated dependencies [ae55749]
+  - @osdk/generator-converters@2.71.0
+  - @osdk/api@2.71.0
+  - @osdk/client.unstable@2.71.0
+  - @osdk/shared.test@2.49.0
+
+## 2.70.0
+
+### Patch Changes
+
+- Updated dependencies [e13da8f]
+  - @osdk/client.unstable@2.70.0
+  - @osdk/api@2.70.0
+  - @osdk/generator-converters@2.70.0
+
+## 2.69.0
+
+### Minor Changes
+
+- 688dd40: Prefetch interface metadata while loading object set pages
+- e108284: Support batch action application on scenario clients
+
+### Patch Changes
+
+- @osdk/api@2.69.0
+- @osdk/client.unstable@2.69.0
+- @osdk/generator-converters@2.69.0
+- @osdk/shared.test@2.48.0
+
+## 2.68.0
+
+### Minor Changes
+
+- e37d2eb: invalidateAll() flips the order of objects because of a clientSort, this change removes that behavior
+
+### Patch Changes
+
+- Updated dependencies [8f47483]
+  - @osdk/client.unstable@2.68.0
+  - @osdk/api@2.68.0
+  - @osdk/generator-converters@2.68.0
+  - @osdk/shared.test@2.47.0
+
+## 2.67.0
+
+### Minor Changes
+
+- aec9d54: Inject the current Foundry branch into a CSP-safe HTML meta tag so switching git branches cannot reuse a stale branch from Vite's optimized dependency cache. The client reads this runtime value from the document, while the Vite plugin accepts the server-only `FOUNDRY_BRANCH_RID` override during development and production builds. Replace any `VITE_FOUNDRY_BRANCH_RID` override with `FOUNDRY_BRANCH_RID`.
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [43bfe44]
+- Updated dependencies [488376f]
+  - @osdk/client.unstable@2.67.0
+  - @osdk/api@2.67.0
+  - @osdk/generator-converters@2.67.0
+  - @osdk/shared.client.impl@1.14.0
+  - @osdk/shared.net.errors@2.13.0
+  - @osdk/shared.net.fetch@1.13.0
+  - @osdk/shared.test@2.46.0
+
 ## 2.66.0
 
 ### Minor Changes

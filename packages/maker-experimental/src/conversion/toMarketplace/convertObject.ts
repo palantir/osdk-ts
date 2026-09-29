@@ -18,6 +18,8 @@ import type {
   DerivedPropertiesDefinition,
   DerivedPropertyAggregation as DerivedPropertyAggregationWire,
   EditsHistory,
+  ImplementingActionType,
+  ImplementingLinkType,
   MarketplaceObjectTypeEntityMetadata,
   ObjectTypeBlockDataV2,
   ObjectTypeDatasource,
@@ -29,6 +31,7 @@ import type {
   EditsHistoryConfig,
   InterfacePropertyType,
   InterfaceType,
+  LinkType,
   ObjectPropertyType,
   ObjectType,
   ObjectTypeDatasourceDefinition_derived,
@@ -36,8 +39,10 @@ import type {
 import {
   cleanAndValidateLinkTypeId,
   convertObjectStatus,
+  getOntologyDefinition,
   isExotic,
   isInterfaceSharedPropertyType,
+  OntologyEntityTypeEnum,
   withoutNamespace,
 } from "@osdk/maker";
 import invariant from "tiny-invariant";
@@ -46,6 +51,60 @@ import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { buildDatasource } from "./convertActionHelpers.js";
 import { convertDatasourceDefinition } from "./convertDatasourceDefinition.js";
 import { convertObjectPropertyType } from "./convertObjectPropertyType.js";
+
+/**
+ * Maps the selected side of a concrete link type to its wire representation.
+ * The side identifies where traversal of the implemented interface link begins.
+ */
+function convertImplementingLinkTypeSide(
+  linkType: LinkType,
+  sideApiName: string,
+): ImplementingLinkType["startingFromLinkTypeSide"] {
+  if ("one" in linkType) {
+    if (sideApiName === linkType.one.metadata.apiName) {
+      return {
+        type: "oneToManyLinkTypeSide",
+        oneToManyLinkTypeSide: "ONE_SIDE",
+      };
+    }
+    if (sideApiName === linkType.toMany.metadata.apiName) {
+      return {
+        type: "oneToManyLinkTypeSide",
+        oneToManyLinkTypeSide: "MANY_SIDE",
+      };
+    }
+  } else if ("intermediaryObjectType" in linkType) {
+    if (sideApiName === linkType.many.metadata.apiName) {
+      return {
+        type: "intermediaryLinkTypeSide",
+        intermediaryLinkTypeSide: "A_SIDE",
+      };
+    }
+    if (sideApiName === linkType.toMany.metadata.apiName) {
+      return {
+        type: "intermediaryLinkTypeSide",
+        intermediaryLinkTypeSide: "B_SIDE",
+      };
+    }
+  } else {
+    if (sideApiName === linkType.many.metadata.apiName) {
+      return {
+        type: "manyToManyLinkTypeSide",
+        manyToManyLinkTypeSide: "A_SIDE",
+      };
+    }
+    if (sideApiName === linkType.toMany.metadata.apiName) {
+      return {
+        type: "manyToManyLinkTypeSide",
+        manyToManyLinkTypeSide: "B_SIDE",
+      };
+    }
+  }
+  throw new Error(
+    `Interface link implementation references link side "${sideApiName}" ` +
+      `which does not exist on link type "${linkType.apiName}".`,
+  );
+}
 
 export function convertObject(
   objectType: ObjectType,
@@ -156,7 +215,45 @@ export function convertObject(
           ),
           interfaceTypeApiName: impl.implements.apiName,
           links: {},
-          linksV2: {},
+          linksV2: Object.fromEntries(
+            Object.entries(impl.linkImplementations ?? {}).map(
+              ([interfaceLinkApiName, implementingLinks]) => {
+                const sourceInterface =
+                  allParents.find((parentInterface) =>
+                    (parentInterface.links ?? []).some(
+                      (link) => link.metadata.apiName === interfaceLinkApiName,
+                    ),
+                  ) ?? impl.implements;
+                return [
+                  ridGenerator.generateRidForInterfaceLinkType(
+                    interfaceLinkApiName,
+                    sourceInterface.apiName,
+                  ),
+                  implementingLinks.map((implementingLink) => {
+                    const linkType =
+                      getOntologyDefinition()[OntologyEntityTypeEnum.LINK_TYPE][
+                        implementingLink.linkTypeApiName
+                      ];
+                    invariant(
+                      linkType !== undefined,
+                      `Interface link implementation references link type "${implementingLink.linkTypeApiName}" which is not defined.`,
+                    );
+                    return {
+                      linkTypeRid: ridGenerator.generateRidForLinkType(
+                        cleanAndValidateLinkTypeId(
+                          implementingLink.linkTypeApiName,
+                        ),
+                      ),
+                      startingFromLinkTypeSide: convertImplementingLinkTypeSide(
+                        linkType,
+                        implementingLink.sideApiName,
+                      ),
+                    };
+                  }),
+                ];
+              },
+            ),
+          ),
           propertiesV2: Object.fromEntries(
             impl.propertyMapping.map((mappings) => {
               const resolvedProperty = resolveInterfaceProperty(
@@ -192,7 +289,32 @@ export function convertObject(
             }),
           ),
           properties: {},
-          actionTypes: {},
+          actionTypes: Object.fromEntries(
+            Object.entries(impl.actionTypeImplementations ?? {}).map(
+              ([constraintApiName, implementation]) => {
+                const sourceInterface =
+                  allParents.find((parentInterface) =>
+                    (parentInterface.actionTypeConstraints ?? []).some(
+                      (constraint) =>
+                        constraint.metadata.apiName === constraintApiName,
+                    ),
+                  ) ?? impl.implements;
+                return [
+                  ridGenerator.generateRidForInterfaceActionTypeConstraint(
+                    constraintApiName,
+                    sourceInterface.apiName,
+                  ),
+                  convertImplementingActionType(
+                    constraintApiName,
+                    sourceInterface,
+                    implementation.actionTypeApiName,
+                    implementation.parameterMapping ?? {},
+                    ridGenerator,
+                  ),
+                ];
+              },
+            ),
+          ),
         };
       }),
       allImplementsInterfaces: {},
@@ -209,6 +331,33 @@ export function convertObject(
     schemaMigrations: undefined,
     writebackDatasets: [],
   } as ObjectTypeBlockDataV2;
+}
+
+function convertImplementingActionType(
+  constraintApiName: string,
+  sourceInterface: InterfaceType,
+  actionTypeApiName: string,
+  parameterMapping: Record<string, string>,
+  ridGenerator: OntologyRidGenerator,
+): ImplementingActionType {
+  return {
+    actionTypeRid: ridGenerator.generateRidForActionType(actionTypeApiName),
+    parameters: Object.fromEntries(
+      Object.entries(parameterMapping).map(
+        ([constraintParameterApiName, actionParameterId]) => [
+          ridGenerator.generateRidForInterfaceParameterConstraint(
+            constraintApiName,
+            sourceInterface.apiName,
+            constraintParameterApiName,
+          ),
+          ridGenerator.generateRidForParameter(
+            actionTypeApiName,
+            actionParameterId,
+          ),
+        ],
+      ),
+    ),
+  };
 }
 
 function resolveInterfaceProperty(

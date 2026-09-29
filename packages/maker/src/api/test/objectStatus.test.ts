@@ -22,7 +22,7 @@ import type { ObjectTypeStatus } from "../object/ObjectTypeStatus.js";
 
 describe("Object Status", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, "/tmp/");
+    await defineOntology("com.palantir.", () => {}, undefined);
   });
 
   describe("Object Status Validation", () => {
@@ -46,7 +46,7 @@ describe("Object Status", () => {
             /Object "validationTest" has "experimental" status, but the following properties have a different status: bar/u,
           );
         },
-        "/tmp/",
+        undefined,
       );
     });
 
@@ -71,7 +71,7 @@ describe("Object Status", () => {
             }),
           ).not.toThrow();
         },
-        "/tmp/",
+        undefined,
       );
     });
 
@@ -98,7 +98,7 @@ describe("Object Status", () => {
             /Object "exampleActiveProp" has "example" status, but the following properties have a different status: bar/u,
           );
         },
-        "/tmp/",
+        undefined,
       );
     });
 
@@ -129,7 +129,7 @@ describe("Object Status", () => {
             /Object "deprecatedActiveProp" has "deprecated" status, but the following properties have a different status: bar/u,
           );
         },
-        "/tmp/",
+        undefined,
       );
     });
 
@@ -154,7 +154,7 @@ describe("Object Status", () => {
             }),
           ).not.toThrow();
         },
-        "/tmp/",
+        undefined,
       );
     });
 
@@ -176,7 +176,7 @@ describe("Object Status", () => {
             }),
           ).not.toThrow();
         },
-        "/tmp/",
+        undefined,
       );
     });
 
@@ -198,7 +198,7 @@ describe("Object Status", () => {
             }),
           ).not.toThrow();
         },
-        "/tmp/",
+        undefined,
       );
     });
   });
@@ -226,7 +226,7 @@ describe("Object Status", () => {
             active: {},
           });
         },
-        "/tmp/",
+        undefined,
       );
     });
 
@@ -253,7 +253,7 @@ describe("Object Status", () => {
             active: {},
           });
         },
-        "/tmp/",
+        undefined,
       );
     });
 
@@ -280,7 +280,7 @@ describe("Object Status", () => {
             experimental: {},
           });
         },
-        "/tmp/",
+        undefined,
       );
     });
 
@@ -315,7 +315,7 @@ describe("Object Status", () => {
             },
           });
         },
-        "/tmp/",
+        undefined,
       );
     });
   });

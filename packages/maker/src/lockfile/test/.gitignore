@@ -1,0 +1,3 @@
+# Scratch input directories created by makerCli.test.ts. They have to live inside the package for
+# a fixture's relative import of maker's source to resolve, and are removed after each test.
+.tmp-*/

@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import type { OntologyIrBaseFormatter } from "@osdk/client.unstable";
+import type {
+  OntologyIrBaseFormatter,
+  OntologyIrValueTypeReferenceWithMetadata,
+} from "@osdk/client.unstable";
 
+import type { TypeClass } from "../common/TypeClass.js";
+import type { Nullability } from "../properties/Nullability.js";
 import type { PropertyTypeType } from "../properties/PropertyTypeType.js";
 import type {
   PropertyType,
@@ -26,9 +31,14 @@ export type InterfacePropertyType =
   | InterfaceSharedPropertyType
   | InterfaceDefinedProperty;
 
+export type PrimaryKeyConstraint =
+  | "MUST_BE_PK"
+  | "CANNOT_BE_PK"
+  | "NO_RESTRICTION";
+
 export interface InterfaceDefinedProperty extends PropertyType {
   required?: boolean;
-  primaryKeyConstraint?: "MUST_BE_PK" | "CANNOT_BE_PK" | "NO_RESTRICTION";
+  primaryKeyConstraint?: PrimaryKeyConstraint;
   baseFormatter?: OntologyIrBaseFormatter;
 }
 
@@ -49,6 +59,74 @@ export function getInterfacePropertyTypeType(
   return isInterfaceSharedPropertyType(interfacePropertyType)
     ? interfacePropertyType.sharedPropertyType.type
     : interfacePropertyType.type;
+}
+
+/**
+ * Whether this property holds a list of its declared type rather than a single value.
+ */
+export function isInterfacePropertyArray(
+  interfacePropertyType: InterfacePropertyType,
+): boolean {
+  const { array } = isInterfaceSharedPropertyType(interfacePropertyType)
+    ? interfacePropertyType.sharedPropertyType
+    : interfacePropertyType;
+  return array ?? false;
+}
+
+/**
+ * The type classes this property carries, or `undefined` if it declares none.
+ *
+ * Type classes drive render hints like sorting and filtering, so they are part of what an
+ * implementing object type has to satisfy rather than presentation-only metadata.
+ */
+export function interfacePropertyTypeClasses(
+  interfacePropertyType: InterfacePropertyType,
+): TypeClass[] | undefined {
+  const { typeClasses } = isInterfaceSharedPropertyType(interfacePropertyType)
+    ? interfacePropertyType.sharedPropertyType
+    : interfacePropertyType;
+  return typeClasses;
+}
+
+/**
+ * The value type this property is an instance of, or `undefined` if it is not.
+ *
+ * A value type carries its own constraints, which an implementing object type's data has to
+ * satisfy, so the reference is part of the contract rather than metadata about it.
+ */
+export function interfacePropertyValueType(
+  interfacePropertyType: InterfacePropertyType,
+): OntologyIrValueTypeReferenceWithMetadata | undefined {
+  return isInterfaceSharedPropertyType(interfacePropertyType)
+    ? interfacePropertyType.sharedPropertyType.valueType
+    : interfacePropertyType.valueType;
+}
+
+/** The nullability requirements for a marking property. */
+const MARKING_NULLABILITY: Nullability = {
+  noNulls: true,
+  noEmptyCollections: true,
+};
+
+/** What this property constrains about nulls and empty collections, or `undefined` if it declares nothing. */
+export function interfacePropertyNullability(
+  interfacePropertyType: InterfacePropertyType,
+): Nullability | undefined {
+  const source = isInterfaceSharedPropertyType(interfacePropertyType)
+    ? interfacePropertyType.sharedPropertyType
+    : interfacePropertyType;
+  if (typeof source.type === "object" && source.type.type === "marking") {
+    return source.nullability ?? MARKING_NULLABILITY;
+  }
+  return source.nullability;
+}
+
+export function interfacePropertyPrimaryKeyConstraint(
+  interfacePropertyType: InterfacePropertyType,
+): PrimaryKeyConstraint {
+  return isInterfaceSharedPropertyType(interfacePropertyType)
+    ? "NO_RESTRICTION"
+    : (interfacePropertyType.primaryKeyConstraint ?? "NO_RESTRICTION");
 }
 
 /**

@@ -36,6 +36,7 @@ import type {
   OneToManyObjectLinkReference,
   OneToManyObjectLinkReferenceUserDefinition,
 } from "./links/LinkType.js";
+import { validateDisplayMetadataLengths } from "./validateMetadataLengths.js";
 
 export function defineLink(linkDefinitionInput: LinkTypeDefinition): LinkType {
   const linkDefinition = cloneDefinition(linkDefinitionInput);
@@ -48,9 +49,8 @@ export function defineLink(linkDefinitionInput: LinkTypeDefinition): LinkType {
       `Link type with apiName ${linkDefinition.apiName} is already defined`,
     );
   }
-  // NOTE: we would normally do validation here, but because of circular dependencies
-  // we have to wait to validate until everything has been defined. The code for validation
-  // was moved to convertLink.ts.
+  // Validation involving linked objects is deferred to convertLink.ts because
+  // circular dependencies can reference objects that have not been defined yet.
 
   let fullLinkDefinition;
   if ("one" in linkDefinition) {
@@ -79,6 +79,16 @@ export function defineLink(linkDefinitionInput: LinkTypeDefinition): LinkType {
     apiName: linkDefinition.apiName,
     __type: OntologyEntityTypeEnum.LINK_TYPE,
   };
+  const sides =
+    "one" in linkType
+      ? { one: linkType.one, toMany: linkType.toMany }
+      : { many: linkType.many, toMany: linkType.toMany };
+  for (const [side, link] of Object.entries(sides)) {
+    validateDisplayMetadataLengths(
+      link.metadata.displayMetadata,
+      `Link type "${linkType.apiName}", ${side} "${link.metadata.apiName}"`,
+    );
+  }
   updateOntology(linkType);
   return linkType;
 }

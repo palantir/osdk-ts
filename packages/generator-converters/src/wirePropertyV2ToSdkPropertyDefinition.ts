@@ -169,6 +169,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
           ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
           : undefined,
         hasReducers: hasReducers(input.dataType),
+        mainValue: extractMainValue(input.dataType.subType),
         ...extractTypeMetadata(input.dataType),
       };
     }

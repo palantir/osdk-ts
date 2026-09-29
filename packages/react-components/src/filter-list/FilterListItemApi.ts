@@ -192,6 +192,32 @@ export interface ExactMatchFilterState<
   values: T[];
 }
 
+/**
+ * Describes one bound of a relative date range.
+ *
+ * Combined with a direction this produces an absolute `Date` anchored to "now".
+ * For example `{ count: 7, unit: "days", direction: "ago" }` resolves to 7 days
+ * before the current time.
+ */
+export interface RelativeDateBound {
+  /** Number of units (e.g. 7 for "7 days ago"). */
+  count: number;
+  /** Time unit. */
+  unit: "days" | "weeks" | "months" | "years";
+  /** Direction relative to now. */
+  direction: "ago" | "fromNow";
+}
+
+/**
+ * Groups the two relative bounds for a `DATE_RANGE` filter.
+ * Presence of this object on the filter state means relative mode is ON.
+ * `null` for either bound means "Indefinitely" (no constraint on that side).
+ */
+export interface RelativeDateState {
+  relativeMin: RelativeDateBound | null;
+  relativeMax: RelativeDateBound | null;
+}
+
 export interface DateRangeFilterState extends BaseFilterState {
   type: "DATE_RANGE";
   /**
@@ -202,6 +228,12 @@ export interface DateRangeFilterState extends BaseFilterState {
    * The latest date the user can select
    */
   maxValue?: Date;
+
+  /**
+   * When present, the filter is in relative-date mode.
+   * When `undefined`, the filter uses absolute `minValue` / `maxValue`.
+   */
+  relativeState?: RelativeDateState;
 }
 
 export interface ContainsTextFilterState extends BaseFilterState {
@@ -264,15 +296,25 @@ export interface DateFormattingProps {
 }
 
 /**
- * Conditionally adds `formatDate` to a property filter definition only for
- * `datetime` / `timestamp` properties. For other property types this field
- * is typed as `never` so attempting to set it is a TypeScript error.
+ * Props specific to `DATE_RANGE` filters on `datetime` / `timestamp`
+ * properties. Controls whether the user can switch to a relative-date
+ * input mode.
  */
+export interface DateRangeRelativeProps {
+  /**
+   * When `true`, the `DATE_RANGE` filter shows an Absolute / Relative toggle.
+   * Has no effect on filter components other than `DATE_RANGE`.
+   *
+   * @default false
+   */
+  enableRelativeMode?: boolean;
+}
+
 export type PropertyFilterDateExtras<P extends WirePropertyTypes> = P extends
   | "datetime"
   | "timestamp"
-  ? DateFormattingProps
-  : { formatDate?: never };
+  ? DateFormattingProps & DateRangeRelativeProps
+  : { formatDate?: never; enableRelativeMode?: never };
 
 interface PropertyFilterDefinitionBase<
   Q extends ObjectTypeDefinition,

@@ -33,6 +33,7 @@ import type {
   IDataType,
   IDiscoveredFunction,
 } from "@osdk/generator-converters.ontologyir";
+import { isInjectedRuntimeInput } from "@osdk/generator-converters.ontologyir";
 
 import type { FunctionsIr } from "../../../api/defineOntologyV2.js";
 import type { InputMappingEntry } from "../../../cli/marketplaceSerialization/index.js";
@@ -339,7 +340,7 @@ class BaseParameterTypeConverter {
   }
 }
 
-function convertShapeDataType(
+export function convertShapeDataType(
   dataType: IDataType,
   objectTypeIds: Record<string, string>,
   interfaceTypes: Record<string, string>,
@@ -425,6 +426,31 @@ function convertShapeDataType(
       }
       return dataType;
     }
+    case "map": {
+      const map = dataType.map as
+        | { keysType: IDataType; valuesType: IDataType }
+        | undefined;
+      if (map) {
+        return {
+          type: "map",
+          map: {
+            keysType: convertShapeDataType(
+              map.keysType,
+              objectTypeIds,
+              interfaceTypes,
+              ridGenerator,
+            ),
+            valuesType: convertShapeDataType(
+              map.valuesType,
+              objectTypeIds,
+              interfaceTypes,
+              ridGenerator,
+            ),
+          },
+        };
+      }
+      return dataType;
+    }
     case "optionalType": {
       const opt = dataType.optionalType as
         | { wrappedType: { type: string; [key: string]: unknown } }
@@ -444,12 +470,123 @@ function convertShapeDataType(
       }
       return dataType;
     }
+    case "anonymousCustomType": {
+      const anonymous = dataType.anonymousCustomType as
+        | IFunctionCustomTypeShape
+        | undefined;
+      if (anonymous) {
+        return {
+          type: "anonymousCustomType",
+          anonymousCustomType: {
+            fields: convertShapeCustomTypeFields(
+              anonymous,
+              objectTypeIds,
+              interfaceTypes,
+              ridGenerator,
+            ),
+          },
+        };
+      }
+      return dataType;
+    }
+    case "union": {
+      const union = dataType.union as { allowedTypes: IDataType[] } | undefined;
+      if (union) {
+        return {
+          type: "union",
+          union: {
+            allowedTypes: union.allowedTypes.map((allowedType) =>
+              convertShapeDataType(
+                allowedType,
+                objectTypeIds,
+                interfaceTypes,
+                ridGenerator,
+              ),
+            ),
+          },
+        };
+      }
+      return dataType;
+    }
     default:
       return dataType;
   }
 }
 
-function buildFunctionShape(
+interface IFunctionCustomTypeShape {
+  about?: unknown;
+  fieldMetadata?: Record<string, { required?: boolean }> | null;
+  fields: Record<string, IDataType>;
+  id?: string;
+}
+
+function convertShapeCustomTypeFields(
+  customType: IFunctionCustomTypeShape,
+  objectTypeIds: Record<string, string>,
+  interfaceTypes: Record<string, string>,
+  ridGenerator: OntologyRidGenerator,
+): Record<string, { type: string; [key: string]: unknown }> {
+  return Object.fromEntries(
+    Object.entries(customType.fields).map(([name, fieldType]) => {
+      const converted = convertShapeDataType(
+        fieldType,
+        objectTypeIds,
+        interfaceTypes,
+        ridGenerator,
+      );
+      const required = customType.fieldMetadata?.[name]?.required ?? true;
+      return [
+        name,
+        !required && converted.type !== "optionalType"
+          ? {
+              type: "optionalType",
+              optionalType: { wrappedType: converted },
+            }
+          : converted,
+      ];
+    }),
+  );
+}
+
+function convertShapeCustomTypes(
+  customTypes: Record<string, unknown>,
+  objectTypeIds: Record<string, string>,
+  interfaceTypes: Record<string, string>,
+  ridGenerator: OntologyRidGenerator,
+): FunctionInputShape["customTypes"] {
+  return Object.fromEntries(
+    Object.entries(customTypes).map(([id, customType]) => {
+      if (
+        customType == null ||
+        typeof customType !== "object" ||
+        !("fields" in customType) ||
+        customType.fields == null ||
+        typeof customType.fields !== "object"
+      ) {
+        throw new Error(
+          `Invalid custom type structure for '${id}': expected a 'fields' property`,
+        );
+      }
+
+      const shape = customType as unknown as IFunctionCustomTypeShape;
+      return [
+        id,
+        {
+          id,
+          fields: convertShapeCustomTypeFields(
+            shape,
+            objectTypeIds,
+            interfaceTypes,
+            ridGenerator,
+          ),
+          ...(shape.about == null ? {} : { about: shape.about }),
+        },
+      ];
+    }),
+  ) as unknown as FunctionInputShape["customTypes"];
+}
+
+export function buildFunctionShape(
   functionApiName: string,
   discoveredFunction: IDiscoveredFunction,
   ridGenerator: OntologyRidGenerator,
@@ -458,55 +595,61 @@ function buildFunctionShape(
   const objectTypeIds = knownIdentifiers.objectTypeIds ?? {};
   const interfaceTypes = knownIdentifiers.interfaceTypes ?? {};
 
-  const inputs = discoveredFunction.inputs.map((input) => {
-    let dataType = input.dataType as { type: string; [key: string]: unknown };
-    let required = true;
+  const inputs = discoveredFunction.inputs
+    .filter((input) => !isInjectedRuntimeInput(input.dataType))
+    .map((input) => {
+      let dataType = input.dataType as { type: string; [key: string]: unknown };
+      let required = input.required ?? true;
 
-    if (dataType.type === "optionalType") {
-      const opt = dataType.optionalType as
-        | { wrappedType: { type: string; [key: string]: unknown } }
-        | undefined;
-      if (opt) {
-        dataType = opt.wrappedType;
-        required = false;
+      if (dataType.type === "optionalType") {
+        const opt = dataType.optionalType as
+          | { wrappedType: { type: string; [key: string]: unknown } }
+          | undefined;
+        if (opt) {
+          dataType = opt.wrappedType;
+          required = false;
+        }
       }
-    }
 
-    return {
-      about: createLocalizedAbout(functionApiName, ""),
-      inputName: input.name,
-      dataType: convertShapeDataType(
-        dataType,
-        objectTypeIds,
-        interfaceTypes,
-        ridGenerator,
-      ),
-      required,
-    };
-  }) as unknown as FunctionInputType[];
-
-  const outputDataType = discoveredFunction.output.single.dataType as {
-    type: string;
-    [key: string]: unknown;
-  };
-
-  return {
-    about: createLocalizedAbout(functionApiName),
-    inputs,
-    output: {
-      type: "singleOutputType",
-      singleOutputType: {
-        about: createLocalizedAbout("Function Output", ""),
+      return {
+        about: createLocalizedAbout(functionApiName, ""),
+        inputName: input.name,
         dataType: convertShapeDataType(
-          outputDataType,
+          dataType,
           objectTypeIds,
           interfaceTypes,
           ridGenerator,
         ),
-      },
-    },
-    customTypes:
-      discoveredFunction.customTypes as FunctionInputShape["customTypes"],
+        required,
+      };
+    }) as unknown as FunctionInputType[];
+
+  const output =
+    "single" in discoveredFunction.output
+      ? {
+          type: "singleOutputType" as const,
+          singleOutputType: {
+            about: createLocalizedAbout("Function Output", ""),
+            dataType: convertShapeDataType(
+              discoveredFunction.output.single.dataType,
+              objectTypeIds,
+              interfaceTypes,
+              ridGenerator,
+            ),
+          },
+        }
+      : { type: "voidOutputType" as const, voidOutputType: {} };
+
+  return {
+    about: createLocalizedAbout(functionApiName),
+    inputs,
+    output,
+    customTypes: convertShapeCustomTypes(
+      discoveredFunction.customTypes,
+      objectTypeIds,
+      interfaceTypes,
+      ridGenerator,
+    ),
     contracts: [],
   } as unknown as FunctionInputShape;
 }

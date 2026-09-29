@@ -165,6 +165,36 @@ export const employeeObjectType: ObjectTypeV2 = {
       rid: "rid",
       typeClasses: [],
     },
+    bonusHistory: {
+      description: "Bonus history with the latest amount as its main value",
+      dataType: {
+        type: "array",
+        subType: {
+          type: "struct",
+          structFieldTypes: [
+            {
+              apiName: "year",
+              dataType: { type: "integer" },
+              rid: "ri.struct.year",
+              typeClasses: [],
+            },
+            {
+              apiName: "amount",
+              dataType: { type: "integer" },
+              rid: "ri.struct.amount",
+              typeClasses: [],
+            },
+          ],
+          mainValue: {
+            mainValueType: { type: "integer" },
+            fields: ["amount"],
+          },
+        },
+        reducers: [{ direction: "DESCENDING_NULLS_LAST", field: "year" }],
+      },
+      rid: "rid",
+      typeClasses: [],
+    },
   },
   rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
   status: "ACTIVE",

@@ -32,6 +32,11 @@ import {
   ontologyDefinition,
   updateOntology,
 } from "./defineOntology.js";
+import {
+  validateMetadataLength,
+  VALUE_TYPE_DESCRIPTION_LIMIT,
+  VALUE_TYPE_DISPLAY_NAME_LIMIT,
+} from "./validateMetadataLengths.js";
 import { type ValueTypeDefinitionVersion } from "./values/ValueTypeDefinitionVersion.js";
 import { type ValueTypeType } from "./values/ValueTypeType.js";
 
@@ -202,6 +207,21 @@ export function defineValueType(
     exampleValues: [],
     __type: OntologyEntityTypeEnum.VALUE_TYPE,
   };
+  const context = `Value type "${apiName}" version "${version}"`;
+  validateMetadataLength(
+    vt.displayMetadata.displayName,
+    "displayName",
+    context,
+    VALUE_TYPE_DISPLAY_NAME_LIMIT,
+    "UTF-16 code units",
+  );
+  validateMetadataLength(
+    vt.displayMetadata.description,
+    "description",
+    context,
+    VALUE_TYPE_DESCRIPTION_LIMIT,
+    "UTF-16 code units",
+  );
   updateOntology(vt);
   return vt;
 }

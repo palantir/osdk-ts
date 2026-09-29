@@ -24,9 +24,17 @@ export async function loadQueryMetadata(
   queryTypeApiNameAndVersion: string,
 ): Promise<QueryMetadata> {
   const [apiName, version] = queryTypeApiNameAndVersion.split(":");
-  const r = await QueryTypes.get(client, await client.ontologyRid, apiName, {
+
+  const queryParameters = {
     version,
-  });
+    branch: client.branch,
+  };
+  const r = await QueryTypes.get(
+    client,
+    await client.ontologyRid,
+    apiName,
+    queryParameters,
+  );
 
   const { wireQueryTypeV2ToSdkQueryMetadata } =
     await import("@osdk/generator-converters");

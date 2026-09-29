@@ -617,7 +617,10 @@ function getInterfaceParameterConstraintOutputShape(
     ),
     actionTypeConstraint: actionTypeConstraintRef,
     requireImplementation: paramConstraint.requireImplementation,
-    type: paramConstraint.type,
+    type: convertParameterConstraintTypeReferencesToShape(
+      paramConstraint.type,
+      knownMarketplaceIdentifiers,
+    ),
   };
 
   const paramReadableId = ridGenerator
@@ -637,6 +640,102 @@ function getInterfaceParameterConstraintOutputShape(
       interfaceParameterConstraint: shape,
     },
   };
+}
+
+export function convertParameterConstraintTypeReferencesToShape(
+  parameterType: InterfaceParameterConstraint["type"],
+  knownIdentifiers: KnownMarketplaceIdentifiers,
+): InterfaceParameterConstraintShape["type"] {
+  switch (parameterType.type) {
+    case "objectReference":
+      return {
+        ...parameterType,
+        objectReference: {
+          ...parameterType.objectReference,
+          objectTypeId: resolveBlockIdentifier(
+            knownIdentifiers.objectTypeIds,
+            parameterType.objectReference.objectTypeId,
+            "object type",
+          ),
+        },
+      };
+    case "objectReferenceList":
+      return {
+        ...parameterType,
+        objectReferenceList: {
+          ...parameterType.objectReferenceList,
+          objectTypeId: resolveBlockIdentifier(
+            knownIdentifiers.objectTypeIds,
+            parameterType.objectReferenceList.objectTypeId,
+            "object type",
+          ),
+        },
+      };
+    case "objectSetRid":
+      return {
+        ...parameterType,
+        objectSetRid: {
+          ...parameterType.objectSetRid,
+          objectTypeId: resolveBlockIdentifier(
+            knownIdentifiers.objectTypeIds,
+            parameterType.objectSetRid.objectTypeId,
+            "object type",
+          ),
+        },
+      };
+    case "interfaceReference":
+      return {
+        ...parameterType,
+        interfaceReference: {
+          ...parameterType.interfaceReference,
+          interfaceTypeRid: resolveBlockIdentifier(
+            knownIdentifiers.interfaceTypes,
+            parameterType.interfaceReference.interfaceTypeRid,
+            "interface type",
+          ),
+        },
+      };
+    case "interfaceReferenceList":
+      return {
+        ...parameterType,
+        interfaceReferenceList: {
+          ...parameterType.interfaceReferenceList,
+          interfaceTypeRid: resolveBlockIdentifier(
+            knownIdentifiers.interfaceTypes,
+            parameterType.interfaceReferenceList.interfaceTypeRid,
+            "interface type",
+          ),
+        },
+      };
+    case "interfaceObjectSetRid":
+      return {
+        ...parameterType,
+        interfaceObjectSetRid: {
+          ...parameterType.interfaceObjectSetRid,
+          interfaceTypeRid: resolveBlockIdentifier(
+            knownIdentifiers.interfaceTypes,
+            parameterType.interfaceObjectSetRid.interfaceTypeRid,
+            "interface type",
+          ),
+        },
+      };
+    default:
+      return parameterType as InterfaceParameterConstraintShape["type"];
+  }
+}
+
+function resolveBlockIdentifier(
+  identifiers: Record<string, string> | undefined,
+  identifier: string,
+  identifierType: string,
+): string {
+  const blockIdentifier = identifiers?.[identifier];
+  if (blockIdentifier === undefined) {
+    throw new Error(
+      `Missing marketplace block identifier for ${identifierType} ${identifier}`,
+    );
+  }
+  return blockIdentifier;
 }
 
 /**

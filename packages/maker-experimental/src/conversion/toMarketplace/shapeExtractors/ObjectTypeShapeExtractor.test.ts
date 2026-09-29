@@ -180,6 +180,10 @@ function createMockRidGenerator(
       paramApiName: string,
     ) =>
       `interface-parameter-constraint.${interfaceTypeApiName}.${constraintApiName}.${paramApiName}` as any,
+    generateRidForInterfaceSchemaTransition: (
+      transitionId: string,
+      interfaceTypeApiName: string,
+    ) => `interface-schema-transition.${interfaceTypeApiName}.${transitionId}`,
     getInterfaceActionTypeConstraintRids: () => new MockBiMap([]) as any,
     getInterfaceParameterConstraintRids: () => new MockBiMap([]) as any,
     ...overrides,

@@ -21,7 +21,7 @@ import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 
 describe("Marking Constraints", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, "/tmp/");
+    await defineOntology("com.palantir.", () => {}, undefined);
   });
   it("supports marking constraints with CBAC type and markingInputGroupName", () => {
     const obj = defineObject({

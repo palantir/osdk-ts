@@ -44,6 +44,7 @@ export function propertyTypeToSchemaType(
 ): string {
   const typeStr = typeof propType === "string" ? propType : propType.type;
   switch (typeStr) {
+    case "marking":
     case "string":
       return "STRING";
     case "boolean":

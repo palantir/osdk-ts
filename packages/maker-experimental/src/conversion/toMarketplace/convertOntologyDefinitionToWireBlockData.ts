@@ -45,6 +45,7 @@ import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
 import { convertAction } from "./convertActionHelpers.js";
 import { convertInterface } from "./convertInterface.js";
+import { convertInterfaceSchemaMigrations } from "./convertInterfaceSchemaMigrations.js";
 import { convertLink } from "./convertLink.js";
 import { convertObject } from "./convertObject.js";
 import { convertSpt } from "./convertSpt.js";
@@ -138,10 +139,15 @@ export function convertOntologyDefinitionToWireBlockData(
     Object.entries(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE]).map<
       [string, InterfaceTypeBlockDataV2]
     >(([apiName, interfaceType]) => {
+      const schemaMigrations = convertInterfaceSchemaMigrations(
+        interfaceType,
+        ridGenerator,
+      );
       return [
         ridGenerator.generateRidForInterface(apiName),
         {
           interfaceType: convertInterface(interfaceType, ridGenerator),
+          ...(schemaMigrations !== undefined ? { schemaMigrations } : {}),
         },
       ];
     }),
@@ -182,6 +188,7 @@ export function convertOntologyDefinitionToWireBlockData(
   // Build knownIdentifiers from ridGenerator's BiMaps
   const knownIdentifiers = buildKnownIdentifiers(
     ontology,
+    objectTypes,
     ridGenerator,
     ontologiesToScan,
     interfacePropertyMappings,
@@ -294,6 +301,7 @@ export function convertOntologyDefinitionToWireBlockData(
 
 function buildKnownIdentifiers(
   ontology: OntologyDefinition,
+  objectTypes: Record<string, ObjectTypeBlockDataV2>,
   ridGenerator: OntologyRidGenerator,
   ontologiesToScan: OntologyDefinition[],
   interfacePropertyMappings: Record<string, string>,
@@ -313,6 +321,27 @@ function buildKnownIdentifiers(
       rid,
       ridGenerator.toBlockInternalId(readableId),
     ]),
+  );
+
+  // Interface type schema transitions: TransitionRid -> BlockInternalId
+  const interfaceSchemaTransitionMappings = Object.fromEntries(
+    Object.entries(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE]).flatMap(
+      ([apiName, interfaceType]) =>
+        (interfaceType.schemaMigrations?.transitions ?? []).map<
+          [string, string]
+        >((transition) => [
+          ridGenerator.generateRidForInterfaceSchemaTransition(
+            transition.id,
+            apiName,
+          ),
+          ridGenerator.toBlockInternalId(
+            ReadableIdGenerator.getForInterfaceSchemaTransition(
+              apiName,
+              transition.id,
+            ),
+          ),
+        ]),
+    ),
   );
 
   // Interface link types: InterfaceLinkTypeRid -> BlockInternalId
@@ -556,27 +585,28 @@ function buildKnownIdentifiers(
         ridGenerator.toBlockInternalId(readableId);
     });
 
-  // Build markings mapping: BlockInternalId -> [markingId]
-  // Collect marking shapes from object type marking properties and additionalMandatoryMarkings
   const markingEntries: Array<{
     markingId: string;
     markingType: "CBAC" | "MANDATORY";
   }> = [];
-  Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).forEach(
-    ([objectTypeApiName, objectType]) => {
-      // Marking properties
-      (objectType.properties ?? []).forEach((prop) => {
-        if (
-          typeof prop.type === "object" &&
-          prop.type.type === "marking" &&
-          prop.type.markingInputGroupName
-        ) {
-          markingEntries.push({
-            markingId: prop.type.markingInputGroupName,
-            markingType: prop.type.markingType as "CBAC" | "MANDATORY",
-          });
-        }
-      });
+  Object.values(objectTypes).forEach((objectType) => {
+    objectType.datasources.forEach((datasource) => {
+      datasource.dataSecurity?.classificationConstraint?.markings.forEach(
+        (markingId) => {
+          markingEntries.push({ markingId, markingType: "CBAC" });
+        },
+      );
+      datasource.dataSecurity?.markingConstraint?.markingIds.forEach(
+        (markingId) => {
+          markingEntries.push({ markingId, markingType: "MANDATORY" });
+        },
+      );
+    });
+  });
+
+  // Collect additionalMandatoryMarkings from property security groups.
+  Object.values(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).forEach(
+    (objectType) => {
       // additionalMandatoryMarkings from property security groups
       (objectType.datasources ?? []).forEach((ds) => {
         if ("propertySecurityGroups" in ds && ds.propertySecurityGroups) {
@@ -627,8 +657,7 @@ function buildKnownIdentifiers(
     interfaceParameterConstraints: interfaceParameterConstraintMappings,
     interfacePropertyTypes: interfacePropertyMappings,
     interfaceTypes: interfaceMappings,
-    // Cannot yet author interface type schema migrations.
-    interfaceTypeSchemaTransitions: {},
+    interfaceTypeSchemaTransitions: interfaceSchemaTransitionMappings,
     linkTypeIds,
     linkTypes: linkTypeRids,
     markings: markingsMappings,

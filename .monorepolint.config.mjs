@@ -100,7 +100,6 @@ const archetypeRules = archetypes(standardPackageRules, {
       // @osdk/e2e.generated.1.1.x migrated to the oxc toolchain (it joins "oxc
       // migrated minimal packages" below).
       "@osdk/examples.*",
-      "@psdk/examples.*",
       "@osdk/monorepo.*",
     ],
     {
@@ -271,6 +270,7 @@ const archetypeRules = archetypes(standardPackageRules, {
   .addArchetype(
     "oxc migrated libraries with carve-outs",
     [
+      "@osdk/aliases",
       "@osdk/maker",
       "@osdk/maker-experimental",
       "@osdk/maker-import",

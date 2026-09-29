@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-export * from "./custom.js";
-export * from "./dataset.js";
-export * from "./mediaset.js";
-export * from "./model.js";
-export * from "./source.js";
-export * from "./stream.js";
+import type * as InternalAliases from "@osdk/aliases/internal";
+
+export {
+  custom,
+  dataset,
+  mediaset,
+  model,
+  source,
+  stream,
+} from "@osdk/aliases/internal";
+
+export type Custom = InternalAliases.Custom;
+export type Dataset = InternalAliases.Dataset;
+export type Mediaset = InternalAliases.Mediaset;
+export type Model = InternalAliases.Model;
+export type Source = InternalAliases.Source;
+export type Stream = InternalAliases.Stream;

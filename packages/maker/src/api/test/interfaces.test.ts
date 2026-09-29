@@ -24,7 +24,7 @@ import { defineSharedPropertyType } from "../defineSpt.js";
 
 describe("Interfaces", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, "/tmp/");
+    await defineOntology("com.palantir.", () => {}, undefined);
   });
 
   it("doesn't let you define the same interface twice", () => {
@@ -1360,7 +1360,7 @@ describe("Interfaces", () => {
           ontologyPackageRid: null,
         });
       },
-      "/tmp/",
+      undefined,
     );
   });
 

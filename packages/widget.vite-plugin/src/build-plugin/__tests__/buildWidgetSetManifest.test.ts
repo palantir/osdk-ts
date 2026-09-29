@@ -35,6 +35,7 @@ const MOCK_WIDGET_CONFIG: WidgetConfig<ParameterConfig> = {
   type: "workshop",
   parameters: {
     stringParam: { type: "string", displayName: "String Parameter" },
+    tileLayer: { type: "mapTileLayer", displayName: "Tile Layer" },
   },
   events: {
     updateParameters: {
@@ -70,6 +71,7 @@ describe("buildWidgetManifestConfig", () => {
       entrypointCss: ENTRYPOINT_CSS,
       parameters: {
         stringParam: { type: "string", displayName: "String Parameter" },
+        tileLayer: { type: "mapTileLayer", displayName: "Tile Layer" },
       },
       events: {
         updateParameters: {

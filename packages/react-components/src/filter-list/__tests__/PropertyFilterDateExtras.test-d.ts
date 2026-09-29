@@ -49,6 +49,30 @@ const stringExtras: PropertyFilterDateExtras<"string"> = {
 };
 void stringExtras;
 
+// For datetime / timestamp, enableRelativeMode is allowed.
+const relativeExtras: PropertyFilterDateExtras<"timestamp"> = {
+  enableRelativeMode: true,
+};
+void relativeExtras;
+
+const relativeExtrasDatetime: PropertyFilterDateExtras<"datetime"> = {
+  enableRelativeMode: true,
+};
+void relativeExtrasDatetime;
+
+// For non-date property types, `enableRelativeMode` is typed as `never`.
+const relativeOnNumber: PropertyFilterDateExtras<"integer"> = {
+  // @ts-expect-error enableRelativeMode is `never` for number-typed properties
+  enableRelativeMode: true,
+};
+void relativeOnNumber;
+
+const relativeOnString: PropertyFilterDateExtras<"string"> = {
+  // @ts-expect-error enableRelativeMode is `never` for string-typed properties
+  enableRelativeMode: true,
+};
+void relativeOnString;
+
 // Empty object literals are still allowed — `formatDate` is optional on
 // all property types (either documented or typed as optional `never`).
 const numberEmpty: PropertyFilterDateExtras<"integer"> = {};

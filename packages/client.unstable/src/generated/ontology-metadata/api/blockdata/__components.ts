@@ -55,6 +55,7 @@ import type {
   InterfaceSharedPropertyType as _api_InterfaceSharedPropertyType,
   InterfaceTypeApiName as _api_InterfaceTypeApiName,
   InterfaceTypeRid as _api_InterfaceTypeRid,
+  InterfaceTypeSchemaTransitionRid as _api_InterfaceTypeSchemaTransitionRid,
   LinkedEntityTypeId as _api_LinkedEntityTypeId,
   LinkType as _api_LinkType,
   LinkTypeId as _api_LinkTypeId,
@@ -230,7 +231,7 @@ export interface InterfaceTypeSchemaMigrationBlockData {
     _api_InterfacePropertyTypeApiName
   >;
   schemaTransitions: Record<
-    _api_schemamigrations_InterfaceTypeSchemaTransitionId,
+    _api_InterfaceTypeSchemaTransitionRid,
     _api_schemamigrations_InterfaceTypeSchemaTransition
   >;
 }
@@ -271,11 +272,8 @@ export interface KnownMarketplaceIdentifiers {
   >;
   interfaceTypes: Record<_api_InterfaceTypeRid, BlockInternalId>;
   interfaceTypeSchemaTransitions: Record<
-    _api_InterfaceTypeRid,
-    Record<
-      _api_schemamigrations_InterfaceTypeSchemaTransitionId,
-      BlockInternalId
-    >
+    _api_InterfaceTypeSchemaTransitionRid,
+    BlockInternalId
   >;
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeRid, BlockInternalId>;
@@ -598,10 +596,6 @@ export interface OntologyIrInterfaceTypeBlockDataV2 {
     | undefined;
 }
 export interface OntologyIrInterfaceTypeSchemaMigrationBlockData {
-  interfacePropertyTypeRidsToApiNames: Record<
-    _api_InterfacePropertyTypeApiName,
-    _api_InterfacePropertyTypeApiName
-  >;
   schemaTransitions: Record<
     _api_schemamigrations_InterfaceTypeSchemaTransitionId,
     _api_schemamigrations_OntologyIrInterfaceTypeSchemaTransition
@@ -638,11 +632,8 @@ export interface OntologyIrKnownMarketplaceIdentifiers {
   >;
   interfaceTypes: Record<_api_InterfaceTypeApiName, BlockInternalId>;
   interfaceTypeSchemaTransitions: Record<
-    _api_InterfaceTypeApiName,
-    Record<
-      _api_schemamigrations_InterfaceTypeSchemaTransitionId,
-      BlockInternalId
-    >
+    _api_schemamigrations_InterfaceTypeSchemaTransitionId,
+    BlockInternalId
   >;
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeId, BlockInternalId>;

@@ -1,5 +1,120 @@
 # @osdk/foundry-sdk-generator
 
+## 2.74.0
+
+### Minor Changes
+
+- e2539c9: Split safe compile time error messages during ontology metadata resolver
+
+### Patch Changes
+
+- Updated dependencies [6ca7442]
+- Updated dependencies [f2e0591]
+  - @osdk/client@2.74.0
+  - @osdk/generator@2.74.0
+  - @osdk/api@2.74.0
+  - @osdk/client.unstable@2.74.0
+  - @osdk/generator-converters@2.74.0
+  - @osdk/generator-utils@2.74.0
+
+## 2.73.0
+
+### Patch Changes
+
+- @osdk/api@2.73.0
+- @osdk/client.unstable@2.73.0
+- @osdk/client@2.73.0
+- @osdk/generator-converters@2.73.0
+- @osdk/generator-utils@2.73.0
+- @osdk/generator@2.73.0
+
+## 2.72.0
+
+### Patch Changes
+
+- Updated dependencies [1172332]
+  - @osdk/client@2.72.0
+  - @osdk/api@2.72.0
+  - @osdk/client.unstable@2.72.0
+  - @osdk/generator-converters@2.72.0
+  - @osdk/generator-utils@2.72.0
+  - @osdk/generator@2.72.0
+
+## 2.71.0
+
+### Minor Changes
+
+- 528d0ca: Add support for generating and executing query functions using semantic version ranges on ontology branches.
+
+### Patch Changes
+
+- Updated dependencies [ae55749]
+- Updated dependencies [528d0ca]
+  - @osdk/generator-converters@2.71.0
+  - @osdk/generator@2.71.0
+  - @osdk/client@2.71.0
+  - @osdk/api@2.71.0
+  - @osdk/client.unstable@2.71.0
+  - @osdk/generator-utils@2.71.0
+
+## 2.70.0
+
+### Patch Changes
+
+- Updated dependencies [e13da8f]
+  - @osdk/client.unstable@2.70.0
+  - @osdk/client@2.70.0
+  - @osdk/api@2.70.0
+  - @osdk/generator-converters@2.70.0
+  - @osdk/generator-utils@2.70.0
+  - @osdk/generator@2.70.0
+
+## 2.69.0
+
+### Patch Changes
+
+- Updated dependencies [688dd40]
+- Updated dependencies [e108284]
+  - @osdk/client@2.69.0
+  - @osdk/api@2.69.0
+  - @osdk/client.unstable@2.69.0
+  - @osdk/generator-converters@2.69.0
+  - @osdk/generator-utils@2.69.0
+  - @osdk/generator@2.69.0
+
+## 2.68.0
+
+### Patch Changes
+
+- Updated dependencies [8f47483]
+- Updated dependencies [e37d2eb]
+  - @osdk/client.unstable@2.68.0
+  - @osdk/client@2.68.0
+  - @osdk/api@2.68.0
+  - @osdk/generator-converters@2.68.0
+  - @osdk/generator-utils@2.68.0
+  - @osdk/generator@2.68.0
+
+## 2.67.0
+
+### Minor Changes
+
+- 488376f: Configure the CI JUnit reporter in each package's vitest config instead of passing it as a turbo `--` argument. Turbo folds passthrough arguments into its global hash, so passing them there made every task in a `turbo run test` invocation a cache miss rather than only the `test` tasks. Test configuration only; no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [aec9d54]
+- Updated dependencies [43bfe44]
+- Updated dependencies [488376f]
+  - @osdk/client@2.67.0
+  - @osdk/client.unstable@2.67.0
+  - @osdk/api@2.67.0
+  - @osdk/client.unstable.tpsa@0.16.0
+  - @osdk/generator@2.67.0
+  - @osdk/generator-converters@2.67.0
+  - @osdk/generator-utils@2.67.0
+  - @osdk/shared.client.impl@1.14.0
+
 ## 2.66.0
 
 ### Patch Changes
