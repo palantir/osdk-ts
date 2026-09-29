@@ -15,6 +15,7 @@
  */
 
 import type {
+  LinkTypeBlockDataV2,
   MarketplaceInterfaceType,
   OntologyBlockDataV2,
   SharedPropertyType,
@@ -304,4 +305,172 @@ describe("property value type associations", () => {
         .toContain(`readonly definedProperty: ${expected} | undefined;`);
     }
   });
+});
+
+describe("links involving imported objects", () => {
+  it.each(
+    [
+      ["manyToMany", "item-rid"],
+      ["manyToMany", "customer-rid"],
+      ["intermediary", "item-rid"],
+      ["intermediary", "customer-rid"],
+      ["oneToMany", "item-rid"],
+      ["oneToMany", "customer-rid"],
+    ] as const,
+  )(
+    "converts and generates %s sides with imported %s",
+    async (type, importedRid) => {
+      const blockData = getBlockData("1.0.0");
+      const item = blockData.objectTypes["item-rid"];
+      const property = item.objectType.propertyTypes["property-rid"];
+      blockData.objectTypes["customer-rid"] = {
+        ...item,
+        objectType: {
+          ...item.objectType,
+          rid: "customer-rid",
+          id: "customer",
+          apiName: "Customer",
+          primaryKeys: ["customer-id-rid"],
+          titlePropertyTypeRid: "customer-id-rid",
+          propertyTypes: {
+            "customer-id-rid": {
+              ...property,
+              rid: "customer-id-rid",
+              id: "id",
+              apiName: "id",
+            },
+            "customer-item-id-rid": {
+              ...property,
+              rid: "customer-item-id-rid",
+              id: "itemId",
+              apiName: "itemId",
+            },
+          },
+        },
+      };
+      const importedTypes = OntologyBlockDataToFullMetadataConverter
+        .getFullMetadataFromBlockData({
+          ...blockData,
+          objectTypes: { [importedRid]: blockData.objectTypes[importedRid] },
+        });
+      delete blockData.objectTypes[importedRid];
+      if (importedRid === "customer-rid") {
+        importedTypes.objectTypes.Customer.objectType.properties.itemId.rid =
+          "original-imported-property-rid";
+        blockData.knownIdentifiers.objectPropertyTypeIdsToRids = {
+          customer: { itemId: "customer-item-id-rid" },
+        };
+      }
+      const linkMetadata = (apiName: string) => ({
+        apiName,
+        displayMetadata: {
+          displayName: apiName,
+          pluralDisplayName: apiName,
+          visibility: "NORMAL" as const,
+        },
+        typeClasses: [],
+      });
+      const endpoints = {
+        objectTypeRidA: "item-rid",
+        objectTypeRidB: "customer-rid",
+        objectTypeAToBLinkMetadata: linkMetadata("customers"),
+        objectTypeBToALinkMetadata: linkMetadata("items"),
+      };
+      const definition: LinkTypeBlockDataV2["linkType"]["definition"] =
+        type === "oneToMany"
+          ? {
+            type,
+            oneToMany: {
+              cardinalityHint: "ONE_TO_MANY",
+              objectTypeRidOneSide: "item-rid",
+              objectTypeRidManySide: "customer-rid",
+              oneToManyLinkMetadata: linkMetadata("customers"),
+              manyToOneLinkMetadata: linkMetadata("items"),
+              oneSidePrimaryKeyToManySidePropertyMapping: {
+                "property-rid": "customer-item-id-rid",
+              },
+            },
+          }
+          : type === "intermediary"
+          ? {
+            type,
+            intermediary: {
+              ...endpoints,
+              intermediaryObjectTypeRid: "bridge-rid",
+              aToIntermediaryLinkTypeRid: "item-to-bridge-rid",
+              intermediaryToBLinkTypeRid: "customer-to-bridge-rid",
+            },
+          }
+          : {
+            type,
+            manyToMany: {
+              ...endpoints,
+              objectTypeAPrimaryKeyPropertyMapping: {},
+              objectTypeBPrimaryKeyPropertyMapping: {},
+            },
+          };
+      blockData.linkTypes = {
+        "new-link-rid": {
+          linkType: {
+            rid: "new-link-rid",
+            id: "item-to-customer",
+            status: { type: "active", active: {} },
+            definition,
+          },
+          datasources: [],
+        },
+      };
+      const originalImportedTypes = structuredClone(importedTypes);
+      const metadata = PreviewOntologyIrConverter
+        .getPreviewFullMetadataFromBlockData(blockData, importedTypes);
+      const forward = metadata.objectTypes.Item.linkTypes;
+      const reverse = metadata.objectTypes.Customer.linkTypes;
+      expect(forward).toEqual([{
+        apiName: "customers",
+        displayName: "customers",
+        objectTypeApiName: "Customer",
+        cardinality: "MANY",
+        status: "ACTIVE",
+        linkTypeRid: expect.stringMatching(
+          /^ri\.ontology\.main\.link-type\.[0-9a-f-]{36}$/,
+        ),
+      }]);
+      expect(reverse).toEqual([{
+        apiName: "items",
+        displayName: "items",
+        objectTypeApiName: "Item",
+        cardinality: type === "oneToMany" ? "ONE" : "MANY",
+        status: "ACTIVE",
+        linkTypeRid: forward[0].linkTypeRid,
+        ...(type === "oneToMany"
+          ? { foreignKeyPropertyApiName: "itemId" }
+          : {}),
+      }]);
+      expect(importedTypes).toEqual(originalImportedTypes);
+      const writeFile = vi.fn<
+        (file: string, contents: string) => Promise<void>
+      >()
+        .mockResolvedValue(undefined);
+      await generateClientSdkVersionTwoPointZero(
+        { ...metadata, actionTypes: {} },
+        "test",
+        {
+          readdir: () => Promise.resolve([]),
+          mkdir: () => Promise.resolve(),
+          writeFile,
+        },
+        "/virtual-sdk",
+        "module",
+      );
+      const files = Object.fromEntries(writeFile.mock.calls);
+      expect(files["/virtual-sdk/ontology/objects/Item.ts"])
+        .toContain("readonly customers: Customer.ObjectSet;");
+      expect(files["/virtual-sdk/ontology/objects/Customer.ts"])
+        .toContain(
+          type === "oneToMany"
+            ? "readonly items: $SingleLinkAccessor<Item>;"
+            : "readonly items: Item.ObjectSet;",
+        );
+    },
+  );
 });
