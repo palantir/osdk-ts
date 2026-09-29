@@ -197,6 +197,101 @@ export interface Affix {
 }
 
 // @public (undocumented)
+export interface AgentClient<D extends AgentDefinition = AgentDefinition> {
+    	// (undocumented)
+    createSession(...args: {} extends AgentTypes<D>["arguments"] ? [args?: AgentTypes<D>["arguments"]] : [args: AgentTypes<D>["arguments"]]): Promise<AgentSession<AgentTypes<D>>>;
+    	// (undocumented)
+    getSession(id: string): Promise<AgentSession<AgentTypes<D>>>;
+}
+
+// @public (undocumented)
+export interface AgentContextItem {
+    	// (undocumented)
+    data: unknown;
+    	// (undocumented)
+    type: string;
+}
+
+// @public (undocumented)
+export interface AgentDefinition {
+    	// (undocumented)
+    __DefinitionMetadata?: AgentTypeDefinition;
+    	// (undocumented)
+    apiName: string;
+    	// (undocumented)
+    contextItemTypes?: readonly string[];
+    	// (undocumented)
+    osdkMetadata?: OsdkMetadata;
+    	// (undocumented)
+    type: "agent";
+    	// (undocumented)
+    version: string;
+}
+
+// @public (undocumented)
+export type AgentEvent<Events extends object> = { [K in keyof Events & string] : { readonly [P in K] : Events[K] } & { readonly [P in Exclude<keyof Events, K>]? : never } }[keyof Events & string];
+
+// @public (undocumented)
+export interface AgentSession<T extends AgentTypeDefinition = GenericAgentTypes> {
+    	// (undocumented)
+    getState(options?: AgentSessionOptions): Promise<AgentSessionState<T>>;
+    	// (undocumented)
+    readonly id: string;
+    	// (undocumented)
+    sendEvent(event: AgentEvent<T["events"]>, options?: AgentSessionOptions): Promise<void>;
+}
+
+// @public (undocumented)
+export interface AgentSessionOptions {
+    	// (undocumented)
+    $timeoutMs?: number;
+}
+
+// @public (undocumented)
+export interface AgentSessionState<T extends AgentTypeDefinition = GenericAgentTypes> {
+    	// (undocumented)
+    agentState: {
+        		data: T["state"]
+        	};
+    	// (undocumented)
+    arguments: T["argumentValues"];
+    	// (undocumented)
+    contextItemOrder: string[];
+    	// (undocumented)
+    contextItems: Record<string, T["contextItem"] | UnknownContextItem>;
+    	// (undocumented)
+    status: AgentSessionStatus;
+}
+
+// @public (undocumented)
+export type AgentSessionStatus = {
+    	type: "live"
+} | {
+    	type: "completed"
+} | {
+    	type: "failed"
+} | {
+    	type: "canceled"
+};
+
+// @public (undocumented)
+export interface AgentTypeDefinition {
+    	// (undocumented)
+    arguments: object;
+    	// (undocumented)
+    argumentValues: object;
+    	// (undocumented)
+    contextItem: AgentContextItem;
+    	// (undocumented)
+    events: object;
+    	// (undocumented)
+    state: unknown;
+}
+
+// @public (undocumented)
+export type AgentTypes<D extends AgentDefinition> = AgentTypeDefinition extends NonNullable<D["__DefinitionMetadata"]> ? GenericAgentTypes : NonNullable<D["__DefinitionMetadata"]>;
+
+// @public (undocumented)
 export type AggregateOpts<Q extends ObjectOrInterfaceDefinition> = {
     	$select: UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>
     	$groupBy?: GroupByClause<Q>
@@ -905,6 +1000,16 @@ export type FlipAxis = "HORIZONTAL" | "VERTICAL" | "UNKNOWN";
 export interface GcpList {
     	// (undocumented)
     gcps: Array<GroundControlPoint>;
+}
+
+// @public (undocumented)
+export interface GenericAgentTypes extends AgentTypeDefinition {
+    	// (undocumented)
+    arguments: Record<string, unknown>;
+    	// (undocumented)
+    argumentValues: Record<string, unknown>;
+    	// (undocumented)
+    events: Record<string, unknown>;
 }
 
 // @public (undocumented)
@@ -2445,6 +2550,14 @@ export interface UnitInterpretation {
     scale?: number;
     	// (undocumented)
     unit?: string;
+}
+
+// @public (undocumented)
+export interface UnknownContextItem extends AgentContextItem {
+    	// (undocumented)
+    contextItemType: string;
+    	// (undocumented)
+    type: "$unknown";
 }
 
 // @public

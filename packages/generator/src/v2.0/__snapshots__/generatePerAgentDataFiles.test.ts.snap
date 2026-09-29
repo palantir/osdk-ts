@@ -1,0 +1,63 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`agent generation > generates typed bindings, exact event keys and barrel exports 1`] = `
+"import type {
+  AgentDefinition,
+  AgentSession,
+  AgentSessionState,
+  QueryParam,
+  QueryResult,
+  UnknownContextItem,
+  VersionBound,
+} from '@osdk/api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+import type { Todo } from '../objects/Todo.js';
+
+/** @experimental */
+export namespace weatherAgent {
+  export type CreateSessionArgs = { readonly city: string; readonly nullable: string | null };
+  export type SessionArguments = { readonly city: string; readonly nullable: string | null };
+  export type Events = {
+    readonly LookupWeather: { readonly city: string };
+    readonly 'use-todos': ReadonlyArray<QueryParam.ObjectType<Todo>>;
+    readonly SetTodos: QueryParam.ObjectSetType<Todo>;
+  };
+  export type AgentState = Record<
+    string,
+    | ({ readonly kind: 'todo' } & { readonly todo: QueryResult.ObjectType<Todo> })
+    | ({ readonly kind: 'count' } & { readonly count: number })
+  >;
+  export type ContextItem =
+    | { type: 'weather-result'; data: { readonly temperature: number } }
+    | { type: 'todos'; data: QueryResult.ObjectSetType<Todo> }
+    | UnknownContextItem;
+  export interface Types {
+    arguments: CreateSessionArgs;
+    argumentValues: SessionArguments;
+    events: Events;
+    state: AgentState;
+    contextItem: ContextItem;
+  }
+  export type Session = AgentSession<Types>;
+  export type SessionState = AgentSessionState<Types>;
+}
+
+/** @experimental */
+export interface weatherAgent extends AgentDefinition, VersionBound<$ExpectedClientVersion> {
+  type: 'agent';
+  apiName: 'weatherAgent';
+  version: '1.2.3-rc1';
+  __DefinitionMetadata?: weatherAgent.Types;
+}
+
+/** @experimental */
+export const weatherAgent: weatherAgent = {
+  type: 'agent',
+  apiName: 'weatherAgent',
+  version: '1.2.3-rc1',
+  contextItemTypes: ['weather-result', 'todos'],
+  osdkMetadata: $osdkMetadata,
+};
+"
+`;

@@ -17,6 +17,8 @@
 import type {
   ActionDefinition,
   ActionMetadata,
+  AgentClient,
+  AgentDefinition,
   CompileTimeMetadata,
   InterfaceDefinition,
   InterfaceMetadata,
@@ -111,6 +113,9 @@ export interface Client extends SharedClient, OldSharedClient {
    * @returns a callable for executing the query function.
    */
   <Q extends QueryDefinition<any>>(o: Q): QuerySignatureFromDef<Q>;
+
+  /** @experimental */
+  <D extends AgentDefinition>(o: D): AgentClient<D>;
 
   /**
    * @param experiment - The experiment marker that gates an unstable feature.

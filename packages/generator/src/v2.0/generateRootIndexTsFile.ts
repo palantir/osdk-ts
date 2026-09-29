@@ -28,7 +28,15 @@ export async function generateRootIndexTsFile(
       `export {${
         helper(ontology.actionTypes)
       }} from "./ontology/actions${importExt}";
-        export * as $Actions from "./ontology/actions${importExt}";
+        export * as $Actions from "./ontology/actions${importExt}";${
+        Object.keys(ontology.agentTypes).length === 0
+          ? ""
+          : `
+        export { ${
+            helper(ontology.agentTypes)
+          } } from "./ontology/agents${importExt}";
+        export * as $Agents from "./ontology/agents${importExt}";`
+      }
         export {${
         helper(ontology.interfaceTypes)
       }} from "./ontology/interfaces${importExt}";

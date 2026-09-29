@@ -10,6 +10,16 @@ import { ActionMetadata } from '@osdk/api';
 import { ActionParam } from '@osdk/api';
 import { ActionReturnTypeForOptions } from '@osdk/api';
 import { ActionValidationResponse } from '@osdk/api';
+import { AgentClient } from '@osdk/api';
+import { AgentContextItem } from '@osdk/api';
+import { AgentDefinition } from '@osdk/api';
+import { AgentEvent } from '@osdk/api';
+import { AgentSession } from '@osdk/api';
+import { AgentSessionOptions } from '@osdk/api';
+import { AgentSessionState } from '@osdk/api';
+import { AgentSessionStatus } from '@osdk/api';
+import { AgentTypeDefinition } from '@osdk/api';
+import { AgentTypes } from '@osdk/api';
 import { ApplyActionOptions } from '@osdk/api';
 import { ApplyBatchActionOptions } from '@osdk/api';
 import { Attachment } from '@osdk/api';
@@ -23,6 +33,7 @@ import type { DataValueWireToClient } from '@osdk/api';
 import { DerivedProperty } from '@osdk/api';
 import type { Experiment } from '@osdk/api/unstable';
 import type { ExperimentFns } from '@osdk/api/unstable';
+import { GenericAgentTypes } from '@osdk/api';
 import { InterfaceDefinition } from '@osdk/api';
 import { InterfaceMetadata } from '@osdk/api';
 import type { InterfaceQueryDataType } from '@osdk/api';
@@ -68,6 +79,7 @@ import type { SharedClientContext } from '@osdk/shared.client2';
 import { SingleLinkAccessor } from '@osdk/api';
 import { ThreeDimensionalAggregation } from '@osdk/api';
 import { TwoDimensionalAggregation } from '@osdk/api';
+import { UnknownContextItem } from '@osdk/api';
 import { UnknownMediaItemMetadata } from '@osdk/api';
 import { UpdateCipherText } from '@osdk/api';
 import type { ValidateActionResponseV2 } from '@osdk/foundry.ontologies';
@@ -94,6 +106,26 @@ export class ActionValidationError extends Error {
 
 export { ActionValidationResponse }
 
+export { AgentClient }
+
+export { AgentContextItem }
+
+export { AgentDefinition }
+
+export { AgentEvent }
+
+export { AgentSession }
+
+export { AgentSessionOptions }
+
+export { AgentSessionState }
+
+export { AgentSessionStatus }
+
+export { AgentTypeDefinition }
+
+export { AgentTypes }
+
 export { ApplyActionOptions }
 
 export { ApplyBatchActionOptions }
@@ -119,6 +151,8 @@ export interface Client extends SharedClient, OldSharedClient {
     //
     // (undocumented)
     <Q extends QueryDefinition<any>>(o: Q): QuerySignatureFromDef<Q>;
+    	// (undocumented)
+    <D extends AgentDefinition>(o: D): AgentClient<D>;
     	// (undocumented)
     <Q extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.59.0"> | Experiment<"2.2.0"> | Experiment<"2.8.0"> | Experiment<"2.19.0">>(experiment: Q): ExperimentFns<Q>;
     	fetchMetadata<Q extends ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any>>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any> ? QueryMetadata : never>;
@@ -157,6 +191,8 @@ export const extractDateInUTC: (date: Date) => string;
 
 // @public
 export function extractPrimaryKeyFromObjectSpecifier(ObjectSpecifier: ObjectSpecifier<any>): string;
+
+export { GenericAgentTypes }
 
 // @public (undocumented)
 export function getWireObjectSet(objectSet: ObjectSet<any> | MinimalObjectSet<any>): WireObjectSet;
@@ -244,6 +280,8 @@ export { SingleLinkAccessor }
 export { ThreeDimensionalAggregation }
 
 export { TwoDimensionalAggregation }
+
+export { UnknownContextItem }
 
 export { UnknownMediaItemMetadata }
 

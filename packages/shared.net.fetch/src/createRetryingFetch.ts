@@ -30,22 +30,31 @@ export function createRetryingFetch(
     | (RequestInit & RequestInitRetryParams<typeof globalThis.fetch>)
     | undefined,
 ) => ReturnType<typeof globalThis.fetch> {
-  return fetchRetry(fetch, {
-    retryDelay(attempt) {
-      const delay = INITIAL_DELAY * 2 ** attempt;
-      const jitter = delay * JITTER_FACTOR * (Math.random() * 2 - 1);
-      return delay + jitter;
-    },
-    retryOn(attempt, error, response) {
-      const status = response?.status ?? 0;
-      return (
-        !(status >= 200 && status < 300) &&
-        isRetryable(error) &&
-        attempt < MAX_RETRIES &&
-        response?.headers.get(QOS_RETRY_HINT_HEADER) !== DO_NOT_RETRY_HINT
-      );
-    },
-  });
+  return (input, init) =>
+    fetchRetry(
+      // fetch-retry invokes retries from a timer, so aborts must reject asynchronously.
+      async (url, options) => {
+        options?.signal?.throwIfAborted();
+        return await fetch(url, options);
+      },
+      {
+        retryDelay(attempt) {
+          const delay = INITIAL_DELAY * 2 ** attempt;
+          const jitter = delay * JITTER_FACTOR * (Math.random() * 2 - 1);
+          return delay + jitter;
+        },
+        retryOn(attempt, error, response) {
+          const status = response?.status ?? 0;
+          return (
+            !init?.signal?.aborted &&
+            !(status >= 200 && status < 300) &&
+            isRetryable(error) &&
+            attempt < MAX_RETRIES &&
+            response?.headers.get(QOS_RETRY_HINT_HEADER) !== DO_NOT_RETRY_HINT
+          );
+        },
+      },
+    )(input, init);
 }
 
 function isRetryable(e: any): boolean {

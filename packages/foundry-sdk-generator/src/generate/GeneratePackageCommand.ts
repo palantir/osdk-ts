@@ -31,6 +31,7 @@ export interface generatePackageCommandArgs {
   objectTypes?: string[];
   actionTypes?: string[];
   queryTypes?: string[];
+  agentTypes?: string[];
   linkTypes?: string[];
   interfaceTypes?: string[];
   experimentalFeatures?: string[];
@@ -118,6 +119,11 @@ export class GeneratePackageCommand implements
         default: undefined,
         defaultDescription:
           `By default, no arguments will not load any link type.`,
+      })
+      .options("agentTypes", {
+        array: true,
+        string: true,
+        description: "Pinned agents to generate, in apiName:version format",
       })
       .options("queryTypes", {
         array: true,
@@ -241,6 +247,7 @@ export class GeneratePackageCommand implements
                 objectTypesApiNamesToLoad: transformArrayArg(args.objectTypes),
                 actionTypesApiNamesToLoad: transformArrayArg(args.actionTypes),
                 queryTypesApiNamesToLoad: transformArrayArg(args.queryTypes),
+                agentTypesApiNamesToLoad: transformArrayArg(args.agentTypes),
                 interfaceTypesApiNamesToLoad: transformArrayArg(
                   args.interfaceTypes,
                 ),

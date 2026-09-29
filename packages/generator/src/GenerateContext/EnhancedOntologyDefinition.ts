@@ -19,6 +19,7 @@ import { GeneratorError } from "@osdk/generator-converters";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedAction } from "./EnhancedAction.js";
+import { EnhancedAgent } from "./EnhancedAgent.js";
 import { extractNamespace } from "./EnhancedBase.js";
 import { EnhancedInterfaceType } from "./EnhancedInterfaceType.js";
 import { EnhancedObjectType } from "./EnhancedObjectType.js";
@@ -45,6 +46,7 @@ export class EnhancedOntologyDefinition {
   objectTypes: Record<string, EnhancedObjectType | ForeignType>;
   actionTypes: Record<string, EnhancedAction>;
   queryTypes: Record<string, EnhancedQuery>;
+  agentTypes: Record<string, EnhancedAgent>;
   interfaceTypes: Record<
     string,
     EnhancedInterfaceType | ForeignType
@@ -82,6 +84,7 @@ export class EnhancedOntologyDefinition {
       this.common,
       EnhancedAction,
     );
+    this.agentTypes = remap(raw.agentTypes ?? {}, this.common, EnhancedAgent);
     this.queryTypes = remap(
       raw.queryTypes,
       this.common,

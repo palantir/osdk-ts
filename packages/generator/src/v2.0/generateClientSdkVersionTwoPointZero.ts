@@ -24,6 +24,7 @@ import {
   generateOntologyMetadataTypeFile,
 } from "./generateMetadata.js";
 import { generatePerActionDataFiles } from "./generatePerActionDataFiles.js";
+import { generatePerAgentDataFiles } from "./generatePerAgentDataFiles.js";
 import { generatePerInterfaceDataFiles } from "./generatePerInterfaceDataFiles.js";
 import { generatePerObjectDataFiles } from "./generatePerObjectDataFiles.js";
 import { generatePerQueryDataFilesV2 } from "./generatePerQueryDataFiles.js";
@@ -95,4 +96,5 @@ export async function generateClientSdkVersionTwoPointZero(
   await generatePerInterfaceDataFiles(ctx);
   await generatePerActionDataFiles(ctx);
   await generatePerQueryDataFilesV2(ctx, true);
+  await generatePerAgentDataFiles(ctx);
 }

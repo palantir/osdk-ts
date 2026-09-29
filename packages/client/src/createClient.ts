@@ -16,6 +16,8 @@
 
 import type {
   ActionDefinition,
+  AgentClient,
+  AgentDefinition,
   FetchPageArgs,
   InterfaceDefinition,
   LinkTypeApiNamesFor,
@@ -54,6 +56,7 @@ import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.clie
 
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import { applyAction } from "./actions/applyAction.js";
+import { createAgentClient } from "./agents/createAgentClient.js";
 import { additionalContext, type Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
 import { fetchMetadataInternal } from "./fetchMetadata.js";
@@ -165,6 +168,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
   function clientFn<
     T extends
       | ObjectOrInterfaceDefinition
+      | AgentDefinition
       | ActionDefinition<any>
       | QueryDefinition<any>
       | Experiment<"2.0.8">
@@ -174,23 +178,27 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       | Experiment<"2.19.0">,
   >(
     o: T,
-  ): T extends ObjectTypeDefinition
-    ? ObjectSet<T>
-    : T extends InterfaceDefinition
-      ? MinimalObjectSet<T>
-      : T extends ActionDefinition<any>
-        ? ActionSignatureFromDef<T>
-        : T extends QueryDefinition<any>
-          ? QuerySignatureFromDef<T>
-          : T extends
-                | Experiment<"2.0.8">
-                | Experiment<"2.1.0">
-                | Experiment<"2.59.0">
-                | Experiment<"2.8.0">
-                | Experiment<"2.19.0">
-            ? { invoke: ExperimentFns<T> }
-            : never {
-    if (o.type === "object" || o.type === "interface") {
+  ): T extends AgentDefinition
+    ? AgentClient<T>
+    : T extends ObjectTypeDefinition
+      ? ObjectSet<T>
+      : T extends InterfaceDefinition
+        ? MinimalObjectSet<T>
+        : T extends ActionDefinition<any>
+          ? ActionSignatureFromDef<T>
+          : T extends QueryDefinition<any>
+            ? QuerySignatureFromDef<T>
+            : T extends
+                  | Experiment<"2.0.8">
+                  | Experiment<"2.1.0">
+                  | Experiment<"2.59.0">
+                  | Experiment<"2.8.0">
+                  | Experiment<"2.19.0">
+              ? { invoke: ExperimentFns<T> }
+              : never {
+    if (o.type === "agent") {
+      return createAgentClient(clientCtx, o) as never;
+    } else if (o.type === "object" || o.type === "interface") {
       return clientCtx.objectSetFactory(o, clientCtx) as any;
     } else if (o.type === "action") {
       return new ActionInvoker(clientCtx, o) as T extends ActionDefinition<any>

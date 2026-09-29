@@ -16,6 +16,7 @@
 
 import type { Sdk, SdkPackage } from "@osdk/client.unstable.tpsa";
 import { getSdk, getSdkPackage } from "@osdk/client.unstable.tpsa";
+import * as AgentDefinitionVersions from "@osdk/foundry.agents/AgentDefinitionVersion";
 import type {
   ActionParameterType,
   ActionTypeV2,
@@ -26,7 +27,16 @@ import type {
   QueryDataType,
   QueryTypeV2,
 } from "@osdk/foundry.ontologies";
-import { GeneratorError } from "@osdk/generator-converters";
+import * as ObjectTypes from "@osdk/foundry.ontologies/ObjectTypeV2";
+import type {
+  WireAgentDefinition,
+  WireOntologyDefinition,
+} from "@osdk/generator";
+import {
+  GeneratorError,
+  getAgentObjectTypeRids,
+  isPinnedAgentVersion,
+} from "@osdk/generator-converters";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { Result } from "./Result.js";
 
@@ -61,7 +71,7 @@ type PackageInfo = Map<string, {
 }>;
 
 export interface OntologyInfo {
-  requestedMetadata: OntologyFullMetadata;
+  requestedMetadata: WireOntologyDefinition;
   externalInterfaces: Map<string, string>;
   externalObjects: Map<string, string>;
   queryVersionReferences: ReadonlyMap<string, string>;
@@ -202,6 +212,7 @@ export class OntologyMetadataResolver {
       actionTypesApiNamesToLoad?: string[];
       objectTypesApiNamesToLoad?: string[];
       queryTypesApiNamesToLoad?: string[];
+      agentTypesApiNamesToLoad?: string[];
       interfaceTypesApiNamesToLoad?: string[];
       linkTypesApiNamesToLoad?: string[];
       includeActionTypeFullMetadata?: boolean;
@@ -228,6 +239,100 @@ export class OntologyMetadataResolver {
         ),
       ]);
     }
+
+    const agentTypes: Record<string, WireAgentDefinition> = {};
+    const agentObjectApiNames = new Set<string>();
+    try {
+      for (const selection of entities.agentTypesApiNamesToLoad ?? []) {
+        const colon = selection.lastIndexOf(":");
+        const apiName = selection.slice(0, colon);
+        const version = selection.slice(colon + 1);
+        if (colon <= 0 || !isPinnedAgentVersion(version)) {
+          return Result.err([
+            new GeneratorError(
+              "Agents require apiName:version with a pinned version",
+              { selection },
+            ),
+          ]);
+        }
+        if (Object.hasOwn(agentTypes, apiName)) {
+          return Result.err([
+            new GeneratorError("Agent was specified multiple times", {
+              apiName,
+            }),
+          ]);
+        }
+        const schema = await AgentDefinitionVersions.get(
+          this.getClientContext(),
+          apiName,
+          version,
+          { ontology: ontology.rid as OntologyIdentifier, preview: true },
+        );
+        if (schema.version !== version) {
+          return Result.err([
+            new GeneratorError(
+              "Agent metadata does not match the requested version",
+              { apiName, version, actualVersion: schema.version },
+            ),
+          ]);
+        }
+        Object.defineProperty(agentTypes, apiName, {
+          value: { ...schema, apiName },
+          enumerable: true,
+        });
+      }
+      const rids = [
+        ...new Set(
+          Object.values(agentTypes).flatMap(
+            agent => [...getAgentObjectTypeRids(agent)],
+          ),
+        ),
+      ];
+      for (let offset = 0; offset < rids.length; offset += 100) {
+        const batch = rids.slice(offset, offset + 100);
+        const response = await ObjectTypes.getByRidBatch(
+          this.getClientContext(),
+          ontology.rid as OntologyIdentifier,
+          {
+            requests: batch.map(objectTypeRid => ({ objectTypeRid })),
+          },
+          { preview: true },
+        );
+        for (const rid of batch) {
+          const object = response.data.find(candidate => candidate.rid === rid);
+          if (!object) {
+            return Result.err([
+              new GeneratorError(
+                "Agent schema references an unavailable object type",
+                undefined,
+                { objectTypeRid: rid },
+              ),
+            ]);
+          }
+          agentObjectApiNames.add(object.apiName);
+        }
+      }
+      if (agentObjectApiNames.size > 0) {
+        entities = {
+          ...entities,
+          objectTypesApiNamesToLoad: [
+            ...new Set([
+              ...(entities.objectTypesApiNamesToLoad ?? []),
+              ...agentObjectApiNames,
+            ]),
+          ],
+        };
+      }
+    } catch (error) {
+      return Result.err([
+        new GeneratorError("Unable to load agent metadata", {
+          error: String(error),
+        }),
+      ]);
+    }
+    const agentMetadata = Object.keys(agentTypes).length > 0
+      ? { agentTypes }
+      : {};
 
     // If we're passing in an external SDK package, we need to load the full metadata. As a result, we cannot use query
     // version pinning. This codepath should be merged with the `loadMetadata` codepath when we have the ability to load
@@ -347,7 +452,10 @@ export class OntologyMetadataResolver {
         return Result.err(validData.error);
       }
       return Result.ok({
-        requestedMetadata: filteredFullMetadata,
+        requestedMetadata: {
+          ...filteredFullMetadata,
+          ...agentMetadata,
+        },
         externalInterfaces,
         externalObjects,
         queryVersionReferences: new Map(),
@@ -433,7 +541,7 @@ export class OntologyMetadataResolver {
         return Result.err(validData.error);
       }
       return Result.ok({
-        requestedMetadata,
+        requestedMetadata: { ...requestedMetadata, ...agentMetadata },
         externalInterfaces: new Map(),
         externalObjects: new Map(),
         queryVersionReferences,

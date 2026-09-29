@@ -170,6 +170,20 @@ export type {
   ActionMetadata,
 } from "./ontology/ActionDefinition.js";
 export type {
+  AgentClient,
+  AgentContextItem,
+  AgentDefinition,
+  AgentEvent,
+  AgentSession,
+  AgentSessionOptions,
+  AgentSessionState,
+  AgentSessionStatus,
+  AgentTypeDefinition,
+  AgentTypes,
+  GenericAgentTypes,
+  UnknownContextItem,
+} from "./ontology/AgentDefinition.js";
+export type {
   InterfaceDefinition,
   InterfaceMetadata,
 } from "./ontology/InterfaceDefinition.js";

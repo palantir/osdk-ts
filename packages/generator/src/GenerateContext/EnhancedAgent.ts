@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import type { AgentDefinitionVersion } from "@osdk/foundry.agents";
-import type * as gateway from "@osdk/foundry.ontologies";
+import type { WireAgentDefinition } from "../WireOntologyDefinition.js";
+import type { EnhanceCommon } from "./EnhanceCommon.js";
+import { EnhancedBase } from "./EnhancedBase.js";
 
-export interface WireAgentDefinition extends AgentDefinitionVersion {
-  apiName: string;
-}
-
-export interface WireOntologyDefinition extends gateway.OntologyFullMetadata {
-  agentTypes?: Record<string, WireAgentDefinition>;
+export class EnhancedAgent extends EnhancedBase<WireAgentDefinition> {
+  constructor(common: EnhanceCommon, raw: WireAgentDefinition) {
+    super(common, raw, raw.apiName, "./ontology/agents");
+  }
 }
