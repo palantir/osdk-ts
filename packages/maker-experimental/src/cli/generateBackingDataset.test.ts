@@ -444,6 +444,7 @@ describe("generateBackingDatasetBlockResult", () => {
     );
     expect(blockDataContents.type).toBe("v1");
     expect(blockDataContents.v1.hasSchema).toBe(true);
+    expect(blockDataContents.v1.includeData).toBe(false);
     const columnValues = Object.values(blockDataContents.v1.columns);
     expect(columnValues).toContain("id");
     expect(columnValues).toContain("count");
@@ -759,6 +760,7 @@ describe("generateBackingDatasetBlockResultForLink", () => {
     );
     expect(blockDataContents.type).toBe("v1");
     expect(blockDataContents.v1.hasSchema).toBe(true);
+    expect(blockDataContents.v1.includeData).toBe(false);
     const columnValues = Object.values(blockDataContents.v1.columns);
     expect(columnValues).toContain("fooId");
     expect(columnValues).toContain("barId");

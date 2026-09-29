@@ -307,6 +307,7 @@ async function generateBackingDatasetBlock(
         columns.map((col, i) => [columnInternalIds[i], col.name]),
       ),
       hasSchema: true,
+      includeData: false,
     },
   };
   await fs.promises.writeFile(
