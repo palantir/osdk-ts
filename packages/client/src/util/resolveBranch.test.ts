@@ -128,6 +128,15 @@ describe(resolveBranch, () => {
       vi.stubGlobal("window", undefined);
       expect(resolveBranch(undefined, INJECTED_BRANCH)).toBe(INJECTED_BRANCH);
     });
+
+    it.each([undefined, null])(
+      "falls back when window.location is %s",
+      (location) => {
+        vi.stubGlobal("window", { location });
+        expect(resolveBranch(undefined, INJECTED_BRANCH)).toBe(INJECTED_BRANCH);
+        expect(resolveBranch(undefined, null)).toBeUndefined();
+      },
+    );
   });
 
   it("reads the branch from HTML metadata by default", () => {

@@ -20,7 +20,7 @@ const FOUNDRY_BRANCH_META_SELECTOR = 'meta[name="osdk-foundry-branch-rid"]';
 function getQueryBranch(): string | null | undefined {
   return typeof window === "undefined"
     ? undefined
-    : new URLSearchParams(window.location.search).get("foundryBranchRid");
+    : new URLSearchParams(window.location?.search).get("foundryBranchRid");
 }
 
 /** Reads the injected branch without requiring a browser environment. */
