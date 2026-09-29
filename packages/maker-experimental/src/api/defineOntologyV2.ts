@@ -47,6 +47,7 @@ import {
   OntologyRidGeneratorImpl,
   ReadableIdGenerator,
 } from "../util/generateRid.js";
+import { getDatasetInputMappings } from "./datasetInputMappings.js";
 import {
   getDatasetDefinitions,
   initializeDatasetState,
@@ -158,6 +159,14 @@ export async function defineOntologyV2(
     ridGenerator,
     functionsIr,
     randomnessKey,
+  );
+
+  shapes.inputMappings.push(
+    ...getDatasetInputMappings(
+      ontologyDefinition,
+      ontDef.ontology.objectTypes,
+      datasets,
+    ),
   );
 
   // Generate input shapes for imported entities and merge into main shapes

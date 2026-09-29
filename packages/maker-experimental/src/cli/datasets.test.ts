@@ -155,6 +155,66 @@ describe("dataset generation", () => {
     }
   });
 
+  it("wires shared datasets and renamed columns into object datasources", async () => {
+    const results = await generate("datasetAsDatasource");
+    expect(results.map((result) => result.block_type)).toEqual([
+      "ONTOLOGY",
+      "STATIC_DATASET",
+    ]);
+    const [ontology, dataset] = results;
+    const datasetOutput = Object.entries(dataset.outputs).find(
+      ([, output]) => output.type === "tabularDatasource",
+    )!;
+    const columnOutputs = Object.fromEntries(
+      Object.entries(dataset.outputs).flatMap(([id, output]) =>
+        output.type === "datasourceColumn"
+          ? [[output.datasourceColumn.about.fallbackTitle, id]]
+          : [],
+      ),
+    );
+    expect(ontology.input_mapping_entries).toEqual(
+      expect.arrayContaining([
+        { input: "dataset-datasource-Event", output: datasetOutput[0] },
+        {
+          input: "dataset-datasource-column-Event-event_id",
+          output: columnOutputs.event_id,
+        },
+        {
+          input: "dataset-datasource-column-Event-description",
+          output: columnOutputs.description,
+        },
+        {
+          input: "dataset-datasource-column-Event-event_metadata",
+          output: columnOutputs.event_metadata,
+        },
+        { input: "dataset-datasource-EventSummary", output: datasetOutput[0] },
+        {
+          input: "dataset-datasource-column-EventSummary-event_id",
+          output: columnOutputs.event_id,
+        },
+      ]),
+    );
+    expect(ontology.input_mapping_entries).toHaveLength(6);
+    for (const { input, output } of ontology.input_mapping_entries) {
+      expect(ontology.inputs[input]).toBeDefined();
+      expect(dataset.outputs[output]).toBeDefined();
+    }
+    const eventInput = Object.entries(ontology.inputs).find(
+      ([id]) => id === "dataset-datasource-Event",
+    )![1];
+    const summaryInput = Object.entries(ontology.inputs).find(
+      ([id]) => id === "dataset-datasource-EventSummary",
+    )![1];
+    expect(
+      eventInput.type === "tabularDatasource" &&
+        eventInput.tabularDatasource.schema,
+    ).toHaveLength(3);
+    expect(
+      summaryInput.type === "tabularDatasource" &&
+        summaryInput.tabularDatasource.schema,
+    ).toHaveLength(1);
+  });
+
   it("writes complete decimal schemas and matching output shapes", async () => {
     const results = await generate("datasetDecimalDefaults");
     expect(results.map((result) => result.block_identifier)).toEqual([

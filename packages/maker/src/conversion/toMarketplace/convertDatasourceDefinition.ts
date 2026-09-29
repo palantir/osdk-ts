@@ -102,7 +102,10 @@ export function convertDatasourceDefinition(
           type: "datasetV3",
           datasetV3: {
             datasetRid: objectType.apiName,
-            propertyMapping: buildPropertyMapping(properties),
+            propertyMapping: buildPropertyMapping(
+              properties,
+              baseDatasource?.propertyMapping,
+            ),
             branchId: "master",
             propertySecurityGroups: convertPropertySecurityGroups(
               baseDatasource,
@@ -116,7 +119,10 @@ export function convertDatasourceDefinition(
         type: "datasetV2",
         datasetV2: {
           datasetRid: objectType.apiName,
-          propertyMapping: buildPropertyMapping(properties),
+          propertyMapping: buildPropertyMapping(
+            properties,
+            baseDatasource?.propertyMapping,
+          ),
         },
       };
   }
@@ -339,19 +345,22 @@ function convertSecurityCondition(
 
 function buildPropertyMapping(
   properties: ObjectPropertyType[],
+  propertyMapping?: Record<string, string>,
 ): Record<string, PropertyTypeMappingInfo> {
+  const columnNames = new Map(Object.entries(propertyMapping ?? {}));
   return Object.fromEntries(
     properties.map((prop) => {
       // editOnly
       if (prop.editOnly) {
         return [prop.apiName, { type: "editOnly", editOnly: {} }];
       }
+      const columnName = columnNames.get(prop.apiName) ?? prop.apiName;
       // structs
       if (typeof prop.type === "object" && prop.type?.type === "struct") {
         const structMapping = {
           type: "struct",
           struct: {
-            column: prop.apiName,
+            column: columnName,
             mapping: Object.fromEntries(
               Object.keys(prop.type.structDefinition).map((fieldName) => [
                 fieldName,
@@ -363,7 +372,7 @@ function buildPropertyMapping(
         return [prop.apiName, structMapping];
       }
       // default: column mapping
-      return [prop.apiName, { type: "column", column: prop.apiName }];
+      return [prop.apiName, { type: "column", column: columnName }];
     }),
   );
 }

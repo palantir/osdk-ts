@@ -241,6 +241,10 @@ export interface DatasetBlockDefinition {
   columns: BackingDatasetColumn[];
 }
 
+export function getStandaloneDatasetInternalName(name: string): string {
+  return `standalone.${toBlockShapeId(name)}`;
+}
+
 export function generateDatasetBlockResult(
   dataset: DatasetBlockDefinition,
   buildDir: string,
@@ -252,7 +256,7 @@ export function generateDatasetBlockResult(
   );
   const blockIdentifier = `${dataset.name}-dataset`;
   return generateBackingDatasetBlock(
-    `standalone.${toBlockShapeId(dataset.name)}`,
+    getStandaloneDatasetInternalName(dataset.name),
     blockIdentifier,
     toBlockShapeId(blockIdentifier, randomnessKey),
     dataset.columns,

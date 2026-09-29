@@ -156,10 +156,23 @@ export function convertDatasourceDefinition(
 
     case "dataset":
     default:
-      // Use generateLocator for dataset datasources
+      const datasetPropertyMapping = buildPropertyMapping(
+        properties,
+        objectType.apiName,
+        ridGenerator,
+        baseDatasource?.propertyMapping,
+      );
       const datasetLocator = ridGenerator.generateDatasetLocator(
         objectType.apiName,
-        getColumnNames(properties),
+        new Set(
+          Object.values(datasetPropertyMapping).flatMap((mapping) =>
+            mapping.type === "column"
+              ? [mapping.column]
+              : mapping.type === "struct"
+                ? [mapping.struct.column]
+                : [],
+          ),
+        ),
       );
 
       if (
@@ -174,11 +187,7 @@ export function convertDatasourceDefinition(
           type: "datasetV3",
           datasetV3: {
             datasetRid: datasetLocator.rid,
-            propertyMapping: buildPropertyMapping(
-              properties,
-              objectType.apiName,
-              ridGenerator,
-            ),
+            propertyMapping: datasetPropertyMapping,
             branchId: datasetLocator.branchId,
             propertySecurityGroups: convertPropertySecurityGroups(
               baseDatasource,
@@ -195,11 +204,7 @@ export function convertDatasourceDefinition(
         datasetV2: {
           datasetRid: datasetLocator.rid,
           branchId: datasetLocator.branchId,
-          propertyMapping: buildPropertyMapping(
-            properties,
-            objectType.apiName,
-            ridGenerator,
-          ),
+          propertyMapping: datasetPropertyMapping,
         },
       };
   }
@@ -596,8 +601,9 @@ function buildPropertyMapping(
   properties: ObjectPropertyType[],
   objectTypeApiName: string,
   ridGenerator: OntologyRidGenerator,
+  propertyMapping?: Record<string, string>,
 ): Record<string, PropertyTypeMappingInfo> {
-  // TODO: Convert property mappings to use RIDs as keys
+  const columnNames = new Map(Object.entries(propertyMapping ?? {}));
   return Object.fromEntries(
     properties.map((prop) => {
       const propertyRid = ridGenerator.generatePropertyRid(
@@ -608,12 +614,13 @@ function buildPropertyMapping(
       if (prop.editOnly) {
         return [propertyRid, { type: "editOnly", editOnly: {} }];
       }
+      const columnName = columnNames.get(prop.apiName) ?? prop.apiName;
       // structs
       if (typeof prop.type === "object" && prop.type?.type === "struct") {
         const structMapping = {
           type: "struct",
           struct: {
-            column: prop.apiName,
+            column: columnName,
             mapping: Object.fromEntries(
               Object.keys(prop.type.structDefinition).map((fieldName) => [
                 fieldName,
@@ -625,7 +632,7 @@ function buildPropertyMapping(
         return [propertyRid, structMapping];
       }
       // default: column mapping
-      return [propertyRid, { type: "column", column: prop.apiName }];
+      return [propertyRid, { type: "column", column: columnName }];
     }),
   );
 }
