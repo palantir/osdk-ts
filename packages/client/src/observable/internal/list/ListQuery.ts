@@ -562,6 +562,10 @@ export abstract class ListQuery extends BaseListQuery<
           this.pendingFetch != null &&
           batch.read(this.cacheKey)?.status === "loading";
 
+        // If we got purely strict matches and the exact cache variants are available,
+        // we can just update the list and move on with our lives. But if we got sorta
+        // matches, a cache variant is unavailable, or an optimistic update or fetch is
+        // pending, then we keep the list loading to avoid thrashing the store.
         const status =
           optimisticId ||
           isPendingFetchLoading ||
