@@ -28,6 +28,8 @@ import { createOptimisticId } from "../OptimisticId.js";
 import { Store } from "../Store.js";
 
 describe("ObjectSetQuery cache reconciliation", () => {
+  type TestEmployee = ObjectHolder & { $primaryKey: number };
+
   let client: Client;
   let store: Store;
 
@@ -60,15 +62,15 @@ describe("ObjectSetQuery cache reconciliation", () => {
     });
   }
 
-  function createEmployee(): ObjectHolder {
+  function createEmployee(): TestEmployee {
     return {
       $apiName: Employee.apiName,
       $objectType: Employee.apiName,
       $primaryKey: 1,
-    } as unknown as ObjectHolder;
+    } as TestEmployee;
   }
 
-  function createChanges(employee: ObjectHolder, isNew: boolean = true) {
+  function createChanges(employee: TestEmployee, isNew: boolean = true) {
     const sourceQuery = store.objects.getQuery({
       apiName: Employee,
       pk: employee.$primaryKey,
@@ -77,6 +79,67 @@ describe("ObjectSetQuery cache reconciliation", () => {
     changes.registerObject(sourceQuery.cacheKey, employee, isNew);
     return changes;
   }
+
+  function getOntologyDefinedDerivedPropertiesQuery() {
+    return store.objectSets.getQuery({
+      baseObjectSet: client(Employee) as ObjectSet<typeof Employee>,
+      mode: "offline",
+      $UNSTABLE_loadOntologyDefinedDerivedProperties: true,
+    });
+  }
+
+  it.each([
+    ["adds", true],
+    ["modifies", false],
+  ])(
+    "revalidates rather than inserting a sibling cache variant when it %s an object",
+    (_change, isNew) => {
+      const query = getOntologyDefinedDerivedPropertiesQuery();
+      const employee = createEmployee();
+      const siblingObjectQuery = store.objects.getQuery({
+        apiName: Employee,
+        pk: employee.$primaryKey,
+      });
+      store.batch({}, (batch) => {
+        batch.write(siblingObjectQuery.cacheKey, employee, "loaded");
+        query.writeToStore({ data: [] }, "loaded", batch);
+      });
+      const changes = createChangedObjects();
+      changes.registerObject(siblingObjectQuery.cacheKey, employee, isNew);
+      const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
+
+      query.maybeUpdateAndRevalidate(changes, undefined);
+
+      expect(revalidate).toHaveBeenCalledWith(true);
+      expect(store.getValue(query.cacheKey)).toMatchObject({
+        status: "loading",
+        value: { data: [] },
+      });
+    },
+  );
+
+  it("locally inserts the exact ontology-defined derived properties cache variant", () => {
+    const query = getOntologyDefinedDerivedPropertiesQuery();
+    const employee = createEmployee();
+    const targetObjectQuery = store.objects.getQuery({
+      apiName: Employee,
+      pk: employee.$primaryKey,
+      $UNSTABLE_loadOntologyDefinedDerivedProperties: true,
+    });
+    store.batch({}, (batch) => {
+      batch.write(targetObjectQuery.cacheKey, employee, "loaded");
+      query.writeToStore({ data: [] }, "loaded", batch);
+    });
+    const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
+
+    query.maybeUpdateAndRevalidate(createChanges(employee), undefined);
+
+    expect(revalidate).not.toHaveBeenCalled();
+    expect(store.getValue(query.cacheKey)).toMatchObject({
+      status: "loaded",
+      value: { data: [targetObjectQuery.cacheKey] },
+    });
+  });
 
   it.each([
     ["adds", true],

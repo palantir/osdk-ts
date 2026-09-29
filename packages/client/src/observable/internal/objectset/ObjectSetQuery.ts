@@ -536,6 +536,10 @@ export class ObjectSetQuery extends BaseListQuery<
       obj.$objectType,
       obj.$primaryKey,
       this.rdpConfig ?? undefined,
+      undefined,
+      undefined,
+      undefined,
+      this.loadOntologyDefinedDerivedProperties,
     );
   }
 
