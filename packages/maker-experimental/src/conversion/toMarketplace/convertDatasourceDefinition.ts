@@ -32,6 +32,7 @@ import type {
   ObjectTypeDatasourceDefinition_direct,
   SecurityConditionDefinition,
 } from "@osdk/maker";
+import { validateObjectDatasources } from "@osdk/maker";
 import invariant from "tiny-invariant";
 
 import {
@@ -44,6 +45,7 @@ export function convertDatasourceDefinition(
   properties: ObjectPropertyType[],
   ridGenerator: OntologyRidGenerator,
 ): ObjectTypeDatasourceDefinition {
+  validateObjectDatasources(objectType);
   const baseDatasource = objectType.datasources?.find((ds) =>
     ["dataset", "stream", "restrictedView", "direct"].includes(ds.type),
   );

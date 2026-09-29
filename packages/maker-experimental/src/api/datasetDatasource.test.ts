@@ -279,6 +279,6 @@ describe("defined dataset datasources", () => {
         });
         propertyMapping.missing = "id";
       }),
-    ).rejects.toThrow(/test.Event.*missing.*cannot map/u);
+    ).rejects.toThrow(/test.Event.*undefined property "missing"/u);
   });
 });

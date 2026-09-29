@@ -45,7 +45,6 @@ import type { ObjectPropertyTypeUserDefinition } from "./object/ObjectPropertyTy
 import type { ObjectType } from "./object/ObjectType.js";
 import type {
   DerivedPropertyAggregation,
-  ObjectTypeDatasourceDefinition_dataset,
   ObjectTypeDatasourceDefinition_derived,
   ObjectTypeDatasourceDefinition_stream,
 } from "./object/ObjectTypeDatasourceDefinition.js";
@@ -58,6 +57,7 @@ import {
   validateDisplayMetadataLengths,
   validateStructFieldMetadata,
 } from "./validateMetadataLengths.js";
+import { validateObjectDatasources } from "./validateObjectDatasources.js";
 // From https://stackoverflow.com/a/79288714
 const ISO_8601_DURATION =
   /^P(?!$)(?:(?:((?:\d+Y)|(?:\d+(?:\.|,)\d+Y$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+D)|(?:\d+(?:\.|,)\d+D$))?(T((?:\d+H)|(?:\d+(?:\.|,)\d+H$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+S)|(?:\d+(?:\.|,)\d+S$))?)?)|(?:\d+(?:(?:\.|,)\d+)?W))$/u;
@@ -124,18 +124,7 @@ export function defineObject(
     `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
   );
 
-  if (objectDef.includeEmptyBackingDatasource && objectDef.datasources) {
-    const nonDatasetDatasources = objectDef.datasources.filter(
-      (ds) => ds.type !== "dataset",
-    );
-    invariant(
-      nonDatasetDatasources.length === 0,
-      `Object type "${objectDef.apiName}" has non-dataset datasources (${nonDatasetDatasources
-        .map((ds) => ds.type)
-        .join(", ")}) and cannot use includeEmptyBackingDatasource. ` +
-        `Empty backing datasources are only supported for object types with dataset datasources.`,
-    );
-  }
+  validateObjectDatasources(objectDef);
 
   const retentionPeriods = (
     (objectDef.datasources ?? []).filter(
@@ -149,15 +138,6 @@ export function defineObject(
     );
   });
 
-  const baseDatasources = (objectDef.datasources ?? []).filter((ds) =>
-    ["dataset", "stream", "restrictedView", "direct"].includes(ds.type),
-  );
-  invariant(
-    baseDatasources.length <= 1,
-    `Object ${objectDef.apiName} has more than one base datasource (got: [${baseDatasources
-      .map((ds) => ds.type)
-      .join(", ")}])`,
-  );
   const derivedDatasources = (objectDef.datasources ?? []).filter(
     (ds) => ds.type === "derived",
   );
@@ -165,12 +145,6 @@ export function defineObject(
     derivedDatasources.forEach((ds) =>
       validateDerivedDatasource(objectDef, ds),
     );
-  }
-
-  for (const datasource of objectDef.datasources ?? []) {
-    if (datasource.type === "dataset") {
-      validateDatasetDatasource(objectDef, datasource);
-    }
   }
 
   // Validate property statuses match the object status.
@@ -388,62 +362,6 @@ function convertUserObjectPropertyType(
     type: property.type,
   };
 }
-function validateDatasetDatasource(
-  objectDef: ObjectTypeDefinition,
-  datasource: ObjectTypeDatasourceDefinition_dataset,
-): void {
-  const context = `Object "${objectDef.apiName}"`;
-  if (datasource.dataset !== undefined) {
-    invariant(
-      datasource.dataset != null &&
-        typeof datasource.dataset.name === "string" &&
-        datasource.dataset.name.trim().length > 0,
-      `${context} dataset reference must have a non-empty name`,
-    );
-    invariant(
-      !objectDef.includeEmptyBackingDatasource,
-      `${context} cannot use includeEmptyBackingDatasource with an explicit dataset`,
-    );
-  }
-
-  if (datasource.propertyMapping === undefined) return;
-  invariant(
-    datasource.dataset !== undefined,
-    `${context} propertyMapping requires an explicit dataset`,
-  );
-  invariant(
-    datasource.propertyMapping != null &&
-      typeof datasource.propertyMapping === "object" &&
-      (Object.getPrototypeOf(datasource.propertyMapping) === Object.prototype ||
-        Object.getPrototypeOf(datasource.propertyMapping) == null),
-    `${context} dataset propertyMapping must be a record`,
-  );
-
-  const propertyNames = new Set(Object.keys(objectDef.properties ?? {}));
-  const derivedPropertyNames = new Set(
-    (objectDef.datasources ?? []).flatMap((ds) =>
-      ds.type === "derived" ? Object.keys(ds.propertyMapping) : [],
-    ),
-  );
-  for (const [propertyName, columnName] of Object.entries(
-    datasource.propertyMapping,
-  )) {
-    invariant(
-      propertyNames.has(propertyName),
-      `${context} dataset propertyMapping references undefined property "${propertyName}"`,
-    );
-    invariant(
-      !objectDef.properties?.[propertyName].editOnly &&
-        !derivedPropertyNames.has(propertyName),
-      `${context} property "${propertyName}" is edit-only or derived and cannot map to a dataset column`,
-    );
-    invariant(
-      typeof columnName === "string" && columnName.length > 0,
-      `${context} property "${propertyName}" must map to a non-empty column name`,
-    );
-  }
-}
-
 function validateDerivedDatasource(
   objectDef: ObjectTypeDefinition,
   datasource: ObjectTypeDatasourceDefinition_derived,

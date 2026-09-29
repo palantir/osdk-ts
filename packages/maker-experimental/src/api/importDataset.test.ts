@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/maker";
+import type {
+  ObjectTypeDefinition,
+  ObjectTypeDatasourceDefinition_dataset,
+} from "@osdk/maker";
 import { defineObject } from "@osdk/maker";
 import { describe, expect, it } from "vitest";
 
@@ -242,5 +245,235 @@ describe("imported datasets", () => {
         columns: { ID: { type: "string" }, id: { type: "string" } },
       }),
     ).toThrow(/unique ignoring case/u);
+  });
+
+  describe("source consistency", () => {
+    const conflicts: Array<{
+      name: string;
+      first: DatasetColumnDefinition;
+      second: DatasetColumnDefinition;
+    }> = [
+      {
+        name: "scalar",
+        first: { type: "string" },
+        second: { type: "integer" },
+      },
+      {
+        name: "array element",
+        first: { type: "string", array: true },
+        second: { type: "integer", array: true },
+      },
+      {
+        name: "decimal precision",
+        first: { type: "decimal" },
+        second: { type: { type: "decimal", precision: 12, scale: 0 } },
+      },
+      {
+        name: "struct field",
+        first: {
+          type: { type: "struct", structDefinition: { source: "string" } },
+        },
+        second: {
+          type: { type: "struct", structDefinition: { source: "integer" } },
+        },
+      },
+    ];
+
+    it.each(conflicts)(
+      "rejects conflicting $name declarations for one source column",
+      async ({ first, second }) => {
+        await expect(
+          defineOntologyV2("com.consumer.", () => {
+            for (const [index, value] of [first, second].entries()) {
+              const dataset = importDataset({
+                name: "Events",
+                packageName: "com.upstream",
+                columns: { event_id: { type: "string" }, value },
+              });
+              defineEvent(dataset, { apiName: `Event${index}` });
+            }
+          }),
+        ).rejects.toThrow(/Events.*com.upstream.*conflicting.*value/u);
+      },
+    );
+
+    it("rejects conflicting column casing across partial source schemas", async () => {
+      await expect(
+        defineOntologyV2("com.consumer.", () => {
+          for (const [index, name] of ["value", "Value"].entries()) {
+            defineEvent(
+              importDataset({
+                name: "Events",
+                packageName: "com.upstream",
+                columns: {
+                  event_id: { type: "string" },
+                  [name]: { type: "string" },
+                },
+              }),
+              { apiName: `Event${index}` },
+            );
+          }
+        }),
+      ).rejects.toThrow(/Events.*com.upstream.*conflicting.*Value/u);
+    });
+
+    it("allows partial schemas that agree on physical column types", async () => {
+      const result = await defineOntologyV2("com.consumer.", () => {
+        defineEvent(
+          importDataset({
+            name: "Events",
+            packageName: "com.upstream",
+            columns: {
+              event_id: { type: "string" },
+              value: {
+                type: {
+                  type: "struct",
+                  structDefinition: { amount: "decimal", source: "string" },
+                },
+                array: true,
+              },
+            },
+          }),
+        );
+        defineEvent(
+          importDataset({
+            name: "Events",
+            packageName: "com.upstream",
+            columns: {
+              event_id: { type: "string" },
+              value: {
+                type: {
+                  type: "struct",
+                  structDefinition: {
+                    source: { type: "string", enableAsciiFolding: true },
+                    amount: { type: "decimal", precision: 38, scale: 0 },
+                  },
+                },
+                array: true,
+              },
+              extra: { type: "boolean" },
+            },
+          }),
+          { apiName: "Summary" },
+        );
+      });
+      expect(result.datasetExternalRecommendations).toHaveLength(1);
+      expect(result.datasetExternalRecommendations[0].mappings).toHaveLength(4);
+    });
+
+    it.each([
+      { packageName: "com.other", randomnessKey: undefined },
+      { packageName: "com.upstream", randomnessKey: UPSTREAM_KEY },
+    ])("keeps different source identities independent: %j", async (source) => {
+      const result = await defineOntologyV2("com.consumer.", () => {
+        defineEvent(
+          importDataset({
+            name: "Events",
+            packageName: "com.upstream",
+            columns: {
+              event_id: { type: "string" },
+              value: { type: "string" },
+            },
+          }),
+        );
+        defineEvent(
+          importDataset({
+            name: "Events",
+            ...source,
+            columns: {
+              event_id: { type: "string" },
+              value: { type: "integer" },
+            },
+          }),
+          { apiName: "Summary" },
+        );
+      });
+      expect(result.datasetExternalRecommendations).toHaveLength(2);
+    });
+  });
+
+  it.each([
+    { namespace: "com.consumer.", randomnessKey: undefined },
+    { namespace: "com.consumer", randomnessKey: undefined },
+    { namespace: "com.consumer.", randomnessKey: UPSTREAM_KEY },
+  ])(
+    "rejects importing from the current product: %j",
+    async ({ namespace, randomnessKey }) => {
+      await expect(
+        defineOntologyV2(
+          namespace,
+          () => {
+            defineEvent(
+              importDataset({
+                name: "Events",
+                packageName: "com.consumer",
+                randomnessKey,
+                columns: { event_id: { type: "string" } },
+              }),
+            );
+          },
+          undefined,
+          undefined,
+          undefined,
+          randomnessKey,
+        ),
+      ).rejects.toThrow(/Events.*own product.*com.consumer/u);
+    },
+  );
+
+  it("allows the same namespace with a different upstream randomness key", async () => {
+    const result = await defineOntologyV2("com.consumer.", () => {
+      defineEvent(
+        importDataset({
+          name: "Events",
+          packageName: "com.consumer",
+          randomnessKey: UPSTREAM_KEY,
+          columns: { event_id: { type: "string" } },
+        }),
+      );
+    });
+    expect(result.datasetExternalRecommendations[0].upstreamRandomnessKey).toBe(
+      UPSTREAM_KEY,
+    );
+  });
+
+  it("rejects adding an imported dataset after enabling automatic backing data", async () => {
+    await expect(
+      defineOntologyV2("com.consumer.", () => {
+        const datasource: ObjectTypeDatasourceDefinition_dataset = {
+          type: "dataset",
+        };
+        defineObject({
+          apiName: "Event",
+          displayName: "Event",
+          pluralDisplayName: "Events",
+          primaryKeyPropertyApiName: "id",
+          titlePropertyApiName: "id",
+          properties: { id: { type: "string" } },
+          datasources: [datasource],
+          includeEmptyBackingDatasource: true,
+        });
+        datasource.dataset = importDataset({
+          name: "Events",
+          packageName: "com.upstream",
+          columns: { id: { type: "string" } },
+        });
+      }),
+    ).rejects.toThrow(/Event.*includeEmptyBackingDatasource/u);
+  });
+
+  it("rejects adding a competing base datasource after definition", async () => {
+    await expect(
+      defineOntologyV2("com.consumer.", () => {
+        const event = defineEvent(
+          importDataset({
+            name: "Events",
+            packageName: "com.upstream",
+            columns: { event_id: { type: "string" } },
+          }),
+        );
+        event.datasources!.push({ type: "direct" });
+      }),
+    ).rejects.toThrow(/more than one base datasource/u);
   });
 });

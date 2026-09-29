@@ -33,11 +33,13 @@ import type {
   ObjectTypeDatasourceDefinition_direct,
 } from "../../api/object/ObjectTypeDatasourceDefinition.js";
 import type { SecurityConditionDefinition } from "../../api/object/SecurityCondition.js";
+import { validateObjectDatasources } from "../../api/validateObjectDatasources.js";
 
 export function convertDatasourceDefinition(
   objectType: ObjectType,
   properties: ObjectPropertyType[],
 ): OntologyIrObjectTypeDatasourceDefinition {
+  validateObjectDatasources(objectType);
   const baseDatasource = objectType.datasources?.find((ds) =>
     ["dataset", "stream", "restrictedView", "direct"].includes(ds.type),
   );

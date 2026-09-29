@@ -210,4 +210,126 @@ describe("dataset datasource definitions", () => {
       ).toThrow(/Event.*dataset.*name/u);
     },
   );
+
+  describe("validation during generation", () => {
+    it("rejects adding an explicit dataset to automatic backing data", () => {
+      const datasource: ObjectTypeDatasourceDefinition_dataset = {
+        type: "dataset",
+      };
+      defineEvent({
+        includeEmptyBackingDatasource: true,
+        datasources: [datasource],
+      });
+      datasource.dataset = { name: "Events" };
+
+      expect(() => dumpOntologyFullMetadata()).toThrow(
+        /Event.*includeEmptyBackingDatasource/u,
+      );
+    });
+
+    it("rejects adding a second base datasource", () => {
+      const object = defineEvent({ datasources: [{ type: "dataset" }] });
+      object.datasources!.push({ type: "direct" });
+
+      expect(() => dumpOntologyFullMetadata()).toThrow(
+        /more than one base datasource/u,
+      );
+    });
+
+    it("rejects changing automatic backing data to a stream", () => {
+      const object = defineEvent({
+        includeEmptyBackingDatasource: true,
+        datasources: [{ type: "dataset" }],
+      });
+      object.datasources![0] = { type: "stream" };
+
+      expect(() => dumpOntologyFullMetadata()).toThrow(
+        /non-dataset.*includeEmptyBackingDatasource/u,
+      );
+    });
+
+    it("rejects removing the dataset required by column overrides", () => {
+      const datasource: ObjectTypeDatasourceDefinition_dataset = {
+        type: "dataset",
+        dataset: { name: "Events" },
+        propertyMapping: { id: "event_id" },
+      };
+      defineEvent({ datasources: [datasource] });
+      datasource.dataset = undefined;
+
+      expect(() => dumpOntologyFullMetadata()).toThrow(
+        /propertyMapping.*dataset/u,
+      );
+    });
+
+    it.each([
+      { name: "null", mapping: null },
+      { name: "an array", mapping: [] },
+      { name: "a Map", mapping: new Map() },
+    ])("rejects replacing column overrides with $name", ({ mapping }) => {
+      const datasource: ObjectTypeDatasourceDefinition_dataset = {
+        type: "dataset",
+        dataset: { name: "Events" },
+        propertyMapping: {},
+      };
+      defineEvent({ datasources: [datasource] });
+      datasource.propertyMapping = mapping as unknown as Record<string, string>;
+
+      expect(() => dumpOntologyFullMetadata()).toThrow(
+        /propertyMapping.*record/u,
+      );
+    });
+
+    it.each(["", 123, null])(
+      "rejects changing a mapped column to %j",
+      (columnName) => {
+        const propertyMapping = { id: "event_id" };
+        defineEvent({
+          datasources: [
+            { type: "dataset", dataset: { name: "Events" }, propertyMapping },
+          ],
+        });
+        propertyMapping.id = columnName as string;
+
+        expect(() => dumpOntologyFullMetadata()).toThrow(/Event.*id.*column/u);
+      },
+    );
+
+    it.each(["missing", "notes"])(
+      "rejects adding a mapping for %s",
+      (propertyName) => {
+        const propertyMapping: Record<string, string> = {};
+        defineEvent({
+          datasources: [
+            { type: "dataset", dataset: { name: "Events" }, propertyMapping },
+          ],
+        });
+        propertyMapping[propertyName] = "event_id";
+
+        expect(() => dumpOntologyFullMetadata()).toThrow(
+          new RegExp(`Event.*${propertyName}`, "u"),
+        );
+      },
+    );
+
+    it("preserves valid changes to column mappings", () => {
+      const propertyMapping: Record<string, string> = {};
+      defineEvent({
+        datasources: [
+          { type: "dataset", dataset: { name: "Events" }, propertyMapping },
+        ],
+      });
+      propertyMapping.id = "event_id";
+
+      expect(
+        dumpOntologyFullMetadata().ontology.objectTypes["test.Event"]
+          .datasources[0].datasource,
+      ).toMatchObject({
+        type: "datasetV2",
+        datasetV2: {
+          propertyMapping: { id: { type: "column", column: "event_id" } },
+        },
+      });
+    });
+  });
 });

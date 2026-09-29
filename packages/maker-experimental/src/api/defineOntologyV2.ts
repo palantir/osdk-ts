@@ -145,6 +145,8 @@ export async function defineOntologyV2(
     ontDef.ontology.objectTypes,
     datasets,
     ridGenerator,
+    ns,
+    randomnessKey,
   );
   shapes.inputMappings.push(...datasetBindings.inputMappings);
 

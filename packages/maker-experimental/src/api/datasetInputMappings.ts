@@ -40,11 +40,19 @@ import {
   importDataset,
 } from "./importDataset.js";
 
+interface ImportedColumn {
+  name: string;
+  type: ConcreteDataType;
+  objectApiName: string;
+}
+
 export function getDatasetBindings(
   ontologyDefinition: OntologyDefinition,
   objectTypes: Record<string, ObjectTypeBlockDataV2>,
   datasets: DatasetBlockDefinition[],
   ridGenerator: OntologyRidGenerator,
+  namespace: string,
+  randomnessKey?: string,
 ): {
   inputMappings: InputMappingEntry[];
   externalRecommendations: GeneratedBlockExternalRecommendations[];
@@ -53,6 +61,10 @@ export function getDatasetBindings(
     datasets.map((dataset) => [dataset.name, dataset]),
   );
   const inputMappings: InputMappingEntry[] = [];
+  const currentPackageName = namespace.endsWith(".")
+    ? namespace.slice(0, -1)
+    : namespace;
+  const importedColumns = new Map<string, Map<string, ImportedColumn>>();
   const externalRecommendations = new Map<
     string,
     GeneratedBlockExternalRecommendations
@@ -80,6 +92,41 @@ export function getDatasetBindings(
       dataset !== undefined,
       `Dataset "${datasource.dataset.name}" referenced by object "${apiName}" is not defined`,
     );
+    if (imported !== undefined) {
+      invariant(
+        imported.packageName !== currentPackageName ||
+          imported.randomnessKey !== randomnessKey,
+        `Object "${apiName}" cannot import dataset "${dataset.name}" from its own product "${currentPackageName}". Use the locally defined dataset instead.`,
+      );
+      const sourceKey = JSON.stringify([
+        imported.packageName,
+        imported.name,
+        imported.randomnessKey,
+      ]);
+      let columns = importedColumns.get(sourceKey);
+      if (columns === undefined) {
+        columns = new Map();
+        importedColumns.set(sourceKey, columns);
+      }
+      for (const column of dataset.columns) {
+        const normalizedName = column.name.toLocaleLowerCase("en-US");
+        const type = normalizeType(typeToConcreteDataType(column.type));
+        const previous = columns.get(normalizedName);
+        invariant(
+          previous === undefined ||
+            (previous.name === column.name &&
+              isDeepStrictEqual(previous.type, type)),
+          `Dataset "${dataset.name}" from package "${imported.packageName}" has conflicting definitions for column "${column.name}" on objects "${previous?.objectApiName}" and "${apiName}"`,
+        );
+        if (previous === undefined) {
+          columns.set(normalizedName, {
+            name: column.name,
+            type,
+            objectApiName: apiName,
+          });
+        }
+      }
+    }
     const internalName = getStandaloneDatasetInternalName(dataset.name);
     const columnsByName = new Map(
       dataset.columns.map((column) => [column.name, column]),
