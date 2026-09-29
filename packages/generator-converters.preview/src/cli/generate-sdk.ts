@@ -171,6 +171,11 @@ async function main(): Promise<void> {
         type: "string",
         coerce: (input: string) => path.resolve(input),
       },
+      "omit-ontology-rid": {
+        describe: "Omit ontology RID and branch exports from the generated SDK",
+        type: "boolean",
+        default: false,
+      },
       "package-name": {
         describe: "Name for the generated SDK package",
         type: "string",
@@ -230,6 +235,10 @@ async function main(): Promise<void> {
       },
     })
     .parse();
+
+  if (argv.omitOntologyRid && !argv.blockResultsInput) {
+    throw new Error("--omit-ontology-rid requires --block-results-input.");
+  }
 
   const packageName = argv.packageName;
   const packageVersion = argv.version;
@@ -362,6 +371,7 @@ async function main(): Promise<void> {
     [],
     true,
     new Map(),
+    argv.omitOntologyRid,
   );
 
   // Write package.json for module resolution. Points to compiled output in
