@@ -230,7 +230,7 @@ describe("ObjectSetQuery cache reconciliation", () => {
       for (const variant of settings) {
         expect(getObjectCacheFullName(objectCacheKeys.get(variant)!)).toBe(
           variant === setting
-            ? `Re-Fetched ${label}`
+            ? `Re-fetched ${label}`
             : `Seed ${String(variant)}`,
         );
       }
