@@ -15,4 +15,5 @@
  */
 
 export { cli } from "./cli/foundrySdkGeneratorCli.js";
+export { generatePackage } from "./generate/betaClient/generatePackage.js";
 export { GeneratePackageCommand as __testSeamOnly_NotSemverStable__GeneratePackageCommand } from "./generate/index.js";
