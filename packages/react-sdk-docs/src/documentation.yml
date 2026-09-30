@@ -205,6 +205,7 @@ versions:
 
             function {{objectType}}List() {
               // $select only the properties you render; by default every property is loaded.
+              // The result type is not narrowed: unselected properties type-check but are undefined.
               const { data, isLoading, error, fetchMore } = useOsdkObjects({{objectType}}, {
                 $select: ["{{titleProperty}}"],
                 pageSize: 30
@@ -286,6 +287,7 @@ versions:
 
             function {{objectType}}List() {
               // $select only the properties you render; by default every property is loaded.
+              // The result type is not narrowed: unselected properties type-check but are undefined.
               const { data, isLoading, error, fetchMore } = useOsdkObjects({{objectType}}, {
                 $select: ["{{titleProperty}}"],
                 pageSize: 30
@@ -311,6 +313,7 @@ versions:
             // so prefer loading more on demand over autoFetchMore: true, which loads every object.
             // Pages are not read from a snapshot, so objects that change between pages may be repeated
             // or skipped. $select only the properties you render; by default every property is loaded.
+            // The result type is not narrowed: unselected properties type-check but are undefined.
             // For counts, sums, or group-bys, use useOsdkAggregation instead of loading objects.
             function All{{objectType}}List() {
               const { data, isLoading, error, fetchMore } = useOsdkObjects({{objectType}}, {
