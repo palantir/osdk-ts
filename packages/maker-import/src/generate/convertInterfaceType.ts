@@ -91,11 +91,30 @@ export function convertInterfaceType(
       description: iface.description ?? "",
     },
     extendsInterfaces,
-    links: [],
+    links: Object.values(iface.links).map(convertInterfaceLinkType),
     actionTypeConstraints: [],
     status: { type: "active", active: {} },
     propertiesV2,
     propertiesV3,
     searchable: true,
+  };
+}
+
+function convertInterfaceLinkType(
+  link: Ontologies.InterfaceLinkType,
+): InterfaceType["links"][number] {
+  const destination = link.linkedEntityApiName;
+  return {
+    cardinality: link.cardinality === "ONE" ? "SINGLE" : "MANY",
+    linkedEntityTypeId:
+      destination.type === "interfaceTypeApiName"
+        ? { type: "interfaceType", interfaceType: destination.apiName }
+        : { type: "objectType", objectType: destination.apiName },
+    metadata: {
+      apiName: link.apiName,
+      displayName: link.displayName,
+      description: link.description ?? "",
+    },
+    required: link.required,
   };
 }
