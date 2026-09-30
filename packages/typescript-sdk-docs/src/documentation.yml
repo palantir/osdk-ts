@@ -1101,7 +1101,7 @@ versions:
             // asyncIter() fetches page after page until every matching object has been loaded:
             // - $select only the properties you read. Without it every property is loaded, and reading one
             //   property afterwards does not reduce what was already fetched. On object types with large
-            //   text, array, or other wide properties this can be orders of magnitude slower.
+            //   text, array, or other wide properties this can be much slower than necessary.
             // - Handle each object as it arrives rather than collecting them all into an array, so that
             //   memory use does not grow with the size of the object set.
             // - asyncIter() always reads from a consistent snapshot, so pages never repeat or skip objects.
