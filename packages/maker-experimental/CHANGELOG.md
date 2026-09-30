@@ -1,5 +1,11 @@
 # @osdk/maker-experimental
 
+## 0.70.0
+
+### Minor Changes
+
+- 3e47b21: Fix empty backing dataset generation for geopoint and geoshape properties, including arrays, by using string columns.
+
 ## 0.69.0
 
 ### Minor Changes
