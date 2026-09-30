@@ -953,8 +953,10 @@ versions:
             import { client } from "./client";
             import { type Osdk } from "@osdk/client";
 
+            // $select only the properties you read; without it every property is loaded.
             try {
-                const object: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne({{{primaryKeyPropertyValueV2}}});
+                const object: Osdk.Instance<{{objectType}}, never, "{{titleProperty}}"> = await client({{objectType}})
+                    .fetchOne({{{primaryKeyPropertyValueV2}}}, { $select: ["{{titleProperty}}"] });
             }
             catch(e) {
                 throw e;
@@ -998,9 +1000,12 @@ versions:
             import { client } from "./client";
             import { type Osdk, type PageResult } from "@osdk/client";
 
+            // $select only the properties you read; without it every property is loaded.
+            // $pageSize is the size of one page, not a limit on the total number of objects.
             try {
-                const page: PageResult<Osdk.Instance<{{objectType}}>> = await client({{objectType}})
+                const page: PageResult<Osdk.Instance<{{objectType}}, never, "{{titleProperty}}">> = await client({{objectType}})
                     .fetchPage({
+                        $select: ["{{titleProperty}}"],
                         $orderBy: {"{{titleProperty}}": "asc"},
                         $pageSize: 30
                     });
@@ -1016,12 +1021,15 @@ versions:
             import { client } from "./client";
             import { type Osdk, type PageResult } from "@osdk/client";
 
+            // $select only the properties you read; without it every property is loaded.
+            // $pageSize is the size of one page, not a limit on the total number of objects.
             try {
-                const page: PageResult<Osdk.Instance<{{objectType}}>> = await client({{objectType}})
+                const page: PageResult<Osdk.Instance<{{objectType}}, never, "{{titleProperty}}">> = await client({{objectType}})
                     .where({
                         {{titleProperty}}: {$isNull: true}
                     })
                     .fetchPage({
+                        $select: ["{{titleProperty}}"],
                         $pageSize: 30
                     });
                 const objects = page.data;
@@ -1036,7 +1044,9 @@ versions:
             import { client } from "./client";
             import type { Osdk } from "@osdk/client";
 
-            const responseNoErrorWrapper: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne({{{primaryKeyPropertyValueV2}}});
+            // $select only the properties you read; without it every property is loaded.
+            const responseNoErrorWrapper: Osdk.Instance<{{objectType}}, never, "{{titleProperty}}"> = await client({{objectType}})
+                .fetchOne({{{primaryKeyPropertyValueV2}}}, { $select: ["{{titleProperty}}"] });
 
           computedVariables:
             - primaryKeyPropertyValueV2
@@ -1744,11 +1754,14 @@ versions:
             // Edit this import if your client location differs
             import { client } from "./client";
 
-            // asyncIter() fetches page after page until every matching object has been loaded, always from
-            // a consistent snapshot (see loadAllObjectsReference). Pass $select: [...] with only the
-            // properties you read, since every property is loaded by default, and handle each object as it
-            // arrives rather than collecting them all into an array. For counts, sums, or group-bys, use
-            // .aggregate() instead; for a sample or the first N objects, use fetchPage({ $pageSize }).
+            // asyncIter() fetches page after page until every matching object has been loaded:
+            // - Pass $select: [...] with only the properties you read; every property is loaded by default.
+            // - Handle each object as it arrives rather than collecting them all into an array.
+            // - It always reads from a consistent snapshot, so pages never repeat or skip objects, but it
+            //   fails if objects are added or removed faster than the traversal completes or the snapshot
+            //   expires. Filter to a stable subset, select fewer properties, or page with fetchPage().
+            // - For counts, sums, or group-bys, use .aggregate() instead; for a sample or the first N
+            //   objects, use fetchPage({ $pageSize }).
             for await (const int of client({{interfaceApiName}}).asyncIter()) {
                 console.log(int.$primaryKey);
             }

@@ -228,7 +228,7 @@ const { data } = useOsdkObjects(Todo, {
 });
 ```
 
-Reading a property afterwards does not reduce what was already fetched, so on object types with large text, array, or other wide properties, loading every property can be much slower than necessary. The returned objects are typed to the selected properties, so reading a property you didn't select is a type error.
+Reading a property afterwards does not reduce what was already fetched, so on object types with large text, array, or other wide properties, loading every property can be much slower than necessary. Unlike `fetchPage` and `asyncIter`, `useOsdkObjects` does not narrow the returned type to the selected properties: reading a property you didn't select still type-checks, but is `undefined` at runtime. Keep `$select` in sync with the properties your component reads.
 
 ### Pagination
 

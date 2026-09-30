@@ -25,14 +25,18 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
+// $select only the properties you read; without it every property is loaded.
+// $pageSize is the size of one page, not a limit on the total number of objects.
 try {
-  const page: PageResult<Osdk.Instance<Employee>> = await client(Employee)
-    .where({
-      fullName: { $isNull: true },
-    })
-    .fetchPage({
-      $pageSize: 30,
-    });
+  const page: PageResult<Osdk.Instance<Employee, never, "fullName">> =
+    await client(Employee)
+      .where({
+        fullName: { $isNull: true },
+      })
+      .fetchPage({
+        $select: ["fullName"],
+        $pageSize: 30,
+      });
   const objects = page.data;
   const object = objects[0];
 } catch (e) {
