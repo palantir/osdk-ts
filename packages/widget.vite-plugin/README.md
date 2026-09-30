@@ -69,7 +69,9 @@ To build for an existing widget set and run Foundry developer mode, provide a `f
 }
 ```
 
-Build tools that assign widget identities during packaging can supply a build context instead.
+SuperRepo packages widget assets into a Marketplace product that creates the widget set when installed. To build before that widget set exists, the Foundry CLI supplies a temporary widget-set RID and release version through the plugin's `build` option. SuperRepo projects receive these values automatically through [`superrepoWidgetPlugin`](#packaging-integrations).
+
+Other build tools can also supply these values directly, as shown below.
 
 `build.widgetSetRid` is the resource identifier (RID) of the widget set represented by the build. It becomes `widgetSet.rid` in the generated `.palantir/widgets.config.json`, which Widget Registry uses to associate a published release with its widget set.
 
