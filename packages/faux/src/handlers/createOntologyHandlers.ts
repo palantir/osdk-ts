@@ -16,6 +16,7 @@
 
 /* eslint-disable @typescript-eslint/require-await */
 
+import { ActionTypesFullMetadata } from "@osdk/foundry.ontologies";
 import type { RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
 
@@ -24,6 +25,7 @@ import { defaultOntologyMetadata } from "../defaultOntologyMetadata.js";
 import { OntologiesV2 } from "../mock/index.js";
 import { authHandlerMiddleware } from "./authHandlerMiddleware.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
+import { handleOpenApiCall } from "./util/handleOpenApiCall.js";
 
 export const createOntologyHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
@@ -35,7 +37,11 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
   OntologiesV2.OntologiesV2.getFullMetadata(baseUrl, async (req) => {
     return fauxFoundry
       .getOntology(req.params.ontologyApiName)
-      .getOntologyFullMetadata();
+      .getOntologyFullMetadata(
+        new URL(req.request.url).searchParams.get(
+          "includeActionTypeFullMetadata",
+        ) === "true",
+      );
   }),
 
   /**
@@ -77,6 +83,14 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
       .getOntology(req.params.ontologyApiName)
       .getActionDef(req.params.actionTypeApiName);
   }),
+
+  handleOpenApiCall(ActionTypesFullMetadata.get, ["ontology", "actionType"])(
+    baseUrl,
+    async ({ params }) =>
+      fauxFoundry
+        .getOntology(params.ontology)
+        .getActionTypeFullMetadata(params.actionType),
+  ),
 
   OntologiesV2.QueryTypes.get(baseUrl, async (req) => {
     const queryParams = Object.fromEntries(

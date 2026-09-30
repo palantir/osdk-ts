@@ -43,6 +43,10 @@ import type { TH_ObjectTypeFullMetadata } from "./typeHelpers/TH_ObjectTypeFullM
  */
 export class FauxOntology {
   #ontology: OntologiesV2.OntologyFullMetadata;
+  #fullActionMetadata = new Map<
+    OntologiesV2.ActionTypeApiName,
+    OntologiesV2.ActionTypeFullMetadata
+  >();
   #actionImpl: Map<OntologiesV2.ActionTypeApiName, FauxActionImpl> = new Map();
   #queryImpl: Map<
     OntologiesV2.QueryApiName,
@@ -66,8 +70,17 @@ export class FauxOntology {
     return this.#ontology.ontology.apiName;
   }
 
-  getOntologyFullMetadata(): OntologiesV2.OntologyFullMetadata {
-    return this.#ontology;
+  getOntologyFullMetadata(
+    includeActionTypeFullMetadata = false,
+  ): OntologiesV2.OntologyFullMetadata {
+    return includeActionTypeFullMetadata
+      ? {
+          ...this.#ontology,
+          actionTypesFullMetadata: this.#getFullActionMetadata(
+            this.#ontology.actionTypes,
+          ),
+        }
+      : this.#ontology;
   }
 
   getFilteredOntologyMetadata(
@@ -92,7 +105,11 @@ export class FauxOntology {
         this.#ontology.actionTypes,
         request.actionTypes,
       ),
-      actionTypesFullMetadata: {},
+      actionTypesFullMetadata: request.includeActionTypeFullMetadata
+        ? this.#getFullActionMetadata(
+            filterRecord(this.#ontology.actionTypes, request.actionTypes),
+          )
+        : {},
       queryTypes: this.#getFilteredQueryTypes(request),
 
       interfaceTypes: filterRecord(
@@ -155,6 +172,38 @@ export class FauxOntology {
       throw new OpenApiCallError(404, ActionNotFoundError());
     }
     return actionType;
+  }
+
+  public getActionTypeFullMetadata(
+    actionTypeApiName: string,
+  ): OntologiesV2.ActionTypeFullMetadata {
+    const actionType = this.getActionDef(actionTypeApiName);
+    return (
+      this.#fullActionMetadata.get(actionType.apiName) ?? {
+        actionType,
+        fullLogicRules: [],
+      }
+    );
+  }
+
+  #getFullActionMetadata(
+    actionTypes: Record<
+      OntologiesV2.ActionTypeApiName,
+      OntologiesV2.ActionTypeV2
+    >,
+  ): Record<
+    OntologiesV2.ActionTypeApiName,
+    OntologiesV2.ActionTypeFullMetadata
+  > {
+    return Object.fromEntries(
+      Object.entries(actionTypes).map(([apiName, actionType]) => [
+        apiName,
+        this.#fullActionMetadata.get(apiName) ?? {
+          actionType,
+          fullLogicRules: [],
+        },
+      ]),
+    );
   }
 
   public getActionImpl(actionTypeApiName: string): FauxActionImpl {
@@ -325,19 +374,28 @@ export class FauxOntology {
   registerActionType<Q extends OntologiesV2.ActionTypeV2>(
     def: Q,
     implementation?: FauxActionImpl<Q>,
+    fullLogicRules?: OntologiesV2.ActionTypeFullMetadata["fullLogicRules"],
   ): void;
   registerActionType(
     def: OntologiesV2.ActionTypeV2,
     implementation?: FauxActionImpl,
+    fullLogicRules?: OntologiesV2.ActionTypeFullMetadata["fullLogicRules"],
   ): void;
   registerActionType(
     def: OntologiesV2.ActionTypeV2,
     implementation?: FauxActionImpl,
+    fullLogicRules?: OntologiesV2.ActionTypeFullMetadata["fullLogicRules"],
   ): void {
     if (def.apiName in this.#ontology.actionTypes) {
       throw new Error(`ActionType ${def.apiName} already registered`);
     }
     this.#ontology.actionTypes[def.apiName] = def;
+    if (fullLogicRules) {
+      this.#fullActionMetadata.set(def.apiName, {
+        actionType: def,
+        fullLogicRules,
+      });
+    }
     if (implementation) {
       this.#actionImpl.set(def.apiName, implementation);
     }

@@ -134,6 +134,17 @@ export interface Client extends SharedClient, OldSharedClient {
   ): ExperimentFns<Q>;
 
   /**
+   * Fetches action metadata with interface link effects from the full metadata
+   * endpoint. This opt-in read makes an online request and surfaces endpoint errors.
+   * Ordinary metadata reads and action application continue to use the standard
+   * action metadata endpoint.
+   */
+  fetchMetadata<Q extends ActionDefinition<unknown>>(
+    o: Q,
+    options: { includeActionEffects: true },
+  ): Promise<ActionMetadata>;
+
+  /**
    * Fetches runtime metadata for the given ontology definition. The returned shape
    * is dispatched on the kind of definition passed: {@link ObjectMetadata},
    * {@link InterfaceMetadata}, {@link ActionMetadata}, or {@link QueryMetadata}.

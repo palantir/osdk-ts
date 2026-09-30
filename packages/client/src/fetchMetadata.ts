@@ -24,17 +24,24 @@ import type {
   QueryDefinition,
   QueryMetadata,
 } from "@osdk/api";
+import * as ActionTypeFullMetadata from "@osdk/foundry.ontologies/ActionTypeFullMetadata";
 
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { InterfaceDefinitions } from "./ontology/OntologyProvider.js";
 
 /** @internal */
-export const fetchMetadataInternal = async <
+export function fetchMetadataInternal<Q extends ActionDefinition<unknown>>(
+  client: MinimalClient,
+  definition: Q,
+  options: { includeActionEffects: true },
+): Promise<ActionMetadata>;
+/** @internal */
+export function fetchMetadataInternal<
   Q extends
     | ObjectTypeDefinition
     | InterfaceDefinition
-    | ActionDefinition<any>
-    | QueryDefinition<any>,
+    | ActionDefinition<unknown>
+    | QueryDefinition<unknown>,
 >(
   client: MinimalClient,
   definition: Q,
@@ -43,30 +50,64 @@ export const fetchMetadataInternal = async <
     ? ObjectMetadata
     : Q extends InterfaceDefinition
       ? InterfaceMetadata
-      : Q extends ActionDefinition<any>
+      : Q extends ActionDefinition<unknown>
         ? ActionMetadata
-        : Q extends QueryDefinition<any>
+        : Q extends QueryDefinition<unknown>
           ? QueryMetadata
           : never
-> => {
+>;
+export async function fetchMetadataInternal(
+  client: MinimalClient,
+  definition:
+    | ObjectTypeDefinition
+    | InterfaceDefinition
+    | ActionDefinition<unknown>
+    | QueryDefinition<unknown>,
+  options?: { includeActionEffects: true },
+): Promise<
+  ObjectMetadata | InterfaceMetadata | ActionMetadata | QueryMetadata
+> {
   if (definition.type === "object") {
     const { [InterfaceDefinitions]: interfaceDefs, ...objectTypeDef } =
       await client.ontologyProvider.getObjectDefinition(definition.apiName);
-    return objectTypeDef as any;
+    return objectTypeDef;
   } else if (definition.type === "interface") {
-    return client.ontologyProvider.getInterfaceDefinition(
-      definition.apiName,
-    ) as any;
+    return client.ontologyProvider.getInterfaceDefinition(definition.apiName);
   } else if (definition.type === "action") {
-    return client.ontologyProvider.getActionDefinition(
-      definition.unsanitizedApiName ?? definition.apiName,
-    ) as any;
+    const actionTypeApiName =
+      definition.unsanitizedApiName ?? definition.apiName;
+    if (options?.includeActionEffects) {
+      const fullMetadata = await ActionTypeFullMetadata.get(
+        client,
+        await client.ontologyRid,
+        actionTypeApiName,
+        { branch: client.branch, preview: true },
+      );
+      if (
+        !fullMetadata ||
+        !fullMetadata.actionType ||
+        !Array.isArray(fullMetadata.fullLogicRules)
+      ) {
+        throw new Error(
+          `Full metadata for action ${actionTypeApiName} is missing actionType or fullLogicRules`,
+        );
+      }
+      const { actionType, fullLogicRules } = fullMetadata;
+      const { wireActionTypeV2ToSdkActionMetadata } =
+        await import("@osdk/generator-converters");
+      return wireActionTypeV2ToSdkActionMetadata(
+        actionType,
+        actionTypeApiName,
+        fullLogicRules,
+      );
+    }
+    return client.ontologyProvider.getActionDefinition(actionTypeApiName);
   } else if (definition.type === "query") {
     return client.ontologyProvider.getQueryDefinition(
       definition.apiName,
       definition.isFixedVersion ? definition.version : undefined,
-    ) as any;
+    );
   } else {
     throw new Error("Not implemented for given definition");
   }
-};
+}

@@ -16,12 +16,15 @@
 
 import type {
   ActionDefinition,
+  ActionMetadata,
   FetchPageArgs,
   InterfaceDefinition,
+  InterfaceMetadata,
   LinkTypeApiNamesFor,
   Logger,
   Media,
   NullabilityAdherence,
+  ObjectMetadata,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectSetSubscription,
@@ -30,6 +33,7 @@ import type {
   OsdkBase,
   PropertyKeys,
   QueryDefinition,
+  QueryMetadata,
   SelectArg,
 } from "@osdk/api";
 import type {
@@ -378,7 +382,53 @@ export function createClientFromContext(clientCtx: MinimalClient) {
     }
   }
 
-  const fetchMetadata = fetchMetadataInternal.bind(undefined, clientCtx);
+  function fetchMetadata<Q extends ActionDefinition<unknown>>(
+    definition: Q,
+    options: { includeActionEffects: true },
+  ): Promise<ActionMetadata>;
+  function fetchMetadata<
+    Q extends
+      | ObjectTypeDefinition
+      | InterfaceDefinition
+      | ActionDefinition<unknown>
+      | QueryDefinition<unknown>,
+  >(
+    definition: Q,
+  ): Promise<
+    Q extends ObjectTypeDefinition
+      ? ObjectMetadata
+      : Q extends InterfaceDefinition
+        ? InterfaceMetadata
+        : Q extends ActionDefinition<unknown>
+          ? ActionMetadata
+          : Q extends QueryDefinition<unknown>
+            ? QueryMetadata
+            : never
+  >;
+  function fetchMetadata(
+    definition:
+      | ObjectTypeDefinition
+      | InterfaceDefinition
+      | ActionDefinition<unknown>
+      | QueryDefinition<unknown>,
+    options?: { includeActionEffects: true },
+  ): Promise<
+    ObjectMetadata | InterfaceMetadata | ActionMetadata | QueryMetadata
+  > {
+    if (definition.type === "action" && options?.includeActionEffects) {
+      return fetchMetadataInternal(clientCtx, definition, options);
+    }
+    if (definition.type === "object") {
+      return fetchMetadataInternal(clientCtx, definition);
+    }
+    if (definition.type === "interface") {
+      return fetchMetadataInternal(clientCtx, definition);
+    }
+    if (definition.type === "action") {
+      return fetchMetadataInternal(clientCtx, definition);
+    }
+    return fetchMetadataInternal(clientCtx, definition);
+  }
 
   const symbolClientContext: newSymbolClientContext = "__osdkClientContext";
 
