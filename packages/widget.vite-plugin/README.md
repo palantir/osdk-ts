@@ -170,7 +170,9 @@ This vite plugin will then discover both entrypoints and output a combined `.pal
 
 The vite plugin also automatically configures developer mode so that you can preview the changes you make locally live on your Foundry environment. For developer mode to work, make sure you set a `FOUNDRY_TOKEN` environment variable that has a token with access to your Foundry stack.
 
-## Packaging integrations
+## SuperRepo (alpha)
+
+Support for custom widgets in SuperRepo is under development. The APIs and workflow described below may change as the integration develops.
 
 SuperRepo packages widget assets into a Marketplace product that creates the widget set when installed. To build before that widget set exists, the Foundry CLI supplies a temporary widget-set RID and release version through the plugin's `build` option. SuperRepo projects receive these values automatically through `superrepoWidgetPlugin`.
 
