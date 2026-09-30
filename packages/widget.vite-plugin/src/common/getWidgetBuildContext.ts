@@ -39,7 +39,7 @@ export async function getWidgetBuildContext(root: string): Promise<{
   return {
     widgetSetRid: local ? LOCAL_WIDGET_SET_RID : config.widgetSet.rid!,
     version: local
-      ? LOCAL_WIDGET_SET_VERSION
+      ? (process.env.FOUNDRY_WIDGET_SET_VERSION ?? LOCAL_WIDGET_SET_VERSION)
       : await autoVersion(
           config.widgetSet.autoVersion ?? { type: "package-json" },
           root,
