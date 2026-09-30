@@ -21,6 +21,10 @@ import type { WidgetSetInputSpec } from "@osdk/widget.api";
 
 import { getWidgetSetInputSpec } from "../build-plugin/getWidgetSetInputSpec.js";
 
+const LOCAL_WIDGET_SET_RID =
+  "ri.widgetregistry.main.widget-set.00000000-0000-0000-0000-000000000000";
+const LOCAL_WIDGET_SET_VERSION = "0.1.0";
+
 export async function getWidgetBuildContext(root: string): Promise<{
   widgetSetRid: string;
   version: string;
@@ -28,18 +32,14 @@ export async function getWidgetBuildContext(root: string): Promise<{
 }> {
   const loaded = await loadFoundryConfig("widgetSet", root);
   if (loaded == null) {
-    throw new Error(
-      'foundry.config.json file not found. Define it with build: "local" to package widgets without a Foundry widget set.',
-    );
+    throw new Error("foundry.config.json file not found.");
   }
   const config = loaded.foundryConfig;
   const local = config.build === "local";
   return {
-    widgetSetRid: local
-      ? "ri.widgetregistry.main.widget-set.00000000-0000-0000-0000-000000000000"
-      : config.widgetSet.rid!,
+    widgetSetRid: local ? LOCAL_WIDGET_SET_RID : config.widgetSet.rid!,
     version: local
-      ? "0.1.0"
+      ? LOCAL_WIDGET_SET_VERSION
       : await autoVersion(
           config.widgetSet.autoVersion ?? { type: "package-json" },
           root,
