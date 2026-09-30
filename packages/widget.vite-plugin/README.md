@@ -69,19 +69,23 @@ To build for an existing widget set and run Foundry developer mode, provide a `f
 }
 ```
 
-Build tools that assign widget identities during packaging can supply a build context instead:
+Build tools that assign widget identities during packaging can supply a build context instead.
+
+`build.widgetSetRid` is the resource identifier (RID) of the widget set represented by the build. It becomes `widgetSet.rid` in the generated `.palantir/widgets.config.json`, which Widget Registry uses to associate a published release with its widget set.
+
+- For an existing widget set, use its RID from `widgetSet.rid` in `foundry.config.json`.
+- For a Marketplace package that creates the widget set during installation, use the temporary RID assigned by the packaging tool. The packaging integration is responsible for mapping it to the installed widget set.
 
 ```ts
 foundryWidgetPlugin({
   build: {
-    widgetSetRid:
-      "ri.widgetregistry.main.widget-set.00000000-0000-0000-0000-000000000000",
+    widgetSetRid: "{YOUR_WIDGET_SET_RID}",
     version: "1.0.0",
   },
 });
 ```
 
-This builds without `foundry.config.json`, a Foundry token, or a pre-created widget set. The manifest uses the supplied identity and release version. By default, SDK inputs and authorizations are discovered from the Vite root's installed packages and `resources.json`. Supply `build.inputSpec` to replace that discovery with inputs assigned by the packaging tool. This option affects production builds; Foundry developer mode still uses `foundry.config.json`.
+The build requires no `foundry.config.json` or Foundry token and does not create a widget set. `build.version` sets the release version in the manifest. By default, SDK inputs and authorizations are discovered from the Vite root's installed packages and `resources.json`. Supply `build.inputSpec` to replace that discovery with inputs assigned by the packaging tool. This option affects production builds; Foundry developer mode still uses `foundry.config.json`.
 
 ## Importing the configuration
 
@@ -184,8 +188,19 @@ This vite plugin will then discover both entrypoints and output a combined `.pal
 
 The vite plugin also automatically configures developer mode so that you can preview the changes you make locally live on your Foundry environment. For developer mode to work, make sure you set a `FOUNDRY_TOKEN` environment variable that has a token with access to your Foundry stack.
 
-### Packaging integrations
+## Packaging integrations
 
 `extractWidgetDeclarations` reads widget configuration without compiling UI assets. `extractWidgetManifest` combines those declarations with an explicit widget-set RID, version, and SDK input specification for configure-only operations. Both are exported as package subpaths.
 
-SuperRepo Vite configurations can use `superrepoWidgetPlugin` from `@osdk/widget.vite-plugin/superrepo`. It reads the build context supplied by `foundry build custom-widget`; a production build without that context fails with the command to run.
+In SuperRepo, use `superrepoWidgetPlugin` to receive the RID, version, and SDK inputs from `foundry build custom-widget` automatically:
+
+```ts
+import { superrepoWidgetPlugin } from "@osdk/widget.vite-plugin/superrepo";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [superrepoWidgetPlugin()],
+});
+```
+
+The CLI supplies a temporary widget-set RID for packaging; Marketplace assigns the actual RID during installation. Widget authors do not need to choose or hardcode a RID. A production build without the CLI context fails with the command to run.
