@@ -2,4 +2,4 @@
 "@osdk/widget.vite-plugin": minor
 ---
 
-Support explicit widget packaging context and declaration extraction for local build tools.
+Support defining the widget packaging context in code and extracting widget declarations locally for local build tools like SuperRepo.

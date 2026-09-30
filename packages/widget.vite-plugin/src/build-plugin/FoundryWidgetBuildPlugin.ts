@@ -74,7 +74,7 @@ export function FoundryWidgetBuildPlugin(
         const foundryConfig = await loadFoundryConfig("widgetSet");
         if (foundryConfig == null) {
           throw new Error(
-            "foundry.config.json file not found. Supply the widget plugin's build option to build without a Foundry widget set.",
+            "foundry.config.json file not found. Define it or call foundryWidgetPlugin with the build option to build without a Foundry widget set.",
           );
         }
         buildContext = {
