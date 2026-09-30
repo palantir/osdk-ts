@@ -534,6 +534,78 @@ describe("generateBackingDatasetBlockResult", () => {
     },
   );
 
+  it.each([
+    { type: "geohash", geohash: {} },
+    { type: "geoshape", geoshape: {} },
+  ] satisfies Type[])(
+    "generates backing columns for scalar and array $type properties",
+    async (type) => {
+      const blockData = createObjectTypeBlockData({
+        properties: [
+          { apiName: "id", type: STRING_PROPERTY_TYPE },
+          { apiName: "location", type },
+          { apiName: "locations", type: makeArrayType(type) },
+        ],
+      });
+
+      const result = await generateBackingDatasetBlockResult(
+        blockData,
+        buildDir,
+      );
+      const schema = JSON.parse(
+        await fs.promises.readFile(
+          path.join(result.block_data_directory, "schema.json"),
+          "utf-8",
+        ),
+      );
+      expect(schema.fieldSchemaList).toMatchObject([
+        { name: "id", type: "STRING", arraySubtype: null },
+        { name: "location", type: "STRING", arraySubtype: null },
+        { name: "locations", type: "ARRAY", arraySubtype: { type: "STRING" } },
+      ]);
+      expect(
+        result.outputs[
+          ReadableIdGenerator.getForDatasetColumnOutput(
+            "TestObject",
+            "location",
+          )
+        ],
+      ).toMatchObject({
+        type: "datasourceColumn",
+        datasourceColumn: {
+          type: {
+            type: "concrete",
+            concrete: { type: "primitive", primitive: { type: "string" } },
+          },
+        },
+      });
+      expect(
+        result.outputs[
+          ReadableIdGenerator.getForDatasetColumnOutput(
+            "TestObject",
+            "locations",
+          )
+        ],
+      ).toMatchObject({
+        type: "datasourceColumn",
+        datasourceColumn: {
+          type: {
+            type: "concrete",
+            concrete: {
+              type: "array",
+              array: {
+                elementType: {
+                  type: "primitive",
+                  primitive: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+      });
+    },
+  );
+
   it("excludes editOnly properties from outputs and files", async () => {
     const blockData = createObjectTypeBlockData({
       properties: [

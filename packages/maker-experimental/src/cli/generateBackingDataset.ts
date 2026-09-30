@@ -44,6 +44,8 @@ export function propertyTypeToSchemaType(
 ): string {
   const typeStr = typeof propType === "string" ? propType : propType.type;
   switch (typeStr) {
+    case "geohash":
+    case "geoshape":
     case "marking":
     case "string":
       return "STRING";
