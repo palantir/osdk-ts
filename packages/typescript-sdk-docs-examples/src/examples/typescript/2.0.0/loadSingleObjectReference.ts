@@ -25,8 +25,9 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const responseNoErrorWrapper: Osdk.Instance<Employee> =
-  await client(Employee).fetchOne(12345);
+// $select only the properties you read; without it every property is loaded.
+const responseNoErrorWrapper: Osdk.Instance<Employee, never, "fullName"> =
+  await client(Employee).fetchOne(12345, { $select: ["fullName"] });
 
 // Ontology-defined derived properties are not returned by default.
 // Pass their API names in $select, along with any other properties you need.
