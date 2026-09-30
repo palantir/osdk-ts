@@ -16,6 +16,7 @@
 
 import { exit } from "node:process";
 
+import { GeneratorError } from "@osdk/generator-converters";
 import type { Arguments, Argv, CommandModule } from "yargs";
 
 import { logDuration, SlsLogger } from "../logging/index.js";
@@ -231,6 +232,7 @@ export class GeneratePackageCommand implements
           { params: { externalSdkCount: args.sdkPackages?.size ?? 0 } },
         );
 
+        const actionTypesApiNamesToLoad = transformArrayArg(args.actionTypes);
         const wireOntologyDefinition = await logDuration(
           logger,
           "Loading ontology metadata",
@@ -239,14 +241,15 @@ export class GeneratePackageCommand implements
               ontologyRid,
               {
                 objectTypesApiNamesToLoad: transformArrayArg(args.objectTypes),
-                actionTypesApiNamesToLoad: transformArrayArg(args.actionTypes),
+                actionTypesApiNamesToLoad,
                 queryTypesApiNamesToLoad: transformArrayArg(args.queryTypes),
                 interfaceTypesApiNamesToLoad: transformArrayArg(
                   args.interfaceTypes,
                 ),
                 linkTypesApiNamesToLoad: transformArrayArg(args.linkTypes),
-                includeActionTypeFullMetadata: args.experimentalOntologyMetadata
-                  ?? false,
+                includeActionTypeFullMetadata:
+                  args.experimentalOntologyMetadata === true
+                  || (actionTypesApiNamesToLoad?.length ?? 0) > 0,
               },
               packageInfo,
               args.branch,
@@ -273,6 +276,22 @@ export class GeneratePackageCommand implements
 
         // Narrowing doesn't carry into the closure below, so extract here.
         const ontologyInfo = wireOntologyDefinition.value;
+
+        const missingFullActionMetadata = actionTypesApiNamesToLoad?.filter(
+          actionApiName =>
+            ontologyInfo.requestedMetadata.actionTypes[actionApiName] != null
+            && !Array.isArray(
+              ontologyInfo.requestedMetadata.actionTypesFullMetadata?.[
+                actionApiName
+              ]?.fullLogicRules,
+            ),
+        ) ?? [];
+        if (missingFullActionMetadata.length > 0) {
+          throw new GeneratorError(
+            "Unable to load full metadata for the following action types. The stack may not support the private-beta full Action metadata endpoint.",
+            { actionTypeApiNames: missingFullActionMetadata },
+          );
+        }
 
         await logDuration(logger, "Rendering OSDK", () =>
           generatePackage(

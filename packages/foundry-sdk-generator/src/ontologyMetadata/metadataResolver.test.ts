@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import type {
+  ActionTypeFullMetadata,
+  OntologyFullMetadata,
+} from "@osdk/foundry.ontologies";
 import type { GeneratorError } from "@osdk/generator-converters";
 import {
   authHandlerMiddleware,
@@ -21,9 +25,9 @@ import {
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
-import { http, HttpResponse } from "msw";
+import { http, HttpResponse, type HttpResponseResolver } from "msw";
 import type { SetupServerApi } from "msw/node";
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { OntologyMetadataResolver } from "./ontologyMetadataResolver.js";
 
 describe("Load Ontologies Metadata", () => {
@@ -43,6 +47,8 @@ describe("Load Ontologies Metadata", () => {
       testSetup.apiServer.close();
     };
   });
+
+  afterEach(() => apiServer.resetHandlers());
 
   it("Loads no object types and action types", async () => {
     const ontologyMetadataResolver = new OntologyMetadataResolver(
@@ -183,7 +189,7 @@ describe("Load Ontologies Metadata", () => {
        */
       http.get(
         "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/actionTypes",
-        authHandlerMiddleware(async (req) => {
+        authHandlerMiddleware(async () => {
           return HttpResponse.json({
             data: [stubData.ActionTypeWithUnsupportedTypes],
           });
@@ -191,7 +197,9 @@ describe("Load Ontologies Metadata", () => {
       ),
       http.get(
         "https://stack.palantir.com/api/v1/ontologies/:ontologyRid/objectTypes",
-        authHandlerMiddleware(async ({ params }) => {
+        authHandlerMiddleware(async (
+          { params }: Parameters<HttpResponseResolver>[0],
+        ) => {
           if (params.ontologyRid !== ontologyRid) {
             return HttpResponse.json(
               { message: "Ontology not found" },
@@ -306,13 +314,40 @@ describe("Load Ontologies Metadata", () => {
     expect(ontologyDefinitions.value).toMatchSnapshot();
   });
 
-  it("Requests action type full metadata when requested", async () => {
+  it("requests and retains full Action metadata when requested", async () => {
     let requestBody: Record<string, unknown> | undefined;
+    const actionType = stubData.PromoteEmployee;
+    const fullAction: ActionTypeFullMetadata = {
+      actionType,
+      fullLogicRules: [{
+        type: "createInterfaceLink",
+        interfaceTypeApiName: "SourceInterface",
+        interfaceLinkTypeApiName: "linkedTarget",
+        sourceObject: "source",
+        targetObject: "target",
+      }],
+    };
+    const metadata: OntologyFullMetadata = {
+      ontology: {
+        apiName: "default-ontology",
+        displayName: "Ontology",
+        description: "The default ontology",
+        rid: "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+      },
+      actionTypes: { [actionType.apiName]: actionType },
+      actionTypesFullMetadata: { [actionType.apiName]: fullAction },
+      objectTypes: {},
+      queryTypes: {},
+      interfaceTypes: {},
+      sharedPropertyTypes: {},
+      valueTypes: {},
+    };
     apiServer.use(
       http.post(
         "https://stack.palantir.com/api/v2/ontologies/:ontology/metadata",
         async ({ request }) => {
           requestBody = await request.clone().json();
+          return HttpResponse.json(metadata);
         },
       ),
     );
@@ -321,7 +356,7 @@ describe("Load Ontologies Metadata", () => {
       .getWireOntologyDefinition(
         "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
         {
-          actionTypesApiNamesToLoad: ["promoteEmployee"],
+          actionTypesApiNamesToLoad: [actionType.apiName],
           includeActionTypeFullMetadata: true,
         },
       );
@@ -331,6 +366,8 @@ describe("Load Ontologies Metadata", () => {
     }
 
     expect(requestBody).toMatchObject({ includeActionTypeFullMetadata: true });
+    expect(ontologyDefinitions.value.requestedMetadata.actionTypesFullMetadata)
+      .toEqual({ [actionType.apiName]: fullAction });
   });
 
   it("Loads object and action types using only specified link types", async () => {
