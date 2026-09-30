@@ -43,61 +43,16 @@ type PropertyApiNameUnion = PropertyApiName | SharedPropertyTypeApiName;
 export function getRequiredCreatePropertyKeys(
   objectType: ObjectTypeFullMetadata["objectType"],
 ): string[] {
-  const properties = objectType.properties;
-  const createWritePaths: Set<string>[] = [];
-
-  for (const datasource of objectType.datasources ?? []) {
-    const definition = datasource.definition;
-
-    switch (definition.type) {
-      case "editsOnly": {
-        const propertyNames: string[] = Object.keys(properties);
-
-        const editableProperties: Set<string> = new Set(propertyNames);
-
-        createWritePaths.push(editableProperties);
-        break;
-      }
-      case "dataset":
-      case "direct":
-      case "restrictedView":
-      case "stream":
-      case "table": {
-        const propertyMapping = definition.propertyMapping;
-
-        const propertyNames = Object.keys(propertyMapping);
-
-        const editableProperties: Set<string> = new Set(propertyNames);
-
-        createWritePaths.push(editableProperties);
-        break;
-      }
-      default:
-        break;
+  const requiredKeys = new Set([objectType.primaryKey]);
+  for (
+    const [propertyName, property] of Object.entries(objectType.properties)
+  ) {
+    if (property.dataConstraints?.nullability === "NOT_NULLABLE") {
+      requiredKeys.add(propertyName);
     }
   }
 
-  if (createWritePaths.length !== 1) {
-    return [objectType.primaryKey];
-  }
-
-  const mappedProperties: Set<string> | undefined = createWritePaths[0];
-  if (mappedProperties === undefined) {
-    return [objectType.primaryKey];
-  }
-
-  const requiredKeys: string[] = [objectType.primaryKey];
-  for (const [propertyName, property] of Object.entries(properties)) {
-    if (
-      mappedProperties.has(propertyName)
-      && property.dataConstraints?.nullability === "NOT_NULLABLE"
-      && propertyName !== objectType.primaryKey
-    ) {
-      requiredKeys.push(propertyName);
-    }
-  }
-
-  return requiredKeys.sort();
+  return [...requiredKeys].sort();
 }
 
 /** @internal */
