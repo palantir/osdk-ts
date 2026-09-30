@@ -41,6 +41,8 @@ export interface ActionMetadata {
     	// (undocumented)
     displayName?: string;
     	// (undocumented)
+    interfaceLinkEffects?: ActionMetadata.InterfaceLinkEffect[];
+    	// (undocumented)
     modifiedEntities?: Partial<Record<any, {
         		created: boolean
         		modified: boolean
@@ -105,6 +107,20 @@ export namespace ActionMetadata {
             			nullable: boolean
             		};
         	}
+    	// (undocumented)
+    export type InterfaceLinkEffect = {
+        		type: "createInterfaceLink"
+        		interfaceTypeApiName: string
+        		interfaceLinkTypeApiName: string
+        		sourceObject: string
+        		targetObject: string
+        	} | {
+        		type: "deleteInterfaceLink"
+        		interfaceTypeApiName: string
+        		interfaceLinkTypeApiName: string
+        		sourceObject: string
+        		targetObject: string
+        	};
     	// (undocumented)
     export interface Parameter<T_Target extends ObjectTypeDefinition = never> {
         		// (undocumented)

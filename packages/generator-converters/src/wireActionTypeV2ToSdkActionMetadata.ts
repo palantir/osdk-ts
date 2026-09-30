@@ -18,6 +18,7 @@ import type { ActionMetadata } from "@osdk/api";
 import type {
   ActionParameterType,
   ActionParameterV2,
+  ActionTypeFullMetadata,
   ActionTypeV2,
 } from "@osdk/foundry.ontologies";
 
@@ -31,8 +32,33 @@ import {
 export function wireActionTypeV2ToSdkActionMetadata(
   input: ActionTypeV2,
   unsanitizedApiName?: string,
+  fullLogicRules?: ActionTypeFullMetadata["fullLogicRules"],
 ): ActionMetadata {
   const modifiedEntityTypes = getModifiedEntityTypes(input);
+  const interfaceLinkEffects = fullLogicRules?.flatMap(
+    (rule): ActionMetadata.InterfaceLinkEffect[] => {
+      switch (rule.type) {
+        case "createInterfaceLink":
+          return [{
+            type: "createInterfaceLink",
+            interfaceTypeApiName: rule.interfaceTypeApiName,
+            interfaceLinkTypeApiName: rule.interfaceLinkTypeApiName,
+            sourceObject: rule.sourceObject,
+            targetObject: rule.targetObject,
+          }];
+        case "deleteInterfaceLink":
+          return [{
+            type: "deleteInterfaceLink",
+            interfaceTypeApiName: rule.interfaceTypeApiName,
+            interfaceLinkTypeApiName: rule.interfaceLinkTypeApiName,
+            sourceObject: rule.sourceObject,
+            targetObject: rule.targetObject,
+          }];
+        default:
+          return [];
+      }
+    },
+  );
   return {
     type: "action",
     apiName: input.apiName,
@@ -51,6 +77,7 @@ export function wireActionTypeV2ToSdkActionMetadata(
       modifiedEntityTypes.addedObjects,
       modifiedEntityTypes.modifiedObjects,
     ),
+    ...(interfaceLinkEffects?.length ? { interfaceLinkEffects } : {}),
     rid: input.rid,
     status: ensureStringEnumSupportedOrUndefined(
       input.status,
