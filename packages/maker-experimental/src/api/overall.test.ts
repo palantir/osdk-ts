@@ -1642,6 +1642,102 @@ describe("Experimental Test Suite", () => {
       ).toEqual(apiNamePreset("importedAction"));
     });
 
+    it.each(["unreferenced", "linked"] as const)(
+      "preserves identifiers for %s imported objects",
+      async (reference) => {
+        const result = await defineOntologyV2("com.palantir.", () => {
+          for (const apiName of ["external.Employee", "external.Office"]) {
+            defineImportObject({
+              apiName,
+              properties: {
+                id: { type: "string" },
+                name: { type: "string" },
+              },
+            });
+          }
+
+          if (reference === "linked") {
+            const team = defineObject({
+              apiName: "team",
+              displayName: "Local Team",
+              pluralDisplayName: "Local Teams",
+              titlePropertyApiName: "id",
+              primaryKeyPropertyApiName: "id",
+              properties: {
+                id: { type: "string" },
+                employeeId: { type: "string" },
+              },
+            });
+            defineLink({
+              apiName: "employee-to-team",
+              one: {
+                object: "external.Employee",
+                metadata: { apiName: "teams", displayName: "Teams" },
+              },
+              toMany: {
+                object: team,
+                metadata: { apiName: "employee", displayName: "Employee" },
+              },
+              manyForeignKeyProperty: "employeeId",
+            });
+          }
+        });
+
+        const knownIds = result.ontologyIr.ontology.knownIdentifiers;
+        const expectedObjectIds = ["external-employee", "external-office"];
+        if (reference === "linked") {
+          expectedObjectIds.push("com-palantir-team");
+        }
+        for (const mapping of [
+          knownIds.objectTypeIds,
+          knownIds.propertyTypeIds,
+          knownIds.objectPropertyTypeIdsToRids,
+        ]) {
+          expect(Object.keys(mapping).sort()).toEqual(expectedObjectIds.sort());
+        }
+
+        for (const { objectType } of Object.values(
+          result.ontologyIr.importedOntology.objectTypes,
+        )) {
+          invariant(
+            objectType.apiName != null,
+            "Imported object API name is missing",
+          );
+          const objectReadableId = ReadableIdGenerator.getForObjectType(
+            objectType.apiName,
+          );
+          expect(result.shapes.inputShapes.get(objectReadableId)?.type).toBe(
+            "objectType",
+          );
+          expect(knownIds.objectTypeIds[objectType.id]).toBe(
+            result.blockDataAddOn.idToBlockShapeId[objectReadableId],
+          );
+
+          for (const [propertyRid, property] of Object.entries(
+            objectType.propertyTypes,
+          )) {
+            invariant(
+              property.apiName != null,
+              "Imported property API name is missing",
+            );
+            const propertyReadableId = ReadableIdGenerator.getForObjectProperty(
+              objectType.apiName,
+              property.apiName,
+            );
+            expect(
+              result.shapes.inputShapes.get(propertyReadableId)?.type,
+            ).toBe("property");
+            expect(knownIds.propertyTypeIds[objectType.id][property.id]).toBe(
+              result.blockDataAddOn.idToBlockShapeId[propertyReadableId],
+            );
+            expect(
+              knownIds.objectPropertyTypeIdsToRids[objectType.id][property.id],
+            ).toBe(propertyRid);
+          }
+        }
+      },
+    );
+
     it("handles local links referencing imported objects", async () => {
       const result = await defineOntologyV2("com.palantir.", () => {
         const importedObj = defineImportObject({
@@ -1652,7 +1748,7 @@ describe("Experimental Test Suite", () => {
           },
         });
         const localObj = defineObject({
-          apiName: "localTeam",
+          apiName: "team",
           displayName: "Local Team",
           pluralDisplayName: "Local Teams",
           titlePropertyApiName: "teamId",
