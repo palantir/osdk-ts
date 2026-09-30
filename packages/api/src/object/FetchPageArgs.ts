@@ -82,6 +82,13 @@ export interface SelectArg<
   RDP_KEYS extends string = never,
   PROPERTY_SECURITIES extends boolean = false,
 > {
+  /**
+   * The properties to load for each object. Defaults to every property.
+   *
+   * Select only the properties you read: reading a property afterwards does not reduce
+   * what was already fetched, so loading every property of an object type with large
+   * text, array, or other wide properties can be much slower than necessary.
+   */
   $select?: readonly L[];
   $includeRid?: R;
   $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
@@ -130,6 +137,10 @@ export interface FetchPageArgs<
   MODIFIERS
 > {
   $nextPageToken?: string;
+  /**
+   * The number of objects in one page. This does not limit the total number of objects:
+   * continue with `nextPageToken` to load further pages.
+   */
   $pageSize?: number;
   $applyModifiers?: ApplyModifiersArg<Q> &
     MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
@@ -143,6 +154,11 @@ export interface FetchPageArgs<
   $EXPERIMENTAL_defaultLoadLevel?: DEFAULT_LOAD_LEVEL;
   /**
    * Ensures paging consistency by freezing the view at the time of query to prevent duplicate or missing items. Setting $snapshot to false ensures that you will always get the latest results.
+   *
+   * Without a snapshot, if objects are added, removed, or edited between requests, later pages
+   * may repeat or skip objects. With a snapshot, pass `$snapshot: true` on every page request;
+   * paging fails if the data changes too much or the snapshot expires before paging completes.
+   * `asyncIter()` always uses a snapshot.
    * @default false
    */
   $snapshot?: boolean;

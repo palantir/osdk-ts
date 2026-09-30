@@ -218,6 +218,18 @@ const { data } = useOsdkObjects(Todo, {
 });
 ```
 
+### Selecting Properties with `$select`
+
+By default every property of each object is loaded. Pass `$select` with only the properties your component reads:
+
+```tsx
+const { data } = useOsdkObjects(Todo, {
+  $select: ["title", "isComplete"],
+});
+```
+
+Reading a property afterwards does not reduce what was already fetched, so on object types with large text, array, or other wide properties, loading every property can be much slower than necessary. The returned objects are typed to the selected properties, so reading a property you didn't select is a type error.
+
 ### Pagination
 
 Control page size and load more results:
@@ -242,6 +254,12 @@ function TodoList() {
 }
 ```
 
+`pageSize` is the size of one page, not a limit on the total number of objects.
+
+:::note Paging consistency
+Pages are loaded without a snapshot. If objects are added, removed, or edited between page loads, later pages may repeat or skip objects. When you need every object from one consistent view outside of a component, use `asyncIter()` on the client (see [useOsdkClient](#useosdkclient)).
+:::
+
 ### Auto-Fetching Pages
 
 By default, only the first page is fetched. Use `autoFetchMore` to load more automatically:
@@ -260,7 +278,7 @@ const { data, isLoading, fetchMore } = useOsdkObjects(Todo, {
 ```
 
 :::warning Performance Warning
-Using `autoFetchMore: true` on large datasets may cause long load times and high memory usage. Prefer `autoFetchMore: N` with a specific number.
+Using `autoFetchMore: true` on large datasets may cause long load times and high memory usage. Prefer `autoFetchMore: N` with a specific number, or `fetchMore` on demand: a UI can only show so much at once. For counts, sums, or group-bys, use [`useOsdkAggregation`](./advanced-queries.md#useosdkaggregation) instead of loading objects.
 :::
 
 ### Conditional Queries with `enabled`
@@ -651,7 +669,10 @@ function MyComponent() {
   const client = useOsdkClient();
 
   const loadTodos = async () => {
-    const todos = await client(Todo).fetchPage();
+    const todos = await client(Todo).fetchPage({
+      $select: ["title", "isComplete"],
+      $pageSize: 50,
+    });
     // ...
   };
 
@@ -660,6 +681,34 @@ function MyComponent() {
 ```
 
 Use this when you need to perform queries outside the reactive hook system, such as in event handlers or effects where you manage state manually.
+
+### Loading pages vs. loading everything
+
+| Method                     | Loads                                   | Snapshot                                            |
+| -------------------------- | --------------------------------------- | --------------------------------------------------- |
+| `fetchPage({ $pageSize })` | One page; continue with `nextPageToken` | Only with `$snapshot: true` (pass it on every page) |
+| `asyncIter()`              | Every matching object, page after page  | Always                                              |
+| `aggregate({ ... })`       | Counts, sums, and group-bys only        | n/a                                                 |
+
+Without a snapshot, later pages may repeat or skip objects if the data changes between requests. With a snapshot, every page reflects the same point in time, but paging fails if the data changes too much or the traversal runs long enough for the snapshot to expire, which is most likely on constantly updated (e.g. stream-backed) object types.
+
+Both `fetchPage` and `asyncIter` load every property unless you pass `$select`. With `asyncIter`, handle each object as it arrives rather than collecting all of them into an array:
+
+```ts
+// ✗ Loads every property of every object and holds all of them in memory
+const todos = await Array.fromAsync(client(Todo).asyncIter());
+
+// ✓ Loads only the property that is used, one object at a time
+let completed = 0;
+for await (const todo of client(Todo).asyncIter({ $select: ["isComplete"] })) {
+  if (todo.isComplete) completed++;
+}
+
+// ✓✓ Better still for counts: aggregate on the server without loading any objects
+const { $count } = await client(Todo)
+  .where({ isComplete: true })
+  .aggregate({ $select: { $count: "unordered" } });
+```
 
 ---
 
