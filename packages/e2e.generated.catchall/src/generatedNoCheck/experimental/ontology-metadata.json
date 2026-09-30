@@ -8533,5 +8533,427 @@
                 }
             ]
         }
+    },
+    "agentTypes": {
+        "osdkTestFixture": {
+            "apiName": "osdkTestFixture",
+            "version": "0.5.0",
+            "createdTime": "2026-09-30T10:59:49.13834977Z",
+            "createdBy": "59a138e5-881f-4171-841c-eb3e124fe166",
+            "argumentDefinitions": [
+                {
+                    "name": "defaultCity",
+                    "dataType": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "eventDefinitions": [
+                {
+                    "eventType": "@platform/send-user-message",
+                    "payloadType": {
+                        "type": "struct",
+                        "fields": [
+                            {
+                                "name": "parts",
+                                "dataType": {
+                                    "type": "list",
+                                    "elementType": {
+                                        "type": "discriminatedUnion",
+                                        "discriminatorKey": "type",
+                                        "members": [
+                                            {
+                                                "discriminatorValue": "text",
+                                                "fields": [
+                                                    {
+                                                        "name": "text",
+                                                        "dataType": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "eventType": "LookupWeather",
+                    "payloadType": {
+                        "type": "struct",
+                        "fields": [
+                            {
+                                "name": "city",
+                                "dataType": {
+                                    "type": "nullable",
+                                    "wrappedType": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "eventType": "SetDefaultCity",
+                    "payloadType": {
+                        "type": "struct",
+                        "fields": [
+                            {
+                                "name": "city",
+                                "dataType": {
+                                    "type": "string"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ],
+            "agentStateType": {
+                "type": "struct",
+                "fields": [
+                    {
+                        "name": "defaultCity",
+                        "dataType": {
+                            "type": "string"
+                        }
+                    }
+                ]
+            },
+            "contextItemDefinitions": [
+                {
+                    "contextItemType": "@platform/assistant-message",
+                    "dataType": {
+                        "type": "struct",
+                        "fields": [
+                            {
+                                "name": "parts",
+                                "dataType": {
+                                    "type": "list",
+                                    "elementType": {
+                                        "type": "discriminatedUnion",
+                                        "discriminatorKey": "type",
+                                        "members": [
+                                            {
+                                                "discriminatorValue": "text",
+                                                "fields": [
+                                                    {
+                                                        "name": "text",
+                                                        "dataType": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "discriminatorValue": "thinking",
+                                                "fields": [
+                                                    {
+                                                        "name": "thinking",
+                                                        "dataType": {
+                                                            "type": "discriminatedUnion",
+                                                            "discriminatorKey": "type",
+                                                            "members": [
+                                                                {
+                                                                    "discriminatorValue": "anthropic",
+                                                                    "fields": [
+                                                                        {
+                                                                            "name": "signature",
+                                                                            "dataType": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "name": "thinking",
+                                                                            "dataType": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "discriminatorValue": "anthropicRedacted",
+                                                                    "fields": [
+                                                                        {
+                                                                            "name": "data",
+                                                                            "dataType": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "discriminatorValue": "openAi",
+                                                                    "fields": [
+                                                                        {
+                                                                            "name": "id",
+                                                                            "dataType": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "name": "summary",
+                                                                            "dataType": {
+                                                                                "type": "list",
+                                                                                "elementType": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "name": "encryptedContent",
+                                                                            "dataType": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "name": "content",
+                                                                            "dataType": {
+                                                                                "type": "nullable",
+                                                                                "wrappedType": {
+                                                                                    "type": "list",
+                                                                                    "elementType": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "discriminatorValue": "spaceXAi",
+                                                                    "fields": [
+                                                                        {
+                                                                            "name": "id",
+                                                                            "dataType": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "name": "summary",
+                                                                            "dataType": {
+                                                                                "type": "list",
+                                                                                "elementType": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "name": "encryptedContent",
+                                                                            "dataType": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "name": "content",
+                                                                            "dataType": {
+                                                                                "type": "nullable",
+                                                                                "wrappedType": {
+                                                                                    "type": "list",
+                                                                                    "elementType": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "discriminatorValue": "google",
+                                                                    "fields": [
+                                                                        {
+                                                                            "name": "content",
+                                                                            "dataType": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "discriminatorValue": "googleSignature",
+                                                                    "fields": [
+                                                                        {
+                                                                            "name": "signature",
+                                                                            "dataType": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "discriminatorValue": "toolRequest",
+                                                "fields": [
+                                                    {
+                                                        "name": "id",
+                                                        "dataType": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "name",
+                                                        "dataType": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "arguments",
+                                                        "dataType": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "name": "toolResults",
+                                "dataType": {
+                                    "type": "record",
+                                    "valueType": {
+                                        "type": "discriminatedUnion",
+                                        "discriminatorKey": "type",
+                                        "members": [
+                                            {
+                                                "discriminatorValue": "notStarted",
+                                                "fields": []
+                                            },
+                                            {
+                                                "discriminatorValue": "executing",
+                                                "fields": []
+                                            },
+                                            {
+                                                "discriminatorValue": "complete",
+                                                "fields": [
+                                                    {
+                                                        "name": "contextItemIds",
+                                                        "dataType": {
+                                                            "type": "list",
+                                                            "elementType": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "name": "status",
+                                "dataType": {
+                                    "type": "discriminatedUnion",
+                                    "discriminatorKey": "type",
+                                    "members": [
+                                        {
+                                            "discriminatorValue": "generating",
+                                            "fields": []
+                                        },
+                                        {
+                                            "discriminatorValue": "completed",
+                                            "fields": []
+                                        },
+                                        {
+                                            "discriminatorValue": "terminated",
+                                            "fields": [
+                                                {
+                                                    "name": "reason",
+                                                    "dataType": {
+                                                        "type": "discriminatedUnion",
+                                                        "discriminatorKey": "type",
+                                                        "members": [
+                                                            {
+                                                                "discriminatorValue": "genericError",
+                                                                "fields": [
+                                                                    {
+                                                                        "name": "message",
+                                                                        "dataType": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "contextItemType": "@platform/tool-execution-error",
+                    "dataType": {
+                        "type": "struct",
+                        "fields": [
+                            {
+                                "name": "message",
+                                "dataType": {
+                                    "type": "string"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "contextItemType": "@platform/user-message",
+                    "dataType": {
+                        "type": "struct",
+                        "fields": [
+                            {
+                                "name": "parts",
+                                "dataType": {
+                                    "type": "list",
+                                    "elementType": {
+                                        "type": "discriminatedUnion",
+                                        "discriminatorKey": "type",
+                                        "members": [
+                                            {
+                                                "discriminatorValue": "text",
+                                                "fields": [
+                                                    {
+                                                        "name": "text",
+                                                        "dataType": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "contextItemType": "weather-result",
+                    "dataType": {
+                        "type": "struct",
+                        "fields": [
+                            {
+                                "name": "text",
+                                "dataType": {
+                                    "type": "string"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
     }
 }

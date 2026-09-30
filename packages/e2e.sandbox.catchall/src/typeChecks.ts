@@ -15,12 +15,13 @@
  */
 
 import type { Osdk, PageResult } from "@osdk/api";
-import type { Client } from "@osdk/client";
+import type { AgentDefinition, AgentSession, Client } from "@osdk/client";
 import type { OsdkTestObject } from "@osdk/e2e.generated.catchall";
 // import type { ObjectSet$Employee } from "@osdk/e2e.generated.catchall";
 import {
   Employee,
   ObjectTypeWithAllPropertyTypes,
+  osdkTestFixture,
 } from "@osdk/e2e.generated.catchall";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
@@ -117,4 +118,70 @@ export async function typeChecks(client: Client): Promise<void> {
     // employeeNumber is not part of the selected peep
     expectType<TypeOf<{ employeeNumber: any }, typeof peepById>>(false);
   }
+}
+
+export async function agentTypeChecks(client: Client): Promise<void> {
+  const agent = client(osdkTestFixture);
+  const session = await agent.createSession({ defaultCity: "London" });
+  expectType<osdkTestFixture.Session>(session);
+  // @ts-expect-error creation arguments are required
+  agent.createSession();
+  // @ts-expect-error defaultCity is required
+  agent.createSession({});
+  // @ts-expect-error defaultCity must be a string
+  agent.createSession({ defaultCity: 1 });
+
+  await session.sendEvent({ SetDefaultCity: { city: "Paris" } });
+  await session.sendEvent({ LookupWeather: { city: "London" } });
+  await session.sendEvent({
+    "@platform/send-user-message": { parts: [{ type: "text", text: "Hello" }] },
+  });
+  // @ts-expect-error event names must match the published schema
+  session.sendEvent({ lookupWeather: { city: "London" } });
+  // @ts-expect-error city must be a string
+  session.sendEvent({ SetDefaultCity: { city: 1 } });
+  // @ts-expect-error exactly one event is required
+  session.sendEvent({});
+  const multipleEvents = {
+    LookupWeather: { city: "London" },
+    SetDefaultCity: { city: "Paris" },
+  };
+  // @ts-expect-error multiple events are also rejected when passed as a variable
+  session.sendEvent(multipleEvents);
+
+  const state = await session.getState();
+  expectType<string>(state.arguments.defaultCity);
+  expectType<string>(state.agentState.data.defaultCity);
+  for (const item of Object.values(state.contextItems)) {
+    if (item.type === "weather-result") {
+      expectType<string>(item.data.text);
+    } else if (item.type === "$unknown") {
+      expectType<string>(item.contextItemType);
+      expectType<unknown>(item.data);
+      // @ts-expect-error unknown context item data cannot be accessed without narrowing
+      expectType<string>(item.data.text);
+    }
+  }
+
+  type Assistant = Extract<
+    osdkTestFixture.ContextItem,
+    { type: "@platform/assistant-message" }
+  >;
+  expectType<Assistant["data"]["status"]>({ type: "generating" });
+  expectType<Assistant["data"]["status"]>({ type: "completed" });
+  expectType<Assistant["data"]["toolResults"][string]>({ type: "notStarted" });
+  expectType<Assistant["data"]["toolResults"][string]>({ type: "executing" });
+  // @ts-expect-error unknown union discriminators are invalid
+  expectType<Assistant["data"]["status"]>({ type: "unknown" });
+
+  expectType<osdkTestFixture.Session>(await agent.getSession(session.id));
+  expectType<AgentSession>(session);
+  const definition: AgentDefinition = {
+    type: "agent",
+    apiName: "osdkTestFixture",
+    version: "0.5.0",
+  };
+  const generic = await client(definition).createSession({ arbitrary: 1 });
+  await generic.sendEvent({ arbitraryEvent: { raw: true } });
+  expectType<unknown>((await generic.getState()).agentState.data);
 }

@@ -22,5 +22,9 @@ export interface WireAgentDefinition extends AgentDefinitionVersion {
 }
 
 export interface WireOntologyDefinition extends gateway.OntologyFullMetadata {
+  // TODO(merge9): Rename to agents
+  // TODO(merge9): Use loosely branded string like the other types in OntologyFullMetadata
+  // TODO(merge9): Can this contain the full agent definition metadata, so that it
+  //  behaves more like the other ontology types?
   agentTypes?: Record<string, WireAgentDefinition>;
 }
