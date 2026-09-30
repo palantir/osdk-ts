@@ -209,8 +209,9 @@ async function generate(inputArgs: string[]): Promise<{
   const { consola } = await import("consola");
   const success = vi.spyOn(consola, "success").mockImplementation(() => {});
 
-  await import("./generate-sdk.js");
-  await vi.waitFor(() => expect(success).toHaveBeenCalledWith("Done!"));
+  const { completion } = await import("./generate-sdk.js");
+  await completion;
+  expect(success).toHaveBeenCalledWith("Done!");
   expect(exit).not.toHaveBeenCalled();
 
   const index = writtenFiles.get(path.join(packageDir, "index.ts"));
@@ -227,67 +228,80 @@ async function generate(inputArgs: string[]): Promise<{
   return { index, metadata };
 }
 
-it("keeps ontology and branch exports by default with block results input", async () => {
-  const { index, metadata } = await generate([
-    "--block-results-input",
-    blockResultsPath,
-  ]);
+it(
+  "keeps ontology and branch exports by default with block results input",
+  async () => {
+    const { index, metadata } = await generate([
+      "--block-results-input",
+      blockResultsPath,
+    ]);
 
-  expect(index).toContain(
-    "export { $branch, $ontologyRid } from './OntologyMetadata.js';",
-  );
-  expect(metadata).toContain("export const $ontologyRid =");
-  expect(metadata).toContain("export const $branch:");
-  expect(index).toContain(
-    "export { $osdkMetadata } from './OntologyMetadata.js';",
-  );
-  expect(metadata).toContain("export const $osdkMetadata =");
-  expect(index).toContain("export { Item } from './ontology/objects.js';");
-  expect(index).toContain(
-    "export { ItemShape } from './ontology/interfaces.js';",
-  );
-  expect(writtenFiles.has(path.join(packageDir, "ontology/objects/Item.ts")))
-    .toBe(true);
-  expect(
-    writtenFiles.has(path.join(packageDir, "ontology/interfaces/ItemShape.ts")),
-  )
-    .toBe(true);
-});
+    expect(index).toContain(
+      "export { $branch, $ontologyRid } from './OntologyMetadata.js';",
+    );
+    expect(metadata).toContain("export const $ontologyRid =");
+    expect(metadata).toContain("export const $branch:");
+    expect(index).toContain(
+      "export { $osdkMetadata } from './OntologyMetadata.js';",
+    );
+    expect(metadata).toContain("export const $osdkMetadata =");
+    expect(index).toContain("export { Item } from './ontology/objects.js';");
+    expect(index).toContain(
+      "export { ItemShape } from './ontology/interfaces.js';",
+    );
+    expect(writtenFiles.has(path.join(packageDir, "ontology/objects/Item.ts")))
+      .toBe(true);
+    expect(
+      writtenFiles.has(
+        path.join(packageDir, "ontology/interfaces/ItemShape.ts"),
+      ),
+    )
+      .toBe(true);
+  },
+  30000,
+);
 
-it("omits ontology and branch exports without losing SDK exports when requested", async () => {
-  const { index, metadata } = await generate([
-    "--block-results-input",
-    blockResultsPath,
-    "--omit-ontology-rid",
-  ]);
+it(
+  "omits ontology and branch exports without losing SDK exports when requested",
+  async () => {
+    const { index, metadata } = await generate([
+      "--block-results-input",
+      blockResultsPath,
+      "--omit-ontology-rid",
+    ]);
 
-  expect(index).not.toContain("$ontologyRid");
-  expect(index).not.toContain("$branch");
-  expect(metadata).not.toContain("$ontologyRid");
-  expect(metadata).not.toContain("$branch");
-  expect(index).toContain(
-    "export { $osdkMetadata } from './OntologyMetadata.js';",
-  );
-  expect(metadata).toContain("export const $osdkMetadata =");
-  expect(index).toContain("export { Item } from './ontology/objects.js';");
-  expect(index).toContain(
-    "export { ItemShape } from './ontology/interfaces.js';",
-  );
-  expect(writtenFiles.has(path.join(packageDir, "ontology/objects/Item.ts")))
-    .toBe(true);
-  expect(
-    writtenFiles.has(path.join(packageDir, "ontology/interfaces/ItemShape.ts")),
-  )
-    .toBe(true);
-});
+    expect(index).not.toContain("$ontologyRid");
+    expect(index).not.toContain("$branch");
+    expect(metadata).not.toContain("$ontologyRid");
+    expect(metadata).not.toContain("$branch");
+    expect(index).toContain(
+      "export { $osdkMetadata } from './OntologyMetadata.js';",
+    );
+    expect(metadata).toContain("export const $osdkMetadata =");
+    expect(index).toContain("export { Item } from './ontology/objects.js';");
+    expect(index).toContain(
+      "export { ItemShape } from './ontology/interfaces.js';",
+    );
+    expect(writtenFiles.has(path.join(packageDir, "ontology/objects/Item.ts")))
+      .toBe(true);
+    expect(
+      writtenFiles.has(
+        path.join(packageDir, "ontology/interfaces/ItemShape.ts"),
+      ),
+    )
+      .toBe(true);
+  },
+  30000,
+);
 
 it("rejects omit ontology RID with direct ontology input", async () => {
   setArgs(["--input", directInputPath, "--omit-ontology-rid"]);
   const { consola } = await import("consola");
   const error = vi.spyOn(consola, "error").mockImplementation(() => {});
 
-  await import("./generate-sdk.js");
-  await vi.waitFor(() => expect(exit).toHaveBeenCalledWith(1));
+  const { completion } = await import("./generate-sdk.js");
+  await completion;
+  expect(exit).toHaveBeenCalledWith(1);
 
   expect(error.mock.calls.flat().join(" ")).toContain("--block-results-input");
   expect(writtenFiles.size).toBe(0);

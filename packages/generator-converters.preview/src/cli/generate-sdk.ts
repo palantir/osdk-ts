@@ -571,7 +571,7 @@ async function main(): Promise<void> {
   consola.success("Done!");
 }
 
-main().catch((err: unknown) => {
+export const completion = main().catch((err: unknown) => {
   consola.error(err instanceof Error ? err.message : err);
   process.exit(1);
 });
