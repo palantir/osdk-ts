@@ -15,8 +15,11 @@
  */
 
 import type {
+  ActionTypeBlockDataV2,
+  ConditionalValidationBlock,
   MarketplaceInterfaceType,
   OntologyBlockDataV2,
+  Parameter,
   SharedPropertyType,
   ValueTypeBlockData,
   ValueTypeReference,
@@ -202,6 +205,256 @@ function getBlockData(versionId: string): OntologyBlockDataV2 {
     },
   };
 }
+
+it("passes converted interface link rules through to generated TypeScript action metadata", async () => {
+  const blockData = getBlockData("1.0.0");
+  const sourceInterfaceRid = "ri.ontology.main.interface-type.source-rid";
+  const targetInterfaceRid = "ri.ontology.main.interface-type.target-rid";
+  const createLinkRid = "ri.ontology.main.interface-link-type.create-rid";
+  const deleteLinkRid = "ri.ontology.main.interface-link-type.delete-rid";
+  const sourceInterfaceApiName = "SourceInterface";
+  const targetInterfaceApiName = "TargetInterface";
+  const createLinkApiName = "targetLink";
+  const deleteLinkApiName = "sourceLink";
+  const sourceParameterId = "sourceEndpoint";
+  const targetParameterId = "targetEndpoint";
+  const sourceInterface = blockData.interfaceTypes["parent-rid"].interfaceType;
+  blockData.interfaceTypes = {
+    [sourceInterfaceRid]: {
+      interfaceType: {
+        ...sourceInterface,
+        rid: sourceInterfaceRid,
+        apiName: sourceInterfaceApiName,
+        displayMetadata: { displayName: sourceInterfaceApiName },
+        extendsInterfaces: [],
+        propertiesV2: {},
+        propertiesV3: {},
+        links: [{
+          rid: createLinkRid,
+          metadata: {
+            apiName: createLinkApiName,
+            displayName: "Target Link",
+            description: "",
+          },
+          linkedEntityTypeId: {
+            type: "interfaceType",
+            interfaceType: targetInterfaceRid,
+          },
+          cardinality: "SINGLE",
+          required: false,
+        }],
+      },
+    },
+    [targetInterfaceRid]: {
+      interfaceType: {
+        ...sourceInterface,
+        rid: targetInterfaceRid,
+        apiName: targetInterfaceApiName,
+        displayMetadata: { displayName: targetInterfaceApiName },
+        extendsInterfaces: [],
+        propertiesV2: {},
+        propertiesV3: {},
+        links: [{
+          rid: deleteLinkRid,
+          metadata: {
+            apiName: deleteLinkApiName,
+            displayName: "Source Link",
+            description: "",
+          },
+          linkedEntityTypeId: {
+            type: "interfaceType",
+            interfaceType: sourceInterfaceRid,
+          },
+          cardinality: "SINGLE",
+          required: false,
+        }],
+      },
+    },
+  };
+
+  const sourceParameter: Parameter = {
+    id: sourceParameterId,
+    rid: "source-parameter-rid",
+    displayMetadata: {
+      displayName: "Source",
+      description: "",
+      structFields: {},
+      structFieldsV2: [],
+      typeClasses: [],
+    },
+    type: {
+      type: "interfaceReference",
+      interfaceReference: { interfaceTypeRid: sourceInterfaceRid },
+    },
+  };
+  const targetParameter: Parameter = {
+    ...sourceParameter,
+    id: targetParameterId,
+    rid: "target-parameter-rid",
+    displayMetadata: {
+      ...sourceParameter.displayMetadata,
+      displayName: "Target",
+    },
+    type: {
+      type: "interfaceReference",
+      interfaceReference: { interfaceTypeRid: targetInterfaceRid },
+    },
+  };
+  const requiredParameterValidation: ConditionalValidationBlock = {
+    conditionalOverrides: [],
+    defaultValidation: {
+      display: {
+        renderHint: { type: "dropdown", dropdown: {} },
+        visibility: { type: "editable", editable: {} },
+      },
+      validation: {
+        allowedValues: {
+          type: "interfaceObjectQuery",
+          interfaceObjectQuery: {
+            type: "interfaceObjectQuery",
+            interfaceObjectQuery: {},
+          },
+        },
+        required: { type: "required", required: {} },
+      },
+    },
+    structFieldValidations: {},
+  };
+  const actionRid = "ri.ontology.main.action-type.manage-link-rid";
+  const actionApiName = "manageInterfaceLink";
+  const action: ActionTypeBlockDataV2 = {
+    parameterIds: {},
+    actionType: {
+      metadata: {
+        rid: actionRid,
+        apiName: actionApiName,
+        displayMetadata: {
+          displayName: "Manage Interface Link",
+          description: "",
+          applyingMessage: [],
+          successMessage: [],
+          typeClasses: [],
+        },
+        formContentOrdering: [],
+        parameterOrdering: [sourceParameterId, targetParameterId],
+        parameters: {
+          [sourceParameterId]: sourceParameter,
+          [targetParameterId]: targetParameter,
+        },
+        sections: {},
+        status: { type: "active", active: {} },
+        version: "1.0.0",
+      },
+      actionTypeLogic: {
+        logic: {
+          rules: [{
+            type: "addInterfaceLinkRuleV2",
+            addInterfaceLinkRuleV2: {
+              interfaceTypeRid: sourceInterfaceRid,
+              interfaceLinkTypeRid: createLinkRid,
+              sourceObjects: [{
+                type: "existingObject",
+                existingObject: sourceParameterId,
+              }],
+              targetObjects: [{
+                type: "existingObject",
+                existingObject: targetParameterId,
+              }],
+            },
+          }, {
+            type: "deleteInterfaceLinkRule",
+            deleteInterfaceLinkRule: {
+              interfaceTypeRid: targetInterfaceRid,
+              interfaceLinkTypeRid: deleteLinkRid,
+              sourceObject: targetParameterId,
+              targetObject: sourceParameterId,
+            },
+          }],
+        },
+        notifications: [],
+        validation: {
+          actionTypeLevelValidation: { ordering: [], rules: {} },
+          parameterValidations: {
+            [sourceParameterId]: requiredParameterValidation,
+            [targetParameterId]: requiredParameterValidation,
+          },
+          sectionValidations: {},
+        },
+      },
+    },
+  };
+  blockData.actionTypes[actionRid] = action;
+
+  const metadata = PreviewOntologyIrConverter
+    .getPreviewFullMetadataFromBlockData(blockData);
+  const expectedRules = [{
+    type: "createInterfaceLink",
+    interfaceTypeApiName: sourceInterfaceApiName,
+    interfaceLinkTypeApiName: createLinkApiName,
+    sourceObject: sourceParameterId,
+    targetObject: targetParameterId,
+  }, {
+    type: "deleteInterfaceLink",
+    interfaceTypeApiName: targetInterfaceApiName,
+    interfaceLinkTypeApiName: deleteLinkApiName,
+    sourceObject: targetParameterId,
+    targetObject: sourceParameterId,
+  }];
+  expect(metadata.actionTypesFullMetadata[actionApiName].fullLogicRules)
+    .toEqual(expectedRules);
+  expect(metadata.actionTypes[actionApiName].fullLogicRules)
+    .toEqual(expectedRules);
+  expect(metadata.actionTypesFullMetadata[actionApiName].actionType.operations)
+    .toEqual([]);
+
+  // The CLI unwraps actionTypes for the TS generator but retains the full wrappers.
+  const generatorInput = {
+    ...metadata,
+    actionTypes: Object.fromEntries(
+      Object.entries(metadata.actionTypes).map(([key, fullMeta]) => [
+        key,
+        fullMeta.actionType,
+      ]),
+    ),
+  };
+  expect(generatorInput.actionTypes[actionApiName].apiName)
+    .toBe(actionApiName);
+  expect(generatorInput.actionTypesFullMetadata[actionApiName].fullLogicRules)
+    .toEqual(expectedRules);
+
+  const writeFile = vi.fn<(file: string, contents: string) => Promise<void>>()
+    .mockResolvedValue(undefined);
+  await generateClientSdkVersionTwoPointZero(
+    generatorInput,
+    "test",
+    {
+      readdir: () => Promise.resolve([]),
+      mkdir: () => Promise.resolve(),
+      writeFile,
+    },
+    "/virtual-sdk",
+    "module",
+  );
+  const files = Object.fromEntries(writeFile.mock.calls);
+  const actionSource = files[
+    path.join("/virtual-sdk", "ontology", "actions", `${actionApiName}.ts`)
+  ];
+  const generatedEffects = actionSource.slice(
+    actionSource.indexOf(`export const ${actionApiName}:`),
+  );
+  expect(generatedEffects).toContain("type: 'createInterfaceLink'");
+  expect(generatedEffects).toContain("type: 'deleteInterfaceLink'");
+  expect(generatedEffects).toContain("interfaceTypeApiName: 'SourceInterface'");
+  expect(generatedEffects).toContain("interfaceTypeApiName: 'TargetInterface'");
+  expect(generatedEffects).toContain("interfaceLinkTypeApiName: 'targetLink'");
+  expect(generatedEffects).toContain("interfaceLinkTypeApiName: 'sourceLink'");
+  expect(generatedEffects).toContain("sourceObject: 'sourceEndpoint'");
+  expect(generatedEffects).toContain("targetObject: 'targetEndpoint'");
+  expect(generatedEffects).not.toContain(sourceInterfaceRid);
+  expect(generatedEffects).not.toContain(targetInterfaceRid);
+  expect(generatedEffects).not.toContain(createLinkRid);
+  expect(generatedEffects).not.toContain(deleteLinkRid);
+});
 
 it("generates both directions of an intermediary link", async () => {
   const blockData = getBlockData("1.0.0");

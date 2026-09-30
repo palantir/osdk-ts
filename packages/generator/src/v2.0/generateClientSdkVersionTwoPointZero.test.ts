@@ -18,6 +18,8 @@ import { mkdir, readdir, rmdir, writeFile } from "fs/promises";
 
 import type {
   ActionParameterType,
+  ActionTypeFullMetadata,
+  ActionTypeV2,
   ObjectPropertyType,
   QueryDataType,
   ValueTypeConstraint,
@@ -1451,6 +1453,166 @@ describe("generator", () => {
       `);
     },
   );
+
+  describe("action interface link effects", () => {
+    const unsanitizedApiName = "example.link-todos";
+    const linkAction: ActionTypeV2 = {
+      ...TodoWireOntology.actionTypes.markTodoCompleted,
+      apiName: unsanitizedApiName,
+      parameters: {
+        sourceTodo: {
+          displayName: "Source todo",
+          dataType: {
+            type: "object",
+            objectApiName: "Todo",
+            objectTypeApiName: "Todo",
+          },
+          required: true,
+          typeClasses: [],
+        },
+        targetPerson: {
+          displayName: "Target person",
+          dataType: {
+            type: "object",
+            objectApiName: "Person",
+            objectTypeApiName: "Person",
+          },
+          required: true,
+          typeClasses: [],
+        },
+      },
+    };
+    const createLinkRule: ActionTypeFullMetadata["fullLogicRules"][number] = {
+      type: "createInterfaceLink",
+      interfaceTypeApiName: "SomeInterface",
+      interfaceLinkTypeApiName: "Assignee",
+      sourceObject: "sourceTodo",
+      targetObject: "targetPerson",
+    };
+    const deleteLinkRule: ActionTypeFullMetadata["fullLogicRules"][number] = {
+      type: "deleteInterfaceLink",
+      interfaceTypeApiName: "SomeInterface",
+      interfaceLinkTypeApiName: "Assignee",
+      sourceObject: "sourceTodo",
+      targetObject: "targetPerson",
+    };
+
+    it("projects matching full rules into the action value and declaration", async () => {
+      const ontology: WireOntologyDefinition = {
+        ...TodoWireOntology,
+        actionTypes: {
+          ...TodoWireOntology.actionTypes,
+          [unsanitizedApiName]: linkAction,
+        },
+        actionTypesFullMetadata: {
+          [unsanitizedApiName]: {
+            actionType: linkAction,
+            fullLogicRules: [
+              createLinkRule,
+              { type: "deleteObject", objectToDelete: "sourceTodo" },
+              deleteLinkRule,
+            ],
+          },
+        },
+      };
+
+      await generateClientSdkVersionTwoPointZero(
+        ontology,
+        "",
+        helper.minimalFiles,
+        BASE_PATH,
+      );
+
+      const generated =
+        helper.getFiles()[`${BASE_PATH}/ontology/actions/linkTodos.ts`];
+      const declaration = generated.slice(
+        generated.indexOf("export interface linkTodos extends"),
+        generated.indexOf("export const linkTodos:"),
+      );
+      const runtimeValue = generated.slice(
+        generated.indexOf("export const linkTodos:"),
+      );
+
+      expect(generated).toContain("apiName: 'example.linkTodos'");
+      expect(generated).toContain("unsanitizedApiName: 'example.link-todos'");
+      expect(declaration.match(/interfaceLinkEffects:\s*\[/g)).toHaveLength(2);
+      expect(runtimeValue.match(/interfaceLinkEffects:\s*\[/g)).toHaveLength(1);
+      for (const projection of [declaration, runtimeValue]) {
+        expect(projection).toContain("type: 'createInterfaceLink'");
+        expect(projection).toContain("type: 'deleteInterfaceLink'");
+        expect(projection).toContain("interfaceTypeApiName: 'SomeInterface'");
+        expect(projection).toContain("interfaceLinkTypeApiName: 'Assignee'");
+        expect(projection).toContain("sourceObject: 'sourceTodo'");
+        expect(projection).toContain("targetObject: 'targetPerson'");
+        expect(projection).not.toContain("objectToDelete");
+      }
+      expect(generated).toContain(
+        "readonly sourceTodo: ActionParam.ObjectType<Todo>;",
+      );
+      expect(generated).toContain(
+        "readonly targetPerson: ActionParam.ObjectType<Person>;",
+      );
+      expect(generated).toContain(
+        "applyAction<OP extends ApplyActionOptions>(",
+      );
+      expect(generated).toContain("args: linkTodos.Params,");
+      expect(generated).toContain(
+        "batchApplyAction<OP extends ApplyBatchActionOptions>(",
+      );
+      expect(generated).toContain("args: ReadonlyArray<linkTodos.Params>,");
+    });
+
+    it("omits effects without a full wrapper or matching rules", async () => {
+      const ontology: WireOntologyDefinition = {
+        ...TodoWireOntology,
+        actionTypesFullMetadata: {
+          deleteTodos: {
+            actionType: TodoWireOntology.actionTypes.deleteTodos,
+            fullLogicRules: [{
+              type: "deleteObject",
+              objectToDelete: "object",
+            }],
+          },
+        },
+      };
+
+      await generateClientSdkVersionTwoPointZero(
+        ontology,
+        "",
+        helper.minimalFiles,
+        BASE_PATH,
+      );
+
+      const files = helper.getFiles();
+      expect(files[`${BASE_PATH}/ontology/actions/markTodoCompleted.ts`])
+        .not.toContain("interfaceLinkEffects");
+      expect(files[`${BASE_PATH}/ontology/actions/deleteTodos.ts`])
+        .not.toContain("interfaceLinkEffects");
+    });
+
+    it("does not use full metadata indexed by a sanitized action name", async () => {
+      const ontology: WireOntologyDefinition = {
+        ...TodoWireOntology,
+        actionTypes: { [unsanitizedApiName]: linkAction },
+        actionTypesFullMetadata: {
+          "example.linkTodos": {
+            actionType: linkAction,
+            fullLogicRules: [createLinkRule],
+          },
+        },
+      };
+
+      await generateClientSdkVersionTwoPointZero(
+        ontology,
+        "",
+        helper.minimalFiles,
+        BASE_PATH,
+      );
+
+      expect(helper.getFiles()[`${BASE_PATH}/ontology/actions/linkTodos.ts`])
+        .not.toContain("interfaceLinkEffects");
+    });
+  });
 
   test("throws an error when target destination is not empty", async () => {
     helper.minimalFiles.readdir = vi.fn(async (_path: string) => ["file"]);
