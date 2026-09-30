@@ -19,15 +19,15 @@
 
 // Example: loadAllInterfacesReference
 
-import type { Osdk } from "@osdk/client";
-
 import { HasAddress } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const interfaces: Osdk<HasAddress>[] = [];
-
+// asyncIter() fetches page after page until every matching object has been loaded, always from
+// a consistent snapshot (see loadAllObjectsReference). Pass $select: [...] with only the
+// properties you read, since every property is loaded by default, and handle each object as it
+// arrives rather than collecting them all into an array. For counts, sums, or group-bys, use
+// .aggregate() instead; for a sample or the first N objects, use fetchPage({ $pageSize }).
 for await (const int of client(HasAddress).asyncIter()) {
-  interfaces.push(int);
+  console.log(int.$primaryKey);
 }
-const interface1 = interfaces[0];

@@ -190,10 +190,16 @@ interface FetchPageSignature<
 > {
   /**
    * Gets a page of objects of this type, with a result wrapper
+   *
+   * Loads every property unless `$select` is passed, so select only the properties you read.
+   * `$pageSize` sizes one page; it does not limit the total number of objects. Pages are not
+   * read from a snapshot unless `$snapshot: true` is passed, so if objects change between
+   * requests, later pages may repeat or skip objects.
    * @param args - Args to specify next page token and page size, if applicable
    * @example
    * ```ts
    * const myObjs = await objectSet.fetchPage({
+   *   $select: ["name"],
    *   $pageSize: 10,
    *   $nextPageToken: "nextPage",
    * });
@@ -274,10 +280,16 @@ interface FetchPageWithErrorsSignature<
 > {
   /**
    * Gets a page of objects of this type, with a result wrapper
+   *
+   * Loads every property unless `$select` is passed, so select only the properties you read.
+   * `$pageSize` sizes one page; it does not limit the total number of objects. Pages are not
+   * read from a snapshot unless `$snapshot: true` is passed, so if objects change between
+   * requests, later pages may repeat or skip objects.
    * @param args - Args to specify next page token and page size, if applicable
    * @example
    * ```ts
    * const myObjs = await objectSet.fetchPage({
+   *   $select: ["name"],
    *   $pageSize: 10,
    *   $nextPageToken: "nextPage",
    * });
@@ -358,10 +370,19 @@ interface AsyncIterSignature<
 > {
   /**
    * Returns an async iterator to load all objects of this type
-   * @param args - Optional args to refine the iteration (e.g., `$select`, `$orderBy`, `$pageSize`)
+   *
+   * Fetches page after page until every matching object has been loaded, always reading from a
+   * consistent snapshot so that pages never repeat or skip objects. The iteration fails if the
+   * snapshot can't be maintained, e.g. when objects are added or removed during a long traversal
+   * of a frequently updated object type.
+   *
+   * Loads every property unless `$select` is passed, so select only the properties you read, and
+   * handle each object as it arrives instead of collecting every object into an array. For counts,
+   * sums, or group-bys use `aggregate()`; for a sample or the first N objects use `fetchPage()`.
+   * @param args - Optional args to refine the iteration (e.g., `$select`, `$orderBy`)
    * @example
    * ```ts
-   * for await (const obj of myObjectSet.asyncIter()) {
+   * for await (const obj of myObjectSet.asyncIter({ $select: ["name"] })) {
    *   // Handle obj
    * }
    * ```
@@ -380,10 +401,19 @@ interface AsyncIterSignature<
 
   /**
    * Returns an async iterator to load all objects of this type
-   * @param args - Optional args to refine the iteration (e.g., `$select`, `$orderBy`, `$pageSize`)
+   *
+   * Fetches page after page until every matching object has been loaded, always reading from a
+   * consistent snapshot so that pages never repeat or skip objects. The iteration fails if the
+   * snapshot can't be maintained, e.g. when objects are added or removed during a long traversal
+   * of a frequently updated object type.
+   *
+   * Loads every property unless `$select` is passed, so select only the properties you read, and
+   * handle each object as it arrives instead of collecting every object into an array. For counts,
+   * sums, or group-bys use `aggregate()`; for a sample or the first N objects use `fetchPage()`.
+   * @param args - Optional args to refine the iteration (e.g., `$select`, `$orderBy`)
    * @example
    * ```ts
-   * for await (const obj of myObjectSet.asyncIter()) {
+   * for await (const obj of myObjectSet.asyncIter({ $select: ["name"] })) {
    *   // Handle obj
    * }
    * ```

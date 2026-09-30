@@ -24,9 +24,15 @@ import type { Osdk, PageResult } from "@osdk/client";
 import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
+// $select only the properties you read; without it every property is loaded.
+// $pageSize is the size of one page. Continue with page.nextPageToken to load more.
 try {
-  const responseNoErrorWrapper: PageResult<Osdk.Instance<Employee>> =
-    await client(Employee).fetchPage({ $pageSize: 30 });
+  const responseNoErrorWrapper: PageResult<
+    Osdk.Instance<Employee, never, "fullName">
+  > = await client(Employee).fetchPage({
+    $select: ["fullName"],
+    $pageSize: 30,
+  });
 } catch (e) {
   throw e;
 }

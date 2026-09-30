@@ -83,8 +83,15 @@ export interface SelectArg<
   PROPERTY_SECURITIES extends boolean = false,
 > {
   /**
-   * API names of the properties to return. Ontology-defined derived properties
-   * are not returned by default and must be included in `$select`.
+   * The properties to load for each object. Defaults to every property except
+   * ontology-defined derived properties.
+   *
+   * Select only the properties you read: reading a property afterwards does not reduce
+   * what was already fetched, so loading every property of an object type with large
+   * text, array, or other wide properties can be much slower than necessary.
+   *
+   * Ontology-defined derived properties are not returned by default and must be
+   * included in `$select`.
    * Include any other properties you need in the same selection.
    * Runtime-defined derived properties added via `.withProperties(...)` are returned
    * by default only when `$select` is omitted. If you pass `$select`, include them
@@ -152,6 +159,10 @@ export interface FetchPageArgs<
   MODIFIERS
 > {
   $nextPageToken?: string;
+  /**
+   * The number of objects in one page. This does not limit the total number of objects:
+   * continue with `nextPageToken` to load further pages.
+   */
   $pageSize?: number;
   $applyModifiers?: ApplyModifiersArg<Q> &
     MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
@@ -165,6 +176,11 @@ export interface FetchPageArgs<
   $EXPERIMENTAL_defaultLoadLevel?: DEFAULT_LOAD_LEVEL;
   /**
    * Ensures paging consistency by freezing the view at the time of query to prevent duplicate or missing items. Setting $snapshot to false ensures that you will always get the latest results.
+   *
+   * Without a snapshot, if objects are added, removed, or edited between requests, later pages
+   * may repeat or skip objects. With a snapshot, pass `$snapshot: true` on every page request;
+   * paging fails if the data changes too much or the snapshot expires before paging completes.
+   * `asyncIter()` always uses a snapshot.
    * @default false
    */
   $snapshot?: boolean;
