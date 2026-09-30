@@ -1,5 +1,12 @@
 # @osdk/functions
 
+## 1.28.0
+
+### Patch Changes
+
+- Updated dependencies [051b67f]
+  - @osdk/aliases@0.4.0
+
 ## 1.27.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @osdk/maker-import
 
+## 0.42.0
+
+### Minor Changes
+
+- 47cf6a2: Preserve interface links on import
+
 ## 0.41.0
 
 ### Patch Changes
