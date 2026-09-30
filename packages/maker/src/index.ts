@@ -147,6 +147,7 @@ export {
   validateVectorProperty,
 } from "./api/propertyConversionUtils.js";
 export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
+export { validateObjectDatasources } from "./api/validateObjectDatasources.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";
 export { default } from "./cli/main.js";
 export { convertInterfaceSchemaGracePeriod } from "./conversion/toMarketplace/convertInterfaceSchemaMigrations.js";

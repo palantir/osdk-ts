@@ -35,7 +35,7 @@ import {
   ReadableIdGenerator,
 } from "../../util/generateRid.js";
 
-const DEFAULT_VERSION_RANGE: BlockSetVersionRange = {
+export const DEFAULT_VERSION_RANGE: BlockSetVersionRange = {
   from: "0.0.0",
   until: "x.x.x",
 };

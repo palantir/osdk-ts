@@ -57,6 +57,7 @@ import {
   validateDisplayMetadataLengths,
   validateStructFieldMetadata,
 } from "./validateMetadataLengths.js";
+import { validateObjectDatasources } from "./validateObjectDatasources.js";
 // From https://stackoverflow.com/a/79288714
 const ISO_8601_DURATION =
   /^P(?!$)(?:(?:((?:\d+Y)|(?:\d+(?:\.|,)\d+Y$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+D)|(?:\d+(?:\.|,)\d+D$))?(T((?:\d+H)|(?:\d+(?:\.|,)\d+H$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+S)|(?:\d+(?:\.|,)\d+S$))?)?)|(?:\d+(?:(?:\.|,)\d+)?W))$/u;
@@ -123,18 +124,7 @@ export function defineObject(
     `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
   );
 
-  if (objectDef.includeEmptyBackingDatasource && objectDef.datasources) {
-    const nonDatasetDatasources = objectDef.datasources.filter(
-      (ds) => ds.type !== "dataset",
-    );
-    invariant(
-      nonDatasetDatasources.length === 0,
-      `Object type "${objectDef.apiName}" has non-dataset datasources (${nonDatasetDatasources
-        .map((ds) => ds.type)
-        .join(", ")}) and cannot use includeEmptyBackingDatasource. ` +
-        `Empty backing datasources are only supported for object types with dataset datasources.`,
-    );
-  }
+  validateObjectDatasources(objectDef);
 
   const retentionPeriods = (
     (objectDef.datasources ?? []).filter(
@@ -148,15 +138,6 @@ export function defineObject(
     );
   });
 
-  const baseDatasources = (objectDef.datasources ?? []).filter((ds) =>
-    ["dataset", "stream", "restrictedView"].includes(ds.type),
-  );
-  invariant(
-    baseDatasources.length <= 1,
-    `Object ${objectDef.apiName} has more than one base datasource (got: [${baseDatasources
-      .map((ds) => ds.type)
-      .join(", ")}])`,
-  );
   const derivedDatasources = (objectDef.datasources ?? []).filter(
     (ds) => ds.type === "derived",
   );

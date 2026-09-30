@@ -32,6 +32,10 @@ export type ObjectTypeDatasourceDefinition =
 
 export interface ObjectTypeDatasourceDefinition_dataset {
   type: "dataset";
+  /** A dataset defined locally or imported from another product. */
+  dataset?: { name: string };
+  /** Property API names to columns in the referenced dataset. Defaults to matching names. */
+  propertyMapping?: Record<string, string>;
   objectSecurityPolicy?: ObjectSecurityPolicy;
   propertySecurityGroups?: Array<PropertySecurityGroup>;
 }
