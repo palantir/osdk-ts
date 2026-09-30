@@ -92,7 +92,7 @@ export function convertInterfaceType(
     },
     extendsInterfaces,
     links: Object.values(iface.links).map(convertInterfaceLinkType),
-    actionTypeConstraints: [],
+    actionTypeConstraints: [], // these don't exist on the gateway type
     status: { type: "active", active: {} },
     propertiesV2,
     propertiesV3,
