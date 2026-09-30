@@ -69,26 +69,6 @@ To build for an existing widget set and run Foundry developer mode, provide a `f
 }
 ```
 
-SuperRepo packages widget assets into a Marketplace product that creates the widget set when installed. To build before that widget set exists, the Foundry CLI supplies a temporary widget-set RID and release version through the plugin's `build` option. SuperRepo projects receive these values automatically through [`superrepoWidgetPlugin`](#packaging-integrations).
-
-Other build tools can also supply these values directly, as shown below.
-
-`build.widgetSetRid` is the resource identifier (RID) of the widget set represented by the build. It becomes `widgetSet.rid` in the generated `.palantir/widgets.config.json`, which Widget Registry uses to associate a published release with its widget set.
-
-- For an existing widget set, use its RID from `widgetSet.rid` in `foundry.config.json`.
-- For a Marketplace package that creates the widget set during installation, use the temporary RID assigned by the packaging tool. The packaging integration is responsible for mapping it to the installed widget set.
-
-```ts
-foundryWidgetPlugin({
-  build: {
-    widgetSetRid: "{YOUR_WIDGET_SET_RID}",
-    version: "1.0.0",
-  },
-});
-```
-
-The build requires no `foundry.config.json` or Foundry token and does not create a widget set. `build.version` sets the release version in the manifest. By default, SDK inputs and authorizations are discovered from the Vite root's installed packages and `resources.json`. Supply `build.inputSpec` to replace that discovery with inputs assigned by the packaging tool. This option affects production builds; Foundry developer mode still uses `foundry.config.json`.
-
 ## Importing the configuration
 
 Import your `*.config.ts` file in any entrypoint JavaScript/TypeScript file so the plugin can pick it up. Entrypoint files are any that are imported from your root HTML file. For example, if you have the following setup:
@@ -191,6 +171,26 @@ This vite plugin will then discover both entrypoints and output a combined `.pal
 The vite plugin also automatically configures developer mode so that you can preview the changes you make locally live on your Foundry environment. For developer mode to work, make sure you set a `FOUNDRY_TOKEN` environment variable that has a token with access to your Foundry stack.
 
 ## Packaging integrations
+
+SuperRepo packages widget assets into a Marketplace product that creates the widget set when installed. To build before that widget set exists, the Foundry CLI supplies a temporary widget-set RID and release version through the plugin's `build` option. SuperRepo projects receive these values automatically through `superrepoWidgetPlugin`.
+
+Other build tools can also supply these values directly, as shown below.
+
+`build.widgetSetRid` is the resource identifier (RID) of the widget set represented by the build. It becomes `widgetSet.rid` in the generated `.palantir/widgets.config.json`, which Widget Registry uses to associate a published release with its widget set.
+
+- For an existing widget set, use its RID from `widgetSet.rid` in `foundry.config.json`.
+- For a Marketplace package that creates the widget set during installation, use the temporary RID assigned by the packaging tool. The packaging integration is responsible for mapping it to the installed widget set.
+
+```ts
+foundryWidgetPlugin({
+  build: {
+    widgetSetRid: "{YOUR_WIDGET_SET_RID}",
+    version: "1.0.0",
+  },
+});
+```
+
+The build requires no `foundry.config.json` or Foundry token and does not create a widget set. `build.version` sets the release version in the manifest. By default, SDK inputs and authorizations are discovered from the Vite root's installed packages and `resources.json`. Supply `build.inputSpec` to replace that discovery with inputs assigned by the packaging tool. This option affects production builds; Foundry developer mode still uses `foundry.config.json`.
 
 `extractWidgetDeclarations` reads widget configuration without compiling UI assets. `extractWidgetManifest` combines those declarations with an explicit widget-set RID, version, and SDK input specification for configure-only operations. Both are exported as package subpaths.
 
