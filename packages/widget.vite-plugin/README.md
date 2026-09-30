@@ -172,7 +172,7 @@ The vite plugin also automatically configures developer mode so that you can pre
 
 ## SuperRepo (alpha)
 
-Support for custom widgets in SuperRepo is under development. The workflow described below may change as the integration develops.
+Support for custom widgets in SuperRepo is under development. The APIs and workflow described below may change as the integration develops.
 
 SuperRepo packages widget assets into a Marketplace product that creates the widget set when installed. To build for local packaging, set `build` to `"local"` in `foundry.config.json`:
 
@@ -188,3 +188,5 @@ SuperRepo packages widget assets into a Marketplace product that creates the wid
 Use the normal `foundryWidgetPlugin()` in your Vite configuration. Local builds require no Foundry URL, widget-set RID, or token. The plugin supplies a placeholder widget-set RID and version `0.1.0` in the generated `.palantir/widgets.config.json`. Marketplace assigns the installed widget-set RID and resolves release-version conflicts during installation. SDK inputs and authorizations are discovered from the Vite root's installed packages and `resources.json`.
 
 When `build` is omitted or set to `"remote"`, the configuration requires `foundryUrl` and `widgetSet.rid`. Builds use that RID and the existing `autoVersion` strategy, which defaults to the version in `package.json`. Foundry developer mode requires remote configuration. Local widget preview is not supported yet.
+
+Build tools can use `extractWidgetDeclarations` to read and validate widget configuration without executing the widget UI or building assets. `extractWidgetManifest` also reads `foundry.config.json` and discovers SDK inputs to produce manifest metadata with empty asset lists. Both APIs are exported as package subpaths.
