@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-import type { WidgetSetInputSpec } from "@osdk/widget.api";
 import type { PluginOption } from "vite";
 
 import { FoundryWidgetBuildPlugin } from "./build-plugin/FoundryWidgetBuildPlugin.js";
 import { FoundryWidgetDevPlugin } from "./dev-plugin/FoundryWidgetDevPlugin.js";
 
 export interface FoundryWidgetPluginOptions {
-  /** Build without a foundry.config.json or a pre-created widget set. */
-  build?: {
-    widgetSetRid: string;
-    version: string;
-    /** Replaces discovery from installed packages and resources.json when provided. */
-    inputSpec?: WidgetSetInputSpec;
-  };
   /**
    * Default values for widget configuration. Individual widget configs can override these values.
    */

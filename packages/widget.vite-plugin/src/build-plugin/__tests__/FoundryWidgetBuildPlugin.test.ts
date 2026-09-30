@@ -18,6 +18,7 @@ import {
   mkdir,
   mkdtemp,
   realpath,
+  rename,
   readFile,
   writeFile,
 } from "node:fs/promises";
@@ -26,12 +27,11 @@ import path from "node:path";
 
 import type { WidgetSetManifest } from "@osdk/widget.api";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget.api";
-import { build } from "vite";
+import { build, createServer } from "vite";
 import { afterEach, expect, test, vi } from "vitest";
 
 import FoundryWidgetPlugin from "../../index.js";
 import type { FoundryWidgetPluginOptions } from "../../index.js";
-import { superrepoWidgetPlugin } from "../../public/superrepo.js";
 
 afterEach(() => vi.unstubAllEnvs());
 
@@ -45,12 +45,19 @@ async function fixture(ids: string[]) {
     await mkdtemp(path.join(tmpdir(), "widget-build-")),
   );
   await mkdir(path.join(root, "src"));
+  await writeFile(
+    path.join(root, "foundry.config.json"),
+    JSON.stringify({
+      build: "local",
+      widgetSet: { directory: "output" },
+    }),
+  );
   await writeFile(path.join(root, "src/widget.css"), ".widget { color: red; }");
   await writeFile(
     path.join(root, "package.json"),
     JSON.stringify({
       name: "widget-build-test",
-      version: "1.0.0",
+      version: "9.9.9",
       type: "module",
     }),
   );
@@ -96,21 +103,21 @@ async function buildFixture(
 }
 
 test.each(["/", "/nested/widgets/", "./"])(
-  "builds multiple widgets without Foundry config from a different working directory using base %s",
+  "builds local widgets without a Foundry URL or RID from a different working directory using base %s",
   async (base) => {
+    vi.stubEnv("FOUNDRY_TOKEN", undefined);
     const ids = ["first", "second"];
     const root = await fixture(ids);
     const manifest = await buildFixture(
       root,
       ids,
       {
-        build: { widgetSetRid, version: "2.3.4" },
         defaults: { refreshHostDataOnAction: true },
       },
       base,
     );
     expect(manifest.widgetSet.rid).toBe(widgetSetRid);
-    expect(manifest.widgetSet.version).toBe("2.3.4");
+    expect(manifest.widgetSet.version).toBe("0.1.0");
     expect(Object.keys(manifest.widgetSet.widgets)).toEqual(ids);
     expect(manifest.widgetSet.inputSpec).toEqual({ discovered: { sdks: [] } });
     for (const [index, id] of ids.entries()) {
@@ -145,21 +152,6 @@ test.each(["/", "/nested/widgets/", "./"])(
   },
 );
 
-test("uses explicit SDK inputs even when package discovery would fail", async () => {
-  const root = await fixture(["widget"]);
-  await writeFile(
-    path.join(root, "package.json"),
-    JSON.stringify({ dependencies: { missing: "1.0.0" } }),
-  );
-  const inputSpec = {
-    discovered: { sdks: [{ rid: sdkRid, version: "0.1.0" }] },
-  };
-  const manifest = await buildFixture(root, ["widget"], {
-    build: { widgetSetRid, version: "3.0.0", inputSpec },
-  });
-  expect(manifest.widgetSet.inputSpec).toEqual(inputSpec);
-});
-
 test("discovers SDK metadata and authorizations relative to the Vite root", async () => {
   const root = await fixture(["widget"]);
   await writeFile(
@@ -182,9 +174,7 @@ test("discovers SDK metadata and authorizations relative to the Vite root", asyn
       authorizations: { read: [["example-org"]] },
     }),
   );
-  const manifest = await buildFixture(root, ["widget"], {
-    build: { widgetSetRid, version: "3.0.0" },
-  });
+  const manifest = await buildFixture(root, ["widget"], {});
   expect(manifest.widgetSet.inputSpec).toEqual({
     discovered: {
       sdks: [{ rid: sdkRid, version: "4.5.6" }],
@@ -196,86 +186,52 @@ test("discovers SDK metadata and authorizations relative to the Vite root", asyn
 test("rejects duplicate widget identities in a real build", async () => {
   const ids = ["same", "same"];
   const root = await fixture(ids);
-  await expect(
-    buildFixture(root, ids, { build: { widgetSetRid, version: "1.0.0" } }),
-  ).rejects.toThrow("Duplicate widget ID: same");
+  await expect(buildFixture(root, ids, {})).rejects.toThrow(
+    "Duplicate widget ID: same",
+  );
 });
 
-test("still requires Foundry configuration when build context is omitted", async () => {
+test("requires a configuration file to select local or remote builds", async () => {
   const root = await fixture(["widget"]);
+  await rename(
+    path.join(root, "foundry.config.json"),
+    path.join(root, "foundry.config.json.bak"),
+  );
   await expect(buildFixture(root, ["widget"], {})).rejects.toThrow(
     "foundry.config.json file not found",
   );
 });
 
-test("keeps the existing Foundry config and package version build path", async () => {
-  const root = await fixture(["widget"]);
-  await writeFile(
-    path.join(root, "foundry.config.json"),
-    JSON.stringify({
-      foundryUrl: "https://example.com",
-      widgetSet: { rid: widgetSetRid, directory: "output" },
-    }),
-  );
-  const cwd = process.cwd();
-  try {
-    process.chdir(root);
+test.each([undefined, "remote"])(
+  "builds for an existing widget set with build %s",
+  async (mode) => {
+    const root = await fixture(["widget"]);
+    const remoteRid =
+      "ri.widgetregistry.main.widget-set.11111111-1111-1111-1111-111111111111";
+    await writeFile(
+      path.join(root, "foundry.config.json"),
+      JSON.stringify({
+        build: mode,
+        foundryUrl: "https://example.com",
+        widgetSet: { rid: remoteRid, directory: "output" },
+      }),
+    );
     const manifest = await buildFixture(root, ["widget"], {});
-    expect(manifest.widgetSet.rid).toBe(widgetSetRid);
-    expect(manifest.widgetSet.version).toBe("1.0.0");
-  } finally {
-    process.chdir(cwd);
-  }
-});
+    expect(manifest.widgetSet.rid).toBe(remoteRid);
+    expect(manifest.widgetSet.version).toBe("9.9.9");
+  },
+);
 
-test("builds SuperRepo widgets with CLI version and SDK inputs", async () => {
-  const root = await fixture(["widget"]);
-  const inputSpec = {
-    discovered: { sdks: [{ rid: sdkRid, version: "0.1.0" }] },
-  };
-  vi.stubEnv(
-    "FOUNDRY_WIDGET_BUILD_CONTEXT",
-    JSON.stringify({ widgetSetRid, version: "4.0.0", inputSpec }),
-  );
-  await build({
-    root,
-    configFile: false,
-    logLevel: "silent",
-    plugins: [superrepoWidgetPlugin()],
-    build: { rollupOptions: { input: path.join(root, "0.html") } },
-  });
-  const manifest = JSON.parse(
-    await readFile(path.join(root, "dist", MANIFEST_FILE_LOCATION), "utf8"),
-  ) as WidgetSetManifest;
-  expect(manifest.widgetSet.rid).toBe(widgetSetRid);
-  expect(manifest.widgetSet.version).toBe("4.0.0");
-  expect(manifest.widgetSet.inputSpec).toEqual(inputSpec);
-  expect(manifest.widgetSet.widgets.widget.entrypointJs).toHaveLength(1);
-});
-
-test("explains the SuperRepo build command when the CLI context is missing", async () => {
-  vi.stubEnv("FOUNDRY_WIDGET_BUILD_CONTEXT", undefined);
+test("explains that local preview is unavailable before requiring a Foundry token", async () => {
+  vi.stubEnv("VITEST", undefined);
+  vi.stubEnv("FOUNDRY_TOKEN", undefined);
   await expect(
-    build({
+    createServer({
       root: await fixture(["widget"]),
       configFile: false,
       logLevel: "silent",
-      plugins: [superrepoWidgetPlugin()],
+      plugins: [FoundryWidgetPlugin()],
+      server: { middlewareMode: true, hmr: false, watch: null },
     }),
-  ).rejects.toThrow("foundry build custom-widget");
-});
-
-test.each([
-  null,
-  {},
-  {
-    widgetSetRid,
-    version: "1.0.0",
-    inputSpec: { discovered: { sdks: [null] } },
-  },
-])("rejects malformed CLI context %j", (context) => {
-  vi.stubEnv("FOUNDRY_WIDGET_BUILD_CONTEXT", JSON.stringify(context));
-  expect(() => superrepoWidgetPlugin()).toThrow(
-    "Invalid FOUNDRY_WIDGET_BUILD_CONTEXT",
-  );
+  ).rejects.toThrow("Local widget preview is not supported yet");
 });

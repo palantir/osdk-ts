@@ -36,7 +36,8 @@ export interface FoundrySiteConfig {
 }
 
 export interface FoundryWidgetSetConfig {
-  foundryUrl: string;
+  build?: "local" | "remote";
+  foundryUrl?: string;
   widgetSet: WidgetSetConfig;
 }
 
@@ -48,7 +49,7 @@ export interface SiteConfig {
 }
 
 export interface WidgetSetConfig {
-  rid: string;
+  rid?: string;
   directory: string;
   repository?: string;
   autoVersion?: AutoVersionConfig;
@@ -109,21 +110,34 @@ const FOUNDRY_SITE_CONFIG_SCHEMA = {
 const FOUNDRY_WIDGET_SET_CONFIG_SCHEMA = {
   type: "object",
   properties: {
-    foundryUrl: { type: "string" },
+    build: { type: "string", enum: ["local", "remote"], nullable: true },
+    foundryUrl: { type: "string", nullable: true },
     widgetSet: {
       type: "object",
       properties: {
-        rid: { type: "string" },
+        rid: { type: "string", nullable: true },
         directory: { type: "string" },
         repository: { type: "string", nullable: true },
         autoVersion:
           FOUNDRY_SITE_CONFIG_SCHEMA.properties.site.properties.autoVersion,
         uploadOnly: { type: "boolean", nullable: true },
       },
-      required: ["rid", "directory"],
+      required: ["directory"],
     },
   },
-  required: ["foundryUrl", "widgetSet"],
+  required: ["widgetSet"],
+  if: { properties: { build: { const: "local" } }, required: ["build"] },
+  else: {
+    required: ["foundryUrl"],
+    properties: {
+      foundryUrl: { type: "string" },
+      widgetSet: {
+        type: "object",
+        required: ["rid"],
+        properties: { rid: { type: "string" } },
+      },
+    },
+  },
   additionalProperties: false,
 } satisfies JSONSchemaType<FoundryConfig<"widgetSet">>;
 
@@ -135,18 +149,21 @@ const FOUNDRY_CONFIG_SCHEMA: {
 };
 
 /**
- * Asynchronously loads a configuration file. Looks for any of the CONFIG_FILE_NAMES in the current directory going up to the root directory.
+ * Loads foundry.config.json from cwd or its ancestors. Defaults to the current working directory.
  * @returns A promise that resolves to the configuration JSON object, or undefined if not found.
  * @throws Will throw an error if the configuration file is found but cannot be read or parsed.
  */
 export async function loadFoundryConfig(
   type: "site",
+  cwd?: string,
 ): Promise<LoadedFoundryConfig<"site"> | undefined>;
 export async function loadFoundryConfig(
   type: "widgetSet",
+  cwd?: string,
 ): Promise<LoadedFoundryConfig<"widgetSet"> | undefined>;
 export async function loadFoundryConfig(
   type: "site" | "widgetSet",
+  cwd?: string,
 ): Promise<LoadedFoundryConfig<typeof type> | undefined> {
   const ajvModule = await import("ajv");
   const Ajv = ajvModule.default.default; // https://github.com/ajv-validator/ajv/issues/2132
@@ -154,7 +171,7 @@ export async function loadFoundryConfig(
   const validate = ajv.compile(FOUNDRY_CONFIG_SCHEMA[type]);
 
   const { findUp } = await import("find-up");
-  const configFilePath = await findUp(CONFIG_FILE_NAMES);
+  const configFilePath = await findUp(CONFIG_FILE_NAMES, { cwd });
 
   if (configFilePath) {
     let foundryConfig: FoundryConfig<typeof type>;

@@ -30,13 +30,6 @@
       },
       "default": "./build/esm/public/extractWidgetManifest.js"
     },
-    "./superrepo": {
-      "import": {
-        "types": "./build/types/public/superrepo.d.ts",
-        "default": "./build/esm/public/superrepo.js"
-      },
-      "default": "./build/esm/public/superrepo.js"
-    },
     "./*": {
       "import": {
         "types": "./build/types/public/*.d.ts",

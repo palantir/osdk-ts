@@ -1,5 +1,6 @@
 ---
 "@osdk/widget.vite-plugin": minor
+"@osdk/foundry-config-json": minor
 ---
 
-Support defining the widget packaging context in code and extracting widget declarations locally for local build tools like SuperRepo.
+Support local widget packaging through foundry.config.json and extracting widget declarations without building assets.

@@ -72,18 +72,26 @@ export async function publishDevModeSettings(
   res: ServerResponse,
 ): Promise<void> {
   try {
-    const foundryConfig = await loadFoundryConfig("widgetSet");
+    const foundryConfig = await loadFoundryConfig(
+      "widgetSet",
+      server.config.root,
+    );
     if (foundryConfig == null) {
       throw new Error("foundry.config.json file not found.");
     }
+    if (foundryConfig.foundryConfig.build === "local") {
+      throw new Error(
+        'Foundry developer mode requires build: "remote", a foundryUrl, and a widget-set RID in foundry.config.json.',
+      );
+    }
     const rawFoundryUrl = isCodeWorkspacesMode(server.config.mode)
       ? getCodeWorkspacesFoundryUrl()
-      : foundryConfig.foundryConfig.foundryUrl;
+      : foundryConfig.foundryConfig.foundryUrl!;
     const foundryUrl = rawFoundryUrl.endsWith("/")
       ? rawFoundryUrl
       : rawFoundryUrl + "/";
 
-    const widgetSetRid = foundryConfig.foundryConfig.widgetSet.rid;
+    const widgetSetRid = foundryConfig.foundryConfig.widgetSet.rid!;
     const settingsResponse = await setWidgetSetManifest(
       foundryUrl,
       widgetSetRid,

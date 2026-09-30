@@ -43,6 +43,20 @@ async function fixture(
     await mkdtemp(path.join(tmpdir(), "widget-declarations-")),
   );
   await mkdir(path.join(root, "src"));
+  await writeFile(
+    path.join(root, "foundry.config.json"),
+    JSON.stringify({
+      build: "local",
+      widgetSet: { directory: "dist" },
+    }),
+  );
+  await writeFile(
+    path.join(root, "package.json"),
+    JSON.stringify({
+      name: "widget-declarations-test",
+      type: "module",
+    }),
+  );
   for (const [index, id] of ids.entries()) {
     await writeFile(
       path.join(root, `${index}.html`),
@@ -63,16 +77,7 @@ async function fixture(
     logLevel: "silent",
     base: "/nested/widgets/",
     resolve: { alias: { "@configs": path.join(root, "src") } },
-    plugins: [
-      FoundryWidgetPlugin({
-        build: {
-          widgetSetRid:
-            "ri.widgetregistry.main.widget-set.00000000-0000-0000-0000-000000000000",
-          version: "1.0.0",
-          inputSpec: { discovered: { sdks: [] } },
-        },
-      }),
-    ],
+    plugins: [FoundryWidgetPlugin()],
     build: {
       rollupOptions: {
         input: ids.map((_, index) => path.join(root, `${index}.html`)),
@@ -135,16 +140,7 @@ test("finds declarations through shared source imports", async () => {
 
 test("extracts configure manifests without assets using the production metadata format", async () => {
   const config = await fixture();
-  const buildContext = {
-    widgetSetRid:
-      "ri.widgetregistry.main.widget-set.00000000-0000-0000-0000-000000000000",
-    version: "1.0.0",
-    inputSpec: { discovered: { sdks: [] } },
-  };
-  const extracted = await extractWidgetManifest(
-    { build: buildContext },
-    config,
-  );
+  const extracted = await extractWidgetManifest(undefined, config);
   await expect(access(path.join(config.root, "dist"))).rejects.toThrow();
   await build(config);
   const manifest = JSON.parse(

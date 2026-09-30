@@ -15,29 +15,40 @@
  */
 
 import type { WidgetSetManifest } from "@osdk/widget.api";
-import type { InlineConfig } from "vite";
+import { createServer, type InlineConfig } from "vite";
 
 import { buildWidgetSetManifest } from "../build-plugin/buildWidgetSetManifest.js";
+import { MODULE_EVALUATION_MODE } from "../common/constants.js";
+import { getWidgetBuildContext } from "../common/getWidgetBuildContext.js";
+import { getWidgetDeclarations } from "../common/getWidgetDeclarations.js";
 import type { FoundryWidgetPluginOptions } from "../index.js";
-import { extractWidgetDeclarations } from "./extractWidgetDeclarations.js";
 
 /** Extract manifest metadata for configure without building JavaScript or CSS assets. */
 export async function extractWidgetManifest(
-  options: FoundryWidgetPluginOptions & {
-    build: Required<NonNullable<FoundryWidgetPluginOptions["build"]>>;
-  },
+  options?: FoundryWidgetPluginOptions,
   config: InlineConfig = {},
 ): Promise<WidgetSetManifest> {
-  const declarations = await extractWidgetDeclarations(config);
-  return buildWidgetSetManifest(
-    options.build.widgetSetRid,
-    options.build.version,
-    declarations.map(({ config: widgetConfig }) => ({
-      widgetConfig,
-      scripts: [],
-      stylesheets: [],
-    })),
-    options.build.inputSpec,
-    options,
-  );
+  const server = await createServer({
+    ...config,
+    mode: MODULE_EVALUATION_MODE,
+    server: { middlewareMode: true, hmr: false, watch: null },
+    optimizeDeps: { noDiscovery: true, include: [] },
+  });
+  try {
+    const context = await getWidgetBuildContext(server.config.root);
+    const declarations = await getWidgetDeclarations(server);
+    return buildWidgetSetManifest(
+      context.widgetSetRid,
+      context.version,
+      declarations.map(({ config: widgetConfig }) => ({
+        widgetConfig,
+        scripts: [],
+        stylesheets: [],
+      })),
+      context.inputSpec,
+      options,
+    );
+  } finally {
+    await server.close();
+  }
 }
