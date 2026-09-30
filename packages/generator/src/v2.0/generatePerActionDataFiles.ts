@@ -63,6 +63,9 @@ export async function generatePerActionDataFiles(
         wireActionTypeV2ToSdkActionMetadata(
           action.raw,
           action.unsanitizedApiName,
+          enhancedOntology.raw.actionTypesFullMetadata?.[
+            action.unsanitizedApiName ?? action.raw.apiName
+          ]?.fullLogicRules,
         ),
       );
 
