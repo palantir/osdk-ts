@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ async function fixture(ids: string[]) {
     await mkdtemp(path.join(tmpdir(), "widget-build-")),
   );
   await mkdir(path.join(root, "src"));
+  await writeFile(path.join(root, "src/widget.css"), ".widget { color: red; }");
   await writeFile(
     path.join(root, "package.json"),
     JSON.stringify({
@@ -60,7 +61,7 @@ async function fixture(ids: string[]) {
     );
     await writeFile(
       path.join(root, `src/${index}.ts`),
-      `import config from "./${index}.config"; document.title = config.name;`,
+      `import config from "./${index}.config"; import "./widget.css"; document.title = config.name;`,
     );
     await writeFile(
       path.join(root, `src/${index}.config.ts`),
@@ -74,9 +75,11 @@ async function buildFixture(
   root: string,
   ids: string[],
   options: FoundryWidgetPluginOptions,
+  base = "/",
 ) {
   await build({
     root,
+    base,
     configFile: false,
     logLevel: "silent",
     plugins: [FoundryWidgetPlugin(options)],
@@ -92,32 +95,55 @@ async function buildFixture(
   ) as WidgetSetManifest;
 }
 
-test("builds multiple widgets without Foundry config from a different working directory", async () => {
-  const ids = ["first", "second"];
-  const root = await fixture(ids);
-  const manifest = await buildFixture(root, ids, {
-    build: { widgetSetRid, version: "2.3.4" },
-    defaults: { refreshHostDataOnAction: true },
-  });
-  expect(manifest.widgetSet.rid).toBe(widgetSetRid);
-  expect(manifest.widgetSet.version).toBe("2.3.4");
-  expect(Object.keys(manifest.widgetSet.widgets)).toEqual(ids);
-  expect(manifest.widgetSet.inputSpec).toEqual({ discovered: { sdks: [] } });
-  for (const widget of Object.values(manifest.widgetSet.widgets)) {
-    expect(widget.parameters.title).toEqual({
-      type: "string",
-      displayName: "Title",
-    });
-    expect(widget.events.changeTitle.parameterUpdateIds).toEqual(["title"]);
-    expect(widget.refreshHostDataOnAction).toBe(true);
-    expect(widget.entrypointJs).toHaveLength(1);
-    for (const asset of widget.entrypointJs) {
-      expect(
-        await readFile(path.join(root, "output", asset.path), "utf8"),
-      ).toContain("document.title");
+test.each(["/", "/nested/widgets/", "./"])(
+  "builds multiple widgets without Foundry config from a different working directory using base %s",
+  async (base) => {
+    const ids = ["first", "second"];
+    const root = await fixture(ids);
+    const manifest = await buildFixture(
+      root,
+      ids,
+      {
+        build: { widgetSetRid, version: "2.3.4" },
+        defaults: { refreshHostDataOnAction: true },
+      },
+      base,
+    );
+    expect(manifest.widgetSet.rid).toBe(widgetSetRid);
+    expect(manifest.widgetSet.version).toBe("2.3.4");
+    expect(Object.keys(manifest.widgetSet.widgets)).toEqual(ids);
+    expect(manifest.widgetSet.inputSpec).toEqual({ discovered: { sdks: [] } });
+    for (const [index, id] of ids.entries()) {
+      const widget = manifest.widgetSet.widgets[id];
+      const html = await readFile(
+        path.join(root, `output/${index}.html`),
+        "utf8",
+      );
+      expect(widget.parameters.title).toEqual({
+        type: "string",
+        displayName: "Title",
+      });
+      expect(widget.events.changeTitle.parameterUpdateIds).toEqual(["title"]);
+      expect(widget.refreshHostDataOnAction).toBe(true);
+      expect(widget.entrypointJs).toHaveLength(1);
+      expect(widget.entrypointCss).toHaveLength(1);
+      for (const asset of widget.entrypointJs) {
+        expect(asset.path).toMatch(/^assets\//u);
+        expect(html).toContain(`src="${base}${asset.path}"`);
+        expect(
+          await readFile(path.join(root, "output", asset.path), "utf8"),
+        ).toContain("document.title");
+      }
+      for (const asset of widget.entrypointCss ?? []) {
+        expect(asset.path).toMatch(/^assets\//u);
+        expect(html).toContain(`href="${base}${asset.path}"`);
+        expect(
+          await readFile(path.join(root, "output", asset.path), "utf8"),
+        ).toContain(".widget");
+      }
     }
-  }
-});
+  },
+);
 
 test("uses explicit SDK inputs even when package discovery would fail", async () => {
   const root = await fixture(["widget"]);
@@ -138,8 +164,14 @@ test("discovers SDK metadata and authorizations relative to the Vite root", asyn
   const root = await fixture(["widget"]);
   await writeFile(
     path.join(root, "package.json"),
+    JSON.stringify({ dependencies: { "@ontology/sdk": "4.5.6" } }),
+  );
+  const sdkPath = path.join(root, "node_modules/@ontology/sdk");
+  await mkdir(sdkPath, { recursive: true });
+  await writeFile(
+    path.join(sdkPath, "package.json"),
     JSON.stringify({
-      name: "generated-sdk",
+      name: "@ontology/sdk",
       version: "4.5.6",
       osdk: { packageRid: sdkRid },
     }),
@@ -147,7 +179,7 @@ test("discovers SDK metadata and authorizations relative to the Vite root", asyn
   await writeFile(
     path.join(root, "resources.json"),
     JSON.stringify({
-      authorizations: { read: ["ri.test.main.resource.example"] },
+      authorizations: { read: [["example-org"]] },
     }),
   );
   const manifest = await buildFixture(root, ["widget"], {
@@ -156,7 +188,7 @@ test("discovers SDK metadata and authorizations relative to the Vite root", asyn
   expect(manifest.widgetSet.inputSpec).toEqual({
     discovered: {
       sdks: [{ rid: sdkRid, version: "4.5.6" }],
-      authorizations: { read: ["ri.test.main.resource.example"] },
+      authorizations: { read: [["example-org"]] },
     },
   });
 });
@@ -215,6 +247,7 @@ test("builds SuperRepo widgets with CLI version and SDK inputs", async () => {
   const manifest = JSON.parse(
     await readFile(path.join(root, "dist", MANIFEST_FILE_LOCATION), "utf8"),
   ) as WidgetSetManifest;
+  expect(manifest.widgetSet.rid).toBe(widgetSetRid);
   expect(manifest.widgetSet.version).toBe("4.0.0");
   expect(manifest.widgetSet.inputSpec).toEqual(inputSpec);
   expect(manifest.widgetSet.widgets.widget.entrypointJs).toHaveLength(1);

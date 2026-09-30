@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import {
 import { build, type InlineConfig } from "vite";
 import { expect, test } from "vitest";
 
-import { buildWidgetManifestConfig } from "../../build-plugin/buildWidgetSetManifest.js";
 import FoundryWidgetPlugin from "../../index.js";
 import { extractWidgetDeclarations } from "../../public/extractWidgetDeclarations.js";
 import { extractWidgetManifest } from "../../public/extractWidgetManifest.js";
@@ -84,6 +83,10 @@ async function fixture(
 
 test("extracts multiple aliased declarations without evaluating UI or producing assets", async () => {
   const config = await fixture();
+  await writeFile(
+    path.join(config.root, "src/0.ts"),
+    `import "@configs/0.config"; throw new Error("Widget UI executed during declaration extraction");`,
+  );
   const declarations = await extractWidgetDeclarations(config);
   expect(
     declarations.map(({ entrypoint, config: widgetConfig }) => [
@@ -99,34 +102,6 @@ test("extracts multiple aliased declarations without evaluating UI or producing 
   ]);
   await expect(access(path.join(config.root, "dist"))).rejects.toThrow();
 });
-
-test.each(["/", "/nested/widgets/", "./"])(
-  "declarations agree with production manifests using base %s",
-  async (base) => {
-    const config = await fixture();
-    const declarations = await extractWidgetDeclarations(config);
-    await build({ ...config, base });
-    const manifest = JSON.parse(
-      await readFile(
-        path.join(config.root, "dist", MANIFEST_FILE_LOCATION),
-        "utf8",
-      ),
-    ) as WidgetSetManifest;
-    const html = await readFile(path.join(config.root, "dist/0.html"), "utf8");
-    expect(html).not.toContain("osdk-widget-preview");
-    expect(html).not.toContain("__PALANTIR_WIDGET_API__");
-    for (const declaration of declarations) {
-      const widget = manifest.widgetSet.widgets[declaration.config.id];
-      expect(
-        buildWidgetManifestConfig(
-          declaration.config,
-          widget.entrypointJs,
-          widget.entrypointCss ?? [],
-        ),
-      ).toEqual(widget);
-    }
-  },
-);
 
 test("reports the HTML entrypoint when no declaration exists", async () => {
   const config = await fixture(["first"]);
