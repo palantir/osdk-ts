@@ -189,4 +189,4 @@ Use the normal `foundryWidgetPlugin()` in your Vite configuration. Local builds 
 
 When `build` is omitted or set to `"remote"`, the configuration requires `foundryUrl` and `widgetSet.rid`. Builds use that RID and the existing `autoVersion` strategy, which defaults to the version in `package.json`. Foundry developer mode requires remote configuration. Local widget preview is not supported yet.
 
-Build tools can use `extractWidgetDeclarations` to read and validate widget configuration without executing the widget UI or building assets. `extractWidgetManifest` also reads `foundry.config.json` and discovers SDK inputs to produce manifest metadata with empty asset lists. Both APIs are exported as package subpaths.
+Build tools can use `extractWidgetDeclarations` to read and validate widget configuration without executing the widget UI or building assets. `extractWidgetManifest` also reads `foundry.config.json` and discovers SDK inputs to produce manifest metadata with empty asset lists. For local builds, it honors the same `FOUNDRY_WIDGET_SET_VERSION` override as the asset build. Both APIs are exported as package subpaths.
