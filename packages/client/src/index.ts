@@ -24,6 +24,8 @@ export type {
   ActionParam,
   ActionReturnTypeForOptions,
   ActionValidationResponse,
+  AgentDefinition,
+  AgentSession,
   ApplyActionOptions,
   ApplyBatchActionOptions,
   Attachment,
