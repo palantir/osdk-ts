@@ -185,7 +185,7 @@ SuperRepo packages widget assets into a Marketplace product that creates the wid
 }
 ```
 
-Use the normal `foundryWidgetPlugin()` in your Vite configuration. Local builds require no Foundry URL, widget-set RID, or token. The plugin supplies a placeholder widget-set RID and version `0.1.0` in the generated `.palantir/widgets.config.json`. Marketplace assigns the installed widget-set RID and resolves release-version conflicts during installation. SDK inputs and authorizations are discovered from the Vite root's installed packages and `resources.json`.
+Use the normal `foundryWidgetPlugin()` in your Vite configuration. Local builds require no Foundry URL, widget-set RID, or token. The plugin supplies a placeholder widget-set RID and defaults to version `0.1.0` in the generated `.palantir/widgets.config.json`. Build tools can set `FOUNDRY_WIDGET_SET_VERSION` to override the local build version. Marketplace assigns the installed widget-set RID and resolves release-version conflicts during installation. SDK inputs and authorizations are discovered from the Vite root's installed packages and `resources.json`.
 
 When `build` is omitted or set to `"remote"`, the configuration requires `foundryUrl` and `widgetSet.rid`. Builds use that RID and the existing `autoVersion` strategy, which defaults to the version in `package.json`. Foundry developer mode requires remote configuration. Local widget preview is not supported yet.
 
