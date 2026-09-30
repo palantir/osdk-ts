@@ -16,20 +16,6 @@
       },
       "default": "./build/esm/index.js"
     },
-    "./extractWidgetDeclarations": {
-      "import": {
-        "types": "./build/types/public/extractWidgetDeclarations.d.ts",
-        "default": "./build/esm/public/extractWidgetDeclarations.js"
-      },
-      "default": "./build/esm/public/extractWidgetDeclarations.js"
-    },
-    "./extractWidgetManifest": {
-      "import": {
-        "types": "./build/types/public/extractWidgetManifest.d.ts",
-        "default": "./build/esm/public/extractWidgetManifest.js"
-      },
-      "default": "./build/esm/public/extractWidgetManifest.js"
-    },
     "./*": {
       "import": {
         "types": "./build/types/public/*.d.ts",
