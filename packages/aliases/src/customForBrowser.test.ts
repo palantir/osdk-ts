@@ -66,6 +66,7 @@ describe("browser aliases", () => {
   afterEach(() => {
     resetAliasesCache();
     vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
   });
 
   describe("custom", () => {
@@ -167,6 +168,55 @@ describe("browser aliases", () => {
         "https://example.com/resources.json",
       );
     });
+
+    it.each(["", "reports/123", "reports/123/?view=summary#details"])(
+      "loads resources.json beneath the preview base at %s",
+      async (route) => {
+        vi.stubEnv("DEV", true);
+        vi.stubEnv("MODE", "code-workspaces");
+        vi.stubEnv("BASE_URL", "/preview/app/");
+        vi.stubGlobal("window", {
+          location: new URL(`https://example.com/preview/app/${route}`),
+        });
+        vi.stubGlobal("document", {
+          baseURI: "https://cdn.example.com/assets/",
+        });
+        const fetchImpl = mockFetch({ body: RESOURCES_JSON });
+        vi.stubGlobal("fetch", fetchImpl);
+
+        await expect(custom("apiBaseUrl")).resolves.toBe(
+          "https://api.example.com",
+        );
+
+        expect(fetchImpl).toHaveBeenCalledWith(
+          "https://example.com/preview/app/resources.json",
+        );
+      },
+    );
+
+    it.each([
+      ["production", false, "/assets/"],
+      ["development", true, "/local/"],
+      ["code-workspaces", false, "/preview/app/"],
+      ["code-workspaces", true, undefined],
+    ] as const)(
+      "uses the site root for mode=%s, dev=%s, base=%s",
+      async (mode, dev, base) => {
+        vi.stubEnv("MODE", mode);
+        vi.stubEnv("DEV", dev);
+        vi.stubEnv("BASE_URL", base);
+        vi.stubGlobal("window", {
+          location: new URL("https://example.com/reports/123"),
+        });
+        const fetchImpl = mockFetch({ body: RESOURCES_JSON });
+
+        await initAliases({ fetch: fetchImpl });
+
+        expect(fetchImpl).toHaveBeenCalledWith(
+          "https://example.com/resources.json",
+        );
+      },
+    );
 
     it("fetches only once across repeated calls", async () => {
       const fetchImpl = mockFetch({ body: RESOURCES_JSON });
