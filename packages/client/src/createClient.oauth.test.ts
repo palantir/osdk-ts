@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { webcrypto } from "node:crypto";
+
 import { BarInterface } from "@osdk/client.test.ontology";
 import { createPublicOauthClient } from "@osdk/oauth";
 import { stubData } from "@osdk/shared.test";
@@ -67,6 +69,7 @@ describe("branch selection after an OAuth round trip", () => {
         history: { replaceState },
       });
       vi.stubGlobal("document", undefined);
+      vi.stubGlobal("crypto", webcrypto);
       vi.stubGlobal("localStorage", memoryStorage());
       vi.stubGlobal("sessionStorage", memoryStorage());
       vi.stubEnv("TARGET", "browser");
@@ -106,8 +109,10 @@ describe("branch selection after an OAuth round trip", () => {
 
       const initialApp = initializeApp();
       // The initial page is unloaded while signIn waits for navigation.
-      void initialApp.auth.signIn();
-      await vi.waitFor(() => expect(assign).toHaveBeenCalledTimes(1));
+      await Promise.race([
+        initialApp.auth.signIn(),
+        vi.waitFor(() => expect(assign).toHaveBeenCalledTimes(1)),
+      ]);
       const authorizationUrl = new URL(assign.mock.calls[0][0] as string);
       expect(authorizationUrl.searchParams.get("redirect_uri")).toBe(
         redirectUrl,
