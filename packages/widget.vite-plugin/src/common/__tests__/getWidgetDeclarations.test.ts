@@ -163,3 +163,10 @@ test.each([undefined, "2.3.4"])(
     expect(extracted).toEqual(manifest);
   },
 );
+
+test("rejects an invalid local version during manifest extraction", async () => {
+  vi.stubEnv("FOUNDRY_WIDGET_SET_VERSION", "invalid");
+  await expect(
+    extractWidgetManifest(undefined, await fixture()),
+  ).rejects.toThrow("FOUNDRY_WIDGET_SET_VERSION must be a valid SemVer string");
+});

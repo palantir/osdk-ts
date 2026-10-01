@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ExitProcessError } from "@osdk/cli.common";
 import type { WidgetSetConfig } from "@osdk/foundry-config-json";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget.api";
 import type { CommandModule } from "yargs";
@@ -34,6 +35,12 @@ const command: CommandModule<CommonWidgetSetArgs, WidgetSetDeployArgs> = {
     ` publish the widget set.`,
   builder: async (argv) => {
     const config = await configLoader("widgetSet");
+    if (config?.foundryConfig.build === "local") {
+      throw new ExitProcessError(
+        2,
+        'Local widget packages cannot be deployed directly. To deploy to an existing widget set, use build: "remote" with its Foundry URL and RID, then rebuild.',
+      );
+    }
     const widgetSetConfig: WidgetSetConfig | undefined =
       config?.foundryConfig.widgetSet;
     const directory = widgetSetConfig?.directory;

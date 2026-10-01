@@ -18,8 +18,9 @@ import {
   mkdir,
   mkdtemp,
   realpath,
-  rename,
   readFile,
+  rename,
+  rm,
   writeFile,
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -33,8 +34,15 @@ import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import FoundryWidgetPlugin from "../../index.js";
 import type { FoundryWidgetPluginOptions } from "../../index.js";
 
+const roots: string[] = [];
+
 beforeEach(() => vi.stubEnv("FOUNDRY_WIDGET_SET_VERSION", undefined));
-afterEach(() => vi.unstubAllEnvs());
+afterEach(async () => {
+  vi.unstubAllEnvs();
+  await Promise.all(
+    roots.splice(0).map((root) => rm(root, { recursive: true, force: true })),
+  );
+});
 
 const widgetSetRid =
   "ri.widgetregistry.main.widget-set.00000000-0000-0000-0000-000000000000";
@@ -45,6 +53,7 @@ async function fixture(ids: string[]) {
   const root = await realpath(
     await mkdtemp(path.join(tmpdir(), "widget-build-")),
   );
+  roots.push(root);
   await mkdir(path.join(root, "src"));
   await writeFile(
     path.join(root, "foundry.config.json"),
@@ -245,3 +254,14 @@ test("explains that local preview is unavailable before requiring a Foundry toke
     }),
   ).rejects.toThrow("Local widget preview is not supported yet");
 });
+
+test.each(["", "invalid"])(
+  "rejects invalid local build version %j",
+  async (version) => {
+    vi.stubEnv("FOUNDRY_WIDGET_SET_VERSION", version);
+    const root = await fixture(["widget"]);
+    await expect(buildFixture(root, ["widget"], {})).rejects.toThrow(
+      "FOUNDRY_WIDGET_SET_VERSION must be a valid SemVer string",
+    );
+  },
+);

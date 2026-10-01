@@ -302,6 +302,33 @@ describe("widget build modes", () => {
     },
   );
 
+  it.each([
+    ["foundryUrl", { foundryUrl: "https://example.com" }],
+    ["rid", { widgetSet: { rid: "test-rid", directory: "dist" } }],
+    [
+      "repository",
+      { widgetSet: { repository: "test-repository", directory: "dist" } },
+    ],
+    [
+      "autoVersion",
+      {
+        widgetSet: { autoVersion: { type: "package-json" }, directory: "dist" },
+      },
+    ],
+  ])(
+    "rejects %s instead of ignoring it in local mode",
+    async (field, config) => {
+      vi.mocked(fsPromises.readFile).mockResolvedValue(
+        JSON.stringify({
+          build: "local",
+          widgetSet: { directory: "dist" },
+          ...config,
+        }),
+      );
+      await expect(loadFoundryConfig("widgetSet")).rejects.toThrow(field);
+    },
+  );
+
   it("rejects an unknown build mode", async () => {
     vi.mocked(fsPromises.readFile).mockResolvedValue(
       JSON.stringify({

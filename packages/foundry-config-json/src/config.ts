@@ -127,6 +127,16 @@ const FOUNDRY_WIDGET_SET_CONFIG_SCHEMA = {
   },
   required: ["widgetSet"],
   if: { properties: { build: { const: "local" } }, required: ["build"] },
+  // oxlint-disable-next-line unicorn/no-thenable -- JSON Schema conditional keyword
+  then: {
+    properties: {
+      foundryUrl: false,
+      widgetSet: {
+        type: "object",
+        properties: { rid: false, repository: false, autoVersion: false },
+      },
+    },
+  },
   else: {
     required: ["foundryUrl"],
     properties: {
