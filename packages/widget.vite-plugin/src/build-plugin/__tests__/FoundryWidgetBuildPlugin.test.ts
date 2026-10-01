@@ -34,15 +34,13 @@ import { afterEach, expect, test, vi } from "vitest";
 import FoundryWidgetPlugin from "../../index.js";
 import type { FoundryWidgetPluginOptions } from "../../index.js";
 
-const originalCwd = process.cwd();
+const roots: string[] = [];
 
 afterEach(async () => {
-  const root = process.cwd();
-  process.chdir(originalCwd);
   vi.unstubAllEnvs();
-  if (root !== originalCwd) {
-    await rm(root, { recursive: true, force: true });
-  }
+  await Promise.all(
+    roots.splice(0).map((root) => rm(root, { recursive: true, force: true })),
+  );
 });
 
 const widgetSetRid =
@@ -54,6 +52,7 @@ async function fixture(ids: string[]) {
   const root = await realpath(
     await mkdtemp(path.join(tmpdir(), "widget-build-")),
   );
+  roots.push(root);
   await mkdir(path.join(root, "src"));
   await writeFile(
     path.join(root, "foundry.config.json"),
@@ -85,7 +84,6 @@ async function fixture(ids: string[]) {
       `export default ${JSON.stringify({ id, name: id, type: "workshop", parameters: { title: { type: "string", displayName: "Title" } }, events: { changeTitle: { displayName: "Change title", parameterUpdateIds: ["title"] } } })};`,
     );
   }
-  process.chdir(root);
   return root;
 }
 
@@ -93,9 +91,11 @@ async function buildFixture(
   root: string,
   ids: string[],
   options: FoundryWidgetPluginOptions,
+  base = "/",
 ) {
   await build({
     root,
+    base,
     configFile: false,
     logLevel: "silent",
     plugins: [FoundryWidgetPlugin(options)],
@@ -111,49 +111,57 @@ async function buildFixture(
   ) as WidgetSetManifest;
 }
 
-test("builds local widgets without a Foundry URL, RID, or token", async () => {
-  vi.stubEnv("FOUNDRY_TOKEN", undefined);
-  const ids = ["first", "second"];
-  const root = await fixture(ids);
-  const manifest = await buildFixture(root, ids, {
-    defaults: { refreshHostDataOnAction: true },
-  });
-  expect(manifest.widgetSet.rid).toBe(widgetSetRid);
-  expect(manifest.widgetSet.version).toBe("0.1.0");
-  expect(Object.keys(manifest.widgetSet.widgets)).toEqual(ids);
-  expect(manifest.widgetSet.inputSpec).toEqual({ discovered: { sdks: [] } });
-  for (const [index, id] of ids.entries()) {
-    const widget = manifest.widgetSet.widgets[id];
-    const html = await readFile(
-      path.join(root, `output/${index}.html`),
-      "utf8",
+test.each(["/", "/nested/widgets/", "./"])(
+  "builds local widgets without a Foundry URL or RID from a different working directory using base %s",
+  async (base) => {
+    vi.stubEnv("FOUNDRY_TOKEN", undefined);
+    const ids = ["first", "second"];
+    const root = await fixture(ids);
+    const manifest = await buildFixture(
+      root,
+      ids,
+      {
+        defaults: { refreshHostDataOnAction: true },
+      },
+      base,
     );
-    expect(widget.parameters.title).toEqual({
-      type: "string",
-      displayName: "Title",
-    });
-    expect(widget.events.changeTitle.parameterUpdateIds).toEqual(["title"]);
-    expect(widget.refreshHostDataOnAction).toBe(true);
-    expect(widget.entrypointJs).toHaveLength(1);
-    expect(widget.entrypointCss).toHaveLength(1);
-    for (const asset of widget.entrypointJs) {
-      expect(asset.path).toMatch(/^assets\//u);
-      expect(html).toContain(`src="/${asset.path}"`);
-      expect(
-        await readFile(path.join(root, "output", asset.path), "utf8"),
-      ).toContain("document.title");
+    expect(manifest.widgetSet.rid).toBe(widgetSetRid);
+    expect(manifest.widgetSet.version).toBe("0.1.0");
+    expect(Object.keys(manifest.widgetSet.widgets)).toEqual(ids);
+    expect(manifest.widgetSet.inputSpec).toEqual({ discovered: { sdks: [] } });
+    for (const [index, id] of ids.entries()) {
+      const widget = manifest.widgetSet.widgets[id];
+      const html = await readFile(
+        path.join(root, `output/${index}.html`),
+        "utf8",
+      );
+      expect(widget.parameters.title).toEqual({
+        type: "string",
+        displayName: "Title",
+      });
+      expect(widget.events.changeTitle.parameterUpdateIds).toEqual(["title"]);
+      expect(widget.refreshHostDataOnAction).toBe(true);
+      expect(widget.entrypointJs).toHaveLength(1);
+      expect(widget.entrypointCss).toHaveLength(1);
+      for (const asset of widget.entrypointJs) {
+        expect(asset.path).toMatch(/^assets\//u);
+        expect(html).toContain(`src="${base}${asset.path}"`);
+        expect(
+          await readFile(path.join(root, "output", asset.path), "utf8"),
+        ).toContain("document.title");
+      }
+      for (const asset of widget.entrypointCss ?? []) {
+        expect(asset.path).toMatch(/^assets\//u);
+        expect(html).toContain(`href="${base}${asset.path}"`);
+        expect(
+          await readFile(path.join(root, "output", asset.path), "utf8"),
+        ).toContain(".widget");
+      }
     }
-    for (const asset of widget.entrypointCss ?? []) {
-      expect(asset.path).toMatch(/^assets\//u);
-      expect(html).toContain(`href="/${asset.path}"`);
-      expect(
-        await readFile(path.join(root, "output", asset.path), "utf8"),
-      ).toContain(".widget");
-    }
-  }
-});
+  },
+);
 
-test("discovers SDK metadata and authorizations for local packages", async () => {
+test("discovers SDK metadata and authorizations relative to the Vite root", async () => {
   const root = await fixture(["widget"]);
   await writeFile(
     path.join(root, "package.json"),

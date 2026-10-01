@@ -24,7 +24,9 @@ vi.mock("../extractBuildOutputs.js");
 
 const MOCK_BUILD_DIR = "/build";
 const MOCK_INPUT = "index.html";
-const MOCK_SERVER = {} as ViteDevServer;
+const MOCK_SERVER = {
+  config: { root: process.cwd(), base: "/" },
+} as ViteDevServer;
 
 beforeEach(() => {
   vi.clearAllMocks();

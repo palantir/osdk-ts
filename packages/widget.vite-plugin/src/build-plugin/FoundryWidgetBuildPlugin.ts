@@ -17,7 +17,6 @@
 import fs from "fs";
 import path from "path";
 
-import { autoVersion, loadFoundryConfig } from "@osdk/foundry-config-json";
 import type { WidgetSetManifest } from "@osdk/widget.api";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget.api";
 import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
@@ -28,14 +27,10 @@ import {
   MODULE_EVALUATION_MODE,
 } from "../common/constants.js";
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
+import { getWidgetBuildContext } from "../common/getWidgetBuildContext.js";
 import type { FoundryWidgetPluginOptions } from "../index.js";
 import { buildWidgetSetManifest } from "./buildWidgetSetManifest.js";
 import { getWidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
-import { getWidgetSetInputSpec } from "./getWidgetSetInputSpec.js";
-
-const LOCAL_WIDGET_SET_RID =
-  "ri.widgetregistry.main.widget-set.00000000-0000-0000-0000-000000000000";
-const LOCAL_WIDGET_SET_VERSION = "0.1.0";
 
 export function FoundryWidgetBuildPlugin(
   options?: FoundryWidgetPluginOptions,
@@ -72,17 +67,7 @@ export function FoundryWidgetBuildPlugin(
      * Write the manifest to the expected location in the dist directory.
      */
     async writeBundle(_, bundle) {
-      const foundryConfig = await loadFoundryConfig("widgetSet");
-      if (foundryConfig == null) {
-        throw new Error("foundry.config.json file not found.");
-      }
-
-      const { widgetSet, build: buildMode } = foundryConfig.foundryConfig;
-      const local = buildMode === "local";
-      const widgetSetRid = local ? LOCAL_WIDGET_SET_RID : widgetSet.rid!;
-      const widgetSetVersion = local
-        ? LOCAL_WIDGET_SET_VERSION
-        : await autoVersion(widgetSet.autoVersion ?? { type: "package-json" });
+      const buildContext = await getWidgetBuildContext(config.root);
 
       // Create a Vite server to evaluate widget config modules
       const server = await createModuleEvaluationServer(config);
@@ -91,23 +76,27 @@ export function FoundryWidgetBuildPlugin(
         // Build widget set manifest
         const widgetBuilds = await Promise.all(
           htmlEntrypoints.map((input) =>
-            getWidgetBuildOutputs(bundle, input, config.build.outDir, server),
+            getWidgetBuildOutputs(
+              bundle,
+              input,
+              path.resolve(config.root, config.build.outDir),
+              server,
+            ),
           ),
         );
-        const widgetSetInputSpec = await getWidgetSetInputSpec(
-          path.resolve(process.cwd(), "package.json"),
-          path.resolve(process.cwd(), "resources.json"),
-        );
         const widgetSetManifest = buildWidgetSetManifest(
-          widgetSetRid,
-          widgetSetVersion,
+          buildContext.widgetSetRid,
+          buildContext.version,
           widgetBuilds,
-          widgetSetInputSpec,
+          buildContext.inputSpec,
           options,
         );
 
         // Write the manifest to the dist directory
-        writeManifest(widgetSetManifest, config.build.outDir);
+        writeManifest(
+          widgetSetManifest,
+          path.resolve(config.root, config.build.outDir),
+        );
       } finally {
         await server.close();
       }
@@ -123,10 +112,13 @@ async function createModuleEvaluationServer(
   config: ResolvedConfig,
 ): Promise<ViteDevServer> {
   return await createServer({
+    ...config.inlineConfig,
+    root: config.root,
     // Reference the existing config file in order to respect any custom config
     configFile: config.configFile,
     // Custom mode to prevent dev plugin execution
     mode: MODULE_EVALUATION_MODE,
+    server: { middlewareMode: true, hmr: false, watch: null },
   });
 }
 
