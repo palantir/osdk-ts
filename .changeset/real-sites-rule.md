@@ -1,5 +1,6 @@
 ---
 "@osdk/vite-plugin-superrepo": minor
+"@osdk/client.unstable": minor
 ---
 
-Add better error handling for smartClient- #4111
+Export generated executor types from client.unstable for exhaustive smartClient return handling and preserve function failure details.
