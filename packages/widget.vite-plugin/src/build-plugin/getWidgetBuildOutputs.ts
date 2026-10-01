@@ -36,28 +36,9 @@ export async function getWidgetBuildOutputs(
 ): Promise<WidgetBuildOutputs> {
   const inputHtmlFilePath = path.resolve(
     buildDir,
-    path.relative(server.config.root, input),
+    path.relative(process.cwd(), input),
   );
-  const extracted = extractBuildOutputs(inputHtmlFilePath);
-  const htmlPath = path
-    .relative(buildDir, inputHtmlFilePath)
-    .split(path.sep)
-    .join("/");
-  const resolveAsset = (src: string): string => {
-    const url = new URL(src, `http://widget.local/${htmlPath}`);
-    const base = server.config.base;
-    if (src.startsWith("/") && base !== "./" && url.pathname.startsWith(base)) {
-      return `/${url.pathname.slice(base.length)}`;
-    }
-    return url.pathname;
-  };
-  const buildOutputs = {
-    scripts: extracted.scripts.map((script) => ({
-      ...script,
-      src: resolveAsset(script.src),
-    })),
-    stylesheets: extracted.stylesheets.map(resolveAsset),
-  };
+  const buildOutputs = extractBuildOutputs(inputHtmlFilePath);
   const scriptPaths = new Set(
     buildOutputs.scripts.map((script) => script.src.slice(1)),
   );

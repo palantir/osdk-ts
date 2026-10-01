@@ -18,8 +18,9 @@ import {
   mkdir,
   mkdtemp,
   realpath,
-  rename,
   readFile,
+  rename,
+  rm,
   writeFile,
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -33,8 +34,17 @@ import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import FoundryWidgetPlugin from "../../index.js";
 import type { FoundryWidgetPluginOptions } from "../../index.js";
 
+const originalCwd = process.cwd();
+
 beforeEach(() => vi.stubEnv("FOUNDRY_WIDGET_SET_VERSION", undefined));
-afterEach(() => vi.unstubAllEnvs());
+afterEach(async () => {
+  const root = process.cwd();
+  process.chdir(originalCwd);
+  vi.unstubAllEnvs();
+  if (root !== originalCwd) {
+    await rm(root, { recursive: true, force: true });
+  }
+});
 
 const widgetSetRid =
   "ri.widgetregistry.main.widget-set.00000000-0000-0000-0000-000000000000";
@@ -76,6 +86,7 @@ async function fixture(ids: string[]) {
       `export default ${JSON.stringify({ id, name: id, type: "workshop", parameters: { title: { type: "string", displayName: "Title" } }, events: { changeTitle: { displayName: "Change title", parameterUpdateIds: ["title"] } } })};`,
     );
   }
+  process.chdir(root);
   return root;
 }
 
@@ -83,11 +94,9 @@ async function buildFixture(
   root: string,
   ids: string[],
   options: FoundryWidgetPluginOptions,
-  base = "/",
 ) {
   await build({
     root,
-    base,
     configFile: false,
     logLevel: "silent",
     plugins: [FoundryWidgetPlugin(options)],
@@ -103,55 +112,47 @@ async function buildFixture(
   ) as WidgetSetManifest;
 }
 
-test.each(["/", "/nested/widgets/", "./"])(
-  "builds local widgets without a Foundry URL or RID from a different working directory using base %s",
-  async (base) => {
-    vi.stubEnv("FOUNDRY_TOKEN", undefined);
-    const ids = ["first", "second"];
-    const root = await fixture(ids);
-    const manifest = await buildFixture(
-      root,
-      ids,
-      {
-        defaults: { refreshHostDataOnAction: true },
-      },
-      base,
+test("builds local widgets without a Foundry URL, RID, or token", async () => {
+  vi.stubEnv("FOUNDRY_TOKEN", undefined);
+  const ids = ["first", "second"];
+  const root = await fixture(ids);
+  const manifest = await buildFixture(root, ids, {
+    defaults: { refreshHostDataOnAction: true },
+  });
+  expect(manifest.widgetSet.rid).toBe(widgetSetRid);
+  expect(manifest.widgetSet.version).toBe("0.1.0");
+  expect(Object.keys(manifest.widgetSet.widgets)).toEqual(ids);
+  expect(manifest.widgetSet.inputSpec).toEqual({ discovered: { sdks: [] } });
+  for (const [index, id] of ids.entries()) {
+    const widget = manifest.widgetSet.widgets[id];
+    const html = await readFile(
+      path.join(root, `output/${index}.html`),
+      "utf8",
     );
-    expect(manifest.widgetSet.rid).toBe(widgetSetRid);
-    expect(manifest.widgetSet.version).toBe("0.1.0");
-    expect(Object.keys(manifest.widgetSet.widgets)).toEqual(ids);
-    expect(manifest.widgetSet.inputSpec).toEqual({ discovered: { sdks: [] } });
-    for (const [index, id] of ids.entries()) {
-      const widget = manifest.widgetSet.widgets[id];
-      const html = await readFile(
-        path.join(root, `output/${index}.html`),
-        "utf8",
-      );
-      expect(widget.parameters.title).toEqual({
-        type: "string",
-        displayName: "Title",
-      });
-      expect(widget.events.changeTitle.parameterUpdateIds).toEqual(["title"]);
-      expect(widget.refreshHostDataOnAction).toBe(true);
-      expect(widget.entrypointJs).toHaveLength(1);
-      expect(widget.entrypointCss).toHaveLength(1);
-      for (const asset of widget.entrypointJs) {
-        expect(asset.path).toMatch(/^assets\//u);
-        expect(html).toContain(`src="${base}${asset.path}"`);
-        expect(
-          await readFile(path.join(root, "output", asset.path), "utf8"),
-        ).toContain("document.title");
-      }
-      for (const asset of widget.entrypointCss ?? []) {
-        expect(asset.path).toMatch(/^assets\//u);
-        expect(html).toContain(`href="${base}${asset.path}"`);
-        expect(
-          await readFile(path.join(root, "output", asset.path), "utf8"),
-        ).toContain(".widget");
-      }
+    expect(widget.parameters.title).toEqual({
+      type: "string",
+      displayName: "Title",
+    });
+    expect(widget.events.changeTitle.parameterUpdateIds).toEqual(["title"]);
+    expect(widget.refreshHostDataOnAction).toBe(true);
+    expect(widget.entrypointJs).toHaveLength(1);
+    expect(widget.entrypointCss).toHaveLength(1);
+    for (const asset of widget.entrypointJs) {
+      expect(asset.path).toMatch(/^assets\//u);
+      expect(html).toContain(`src="/${asset.path}"`);
+      expect(
+        await readFile(path.join(root, "output", asset.path), "utf8"),
+      ).toContain("document.title");
     }
-  },
-);
+    for (const asset of widget.entrypointCss ?? []) {
+      expect(asset.path).toMatch(/^assets\//u);
+      expect(html).toContain(`href="/${asset.path}"`);
+      expect(
+        await readFile(path.join(root, "output", asset.path), "utf8"),
+      ).toContain(".widget");
+    }
+  }
+});
 
 test("builds local widgets with the version supplied by the build tool", async () => {
   vi.stubEnv("FOUNDRY_WIDGET_SET_VERSION", "2.3.4");
@@ -161,7 +162,7 @@ test("builds local widgets with the version supplied by the build tool", async (
   expect(manifest.widgetSet.version).toBe("2.3.4");
 });
 
-test("discovers SDK metadata and authorizations relative to the Vite root", async () => {
+test("discovers SDK metadata and authorizations for local packages", async () => {
   const root = await fixture(["widget"]);
   await writeFile(
     path.join(root, "package.json"),
@@ -245,3 +246,14 @@ test("explains that local preview is unavailable before requiring a Foundry toke
     }),
   ).rejects.toThrow("Local widget preview is not supported yet");
 });
+
+test.each(["", "invalid"])(
+  "rejects invalid local build version %j",
+  async (version) => {
+    vi.stubEnv("FOUNDRY_WIDGET_SET_VERSION", version);
+    const root = await fixture(["widget"]);
+    await expect(buildFixture(root, ["widget"], {})).rejects.toThrow(
+      "FOUNDRY_WIDGET_SET_VERSION must be a valid SemVer string",
+    );
+  },
+);

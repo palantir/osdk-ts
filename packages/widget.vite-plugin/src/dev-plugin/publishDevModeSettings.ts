@@ -72,10 +72,7 @@ export async function publishDevModeSettings(
   res: ServerResponse,
 ): Promise<void> {
   try {
-    const foundryConfig = await loadFoundryConfig(
-      "widgetSet",
-      server.config.root,
-    );
+    const foundryConfig = await loadFoundryConfig("widgetSet");
     if (foundryConfig == null) {
       throw new Error("foundry.config.json file not found.");
     }

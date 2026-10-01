@@ -85,7 +85,7 @@ export function FoundryWidgetDevPlugin(
      * Check for the required token environment variable in dev mode.
      */
     async configResolved(resolvedConfig) {
-      const config = await loadFoundryConfig("widgetSet", resolvedConfig.root);
+      const config = await loadFoundryConfig("widgetSet");
       if (config?.foundryConfig.build === "local") {
         throw new Error(
           "Local widget preview is not supported yet. Use vite build to package widgets.",
