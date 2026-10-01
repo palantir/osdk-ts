@@ -18,9 +18,12 @@ const FOUNDRY_BRANCH_META_SELECTOR = 'meta[name="osdk-foundry-branch-rid"]';
 
 /** Reads the runtime branch from the current window, including in an iframe. */
 function getQueryBranch(): string | null | undefined {
-  return typeof window === "undefined"
-    ? undefined
-    : new URLSearchParams(window.location?.search).get("foundryBranchRid");
+  const search =
+    typeof window === "undefined" ? undefined : window.location?.search;
+  if (search === undefined) {
+    return undefined;
+  }
+  return new URLSearchParams(search).get("foundryBranchRid");
 }
 
 /** Reads the injected branch without requiring a browser environment. */

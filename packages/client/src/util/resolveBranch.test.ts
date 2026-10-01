@@ -129,12 +129,17 @@ describe(resolveBranch, () => {
       expect(resolveBranch(undefined, INJECTED_BRANCH)).toBe(INJECTED_BRANCH);
     });
 
-    it.each([undefined, null])(
+    it.each([undefined, null, {}, { search: undefined }])(
       "falls back when window.location is %s",
       (location) => {
         vi.stubGlobal("window", { location });
+        const searchParams = vi.fn(() => {
+          throw new Error("URLSearchParams is unavailable");
+        });
+        vi.stubGlobal("URLSearchParams", searchParams);
         expect(resolveBranch(undefined, INJECTED_BRANCH)).toBe(INJECTED_BRANCH);
         expect(resolveBranch(undefined, null)).toBeUndefined();
+        expect(searchParams).not.toHaveBeenCalled();
       },
     );
   });
