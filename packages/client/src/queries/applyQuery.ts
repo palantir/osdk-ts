@@ -412,12 +412,17 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
     case "set":
       return requiresConversion(dataType.set);
 
+    case "array":
+      return requiresConversion(dataType.array);
+
     case "attachment":
     case "mediaReference":
     case "objectSet":
     case "twoDimensionalAggregation":
     case "threeDimensionalAggregation":
     case "object":
+    case "interface":
+    case "map":
       return true;
 
     default:
