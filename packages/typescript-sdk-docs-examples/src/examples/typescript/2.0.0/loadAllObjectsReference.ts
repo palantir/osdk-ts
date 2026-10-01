@@ -19,22 +19,26 @@
 
 // Example: loadAllObjectsReference
 
-import type { Osdk } from "@osdk/client";
-
 import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-async function getAll(): Promise<Array<Osdk.Instance<Employee>>> {
-  const objects: Osdk.Instance<Employee>[] = [];
-  for await (const obj of client(Employee).asyncIter()) {
-    objects.push(obj);
-  }
-
-  return objects;
-}
-
-// If Array.fromAsync() is available in your target environment
-function getAllFromAsync(): Promise<Array<Osdk.Instance<Employee>>> {
-  return Array.fromAsync(client(Employee).asyncIter());
+// Before loading every object, check whether you need to:
+// - Count, sum, or group objects: use .aggregate() instead, which never loads the objects.
+// - Show a sample or the first N objects: use fetchPage({ $pageSize }) instead.
+//
+// asyncIter() fetches page after page until every matching object has been loaded:
+// - $select only the properties you read. Without it every property is loaded, and reading one
+//   property afterwards does not reduce what was already fetched. On object types with large
+//   text, array, or other wide properties this can be much slower than necessary.
+// - Handle each object as it arrives rather than collecting them all into an array, so that
+//   memory use does not grow with the size of the object set.
+// - asyncIter() always reads from a consistent snapshot, so pages never repeat or skip objects.
+//   If objects are added or removed faster than the traversal completes (e.g. stream-backed
+//   object types), or the traversal runs long enough for the snapshot to expire, it fails.
+//   In that case, filter to a stable subset, $select fewer properties so it finishes sooner,
+//   or page with fetchPage() yourself, which does not use a snapshot by default but may then
+//   return duplicate or missing objects if the data changes.
+for await (const obj of client(Employee).asyncIter({ $select: ["fullName"] })) {
+  console.log(obj.fullName);
 }
