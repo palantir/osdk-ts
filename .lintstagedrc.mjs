@@ -21,6 +21,7 @@ const OXC_PACKAGES = [
   "widget.client-react",
   "widget.api",
   "widget.client",
+  "widget.preview",
   "cbac-components",
   "react",
   "react-devtools",

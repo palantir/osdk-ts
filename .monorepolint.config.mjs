@@ -375,6 +375,14 @@ const archetypeRules = archetypes(standardPackageRules, {
       cssExport: ["styles.css"],
     },
   )
+  .addArchetype("widget preview", ["@osdk/widget.preview"], {
+    ...LIBRARY_RULES,
+    react: true,
+    oxc: true,
+    checkApi: true,
+    output: OUTPUT_ESM_ONLY,
+    cssExport: ["styles.css"],
+  })
   // Private, minimal-change packages migrated to the oxc toolchain. Mirrors the
   // "minimal packages" archetype (minimalChangesOnly + private) but on oxc.
   // @osdk/react-components-storybook is the storybook for
