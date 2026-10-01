@@ -20,7 +20,6 @@ import path from "path";
 import { autoVersion, loadFoundryConfig } from "@osdk/foundry-config-json";
 import type { WidgetSetManifest } from "@osdk/widget.api";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget.api";
-import { valid } from "semver";
 import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
 import { createServer } from "vite";
 
@@ -82,13 +81,8 @@ export function FoundryWidgetBuildPlugin(
       const local = buildMode === "local";
       const widgetSetRid = local ? LOCAL_WIDGET_SET_RID : widgetSet.rid!;
       const widgetSetVersion = local
-        ? (process.env.FOUNDRY_WIDGET_SET_VERSION ?? LOCAL_WIDGET_SET_VERSION)
+        ? LOCAL_WIDGET_SET_VERSION
         : await autoVersion(widgetSet.autoVersion ?? { type: "package-json" });
-      if (local && valid(widgetSetVersion) == null) {
-        throw new Error(
-          `FOUNDRY_WIDGET_SET_VERSION must be a valid SemVer string: ${widgetSetVersion}`,
-        );
-      }
 
       // Create a Vite server to evaluate widget config modules
       const server = await createModuleEvaluationServer(config);
