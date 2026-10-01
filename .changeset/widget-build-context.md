@@ -4,4 +4,4 @@
 "@osdk/cli": patch
 ---
 
-Support local widget packaging through foundry.config.json with an optional build version override.
+Support local widget packaging through foundry.config.json without an existing Foundry widget set.

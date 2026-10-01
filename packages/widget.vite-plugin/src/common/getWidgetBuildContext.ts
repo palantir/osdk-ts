@@ -18,7 +18,6 @@ import path from "node:path";
 
 import { autoVersion, loadFoundryConfig } from "@osdk/foundry-config-json";
 import type { WidgetSetInputSpec } from "@osdk/widget.api";
-import { valid } from "semver";
 
 import { getWidgetSetInputSpec } from "../build-plugin/getWidgetSetInputSpec.js";
 
@@ -38,16 +37,11 @@ export async function getWidgetBuildContext(root: string): Promise<{
   const config = loaded.foundryConfig;
   const local = config.build === "local";
   const version = local
-    ? (process.env.FOUNDRY_WIDGET_SET_VERSION ?? LOCAL_WIDGET_SET_VERSION)
+    ? LOCAL_WIDGET_SET_VERSION
     : await autoVersion(
         config.widgetSet.autoVersion ?? { type: "package-json" },
         root,
       );
-  if (local && valid(version) == null) {
-    throw new Error(
-      `FOUNDRY_WIDGET_SET_VERSION must be a valid SemVer string: ${version}`,
-    );
-  }
   return {
     widgetSetRid: local ? LOCAL_WIDGET_SET_RID : config.widgetSet.rid!,
     version,

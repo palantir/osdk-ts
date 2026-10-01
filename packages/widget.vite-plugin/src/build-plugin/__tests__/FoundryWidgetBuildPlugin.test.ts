@@ -29,14 +29,13 @@ import path from "node:path";
 import type { WidgetSetManifest } from "@osdk/widget.api";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget.api";
 import { build, createServer } from "vite";
-import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { afterEach, expect, test, vi } from "vitest";
 
 import FoundryWidgetPlugin from "../../index.js";
 import type { FoundryWidgetPluginOptions } from "../../index.js";
 
 const roots: string[] = [];
 
-beforeEach(() => vi.stubEnv("FOUNDRY_WIDGET_SET_VERSION", undefined));
 afterEach(async () => {
   vi.unstubAllEnvs();
   await Promise.all(
@@ -162,14 +161,6 @@ test.each(["/", "/nested/widgets/", "./"])(
   },
 );
 
-test("builds local widgets with the version supplied by the build tool", async () => {
-  vi.stubEnv("FOUNDRY_WIDGET_SET_VERSION", "2.3.4");
-  const root = await fixture(["widget"]);
-  const manifest = await buildFixture(root, ["widget"], {});
-  expect(manifest.widgetSet.rid).toBe(widgetSetRid);
-  expect(manifest.widgetSet.version).toBe("2.3.4");
-});
-
 test("discovers SDK metadata and authorizations relative to the Vite root", async () => {
   const root = await fixture(["widget"]);
   await writeFile(
@@ -223,7 +214,6 @@ test("requires a configuration file to select local or remote builds", async () 
 test.each([undefined, "remote"])(
   "builds for an existing widget set with build %s",
   async (mode) => {
-    vi.stubEnv("FOUNDRY_WIDGET_SET_VERSION", "2.3.4");
     const root = await fixture(["widget"]);
     const remoteRid =
       "ri.widgetregistry.main.widget-set.11111111-1111-1111-1111-111111111111";
@@ -254,14 +244,3 @@ test("explains that local preview is unavailable before requiring a Foundry toke
     }),
   ).rejects.toThrow("Local widget preview is not supported yet");
 });
-
-test.each(["", "invalid"])(
-  "rejects invalid local build version %j",
-  async (version) => {
-    vi.stubEnv("FOUNDRY_WIDGET_SET_VERSION", version);
-    const root = await fixture(["widget"]);
-    await expect(buildFixture(root, ["widget"], {})).rejects.toThrow(
-      "FOUNDRY_WIDGET_SET_VERSION must be a valid SemVer string",
-    );
-  },
-);

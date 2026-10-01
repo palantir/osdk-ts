@@ -30,14 +30,11 @@ import {
   type WidgetSetManifest,
 } from "@osdk/widget.api";
 import { build, type InlineConfig } from "vite";
-import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { expect, test } from "vitest";
 
 import FoundryWidgetPlugin from "../../index.js";
 import { extractWidgetDeclarations } from "../../public/extractWidgetDeclarations.js";
 import { extractWidgetManifest } from "../../public/extractWidgetManifest.js";
-
-beforeEach(() => vi.stubEnv("FOUNDRY_WIDGET_SET_VERSION", undefined));
-afterEach(() => vi.unstubAllEnvs());
 
 async function fixture(
   ids = ["first", "second"],
@@ -141,32 +138,21 @@ test("finds declarations through shared source imports", async () => {
   expect((await extractWidgetDeclarations(config))[0].config.id).toBe("first");
 });
 
-test.each([undefined, "2.3.4"])(
-  "extracts manifest metadata matching a production build with version %s",
-  async (version) => {
-    vi.stubEnv("FOUNDRY_WIDGET_SET_VERSION", version);
-    const config = await fixture();
-    const extracted = await extractWidgetManifest(undefined, config);
-    expect(extracted.widgetSet.version).toBe(version ?? "0.1.0");
-    await expect(access(path.join(config.root, "dist"))).rejects.toThrow();
-    await build(config);
-    const manifest = JSON.parse(
-      await readFile(
-        path.join(config.root, "dist", MANIFEST_FILE_LOCATION),
-        "utf8",
-      ),
-    ) as WidgetSetManifest;
-    for (const widget of Object.values(manifest.widgetSet.widgets)) {
-      widget.entrypointJs = [];
-      widget.entrypointCss = [];
-    }
-    expect(extracted).toEqual(manifest);
-  },
-);
-
-test("rejects an invalid local version during manifest extraction", async () => {
-  vi.stubEnv("FOUNDRY_WIDGET_SET_VERSION", "invalid");
-  await expect(
-    extractWidgetManifest(undefined, await fixture()),
-  ).rejects.toThrow("FOUNDRY_WIDGET_SET_VERSION must be a valid SemVer string");
+test("extracts manifest metadata matching a production build", async () => {
+  const config = await fixture();
+  const extracted = await extractWidgetManifest(undefined, config);
+  expect(extracted.widgetSet.version).toBe("0.1.0");
+  await expect(access(path.join(config.root, "dist"))).rejects.toThrow();
+  await build(config);
+  const manifest = JSON.parse(
+    await readFile(
+      path.join(config.root, "dist", MANIFEST_FILE_LOCATION),
+      "utf8",
+    ),
+  ) as WidgetSetManifest;
+  for (const widget of Object.values(manifest.widgetSet.widgets)) {
+    widget.entrypointJs = [];
+    widget.entrypointCss = [];
+  }
+  expect(extracted).toEqual(manifest);
 });

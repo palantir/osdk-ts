@@ -185,8 +185,8 @@ To build widgets for that workflow, use the normal `foundryWidgetPlugin()` and t
 }
 ```
 
-Local builds require no Foundry URL, widget-set RID, or token. The manifest uses a placeholder RID because the widget set will be created during product installation. Its version defaults to `0.1.0`; build tools can set `FOUNDRY_WIDGET_SET_VERSION` to supply a different SemVer version. SDK inputs and authorizations are discovered as in other widget builds.
+Local builds require no Foundry URL, widget-set RID, or token. The manifest uses a placeholder RID because the widget set will be created during product installation, and a placeholder version of `0.1.0`. SuperRepo will assign the release version during packaging. SDK inputs and authorizations are discovered as in other widget builds.
 
 These assets are for Marketplace packaging and cannot be deployed directly with `osdk widgetset deploy`. Local configuration must omit `foundryUrl`, `rid`, `repository`, and `autoVersion`. To build and develop against an existing widget set, keep the usual configuration: omit `build` or set it to `"remote"`. That workflow still requires a Foundry URL and RID and uses the existing `autoVersion` strategy.
 
-Build tools can use `extractWidgetDeclarations` to read and validate widget configuration without executing the widget UI or building assets. `extractWidgetManifest` also reads `foundry.config.json` and discovers SDK inputs to produce manifest metadata with empty asset lists. For local builds, it honors the same `FOUNDRY_WIDGET_SET_VERSION` override as the asset build. Both APIs are exported as package subpaths and remain under development.
+Build tools can use `extractWidgetDeclarations` to read and validate widget configuration without executing the widget UI or building assets. `extractWidgetManifest` also reads `foundry.config.json` and discovers SDK inputs to produce manifest metadata with empty asset lists. Both APIs are exported as package subpaths and remain under development.
