@@ -183,6 +183,55 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return value != null && typeof value === "object" && !Array.isArray(value);
 }
 
+function decodeRuntimeValueOfType(
+  value: unknown,
+  types: readonly string[],
+): unknown {
+  if (
+    !isRecord(value) ||
+    typeof value.type !== "string" ||
+    !types.includes(value.type)
+  ) {
+    throw new Error(
+      `Unexpected return value from local runtime: expected ${types.join(" or ")}`,
+    );
+  }
+  return decodeRuntimeValue(value);
+}
+
+function decodeAggregationBuckets(value: unknown, nested: boolean): unknown[] {
+  if (!isRecord(value) || !Array.isArray(value.buckets)) {
+    throw new Error("Unexpected aggregation buckets from local runtime");
+  }
+  return value.buckets.map((bucket: unknown) => {
+    if (!isRecord(bucket)) {
+      throw new Error("Unexpected aggregation bucket from local runtime");
+    }
+    const key = decodeRuntimeValueOfType(bucket.key, [
+      "double",
+      "integer",
+      "date",
+      "timestamp",
+      "range",
+      "string",
+      "boolean",
+    ]);
+    const decodedKey = isRecord(key)
+      ? { startValue: key.min, endValue: key.max }
+      : key;
+    return nested
+      ? { key: decodedKey, groups: decodeAggregationBuckets(bucket, false) }
+      : {
+          key: decodedKey,
+          value: decodeRuntimeValueOfType(bucket.value, [
+            "double",
+            "date",
+            "timestamp",
+          ]),
+        };
+  });
+}
+
 function decodeRuntimeValue(value: unknown): unknown {
   if (!isRecord(value) || typeof value.type !== "string") {
     throw new Error("Unexpected return value from local runtime");
@@ -236,6 +285,65 @@ function decodeRuntimeValue(value: unknown): unknown {
         return payload;
       }
       break;
+    case "mediaReference":
+    case "objectLocator":
+    case "objectLocatorWithData":
+    case "ontologyEdit":
+    case "ontologyEditV2":
+    case "principal":
+    case "notification":
+    case "geoShape":
+    case "marking":
+      // These payloads contain domain unions, not nested executor Values.
+      if (isRecord(payload)) {
+        return payload;
+      }
+      break;
+    case "range":
+      if (isRecord(payload)) {
+        const types = ["integer", "double", "timestamp", "date"];
+        return {
+          min:
+            payload.min == null
+              ? undefined
+              : decodeRuntimeValueOfType(payload.min, types),
+          max:
+            payload.max == null
+              ? undefined
+              : decodeRuntimeValueOfType(payload.max, types),
+        };
+      }
+      break;
+    case "vector":
+      if (isRecord(payload) && Array.isArray(payload.values)) {
+        return payload.values.map((element: unknown) =>
+          decodeRuntimeValueOfType(element, ["double"]),
+        );
+      }
+      break;
+    case "action":
+      if (
+        isRecord(payload) &&
+        typeof payload.actionTypeRid === "string" &&
+        isRecord(payload.parameters)
+      ) {
+        return {
+          actionTypeRid: payload.actionTypeRid,
+          parameters: Object.fromEntries(
+            Object.entries(payload.parameters).map(([key, parameter]) => [
+              key,
+              decodeRuntimeValue(parameter),
+            ]),
+          ),
+        };
+      }
+      break;
+    case "twoDimensionalAggregation":
+    case "threeDimensionalAggregation":
+      return decodeAggregationBuckets(
+        payload,
+        value.type === "threeDimensionalAggregation",
+      );
     case "customType":
       if (isRecord(payload)) {
         return Object.fromEntries(
@@ -300,7 +408,9 @@ function transformResponseFromLocal(response: unknown): unknown {
     throw new Error(
       typeof message === "string" && message.length > 0
         ? message
-        : `Function execution failed with no error message (${result.failed.type})`,
+        : failure == null
+          ? `Function execution failed with no error message (${result.failed.type})`
+          : `Function execution failed (${result.failed.type}): ${JSON.stringify(failure)}`,
     );
   }
 
