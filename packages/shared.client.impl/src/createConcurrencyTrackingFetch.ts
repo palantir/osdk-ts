@@ -14,7 +14,37 @@
  * limitations under the License.
  */
 
-export const OSDK_CLIENT_CONCURRENCY_HEADER = "X-OSDK-Client-Concurrency";
+import type {
+  ClientMetrics,
+  OsdkRequestContext,
+} from "./OsdkRequestContext.js";
+import {
+  getOsdkRequestContext,
+  removeOsdkRequestContext,
+} from "./OsdkRequestContext.js";
+
+export const OSDK_REQUEST_CONTEXT_HEADER = "X-OSDK-Request-Context";
+
+function requestContextFromHeader(
+  requestContextHeader: string | null,
+): OsdkRequestContext {
+  if (requestContextHeader != null) {
+    try {
+      const requestContext: unknown = JSON.parse(requestContextHeader);
+      if (
+        typeof requestContext === "object" &&
+        requestContext != null &&
+        !Array.isArray(requestContext)
+      ) {
+        return requestContext as OsdkRequestContext;
+      }
+    } catch {
+      // Ignore malformed request-context headers.
+    }
+  }
+
+  return {};
+}
 
 export function createConcurrencyTrackingFetch(
   fetchFn: typeof globalThis.fetch,
@@ -33,8 +63,30 @@ export function createConcurrencyTrackingFetch(
 
     activeHttpAttempts++;
     try {
-      headers.set(OSDK_CLIENT_CONCURRENCY_HEADER, String(activeHttpAttempts));
-      return await fetchFn(input, { ...init, headers });
+      const requestContext =
+        getOsdkRequestContext(init) ??
+        requestContextFromHeader(headers.get(OSDK_REQUEST_CONTEXT_HEADER));
+      const existingClientMetrics = requestContext.clientMetrics;
+      const clientMetrics: ClientMetrics = {
+        ...(typeof existingClientMetrics === "object" &&
+        existingClientMetrics != null &&
+        !Array.isArray(existingClientMetrics)
+          ? existingClientMetrics
+          : {}),
+        concurrency: activeHttpAttempts,
+      };
+      const requestContextWithConcurrency: OsdkRequestContext = {
+        ...requestContext,
+        clientMetrics,
+      };
+      headers.set(
+        OSDK_REQUEST_CONTEXT_HEADER,
+        JSON.stringify(requestContextWithConcurrency),
+      );
+      return await fetchFn(input, {
+        ...removeOsdkRequestContext(init),
+        headers,
+      });
     } finally {
       activeHttpAttempts--;
     }
