@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-import type {
-  DatasetTransactionRid as _api_DatasetTransactionRid,
-  DatasourceRid as _api_DatasourceRid,
-  LinkTypeRid as _api_LinkTypeRid,
-  ObjectTypeRid as _api_ObjectTypeRid,
-  OntologyBranchRid as _api_OntologyBranchRid,
-  OntologyVersion as _api_OntologyVersion,
-  RestrictedViewTransactionRid as _api_RestrictedViewTransactionRid,
-  StreamViewRid as _api_StreamViewRid,
-  TimeSeriesSyncRid as _api_TimeSeriesSyncRid,
-} from "../__components.js";
+import type { DatasetTransactionRid as _api_DatasetTransactionRid } from "../__components.js";
+import type { LinkTypeRid as _api_LinkTypeRid } from "../__components.js";
+import type { ObjectTypeRid as _api_ObjectTypeRid } from "../__components.js";
+import type { OntologyBranchRid as _api_OntologyBranchRid } from "../__components.js";
+import type { OntologyVersion as _api_OntologyVersion } from "../__components.js";
+import type { DatasourceRid as _api_DatasourceRid } from "../__components.js";
+import type { RestrictedViewTransactionRid as _api_RestrictedViewTransactionRid } from "../__components.js";
+import type { StreamViewRid as _api_StreamViewRid } from "../__components.js";
+import type { TimeSeriesSyncRid as _api_TimeSeriesSyncRid } from "../__components.js";
 
 /**
  * Provenance information for a dataset that is made available by Object Storage services.

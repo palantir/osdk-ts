@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  LoadActionTypesFromOntologyRequest as _api_LoadActionTypesFromOntologyRequest,
-  LoadActionTypesFromOntologyResponse as _api_LoadActionTypesFromOntologyResponse,
-} from "../../__components.js";
+import type { LoadActionTypesFromOntologyRequest as _api_LoadActionTypesFromOntologyRequest } from "../../__components.js";
+import type { LoadActionTypesFromOntologyResponse as _api_LoadActionTypesFromOntologyResponse } from "../../__components.js";
 
 /**
  * Endpoint to batch load ActionTypes. The returned LoadActionTypeResponse will only contain

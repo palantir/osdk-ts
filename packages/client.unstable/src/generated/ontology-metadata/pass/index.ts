@@ -14,13 +14,4 @@
  * limitations under the License.
  */
 
-export * as OntologyDiffService from "./OntologyDiffService.js";
-
-export type {
-  LoadOntologyDiffRequest,
-  LoadOntologyDiffResponse,
-  ObjectTypeDiff,
-  OntologyDiffModificationData,
-  OptionalObjectType,
-  OptionalObjectTypeDisplayMetadata,
-} from "./__components.js";
+export * as types from "./types/index.js";

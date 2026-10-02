@@ -14,32 +14,30 @@
  * limitations under the License.
  */
 
-import type {
-  ActionType as _api_ActionType,
-  ActionTypeRid as _api_ActionTypeRid,
-  DatasetRid as _api_DatasetRid,
-  DatasourceRid as _api_DatasourceRid,
-  DataType as _api_DataType,
-  FunctionRid as _api_FunctionRid,
-  InterfaceType as _api_InterfaceType,
-  InterfaceTypeRid as _api_InterfaceTypeRid,
-  LinkTypeRid as _api_LinkTypeRid,
-  ObjectType as _api_ObjectType,
-  ObjectTypeRid as _api_ObjectTypeRid,
-  OntologyBranchRid as _api_OntologyBranchRid,
-  OntologyRid as _api_OntologyRid,
-  OntologyVersion as _api_OntologyVersion,
-  ParameterRid as _api_ParameterRid,
-  PropertySecurityGroupRid as _api_PropertySecurityGroupRid,
-  PropertyTypeRid as _api_PropertyTypeRid,
-  SectionRid as _api_SectionRid,
-  SharedPropertyType as _api_SharedPropertyType,
-  SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
-  StructFieldRid as _api_StructFieldRid,
-  TypeGroupRid as _api_TypeGroupRid,
-  Visibility as _api_Visibility,
-  WebhookRid as _api_WebhookRid,
-} from "../__components.js";
+import type { ObjectTypeRid as _api_ObjectTypeRid } from "../__components.js";
+import type { WebhookRid as _api_WebhookRid } from "../__components.js";
+import type { ActionTypeRid as _api_ActionTypeRid } from "../__components.js";
+import type { FunctionRid as _api_FunctionRid } from "../__components.js";
+import type { InterfaceTypeRid as _api_InterfaceTypeRid } from "../__components.js";
+import type { LinkTypeRid as _api_LinkTypeRid } from "../__components.js";
+import type { ParameterRid as _api_ParameterRid } from "../__components.js";
+import type { SectionRid as _api_SectionRid } from "../__components.js";
+import type { ActionType as _api_ActionType } from "../__components.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type { OntologyVersion as _api_OntologyVersion } from "../__components.js";
+import type { OntologyBranchRid as _api_OntologyBranchRid } from "../__components.js";
+import type { Visibility as _api_Visibility } from "../__components.js";
+import type { SharedPropertyTypeRid as _api_SharedPropertyTypeRid } from "../__components.js";
+import type { InterfaceType as _api_InterfaceType } from "../__components.js";
+import type { PropertyTypeRid as _api_PropertyTypeRid } from "../__components.js";
+import type { DatasetRid as _api_DatasetRid } from "../__components.js";
+import type { DatasourceRid as _api_DatasourceRid } from "../__components.js";
+import type { DataType as _api_DataType } from "../__components.js";
+import type { TypeGroupRid as _api_TypeGroupRid } from "../__components.js";
+import type { PropertySecurityGroupRid as _api_PropertySecurityGroupRid } from "../__components.js";
+import type { StructFieldRid as _api_StructFieldRid } from "../__components.js";
+import type { ObjectType as _api_ObjectType } from "../__components.js";
+import type { SharedPropertyType as _api_SharedPropertyType } from "../__components.js";
 export interface ActionTypeClause_and {
   type: "and";
   and: Array<ActionTypeClause>;
@@ -347,6 +345,11 @@ export interface CombinedEntityTypeTitleClause_status {
   type: "status";
   status: CombinedEntityTypeStatusFilter;
 }
+
+export interface CombinedEntityTypeTitleClause_archiveStateFilter {
+  type: "archiveStateFilter";
+  archiveStateFilter: ArchiveStateFilter;
+}
 /**
  * Data structure to represent Title search query over specified Ontology entity types.
  */
@@ -356,7 +359,8 @@ export type CombinedEntityTypeTitleClause =
   | CombinedEntityTypeTitleClause_title
   | CombinedEntityTypeTitleClause_objectTypeVisibility
   | CombinedEntityTypeTitleClause_interfaceTypeSupportsObjectSetSearch
-  | CombinedEntityTypeTitleClause_status;
+  | CombinedEntityTypeTitleClause_status
+  | CombinedEntityTypeTitleClause_archiveStateFilter;
 
 /**
  * Sort order for combined entity type title results.
@@ -383,12 +387,18 @@ export interface FullTextStringPredicate_contains {
   type: "contains";
   contains: string;
 }
+
+export interface FullTextStringPredicate_prefix {
+  type: "prefix";
+  prefix: string;
+}
 /**
  * Predicate for matching Strings.
  */
 export type FullTextStringPredicate =
   | FullTextStringPredicate_exact
-  | FullTextStringPredicate_contains;
+  | FullTextStringPredicate_contains
+  | FullTextStringPredicate_prefix;
 
 /**
  * Fuzzy search is activated which can sometimes help to discover additional search results based on small
@@ -701,6 +711,21 @@ export interface LinkTypeClause_targetStorageBackend {
   targetStorageBackend: LinkTypeTargetStorageBackendFilter;
 }
 
+export interface LinkTypeClause_datasetRid {
+  type: "datasetRid";
+  datasetRid: _api_DatasetRid;
+}
+
+export interface LinkTypeClause_datasourceRid {
+  type: "datasourceRid";
+  datasourceRid: _api_DatasourceRid;
+}
+
+export interface LinkTypeClause_createdBy {
+  type: "createdBy";
+  createdBy: string;
+}
+
 export interface LinkTypeClause_archiveStateFilter {
   type: "archiveStateFilter";
   archiveStateFilter: ArchiveStateFilter;
@@ -732,6 +757,9 @@ export type LinkTypeClause =
   | LinkTypeClause_permissionModel
   | LinkTypeClause_hasEditsEnabled
   | LinkTypeClause_targetStorageBackend
+  | LinkTypeClause_datasetRid
+  | LinkTypeClause_datasourceRid
+  | LinkTypeClause_createdBy
   | LinkTypeClause_archiveStateFilter;
 
 /**
@@ -793,6 +821,7 @@ export interface LinkTypeSearchRequest {
   clause: LinkTypeClause;
   excludedLinkTypeRids: Array<string>;
   fuzziness?: LinkTypeFuzziness | null | undefined;
+  includedLinkTypeRids: Array<string>;
   ontologyBranchRid?: _api_OntologyBranchRid | null | undefined;
   ontologyRids: Array<_api_OntologyRid>;
   pageSizeLimit: number;
@@ -861,7 +890,8 @@ export type LogicRuleTypeFilter =
   | "FUNCTION"
   | "BATCHED_FUNCTION"
   | "ADD_OR_MODIFY_OBJECT"
-  | "ADD_OR_MODIFY_OBJECT_V2";
+  | "ADD_OR_MODIFY_OBJECT_V2"
+  | "SCENARIO";
 export interface ObjectTypeClause_and {
   type: "and";
   and: Array<ObjectTypeClause>;
@@ -925,6 +955,21 @@ export interface ObjectTypeClause_propertyTypeDisplayName {
 export interface ObjectTypeClause_propertyTypeAlias {
   type: "propertyTypeAlias";
   propertyTypeAlias: FullTextStringPredicate;
+}
+
+export interface ObjectTypeClause_propertyTypeVisibility {
+  type: "propertyTypeVisibility";
+  propertyTypeVisibility: _api_Visibility;
+}
+
+export interface ObjectTypeClause_propertyTypeStatus {
+  type: "propertyTypeStatus";
+  propertyTypeStatus: PropertyTypeStatusFilter;
+}
+
+export interface ObjectTypeClause_hasSearchablePropertyType {
+  type: "hasSearchablePropertyType";
+  hasSearchablePropertyType: boolean;
 }
 
 export interface ObjectTypeClause_objectTypeRid {
@@ -1012,6 +1057,11 @@ export interface ObjectTypeClause_datasourceRid {
   datasourceRid: _api_DatasourceRid;
 }
 
+export interface ObjectTypeClause_datasourceType {
+  type: "datasourceType";
+  datasourceType: ObjectTypeDatasourceTypeFilter;
+}
+
 export interface ObjectTypeClause_propertySecurityGroupRid {
   type: "propertySecurityGroupRid";
   propertySecurityGroupRid: _api_PropertySecurityGroupRid;
@@ -1037,6 +1087,11 @@ export interface ObjectTypeClause_hasDerivedProperties {
   hasDerivedProperties: boolean;
 }
 
+export interface ObjectTypeClause_createdBy {
+  type: "createdBy";
+  createdBy: string;
+}
+
 export interface ObjectTypeClause_archiveStateFilter {
   type: "archiveStateFilter";
   archiveStateFilter: ArchiveStateFilter;
@@ -1058,6 +1113,9 @@ export type ObjectTypeClause =
   | ObjectTypeClause_propertyTypeDescription
   | ObjectTypeClause_propertyTypeDisplayName
   | ObjectTypeClause_propertyTypeAlias
+  | ObjectTypeClause_propertyTypeVisibility
+  | ObjectTypeClause_propertyTypeStatus
+  | ObjectTypeClause_hasSearchablePropertyType
   | ObjectTypeClause_objectTypeRid
   | ObjectTypeClause_objectTypeId
   | ObjectTypeClause_objectTypeDisplayName
@@ -1075,12 +1133,30 @@ export type ObjectTypeClause =
   | ObjectTypeClause_objectTypeApiName
   | ObjectTypeClause_datasetRid
   | ObjectTypeClause_datasourceRid
+  | ObjectTypeClause_datasourceType
   | ObjectTypeClause_propertySecurityGroupRid
   | ObjectTypeClause_mediaSourceRid
   | ObjectTypeClause_sharedPropertyTypeRid
   | ObjectTypeClause_structFieldRid
   | ObjectTypeClause_hasDerivedProperties
+  | ObjectTypeClause_createdBy
   | ObjectTypeClause_archiveStateFilter;
+
+/**
+ * Filter by object type's datasource type
+ */
+export type ObjectTypeDatasourceTypeFilter =
+  | "DATASET"
+  | "DERIVED"
+  | "DIRECT"
+  | "EDITS_ONLY"
+  | "GEOTIME_SERIES"
+  | "MEDIA"
+  | "RESTRICTED_VIEW"
+  | "RESTRICTED_STREAM"
+  | "STREAM"
+  | "TABLE"
+  | "TIME_SERIES";
 
 /**
  * Filter by object type entity provenance source
@@ -1227,6 +1303,15 @@ export type ObjectTypeStatusFilter =
 export type ObjectTypeTargetStorageBackendFilter =
   | "OBJECT_STORAGE_V1"
   | "OBJECT_STORAGE_V2";
+
+/**
+ * Filter by PropertyTypeStatus
+ */
+export type PropertyTypeStatusFilter =
+  | "EXPERIMENTAL"
+  | "ACTIVE"
+  | "DEPRECATED"
+  | "EXAMPLE";
 
 /**
  * Favorites have a bigger boost than the boosted status-based resources. For status-based boosting, endorsed

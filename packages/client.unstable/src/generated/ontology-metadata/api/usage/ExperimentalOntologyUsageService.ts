@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-export { checkActionTypeProvenanceStatus } from "./ExperimentalOntologyUsageService/checkActionTypeProvenanceStatus.js";
-export { getActionTypeUsage } from "./ExperimentalOntologyUsageService/getActionTypeUsage.js";
-export { getDeprecationUsage } from "./ExperimentalOntologyUsageService/getDeprecationUsage.js";
+export { reportUsageMetadata } from "./ExperimentalOntologyUsageService/reportUsageMetadata.js";
 export { getUsage } from "./ExperimentalOntologyUsageService/getUsage.js";
+export { getUsageV2 } from "./ExperimentalOntologyUsageService/getUsageV2.js";
+export { getDeprecationUsage } from "./ExperimentalOntologyUsageService/getDeprecationUsage.js";
 export { getUsageSettingsByOrganization } from "./ExperimentalOntologyUsageService/getUsageSettingsByOrganization.js";
 export { getUsageSettingsByUser } from "./ExperimentalOntologyUsageService/getUsageSettingsByUser.js";
-export { getUsageV2 } from "./ExperimentalOntologyUsageService/getUsageV2.js";
-export { reportUsageMetadata } from "./ExperimentalOntologyUsageService/reportUsageMetadata.js";
 export { setUsageSettingsByOrganization } from "./ExperimentalOntologyUsageService/setUsageSettingsByOrganization.js";
+export { getActionTypeUsage } from "./ExperimentalOntologyUsageService/getActionTypeUsage.js";
+export { checkActionTypeProvenanceStatus } from "./ExperimentalOntologyUsageService/checkActionTypeProvenanceStatus.js";

@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  SetOntologyBranchOrganizationMarkingsRequest as _branch_api_SetOntologyBranchOrganizationMarkingsRequest,
-  SetOntologyBranchOrganizationMarkingsResponse as _branch_api_SetOntologyBranchOrganizationMarkingsResponse,
-} from "../__components.js";
+import type { SetOntologyBranchOrganizationMarkingsRequest as _branch_api_SetOntologyBranchOrganizationMarkingsRequest } from "../__components.js";
+import type { SetOntologyBranchOrganizationMarkingsResponse as _branch_api_SetOntologyBranchOrganizationMarkingsResponse } from "../__components.js";
 
 /**
  * Manually set the org markings for an ontology branch. This will throw if the stack does not

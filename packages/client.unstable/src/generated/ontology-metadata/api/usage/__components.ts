@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-import type {
-  ActionTypeRid as _api_ActionTypeRid,
-  LinkTypeIdentifier as _api_LinkTypeIdentifier,
-  LinkTypeRid as _api_LinkTypeRid,
-  ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
-  ObjectTypeIdentifier as _api_ObjectTypeIdentifier,
-  ObjectTypeRid as _api_ObjectTypeRid,
-  OrganizationRid as _api_OrganizationRid,
-  PropertyTypeId as _api_PropertyTypeId,
-  PropertyTypeRid as _api_PropertyTypeRid,
-  UserId as _api_UserId,
-} from "../__components.js";
+import type { ActionTypeRid as _api_ActionTypeRid } from "../__components.js";
+import type { ObjectTypeRid as _api_ObjectTypeRid } from "../__components.js";
+import type { LinkTypeRid as _api_LinkTypeRid } from "../__components.js";
+import type { UserId as _api_UserId } from "../__components.js";
+import type { OrganizationRid as _api_OrganizationRid } from "../__components.js";
+import type { PropertyTypeRid as _api_PropertyTypeRid } from "../__components.js";
+import type { ObjectTypeIdentifier as _api_ObjectTypeIdentifier } from "../__components.js";
+import type { LinkTypeIdentifier as _api_LinkTypeIdentifier } from "../__components.js";
+import type { PropertyTypeId as _api_PropertyTypeId } from "../__components.js";
+import type { ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName } from "../__components.js";
 export interface ActionTypeProvenanceStatus_noIncorrectProvenanceRecorded {
   type: "noIncorrectProvenanceRecorded";
   noIncorrectProvenanceRecorded: NoIncorrectProvenanceRecorded;
