@@ -133,6 +133,7 @@ const descriptionProperty = defineSharedPropertyType({
     isLongText: true,
     supportsEfficientLeadingWildcard: true,
     supportsExactMatching: false,
+    supportsPhonetic: true,
   },
   displayName: "Description",
   description: "Detailed description text",
