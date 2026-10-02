@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Website resources.json",
+  "description": "Editor support for website resources.json. This schema validates custom alias declarations under aliases.custom.",
+  "type": "object",
+  "properties": {
+    "aliases": {
+      "description": "Alias configuration for the website application.",
+      "type": ["object", "null"],
+      "properties": {
+        "custom": {
+          "description": "Custom aliases that Marketplace can prompt installers to configure.",
+          "anyOf": [
+            {
+              "type": "object",
+              "maxProperties": 100,
+              "propertyNames": {
+                "description": "Alias names must be 1 to 100 ASCII letters, digits, periods, underscores, or hyphens.",
+                "minLength": 1,
+                "maxLength": 100,
+                "not": {
+                  "pattern": "[^A-Za-z0-9._-]"
+                }
+              },
+              "additionalProperties": {
+                "$ref": "#/definitions/customAliasDeclaration"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "definitions": {
+    "customAliasDeclaration": {
+      "title": "Custom alias declaration",
+      "description": "A custom alias value and optional metadata used when Marketplace prompts an installer.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "The alias value. An empty string is valid. Values can contain at most 250 characters.",
+          "type": "string",
+          "maxLength": 250
+        },
+        "description": {
+          "description": "Optional installer-facing description, up to 500 characters.",
+          "type": ["string", "null"],
+          "maxLength": 500
+        },
+        "required": {
+          "description": "Whether Marketplace must collect this alias from the installer. Defaults to false.",
+          "type": ["boolean", "null"],
+          "default": false
+        }
+      },
+      "required": ["value"],
+      "additionalProperties": false
+    }
+  }
+}
