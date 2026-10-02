@@ -83,6 +83,7 @@ export interface Manager extends $ObjectTypeDefinition {
     props: Manager.Props;
     linksType: Manager.Links;
     strictProps: Manager.StrictProps;
+    requiredCreatePropertyKeys: 'managerId';
     apiName: 'Manager';
     description: 'A manager / team lead responsible for one or more Assignments.';
     displayName: 'Manager';

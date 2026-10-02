@@ -37,6 +37,21 @@ import { stringUnionFrom } from "../util/stringUnionFrom.js";
 
 type PropertyApiNameUnion = PropertyApiName | SharedPropertyTypeApiName;
 
+export function getRequiredCreatePropertyKeys(
+  objectType: ObjectTypeFullMetadata["objectType"],
+): string[] {
+  const requiredKeys = new Set([objectType.primaryKey]);
+  for (
+    const [propertyName, property] of Object.entries(objectType.properties)
+  ) {
+    if (property.dataConstraints?.nullability === "NOT_NULLABLE") {
+      requiredKeys.add(propertyName);
+    }
+  }
+
+  return [...requiredKeys].sort();
+}
+
 /** @internal */
 export function wireObjectTypeV2ToSdkObjectConstV2(
   wireObject: ObjectTypeFullMetadata,
@@ -287,6 +302,9 @@ export function createDefinition(
   }: Identifiers,
 ) {
   const definition = object.getCleanedUpDefinition(true);
+  const requiredCreatePropertyKeys = object instanceof EnhancedObjectType
+    ? getRequiredCreatePropertyKeys(object.raw.objectType)
+    : [];
   const propertyMetadata = object instanceof EnhancedObjectType
     ? object.raw.objectType.properties
     : object instanceof EnhancedInterfaceType
@@ -313,6 +331,12 @@ export function createDefinition(
       linksType: ${osdkObjectLinksIdentifier};
       strictProps: ${osdkObjectStrictPropsIdentifier};
       ${
+    object instanceof EnhancedObjectType
+      ? `requiredCreatePropertyKeys: ${
+        stringUnionFrom(requiredCreatePropertyKeys)
+      };\n      `
+      : ""
+  }${
     stringify(definition, {
       links: (_value) =>
         `{
@@ -339,6 +363,7 @@ export function createDefinition(
                 }, ${linkDefinition.multiplicity}>`,
             })
         }
+        
       }`,
       properties: (_value) => (`{
         ${

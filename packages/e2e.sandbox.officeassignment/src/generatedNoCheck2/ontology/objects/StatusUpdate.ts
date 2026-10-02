@@ -141,6 +141,7 @@ export interface StatusUpdate extends $ObjectTypeDefinition {
     props: StatusUpdate.Props;
     linksType: StatusUpdate.Links;
     strictProps: StatusUpdate.StrictProps;
+    requiredCreatePropertyKeys: 'statusUpdateId';
     apiName: 'StatusUpdate';
     description: 'A typed, timestamped status row hung off an Assignment (the one-to-many timeline being stress-tested). The latest value per type is derived by max-aggregating timestampEpochMs over this link.';
     displayName: 'Status Update';

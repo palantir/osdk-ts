@@ -106,6 +106,7 @@ export interface ReducerTest extends $ObjectTypeDefinition {
     props: ReducerTest.Props;
     linksType: ReducerTest.Links;
     strictProps: ReducerTest.StrictProps;
+    requiredCreatePropertyKeys: 'primaryKey_';
     apiName: 'ReducerTest';
     description: '';
     displayName: 'Reducer Test';
