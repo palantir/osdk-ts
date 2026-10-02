@@ -40,11 +40,7 @@ Example file with one alias:
 
 Each alias needs a string `value`, which is used as the local default. `description` is optional help text for the Marketplace installer. `required` defaults to `false`; setting it to `true` makes that input mandatory.
 
-Install `@osdk/aliases` separately to read an alias in your app:
-
-```sh
-npm install @osdk/aliases
-```
+The `@osdk/aliases` package is included in this project. Import it to read an alias:
 
 ```ts
 import { Aliases } from "@osdk/aliases/experimental";
