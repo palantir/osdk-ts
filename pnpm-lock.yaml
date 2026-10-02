@@ -804,6 +804,9 @@ importers:
       '@blueprintjs/icons':
         specifier: ^6.7.0
         version: 6.8.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@osdk/aliases':
+        specifier: workspace:*
+        version: link:../../packages/aliases
       '@osdk/client':
         specifier: workspace:*
         version: link:../../packages/client
@@ -910,6 +913,9 @@ importers:
       '@blueprintjs/icons':
         specifier: ^6.7.0
         version: 6.8.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@osdk/aliases':
+        specifier: workspace:*
+        version: link:../../packages/aliases
       '@osdk/client':
         specifier: workspace:*
         version: link:../../packages/client
@@ -1004,6 +1010,9 @@ importers:
 
   examples/example-react-sdk-1.x:
     dependencies:
+      '@osdk/aliases':
+        specifier: workspace:*
+        version: link:../../packages/aliases
       '@osdk/e2e.generated.1.1.x':
         specifier: workspace:*
         version: link:../../packages/e2e.generated.1.1.x
@@ -1080,6 +1089,9 @@ importers:
       '@blueprintjs/icons':
         specifier: ^6.7.0
         version: 6.8.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@osdk/aliases':
+        specifier: workspace:*
+        version: link:../../packages/aliases
       '@osdk/client':
         specifier: workspace:*
         version: link:../../packages/client
@@ -1186,6 +1198,9 @@ importers:
       '@blueprintjs/icons':
         specifier: ^6.7.0
         version: 6.8.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@osdk/aliases':
+        specifier: workspace:*
+        version: link:../../packages/aliases
       '@osdk/client':
         specifier: workspace:*
         version: link:../../packages/client
@@ -1283,6 +1298,9 @@ importers:
 
   examples/example-tutorial-todo-aip-app-sdk-1.x:
     dependencies:
+      '@osdk/aliases':
+        specifier: workspace:*
+        version: link:../../packages/aliases
       '@osdk/e2e.generated.1.1.x':
         specifier: workspace:*
         version: link:../../packages/e2e.generated.1.1.x
@@ -1353,6 +1371,9 @@ importers:
 
   examples/example-tutorial-todo-aip-app-sdk-2.x:
     dependencies:
+      '@osdk/aliases':
+        specifier: workspace:*
+        version: link:../../packages/aliases
       '@osdk/client':
         specifier: workspace:*
         version: link:../../packages/client
@@ -1432,6 +1453,9 @@ importers:
 
   examples/example-tutorial-todo-app-sdk-1.x:
     dependencies:
+      '@osdk/aliases':
+        specifier: workspace:*
+        version: link:../../packages/aliases
       '@osdk/e2e.generated.1.1.x':
         specifier: workspace:*
         version: link:../../packages/e2e.generated.1.1.x
@@ -1502,6 +1526,9 @@ importers:
 
   examples/example-tutorial-todo-app-sdk-2.x:
     dependencies:
+      '@osdk/aliases':
+        specifier: workspace:*
+        version: link:../../packages/aliases
       '@osdk/client':
         specifier: workspace:*
         version: link:../../packages/client
@@ -1599,6 +1626,9 @@ importers:
 
   examples/example-vue-sdk-1.x:
     dependencies:
+      '@osdk/aliases':
+        specifier: workspace:*
+        version: link:../../packages/aliases
       '@osdk/e2e.generated.1.1.x':
         specifier: workspace:*
         version: link:../../packages/e2e.generated.1.1.x
@@ -1627,6 +1657,9 @@ importers:
 
   examples/example-vue-sdk-2.x:
     dependencies:
+      '@osdk/aliases':
+        specifier: workspace:*
+        version: link:../../packages/aliases
       '@osdk/client':
         specifier: workspace:*
         version: link:../../packages/client
@@ -1667,6 +1700,9 @@ importers:
 
   examples/example-vue-sdk-2.x-no-osdk:
     dependencies:
+      '@osdk/aliases':
+        specifier: workspace:*
+        version: link:../../packages/aliases
       '@osdk/client':
         specifier: workspace:*
         version: link:../../packages/client
