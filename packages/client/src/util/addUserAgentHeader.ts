@@ -20,17 +20,12 @@ import { createFetchHeaderMutator } from "@osdk/shared.net.fetch";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
 
-export const addUserAgentAndRequestContextHeaders = (
+export const addUserAgentHeader = (
   client: MinimalClient,
   withMetadata: Pick<ObjectOrInterfaceDefinition, "osdkMetadata">,
 ): MinimalClient => ({
   ...client,
   fetch: createFetchHeaderMutator(client.fetch, (headers) => {
-    headers.set(
-      "X-OSDK-Request-Context",
-      JSON.stringify(client.requestContext),
-    );
-
     if (withMetadata.osdkMetadata) {
       headers.set(
         USER_AGENT_HEADER,
