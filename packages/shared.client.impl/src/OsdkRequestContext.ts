@@ -15,48 +15,9 @@
  */
 
 export interface ClientMetrics {
-  concurrency?: number;
-  [key: string]: unknown;
+  concurrency: number;
 }
 
 export interface OsdkRequestContext {
-  clientMetrics?: ClientMetrics;
-  [key: string]: unknown;
-}
-
-const osdkRequestContextKey: unique symbol = Symbol("osdkRequestContext");
-
-type RequestInitWithOsdkRequestContext = RequestInit & {
-  [osdkRequestContextKey]?: OsdkRequestContext;
-};
-
-export function createFetchWithOsdkRequestContext(
-  fetchFn: typeof globalThis.fetch,
-  requestContext: OsdkRequestContext,
-): typeof globalThis.fetch {
-  return function fetchWithOsdkRequestContext(input, init) {
-    const initWithRequestContext: RequestInitWithOsdkRequestContext = {
-      ...init,
-      [osdkRequestContextKey]: requestContext,
-    };
-    return fetchFn(input, initWithRequestContext);
-  };
-}
-
-export function getOsdkRequestContext(
-  init: RequestInit | undefined,
-): OsdkRequestContext | undefined {
-  return (init as RequestInitWithOsdkRequestContext | undefined)?.[
-    osdkRequestContextKey
-  ];
-}
-
-export function removeOsdkRequestContext(
-  init: RequestInit | undefined,
-): RequestInit {
-  const {
-    [osdkRequestContextKey]: _requestContext,
-    ...initWithoutRequestContext
-  } = (init ?? {}) as RequestInitWithOsdkRequestContext;
-  return initWithoutRequestContext;
+  clientMetrics: ClientMetrics;
 }
