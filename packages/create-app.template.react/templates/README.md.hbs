@@ -18,6 +18,42 @@ In order to make API requests to Foundry, a CORS proxy has been set up for local
 In order to make API requests to Foundry, CORS must be configured for the stack to allow `http://localhost:8080` to load resources. If this has not been configured and you are unable to request this, you can alternatively generate your project again with `--corsProxy true` to use a proxy for API requests during local development. The configured OAuth client must also allow `http://localhost:8080/auth/callback` as a redirect URL.
 {{/if}}
 
+## Custom aliases (experimental)
+
+Use the optional `public/resources.json` file to define custom string aliases. Leave `aliases.custom` empty if you do not need any.
+
+Example file with one alias:
+
+```json
+{
+  "aliases": {
+    "custom": {
+      "apiBaseUrl": {
+        "value": "https://api.example.com",
+        "description": "Base URL for the partner API",
+        "required": false
+      }
+    }
+  }
+}
+```
+
+Each alias needs a string `value`, which is used as the local default. `description` is optional help text for the Marketplace installer. `required` defaults to `false`; setting it to `true` makes that input mandatory.
+
+Install `@osdk/aliases` separately to read an alias in your app:
+
+```sh
+npm install @osdk/aliases
+```
+
+```ts
+import { Aliases } from "@osdk/aliases/experimental";
+
+const apiBaseUrl = await Aliases.custom("apiBaseUrl");
+```
+
+When you distribute a hosted website through Foundry Marketplace, its installer can override selected aliases. Optional aliases left unspecified keep their defaults. Alias values are served with the website, so do not use them for secrets.
+
 ## Deploying
 
 Run the following command or equivalent with your preferred package manager to create a production build of your application:
