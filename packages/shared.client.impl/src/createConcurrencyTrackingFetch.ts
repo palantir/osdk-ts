@@ -43,15 +43,7 @@ export function createConcurrencyTrackingFetch(
     activeHttpAttempts++;
     try {
       const requestContext = getOsdkRequestContext(init) ?? {};
-      const existingClientMetrics = requestContext.clientMetrics;
-      const clientMetrics: ClientMetrics = {
-        ...(typeof existingClientMetrics === "object" &&
-        existingClientMetrics != null &&
-        !Array.isArray(existingClientMetrics)
-          ? existingClientMetrics
-          : {}),
-        concurrency: activeHttpAttempts,
-      };
+      const clientMetrics: ClientMetrics = { concurrency: activeHttpAttempts };
       const requestContextWithConcurrency: OsdkRequestContext = {
         ...requestContext,
         clientMetrics,
