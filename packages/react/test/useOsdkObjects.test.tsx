@@ -247,6 +247,25 @@ describe("useOsdkObjects enabled option", () => {
     );
   });
 
+  it("should pass explicit false for ontology-defined derived properties", () => {
+    const wrapper = createWrapper();
+
+    renderHook(
+      () =>
+        useOsdkObjects(MockObjectType, {
+          $UNSTABLE_loadOntologyDefinedDerivedProperties: false,
+        }),
+      { wrapper },
+    );
+
+    expect(mockObserveList).toHaveBeenCalledWith(
+      expect.objectContaining({
+        $UNSTABLE_loadOntologyDefinedDerivedProperties: false,
+      }),
+      expect.any(Object),
+    );
+  });
+
   it("should not resubscribe when rerendered with a new inline withProperties of the same shape", () => {
     const canonicalWithProperties = { leadName: () => {} };
     const observableClient = {

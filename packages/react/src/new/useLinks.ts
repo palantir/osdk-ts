@@ -99,6 +99,16 @@ interface UseLinksBaseOptions<T extends ObjectOrInterfaceDefinition> {
    * object type.
    */
   $includeAllBaseObjectProperties?: boolean;
+
+  /**
+   * Controls whether ontology-defined derived properties are loaded. When
+   * omitted, the server's default behavior is used.
+   *
+   * Setting this explicitly gives the query its own cache entry, separate from
+   * queries that leave it unset. Optimistic updates are not applied to that
+   * entry; it refreshes once the action completes.
+   */
+  $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
 }
 
 export interface UseLinksResult<Q extends ObjectOrInterfaceDefinition> {
@@ -157,6 +167,7 @@ export function useLinks<
   const {
     enabled = true,
     $includeAllBaseObjectProperties,
+    $UNSTABLE_loadOntologyDefinedDerivedProperties,
     resolveToObjectType,
     ...otherOptions
   } = options;
@@ -206,6 +217,7 @@ export function useLinks<
             mode: otherOptions.mode,
             dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
             $includeAllBaseObjectProperties,
+            $UNSTABLE_loadOntologyDefinedDerivedProperties,
             resolveToObjectType,
             ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
           },
@@ -230,6 +242,7 @@ export function useLinks<
     otherOptions.dedupeIntervalMs,
     canonOptions.$select,
     $includeAllBaseObjectProperties,
+    $UNSTABLE_loadOntologyDefinedDerivedProperties,
     !!resolveToObjectType,
   ]);
 
