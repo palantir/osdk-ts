@@ -83,6 +83,15 @@ beforeEach(() => {
 describe("CbacPicker", () => {
   afterEach(cleanup);
 
+  it.each([undefined, false, true, 200])(
+    "passes autoFetchMore=%s to both catalogue hooks",
+    (autoFetchMore) => {
+      render(<CbacPicker onChange={vi.fn()} autoFetchMore={autoFetchMore} />);
+      expect(useMarkings).toHaveBeenCalledWith({ autoFetchMore });
+      expect(useMarkingCategories).toHaveBeenCalledWith({ autoFetchMore });
+    },
+  );
+
   it("fires onChange with the updated selection when a marking is toggled", () => {
     const onChange = vi.fn();
     render(<CbacPicker onChange={onChange} />);
