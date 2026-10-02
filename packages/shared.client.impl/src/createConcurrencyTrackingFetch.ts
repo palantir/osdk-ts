@@ -25,27 +25,6 @@ import {
 
 export const OSDK_REQUEST_CONTEXT_HEADER = "X-OSDK-Request-Context";
 
-function requestContextFromHeader(
-  requestContextHeader: string | null,
-): OsdkRequestContext {
-  if (requestContextHeader != null) {
-    try {
-      const requestContext: unknown = JSON.parse(requestContextHeader);
-      if (
-        typeof requestContext === "object" &&
-        requestContext != null &&
-        !Array.isArray(requestContext)
-      ) {
-        return requestContext as OsdkRequestContext;
-      }
-    } catch {
-      // Ignore malformed request-context headers.
-    }
-  }
-
-  return {};
-}
-
 export function createConcurrencyTrackingFetch(
   fetchFn: typeof globalThis.fetch,
 ): typeof globalThis.fetch {
@@ -63,9 +42,7 @@ export function createConcurrencyTrackingFetch(
 
     activeHttpAttempts++;
     try {
-      const requestContext =
-        getOsdkRequestContext(init) ??
-        requestContextFromHeader(headers.get(OSDK_REQUEST_CONTEXT_HEADER));
+      const requestContext = getOsdkRequestContext(init) ?? {};
       const existingClientMetrics = requestContext.clientMetrics;
       const clientMetrics: ClientMetrics = {
         ...(typeof existingClientMetrics === "object" &&
