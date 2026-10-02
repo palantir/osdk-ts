@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client.unstable",
-  "version": "2.73.0",
+  "version": "2.75.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -24,6 +24,15 @@
       },
       "require": "./build/cjs/public/api.cjs",
       "default": "./build/browser/public/api.js"
+    },
+    "./functionExecutor": {
+      "browser": "./build/browser/public/functionExecutor.js",
+      "import": {
+        "types": "./build/types/public/functionExecutor.d.ts",
+        "default": "./build/esm/public/functionExecutor.js"
+      },
+      "require": "./build/cjs/public/functionExecutor.cjs",
+      "default": "./build/browser/public/functionExecutor.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",

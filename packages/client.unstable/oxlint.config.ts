@@ -45,8 +45,7 @@ export default defineConfig({
     {
       files: ["src/generated/**/*.ts"],
       rules: {
-        // Conjure emits one import per referenced symbol. ESLint previously merged
-        // these during generation, but oxlint's equivalent rules are not fixable.
+        // Conjure emits a separate import for each referenced type.
         "import/no-duplicates": "off",
         "no-duplicate-imports": "off",
       },

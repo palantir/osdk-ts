@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import type { ActionParameter } from "./action/ActionParameter.js";
 import type { ActionType } from "./action/ActionType.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import type { InterfaceActionTypeUserDefinition } from "./defineAction.js";
 import {
+  convertValidationRule,
   defineAction,
   DELETE_OBJECT_PARAMETER,
   kebab,
@@ -27,6 +29,24 @@ export function defineDeleteInterfaceObjectAction(
   defInput: InterfaceActionTypeUserDefinition,
 ): ActionType {
   const def = cloneDefinition(defInput);
+  const parameters: Array<ActionParameter> = [
+    {
+      id: DELETE_OBJECT_PARAMETER,
+      displayName:
+        def.parameterConfiguration?.[DELETE_OBJECT_PARAMETER]?.displayName ??
+        "Delete object",
+      description:
+        def.parameterConfiguration?.[DELETE_OBJECT_PARAMETER]?.description,
+      type: {
+        type: "interfaceReference",
+        interfaceReference: { interfaceTypeRid: def.interfaceType.apiName },
+      },
+      validation: {
+        required: true,
+        allowedValues: { type: "interfaceObjectQuery" },
+      },
+    },
+  ];
   return defineAction({
     apiName:
       def.apiName ??
@@ -37,24 +57,7 @@ export function defineDeleteInterfaceObjectAction(
       def.displayName ??
       `Delete ${def.interfaceType.displayMetadata.displayName}`,
     description: def.description,
-    parameters: [
-      {
-        id: DELETE_OBJECT_PARAMETER,
-        displayName:
-          def.parameterConfiguration?.[DELETE_OBJECT_PARAMETER]?.displayName ??
-          "Delete object",
-        description:
-          def.parameterConfiguration?.[DELETE_OBJECT_PARAMETER]?.description,
-        type: {
-          type: "interfaceReference",
-          interfaceReference: { interfaceTypeRid: def.interfaceType.apiName },
-        },
-        validation: {
-          required: true,
-          allowedValues: { type: "interfaceObjectQuery" },
-        },
-      },
-    ],
+    parameters,
     status: def.status ?? "active",
     rules: [
       {
@@ -70,6 +73,9 @@ export function defineDeleteInterfaceObjectAction(
       affectedLinkTypes: [],
       typeGroups: [],
     },
+    ...(def.actionLevelValidation && {
+      validation: convertValidationRule(def.actionLevelValidation, parameters),
+    }),
     ...(def.permission && { permission: def.permission }),
     ...(def.icon && { icon: def.icon }),
   });

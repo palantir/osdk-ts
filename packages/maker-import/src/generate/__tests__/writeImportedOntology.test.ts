@@ -16,8 +16,10 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { pathToFileURL } from "node:url";
 
 import type * as Ontologies from "@osdk/foundry.ontologies";
+import { defineOntology, getImportedTypes, type ObjectType } from "@osdk/maker";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { mapActionParameterType } from "../mapActionParameterType.js";
@@ -304,6 +306,61 @@ describe("writeImportedOntology", () => {
     queryTypes: {},
     valueTypes: {},
   };
+
+  it("imports canonical SPT dependencies through generated object proxies", async () => {
+    const sptApiName = "com.example.fullName";
+    writeImportedOntology(
+      {
+        ...sampleMetadata,
+        objectTypes: {
+          Employee: {
+            ...sampleMetadata.objectTypes.Employee,
+            sharedPropertyTypeMapping: { [sptApiName]: "fullName" },
+          },
+        },
+        sharedPropertyTypes: {
+          [sptApiName]: {
+            apiName: sptApiName,
+            rid: "ri.ontology.main.shared-property-type.full-name",
+            displayName: "Canonical Full Name",
+            description: "Canonical description",
+            dataType: {
+              type: "array",
+              subType: { type: "string" },
+              reducers: [],
+            },
+            typeClasses: [],
+          },
+        },
+      },
+      TEST_OUTPUT_DIR,
+    );
+
+    await defineOntology(
+      "com.local.",
+      async () => {
+        const { employee }: { employee: ObjectType } = await import(
+          pathToFileURL(
+            path.join(TEST_OUTPUT_DIR, "codegen/object-types/employee.ts"),
+          ).href
+        );
+        expect(employee.apiName).toBe("com.example.Employee");
+      },
+      undefined,
+    );
+
+    expect(getImportedTypes().SHARED_PROPERTY_TYPE).toEqual({
+      [sptApiName]: {
+        __type: "SHARED_PROPERTY_TYPE",
+        apiName: sptApiName,
+        nonNameSpacedApiName: "fullName",
+        displayName: "Canonical Full Name",
+        description: "Canonical description",
+        type: "string",
+        array: true,
+      },
+    });
+  });
 
   it("generates object type files", () => {
     writeImportedOntology(sampleMetadata, TEST_OUTPUT_DIR);

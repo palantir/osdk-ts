@@ -18,7 +18,6 @@ import * as fs from "fs";
 
 import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { InputPreset } from "@osdk/client.unstable/api";
-import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import type { LinkType, ObjectType, OntologyDefinition } from "@osdk/maker";
 import {
@@ -35,9 +34,12 @@ import { convertOntologyFullMetadata } from "@osdk/maker-import";
 import type { BlockDataAddOn } from "../cli/marketplaceSerialization/BlockGeneratorResult.js";
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
 import {
+  type ExternalImportedOntologyMetadata,
   getImportedShapes,
   type LinkTypeIdsByApiName,
 } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
+
+export type { ExternalImportedOntologyMetadata } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
 import type { BlockShapes, ReadableId } from "../util/generateRid.js";
 import {
@@ -68,7 +70,7 @@ export async function defineOntologyV2(
   functionsIrFile?: string,
   randomnessKey?: string,
   importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
-  externalImportedMetadata?: OntologyFullMetadata,
+  externalImportedMetadata?: ExternalImportedOntologyMetadata,
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
 
@@ -130,6 +132,7 @@ export async function defineOntologyV2(
     ontDef.importedOntology,
     ridGenerator,
     importedLinkTypeIdsByApiName,
+    externalImportedMetadata,
   );
   for (const [key, value] of importedShapes.inputShapes) {
     shapes.inputShapes.set(key, value);
