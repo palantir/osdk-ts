@@ -23,7 +23,7 @@ import {
 } from "@osdk/shared.test";
 import { http, HttpResponse } from "msw";
 import type { SetupServerApi } from "msw/node";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { OntologyMetadataResolver } from "./ontologyMetadataResolver.js";
 
 describe("Load Ontologies Metadata", () => {
@@ -43,6 +43,39 @@ describe("Load Ontologies Metadata", () => {
       testSetup.apiServer.close();
     };
   });
+
+  it.each([
+    {
+      name: "set",
+      traceId: "0123456789abcdef",
+      expectedTraceId: "0123456789abcdef",
+    },
+    { name: "empty", traceId: "", expectedTraceId: null },
+    { name: "unset", traceId: undefined, expectedTraceId: null },
+  ])(
+    "sets the gateway trace header correctly when TRACE_ID is $name",
+    async ({ traceId, expectedTraceId }) => {
+      vi.stubEnv("TRACE_ID", traceId);
+      const traceHeaders: Array<string | null> = [];
+      const captureTraceHeader = ({ request }: { request: Request }) => {
+        traceHeaders.push(request.headers.get("X-B3-TraceId"));
+      };
+      apiServer.events.on("request:start", captureTraceHeader);
+
+      try {
+        const result = await ontologyMetadataResolver.getWireOntologyDefinition(
+          "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+          {},
+        );
+
+        expect(result.isOk()).toBe(true);
+        expect(traceHeaders).toEqual([expectedTraceId, expectedTraceId]);
+      } finally {
+        apiServer.events.removeListener("request:start", captureTraceHeader);
+        vi.unstubAllEnvs();
+      }
+    },
+  );
 
   it("Loads no object types and action types", async () => {
     const ontologyMetadataResolver = new OntologyMetadataResolver(
