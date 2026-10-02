@@ -38,6 +38,7 @@ import type { MarkingId as _api_MarkingId } from "../__components.js";
 import type { ObjectTypeId as _api_ObjectTypeId } from "../__components.js";
 import type { PropertyTypeId as _api_PropertyTypeId } from "../__components.js";
 import type { PropertyTypeRid as _api_PropertyTypeRid } from "../__components.js";
+import type { StructFieldRid as _api_StructFieldRid } from "../__components.js";
 import type { TimeSeriesSyncRid as _api_TimeSeriesSyncRid } from "../__components.js";
 import type { ValueTypeRid as _api_ValueTypeRid } from "../__components.js";
 import type { ValueTypeVersionId as _api_ValueTypeVersionId } from "../__components.js";
@@ -276,6 +277,10 @@ export interface KnownMarketplaceIdentifiers {
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeRid, BlockInternalId>;
   markings: Record<BlockInternalId, Array<_api_MarkingId>>;
+  objectPropertyTypeIdsToRids: Record<
+    _api_ObjectTypeId,
+    Record<_api_PropertyTypeId, _api_PropertyTypeRid>
+  >;
   objectTypeIds: Record<_api_ObjectTypeId, BlockInternalId>;
   objectTypes: Record<_api_ObjectTypeRid, BlockInternalId>;
   propertyTypeIds: Record<
@@ -287,6 +292,10 @@ export interface KnownMarketplaceIdentifiers {
   shapeIdForOntologyAllowSchemaMigrations?: BlockShapeId | null | undefined;
   shapeIdForOntologySchemaMigrationInputs?: BlockShapeId | null | undefined;
   sharedPropertyTypes: Record<_api_SharedPropertyTypeRid, BlockInternalId>;
+  structFieldRidsToApiNames: Record<
+    _api_PropertyTypeRid,
+    Record<_api_StructFieldRid, _api_ObjectTypeFieldApiName>
+  >;
   timeSeriesSyncs: Record<_api_TimeSeriesSyncRid, BlockInternalId>;
   valueTypes: Record<
     _api_ValueTypeRid,

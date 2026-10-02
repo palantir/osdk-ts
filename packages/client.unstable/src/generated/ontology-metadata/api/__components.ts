@@ -9513,6 +9513,11 @@ export interface OntologyIrAllowedParameterValues_redacted {
   redacted: Redacted;
 }
 
+export interface OntologyIrAllowedParameterValues_struct {
+  type: "struct";
+  struct: ParameterStructOrEmpty;
+}
+
 export interface OntologyIrAllowedParameterValues_valueType {
   type: "valueType";
   valueType: ParameterValueTypeWithVersionIdOrEmpty;
@@ -9549,6 +9554,7 @@ export type OntologyIrAllowedParameterValues =
   | OntologyIrAllowedParameterValues_geotimeSeriesReference
   | OntologyIrAllowedParameterValues_sidcIcon
   | OntologyIrAllowedParameterValues_redacted
+  | OntologyIrAllowedParameterValues_struct
   | OntologyIrAllowedParameterValues_valueType
   | OntologyIrAllowedParameterValues_scenarioReference;
 
@@ -9812,6 +9818,10 @@ export interface OntologyIrConditionalOverride {
 export interface OntologyIrConditionalValidationBlock {
   conditionalOverrides: Array<OntologyIrConditionalOverride>;
   defaultValidation: OntologyIrParameterValidationBlock;
+  structFieldValidations?: Record<
+    _api_types_StructParameterFieldApiName,
+    OntologyIrStructFieldConditionalValidationBlock
+  >;
 }
 export interface OntologyIrConditionValue_parameterId {
   type: "parameterId";
