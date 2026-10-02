@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  MigrateEntitiesToProjectsRequest as _api_permissions_MigrateEntitiesToProjectsRequest,
-  MigrateEntitiesToProjectsResponse as _api_permissions_MigrateEntitiesToProjectsResponse,
-} from "../__components.js";
+import type { MigrateEntitiesToProjectsRequest as _api_permissions_MigrateEntitiesToProjectsRequest } from "../__components.js";
+import type { MigrateEntitiesToProjectsResponse as _api_permissions_MigrateEntitiesToProjectsResponse } from "../__components.js";
 
 /**
  * Moves the specified entities to the target folder.

@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
-import type {
-  OntologyUpdateRequest as _api_modification_OntologyUpdateRequest,
-  OntologyUpdateResponse as _api_modification_OntologyUpdateResponse,
-} from "../../modification/__components.js";
+import type { OntologyUpdateRequest as _api_modification_OntologyUpdateRequest } from "../../modification/__components.js";
+import type { OntologyUpdateResponse as _api_modification_OntologyUpdateResponse } from "../../modification/__components.js";
 
 /**
  * Endpoint to update information about an existing Ontology. Requires the

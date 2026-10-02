@@ -41,6 +41,18 @@ export default defineConfig({
     (p) => p !== "**/generated",
   ),
 
+  overrides: [
+    {
+      files: ["src/generated/**/*.ts"],
+      rules: {
+        // Conjure emits one import per referenced symbol. ESLint previously merged
+        // these during generation, but oxlint's equivalent rules are not fixable.
+        "import/no-duplicates": "off",
+        "no-duplicate-imports": "off",
+      },
+    },
+  ],
+
   rules: {
     // The generated barrels (`export * from ...` in the per-service index.ts
     // files) re-export the whole tree; barrels are intrinsic to the generated

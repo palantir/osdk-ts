@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type { OntologyRid as _api_OntologyRid } from "../../../api/__components.js";
-import type {
-  LoadOntologyDiffRequest as _diff_api_LoadOntologyDiffRequest,
-  LoadOntologyDiffResponse as _diff_api_LoadOntologyDiffResponse,
-} from "../__components.js";
+import type { LoadOntologyInformationRequest as _api_LoadOntologyInformationRequest } from "../__components.js";
+import type { LoadOntologyInformationResponse as _api_LoadOntologyInformationResponse } from "../__components.js";
 
 /**
- * Experimental endpoint that loads the difference in entities between two ontology versions
- * Currently non-functional, please do not use.
+ * Endpoint to load metadata about a single Ontology by its RID. Prefer this over `loadAllOntologies`
+ * when only one Ontology is needed. The response is empty unless the Ontology exists and the user has
+ * permissions to view it.
  */
-export async function loadOntologyDiff(
+export async function loadOntologyInformation(
   ctx: ConjureContext,
-  ontologyRid: _api_OntologyRid,
-  request: _diff_api_LoadOntologyDiffRequest,
-): Promise<_diff_api_LoadOntologyDiffResponse> {
+  request: _api_LoadOntologyInformationRequest,
+): Promise<_api_LoadOntologyInformationResponse> {
   return conjureFetch(
     ctx,
-    `/ontology/diff/load/ontologyDiff/${ontologyRid}`,
+    `/ontology/ontology/ontologies/load`,
     "POST",
     request,
   );

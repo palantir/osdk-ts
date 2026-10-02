@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  LoadMergedRebaseStateRequest as _api_LoadMergedRebaseStateRequest,
-  OntologyBulkLoadEntitiesResponse as _api_OntologyBulkLoadEntitiesResponse,
-} from "../__components.js";
+import type { LoadMergedRebaseStateRequest as _api_LoadMergedRebaseStateRequest } from "../__components.js";
+import type { OntologyBulkLoadEntitiesResponseInternal as _api_OntologyBulkLoadEntitiesResponseInternal } from "../__components.js";
 
 /**
  * Loads the merged rebase base state for a branch at a given rebase target version.
@@ -35,7 +33,7 @@ import type {
  * branch are returned at their parent version if they still exist on the parent, enabling
  * restoration as updates rather than creates.
  *
- * The response follows the same positional list format as OntologyBulkLoadEntitiesResponse:
+ * The response follows the same positional list format as OntologyBulkLoadEntitiesResponseInternal:
  * each entry corresponds to the RID at the same index in the request.
  *
  * The ontologyVersion and resolvedBranch fields on each entity response are contextual — this
@@ -46,7 +44,7 @@ import type {
 export async function loadMergedRebaseState(
   ctx: ConjureContext,
   request: _api_LoadMergedRebaseStateRequest,
-): Promise<_api_OntologyBulkLoadEntitiesResponse> {
+): Promise<_api_OntologyBulkLoadEntitiesResponseInternal> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/loadMergedRebaseState`,

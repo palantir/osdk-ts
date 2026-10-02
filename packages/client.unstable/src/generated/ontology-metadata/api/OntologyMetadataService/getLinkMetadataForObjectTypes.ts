@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetLinkMetadataForObjectTypesRequest as _api_GetLinkMetadataForObjectTypesRequest,
-  GetLinkMetadataForObjectTypesResponse as _api_GetLinkMetadataForObjectTypesResponse,
-} from "../__components.js";
+import type { GetLinkMetadataForObjectTypesRequest as _api_GetLinkMetadataForObjectTypesRequest } from "../__components.js";
+import type { GetLinkMetadataForObjectTypesResponse as _api_GetLinkMetadataForObjectTypesResponse } from "../__components.js";
 
 /**
  * Endpoint to batch load links associated to given ObjectTypeRid(s). The GetLinkTypesForObjectTypesResponse

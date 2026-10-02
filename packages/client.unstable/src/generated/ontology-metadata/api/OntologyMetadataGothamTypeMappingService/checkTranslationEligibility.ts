@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  CheckTranslationEligibilityRequest as _api_typemapping_CheckTranslationEligibilityRequest,
-  CheckTranslationEligibilityResponse as _api_typemapping_CheckTranslationEligibilityResponse,
-} from "../typemapping/__components.js";
+import type { CheckTranslationEligibilityRequest as _api_typemapping_CheckTranslationEligibilityRequest } from "../typemapping/__components.js";
+import type { CheckTranslationEligibilityResponse as _api_typemapping_CheckTranslationEligibilityResponse } from "../typemapping/__components.js";
 
 /**
  * Evaluate if the requested Datasource Delegates can be translated into the Simple Policy Structure

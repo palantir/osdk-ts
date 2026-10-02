@@ -14,220 +14,212 @@
  * limitations under the License.
  */
 
-import type {
-  WorkflowCreate as _workflow_api_WorkflowCreate,
-  WorkflowIdInRequest as _workflow_api_WorkflowIdInRequest,
-  WorkflowRid as _workflow_api_WorkflowRid,
-  WorkflowUpdate as _workflow_api_WorkflowUpdate,
-} from "../../workflow/api/__components.js";
-import type {
-  ActionApplyClientPreferences as _api_ActionApplyClientPreferences,
-  ActionEditsValidationModification as _api_ActionEditsValidationModification,
-  ActionEffectsModification as _api_ActionEffectsModification,
-  ActionLogConfiguration as _api_ActionLogConfiguration,
-  ActionLogicModification as _api_ActionLogicModification,
-  ActionNotificationModification as _api_ActionNotificationModification,
-  ActionNotificationSettings as _api_ActionNotificationSettings,
-  ActionRevert as _api_ActionRevert,
-  ActionSubmissionConfiguration as _api_ActionSubmissionConfiguration,
-  ActionType as _api_ActionType,
-  ActionTypeApiName as _api_ActionTypeApiName,
-  ActionTypeBranchSettingsModification as _api_ActionTypeBranchSettingsModification,
-  ActionTypeCreate as _api_ActionTypeCreate,
-  ActionTypeDisplayMetadataModification as _api_ActionTypeDisplayMetadataModification,
-  ActionTypeEntities as _api_ActionTypeEntities,
-  ActionTypeIdentifier as _api_ActionTypeIdentifier,
-  ActionTypeIdInRequest as _api_ActionTypeIdInRequest,
-  ActionTypeParameterIdentifier as _api_ActionTypeParameterIdentifier,
-  ActionTypeProvenanceModification as _api_ActionTypeProvenanceModification,
-  ActionTypeRid as _api_ActionTypeRid,
-  ActionTypeScenarioSettingsModification as _api_ActionTypeScenarioSettingsModification,
-  ActionTypeStatus as _api_ActionTypeStatus,
-  ActionTypeUpdate as _api_ActionTypeUpdate,
-  ActionWebhooksModification as _api_ActionWebhooksModification,
-  ArrayPropertyTypeReducerSortDirection as _api_ArrayPropertyTypeReducerSortDirection,
-  AttachmentPropertyType as _api_AttachmentPropertyType,
-  Attribution as _api_Attribution,
-  AuthorizationModification as _api_AuthorizationModification,
-  BaseFormatter as _api_BaseFormatter,
-  BooleanPropertyType as _api_BooleanPropertyType,
-  BytePropertyType as _api_BytePropertyType,
-  ColumnName as _api_ColumnName,
-  CompassFolderRid as _api_CompassFolderRid,
-  DataNullability as _api_DataNullability,
-  DataNullabilityV2 as _api_DataNullabilityV2,
-  DataSecurityModification as _api_DataSecurityModification,
-  DatasetRid as _api_DatasetRid,
-  DatasourceRid as _api_DatasourceRid,
-  DataType as _api_DataType,
-  DatePropertyType as _api_DatePropertyType,
-  DecimalPropertyType as _api_DecimalPropertyType,
-  DirectSourceRid as _api_DirectSourceRid,
-  DoublePropertyType as _api_DoublePropertyType,
-  EditParameterRequestModification as _api_EditParameterRequestModification,
-  EditsConfiguration as _api_EditsConfiguration,
-  EditSectionRequest as _api_EditSectionRequest,
-  EditsOnlyRid as _api_EditsOnlyRid,
-  ExperimentalTimeDependentPropertyTypeV1 as _api_ExperimentalTimeDependentPropertyTypeV1,
-  FloatPropertyType as _api_FloatPropertyType,
-  FormContent as _api_FormContent,
-  GeohashPropertyType as _api_GeohashPropertyType,
-  GeoshapePropertyType as _api_GeoshapePropertyType,
-  GeotimeSeriesIntegrationRid as _api_GeotimeSeriesIntegrationRid,
-  GeotimeSeriesReferencePropertyType as _api_GeotimeSeriesReferencePropertyType,
-  GroupId as _api_GroupId,
-  Icon as _api_Icon,
-  InlineActionDisplayOptions as _api_InlineActionDisplayOptions,
-  IntegerPropertyType as _api_IntegerPropertyType,
-  InterfaceActionTypeConstraintMetadata as _api_InterfaceActionTypeConstraintMetadata,
-  InterfaceActionTypeConstraintRidOrIdInRequest as _api_InterfaceActionTypeConstraintRidOrIdInRequest,
-  InterfaceLinkTypeCardinality as _api_InterfaceLinkTypeCardinality,
-  InterfaceLinkTypeMetadata as _api_InterfaceLinkTypeMetadata,
-  InterfaceLinkTypeRidOrIdInRequest as _api_InterfaceLinkTypeRidOrIdInRequest,
-  InterfaceParameterConstraintDisplayMetadata as _api_InterfaceParameterConstraintDisplayMetadata,
-  InterfaceParameterConstraintRidOrIdInRequest as _api_InterfaceParameterConstraintRidOrIdInRequest,
-  InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName,
-  InterfacePropertyTypeDisplayMetadata as _api_InterfacePropertyTypeDisplayMetadata,
-  InterfacePropertyTypeRidOrIdInRequest as _api_InterfacePropertyTypeRidOrIdInRequest,
-  InterfaceTypeApiName as _api_InterfaceTypeApiName,
-  InterfaceTypeIdInRequest as _api_InterfaceTypeIdInRequest,
-  InterfaceTypeRid as _api_InterfaceTypeRid,
-  InterfaceTypeRidOrIdInRequest as _api_InterfaceTypeRidOrIdInRequest,
-  InterfaceTypeStatus as _api_InterfaceTypeStatus,
-  LinkedEntityTypeRidOrIdInRequest as _api_LinkedEntityTypeRidOrIdInRequest,
-  LinkTypeId as _api_LinkTypeId,
-  LinkTypeMetadata as _api_LinkTypeMetadata,
-  LinkTypePeeringMetadataV1 as _api_LinkTypePeeringMetadataV1,
-  LinkTypeRid as _api_LinkTypeRid,
-  LinkTypeRidOrId as _api_LinkTypeRidOrId,
-  LinkTypeStatus as _api_LinkTypeStatus,
-  LogicRuleIdInRequest as _api_LogicRuleIdInRequest,
-  LogicRuleRid as _api_LogicRuleRid,
-  LongPropertyType as _api_LongPropertyType,
-  MarkingId as _api_MarkingId,
-  MarkingPropertyType as _api_MarkingPropertyType,
-  MediaReferencePropertyType as _api_MediaReferencePropertyType,
-  MediaSetRid as _api_MediaSetRid,
-  MediaSetViewLocator as _api_MediaSetViewLocator,
-  MediaSourceRid as _api_MediaSourceRid,
-  ObjectTypeApiName as _api_ObjectTypeApiName,
-  ObjectTypeDisplayMetadata as _api_ObjectTypeDisplayMetadata,
-  ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
-  ObjectTypeId as _api_ObjectTypeId,
-  ObjectTypePeeringMetadataV1 as _api_ObjectTypePeeringMetadataV1,
-  ObjectTypeRid as _api_ObjectTypeRid,
-  ObjectTypeStatus as _api_ObjectTypeStatus,
-  OneToManyLinkCardinalityHint as _api_OneToManyLinkCardinalityHint,
-  OntologyApiName as _api_OntologyApiName,
-  OntologyBranchRid as _api_OntologyBranchRid,
-  OntologyPackageRid as _api_OntologyPackageRid,
-  OntologyRid as _api_OntologyRid,
-  OntologyVersion as _api_OntologyVersion,
-  OrganizationMarkingId as _api_OrganizationMarkingId,
-  ParameterId as _api_ParameterId,
-  ParameterRid as _api_ParameterRid,
-  PolicyVersion as _api_PolicyVersion,
-  PrimaryKeyConstraint as _api_PrimaryKeyConstraint,
-  PropertySecurityGroupPatch as _api_PropertySecurityGroupPatch,
-  PropertySecurityGroupRid as _api_PropertySecurityGroupRid,
-  PropertySecurityGroupsModification as _api_PropertySecurityGroupsModification,
-  PropertyTypeDisplayMetadata as _api_PropertyTypeDisplayMetadata,
-  PropertyTypeId as _api_PropertyTypeId,
-  PropertyTypeIdentifier as _api_PropertyTypeIdentifier,
-  PropertyTypeMappingInfo as _api_PropertyTypeMappingInfo,
-  PropertyTypeRid as _api_PropertyTypeRid,
-  PutParameterRequest as _api_PutParameterRequest,
-  PutParameterRequestModification as _api_PutParameterRequestModification,
-  PutSectionRequest as _api_PutSectionRequest,
-  RestrictedViewRid as _api_RestrictedViewRid,
-  RetentionConfig as _api_RetentionConfig,
-  RetentionPolicy as _api_RetentionPolicy,
-  RuleSetRid as _api_RuleSetRid,
-  SectionId as _api_SectionId,
-  SectionRid as _api_SectionRid,
-  SharedPropertyTypeDisplayMetadata as _api_SharedPropertyTypeDisplayMetadata,
-  SharedPropertyTypeIdInRequest as _api_SharedPropertyTypeIdInRequest,
-  SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
-  SharedPropertyTypeRidOrIdInRequest as _api_SharedPropertyTypeRidOrIdInRequest,
-  ShortPropertyType as _api_ShortPropertyType,
-  StreamLocator as _api_StreamLocator,
-  StringPropertyType as _api_StringPropertyType,
-  StructFieldAlias as _api_StructFieldAlias,
-  StructFieldApiNameOrRid as _api_StructFieldApiNameOrRid,
-  StructFieldDisplayMetadata as _api_StructFieldDisplayMetadata,
-  StructFieldRid as _api_StructFieldRid,
-  TableRid as _api_TableRid,
-  TimeSeriesSyncRid as _api_TimeSeriesSyncRid,
-  TimestampPropertyType as _api_TimestampPropertyType,
-  TypeClass as _api_TypeClass,
-  TypeGroupDisplayMetadata as _api_TypeGroupDisplayMetadata,
-  TypeGroupIdInRequest as _api_TypeGroupIdInRequest,
-  TypeGroupRid as _api_TypeGroupRid,
-  TypeGroupRidOrIdInRequest as _api_TypeGroupRidOrIdInRequest,
-  ValidationRuleIdInRequest as _api_ValidationRuleIdInRequest,
-  ValidationRuleModification as _api_ValidationRuleModification,
-  ValidationRuleRid as _api_ValidationRuleRid,
-  ValueReferenceId as _api_ValueReferenceId,
-  ValueTypeRid as _api_ValueTypeRid,
-  ValueTypeVersionId as _api_ValueTypeVersionId,
-  VectorPropertyType as _api_VectorPropertyType,
-  WorkflowObjectTypeTraitId as _api_WorkflowObjectTypeTraitId,
-  WorkflowObjectTypeTraitPropertyId as _api_WorkflowObjectTypeTraitPropertyId,
-  WorkflowObjectTypeTraitReference as _api_WorkflowObjectTypeTraitReference,
-  WorkflowObjectTypeTraitVersion as _api_WorkflowObjectTypeTraitVersion,
-} from "../__components.js";
+import type { WorkflowIdInRequest as _workflow_api_WorkflowIdInRequest } from "../../workflow/api/__components.js";
+import type { WorkflowCreate as _workflow_api_WorkflowCreate } from "../../workflow/api/__components.js";
+import type { WorkflowRid as _workflow_api_WorkflowRid } from "../../workflow/api/__components.js";
+import type { WorkflowUpdate as _workflow_api_WorkflowUpdate } from "../../workflow/api/__components.js";
+import type { ActionTypeIdentifier as _api_ActionTypeIdentifier } from "../__components.js";
+import type { ActionApplyClientPreferences as _api_ActionApplyClientPreferences } from "../__components.js";
+import type { ActionEditsValidationModification as _api_ActionEditsValidationModification } from "../__components.js";
+import type { ActionLogConfiguration as _api_ActionLogConfiguration } from "../__components.js";
+import type { ActionTypeApiName as _api_ActionTypeApiName } from "../__components.js";
+import type { ActionTypeBranchSettingsModification as _api_ActionTypeBranchSettingsModification } from "../__components.js";
+import type { ActionTypeDisplayMetadataModification as _api_ActionTypeDisplayMetadataModification } from "../__components.js";
+import type { ActionEffectsModification as _api_ActionEffectsModification } from "../__components.js";
+import type { ActionTypeEntities as _api_ActionTypeEntities } from "../__components.js";
+import type { FormContent as _api_FormContent } from "../__components.js";
+import type { ActionTypeIsolationSettingsModification as _api_ActionTypeIsolationSettingsModification } from "../__components.js";
+import type { ActionLogicModification as _api_ActionLogicModification } from "../__components.js";
+import type { LogicRuleIdInRequest as _api_LogicRuleIdInRequest } from "../__components.js";
+import type { LogicRuleRid as _api_LogicRuleRid } from "../__components.js";
+import type { ActionNotificationModification as _api_ActionNotificationModification } from "../__components.js";
+import type { ActionNotificationSettings as _api_ActionNotificationSettings } from "../__components.js";
+import type { ActionTypeOwningResourceModification as _api_ActionTypeOwningResourceModification } from "../__components.js";
+import type { ParameterId as _api_ParameterId } from "../__components.js";
+import type { ParameterRid as _api_ParameterRid } from "../__components.js";
+import type { EditParameterRequestModification as _api_EditParameterRequestModification } from "../__components.js";
+import type { ActionTypeProvenanceModification as _api_ActionTypeProvenanceModification } from "../__components.js";
+import type { AuthorizationModification as _api_AuthorizationModification } from "../__components.js";
+import type { ActionRevert as _api_ActionRevert } from "../__components.js";
+import type { ActionTypeScenarioSettingsModification as _api_ActionTypeScenarioSettingsModification } from "../__components.js";
+import type { SectionRid as _api_SectionRid } from "../__components.js";
+import type { EditSectionRequest as _api_EditSectionRequest } from "../__components.js";
+import type { MediaSetRid as _api_MediaSetRid } from "../__components.js";
+import type { ActionTypeStatus as _api_ActionTypeStatus } from "../__components.js";
+import type { ActionSubmissionConfiguration as _api_ActionSubmissionConfiguration } from "../__components.js";
+import type { TypeGroupRid as _api_TypeGroupRid } from "../__components.js";
+import type { ValidationRuleRid as _api_ValidationRuleRid } from "../__components.js";
+import type { ValidationRuleModification as _api_ValidationRuleModification } from "../__components.js";
+import type { ActionWebhooksModification as _api_ActionWebhooksModification } from "../__components.js";
+import type { ArrayPropertyTypeReducerSortDirection as _api_ArrayPropertyTypeReducerSortDirection } from "../__components.js";
+import type { StructFieldApiNameOrRid as _api_StructFieldApiNameOrRid } from "../__components.js";
+import type { LinkTypeRid as _api_LinkTypeRid } from "../__components.js";
+import type { ObjectTypeRid as _api_ObjectTypeRid } from "../__components.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type { OntologyVersion as _api_OntologyVersion } from "../__components.js";
+import type { ActionTypeRid as _api_ActionTypeRid } from "../__components.js";
+import type { InterfaceTypeRid as _api_InterfaceTypeRid } from "../__components.js";
+import type { SharedPropertyTypeRid as _api_SharedPropertyTypeRid } from "../__components.js";
+import type { DataNullability as _api_DataNullability } from "../__components.js";
+import type { DataNullabilityV2 as _api_DataNullabilityV2 } from "../__components.js";
+import type { GlobalBranchRid as _api_GlobalBranchRid } from "../__components.js";
+import type { OntologyBranchRid as _api_OntologyBranchRid } from "../__components.js";
+import type { OntologyProposalRid as _api_OntologyProposalRid } from "../__components.js";
+import type { RuleSetRid as _api_RuleSetRid } from "../__components.js";
+import type { PropertyTypeRid as _api_PropertyTypeRid } from "../__components.js";
+import type { PropertyTypeId as _api_PropertyTypeId } from "../__components.js";
+import type { DatasourceRid as _api_DatasourceRid } from "../__components.js";
+import type { Attribution as _api_Attribution } from "../__components.js";
+import type { LinkTypeRidOrId as _api_LinkTypeRidOrId } from "../__components.js";
+import type { InterfaceLinkTypeRidOrIdInRequest as _api_InterfaceLinkTypeRidOrIdInRequest } from "../__components.js";
+import type { InterfaceParameterConstraintRidOrIdInRequest as _api_InterfaceParameterConstraintRidOrIdInRequest } from "../__components.js";
+import type { ActionTypeParameterIdentifier as _api_ActionTypeParameterIdentifier } from "../__components.js";
+import type { InlineActionDisplayOptions as _api_InlineActionDisplayOptions } from "../__components.js";
+import type { ObjectTypeRidOrId as _api_ObjectTypeRidOrId } from "../__components.js";
+import type { InterfaceActionTypeConstraintRidOrIdInRequest as _api_InterfaceActionTypeConstraintRidOrIdInRequest } from "../__components.js";
+import type { InterfaceActionTypeConstraintMetadata as _api_InterfaceActionTypeConstraintMetadata } from "../__components.js";
+import type { InterfaceActionTypeEditsValidationEntryRidOrIdInRequest as _api_InterfaceActionTypeEditsValidationEntryRidOrIdInRequest } from "../__components.js";
+import type { InterfaceTypeRidOrIdInRequest as _api_InterfaceTypeRidOrIdInRequest } from "../__components.js";
+import type { PrimaryKeyConstraint as _api_PrimaryKeyConstraint } from "../__components.js";
+import type { TypeClass as _api_TypeClass } from "../__components.js";
+import type { InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName } from "../__components.js";
+import type { BaseFormatter as _api_BaseFormatter } from "../__components.js";
+import type { InterfacePropertyTypeDisplayMetadata as _api_InterfacePropertyTypeDisplayMetadata } from "../__components.js";
+import type { InterfaceLinkedObjectRequirementAnyCompatibleObject as _api_InterfaceLinkedObjectRequirementAnyCompatibleObject } from "../__components.js";
+import type { LinkTypeId as _api_LinkTypeId } from "../__components.js";
+import type { InterfaceLinkTypeCardinality as _api_InterfaceLinkTypeCardinality } from "../__components.js";
+import type { LinkedEntityTypeRidOrIdInRequest as _api_LinkedEntityTypeRidOrIdInRequest } from "../__components.js";
+import type { InterfaceLinkTypeMetadata as _api_InterfaceLinkTypeMetadata } from "../__components.js";
+import type { InterfaceParameterConstraintDisplayMetadata as _api_InterfaceParameterConstraintDisplayMetadata } from "../__components.js";
+import type { SharedPropertyTypeRidOrIdInRequest as _api_SharedPropertyTypeRidOrIdInRequest } from "../__components.js";
+import type { InterfacePropertyTypeRidOrIdInRequest as _api_InterfacePropertyTypeRidOrIdInRequest } from "../__components.js";
+import type { BooleanPropertyType as _api_BooleanPropertyType } from "../__components.js";
+import type { BytePropertyType as _api_BytePropertyType } from "../__components.js";
+import type { DatePropertyType as _api_DatePropertyType } from "../__components.js";
+import type { DecimalPropertyType as _api_DecimalPropertyType } from "../__components.js";
+import type { DoublePropertyType as _api_DoublePropertyType } from "../__components.js";
+import type { FloatPropertyType as _api_FloatPropertyType } from "../__components.js";
+import type { GeohashPropertyType as _api_GeohashPropertyType } from "../__components.js";
+import type { GeoshapePropertyType as _api_GeoshapePropertyType } from "../__components.js";
+import type { IntegerPropertyType as _api_IntegerPropertyType } from "../__components.js";
+import type { LongPropertyType as _api_LongPropertyType } from "../__components.js";
+import type { ShortPropertyType as _api_ShortPropertyType } from "../__components.js";
+import type { StringPropertyType as _api_StringPropertyType } from "../__components.js";
+import type { ExperimentalTimeDependentPropertyTypeV1 as _api_ExperimentalTimeDependentPropertyTypeV1 } from "../__components.js";
+import type { TimestampPropertyType as _api_TimestampPropertyType } from "../__components.js";
+import type { AttachmentPropertyType as _api_AttachmentPropertyType } from "../__components.js";
+import type { MarkingPropertyType as _api_MarkingPropertyType } from "../__components.js";
+import type { MediaReferencePropertyType as _api_MediaReferencePropertyType } from "../__components.js";
+import type { VectorPropertyType as _api_VectorPropertyType } from "../__components.js";
+import type { GeotimeSeriesReferencePropertyType as _api_GeotimeSeriesReferencePropertyType } from "../__components.js";
+import type { StructFieldAlias as _api_StructFieldAlias } from "../__components.js";
+import type { ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName } from "../__components.js";
+import type { StructFieldDisplayMetadata as _api_StructFieldDisplayMetadata } from "../__components.js";
+import type { StructFieldRid as _api_StructFieldRid } from "../__components.js";
+import type { Icon as _api_Icon } from "../__components.js";
+import type { InterfaceTypeApiName as _api_InterfaceTypeApiName } from "../__components.js";
+import type { InterfaceTypeStatus as _api_InterfaceTypeStatus } from "../__components.js";
+import type { ObjectTypeId as _api_ObjectTypeId } from "../__components.js";
+import type { LinkTypeMetadata as _api_LinkTypeMetadata } from "../__components.js";
+import type { MarkingId as _api_MarkingId } from "../__components.js";
+import type { OntologyPackageRid as _api_OntologyPackageRid } from "../__components.js";
+import type { CompassFolderRid as _api_CompassFolderRid } from "../__components.js";
+import type { LinkTypeStatus as _api_LinkTypeStatus } from "../__components.js";
+import type { LinkTypePeeringMetadataV1 as _api_LinkTypePeeringMetadataV1 } from "../__components.js";
+import type { DatasetRid as _api_DatasetRid } from "../__components.js";
+import type { ColumnName as _api_ColumnName } from "../__components.js";
+import type { EditsConfiguration as _api_EditsConfiguration } from "../__components.js";
+import type { RetentionPolicy as _api_RetentionPolicy } from "../__components.js";
+import type { StreamLocator as _api_StreamLocator } from "../__components.js";
+import type { PropertyTypeMappingInfo as _api_PropertyTypeMappingInfo } from "../__components.js";
+import type { PropertySecurityGroupPatch as _api_PropertySecurityGroupPatch } from "../__components.js";
+import type { PropertySecurityGroupsModification as _api_PropertySecurityGroupsModification } from "../__components.js";
+import type { DataSecurityModification as _api_DataSecurityModification } from "../__components.js";
+import type { PropertySecurityGroupRid as _api_PropertySecurityGroupRid } from "../__components.js";
+import type { DirectSourceRid as _api_DirectSourceRid } from "../__components.js";
+import type { RetentionConfig as _api_RetentionConfig } from "../__components.js";
+import type { EditsOnlyRid as _api_EditsOnlyRid } from "../__components.js";
+import type { GeotimeSeriesIntegrationRid as _api_GeotimeSeriesIntegrationRid } from "../__components.js";
+import type { MediaSourceRid as _api_MediaSourceRid } from "../__components.js";
+import type { MediaSetViewLocator as _api_MediaSetViewLocator } from "../__components.js";
+import type { ObjectTypeApiName as _api_ObjectTypeApiName } from "../__components.js";
+import type { ObjectTypeDisplayMetadata as _api_ObjectTypeDisplayMetadata } from "../__components.js";
+import type { EditPolicyPatches as _api_EditPolicyPatches } from "../__components.js";
+import type { ObjectTypeStatus as _api_ObjectTypeStatus } from "../__components.js";
+import type { TypeGroupRidOrIdInRequest as _api_TypeGroupRidOrIdInRequest } from "../__components.js";
+import type { ObjectTypePeeringMetadataV1 as _api_ObjectTypePeeringMetadataV1 } from "../__components.js";
+import type { PolicyVersion as _api_PolicyVersion } from "../__components.js";
+import type { RestrictedViewRid as _api_RestrictedViewRid } from "../__components.js";
+import type { TableRid as _api_TableRid } from "../__components.js";
+import type { TimeSeriesSyncRid as _api_TimeSeriesSyncRid } from "../__components.js";
+import type { WorkflowObjectTypeTraitId as _api_WorkflowObjectTypeTraitId } from "../__components.js";
+import type { WorkflowObjectTypeTraitVersion as _api_WorkflowObjectTypeTraitVersion } from "../__components.js";
+import type { OneToManyLinkCardinalityHint as _api_OneToManyLinkCardinalityHint } from "../__components.js";
+import type { OntologyApiName as _api_OntologyApiName } from "../__components.js";
+import type { GroupId as _api_GroupId } from "../__components.js";
+import type { OrganizationMarkingId as _api_OrganizationMarkingId } from "../__components.js";
+import type { ActionTypeIdInRequest as _api_ActionTypeIdInRequest } from "../__components.js";
+import type { ActionTypeCreate as _api_ActionTypeCreate } from "../__components.js";
+import type { ActionTypeUpdate as _api_ActionTypeUpdate } from "../__components.js";
+import type { InterfaceTypeIdInRequest as _api_InterfaceTypeIdInRequest } from "../__components.js";
+import type { SharedPropertyTypeIdInRequest as _api_SharedPropertyTypeIdInRequest } from "../__components.js";
+import type { TypeGroupIdInRequest as _api_TypeGroupIdInRequest } from "../__components.js";
+import type { ActionType as _api_ActionType } from "../__components.js";
+import type { PropertyTypeDisplayMetadata as _api_PropertyTypeDisplayMetadata } from "../__components.js";
+import type { PutParameterRequestModification as _api_PutParameterRequestModification } from "../__components.js";
+import type { PutParameterRequest as _api_PutParameterRequest } from "../__components.js";
+import type { SectionId as _api_SectionId } from "../__components.js";
+import type { PutSectionRequest as _api_PutSectionRequest } from "../__components.js";
+import type { ValueReferenceId as _api_ValueReferenceId } from "../__components.js";
+import type { DataType as _api_DataType } from "../__components.js";
+import type { SharedPropertyTypeDisplayMetadata as _api_SharedPropertyTypeDisplayMetadata } from "../__components.js";
+import type { PropertyTypeIdentifier as _api_PropertyTypeIdentifier } from "../__components.js";
+import type { TypeGroupDisplayMetadata as _api_TypeGroupDisplayMetadata } from "../__components.js";
+import type { ValidationRuleIdInRequest as _api_ValidationRuleIdInRequest } from "../__components.js";
+import type { ValueTypeRid as _api_ValueTypeRid } from "../__components.js";
+import type { ValueTypeVersionId as _api_ValueTypeVersionId } from "../__components.js";
+import type { WorkflowObjectTypeTraitPropertyId as _api_WorkflowObjectTypeTraitPropertyId } from "../__components.js";
+import type { WorkflowObjectTypeTraitReference as _api_WorkflowObjectTypeTraitReference } from "../__components.js";
 import type { DerivedPropertiesDefinitionModification as _api_derivedproperties_DerivedPropertiesDefinitionModification } from "../derivedproperties/__components.js";
-import type {
-  EditsResolutionStrategy as _api_entitymetadata_EditsResolutionStrategy,
-  InterfaceSettings as _api_entitymetadata_InterfaceSettings,
-  ObjectDbType as _api_entitymetadata_ObjectDbType,
-  ObjectDbTypeConfig as _api_entitymetadata_ObjectDbTypeConfig,
-  ObjectTypeAlias as _api_entitymetadata_ObjectTypeAlias,
-  PatchApplicationStrategy as _api_entitymetadata_PatchApplicationStrategy,
-  SharedPropertyTypeAlias as _api_entitymetadata_SharedPropertyTypeAlias,
-  StreamingConsistencyGuarantee as _api_entitymetadata_StreamingConsistencyGuarantee,
-  StreamingProfileConfig as _api_entitymetadata_StreamingProfileConfig,
-  TransformProfileConfig as _api_entitymetadata_TransformProfileConfig,
-  TransitionWindows as _api_entitymetadata_TransitionWindows,
-} from "../entitymetadata/__components.js";
-import type {
-  BuilderDirectWriter as _api_entitymetadata_provenance_BuilderDirectWriter,
-  BuilderEntityProvenance as _api_entitymetadata_provenance_BuilderEntityProvenance,
-  EditsHistoryProvenance as _api_entitymetadata_provenance_EditsHistoryProvenance,
-  MarketplaceEntityProvenance as _api_entitymetadata_provenance_MarketplaceEntityProvenance,
-} from "../entitymetadata/provenance/__components.js";
-import type {
-  RuleChain as _api_formatting_RuleChain,
-  RuleSet as _api_formatting_RuleSet,
-  RuleSetBindingModification as _api_formatting_RuleSetBindingModification,
-  RuleSetCreate as _api_formatting_RuleSetCreate,
-  RuleSetIdentifier as _api_formatting_RuleSetIdentifier,
-  RuleSetIdInRequest as _api_formatting_RuleSetIdInRequest,
-  RuleSetNamedType as _api_formatting_RuleSetNamedType,
-  ValueReferenceSourceModification as _api_formatting_ValueReferenceSourceModification,
-} from "../formatting/__components.js";
-import type {
-  PermissionModel as _api_permissions_PermissionModel,
-  RoleGrant as _api_permissions_RoleGrant,
-  RoleGrantPatch as _api_permissions_RoleGrantPatch,
-} from "../permissions/__components.js";
-import type {
-  InterfaceTypeSchemaMigrationModification as _api_schemamigrations_InterfaceTypeSchemaMigrationModification,
-  ResetSchemaMigrationsAndDropEditParameters as _api_schemamigrations_ResetSchemaMigrationsAndDropEditParameters,
-  SchemaMigrationInitialization as _api_schemamigrations_SchemaMigrationInitialization,
-  SchemaMigrationModification as _api_schemamigrations_SchemaMigrationModification,
-} from "../schemamigrations/__components.js";
-import type {
-  ExternalMappingConfiguration as _api_typemapping_ExternalMappingConfiguration,
-  ExternalMappingConfigurationFilter as _api_typemapping_ExternalMappingConfigurationFilter,
-  GothamMappingConfiguration as _api_typemapping_GothamMappingConfiguration,
-  ObjectTypeGothamMappingModification as _api_typemapping_ObjectTypeGothamMappingModification,
-  SharedPropertyTypeGothamMappingModification as _api_typemapping_SharedPropertyTypeGothamMappingModification,
-} from "../typemapping/__components.js";
-import type {
-  BaseParameterConstraintTypeModification as _api_types_BaseParameterConstraintTypeModification,
-  LinkTypeSide as _api_types_LinkTypeSide,
-} from "../types/__components.js";
+import type { StorageBackend as _api_entitymetadata_StorageBackend } from "../entitymetadata/__components.js";
+import type { EditsResolutionStrategy as _api_entitymetadata_EditsResolutionStrategy } from "../entitymetadata/__components.js";
+import type { ObjectDbType as _api_entitymetadata_ObjectDbType } from "../entitymetadata/__components.js";
+import type { ObjectDbTypeConfig as _api_entitymetadata_ObjectDbTypeConfig } from "../entitymetadata/__components.js";
+import type { TransitionWindows as _api_entitymetadata_TransitionWindows } from "../entitymetadata/__components.js";
+import type { ObjectTypeAlias as _api_entitymetadata_ObjectTypeAlias } from "../entitymetadata/__components.js";
+import type { InterfaceSettings as _api_entitymetadata_InterfaceSettings } from "../entitymetadata/__components.js";
+import type { StreamingConsistencyGuarantee as _api_entitymetadata_StreamingConsistencyGuarantee } from "../entitymetadata/__components.js";
+import type { TransformProfileConfig as _api_entitymetadata_TransformProfileConfig } from "../entitymetadata/__components.js";
+import type { PatchApplicationStrategy as _api_entitymetadata_PatchApplicationStrategy } from "../entitymetadata/__components.js";
+import type { SharedPropertyTypeAlias as _api_entitymetadata_SharedPropertyTypeAlias } from "../entitymetadata/__components.js";
+import type { StreamingProfileConfig as _api_entitymetadata_StreamingProfileConfig } from "../entitymetadata/__components.js";
+import type { BuilderEntityProvenance as _api_entitymetadata_provenance_BuilderEntityProvenance } from "../entitymetadata/provenance/__components.js";
+import type { MarketplaceEntityProvenance as _api_entitymetadata_provenance_MarketplaceEntityProvenance } from "../entitymetadata/provenance/__components.js";
+import type { EditsHistoryProvenance as _api_entitymetadata_provenance_EditsHistoryProvenance } from "../entitymetadata/provenance/__components.js";
+import type { BuilderDirectWriter as _api_entitymetadata_provenance_BuilderDirectWriter } from "../entitymetadata/provenance/__components.js";
+import type { RuleSetIdInRequest as _api_formatting_RuleSetIdInRequest } from "../formatting/__components.js";
+import type { RuleSetCreate as _api_formatting_RuleSetCreate } from "../formatting/__components.js";
+import type { RuleSet as _api_formatting_RuleSet } from "../formatting/__components.js";
+import type { RuleSetBindingModification as _api_formatting_RuleSetBindingModification } from "../formatting/__components.js";
+import type { ValueReferenceSourceModification as _api_formatting_ValueReferenceSourceModification } from "../formatting/__components.js";
+import type { RuleSetIdentifier as _api_formatting_RuleSetIdentifier } from "../formatting/__components.js";
+import type { RuleChain as _api_formatting_RuleChain } from "../formatting/__components.js";
+import type { RuleSetNamedType as _api_formatting_RuleSetNamedType } from "../formatting/__components.js";
+import type { PermissionModel as _api_permissions_PermissionModel } from "../permissions/__components.js";
+import type { RoleGrant as _api_permissions_RoleGrant } from "../permissions/__components.js";
+import type { RoleGrantPatch as _api_permissions_RoleGrantPatch } from "../permissions/__components.js";
+import type { InterfaceTypeSchemaMigrationModification as _api_schemamigrations_InterfaceTypeSchemaMigrationModification } from "../schemamigrations/__components.js";
+import type { SchemaMigrationInitialization as _api_schemamigrations_SchemaMigrationInitialization } from "../schemamigrations/__components.js";
+import type { SchemaMigrationModification as _api_schemamigrations_SchemaMigrationModification } from "../schemamigrations/__components.js";
+import type { ResetSchemaMigrationsAndDropEditParameters as _api_schemamigrations_ResetSchemaMigrationsAndDropEditParameters } from "../schemamigrations/__components.js";
+import type { ExternalMappingConfigurationFilter as _api_typemapping_ExternalMappingConfigurationFilter } from "../typemapping/__components.js";
+import type { ObjectTypeGothamMappingModification as _api_typemapping_ObjectTypeGothamMappingModification } from "../typemapping/__components.js";
+import type { ExternalMappingConfiguration as _api_typemapping_ExternalMappingConfiguration } from "../typemapping/__components.js";
+import type { GothamMappingConfiguration as _api_typemapping_GothamMappingConfiguration } from "../typemapping/__components.js";
+import type { SharedPropertyTypeGothamMappingModification as _api_typemapping_SharedPropertyTypeGothamMappingModification } from "../typemapping/__components.js";
+import type { ActionReturnConfiguration as _api_types_ActionReturnConfiguration } from "../types/__components.js";
+import type { LinkTypeSide as _api_types_LinkTypeSide } from "../types/__components.js";
+import type { BaseParameterConstraintTypeModification as _api_types_BaseParameterConstraintTypeModification } from "../types/__components.js";
 import type { OntologyValidationError as _api_validation_OntologyValidationError } from "../validation/__components.js";
 
 /**
@@ -284,10 +276,15 @@ export interface ActionTypeModification {
   effects?: _api_ActionEffectsModification | null | undefined;
   entities?: _api_ActionTypeEntities | null | undefined;
   formContentOrdering?: Array<_api_FormContent> | null | undefined;
+  isolationSettings?:
+    | _api_ActionTypeIsolationSettingsModification
+    | null
+    | undefined;
   logic: _api_ActionLogicModification;
   logicRulesToCreate: Record<_api_LogicRuleIdInRequest, _api_LogicRuleRid>;
   notifications: Array<_api_ActionNotificationModification>;
   notificationSettings?: _api_ActionNotificationSettings | null | undefined;
+  owningResource?: _api_ActionTypeOwningResourceModification | null | undefined;
   parameterOrdering: Array<_api_ParameterId>;
   parametersToCreate: Record<
     _api_ParameterRid,
@@ -300,6 +297,7 @@ export interface ActionTypeModification {
   >;
   provenance?: _api_ActionTypeProvenanceModification | null | undefined;
   readAuthorization?: _api_AuthorizationModification | null | undefined;
+  returnConfiguration?: _api_types_ActionReturnConfiguration | null | undefined;
   revert?: _api_ActionRevert | null | undefined;
   scenarioSettings?:
     | _api_ActionTypeScenarioSettingsModification
@@ -332,6 +330,7 @@ export interface ActionTypeModification {
  * This status indicates that the PropertyType will not change on short notice and should thus be safe to use in user facing workflows. They will not be removed without first being deprecated.
  */
 export interface ActivePropertyTypeStatusModification {}
+export interface AnyObjectOfTypeModification {}
 /**
  * Indicates the that given object type is archived.
  */
@@ -379,6 +378,31 @@ export interface BranchEntityIndexingConfigurationModification {
   >;
 }
 /**
+ * Request to load a batch of Ontologies by their RIDs. Prefer this over `loadAllOntologiesInternal` when the
+ * set of Ontologies needed is known, as it avoids loading stored ontology information for all ontologies. This
+ * carries additional details most clients do not need; prefer `bulkLoadOntologyInformation` unless that extra
+ * detail is required.
+ */
+export interface BulkLoadOntologyInformationInternalRequest {
+  ontologyRids: Array<_api_OntologyRid>;
+}
+export interface BulkLoadOntologyInformationInternalResponse {
+  ontologies: Record<_api_OntologyRid, OntologyInformationInternal>;
+}
+/**
+ * How a cascade-affected entity was modified.
+ */
+export type CascadeModificationType = "TRASHED" | "UPDATED";
+
+/**
+ * A related entity that was modified as a side effect of trashing the requested entities, tagged with how it
+ * was modified.
+ */
+export interface CascadeModifiedEntity {
+  entityRid: CompassOntologyResourceRid;
+  modificationType: CascadeModificationType;
+}
+/**
  * Request to check existing unique identifiers before making an Ontology modification. A maximum of 500
  * identifiers is allowed. This will also return reused ObjectTypeIds if on a multitenant stack.
  */
@@ -399,6 +423,25 @@ export interface CipherTextPropertyTypeModification {
   defaultCipherChannelRid?: string | null | undefined;
   plainTextType: TypeForModification;
 }
+/**
+ * Internal, service-to-service request used by objects-data-funnel to finalize an OSv1 to OSv2 migration
+ * (or archival) for a set of entities. Finalization clears the migration configuration from each entity's
+ * target storage backend, updates entity config / patch settings, and strips writeback datasets from the
+ * entity's datasources. This is applied with migration-relaxed validations under the OMS service identity,
+ * so the endpoint must only be callable by trusted infrastructure services.
+ */
+export interface ClearMigrationInformationRequest {
+  expectedOntologyVersion?: _api_OntologyVersion | null | undefined;
+  linkTypeTargetStorageBackends: Record<
+    _api_LinkTypeRid,
+    _api_entitymetadata_StorageBackend
+  >;
+  objectTypeTargetStorageBackends: Record<
+    _api_ObjectTypeRid,
+    _api_entitymetadata_StorageBackend
+  >;
+  ontologyRid: _api_OntologyRid;
+}
 export interface CompassDeletionParameters {
   blockUntilDone: boolean;
   deletionMode: CompassResourceDeletionMode;
@@ -407,7 +450,48 @@ export interface CompassDeletionParameters {
  * An rid identifying a Compass namespace. This rid is generated randomly and is safe for logging purposes.
  */
 export type CompassNamespaceRid = string;
+export interface CompassOntologyResourceRid_objectTypeRid {
+  type: "objectTypeRid";
+  objectTypeRid: _api_ObjectTypeRid;
+}
+
+export interface CompassOntologyResourceRid_linkTypeRid {
+  type: "linkTypeRid";
+  linkTypeRid: _api_LinkTypeRid;
+}
+
+export interface CompassOntologyResourceRid_actionTypeRid {
+  type: "actionTypeRid";
+  actionTypeRid: _api_ActionTypeRid;
+}
+
+export interface CompassOntologyResourceRid_interfaceTypeRid {
+  type: "interfaceTypeRid";
+  interfaceTypeRid: _api_InterfaceTypeRid;
+}
+
+export interface CompassOntologyResourceRid_sharedPropertyTypeRid {
+  type: "sharedPropertyTypeRid";
+  sharedPropertyTypeRid: _api_SharedPropertyTypeRid;
+}
+/**
+ * Resource identifier of an ontology entity that is backed by a public compass project. Should be used only
+ * on endpoints that work with ontology resources migrated to compass permissions.
+ */
+export type CompassOntologyResourceRid =
+  | CompassOntologyResourceRid_objectTypeRid
+  | CompassOntologyResourceRid_linkTypeRid
+  | CompassOntologyResourceRid_actionTypeRid
+  | CompassOntologyResourceRid_interfaceTypeRid
+  | CompassOntologyResourceRid_sharedPropertyTypeRid;
+
 export type CompassResourceDeletionMode = "TRASH" | "PERMANENTLY_DELETE";
+export type CompassTagOperationType = "ADD" | "REMOVE";
+
+/**
+ * The rid belonging to a Compass Tag.
+ */
+export type CompassTagRid = string;
 export interface CopyEditsFromParentBranchOnInitialIndexingMode {}
 export interface CopyEditsMode_copyEditsFromParentBranchOnInitialIndexing {
   type: "copyEditsFromParentBranchOnInitialIndexing";
@@ -427,6 +511,75 @@ export type CopyEditsMode =
 export interface DataConstraintsModification {
   nullability?: _api_DataNullability | null | undefined;
   nullabilityV2?: _api_DataNullabilityV2 | null | undefined;
+}
+/**
+ * Default-branch-owned entities staged for trashing on a new branch (using the request's branch metadata).
+ * A proposal is created for the branch, However, these entities are not trashed yet. They will
+ * be trashed once the proposal is approved and merged to the default branch.
+ */
+export interface DefaultBranchEntityTrashedOnAnewBranch {
+  branchName: string;
+  cascadeModifiedEntities: Array<CascadeModifiedEntity>;
+  entityRids: Array<CompassOntologyResourceRid>;
+  globalBranchRid: _api_GlobalBranchRid;
+  ontologyBranchRid: _api_OntologyBranchRid;
+  ontologyProposalRid: _api_OntologyProposalRid;
+}
+export interface DeletableEntityRid_objectTypeRid {
+  type: "objectTypeRid";
+  objectTypeRid: _api_ObjectTypeRid;
+}
+
+export interface DeletableEntityRid_linkTypeRid {
+  type: "linkTypeRid";
+  linkTypeRid: _api_LinkTypeRid;
+}
+
+export interface DeletableEntityRid_actionTypeRid {
+  type: "actionTypeRid";
+  actionTypeRid: _api_ActionTypeRid;
+}
+
+export interface DeletableEntityRid_interfaceTypeRid {
+  type: "interfaceTypeRid";
+  interfaceTypeRid: _api_InterfaceTypeRid;
+}
+
+export interface DeletableEntityRid_sharedPropertyTypeRid {
+  type: "sharedPropertyTypeRid";
+  sharedPropertyTypeRid: _api_SharedPropertyTypeRid;
+}
+
+export interface DeletableEntityRid_ruleSetRid {
+  type: "ruleSetRid";
+  ruleSetRid: _api_RuleSetRid;
+}
+
+export interface DeletableEntityRid_typeGroupRid {
+  type: "typeGroupRid";
+  typeGroupRid: _api_TypeGroupRid;
+}
+/**
+ * Resource identifier of any ontology entity that can be deleted. Distinct from `EntityRid` (the
+ * modification-history request type, limited to the entity types whose history can be retrieved): this
+ * additionally covers rule sets and type groups, so responses such as `TrashResult` can reference every
+ * deletable entity type.
+ */
+export type DeletableEntityRid =
+  | DeletableEntityRid_objectTypeRid
+  | DeletableEntityRid_linkTypeRid
+  | DeletableEntityRid_actionTypeRid
+  | DeletableEntityRid_interfaceTypeRid
+  | DeletableEntityRid_sharedPropertyTypeRid
+  | DeletableEntityRid_ruleSetRid
+  | DeletableEntityRid_typeGroupRid;
+
+/**
+ * An entity that was deleted but not trashed, with the reason it could not be trashed.
+ */
+export interface DeletedButNotTrashedEntity {
+  entity: DeletableEntityRid;
+  reason: NotTrashedReason;
 }
 /**
  * This status indicates that the PropertyType is reaching the end of its life and will be removed as per the deadline specified.
@@ -489,6 +642,12 @@ export type EnabledObjectStoragesStatus =
   | "OSV1_ENABLED";
 
 /**
+ * The resulting set of Compass Tags on an Entity after its operations were applied.
+ */
+export interface EntityCompassTagUpdateResult {
+  tagSet: Array<CompassTagRid>;
+}
+/**
  * Contains ObjectDb configurations for a particular ObjectType or LinkType. This modification carries out a complete overwrite of the existing `objectDbTypeConfigs` Map with the provided Map in this request.
  */
 export interface EntityConfigModification {
@@ -503,6 +662,17 @@ export interface EntityModificationHistoryPageItem {
   modificationType: ModificationType;
   ontologyVersion: _api_OntologyVersion;
 }
+/**
+ * The kinds of per-entity modification history that can be requested from `getEntityModificationHistory`.
+ *
+ * `ENTITY` is the entity's own modification history, returned in `entityModificationPageItems`.
+ * `ENTITY_METADATA` is the EntityMetadata modification history, returned in
+ * `entityMetadataModificationPageItems`; it only has an effect for objectTypeRid and linkTypeRid requests.
+ * Requesting it for other entity types will result in an `EntityModificationHistoryTypeNotSupportedForEntity`
+ * error.
+ */
+export type EntityModificationHistoryTypes = "ENTITY" | "ENTITY_METADATA";
+
 /**
  * Metadata describing provenance of an entity. Can only be set by the privileged owner.
  */
@@ -582,16 +752,42 @@ export interface EventMetadataModification {
  */
 export interface ExamplePropertyTypeStatusModification {}
 /**
+ * Stage the untrash on an existing branch the caller supplies. OMS creates no branch or proposal.
+ */
+export interface ExistingBranchMetadata {
+  ontologyBranchRid: _api_OntologyBranchRid;
+}
+export interface ExistingObjectEditRequirementModification_anyObjectOfType {
+  type: "anyObjectOfType";
+  anyObjectOfType: AnyObjectOfTypeModification;
+}
+
+export interface ExistingObjectEditRequirementModification_objectsFromParameterRequirement {
+  type: "objectsFromParameterRequirement";
+  objectsFromParameterRequirement: ObjectsFromParameterConstraintsRequirementModification;
+}
+export type ExistingObjectEditRequirementModification =
+  | ExistingObjectEditRequirementModification_anyObjectOfType
+  | ExistingObjectEditRequirementModification_objectsFromParameterRequirement;
+
+/**
  * This status indicates that the PropertyType is in development. Please refrain from using it in critical workflows as it may change/disappear at any time.
  */
 export interface ExperimentalPropertyTypeStatusModification {}
 export interface GetEntityModificationHistoryRequest {
+  entityMetadataPageToken?: ModificationHistoryPageToken | null | undefined;
   entityRid: EntityRid;
   limit: number;
+  modificationHistoryTypes?:
+    | Array<EntityModificationHistoryTypes>
+    | null
+    | undefined;
   ontologyBranchRid?: _api_OntologyBranchRid | null | undefined;
   pageToken?: ModificationHistoryPageToken | null | undefined;
 }
 export interface GetEntityModificationHistoryResponse {
+  entityMetadataModificationPageItems: Array<EntityModificationHistoryPageItem>;
+  entityMetadataNextPageToken?: ModificationHistoryPageToken | null | undefined;
   entityModificationPageItems: Array<EntityModificationHistoryPageItem>;
   nextPageToken?: ModificationHistoryPageToken | null | undefined;
 }
@@ -628,34 +824,189 @@ export interface ImplementingLinkTypeModification {
   linkTypeRidOrId: _api_LinkTypeRidOrId;
   linkTypeSide?: _api_types_LinkTypeSide | null | undefined;
 }
+export interface ImplementingObjectCreateValidationModification {
+  requiredInterfaceLinkCreations: Array<InterfaceLinkRequirementModification>;
+}
+export interface ImplementingObjectDeleteValidationModification {
+  editRequirement: ExistingObjectEditRequirementModification;
+  requiredInterfaceLinkDeletions: Array<InterfaceLinkRequirementModification>;
+}
+export interface ImplementingObjectEditsValidationModification_create {
+  type: "create";
+  create: ImplementingObjectCreateValidationModification;
+}
+
+export interface ImplementingObjectEditsValidationModification_modify {
+  type: "modify";
+  modify: ImplementingObjectModifyValidationModification;
+}
+
+export interface ImplementingObjectEditsValidationModification_delete {
+  type: "delete";
+  delete: ImplementingObjectDeleteValidationModification;
+}
+export type ImplementingObjectEditsValidationModification =
+  | ImplementingObjectEditsValidationModification_create
+  | ImplementingObjectEditsValidationModification_modify
+  | ImplementingObjectEditsValidationModification_delete;
+
+export interface ImplementingObjectInterfaceLinkEditsValidationModification_create {
+  type: "create";
+  create: ImplementingObjectInterfaceLinkValidationModification;
+}
+
+export interface ImplementingObjectInterfaceLinkEditsValidationModification_delete {
+  type: "delete";
+  delete: ImplementingObjectInterfaceLinkValidationModification;
+}
+export type ImplementingObjectInterfaceLinkEditsValidationModification =
+  | ImplementingObjectInterfaceLinkEditsValidationModification_create
+  | ImplementingObjectInterfaceLinkEditsValidationModification_delete;
+
+export interface ImplementingObjectInterfaceLinkRequirementModification {
+  interfaceLinkedObjectRequirement: InterfaceLinkedObjectRequirementModification;
+  interfaceLinkTypeRidOrIdInRequest: _api_InterfaceLinkTypeRidOrIdInRequest;
+}
+export interface ImplementingObjectInterfaceLinkValidationModification {
+  interfaceLinkTypeRidOrIdInRequest: _api_InterfaceLinkTypeRidOrIdInRequest;
+  source: InterfaceLinkedObjectRequirementModification;
+  target: InterfaceLinkedObjectRequirementModification;
+}
+export interface ImplementingObjectModifyValidationModification {
+  editRequirement: ExistingObjectEditRequirementModification;
+  requiredInterfaceLinkCreations: Array<InterfaceLinkRequirementModification>;
+  requiredInterfaceLinkDeletions: Array<InterfaceLinkRequirementModification>;
+}
 export interface ImplementingParameterModification {
   interfaceParameterConstraintRidOrIdInRequest: _api_InterfaceParameterConstraintRidOrIdInRequest;
   parameterIdentifier: _api_ActionTypeParameterIdentifier;
 }
-/**
- * A request to import SharedPropertyTypes into another ontology
- */
-export interface ImportSharedPropertyTypesRequest {
-  sharedPropertyTypes: Array<_api_SharedPropertyTypeRid>;
-}
-/**
- * A response to ImportSharedPropertyTypesRequest
- */
-export interface ImportSharedPropertyTypesResponse {}
 export interface InlineActionTypeModification {
   actionTypeIdentifier: _api_ActionTypeIdentifier;
   displayOptions: _api_InlineActionDisplayOptions;
   parameterId?: _api_ParameterId | null | undefined;
+}
+export interface InterfaceActionTypeConcreteObjectCreateValidationModification {}
+export interface InterfaceActionTypeConcreteObjectDeleteValidationModification {
+  editRequirement: ExistingObjectEditRequirementModification;
+}
+export interface InterfaceActionTypeConcreteObjectEditsOperationModification_create {
+  type: "create";
+  create: InterfaceActionTypeConcreteObjectCreateValidationModification;
+}
+
+export interface InterfaceActionTypeConcreteObjectEditsOperationModification_modify {
+  type: "modify";
+  modify: InterfaceActionTypeConcreteObjectModifyValidationModification;
+}
+
+export interface InterfaceActionTypeConcreteObjectEditsOperationModification_delete {
+  type: "delete";
+  delete: InterfaceActionTypeConcreteObjectDeleteValidationModification;
+}
+export type InterfaceActionTypeConcreteObjectEditsOperationModification =
+  | InterfaceActionTypeConcreteObjectEditsOperationModification_create
+  | InterfaceActionTypeConcreteObjectEditsOperationModification_modify
+  | InterfaceActionTypeConcreteObjectEditsOperationModification_delete;
+
+export interface InterfaceActionTypeConcreteObjectEditsValidationModification {
+  objectTypeRidOrId: _api_ObjectTypeRidOrId;
+  operation: InterfaceActionTypeConcreteObjectEditsOperationModification;
+}
+export interface InterfaceActionTypeConcreteObjectModifyValidationModification {
+  editRequirement: ExistingObjectEditRequirementModification;
 }
 export interface InterfaceActionTypeConstraintImplementationModification {
   actionType: ImplementingActionTypeModification;
   interfaceActionTypeConstraintRidOrIdInRequest: _api_InterfaceActionTypeConstraintRidOrIdInRequest;
 }
 export interface InterfaceActionTypeConstraintModification {
+  editsValidation?:
+    | InterfaceActionTypeEditsValidationModification
+    | null
+    | undefined;
   id: _api_InterfaceActionTypeConstraintRidOrIdInRequest;
   metadata: _api_InterfaceActionTypeConstraintMetadata;
   parameters: Array<InterfaceParameterConstraintModification>;
   requireImplementation: boolean;
+}
+export interface InterfaceActionTypeEditsValidationAndModification {
+  conditions: Array<InterfaceActionTypeEditsValidationConditionModification>;
+}
+export interface InterfaceActionTypeEditsValidationConditionModification_entry {
+  type: "entry";
+  entry: InterfaceActionTypeEditsValidationEntryModification;
+}
+
+export interface InterfaceActionTypeEditsValidationConditionModification_and {
+  type: "and";
+  and: InterfaceActionTypeEditsValidationAndModification;
+}
+export type InterfaceActionTypeEditsValidationConditionModification =
+  | InterfaceActionTypeEditsValidationConditionModification_entry
+  | InterfaceActionTypeEditsValidationConditionModification_and;
+
+export interface InterfaceActionTypeEditsValidationConditionSubjectModification_concreteObject {
+  type: "concreteObject";
+  concreteObject: InterfaceActionTypeConcreteObjectEditsValidationModification;
+}
+
+export interface InterfaceActionTypeEditsValidationConditionSubjectModification_interfaceObject {
+  type: "interfaceObject";
+  interfaceObject: InterfaceActionTypeInterfaceObjectEditsValidationModification;
+}
+
+export interface InterfaceActionTypeEditsValidationConditionSubjectModification_implementingObject {
+  type: "implementingObject";
+  implementingObject: ImplementingObjectEditsValidationModification;
+}
+
+export interface InterfaceActionTypeEditsValidationConditionSubjectModification_implementingObjectInterfaceLink {
+  type: "implementingObjectInterfaceLink";
+  implementingObjectInterfaceLink: ImplementingObjectInterfaceLinkEditsValidationModification;
+}
+export type InterfaceActionTypeEditsValidationConditionSubjectModification =
+  | InterfaceActionTypeEditsValidationConditionSubjectModification_concreteObject
+  | InterfaceActionTypeEditsValidationConditionSubjectModification_interfaceObject
+  | InterfaceActionTypeEditsValidationConditionSubjectModification_implementingObject
+  | InterfaceActionTypeEditsValidationConditionSubjectModification_implementingObjectInterfaceLink;
+
+export interface InterfaceActionTypeEditsValidationEntryModification {
+  ridOrIdInRequest: _api_InterfaceActionTypeEditsValidationEntryRidOrIdInRequest;
+  subject: InterfaceActionTypeEditsValidationConditionSubjectModification;
+}
+export interface InterfaceActionTypeEditsValidationModification {
+  condition: InterfaceActionTypeEditsValidationConditionModification;
+}
+export interface InterfaceActionTypeInterfaceObjectCreateValidationModification {}
+export interface InterfaceActionTypeInterfaceObjectDeleteValidationModification {
+  editRequirement: ExistingObjectEditRequirementModification;
+}
+export interface InterfaceActionTypeInterfaceObjectEditsOperationModification_create {
+  type: "create";
+  create: InterfaceActionTypeInterfaceObjectCreateValidationModification;
+}
+
+export interface InterfaceActionTypeInterfaceObjectEditsOperationModification_modify {
+  type: "modify";
+  modify: InterfaceActionTypeInterfaceObjectModifyValidationModification;
+}
+
+export interface InterfaceActionTypeInterfaceObjectEditsOperationModification_delete {
+  type: "delete";
+  delete: InterfaceActionTypeInterfaceObjectDeleteValidationModification;
+}
+export type InterfaceActionTypeInterfaceObjectEditsOperationModification =
+  | InterfaceActionTypeInterfaceObjectEditsOperationModification_create
+  | InterfaceActionTypeInterfaceObjectEditsOperationModification_modify
+  | InterfaceActionTypeInterfaceObjectEditsOperationModification_delete;
+
+export interface InterfaceActionTypeInterfaceObjectEditsValidationModification {
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  operation: InterfaceActionTypeInterfaceObjectEditsOperationModification;
+}
+export interface InterfaceActionTypeInterfaceObjectModifyValidationModification {
+  editRequirement: ExistingObjectEditRequirementModification;
 }
 export interface InterfaceAndObjectPropertyStructField {
   interfaceStructPropertyTypeField: _api_StructFieldApiNameOrRid;
@@ -683,6 +1034,26 @@ export interface InterfaceDefinedPropertyTypeModification {
   displayMetadata: _api_InterfacePropertyTypeDisplayMetadata;
   type: InterfacePropertyTypeTypeForModification;
 }
+export interface InterfaceLinkedObjectRequirementModification_anyCompatibleObject {
+  type: "anyCompatibleObject";
+  anyCompatibleObject: _api_InterfaceLinkedObjectRequirementAnyCompatibleObject;
+}
+
+export interface InterfaceLinkedObjectRequirementModification_interfaceParameterConstraintRidOrIdInRequest {
+  type: "interfaceParameterConstraintRidOrIdInRequest";
+  interfaceParameterConstraintRidOrIdInRequest: _api_InterfaceParameterConstraintRidOrIdInRequest;
+}
+export type InterfaceLinkedObjectRequirementModification =
+  | InterfaceLinkedObjectRequirementModification_anyCompatibleObject
+  | InterfaceLinkedObjectRequirementModification_interfaceParameterConstraintRidOrIdInRequest;
+
+export interface InterfaceLinkRequirementModification_implementingObjectInterfaceLink {
+  type: "implementingObjectInterfaceLink";
+  implementingObjectInterfaceLink: ImplementingObjectInterfaceLinkRequirementModification;
+}
+export type InterfaceLinkRequirementModification =
+  InterfaceLinkRequirementModification_implementingObjectInterfaceLink;
+
 export interface InterfaceLinkTypeImplementationModification {
   interfaceLinkTypeRidOrIdInRequest: _api_InterfaceLinkTypeRidOrIdInRequest;
   linkTypeIds: Array<_api_LinkTypeId>;
@@ -700,6 +1071,7 @@ export interface InterfaceLinkTypeModification {
 }
 export interface InterfaceParameterConstraintModification {
   id: _api_InterfaceParameterConstraintRidOrIdInRequest;
+  isRequiredParameterOnConcreteAction?: boolean | null | undefined;
   metadata: _api_InterfaceParameterConstraintDisplayMetadata;
   requireImplementation: boolean;
   type: _api_types_BaseParameterConstraintTypeModification;
@@ -926,6 +1298,7 @@ export interface InterfaceTypeModification {
   propertiesV2: Array<InterfaceSharedPropertyTypeModification>;
   propertiesV3: Array<InterfacePropertyTypeModificationWithRidOrIdInRequest>;
   provenance?: EntityProvenanceModification | null | undefined;
+  schemaMigrationsEnabled?: boolean | null | undefined;
   searchable?: boolean | null | undefined;
   status: _api_InterfaceTypeStatus;
 }
@@ -1025,13 +1398,22 @@ export interface LoadAllOntologiesInternalRequest {
   includeEmptyDefaultOntology?: boolean | null | undefined;
 }
 /**
- * Response to LoadAllOntologiesInternalRequest. This includes information
- * about the Ontologies that a user can access. It is expected
- * that only administrative users should have access to multiple
- * Ontologies. This is only expected to be used by Ontology Metadata App.
+ * This includes information about the Ontologies that a user can access.
  */
 export interface LoadAllOntologiesInternalResponse {
   ontologies: Record<_api_OntologyRid, OntologyInformationInternal>;
+}
+/**
+ * Request to load a single Ontology by its RID. Prefer this over `loadAllOntologiesInternal` when only one
+ * Ontology is needed, as it avoids loading stored ontology information for all ontologies. This carries
+ * additional details most clients do not need; prefer `loadOntologyInformation` unless that extra detail is
+ * required.
+ */
+export interface LoadOntologyInformationInternalRequest {
+  ontologyRid: _api_OntologyRid;
+}
+export interface LoadOntologyInformationInternalResponse {
+  ontology?: OntologyInformationInternal | null | undefined;
 }
 export interface ManyToManyLinkDefinitionModification {
   objectTypeAToBLinkMetadata: _api_LinkTypeMetadata;
@@ -1175,10 +1557,34 @@ export type NestedInterfacePropertyTypeImplementationModification =
   | NestedInterfacePropertyTypeImplementationModification_structField;
 
 /**
+ * Stage the trash/untrash on a new branch and proposal that OMS creates.
+ */
+export interface NewBranchMetadata {
+  name?: string | null | undefined;
+}
+/**
  * Configuration for disabled edits history.
  */
 export interface NoEditsHistoryModification {}
+/**
+ * Entities trashed in place on an existing non-default branch, effective immediately. The branch already
+ * existed, so OMS didn't create a proposal.
+ */
+export interface NonDefaultBranchEntityTrashedInPlace {
+  branchName: string;
+  cascadeModifiedEntities: Array<CascadeModifiedEntity>;
+  entityRids: Array<CompassOntologyResourceRid>;
+  globalBranchRid?: _api_GlobalBranchRid | null | undefined;
+  ontologyBranchRid: _api_OntologyBranchRid;
+}
 export interface NoneEntityProvenance {}
+/**
+ * Why a deleted entity could not be trashed.
+ */
+export type NotTrashedReason = "NOT_IN_PUBLIC_PROJECT" | "NON_COMPASS_ENTITY";
+export interface ObjectsFromParameterConstraintsRequirementModification {
+  interfaceParameterConstraints: Array<_api_InterfaceParameterConstraintRidOrIdInRequest>;
+}
 /**
  * Entity can be stored in Phonograph. Note that it is not guaranteed that the object type or link type is
  * currently registered with Phonograph. There is no guarantee the object type or link type has finished
@@ -1625,6 +2031,7 @@ export interface ObjectTypeMediaSetViewDatasourceModification {
 export interface ObjectTypeModification {
   apiName?: _api_ObjectTypeApiName | null | undefined;
   displayMetadata: _api_ObjectTypeDisplayMetadata;
+  editPolicies?: _api_EditPolicyPatches | null | undefined;
   id: _api_ObjectTypeId;
   implementsInterfaces: Array<_api_InterfaceTypeRidOrIdInRequest>;
   implementsInterfaces2: Array<ObjectTypeInterfaceImplementationModification>;
@@ -2060,6 +2467,7 @@ export interface OntologyModificationResponse {
     _workflow_api_WorkflowRid
   >;
   ontologyVersion: _api_OntologyVersion;
+  trashResult?: TrashResult | null | undefined;
   updatedActionTypes: Record<_api_ActionTypeRid, _api_ActionType>;
 }
 /**
@@ -2390,6 +2798,119 @@ export interface TimeSeriesMetadataModification {
   timeSeriesIdPropertyTypeId: _api_PropertyTypeId;
   valueUnitsPropertyTypeId?: _api_PropertyTypeId | null | undefined;
 }
+export interface TrashBranchMetadata_newBranch {
+  type: "newBranch";
+  newBranch: NewBranchMetadata;
+}
+/**
+ * How default-branch-owned trashes are staged for review.
+ */
+export type TrashBranchMetadata = TrashBranchMetadata_newBranch;
+
+/**
+ * Request to trash a set of ontology entities from Compass. Entities owned by the default branch are trashed
+ * and staged for review on a newly created branch + proposal, while entities owned by a non-default branch are
+ * trashed directly in place on that branch. For default-branch entities, the corresponding Compass resource is
+ * moved to the trash only once the branch is merged. Trashing an entity may also trash or update related
+ * entities so the ontology stays valid after the entity is removed.
+ */
+export interface TrashEntitiesRequest {
+  branchMetadata?: TrashBranchMetadata | null | undefined;
+  entityRids: Array<TrashRequestResourceRid>;
+}
+/**
+ * The outcome of the trash request. Every requested entity appears in exactly one outcome. Outcomes are NOT
+ * one-to-one with branches: a single branch may yield several (e.g. some of its entities trashed and others
+ * skipped). Best-effort: a failure on one branch is reported as a failed outcome without aborting the others.
+ * See each TrashOutcome variant for details.
+ */
+export interface TrashEntitiesResponse {
+  outcomes: Array<TrashOutcome>;
+}
+/**
+ * Trashing on this branch was aborted because a fatal error occured.
+ */
+export interface TrashFailed {
+  entityRids: Array<CompassOntologyResourceRid>;
+  errorMessage: string;
+  globalBranchRid?: _api_GlobalBranchRid | null | undefined;
+  ontologyBranchRid?: _api_OntologyBranchRid | null | undefined;
+  reason: TrashFailReason;
+}
+/**
+ * The category of a per-branch trash failure, for programmatic handling by the caller.
+ */
+export type TrashFailReason =
+  | "VERSION_MISMATCH"
+  | "GLOBAL_BRANCH_CREATION_FAILED"
+  | "LOCAL_BRANCH_CREATION_FAILED"
+  | "PROPOSAL_CREATION_FAILED"
+  | "STAGING_FAILED"
+  | "MODIFICATION_FAILED"
+  | "UNAUTHORIZED";
+export interface TrashOutcome_defaultBranchEntityTrashedOnAnewBranch {
+  type: "defaultBranchEntityTrashedOnAnewBranch";
+  defaultBranchEntityTrashedOnAnewBranch: DefaultBranchEntityTrashedOnAnewBranch;
+}
+
+export interface TrashOutcome_nonDefaultBranchEntityTrashedInPlace {
+  type: "nonDefaultBranchEntityTrashedInPlace";
+  nonDefaultBranchEntityTrashedInPlace: NonDefaultBranchEntityTrashedInPlace;
+}
+
+export interface TrashOutcome_skipped {
+  type: "skipped";
+  skipped: TrashSkipped;
+}
+
+export interface TrashOutcome_failed {
+  type: "failed";
+  failed: TrashFailed;
+}
+/**
+ * The outcome for a group of requested entities that shared the same result.
+ */
+export type TrashOutcome =
+  | TrashOutcome_defaultBranchEntityTrashedOnAnewBranch
+  | TrashOutcome_nonDefaultBranchEntityTrashedInPlace
+  | TrashOutcome_skipped
+  | TrashOutcome_failed;
+
+export interface TrashRequestResourceRid_entityRid {
+  type: "entityRid";
+  entityRid: CompassOntologyResourceRid;
+}
+
+export interface TrashRequestResourceRid_compassFolderRid {
+  type: "compassFolderRid";
+  compassFolderRid: _api_CompassFolderRid;
+}
+/**
+ * Resource identifier accepted by the trash request: either a single ontology entity, or a Compass folder.
+ */
+export type TrashRequestResourceRid =
+  | TrashRequestResourceRid_entityRid
+  | TrashRequestResourceRid_compassFolderRid;
+
+/**
+ * The trashing outcome for every entity deleted in a modification request.
+ */
+export interface TrashResult {
+  deletedButNotTrashed: Array<DeletedButNotTrashedEntity>;
+  trashed: Array<DeletableEntityRid>;
+}
+/**
+ * Requested entities that were skipped for a reason (e.g. not present at latest, so there was nothing to
+ * trash), grouped by the reason. A skip does not block the other requested entities from being trashed.
+ */
+export interface TrashSkipped {
+  entityRids: Array<CompassOntologyResourceRid>;
+  reason: TrashSkipReason;
+}
+/**
+ * The category of a per-entity trash skip, for programmatic handling by the caller.
+ */
+export type TrashSkipReason = "NOT_PRESENT_AT_LATEST";
 export interface TypeForModification_array {
   type: "array";
   array: ArrayPropertyTypeModification;
@@ -2535,6 +3056,150 @@ export interface TypeGroupModification {
  * Represents an empty streaming profile configuration.
  */
 export interface UnsetStreamingProfileConfig {}
+export interface UntrashBranchMetadata_newBranch {
+  type: "newBranch";
+  newBranch: NewBranchMetadata;
+}
+
+export interface UntrashBranchMetadata_existingBranch {
+  type: "existingBranch";
+  existingBranch: ExistingBranchMetadata;
+}
+/**
+ * How default-branch-owned untrashes are staged: a new branch OMS creates, or an existing
+ * branch the caller supplies.
+ */
+export type UntrashBranchMetadata =
+  | UntrashBranchMetadata_newBranch
+  | UntrashBranchMetadata_existingBranch;
+
+/**
+ * Entities staged for restoration on an existing branch, with no proposal. Covers default-branch-owned
+ * entities staged on a caller-supplied branch and non-default-branch-owned entities restored on their own
+ * owning branch. Their Compass resources are restored from the trash as soon as they are staged.
+ */
+export interface UntrashedOnExistingBranch {
+  branchName: string;
+  entityRids: Array<CompassOntologyResourceRid>;
+  globalBranchRid: _api_GlobalBranchRid;
+  ontologyBranchRid: _api_OntologyBranchRid;
+}
+/**
+ * Default-branch-owned entities staged for restoration on a new branch OMS created, with a proposal. Their
+ * Compass resources are restored from the trash as soon as they are staged.
+ */
+export interface UntrashedOnNewBranch {
+  branchName: string;
+  entityRids: Array<CompassOntologyResourceRid>;
+  globalBranchRid: _api_GlobalBranchRid;
+  ontologyBranchRid: _api_OntologyBranchRid;
+  ontologyProposalRid: _api_OntologyProposalRid;
+}
+/**
+ * Restore previously-trashed ontology entities, each rebuilt from its pre-trash definition under its original
+ * RID and staged on a branch. Routed by owning branch: default-branch-owned entities are staged together per
+ * branchMetadata; entities owned by a non-default branch are restored on their own owning branch. Untrash does
+ * not cascade - only the listed entities are restored. Entities with no recoverable pre-trash version are
+ * reported in a skipped outcome rather than staged. All requested entities must belong to a single ontology; a
+ * request spanning multiple ontologies is rejected outright rather than returning per-entity outcomes. Compass
+ * resources are restored from the trash as soon as they are staged onto a branch.
+ */
+export interface UntrashEntitiesRequest {
+  branchMetadata?: UntrashBranchMetadata | null | undefined;
+  entityRids: Array<CompassOntologyResourceRid>;
+}
+/**
+ * The outcome of the untrash request. Every requested entity appears in exactly one outcome: staged on a
+ * target branch, reported as skipped when there is no recoverable pre-trash version, or failed.
+ * Best-effort: a failure on one branch is reported as a failed outcome without aborting the others.
+ */
+export interface UntrashEntitiesResponse {
+  outcomes: Array<UntrashOutcome>;
+}
+/**
+ * Untrashing on this branch was aborted because a fatal error occurred.
+ */
+export interface UntrashFailed {
+  errorMessage: string;
+  failingEntityRids: Array<CompassOntologyResourceRid>;
+  globalBranchRid?: _api_GlobalBranchRid | null | undefined;
+  ontologyBranchRid?: _api_OntologyBranchRid | null | undefined;
+  reason: UntrashFailReason;
+}
+/**
+ * The category of an untrash failure, mirroring TrashFailReason, for programmatic handling and metrics. See
+ * UntrashFailed.errorMessage for human-readable detail.
+ */
+export type UntrashFailReason =
+  | "VERSION_MISMATCH"
+  | "GLOBAL_BRANCH_CREATION_FAILED"
+  | "LOCAL_BRANCH_CREATION_FAILED"
+  | "PROPOSAL_CREATION_FAILED"
+  | "OWNING_BRANCH_DOES_NOT_EXIST"
+  | "BRANCH_NOT_IN_ONTOLOGY"
+  | "SUPPLIED_EXISTING_BRANCH_CANNOT_BE_DEFAULT"
+  | "BRANCH_NOT_GLOBAL"
+  | "STAGING_FAILED"
+  | "UNAUTHORIZED";
+export interface UntrashOutcome_untrashedOnNewBranch {
+  type: "untrashedOnNewBranch";
+  untrashedOnNewBranch: UntrashedOnNewBranch;
+}
+
+export interface UntrashOutcome_untrashedOnExistingBranch {
+  type: "untrashedOnExistingBranch";
+  untrashedOnExistingBranch: UntrashedOnExistingBranch;
+}
+
+export interface UntrashOutcome_skipped {
+  type: "skipped";
+  skipped: UntrashSkipped;
+}
+
+export interface UntrashOutcome_failed {
+  type: "failed";
+  failed: UntrashFailed;
+}
+/**
+ * The outcome for a group of requested entities that shared the same result.
+ */
+export type UntrashOutcome =
+  | UntrashOutcome_untrashedOnNewBranch
+  | UntrashOutcome_untrashedOnExistingBranch
+  | UntrashOutcome_skipped
+  | UntrashOutcome_failed;
+
+/**
+ * Requested entities that were skipped because they have no recoverable pre-trash version, grouped by reason.
+ * Determined at resolve time before any branch is created, so not attributed to a branch. A skip does not block
+ * the other requested entities from being restored.
+ */
+export interface UntrashSkipped {
+  entityRids: Array<CompassOntologyResourceRid>;
+  reason: UntrashSkipReason;
+}
+/**
+ * The category of a per-entity untrash skip, for programmatic handling by the caller.
+ */
+export type UntrashSkipReason =
+  | "NOT_IN_TRASH"
+  | "PRE_TRASH_VERSION_UNAVAILABLE";
+
+/**
+ * Adds or removes Compass Tags from a set of Ontology Entities. All changes are made through Compass, which
+ * owns Tags. Changes to Entities in service projects are checked by OMS on permissions. If any Entity in the
+ * request is in a service project, the entire request is forwarded to Compass with OMS's service token;
+ * otherwise, the request is forwarded without it.
+ */
+export interface UpdateEntityCompassTagsRequest {
+  operations: Record<string, Record<CompassTagRid, CompassTagOperationType>>;
+}
+/**
+ * The resulting Compass Tags for each Entity in the request, keyed by Entity rid.
+ */
+export interface UpdateEntityCompassTagsResponse {
+  results: Record<string, EntityCompassTagUpdateResult>;
+}
 /**
  * Internal version of ValidationRuleModification.
  */

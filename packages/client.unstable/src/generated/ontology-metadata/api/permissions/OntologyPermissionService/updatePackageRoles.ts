@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyPackageRid as _api_OntologyPackageRid } from "../../__components.js";
-import type {
-  UpdatePackageRolesRequest as _api_permissions_UpdatePackageRolesRequest,
-  UpdatePackageRolesResponse as _api_permissions_UpdatePackageRolesResponse,
-} from "../__components.js";
+import type { UpdatePackageRolesRequest as _api_permissions_UpdatePackageRolesRequest } from "../__components.js";
+import type { UpdatePackageRolesResponse as _api_permissions_UpdatePackageRolesResponse } from "../__components.js";
 
 /**
  * Updates the roles on the specified package.
