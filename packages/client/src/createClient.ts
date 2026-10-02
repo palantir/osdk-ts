@@ -511,20 +511,6 @@ export const createClientWithSubscriptionConnection: (
     ...args,
   ) as Client;
 
-/** @internal */
-export const createClientWithScenario: (
-  scenarioRid: string,
-  ...args: Parameters<typeof createClient>
-) => Client = (scenarioRid, ...args) =>
-  createClientInternal(
-    createObjectSet,
-    undefined,
-    undefined,
-    scenarioRid,
-    undefined,
-    ...args,
-  ) as Client;
-
 function createWithRid(rids: string[]) {
   const withRid: WireObjectSet = {
     type: "static",
