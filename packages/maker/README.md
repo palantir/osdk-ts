@@ -670,6 +670,51 @@ const modifyEmployeeAction = defineModifyObjectAction({
 });
 ```
 
+### Struct Field Defaults
+
+When generating a Marketplace ontology with `@osdk/maker-experimental`,
+`defineModifyObjectAction` and `defineCreateOrModifyObjectAction` automatically
+prefill each struct or struct-array field from the existing object's matching
+property field. Create actions do not infer these defaults.
+
+Use `structFieldValidations` to override individual field defaults. For example,
+for an object with `addresses` and `previousAddresses` struct-array properties:
+
+```typescript
+import { defineModifyObjectAction, MODIFY_OBJECT_PARAMETER } from "@osdk/maker";
+
+const modifyEmployee = defineModifyObjectAction({
+  objectType: employeeObject,
+  parameterConfiguration: {
+    addresses: {
+      structFieldValidations: {
+        city: {
+          defaultValue: {
+            type: "objectParameterStructListFieldValue",
+            objectParameterStructListFieldValue: {
+              parameterId: MODIFY_OBJECT_PARAMETER,
+              propertyTypeId: "previousAddresses",
+              structFieldApiName: "city",
+            },
+          },
+        },
+        postcode: { defaultValue: null },
+      },
+    },
+  },
+});
+```
+
+Use `objectParameterStructFieldValue` for a single struct. Source parameters must
+be single object references ordered before the struct parameter, with matching
+field types and struct cardinality. Maker resolves field API names to field RIDs
+when generating the Marketplace metadata.
+
+A field's `defaultValue: null` suppresses its automatic default. Field
+`conditionalOverrides` also accept `type: "defaultValue"` with a struct field
+default. A top-level `defaultValue` on a struct parameter is unsupported.
+These defaults configure action-form prefills.
+
 ### Delete Object Action
 
 ```typescript
