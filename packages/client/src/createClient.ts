@@ -16,6 +16,7 @@
 
 import type {
   ActionDefinition,
+  AgentDefinition,
   FetchPageArgs,
   InterfaceDefinition,
   LinkTypeApiNamesFor,
@@ -54,6 +55,8 @@ import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.clie
 
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import { applyAction } from "./actions/applyAction.js";
+import { createAgentSession } from "./agents/createAgentSession.js";
+import type { AgentSignatureFromDef } from "./agents/types.js";
 import { additionalContext, type Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
 import { fetchMetadataInternal } from "./fetchMetadata.js";
@@ -103,6 +106,20 @@ class QueryInvoker<
   }
 
   executeFunction: (...args: any[]) => any;
+}
+
+class AgentClient<
+  D extends AgentDefinition<unknown>,
+> implements AgentSignatureFromDef<D> {
+  constructor(clientCtx: MinimalClient, agentDef: AgentDefinition<unknown>) {
+    this.createSession = createAgentSession.bind(
+      undefined,
+      clientCtx,
+      agentDef,
+    );
+  }
+
+  createSession: (...args: any[]) => any;
 }
 
 /** @internal */
@@ -167,6 +184,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       | ObjectOrInterfaceDefinition
       | ActionDefinition<any>
       | QueryDefinition<any>
+      | AgentDefinition<unknown>
       | Experiment<"2.0.8">
       | Experiment<"2.1.0">
       | Experiment<"2.59.0">
@@ -182,14 +200,16 @@ export function createClientFromContext(clientCtx: MinimalClient) {
         ? ActionSignatureFromDef<T>
         : T extends QueryDefinition<any>
           ? QuerySignatureFromDef<T>
-          : T extends
-                | Experiment<"2.0.8">
-                | Experiment<"2.1.0">
-                | Experiment<"2.59.0">
-                | Experiment<"2.8.0">
-                | Experiment<"2.19.0">
-            ? { invoke: ExperimentFns<T> }
-            : never {
+          : T extends AgentDefinition<unknown>
+            ? AgentSignatureFromDef<T>
+            : T extends
+                  | Experiment<"2.0.8">
+                  | Experiment<"2.1.0">
+                  | Experiment<"2.59.0">
+                  | Experiment<"2.8.0">
+                  | Experiment<"2.19.0">
+              ? { invoke: ExperimentFns<T> }
+              : never {
     if (o.type === "object" || o.type === "interface") {
       return clientCtx.objectSetFactory(o, clientCtx) as any;
     } else if (o.type === "action") {
@@ -200,6 +220,10 @@ export function createClientFromContext(clientCtx: MinimalClient) {
     } else if (o.type === "query") {
       return new QueryInvoker(clientCtx, o) as T extends QueryDefinition<any>
         ? QuerySignatureFromDef<T>
+        : never as any;
+    } else if (o.type === "agent") {
+      return new AgentClient(clientCtx, o) as T extends AgentDefinition<unknown>
+        ? AgentSignatureFromDef<T>
         : never as any;
     } else if (o.type === "experiment") {
       switch (o.name) {

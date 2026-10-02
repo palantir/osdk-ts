@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,10 @@
  * limitations under the License.
  */
 
-export { osdkTestFixture } from "./agents/osdkTestFixture.js";
-export * from "./generatedNoCheck/index.js";
+import { weatherAgent } from "@osdk/client.test.ontology";
+
+import type { Client } from "../Client.js";
+
+declare const client: Client;
+const agent = client(weatherAgent);
+void agent.createSession({ city: "London" });

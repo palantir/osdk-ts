@@ -101,6 +101,17 @@ describe("intellisense", () => {
     tsServer = undefined as any;
   });
 
+  it("callsAgent", { timeout: 40_000 }, async () => {
+    const { resp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 23,
+      offset: 12,
+    });
+    expect(resp.body?.displayString).toMatchInlineSnapshot(
+      `"(property) AgentSignatureFromDef<weatherAgent>.createSession: (args: weatherAgent.Params) => Promise<AgentSession>"`,
+    );
+  });
+
   it("callsQueryAcceptsObject", { timeout: 40_000 }, async () => {
     const { resp } = await tsServer.sendQuickInfoRequest({
       file: intellisenseFilePath,
