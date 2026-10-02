@@ -46,7 +46,7 @@ import invariant from "tiny-invariant";
 
 import { extractNamespace } from "../internal/conversions/extractNamespace.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
+import { addUserAgentHeader } from "../util/addUserAgentHeader.js";
 import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
 import { extractRdpDefinition } from "../util/extractRdpDefinition.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
@@ -269,7 +269,7 @@ export async function fetchStaticRidPage<
   }
 
   const result = await OntologyObjectSets.loadMultipleObjectTypes(
-    addUserAgentAndRequestContextHeaders(client, { osdkMetadata: undefined }),
+    addUserAgentHeader(client, { osdkMetadata: undefined }),
     await client.ontologyRid,
     requestBody,
     {
@@ -383,7 +383,7 @@ async function fetchInterfacePage<
   }
 
   const result = await OntologyObjectSets.loadMultipleObjectTypes(
-    addUserAgentAndRequestContextHeaders(client, interfaceType),
+    addUserAgentHeader(client, interfaceType),
     await client.ontologyRid,
     requestBody,
     {
@@ -781,7 +781,7 @@ export async function fetchObjectPage<
   }
 
   const r = await OntologyObjectSets.load(
-    addUserAgentAndRequestContextHeaders(client, objectType),
+    addUserAgentHeader(client, objectType),
     await client.ontologyRid,
     requestBody,
     {
