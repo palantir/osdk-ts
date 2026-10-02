@@ -258,3 +258,87 @@ describe("loadFoundryConfig - widget set", () => {
     });
   });
 });
+
+describe("widget build modes", () => {
+  beforeEach(() => {
+    vi.mocked(findUp).mockResolvedValue("/path/foundry.config.json");
+    vi.mocked(extname).mockReturnValue(".json");
+  });
+
+  it("accepts local packaging without a Foundry URL or widget-set RID", async () => {
+    const config = { build: "local", widgetSet: { directory: "dist" } };
+    vi.mocked(fsPromises.readFile).mockResolvedValue(JSON.stringify(config));
+    expect((await loadFoundryConfig("widgetSet"))?.foundryConfig).toEqual(
+      config,
+    );
+  });
+
+  it.each([undefined, "remote"])(
+    "requires a Foundry URL for build %s",
+    async (build) => {
+      vi.mocked(fsPromises.readFile).mockResolvedValue(
+        JSON.stringify({
+          build,
+          widgetSet: { rid: "test-rid", directory: "dist" },
+        }),
+      );
+      await expect(loadFoundryConfig("widgetSet")).rejects.toThrow(
+        "foundryUrl",
+      );
+    },
+  );
+
+  it.each([undefined, "remote"])(
+    "requires a widget-set RID for build %s",
+    async (build) => {
+      vi.mocked(fsPromises.readFile).mockResolvedValue(
+        JSON.stringify({
+          build,
+          foundryUrl: "https://example.com",
+          widgetSet: { directory: "dist" },
+        }),
+      );
+      await expect(loadFoundryConfig("widgetSet")).rejects.toThrow("rid");
+    },
+  );
+
+  it.each([
+    ["foundryUrl", { foundryUrl: "https://example.com" }],
+    ["rid", { widgetSet: { rid: "test-rid", directory: "dist" } }],
+    [
+      "repository",
+      { widgetSet: { repository: "test-repository", directory: "dist" } },
+    ],
+    [
+      "autoVersion",
+      {
+        widgetSet: { autoVersion: { type: "package-json" }, directory: "dist" },
+      },
+    ],
+  ])(
+    "rejects %s instead of ignoring it in local mode",
+    async (field, config) => {
+      vi.mocked(fsPromises.readFile).mockResolvedValue(
+        JSON.stringify({
+          build: "local",
+          widgetSet: { directory: "dist" },
+          ...config,
+        }),
+      );
+      await expect(loadFoundryConfig("widgetSet")).rejects.toThrow(field);
+    },
+  );
+
+  it("rejects an unknown build mode", async () => {
+    vi.mocked(fsPromises.readFile).mockResolvedValue(
+      JSON.stringify({
+        build: "unknown",
+        foundryUrl: "https://example.com",
+        widgetSet: { rid: "test-rid", directory: "dist" },
+      }),
+    );
+    await expect(loadFoundryConfig("widgetSet")).rejects.toThrow(
+      "allowed values",
+    );
+  });
+});

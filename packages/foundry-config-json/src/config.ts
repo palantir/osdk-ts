@@ -36,7 +36,8 @@ export interface FoundrySiteConfig {
 }
 
 export interface FoundryWidgetSetConfig {
-  foundryUrl: string;
+  build?: "local" | "remote";
+  foundryUrl?: string;
   widgetSet: WidgetSetConfig;
 }
 
@@ -48,7 +49,7 @@ export interface SiteConfig {
 }
 
 export interface WidgetSetConfig {
-  rid: string;
+  rid?: string;
   directory: string;
   repository?: string;
   autoVersion?: AutoVersionConfig;
@@ -109,21 +110,44 @@ const FOUNDRY_SITE_CONFIG_SCHEMA = {
 const FOUNDRY_WIDGET_SET_CONFIG_SCHEMA = {
   type: "object",
   properties: {
-    foundryUrl: { type: "string" },
+    build: { type: "string", enum: ["local", "remote"], nullable: true },
+    foundryUrl: { type: "string", nullable: true },
     widgetSet: {
       type: "object",
       properties: {
-        rid: { type: "string" },
+        rid: { type: "string", nullable: true },
         directory: { type: "string" },
         repository: { type: "string", nullable: true },
         autoVersion:
           FOUNDRY_SITE_CONFIG_SCHEMA.properties.site.properties.autoVersion,
         uploadOnly: { type: "boolean", nullable: true },
       },
-      required: ["rid", "directory"],
+      required: ["directory"],
     },
   },
-  required: ["foundryUrl", "widgetSet"],
+  required: ["widgetSet"],
+  if: { properties: { build: { const: "local" } }, required: ["build"] },
+  // oxlint-disable-next-line unicorn/no-thenable -- JSON Schema conditional keyword
+  then: {
+    properties: {
+      foundryUrl: false,
+      widgetSet: {
+        type: "object",
+        properties: { rid: false, repository: false, autoVersion: false },
+      },
+    },
+  },
+  else: {
+    required: ["foundryUrl"],
+    properties: {
+      foundryUrl: { type: "string" },
+      widgetSet: {
+        type: "object",
+        required: ["rid"],
+        properties: { rid: { type: "string" } },
+      },
+    },
+  },
   additionalProperties: false,
 } satisfies JSONSchemaType<FoundryConfig<"widgetSet">>;
 

@@ -17,7 +17,6 @@
 import fs from "fs";
 import path from "path";
 
-import type { LoadedFoundryConfig } from "@osdk/foundry-config-json";
 import { autoVersion, loadFoundryConfig } from "@osdk/foundry-config-json";
 import type { WidgetSetManifest } from "@osdk/widget.api";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget.api";
@@ -33,6 +32,10 @@ import type { FoundryWidgetPluginOptions } from "../index.js";
 import { buildWidgetSetManifest } from "./buildWidgetSetManifest.js";
 import { getWidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
 import { getWidgetSetInputSpec } from "./getWidgetSetInputSpec.js";
+
+const LOCAL_WIDGET_SET_RID =
+  "ri.widgetregistry.main.widget-set.00000000-0000-0000-0000-000000000000";
+const LOCAL_WIDGET_SET_VERSION = "0.1.0";
 
 export function FoundryWidgetBuildPlugin(
   options?: FoundryWidgetPluginOptions,
@@ -74,12 +77,18 @@ export function FoundryWidgetBuildPlugin(
         throw new Error("foundry.config.json file not found.");
       }
 
+      const { widgetSet, build: buildMode } = foundryConfig.foundryConfig;
+      const local = buildMode === "local";
+      const widgetSetRid = local ? LOCAL_WIDGET_SET_RID : widgetSet.rid!;
+      const widgetSetVersion = local
+        ? LOCAL_WIDGET_SET_VERSION
+        : await autoVersion(widgetSet.autoVersion ?? { type: "package-json" });
+
       // Create a Vite server to evaluate widget config modules
       const server = await createModuleEvaluationServer(config);
 
       try {
         // Build widget set manifest
-        const widgetSetVersion = await computeWidgetSetVersion(foundryConfig);
         const widgetBuilds = await Promise.all(
           htmlEntrypoints.map((input) =>
             getWidgetBuildOutputs(bundle, input, config.build.outDir, server),
@@ -90,7 +99,7 @@ export function FoundryWidgetBuildPlugin(
           path.resolve(process.cwd(), "resources.json"),
         );
         const widgetSetManifest = buildWidgetSetManifest(
-          foundryConfig.foundryConfig.widgetSet.rid,
+          widgetSetRid,
           widgetSetVersion,
           widgetBuilds,
           widgetSetInputSpec,
@@ -119,18 +128,6 @@ async function createModuleEvaluationServer(
     // Custom mode to prevent dev plugin execution
     mode: MODULE_EVALUATION_MODE,
   });
-}
-
-// TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
-// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
-async function computeWidgetSetVersion(
-  foundryConfig: LoadedFoundryConfig<"widgetSet">,
-): Promise<string> {
-  return autoVersion(
-    foundryConfig.foundryConfig.widgetSet.autoVersion ?? {
-      type: "package-json",
-    },
-  );
 }
 
 function writeManifest(
