@@ -38,3 +38,16 @@ async function getAll(): Promise<Array<Osdk.Instance<Employee>>> {
 function getAllFromAsync(): Promise<Array<Osdk.Instance<Employee>>> {
   return Array.fromAsync(client(Employee).asyncIter());
 }
+
+// Ontology-defined derived properties are not returned by default.
+// Pass their API names in $select, along with any other properties you need.
+// Runtime-defined properties added with withProperties are returned by default.
+async function getAllWithSelectedProperties(
+  properties: Employee.PropertyKeys[],
+) {
+  const objects = [];
+  for await (const obj of client(Employee).asyncIter({ $select: properties })) {
+    objects.push(obj);
+  }
+  return objects;
+}
