@@ -2,12 +2,6 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "eslint.useFlatConfig": true,
-  "json.schemas": [
-    {
-      "fileMatch": ["/public/resources.json"],
-      "url": "./.vscode/resources.schema.json"
-    }
-  ],
   "search.exclude": {
     "**/node_modules": true,
     "**/dist": true
