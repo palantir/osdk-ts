@@ -1,5 +1,16 @@
 # @osdk/aip-core
 
+## 0.12.0
+
+### Minor Changes
+
+- 458ea60: Fix peer dep of aip-core
+
+### Patch Changes
+
+- Updated dependencies [458ea60]
+  - @osdk/language-models@0.11.0
+
 ## 0.11.0
 
 ### Minor Changes

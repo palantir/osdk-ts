@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  BulkUpdateEntityRolesRequest as _api_permissions_BulkUpdateEntityRolesRequest,
-  BulkUpdateEntityRolesResponse as _api_permissions_BulkUpdateEntityRolesResponse,
-} from "../__components.js";
+import type { BulkUpdateEntityRolesRequest as _api_permissions_BulkUpdateEntityRolesRequest } from "../__components.js";
+import type { BulkUpdateEntityRolesResponse as _api_permissions_BulkUpdateEntityRolesResponse } from "../__components.js";
 
 /**
  * Updates the role grants for a set of ontology entities. NOTE: If roles are updated on an ObjectType or LinkType, the

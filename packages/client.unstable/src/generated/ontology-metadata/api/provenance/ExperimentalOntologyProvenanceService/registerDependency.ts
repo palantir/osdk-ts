@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  RegisterDependencyRequest as _api_provenance_RegisterDependencyRequest,
-  RegisterDependencyResponse as _api_provenance_RegisterDependencyResponse,
-} from "../__components.js";
+import type { RegisterDependencyRequest as _api_provenance_RegisterDependencyRequest } from "../__components.js";
+import type { RegisterDependencyResponse as _api_provenance_RegisterDependencyResponse } from "../__components.js";
 
 /**
  * Endpoint to register dependencies on ontology entities.

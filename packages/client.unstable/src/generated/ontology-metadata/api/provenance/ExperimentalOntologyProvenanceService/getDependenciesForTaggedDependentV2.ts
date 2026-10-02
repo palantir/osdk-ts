@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetDependenciesForTaggedDependentRequestV2 as _api_provenance_GetDependenciesForTaggedDependentRequestV2,
-  GetDependenciesForTaggedDependentResponseV2 as _api_provenance_GetDependenciesForTaggedDependentResponseV2,
-} from "../__components.js";
+import type { GetDependenciesForTaggedDependentRequestV2 as _api_provenance_GetDependenciesForTaggedDependentRequestV2 } from "../__components.js";
+import type { GetDependenciesForTaggedDependentResponseV2 as _api_provenance_GetDependenciesForTaggedDependentResponseV2 } from "../__components.js";
 
 /**
  * Endpoint to get the OntologyEntities which the requested tagged dependent depends on. This endpoint supports

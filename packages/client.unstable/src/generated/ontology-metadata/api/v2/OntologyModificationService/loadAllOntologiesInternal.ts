@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  LoadAllOntologiesInternalRequest as _api_modification_LoadAllOntologiesInternalRequest,
-  LoadAllOntologiesInternalResponse as _api_modification_LoadAllOntologiesInternalResponse,
-} from "../../modification/__components.js";
+import type { LoadAllOntologiesInternalRequest as _api_modification_LoadAllOntologiesInternalRequest } from "../../modification/__components.js";
+import type { LoadAllOntologiesInternalResponse as _api_modification_LoadAllOntologiesInternalResponse } from "../../modification/__components.js";
 
 /**
  * Endpoint to load metadata about the Ontologies a user has access to. The response will contain

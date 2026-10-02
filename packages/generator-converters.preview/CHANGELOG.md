@@ -1,5 +1,26 @@
 # @osdk/generator-converters.preview
 
+## 0.52.0
+
+### Minor Changes
+
+- aa9fe40: Support intermediary link types
+- e316cb7: Write the TypeScript functions runtime metadata with the plural ontologyRids key required by functions-typescript-runtime 0.311.0 and above
+
+### Patch Changes
+
+- Updated dependencies [aa9fe40]
+- Updated dependencies [f2e0591]
+  - @osdk/generator-converters.ontologyir@2.74.0
+  - @osdk/generator@2.74.0
+  - @osdk/client.unstable@2.74.0
+
+## 0.51.0
+
+### Minor Changes
+
+- 9fa9a26: Support interface types in functions preview
+
 ## 0.50.0
 
 ### Minor Changes

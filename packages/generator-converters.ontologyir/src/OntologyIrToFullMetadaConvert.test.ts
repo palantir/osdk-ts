@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { OntologyIrLinkTypeBlockDataV2 } from "@osdk/client.unstable";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
 import { isInjectedRuntimeInput } from "./convertDataType.js";
@@ -45,6 +46,84 @@ vi.mock("@foundry/functions-typescript-osdk-discovery", () => ({
 }));
 
 describe(OntologyIrToFullMetadataConverter, () => {
+  it.each(
+    [
+      ["manyToMany", "Target"],
+      ["intermediary", "Target"],
+      ["intermediary", "Source"],
+    ] as const,
+  )("converts both directions of %s links to %s", (type, target) => {
+    const endpoints = {
+      objectTypeRidA: "Source",
+      objectTypeRidB: target,
+      objectTypeAToBLinkMetadata: {
+        apiName: "targets",
+        displayMetadata: {
+          displayName: "Targets",
+          pluralDisplayName: "Targets",
+          visibility: "NORMAL" as const,
+        },
+        typeClasses: [],
+      },
+      objectTypeBToALinkMetadata: {
+        apiName: "sources",
+        displayMetadata: {
+          displayName: "Sources",
+          pluralDisplayName: "Sources",
+          visibility: "NORMAL" as const,
+        },
+        typeClasses: [],
+      },
+    };
+    const link: OntologyIrLinkTypeBlockDataV2 = {
+      linkType: {
+        id: "source-to-target",
+        status: { type: "active", active: {} },
+        definition: type === "intermediary"
+          ? {
+            type,
+            intermediary: {
+              ...endpoints,
+              intermediaryObjectTypeRid: "Bridge",
+              aToIntermediaryLinkTypeRid: "source-to-bridge",
+              intermediaryToBLinkTypeRid: "target-to-bridge",
+            },
+          }
+          : {
+            type,
+            manyToMany: {
+              ...endpoints,
+              objectTypeAPrimaryKeyPropertyMapping: [],
+              objectTypeBPrimaryKeyPropertyMapping: [],
+            },
+          },
+      },
+      datasources: [],
+    };
+    const result = OntologyIrToFullMetadataConverter.getLinkMappings([link]);
+    const forward = {
+      apiName: "targets",
+      displayName: "Targets",
+      cardinality: "MANY",
+      objectTypeApiName: target,
+      linkTypeRid: `ri.Source.source-to-target.${target}`,
+      status: "ACTIVE",
+    };
+    const reverse = {
+      apiName: "sources",
+      displayName: "Sources",
+      cardinality: "MANY",
+      objectTypeApiName: "Source",
+      linkTypeRid: `ri.Source.source-to-target.${target}`,
+      status: "ACTIVE",
+    };
+    expect(result).toEqual(
+      target === "Source"
+        ? { Source: [forward, reverse] }
+        : { Source: [forward], Target: [reverse] },
+    );
+  });
+
   it("should convert ontology IR to full metadata", async () => {
     const result = OntologyIrToFullMetadataConverter
       .getFullMetadataFromIr(

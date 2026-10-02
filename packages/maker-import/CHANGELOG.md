@@ -1,5 +1,18 @@
 # @osdk/maker-import
 
+## 0.42.0
+
+### Minor Changes
+
+- 47cf6a2: Preserve interface links on import
+
+## 0.41.0
+
+### Patch Changes
+
+- @osdk/maker@0.75.0
+- @osdk/client.unstable@2.74.0
+
 ## 0.40.0
 
 ### Patch Changes

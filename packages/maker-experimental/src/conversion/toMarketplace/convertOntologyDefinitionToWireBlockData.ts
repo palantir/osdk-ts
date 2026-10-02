@@ -405,9 +405,7 @@ function buildKnownIdentifiers(
     ontologiesToScan.flatMap((ont) =>
       Object.entries(ont[OntologyEntityTypeEnum.OBJECT_TYPE]).map(
         ([objectTypeApiName, objectType]) => [
-          ridGenerator
-            .getObjectTypeIds()
-            .get(ReadableIdGenerator.getForObjectType(objectTypeApiName)),
+          ridGenerator.generateObjectTypeId(objectTypeApiName),
           ridGenerator.toBlockInternalId(
             ReadableIdGenerator.getForObjectType(objectTypeApiName),
           ),
@@ -458,9 +456,7 @@ function buildKnownIdentifiers(
             );
           }
         });
-        const objTypeId = ridGenerator
-          .getObjectTypeIds()
-          .get(ReadableIdGenerator.getForObjectType(objectTypeApiName))!;
+        const objTypeId = ridGenerator.generateObjectTypeId(objectTypeApiName);
         propertyTypeIds[objTypeId] = propMap;
         objectPropertyTypeIdsToRids[objTypeId] = propertyTypeIdsToRids;
       },

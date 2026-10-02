@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client",
-  "version": "2.72.0",
+  "version": "2.75.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -118,6 +118,7 @@
     "@osdk/client.test.ontology": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/oauth": "workspace:~",
     "@osdk/shared.test.intellisense": "workspace:~",
     "@types/big.js": "^4.0.5",
     "@types/geojson": "^7946.0.14",

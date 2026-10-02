@@ -1,5 +1,18 @@
 # @osdk/react-components
 
+## 0.61.0
+
+### Minor Changes
+
+- 119ff0d: Fire onFilterListChanged when the objectSet prop changes so consumers receive an up-to-date filteredObjectSet
+
+## 0.60.0
+
+### Patch Changes
+
+- Updated dependencies [458ea60]
+  - @osdk/aip-core@0.12.0
+
 ## 0.59.0
 
 ### Minor Changes

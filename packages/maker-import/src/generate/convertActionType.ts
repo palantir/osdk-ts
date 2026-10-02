@@ -16,7 +16,10 @@
 
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import type { ActionParameter, ActionType } from "@osdk/maker";
-import { OntologyEntityTypeEnum } from "@osdk/maker";
+import {
+  extractAllowedValuesFromActionParameterType,
+  OntologyEntityTypeEnum,
+} from "@osdk/maker";
 import { consola } from "consola";
 
 import { mapActionParameterType } from "./mapActionParameterType.js";
@@ -39,6 +42,7 @@ export function convertActionType(action: Ontologies.ActionTypeV2): ActionType {
       description: paramV2.description,
       type: mappedType,
       validation: {
+        allowedValues: extractAllowedValuesFromActionParameterType(mappedType),
         required: paramV2.required,
       },
     });

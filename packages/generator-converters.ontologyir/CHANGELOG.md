@@ -1,5 +1,27 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.75.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.75.0
+
+## 2.74.0
+
+### Minor Changes
+
+- aa9fe40: Support intermediary link types
+
+### Patch Changes
+
+- @osdk/client.unstable@2.74.0
+
+## 2.73.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.73.0
+
 ## 2.72.0
 
 ### Minor Changes

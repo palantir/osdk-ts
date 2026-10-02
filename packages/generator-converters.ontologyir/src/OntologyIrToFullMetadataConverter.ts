@@ -462,40 +462,50 @@ export class OntologyIrToFullMetadataConverter {
       fs.writeFileSync(irOutputFile, JSON.stringify(functions));
     }
 
-    return tsFunctions.map((func: IDiscoveredFunction) => {
+    return tsFunctions.flatMap((func: IDiscoveredFunction) => {
       const functionName = func.locator.typescript!.functionName;
-      return {
-        apiName: functionName,
-        rid: `ri.function-registry.main.function.${functionName}`,
-        version: "0.0.0",
-        parameters: func.inputs.reduce<
-          Record<ApiName, Ontologies.QueryParameterV2>
-        >((acc, input, index) => {
-          // Discovery emits diagnostics requiring injected context to be the
-          // first function argument, so only strip it from that position.
-          if (index === 0 && isInjectedRuntimeInput(input.dataType)) {
-            return acc;
-          }
+      try {
+        return [
+          {
+            apiName: functionName,
+            rid: `ri.function-registry.main.function.${functionName}`,
+            version: "0.0.0",
+            parameters: func.inputs.reduce<
+              Record<ApiName, Ontologies.QueryParameterV2>
+            >((acc, input, index) => {
+              // Discovery emits diagnostics requiring injected context to be the
+              // first function argument, so only strip it from that position.
+              if (index === 0 && isInjectedRuntimeInput(input.dataType)) {
+                return acc;
+              }
 
-          acc[input.name] = {
-            dataType: convertDataType(
-              input.dataType,
-              func.customTypes,
-              interfaceRidToApiName,
-            ),
-            required: input.required ?? true,
-          };
-          return acc;
-        }, {}),
-        output: "single" in func.output
-          ? convertDataType(
-            func.output.single.dataType,
-            func.customTypes,
-            interfaceRidToApiName,
-          )
-          : { type: "void" },
-        typeReferences: {},
-      } satisfies Ontologies.QueryTypeV2;
+              acc[input.name] = {
+                dataType: convertDataType(
+                  input.dataType,
+                  func.customTypes,
+                  interfaceRidToApiName,
+                ),
+                required: input.required ?? true,
+              };
+              return acc;
+            }, {}),
+            output: "single" in func.output
+              ? convertDataType(
+                func.output.single.dataType,
+                func.customTypes,
+                interfaceRidToApiName,
+              )
+              : { type: "void" },
+            typeReferences: {},
+          } satisfies Ontologies.QueryTypeV2,
+        ];
+      } catch (error) {
+        consola.warn(
+          `Skipping TypeScript function "${functionName}" in OSDK generation because of an error:`,
+          error,
+        );
+        return [];
+      }
     });
   }
 
@@ -849,8 +859,11 @@ export class OntologyIrToFullMetadataConverter {
 
       let mappings: Record<string, Ontologies.LinkTypeSideV2[]>;
       switch (linkType.definition.type) {
-        case "manyToMany": {
-          const linkDef = linkType.definition.manyToMany;
+        case "manyToMany":
+        case "intermediary": {
+          const linkDef = linkType.definition.type === "manyToMany"
+            ? linkType.definition.manyToMany
+            : linkType.definition.intermediary;
           const sideA: Ontologies.LinkTypeSideV2 = {
             apiName: linkDef.objectTypeAToBLinkMetadata.apiName ?? "",
             displayName: linkDef.objectTypeAToBLinkMetadata

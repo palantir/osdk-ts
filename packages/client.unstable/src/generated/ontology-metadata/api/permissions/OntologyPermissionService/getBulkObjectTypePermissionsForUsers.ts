@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetBulkObjectTypePermissionsForUsersRequest as _api_permissions_GetBulkObjectTypePermissionsForUsersRequest,
-  GetBulkObjectTypePermissionsForUsersResponse as _api_permissions_GetBulkObjectTypePermissionsForUsersResponse,
-} from "../__components.js";
+import type { GetBulkObjectTypePermissionsForUsersRequest as _api_permissions_GetBulkObjectTypePermissionsForUsersRequest } from "../__components.js";
+import type { GetBulkObjectTypePermissionsForUsersResponse as _api_permissions_GetBulkObjectTypePermissionsForUsersResponse } from "../__components.js";
 
 /**
  * Returns permissions that other users have on the ObjectTypes provided. The result is scoped down to the

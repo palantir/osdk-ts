@@ -20,9 +20,15 @@ import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type {
+  OntologyIrSecurityGroupGranularCondition,
+  SecurityGroupComparisonValue,
+} from "@osdk/client.unstable";
+import type { ResolvedBlockSetInputShape } from "@osdk/client.unstable/api";
+import type {
   ActionType,
   InterfaceType,
   PropertyTypeTypeVector,
+  SecurityConditionDefinition,
 } from "@osdk/maker";
 import {
   addDependency,
@@ -42,7 +48,10 @@ import {
 import invariant from "tiny-invariant";
 import { beforeEach, describe, expect, it } from "vitest";
 
+import type { ExternalImportedOntologyMetadata } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
+import { defineFunctionBackedAction } from "./defineFunctionBackedAction.js";
+import type { FunctionsIr } from "./defineOntologyV2.js";
 import { defineOntologyV2 } from "./defineOntologyV2.js";
 import { defineImportObject } from "./importObjectType.js";
 
@@ -63,9 +72,126 @@ function apiNamePreset(apiName: string) {
   };
 }
 
+function resolvedShapePreset(resolvedShape: ResolvedBlockSetInputShape) {
+  return {
+    value: {
+      type: "fromSource",
+      fromSource: {
+        resolver: {
+          type: "resolvedShapeResolver",
+          resolvedShapeResolver: resolvedShape,
+        },
+      },
+    },
+    exportCompatibility: "INCOMPATIBLE",
+    enforcement: "SUGGESTED",
+    isDefault: false,
+  };
+}
+
 describe("Experimental Test Suite", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, undefined);
+  });
+
+  describe("Function-backed action parameter requirements", () => {
+    const stringList = {
+      type: "list",
+      list: { elementsType: { type: "string" } },
+    };
+    const objectList = {
+      type: "list",
+      list: {
+        elementsType: {
+          type: "object",
+          object: { objectTypeId: "com.palantir.TaggedObject" },
+        },
+      },
+    };
+    const optionalStringList = {
+      type: "optionalType",
+      optionalType: { wrappedType: stringList },
+    };
+    const geoPointList = {
+      type: "list",
+      list: {
+        elementsType: {
+          type: "geoShape",
+          geoShape: { subType: { type: "geoPoint", geoPoint: {} } },
+        },
+      },
+    };
+
+    it.each([
+      ["string", { type: "string" }, true, "required"],
+      ["string", { type: "string" }, false, "notRequired"],
+      ["stringList", stringList, true, "listLengthValidation"],
+      ["stringList", stringList, false, "listLengthValidation"],
+      ["stringList", stringList, undefined, "listLengthValidation"],
+      ["stringList", optionalStringList, false, "listLengthValidation"],
+      ["objectReferenceList", objectList, true, "listLengthValidation"],
+      ["geohashList", geoPointList, true, "listLengthValidation"],
+    ] as const)(
+      "uses %s-compatible requirements for %j with required=%s",
+      async (parameterType, dataType, required, requirementType) => {
+        const outputDir = fs.mkdtempSync(
+          path.join(os.tmpdir(), "maker-function-action-requirements-"),
+        );
+        const functionsIrFile = path.join(outputDir, "functions-ir.json");
+        const functionsIr: FunctionsIr = {
+          discoveredFunctions: [
+            {
+              locator: {
+                type: "typescript",
+                typescript: { functionName: "updateTags" },
+              },
+              inputs: [{ name: "tags", dataType, required }],
+              output: { type: "void" },
+              customTypes: {},
+              ontologyProvenance: {
+                editedObjects: { "com.palantir.TaggedObject": {} },
+                editedLinks: {},
+                editedInterfaces: {},
+              },
+            },
+          ],
+        };
+
+        try {
+          fs.writeFileSync(functionsIrFile, JSON.stringify(functionsIr));
+          const result = await defineOntologyV2(
+            "com.palantir.",
+            () => {
+              defineObject({
+                apiName: "TaggedObject",
+                displayName: "Tagged object",
+                pluralDisplayName: "Tagged objects",
+                titlePropertyApiName: "id",
+                primaryKeyPropertyApiName: "id",
+                properties: {
+                  id: { type: "string" },
+                  tags: { type: "string", array: true },
+                },
+              });
+              defineFunctionBackedAction({ functionApiName: "updateTags" });
+            },
+            undefined,
+            undefined,
+            functionsIrFile,
+          );
+          const actions = Object.values(result.ontologyIr.ontology.actionTypes);
+          expect(actions).toHaveLength(1);
+          const action = actions[0].actionType;
+          expect(action.metadata.parameters.tags.type.type).toBe(parameterType);
+          expect(
+            action.actionTypeLogic.validation.parameterValidations.tags
+              .defaultValidation.validation.required,
+          ).toEqual({ type: requirementType, [requirementType]: {} });
+        } finally {
+          fs.rmSync(outputDir, { recursive: true, force: true });
+        }
+      },
+    );
   });
 
   describe("Empty backing Media Sets", () => {
@@ -160,6 +286,172 @@ describe("Experimental Test Suite", () => {
         ).toEqual([[combinedMarkingId]]);
       },
     );
+  });
+
+  describe("Security group dependencies", () => {
+    const groupId = "00000000-0000-0000-0000-000000000001";
+    const otherGroupId = "00000000-0000-0000-0000-000000000002";
+    const userGroups: SecurityGroupComparisonValue = {
+      type: "userProperty",
+      userProperty: { type: "groupIds", groupIds: {} },
+    };
+    const groupConstant: SecurityGroupComparisonValue = {
+      type: "constant",
+      constant: { type: "strings", strings: [groupId, otherGroupId] },
+    };
+    const scalarConstant: SecurityGroupComparisonValue = {
+      type: "constant",
+      constant: { type: "string", string: groupId },
+    };
+
+    function comparison(
+      left: SecurityGroupComparisonValue,
+      right: SecurityGroupComparisonValue,
+    ): OntologyIrSecurityGroupGranularCondition {
+      return {
+        type: "comparison",
+        comparison: { operator: "INTERSECTS", left, right },
+      };
+    }
+
+    const rawCondition = comparison(userGroups, groupConstant);
+    const cases: Array<{
+      name: string;
+      condition: SecurityConditionDefinition;
+      groups: string[];
+    }> = [
+      {
+        name: "shorthand",
+        condition: { type: "group", name: groupId },
+        groups: [groupId],
+      },
+      {
+        name: "string set",
+        condition: rawCondition,
+        groups: [groupId, otherGroupId],
+      },
+      {
+        name: "scalar",
+        condition: comparison(userGroups, scalarConstant),
+        groups: [groupId],
+      },
+      {
+        name: "reversed string set",
+        condition: comparison(groupConstant, userGroups),
+        groups: [groupId, otherGroupId],
+      },
+      {
+        name: "reversed scalar",
+        condition: comparison(scalarConstant, userGroups),
+        groups: [groupId],
+      },
+      {
+        name: "nested conditions",
+        condition: {
+          type: "and",
+          and: {
+            conditions: [
+              {
+                type: "not",
+                not: {
+                  condition: { type: "or", or: { conditions: [rawCondition] } },
+                },
+              },
+            ],
+          },
+        },
+        groups: [groupId, otherGroupId],
+      },
+      {
+        name: "authored union containing raw comparisons",
+        condition: { type: "or", conditions: [rawCondition, rawCondition] },
+        groups: [groupId, otherGroupId],
+      },
+      {
+        name: "non-group constant",
+        condition: comparison(
+          { type: "property", property: "private" },
+          scalarConstant,
+        ),
+        groups: [],
+      },
+      {
+        name: "user ID constant",
+        condition: comparison(
+          {
+            type: "userProperty",
+            userProperty: { type: "userId", userId: {} },
+          },
+          scalarConstant,
+        ),
+        groups: [],
+      },
+    ];
+
+    describe.each(["object", "property"] as const)("%s policy", (placement) => {
+      function compilePolicy(granularPolicy: SecurityConditionDefinition) {
+        return defineOntologyV2("com.palantir.", () => {
+          defineObject({
+            apiName: "document",
+            displayName: "Document",
+            pluralDisplayName: "Documents",
+            titlePropertyApiName: "id",
+            primaryKeyPropertyApiName: "id",
+            properties: { id: { type: "string" }, private: { type: "string" } },
+            datasources: [
+              {
+                type: "dataset",
+                objectSecurityPolicy:
+                  placement === "object"
+                    ? { name: "restricted", granularPolicy }
+                    : undefined,
+                propertySecurityGroups:
+                  placement === "property"
+                    ? [
+                        {
+                          name: "restricted",
+                          properties: ["private"],
+                          granularPolicy,
+                        },
+                      ]
+                    : undefined,
+              },
+            ],
+          });
+        });
+      }
+
+      it.each(cases)(
+        "packages group dependencies for $name",
+        async ({ condition, groups }) => {
+          const result = await compilePolicy(condition);
+          expect(
+            Object.keys(result.ontologyIr.ontology.knownIdentifiers.groupIds),
+          ).toEqual(groups);
+          const groupInputs = [...result.shapes.inputShapes.entries()].filter(
+            ([, shape]) => shape.type === "multipassGroup",
+          );
+          expect(groupInputs.map(([readableId]) => readableId)).toEqual(
+            groups.map((id) => `group-${id}`),
+          );
+          expect(
+            Object.values(result.ontologyIr.ontology.knownIdentifiers.groupIds),
+          ).toEqual(groups.map(() => expect.any(String)));
+        },
+      );
+
+      it("packages equivalent shorthand and raw policies identically", async () => {
+        const shorthand = await compilePolicy({ type: "group", name: groupId });
+        const raw = await compilePolicy(
+          comparison(userGroups, {
+            type: "constant",
+            constant: { type: "strings", strings: [groupId] },
+          }),
+        );
+        expect(raw.ontologyIr).toStrictEqual(shorthand.ontologyIr);
+        expect(raw.shapes).toStrictEqual(shorthand.shapes);
+      });
+    });
   });
 
   describe("Dependencies", () => {
@@ -1123,6 +1415,329 @@ describe("Experimental Test Suite", () => {
       expect(objectOutputShapes.length).toBeGreaterThanOrEqual(1);
     });
 
+    it("uses resolved presets for externally imported parent shapes", async () => {
+      const objectTypeRid = "ri.ontology.main.object-type.imported-foo";
+      const propertyTypeRid = "ri.ontology.main.property.imported-foo-name";
+      const actionTypeRid = "ri.ontology.main.action-type.imported-action";
+      const interfaceTypeRid =
+        "ri.ontology.main.interface-type.imported-interface";
+      const sharedPropertyTypeRid =
+        "ri.ontology.main.shared-property-type.imported-name";
+      const ontologyRid = "ri.ontology.main.ontology.source";
+      const objectTypeId = "source-object-type-id";
+      const actionTypeVersion = "7";
+      const externalImportedMetadata = {
+        actionTypes: {
+          importedAction: {
+            apiName: "importedAction",
+            description: "",
+            displayName: "Imported Action",
+            operations: [],
+            parameters: {},
+            rid: actionTypeRid,
+            status: "ACTIVE",
+          },
+        },
+        interfaceTypes: {
+          importedInterface: {
+            allExtendsInterfaces: [],
+            allLinks: {},
+            allProperties: {},
+            allPropertiesV2: {},
+            apiName: "importedInterface",
+            displayName: "Imported Interface",
+            extendsInterfaces: [],
+            implementedByObjectTypes: [],
+            links: {},
+            properties: {},
+            propertiesV2: {},
+            rid: interfaceTypeRid,
+          },
+        },
+        objectTypes: {
+          importedFoo: {
+            implementsInterfaces: [],
+            implementsInterfaces2: {},
+            linkTypes: [],
+            objectType: {
+              apiName: "importedFoo",
+              description: "",
+              displayName: "Imported Foo",
+              icon: { type: "blueprint", color: "#4C90F0", name: "cube" },
+              pluralDisplayName: "Imported Foos",
+              primaryKey: "name",
+              properties: {
+                name: {
+                  dataType: { type: "string" },
+                  displayName: "Name",
+                  rid: propertyTypeRid,
+                  status: { type: "experimental" },
+                  typeClasses: [],
+                  visibility: "NORMAL",
+                },
+              },
+              rid: objectTypeRid,
+              status: "EXPERIMENTAL",
+              titleProperty: "name",
+              visibility: "NORMAL",
+            },
+            sharedPropertyTypeMapping: {},
+          },
+        },
+        ontology: {
+          apiName: "source",
+          description: "",
+          displayName: "Source",
+          rid: ontologyRid,
+        },
+        queryTypes: {},
+        sharedPropertyTypes: {
+          importedName: {
+            apiName: "importedName",
+            dataType: { type: "string" },
+            displayName: "Imported Name",
+            rid: sharedPropertyTypeRid,
+            typeClasses: [],
+          },
+        },
+        valueTypes: {},
+        actionTypeVersionsByRid: {
+          [actionTypeRid]: actionTypeVersion,
+        },
+        objectTypeIdsByRid: { [objectTypeRid]: objectTypeId },
+        resolvedShapePresetEntityRids: [
+          objectTypeRid,
+          actionTypeRid,
+          interfaceTypeRid,
+          sharedPropertyTypeRid,
+        ],
+      } as unknown as ExternalImportedOntologyMetadata;
+      const result = await defineOntologyV2(
+        "com.palantir.",
+        () => {},
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        externalImportedMetadata,
+      );
+
+      expect(
+        result.importedInputPresets.get(
+          ReadableIdGenerator.getForObjectType("importedFoo"),
+        ),
+      ).toEqual(
+        resolvedShapePreset({
+          type: "objectType",
+          objectType: {
+            apiName: "importedFoo",
+            id: objectTypeId,
+            ontologyRid,
+            rid: objectTypeRid,
+          },
+        }),
+      );
+      expect(
+        result.importedInputPresets.get(
+          ReadableIdGenerator.getForObjectProperty("importedFoo", "name"),
+        ),
+      ).toEqual(apiNamePreset("name"));
+      expect(
+        result.importedInputPresets.get(
+          ReadableIdGenerator.getForInterface("importedInterface"),
+        ),
+      ).toEqual(
+        resolvedShapePreset({
+          type: "interfaceType",
+          interfaceType: {
+            apiName: "importedInterface",
+            ontologyRid,
+            rid: interfaceTypeRid,
+          },
+        }),
+      );
+      expect(
+        result.importedInputPresets.get(
+          ReadableIdGenerator.getForSpt("importedName"),
+        ),
+      ).toEqual(
+        resolvedShapePreset({
+          type: "sharedPropertyType",
+          sharedPropertyType: {
+            apiName: "importedName",
+            ontologyRid,
+            rid: sharedPropertyTypeRid,
+            structFieldRids: {},
+          },
+        }),
+      );
+      expect(
+        result.importedInputPresets.get(
+          ReadableIdGenerator.getForActionType("importedAction"),
+        ),
+      ).toEqual(
+        resolvedShapePreset({
+          type: "action",
+          action: {
+            apiName: "importedAction",
+            ontologyRid,
+            parameters: {},
+            rid: actionTypeRid,
+            version: actionTypeVersion,
+          },
+        }),
+      );
+
+      const ineligibleResult = await defineOntologyV2(
+        "com.palantir.",
+        () => {},
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        { ...externalImportedMetadata, resolvedShapePresetEntityRids: [] },
+      );
+      for (const [readableId, apiName] of [
+        [ReadableIdGenerator.getForObjectType("importedFoo"), "importedFoo"],
+        [
+          ReadableIdGenerator.getForInterface("importedInterface"),
+          "importedInterface",
+        ],
+        [ReadableIdGenerator.getForSpt("importedName"), "importedName"],
+        [
+          ReadableIdGenerator.getForActionType("importedAction"),
+          "importedAction",
+        ],
+      ] as const) {
+        expect(ineligibleResult.importedInputPresets.get(readableId)).toEqual(
+          apiNamePreset(apiName),
+        );
+      }
+
+      const missingEnrichmentResult = await defineOntologyV2(
+        "com.palantir.",
+        () => {},
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        {
+          ...externalImportedMetadata,
+          actionTypeVersionsByRid: {},
+          objectTypeIdsByRid: {},
+        },
+      );
+      expect(
+        missingEnrichmentResult.importedInputPresets.get(
+          ReadableIdGenerator.getForObjectType("importedFoo"),
+        ),
+      ).toEqual(apiNamePreset("importedFoo"));
+      expect(
+        missingEnrichmentResult.importedInputPresets.get(
+          ReadableIdGenerator.getForActionType("importedAction"),
+        ),
+      ).toEqual(apiNamePreset("importedAction"));
+    });
+
+    it.each(["unreferenced", "linked"] as const)(
+      "preserves identifiers for %s imported objects",
+      async (reference) => {
+        const result = await defineOntologyV2("com.palantir.", () => {
+          for (const apiName of ["external.Employee", "external.Office"]) {
+            defineImportObject({
+              apiName,
+              properties: {
+                id: { type: "string" },
+                name: { type: "string" },
+              },
+            });
+          }
+
+          if (reference === "linked") {
+            const team = defineObject({
+              apiName: "team",
+              displayName: "Local Team",
+              pluralDisplayName: "Local Teams",
+              titlePropertyApiName: "id",
+              primaryKeyPropertyApiName: "id",
+              properties: {
+                id: { type: "string" },
+                employeeId: { type: "string" },
+              },
+            });
+            defineLink({
+              apiName: "employee-to-team",
+              one: {
+                object: "external.Employee",
+                metadata: { apiName: "teams", displayName: "Teams" },
+              },
+              toMany: {
+                object: team,
+                metadata: { apiName: "employee", displayName: "Employee" },
+              },
+              manyForeignKeyProperty: "employeeId",
+            });
+          }
+        });
+
+        const knownIds = result.ontologyIr.ontology.knownIdentifiers;
+        const expectedObjectIds = ["external-employee", "external-office"];
+        if (reference === "linked") {
+          expectedObjectIds.push("com-palantir-team");
+        }
+        for (const mapping of [
+          knownIds.objectTypeIds,
+          knownIds.propertyTypeIds,
+          knownIds.objectPropertyTypeIdsToRids,
+        ]) {
+          expect(Object.keys(mapping).sort()).toEqual(expectedObjectIds.sort());
+        }
+
+        for (const { objectType } of Object.values(
+          result.ontologyIr.importedOntology.objectTypes,
+        )) {
+          invariant(
+            objectType.apiName != null,
+            "Imported object API name is missing",
+          );
+          const objectReadableId = ReadableIdGenerator.getForObjectType(
+            objectType.apiName,
+          );
+          expect(result.shapes.inputShapes.get(objectReadableId)?.type).toBe(
+            "objectType",
+          );
+          expect(knownIds.objectTypeIds[objectType.id]).toBe(
+            result.blockDataAddOn.idToBlockShapeId[objectReadableId],
+          );
+
+          for (const [propertyRid, property] of Object.entries(
+            objectType.propertyTypes,
+          )) {
+            invariant(
+              property.apiName != null,
+              "Imported property API name is missing",
+            );
+            const propertyReadableId = ReadableIdGenerator.getForObjectProperty(
+              objectType.apiName,
+              property.apiName,
+            );
+            expect(
+              result.shapes.inputShapes.get(propertyReadableId)?.type,
+            ).toBe("property");
+            expect(knownIds.propertyTypeIds[objectType.id][property.id]).toBe(
+              result.blockDataAddOn.idToBlockShapeId[propertyReadableId],
+            );
+            expect(
+              knownIds.objectPropertyTypeIdsToRids[objectType.id][property.id],
+            ).toBe(propertyRid);
+          }
+        }
+      },
+    );
+
     it("handles local links referencing imported objects", async () => {
       const result = await defineOntologyV2("com.palantir.", () => {
         const importedObj = defineImportObject({
@@ -1133,7 +1748,7 @@ describe("Experimental Test Suite", () => {
           },
         });
         const localObj = defineObject({
-          apiName: "localTeam",
+          apiName: "team",
           displayName: "Local Team",
           pluralDisplayName: "Local Teams",
           titlePropertyApiName: "teamId",
