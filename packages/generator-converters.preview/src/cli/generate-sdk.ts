@@ -21,19 +21,17 @@ import * as fs from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
 
-import {
-  generateClientSdkVersionTwoPointZero,
-  getTsCompilerOptions,
-  ONTOLOGY_METADATA_DCTS_PATH,
-  ONTOLOGY_METADATA_DMTS_PATH,
-  ONTOLOGY_METADATA_JSON_PATH,
-} from "@osdk/generator";
+import { generatePackage } from "@osdk/foundry-sdk-generator";
+import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { consola } from "consola";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-import { PreviewOntologyIrConverter } from "../PreviewOntologyIrConverter.js";
+import {
+  type PreviewOntologyFullMetadata,
+  PreviewOntologyIrConverter,
+} from "../PreviewOntologyIrConverter.js";
 import { loadSdkInput } from "./loadSdkInput.js";
 import {
   type RuntimePropertyType,
@@ -42,18 +40,10 @@ import {
 
 const PYTHON_SDK_PACKAGE_NAME = "ontology_sdk";
 
-/**
- * Generates the Python SDK package into the conda environment's site-packages
- * so that Python function discovery can resolve ontology type imports.
- */
-function generatePythonSdk(
-  previewMetadata: ReturnType<
-    typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData
-  >,
-  pythonBinary: string,
-): void {
-  // Build the Python-compatible metadata: unwrap actionTypes and add globalFunctions
-  const pythonMetadata = {
+function toSdkMetadata(
+  previewMetadata: PreviewOntologyFullMetadata,
+): OntologyFullMetadata {
+  return {
     ...previewMetadata,
     actionTypes: Object.fromEntries(
       Object.entries(previewMetadata.actionTypes).map(([key, fullMeta]) => [
@@ -61,8 +51,25 @@ function generatePythonSdk(
         fullMeta.actionType,
       ]),
     ),
+  };
+}
+
+function toPythonSdkMetadata(metadata: OntologyFullMetadata) {
+  return {
+    ...metadata,
     globalFunctions: { queryTypes: {}, valueTypes: {} },
   };
+}
+
+/**
+ * Generates the Python SDK package into the conda environment's site-packages
+ * so that Python function discovery can resolve ontology type imports.
+ */
+function generatePythonSdk(
+  previewMetadata: PreviewOntologyFullMetadata,
+  pythonBinary: string,
+): void {
+  const pythonMetadata = toPythonSdkMetadata(toSdkMetadata(previewMetadata));
 
   const objectTypes = Object.keys(previewMetadata.objectTypes ?? {});
   if (objectTypes.length === 0) {
@@ -299,16 +306,7 @@ async function main(): Promise<void> {
     }
   }
 
-  // Convert ActionTypeFullMetadata to ActionTypeV2 for generator compatibility
-  const metadata = {
-    ...previewMetadata,
-    actionTypes: Object.fromEntries(
-      Object.entries(previewMetadata.actionTypes).map(([key, fullMeta]) => [
-        key,
-        fullMeta.actionType,
-      ]),
-    ),
-  };
+  const metadata = toSdkMetadata(previewMetadata);
 
   const fullOutputDir = path.join(outputDir, packageName);
   await fs.mkdir(fullOutputDir, { recursive: true });
@@ -324,116 +322,28 @@ async function main(): Promise<void> {
     });
   }
 
-  const hostFs = {
-    async writeFile(filePath: string, contents: string): Promise<void> {
-      // Normalize backslashes to forward slashes so path.join/isAbsolute
-      // work consistently on Windows where generators may emit mixed separators.
-      const normalized = filePath.replaceAll("\\", "/");
-      const fullPath = path.isAbsolute(normalized)
-        ? normalized
-        : path.join(fullOutputDir, normalized);
-      await fs.mkdir(path.dirname(fullPath), { recursive: true });
-      await fs.writeFile(fullPath, contents, "utf-8");
-    },
-    async mkdir(dirPath: string): Promise<void> {
-      const normalized = dirPath.replaceAll("\\", "/");
-      const fullPath = path.isAbsolute(normalized)
-        ? normalized
-        : path.join(fullOutputDir, normalized);
-      await fs.mkdir(fullPath, { recursive: true });
-    },
-    async readdir(dirPath: string): Promise<string[]> {
-      return fs.readdir(dirPath);
-    },
-  };
-
   consola.info(`Generating SDK to ${fullOutputDir}...`);
 
-  await generateClientSdkVersionTwoPointZero(
-    metadata,
-    `osdk-generator/${packageVersion} (from-ir)`,
-    hostFs,
-    fullOutputDir,
-    "module",
-    new Map(),
-    new Map(),
-    new Map(),
-    false,
-    [],
-    true,
-    new Map(),
+  await generatePackage(
+    {
+      requestedMetadata: metadata,
+      externalObjects: new Map(),
+      externalInterfaces: new Map(),
+      queryVersionReferences: new Map(),
+    },
+    {
+      packageName,
+      packageVersion,
+      // Older CLI versions invoke npm run build after generation.
+      scripts: { build: "node -e \"process.exit(0)\"" },
+      outputDir,
+      beta: true,
+      ontologyJsonOnly: false,
+      packageRid: undefined,
+      branch: undefined,
+      exportOntologyMetadata: true,
+    },
   );
-
-  // Write package.json for module resolution. Points to compiled output in
-  // dist/ so that TypeScript function discovery can resolve types from
-  // @ontology/sdk during the bootstrap → function discovery → regeneration cycle.
-  // No npm install is needed — @osdk/client and typescript are resolved from
-  // the parent ontology project's node_modules.
-  const previewPackageJson = {
-    name: packageName,
-    version: packageVersion,
-    type: "module",
-    main: "./dist/index.js",
-    types: "./dist/index.d.ts",
-    exports: {
-      ".": {
-        types: "./dist/index.d.ts",
-        import: "./dist/index.js",
-      },
-      "./experimental/ontology-metadata": {
-        import: {
-          types: `./${ONTOLOGY_METADATA_DMTS_PATH}`,
-          default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
-        },
-        require: {
-          types: `./${ONTOLOGY_METADATA_DCTS_PATH}`,
-          default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
-        },
-      },
-    },
-    scripts: {
-      build: "tsc",
-    },
-    dependencies: {
-      "@osdk/client": "^2.0.0",
-    },
-    devDependencies: {
-      typescript: "^5.0.0",
-    },
-  };
-
-  await fs.writeFile(
-    path.join(fullOutputDir, "package.json"),
-    `${JSON.stringify(previewPackageJson, null, 2)}\n`,
-    "utf-8",
-  );
-  consola.info(`Wrote ${path.join(fullOutputDir, "package.json")}`);
-
-  // Write tsconfig.json for the tsc build step. Uses shared compiler options
-  // from @osdk/generator with preview-specific additions.
-  const previewTsconfig = {
-    compilerOptions: {
-      ...getTsCompilerOptions("module"),
-      importHelpers: false,
-      outDir: "./dist",
-      rootDir: "./",
-      declarationMap: true,
-      sourceMap: true,
-      moduleResolution: "node",
-      module: "ES2020",
-      resolveJsonModule: true,
-      allowSyntheticDefaultImports: true,
-    },
-    include: ["**/*.ts", "**/*.tsx"],
-    exclude: ["node_modules", "dist"],
-  };
-
-  await fs.writeFile(
-    path.join(fullOutputDir, "tsconfig.json"),
-    `${JSON.stringify(previewTsconfig, null, 2)}\n`,
-    "utf-8",
-  );
-  consola.info(`Wrote ${path.join(fullOutputDir, "tsconfig.json")}`);
 
   const metadataPath = path.join(fullOutputDir, "ontology-metadata.json");
   await fs.writeFile(
@@ -454,11 +364,7 @@ async function main(): Promise<void> {
     );
     await fs.writeFile(
       pythonMetadataPath,
-      JSON.stringify(
-        { ...metadata, globalFunctions: { queryTypes: {}, valueTypes: {} } },
-        null,
-        2,
-      ),
+      JSON.stringify(toPythonSdkMetadata(metadata), null, 2),
       "utf-8",
     );
     consola.info(`Wrote ${pythonMetadataPath}`);

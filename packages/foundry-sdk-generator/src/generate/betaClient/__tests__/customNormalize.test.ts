@@ -18,6 +18,17 @@ import { describe, expect, it } from "vitest";
 import { customNormalize } from "../customNormalize.js";
 
 describe("test path normalization", () => {
+  it.each([
+    [
+      String.raw`\\server\share\generated\@preview\sdk`,
+      "//server/share/generated/@preview/sdk",
+    ],
+    ["//server/share/generated/../sdk", "//server/share/sdk"],
+    [String.raw`\\server\share\..\sdk`, "//server/share/sdk"],
+  ])("preserves the UNC root of %s", (input, expected) => {
+    expect(customNormalize(input)).toBe(expected);
+  });
+
   it("works for mac", () => {
     const macPath =
       "/Volumes/testFolder/osdk-ts/packages/foundry-sdk-generator/src/generate/betaClient/__tests__/customNormalize.test.ts";

@@ -25,7 +25,7 @@ import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { OntologyBlockDataToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import * as path from "node:path";
 import { describe, expect, it, vi } from "vitest";
-import { PreviewOntologyIrConverter } from "./PreviewOntologyIrConverter.js";
+import { PreviewOntologyIrConverter } from "./index.js";
 
 const valueTypes: Record<string, ValueTypeBlockData> = {
   "classification-rid": {
@@ -202,6 +202,191 @@ function getBlockData(versionId: string): OntologyBlockDataV2 {
     },
   };
 }
+
+function getActionBlockData(): OntologyBlockDataV2 {
+  const blockData = getBlockData("2.0.0");
+  blockData.actionTypes["action-rid"] = {
+    parameterIds: { parent: "parent" },
+    actionType: {
+      metadata: {
+        rid: "action-rid",
+        apiName: "createItem",
+        version: "1.0.0",
+        displayMetadata: {
+          displayName: "Create item",
+          description: "Create a local item",
+          applyingMessage: [],
+          successMessage: [],
+          typeClasses: [],
+        },
+        status: { type: "active", active: {} },
+        parameters: {
+          parent: {
+            id: "parent",
+            rid: "parent-parameter-rid",
+            displayMetadata: {
+              displayName: "Parent",
+              description: "Parent object",
+              structFields: {},
+              structFieldsV2: [],
+              typeClasses: [],
+            },
+            type: {
+              type: "interfaceReference",
+              interfaceReference: { interfaceTypeRid: "parent-rid" },
+            },
+          },
+        },
+        parameterOrdering: ["parent"],
+        formContentOrdering: [],
+        sections: {},
+      },
+      actionTypeLogic: {
+        logic: {
+          rules: [{
+            type: "addObjectRule",
+            addObjectRule: {
+              objectTypeId: "item-rid",
+              propertyValues: {
+                classificationProperty: {
+                  type: "staticValue",
+                  staticValue: { type: "string", string: "A" },
+                },
+              },
+              structFieldValues: {},
+            },
+          }],
+        },
+        notifications: [],
+        validation: {
+          actionTypeLevelValidation: { ordering: [], rules: {} },
+          parameterValidations: {
+            parent: {
+              conditionalOverrides: [],
+              structFieldValidations: {},
+              defaultValidation: {
+                display: {
+                  renderHint: { type: "dropdown", dropdown: {} },
+                  visibility: { type: "editable", editable: {} },
+                },
+                validation: {
+                  required: { type: "required", required: {} },
+                  allowedValues: {
+                    type: "interfaceObjectQuery",
+                    interfaceObjectQuery: {
+                      type: "interfaceObjectQuery",
+                      interfaceObjectQuery: {},
+                    },
+                  },
+                },
+              },
+            },
+          },
+          sectionValidations: {},
+        },
+      },
+    },
+  };
+  return blockData;
+}
+
+describe("preview action metadata", () => {
+  it.each(["local", "imported"])(
+    "preserves action metadata and logic rules referencing %s entities",
+    source => {
+      const blockData = getActionBlockData();
+      const importedTypes = source === "imported"
+        ? OntologyBlockDataToFullMetadataConverter.getFullMetadataFromBlockData(
+          getBlockData("2.0.0"),
+        )
+        : undefined;
+      if (importedTypes) {
+        blockData.objectTypes = {};
+        blockData.interfaceTypes = {};
+      }
+      const inputBefore = structuredClone({ blockData, importedTypes });
+
+      const metadata = PreviewOntologyIrConverter
+        .getPreviewFullMetadataFromBlockData(blockData, importedTypes);
+
+      expect(metadata.actionTypes).toEqual({
+        createItem: {
+          actionType: {
+            rid: "action-rid",
+            apiName: "createItem",
+            displayName: "Create item",
+            description: "Create a local item",
+            status: "ACTIVE",
+            parameters: {
+              parent: {
+                displayName: "Parent",
+                description: "Parent object",
+                dataType: {
+                  type: "interfaceObject",
+                  interfaceTypeApiName: "Parent",
+                },
+                required: true,
+                typeClasses: [],
+              },
+            },
+            operations: [{ type: "createObject", objectTypeApiName: "Item" }],
+          },
+          fullLogicRules: [{
+            type: "createObject",
+            objectTypeApiName: "Item",
+            propertyArguments: {
+              classificationProperty: { type: "staticValue", value: "A" },
+            },
+            structPropertyArguments: {},
+          }],
+        },
+      });
+      expect(metadata.actionTypesFullMetadata).toBe(metadata.actionTypes);
+      expect(metadata.objectTypes.Item.objectType.apiName).toBe("Item");
+      expect(metadata.interfaceTypes.Parent.apiName).toBe("Parent");
+      expect({ blockData, importedTypes }).toEqual(inputBefore);
+    },
+  );
+
+  it.each([true, false])(
+    "excludes imported actions without replacing local definitions (local action: %s)",
+    hasLocalAction => {
+      const blockData = hasLocalAction
+        ? getActionBlockData()
+        : getBlockData("2.0.0");
+      const importedTypes = OntologyBlockDataToFullMetadataConverter
+        .getFullMetadataFromBlockData(getActionBlockData());
+      importedTypes.actionTypes.createItem.rid = "imported-action-rid";
+      importedTypes.actionTypes.createItem.description = "Imported action";
+      importedTypes.actionTypes.importedOnly = {
+        ...importedTypes.actionTypes.createItem,
+        apiName: "importedOnly",
+      };
+      importedTypes.actionTypesFullMetadata = {
+        importedOnly: {
+          actionType: importedTypes.actionTypes.importedOnly,
+          fullLogicRules: [],
+        },
+      };
+      const importedBefore = structuredClone(importedTypes);
+
+      const metadata = PreviewOntologyIrConverter
+        .getPreviewFullMetadataFromBlockData(blockData, importedTypes);
+
+      expect(Object.keys(metadata.actionTypes)).toEqual(
+        hasLocalAction ? ["createItem"] : [],
+      );
+      expect(metadata.actionTypesFullMetadata).toBe(metadata.actionTypes);
+      if (hasLocalAction) {
+        expect(metadata.actionTypes.createItem.actionType).toMatchObject({
+          rid: "action-rid",
+          description: "Create a local item",
+        });
+      }
+      expect(importedTypes).toEqual(importedBefore);
+    },
+  );
+});
 
 it("generates both directions of an intermediary link", async () => {
   const blockData = getBlockData("1.0.0");

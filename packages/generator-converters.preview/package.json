@@ -44,13 +44,14 @@
   },
   "dependencies": {
     "@osdk/client.unstable": "workspace:~",
+    "@osdk/foundry-sdk-generator": "workspace:~",
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
-    "@osdk/generator": "workspace:~",
     "@osdk/generator-converters.ontologyir": "workspace:~",
     "consola": "^3.4.2",
     "yargs": "17.7.2"
   },
   "devDependencies": {
+    "@osdk/generator": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/node": "^24.3.1",
