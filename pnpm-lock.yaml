@@ -2271,6 +2271,9 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
+      '@osdk/oauth':
+        specifier: workspace:~
+        version: link:../oauth
       '@osdk/shared.test.intellisense':
         specifier: workspace:~
         version: link:../shared.test.intellisense
