@@ -27,3 +27,13 @@ import { client } from "./client.js";
 
 const responseNoErrorWrapper: Osdk.Instance<Employee> =
   await client(Employee).fetchOne(12345);
+
+// Ontology-defined derived properties are not returned by default.
+// Pass their API names in $select, along with any other properties you need.
+// Runtime-defined derived properties added with withProperties are returned
+// by default.
+function getWithSelectedProperties(properties: Employee.PropertyKeys[]) {
+  return client(Employee).fetchOne(12345, {
+    $select: properties,
+  });
+}

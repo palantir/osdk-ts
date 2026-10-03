@@ -30,3 +30,14 @@ try {
 } catch (e) {
   throw e;
 }
+
+// Ontology-defined derived properties are not returned by default.
+// Pass their API names in $select, along with any other properties you need.
+// Runtime-defined derived properties added with withProperties are returned
+// by default.
+function getPageWithSelectedProperties(properties: Employee.PropertyKeys[]) {
+  return client(Employee).fetchPage({
+    $pageSize: 30,
+    $select: properties,
+  });
+}
