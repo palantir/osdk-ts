@@ -37,11 +37,28 @@ export interface ActionMetadata {
       }
     >
   >;
+  interfaceLinkEffects?: ActionMetadata.InterfaceLinkEffect[];
   status: ReleaseStatus | undefined;
   rid: string;
 }
 
 export namespace ActionMetadata {
+  export type InterfaceLinkEffect =
+    | {
+        type: "createInterfaceLink";
+        interfaceTypeApiName: string;
+        interfaceLinkTypeApiName: string;
+        sourceObject: string;
+        targetObject: string;
+      }
+    | {
+        type: "deleteInterfaceLink";
+        interfaceTypeApiName: string;
+        interfaceLinkTypeApiName: string;
+        sourceObject: string;
+        targetObject: string;
+      };
+
   export interface Parameter<T_Target extends ObjectTypeDefinition = never> {
     type:
       | DataType.BaseActionParameterTypes
