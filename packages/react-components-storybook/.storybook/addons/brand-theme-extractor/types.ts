@@ -69,6 +69,10 @@ export type SurfaceTokenRole =
   | "button-border-radius"
   | "spacing"
   | "border-width"
+  | "table-border"
+  | "table-header-divider"
+  | "table-pinned-column-border"
+  | "table-row-divider"
   | "shadow";
 
 export type EmphasisTokenRole =
