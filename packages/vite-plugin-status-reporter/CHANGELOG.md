@@ -1,5 +1,12 @@
 # @osdk/vite-plugin-status-reporter
 
+## 0.8.0
+
+### Patch Changes
+
+- Updated dependencies [21a0d8c]
+  - @osdk/vite-plugin-superrepo@0.12.0
+
 ## 0.7.0
 
 ### Minor Changes

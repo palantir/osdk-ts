@@ -1,5 +1,20 @@
 # @osdk/maker-import
 
+## 0.43.0
+
+### Minor Changes
+
+- c11669e: Fix incomplete Marketplace mappings for SPTs imported ontology objects
+
+### Patch Changes
+
+- Updated dependencies [dec2ee4]
+- Updated dependencies [c11669e]
+- Updated dependencies [21a0d8c]
+- Updated dependencies [a38af5a]
+  - @osdk/maker@0.76.0
+  - @osdk/client.unstable@2.76.0
+
 ## 0.42.0
 
 ### Minor Changes

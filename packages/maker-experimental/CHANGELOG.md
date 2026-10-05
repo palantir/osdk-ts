@@ -1,5 +1,26 @@
 # @osdk/maker-experimental
 
+## 0.71.0
+
+### Minor Changes
+
+- 13ad212: Fix imported object and property mappings being written under an `undefined` key in Marketplace packages.
+
+### Patch Changes
+
+- Updated dependencies [43dd010]
+- Updated dependencies [dec2ee4]
+- Updated dependencies [a9fafd0]
+- Updated dependencies [c11669e]
+- Updated dependencies [21a0d8c]
+- Updated dependencies [a38af5a]
+  - @osdk/generator-converters.ontologyir@2.76.0
+  - @osdk/maker@0.76.0
+  - @osdk/generator-converters.preview@0.53.0
+  - @osdk/maker-import@0.43.0
+  - @osdk/client.unstable@2.76.0
+  - @osdk/api@2.76.0
+
 ## 0.70.0
 
 ### Minor Changes

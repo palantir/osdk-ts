@@ -1,5 +1,14 @@
 # @osdk/cli.cmd.typescript
 
+## 0.102.0
+
+### Patch Changes
+
+- Updated dependencies [0c09251]
+  - @osdk/shared.client.impl@1.15.0
+  - @osdk/generator@2.76.0
+  - @osdk/cli.common@0.102.0
+
 ## 0.101.0
 
 ### Patch Changes

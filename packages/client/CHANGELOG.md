@@ -1,5 +1,23 @@
 # @osdk/client
 
+## 2.76.0
+
+### Minor Changes
+
+- b1616e3: Remove legacy final method call request-context telemetry.
+- b8f103c: Read the `foundryBranchRid` query parameter from `window.location` when creating a client, allowing iframe hosts to select a Foundry branch at runtime. Explicit client branch options take precedence over the URL, which takes precedence over the branch meta tag injected by build tooling. Missing or blank query values fall back to the meta tag; an explicit `null` continues to select the default branch.
+
+### Patch Changes
+
+- Updated dependencies [21a0d8c]
+- Updated dependencies [0c09251]
+- Updated dependencies [a38af5a]
+  - @osdk/client.unstable@2.76.0
+  - @osdk/shared.client.impl@1.15.0
+  - @osdk/api@2.76.0
+  - @osdk/generator-converters@2.76.0
+  - @osdk/shared.test@2.51.0
+
 ## 2.75.0
 
 ### Minor Changes
