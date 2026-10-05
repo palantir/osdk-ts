@@ -86,8 +86,9 @@ export interface SelectArg<
    * API names of the properties to return. Ontology-defined derived properties
    * are not returned by default and must be included in `$select`.
    * Include any other properties you need in the same selection.
-   * Runtime-defined derived properties added with `withProperties` are returned
-   * by default when `$select` is omitted.
+   * Runtime-defined derived properties added via `.withProperties(...)` are returned
+   * by default only when `$select` is omitted. If you pass `$select`, include them
+   * in the selection as well.
    *
    * @example
    * ```ts

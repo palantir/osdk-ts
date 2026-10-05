@@ -30,8 +30,9 @@ const responseNoErrorWrapper: Osdk.Instance<Employee> =
 
 // Ontology-defined derived properties are not returned by default.
 // Pass their API names in $select, along with any other properties you need.
-// Runtime-defined derived properties added with withProperties are returned
-// by default.
+// Runtime-defined derived properties added via .withProperties(...) are returned
+// by default only when $select is omitted. If you pass $select, include them
+// in the selection as well.
 function getWithSelectedProperties(properties: Employee.PropertyKeys[]) {
   return client(Employee).fetchOne(12345, {
     $select: properties,
