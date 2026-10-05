@@ -192,6 +192,8 @@ export function createClientMockHelper(): MockClientHelper {
     ontologyRid: "ri.something",
     objectFactory: vitest.fn(),
     ontologyProvider: {
+      prepare: vitest.fn(),
+      getPreparedInterfaceDefinition: vitest.fn(),
       getActionDefinition: vitest.fn(),
       getInterfaceDefinition: vitest.fn(),
       getObjectDefinition: vitest.fn(),

@@ -38,9 +38,12 @@ describe("ObjectSet", () => {
   let client: Client;
   let apiServer: SetupServer;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
     ({ client, apiServer } = testSetup);
+    client = await client.prepare({
+      interfaces: [FooInterface, BarInterface, ComplexImplementationInterface],
+    });
     return () => {
       testSetup.apiServer.close();
     };

@@ -630,19 +630,16 @@ describe(fetchPage, () => {
 
     it("prefetches implementing object metadata while the interface page loads", async () => {
       const testSetup = startNodeApiServer(new LegacyFauxFoundry());
-      const interfaceMetadataResponse = pDefer<void>();
       const fetchPageResponse = pDefer<void>();
       const fetchFn = vi.fn<typeof globalThis.fetch>(async (input, init) => {
         const response = await globalThis.fetch(input, init);
         const url = String(input);
-        if (url.includes("interfaceTypes/FooInterface")) {
-          await interfaceMetadataResponse.promise;
-        } else if (url.includes("objectSets/loadObjects")) {
+        if (url.includes("objectSets/loadObjects")) {
           await fetchPageResponse.promise;
         }
         return response;
       });
-      const client = createMinimalClient(
+      let client = createMinimalClient(
         { ontologyRid: testSetup.fauxFoundry.defaultOntologyRid },
         testSetup.fauxFoundry.baseUrl,
         testSetup.auth,
@@ -651,6 +648,12 @@ describe(fetchPage, () => {
       );
 
       try {
+        client = {
+          ...client,
+          ontologyProvider: await client.ontologyProvider.prepare({
+            interfaces: [FooInterface],
+          }),
+        };
         let fetchPageSettled = false;
         const resultPromise = fetchPage(client, FooInterface, {}).finally(
           () => {
@@ -671,8 +674,6 @@ describe(fetchPage, () => {
           ).toHaveLength(1);
         });
 
-        interfaceMetadataResponse.resolve();
-
         await vi.waitFor(() => {
           expect(
             fetchFn.mock.calls.filter(([input]) =>
@@ -689,7 +690,6 @@ describe(fetchPage, () => {
         expect(result.data[0].$apiName).toBe("FooInterface");
         expect(result.data[0].$objectType).toBe("Employee");
       } finally {
-        interfaceMetadataResponse.resolve();
         fetchPageResponse.resolve();
         testSetup.apiServer.close();
       }

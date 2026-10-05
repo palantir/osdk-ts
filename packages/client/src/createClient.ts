@@ -54,7 +54,11 @@ import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.clie
 
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import { applyAction } from "./actions/applyAction.js";
-import { additionalContext, type Client } from "./Client.js";
+import {
+  additionalContext,
+  type Client,
+  type ClientPreparation,
+} from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
 import { fetchMetadataInternal } from "./fetchMetadata.js";
 import { makeMediaTransformation } from "./internal/conversions/makeMediaTransformation.js";
@@ -161,7 +165,7 @@ export function createClientInternal(
 /**
  * @internal
  */
-export function createClientFromContext(clientCtx: MinimalClient) {
+export function createClientFromContext(clientCtx: MinimalClient): Client {
   function clientFn<
     T extends
       | ObjectOrInterfaceDefinition
@@ -190,6 +194,9 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 | Experiment<"2.19.0">
             ? { invoke: ExperimentFns<T> }
             : never {
+    if (o.type === "interface") {
+      clientCtx.ontologyProvider.getPreparedInterfaceDefinition(o.apiName);
+    }
     if (o.type === "object" || o.type === "interface") {
       return clientCtx.objectSetFactory(o, clientCtx) as any;
     } else if (o.type === "action") {
@@ -391,6 +398,19 @@ export function createClientFromContext(clientCtx: MinimalClient) {
     },
     [additionalContext]: {
       value: clientCtx,
+    },
+    prepare: {
+      value: async (options: ClientPreparation) => {
+        const ontologyProvider =
+          await clientCtx.ontologyProvider.prepare(options);
+        return createClientFromContext(
+          Object.freeze({
+            ...clientCtx,
+            clientCacheKey: {} as MinimalClient["clientCacheKey"],
+            ontologyProvider,
+          }),
+        );
+      },
     },
     fetchMetadata: {
       value: fetchMetadata,

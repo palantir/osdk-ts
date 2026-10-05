@@ -16,14 +16,16 @@
 
 import type { ObjectOrInterfaceDefinition, OsdkBase } from "@osdk/api";
 
-import {
-  type FetchedObjectTypeDefinition,
-  InterfaceDefinitions,
-} from "../../ontology/OntologyProvider.js";
+import type { MinimalClient } from "../../MinimalClientContext.js";
+import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { createSimpleCache } from "../SimpleCache.js";
 import { createOsdkInterface } from "./createOsdkInterface.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
-import { InterfaceDefRef, UnderlyingOsdkObject } from "./InternalSymbols.js";
+import {
+  ClientRef,
+  InterfaceDefRef,
+  UnderlyingOsdkObject,
+} from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
 
 /** @internal */
@@ -80,6 +82,7 @@ function $asFactory(objDef: FetchedObjectTypeDefinition): DollarAsFn {
     this: OsdkBase<any> & {
       [UnderlyingOsdkObject]: any;
       [InterfaceDefRef]?: unknown;
+      [ClientRef]?: MinimalClient;
     },
     targetMinDef: NEW_Q | string,
   ): OsdkBase<any> {
@@ -111,12 +114,15 @@ function $asFactory(objDef: FetchedObjectTypeDefinition): DollarAsFn {
       targetInterfaceApiName = targetMinDef.apiName;
     }
 
-    const def = objDef[InterfaceDefinitions][targetInterfaceApiName];
-    if (!def) {
+    if (objDef.interfaceMap?.[targetInterfaceApiName] == null) {
       throw new Error(
         `Object does not implement interface '${targetInterfaceApiName}'.`,
       );
     }
+    const client = this[ClientRef] ?? this[UnderlyingOsdkObject][ClientRef];
+    const def = client.ontologyProvider.getPreparedInterfaceDefinition(
+      targetInterfaceApiName,
+    );
 
     const underlying = this[UnderlyingOsdkObject];
 
@@ -126,7 +132,7 @@ function $asFactory(objDef: FetchedObjectTypeDefinition): DollarAsFn {
       ?.deref();
     if (existing) return existing;
 
-    const osdkInterface = createOsdkInterface(underlying, def.def);
+    const osdkInterface = createOsdkInterface(underlying, def);
     osdkObjectToInterfaceView
       .get(underlying)
       .set(targetInterfaceApiName, new WeakRef(osdkInterface));

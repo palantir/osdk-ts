@@ -860,6 +860,7 @@ describe("ObjectsHelper.storeOsdkInstances interface unwrap", () => {
 
     const fauxOntology = testSetup.fauxFoundry.getDefaultOntology();
     ontologies.addEmployeeOntology(fauxOntology);
+    client = await client.prepare({ interfaces: [FooInterface] });
 
     testSetup.fauxFoundry.getDefaultDataStore().registerObject(Employee, {
       employeeId: 1,

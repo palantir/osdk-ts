@@ -147,7 +147,9 @@ describe("branch selection after an OAuth round trip", () => {
 
       ontologyFetch.mockResolvedValueOnce(Response.json(stubData.BarInterface));
       ontologyFetch.mockResolvedValueOnce(Response.json({ data: [] }));
-      await activeApp.client(BarInterface).fetchPage();
+      await (
+        await activeApp.client.prepare({ interfaces: [BarInterface] })
+      )(BarInterface).fetchPage();
 
       expect(ontologyFetch).toHaveBeenCalledTimes(2);
       // Check both metadata and data requests, not just the restored address bar.
