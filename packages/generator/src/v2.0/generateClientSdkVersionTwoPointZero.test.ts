@@ -546,10 +546,10 @@ describe("generator", () => {
     );
 
     const files = helper.getFiles();
-    const interfaceSource =
+    const generatedInterface =
       files[`${BASE_PATH}/ontology/interfaces/SomeInterface.ts`];
-    expect(interfaceSource).not.toContain("implementedBy:");
-    expect(interfaceSource).toContain("SomeProperty");
+    expect(generatedInterface).not.toContain("implementedBy:");
+    expect(generatedInterface).toContain("SomeProperty");
     expect(
       JSON.parse(files[`${BASE_PATH}/experimental/ontology-metadata.json`])
         .interfaceTypes.SomeInterface.implementedByObjectTypes,
