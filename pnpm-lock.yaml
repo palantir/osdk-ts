@@ -811,7 +811,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/e2e.generated.catchall
       '@osdk/foundry':
-        specifier: latest
+        specifier: ^2.75.0
         version: 2.78.0
       '@osdk/oauth':
         specifier: workspace:*
@@ -914,7 +914,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/client
       '@osdk/foundry':
-        specifier: latest
+        specifier: ^2.75.0
         version: 2.78.0
       '@osdk/oauth':
         specifier: workspace:*
