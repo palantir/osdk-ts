@@ -285,11 +285,9 @@ export function createDefinition(
     osdkObjectStrictPropsIdentifier,
     osdkObjectLinksIdentifier,
   }: Identifiers,
-  omitInterfaceImplementations: boolean = false,
 ) {
   const definition = object.getCleanedUpDefinition(true);
-  const emittedDefinition = omitInterfaceImplementations
-      && definition.type === "interface"
+  const emittedDefinition = definition.type === "interface"
     ? Object.fromEntries(
       Object.entries(definition).filter(([key]) => key !== "implementedBy"),
     )

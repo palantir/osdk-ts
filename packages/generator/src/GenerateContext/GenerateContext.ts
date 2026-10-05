@@ -28,5 +28,4 @@ export interface GenerateContext {
   ontologyApiNamespace?: string | undefined;
   apiNamespacePackageMap?: Map<string, string>;
   forInternalUse?: boolean;
-  omitInterfaceImplementations?: boolean;
 }

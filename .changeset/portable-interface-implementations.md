@@ -1,6 +1,5 @@
 ---
-"@osdk/generator": minor
-"@osdk/generator-converters.preview": minor
+"@osdk/generator": patch
 ---
 
-Allow offline block result generation to omit installation-dependent interface implementation lists from generated TypeScript.
+Omit interface implementation lists from generated TypeScript definitions.

@@ -182,7 +182,6 @@ describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
           apiName: "Bar";
           description: undefined;
           displayName: "Bar";
-          implementedBy: [];
           implements: [];
           links: {};
           properties: {
@@ -285,7 +284,6 @@ describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
           apiName: "Foo";
           description: "Foo interface desc";
           displayName: "Foo interface dn";
-          implementedBy: [];
           implements: ["Parent"];
           links: {};
           properties: {
@@ -395,7 +393,6 @@ describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
           apiName: "Foo";
           description: "Foo interface desc";
           displayName: "Foo interface dn";
-          implementedBy: [];
           implements: ["Parent"];
           links: {};
           properties: {
@@ -432,7 +429,7 @@ describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
     { implementors: [], label: "empty" },
     { implementors: ["childrenObject"], label: "populated" },
   ])(
-    "omits $label implementation lists in portable interface output",
+    "omits $label implementation lists from generated interfaces",
     async ({ implementors }) => {
       const ontology = enhanceOntology({
         sanitized: simpleOntology("ontology", [
@@ -445,31 +442,13 @@ describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
         throw new Error("Expected Foo to be an EnhancedInterfaceType");
       }
 
-      const normal = wireInterfaceTypeV2ToSdkObjectConst(
-        iface,
-        ontology,
-        true,
-        true,
+      const code = await format(
+        wireInterfaceTypeV2ToSdkObjectConst(iface, ontology, true, true),
+        { parser: "typescript" },
       );
-      const portable = wireInterfaceTypeV2ToSdkObjectConst(
-        iface,
-        ontology,
-        true,
-        true,
-        "",
-        true,
-      );
-
-      const formattedNormal = await format(normal, { parser: "typescript" });
-      const formattedPortable = await format(portable, {
-        parser: "typescript",
-      });
-      expect(formattedNormal).toContain(
-        `implementedBy: ${JSON.stringify(implementors)};`,
-      );
-      expect(formattedPortable).not.toContain("implementedBy:");
-      expect(formattedPortable).toContain("apiName: \"Foo\"");
-      expect(formattedPortable).toContain("props: Foo.Props");
+      expect(code).not.toContain("implementedBy:");
+      expect(code).toContain("apiName: \"Foo\"");
+      expect(code).toContain("props: Foo.Props");
     },
   );
 
@@ -550,7 +529,6 @@ describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
           apiName: "Foo";
           description: "Foo interface desc";
           displayName: "Foo interface dn";
-          implementedBy: ["childrenObject"];
           implements: ["Parent"];
           links: {};
           properties: {

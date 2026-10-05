@@ -525,7 +525,7 @@ describe("generator", () => {
     helper = createMockMinimalFiles();
   });
 
-  it("omits interface implementation lists only in portable generated definitions", async () => {
+  it("omits interface implementation lists from generated definitions", async () => {
     const ontology = immer.produce(TodoWireOntology, draft => {
       draft.interfaceTypes.SomeInterface.implementedByObjectTypes = ["Todo"];
     });
@@ -543,7 +543,6 @@ describe("generator", () => {
       [],
       true,
       new Map(),
-      true,
     );
 
     const files = helper.getFiles();
@@ -1098,7 +1097,6 @@ describe("generator", () => {
             apiName: 'SomeInterface';
             description: 'Some interface';
             displayName: 'Sum Interface';
-            implementedBy: [];
             implements: [];
             links: {};
             properties: {
@@ -1800,7 +1798,6 @@ describe("generator", () => {
             apiName: 'foo.bar.SomeInterface';
             description: 'Some interface';
             displayName: 'Sum Interface';
-            implementedBy: [];
             implements: [];
             links: {};
             properties: {
@@ -3227,7 +3224,6 @@ describe("generator", () => {
             apiName: 'com.example.dep.SomeInterface';
             description: undefined;
             displayName: 'Sum Interface';
-            implementedBy: [];
             implements: [];
             links: {};
             properties: {
