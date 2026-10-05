@@ -31,6 +31,7 @@ import { loadQueryMetadata } from "./loadQueryMetadata.js";
 import {
   type FetchedObjectTypeDefinition,
   InterfaceDefinitions,
+  type OntologyProvider,
   type OntologyProviderFactory,
 } from "./OntologyProvider.js";
 
@@ -38,7 +39,7 @@ export interface OntologyCachingOptions {}
 
 export const createStandardOntologyProviderFactory: (
   opts: OntologyCachingOptions,
-) => OntologyProviderFactory = (client) => {
+) => OntologyProviderFactory = (_options) => {
   return (client) => {
     async function loadObject(
       client: MinimalClient,
@@ -46,22 +47,9 @@ export const createStandardOntologyProviderFactory: (
     ): Promise<FetchedObjectTypeDefinition> {
       const objectDef = await loadFullObjectMetadata(client, key);
 
-      // ensure we have all of the interfaces loaded
-      const interfaceDefs = Object.fromEntries<{
-        def: InterfaceMetadata;
-        handler: undefined;
-      }>(
-        (
-          await Promise.all<InterfaceMetadata>(
-            objectDef.implements?.map((i) => ret.getInterfaceDefinition(i)) ??
-              [],
-          )
-        ).map((i) => [i.apiName, { def: i, handler: undefined }]),
-      );
-
       const fullObjectDef = {
         ...objectDef,
-        [InterfaceDefinitions]: interfaceDefs,
+        [InterfaceDefinitions]: {},
       };
 
       return deepFreeze(fullObjectDef);
@@ -118,12 +106,48 @@ export const createStandardOntologyProviderFactory: (
       };
     }
 
-    const ret = {
+    const loadInterfaceDefinition = makeGetter(loadInterface);
+    const base = {
       getObjectDefinition: makeGetter(loadObject),
-      getInterfaceDefinition: makeGetter(loadInterface),
       getActionDefinition: makeGetter(loadAction),
       getQueryDefinition: makeQueryGetter(client, loadQuery),
     };
-    return ret;
+
+    function preparedProvider(
+      interfaces: ReadonlyMap<string, InterfaceMetadata>,
+    ): OntologyProvider {
+      const getPreparedInterfaceDefinition = (apiName: string) => {
+        const definition = interfaces.get(apiName);
+        if (!definition) {
+          throw new Error(
+            `Interface '${apiName}' has not been prepared. Use the client returned by await client.prepare({ interfaces: [MyInterface] }).`,
+          );
+        }
+        return definition;
+      };
+      return {
+        ...base,
+        getPreparedInterfaceDefinition,
+        getInterfaceDefinition: (apiName) =>
+          Promise.resolve().then(() => getPreparedInterfaceDefinition(apiName)),
+        async prepare(options) {
+          const definitions = await Promise.all(
+            (options.interfaces ?? []).map((definition) =>
+              loadInterfaceDefinition(definition.apiName),
+            ),
+          );
+          return preparedProvider(
+            new Map([
+              ...interfaces,
+              ...definitions.map(
+                (definition) => [definition.apiName, definition] as const,
+              ),
+            ]),
+          );
+        },
+      };
+    }
+
+    return preparedProvider(new Map());
   };
 };

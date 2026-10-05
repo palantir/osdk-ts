@@ -169,7 +169,9 @@ describe("queries", () => {
         interfaceObject: Osdk.Instance<FooInterface>;
       }>().toMatchTypeOf<InferredParamType>();
 
-      const result = await client(queryAcceptsInterface).executeFunction({
+      const result = await (
+        await client.prepare({ interfaces: [FooInterface] })
+      )(queryAcceptsInterface).executeFunction({
         interfaceObject: { $objectType: "Employee", $primaryKey: 50030 },
       });
 
@@ -183,7 +185,9 @@ describe("queries", () => {
     });
 
     it("Works when passing in interface object sets", async () => {
-      const os = client(FooInterface);
+      const os = (await client.prepare({ interfaces: [FooInterface] }))(
+        FooInterface,
+      );
       const result = await client(
         queryAcceptsInterfaceObjectSet,
       ).executeFunction({

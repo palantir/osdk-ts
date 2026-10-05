@@ -51,6 +51,12 @@ export type CheckVersionBound<Q> =
         }
     : Q;
 
+/** Metadata dependencies to resolve before using the returned client. */
+export interface ClientPreparation {
+  /** Interfaces available for queries and synchronous `$as()` conversions. */
+  interfaces?: readonly InterfaceDefinition[];
+}
+
 export interface Client extends SharedClient, OldSharedClient {
   /**
    * Returns the operation surface for the given ontology definition. The shape of the
@@ -76,10 +82,12 @@ export interface Client extends SharedClient, OldSharedClient {
     : CompileTimeMetadata<Q>["objectSet"];
 
   /**
+   * Interfaces must be declared in `prepare()` before use.
    * @param o - The interface definition to wrap.
    * @example
    * ```ts
-   * const page = await client(MyInterface).fetchPage({ $pageSize: 30 });
+   * const prepared = await client.prepare({ interfaces: [MyInterface] });
+   * const page = await prepared(MyInterface).fetchPage({ $pageSize: 30 });
    * ```
    * @returns a minimal object set over all objects implementing the interface.
    */
@@ -137,6 +145,7 @@ export interface Client extends SharedClient, OldSharedClient {
    * Fetches runtime metadata for the given ontology definition. The returned shape
    * is dispatched on the kind of definition passed: {@link ObjectMetadata},
    * {@link InterfaceMetadata}, {@link ActionMetadata}, or {@link QueryMetadata}.
+   * Interface definitions must have been explicitly prepared on this client.
    * @param o - The object type, interface, action, or query definition to look up.
    * @example
    * ```ts
@@ -164,6 +173,21 @@ export interface Client extends SharedClient, OldSharedClient {
             ? QueryMetadata
             : never
   >;
+
+  /**
+   * Returns a new client with the requested metadata prepared. Object metadata
+   * continues to load automatically; interfaces require explicit preparation.
+   * Declarations accumulate when preparing an already prepared client. The
+   * original client and objects loaded through it remain unchanged.
+   *
+   * @example
+   * ```ts
+   * const prepared = await client.prepare({ interfaces: [MyInterface] });
+   * const employee = await prepared(Employee).fetchOne(12345);
+   * const view = employee.$as(MyInterface);
+   * ```
+   */
+  prepare(options: ClientPreparation): Promise<Client>;
 
   /** @internal */
   [additionalContext]: MinimalClient;

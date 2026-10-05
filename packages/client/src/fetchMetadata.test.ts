@@ -268,7 +268,10 @@ describe("FetchMetadata", () => {
   });
 
   it("fetches interface metadata correctly", async () => {
-    const interfaceMetadata = await client.fetchMetadata(
+    const prepared = await client.prepare({
+      interfaces: [$Interfaces.FooInterface],
+    });
+    const interfaceMetadata = await prepared.fetchMetadata(
       $Interfaces.FooInterface,
     );
 

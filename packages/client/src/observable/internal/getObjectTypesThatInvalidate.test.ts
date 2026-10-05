@@ -38,7 +38,7 @@ describe(getObjectTypesThatInvalidate, () => {
   let apiServer: SetupServer;
   let fauxFoundry: FauxFoundry;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     const logger = new TestLogger();
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
@@ -48,6 +48,7 @@ describe(getObjectTypesThatInvalidate, () => {
     ({ client, apiServer, fauxFoundry } = testSetup);
 
     setupOntology(fauxFoundry);
+    client = await client.prepare({ interfaces: [FooInterface] });
 
     return () => {
       testSetup.apiServer.close();

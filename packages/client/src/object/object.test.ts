@@ -36,7 +36,9 @@ import { additionalContext, type Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import type { FetchedObjectTypeDefinition } from "../ontology/OntologyProvider.js";
 import { InterfaceDefinitions } from "../ontology/OntologyProvider.js";
+import { createOsdkInterface } from "./convertWireToOsdkObjects/createOsdkInterface.js";
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
+import type { ObjectHolder } from "./convertWireToOsdkObjects/ObjectHolder.js";
 
 function asV2Object(o: any, includeRid?: boolean) {
   o = includeRid ? { ...o } : withoutRid(o);
@@ -57,11 +59,12 @@ describe.each([
   let client: Client;
   let apiServer: SetupServer;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     ({ client, apiServer } = startNodeApiServer(
       new LegacyFauxFoundry(baseUrl),
       createClient,
     ));
+    client = await client.prepare({ interfaces: [FooInterface] });
 
     return () => {
       apiServer.close();
@@ -543,7 +546,10 @@ describe.each([
           "employeeId" | "fullName"
         >;
 
-        const loadedInterfaceObject = employeeOsdkObject.$as(interfaceDef);
+        const loadedInterfaceObject = createOsdkInterface(
+          employeeOsdkObject as unknown as ObjectHolder,
+          interfaceDef,
+        );
         expect(() =>
           loadedInterfaceObject.$clone({
             notImplementedFooSpt: "John Adams",

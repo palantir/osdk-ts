@@ -211,7 +211,7 @@ describe(Store, () => {
     let cache: Store;
     let fauxFoundry: FauxFoundry;
 
-    beforeAll(() => {
+    beforeAll(async () => {
       // Set up the mock environment and client
       const testSetup = startNodeApiServer(
         new FauxFoundry("https://stack.palantir.com/"),
@@ -223,6 +223,7 @@ describe(Store, () => {
       // Use the existing setup function that adds Employee objects
       setupOntology(fauxFoundry);
       setupSomeEmployees(fauxFoundry);
+      client = await client.prepare({ interfaces: [FooInterface] });
 
       return () => {
         testSetup.apiServer.close();
@@ -849,6 +850,7 @@ describe(Store, () => {
 
       setupOntology(testSetup.fauxFoundry);
       setupSomeEmployees(testSetup.fauxFoundry);
+      client = await client.prepare({ interfaces: [FooInterface] });
 
       employeesAsServerReturns = (
         await client(Employee).fetchPage({

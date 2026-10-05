@@ -819,7 +819,7 @@ describe("ListQuery pivotTo tests", () => {
   let fauxFoundry: FauxFoundry;
   let store: Store;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
       createClient,
@@ -828,6 +828,7 @@ describe("ListQuery pivotTo tests", () => {
     ({ client, apiServer, fauxFoundry } = testSetup);
 
     setupOntology(testSetup.fauxFoundry);
+    client = await client.prepare({ interfaces: [FooInterface] });
 
     return () => {
       testSetup.apiServer.close();

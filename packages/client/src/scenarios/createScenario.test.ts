@@ -70,7 +70,9 @@ describe("createScenario", () => {
       data: [],
     };
     mockInterfaceFetchPageResponse(fetchFunction, loadResponse);
-    await scenario(BarInterface).fetchPage();
+    await (
+      await scenario.prepare({ interfaces: [BarInterface] })
+    )(BarInterface).fetchPage();
     const loadCall = fetchFunction.mock.calls.find(([input]) =>
       String(input).includes("objectSets/loadObjects"),
     );

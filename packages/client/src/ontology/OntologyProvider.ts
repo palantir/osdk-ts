@@ -21,6 +21,7 @@ import type {
   QueryMetadata,
 } from "@osdk/api";
 
+import type { ClientPreparation } from "../Client.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export const InterfaceDefinitions: unique symbol = Symbol(
@@ -28,13 +29,17 @@ export const InterfaceDefinitions: unique symbol = Symbol(
 );
 
 export interface FetchedObjectTypeDefinition extends ObjectMetadata {
-  // we keep this here so we can depend on these synchronously
+  // Legacy metadata slot. Interface casts now resolve definitions through the
+  // client's explicitly prepared ontology provider.
   [InterfaceDefinitions]: {
     [key: string]: { def: InterfaceMetadata };
   };
 }
 
 export interface OntologyProvider {
+  prepare(options: ClientPreparation): Promise<OntologyProvider>;
+  getPreparedInterfaceDefinition(apiName: string): InterfaceMetadata;
+
   /**
    * Returns the current known definition for the object.
    *
@@ -47,9 +52,9 @@ export interface OntologyProvider {
   ) => Promise<FetchedObjectTypeDefinition>;
 
   /**
-   * Returns the current known definition for the interface.
+   * Returns the explicitly prepared definition for the interface.
    *
-   * May result in multiple network calls. May cache results. May invalidate results
+   * Throws if the interface has not been prepared. Never performs network I/O.
    * @param apiName
    * @returns
    */

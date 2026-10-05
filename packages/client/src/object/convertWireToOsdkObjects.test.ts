@@ -61,9 +61,10 @@ describe("convertWireToOsdkObjects", () => {
     },
   };
 
-  beforeAll(() => {
+  beforeAll(async () => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
     ({ client } = testSetup);
+    client = await client.prepare({ interfaces: [FooInterface] });
     return () => {
       testSetup.apiServer.close();
     };
@@ -244,11 +245,18 @@ describe("convertWireToOsdkObjects", () => {
   });
 
   it("reconstitutes interfaces properly without rid", async () => {
-    const clientCtx = createMinimalClient(
+    let clientCtx = createMinimalClient(
       { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
       () => "myAccessToken",
     );
+
+    clientCtx = {
+      ...clientCtx,
+      ontologyProvider: await clientCtx.ontologyProvider.prepare({
+        interfaces: [FooInterface],
+      }),
+    };
 
     const objectFromWire = {
       __apiName: "Employee" as const,
@@ -301,11 +309,18 @@ describe("convertWireToOsdkObjects", () => {
   });
 
   it("reconstitutes interfaces properly without rid - with IDP", async () => {
-    const clientCtx = createMinimalClient(
+    let clientCtx = createMinimalClient(
       { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
       () => "myAccessToken",
     );
+
+    clientCtx = {
+      ...clientCtx,
+      ontologyProvider: await clientCtx.ontologyProvider.prepare({
+        interfaces: [FooInterface],
+      }),
+    };
 
     const objectFromWire = {
       __apiName: "Employee" as const,
@@ -359,11 +374,18 @@ describe("convertWireToOsdkObjects", () => {
   });
 
   it("reconstitutes interfaces properly with rid", async () => {
-    const clientCtx = createMinimalClient(
+    let clientCtx = createMinimalClient(
       { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
       () => "myAccessToken",
     );
+
+    clientCtx = {
+      ...clientCtx,
+      ontologyProvider: await clientCtx.ontologyProvider.prepare({
+        interfaces: [FooInterface],
+      }),
+    };
 
     const objectFromWire = {
       __apiName: "Employee" as const,
@@ -423,11 +445,18 @@ describe("convertWireToOsdkObjects", () => {
   });
 
   it("reconstitutes interfaces properly with rid - with IDP", async () => {
-    const clientCtx = createMinimalClient(
+    let clientCtx = createMinimalClient(
       { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
       () => "myAccessToken",
     );
+
+    clientCtx = {
+      ...clientCtx,
+      ontologyProvider: await clientCtx.ontologyProvider.prepare({
+        interfaces: [FooInterface],
+      }),
+    };
 
     const objectFromWire = {
       __apiName: "Employee" as const,
@@ -930,61 +959,7 @@ describe("convertWireToOsdkObjects", () => {
             "titleProperty": "fullName",
             "type": "object",
             "visibility": "NORMAL",
-            Symbol(InterfaceDefinitions): {
-              "FooInterface": {
-                "def": {
-                  "apiName": "FooInterface",
-                  "description": "Interface for Foo",
-                  "displayName": "Foo Interface",
-                  "implementedBy": [
-                    "Employee",
-                    "Person",
-                  ],
-                  "implements": [],
-                  "links": {
-                    "toBar": {
-                      "multiplicity": true,
-                      "targetType": "interface",
-                      "targetTypeApiName": "BarInterface",
-                    },
-                  },
-                  "properties": {
-                    "fooArray": {
-                      "description": "An array-valued Foo property",
-                      "displayName": "Foo Array",
-                      "hasReducers": false,
-                      "mainValue": undefined,
-                      "multiplicity": true,
-                      "nullable": true,
-                      "type": "string",
-                      "valueFormatting": undefined,
-                      "valueTypeApiName": undefined,
-                    },
-                    "fooIdp": {
-                      "description": "A Foo IDP",
-                      "displayName": "Foo IDP",
-                      "multiplicity": false,
-                      "nullable": true,
-                      "type": "string",
-                      "valueFormatting": undefined,
-                      "valueTypeApiName": undefined,
-                    },
-                    "fooSpt": {
-                      "description": "A foo",
-                      "displayName": "Foo",
-                      "multiplicity": false,
-                      "nullable": true,
-                      "type": "string",
-                      "valueFormatting": undefined,
-                      "valueTypeApiName": undefined,
-                    },
-                  },
-                  "rid": "ri.interface.main.interface.1",
-                  "type": "interface",
-                },
-                "handler": undefined,
-              },
-            },
+            Symbol(InterfaceDefinitions): {},
           }
         `,
         );

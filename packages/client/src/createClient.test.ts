@@ -97,7 +97,9 @@ describe(createClient, () => {
         // An existing client keeps its branch if navigation changes the URL.
         location.search = "?foundryBranchRid=another-branch";
         mockInterfaceFetchPageResponse(fetchFunction, { data: [] });
-        await branchClient(BarInterface).fetchPage();
+        await (
+          await branchClient.prepare({ interfaces: [BarInterface] })
+        )(BarInterface).fetchPage();
 
         expect(fetchFunction).toHaveBeenCalledTimes(2);
         for (const [input] of fetchFunction.mock.calls) {
@@ -123,7 +125,9 @@ describe(createClient, () => {
 
     it("works for objects", async () => {
       mockInterfaceFetchPageResponse(fetchFunction, { data: [] });
-      await client(BarInterface).fetchPage();
+      await (
+        await client.prepare({ interfaces: [BarInterface] })
+      )(BarInterface).fetchPage();
       expect(fetchFunction).toHaveBeenCalledTimes(2);
 
       const parts = getUserAgentPartsFromMockedFetch();
@@ -145,7 +149,9 @@ describe(createClient, () => {
         customFetch,
       );
 
-      await clientWithHeaders(BarInterface).fetchPage();
+      await (
+        await clientWithHeaders.prepare({ interfaces: [BarInterface] })
+      )(BarInterface).fetchPage();
       expect(customFetch).toHaveBeenCalledTimes(2);
 
       const parts = getUserAgentPartsFromMockedFetch(customFetch);
@@ -263,7 +269,9 @@ describe(createClient, () => {
 
       mockInterfaceFetchPageResponse(fetchFunction, { data: [] });
 
-      await clientWithTransaction(BarInterface).fetchPage();
+      await (
+        await clientWithTransaction.prepare({ interfaces: [BarInterface] })
+      )(BarInterface).fetchPage();
 
       expect(fetchFunction).toHaveBeenCalledTimes(2);
       const url = fetchFunction.mock.calls.find(([input]) =>

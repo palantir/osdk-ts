@@ -56,7 +56,9 @@ describe("withScenario", () => {
     const mock: LoadObjectSetV2MultipleObjectTypesResponse = { data: [] };
     mockInterfaceFetchPageResponse(fetchFunction, mock);
 
-    await scenario(BarInterface).fetchPage();
+    await (
+      await scenario.prepare({ interfaces: [BarInterface] })
+    )(BarInterface).fetchPage();
 
     expect(fetchFunction).toHaveBeenCalledTimes(2);
     const loadCall = fetchFunction.mock.calls.find(([input]) =>
