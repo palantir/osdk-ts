@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.77.0
+
+### Minor Changes
+
+- de4d83e: Add phonetic search support to string properties.
+
 ## 0.76.0
 
 ### Minor Changes
