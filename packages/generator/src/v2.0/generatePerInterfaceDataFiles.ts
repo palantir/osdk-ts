@@ -23,7 +23,14 @@ import { wireInterfaceTypeV2ToSdkObjectConst } from "./wireInterfaceTypeV2ToSdkO
 
 /** @internal */
 export async function generatePerInterfaceDataFiles(
-  { fs, outDir, ontology, importExt, forInternalUse }: GenerateContext,
+  {
+    fs,
+    outDir,
+    ontology,
+    importExt,
+    forInternalUse,
+    omitInterfaceImplementations,
+  }: GenerateContext,
 ) {
   const interfacesDir = path.join(outDir, "ontology", "interfaces");
   await fs.mkdir(interfacesDir, {
@@ -53,6 +60,7 @@ export async function generatePerInterfaceDataFiles(
           true,
           forInternalUse,
           relPath,
+          omitInterfaceImplementations,
         )
       }
     `),

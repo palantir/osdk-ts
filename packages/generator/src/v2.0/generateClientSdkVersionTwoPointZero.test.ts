@@ -525,6 +525,38 @@ describe("generator", () => {
     helper = createMockMinimalFiles();
   });
 
+  it("omits interface implementation lists only in portable generated definitions", async () => {
+    const ontology = immer.produce(TodoWireOntology, draft => {
+      draft.interfaceTypes.SomeInterface.implementedByObjectTypes = ["Todo"];
+    });
+
+    await generateClientSdkVersionTwoPointZero(
+      ontology,
+      "",
+      helper.minimalFiles,
+      BASE_PATH,
+      "module",
+      new Map(),
+      new Map(),
+      new Map(),
+      false,
+      [],
+      true,
+      new Map(),
+      true,
+    );
+
+    const files = helper.getFiles();
+    const interfaceSource =
+      files[`${BASE_PATH}/ontology/interfaces/SomeInterface.ts`];
+    expect(interfaceSource).not.toContain("implementedBy:");
+    expect(interfaceSource).toContain("SomeProperty");
+    expect(
+      JSON.parse(files[`${BASE_PATH}/experimental/ontology-metadata.json`])
+        .interfaceTypes.SomeInterface.implementedByObjectTypes,
+    ).toEqual(["Todo"]);
+  });
+
   describe("value type constraints", () => {
     const enumConstraint: ValueTypeConstraint = {
       type: "enum",

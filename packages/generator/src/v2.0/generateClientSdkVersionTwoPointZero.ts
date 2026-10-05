@@ -43,6 +43,7 @@ export async function generateClientSdkVersionTwoPointZero(
   fixedVersionQueryTypes: string[] = [],
   exportOntologyMetadata: boolean = false,
   queryVersionReferences: ReadonlyMap<string, string> = new Map(),
+  omitInterfaceImplementations: boolean = false,
 ): Promise<void> {
   const duplicateQueryType = fixedVersionQueryTypes.find(queryType =>
     queryVersionReferences.has(queryType)
@@ -85,6 +86,7 @@ export async function generateClientSdkVersionTwoPointZero(
     fs,
     outDir,
     forInternalUse,
+    omitInterfaceImplementations,
     queryVersionReferences: normalizedQueryVersionReferences,
   };
 

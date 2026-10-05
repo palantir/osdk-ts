@@ -44,6 +44,7 @@ export function wireInterfaceTypeV2ToSdkObjectConst(
   v2: boolean = false,
   forInternalUse: boolean = false,
   currentFilePath: string = "",
+  omitInterfaceImplementations: boolean = false,
 ) {
   const definition = deleteUndefineds(
     wireInterfaceTypeV2ToSdkObjectDefinition(
@@ -203,7 +204,15 @@ ${
       
     }    
 
-    ${createDefinition(interfaceDef, ontology, interfaceDef.shortApiName, ids)}
+    ${
+      createDefinition(
+        interfaceDef,
+        ontology,
+        interfaceDef.shortApiName,
+        ids,
+        omitInterfaceImplementations,
+      )
+    }
 
 `;
   }

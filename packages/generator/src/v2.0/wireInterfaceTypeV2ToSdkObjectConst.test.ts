@@ -428,6 +428,51 @@ describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
       "
     `);
   });
+  it.each([
+    { implementors: [], label: "empty" },
+    { implementors: ["childrenObject"], label: "populated" },
+  ])(
+    "omits $label implementation lists in portable interface output",
+    async ({ implementors }) => {
+      const ontology = enhanceOntology({
+        sanitized: simpleOntology("ontology", [
+          simpleInterface("Foo", [simpleSpt("foo")], [], 2, implementors),
+        ]),
+        importExt: "",
+      });
+      const iface = ontology.interfaceTypes.Foo;
+      if (!(iface instanceof EnhancedInterfaceType)) {
+        throw new Error("Expected Foo to be an EnhancedInterfaceType");
+      }
+
+      const normal = wireInterfaceTypeV2ToSdkObjectConst(
+        iface,
+        ontology,
+        true,
+        true,
+      );
+      const portable = wireInterfaceTypeV2ToSdkObjectConst(
+        iface,
+        ontology,
+        true,
+        true,
+        "",
+        true,
+      );
+
+      const formattedNormal = await format(normal, { parser: "typescript" });
+      const formattedPortable = await format(portable, {
+        parser: "typescript",
+      });
+      expect(formattedNormal).toContain(
+        `implementedBy: ${JSON.stringify(implementors)};`,
+      );
+      expect(formattedPortable).not.toContain("implementedBy:");
+      expect(formattedPortable).toContain("apiName: \"Foo\"");
+      expect(formattedPortable).toContain("props: Foo.Props");
+    },
+  );
+
   it("Generates map for implementedBy", async () => {
     const fooSpt = simpleSpt("foo");
     const barSpt = simpleSpt("bar");

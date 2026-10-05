@@ -285,8 +285,15 @@ export function createDefinition(
     osdkObjectStrictPropsIdentifier,
     osdkObjectLinksIdentifier,
   }: Identifiers,
+  omitInterfaceImplementations: boolean = false,
 ) {
   const definition = object.getCleanedUpDefinition(true);
+  const emittedDefinition = omitInterfaceImplementations
+      && definition.type === "interface"
+    ? Object.fromEntries(
+      Object.entries(definition).filter(([key]) => key !== "implementedBy"),
+    )
+    : definition;
   const propertyMetadata = object instanceof EnhancedObjectType
     ? object.raw.objectType.properties
     : object instanceof EnhancedInterfaceType
@@ -313,7 +320,7 @@ export function createDefinition(
       linksType: ${osdkObjectLinksIdentifier};
       strictProps: ${osdkObjectStrictPropsIdentifier};
       ${
-    stringify(definition, {
+    stringify(emittedDefinition, {
       links: (_value) =>
         `{
         ${
