@@ -432,20 +432,17 @@ function extractInterfaceType(
   });
 }
 
-/**
- * Get interface property type output shape for either interface-defined or SPT-backed properties.
- */
 function getInterfaceSchemaTransitionOutputShape(
   knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
   interfaceType: MarketplaceInterfaceType,
   transition: InterfaceTypeSchemaTransition,
 ): InterfaceTypeSchemaTransitionOutputShape {
   return {
+    transitionId: transition.id,
     about: createLocalizedAbout(
       transition.title ?? transition.id,
       transition.description ?? "",
     ),
-    transitionId: transition.id,
     interfaceType: requireKnownIdentifier(
       knownMarketplaceIdentifiers.interfaceTypes,
       interfaceType.rid,
@@ -484,18 +481,9 @@ function toMarketplaceSchemaMigrationInstruction(
   }
 }
 
-function requireKnownIdentifier(
-  identifiers: Record<string, string> | undefined,
-  rid: string,
-  kind: string,
-): string {
-  const blockInternalId = identifiers?.[rid];
-  if (blockInternalId === undefined) {
-    throw new Error(`Missing known identifier for ${kind} ${rid}`);
-  }
-  return blockInternalId;
-}
-
+/**
+ * Get interface property type output shape for either interface-defined or SPT-backed properties.
+ */
 function getInterfacePropertyTypeOutputShape(
   knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
   interfaceType: MarketplaceInterfaceType,
@@ -1303,4 +1291,16 @@ function getReadableIdForInterfaceLink(
     interfaceApiName,
     linkApiName,
   );
+}
+
+function requireKnownIdentifier(
+  identifiers: Record<string, string> | undefined,
+  rid: string,
+  kind: string,
+): string {
+  const blockInternalId = identifiers?.[rid];
+  if (blockInternalId === undefined) {
+    throw new Error(`Missing known identifier for ${kind} ${rid}`);
+  }
+  return blockInternalId;
 }
