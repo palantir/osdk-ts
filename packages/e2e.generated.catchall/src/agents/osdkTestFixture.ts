@@ -42,12 +42,6 @@ export interface osdkTestFixture
   version: "0.5.0";
   osdkMetadata: typeof $osdkMetadata;
   __DefinitionMetadata?: {
-    type: "agent";
-    apiName: "osdkTestFixture";
-    version: "0.5.0";
-    arguments: {
-      defaultCity: { type: "string" };
-    };
     signatures: osdkTestFixture.Signatures;
   };
 }

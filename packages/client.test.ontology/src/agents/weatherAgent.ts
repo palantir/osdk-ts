@@ -42,12 +42,6 @@ export interface weatherAgent
   version: "1.2.3";
   osdkMetadata: typeof $osdkMetadata;
   __DefinitionMetadata?: {
-    type: "agent";
-    apiName: "weatherAgent";
-    version: "1.2.3";
-    arguments: {
-      city: { type: "string" };
-    };
     signatures: weatherAgent.Signatures;
   };
 }

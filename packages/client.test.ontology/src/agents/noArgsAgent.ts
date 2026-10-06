@@ -38,10 +38,6 @@ export interface noArgsAgent
   version: "1.2.3";
   osdkMetadata: typeof $osdkMetadata;
   __DefinitionMetadata?: {
-    type: "agent";
-    apiName: "noArgsAgent";
-    version: "1.2.3";
-    arguments: {};
     signatures: noArgsAgent.Signatures;
   };
 }
