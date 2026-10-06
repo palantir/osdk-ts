@@ -1415,6 +1415,130 @@ describe("Experimental Test Suite", () => {
       expect(objectOutputShapes.length).toBeGreaterThanOrEqual(1);
     });
 
+    it("preserves marking properties from external imported metadata", async () => {
+      const externalImportedMetadata = {
+        actionTypes: {},
+        interfaceTypes: {},
+        objectTypes: {
+          TestObject: {
+            implementsInterfaces: [],
+            implementsInterfaces2: {},
+            linkTypes: [],
+            objectType: {
+              apiName: "TestObject",
+              description: "",
+              displayName: "Test Object",
+              icon: { type: "blueprint", color: "#4C90F0", name: "cube" },
+              pluralDisplayName: "Test Objects",
+              primaryKey: "id",
+              properties: {
+                id: {
+                  dataType: { type: "string" },
+                  displayName: "Id",
+                  rid: "ri.ontology.main.property.00000000-0000-0000-0000-000000000003",
+                  status: { type: "experimental" },
+                  typeClasses: [],
+                  visibility: "NORMAL",
+                },
+                value: {
+                  dataType: { type: "marking" },
+                  displayName: "Value",
+                  rid: "ri.ontology.main.property.00000000-0000-0000-0000-000000000004",
+                  status: { type: "experimental" },
+                  typeClasses: [],
+                  visibility: "NORMAL",
+                },
+              },
+              rid: "ri.ontology.main.object-type.00000000-0000-0000-0000-000000000002",
+              status: "EXPERIMENTAL",
+              titleProperty: "id",
+              visibility: "NORMAL",
+            },
+            sharedPropertyTypeMapping: {},
+          },
+        },
+        ontology: {
+          apiName: "test",
+          description: "",
+          displayName: "Test",
+          rid: "ri.ontology.main.ontology.test",
+        },
+        queryTypes: {},
+        sharedPropertyTypes: {},
+        valueTypes: {},
+      } as unknown as ExternalImportedOntologyMetadata;
+
+      const result = await defineOntologyV2(
+        "com.palantir.",
+        () => {},
+        undefined,
+        undefined,
+        undefined,
+        "00000000-0000-0000-0000-00000000002a",
+        undefined,
+        externalImportedMetadata,
+      );
+
+      const objectReadableId =
+        ReadableIdGenerator.getForObjectType("TestObject");
+      const idReadableId = ReadableIdGenerator.getForObjectProperty(
+        "TestObject",
+        "id",
+      );
+      const valueReadableId = ReadableIdGenerator.getForObjectProperty(
+        "TestObject",
+        "value",
+      );
+      expect(result.shapes.inputShapes.get(idReadableId)).toMatchObject({
+        type: "property",
+        property: {
+          type: {
+            type: "objectPropertyType",
+            objectPropertyType: {
+              type: "primitive",
+              primitive: { type: "stringType" },
+            },
+          },
+        },
+      });
+      expect
+        .soft(result.shapes.inputShapes.get(valueReadableId))
+        .toMatchObject({
+          type: "property",
+          property: {
+            about: { fallbackTitle: "Value" },
+            type: {
+              type: "objectPropertyType",
+              objectPropertyType: {
+                type: "primitive",
+                primitive: { type: "markingType" },
+              },
+            },
+          },
+        });
+      expect
+        .soft(result.shapes.inputShapes.get(objectReadableId))
+        .toMatchObject({
+          type: "objectType",
+          objectType: {
+            propertyTypes: [
+              "824f0620-f826-372b-aedb-201a0482f3b0",
+              "22a321b3-ab42-35bc-917c-e64a9982f7d9",
+            ],
+          },
+        });
+
+      expect(result.importedInputPresets.get(valueReadableId)).toEqual(
+        apiNamePreset("value"),
+      );
+      expect(result.shapes.inputShapeMetadata.has(valueReadableId)).toBe(true);
+      expect(result.blockDataAddOn.idToBlockShapeId).toMatchObject({
+        [objectReadableId]: "2208f50a-baaf-39f6-b054-bf332136365e",
+        [idReadableId]: "824f0620-f826-372b-aedb-201a0482f3b0",
+        [valueReadableId]: "22a321b3-ab42-35bc-917c-e64a9982f7d9",
+      });
+    });
+
     it("uses resolved presets for externally imported parent shapes", async () => {
       const objectTypeRid = "ri.ontology.main.object-type.imported-foo";
       const propertyTypeRid = "ri.ontology.main.property.imported-foo-name";

@@ -52,7 +52,10 @@ import type {
   ReadableId,
 } from "../../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../../util/generateRid.js";
-import { typeToMarketplaceObjectPropertyType } from "../typeVisitors.js";
+import {
+  externalTypeToMarketplaceObjectPropertyType,
+  typeToMarketplaceObjectPropertyType,
+} from "../typeVisitors.js";
 import {
   convertParameterConstraintTypeReferencesToShape,
   extractValueTypeInputShapeIfPresent,
@@ -188,13 +191,50 @@ function extractImportedObjectTypes(
     const readableId = objectReadableIds.get(rid as ObjectTypeRid);
     if (!readableId) continue;
 
+    // Generate the list of property-shape IDs that the object input declares as part of its shape
     const propertyBlockIds: string[] = [];
-    for (const propertyRid of Object.keys(
-      objectType.objectType.propertyTypes,
-    )) {
-      const propReadableId = propertyReadableIds.get(propertyRid);
-      if (propReadableId) {
-        propertyBlockIds.push(ridGenerator.toBlockInternalId(propReadableId));
+    const apiName = objectType.objectType.apiName!;
+    const sourceObjectType =
+      externalImportedMetadata?.objectTypes[apiName]?.objectType;
+
+    // sourceObjectType can be undefined if the import is defined using defineImportObject
+    // This isn't documented but as a precaution, we fallback to the old behavior if we have no external
+    // imported metadata about this object type
+    if (sourceObjectType) {
+      Object.entries(sourceObjectType.properties).forEach(
+        ([propertyApiName, property]) => {
+          // Checks whether a property from the original external metadata survived conversion through
+          // Maker’s authoring model. Some properties like markings, vectors and structs don't make it through.
+          const isInImportedBlockData = Object.values(
+            objectType.objectType.propertyTypes,
+          ).some((candidate) => candidate.apiName === propertyApiName);
+
+          if (
+            !isInImportedBlockData &&
+            externalTypeToMarketplaceObjectPropertyType(property.dataType) ===
+              undefined
+          ) {
+            return;
+          }
+
+          propertyBlockIds.push(
+            ridGenerator.toBlockInternalId(
+              ReadableIdGenerator.getForObjectProperty(
+                apiName,
+                propertyApiName,
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      for (const propertyRid of Object.keys(
+        objectType.objectType.propertyTypes,
+      )) {
+        const propReadableId = propertyReadableIds.get(propertyRid);
+        if (propReadableId) {
+          propertyBlockIds.push(ridGenerator.toBlockInternalId(propReadableId));
+        }
       }
     }
 
@@ -212,9 +252,6 @@ function extractImportedObjectTypes(
       type: "objectType",
       objectType: inputShape,
     });
-    const apiName = objectType.objectType.apiName!;
-    const sourceObjectType =
-      externalImportedMetadata?.objectTypes[apiName]?.objectType;
     const objectTypeId =
       sourceObjectType !== undefined &&
       isResolvedShapePresetEligible(
@@ -285,6 +322,64 @@ function extractImportedObjectTypes(
       });
       addApiNamePreset(blockShapes, propReadableId, propertyType.apiName!);
 
+      blockShapes.inputShapeMetadata.set(propReadableId, {
+        isOptional: false,
+        isAccessedInReconcile: true,
+        reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+        preallocateAccessRequirements: "RESOURCE_PREALLOCATION_REQUIRED",
+      });
+    }
+
+    // This fix is a bit conservative version: we keep the established block-data conversion for
+    // properties that have successfully converted from external metadata into into Maker
+    // entities. For properties that don't survive, we go directly from metadata to Marketplace
+    // shapes. This minimizes behavioral changes but does (unfortunately) add extra logic.
+    for (const [propertyApiName, property] of Object.entries(
+      sourceObjectType?.properties ?? {},
+    )) {
+      const propReadableId = ReadableIdGenerator.getForObjectProperty(
+        apiName,
+        propertyApiName,
+      );
+      if (blockShapes.inputShapes.has(propReadableId)) continue;
+
+      const propertyType = externalTypeToMarketplaceObjectPropertyType(
+        property.dataType,
+      );
+      if (propertyType === undefined) continue;
+
+      // The sharedPropertyType mapping looks like this:
+      // sharedPropertyTypeMapping: {
+      //   employeeName: "name",
+      // }
+      // Where employeeName is the shared property type API name, and name is the object property API name
+      const sharedPropertyTypeApiName = Object.entries(
+        externalImportedMetadata?.objectTypes[apiName]
+          ?.sharedPropertyTypeMapping ?? {},
+      ).find(
+        ([_, mappedPropertyApiName]) =>
+          mappedPropertyApiName === propertyApiName,
+      )?.[0];
+      blockShapes.inputShapes.set(propReadableId, {
+        type: "property",
+        property: {
+          about: createLocalizedAbout(
+            property.displayName ?? propertyApiName,
+            property.description ?? "",
+          ),
+          objectType: ridGenerator.toBlockInternalId(readableId),
+          type: {
+            type: "objectPropertyType",
+            objectPropertyType: propertyType,
+          },
+          sharedPropertyType: sharedPropertyTypeApiName
+            ? ridGenerator.toBlockInternalId(
+                ReadableIdGenerator.getForSpt(sharedPropertyTypeApiName),
+              )
+            : undefined,
+        },
+      });
+      addApiNamePreset(blockShapes, propReadableId, propertyApiName);
       blockShapes.inputShapeMetadata.set(propReadableId, {
         isOptional: false,
         isAccessedInReconcile: true,
