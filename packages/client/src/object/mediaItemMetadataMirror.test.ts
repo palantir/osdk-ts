@@ -116,44 +116,75 @@ import type {
   VideoMediaItemMetadata as PlatformVideoMediaItemMetadata,
   VideoSpecification as PlatformVideoSpecification,
 } from "@osdk/foundry.mediasets";
+import type { Simplify } from "type-fest";
 import { describe, expectTypeOf, it } from "vitest";
 
+type WithSizeBytesLong<T> = T extends unknown
+  ? "sizeBytesLong" extends keyof T
+    ? T
+    : T & { sizeBytesLong: string }
+  : never;
+type SupportedPlatformMediaItemMetadata = Extract<
+  PlatformMediaItemMetadata,
+  { type: ApiMediaItemMetadata["type"] }
+>;
+
 /**
- * Fails the build when `@osdk/api`'s `MediaItemMetadata` mirror drifts from
- * `@osdk/foundry.mediasets` (union extensions, new fields on existing variants).
+ * checks the supported metadata variants against the platform bindings
+ * validateMediaItemMetadata enforces size-field parity during production typechecking
  */
 describe("MediaItemMetadata mirror", () => {
   it("matches the platform union", () => {
-    expectTypeOf<ApiMediaItemMetadata>().toEqualTypeOf<PlatformMediaItemMetadata>();
+    expectTypeOf<Simplify<ApiMediaItemMetadata>>().toEqualTypeOf<
+      Simplify<WithSizeBytesLong<SupportedPlatformMediaItemMetadata>>
+    >();
   });
 
   describe("variant interfaces", () => {
     it("DocumentMediaItemMetadata", () => {
-      expectTypeOf<ApiDocumentMediaItemMetadata>().toEqualTypeOf<PlatformDocumentMediaItemMetadata>();
+      expectTypeOf<Simplify<ApiDocumentMediaItemMetadata>>().toEqualTypeOf<
+        Simplify<WithSizeBytesLong<PlatformDocumentMediaItemMetadata>>
+      >();
     });
     it("ImageryMediaItemMetadata", () => {
-      expectTypeOf<ApiImageryMediaItemMetadata>().toEqualTypeOf<PlatformImageryMediaItemMetadata>();
+      expectTypeOf<Simplify<ApiImageryMediaItemMetadata>>().toEqualTypeOf<
+        Simplify<WithSizeBytesLong<PlatformImageryMediaItemMetadata>>
+      >();
     });
     it("AudioMediaItemMetadata", () => {
-      expectTypeOf<ApiAudioMediaItemMetadata>().toEqualTypeOf<PlatformAudioMediaItemMetadata>();
+      expectTypeOf<Simplify<ApiAudioMediaItemMetadata>>().toEqualTypeOf<
+        Simplify<WithSizeBytesLong<PlatformAudioMediaItemMetadata>>
+      >();
     });
     it("VideoMediaItemMetadata", () => {
-      expectTypeOf<ApiVideoMediaItemMetadata>().toEqualTypeOf<PlatformVideoMediaItemMetadata>();
+      expectTypeOf<Simplify<ApiVideoMediaItemMetadata>>().toEqualTypeOf<
+        Simplify<WithSizeBytesLong<PlatformVideoMediaItemMetadata>>
+      >();
     });
     it("DicomMediaItemMetadata", () => {
-      expectTypeOf<ApiDicomMediaItemMetadata>().toEqualTypeOf<PlatformDicomMediaItemMetadata>();
+      expectTypeOf<Simplify<ApiDicomMediaItemMetadata>>().toEqualTypeOf<
+        Simplify<WithSizeBytesLong<PlatformDicomMediaItemMetadata>>
+      >();
     });
     it("EmailMediaItemMetadata", () => {
-      expectTypeOf<ApiEmailMediaItemMetadata>().toEqualTypeOf<PlatformEmailMediaItemMetadata>();
+      expectTypeOf<Simplify<ApiEmailMediaItemMetadata>>().toEqualTypeOf<
+        Simplify<WithSizeBytesLong<PlatformEmailMediaItemMetadata>>
+      >();
     });
     it("Model3dMediaItemMetadata", () => {
-      expectTypeOf<ApiModel3dMediaItemMetadata>().toEqualTypeOf<PlatformModel3dMediaItemMetadata>();
+      expectTypeOf<Simplify<ApiModel3dMediaItemMetadata>>().toEqualTypeOf<
+        Simplify<WithSizeBytesLong<PlatformModel3dMediaItemMetadata>>
+      >();
     });
     it("SpreadsheetMediaItemMetadata", () => {
-      expectTypeOf<ApiSpreadsheetMediaItemMetadata>().toEqualTypeOf<PlatformSpreadsheetMediaItemMetadata>();
+      expectTypeOf<Simplify<ApiSpreadsheetMediaItemMetadata>>().toEqualTypeOf<
+        Simplify<WithSizeBytesLong<PlatformSpreadsheetMediaItemMetadata>>
+      >();
     });
     it("UntypedMediaItemMetadata", () => {
-      expectTypeOf<ApiUntypedMediaItemMetadata>().toEqualTypeOf<PlatformUntypedMediaItemMetadata>();
+      expectTypeOf<Simplify<ApiUntypedMediaItemMetadata>>().toEqualTypeOf<
+        Simplify<WithSizeBytesLong<PlatformUntypedMediaItemMetadata>>
+      >();
     });
   });
 

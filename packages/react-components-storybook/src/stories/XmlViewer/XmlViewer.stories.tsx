@@ -59,6 +59,7 @@ function createMockXmlMedia(xmlContent: string): Media {
       Promise.resolve({
         path: "catalog.xml",
         sizeBytes: xmlContent.length,
+        sizeBytesLong: String(xmlContent.length),
         mediaType: "application/xml",
       }),
     getMediaReference: () => ({

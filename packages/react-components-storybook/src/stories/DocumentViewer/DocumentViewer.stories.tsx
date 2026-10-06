@@ -80,6 +80,7 @@ function createMockMedia(
       Promise.resolve({
         path: filename,
         sizeBytes: 1024,
+        sizeBytesLong: "1024",
         mediaType: mimeType,
       }),
     getMediaReference: () => ({

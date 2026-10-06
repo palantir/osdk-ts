@@ -182,6 +182,7 @@ function createMockMedia(
         mediaType: mimeType,
         path: fileName,
         sizeBytes: 1024,
+        sizeBytesLong: "1024",
       }),
     getMediaReference: () => ({
       mimeType,
