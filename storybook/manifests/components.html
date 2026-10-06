@@ -7967,13 +7967,13 @@ export const WithCustomRenderers: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;ComponentOverview&quot; component.
-  514 | }
-  515 |
-&gt; 516 | const meta: Meta = {
+  517 | }
+  518 |
+&gt; 519 | const meta: Meta = {
       | ^
-  517 |   title: &quot;Components/Overview&quot;,
-  518 |   component: ComponentOverview,
-  519 |   tags: [&quot;beta&quot;],
+  520 |   title: &quot;Components/Overview&quot;,
+  521 |   component: ComponentOverview,
+  522 |   tags: [&quot;beta&quot;],
 
 ./src/stories/Overview/Overview.stories.tsx:
 /*
@@ -8406,6 +8406,8 @@ function ComponentOverview(): React.ReactElement {
         flexDirection: &quot;column&quot;,
         height: &quot;100%&quot;,
         minHeight: 0,
+        color: &quot;var(--osdk-typography-color-default-rest, #1c2127)&quot;,
+        backgroundColor: &quot;var(--osdk-background-primary, #ffffff)&quot;,
       }}
     &gt;
       &lt;div
@@ -8413,6 +8415,7 @@ function ComponentOverview(): React.ReactElement {
           display: &quot;flex&quot;,
           alignItems: &quot;center&quot;,
           flexShrink: 0,
+          backgroundColor: &quot;var(--osdk-background-secondary, #f6f7f9)&quot;,
           borderBottom:
             &quot;1px solid var(--osdk-surface-border-color-default, #d1d5db)&quot;,
         }}
@@ -8465,8 +8468,8 @@ function ComponentOverview(): React.ReactElement {
                   &quot;1px solid var(--osdk-surface-border-color-default, #d1d5db)&quot;,
                 borderRadius: 4,
                 background:
-                  &quot;var(--osdk-surface-background-color-default, #fff)&quot;,
-                color: &quot;var(--osdk-typography-color-default, #111827)&quot;,
+                  &quot;var(--osdk-input-bg, var(--osdk-background-primary, #fff))&quot;,
+                color: &quot;var(--osdk-typography-color-default-rest, #111827)&quot;,
                 padding: &quot;0 8px&quot;,
               }}
             &gt;
@@ -29296,13 +29299,13 @@ export const WithValidation: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;ComponentOverview&quot; component.
-  514 | }
-  515 |
-&gt; 516 | const meta: Meta = {
+  517 | }
+  518 |
+&gt; 519 | const meta: Meta = {
       | ^
-  517 |   title: &quot;Components/Overview&quot;,
-  518 |   component: ComponentOverview,
-  519 |   tags: [&quot;beta&quot;],
+  520 |   title: &quot;Components/Overview&quot;,
+  521 |   component: ComponentOverview,
+  522 |   tags: [&quot;beta&quot;],
 
 ./src/stories/Overview/Overview.stories.tsx:
 /*
@@ -29735,6 +29738,8 @@ function ComponentOverview(): React.ReactElement {
         flexDirection: &quot;column&quot;,
         height: &quot;100%&quot;,
         minHeight: 0,
+        color: &quot;var(--osdk-typography-color-default-rest, #1c2127)&quot;,
+        backgroundColor: &quot;var(--osdk-background-primary, #ffffff)&quot;,
       }}
     &gt;
       &lt;div
@@ -29742,6 +29747,7 @@ function ComponentOverview(): React.ReactElement {
           display: &quot;flex&quot;,
           alignItems: &quot;center&quot;,
           flexShrink: 0,
+          backgroundColor: &quot;var(--osdk-background-secondary, #f6f7f9)&quot;,
           borderBottom:
             &quot;1px solid var(--osdk-surface-border-color-default, #d1d5db)&quot;,
         }}
@@ -29794,8 +29800,8 @@ function ComponentOverview(): React.ReactElement {
                   &quot;1px solid var(--osdk-surface-border-color-default, #d1d5db)&quot;,
                 borderRadius: 4,
                 background:
-                  &quot;var(--osdk-surface-background-color-default, #fff)&quot;,
-                color: &quot;var(--osdk-typography-color-default, #111827)&quot;,
+                  &quot;var(--osdk-input-bg, var(--osdk-background-primary, #fff))&quot;,
+                color: &quot;var(--osdk-typography-color-default-rest, #111827)&quot;,
                 padding: &quot;0 8px&quot;,
               }}
             &gt;
