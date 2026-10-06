@@ -180,6 +180,29 @@ test("getWidgetSetInputSpec ignores unknown properties in resources.json", async
   });
 });
 
+test("getWidgetSetInputSpec accepts dataset declarations", async () => {
+  mockSingleRootPackage();
+  vi.mocked(readFile).mockResolvedValue(
+    JSON.stringify({
+      version: 1,
+      resources: {
+        datasets: [
+          {
+            identifier: { rid: "ri.foundry.main.dataset.0" },
+            usage: ["READ"],
+            alias: "myDatasetAlias",
+          },
+        ],
+      },
+    }),
+  );
+  const inputSpec = await getWidgetSetInputSpec(
+    "/path/to/package.json",
+    "/path/to/resources.json",
+  );
+  expect(inputSpec.discovered?.authorizations).toBeUndefined();
+});
+
 test("getWidgetSetInputSpec omits authorizations when resources.json is missing", async () => {
   mockSingleRootPackage();
   vi.mocked(readFile).mockRejectedValue(enoentError);

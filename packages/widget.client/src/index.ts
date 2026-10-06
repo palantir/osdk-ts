@@ -35,6 +35,7 @@ export {
   HostMessage,
   isHostParametersUpdatedMessage,
 } from "@osdk/widget.api";
+export * as Aliases from "./aliases/index.js";
 export { createFoundryWidgetClient } from "./client.js";
 export type { FoundryWidgetClient } from "./client.js";
 export { FoundryHostEventTarget } from "./host.js";

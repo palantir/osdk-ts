@@ -6203,6 +6203,9 @@ importers:
 
   packages/widget.client:
     dependencies:
+      '@osdk/aliases':
+        specifier: workspace:~
+        version: link:../aliases
       '@osdk/widget.api':
         specifier: workspace:~
         version: link:../widget.api

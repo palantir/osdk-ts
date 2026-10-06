@@ -133,6 +133,11 @@ export interface WidgetSetDiscoveredInputSpecV1 {
   sdks: Array<OntologySdkInputSpecV1>;
 
   /**
+   * The discovered datasets, read from the project's resources.json.
+   */
+  datasets: Array<DatasetInputSpecV1>;
+
+  /**
    * The widget set authorizations, read from the project's resources.json.
    * Only present when resources.json exists with the expected format.
    * @optional
@@ -160,5 +165,18 @@ export interface WidgetSetAuthorizationsInputSpecV1 {
  * A set of markings representing an authorization constraint, expressed in conjunctive normal form (CNF).
  */
 type WidgetSetAuthorizationV1 = string[][];
+export interface DatasetInputSpecV1 {
+  datasetIdentifier: DatasetIdentifierV1;
+  usage: UsageV1[];
+  alias: string;
+}
+
+interface DatasetIdentifierV1 {
+  rid: string;
+}
+
+enum UsageV1 {
+  READ = "READ",
+}
 
 export const MANIFEST_FILE_LOCATION = ".palantir/widgets.config.json";

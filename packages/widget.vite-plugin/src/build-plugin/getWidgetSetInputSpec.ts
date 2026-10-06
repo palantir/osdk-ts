@@ -28,11 +28,13 @@ import { visitNpmPackages } from "../common/visitNpmPackages.js";
 
 export async function getWidgetSetInputSpec(
   packageJsonPath: string,
-  resourcesJsonPath: string,
+  resourcesJsonPath: string | undefined,
 ): Promise<WidgetSetInputSpec> {
   const [sdks, authorizations] = await Promise.all([
     discoverOntologySdkInputSpecs(packageJsonPath),
-    getAuthorizations(resourcesJsonPath),
+    resourcesJsonPath == null
+      ? undefined
+      : getAuthorizations(resourcesJsonPath),
   ]);
   return {
     discovered: {
@@ -70,10 +72,10 @@ async function getAuthorizations(
 ): Promise<WidgetSetAuthorizationsInputSpec | undefined> {
   const parsedResourcesJson: ResourcesJson | undefined =
     await parseResourcesJson(resourcesJsonPath);
-  if (parsedResourcesJson == null) {
+  if (parsedResourcesJson?.authorizations == null) {
     return undefined;
   }
-  const { read, requiredRead } = parsedResourcesJson.authorizations ?? {};
+  const { read, requiredRead } = parsedResourcesJson.authorizations;
   return {
     read,
     requiredRead,

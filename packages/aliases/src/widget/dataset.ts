@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-import type {
-  DatasetInputSpec,
-  WidgetSetAuthorizationsInputSpec,
-} from "@osdk/widget.api";
+import { getAlias } from "../getAlias.js";
+import type { Dataset } from "../types.js";
+import { loadResolvedAliases } from "./loaders.js";
 
-type DeclaredWidgetSetAuthorizations = Pick<
-  WidgetSetAuthorizationsInputSpec,
-  "read" | "requiredRead"
->;
-
-interface ResourceScopes {
-  datasets?: DatasetInputSpec[];
+/**
+ * Returns the identifier for a dataset alias. Loads on first lookup, shares
+ * concurrent requests, caches successful loads, and retries failed loads.
+ *
+ * @experimental Dataset aliases and the shape of this API are provisional.
+ */
+export async function datasetForBrowser(alias: string): Promise<Dataset> {
+  const resolvedAliases = await loadResolvedAliases();
+  return getAlias(resolvedAliases.datasets, alias, "Dataset");
 }
-
-interface ResourcesJsonV1 {
-  authorizations?: DeclaredWidgetSetAuthorizations;
-  resources?: ResourceScopes;
-  version: 1;
-}
-
-export type ResourcesJson = ResourcesJsonV1;

@@ -34,6 +34,15 @@
       "require": "./build/cjs/public/internal.cjs",
       "default": "./build/browser/public/internal.js"
     },
+    "./widget": {
+      "browser": "./build/browser/public/widget.js",
+      "import": {
+        "types": "./build/types/public/widget.d.ts",
+        "default": "./build/esm/public/widget.js"
+      },
+      "require": "./build/cjs/public/widget.cjs",
+      "default": "./build/browser/public/widget.js"
+    },
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {

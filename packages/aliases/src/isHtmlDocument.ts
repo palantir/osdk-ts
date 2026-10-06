@@ -14,24 +14,8 @@
  * limitations under the License.
  */
 
-import type {
-  DatasetInputSpec,
-  WidgetSetAuthorizationsInputSpec,
-} from "@osdk/widget.api";
-
-type DeclaredWidgetSetAuthorizations = Pick<
-  WidgetSetAuthorizationsInputSpec,
-  "read" | "requiredRead"
->;
-
-interface ResourceScopes {
-  datasets?: DatasetInputSpec[];
+/** A missing `resources.json` may return the website's HTML page instead of a 404. */
+export function isHtmlDocument(body: string): boolean {
+  const start = body.trimStart().slice(0, 32).toLowerCase();
+  return start.startsWith("<!doctype html") || start.startsWith("<html");
 }
-
-interface ResourcesJsonV1 {
-  authorizations?: DeclaredWidgetSetAuthorizations;
-  resources?: ResourceScopes;
-  version: 1;
-}
-
-export type ResourcesJson = ResourcesJsonV1;

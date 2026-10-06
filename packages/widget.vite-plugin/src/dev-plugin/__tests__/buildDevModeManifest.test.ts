@@ -51,7 +51,7 @@ const MOCK_WIDGET_CONFIG: WidgetConfig<ParameterConfig> = {
 
 const MOCK_SERVER = {
   ssrLoadModule: vi.fn(),
-  config: { root: "/project" },
+  config: { root: "/project", publicDir: "/project/public" },
 } as unknown as ViteDevServer;
 
 const MOCK_CODE_ENTRYPOINTS = { "entry.ts": `/entry.js` };
@@ -158,7 +158,7 @@ describe("buildDevModeManifest", () => {
     expect(result.devSettings.inputSpec).toEqual(MOCK_INPUT_SPEC);
     expect(vi.mocked(getWidgetSetInputSpec)).toHaveBeenCalledWith(
       "/project/package.json",
-      "/project/resources.json",
+      "/project/public/resources.json",
     );
   });
 

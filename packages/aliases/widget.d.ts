@@ -14,24 +14,4 @@
  * limitations under the License.
  */
 
-import type {
-  DatasetInputSpec,
-  WidgetSetAuthorizationsInputSpec,
-} from "@osdk/widget.api";
-
-type DeclaredWidgetSetAuthorizations = Pick<
-  WidgetSetAuthorizationsInputSpec,
-  "read" | "requiredRead"
->;
-
-interface ResourceScopes {
-  datasets?: DatasetInputSpec[];
-}
-
-interface ResourcesJsonV1 {
-  authorizations?: DeclaredWidgetSetAuthorizations;
-  resources?: ResourceScopes;
-  version: 1;
-}
-
-export type ResourcesJson = ResourcesJsonV1;
+export * from "./build/cjs/public/widget.cjs";

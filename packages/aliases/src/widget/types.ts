@@ -14,24 +14,28 @@
  * limitations under the License.
  */
 
-import type {
-  DatasetInputSpec,
-  WidgetSetAuthorizationsInputSpec,
-} from "@osdk/widget.api";
+import type { Dataset, DatasetIdentifier } from "../types.js";
 
-type DeclaredWidgetSetAuthorizations = Pick<
-  WidgetSetAuthorizationsInputSpec,
-  "read" | "requiredRead"
->;
+// The resource declaration fields used for alias lookup.
 
-interface ResourceScopes {
-  datasets?: DatasetInputSpec[];
+export interface Resource<Identifier> {
+  identifier: Identifier;
+  alias: string;
 }
 
-interface ResourcesJsonV1 {
-  authorizations?: DeclaredWidgetSetAuthorizations;
+export type DatasetResource = Resource<DatasetIdentifier>;
+
+export interface ResourceScopes {
+  datasets?: DatasetResource[];
+}
+
+export interface ResourcesJson {
   resources?: ResourceScopes;
   version: 1;
 }
 
-export type ResourcesJson = ResourcesJsonV1;
+// Resolved aliases shared by all widget lookups.
+
+export interface ResolvedAliases {
+  datasets: Record<string, Dataset>;
+}

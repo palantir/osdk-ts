@@ -15,6 +15,7 @@
  */
 
 import { getAlias } from "./getAlias.js";
+import { isHtmlDocument } from "./isHtmlDocument.js";
 import type { Custom } from "./types.js";
 
 export type { Custom } from "./types.js";
@@ -125,12 +126,6 @@ function resolveUrl(path: string): string {
     return new URL(path, window.location.origin).toString();
   }
   return path;
-}
-
-/** A missing `resources.json` may return the website's HTML page instead of a 404. */
-function isHtmlDocument(body: string): boolean {
-  const start = body.trimStart().slice(0, 32).toLowerCase();
-  return start.startsWith("<!doctype html") || start.startsWith("<html");
 }
 
 function parseJson(body: string, url: string): unknown {

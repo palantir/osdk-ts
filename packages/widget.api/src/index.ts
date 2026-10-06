@@ -26,6 +26,7 @@ export type {
 } from "./config.js";
 export { defineConfig } from "./config.js";
 export type {
+  DatasetInputSpecV1 as DatasetInputSpec,
   OntologySdkInputSpecV1 as OntologySdkInputSpec,
   WidgetManifestConfigV1 as WidgetManifestConfig,
   WidgetSetAuthorizationsInputSpecV1 as WidgetSetAuthorizationsInputSpec,
