@@ -19,6 +19,8 @@ import type {
   InterfaceActionTypeConstraint,
   InterfaceParameterConstraint,
   InterfaceTypeBlockDataV2,
+  InterfaceTypeSchemaMigrationInstruction,
+  InterfaceTypeSchemaTransition,
   KnownMarketplaceIdentifiers,
   MarketplaceInterfaceLinkType,
   MarketplaceInterfaceType,
@@ -37,6 +39,8 @@ import type {
   InterfaceParameterConstraintShape,
   InterfacePropertyTypeOutputShape,
   InterfaceTypeOutputShape,
+  InterfaceTypeSchemaTransitionOutputShape,
+  InterfaceTypeSchemaMigrationInstruction as MarketplaceInterfaceTypeSchemaMigrationInstruction,
   LocalizedTitleAndDescription,
   MarkingsShape,
   MultipassGroupShape,
@@ -120,6 +124,7 @@ export async function getShapes(
       outputSharedPropertyTypeRids,
       multiInterfaceSptApiNames,
       interfaceType.interfaceType,
+      interfaceType.schemaMigrations ?? undefined,
       ridGenerator,
     );
   }
@@ -229,9 +234,13 @@ function extractInterfaceType(
   outputSharedPropertyTypeRids: Set<string>,
   multiInterfaceSptApiNames: Set<string>,
   interfaceType: MarketplaceInterfaceType,
+  schemaMigrations: InterfaceTypeBlockDataV2["schemaMigrations"],
   ridGenerator: OntologyRidGenerator,
 ): void {
   const interfaceReadableId = getReadableIdForInterface(interfaceType.apiName);
+  const schemaTransitions = Object.values(
+    schemaMigrations?.schemaTransitions ?? {},
+  );
   // SPT-backed properties must be present in both the legacy SPT reference list
   // and the modern IPT reference list. Marketplace follows the legacy edge to
   // resolve the SPT backing an IPT when wiring producer and consumer shapes.
@@ -288,6 +297,13 @@ function extractInterfaceType(
           ];
         return constraintId ?? constraint.rid;
       },
+    ),
+    schemaTransitionMetadata: schemaTransitions.map((transition) =>
+      requireKnownIdentifier(
+        knownMarketplaceIdentifiers.interfaceTypeSchemaTransitions,
+        transition.rid,
+        "schema transition",
+      ),
     ),
   };
 
@@ -392,6 +408,23 @@ function extractInterfaceType(
     }
   }
 
+  for (const transition of schemaTransitions) {
+    outputShapeMap.set(
+      ReadableIdGenerator.getForInterfaceSchemaTransition(
+        interfaceType.apiName,
+        transition.id,
+      ),
+      {
+        type: "interfaceTypeSchemaTransition",
+        interfaceTypeSchemaTransition: getInterfaceSchemaTransitionOutputShape(
+          knownMarketplaceIdentifiers,
+          interfaceType,
+          transition,
+        ),
+      },
+    );
+  }
+
   // Add interface type output shape
   outputShapeMap.set(interfaceReadableId, {
     type: "interfaceType",
@@ -402,6 +435,67 @@ function extractInterfaceType(
 /**
  * Get interface property type output shape for either interface-defined or SPT-backed properties.
  */
+function getInterfaceSchemaTransitionOutputShape(
+  knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
+  interfaceType: MarketplaceInterfaceType,
+  transition: InterfaceTypeSchemaTransition,
+): InterfaceTypeSchemaTransitionOutputShape {
+  return {
+    about: createLocalizedAbout(
+      transition.title ?? transition.id,
+      transition.description ?? "",
+    ),
+    transitionId: transition.id,
+    interfaceType: requireKnownIdentifier(
+      knownMarketplaceIdentifiers.interfaceTypes,
+      interfaceType.rid,
+      "interface type",
+    ),
+    migrations: transition.migrations.map((instruction) =>
+      toMarketplaceSchemaMigrationInstruction(
+        instruction,
+        knownMarketplaceIdentifiers,
+      ),
+    ),
+  };
+}
+
+function toMarketplaceSchemaMigrationInstruction(
+  instruction: InterfaceTypeSchemaMigrationInstruction,
+  knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
+): MarketplaceInterfaceTypeSchemaMigrationInstruction {
+  switch (instruction.type) {
+    case "addRequiredProperty":
+      return {
+        type: "addRequiredProperty",
+        addRequiredProperty: {
+          interfaceProperty: requireKnownIdentifier(
+            knownMarketplaceIdentifiers.interfacePropertyTypes,
+            instruction.addRequiredProperty.propertyTypeRid,
+            "interface property type",
+          ),
+        },
+      };
+    default:
+      // TODO: add a never exhaustiveness check once there's more than one instruction type
+      throw new Error(
+        `Unknown schema migration instruction type: ${instruction.type}`,
+      );
+  }
+}
+
+function requireKnownIdentifier(
+  identifiers: Record<string, string> | undefined,
+  rid: string,
+  kind: string,
+): string {
+  const blockInternalId = identifiers?.[rid];
+  if (blockInternalId === undefined) {
+    throw new Error(`Missing known identifier for ${kind} ${rid}`);
+  }
+  return blockInternalId;
+}
+
 function getInterfacePropertyTypeOutputShape(
   knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
   interfaceType: MarketplaceInterfaceType,
