@@ -19,8 +19,7 @@ import type { JsonValue } from "@osdk/foundry.agents";
 import * as Sessions from "@osdk/foundry.agents/AgentSession";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
-import { augmentRequestContext } from "../util/augmentRequestContext.js";
+import { addUserAgentHeader } from "../util/addUserAgentHeader.js";
 import type { AgentSignatureFromDef } from "./types.js";
 
 export async function createAgentSession<D extends AgentDefinition<unknown>>(
@@ -37,10 +36,7 @@ export async function createAgentSession<D extends AgentDefinition<unknown>>(
   if (client.branch != null) {
     throw new Error("Agent sessions are not supported on branches");
   }
-  const clientWithHeaders = addUserAgentAndRequestContextHeaders(
-    augmentRequestContext(client, () => ({ finalMethodCall: "createSession" })),
-    agent,
-  );
+  const clientWithHeaders = addUserAgentHeader(client, agent);
   const ontologyRid = await client.ontologyRid;
   const response = await Sessions.create(
     clientWithHeaders,
