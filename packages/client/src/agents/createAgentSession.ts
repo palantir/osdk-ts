@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AgentDefinition, AgentSession } from "@osdk/api";
+import type { AgentDefinition, AgentSession } from "@osdk/api/unstable";
 import type { JsonValue } from "@osdk/foundry.agents";
 import * as Sessions from "@osdk/foundry.agents/AgentSession";
 
@@ -33,6 +33,9 @@ export async function createAgentSession<D extends AgentDefinition<unknown>>(
   }
   if (client.transactionId != null) {
     throw new Error("Agent sessions are not supported in transactions");
+  }
+  if (client.branch != null) {
+    throw new Error("Agent sessions are not supported on branches");
   }
   const clientWithHeaders = addUserAgentAndRequestContextHeaders(
     augmentRequestContext(client, () => ({ finalMethodCall: "createSession" })),

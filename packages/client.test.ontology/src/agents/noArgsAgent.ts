@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import type { AgentDefinition, AgentSession, VersionBound } from "@osdk/api";
+import type { VersionBound } from "@osdk/api";
+import type { AgentDefinition, AgentSession } from "@osdk/api/unstable";
 
 import type { $ExpectedClientVersion } from "../generatedNoCheck/OntologyMetadata.js";
 import { $osdkMetadata } from "../generatedNoCheck/OntologyMetadata.js";
 
 // TODO(mhogberg): Replace this handwritten fixture with generated output once agent generation is supported.
-/** @experimental */
+/** @beta */
 export namespace noArgsAgent {
   export interface Signatures {
     createSession(): Promise<AgentSession>;
   }
 }
 
-/** @experimental */
+/** @beta */
 export interface noArgsAgent
   extends
     AgentDefinition<noArgsAgent.Signatures>,
@@ -45,7 +46,7 @@ export interface noArgsAgent
   };
 }
 
-/** @experimental */
+/** @beta */
 export const noArgsAgent: noArgsAgent = {
   type: "agent",
   apiName: "noArgsAgent",

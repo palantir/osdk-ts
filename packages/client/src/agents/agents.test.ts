@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AgentSession } from "@osdk/api";
+import type { AgentSession } from "@osdk/api/unstable";
 import { noArgsAgent, weatherAgent } from "@osdk/client.test.ontology";
 import {
   LegacyFauxFoundry,
@@ -81,6 +81,24 @@ describe("agents", () => {
     expect(flushEdits).not.toHaveBeenCalled();
     expect(fetchFunction).not.toHaveBeenCalled();
   });
+
+  it.each(["ri.foundry.main.branch.test", "feature/test branch"])(
+    "rejects branch %s before making requests",
+    async (branch) => {
+      const fetchFunction = vi.fn<typeof globalThis.fetch>();
+      const branchClient = createClient(
+        baseUrl,
+        fauxFoundry.defaultOntologyRid,
+        auth,
+        { UNSTABLE_DO_NOT_USE_BRANCH: branch },
+        fetchFunction,
+      );
+      await expect(
+        branchClient(weatherAgent).createSession({ city: "London" }),
+      ).rejects.toThrow("Agent sessions are not supported on branches");
+      expect(fetchFunction).not.toHaveBeenCalled();
+    },
+  );
 
   it("creates a session", async () => {
     const createSession = client(weatherAgent).createSession;

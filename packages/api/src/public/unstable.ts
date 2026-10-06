@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+export type {
+  AgentDefinition,
+  AgentMetadata,
+} from "../agents/AgentDefinition.js";
+export type { AgentSession } from "../agents/AgentSession.js";
 export type { Experiment, ExperimentFns } from "../experimental/Experiment.js";
 
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction } from "../experimental/executeStreamingFunction.js";

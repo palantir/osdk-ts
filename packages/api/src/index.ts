@@ -22,11 +22,6 @@ export type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from "./actions/Actions.js";
-export type {
-  AgentDefinition,
-  AgentMetadata,
-} from "./agents/AgentDefinition.js";
-export type { AgentSession } from "./agents/AgentSession.js";
 export type { ValidAggregationKeys } from "./aggregate/AggregatableKeys.js";
 export type { AggregateOpts } from "./aggregate/AggregateOpts.js";
 export type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "./aggregate/AggregateOptsThatErrors.js";

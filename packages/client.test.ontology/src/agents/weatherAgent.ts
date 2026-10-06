@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import type { AgentDefinition, AgentSession, VersionBound } from "@osdk/api";
+import type { VersionBound } from "@osdk/api";
+import type { AgentDefinition, AgentSession } from "@osdk/api/unstable";
 
 import type { $ExpectedClientVersion } from "../generatedNoCheck/OntologyMetadata.js";
 import { $osdkMetadata } from "../generatedNoCheck/OntologyMetadata.js";
 
 // TODO(mhogberg): Replace this handwritten fixture with generated output once agent generation is supported.
-/** @experimental */
+/** @beta */
 export namespace weatherAgent {
   export interface Signatures {
     createSession(args: weatherAgent.Params): Promise<AgentSession>;
@@ -31,7 +32,7 @@ export namespace weatherAgent {
   }
 }
 
-/** @experimental */
+/** @beta */
 export interface weatherAgent
   extends
     AgentDefinition<weatherAgent.Signatures>,
@@ -51,7 +52,7 @@ export interface weatherAgent
   };
 }
 
-/** @experimental */
+/** @beta */
 export const weatherAgent: weatherAgent = {
   type: "agent",
   apiName: "weatherAgent",

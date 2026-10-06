@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/** @experimental */
+/** @beta */
 export interface AgentSession {
   readonly id: string;
 }

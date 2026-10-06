@@ -16,7 +16,6 @@
 
 import type {
   ActionDefinition,
-  AgentDefinition,
   FetchPageArgs,
   InterfaceDefinition,
   LinkTypeApiNamesFor,
@@ -34,6 +33,7 @@ import type {
   SelectArg,
 } from "@osdk/api";
 import type {
+  AgentDefinition,
   Experiment,
   ExperimentFns,
   LinkSubscription,

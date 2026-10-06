@@ -17,7 +17,6 @@
 import type {
   ActionDefinition,
   ActionMetadata,
-  AgentDefinition,
   CompileTimeMetadata,
   InterfaceDefinition,
   InterfaceMetadata,
@@ -29,6 +28,7 @@ import type {
   VersionBound,
 } from "@osdk/api";
 import type {
+  AgentDefinition,
   Experiment,
   ExperimentFns,
   MinimalObjectSet,
@@ -114,7 +114,7 @@ export interface Client extends SharedClient, OldSharedClient {
    */
   <Q extends QueryDefinition<any>>(o: Q): QuerySignatureFromDef<Q>;
 
-  /** @experimental */
+  /** @beta */
   <Q extends AgentDefinition<unknown>>(o: Q): AgentSignatureFromDef<Q>;
 
   /**

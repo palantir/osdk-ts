@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import type {
-  AgentDefinition,
-  AgentSession,
-  CompileTimeMetadata,
-} from "@osdk/api";
+import type { CompileTimeMetadata } from "@osdk/api";
+import type { AgentDefinition, AgentSession } from "@osdk/api/unstable";
 
+/** @beta */
 export interface AgentSignatureFromDef<D extends AgentDefinition<unknown>> {
-  /** @experimental */
+  /** @beta */
   createSession: CompileTimeMetadata<D>["signatures"] extends never
     ? AgentSignature
     : CompileTimeMetadata<D>["signatures"] extends {
@@ -31,6 +29,7 @@ export interface AgentSignatureFromDef<D extends AgentDefinition<unknown>> {
       : AgentSignature;
 }
 
+/** @beta */
 export type AgentSignature = (
   args?: Record<string, unknown>,
 ) => Promise<AgentSession>;

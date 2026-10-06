@@ -16,7 +16,21 @@
 
 import type { OsdkMetadata } from "../OsdkMetadata.js";
 
-/** @experimental */
+/** @beta */
+export interface AgentCompileTimeMetadata<T> {
+  signatures: T;
+}
+
+/** @beta */
+export interface AgentDefinition<T = never> {
+  type: "agent";
+  apiName: string;
+  version: string;
+  osdkMetadata?: OsdkMetadata;
+  __DefinitionMetadata?: AgentCompileTimeMetadata<T> & AgentMetadata;
+}
+
+/** @beta */
 export interface AgentMetadata {
   type: "agent";
   apiName: string;
@@ -24,9 +38,9 @@ export interface AgentMetadata {
   arguments: Record<string, AgentMetadata.DataType>;
 }
 
-/** @experimental */
+/** @beta */
 export namespace AgentMetadata {
-  /** @experimental */
+  /** @beta */
   export type DataType =
     | DataType.Primitive
     | DataType.Object
@@ -37,9 +51,9 @@ export namespace AgentMetadata {
     | DataType.Struct
     | DataType.DiscriminatedUnion;
 
-  /** @experimental */
+  /** @beta */
   export namespace DataType {
-    /** @experimental */
+    /** @beta */
     export interface Primitive {
       type:
         | "boolean"
@@ -53,61 +67,47 @@ export namespace AgentMetadata {
         | "float";
     }
 
-    /** @experimental */
+    /** @beta */
     export interface Object {
       type: "object";
       objectTypeRid: string;
     }
 
-    /** @experimental */
+    /** @beta */
     export interface ObjectSet {
       type: "objectSet";
       objectTypeRid: string;
     }
 
-    /** @experimental */
+    /** @beta */
     export interface Nullable {
       type: "nullable";
       wrappedType: AgentMetadata.DataType;
     }
 
-    /** @experimental */
+    /** @beta */
     export interface List {
       type: "list";
       elementType: AgentMetadata.DataType;
     }
 
-    /** @experimental */
+    /** @beta */
     export interface Record {
       type: "record";
       valueType: AgentMetadata.DataType;
     }
 
-    /** @experimental */
+    /** @beta */
     export interface Struct {
       type: "struct";
       fields: { [key: string]: AgentMetadata.DataType };
     }
 
-    /** @experimental */
+    /** @beta */
     export interface DiscriminatedUnion {
       type: "discriminatedUnion";
       discriminatorKey: string;
       members: { [key: string]: { [key: string]: AgentMetadata.DataType } };
     }
   }
-}
-
-/** @experimental */
-export interface AgentCompileTimeMetadata<T> {
-  signatures: T;
-}
-
-/** @experimental */
-export interface AgentDefinition<T = never> {
-  type: "agent";
-  apiName: string;
-  version: string;
-  osdkMetadata?: OsdkMetadata;
-  __DefinitionMetadata?: AgentCompileTimeMetadata<T> & AgentMetadata;
 }
