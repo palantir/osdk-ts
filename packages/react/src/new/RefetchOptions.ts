@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-export interface Unsubscribable {
-  unsubscribe: () => void;
-  revalidate?: (force?: boolean) => Promise<void>;
+export interface RefetchOptions {
+  /**
+   * The scope of the refetch:
+   * - `"query"` (default): Revalidates only the calling query, leaving other queries untouched.
+   * - `"type"`: Invalidates the entire object type, revalidating all active queries for this type.
+   *
+   * @default "query"
+   */
+  scope?: "query" | "type";
 }

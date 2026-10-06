@@ -31,10 +31,13 @@ function createMockObservableClient(): {
   client: ObservableClient;
   observeAggregation: ReturnType<typeof vi.fn>;
   invalidateObjectType: ReturnType<typeof vi.fn>;
+  revalidate: ReturnType<typeof vi.fn>;
 } {
+  const revalidate = vi.fn().mockResolvedValue(undefined);
   const observeAggregation = vi.fn(
     (_args: unknown, _observer: Observer<unknown>) => ({
       unsubscribe: vi.fn(),
+      revalidate,
     }),
   );
   const invalidateObjectType = vi.fn().mockResolvedValue(undefined);
@@ -43,7 +46,7 @@ function createMockObservableClient(): {
     canonicalizeOptions: vi.fn((opts: unknown) => opts),
     invalidateObjectType,
   } as unknown as ObservableClient;
-  return { client, observeAggregation, invalidateObjectType };
+  return { client, observeAggregation, invalidateObjectType, revalidate };
 }
 
 function createWrapper(observableClient: ObservableClient) {
@@ -66,12 +69,14 @@ describe("useOsdkAggregation", () => {
   let observableClient: ObservableClient;
   let observeAggregation: ReturnType<typeof vi.fn>;
   let invalidateObjectType: ReturnType<typeof vi.fn>;
+  let revalidate: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     ({
       client: observableClient,
       observeAggregation,
       invalidateObjectType,
+      revalidate,
     } = createMockObservableClient());
   });
 
@@ -179,7 +184,7 @@ describe("useOsdkAggregation", () => {
   });
 
   describe("refetch", () => {
-    it("invalidates the object type when enabled is true", async () => {
+    it("revalidates only the calling query by default when enabled is true", async () => {
       const { result } = renderHook(
         () =>
           useOsdkAggregation(Employee, { aggregate: AGGREGATE, enabled: true }),
@@ -190,10 +195,41 @@ describe("useOsdkAggregation", () => {
         await result.current.refetch();
       });
 
-      expect(invalidateObjectType).toHaveBeenCalledTimes(1);
+      expect(revalidate).toHaveBeenCalledTimes(1);
+      expect(invalidateObjectType).not.toHaveBeenCalled();
     });
 
-    it("does not invalidate the object type when enabled is false", async () => {
+    it("revalidates only the calling query when refetch({ scope: 'query' }) is called", async () => {
+      const { result } = renderHook(
+        () =>
+          useOsdkAggregation(Employee, { aggregate: AGGREGATE, enabled: true }),
+        { wrapper: createWrapper(observableClient) },
+      );
+
+      await act(async () => {
+        await result.current.refetch({ scope: "query" });
+      });
+
+      expect(revalidate).toHaveBeenCalledTimes(1);
+      expect(invalidateObjectType).not.toHaveBeenCalled();
+    });
+
+    it("invalidates the object type when refetch({ scope: 'type' }) is called", async () => {
+      const { result } = renderHook(
+        () =>
+          useOsdkAggregation(Employee, { aggregate: AGGREGATE, enabled: true }),
+        { wrapper: createWrapper(observableClient) },
+      );
+
+      await act(async () => {
+        await result.current.refetch({ scope: "type" });
+      });
+
+      expect(invalidateObjectType).toHaveBeenCalledTimes(1);
+      expect(revalidate).not.toHaveBeenCalled();
+    });
+
+    it("does not revalidate or invalidate when enabled is false", async () => {
       const { result } = renderHook(
         () =>
           useOsdkAggregation(Employee, {
@@ -207,6 +243,7 @@ describe("useOsdkAggregation", () => {
         await result.current.refetch();
       });
 
+      expect(revalidate).not.toHaveBeenCalled();
       expect(invalidateObjectType).not.toHaveBeenCalled();
     });
   });
