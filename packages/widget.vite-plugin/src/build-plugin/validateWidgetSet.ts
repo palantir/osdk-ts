@@ -16,8 +16,11 @@
 
 import type { WidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
 
+export const MAX_ENTRYPOINT_CSS_COUNT = 10;
+
 export function validateWidgetSet(widgetBuilds: WidgetBuildOutputs[]): void {
   validateWidgetIds(widgetBuilds);
+  validateEntrypointCssCount(widgetBuilds);
 }
 
 function validateWidgetIds(widgetBuilds: WidgetBuildOutputs[]): void {
@@ -30,5 +33,15 @@ function validateWidgetIds(widgetBuilds: WidgetBuildOutputs[]): void {
       );
     }
     widgetIds.add(widgetConfigId);
+  }
+}
+
+function validateEntrypointCssCount(widgetBuilds: WidgetBuildOutputs[]): void {
+  for (const widgetBuild of widgetBuilds) {
+    if (widgetBuild.stylesheets.length > MAX_ENTRYPOINT_CSS_COUNT) {
+      throw new Error(
+        `Entrypoint CSS count can be at most ${MAX_ENTRYPOINT_CSS_COUNT}. Widget '${widgetBuild.widgetConfig.id}' has ${widgetBuild.stylesheets.length} CSS files. Consider setting 'build.cssCodeSplit: false' in your Vite config to combine CSS into a single stylesheet.`,
+      );
+    }
   }
 }
