@@ -1,5 +1,8 @@
 ---
 "@osdk/react-components": minor
+"@osdk/react": minor
+"@osdk/aip-core": minor
+"@osdk/language-models": minor
 ---
 
-Require @osdk/api, @osdk/client, and @osdk/react versions matching the workspace release or newer within the same major version, preventing installs with older peers that lack APIs used by the components.
+Require workspace-derived OSDK peer versions in @osdk/react-components, @osdk/react, @osdk/aip-core, and @osdk/language-models, preventing installs with older peers than the versions used to build and validate these packages.

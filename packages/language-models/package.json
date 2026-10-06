@@ -46,7 +46,7 @@
     "@osdk/shared.client2": "^1.0.0"
   },
   "peerDependencies": {
-    "@osdk/client": "^2.8.0"
+    "@osdk/client": "workspace:^"
   },
   "devDependencies": {
     "@osdk/client": "workspace:*",
