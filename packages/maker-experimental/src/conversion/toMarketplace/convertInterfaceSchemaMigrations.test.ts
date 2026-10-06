@@ -82,11 +82,11 @@ function transition(
   };
 }
 
-describe("interface type schema migrations", () => {
-  beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, undefined);
-  });
+beforeEach(async () => {
+  await defineOntology("com.palantir.", () => {}, undefined);
+});
 
+describe("interface type schema migrations", () => {
   it("omits the migration block when not opted in", async () => {
     const block = await convertInterfaces(() => {
       defineInterface({ apiName: "Foo" });
@@ -315,10 +315,6 @@ describe("interface type schema migrations", () => {
 });
 
 describe("interface type schema migration output shapes", () => {
-  beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {}, undefined);
-  });
-
   async function convertWithShapes(body: () => void) {
     const { ontologyIr, shapes } = await defineOntologyV2(
       "com.palantir.",
@@ -344,7 +340,10 @@ describe("interface type schema migration output shapes", () => {
     id: string,
   ) {
     const shape = outputShapes.get(
-      `interface-schema-transition-com.palantir.Foo-${id}` as ReadableId,
+      ReadableIdGenerator.getForInterfaceSchemaTransition(
+        "com.palantir.Foo",
+        id,
+      ),
     );
     invariant(
       shape?.type === "interfaceTypeSchemaTransition",
@@ -353,8 +352,8 @@ describe("interface type schema migration output shapes", () => {
     return shape.interfaceTypeSchemaTransition;
   }
 
-  it("emits an output shape for each transition", async () => {
-    const { ontology, interfaceRid, block, outputShapes } =
+  it("emits transition output shapes and links them from the interface", async () => {
+    const { ontology, interfaceRid, block, outputShapes, interfaceShape } =
       await convertWithShapes(() => {
         defineInterface({
           apiName: "Foo",
@@ -411,30 +410,6 @@ describe("interface type schema migration output shapes", () => {
       about: { fallbackTitle: "Some transition", fallbackDescription: "" },
       transitionId: "no-description",
     });
-  });
-
-  it("links the interface output shape to its transitions", async () => {
-    const { ontology, interfaceShape } = await convertWithShapes(() => {
-      defineInterface({
-        apiName: "Foo",
-        properties: {
-          optional: { required: false, type: "string" },
-          other: { required: false, type: "string" },
-        },
-        schemaMigrations: {
-          transitions: [
-            transition({ id: "t1" }),
-            transition({
-              id: "t2",
-              instructions: [
-                { type: "addRequiredProperty", property: "other" },
-              ],
-            }),
-          ],
-        },
-      });
-    });
-
     expect([...interfaceShape.schemaTransitionMetadata].sort()).toEqual(
       Object.values(
         ontology.knownIdentifiers.interfaceTypeSchemaTransitions,
