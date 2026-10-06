@@ -2235,6 +2235,43 @@ describe("generator", () => {
     });
   });
 
+  describe("omitOntologyRid", () => {
+    it("omits ontology and branch metadata without removing SDK exports", async () => {
+      await generateClientSdkVersionTwoPointZero(
+        referencedOntology,
+        "",
+        helper.minimalFiles,
+        BASE_PATH,
+        "module",
+        undefined,
+        undefined,
+        undefined,
+        false,
+        [],
+        false,
+        new Map(),
+        true,
+      );
+
+      const files = helper.getFiles();
+      const index = files[`${BASE_PATH}/index.ts`];
+      const metadata = files[`${BASE_PATH}/OntologyMetadata.ts`];
+
+      expect(index).not.toContain("$ontologyRid");
+      expect(index).not.toContain("$branch");
+      expect(metadata).not.toContain("$ontologyRid");
+      expect(metadata).not.toContain("$branch");
+      expect(index).toContain(
+        "export { $osdkMetadata } from './OntologyMetadata.js';",
+      );
+      expect(metadata).toContain("export const $osdkMetadata =");
+      expect(index).toContain(
+        "export { SomeInterface } from './ontology/interfaces.js';",
+      );
+      expect(index).toContain("export { Task } from './ontology/objects.js';");
+    });
+  });
+
   describe("exportOntologyMetadata", () => {
     async function generate(
       exportOntologyMetadata: boolean,
