@@ -43,14 +43,12 @@ export class CacheKeys<TCacheKey extends CacheKey> {
         )})`,
       );
 
-      this.#finalizationRegistry.register(cacheKey, () => {
-        // eslint-disable-next-line no-console
-        console.log(
-          `CacheKey Finalization(${cacheKey.type}, ${JSON.stringify(
-            cacheKey.otherKeys,
-          )})`,
-        );
-      });
+      this.#finalizationRegistry.register(
+        cacheKey,
+        `CacheKey Finalization(${cacheKey.type}, ${JSON.stringify(
+          cacheKey.otherKeys,
+        )})`,
+      );
     }
     return cacheKey;
   });
@@ -59,7 +57,7 @@ export class CacheKeys<TCacheKey extends CacheKey> {
 
   // we are currently only using this for debug logging and should just remove it in the future if that
   // continues to be true
-  #finalizationRegistry: FinalizationRegistry<() => void>;
+  #finalizationRegistry: FinalizationRegistry<string>;
 
   #onCreate?: (cacheKey: TCacheKey) => void;
   #onDestroy?: (cacheKey: TCacheKey) => void;
@@ -80,18 +78,25 @@ export class CacheKeys<TCacheKey extends CacheKey> {
 
     this.#refCounts = new RefCounts<TCacheKey>(
       this.#debugRefCounts ? 15_000 : 60_000,
-      (k) => this.#cleanupCacheKey(k),
+      this.#cleanupCacheKey,
       this.#debugRefCounts,
     );
 
-    setInterval(() => {
-      this.#refCounts.gc();
+    const weakThis = new WeakRef(this);
+    const intervalId = setInterval(() => {
+      const self = weakThis.deref();
+      if (self) {
+        self.#refCounts.gc();
+      } else {
+        clearInterval(intervalId);
+      }
     }, 1000);
 
-    this.#finalizationRegistry = new FinalizationRegistry<() => void>(
-      (cleanupCallback) => {
+    this.#finalizationRegistry = new FinalizationRegistry<string>(
+      (cleanupMessage) => {
         try {
-          cleanupCallback();
+          // eslint-disable-next-line no-console
+          console.log(cleanupMessage);
         } catch (e) {
           // eslint-disable-next-line no-console
           console.error(
