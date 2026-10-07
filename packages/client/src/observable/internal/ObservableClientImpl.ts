@@ -272,13 +272,19 @@ export class ObservableClientImpl implements ObservableClient {
       string,
       WirePropertyTypes | undefined | Array<WirePropertyTypes>
     > = {},
+    BaseRDPs extends Record<string, SimplePropertyDef> = never,
   >(
-    baseObjectSet: ObjectSet<T>,
+    baseObjectSet: ObjectSet<T, BaseRDPs>,
     options: ObserveObjectSetOptions<T, RDPs>,
-    subFn: Observer<ObserveObjectSetArgs<T, RDPs>>,
+    subFn: Observer<
+      ObserveObjectSetArgs<
+        T,
+        Omit<[BaseRDPs] extends [never] ? {} : BaseRDPs, keyof RDPs> & RDPs
+      >
+    >,
   ): Unsubscribable {
     return this.__experimentalStore.objectSets.observe(
-      { baseObjectSet, ...options },
+      { baseObjectSet: baseObjectSet as ObjectSet<T>, ...options },
       // cast to cross typed to untyped barrier
       subFn as unknown as Observer<ObjectSetPayload>,
     );

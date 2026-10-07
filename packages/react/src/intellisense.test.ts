@@ -213,4 +213,28 @@ describe("intellisense", () => {
     // streamUpdates is a type error. If the restriction is removed, typecheck
     // will fail with "unused @ts-expect-error".
   });
+  it("useObjectSetDerivedProperties", { timeout: 90_000 }, () => {
+    const configPath = path.join(
+      path.dirname(intellisenseFilePath),
+      "tsconfig.json",
+    );
+    const config = ts.readConfigFile(configPath, ts.sys.readFile);
+    const parsed = ts.parseJsonConfigFileContent(
+      config.config,
+      ts.sys,
+      path.dirname(configPath),
+    );
+    const program = ts.createProgram([intellisenseFilePath], {
+      ...parsed.options,
+      noEmit: true,
+      emitDeclarationOnly: false,
+    });
+    expect(
+      ts
+        .getPreEmitDiagnostics(program)
+        .map((diagnostic) =>
+          ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n"),
+        ),
+    ).toEqual([]);
+  });
 });

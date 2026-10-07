@@ -209,7 +209,10 @@ export function useObjectSet<
     pivotTo: LinkNames<Q>;
     streamUpdates?: never;
   },
-): UseObjectSetResult<Q, RDPs>;
+): UseObjectSetResult<
+  Q,
+  Omit<[BaseRDPs] extends [never] ? {} : BaseRDPs, keyof RDPs> & RDPs
+>;
 
 // Non-pivotTo overload: pivotTo is forbidden to prevent fallthrough.
 export function useObjectSet<
@@ -219,7 +222,10 @@ export function useObjectSet<
 >(
   baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
   options?: UseObjectSetOptions<Q, RDPs> & { pivotTo?: never },
-): UseObjectSetResult<Q, RDPs>;
+): UseObjectSetResult<
+  Q,
+  Omit<[BaseRDPs] extends [never] ? {} : BaseRDPs, keyof RDPs> & RDPs
+>;
 
 export function useObjectSet<
   Q extends ObjectOrInterfaceDefinition,
@@ -228,7 +234,16 @@ export function useObjectSet<
 >(
   baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
   options: UseObjectSetOptions<Q, RDPs> = {},
-): UseObjectSetResult<Q, RDPs> {
+): UseObjectSetResult<
+  Q,
+  Omit<[BaseRDPs] extends [never] ? {} : BaseRDPs, keyof RDPs> & RDPs
+> {
+  type CombinedRDPs = Omit<
+    [BaseRDPs] extends [never] ? {} : BaseRDPs,
+    keyof RDPs
+  > &
+    RDPs;
+
   const { observableClient } = React.useContext(OsdkContext);
 
   const {
@@ -246,7 +261,7 @@ export function useObjectSet<
 
   const previousObjectTypeRef = React.useRef<string>(objectTypeKey);
   const previousCompletedPayloadRef = React.useRef<
-    Snapshot<ObserveObjectSetArgs<Q, RDPs>> | undefined
+    Snapshot<ObserveObjectSetArgs<Q, CombinedRDPs>> | undefined
   >();
   // TODO: Is it expected to only clear the previousCompletedPayloadRef when the object type changes?
   // What if the same object type is queried with different filters, should we also clear the cache?
@@ -279,7 +294,7 @@ export function useObjectSet<
 
   const { subscribe, getSnapShot } = React.useMemo(() => {
     if (!enabled) {
-      return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
+      return makeExternalStore<ObserveObjectSetArgs<Q, CombinedRDPs>>(
         () => ({ unsubscribe: () => {} }),
         devToolsMetadata({
           hookType: "useObjectSet",
@@ -292,13 +307,13 @@ export function useObjectSet<
       ? undefined
       : previousCompletedPayloadRef.current;
 
-    return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
+    return makeExternalStore<ObserveObjectSetArgs<Q, CombinedRDPs>>(
       (observer) => {
         if (!baseObjectSetRef.current) {
           return { unsubscribe: () => {} };
         }
         const subscription = observableClient.observeObjectSet(
-          baseObjectSetRef.current as ObjectSet<Q>,
+          baseObjectSetRef.current,
           {
             where: canonOptions.where,
             withProperties: canonOptions.withProperties,
@@ -364,14 +379,16 @@ export function useObjectSet<
         Q,
         "$allBaseProperties",
         PropertyKeys<Q>,
-        RDPs
+        CombinedRDPs
       >[],
       isLoading: enabled ? !isPayloadCompleted(payload) : false,
       error: extractPayloadError(lastLoaded, "Failed to load object set"),
       isOptimistic: payload?.isOptimistic ?? false,
       fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
       hasMore: payload?.hasMore ?? false,
-      objectSet: lastLoaded?.objectSet as ObjectSet<Q, RDPs> | undefined,
+      objectSet: lastLoaded?.objectSet as
+        | ObjectSet<Q, CombinedRDPs>
+        | undefined,
       totalCount: lastLoaded?.totalCount,
       refetch,
     };

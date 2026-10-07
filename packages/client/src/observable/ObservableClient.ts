@@ -455,10 +455,16 @@ export interface ObservableClient extends ObserveLinks {
       string,
       WirePropertyTypes | undefined | Array<WirePropertyTypes>
     > = {},
+    BaseRDPs extends Record<string, SimplePropertyDef> = never,
   >(
-    baseObjectSet: ObjectSet<T>,
+    baseObjectSet: ObjectSet<T, BaseRDPs>,
     options: ObserveObjectSetOptions<T, RDPs>,
-    subFn: Observer<ObserveObjectSetArgs<T, RDPs>>,
+    subFn: Observer<
+      ObserveObjectSetArgs<
+        T,
+        Omit<[BaseRDPs] extends [never] ? {} : BaseRDPs, keyof RDPs> & RDPs
+      >
+    >,
   ): Unsubscribable;
 
   /**
