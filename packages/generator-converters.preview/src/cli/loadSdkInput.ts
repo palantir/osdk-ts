@@ -49,6 +49,7 @@ export async function loadSdkInput(options: {
   if (hasBlockResults(data)) {
     return loadBlockResults(
       path.resolve(path.dirname(inputFile), data.blockResults),
+      getOntologyData(data, inputFile),
     );
   }
   return { ontology: getOntologyData(data, inputFile), valueTypes: {} };
@@ -59,7 +60,10 @@ function hasBlockResults(data: unknown): data is { blockResults: string } {
     && typeof data.blockResults === "string";
 }
 
-async function loadBlockResults(inputFile: string): Promise<SdkInput> {
+async function loadBlockResults(
+  inputFile: string,
+  inputOntology?: OntologyBlockDataV2,
+): Promise<SdkInput> {
   const data = await readJson(inputFile) as
     | Record<string, unknown>
     | Record<string, unknown>[];
@@ -67,7 +71,9 @@ async function loadBlockResults(inputFile: string): Promise<SdkInput> {
   const blocks = Array.isArray(data) ? data : [data];
   const ontologyBlock = blocks.find(block => block.block_type === "ONTOLOGY")!;
   const ontologyFile = getBlockFile(ontologyBlock, inputFile, "ontology.json");
-  const ontology = getOntologyData(await readJson(ontologyFile), ontologyFile);
+  // Scripts that wrap the generator can filter the `--input` ontology, so it wins over Maker's copy.
+  const ontology = inputOntology
+    ?? getOntologyData(await readJson(ontologyFile), ontologyFile);
   const connections = getValueTypeConnections(ontology, ontologyBlock);
   const outputs = await loadValueTypeOutputs(blocks, connections, inputFile);
   const valueTypes = Object.fromEntries(

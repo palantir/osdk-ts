@@ -303,26 +303,30 @@ describe("loadSdkInput", () => {
     expect(fs.readFile).toHaveBeenCalledTimes(2);
   });
 
-  it("loads block results referenced by wrapped ontology input", async () => {
-    const wrapperFile = path.resolve("wrapper/sdk-input.json");
-    mockFiles({
-      [wrapperFile]: { ontology, blockResults: "../build/block-results.json" },
-      [inputFile]: [
-        { ...valueTypeOntologyBlock, add_on_override: blockIdentities },
-        valueTypeBlock,
-      ],
-      [ontologyFile]: ontology,
-      [valueTypeFile]: valueTypeDefinition,
-    });
+  it.each([
+    { name: "relative", blockResults: "../build/block-results.json" },
+    { name: "absolute", blockResults: inputFile },
+  ])(
+    "loads value types from $name blockResults in wrapped ontology input",
+    async ({ blockResults }) => {
+      const wrapperFile = path.resolve("wrapper/sdk-input.json");
+      mockFiles({
+        [wrapperFile]: { ontology, blockResults },
+        [inputFile]: [
+          { ...valueTypeOntologyBlock, add_on_override: blockIdentities },
+          valueTypeBlock,
+        ],
+        [ontologyFile]: { ...ontology, objectTypes: { unfiltered: {} } },
+        [valueTypeFile]: valueTypeDefinition,
+      });
 
-    const loaded = await loadSdkInput({ input: wrapperFile });
-    expect(loaded).toEqual({
-      ontology,
-      valueTypes: { "value-type-rid": valueTypeDefinition },
-    });
-    await expect(loadSdkInput({ blockResultsInput: inputFile })).resolves
-      .toEqual(loaded);
-  });
+      await expect(loadSdkInput({ input: wrapperFile })).resolves.toEqual({
+        ontology,
+        valueTypes: { "value-type-rid": valueTypeDefinition },
+      });
+      expect(fs.readFile).not.toHaveBeenCalledWith(ontologyFile, "utf-8");
+    },
+  );
 
   it("loads no value types from block results without block identities", async () => {
     mockFiles({
