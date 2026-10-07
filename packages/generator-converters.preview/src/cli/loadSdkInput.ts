@@ -48,15 +48,17 @@ export async function loadSdkInput(options: {
   const data = await readJson(inputFile);
   // `blockResults` sits beside `ontology` because older generators unwrap
   // `ontology` and ignore other fields.
-  if (
-    typeof data === "object" && data != null && "blockResults" in data
-    && typeof data.blockResults === "string"
-  ) {
+  if (hasBlockResults(data)) {
     return loadBlockResults(
       path.resolve(path.dirname(inputFile), data.blockResults),
     );
   }
   return { ontology: getOntologyData(data, inputFile), valueTypes: {} };
+}
+
+function hasBlockResults(data: unknown): data is { blockResults: string } {
+  return typeof data === "object" && data != null && "blockResults" in data
+    && typeof data.blockResults === "string";
 }
 
 async function loadBlockResults(inputFile: string): Promise<SdkInput> {
