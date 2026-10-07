@@ -746,6 +746,9 @@ export abstract class BaseListQuery<
     if (process.env.NODE_ENV !== "production") {
       this.logger?.child({ methodName: "onOutOfDate" }).debug("");
     }
+    void this.revalidate(true).catch((error: unknown) =>
+      this.onOswError({ subscriptionClosed: false, error }),
+    );
   }
 
   /**
