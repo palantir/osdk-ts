@@ -816,13 +816,14 @@ describe(Store, () => {
         linkSubFn,
       );
 
-      await waitForCall(linkSubFn);
+      await vi.waitFor(() => {
+        expect(linkSubFn.next.mock.lastCall?.[0].status).toBe("error");
+      });
       linkSubFn.next.mockClear();
 
       await cache.invalidateObjectType(Employee, undefined);
 
-      await waitForCall(linkSubFn);
-      expect(linkSubFn.next).toHaveBeenCalled();
+      expect(linkSubFn.next.mock.lastCall?.[0].status).toBe("error");
 
       subscription.unsubscribe();
       testStage(

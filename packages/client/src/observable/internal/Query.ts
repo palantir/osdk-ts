@@ -44,6 +44,7 @@ export abstract class Query<
 > implements Subscribable<PAYLOAD> {
   lastFetchStarted?: number;
   pendingFetch?: Promise<void>;
+  #queuedRevalidation?: Promise<void>;
   retainCount: number = 0;
   options: O;
   cacheKey: KEY;
@@ -170,6 +171,15 @@ export abstract class Query<
 
     // if we are pending the first page/object we can just ignore this
     if (this.pendingFetch) {
+      if (force) {
+        this.#queuedRevalidation ??= this.pendingFetch
+          .catch(() => {})
+          .then(() => {
+            this.#queuedRevalidation = undefined;
+            return this.revalidate(true);
+          });
+        return this.#queuedRevalidation;
+      }
       if (process.env.NODE_ENV !== "production") {
         logger?.debug("Fetch is already pending, using it");
       }
