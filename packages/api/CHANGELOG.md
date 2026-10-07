@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.77.0
+
+### Minor Changes
+
+- 2ab4d7c: Clarify that ontology-defined derived properties require explicit selection, distinguish runtime-defined derived properties, and add object-loading examples.
+- 75a8f07: Add experimental agent clients with support for creating sessions.
+
 ## 2.76.0
 
 ## 2.75.0

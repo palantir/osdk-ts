@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.26.0
+
+### Minor Changes
+
+- 2ab4d7c: Clarify that ontology-defined derived properties require explicit selection, distinguish runtime-defined derived properties, and add object-loading examples.
+
 ## 0.25.0
 
 ### Minor Changes
