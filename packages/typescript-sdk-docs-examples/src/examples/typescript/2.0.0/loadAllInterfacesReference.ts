@@ -24,8 +24,8 @@ import { HasAddress } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 // asyncIter() fetches page after page until every matching object has been loaded:
-// - Pass $select: [...] with only the properties you read. Without it, every property except
-//   vector properties is loaded.
+// - Pass $select: [...] with only the properties you read. Without it, the API loads its
+//   default property set.
 // - Handle each object as it arrives rather than collecting them all into an array.
 // - It requests a consistent snapshot, so for non-stream-backed object types a completed traversal
 //   returns each object exactly once. It throws if the snapshot expires or the backend detects a

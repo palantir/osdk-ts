@@ -28,10 +28,9 @@ import { client } from "./client.js";
 // - Show a sample or the first N objects: use fetchPage({ $pageSize }) instead.
 //
 // asyncIter() fetches page after page until every matching object has been loaded:
-// - $select only the properties you read. Without it, every property except vector properties
-//   and ontology-defined derived properties is loaded, and reading fewer properties afterwards
-//   does not avoid the cost of fetching them. Loading unused properties wastes bandwidth and
-//   compute and can slow down retrieval.
+// - $select only the properties you read. Without it, the API loads its default property set,
+//   and reading fewer properties afterwards does not avoid the cost of fetching them. Loading
+//   unused properties wastes bandwidth and compute and can slow down retrieval.
 // - Handle each object as it arrives rather than collecting them all into an array, so that
 //   memory use does not grow with the size of the object set.
 // - asyncIter() requests a consistent snapshot. For non-stream-backed object types, a completed

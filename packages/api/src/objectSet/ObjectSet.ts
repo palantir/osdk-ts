@@ -191,8 +191,9 @@ interface FetchPageSignature<
   /**
    * Gets a page of objects of this type, with a result wrapper
    *
-   * Without `$select`, loads every property except vector properties, so select only the
-   * properties you read. `$pageSize` sizes one page; it does not limit the total number of
+   * Without `$select`, loads the API's default property set, and reading fewer properties
+   * afterwards does not avoid the cost of fetching them, so select only the properties you
+   * read. `$pageSize` sizes one page; it does not limit the total number of
    * objects. Does not request a snapshot unless `$snapshot: true` is passed (a snapshot
    * configured for a function run still applies), so if objects change between requests,
    * later pages may repeat or skip objects.
@@ -282,8 +283,9 @@ interface FetchPageWithErrorsSignature<
   /**
    * Gets a page of objects of this type, with a result wrapper
    *
-   * Without `$select`, loads every property except vector properties, so select only the
-   * properties you read. `$pageSize` sizes one page; it does not limit the total number of
+   * Without `$select`, loads the API's default property set, and reading fewer properties
+   * afterwards does not avoid the cost of fetching them, so select only the properties you
+   * read. `$pageSize` sizes one page; it does not limit the total number of
    * objects. Does not request a snapshot unless `$snapshot: true` is passed (a snapshot
    * configured for a function run still applies), so if objects change between requests,
    * later pages may repeat or skip objects.
@@ -380,8 +382,9 @@ interface AsyncIterSignature<
    * Stream-backed object types do not provide this snapshot guarantee across pages: changes
    * during traversal can cause iteration to throw, and exactly-once traversal is not guaranteed.
    *
-   * Without `$select`, loads every property except vector properties, so select only the
-   * properties you read, and handle each object as it arrives instead of collecting every object
+   * Without `$select`, loads the API's default property set, and reading fewer properties
+   * afterwards does not avoid the cost of fetching them, so select only the properties you
+   * read, and handle each object as it arrives instead of collecting every object
    * into an array. For counts, sums, or group-bys use `aggregate()`; for a sample or the first N
    * objects use `fetchPage()`.
    * @param args - Optional args to refine the iteration (e.g., `$select`, `$orderBy`)
@@ -414,8 +417,9 @@ interface AsyncIterSignature<
    * Stream-backed object types do not provide this snapshot guarantee across pages: changes
    * during traversal can cause iteration to throw, and exactly-once traversal is not guaranteed.
    *
-   * Without `$select`, loads every property except vector properties, so select only the
-   * properties you read, and handle each object as it arrives instead of collecting every object
+   * Without `$select`, loads the API's default property set, and reading fewer properties
+   * afterwards does not avoid the cost of fetching them, so select only the properties you
+   * read, and handle each object as it arrives instead of collecting every object
    * into an array. For counts, sums, or group-bys use `aggregate()`; for a sample or the first N
    * objects use `fetchPage()`.
    * @param args - Optional args to refine the iteration (e.g., `$select`, `$orderBy`)

@@ -220,7 +220,7 @@ const { data } = useOsdkObjects(Todo, {
 
 ### Selecting Properties with `$select`
 
-Without `$select`, the API loads its default property set, which includes every property except vector properties. Pass `$select` with only the properties your component reads (the primary key is always returned):
+Without `$select`, the API loads its default property set (vector properties, for example, are not included). Pass `$select` with only the properties your component reads (the primary key is always returned):
 
 ```tsx
 const { data } = useOsdkObjects(Todo, {
@@ -694,10 +694,10 @@ Without a snapshot, later pages may repeat or skip objects if the data changes b
 
 If a full `asyncIter()` traversal of a frequently updated object type fails, aggregate instead if you only need a summary, `$select` fewer properties and filter the object set so the traversal finishes sooner, or loop over `fetchPage()` yourself and de-duplicate by `$primaryKey`. Without a snapshot, de-duplication removes repeated objects but does not recover skipped ones.
 
-Both `fetchPage` and `asyncIter` load every property except vector properties unless you pass `$select`. With `asyncIter`, handle each object as it arrives rather than collecting all of them into an array:
+Both `fetchPage` and `asyncIter` load the API's default property set unless you pass `$select`. With `asyncIter`, handle each object as it arrives rather than collecting all of them into an array:
 
 ```ts
-// ✗ Loads every non-vector property of every object and holds all of them in memory
+// ✗ Loads the default property set for every object and holds all of them in memory
 const todos = await Array.fromAsync(client(Todo).asyncIter());
 
 // ✓ Loads only the property that is used, one object at a time

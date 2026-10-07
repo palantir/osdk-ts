@@ -25,8 +25,8 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-// $select only the properties you read. Without it, every property except vector properties is
-// loaded, and reading fewer properties afterwards does not avoid the cost of fetching them.
+// $select only the properties you read. Without it, the API loads its default property set,
+// and reading fewer properties afterwards does not avoid the cost of fetching them.
 // $pageSize is the size of one page, not a limit on the total number of objects.
 // fetchPage does not request a snapshot unless you pass $snapshot: true (a snapshot configured for
 // a function run still applies). Without one, if data changes between requests, later pages may

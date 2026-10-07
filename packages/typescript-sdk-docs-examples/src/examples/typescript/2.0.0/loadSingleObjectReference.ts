@@ -25,7 +25,7 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-// $select only the properties you read; without it, all non-vector properties are loaded.
+// $select only the properties you read; without it, the default property set is loaded.
 const responseNoErrorWrapper: Osdk.Instance<Employee, never, "fullName"> =
   await client(Employee).fetchOne(12345, { $select: ["fullName"] });
 

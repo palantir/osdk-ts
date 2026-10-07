@@ -84,8 +84,8 @@ export interface SelectArg<
 > {
   /**
    * The properties to load for each object. If omitted, the API loads its default property
-   * set, which includes every property except vector properties and ontology-defined derived
-   * properties. The primary key is always returned, even when it is not selected.
+   * set (vector properties, for example, are not included). The primary key is always
+   * returned, even when it is not selected.
    *
    * Select only the properties your code needs. Loading unused properties wastes bandwidth
    * and compute and can slow down retrieval, and reading fewer properties afterwards does
