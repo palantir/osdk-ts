@@ -14,11 +14,21 @@
  * limitations under the License.
  */
 
-export type { AgentDefinition, AgentSession } from "@osdk/api/unstable";
+import invariant from "tiny-invariant";
 
-export { createClientWithTransaction } from "../createClient.js";
-export { createClientFromWriteableClient } from "../createClientFromWriteableClient.js";
+import { Agents } from "../mock/index.js";
+import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
 
-export { createScenario } from "../scenarios/createScenario.js";
-export type { EXPERIMENTAL_ScenarioClient } from "../scenarios/ScenarioClient.js";
-export { withScenario } from "../scenarios/withScenario.js";
+export const createAgentHandlers: FauxFoundryHandlersFactory = (
+  baseUrl,
+  fauxFoundry,
+) => [
+  Agents.AgentSessions.create(baseUrl, async ({ request }) => {
+    const body = await request.json();
+    invariant(body.agent.type === "agentApiName");
+    const impl = fauxFoundry
+      .getOntology(body.agent.ontology)
+      .getAgentImpl(body.agent.agentApiName, body.agentVersion);
+    return impl(body, fauxFoundry.getDataStore(body.agent.ontology));
+  }),
+];

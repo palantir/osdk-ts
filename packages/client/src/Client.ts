@@ -28,6 +28,7 @@ import type {
   VersionBound,
 } from "@osdk/api";
 import type {
+  AgentDefinition,
   Experiment,
   ExperimentFns,
   MinimalObjectSet,
@@ -35,6 +36,7 @@ import type {
 import type { SharedClient } from "@osdk/shared.client2";
 
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
+import type { AgentSignatureFromDef } from "./agents/types.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 import type { SatisfiesSemver } from "./SatisfiesSemver.js";
@@ -111,6 +113,9 @@ export interface Client extends SharedClient, OldSharedClient {
    * @returns a callable for executing the query function.
    */
   <Q extends QueryDefinition<any>>(o: Q): QuerySignatureFromDef<Q>;
+
+  /** @beta */
+  <Q extends AgentDefinition<unknown>>(o: Q): AgentSignatureFromDef<Q>;
 
   /**
    * @param experiment - The experiment marker that gates an unstable feature.

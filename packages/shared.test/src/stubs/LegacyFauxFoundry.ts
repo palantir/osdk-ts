@@ -20,6 +20,7 @@ import invariant from "tiny-invariant";
 
 import { registerLazyActions } from "./actions.js";
 import { ActionTypeWithUnsupportedTypes, editTodo } from "./actionTypes.js";
+import { registerLazyAgents } from "./agents.js";
 import {
   ComplexImplementationInterface,
   complexImplementationObjectTypeWithLinkTypes,
@@ -67,6 +68,7 @@ export class LegacyFauxFoundry extends FauxFoundry {
     legacyFullOntology.registerActionType(editTodo.actionTypeV2);
 
     registerLazyQueries(legacyFullOntology);
+    registerLazyAgents(legacyFullOntology);
 
     legacyFullOntology.registerInterfaceType(BarInterface);
     legacyFullOntology.registerInterfaceType(ComplexImplementationInterface);

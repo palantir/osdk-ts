@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
-export type { AgentDefinition, AgentSession } from "@osdk/api/unstable";
+import { Errors, OpenApiCallError } from "@osdk/faux";
+import type {
+  AgentSession,
+  CreateAgentSessionRequest,
+} from "@osdk/foundry.agents";
 
-export { createClientWithTransaction } from "../createClient.js";
-export { createClientFromWriteableClient } from "../createClientFromWriteableClient.js";
+export function createLazyAgentImpl(
+  bodyToResponse: Record<string, AgentSession>,
+): (req: CreateAgentSessionRequest) => AgentSession {
+  return (req: CreateAgentSessionRequest): AgentSession => {
+    const body = JSON.stringify(req);
 
-export { createScenario } from "../scenarios/createScenario.js";
-export type { EXPERIMENTAL_ScenarioClient } from "../scenarios/ScenarioClient.js";
-export { withScenario } from "../scenarios/withScenario.js";
+    const resp = bodyToResponse[body];
+    if (!resp) {
+      throw new OpenApiCallError(
+        400,
+        Errors.InvalidRequest("Invalid Agent Session Request"),
+      );
+    }
+    return resp;
+  };
+}

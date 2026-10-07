@@ -14,11 +14,21 @@
  * limitations under the License.
  */
 
-export type { AgentDefinition, AgentSession } from "@osdk/api/unstable";
+import type { AgentSession } from "@osdk/client/experimental";
+import { osdkTestFixture } from "@osdk/e2e.generated.catchall";
+import invariant from "tiny-invariant";
+import { expectType } from "ts-expect";
 
-export { createClientWithTransaction } from "../createClient.js";
-export { createClientFromWriteableClient } from "../createClientFromWriteableClient.js";
+import { client } from "./client.js";
 
-export { createScenario } from "../scenarios/createScenario.js";
-export type { EXPERIMENTAL_ScenarioClient } from "../scenarios/ScenarioClient.js";
-export { withScenario } from "../scenarios/withScenario.js";
+export async function runAgentsTest(): Promise<void> {
+  const session = await client(osdkTestFixture).experimental_createSession({
+    defaultCity: "Rome",
+  });
+  expectType<AgentSession>(session);
+  expectType<string>(session.id);
+  console.log("Agent session:", session.id);
+  invariant(session.id.length > 0);
+}
+
+void runAgentsTest();

@@ -23,6 +23,7 @@ catalogs:
     "@osdk/docs-spec-core": 0.6.0
     "@osdk/docs-spec-sdk": 0.17.0
     "@osdk/foundry": 2.78.0
+    "@osdk/foundry.agents": 2.81.0
     "@osdk/foundry.core": 2.78.0
     "@osdk/foundry.datasets": ~2.5.0
     "@osdk/foundry.functions": 2.78.0
