@@ -38,10 +38,22 @@ type CanonicalValue =
   | [CanonicalValue, CanonicalValue][]
   | { [key: string]: CanonicalValue };
 
-type PathElement = PrimitiveValue | WireObjectSet;
+type PathElement = PrimitiveValue | WireObjectSet | symbol;
 
-// Path markers use "$:" prefix. User data with this prefix is unlikely but could
-// theoretically cause collisions if it matches the exact marker sequence.
+const pathMarkers = {
+  date: Symbol("date"),
+  array: Symbol("array"),
+  arrayEnd: Symbol("array_end"),
+  set: Symbol("set"),
+  setEnd: Symbol("set_end"),
+  map: Symbol("map"),
+  mapEnd: Symbol("map_end"),
+  osdk: Symbol("osdk"),
+  objectSet: Symbol("objectset"),
+  object: Symbol("object"),
+  objectEnd: Symbol("object_end"),
+};
+
 function isPrimitiveValue(value: unknown): value is PrimitiveValue {
   if (value == null) return true;
   const t = typeof value;
@@ -112,56 +124,56 @@ export class FunctionParamsCanonicalizer {
 
     if (value instanceof Date) {
       const iso = value.toISOString();
-      path.push("$:date", iso);
+      path.push(pathMarkers.date, iso);
       return iso;
     }
 
     if (Array.isArray(value)) {
-      path.push("$:array");
+      path.push(pathMarkers.array);
       const arr = value.map((item) => this.#encodeAndBuild(item, path, seen));
-      path.push("$:array_end");
+      path.push(pathMarkers.arrayEnd);
       return arr;
     }
 
     if (value instanceof Set) {
-      path.push("$:set");
+      path.push(pathMarkers.set);
       const sorted = this.#sortSetValues(Array.from(value));
       const arr = sorted.map((item) => this.#encodeAndBuild(item, path, seen));
-      path.push("$:set_end");
+      path.push(pathMarkers.setEnd);
       return arr;
     }
 
     if (value instanceof Map) {
-      path.push("$:map");
+      path.push(pathMarkers.map);
       const sorted = this.#sortMapEntries(Array.from(value.entries()));
       const arr: [CanonicalValue, CanonicalValue][] = sorted.map(([k, v]) => [
         this.#encodeAndBuild(k, path, seen),
         this.#encodeAndBuild(v, path, seen),
       ]);
-      path.push("$:map_end");
+      path.push(pathMarkers.mapEnd);
       return arr;
     }
 
     if (isObjectSpecifiersObject(value)) {
       const objectType = value.$objectType ?? value.$apiName;
-      path.push("$:osdk", objectType, value.$primaryKey);
+      path.push(pathMarkers.osdk, objectType, value.$primaryKey);
       return { $apiName: objectType, $primaryKey: value.$primaryKey };
     }
 
     if (isObjectSet(value)) {
       const wire = JSON.stringify(getWireObjectSet(value));
-      path.push("$:objectset", wire);
+      path.push(pathMarkers.objectSet, wire);
       return wire;
     }
 
     const obj = value as Record<string, unknown>;
-    path.push("$:object");
+    path.push(pathMarkers.object);
     const canonical: Record<string, CanonicalValue> = {};
     for (const key of Object.keys(obj).sort()) {
       path.push(key);
       canonical[key] = this.#encodeAndBuild(obj[key], path, seen);
     }
-    path.push("$:object_end");
+    path.push(pathMarkers.objectEnd);
     return canonical;
   }
 

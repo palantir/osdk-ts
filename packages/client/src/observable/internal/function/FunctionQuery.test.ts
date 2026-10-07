@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { QueryDefinition } from "@osdk/api";
 import { addOne, Employee, Todo } from "@osdk/client.test.ontology";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import type { MockedObject } from "vitest";
@@ -31,9 +32,11 @@ import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { FunctionPayload } from "../../FunctionPayload.js";
+import { createObservableClient } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { createChangedObjects } from "../Changes.js";
 import { Store } from "../Store.js";
+import { createDefer } from "../testUtils.js";
 import type { FunctionQuery } from "./FunctionQuery.js";
 
 function mockFunctionSubCallback(): MockedObject<
@@ -65,12 +68,38 @@ async function waitForCall(
   });
 }
 
+const defer = createDefer();
+
 describe("FunctionQuery", () => {
   let client: Client;
   let store: Store;
+  let countGroupsExecutions = 0;
 
   beforeAll(() => {
-    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
+    const foundry = new LegacyFauxFoundry();
+    foundry.getDefaultOntology().registerQueryType(
+      {
+        apiName: "countGroups",
+        version: "1.0.0",
+        rid: "ri.function-registry.main.function.count-groups",
+        parameters: {
+          groups: {
+            dataType: {
+              type: "array",
+              subType: { type: "array", subType: { type: "string" } },
+            },
+            required: true,
+          },
+        },
+        output: { type: "integer" },
+        typeReferences: {},
+      },
+      (request) => {
+        countGroupsExecutions++;
+        return { value: request.parameters.groups.length };
+      },
+    );
+    const testSetup = startNodeApiServer(foundry, createClient);
     ({ client } = testSetup);
     return () => {
       testSetup.apiServer.close();
@@ -79,6 +108,7 @@ describe("FunctionQuery", () => {
 
   beforeEach(() => {
     store = new Store(client);
+    countGroupsExecutions = 0;
     return () => {
       store = undefined!;
     };
@@ -215,6 +245,90 @@ describe("FunctionQuery", () => {
 
     sub1.unsubscribe();
     sub2.unsubscribe();
+  });
+
+  it("keeps nested arrays distinct from strings that match cache markers", async () => {
+    const observableClient = createObservableClient(client);
+    const countGroups: QueryDefinition<unknown> = {
+      type: "query",
+      apiName: "countGroups",
+      version: "1.0.0",
+      isFixedVersion: true,
+    };
+    const emptyGroups = mockFunctionSubCallback();
+    const markerStrings = mockFunctionSubCallback();
+
+    defer(
+      observableClient.observeFunction(
+        countGroups,
+        { groups: [[], []] },
+        { dedupeInterval: 60_000 },
+        emptyGroups,
+      ),
+    );
+    await vi.waitFor(() => {
+      expect(emptyGroups.next).toHaveBeenLastCalledWith(
+        expect.objectContaining({ status: "loaded", result: 2 }),
+      );
+    });
+
+    defer(
+      observableClient.observeFunction(
+        countGroups,
+        { groups: [["$:array_end", "$:array"]] },
+        { dedupeInterval: 60_000 },
+        markerStrings,
+      ),
+    );
+    await vi.waitFor(() => {
+      expect(markerStrings.next).toHaveBeenLastCalledWith(
+        expect.objectContaining({ status: "loaded", result: 1 }),
+      );
+    });
+    expect(emptyGroups.next).toHaveBeenLastCalledWith(
+      expect.objectContaining({ status: "loaded", result: 2 }),
+    );
+  });
+
+  it("reuses a function result for equivalent nested arrays", async () => {
+    const observableClient = createObservableClient(client);
+    const countGroups: QueryDefinition<unknown> = {
+      type: "query",
+      apiName: "countGroups",
+      version: "1.0.0",
+      isFixedVersion: true,
+    };
+    const firstObserver = mockFunctionSubCallback();
+    const secondObserver = mockFunctionSubCallback();
+
+    defer(
+      observableClient.observeFunction(
+        countGroups,
+        { groups: [["first"], ["second"]] },
+        { dedupeInterval: 60_000 },
+        firstObserver,
+      ),
+    );
+    await vi.waitFor(() => {
+      expect(firstObserver.next).toHaveBeenLastCalledWith(
+        expect.objectContaining({ status: "loaded", result: 2 }),
+      );
+    });
+
+    defer(
+      observableClient.observeFunction(
+        countGroups,
+        { groups: [["first"], ["second"]] },
+        { dedupeInterval: 60_000 },
+        secondObserver,
+      ),
+    );
+    await vi.waitFor(() => {
+      expect(secondObserver.next).toHaveBeenLastCalledWith(
+        expect.objectContaining({ status: "loaded", result: 2 }),
+      );
+    });
+    expect(countGroupsExecutions).toBe(1);
   });
 
   it("dependsOnObjects triggers refetch when specific object is modified", async () => {
