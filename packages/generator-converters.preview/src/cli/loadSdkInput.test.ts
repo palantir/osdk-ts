@@ -333,4 +333,10 @@ describe("loadSdkInput", () => {
       .toEqual({ ontology, valueTypes: {} });
     expect(fs.readFile).toHaveBeenCalledTimes(2);
   });
+
+  it("loads the ontology from a single block result", async () => {
+    mockFiles({ [inputFile]: ontologyBlock, [ontologyFile]: ontology });
+    await expect(loadSdkInput({ blockResultsInput: inputFile })).resolves
+      .toEqual({ ontology, valueTypes: {} });
+  });
 });

@@ -62,7 +62,11 @@ function hasBlockResults(data: unknown): data is { blockResults: string } {
 }
 
 async function loadBlockResults(inputFile: string): Promise<SdkInput> {
-  const blocks = await readJson(inputFile) as Record<string, unknown>[];
+  const data = await readJson(inputFile) as
+    | Record<string, unknown>
+    | Record<string, unknown>[];
+  // TODO(ksethi): remove once maker users have migrated to writing a list of block results
+  const blocks = Array.isArray(data) ? data : [data];
   const ontologyBlock = blocks.find(block => block.block_type === "ONTOLOGY")!;
   const ontologyFile = getBlockFile(ontologyBlock, inputFile, "ontology.json");
   const ontology = getOntologyData(await readJson(ontologyFile), ontologyFile);
