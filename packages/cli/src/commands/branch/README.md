@@ -1,11 +1,12 @@
-# `unstable branch` subcommand
+# `branch` subcommand
 
 The `branch` subcommand syncs the SDK(s) a project consumes to the correct
 version for wherever it is run: the latest pre-release version on a global branch, or the latest stable release on main.
 
 ```
-npx @osdk/cli unstable branch sync
+npx @osdk/cli branch sync
 ```
+
 
 Options
 
@@ -24,11 +25,11 @@ To see all supported subcommands and their expected arguments, run a command wit
 `--help` flag.
 
 ```
-npx @osdk/cli unstable branch --help
+npx @osdk/cli branch --help
 ```
 
 For additional debugging information, use the `--verbose` flag.
 
 ```
-npx @osdk/cli unstable branch sync --verbose
+npx @osdk/cli branch sync --verbose
 ```
