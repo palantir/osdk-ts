@@ -24,16 +24,15 @@ import type {
 import type { InputShape, OutputShape } from "@osdk/client.unstable/api";
 
 type ValueTypeConnection = { rid: string; output: string };
+type SdkInput = {
+  ontology: OntologyBlockDataV2;
+  valueTypes: Record<string, ValueTypeBlockData>;
+};
 
 export async function loadSdkInput(options: {
   input?: string;
   blockResultsInput?: string;
-}): Promise<
-  {
-    ontology: OntologyBlockDataV2;
-    valueTypes: Record<string, ValueTypeBlockData>;
-  }
-> {
+}): Promise<SdkInput> {
   const inputFile = options.input ?? options.blockResultsInput;
   if (
     inputFile === undefined
@@ -42,12 +41,26 @@ export async function loadSdkInput(options: {
     throw new Error("Provide exactly one of --input or --block-results-input.");
   }
 
-  const data = await readJson(inputFile);
-  if (options.input !== undefined) {
-    return { ontology: getOntologyData(data, inputFile), valueTypes: {} };
+  if (options.input === undefined) {
+    return loadBlockResults(inputFile);
   }
 
-  const blocks = data as Record<string, unknown>[];
+  const data = await readJson(inputFile);
+  // `blockResults` sits beside `ontology` because older generators unwrap
+  // `ontology` and ignore other fields.
+  if (
+    typeof data === "object" && data != null && "blockResults" in data
+    && typeof data.blockResults === "string"
+  ) {
+    return loadBlockResults(
+      path.resolve(path.dirname(inputFile), data.blockResults),
+    );
+  }
+  return { ontology: getOntologyData(data, inputFile), valueTypes: {} };
+}
+
+async function loadBlockResults(inputFile: string): Promise<SdkInput> {
+  const blocks = await readJson(inputFile) as Record<string, unknown>[];
   const ontologyBlock = blocks.find(block => block.block_type === "ONTOLOGY")!;
   const ontologyFile = getBlockFile(ontologyBlock, inputFile, "ontology.json");
   const ontology = getOntologyData(await readJson(ontologyFile), ontologyFile);
@@ -73,6 +86,10 @@ function getValueTypeConnections(
   const mappings = block.input_mapping_entries as Record<string, string>[];
   const addOn = block.add_on_override as Record<string, unknown>;
   const identities = addOn?.idToBlockShapeId as Record<string, string>;
+  // @osdk/maker-experimental versions before 0.62.0 do not write block identities.
+  if (identities === undefined) {
+    return [];
+  }
 
   // Imported dependencies have no local value-type block to read.
   return mappings
