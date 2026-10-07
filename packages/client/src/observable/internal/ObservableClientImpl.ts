@@ -466,7 +466,12 @@ function observeMultiLinks(
   observer: Observer<SpecificLinkPayload>,
 ): Unsubscribable {
   const parentSub = new Subscription();
-  const totalExpected = objectsArray.length;
+  const sources = new Map(
+    objectsArray.map((object) => [
+      `${object.$objectType ?? object.$apiName}:${object.$primaryKey}`,
+      object,
+    ]),
+  );
   const perObjectData = new Map<
     string,
     { payload: SpecificLinkPayload; pk: string | number }
@@ -511,7 +516,7 @@ function observeMultiLinks(
 
     const payloads = [...perObjectData.values()].map((d) => d.payload);
     const loading =
-      perObjectData.size < totalExpected ||
+      perObjectData.size < sources.size ||
       payloads.some((p) => p.status === "init" || p.status === "loading");
 
     observer.next({
@@ -532,8 +537,7 @@ function observeMultiLinks(
     });
   }
 
-  for (const obj of objectsArray) {
-    const objKey = `${obj.$objectType ?? obj.$apiName}:${obj.$primaryKey}`;
+  for (const [objKey, obj] of sources) {
     const pk = obj.$primaryKey;
 
     const sourceType: "object" | "interface" =
