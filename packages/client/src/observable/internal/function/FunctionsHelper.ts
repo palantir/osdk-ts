@@ -61,7 +61,7 @@ export class FunctionsHelper extends AbstractHelper<
     const apiName = queryDef.apiName;
     const version = queryDef.isFixedVersion ? queryDef.version : undefined;
 
-    const canonicalParams = this.paramsCanonicalizer.canonicalize(params);
+    const canonicalParams = this.paramsCanonicalizer.canonicalize(params ?? {});
 
     const functionCacheKey = this.cacheKeys.get<FunctionCacheKey>(
       "function",
