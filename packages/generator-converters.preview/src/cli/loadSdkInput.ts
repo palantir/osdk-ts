@@ -46,8 +46,6 @@ export async function loadSdkInput(options: {
   }
 
   const data = await readJson(inputFile);
-  // `blockResults` sits beside `ontology` because older generators unwrap
-  // `ontology` and ignore other fields.
   if (hasBlockResults(data)) {
     return loadBlockResults(
       path.resolve(path.dirname(inputFile), data.blockResults),
