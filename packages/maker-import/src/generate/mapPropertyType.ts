@@ -35,7 +35,6 @@ export interface MappedPropertyType {
  */
 export function mapPropertyType(
   dataType: ObjectPropertyType,
-  markingInputGroupName?: string,
 ): MappedPropertyType | undefined {
   switch (dataType.type) {
     case "string":
@@ -71,17 +70,16 @@ export function mapPropertyType(
     case "geotimeSeriesReference":
       return { type: "geotimeSeries" };
     case "marking":
-      if (
-        dataType.markingType === undefined ||
-        markingInputGroupName === undefined
-      ) {
+      if (dataType.markingType === undefined) {
         return undefined;
       }
       return {
         type: {
           type: "marking",
           markingType: dataType.markingType,
-          markingInputGroupName,
+          // Imported entities already own their marking configuration, so
+          // Maker's required authoring input group does not apply here.
+          markingInputGroupName: "not-applicable",
         },
       };
     case "struct": {
@@ -94,10 +92,7 @@ export function mapPropertyType(
       const structDefinition: PropertyTypeTypeStruct["structDefinition"] = {};
 
       for (const field of dataType.structFieldTypes) {
-        const mappedField = mapPropertyType(
-          field.dataType,
-          markingInputGroupName,
-        );
+        const mappedField = mapPropertyType(field.dataType);
         if (
           mappedField === undefined ||
           mappedField.array === true ||
@@ -120,7 +115,6 @@ export function mapPropertyType(
       if (dataType.mainValue !== undefined) {
         const mappedMainValue = mapPropertyType(
           dataType.mainValue.mainValueType,
-          markingInputGroupName,
         );
         if (mappedMainValue === undefined || mappedMainValue.array === true) {
           return undefined;
@@ -145,7 +139,7 @@ export function mapPropertyType(
         consola.warn("Array type missing subType, skipping");
         return undefined;
       }
-      const inner = mapPropertyType(subType, markingInputGroupName);
+      const inner = mapPropertyType(subType);
       if (!inner) {
         return undefined;
       }

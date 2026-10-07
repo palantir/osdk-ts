@@ -25,7 +25,7 @@ import { withoutNamespace } from "./utils.js";
 export function convertSharedPropertyType(
   spt: Ontologies.SharedPropertyType,
 ): SharedPropertyType | undefined {
-  const mapped = mapPropertyType(spt.dataType, spt.apiName);
+  const mapped = mapPropertyType(spt.dataType);
   if (!mapped) {
     consola.warn(
       `Skipping shared property type "${spt.apiName}": unsupported type "${spt.dataType.type}"`,
