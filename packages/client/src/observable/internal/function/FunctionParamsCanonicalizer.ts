@@ -125,8 +125,20 @@ export class FunctionParamsCanonicalizer {
 
     if (value instanceof Set) {
       path.push("$:set");
-      const sorted = this.#sortSetValues(Array.from(value));
-      const arr = sorted.map((item) => this.#encodeAndBuild(item, path, seen));
+      const encoded = Array.from(value, (item) => {
+        const itemPath: PathElement[] = [];
+        return {
+          value: this.#encodeAndBuild(item, itemPath, seen),
+          path: itemPath,
+        };
+      });
+      const sorted = this.#sortSetValues(encoded);
+      const arr = sorted.map((item) => {
+        for (const element of item.path) {
+          path.push(element);
+        }
+        return item.value;
+      });
       path.push("$:set_end");
       return arr;
     }
@@ -187,12 +199,12 @@ export class FunctionParamsCanonicalizer {
     return 0;
   }
 
-  #sortSetValues<T>(items: T[]): T[] {
+  #sortSetValues<T extends { value: CanonicalValue }>(items: T[]): T[] {
     return items.slice().sort((a, b) => {
-      if (isPrimitiveValue(a) && isPrimitiveValue(b)) {
-        return this.#comparePrimitives(a, b);
+      if (isPrimitiveValue(a.value) && isPrimitiveValue(b.value)) {
+        return this.#comparePrimitives(a.value, b.value);
       }
-      return JSON.stringify(a).localeCompare(JSON.stringify(b));
+      return JSON.stringify(a.value).localeCompare(JSON.stringify(b.value));
     });
   }
 
