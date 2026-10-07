@@ -64,6 +64,12 @@ export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = {
       loadObjectPageGuide: {
         code: 'import { Employee } from "../../../generatedNoCheck/index.js";\n// Edit this import if your client location differs\nimport { client } from "./client";\nimport { type Osdk, type PageResult } from "@osdk/client";\n\ntry {\n    const firstPage: PageResult<Osdk.Instance<Employee>>\n        = await client(Employee).fetchPage({ $pageSize: 30 });\n    if (firstPage.nextPageToken === undefined) {\n        console.log(firstPage.data);\n    }\n    const secondPage: PageResult<Osdk.Instance<Employee>>\n    = await client(Employee).fetchPage({ $pageSize: 30, $nextPageToken: firstPage.nextPageToken });\n    console.log([...firstPage.data, ...secondPage.data]);\n}\ncatch (e) {\n    throw e;\n}',
       },
+      selectPropertiesGuide: {
+        code: 'import { Employee } from "../../../generatedNoCheck/index.js";\n// Edit this import if your client location differs\nimport { client } from "./client";\n\nconst page = await client(Employee).fetchPage({\n    $select: ["fullName"],\n});',
+      },
+      applyPropertyModifiersGuide: {
+        code: 'import { Employee } from "../../../generatedNoCheck/index.js";\n// Edit this import if your client location differs\nimport { client } from "./client";\n\nconst page = await client(Employee).fetchPage({\n    $select: ["certifications"],\n    $applyModifiers: {\n        certifications: "applyReducers",\n    },\n});\n\nfor (const object of page.data) {\n    // The generated type is the array element type, not the original array type.\n    const reducedValue = object.certifications;\n}',
+      },
       orderObjectsGuide: {
         code: 'import { Employee } from "../../../generatedNoCheck/index.js";\n// Edit this import if your client location differs\nimport { client } from "./client";\nimport { type Osdk, type PageResult } from "@osdk/client";\n\ntry {\n    const page: PageResult<Osdk.Instance<Employee>> = await client(Employee)\n        .fetchPage({\n            $orderBy: {"fullName": "asc"},\n            $pageSize: 30\n        });\n    const objects = page.data;\n    const object = objects[0];\n} catch (e) {\n    throw e;\n}',
       },

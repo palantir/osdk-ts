@@ -27,6 +27,12 @@
 // loadObjectPageGuide
 // See: ./loadObjectPageGuide.ts
 
+// selectPropertiesGuide
+// See: ./selectPropertiesGuide.ts
+
+// applyPropertyModifiersGuide
+// See: ./applyPropertyModifiersGuide.ts
+
 // orderObjectsGuide
 // See: ./orderObjectsGuide.ts
 
