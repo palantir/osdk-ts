@@ -1,5 +1,5 @@
 ---
-"@osdk/maker-experimental": patch
+"@osdk/maker-import": patch
 ---
 
-Preserve marketplace-supported property types in imported ontology input shapes.
+Preserve imported marking properties in generated Marketplace input shapes.

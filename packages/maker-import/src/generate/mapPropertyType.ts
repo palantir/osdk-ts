@@ -35,6 +35,7 @@ export interface MappedPropertyType {
  */
 export function mapPropertyType(
   dataType: ObjectPropertyType,
+  markingInputGroupName?: string,
 ): MappedPropertyType | undefined {
   switch (dataType.type) {
     case "string":
@@ -69,19 +70,33 @@ export function mapPropertyType(
       return { type: "mediaReference" };
     case "geotimeSeriesReference":
       return { type: "geotimeSeries" };
+    case "marking":
+      if (
+        dataType.markingType === undefined ||
+        markingInputGroupName === undefined
+      ) {
+        return undefined;
+      }
+      return {
+        type: {
+          type: "marking",
+          markingType: dataType.markingType,
+          markingInputGroupName,
+        },
+      };
     case "array": {
       const subType = dataType.subType;
       if (!subType) {
         consola.warn("Array type missing subType, skipping");
         return undefined;
       }
-      const inner = mapPropertyType(subType);
+      const inner = mapPropertyType(subType, markingInputGroupName);
       if (!inner) {
         return undefined;
       }
       return { type: inner.type, array: true };
     }
-    // We don't support structs or markings here. It should have no influence on importing functionality
+    // We don't support structs here. It should have no influence on importing functionality
     default:
       return undefined;
   }

@@ -57,7 +57,7 @@ export function convertInterfaceType(
         propertiesV3[withoutNamespace(prop.apiName)] = entry;
       }
     } else if (prop.type === "interfaceDefinedPropertyType") {
-      const mapped = mapPropertyType(prop.dataType);
+      const mapped = mapPropertyType(prop.dataType, prop.apiName);
       if (mapped) {
         propertiesV3[withoutNamespace(prop.apiName)] = {
           type: mapped.type,

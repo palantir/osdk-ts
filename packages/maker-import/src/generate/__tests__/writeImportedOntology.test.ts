@@ -84,8 +84,28 @@ describe("mapPropertyType", () => {
     ).toEqual({ type: "string", array: true });
   });
 
+  it.each(["CBAC", "MANDATORY"] as const)(
+    "maps %s marking types when the subtype is known",
+    (markingType) => {
+      expect(
+        mapPropertyType({ type: "marking", markingType }, "classification"),
+      ).toEqual({
+        type: {
+          type: "marking",
+          markingType,
+          markingInputGroupName: "classification",
+        },
+      });
+    },
+  );
+
+  it("returns undefined for marking types with an unknown subtype", () => {
+    expect(
+      mapPropertyType({ type: "marking" }, "classification"),
+    ).toBeUndefined();
+  });
+
   it("returns undefined for unsupported types", () => {
-    expect(mapPropertyType({ type: "marking" })).toBeUndefined();
     expect(
       mapPropertyType({ type: "struct", structFieldTypes: [] }),
     ).toBeUndefined();

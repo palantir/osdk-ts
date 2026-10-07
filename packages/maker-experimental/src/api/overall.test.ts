@@ -1441,7 +1441,7 @@ describe("Experimental Test Suite", () => {
                   visibility: "NORMAL",
                 },
                 value: {
-                  dataType: { type: "marking" },
+                  dataType: { type: "marking", markingType: "CBAC" },
                   displayName: "Value",
                   rid: "ri.ontology.main.property.00000000-0000-0000-0000-000000000004",
                   status: { type: "experimental" },
