@@ -4514,12 +4514,12 @@ importers:
       '@osdk/client.unstable':
         specifier: workspace:~
         version: link:../client.unstable
+      '@osdk/foundry-sdk-generator':
+        specifier: workspace:~
+        version: link:../foundry-sdk-generator
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
         version: 2.78.0
-      '@osdk/generator':
-        specifier: workspace:~
-        version: link:../generator
       '@osdk/generator-converters.ontologyir':
         specifier: workspace:~
         version: link:../generator-converters.ontologyir
@@ -4530,6 +4530,9 @@ importers:
         specifier: 17.7.2
         version: 17.7.2
     devDependencies:
+      '@osdk/generator':
+        specifier: workspace:~
+        version: link:../generator
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
