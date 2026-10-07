@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  UpdateEntityRolesRequest as _api_permissions_UpdateEntityRolesRequest,
-  UpdateEntityRolesResponse as _api_permissions_UpdateEntityRolesResponse,
-} from "../__components.js";
+import type { UpdateEntityRolesRequest as _api_permissions_UpdateEntityRolesRequest } from "../__components.js";
+import type { UpdateEntityRolesResponse as _api_permissions_UpdateEntityRolesResponse } from "../__components.js";
 
 /**
  * Updates the role grants for an ontology entity. NOTE: If roles are updated on an ObjectType or LinkType, the

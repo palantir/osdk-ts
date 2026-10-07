@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-import type {
-  ActionTypeRid as _api_ActionTypeRid,
-  FunctionReference as _api_FunctionReference,
-  FunctionRid as _api_FunctionRid,
-  GlobalBranchRid as _api_GlobalBranchRid,
-  LinkTypeId as _api_LinkTypeId,
-  LinkTypeIdentifier as _api_LinkTypeIdentifier,
-  LinkTypeRid as _api_LinkTypeRid,
-  NotepadReference as _api_NotepadReference,
-  NotepadRid as _api_NotepadRid,
-  ObjectTypeId as _api_ObjectTypeId,
-  ObjectTypeRid as _api_ObjectTypeRid,
-  PropertyTypeId as _api_PropertyTypeId,
-  PropertyTypeRid as _api_PropertyTypeRid,
-  QuiverDashboardReference as _api_QuiverDashboardReference,
-  QuiverDashboardRid as _api_QuiverDashboardRid,
-  ValueTypeReference as _api_ValueTypeReference,
-  ValueTypeRid as _api_ValueTypeRid,
-  WorkshopModuleRid as _api_WorkshopModuleRid,
-  WorkshopReference as _api_WorkshopReference,
-} from "../__components.js";
+import type { ObjectTypeId as _api_ObjectTypeId } from "../__components.js";
+import type { ObjectTypeRid as _api_ObjectTypeRid } from "../__components.js";
+import type { LinkTypeId as _api_LinkTypeId } from "../__components.js";
+import type { PropertyTypeId as _api_PropertyTypeId } from "../__components.js";
+import type { PropertyTypeRid as _api_PropertyTypeRid } from "../__components.js";
+import type { ActionTypeRid as _api_ActionTypeRid } from "../__components.js";
+import type { FunctionReference as _api_FunctionReference } from "../__components.js";
+import type { LinkTypeIdentifier as _api_LinkTypeIdentifier } from "../__components.js";
+import type { NotepadReference as _api_NotepadReference } from "../__components.js";
+import type { QuiverDashboardReference as _api_QuiverDashboardReference } from "../__components.js";
+import type { ValueTypeReference as _api_ValueTypeReference } from "../__components.js";
+import type { WorkshopReference as _api_WorkshopReference } from "../__components.js";
+import type { LinkTypeRid as _api_LinkTypeRid } from "../__components.js";
+import type { ValueTypeRid as _api_ValueTypeRid } from "../__components.js";
+import type { FunctionRid as _api_FunctionRid } from "../__components.js";
+import type { WorkshopModuleRid as _api_WorkshopModuleRid } from "../__components.js";
+import type { NotepadRid as _api_NotepadRid } from "../__components.js";
+import type { QuiverDashboardRid as _api_QuiverDashboardRid } from "../__components.js";
+import type { GlobalBranchRid as _api_GlobalBranchRid } from "../__components.js";
 
 /**
  * Represents all properties available on the corresponding ObjectType.

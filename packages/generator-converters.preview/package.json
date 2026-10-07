@@ -1,6 +1,6 @@
 {
   "name": "@osdk/generator-converters.preview",
-  "version": "0.52.0",
+  "version": "0.53.0",
   "description": "OSDK generator with support for Python and TSv2 discovered functions",
   "access": "public",
   "license": "Apache-2.0",
@@ -44,13 +44,14 @@
   },
   "dependencies": {
     "@osdk/client.unstable": "workspace:~",
+    "@osdk/foundry-sdk-generator": "workspace:~",
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
-    "@osdk/generator": "workspace:~",
     "@osdk/generator-converters.ontologyir": "workspace:~",
     "consola": "^3.4.2",
     "yargs": "17.7.2"
   },
   "devDependencies": {
+    "@osdk/generator": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/node": "^24.3.1",

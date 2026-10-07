@@ -1,5 +1,21 @@
 # @osdk/generator-converters.preview
 
+## 0.53.0
+
+### Minor Changes
+
+- a9fafd0: Fix link attachment for imported objects
+
+### Patch Changes
+
+- Updated dependencies [43dd010]
+- Updated dependencies [a9fafd0]
+- Updated dependencies [21a0d8c]
+- Updated dependencies [a38af5a]
+  - @osdk/generator-converters.ontologyir@2.76.0
+  - @osdk/client.unstable@2.76.0
+  - @osdk/generator@2.76.0
+
 ## 0.52.0
 
 ### Minor Changes

@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  ActionTypeSearchRequest as _api_search_ActionTypeSearchRequest,
-  ActionTypeSearchResponse as _api_search_ActionTypeSearchResponse,
-} from "../search/__components.js";
+import type { ActionTypeSearchRequest as _api_search_ActionTypeSearchRequest } from "../search/__components.js";
+import type { ActionTypeSearchResponse as _api_search_ActionTypeSearchResponse } from "../search/__components.js";
 
 /**
  * Endpoint to search ActionTypes based on various filters. Endpoint allows to return results based on relevance

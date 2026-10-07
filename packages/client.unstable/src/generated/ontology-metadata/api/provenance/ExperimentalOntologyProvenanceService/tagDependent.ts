@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  TagDependentRequest as _api_provenance_TagDependentRequest,
-  TagDependentResponse as _api_provenance_TagDependentResponse,
-} from "../__components.js";
+import type { TagDependentRequest as _api_provenance_TagDependentRequest } from "../__components.js";
+import type { TagDependentResponse as _api_provenance_TagDependentResponse } from "../__components.js";
 
 /**
  * Endpoint to tag a dependent entity.

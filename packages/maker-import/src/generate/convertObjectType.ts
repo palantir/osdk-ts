@@ -28,6 +28,7 @@ import { withoutNamespace } from "./utils.js";
 
 export function convertObjectType(
   fullMetadata: Ontologies.ObjectTypeFullMetadata,
+  sharedPropertyTypes: Readonly<Record<string, SharedPropertyType>>,
 ): ObjectType {
   const obj = fullMetadata.objectType;
   const properties: Array<ObjectPropertyType> = [];
@@ -51,17 +52,21 @@ export function convertObjectType(
 
     const sharedPropertyTypeApiName =
       sharedPropertyTypeApiNameByPropertyApiName.get(propApiName);
-    // Imported property shapes only need the SPT API name.
-    const sharedPropertyType: SharedPropertyType | undefined =
-      sharedPropertyTypeApiName
-        ? {
+    let sharedPropertyType: SharedPropertyType | undefined;
+    if (sharedPropertyTypeApiName !== undefined) {
+      sharedPropertyType = Object.hasOwn(
+        sharedPropertyTypes,
+        sharedPropertyTypeApiName,
+      )
+        ? sharedPropertyTypes[sharedPropertyTypeApiName]
+        : {
             __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
             apiName: sharedPropertyTypeApiName,
             nonNameSpacedApiName: withoutNamespace(sharedPropertyTypeApiName),
             type: mapped.type,
             array: mapped.array,
-          }
-        : undefined;
+          };
+    }
 
     const prop: ObjectPropertyType = {
       apiName: propApiName,

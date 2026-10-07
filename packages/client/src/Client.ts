@@ -28,6 +28,7 @@ import type {
   VersionBound,
 } from "@osdk/api";
 import type {
+  AgentDefinition,
   Experiment,
   ExperimentFns,
   MinimalObjectSet,
@@ -35,6 +36,7 @@ import type {
 import type { SharedClient } from "@osdk/shared.client2";
 
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
+import type { AgentSignatureFromDef } from "./agents/types.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 import type { SatisfiesSemver } from "./SatisfiesSemver.js";
@@ -112,6 +114,9 @@ export interface Client extends SharedClient, OldSharedClient {
    */
   <Q extends QueryDefinition<any>>(o: Q): QuerySignatureFromDef<Q>;
 
+  /** @beta */
+  <Q extends AgentDefinition<unknown>>(o: Q): AgentSignatureFromDef<Q>;
+
   /**
    * @param experiment - The experiment marker that gates an unstable feature.
    * @example
@@ -174,7 +179,7 @@ export interface Client extends SharedClient, OldSharedClient {
 export const additionalContext: unique symbol = Symbol("additionalContext");
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
-const MaxOsdkVersion = "2.74.0";
+const MaxOsdkVersion = "2.76.0";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 export type MaxOsdkVersion = typeof MaxOsdkVersion;
 const ErrorMessage: unique symbol = Symbol("ErrorMessage");

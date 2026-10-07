@@ -1,5 +1,14 @@
 # @osdk/client.unstable
 
+## 2.76.0
+
+### Minor Changes
+
+- 21a0d8c: Export generated executor types from client.unstable for exhaustive smartClient return handling and preserve function failure details.
+- a38af5a: Regenerate OMS bindings to add phonetic search support and align Maker with marketplace datasource types.
+
+## 2.75.0
+
 ## 2.74.0
 
 ## 2.73.0

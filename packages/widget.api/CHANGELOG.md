@@ -1,5 +1,23 @@
 # @osdk/widget.api
 
+## 3.76.0
+
+### Minor Changes
+
+- 52fecd0: [widgets] replace styleJsonUrl with tileSourceId
+
+## 3.75.0
+
+### Patch Changes
+
+- @osdk/api@2.76.0
+
+## 3.74.0
+
+### Patch Changes
+
+- @osdk/api@2.75.0
+
 ## 3.73.0
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client",
-  "version": "2.74.0",
+  "version": "2.76.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -82,6 +82,7 @@
   "dependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/client.unstable": "workspace:*",
+    "@osdk/foundry.agents": "catalog:foundry-platform-typescript",
     "@osdk/foundry.core": "catalog:foundry-platform-typescript",
     "@osdk/foundry.functions": "catalog:foundry-platform-typescript",
     "@osdk/foundry.mediasets": "catalog:foundry-platform-typescript",
@@ -118,6 +119,7 @@
     "@osdk/client.test.ontology": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/oauth": "workspace:~",
     "@osdk/shared.test.intellisense": "workspace:~",
     "@types/big.js": "^4.0.5",
     "@types/geojson": "^7946.0.14",

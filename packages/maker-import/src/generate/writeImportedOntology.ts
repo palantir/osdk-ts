@@ -72,7 +72,10 @@ export function convertOntologyFullMetadata(
       converted;
   }
   for (const objectType of Object.values(metadata.objectTypes)) {
-    const converted = convertObjectType(objectType);
+    const converted = convertObjectType(
+      objectType,
+      result[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE],
+    );
     result[OntologyEntityTypeEnum.OBJECT_TYPE][converted.apiName] = converted;
   }
   for (const action of Object.values(metadata.actionTypes)) {

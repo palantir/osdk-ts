@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { getOrganizationsForTypeGroups } from "./TypeGroupOrgsService/getOrganizationsForTypeGroups.js";
 export { setOrganizationsForTypeGroups } from "./TypeGroupOrgsService/setOrganizationsForTypeGroups.js";
+export { getOrganizationsForTypeGroups } from "./TypeGroupOrgsService/getOrganizationsForTypeGroups.js";

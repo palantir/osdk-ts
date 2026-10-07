@@ -1,5 +1,26 @@
 # @osdk/maker
 
+## 0.77.0
+
+### Minor Changes
+
+- de4d83e: Add phonetic search support to string properties.
+
+## 0.76.0
+
+### Minor Changes
+
+- dec2ee4: Preserve action-level validation and failure messages in interface delete actions.
+- c11669e: Fix incomplete Marketplace mappings for SPTs imported ontology objects
+- a38af5a: Regenerate OMS bindings to add phonetic search support and align Maker with marketplace datasource types.
+
+### Patch Changes
+
+- Updated dependencies [43dd010]
+- Updated dependencies [a9fafd0]
+  - @osdk/generator-converters.ontologyir@2.76.0
+  - @osdk/api@2.76.0
+
 ## 0.75.0
 
 ### Patch Changes

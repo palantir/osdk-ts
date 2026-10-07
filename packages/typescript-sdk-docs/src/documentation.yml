@@ -1028,6 +1028,17 @@ versions:
 
             const responseNoErrorWrapper: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne({{{primaryKeyPropertyValueV2}}});
 
+            // Ontology-defined derived properties are not returned by default.
+            // Pass their API names in $select, along with any other properties you need.
+            // Runtime-defined derived properties added via .withProperties(...) are returned
+            // by default only when $select is omitted. If you pass $select, include them
+            // in the selection as well.
+            function getWithSelectedProperties(properties: {{objectType}}.PropertyKeys[]) {
+                return client({{objectType}}).fetchOne({{{primaryKeyPropertyValueV2}}}, {
+                    $select: properties
+                });
+            }
+
           computedVariables:
             - primaryKeyPropertyValueV2
 
@@ -1042,6 +1053,18 @@ versions:
                     = await client({{objectType}}).fetchPage({ $pageSize: 30 });
             } catch (e) {
                 throw e;
+            }
+
+            // Ontology-defined derived properties are not returned by default.
+            // Pass their API names in $select, along with any other properties you need.
+            // Runtime-defined derived properties added via .withProperties(...) are returned
+            // by default only when $select is omitted. If you pass $select, include them
+            // in the selection as well.
+            function getPageWithSelectedProperties(properties: {{objectType}}.PropertyKeys[]) {
+                return client({{objectType}}).fetchPage({
+                    $pageSize: 30,
+                    $select: properties
+                });
             }
       loadAllObjectsReference:
         - template: |-
@@ -1062,6 +1085,19 @@ versions:
             // If Array.fromAsync() is available in your target environment
             function getAllFromAsync(): Promise<Array<Osdk.Instance<{{objectType}}>>> {
                 return Array.fromAsync(client({{objectType}}).asyncIter());
+            }
+
+            // Ontology-defined derived properties are not returned by default.
+            // Pass their API names in $select, along with any other properties you need.
+            // Runtime-defined derived properties added via .withProperties(...) are returned
+            // by default only when $select is omitted. If you pass $select, include them
+            // in the selection as well.
+            async function getAllWithSelectedProperties(properties: {{objectType}}.PropertyKeys[]) {
+                const objects = [];
+                for await (const obj of client({{objectType}}).asyncIter({ $select: properties })) {
+                    objects.push(obj);
+                }
+                return objects;
             }
       loadLinkedObjectReference:
         - template: |-

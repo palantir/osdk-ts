@@ -436,7 +436,7 @@ interface WithProperties<
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
-   * Adds derived properties to objects in this object set
+   * Adds runtime-defined derived properties to objects in this object set.
    * @param clause - A map of new property names to a function that derives each property from the base object set
    * @example
    * ```ts

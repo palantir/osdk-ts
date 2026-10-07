@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyRid as _api_OntologyRid } from "../__components.js";
 import type { GetGothamObjectTypesResponse as _api_typemapping_GetGothamObjectTypesResponse } from "../typemapping/__components.js";

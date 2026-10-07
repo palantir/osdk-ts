@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../../api/__components.js";
-import type {
-  ValidateOntologyBranchRequest as _branch_api_ValidateOntologyBranchRequest,
-  ValidateOntologyBranchResponse as _branch_api_ValidateOntologyBranchResponse,
-} from "../__components.js";
+import type { ValidateOntologyBranchRequest as _branch_api_ValidateOntologyBranchRequest } from "../__components.js";
+import type { ValidateOntologyBranchResponse as _branch_api_ValidateOntologyBranchResponse } from "../__components.js";
 
 /**
  * Endpoint to validate a branch to determine if it is mergeable with the default branch. The main purpose

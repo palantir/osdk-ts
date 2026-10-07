@@ -82,6 +82,28 @@ export interface SelectArg<
   RDP_KEYS extends string = never,
   PROPERTY_SECURITIES extends boolean = false,
 > {
+  /**
+   * API names of the properties to return. Ontology-defined derived properties
+   * are not returned by default and must be included in `$select`.
+   * Include any other properties you need in the same selection.
+   * Runtime-defined derived properties added via `.withProperties(...)` are returned
+   * by default only when `$select` is omitted. If you pass `$select`, include them
+   * in the selection as well.
+   *
+   * @example
+   * ```ts
+   * // Assume leadName is an ontology-defined derived property on Employee.
+   * const page = await client(Employee).fetchPage({
+   *   $select: ["fullName", "leadName"],
+   * });
+   *
+   * for await (const employee of client(Employee).asyncIter({
+   *   $select: ["fullName", "leadName"],
+   * })) {
+   *   console.log(employee.fullName, employee.leadName);
+   * }
+   * ```
+   */
   $select?: readonly L[];
   $includeRid?: R;
   $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;

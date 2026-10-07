@@ -14,126 +14,125 @@
  * limitations under the License.
  */
 
-import type {
-  ActionApplyClientPreferences as _api_ActionApplyClientPreferences,
-  ActionLogConfiguration as _api_ActionLogConfiguration,
-  ActionNotificationSettings as _api_ActionNotificationSettings,
-  ActionSubmissionConfiguration as _api_ActionSubmissionConfiguration,
-  ActionTypeApiName as _api_ActionTypeApiName,
-  ActionTypeBranchSettings as _api_ActionTypeBranchSettings,
-  ActionTypeDisplayMetadataConfiguration as _api_ActionTypeDisplayMetadataConfiguration,
-  ActionTypeEntities as _api_ActionTypeEntities,
-  ActionTypeLogic as _api_ActionTypeLogic,
-  ActionTypeRichTextComponent as _api_ActionTypeRichTextComponent,
-  ActionTypeRid as _api_ActionTypeRid,
-  ActionTypeScenarioSettings as _api_ActionTypeScenarioSettings,
-  ActionTypeStatus as _api_ActionTypeStatus,
-  ActionTypeVersion as _api_ActionTypeVersion,
-  BaseFormatter as _api_BaseFormatter,
-  ButtonDisplayMetadata as _api_ButtonDisplayMetadata,
-  ColumnName as _api_ColumnName,
-  DataNullability as _api_DataNullability,
-  DataNullabilityV2 as _api_DataNullabilityV2,
-  DatasourceRid as _api_DatasourceRid,
-  FormContent as _api_FormContent,
-  FunctionRid as _api_FunctionRid,
-  FunctionVersion as _api_FunctionVersion,
-  GeotimeSeriesIntegrationRid as _api_GeotimeSeriesIntegrationRid,
-  GroupId as _api_GroupId,
-  Icon as _api_Icon,
-  InterfaceActionTypeConstraint as _api_InterfaceActionTypeConstraint,
-  InterfaceActionTypeConstraintApiName as _api_InterfaceActionTypeConstraintApiName,
-  InterfaceActionTypeConstraintRid as _api_InterfaceActionTypeConstraintRid,
-  InterfaceLinkTypeApiName as _api_InterfaceLinkTypeApiName,
-  InterfaceLinkTypeRid as _api_InterfaceLinkTypeRid,
-  InterfaceParameterConstraintApiName as _api_InterfaceParameterConstraintApiName,
-  InterfaceParameterConstraintRid as _api_InterfaceParameterConstraintRid,
-  InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName,
-  InterfacePropertyTypeDisplayMetadata as _api_InterfacePropertyTypeDisplayMetadata,
-  InterfacePropertyTypeRid as _api_InterfacePropertyTypeRid,
-  InterfacePropertyTypeType as _api_InterfacePropertyTypeType,
-  InterfaceSharedPropertyType as _api_InterfaceSharedPropertyType,
-  InterfaceTypeApiName as _api_InterfaceTypeApiName,
-  InterfaceTypeRid as _api_InterfaceTypeRid,
-  InterfaceTypeSchemaTransitionRid as _api_InterfaceTypeSchemaTransitionRid,
-  LinkedEntityTypeId as _api_LinkedEntityTypeId,
-  LinkType as _api_LinkType,
-  LinkTypeId as _api_LinkTypeId,
-  LinkTypeRid as _api_LinkTypeRid,
-  ManyToManyLinkTypeDatasource as _api_ManyToManyLinkTypeDatasource,
-  MarkingId as _api_MarkingId,
-  MediaSetRid as _api_MediaSetRid,
-  ModuleRid as _api_ModuleRid,
-  ObjectType as _api_ObjectType,
-  ObjectTypeApiName as _api_ObjectTypeApiName,
-  ObjectTypeDatasource as _api_ObjectTypeDatasource,
-  ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
-  ObjectTypeId as _api_ObjectTypeId,
-  ObjectTypeRid as _api_ObjectTypeRid,
-  OntologyIrActionTypeEntities as _api_OntologyIrActionTypeEntities,
-  OntologyIrActionTypeLogic as _api_OntologyIrActionTypeLogic,
-  OntologyIrActionTypeRichTextComponent as _api_OntologyIrActionTypeRichTextComponent,
-  OntologyIrActionTypeStatus as _api_OntologyIrActionTypeStatus,
-  OntologyIrBaseFormatter as _api_OntologyIrBaseFormatter,
-  OntologyIrFormContent as _api_OntologyIrFormContent,
-  OntologyIrInterfaceActionTypeConstraint as _api_OntologyIrInterfaceActionTypeConstraint,
-  OntologyIrInterfacePropertyTypeType as _api_OntologyIrInterfacePropertyTypeType,
-  OntologyIrInterfaceSharedPropertyType as _api_OntologyIrInterfaceSharedPropertyType,
-  OntologyIrLinkedEntityTypeId as _api_OntologyIrLinkedEntityTypeId,
-  OntologyIrLinkType as _api_OntologyIrLinkType,
-  OntologyIrManyToManyLinkTypeDatasource as _api_OntologyIrManyToManyLinkTypeDatasource,
-  OntologyIrObjectType as _api_OntologyIrObjectType,
-  OntologyIrObjectTypeDatasource as _api_OntologyIrObjectTypeDatasource,
-  OntologyIrParameter as _api_OntologyIrParameter,
-  OntologyIrSection as _api_OntologyIrSection,
-  OntologyIrSharedPropertyType as _api_OntologyIrSharedPropertyType,
-  OntologyPackageRid as _api_OntologyPackageRid,
-  Parameter as _api_Parameter,
-  ParameterId as _api_ParameterId,
-  ParameterRid as _api_ParameterRid,
-  PrimaryKeyConstraint as _api_PrimaryKeyConstraint,
-  PropertyId as _api_PropertyId,
-  PropertyTypeId as _api_PropertyTypeId,
-  PropertyTypeRid as _api_PropertyTypeRid,
-  RuleSetRid as _api_RuleSetRid,
-  SchemaVersion as _api_SchemaVersion,
-  Section as _api_Section,
-  SectionId as _api_SectionId,
-  SharedPropertyType as _api_SharedPropertyType,
-  SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
-  StructFieldRid as _api_StructFieldRid,
-  TimeSeriesSyncRid as _api_TimeSeriesSyncRid,
-  TypeClass as _api_TypeClass,
-  ValueTypeReference as _api_ValueTypeReference,
-  ValueTypeRid as _api_ValueTypeRid,
-  ValueTypeVersionId as _api_ValueTypeVersionId,
-  WebhookRid as _api_WebhookRid,
-} from "../__components.js";
-import type {
-  ActionLogRequirednessMetadata as _api_entitymetadata_ActionLogRequirednessMetadata,
-  EditsHistory as _api_entitymetadata_EditsHistory,
-  EditsResolutionStrategies as _api_entitymetadata_EditsResolutionStrategies,
-  EntityConfig as _api_entitymetadata_EntityConfig,
-  InterfaceSettings as _api_entitymetadata_InterfaceSettings,
-  LinkTypeEntityMetadata as _api_entitymetadata_LinkTypeEntityMetadata,
-  ObjectTypeAlias as _api_entitymetadata_ObjectTypeAlias,
-  OntologyIrEditsHistory as _api_entitymetadata_OntologyIrEditsHistory,
-  OntologyIrLinkTypeEntityMetadata as _api_entitymetadata_OntologyIrLinkTypeEntityMetadata,
-  PatchApplicationStrategy as _api_entitymetadata_PatchApplicationStrategy,
-  StorageBackend as _api_entitymetadata_StorageBackend,
-} from "../entitymetadata/__components.js";
-import type {
-  ActionTypeProvenance as _api_entitymetadata_provenance_ActionTypeProvenance,
-  EntityProvenance as _api_entitymetadata_provenance_EntityProvenance,
-} from "../entitymetadata/provenance/__components.js";
+import type { ParameterId as _api_ParameterId } from "../__components.js";
+import type { OntologyPackageRid as _api_OntologyPackageRid } from "../__components.js";
+import type { ActionTypeRid as _api_ActionTypeRid } from "../__components.js";
+import type { InterfaceTypeRid as _api_InterfaceTypeRid } from "../__components.js";
+import type { LinkTypeRid as _api_LinkTypeRid } from "../__components.js";
+import type { ObjectTypeRid as _api_ObjectTypeRid } from "../__components.js";
+import type { SharedPropertyTypeRid as _api_SharedPropertyTypeRid } from "../__components.js";
+import type { DatasourceRid as _api_DatasourceRid } from "../__components.js";
+import type { InterfacePropertyTypeRid as _api_InterfacePropertyTypeRid } from "../__components.js";
+import type { InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName } from "../__components.js";
+import type { InterfaceTypeSchemaTransitionRid as _api_InterfaceTypeSchemaTransitionRid } from "../__components.js";
+import type { ParameterRid as _api_ParameterRid } from "../__components.js";
+import type { FunctionRid as _api_FunctionRid } from "../__components.js";
+import type { FunctionVersion as _api_FunctionVersion } from "../__components.js";
+import type { GeotimeSeriesIntegrationRid as _api_GeotimeSeriesIntegrationRid } from "../__components.js";
+import type { GroupId as _api_GroupId } from "../__components.js";
+import type { InterfaceActionTypeConstraintRid as _api_InterfaceActionTypeConstraintRid } from "../__components.js";
+import type { InterfaceLinkTypeRid as _api_InterfaceLinkTypeRid } from "../__components.js";
+import type { InterfaceParameterConstraintRid as _api_InterfaceParameterConstraintRid } from "../__components.js";
+import type { LinkTypeId as _api_LinkTypeId } from "../__components.js";
+import type { MarkingId as _api_MarkingId } from "../__components.js";
+import type { ObjectTypeId as _api_ObjectTypeId } from "../__components.js";
+import type { PropertyTypeId as _api_PropertyTypeId } from "../__components.js";
+import type { PropertyTypeRid as _api_PropertyTypeRid } from "../__components.js";
+import type { StructFieldRid as _api_StructFieldRid } from "../__components.js";
+import type { TimeSeriesSyncRid as _api_TimeSeriesSyncRid } from "../__components.js";
+import type { ValueTypeRid as _api_ValueTypeRid } from "../__components.js";
+import type { ValueTypeVersionId as _api_ValueTypeVersionId } from "../__components.js";
+import type { WebhookRid as _api_WebhookRid } from "../__components.js";
+import type { ModuleRid as _api_ModuleRid } from "../__components.js";
+import type { ManyToManyLinkTypeDatasource as _api_ManyToManyLinkTypeDatasource } from "../__components.js";
+import type { LinkType as _api_LinkType } from "../__components.js";
+import type { ActionTypeLogic as _api_ActionTypeLogic } from "../__components.js";
+import type { ActionTypeRichTextComponent as _api_ActionTypeRichTextComponent } from "../__components.js";
+import type { ActionTypeDisplayMetadataConfiguration as _api_ActionTypeDisplayMetadataConfiguration } from "../__components.js";
+import type { Icon as _api_Icon } from "../__components.js";
+import type { ButtonDisplayMetadata as _api_ButtonDisplayMetadata } from "../__components.js";
+import type { TypeClass as _api_TypeClass } from "../__components.js";
+import type { ActionApplyClientPreferences as _api_ActionApplyClientPreferences } from "../__components.js";
+import type { ActionLogConfiguration as _api_ActionLogConfiguration } from "../__components.js";
+import type { ActionTypeApiName as _api_ActionTypeApiName } from "../__components.js";
+import type { ActionTypeBranchSettings as _api_ActionTypeBranchSettings } from "../__components.js";
+import type { ActionTypeEntities as _api_ActionTypeEntities } from "../__components.js";
+import type { FormContent as _api_FormContent } from "../__components.js";
+import type { ActionTypeIsolationSettings as _api_ActionTypeIsolationSettings } from "../__components.js";
+import type { ActionNotificationSettings as _api_ActionNotificationSettings } from "../__components.js";
+import type { Parameter as _api_Parameter } from "../__components.js";
+import type { ActionTypeScenarioSettings as _api_ActionTypeScenarioSettings } from "../__components.js";
+import type { SectionId as _api_SectionId } from "../__components.js";
+import type { Section as _api_Section } from "../__components.js";
+import type { MediaSetRid as _api_MediaSetRid } from "../__components.js";
+import type { ActionTypeStatus as _api_ActionTypeStatus } from "../__components.js";
+import type { ActionSubmissionConfiguration as _api_ActionSubmissionConfiguration } from "../__components.js";
+import type { ActionTypeVersion as _api_ActionTypeVersion } from "../__components.js";
+import type { DataNullability as _api_DataNullability } from "../__components.js";
+import type { DataNullabilityV2 as _api_DataNullabilityV2 } from "../__components.js";
+import type { ClassificationConstraint as _api_ClassificationConstraint } from "../__components.js";
+import type { MandatoryMarkingConstraint as _api_MandatoryMarkingConstraint } from "../__components.js";
+import type { BaseFormatter as _api_BaseFormatter } from "../__components.js";
+import type { InterfacePropertyTypeDisplayMetadata as _api_InterfacePropertyTypeDisplayMetadata } from "../__components.js";
+import type { InterfacePropertyTypeType as _api_InterfacePropertyTypeType } from "../__components.js";
+import type { PrimaryKeyConstraint as _api_PrimaryKeyConstraint } from "../__components.js";
+import type { ValueTypeReference as _api_ValueTypeReference } from "../__components.js";
+import type { LinkedEntityTypeId as _api_LinkedEntityTypeId } from "../__components.js";
+import type { InterfaceLinkTypeApiName as _api_InterfaceLinkTypeApiName } from "../__components.js";
+import type { InterfaceActionTypeConstraint as _api_InterfaceActionTypeConstraint } from "../__components.js";
+import type { InterfaceTypeApiName as _api_InterfaceTypeApiName } from "../__components.js";
+import type { SharedPropertyType as _api_SharedPropertyType } from "../__components.js";
+import type { InterfaceSharedPropertyType as _api_InterfaceSharedPropertyType } from "../__components.js";
+import type { ObjectTypeDatasourceDefinition as _api_ObjectTypeDatasourceDefinition } from "../__components.js";
+import type { EditsConfiguration as _api_EditsConfiguration } from "../__components.js";
+import type { ColumnName as _api_ColumnName } from "../__components.js";
+import type { ObjectType as _api_ObjectType } from "../__components.js";
+import type { RuleSetRid as _api_RuleSetRid } from "../__components.js";
+import type { ObjectTypeApiName as _api_ObjectTypeApiName } from "../__components.js";
+import type { ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName } from "../__components.js";
+import type { InterfaceActionTypeConstraintApiName as _api_InterfaceActionTypeConstraintApiName } from "../__components.js";
+import type { InterfaceParameterConstraintApiName as _api_InterfaceParameterConstraintApiName } from "../__components.js";
+import type { OntologyIrManyToManyLinkTypeDatasource as _api_OntologyIrManyToManyLinkTypeDatasource } from "../__components.js";
+import type { OntologyIrLinkType as _api_OntologyIrLinkType } from "../__components.js";
+import type { OntologyIrActionTypeLogic as _api_OntologyIrActionTypeLogic } from "../__components.js";
+import type { OntologyIrActionTypeRichTextComponent as _api_OntologyIrActionTypeRichTextComponent } from "../__components.js";
+import type { OntologyIrActionTypeEntities as _api_OntologyIrActionTypeEntities } from "../__components.js";
+import type { OntologyIrFormContent as _api_OntologyIrFormContent } from "../__components.js";
+import type { OntologyIrParameter as _api_OntologyIrParameter } from "../__components.js";
+import type { OntologyIrSection as _api_OntologyIrSection } from "../__components.js";
+import type { OntologyIrActionTypeStatus as _api_OntologyIrActionTypeStatus } from "../__components.js";
+import type { OntologyIrClassificationConstraint as _api_OntologyIrClassificationConstraint } from "../__components.js";
+import type { OntologyIrMandatoryMarkingConstraint as _api_OntologyIrMandatoryMarkingConstraint } from "../__components.js";
+import type { OntologyIrBaseFormatter as _api_OntologyIrBaseFormatter } from "../__components.js";
+import type { OntologyIrInterfacePropertyTypeType as _api_OntologyIrInterfacePropertyTypeType } from "../__components.js";
+import type { OntologyIrLinkedEntityTypeId as _api_OntologyIrLinkedEntityTypeId } from "../__components.js";
+import type { OntologyIrInterfaceActionTypeConstraint as _api_OntologyIrInterfaceActionTypeConstraint } from "../__components.js";
+import type { OntologyIrSharedPropertyType as _api_OntologyIrSharedPropertyType } from "../__components.js";
+import type { OntologyIrInterfaceSharedPropertyType as _api_OntologyIrInterfaceSharedPropertyType } from "../__components.js";
+import type { OntologyIrObjectTypeDatasourceDefinition as _api_OntologyIrObjectTypeDatasourceDefinition } from "../__components.js";
+import type { OntologyIrObjectType as _api_OntologyIrObjectType } from "../__components.js";
+import type { SchemaVersion as _api_SchemaVersion } from "../__components.js";
+import type { PropertyId as _api_PropertyId } from "../__components.js";
+import type { LinkTypeEntityMetadata as _api_entitymetadata_LinkTypeEntityMetadata } from "../entitymetadata/__components.js";
+import type { ActionLogRequirednessMetadata as _api_entitymetadata_ActionLogRequirednessMetadata } from "../entitymetadata/__components.js";
+import type { ObjectTypeAlias as _api_entitymetadata_ObjectTypeAlias } from "../entitymetadata/__components.js";
+import type { EditsHistory as _api_entitymetadata_EditsHistory } from "../entitymetadata/__components.js";
+import type { EditsResolutionStrategies as _api_entitymetadata_EditsResolutionStrategies } from "../entitymetadata/__components.js";
+import type { EntityConfig as _api_entitymetadata_EntityConfig } from "../entitymetadata/__components.js";
+import type { InterfaceSettings as _api_entitymetadata_InterfaceSettings } from "../entitymetadata/__components.js";
+import type { PatchApplicationStrategy as _api_entitymetadata_PatchApplicationStrategy } from "../entitymetadata/__components.js";
+import type { StorageBackend as _api_entitymetadata_StorageBackend } from "../entitymetadata/__components.js";
+import type { OntologyIrLinkTypeEntityMetadata as _api_entitymetadata_OntologyIrLinkTypeEntityMetadata } from "../entitymetadata/__components.js";
+import type { OntologyIrEditsHistory as _api_entitymetadata_OntologyIrEditsHistory } from "../entitymetadata/__components.js";
+import type { ActionTypeOwningResource as _api_entitymetadata_provenance_ActionTypeOwningResource } from "../entitymetadata/provenance/__components.js";
+import type { ActionTypeProvenance as _api_entitymetadata_provenance_ActionTypeProvenance } from "../entitymetadata/provenance/__components.js";
+import type { EntityProvenance as _api_entitymetadata_provenance_EntityProvenance } from "../entitymetadata/provenance/__components.js";
 import type { RuleSet as _api_formatting_RuleSet } from "../formatting/__components.js";
-import type {
-  InterfaceTypeSchemaTransition as _api_schemamigrations_InterfaceTypeSchemaTransition,
-  InterfaceTypeSchemaTransitionId as _api_schemamigrations_InterfaceTypeSchemaTransitionId,
-  OntologyIrInterfaceTypeSchemaTransition as _api_schemamigrations_OntologyIrInterfaceTypeSchemaTransition,
-  OntologyIrSchemaTransition as _api_schemamigrations_OntologyIrSchemaTransition,
-  SchemaTransition as _api_schemamigrations_SchemaTransition,
-} from "../schemamigrations/__components.js";
+import type { InterfaceTypeSchemaTransition as _api_schemamigrations_InterfaceTypeSchemaTransition } from "../schemamigrations/__components.js";
+import type { InterfaceTypeSchemaTransitionId as _api_schemamigrations_InterfaceTypeSchemaTransitionId } from "../schemamigrations/__components.js";
+import type { OntologyIrInterfaceTypeSchemaTransition as _api_schemamigrations_OntologyIrInterfaceTypeSchemaTransition } from "../schemamigrations/__components.js";
+import type { OntologyIrSchemaTransition as _api_schemamigrations_OntologyIrSchemaTransition } from "../schemamigrations/__components.js";
+import type { SchemaTransition as _api_schemamigrations_SchemaTransition } from "../schemamigrations/__components.js";
 import type { ObjectTypeGothamMapping as _api_typemapping_ObjectTypeGothamMapping } from "../typemapping/__components.js";
 export type ActionParameterShapeId = string;
 export interface ActionTypeBlockDataV2 {
@@ -291,6 +290,7 @@ export interface KnownMarketplaceIdentifiers {
   propertyTypes: Record<_api_PropertyTypeRid, BlockInternalId>;
   shapeIdForInstallPrefix?: BlockShapeId | null | undefined;
   shapeIdForOntologyAllowSchemaMigrations?: BlockShapeId | null | undefined;
+  shapeIdForOntologySchemaMigrationInputs?: BlockShapeId | null | undefined;
   sharedPropertyTypes: Record<_api_SharedPropertyTypeRid, BlockInternalId>;
   structFieldRidsToApiNames: Record<
     _api_PropertyTypeRid,
@@ -359,7 +359,12 @@ export interface MarketplaceActionTypeMetadata {
   displayMetadata: MarketplaceActionTypeDisplayMetadata;
   entities?: _api_ActionTypeEntities | null | undefined;
   formContentOrdering: Array<_api_FormContent>;
+  isolationSettings?: _api_ActionTypeIsolationSettings | null | undefined;
   notificationSettings?: _api_ActionNotificationSettings | null | undefined;
+  owningResource?:
+    | _api_entitymetadata_provenance_ActionTypeOwningResource
+    | null
+    | undefined;
   parameterOrdering: Array<_api_ParameterId>;
   parameters: Record<_api_ParameterId, _api_Parameter>;
   provenance?:
@@ -381,6 +386,15 @@ export interface MarketplaceActiveInterfaceTypeStatus {}
 export interface MarketplaceDataConstraints {
   nullability?: _api_DataNullability | null | undefined;
   nullabilityV2?: _api_DataNullabilityV2 | null | undefined;
+}
+/**
+ * Marketplace shape of DataSecurity used in packaged block data. Mirrors DataSecurity but omits the
+ * server-derived constantPolicyMarkings field, which the destination stack derives from the
+ * installed PSGs on read.
+ */
+export interface MarketplaceDataSecurity {
+  classificationConstraint?: _api_ClassificationConstraint | null | undefined;
+  markingConstraint?: _api_MandatoryMarkingConstraint | null | undefined;
 }
 export interface MarketplaceDeprecatedInterfaceTypeStatus {
   deadline: string;
@@ -482,6 +496,17 @@ export type MarketplaceInterfaceTypeStatus =
   | MarketplaceInterfaceTypeStatus_example;
 
 /**
+ * Marketplace shape of an ObjectTypeDatasource used in packaged block data. References MarketplaceDataSecurity
+ * so that the server-derived constantPolicyMarkings field is not packaged.
+ */
+export interface MarketplaceObjectTypeDatasource {
+  dataSecurity?: MarketplaceDataSecurity | null | undefined;
+  datasource: _api_ObjectTypeDatasourceDefinition;
+  editsConfiguration?: _api_EditsConfiguration | null | undefined;
+  redacted?: boolean | null | undefined;
+  rid: _api_DatasourceRid;
+}
+/**
  * Local overridden alias of OMS public API representation of ObjectTypeEntityMetadata. In OMS API we model
  * editsResolutionStrategies field as non-optional, but Marketplace ontology block data uploaded to
  * artifacts faces similar constraints as our internal StorageObjectTypeEntityMetadata and we need to provide
@@ -536,7 +561,7 @@ export interface ObjectsWritebackDataset {
   spec: WritebackDatasetSpec;
 }
 export interface ObjectTypeBlockDataV2 {
-  datasources: Array<_api_ObjectTypeDatasource>;
+  datasources: Array<MarketplaceObjectTypeDatasource>;
   entityMetadata?: MarketplaceObjectTypeEntityMetadata | null | undefined;
   objectType: _api_ObjectType;
   propertySecurityGroupPackagingVersion?:
@@ -647,6 +672,7 @@ export interface OntologyIrKnownMarketplaceIdentifiers {
   propertyTypes: Record<_api_ObjectTypeFieldApiName, BlockInternalId>;
   shapeIdForInstallPrefix?: BlockShapeId | null | undefined;
   shapeIdForOntologyAllowSchemaMigrations?: BlockShapeId | null | undefined;
+  shapeIdForOntologySchemaMigrationInputs?: BlockShapeId | null | undefined;
   sharedPropertyTypes: Record<_api_ObjectTypeFieldApiName, BlockInternalId>;
   timeSeriesSyncs: Record<TimeSeriesSyncName, BlockInternalId>;
   valueTypes: Record<
@@ -697,12 +723,32 @@ export interface OntologyIrMarketplaceActionTypeMetadata {
   displayMetadata: OntologyIrMarketplaceActionTypeDisplayMetadata;
   entities?: _api_OntologyIrActionTypeEntities | null | undefined;
   formContentOrdering: Array<_api_OntologyIrFormContent>;
+  isolationSettings?: _api_ActionTypeIsolationSettings | null | undefined;
+  owningResource?:
+    | _api_entitymetadata_provenance_ActionTypeOwningResource
+    | null
+    | undefined;
   parameterOrdering: Array<_api_ParameterId>;
   parameters: Record<_api_ParameterId, _api_OntologyIrParameter>;
   scenarioSettings?: _api_ActionTypeScenarioSettings | null | undefined;
   sections: Record<_api_SectionId, _api_OntologyIrSection>;
   stagingMediaSetRid?: _api_MediaSetRid | null | undefined;
   status: _api_OntologyIrActionTypeStatus;
+}
+/**
+ * Marketplace shape of DataSecurity used in packaged block data. Mirrors DataSecurity but omits the
+ * server-derived constantPolicyMarkings field, which the destination stack derives from the
+ * installed PSGs on read.
+ */
+export interface OntologyIrMarketplaceDataSecurity {
+  classificationConstraint?:
+    | _api_OntologyIrClassificationConstraint
+    | null
+    | undefined;
+  markingConstraint?:
+    | _api_OntologyIrMandatoryMarkingConstraint
+    | null
+    | undefined;
 }
 export interface OntologyIrMarketplaceDeprecatedInterfaceTypeStatus {
   deadline: string;
@@ -789,6 +835,17 @@ export type OntologyIrMarketplaceInterfaceTypeStatus =
   | OntologyIrMarketplaceInterfaceTypeStatus_example;
 
 /**
+ * Marketplace shape of an ObjectTypeDatasource used in packaged block data. References MarketplaceDataSecurity
+ * so that the server-derived constantPolicyMarkings field is not packaged.
+ */
+export interface OntologyIrMarketplaceObjectTypeDatasource {
+  dataSecurity?: OntologyIrMarketplaceDataSecurity | null | undefined;
+  datasource: _api_OntologyIrObjectTypeDatasourceDefinition;
+  datasourceName: DatasourceName;
+  editsConfiguration?: _api_EditsConfiguration | null | undefined;
+  redacted?: boolean | null | undefined;
+}
+/**
  * Local overridden alias of OMS public API representation of ObjectTypeEntityMetadata. In OMS API we model
  * editsResolutionStrategies field as non-optional, but Marketplace ontology block data uploaded to
  * artifacts faces similar constraints as our internal StorageObjectTypeEntityMetadata and we need to provide
@@ -819,7 +876,7 @@ export interface OntologyIrObjectsWritebackDataset {
   spec: WritebackDatasetSpec;
 }
 export interface OntologyIrObjectTypeBlockDataV2 {
-  datasources: Array<_api_OntologyIrObjectTypeDatasource>;
+  datasources: Array<OntologyIrMarketplaceObjectTypeDatasource>;
   entityMetadata?:
     | OntologyIrMarketplaceObjectTypeEntityMetadata
     | null

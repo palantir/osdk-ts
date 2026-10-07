@@ -14,28 +14,27 @@
  * limitations under the License.
  */
 
-import type {
-  DatasourceMigrationTarget as _api_DatasourceMigrationTarget,
-  DatasourceRid as _api_DatasourceRid,
-  InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName,
-  InterfacePropertyTypeRid as _api_InterfacePropertyTypeRid,
-  InterfacePropertyTypeRidOrIdInRequest as _api_InterfacePropertyTypeRidOrIdInRequest,
-  InterfaceTypeRid as _api_InterfaceTypeRid,
-  InterfaceTypeSchemaTransitionRid as _api_InterfaceTypeSchemaTransitionRid,
-  ObjectTypeApiName as _api_ObjectTypeApiName,
-  ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
-  ObjectTypeRid as _api_ObjectTypeRid,
-  OntologyIrType as _api_OntologyIrType,
-  OntologyVersion as _api_OntologyVersion,
-  PropertyTypeId as _api_PropertyTypeId,
-  PropertyTypeRid as _api_PropertyTypeRid,
-  SchemaMigrationRid as _api_SchemaMigrationRid,
-  SchemaVersion as _api_SchemaVersion,
-  StructFieldApiNameOrRid as _api_StructFieldApiNameOrRid,
-  StructFieldRid as _api_StructFieldRid,
-  StructPropertyFieldType as _api_StructPropertyFieldType,
-  Type as _api_Type,
-} from "../__components.js";
+import type { PropertyTypeRid as _api_PropertyTypeRid } from "../__components.js";
+import type { Type as _api_Type } from "../__components.js";
+import type { StructPropertyFieldType as _api_StructPropertyFieldType } from "../__components.js";
+import type { StructFieldRid as _api_StructFieldRid } from "../__components.js";
+import type { InterfaceTypeSchemaTransitionRid as _api_InterfaceTypeSchemaTransitionRid } from "../__components.js";
+import type { SchemaVersion as _api_SchemaVersion } from "../__components.js";
+import type { DatasourceRid as _api_DatasourceRid } from "../__components.js";
+import type { InterfacePropertyTypeRid as _api_InterfacePropertyTypeRid } from "../__components.js";
+import type { InterfacePropertyTypeRidOrIdInRequest as _api_InterfacePropertyTypeRidOrIdInRequest } from "../__components.js";
+import type { InterfaceTypeRid as _api_InterfaceTypeRid } from "../__components.js";
+import type { Attribution as _api_Attribution } from "../__components.js";
+import type { ObjectTypeRid as _api_ObjectTypeRid } from "../__components.js";
+import type { OntologyVersion as _api_OntologyVersion } from "../__components.js";
+import type { ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName } from "../__components.js";
+import type { OntologyIrType as _api_OntologyIrType } from "../__components.js";
+import type { InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName } from "../__components.js";
+import type { ObjectTypeApiName as _api_ObjectTypeApiName } from "../__components.js";
+import type { SchemaMigrationRid as _api_SchemaMigrationRid } from "../__components.js";
+import type { DatasourceMigrationTarget as _api_DatasourceMigrationTarget } from "../__components.js";
+import type { PropertyTypeId as _api_PropertyTypeId } from "../__components.js";
+import type { StructFieldApiNameOrRid as _api_StructFieldApiNameOrRid } from "../__components.js";
 
 /**
  * An ID referencing a backup stored in Funnel.
@@ -56,6 +55,8 @@ export interface BulkLoadObjectTypeSchemaMigrationsRequest {
 export interface BulkLoadObjectTypeSchemaMigrationsResponse {
   schemaTransitions: Array<ObjectTypeSchemaTransitions>;
 }
+export type ByteValue = number;
+
 /**
  * Migration to cast a property to another type.
  */
@@ -89,6 +90,36 @@ export interface CastStructFieldMigrationModification {
   target: _api_StructPropertyFieldType;
 }
 /**
+ * Aggregate compliance counts for an interface type schema migration transition.
+ */
+export interface ComplianceCounts {
+  compliant: number;
+  nonCompliant: number;
+  unimplemented: number;
+}
+export interface ComplianceStatus_compliant {
+  type: "compliant";
+  compliant: ObjectTypeCompliantResult;
+}
+
+export interface ComplianceStatus_nonCompliant {
+  type: "nonCompliant";
+  nonCompliant: ObjectTypeNonCompliantResult;
+}
+
+export interface ComplianceStatus_unimplemented {
+  type: "unimplemented";
+  unimplemented: ObjectTypeUnimplementedResult;
+}
+/**
+ * Compliance status of an object type with respect to an interface type schema migration.
+ */
+export type ComplianceStatus =
+  | ComplianceStatus_compliant
+  | ComplianceStatus_nonCompliant
+  | ComplianceStatus_unimplemented;
+
+/**
  * Creates an InterfaceType schema transition.
  */
 export interface CreateInterfaceTypeSchemaTransitionModification {
@@ -98,6 +129,16 @@ export interface CreateInterfaceTypeSchemaTransitionModification {
   migrations: Array<InterfaceTypeSchemaMigrationInstructionModification>;
   title?: string | null | undefined;
 }
+/**
+ * An ISO-8601 date with no time component.
+ */
+export type DateValue = string;
+
+/**
+ * A decimal serialized as a string to avoid loss of precision.
+ */
+export type DecimalValue = string;
+
 /**
  * Delete an existing InterfaceType schema transition by RID.
  */
@@ -143,11 +184,22 @@ export interface EditsWinToLatestTimestamp {
   timestampValue: any;
 }
 /**
+ * The enforcement behavior applied to a non-compliant object type. Defaults to EXTEND_DEADLINE.
+ */
+export type EnforcementPolicy = "EXTEND_DEADLINE" | "AUTO_UNIMPLEMENT";
+
+/**
  * Finalize an InterfaceType schema transition by RID after enforcement has completed.
  */
 export interface FinalizeInterfaceTypeSchemaTransitionModification {
   rid: _api_InterfaceTypeSchemaTransitionRid;
 }
+export type FloatValue = number | "NaN" | "Infinity" | "-Infinity";
+
+/**
+ * A geohash or "latitude,longitude" value. Only WGS-84 coordinates are supported.
+ */
+export type GeohashValue = string;
 export interface GracePeriod_daysAfterActivation {
   type: "daysAfterActivation";
   daysAfterActivation: number;
@@ -205,12 +257,47 @@ export interface InterfaceTypeAddRequiredPropertyMigration {
 export interface InterfaceTypeAddRequiredPropertyMigrationModification {
   property: _api_InterfacePropertyTypeRidOrIdInRequest;
 }
+/**
+ * Tracks the initial deadline and any extensions applied during enforcement.
+ */
+export interface InterfaceTypeSchemaMigrationDeadline {
+  effective: string;
+  extensions: Array<InterfaceTypeSchemaMigrationDeadlineExtension>;
+  initial: string;
+}
+/**
+ * Records a single deadline extension.
+ */
+export interface InterfaceTypeSchemaMigrationDeadlineExtension {
+  newDeadline: string;
+  reason: InterfaceTypeSchemaMigrationDeadlineExtensionReason;
+}
+export interface InterfaceTypeSchemaMigrationDeadlineExtensionReason_userRequested {
+  type: "userRequested";
+  userRequested: UserInputtedManualReason;
+}
+
+export interface InterfaceTypeSchemaMigrationDeadlineExtensionReason_nonCompliantObjectTypesFound {
+  type: "nonCompliantObjectTypesFound";
+  nonCompliantObjectTypesFound: NonCompliantObjectTypesFound;
+}
+/**
+ * Manual or automatic explanation for a deadline extension
+ */
+export type InterfaceTypeSchemaMigrationDeadlineExtensionReason =
+  | InterfaceTypeSchemaMigrationDeadlineExtensionReason_userRequested
+  | InterfaceTypeSchemaMigrationDeadlineExtensionReason_nonCompliantObjectTypesFound;
+
+/**
+ * The transition is within its grace period and has not yet been enforced.
+ */
+export interface InterfaceTypeSchemaMigrationInGracePeriod {}
 export interface InterfaceTypeSchemaMigrationInstruction_addRequiredProperty {
   type: "addRequiredProperty";
   addRequiredProperty: InterfaceTypeAddRequiredPropertyMigration;
 }
 /**
- * Instruction on how to transition from one InterfaceType version to another.
+ * An instruction in an InterfaceType schema transition.
  */
 export type InterfaceTypeSchemaMigrationInstruction =
   InterfaceTypeSchemaMigrationInstruction_addRequiredProperty;
@@ -220,7 +307,7 @@ export interface InterfaceTypeSchemaMigrationInstructionModification_addRequired
   addRequiredProperty: InterfaceTypeAddRequiredPropertyMigrationModification;
 }
 /**
- * Instruction on how to transition from one InterfaceType version to another.
+ * A modification instruction in an InterfaceType schema transition.
  */
 export type InterfaceTypeSchemaMigrationInstructionModification =
   InterfaceTypeSchemaMigrationInstructionModification_addRequiredProperty;
@@ -229,7 +316,56 @@ export interface InterfaceTypeSchemaMigrationModification {
   transitions: Array<InterfaceTypeSchemaTransitionModification>;
 }
 /**
- * Instructions on how to transition from one InterfaceType schema version to another.
+ * The status of a single interface type schema migration transition for an implementing object type.
+ */
+export interface InterfaceTypeSchemaMigrationObjectStatus {
+  complianceStatus: ComplianceStatus;
+  deadline: string;
+  description?: string | null | undefined;
+  directlyImplementedInterfacesInheritingMigration: Array<_api_InterfaceTypeRid>;
+  id: InterfaceTypeSchemaTransitionId;
+  migrations: Array<InterfaceTypeSchemaMigrationInstruction>;
+  rid: _api_InterfaceTypeSchemaTransitionRid;
+  title?: string | null | undefined;
+}
+/**
+ * Migration statuses for a single interface type for an implementing object type.
+ */
+export interface InterfaceTypeSchemaMigrationObjectStatuses {
+  statuses: Array<InterfaceTypeSchemaMigrationObjectStatus>;
+}
+/**
+ * The status of a single interface type schema migration transition, including adoption information
+ * across implementing object types.
+ */
+export interface InterfaceTypeSchemaMigrationStatus {
+  attribution: _api_Attribution;
+  counts: ComplianceCounts;
+  deadline: InterfaceTypeSchemaMigrationDeadline;
+  description?: string | null | undefined;
+  id: InterfaceTypeSchemaTransitionId;
+  rid: _api_InterfaceTypeSchemaTransitionRid;
+  state: InterfaceTypeSchemaMigrationTransitionState;
+  title?: string | null | undefined;
+}
+export interface InterfaceTypeSchemaMigrationTransitionState_inGracePeriod {
+  type: "inGracePeriod";
+  inGracePeriod: InterfaceTypeSchemaMigrationInGracePeriod;
+}
+
+export interface InterfaceTypeSchemaMigrationTransitionState_awaitingFinalization {
+  type: "awaitingFinalization";
+  awaitingFinalization: InterfaceTypeSchemaTransitionAwaitingFinalization;
+}
+/**
+ * The current state of an interface type schema migration transition.
+ */
+export type InterfaceTypeSchemaMigrationTransitionState =
+  | InterfaceTypeSchemaMigrationTransitionState_inGracePeriod
+  | InterfaceTypeSchemaMigrationTransitionState_awaitingFinalization;
+
+/**
+ * A collection of instructions for migrating an InterfaceType schema.
  */
 export interface InterfaceTypeSchemaTransition {
   description?: string | null | undefined;
@@ -240,10 +376,43 @@ export interface InterfaceTypeSchemaTransition {
   title?: string | null | undefined;
 }
 /**
+ * Enforcement information retained while an interface type schema transition awaits finalization.
+ */
+export interface InterfaceTypeSchemaTransitionAwaitingFinalization {
+  deadline: InterfaceTypeSchemaMigrationDeadline;
+  enforcementCompletedAt: string;
+  result: InterfaceTypeSchemaTransitionEnforcementResult;
+}
+/**
+ * All implementing object types were compliant by the deadline.
+ */
+export interface InterfaceTypeSchemaTransitionEnforcementAllCompliant {}
+/**
+ * Enforcement was applied to non-compliant object types.
+ */
+export interface InterfaceTypeSchemaTransitionEnforcementEnforced {
+  unimplemented: Array<_api_ObjectTypeRid>;
+}
+export interface InterfaceTypeSchemaTransitionEnforcementResult_allCompliant {
+  type: "allCompliant";
+  allCompliant: InterfaceTypeSchemaTransitionEnforcementAllCompliant;
+}
+
+export interface InterfaceTypeSchemaTransitionEnforcementResult_enforced {
+  type: "enforced";
+  enforced: InterfaceTypeSchemaTransitionEnforcementEnforced;
+}
+/**
+ * The outcome of interface type schema migration enforcement.
+ */
+export type InterfaceTypeSchemaTransitionEnforcementResult =
+  | InterfaceTypeSchemaTransitionEnforcementResult_allCompliant
+  | InterfaceTypeSchemaTransitionEnforcementResult_enforced;
+
+/**
  * A unique, immutable identifier for an Interface Type schema transition. Can be user defined.
  */
 export type InterfaceTypeSchemaTransitionId = string;
-
 export interface InterfaceTypeSchemaTransitionModification_create {
   type: "create";
   create: CreateInterfaceTypeSchemaTransitionModification;
@@ -267,15 +436,6 @@ export type InterfaceTypeSchemaTransitionModification =
   | InterfaceTypeSchemaTransitionModification_finalize;
 
 /**
- * The transitions for a given InterfaceType defined up to the requested ontology version.
- */
-export interface InterfaceTypeSchemaTransitions {
-  interfaceTypeRid: _api_InterfaceTypeRid;
-  ontologyVersion: _api_OntologyVersion;
-  schemaTransitions: Array<InterfaceTypeSchemaTransition>;
-  schemaVersion: _api_SchemaVersion;
-}
-/**
  * Type that represents the latest schema version
  */
 export interface LatestSchemaVersion {}
@@ -285,6 +445,167 @@ export interface LatestSchemaVersion {}
 export interface LatestTimestampToEditsWin {
   datasourceRid: _api_DatasourceRid;
   timestampPropertyRid: _api_PropertyTypeRid;
+}
+export interface LiteralPropertyValue_array {
+  type: "array";
+  array: Array<LiteralPropertyValue>;
+}
+
+export interface LiteralPropertyValue_boolean {
+  type: "boolean";
+  boolean: boolean;
+}
+
+export interface LiteralPropertyValue_byte {
+  type: "byte";
+  byte: ByteValue;
+}
+
+export interface LiteralPropertyValue_date {
+  type: "date";
+  date: DateValue;
+}
+
+export interface LiteralPropertyValue_decimal {
+  type: "decimal";
+  decimal: DecimalValue;
+}
+
+export interface LiteralPropertyValue_double {
+  type: "double";
+  double: number | "NaN" | "Infinity" | "-Infinity";
+}
+
+export interface LiteralPropertyValue_float {
+  type: "float";
+  float: FloatValue;
+}
+
+export interface LiteralPropertyValue_geohash {
+  type: "geohash";
+  geohash: GeohashValue;
+}
+
+export interface LiteralPropertyValue_integer {
+  type: "integer";
+  integer: number;
+}
+
+export interface LiteralPropertyValue_long {
+  type: "long";
+  long: LongValue;
+}
+
+export interface LiteralPropertyValue_marking {
+  type: "marking";
+  marking: MarkingValue;
+}
+
+export interface LiteralPropertyValue_short {
+  type: "short";
+  short: ShortValue;
+}
+
+export interface LiteralPropertyValue_string {
+  type: "string";
+  string: string;
+}
+
+export interface LiteralPropertyValue_timestamp {
+  type: "timestamp";
+  timestamp: TimestampValue;
+}
+/**
+ * A property value stored in an object edit (patch), mirroring what Funnel will store.
+ */
+export type LiteralPropertyValue =
+  | LiteralPropertyValue_array
+  | LiteralPropertyValue_boolean
+  | LiteralPropertyValue_byte
+  | LiteralPropertyValue_date
+  | LiteralPropertyValue_decimal
+  | LiteralPropertyValue_double
+  | LiteralPropertyValue_float
+  | LiteralPropertyValue_geohash
+  | LiteralPropertyValue_integer
+  | LiteralPropertyValue_long
+  | LiteralPropertyValue_marking
+  | LiteralPropertyValue_short
+  | LiteralPropertyValue_string
+  | LiteralPropertyValue_timestamp;
+
+/**
+ * Page token for loadInterfaceTypeSchemaMigrationObjectTypeCompliance.
+ */
+export type LoadInterfaceTypeSchemaMigrationObjectTypeCompliancePagingToken =
+  string;
+
+/**
+ * Request to load per-object-type compliance details for a specific interface type schema migration transition.
+ */
+export interface LoadInterfaceTypeSchemaMigrationObjectTypeComplianceRequest {
+  interfaceTypeRid: _api_InterfaceTypeRid;
+  ontologyVersion?: _api_OntologyVersion | null | undefined;
+  pageToken?:
+    | LoadInterfaceTypeSchemaMigrationObjectTypeCompliancePagingToken
+    | null
+    | undefined;
+  transitionRid: _api_InterfaceTypeSchemaTransitionRid;
+}
+/**
+ * Paged per-object-type compliance details for a specific transition.
+ */
+export interface LoadInterfaceTypeSchemaMigrationObjectTypeComplianceResponse {
+  details: Record<_api_ObjectTypeRid, ObjectTypeCompliance>;
+  nextPageToken?:
+    | LoadInterfaceTypeSchemaMigrationObjectTypeCompliancePagingToken
+    | null
+    | undefined;
+}
+/**
+ * Page token for loadInterfaceTypeSchemaMigrationStatusesByImplementingObjectType.
+ */
+export type LoadInterfaceTypeSchemaMigrationStatusesByImplementingObjectTypePagingToken =
+  string;
+
+/**
+ * Request to load interface type schema migration statuses for a given implementing ObjectType.
+ */
+export interface LoadInterfaceTypeSchemaMigrationStatusesByImplementingObjectTypeRequest {
+  objectTypeRid: _api_ObjectTypeRid;
+  ontologyVersion?: _api_OntologyVersion | null | undefined;
+  pageToken?:
+    | LoadInterfaceTypeSchemaMigrationStatusesByImplementingObjectTypePagingToken
+    | null
+    | undefined;
+}
+/**
+ * Response containing interface type schema migration statuses grouped by interface type, for a given
+ * implementing object type. Interface types the calling user does not have permission to view are excluded.
+ * Paging is over interface types.
+ */
+export interface LoadInterfaceTypeSchemaMigrationStatusesByImplementingObjectTypeResponse {
+  nextPageToken?:
+    | LoadInterfaceTypeSchemaMigrationStatusesByImplementingObjectTypePagingToken
+    | null
+    | undefined;
+  statusesByInterfaceType: Record<
+    _api_InterfaceTypeRid,
+    InterfaceTypeSchemaMigrationObjectStatuses
+  >;
+}
+/**
+ * Request to load schema migration statuses for a given InterfaceType.
+ */
+export interface LoadInterfaceTypeSchemaMigrationStatusesRequest {
+  interfaceTypeRid: _api_InterfaceTypeRid;
+  ontologyVersion?: _api_OntologyVersion | null | undefined;
+}
+/**
+ * Response containing interface type schema migration statuses, ordered from most recent to least recent.
+ */
+export interface LoadInterfaceTypeSchemaMigrationStatusesResponse {
+  statuses: Array<InterfaceTypeSchemaMigrationStatus>;
 }
 /**
  * Request to load schema migrations for the given ObjectTypeRid at the given OntologyVersion.
@@ -306,12 +627,27 @@ export interface LoadObjectTypeSchemaMigrationsResponse {
 export type LoadSchemaMigrationsPagingToken = string;
 
 /**
+ * A 64-bit integer encoded as a string to preserve the full long range without the precision loss
+ * that a numeric JSON representation would incur.
+ */
+export type LongValue = string;
+
+/**
+ * A marking id. For mandatory markings this is the marking id; for CBAC markings it is the marking name.
+ */
+export type MarkingValue = string;
+
+/**
  * Instructions on how to transition from one schema version to the version that will be created.
  */
 export interface NewVersionSchemaTransitionModification {
   migrations: Array<SchemaMigrationInstructionModification>;
   source: SourceSchemaVersion;
 }
+/**
+ * The interface has implementing object types that are not compliant with the schema migration.
+ */
+export interface NonCompliantObjectTypesFound {}
 export interface NonRevertibleMigration_initializePatches {
   type: "initializePatches";
   initializePatches: InitializePatchesMigration;
@@ -344,6 +680,22 @@ export type NonRevertibleMigrationModification =
   | NonRevertibleMigrationModification_initializePatches
   | NonRevertibleMigrationModification_permanentlyDeletePatches;
 
+/**
+ * Compliance status for an object type with respect to an interface type schema migration.
+ */
+export interface ObjectTypeCompliance {
+  status: ComplianceStatus;
+}
+/**
+ * The object type is compliant with the interface type schema migration.
+ */
+export interface ObjectTypeCompliantResult {}
+/**
+ * The object type is not compliant with the interface type schema migration.
+ */
+export interface ObjectTypeNonCompliantResult {
+  enforcementPolicy: EnforcementPolicy;
+}
 export interface ObjectTypePrimaryKeyRename {
   rename: RenamePropertyMigration;
 }
@@ -359,6 +711,10 @@ export interface ObjectTypeSchemaTransitions {
   schemaTransitions: Array<SchemaTransition>;
   schemaVersion: _api_SchemaVersion;
 }
+/**
+ * The object type was unimplemented due to non-compliance with the interface type schema migration.
+ */
+export interface ObjectTypeUnimplementedResult {}
 /**
  * Migration to cast a property to another type.
  */
@@ -429,13 +785,13 @@ export interface OntologyIrInterfaceTypeSchemaMigrationInstruction_addRequiredPr
   addRequiredProperty: OntologyIrInterfaceTypeAddRequiredPropertyMigration;
 }
 /**
- * Instruction on how to transition from one InterfaceType version to another.
+ * An instruction in an InterfaceType schema transition.
  */
 export type OntologyIrInterfaceTypeSchemaMigrationInstruction =
   OntologyIrInterfaceTypeSchemaMigrationInstruction_addRequiredProperty;
 
 /**
- * Instructions on how to transition from one InterfaceType schema version to another.
+ * A collection of instructions for migrating an InterfaceType schema.
  */
 export interface OntologyIrInterfaceTypeSchemaTransition {
   description?: string | null | undefined;
@@ -566,6 +922,11 @@ export interface OntologyIrSchemaMigrationInstruction_updateEditsResolutionStrat
   type: "updateEditsResolutionStrategy";
   updateEditsResolutionStrategy: OntologyIrUpdateEditsResolutionStrategyMigration;
 }
+
+export interface OntologyIrSchemaMigrationInstruction_setPropertyValueIfUnset {
+  type: "setPropertyValueIfUnset";
+  setPropertyValueIfUnset: OntologyIrSetPropertyValueIfUnsetMigration;
+}
 /**
  * One out of potentially many instructions on how to transition from one ObjectType version to another.
  */
@@ -581,7 +942,8 @@ export type OntologyIrSchemaMigrationInstruction =
   | OntologyIrSchemaMigrationInstruction_castStructField
   | OntologyIrSchemaMigrationInstruction_revert
   | OntologyIrSchemaMigrationInstruction_nonRevertible
-  | OntologyIrSchemaMigrationInstruction_updateEditsResolutionStrategy;
+  | OntologyIrSchemaMigrationInstruction_updateEditsResolutionStrategy
+  | OntologyIrSchemaMigrationInstruction_setPropertyValueIfUnset;
 
 /**
  * Instructions on how to transition from one ObjectType schema version to another.
@@ -590,6 +952,15 @@ export interface OntologyIrSchemaTransition {
   migrations: Array<OntologyIrSchemaMigration>;
   source: _api_SchemaVersion;
   target: _api_SchemaVersion;
+}
+/**
+ * Backfills `value` into historical edits where `property` is implicitly NULL (unset/cleared in a
+ * create-object-like patch). An explicit NULL or non-null value is never overwritten.
+ */
+export interface OntologyIrSetPropertyValueIfUnsetMigration {
+  datasource: _api_DatasourceRid;
+  property: _api_ObjectTypeFieldApiName;
+  value: PropertyValue;
 }
 export interface OntologyIrUpdateEditsResolutionStrategyMigration_latestTimestampToEditsWin {
   type: "latestTimestampToEditsWin";
@@ -611,14 +982,105 @@ export type OntologyIrUpdateEditsResolutionStrategyMigration =
   | OntologyIrUpdateEditsResolutionStrategyMigration_latestTimestampToEditsWin
   | OntologyIrUpdateEditsResolutionStrategyMigration_editsWinToLatestTimestamp;
 
+export interface PastVersionSchemaMigrationInstructionModification_dropProperty {
+  type: "dropProperty";
+  dropProperty: DropPropertyMigration;
+}
+
+export interface PastVersionSchemaMigrationInstructionModification_dropStructField {
+  type: "dropStructField";
+  dropStructField: DropStructFieldMigration;
+}
+
+export interface PastVersionSchemaMigrationInstructionModification_dropDatasource {
+  type: "dropDatasource";
+  dropDatasource: DropDatasourceMigration;
+}
+
+export interface PastVersionSchemaMigrationInstructionModification_dropAllPatches {
+  type: "dropAllPatches";
+  dropAllPatches: DropAllPatchesMigration;
+}
+
+export interface PastVersionSchemaMigrationInstructionModification_renameDatasource {
+  type: "renameDatasource";
+  renameDatasource: RenameDatasourceMigration;
+}
+
+export interface PastVersionSchemaMigrationInstructionModification_renameProperty {
+  type: "renameProperty";
+  renameProperty: RenamePropertyMigration;
+}
+
+export interface PastVersionSchemaMigrationInstructionModification_renameStructField {
+  type: "renameStructField";
+  renameStructField: RenameStructFieldMigration;
+}
+
+export interface PastVersionSchemaMigrationInstructionModification_cast {
+  type: "cast";
+  cast: CastMigration;
+}
+
+export interface PastVersionSchemaMigrationInstructionModification_castStructField {
+  type: "castStructField";
+  castStructField: CastStructFieldMigration;
+}
+
+export interface PastVersionSchemaMigrationInstructionModification_revert {
+  type: "revert";
+  revert: RevertMigration;
+}
+
+export interface PastVersionSchemaMigrationInstructionModification_nonRevertible {
+  type: "nonRevertible";
+  nonRevertible: NonRevertibleMigration;
+}
+
+export interface PastVersionSchemaMigrationInstructionModification_updateEditsResolutionStrategy {
+  type: "updateEditsResolutionStrategy";
+  updateEditsResolutionStrategy: UpdateEditsResolutionStrategyMigration;
+}
+
+export interface PastVersionSchemaMigrationInstructionModification_setPropertyValueIfUnset {
+  type: "setPropertyValueIfUnset";
+  setPropertyValueIfUnset: PastVersionSetPropertyValueIfUnsetMigrationModification;
+}
+/**
+ * One out of potentially many instructions on how to fix a past transition.
+ */
+export type PastVersionSchemaMigrationInstructionModification =
+  | PastVersionSchemaMigrationInstructionModification_dropProperty
+  | PastVersionSchemaMigrationInstructionModification_dropStructField
+  | PastVersionSchemaMigrationInstructionModification_dropDatasource
+  | PastVersionSchemaMigrationInstructionModification_dropAllPatches
+  | PastVersionSchemaMigrationInstructionModification_renameDatasource
+  | PastVersionSchemaMigrationInstructionModification_renameProperty
+  | PastVersionSchemaMigrationInstructionModification_renameStructField
+  | PastVersionSchemaMigrationInstructionModification_cast
+  | PastVersionSchemaMigrationInstructionModification_castStructField
+  | PastVersionSchemaMigrationInstructionModification_revert
+  | PastVersionSchemaMigrationInstructionModification_nonRevertible
+  | PastVersionSchemaMigrationInstructionModification_updateEditsResolutionStrategy
+  | PastVersionSchemaMigrationInstructionModification_setPropertyValueIfUnset;
+
 /**
  * Instructions on how to transition from one schema version to another. Can be used to fix past
  * transitions.
  */
 export interface PastVersionSchemaTransitionModification {
-  migrations: Array<SchemaMigrationInstruction>;
+  migrations: Array<PastVersionSchemaMigrationInstructionModification>;
   source: _api_SchemaVersion;
   target: _api_SchemaVersion;
+}
+/**
+ * Backfills `value` into historical edits where `property` is implicitly NULL (unset/cleared in a
+ * create-object-like patch). An explicit NULL or non-null value is never overwritten.
+ */
+export interface PastVersionSetPropertyValueIfUnsetMigrationModification {
+  datasource: _api_DatasourceRid;
+  property: _api_PropertyTypeRid;
+  value: LiteralPropertyValue;
 }
 /**
  * Contains the information that can be used to restore patches that were deleted by mistake.
@@ -649,6 +1111,21 @@ export interface PrimaryKeyRenamesModification_objectType {
 export type PrimaryKeyRenamesModification =
   PrimaryKeyRenamesModification_objectType;
 
+export interface PropertyValue_literal {
+  type: "literal";
+  literal: LiteralPropertyValue;
+}
+
+export interface PropertyValue_redacted {
+  type: "redacted";
+  redacted: RedactedPropertyValue;
+}
+export type PropertyValue = PropertyValue_literal | PropertyValue_redacted;
+
+/**
+ * Sentinel indicating the value is hidden because the caller lacks permissions to see/modify it.
+ */
+export interface RedactedPropertyValue {}
 /**
  * Migration to rename one datasource to another.
  */
@@ -769,6 +1246,11 @@ export interface SchemaMigrationInstruction_updateEditsResolutionStrategy {
   type: "updateEditsResolutionStrategy";
   updateEditsResolutionStrategy: UpdateEditsResolutionStrategyMigration;
 }
+
+export interface SchemaMigrationInstruction_setPropertyValueIfUnset {
+  type: "setPropertyValueIfUnset";
+  setPropertyValueIfUnset: SetPropertyValueIfUnsetMigration;
+}
 /**
  * One out of potentially many instructions on how to transition from one ObjectType version to another.
  */
@@ -784,7 +1266,8 @@ export type SchemaMigrationInstruction =
   | SchemaMigrationInstruction_castStructField
   | SchemaMigrationInstruction_revert
   | SchemaMigrationInstruction_nonRevertible
-  | SchemaMigrationInstruction_updateEditsResolutionStrategy;
+  | SchemaMigrationInstruction_updateEditsResolutionStrategy
+  | SchemaMigrationInstruction_setPropertyValueIfUnset;
 
 export interface SchemaMigrationInstructionInitialization_initializePatches {
   type: "initializePatches";
@@ -855,6 +1338,11 @@ export interface SchemaMigrationInstructionModification_updateEditsResolutionStr
   type: "updateEditsResolutionStrategy";
   updateEditsResolutionStrategy: UpdateEditsResolutionStrategyMigration;
 }
+
+export interface SchemaMigrationInstructionModification_setPropertyValueIfUnset {
+  type: "setPropertyValueIfUnset";
+  setPropertyValueIfUnset: SetPropertyValueIfUnsetMigrationModification;
+}
 /**
  * One out of potentially many instructions on how to transition from one version to another.
  */
@@ -870,7 +1358,8 @@ export type SchemaMigrationInstructionModification =
   | SchemaMigrationInstructionModification_castStructField
   | SchemaMigrationInstructionModification_revert
   | SchemaMigrationInstructionModification_nonRevertible
-  | SchemaMigrationInstructionModification_updateEditsResolutionStrategy;
+  | SchemaMigrationInstructionModification_updateEditsResolutionStrategy
+  | SchemaMigrationInstructionModification_setPropertyValueIfUnset;
 
 export interface SchemaMigrationModification {
   transitions: Array<SchemaTransitionModification>;
@@ -907,6 +1396,24 @@ export type SchemaTransitionModification =
   | SchemaTransitionModification_pastVersion
   | SchemaTransitionModification_delete;
 
+/**
+ * Backfills `value` into historical edits where `property` is implicitly NULL (unset/cleared in a
+ * create-object-like patch). An explicit NULL or non-null value is never overwritten.
+ */
+export interface SetPropertyValueIfUnsetMigration {
+  datasource: _api_DatasourceRid;
+  property: _api_PropertyTypeRid;
+  value: PropertyValue;
+}
+/**
+ * Backfills `value` into historical edits where `property` is implicitly NULL (unset/cleared in a
+ * create-object-like patch). An explicit NULL or non-null value is never overwritten.
+ */
+export interface SetPropertyValueIfUnsetMigrationModification {
+  property: _api_PropertyTypeId;
+  value: LiteralPropertyValue;
+}
+export type ShortValue = number;
 export interface SourceSchemaVersion_latestVersion {
   type: "latestVersion";
   latestVersion: LatestSchemaVersion;
@@ -923,6 +1430,7 @@ export type SourceSchemaVersion =
   | SourceSchemaVersion_latestVersion
   | SourceSchemaVersion_specificVersion;
 
+export type TimestampValue = string;
 export interface UpdateEditsResolutionStrategyMigration_latestTimestampToEditsWin {
   type: "latestTimestampToEditsWin";
   latestTimestampToEditsWin: LatestTimestampToEditsWin;
@@ -943,6 +1451,12 @@ export type UpdateEditsResolutionStrategyMigration =
   | UpdateEditsResolutionStrategyMigration_latestTimestampToEditsWin
   | UpdateEditsResolutionStrategyMigration_editsWinToLatestTimestamp;
 
+/**
+ * Manual user inputted reason
+ */
+export interface UserInputtedManualReason {
+  input: string;
+}
 /**
  * An ObjectTypeRid with an optional ontology version
  */

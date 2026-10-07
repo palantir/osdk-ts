@@ -1,5 +1,24 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.76.0
+
+### Minor Changes
+
+- 43dd010: Skip and warn functions are not osdk compatible
+- a9fafd0: Fix link attachment for imported objects
+
+### Patch Changes
+
+- Updated dependencies [21a0d8c]
+- Updated dependencies [a38af5a]
+  - @osdk/client.unstable@2.76.0
+
+## 2.75.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.75.0
+
 ## 2.74.0
 
 ### Minor Changes

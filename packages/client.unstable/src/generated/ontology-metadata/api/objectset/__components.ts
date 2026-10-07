@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeApiName as _api_ObjectTypeApiName,
-  ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
-  ObjectTypeId as _api_ObjectTypeId,
-  PropertyId as _api_PropertyId,
-  PropertyTypeId as _api_PropertyTypeId,
-  RelationId as _api_RelationId,
-} from "../__components.js";
-import type {
-  ConditionValueId as _api_types_ConditionValueId,
-  RelationSide as _api_types_RelationSide,
-} from "../types/__components.js";
+import type { PropertyTypeId as _api_PropertyTypeId } from "../__components.js";
+import type { RelationId as _api_RelationId } from "../__components.js";
+import type { ObjectTypeId as _api_ObjectTypeId } from "../__components.js";
+import type { ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName } from "../__components.js";
+import type { ObjectTypeApiName as _api_ObjectTypeApiName } from "../__components.js";
+import type { PropertyId as _api_PropertyId } from "../__components.js";
+import type { RelationSide as _api_types_RelationSide } from "../types/__components.js";
+import type { ConditionValueId as _api_types_ConditionValueId } from "../types/__components.js";
 export interface AllPropertiesPropertySet {}
 /**
  * An ObjectSetFilter used to combine multiple ObjectSetFilters.

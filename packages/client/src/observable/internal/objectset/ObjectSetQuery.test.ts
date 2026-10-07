@@ -464,30 +464,65 @@ describe("ObjectSetQuery cache reconciliation", () => {
     },
   );
 
-  it("locally adds an object when the exact RDP cache variant is available", () => {
-    const query = getRdpQuery();
-    const employee = createEmployee();
-    const targetObjectQuery = store.objects.getQuery(
-      { apiName: Employee, pk: employee.$primaryKey },
-      query.rdpConfig,
-    );
-    store.batch({}, (batch) => {
-      batch.write(targetObjectQuery.cacheKey, employee, "loaded");
-      batch.write(query.cacheKey, { data: [] }, "loaded");
-    });
-    const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
+  it.each([
+    ["addition", true],
+    ["modification", false],
+  ])(
+    "preserves rows and revalidates when the exact RDP variant was only cached before the current %s",
+    (_change, isNew) => {
+      const query = getRdpQuery();
+      const employee = createEmployee();
+      const targetObjectQuery = store.objects.getQuery(
+        { apiName: Employee, pk: employee.$primaryKey },
+        query.rdpConfig,
+      );
+      const initialKeys = isNew ? [] : [targetObjectQuery.cacheKey];
+      store.batch({}, (batch) => {
+        batch.write(targetObjectQuery.cacheKey, employee, "loaded");
+        query.writeToStore({ data: initialKeys }, "loaded", batch);
+      });
+      const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
 
-    query.maybeUpdateAndRevalidate(
-      createChanges(employee, true, targetObjectQuery.cacheKey),
-      undefined,
-    );
+      query.maybeUpdateAndRevalidate(createChanges(employee, isNew), undefined);
 
-    expect(revalidate).not.toHaveBeenCalled();
-    expect(store.getValue(query.cacheKey)).toMatchObject({
-      status: "loaded",
-      value: { data: [targetObjectQuery.cacheKey] },
-    });
-  });
+      expect(revalidate).toHaveBeenCalledWith(true);
+      expect(store.getValue(query.cacheKey)).toMatchObject({
+        status: "loading",
+        value: { data: initialKeys },
+      });
+    },
+  );
+
+  it.each([
+    ["addition", true],
+    ["modification", false],
+  ])(
+    "locally reconciles an exact RDP variant written by the current %s",
+    (_change, isNew) => {
+      const query = getRdpQuery();
+      const employee = createEmployee();
+      const targetObjectQuery = store.objects.getQuery(
+        { apiName: Employee, pk: employee.$primaryKey },
+        query.rdpConfig,
+      );
+      store.batch({}, (batch) => {
+        batch.write(targetObjectQuery.cacheKey, employee, "loaded");
+        batch.write(query.cacheKey, { data: [] }, "loaded");
+      });
+      const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
+
+      query.maybeUpdateAndRevalidate(
+        createChanges(employee, isNew, targetObjectQuery.cacheKey),
+        undefined,
+      );
+
+      expect(revalidate).not.toHaveBeenCalled();
+      expect(store.getValue(query.cacheKey)).toMatchObject({
+        status: "loaded",
+        value: { data: [targetObjectQuery.cacheKey] },
+      });
+    },
+  );
 
   it("keeps a flagged query loading while its own fetch is pending", () => {
     const query = getQueryForOntologyDefinedDerivedPropertiesSetting(true);
