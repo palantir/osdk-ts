@@ -250,7 +250,6 @@ export class SpecificLinkQuery extends BaseListQuery<
       $nextPageToken: string | undefined;
       $includeRid: true;
       $orderBy?: Record<string, "asc" | "desc" | undefined>;
-      $where?: Record<string, unknown>;
       $select?: readonly string[];
       $includeAllBaseObjectProperties?: true;
     } = {
@@ -268,7 +267,7 @@ export class SpecificLinkQuery extends BaseListQuery<
     }
 
     if (this.#whereClause && Object.keys(this.#whereClause).length > 0) {
-      queryParams.$where = this.#whereClause;
+      linkQuery = linkQuery.where(this.#whereClause);
     }
 
     // Only forward $includeAllBaseObjectProperties when the link target is an
