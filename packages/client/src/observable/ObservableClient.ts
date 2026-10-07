@@ -437,8 +437,11 @@ export interface ObservableClient extends ObserveLinks {
   /**
    * Observe an ObjectSet with automatic updates when matching objects change.
    *
-   * @param baseObjectSet - The base ObjectSet to observe
-   * @param options - Options for transforming and observing the ObjectSet
+   * Build filters, derived properties, set operations, and pivots on the input ObjectSet.
+   * Transformation options remain supported for compatibility.
+   *
+   * @param baseObjectSet - The completed ObjectSet to observe
+   * @param options - Loading options, including sorting, projection, and pagination
    * @param subFn - Observer that receives ObjectSet state updates
    * @returns Subscription that can be unsubscribed to stop updates
    *

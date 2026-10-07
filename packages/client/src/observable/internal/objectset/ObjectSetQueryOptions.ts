@@ -33,13 +33,20 @@ export interface ObserveObjectSetOptions<
     WirePropertyTypes | undefined | Array<WirePropertyTypes>
   > = {},
 > extends CommonObserveOptions {
+  /** @deprecated Call `where()` on the input ObjectSet instead. */
   where?: WhereClause<Q>;
+  /** @deprecated Call `withProperties()` on the input ObjectSet instead. */
   withProperties?: { [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]> };
+  /** @deprecated Call `union()` on the input ObjectSet instead. */
   union?: ObjectSet<Q>[];
+  /** @deprecated Call `intersect()` on the input ObjectSet instead. */
   intersect?: ObjectSet<Q>[];
+  /** @deprecated Call `subtract()` on the input ObjectSet instead. */
   subtract?: ObjectSet<Q>[];
 
   /**
+   * @deprecated Call `pivotTo()` on the input ObjectSet instead.
+   *
    * Traverse to linked objects. Cannot be combined with `streamUpdates`.
    * The server does not support websocket subscriptions for link-traversal
    * queries.

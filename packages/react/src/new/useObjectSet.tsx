@@ -42,31 +42,37 @@ export interface UseObjectSetOptions<
 > {
   /**
    * Where clause for filtering
+   * @deprecated Call `where()` on the input ObjectSet instead.
    */
   where?: WhereClause<Q, RDPs>;
 
   /**
    * Derived properties to add to the object set
+   * @deprecated Call `withProperties()` on the input ObjectSet instead.
    */
   withProperties?: { [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]> };
 
   /**
    * Object sets to union with
+   * @deprecated Call `union()` on the input ObjectSet instead.
    */
   union?: ObjectSet<Q>[];
 
   /**
    * Object sets to intersect with
+   * @deprecated Call `intersect()` on the input ObjectSet instead.
    */
   intersect?: ObjectSet<Q>[];
 
   /**
    * Object sets to subtract from
+   * @deprecated Call `subtract()` on the input ObjectSet instead.
    */
   subtract?: ObjectSet<Q>[];
 
   /**
    * Link to pivot to (changes the type).
+   * @deprecated Call `pivotTo()` on the input ObjectSet instead.
    *
    * Cannot be combined with `streamUpdates`. The server does not support
    * websocket subscriptions for link-traversal queries.
@@ -133,8 +139,8 @@ export interface UseObjectSetOptions<
    * @example
    * ```tsx
    * // Dependent query - wait for filter selection
-   * const { data: filteredObjects } = useObjectSet(MyObject.all(), {
-   *   where: { status: selectedStatus },
+   * const objectSet = client(MyObject).where({ status: selectedStatus });
+   * const { data: filteredObjects } = useObjectSet(objectSet, {
    *   enabled: !!selectedStatus,
    * });
    * ```
@@ -193,8 +199,11 @@ const OBJECT_TYPE_PLACEHOLDER = "$__OBJECT__TYPE__PLACEHOLDER";
  * @typeParam BaseRDPs - Derived properties that already exist on the input ObjectSet
  * @typeParam RDPs - New derived properties to be added via options.withProperties
  *
- * @param baseObjectSet - The ObjectSet to observe (may already have derived properties)
- * @param options - Options for filtering, sorting, and adding new derived properties
+ * Build filters, derived properties, set operations, and pivots on the input ObjectSet.
+ * Transformation options remain supported for compatibility.
+ *
+ * @param baseObjectSet - The completed ObjectSet to observe
+ * @param options - Loading options, including sorting, projection, pagination, and enabled state
  * @returns Object set data with both existing and new derived properties
  */
 // pivotTo overload: streamUpdates is forbidden (the server does not support

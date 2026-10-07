@@ -38,10 +38,8 @@ const { data: simpleData } = useOsdkObjects(Todo, {
 const urgentTodos = client(Todo).where({ isUrgent: true });
 const completedTodos = client(Todo).where({ isComplete: true });
 
-const { data: setData } = useObjectSet(client(Todo), {
-  union: [urgentTodos],
-  subtract: [completedTodos],
-});
+const objectSet = client(Todo).union(urgentTodos).subtract(completedTodos);
+const { data: setData } = useObjectSet(objectSet);
 ```
 
 :::note Building ObjectSets
@@ -59,19 +57,19 @@ function TodosWithSetOperations() {
   const allTodos = client(Todo);
   const completedTodos = client(Todo).where({ isComplete: true });
 
-  const { data, isLoading, fetchMore } = useObjectSet(allTodos, {
-    subtract: [completedTodos],
-    where: { priority: "high" },
+  const objectSet = allTodos
+    .where({ priority: "high" })
+    .subtract(completedTodos);
+
+  const { data, isLoading, fetchMore } = useObjectSet(objectSet, {
     orderBy: { createdAt: "desc" },
     pageSize: 20,
   });
 
   return (
     <div>
-      {data?.map(todo => (
-        <div key={todo.$primaryKey}>
-          {todo.title}
-        </div>
+      {data?.map((todo) => (
+        <div key={todo.$primaryKey}>{todo.title}</div>
       ))}
     </div>
   );
@@ -93,9 +91,7 @@ function CombinedTodoQuery() {
   const highPriorityTodos = client(Todo).where({ priority: "high" });
   const urgentTodos = client(Todo).where({ isUrgent: true });
 
-  const { data } = useObjectSet(highPriorityTodos, {
-    union: [urgentTodos], // High priority OR urgent
-  });
+  const { data } = useObjectSet(highPriorityTodos.union(urgentTodos));
 
   return <div>High priority or urgent: {data?.length}</div>;
 }
@@ -114,14 +110,14 @@ function StarredAndIncompleteTodos() {
   const starred = client(Todo).where({ isStarred: true });
   const incomplete = client(Todo).where({ isComplete: false });
 
-  const { data } = useObjectSet(starred, {
-    intersect: [incomplete],
-  });
+  const { data } = useObjectSet(starred.intersect(incomplete));
 
   return (
     <div>
       <h3>Starred todos that are still open</h3>
-      {data?.map(todo => <div key={todo.$primaryKey}>{todo.title}</div>)}
+      {data?.map((todo) => (
+        <div key={todo.$primaryKey}>{todo.title}</div>
+      ))}
     </div>
   );
 }
@@ -140,9 +136,7 @@ function ActiveTodos() {
   const allTodos = client(Todo);
   const completedTodos = client(Todo).where({ isComplete: true });
 
-  const { data } = useObjectSet(allTodos, {
-    subtract: [completedTodos],
-  });
+  const { data } = useObjectSet(allTodos.subtract(completedTodos));
 
   return <div>Active todos: {data?.length}</div>;
 }
@@ -160,10 +154,10 @@ function ComplexTodoQuery() {
   const urgentTodos = client(Todo).where({ isUrgent: true });
   const completedTodos = client(Todo).where({ isComplete: true });
 
-  const { data } = useObjectSet(highPriorityTodos, {
-    union: [urgentTodos], // High priority OR urgent
-    subtract: [completedTodos], // But not completed
-  });
+  const objectSet = highPriorityTodos
+    .union(urgentTodos)
+    .subtract(completedTodos);
+  const { data } = useObjectSet(objectSet);
 
   return <div>High priority or urgent (but not completed): {data?.length}</div>;
 }
@@ -178,20 +172,16 @@ import { Employee } from "@my/osdk";
 import { useObjectSet } from "@osdk/react";
 import client from "./client";
 
-function EmployeeDepartments(
-  { employee }: { employee: Employee.OsdkInstance },
-) {
+function EmployeeDepartments({
+  employee,
+}: {
+  employee: Employee.OsdkInstance;
+}) {
   const employeeSet = client(Employee).where({ id: employee.id });
 
-  const { data } = useObjectSet(employeeSet, {
-    pivotTo: "department",
-  });
+  const { data } = useObjectSet(employeeSet.pivotTo("department"));
 
-  return (
-    <div>
-      Departments: {data?.map(dept => dept.name).join(", ")}
-    </div>
-  );
+  return <div>Departments: {data?.map((dept) => dept.name).join(", ")}</div>;
 }
 ```
 
@@ -202,8 +192,8 @@ import { Todo } from "@my/osdk";
 import { useObjectSet } from "@osdk/react";
 import client from "./client";
 
-const { data, isLoading } = useObjectSet(client(Todo), {
-  where: { isComplete: false },
+const incompleteTodos = client(Todo).where({ isComplete: false });
+const { data, isLoading } = useObjectSet(incompleteTodos, {
   autoFetchMore: 200, // Fetch at least 200 items
   streamUpdates: true, // Real-time WebSocket updates
 });
@@ -215,21 +205,36 @@ websocket subscriptions for link-traversal queries. Queries using `pivotTo` will
 still fetch data normally but won't receive real-time updates.
 :::
 
-### All Options
+### Loading Options
 
-- `where` — Filter objects
-- `withProperties` — Add derived/computed properties
+Build the complete query with `where`, `withProperties`, `union`, `intersect`, `subtract`, and `pivotTo` on the input ObjectSet. Use hook options to control loading:
+
 - `$select` — Restrict which properties are returned for each object
-- `union` — Combine with other ObjectSets
-- `intersect` — Find common objects with other ObjectSets
-- `subtract` — Remove objects that exist in other ObjectSets
-- `pivotTo` — Traverse to linked objects (changes result type). Cannot be combined with `streamUpdates`.
 - `pageSize` — Number of objects per page
 - `orderBy` — Sort order
 - `dedupeIntervalMs` — Minimum time between re-fetches (default: 2000ms)
-- `streamUpdates` — Enable real-time websocket updates (default: false). Cannot be combined with `pivotTo` or `withProperties`.
+- `streamUpdates` — Enable real-time websocket updates (default: false). Queries with pivots or derived properties do not support streaming.
 - `autoFetchMore` — Auto-fetch additional pages
 - `enabled` — Enable/disable the query
+
+### Migrate Transformation Options
+
+The top-level `where`, `withProperties`, `union`, `intersect`, `subtract`, and `pivotTo` options are deprecated. They remain supported for compatibility. This applies to both `useObjectSet` and `observableClient.observeObjectSet`.
+
+To preserve an existing query, move the options onto the input ObjectSet in this order: `withProperties`, `where`, `union`, `intersect`, `subtract`, then `pivotTo`. Pass each set-operation array with the spread operator, for example `.union(...otherSets)`. The options object key order does not affect this order.
+
+```tsx
+const objectSet = client(Employee).where({ active: true }).pivotTo("manager");
+
+const { data } = useObjectSet(objectSet, { pageSize: 50 });
+const subscription = observableClient.observeObjectSet(
+  objectSet,
+  { pageSize: 50 },
+  observer,
+);
+```
+
+Apply a filter after `.pivotTo()` to filter the linked results. `useOsdkObjects(Type, options)` continues to support its transformation options as a typed shorthand.
 
 ### Return Values
 
@@ -300,9 +305,7 @@ const { data } = useOsdkObjects(Employee, {
   withProperties: {
     // Chained traversal
     departmentSize: (base: DerivedProperty.Builder<Employee, false>) =>
-      base.pivotTo("manager")
-        .pivotTo("reports")
-        .aggregate("$count"),
+      base.pivotTo("manager").pivotTo("reports").aggregate("$count"),
 
     // Aggregate a specific property — `propertyName:metric` keys
     avgReportSalary: (base: DerivedProperty.Builder<Employee, false>) =>
