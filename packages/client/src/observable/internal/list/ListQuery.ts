@@ -59,6 +59,7 @@ import { EMPTY_RDP_SET } from "../utils/rdpFieldOperations.js";
 import {
   INCLUDE_ALL_BASE_PROPERTIES_IDX,
   INTERSECT_IDX,
+  LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX,
   type ListCacheKey,
   ORDER_BY_IDX,
   PIVOT_IDX,
@@ -205,6 +206,14 @@ export abstract class ListQuery extends BaseListQuery<
     return this.cacheKey.otherKeys[INCLUDE_ALL_BASE_PROPERTIES_IDX] === true;
   }
 
+  public override get loadOntologyDefinedDerivedProperties():
+    | boolean
+    | undefined {
+    return this.cacheKey.otherKeys[
+      LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX
+    ];
+  }
+
   get objectTypes(): ReadonlySet<string> {
     return this.#objectTypesCache ?? new Set([this.apiName]);
   }
@@ -345,6 +354,12 @@ export abstract class ListQuery extends BaseListQuery<
         : {}),
       ...(this.includeAllBaseObjectProperties
         ? { $includeAllBaseObjectProperties: true }
+        : {}),
+      ...(this.loadOntologyDefinedDerivedProperties != null
+        ? {
+            $UNSTABLE_loadOntologyDefinedDerivedProperties:
+              this.loadOntologyDefinedDerivedProperties,
+          }
         : {}),
     });
 
@@ -548,8 +563,9 @@ export abstract class ListQuery extends BaseListQuery<
           batch.read(this.cacheKey)?.status === "loading";
 
         // If we got purely strict matches and the exact cache variants are available,
-        // we can update the list locally. Otherwise, keep it loading until the
-        // pending operation or server revalidation supplies the missing data.
+        // we can just update the list and move on with our lives. But if we got sorta
+        // matches, a cache variant is unavailable, or an optimistic update or fetch is
+        // pending, then we keep the list loading to avoid thrashing the store.
         const status =
           optimisticId ||
           isPendingFetchLoading ||
@@ -653,6 +669,7 @@ export abstract class ListQuery extends BaseListQuery<
           undefined,
           this.includeAllBaseObjectProperties,
           EMPTY_RDP_SET,
+          this.loadOntologyDefinedDerivedProperties,
         );
       });
     } else if (state === "REMOVED") {
@@ -732,6 +749,10 @@ export abstract class ListQuery extends BaseListQuery<
       obj.$objectType,
       pk,
       this.rdpConfig ?? undefined,
+      undefined,
+      undefined,
+      undefined,
+      this.loadOntologyDefinedDerivedProperties,
     );
   }
 
@@ -744,6 +765,10 @@ export abstract class ListQuery extends BaseListQuery<
       obj.$objectType,
       obj.$primaryKey,
       this.rdpConfig ?? undefined,
+      undefined,
+      undefined,
+      undefined,
+      this.loadOntologyDefinedDerivedProperties,
     );
   }
 }

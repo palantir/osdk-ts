@@ -188,6 +188,21 @@ describe("useLinks enabled option", () => {
     expect(options.$includeAllBaseObjectProperties).toBe(true);
   });
 
+  it("should forward explicit false for ontology-defined derived properties", () => {
+    const wrapper = createWrapper();
+
+    renderHook(
+      () =>
+        useLinks(mockObject, "relatedObjects", {
+          $UNSTABLE_loadOntologyDefinedDerivedProperties: false,
+        }),
+      { wrapper },
+    );
+
+    const options = mockObserveLinks.mock.calls[0][2];
+    expect(options.$UNSTABLE_loadOntologyDefinedDerivedProperties).toBe(false);
+  });
+
   describe("resolveToObjectType", () => {
     it("should pass resolveToObjectType: true to observeLinks when true", () => {
       const wrapper = createWrapper();

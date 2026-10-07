@@ -179,6 +179,11 @@ export class ObjectSetHelper extends AbstractHelper<
       operations.loadPropertySecurity = true;
     }
 
+    if (options.$UNSTABLE_loadOntologyDefinedDerivedProperties != null) {
+      operations.loadOntologyDefinedDerivedProperties =
+        options.$UNSTABLE_loadOntologyDefinedDerivedProperties;
+    }
+
     return operations as Canonical<ObjectSetOperations>;
   }
 }

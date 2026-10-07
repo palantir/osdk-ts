@@ -29,6 +29,7 @@ export const RDP_CONFIG_IDX = 2;
 export const SELECT_IDX = 3;
 export const LOAD_PROPERTY_SECURITY_IDX = 4;
 export const INCLUDE_ALL_BASE_PROPERTIES_IDX = 5;
+export const LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX = 6;
 
 export interface ObjectCacheKey extends CacheKey<
   "object",
@@ -41,5 +42,6 @@ export interface ObjectCacheKey extends CacheKey<
     select?: Canonical<readonly string[]> | undefined,
     loadPropertySecurity?: true | undefined,
     includeAllBaseObjectProperties?: true | undefined,
+    loadOntologyDefinedDerivedProperties?: boolean | undefined,
   ]
 > {}
