@@ -472,16 +472,6 @@ export abstract class ListQuery extends BaseListQuery<
       const relevantObjects =
         this._extractAndCategorizeRelevantObjects(changes);
 
-      // If we got purely strict matches we can just update the list and move
-      // on with our lives. But if we got sorta matches, then we need to revalidate
-      // the list so we preemptively set it to loading to avoid thrashing the store.
-      const status =
-        optimisticId ||
-        relevantObjects.added.sortaMatches.size > 0 ||
-        relevantObjects.modified.sortaMatches.size > 0
-          ? "loading"
-          : "loaded";
-
       // while we only push updates for the strict matches, we still need to
       // trigger the list updating if some of our objects changed
 
@@ -490,11 +480,36 @@ export abstract class ListQuery extends BaseListQuery<
       let needsRevalidation = false;
       this.store.batch({ optimisticId, changes }, (batch) => {
         const existingList = new Set(batch.read(this.cacheKey)?.value?.data);
+        const keysToAdd = new Set<ObjectCacheKey>();
 
-        const toAdd = new Set<ObjectHolder | InterfaceHolder>(
-          // easy case. objects are new to the cache and they match this filter
-          relevantObjects.added.strictMatches,
-        );
+        const getCachedObjectKey = (
+          obj: ObjectHolder | InterfaceHolder,
+        ): ObjectCacheKey | undefined => {
+          const key = this.peekObjectCacheKey(obj);
+          if (key == null || !changes.writtenObjectCacheKeys.has(key)) {
+            return undefined;
+          }
+
+          const value = batch.read(key)?.value;
+          return value != null && typeof value === "object" ? key : undefined;
+        };
+
+        const addIfAvailable = (obj: ObjectHolder | InterfaceHolder): void => {
+          const key = getCachedObjectKey(obj);
+
+          if (key == null) {
+            needsRevalidation = true;
+            return;
+          }
+
+          if (!existingList.has(key)) {
+            keysToAdd.add(key);
+          }
+        };
+
+        for (const obj of relevantObjects.added.strictMatches) {
+          addIfAvailable(obj);
+        }
 
         // anything thats been deleted can be removed, so start there
         const toRemove = new Set<CacheKey>(changes.deleted);
@@ -502,12 +517,7 @@ export abstract class ListQuery extends BaseListQuery<
         // deal with the modified objects
         for (const obj of relevantObjects.modified.all) {
           if (relevantObjects.modified.strictMatches.has(obj)) {
-            const objectCacheKey = this.getObjectCacheKey(obj);
-
-            if (!existingList.has(objectCacheKey)) {
-              // object is new to the list
-              toAdd.add(obj);
-            }
+            addIfAvailable(obj);
             continue;
           } else if (batch.optimisticWrite) {
             // we aren't removing objects in optimistic mode
@@ -531,9 +541,23 @@ export abstract class ListQuery extends BaseListQuery<
           if (toRemove.has(key)) continue;
           newList.push(key);
         }
-        for (const obj of toAdd) {
-          newList.push(this.getObjectCacheKey(obj));
-        }
+        newList.push(...keysToAdd);
+
+        const isPendingFetchLoading =
+          this.pendingFetch != null &&
+          batch.read(this.cacheKey)?.status === "loading";
+
+        // If we got purely strict matches and the exact cache variants are available,
+        // we can update the list locally. Otherwise, keep it loading until the
+        // pending operation or server revalidation supplies the missing data.
+        const status =
+          optimisticId ||
+          isPendingFetchLoading ||
+          needsRevalidation ||
+          relevantObjects.added.sortaMatches.size > 0 ||
+          relevantObjects.modified.sortaMatches.size > 0
+            ? "loading"
+            : "loaded";
 
         const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
         this._updateList(
@@ -545,7 +569,7 @@ export abstract class ListQuery extends BaseListQuery<
         );
       });
 
-      if (needsRevalidation) {
+      if (needsRevalidation && !optimisticId) {
         return this.revalidate(true);
       }
       return undefined;
@@ -707,6 +731,18 @@ export abstract class ListQuery extends BaseListQuery<
       "object",
       obj.$objectType,
       pk,
+      this.rdpConfig ?? undefined,
+    );
+  }
+
+  private peekObjectCacheKey(obj: {
+    $objectType: string;
+    $primaryKey: string | number;
+  }): ObjectCacheKey | undefined {
+    return this.cacheKeys.peek<ObjectCacheKey>(
+      "object",
+      obj.$objectType,
+      obj.$primaryKey,
       this.rdpConfig ?? undefined,
     );
   }
