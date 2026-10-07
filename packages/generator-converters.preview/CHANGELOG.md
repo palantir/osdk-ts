@@ -1,5 +1,18 @@
 # @osdk/generator-converters.preview
 
+## 0.54.0
+
+### Minor Changes
+
+- 6f2b7e6: Remove package.json creation duplication from the OSDK generators
+
+### Patch Changes
+
+- Updated dependencies [6f2b7e6]
+  - @osdk/foundry-sdk-generator@2.77.0
+  - @osdk/client.unstable@2.77.0
+  - @osdk/generator-converters.ontologyir@2.77.0
+
 ## 0.53.0
 
 ### Minor Changes

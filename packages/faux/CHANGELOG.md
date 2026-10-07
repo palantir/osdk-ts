@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 0.57.0
+
+### Minor Changes
+
+- 75a8f07: Add experimental agent clients with support for creating sessions.
+
+### Patch Changes
+
+- Updated dependencies [2ab4d7c]
+- Updated dependencies [75a8f07]
+  - @osdk/api@2.77.0
+  - @osdk/generator-converters@2.77.0
+
 ## 0.56.0
 
 ### Patch Changes

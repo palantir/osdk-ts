@@ -1,5 +1,15 @@
 # @osdk/cli
 
+## 0.104.0
+
+### Minor Changes
+
+- c1adfaa: Expose `osdk branch sync` directly while retaining `osdk unstable branch sync` for backward compatibility.
+
+### Patch Changes
+
+- @osdk/widget.api@3.77.0
+
 ## 0.103.0
 
 ### Patch Changes

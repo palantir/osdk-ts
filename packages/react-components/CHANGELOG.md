@@ -1,5 +1,11 @@
 # @osdk/react-components
 
+## 0.62.0
+
+### Minor Changes
+
+- cb903af: Prevent the default and custom table empty states from rendering while the initial data is loading.
+
 ## 0.61.0
 
 ### Minor Changes

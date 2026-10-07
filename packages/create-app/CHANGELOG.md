@@ -1,5 +1,16 @@
 # @osdk/create-app
 
+## 2.77.0
+
+### Minor Changes
+
+- 2b0991d: Add a starter public/resources.json with an empty aliases.custom object to browser app templates, include @osdk/aliases by default, and document how to configure and read custom aliases in generated app READMEs.
+- c1adfaa: Expose `osdk branch sync` directly while retaining `osdk unstable branch sync` for backward compatibility.
+
+### Patch Changes
+
+- @osdk/generator-utils@2.77.0
+
 ## 2.76.0
 
 ### Patch Changes

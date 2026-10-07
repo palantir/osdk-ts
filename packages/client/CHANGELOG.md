@@ -1,5 +1,21 @@
 # @osdk/client
 
+## 2.77.0
+
+### Minor Changes
+
+- 75a8f07: Add experimental agent clients with support for creating sessions.
+- bd50cd9: Scenario clients now throw the same `PalantirApiError` (including `errorName` and `parameters`) as base clients instead of a generic `UnknownError`, by reusing the parent client's fetch stack rather than double-wrapping it
+
+### Patch Changes
+
+- Updated dependencies [2ab4d7c]
+- Updated dependencies [75a8f07]
+  - @osdk/api@2.77.0
+  - @osdk/generator-converters@2.77.0
+  - @osdk/shared.test@2.52.0
+  - @osdk/client.unstable@2.77.0
+
 ## 2.76.0
 
 ### Minor Changes

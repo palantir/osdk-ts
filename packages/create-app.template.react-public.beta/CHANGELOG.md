@@ -1,5 +1,7 @@
 # @osdk/create-app.template.react-public.beta
 
+## 2.77.0
+
 ## 2.76.0
 
 ### Minor Changes

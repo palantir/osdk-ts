@@ -1,5 +1,16 @@
 # @osdk/maker-import
 
+## 0.44.0
+
+### Minor Changes
+
+- e365fc1: Preserve imported marking and struct properties in generated Marketplace input shapes.
+
+### Patch Changes
+
+- @osdk/maker@0.78.0
+- @osdk/client.unstable@2.77.0
+
 ## 0.43.0
 
 ### Minor Changes
