@@ -547,7 +547,7 @@ export function objectPayloadContaining(
 ): ObjectPayload {
   return {
     object: nonOptionalValue(x, "object"),
-    isOptimistic: expect.any(Boolean),
+    isOptimistic: x.isOptimistic ?? expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
   };
@@ -558,7 +558,7 @@ export function listPayloadContaining(x: Partial<ListPayload>): ListPayload {
     fetchMore: x.fetchMore ?? expect.any(Function),
     hasMore: x.hasMore ?? expect.any(Boolean),
     resolvedList: "resolvedList" in x ? x.resolvedList : expect.anything(),
-    isOptimistic: expect.any(Boolean),
+    isOptimistic: x.isOptimistic ?? expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
     objectSet: x.objectSet ?? expect.anything(),
@@ -572,7 +572,7 @@ export function linkPayloadContaining(
     fetchMore: x.fetchMore ?? expect.any(Function),
     hasMore: x.hasMore ?? expect.any(Boolean),
     resolvedList: "resolvedList" in x ? x.resolvedList : expect.anything(),
-    isOptimistic: expect.any(Boolean),
+    isOptimistic: x.isOptimistic ?? expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
     ...("totalCount" in x ? { totalCount: x.totalCount } : {}),
