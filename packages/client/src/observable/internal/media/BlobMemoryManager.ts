@@ -116,6 +116,10 @@ export function createBlobMemoryManager(): BlobMemoryManager {
 
   function releaseBlobUrl(key: string): void {
     urlRefCounts.release(key);
+    const entry = cache.get(key);
+    if (entry) {
+      entry.lastAccessed = Date.now();
+    }
   }
 
   function remove(key: string): void {

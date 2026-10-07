@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { BlobMemoryManager } from "./BlobMemoryManager.js";
 import { createBlobMemoryManager } from "./BlobMemoryManager.js";
@@ -28,6 +28,8 @@ describe("BlobMemoryManager", () => {
 
   afterEach(() => {
     manager.dispose();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
   it("manages blob cache lifecycle (add, get, remove, clear)", () => {
@@ -60,24 +62,40 @@ describe("BlobMemoryManager", () => {
     expect(url2).toBe(url1);
   });
 
-  it("manages blob URL reference counting", () => {
-    const blob = new Blob(["test"]);
+  it("revokes a long-held URL after its final reference is released", async () => {
+    vi.useFakeTimers({
+      toFake: [
+        "setTimeout",
+        "clearTimeout",
+        "setInterval",
+        "clearInterval",
+        "Date",
+      ],
+    });
+    const blob = new Blob(["retained-content"]);
     manager.add("key", blob);
 
     const url1 = manager.createBlobUrl("key");
     const url2 = manager.createBlobUrl("key");
     expect(url1).toBe(url2);
+    const revoke = vi.spyOn(URL, "revokeObjectURL");
 
     manager.releaseBlobUrl("key");
-    const url3 = manager.createBlobUrl("key");
-    expect(url3).toBe(url1);
+    await vi.advanceTimersByTimeAsync(70_000);
+    expect(revoke).not.toHaveBeenCalled();
+    expect(await (await fetch(url1!)).text()).toBe("retained-content");
 
     manager.releaseBlobUrl("key");
-    manager.releaseBlobUrl("key");
+    await vi.advanceTimersByTimeAsync(50_000);
+    expect(manager.get("key")).toBe(blob);
+    expect(revoke).not.toHaveBeenCalled();
 
-    const url4 = manager.createBlobUrl("key");
-    expect(url4).toMatch(/^blob:/u);
-    expect(url4).toBe(url1);
+    await vi.advanceTimersByTimeAsync(20_000);
+    expect(revoke).toHaveBeenCalledExactlyOnceWith(url1);
+    expect(manager.get("key")).toBe(blob);
+    const newUrl = manager.createBlobUrl("key");
+    expect(newUrl).toMatch(/^blob:/u);
+    expect(newUrl).not.toBe(url1);
   });
 
   it("revokes blob URLs when removing entries", () => {
