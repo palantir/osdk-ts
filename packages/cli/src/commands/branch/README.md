@@ -7,7 +7,6 @@ version for wherever it is run: the latest pre-release version on a global branc
 npx @osdk/cli branch sync
 ```
 
-
 Options
 
 | Option        | Description                                                                                     |
