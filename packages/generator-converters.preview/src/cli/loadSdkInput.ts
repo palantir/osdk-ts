@@ -86,7 +86,7 @@ function getValueTypeConnections(
   const mappings = block.input_mapping_entries as Record<string, string>[];
   const addOn = block.add_on_override as Record<string, unknown>;
   const identities = addOn?.idToBlockShapeId as Record<string, string>;
-  // @osdk/maker-experimental versions before 0.62.0 do not write block identities.
+  // TODO(ksethi): remove once maker users have migrated to writing block identities
   if (identities === undefined) {
     return [];
   }
