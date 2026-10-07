@@ -140,7 +140,7 @@ export class MediaHelper extends AbstractHelper<
       const contentType =
         response.headers.get("content-type") || "application/octet-stream";
       const blob = new Blob([arrayBuffer], { type: contentType });
-      this.blobManager.add(baseCacheKey, blob);
+      this.blobManager.add(cacheKey, blob);
       return blob;
     } else {
       throw new Error(
