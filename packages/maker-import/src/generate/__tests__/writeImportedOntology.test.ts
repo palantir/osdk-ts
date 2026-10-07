@@ -97,8 +97,10 @@ describe("mapPropertyType", () => {
     },
   );
 
-  it("returns undefined for marking types with an unknown subtype", () => {
-    expect(mapPropertyType({ type: "marking" })).toBeUndefined();
+  it("throws for marking types with an unknown subtype", () => {
+    expect(() => mapPropertyType({ type: "marking" })).toThrowError(
+      'Cannot import marking property because markingType is missing. Expected "CBAC" or "MANDATORY" in the source ontology metadata.',
+    );
   });
 
   it("maps struct fields and main values", () => {

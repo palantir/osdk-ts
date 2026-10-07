@@ -71,7 +71,9 @@ export function mapPropertyType(
       return { type: "geotimeSeries" };
     case "marking":
       if (dataType.markingType === undefined) {
-        return undefined;
+        throw new Error(
+          'Cannot import marking property because markingType is missing. Expected "CBAC" or "MANDATORY" in the source ontology metadata.',
+        );
       }
       return {
         type: {
