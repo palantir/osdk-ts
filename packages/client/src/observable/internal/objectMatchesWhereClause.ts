@@ -91,7 +91,7 @@ export function objectSortaMatchesWhereClause(
     );
   }
   if (is$not(whereClause)) {
-    return !objectSortaMatchesWhereClause(o, whereClause.$not, strict);
+    return !objectSortaMatchesWhereClause(o, whereClause.$not, !strict);
   }
 
   return Object.entries(whereClause).every(([key, filter]) => {
