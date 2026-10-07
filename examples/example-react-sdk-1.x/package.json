@@ -15,6 +15,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@osdk/aliases": "workspace:*",
     "@osdk/e2e.generated.1.1.x": "workspace:*",
     "react": "^18",
     "react-dom": "^18",
