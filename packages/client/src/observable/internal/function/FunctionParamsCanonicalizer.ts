@@ -110,59 +110,65 @@ export class FunctionParamsCanonicalizer {
     }
     seen.add(value as object);
 
-    if (value instanceof Date) {
-      const iso = value.toISOString();
-      path.push("$:date", iso);
-      return iso;
-    }
+    try {
+      if (value instanceof Date) {
+        const iso = value.toISOString();
+        path.push("$:date", iso);
+        return iso;
+      }
 
-    if (Array.isArray(value)) {
-      path.push("$:array");
-      const arr = value.map((item) => this.#encodeAndBuild(item, path, seen));
-      path.push("$:array_end");
-      return arr;
-    }
+      if (Array.isArray(value)) {
+        path.push("$:array");
+        const arr = value.map((item) => this.#encodeAndBuild(item, path, seen));
+        path.push("$:array_end");
+        return arr;
+      }
 
-    if (value instanceof Set) {
-      path.push("$:set");
-      const sorted = this.#sortSetValues(Array.from(value));
-      const arr = sorted.map((item) => this.#encodeAndBuild(item, path, seen));
-      path.push("$:set_end");
-      return arr;
-    }
+      if (value instanceof Set) {
+        path.push("$:set");
+        const sorted = this.#sortSetValues(Array.from(value));
+        const arr = sorted.map((item) =>
+          this.#encodeAndBuild(item, path, seen),
+        );
+        path.push("$:set_end");
+        return arr;
+      }
 
-    if (value instanceof Map) {
-      path.push("$:map");
-      const sorted = this.#sortMapEntries(Array.from(value.entries()));
-      const arr: [CanonicalValue, CanonicalValue][] = sorted.map(([k, v]) => [
-        this.#encodeAndBuild(k, path, seen),
-        this.#encodeAndBuild(v, path, seen),
-      ]);
-      path.push("$:map_end");
-      return arr;
-    }
+      if (value instanceof Map) {
+        path.push("$:map");
+        const sorted = this.#sortMapEntries(Array.from(value.entries()));
+        const arr: [CanonicalValue, CanonicalValue][] = sorted.map(([k, v]) => [
+          this.#encodeAndBuild(k, path, seen),
+          this.#encodeAndBuild(v, path, seen),
+        ]);
+        path.push("$:map_end");
+        return arr;
+      }
 
-    if (isObjectSpecifiersObject(value)) {
-      const objectType = value.$objectType ?? value.$apiName;
-      path.push("$:osdk", objectType, value.$primaryKey);
-      return { $apiName: objectType, $primaryKey: value.$primaryKey };
-    }
+      if (isObjectSpecifiersObject(value)) {
+        const objectType = value.$objectType ?? value.$apiName;
+        path.push("$:osdk", objectType, value.$primaryKey);
+        return { $apiName: objectType, $primaryKey: value.$primaryKey };
+      }
 
-    if (isObjectSet(value)) {
-      const wire = JSON.stringify(getWireObjectSet(value));
-      path.push("$:objectset", wire);
-      return wire;
-    }
+      if (isObjectSet(value)) {
+        const wire = JSON.stringify(getWireObjectSet(value));
+        path.push("$:objectset", wire);
+        return wire;
+      }
 
-    const obj = value as Record<string, unknown>;
-    path.push("$:object");
-    const canonical: Record<string, CanonicalValue> = {};
-    for (const key of Object.keys(obj).sort()) {
-      path.push(key);
-      canonical[key] = this.#encodeAndBuild(obj[key], path, seen);
+      const obj = value as Record<string, unknown>;
+      path.push("$:object");
+      const canonical: Record<string, CanonicalValue> = {};
+      for (const key of Object.keys(obj).sort()) {
+        path.push(key);
+        canonical[key] = this.#encodeAndBuild(obj[key], path, seen);
+      }
+      path.push("$:object_end");
+      return canonical;
+    } finally {
+      seen.delete(value as object);
     }
-    path.push("$:object_end");
-    return canonical;
   }
 
   #comparePrimitives(a: PrimitiveValue, b: PrimitiveValue): number {
