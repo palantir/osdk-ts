@@ -84,11 +84,91 @@ describe("mapPropertyType", () => {
     ).toEqual({ type: "string", array: true });
   });
 
-  it("returns undefined for unsupported types", () => {
-    expect(mapPropertyType({ type: "marking" })).toBeUndefined();
+  it.each(["CBAC", "MANDATORY"] as const)(
+    "maps %s marking types when the subtype is known",
+    (markingType) => {
+      expect(mapPropertyType({ type: "marking", markingType })).toEqual({
+        type: {
+          type: "marking",
+          markingType,
+          markingInputGroupName: "not-applicable",
+        },
+      });
+    },
+  );
+
+  it("throws for marking types with an unknown subtype", () => {
+    expect(() => mapPropertyType({ type: "marking" })).toThrowError(
+      'Cannot import marking property because markingType is missing. Expected "CBAC" or "MANDATORY" in the source ontology metadata.',
+    );
+  });
+
+  it("maps struct fields and main values", () => {
     expect(
-      mapPropertyType({ type: "struct", structFieldTypes: [] }),
+      mapPropertyType({
+        type: "struct",
+        structFieldTypes: [
+          {
+            apiName: "name",
+            rid: "ri.ontology.main.struct-field.name",
+            dataType: { type: "string" },
+            typeClasses: [],
+          },
+          {
+            apiName: "score",
+            rid: "ri.ontology.main.struct-field.score",
+            dataType: { type: "double" },
+            typeClasses: [],
+          },
+        ],
+        mainValue: {
+          fields: ["name"],
+          mainValueType: { type: "string" },
+        },
+      }),
+    ).toEqual({
+      type: {
+        type: "struct",
+        structDefinition: {
+          name: {
+            fieldType: "string",
+            displayMetadata: {
+              displayName: "name",
+              description: undefined,
+            },
+            typeClasses: [],
+          },
+          score: {
+            fieldType: "double",
+            displayMetadata: {
+              displayName: "score",
+              description: undefined,
+            },
+            typeClasses: [],
+          },
+        },
+        mainValue: { fields: ["name"], type: "string" },
+      },
+    });
+  });
+
+  it("returns undefined when a struct field is unsupported", () => {
+    expect(
+      mapPropertyType({
+        type: "struct",
+        structFieldTypes: [
+          {
+            apiName: "history",
+            rid: "ri.ontology.main.struct-field.history",
+            dataType: { type: "timeseries", itemType: { type: "string" } },
+            typeClasses: [],
+          },
+        ],
+      }),
     ).toBeUndefined();
+  });
+
+  it("returns undefined for unsupported types", () => {
     expect(
       mapPropertyType({ type: "timeseries", itemType: { type: "string" } }),
     ).toBeUndefined();
