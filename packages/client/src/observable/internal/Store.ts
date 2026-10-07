@@ -484,6 +484,10 @@ export class Store {
       return true;
     }
 
+    if (query.cacheKey.type === "function") {
+      return true;
+    }
+
     // Check if the query's object type is affected by the changes
     if (this.#shouldPropagateForObjectTypeChanges(query.cacheKey, changes)) {
       return true;
