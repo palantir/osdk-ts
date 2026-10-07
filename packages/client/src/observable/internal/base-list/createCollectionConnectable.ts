@@ -53,23 +53,29 @@ export function createCollectionConnectable<
   return connectable<P>(
     subject.pipe(
       switchMap((listEntry) => {
-        const resolvedData =
-          listEntry?.value?.data == null
+        const cacheKeys: ObjectCacheKey[] | undefined = listEntry?.value?.data;
+        const resolvedEntries =
+          cacheKeys == null
             ? of(undefined)
-            : listEntry.value.data.length === 0
+            : cacheKeys.length === 0
               ? of([])
               : combineLatest(
-                  listEntry.value.data.map((cacheKey: ObjectCacheKey) =>
-                    subjects.get(cacheKey).pipe(
-                      map((objectEntry) => objectEntry?.value!),
-                      distinctUntilChanged(),
-                    ),
+                  cacheKeys.map((cacheKey) =>
+                    subjects
+                      .get(cacheKey)
+                      .pipe(
+                        distinctUntilChanged(
+                          (previous, current) =>
+                            previous?.value === current?.value &&
+                            previous?.isOptimistic === current?.isOptimistic,
+                        ),
+                      ),
                   ),
                 );
 
         return scheduled(
           combineLatest({
-            resolvedData,
+            resolvedEntries,
             isOptimistic: of(listEntry.isOptimistic),
             status: of(listEntry.status),
             lastUpdated: of(listEntry.lastUpdated),
@@ -77,13 +83,15 @@ export function createCollectionConnectable<
           }).pipe(
             map((params) =>
               createPayload({
-                resolvedData:
-                  params.resolvedData === undefined
-                    ? undefined
-                    : Array.isArray(params.resolvedData)
-                      ? params.resolvedData
-                      : [],
-                isOptimistic: params.isOptimistic,
+                resolvedData: params.resolvedEntries?.map(
+                  (entry) => entry?.value!,
+                ),
+                isOptimistic:
+                  params.isOptimistic ||
+                  (params.resolvedEntries?.some(
+                    (entry) => entry?.isOptimistic,
+                  ) ??
+                    false),
                 status: params.status,
                 lastUpdated: params.lastUpdated,
                 totalCount: params.totalCount,

@@ -1002,6 +1002,7 @@ describe(Store, () => {
 
         // expect optimistic write to the list
         await waitForCall(listSubFn, 1);
+        expect(listSubFn.next.mock.lastCall?.[0]?.isOptimistic).toBe(true);
         expectSingleListCallAndClear(
           listSubFn,
           [optimisticEmployee, ...employeesAsServerReturns.slice(1)],
@@ -1034,6 +1035,7 @@ describe(Store, () => {
 
         // see the list get updated
         await waitForCall(listSubFn, 1);
+        expect(listSubFn.next.mock.lastCall?.[0]?.isOptimistic).toBe(false);
         expectSingleListCallAndClear(listSubFn, [truthUpdatedEmployee], {
           status: "loaded",
           isOptimistic: false,
