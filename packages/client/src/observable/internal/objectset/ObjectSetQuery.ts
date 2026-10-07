@@ -428,7 +428,9 @@ export class ObjectSetQuery extends BaseListQuery<
             return value != null && typeof value === "object" ? key : undefined;
           },
         });
-        const { needsRevalidation } = reconciliationPlan;
+        const needsRevalidation =
+          reconciliationPlan.needsRevalidation ||
+          addedMatches.uncertain.size > 0;
         const newList = reconcileListChanges(existingKeys, reconciliationPlan);
 
         const isPendingFetchLoading =

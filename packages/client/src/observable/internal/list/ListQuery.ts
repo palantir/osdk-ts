@@ -487,7 +487,8 @@ export abstract class ListQuery extends BaseListQuery<
 
       const newList: Array<ObjectCacheKey> = [];
 
-      let needsRevalidation = false;
+      let needsRevalidation =
+        relevantObjects.added.sortaMatches.size > 0 && !optimisticId;
       this.store.batch({ optimisticId, changes }, (batch) => {
         const existingList = new Set(batch.read(this.cacheKey)?.value?.data);
 
