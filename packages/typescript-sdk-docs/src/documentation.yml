@@ -953,7 +953,7 @@ versions:
             import { client } from "./client";
             import { type Osdk } from "@osdk/client";
 
-            // $select only the properties you read; without it every property is loaded.
+            // $select only the properties you read; without it, all non-vector properties are loaded.
             try {
                 const object: Osdk.Instance<{{objectType}}, never, "{{titleProperty}}"> = await client({{objectType}})
                     .fetchOne({{{primaryKeyPropertyValueV2}}}, { $select: ["{{titleProperty}}"] });
@@ -970,12 +970,13 @@ versions:
             import { client } from "./client";
             import { type Osdk, type PageResult } from "@osdk/client";
 
-            // $select only the properties you read. Without it every property is loaded, and reading
-            // one property afterwards does not reduce what was already fetched.
+            // $select only the properties you read. Without it, every property except vector properties is
+            // loaded, and reading fewer properties afterwards does not avoid the cost of fetching them.
             // $pageSize is the size of one page, not a limit on the total number of objects.
-            // fetchPage does not use a snapshot by default ($snapshot: false): if objects change between
-            // requests, later pages may repeat or skip objects. Pass $snapshot: true on every request to
-            // page through one consistent view, or use asyncIter(), which always uses a snapshot.
+            // fetchPage does not request a snapshot unless you pass $snapshot: true (a snapshot configured for
+            // a function run still applies). Without one, if data changes between requests, later pages may
+            // repeat or skip objects. Pass $snapshot: true on every request to page through one consistent
+            // view, or use asyncIter(), which always requests a snapshot.
             try {
                 const firstPage: PageResult<Osdk.Instance<{{objectType}}, never, "{{titleProperty}}">>
                     = await client({{objectType}}).fetchPage({ $select: ["{{titleProperty}}"], $pageSize: 30 });
@@ -1000,7 +1001,7 @@ versions:
             import { client } from "./client";
             import { type Osdk, type PageResult } from "@osdk/client";
 
-            // $select only the properties you read; without it every property is loaded.
+            // $select only the properties you read; without it, all non-vector properties are loaded.
             // $pageSize is the size of one page, not a limit on the total number of objects.
             try {
                 const page: PageResult<Osdk.Instance<{{objectType}}, never, "{{titleProperty}}">> = await client({{objectType}})
@@ -1021,7 +1022,7 @@ versions:
             import { client } from "./client";
             import { type Osdk, type PageResult } from "@osdk/client";
 
-            // $select only the properties you read; without it every property is loaded.
+            // $select only the properties you read; without it, all non-vector properties are loaded.
             // $pageSize is the size of one page, not a limit on the total number of objects.
             try {
                 const page: PageResult<Osdk.Instance<{{objectType}}, never, "{{titleProperty}}">> = await client({{objectType}})
@@ -1044,7 +1045,7 @@ versions:
             import { client } from "./client";
             import type { Osdk } from "@osdk/client";
 
-            // $select only the properties you read; without it every property is loaded.
+            // $select only the properties you read; without it, all non-vector properties are loaded.
             const responseNoErrorWrapper: Osdk.Instance<{{objectType}}, never, "{{titleProperty}}"> = await client({{objectType}})
                 .fetchOne({{{primaryKeyPropertyValueV2}}}, { $select: ["{{titleProperty}}"] });
 
@@ -1068,7 +1069,7 @@ versions:
             // Edit this import if your client location differs
             import { client } from "./client";
             import type { Osdk, PageResult } from "@osdk/client";
-            // $select only the properties you read; without it every property is loaded.
+            // $select only the properties you read; without it, all non-vector properties are loaded.
             // $pageSize is the size of one page. Continue with page.nextPageToken to load more.
             try {
                 const responseNoErrorWrapper: PageResult<Osdk.Instance<{{objectType}}, never, "{{titleProperty}}">>
@@ -1099,17 +1100,20 @@ versions:
             // - Show a sample or the first N objects: use fetchPage({ $pageSize }) instead.
             //
             // asyncIter() fetches page after page until every matching object has been loaded:
-            // - $select only the properties you read. Without it every property is loaded, and reading one
-            //   property afterwards does not reduce what was already fetched. On object types with large
-            //   text, array, or other wide properties this can be much slower than necessary.
+            // - $select only the properties you read. Without it, every property except vector properties
+            //   and ontology-defined derived properties is loaded, and reading fewer properties afterwards
+            //   does not avoid the cost of fetching them. Loading unused properties wastes bandwidth and
+            //   compute and can slow down retrieval.
             // - Handle each object as it arrives rather than collecting them all into an array, so that
             //   memory use does not grow with the size of the object set.
-            // - asyncIter() always reads from a consistent snapshot, so pages never repeat or skip objects.
-            //   If objects are added or removed faster than the traversal completes (e.g. stream-backed
-            //   object types), or the traversal runs long enough for the snapshot to expire, it fails.
-            //   In that case, filter to a stable subset, $select fewer properties so it finishes sooner,
-            //   or page with fetchPage() yourself, which does not use a snapshot by default but may then
-            //   return duplicate or missing objects if the data changes.
+            // - asyncIter() requests a consistent snapshot. For non-stream-backed object types, a completed
+            //   traversal returns each object exactly once even if the data changes. If the snapshot expires
+            //   or the backend detects a paging inconsistency (PagingInconsistencyDetected), it throws.
+            //   Stream-backed object types do not provide this guarantee across pages: changes during the
+            //   traversal can cause it to throw, and exactly-once traversal is not guaranteed.
+            //   If a traversal fails this way, $select fewer properties and narrow the object set with a
+            //   filter so it finishes sooner, or page with fetchPage() yourself, which does not request a
+            //   snapshot by default but may then return duplicate or missing objects if the data changes.
             for await (const obj of client({{objectType}}).asyncIter({ $select: ["{{titleProperty}}"] })) {
                 console.log(obj.{{titleProperty}});
             }
@@ -1119,12 +1123,10 @@ versions:
             // Runtime-defined derived properties added via .withProperties(...) are returned
             // by default only when $select is omitted. If you pass $select, include them
             // in the selection as well.
-            async function getAllWithSelectedProperties(properties: {{objectType}}.PropertyKeys[]) {
-                const objects = [];
+            async function logAllWithSelectedProperties(properties: {{objectType}}.PropertyKeys[]) {
                 for await (const obj of client({{objectType}}).asyncIter({ $select: properties })) {
-                    objects.push(obj);
+                    console.log(obj);
                 }
-                return objects;
             }
       loadLinkedObjectReference:
         - template: |-
@@ -1791,11 +1793,13 @@ versions:
             import { client } from "./client";
 
             // asyncIter() fetches page after page until every matching object has been loaded:
-            // - Pass $select: [...] with only the properties you read; every property is loaded by default.
+            // - Pass $select: [...] with only the properties you read. Without it, every property except
+            //   vector properties is loaded.
             // - Handle each object as it arrives rather than collecting them all into an array.
-            // - It always reads from a consistent snapshot, so pages never repeat or skip objects, but it
-            //   fails if objects are added or removed faster than the traversal completes or the snapshot
-            //   expires. Filter to a stable subset, select fewer properties, or page with fetchPage().
+            // - It requests a consistent snapshot, so for non-stream-backed object types a completed traversal
+            //   returns each object exactly once. It throws if the snapshot expires or the backend detects a
+            //   paging inconsistency. Stream-backed object types do not provide this guarantee across pages.
+            //   If it fails, select fewer properties, narrow with a filter, or page with fetchPage().
             // - For counts, sums, or group-bys, use .aggregate() instead; for a sample or the first N
             //   objects, use fetchPage({ $pageSize }).
             for await (const int of client({{interfaceApiName}}).asyncIter()) {

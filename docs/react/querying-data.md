@@ -220,7 +220,7 @@ const { data } = useOsdkObjects(Todo, {
 
 ### Selecting Properties with `$select`
 
-By default every property of each object is loaded. Pass `$select` with only the properties your component reads:
+Without `$select`, the API loads its default property set, which includes every property except vector properties. Pass `$select` with only the properties your component reads (the primary key is always returned):
 
 ```tsx
 const { data } = useOsdkObjects(Todo, {
@@ -228,7 +228,7 @@ const { data } = useOsdkObjects(Todo, {
 });
 ```
 
-Reading a property afterwards does not reduce what was already fetched, so on object types with large text, array, or other wide properties, loading every property can be much slower than necessary. Unlike `fetchPage` and `asyncIter`, `useOsdkObjects` does not narrow the returned type to the selected properties: reading a property you didn't select still type-checks, but is `undefined` at runtime. Keep `$select` in sync with the properties your component reads.
+Loading unused properties wastes bandwidth and compute and can slow down retrieval, and reading fewer properties afterwards does not avoid the cost of fetching them. Unlike `fetchPage` and `asyncIter`, `useOsdkObjects` does not narrow the returned type to the selected properties: reading a property you didn't select still type-checks, but is `undefined` at runtime. Keep `$select` in sync with the properties your component reads.
 
 ### Pagination
 
@@ -690,12 +690,14 @@ Use this when you need to perform queries outside the reactive hook system, such
 | `asyncIter()`              | Every matching object, page after page  | Always                                              |
 | `aggregate({ ... })`       | Counts, sums, and group-bys only        | n/a                                                 |
 
-Without a snapshot, later pages may repeat or skip objects if the data changes between requests. With a snapshot, every page reflects the same point in time, but paging fails if the data changes too much or the traversal runs long enough for the snapshot to expire, which is most likely on constantly updated (e.g. stream-backed) object types.
+Without a snapshot, later pages may repeat or skip objects if the data changes between requests. A snapshot configured for a function run still applies regardless of the method. With a snapshot, every page of a non-stream-backed object type reflects the same point in time, so a completed traversal returns each object exactly once. Paging fails if the snapshot expires or the backend detects a paging inconsistency (`PagingInconsistencyDetected`). Stream-backed object types do not provide this snapshot guarantee across pages: changes during a traversal can cause it to fail, and exactly-once traversal is not guaranteed.
 
-Both `fetchPage` and `asyncIter` load every property unless you pass `$select`. With `asyncIter`, handle each object as it arrives rather than collecting all of them into an array:
+If a full `asyncIter()` traversal of a frequently updated object type fails, aggregate instead if you only need a summary, `$select` fewer properties and filter the object set so the traversal finishes sooner, or loop over `fetchPage()` yourself and de-duplicate by `$primaryKey`. Without a snapshot, de-duplication removes repeated objects but does not recover skipped ones.
+
+Both `fetchPage` and `asyncIter` load every property except vector properties unless you pass `$select`. With `asyncIter`, handle each object as it arrives rather than collecting all of them into an array:
 
 ```ts
-// ✗ Loads every property of every object and holds all of them in memory
+// ✗ Loads every non-vector property of every object and holds all of them in memory
 const todos = await Array.fromAsync(client(Todo).asyncIter());
 
 // ✓ Loads only the property that is used, one object at a time

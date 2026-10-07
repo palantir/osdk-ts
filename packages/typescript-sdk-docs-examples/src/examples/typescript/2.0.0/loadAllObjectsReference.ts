@@ -28,17 +28,20 @@ import { client } from "./client.js";
 // - Show a sample or the first N objects: use fetchPage({ $pageSize }) instead.
 //
 // asyncIter() fetches page after page until every matching object has been loaded:
-// - $select only the properties you read. Without it every property is loaded, and reading one
-//   property afterwards does not reduce what was already fetched. On object types with large
-//   text, array, or other wide properties this can be much slower than necessary.
+// - $select only the properties you read. Without it, every property except vector properties
+//   and ontology-defined derived properties is loaded, and reading fewer properties afterwards
+//   does not avoid the cost of fetching them. Loading unused properties wastes bandwidth and
+//   compute and can slow down retrieval.
 // - Handle each object as it arrives rather than collecting them all into an array, so that
 //   memory use does not grow with the size of the object set.
-// - asyncIter() always reads from a consistent snapshot, so pages never repeat or skip objects.
-//   If objects are added or removed faster than the traversal completes (e.g. stream-backed
-//   object types), or the traversal runs long enough for the snapshot to expire, it fails.
-//   In that case, filter to a stable subset, $select fewer properties so it finishes sooner,
-//   or page with fetchPage() yourself, which does not use a snapshot by default but may then
-//   return duplicate or missing objects if the data changes.
+// - asyncIter() requests a consistent snapshot. For non-stream-backed object types, a completed
+//   traversal returns each object exactly once even if the data changes. If the snapshot expires
+//   or the backend detects a paging inconsistency (PagingInconsistencyDetected), it throws.
+//   Stream-backed object types do not provide this guarantee across pages: changes during the
+//   traversal can cause it to throw, and exactly-once traversal is not guaranteed.
+//   If a traversal fails this way, $select fewer properties and narrow the object set with a
+//   filter so it finishes sooner, or page with fetchPage() yourself, which does not request a
+//   snapshot by default but may then return duplicate or missing objects if the data changes.
 for await (const obj of client(Employee).asyncIter({ $select: ["fullName"] })) {
   console.log(obj.fullName);
 }
@@ -48,12 +51,10 @@ for await (const obj of client(Employee).asyncIter({ $select: ["fullName"] })) {
 // Runtime-defined derived properties added via .withProperties(...) are returned
 // by default only when $select is omitted. If you pass $select, include them
 // in the selection as well.
-async function getAllWithSelectedProperties(
+async function logAllWithSelectedProperties(
   properties: Employee.PropertyKeys[],
 ) {
-  const objects = [];
   for await (const obj of client(Employee).asyncIter({ $select: properties })) {
-    objects.push(obj);
+    console.log(obj);
   }
-  return objects;
 }

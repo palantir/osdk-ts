@@ -25,7 +25,7 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-// $select only the properties you read; without it every property is loaded.
+// $select only the properties you read; without it, all non-vector properties are loaded.
 try {
   const object: Osdk.Instance<Employee, never, "fullName"> = await client(
     Employee,

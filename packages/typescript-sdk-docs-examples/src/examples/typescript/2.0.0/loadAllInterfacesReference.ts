@@ -24,11 +24,13 @@ import { HasAddress } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 // asyncIter() fetches page after page until every matching object has been loaded:
-// - Pass $select: [...] with only the properties you read; every property is loaded by default.
+// - Pass $select: [...] with only the properties you read. Without it, every property except
+//   vector properties is loaded.
 // - Handle each object as it arrives rather than collecting them all into an array.
-// - It always reads from a consistent snapshot, so pages never repeat or skip objects, but it
-//   fails if objects are added or removed faster than the traversal completes or the snapshot
-//   expires. Filter to a stable subset, select fewer properties, or page with fetchPage().
+// - It requests a consistent snapshot, so for non-stream-backed object types a completed traversal
+//   returns each object exactly once. It throws if the snapshot expires or the backend detects a
+//   paging inconsistency. Stream-backed object types do not provide this guarantee across pages.
+//   If it fails, select fewer properties, narrow with a filter, or page with fetchPage().
 // - For counts, sums, or group-bys, use .aggregate() instead; for a sample or the first N
 //   objects, use fetchPage({ $pageSize }).
 for await (const int of client(HasAddress).asyncIter()) {

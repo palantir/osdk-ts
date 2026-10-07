@@ -83,12 +83,13 @@ export interface SelectArg<
   PROPERTY_SECURITIES extends boolean = false,
 > {
   /**
-   * The properties to load for each object. Defaults to every property except
-   * ontology-defined derived properties.
+   * The properties to load for each object. If omitted, the API loads its default property
+   * set, which includes every property except vector properties and ontology-defined derived
+   * properties. The primary key is always returned, even when it is not selected.
    *
-   * Select only the properties you read: reading a property afterwards does not reduce
-   * what was already fetched, so loading every property of an object type with large
-   * text, array, or other wide properties can be much slower than necessary.
+   * Select only the properties your code needs. Loading unused properties wastes bandwidth
+   * and compute and can slow down retrieval, and reading fewer properties afterwards does
+   * not avoid the cost of fetching them.
    *
    * Ontology-defined derived properties are not returned by default and must be
    * included in `$select`.
@@ -178,9 +179,11 @@ export interface FetchPageArgs<
    * Ensures paging consistency by freezing the view at the time of query to prevent duplicate or missing items. Setting $snapshot to false ensures that you will always get the latest results.
    *
    * Without a snapshot, if objects are added, removed, or edited between requests, later pages
-   * may repeat or skip objects. With a snapshot, pass `$snapshot: true` on every page request;
-   * paging fails if the data changes too much or the snapshot expires before paging completes.
-   * `asyncIter()` always uses a snapshot.
+   * may repeat or skip objects. A snapshot configured for a function run still applies even
+   * when this is `false`. With a snapshot, pass `$snapshot: true` on every page request; paging
+   * fails if the snapshot expires or the backend detects a paging inconsistency
+   * (`PagingInconsistencyDetected`). Stream-backed object types do not provide this snapshot
+   * guarantee across pages. `asyncIter()` always requests a snapshot.
    * @default false
    */
   $snapshot?: boolean;

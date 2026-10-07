@@ -191,10 +191,11 @@ interface FetchPageSignature<
   /**
    * Gets a page of objects of this type, with a result wrapper
    *
-   * Loads every property unless `$select` is passed, so select only the properties you read.
-   * `$pageSize` sizes one page; it does not limit the total number of objects. Pages are not
-   * read from a snapshot unless `$snapshot: true` is passed, so if objects change between
-   * requests, later pages may repeat or skip objects.
+   * Without `$select`, loads every property except vector properties, so select only the
+   * properties you read. `$pageSize` sizes one page; it does not limit the total number of
+   * objects. Does not request a snapshot unless `$snapshot: true` is passed (a snapshot
+   * configured for a function run still applies), so if objects change between requests,
+   * later pages may repeat or skip objects.
    * @param args - Args to specify next page token and page size, if applicable
    * @example
    * ```ts
@@ -281,10 +282,11 @@ interface FetchPageWithErrorsSignature<
   /**
    * Gets a page of objects of this type, with a result wrapper
    *
-   * Loads every property unless `$select` is passed, so select only the properties you read.
-   * `$pageSize` sizes one page; it does not limit the total number of objects. Pages are not
-   * read from a snapshot unless `$snapshot: true` is passed, so if objects change between
-   * requests, later pages may repeat or skip objects.
+   * Without `$select`, loads every property except vector properties, so select only the
+   * properties you read. `$pageSize` sizes one page; it does not limit the total number of
+   * objects. Does not request a snapshot unless `$snapshot: true` is passed (a snapshot
+   * configured for a function run still applies), so if objects change between requests,
+   * later pages may repeat or skip objects.
    * @param args - Args to specify next page token and page size, if applicable
    * @example
    * ```ts
@@ -371,14 +373,17 @@ interface AsyncIterSignature<
   /**
    * Returns an async iterator to load all objects of this type
    *
-   * Fetches page after page until every matching object has been loaded, always reading from a
-   * consistent snapshot so that pages never repeat or skip objects. The iteration fails if the
-   * snapshot can't be maintained, e.g. when objects are added or removed during a long traversal
-   * of a frequently updated object type.
+   * Fetches page after page until every matching object has been loaded, and always requests a
+   * consistent snapshot. For non-stream-backed object types, a completed traversal returns each
+   * object exactly once even if the underlying data changes. If the snapshot expires or the
+   * backend detects a paging inconsistency (`PagingInconsistencyDetected`), iteration throws.
+   * Stream-backed object types do not provide this snapshot guarantee across pages: changes
+   * during traversal can cause iteration to throw, and exactly-once traversal is not guaranteed.
    *
-   * Loads every property unless `$select` is passed, so select only the properties you read, and
-   * handle each object as it arrives instead of collecting every object into an array. For counts,
-   * sums, or group-bys use `aggregate()`; for a sample or the first N objects use `fetchPage()`.
+   * Without `$select`, loads every property except vector properties, so select only the
+   * properties you read, and handle each object as it arrives instead of collecting every object
+   * into an array. For counts, sums, or group-bys use `aggregate()`; for a sample or the first N
+   * objects use `fetchPage()`.
    * @param args - Optional args to refine the iteration (e.g., `$select`, `$orderBy`)
    * @example
    * ```ts
@@ -402,14 +407,17 @@ interface AsyncIterSignature<
   /**
    * Returns an async iterator to load all objects of this type
    *
-   * Fetches page after page until every matching object has been loaded, always reading from a
-   * consistent snapshot so that pages never repeat or skip objects. The iteration fails if the
-   * snapshot can't be maintained, e.g. when objects are added or removed during a long traversal
-   * of a frequently updated object type.
+   * Fetches page after page until every matching object has been loaded, and always requests a
+   * consistent snapshot. For non-stream-backed object types, a completed traversal returns each
+   * object exactly once even if the underlying data changes. If the snapshot expires or the
+   * backend detects a paging inconsistency (`PagingInconsistencyDetected`), iteration throws.
+   * Stream-backed object types do not provide this snapshot guarantee across pages: changes
+   * during traversal can cause iteration to throw, and exactly-once traversal is not guaranteed.
    *
-   * Loads every property unless `$select` is passed, so select only the properties you read, and
-   * handle each object as it arrives instead of collecting every object into an array. For counts,
-   * sums, or group-bys use `aggregate()`; for a sample or the first N objects use `fetchPage()`.
+   * Without `$select`, loads every property except vector properties, so select only the
+   * properties you read, and handle each object as it arrives instead of collecting every object
+   * into an array. For counts, sums, or group-bys use `aggregate()`; for a sample or the first N
+   * objects use `fetchPage()`.
    * @param args - Optional args to refine the iteration (e.g., `$select`, `$orderBy`)
    * @example
    * ```ts
