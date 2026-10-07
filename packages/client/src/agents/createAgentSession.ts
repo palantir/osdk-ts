@@ -25,7 +25,7 @@ import type { AgentSignatureFromDef } from "./types.js";
 export async function createAgentSession<D extends AgentDefinition<unknown>>(
   client: MinimalClient,
   agent: D,
-  args?: Parameters<AgentSignatureFromDef<D>["createSession"]>[0],
+  args?: Parameters<AgentSignatureFromDef<D>["experimental_createSession"]>[0],
 ): Promise<AgentSession> {
   if (client.scenarioRid != null) {
     throw new Error("Agent sessions are not supported in scenarios");

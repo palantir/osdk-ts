@@ -112,14 +112,14 @@ class AgentClient<
   D extends AgentDefinition<unknown>,
 > implements AgentSignatureFromDef<D> {
   constructor(clientCtx: MinimalClient, agentDef: AgentDefinition<unknown>) {
-    this.createSession = createAgentSession.bind(
+    this.experimental_createSession = createAgentSession.bind(
       undefined,
       clientCtx,
       agentDef,
     );
   }
 
-  createSession: (...args: any[]) => any;
+  experimental_createSession: (...args: any[]) => any;
 }
 
 /** @internal */

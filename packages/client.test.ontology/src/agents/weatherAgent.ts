@@ -24,7 +24,9 @@ import { $osdkMetadata } from "../generatedNoCheck/OntologyMetadata.js";
 /** @beta */
 export namespace weatherAgent {
   export interface Signatures {
-    createSession(args: weatherAgent.Params): Promise<AgentSession>;
+    experimental_createSession(
+      args: weatherAgent.Params,
+    ): Promise<AgentSession>;
   }
 
   export interface Params {

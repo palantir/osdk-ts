@@ -24,7 +24,7 @@ import { $osdkMetadata } from "../generatedNoCheck/OntologyMetadata.js";
 /** @beta */
 export namespace noArgsAgent {
   export interface Signatures {
-    createSession(): Promise<AgentSession>;
+    experimental_createSession(): Promise<AgentSession>;
   }
 }
 

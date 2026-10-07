@@ -24,7 +24,9 @@ import { $osdkMetadata } from "../generatedNoCheck/OntologyMetadata.js";
 /** @beta */
 export namespace osdkTestFixture {
   export interface Signatures {
-    createSession(args: osdkTestFixture.Params): Promise<AgentSession>;
+    experimental_createSession(
+      args: osdkTestFixture.Params,
+    ): Promise<AgentSession>;
   }
 
   export interface Params {

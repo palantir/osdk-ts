@@ -58,7 +58,7 @@ describe("agents", () => {
       "ri.actions..scenario.test",
     );
     await expect(
-      scenario(weatherAgent).createSession({ city: "London" }),
+      scenario(weatherAgent).experimental_createSession({ city: "London" }),
     ).rejects.toThrow("Agent sessions are not supported in scenarios");
     expect(fetchFunction).not.toHaveBeenCalled();
   });
@@ -76,7 +76,7 @@ describe("agents", () => {
       fetchFunction,
     );
     await expect(
-      transaction(weatherAgent).createSession({ city: "London" }),
+      transaction(weatherAgent).experimental_createSession({ city: "London" }),
     ).rejects.toThrow("Agent sessions are not supported in transactions");
     expect(flushEdits).not.toHaveBeenCalled();
     expect(fetchFunction).not.toHaveBeenCalled();
@@ -94,18 +94,21 @@ describe("agents", () => {
         fetchFunction,
       );
       await expect(
-        branchClient(weatherAgent).createSession({ city: "London" }),
+        branchClient(weatherAgent).experimental_createSession({
+          city: "London",
+        }),
       ).rejects.toThrow("Agent sessions are not supported on branches");
       expect(fetchFunction).not.toHaveBeenCalled();
     },
   );
 
   it("creates a session", async () => {
-    const createSession = client(weatherAgent).createSession;
-    type InferredParamType = Parameters<typeof createSession>[0];
+    const experimental_createSession =
+      client(weatherAgent).experimental_createSession;
+    type InferredParamType = Parameters<typeof experimental_createSession>[0];
     expectTypeOf<{ city: string }>().toMatchTypeOf<InferredParamType>();
 
-    const session = await client(weatherAgent).createSession({
+    const session = await client(weatherAgent).experimental_createSession({
       city: "London",
     });
 
@@ -117,18 +120,18 @@ describe("agents", () => {
     const session = await client({
       ...weatherAgent,
       version: "2.0.0",
-    }).createSession({ city: "London" });
+    }).experimental_createSession({ city: "London" });
     expect(session).toEqual(stubData.weatherAgentOtherVersionResponse);
   });
 
-  it("supports a detached createSession method", async () => {
-    const { createSession } = client(weatherAgent);
-    const session = await createSession({ city: "London" });
+  it("supports a detached experimental_createSession method", async () => {
+    const { experimental_createSession } = client(weatherAgent);
+    const session = await experimental_createSession({ city: "London" });
     expect(session).toEqual(stubData.weatherAgentResponse);
   });
 
   it("creates a session without arguments", async () => {
-    const session = await client(noArgsAgent).createSession();
+    const session = await client(noArgsAgent).experimental_createSession();
     expect(session).toEqual(stubData.noArgsAgentResponse);
   });
 });

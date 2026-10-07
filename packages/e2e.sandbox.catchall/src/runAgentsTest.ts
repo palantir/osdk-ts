@@ -22,7 +22,7 @@ import { expectType } from "ts-expect";
 import { client } from "./client.js";
 
 export async function runAgentsTest(): Promise<void> {
-  const session = await client(osdkTestFixture).createSession({
+  const session = await client(osdkTestFixture).experimental_createSession({
     defaultCity: "Rome",
   });
   expectType<AgentSession>(session);
