@@ -2,4 +2,4 @@
 "@osdk/maker-import": patch
 ---
 
-Preserve imported marking properties in generated Marketplace input shapes.
+Preserve imported marking and struct properties in generated Marketplace input shapes.

@@ -84,6 +84,61 @@ export function mapPropertyType(
           markingInputGroupName,
         },
       };
+    case "struct": {
+      // PropertyTypeTypeStruct is not exported from the root
+      // Recreating it here
+      type PropertyTypeTypeStruct = Extract<
+        PropertyTypeType,
+        { type: "struct" }
+      >;
+      const structDefinition: PropertyTypeTypeStruct["structDefinition"] = {};
+
+      for (const field of dataType.structFieldTypes) {
+        const mappedField = mapPropertyType(
+          field.dataType,
+          markingInputGroupName,
+        );
+        if (
+          mappedField === undefined ||
+          mappedField.array === true ||
+          (typeof mappedField.type === "object" &&
+            mappedField.type.type === "struct")
+        ) {
+          return undefined;
+        }
+        structDefinition[field.apiName] = {
+          fieldType: mappedField.type,
+          displayMetadata: {
+            displayName: field.apiName,
+            description: undefined,
+          },
+          typeClasses: field.typeClasses,
+        };
+      }
+
+      let mainValue: PropertyTypeTypeStruct["mainValue"] | undefined;
+      if (dataType.mainValue !== undefined) {
+        const mappedMainValue = mapPropertyType(
+          dataType.mainValue.mainValueType,
+          markingInputGroupName,
+        );
+        if (mappedMainValue === undefined || mappedMainValue.array === true) {
+          return undefined;
+        }
+        mainValue = {
+          fields: dataType.mainValue.fields,
+          type: mappedMainValue.type,
+        };
+      }
+
+      return {
+        type: {
+          type: "struct",
+          structDefinition,
+          mainValue,
+        },
+      };
+    }
     case "array": {
       const subType = dataType.subType;
       if (!subType) {
@@ -96,7 +151,6 @@ export function mapPropertyType(
       }
       return { type: inner.type, array: true };
     }
-    // We don't support structs here. It should have no influence on importing functionality
     default:
       return undefined;
   }

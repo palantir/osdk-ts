@@ -1415,7 +1415,7 @@ describe("Experimental Test Suite", () => {
       expect(objectOutputShapes.length).toBeGreaterThanOrEqual(1);
     });
 
-    it("preserves marking properties from external imported metadata", async () => {
+    it("preserves marking and struct properties from external imported metadata", async () => {
       const externalImportedMetadata = {
         actionTypes: {},
         interfaceTypes: {},
@@ -1444,6 +1444,30 @@ describe("Experimental Test Suite", () => {
                   dataType: { type: "marking", markingType: "CBAC" },
                   displayName: "Value",
                   rid: "ri.ontology.main.property.00000000-0000-0000-0000-000000000004",
+                  status: { type: "experimental" },
+                  typeClasses: [],
+                  visibility: "NORMAL",
+                },
+                details: {
+                  dataType: {
+                    type: "struct",
+                    structFieldTypes: [
+                      {
+                        apiName: "name",
+                        dataType: { type: "string" },
+                        rid: "ri.ontology.main.struct-field.00000000-0000-0000-0000-000000000005",
+                        typeClasses: [],
+                      },
+                      {
+                        apiName: "count",
+                        dataType: { type: "integer" },
+                        rid: "ri.ontology.main.struct-field.00000000-0000-0000-0000-000000000006",
+                        typeClasses: [],
+                      },
+                    ],
+                  },
+                  displayName: "Details",
+                  rid: "ri.ontology.main.property.00000000-0000-0000-0000-000000000007",
                   status: { type: "experimental" },
                   typeClasses: [],
                   visibility: "NORMAL",
@@ -1489,6 +1513,10 @@ describe("Experimental Test Suite", () => {
         "TestObject",
         "value",
       );
+      const detailsReadableId = ReadableIdGenerator.getForObjectProperty(
+        "TestObject",
+        "details",
+      );
       expect(result.shapes.inputShapes.get(idReadableId)).toMatchObject({
         type: "property",
         property: {
@@ -1517,6 +1545,35 @@ describe("Experimental Test Suite", () => {
           },
         });
       expect
+        .soft(result.shapes.inputShapes.get(detailsReadableId))
+        .toMatchObject({
+          type: "property",
+          property: {
+            about: { fallbackTitle: "Details" },
+            type: {
+              type: "objectPropertyType",
+              objectPropertyType: {
+                type: "primitive",
+                primitive: {
+                  type: "structType",
+                  structType: {
+                    structFieldTypes: [
+                      {
+                        type: "primitive",
+                        primitive: { type: "stringType" },
+                      },
+                      {
+                        type: "primitive",
+                        primitive: { type: "integerType" },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        });
+      expect
         .soft(result.shapes.inputShapes.get(objectReadableId))
         .toMatchObject({
           type: "objectType",
@@ -1524,6 +1581,7 @@ describe("Experimental Test Suite", () => {
             propertyTypes: [
               "824f0620-f826-372b-aedb-201a0482f3b0",
               "22a321b3-ab42-35bc-917c-e64a9982f7d9",
+              "55039f50-087f-3feb-a44b-4da71c530dd7",
             ],
           },
         });
@@ -1536,6 +1594,7 @@ describe("Experimental Test Suite", () => {
         [objectReadableId]: "2208f50a-baaf-39f6-b054-bf332136365e",
         [idReadableId]: "824f0620-f826-372b-aedb-201a0482f3b0",
         [valueReadableId]: "22a321b3-ab42-35bc-917c-e64a9982f7d9",
+        [detailsReadableId]: "55039f50-087f-3feb-a44b-4da71c530dd7",
       });
     });
 
