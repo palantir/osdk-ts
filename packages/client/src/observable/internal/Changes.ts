@@ -29,6 +29,7 @@ import type { ObjectSetCacheKey } from "./objectset/ObjectSetCacheKey.js";
 export class Changes {
   modifiedObjects: MultiMap<string, ObjectHolder> = new MultiMap();
   addedObjects: MultiMap<string, ObjectHolder> = new MultiMap();
+  writtenObjectCacheKeys: Set<ObjectCacheKey> = new Set<ObjectCacheKey>();
 
   added: Set<
     | AggregationCacheKey
