@@ -90,6 +90,27 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
       ObjectMetadata.InterfacePropertyImplementation
     >
   >;
+  interfaceActionMap?: Record<
+    /* InterfaceType api name */ string,
+    Record<
+      /* InterfaceActionTypeConstraint api name */ string,
+      /* ObjectType action api name */ string
+    >
+  >;
+  inverseInterfaceActionMap?: Record<
+    /* InterfaceType api name */ string,
+    Record<
+      /* ObjectType action api name */ string,
+      /* InterfaceActionTypeConstraint api name */ string
+    >
+  >;
+  interfaceActionImplementations?: Record<
+    /* InterfaceType api name */ string,
+    Record<
+      /* InterfaceActionTypeConstraint api name */ string,
+      ObjectMetadata.InterfaceActionImplementation
+    >
+  >;
 }
 
 export namespace ObjectMetadata {
@@ -173,6 +194,11 @@ export namespace ObjectMetadata {
       | InterfacePropertyLocalImplementation
       | InterfacePropertyStructFieldImplementation
       | InterfacePropertyStructImplementation;
+  }
+
+  export interface InterfaceActionImplementation {
+    actionApiName: string;
+    parameterMapping?: Record<string, string>;
   }
 }
 
