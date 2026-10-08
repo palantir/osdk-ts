@@ -5218,7 +5218,7 @@ importers:
         specifier: ^7.54.0
         version: 7.71.2(react@18.3.1)
       react-markdown:
-        specifier: ^9.0.3
+        specifier: ^9.0.3 || ^10.0.0
         version: 9.1.0(@types/react@18.3.24)(react@18.3.1)
       remark-gfm:
         specifier: ^4.0.1
