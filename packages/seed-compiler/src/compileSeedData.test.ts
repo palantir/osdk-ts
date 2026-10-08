@@ -18,6 +18,7 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 
+import { createClient } from "@osdk/client";
 import type * as Ontology from "@osdk/foundry.ontologies";
 import { createSeedWithMetadata, type SeedOutput } from "@osdk/seed-helpers";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -47,7 +48,10 @@ function makeObjectType(
         ]),
       ),
     },
-    linkTypes: [],
+    linkTypes:
+      apiName === "Employee"
+        ? [{ apiName: "officeLink", objectTypeApiName: "Office" }]
+        : [],
     implementsInterfaces: [],
     implementsInterfaces2: {},
     sharedPropertyTypeMapping: {},
@@ -121,6 +125,34 @@ function readOutput(outputPath: string): SeedOutput {
 }
 
 describe("compileSeedData", () => {
+  it("captures once and replays without importing the capture again", async () => {
+    const capture = writeSeedFile(
+      "capture.mts",
+      `export default async seed => {
+      await Promise.resolve();
+      seed.create({ type: "object", apiName: "Office" }, { officeId: "NYC" });
+    };`,
+    );
+    const outputPath = path.join(dir, "seed.json");
+    const captureCache = path.join(dir, "captures");
+    const foundry = createClient(
+      "http://127.0.0.1:1/api",
+      metadata.ontology.rid,
+      () => Promise.resolve("test"),
+    );
+    await compileSeedData([capture], outputPath, metadata, {
+      foundry,
+      captureCache,
+    });
+    const captured = readOutput(outputPath);
+    expect(captured.objects.Office).toEqual([{ officeId: "NYC" }]);
+    writeSeedFile(
+      "capture.mts",
+      `throw new Error("capture must not be imported");`,
+    );
+    await compileSeedData([capture], outputPath, metadata, { captureCache });
+    expect(readOutput(outputPath)).toEqual(captured);
+  });
   it("merges objects and links from every file into one JSON output", async () => {
     const a = writeSeed("01-a.mts", (seed) => {
       const office = seed.create(Office, { officeId: "NYC" });
@@ -277,7 +309,7 @@ describe("compileSeedData", () => {
 
     await expect(
       compileSeedData([file], path.join(dir, "seed.json"), metadata),
-    ).rejects.toThrow(/Seed file '01-empty\.mts' must have a default export/u);
+    ).rejects.toThrow(/Seed file '01-empty\.mts': Must have a default export/u);
   });
 
   // The `{ output, context }` form is exercised by every test above, since
@@ -299,8 +331,6 @@ describe("compileSeedData", () => {
   });
 
   it("throws when the default export is neither accepted shape", async () => {
-    // A function is `export default (seed) => {...}` with createSeed() never
-    // called — it has a default export, so it must not be reported as missing.
     for (const [name, source] of [
       ["01-fn.mts", `export default function (seed) { return seed; };\n`],
       ["01-junk.mts", `export default { hello: "world" };\n`],
@@ -312,10 +342,12 @@ describe("compileSeedData", () => {
           metadata,
         ),
       ).rejects.toThrow(
-        new RegExp(
-          `Seed file '${name}' default export is not a createSeed\\(\\) result`,
-          "u",
-        ),
+        name === "01-fn.mts"
+          ? /restart.*offline/u
+          : new RegExp(
+              `Seed file '${name}': Default export is not a createSeed\\(\\) result`,
+              "u",
+            ),
       );
     }
   });
@@ -333,11 +365,11 @@ describe("compileSeedData", () => {
     await expect(
       compileSeedData([notArray], path.join(dir, "seed.json"), metadata),
     ).rejects.toThrow(
-      /Seed file '01-objects\.mts' has a non-array entry for object type 'Employee'/u,
+      /Seed file '01-objects\.mts': Non-array entry for object type 'Employee'/u,
     );
     await expect(
       compileSeedData([badLinks], path.join(dir, "seed.json"), metadata),
-    ).rejects.toThrow(/Seed file '02-links\.mts' has a non-array 'links'/u);
+    ).rejects.toThrow(/Seed file '02-links\.mts': Non-array 'links'/u);
   });
 
   it("wraps errors thrown while a seed file is being imported", async () => {
@@ -348,8 +380,6 @@ describe("compileSeedData", () => {
 
     await expect(
       compileSeedData([file], path.join(dir, "seed.json"), metadata),
-    ).rejects.toThrow(
-      /Seed file '01-boom\.mts' failed to compile:\n {2}kaboom/u,
-    );
+    ).rejects.toThrow(/Seed file '01-boom\.mts': kaboom/u);
   });
 });

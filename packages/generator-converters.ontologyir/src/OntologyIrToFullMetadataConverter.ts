@@ -1441,7 +1441,7 @@ export class OntologyIrToFullMetadataConverter {
    * Convert property types from IR to OSDK format
    */
   static getOsdkPropertyType(
-    type: OntologyIrType,
+    type: OntologyIrType | Type | InterfacePropertyTypeType,
   ): Ontologies.ObjectPropertyType | null {
     switch (type.type) {
       case "array": {
@@ -1456,7 +1456,11 @@ export class OntologyIrToFullMetadataConverter {
       case "date":
         return { type: "date" };
       case "decimal":
-        return { type: "decimal" };
+        return {
+          type: "decimal",
+          precision: type.decimal.precision ?? undefined,
+          scale: type.decimal.scale ?? undefined,
+        };
       case "double":
         return { type: "double" };
       case "float":
