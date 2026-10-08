@@ -40,6 +40,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@blueprintjs/icons": "^6.7.0",
     "@osdk/api": "workspace:~",
     "@osdk/generator-converters.ontologyir": "workspace:~",
     "@osdk/typescript-sdk-docs": "^0.2.0",
