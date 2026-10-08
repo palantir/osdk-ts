@@ -68,6 +68,8 @@ export function defineInterfaceActionTypeConstraint(
       },
       type: param.type,
       requireImplementation: param.requireImplementation,
+      isRequiredParameterOnConcreteAction:
+        param.isRequiredParameterOnConcreteAction,
     };
   }
 

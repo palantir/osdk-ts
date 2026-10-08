@@ -23,6 +23,7 @@ export interface ParameterConstraintDefinition {
   displayName: string;
   type: OntologyIrBaseParameterConstraintType;
   requireImplementation: boolean;
+  isRequiredParameterOnConcreteAction?: boolean;
 }
 
 export interface InterfaceActionTypeConstraintDefinition {

@@ -13395,6 +13395,7 @@ export interface InterfaceParameterConstraintRidIdentifier {
 export interface InterfaceParameterConstraintShape {
   about: LocalizedTitleAndDescription;
   actionTypeConstraint: InterfaceActionTypeConstraintReference;
+  isRequiredParameterOnConcreteAction?: boolean | null | undefined;
   requireImplementation: boolean;
   type: BaseParameterConstraintType;
 }
