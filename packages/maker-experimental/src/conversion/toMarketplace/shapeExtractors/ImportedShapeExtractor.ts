@@ -711,6 +711,8 @@ function extractImportedInterfaceTypes(
           actionTypeConstraint:
             ridGenerator.toBlockInternalId(constraintReadableId),
           requireImplementation: paramConstraint.requireImplementation,
+          isRequiredParameterOnConcreteAction:
+            paramConstraint.isRequiredParameterOnConcreteAction,
           type: convertParameterConstraintTypeReferencesToShape(
             paramConstraint.type,
             knownIdentifiers,
