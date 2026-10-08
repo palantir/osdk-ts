@@ -27,19 +27,6 @@ The previous `osdk unstable branch sync` command remains available during the
 transition for backward compatibility. See the [branch command documentation](./src/commands/branch/README.md)
 for supported options.
 
-## `widgetset` subcommand
-
-Publish widget set releases and list their versions:
-
-```sh
-npx @osdk/cli widgetset deploy
-npx @osdk/cli widgetset version list
-```
-
-Both commands use the current Git branch as the Foundry branch identifier. If Git
-cannot identify a current branch (for example, in a detached checkout), they use
-the default Foundry branch.
-
 ## `site` subcommand
 
 The site subcommand allows users to manage their Foundry site
