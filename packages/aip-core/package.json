@@ -55,7 +55,7 @@
   },
   "peerDependencies": {
     "@ai-sdk/provider": "^3.0.0",
-    "@osdk/client": "^2.8.0"
+    "@osdk/client": "workspace:^"
   },
   "peerDependenciesMeta": {
     "@ai-sdk/provider": {
