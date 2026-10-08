@@ -24,13 +24,12 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 const page = await client(Employee).fetchPage({
-  $select: ["certifications"],
   $applyModifiers: {
     certifications: "applyReducers",
   },
 });
 
+type ReducedValue = (typeof page.data)[number]["certifications"];
 for (const object of page.data) {
-  // The generated type is the array element type, not the original array type.
-  const reducedValue = object.certifications;
+  const reducedValue: ReducedValue = object.certifications;
 }

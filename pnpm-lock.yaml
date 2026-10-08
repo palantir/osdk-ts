@@ -7,11 +7,11 @@ settings:
 catalogs:
   foundry-platform-typescript:
     '@osdk/docs-spec-core':
-      specifier: 0.6.0
-      version: 0.6.0
+      specifier: 0.7.0
+      version: 0.7.0
     '@osdk/docs-spec-sdk':
-      specifier: 0.17.0
-      version: 0.17.0
+      specifier: 0.23.0
+      version: 0.23.0
     '@osdk/foundry':
       specifier: 2.78.0
       version: 2.78.0
@@ -5480,10 +5480,10 @@ importers:
     dependencies:
       '@osdk/docs-spec-core':
         specifier: catalog:foundry-platform-typescript
-        version: 0.6.0
+        version: 0.7.0
       '@osdk/docs-spec-sdk':
         specifier: catalog:foundry-platform-typescript
-        version: 0.17.0
+        version: 0.23.0
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
@@ -5959,10 +5959,10 @@ importers:
     dependencies:
       '@osdk/docs-spec-core':
         specifier: catalog:foundry-platform-typescript
-        version: 0.6.0
+        version: 0.7.0
       '@osdk/docs-spec-sdk':
         specifier: catalog:foundry-platform-typescript
-        version: 0.17.0
+        version: 0.23.0
       outdent:
         specifier: ^0.8.0
         version: 0.8.0
@@ -9412,14 +9412,14 @@ packages:
   '@osdk/docs-spec-core@0.5.0':
     resolution: {integrity: sha512-sHkNoGV5MdcZWfjIslZWWqmJlgSJfWJbnM4vC1RcGyyzKDpZXRMJ4AjSpKr9VqtuTlNHGmD2Y3bQUO/wpSQBbw==}
 
-  '@osdk/docs-spec-core@0.6.0':
-    resolution: {integrity: sha512-fR5E67XrAVk6R4h8dzq+lu8wWH+nFnWllDsIC2+pXtZKbMIS4TjArH15Qa1G6NeiGQazFjvXbsJYXYqMbblk8g==}
+  '@osdk/docs-spec-core@0.7.0':
+    resolution: {integrity: sha512-4PhFvnflrdOSum5+XO/EsRO95moUU7dsQ6Jjv+5fOT24yHtvk+8AZUfRWObbe2zChKRzZwfZLvWVuV5UXAvaIw==}
 
   '@osdk/docs-spec-sdk@0.1.0':
     resolution: {integrity: sha512-xGW/bBjlQvyg4YdRaEC+GdaKoh6qoWmyp7uLEfH2h4XCWDKpDGaQD5dLgkGjNqao1jk2mTZb6YrTjkz0CB+9JA==}
 
-  '@osdk/docs-spec-sdk@0.17.0':
-    resolution: {integrity: sha512-uiC2wfUf3i2tQ9wQlcgwLOxHObdjxfwwvy4X04N0tZnpnXEIn7zIIa7WJqpcNUMH3g07tJLEu/wZNdUgxCnS2Q==}
+  '@osdk/docs-spec-sdk@0.23.0':
+    resolution: {integrity: sha512-Bw2RidqN0Lu/759qiB5ajdShZ4eLXVQEvny5ANDM6wPOw3kLmqjCj+ObDyjR9kIrxpBo66hx68yFHjXx3Co5sw==}
 
   '@osdk/foundry.admin@2.75.0':
     resolution: {integrity: sha512-gpTVv25I0Y4DJ5O+pkvD6KXnyAN+IUKpapymCWpk4TDF5vaz4aIlCfOKdjivFYm2U6xGxGc/OfKkjhnCrGX6rw==}
@@ -26820,15 +26820,15 @@ snapshots:
 
   '@osdk/docs-spec-core@0.5.0': {}
 
-  '@osdk/docs-spec-core@0.6.0': {}
+  '@osdk/docs-spec-core@0.7.0': {}
 
   '@osdk/docs-spec-sdk@0.1.0':
     dependencies:
       '@osdk/docs-spec-core': 0.5.0
 
-  '@osdk/docs-spec-sdk@0.17.0':
+  '@osdk/docs-spec-sdk@0.23.0':
     dependencies:
-      '@osdk/docs-spec-core': 0.6.0
+      '@osdk/docs-spec-core': 0.7.0
 
   '@osdk/foundry.admin@2.75.0':
     dependencies:

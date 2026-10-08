@@ -997,15 +997,14 @@ versions:
             import { client } from "./client";
 
             const page = await client({{objectType}}).fetchPage({
-                $select: ["{{arrayProperty}}"],
                 $applyModifiers: {
                     {{arrayProperty}}: "applyReducers",
                 },
             });
 
+            type ReducedValue = (typeof page.data)[number]["{{arrayProperty}}"];
             for (const object of page.data) {
-                // The generated type is the array element type, not the original array type.
-                const reducedValue = object.{{arrayProperty}};
+                const reducedValue: ReducedValue = object.{{arrayProperty}};
             }
       orderObjectsGuide:
         - template: |-
