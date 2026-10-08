@@ -32,12 +32,11 @@ export default async function versionListCommand({
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   const branch = await getGitBranch();
-  consola.debug(
+  consola.start(
     branch == null
-      ? "Listing widget set releases from the default Foundry branch (no current Git branch)"
-      : `Listing widget set releases using Git branch "${branch}"`,
+      ? "Fetching versions from the default Foundry branch"
+      : `Fetching versions using Git branch "${branch}"`,
   );
-  consola.start("Fetching versions");
 
   const response = await widgetRegistry.listReleases(
     clientCtx,

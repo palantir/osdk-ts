@@ -58,11 +58,6 @@ export default async function widgetSetDeployCommand({
 
   const widgetSetVersion = await findWidgetSetVersion(directory);
   const branch = await getGitBranch();
-  consola.debug(
-    branch == null
-      ? "Publishing widget set releases to the default Foundry branch (no current Git branch)"
-      : `Publishing widget set releases using Git branch "${branch}"`,
-  );
   consola.info(`Found version from manifest: ${widgetSetVersion}`);
 
   consola.start("Zipping widget set files");
@@ -75,7 +70,11 @@ export default async function widgetSetDeployCommand({
     consola.debug(`Deploying to repository ${repository} for ${widgetSet}`);
   }
 
-  consola.start("Publishing widget set files");
+  consola.start(
+    branch == null
+      ? "Publishing widget set files to the default Foundry branch"
+      : `Publishing widget set files using Git branch "${branch}"`,
+  );
   await Promise.all([
     widgetRegistry.publishRelease(
       clientCtx,
