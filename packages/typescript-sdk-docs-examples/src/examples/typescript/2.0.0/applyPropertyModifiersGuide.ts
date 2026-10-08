@@ -19,17 +19,25 @@
 
 // Example: applyPropertyModifiersGuide
 
+import { type Osdk, type PageResult } from "@osdk/client";
+
 import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const page = await client(Employee).fetchPage({
+const page: PageResult<
+  Osdk.Instance<
+    Employee,
+    never,
+    Employee.PropertyKeys | "certifications:applyReducers"
+  >
+> = await client(Employee).fetchPage({
   $applyModifiers: {
     certifications: "applyReducers",
   },
-});
+} as const);
 
 for (const object of page.data) {
-  // The inferred type is the array element type, not the original array type.
+  // The property type is the array element type, not the original array type.
   const reducedValue = object.certifications;
 }

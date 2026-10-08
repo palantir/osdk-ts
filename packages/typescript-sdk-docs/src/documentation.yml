@@ -995,15 +995,20 @@ versions:
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
+            import { type Osdk, type PageResult } from "@osdk/client";
 
-            const page = await client({{objectType}}).fetchPage({
+            const page: PageResult<Osdk.Instance<
+                {{objectType}},
+                never,
+                {{objectType}}.PropertyKeys | "{{arrayProperty}}:applyReducers"
+            >> = await client({{objectType}}).fetchPage({
                 $applyModifiers: {
                     {{arrayProperty}}: "applyReducers",
                 },
-            });
+            } as const);
 
             for (const object of page.data) {
-                // The inferred type is the array element type, not the original array type.
+                // The property type is the array element type, not the original array type.
                 const reducedValue = object.{{arrayProperty}};
             }
       orderObjectsGuide:
