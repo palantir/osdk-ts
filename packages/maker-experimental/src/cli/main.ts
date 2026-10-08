@@ -33,7 +33,10 @@ import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-import { defineOntologyV2 } from "../api/defineOntologyV2.js";
+import {
+  defineOntologyV2,
+  type OntologyPackagingOptions,
+} from "../api/defineOntologyV2.js";
 import { getExternalRecommendations } from "../conversion/toMarketplace/RecommendationUtils.js";
 import type {
   ExternalImportedOntologyMetadata,
@@ -76,6 +79,7 @@ export default async function main(
     functionsIrOutputFile?: string;
     randomnessKey?: string;
     importJson?: string;
+    targetEnvironment: "CLOUD" | "EDGE";
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -106,6 +110,11 @@ export default async function main(
         describe: "Api name prefix for namespaced ontology types",
         type: "string",
         default: "",
+      },
+      targetEnvironment: {
+        describe: "Package for CLOUD, or for both cloud and edge with EDGE",
+        choices: ["CLOUD", "EDGE"] as const,
+        default: "CLOUD" as const,
       },
       buildDir: {
         alias: "b",
@@ -257,6 +266,7 @@ export default async function main(
     commandLineOpts.randomnessKey,
     importedLinkTypeIdsByApiName,
     externalImportedMetadata,
+    { targetEnvironment: commandLineOpts.targetEnvironment },
   );
 
   // Create temp directory for block data
@@ -539,6 +549,7 @@ async function loadOntology(
   randomnessKey?: string,
   importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
   externalImportedMetadata?: ExternalImportedOntologyMetadata,
+  packagingOptions?: OntologyPackagingOptions,
 ) {
   const result = await defineOntologyV2(
     apiNamespace,
@@ -549,6 +560,7 @@ async function loadOntology(
     randomnessKey,
     importedLinkTypeIdsByApiName,
     externalImportedMetadata,
+    packagingOptions,
   );
   return result;
 }
