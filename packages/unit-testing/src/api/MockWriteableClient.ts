@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-export type { MockClient } from "./MockClient.js";
-export type { MockOsdkObjectOptions } from "./MockOsdkObjectOptions.js";
-export type { MockWriteableClient } from "./MockWriteableClient.js";
-export type {
-  AggregateStubBuilder,
-  FetchOneStubBuilder,
-  FetchPageStubBuilder,
-  QueryStubBuilder,
-  StubBuilderFor,
-} from "./StubBuilders.js";
-export type { StubClient } from "./StubClient.js";
+import type { WriteableClient } from "@osdk/functions/experimental";
+import type { AnyEdit } from "@osdk/functions/internal";
+
+import type { MockClient } from "./MockClient.js";
+
+export interface MockWriteableClient<X extends AnyEdit = never>
+  extends MockClient, WriteableClient<X> {
+  getEdits(): X[];
+  clearEdits(): void;
+}
