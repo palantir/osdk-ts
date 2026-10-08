@@ -552,12 +552,12 @@ versions:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
 
-            const objects: {{objectType}}[]= [];
-
+            // asyncIter() loads every matching object, page after page. Handle each object as it arrives
+            // rather than collecting them all into an array. For counts, sums, or group-bys, use an
+            // aggregation instead; for a sample or the first N objects, use fetchPage({ pageSize }).
             for await(const obj of client.ontology.objects.{{objectType}}.asyncIter()) {
-                objects.push(obj);
+                console.log(obj.{{titleProperty}});
             }
-            const object = objects.value[0];
       loadLinkedObjectReference:
         - template: |-
             import type { GetLinkedObjectError, Result } from "{{{packageName}}}";
@@ -953,8 +953,10 @@ versions:
             import { client } from "./client";
             import { type Osdk } from "@osdk/client";
 
+            // $select only the properties you read; without it, the default property set is loaded.
             try {
-                const object: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne({{{primaryKeyPropertyValueV2}}});
+                const object: Osdk.Instance<{{objectType}}, never, "{{titleProperty}}"> = await client({{objectType}})
+                    .fetchOne({{{primaryKeyPropertyValueV2}}}, { $select: ["{{titleProperty}}"] });
             }
             catch(e) {
                 throw e;
@@ -968,14 +970,25 @@ versions:
             import { client } from "./client";
             import { type Osdk, type PageResult } from "@osdk/client";
 
+            // $select only the properties you read. Without it, the API loads its default property set,
+            // and reading fewer properties afterwards does not avoid the cost of fetching them.
+            // $pageSize is the size of one page, not a limit on the total number of objects.
+            // fetchPage does not request a snapshot unless you pass $snapshot: true (a snapshot configured for
+            // a function run still applies). Without one, if data changes between requests, later pages may
+            // repeat or skip objects. Pass $snapshot: true on every request to page through one consistent
+            // view, or use asyncIter(), which always requests a snapshot.
             try {
-                const firstPage: PageResult<Osdk.Instance<{{objectType}}>>
-                    = await client({{objectType}}).fetchPage({ $pageSize: 30 });
+                const firstPage: PageResult<Osdk.Instance<{{objectType}}, never, "{{titleProperty}}">>
+                    = await client({{objectType}}).fetchPage({ $select: ["{{titleProperty}}"], $pageSize: 30 });
                 if (firstPage.nextPageToken === undefined) {
                     console.log(firstPage.data);
                 }
-                const secondPage: PageResult<Osdk.Instance<{{objectType}}>>
-                = await client({{objectType}}).fetchPage({ $pageSize: 30, $nextPageToken: firstPage.nextPageToken });
+                const secondPage: PageResult<Osdk.Instance<{{objectType}}, never, "{{titleProperty}}">>
+                    = await client({{objectType}}).fetchPage({
+                        $select: ["{{titleProperty}}"],
+                        $pageSize: 30,
+                        $nextPageToken: firstPage.nextPageToken,
+                    });
                 console.log([...firstPage.data, ...secondPage.data]);
             }
             catch (e) {
@@ -988,9 +1001,12 @@ versions:
             import { client } from "./client";
             import { type Osdk, type PageResult } from "@osdk/client";
 
+            // $select only the properties you read; without it, the default property set is loaded.
+            // $pageSize is the size of one page, not a limit on the total number of objects.
             try {
-                const page: PageResult<Osdk.Instance<{{objectType}}>> = await client({{objectType}})
+                const page: PageResult<Osdk.Instance<{{objectType}}, never, "{{titleProperty}}">> = await client({{objectType}})
                     .fetchPage({
+                        $select: ["{{titleProperty}}"],
                         $orderBy: {"{{titleProperty}}": "asc"},
                         $pageSize: 30
                     });
@@ -1006,12 +1022,15 @@ versions:
             import { client } from "./client";
             import { type Osdk, type PageResult } from "@osdk/client";
 
+            // $select only the properties you read; without it, the default property set is loaded.
+            // $pageSize is the size of one page, not a limit on the total number of objects.
             try {
-                const page: PageResult<Osdk.Instance<{{objectType}}>> = await client({{objectType}})
+                const page: PageResult<Osdk.Instance<{{objectType}}, never, "{{titleProperty}}">> = await client({{objectType}})
                     .where({
                         {{titleProperty}}: {$isNull: true}
                     })
                     .fetchPage({
+                        $select: ["{{titleProperty}}"],
                         $pageSize: 30
                     });
                 const objects = page.data;
@@ -1026,7 +1045,9 @@ versions:
             import { client } from "./client";
             import type { Osdk } from "@osdk/client";
 
-            const responseNoErrorWrapper: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne({{{primaryKeyPropertyValueV2}}});
+            // $select only the properties you read; without it, the default property set is loaded.
+            const responseNoErrorWrapper: Osdk.Instance<{{objectType}}, never, "{{titleProperty}}"> = await client({{objectType}})
+                .fetchOne({{{primaryKeyPropertyValueV2}}}, { $select: ["{{titleProperty}}"] });
 
             // Ontology-defined derived properties are not returned by default.
             // Pass their API names in $select, along with any other properties you need.
@@ -1048,9 +1069,11 @@ versions:
             // Edit this import if your client location differs
             import { client } from "./client";
             import type { Osdk, PageResult } from "@osdk/client";
+            // $select only the properties you read; without it, the default property set is loaded.
+            // $pageSize is the size of one page. Continue with page.nextPageToken to load more.
             try {
-                const responseNoErrorWrapper: PageResult<Osdk.Instance<{{objectType}}>>
-                    = await client({{objectType}}).fetchPage({ $pageSize: 30 });
+                const responseNoErrorWrapper: PageResult<Osdk.Instance<{{objectType}}, never, "{{titleProperty}}">>
+                    = await client({{objectType}}).fetchPage({ $select: ["{{titleProperty}}"], $pageSize: 30 });
             } catch (e) {
                 throw e;
             }
@@ -1071,20 +1094,27 @@ versions:
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import type { Osdk } from "@osdk/client";
 
-            async function getAll(): Promise<Array<Osdk.Instance<{{objectType}}>>> {
-                const objects: Osdk.Instance<{{objectType}}>[]= [];
-                for await(const obj of client({{objectType}}).asyncIter()) {
-                    objects.push(obj);
-                }
-
-                return objects;
-            }
-
-            // If Array.fromAsync() is available in your target environment
-            function getAllFromAsync(): Promise<Array<Osdk.Instance<{{objectType}}>>> {
-                return Array.fromAsync(client({{objectType}}).asyncIter());
+            // Before loading every object, check whether you need to:
+            // - Count, sum, or group objects: use .aggregate() instead, which never loads the objects.
+            // - Show a sample or the first N objects: use fetchPage({ $pageSize }) instead.
+            //
+            // asyncIter() fetches page after page until every matching object has been loaded:
+            // - $select only the properties you read. Without it, the API loads its default property set,
+            //   and reading fewer properties afterwards does not avoid the cost of fetching them. Loading
+            //   unused properties wastes bandwidth and compute and can slow down retrieval.
+            // - Handle each object as it arrives rather than collecting them all into an array, so that
+            //   memory use does not grow with the size of the object set.
+            // - asyncIter() requests a consistent snapshot. For non-stream-backed object types, a completed
+            //   traversal returns each object exactly once even if the data changes. If the snapshot expires
+            //   or the backend detects a paging inconsistency (PagingInconsistencyDetected), it throws.
+            //   Stream-backed object types do not provide this guarantee across pages: changes during the
+            //   traversal can cause it to throw, and exactly-once traversal is not guaranteed.
+            //   If a traversal fails this way, $select fewer properties and narrow the object set with a
+            //   filter so it finishes sooner, or page with fetchPage() yourself, which does not request a
+            //   snapshot by default but may then return duplicate or missing objects if the data changes.
+            for await (const obj of client({{objectType}}).asyncIter({ $select: ["{{titleProperty}}"] })) {
+                console.log(obj.{{titleProperty}});
             }
 
             // Ontology-defined derived properties are not returned by default.
@@ -1092,12 +1122,10 @@ versions:
             // Runtime-defined derived properties added via .withProperties(...) are returned
             // by default only when $select is omitted. If you pass $select, include them
             // in the selection as well.
-            async function getAllWithSelectedProperties(properties: {{objectType}}.PropertyKeys[]) {
-                const objects = [];
+            async function logAllWithSelectedProperties(properties: {{objectType}}.PropertyKeys[]) {
                 for await (const obj of client({{objectType}}).asyncIter({ $select: properties })) {
-                    objects.push(obj);
+                    console.log(obj);
                 }
-                return objects;
             }
       loadLinkedObjectReference:
         - template: |-
@@ -1762,14 +1790,20 @@ versions:
             import { {{interfaceApiName}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import type { Osdk } from "@osdk/client";
 
-            const interfaces: Osdk<{{interfaceApiName}}>[] = [];
-
-            for await(const int of client({{interfaceApiName}}).asyncIter()) {
-                interfaces.push(int);
+            // asyncIter() fetches page after page until every matching object has been loaded:
+            // - Pass $select: [...] with only the properties you read. Without it, the API loads its
+            //   default property set.
+            // - Handle each object as it arrives rather than collecting them all into an array.
+            // - It requests a consistent snapshot, so for non-stream-backed object types a completed traversal
+            //   returns each object exactly once. It throws if the snapshot expires or the backend detects a
+            //   paging inconsistency. Stream-backed object types do not provide this guarantee across pages.
+            //   If it fails, select fewer properties, narrow with a filter, or page with fetchPage().
+            // - For counts, sums, or group-bys, use .aggregate() instead; for a sample or the first N
+            //   objects, use fetchPage({ $pageSize }).
+            for await (const int of client({{interfaceApiName}}).asyncIter()) {
+                console.log(int.$primaryKey);
             }
-            const interface1 = interfaces[0];
       loadOrderedInterfacesReference:
         - template: |-
             import { {{interfaceApiName}} } from "{{{packageName}}}";

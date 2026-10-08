@@ -25,16 +25,25 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
+// $select only the properties you read. Without it, the API loads its default property set,
+// and reading fewer properties afterwards does not avoid the cost of fetching them.
+// $pageSize is the size of one page, not a limit on the total number of objects.
+// fetchPage does not request a snapshot unless you pass $snapshot: true (a snapshot configured for
+// a function run still applies). Without one, if data changes between requests, later pages may
+// repeat or skip objects. Pass $snapshot: true on every request to page through one consistent
+// view, or use asyncIter(), which always requests a snapshot.
 try {
-  const firstPage: PageResult<Osdk.Instance<Employee>> = await client(
-    Employee,
-  ).fetchPage({ $pageSize: 30 });
+  const firstPage: PageResult<Osdk.Instance<Employee, never, "fullName">> =
+    await client(Employee).fetchPage({ $select: ["fullName"], $pageSize: 30 });
   if (firstPage.nextPageToken === undefined) {
     console.log(firstPage.data);
   }
-  const secondPage: PageResult<Osdk.Instance<Employee>> = await client(
-    Employee,
-  ).fetchPage({ $pageSize: 30, $nextPageToken: firstPage.nextPageToken });
+  const secondPage: PageResult<Osdk.Instance<Employee, never, "fullName">> =
+    await client(Employee).fetchPage({
+      $select: ["fullName"],
+      $pageSize: 30,
+      $nextPageToken: firstPage.nextPageToken,
+    });
   console.log([...firstPage.data, ...secondPage.data]);
 } catch (e) {
   throw e;

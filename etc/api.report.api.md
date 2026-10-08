@@ -875,8 +875,7 @@ export interface FetchPageArgs<
     	$EXPERIMENTAL_defaultLoadLevel?: DEFAULT_LOAD_LEVEL;
     	// (undocumented)
     $nextPageToken?: string;
-    	// (undocumented)
-    $pageSize?: number;
+    	$pageSize?: number;
     	// Warning: (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
     $snapshot?: boolean;
 }
