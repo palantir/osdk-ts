@@ -22,7 +22,7 @@ import type { ListReleasesResponse } from "./ListReleasesResponse.mjs";
 export async function listReleases(
   ctx: InternalClientContext,
   widgetSetRid: WidgetSetRid,
-  branch?: string,
+  branch: string | undefined,
 ): Promise<ListReleasesResponse> {
   const fetch = createFetch(ctx.tokenProvider);
   const urlObj = new URL(

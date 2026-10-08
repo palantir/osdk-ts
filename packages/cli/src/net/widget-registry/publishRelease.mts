@@ -24,7 +24,7 @@ export async function publishRelease(
   repositoryRid: WidgetSetRid | StemmaRepositoryRid,
   repositoryVersion: string,
   zipFile: ReadableStream | Blob | BufferSource,
-  branch?: string,
+  branch: string | undefined,
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
   const urlObj = new URL(
