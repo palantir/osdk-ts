@@ -22,6 +22,7 @@ import type { ListReleasesResponse } from "./ListReleasesResponse.mjs";
 export async function listReleases(
   ctx: InternalClientContext,
   widgetSetRid: WidgetSetRid,
+  branch?: string,
 ): Promise<ListReleasesResponse> {
   const fetch = createFetch(ctx.tokenProvider);
   const urlObj = new URL(
@@ -29,6 +30,9 @@ export async function listReleases(
     ctx.foundryUrl,
   );
   urlObj.searchParams.set("preview", "true");
+  if (branch != null) {
+    urlObj.searchParams.set("branch", branch);
+  }
   const url = urlObj.toString();
   const response = await fetch(url);
   return response.json();

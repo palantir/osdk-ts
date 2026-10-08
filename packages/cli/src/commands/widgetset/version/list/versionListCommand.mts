@@ -18,6 +18,7 @@ import { consola } from "consola";
 
 import { createInternalClientContext, widgetRegistry } from "#net";
 
+import { getGitBranch } from "../../../../util/getGitBranch.js";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionListArgs } from "./VersionListArgs.js";
 
@@ -30,9 +31,19 @@ export default async function versionListCommand({
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
+  const branch = await getGitBranch();
+  consola.debug(
+    branch == null
+      ? "Listing widget set releases from the default Foundry branch (no current Git branch)"
+      : `Listing widget set releases using Git branch "${branch}"`,
+  );
   consola.start("Fetching versions");
 
-  const response = await widgetRegistry.listReleases(clientCtx, widgetSet);
+  const response = await widgetRegistry.listReleases(
+    clientCtx,
+    widgetSet,
+    branch,
+  );
   if (response.data.length === 0) {
     consola.info("No widget set versions found");
     return;

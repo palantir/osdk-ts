@@ -24,6 +24,7 @@ export async function publishRelease(
   repositoryRid: WidgetSetRid | StemmaRepositoryRid,
   repositoryVersion: string,
   zipFile: ReadableStream | Blob | BufferSource,
+  branch?: string,
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
   const urlObj = new URL(
@@ -32,6 +33,9 @@ export async function publishRelease(
   );
   urlObj.searchParams.set("preview", "true");
   urlObj.searchParams.set("repositoryVersion", repositoryVersion);
+  if (branch != null) {
+    urlObj.searchParams.set("branch", branch);
+  }
   const url = urlObj.toString();
 
   await fetch(url, {
