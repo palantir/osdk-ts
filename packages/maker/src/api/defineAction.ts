@@ -1143,6 +1143,7 @@ function validateActionConfiguration(action: ActionType): void {
       action.parameters,
       param.defaultValue,
     );
+    const structFieldDefaultSources = new Set<string>();
     for (const [fieldApiName, configuration] of Object.entries(
       param.validation.structFieldValidations ?? {},
     )) {
@@ -1151,6 +1152,7 @@ function validateActionConfiguration(action: ActionType): void {
         fieldApiName,
         configuration.defaultValue,
         seenParameterIds,
+        structFieldDefaultSources,
         action.parameters,
       );
       for (const override of configuration.conditionalOverrides ?? []) {
@@ -1166,11 +1168,16 @@ function validateActionConfiguration(action: ActionType): void {
             fieldApiName,
             override.defaultValue,
             seenParameterIds,
+            structFieldDefaultSources,
             action.parameters,
           );
         }
       }
     }
+    invariant(
+      structFieldDefaultSources.size <= 1,
+      `Struct field defaults for parameter ${param.id} must reference the same source object parameter and property`,
+    );
     seenParameterIds.add(param.id);
   });
 }
@@ -1180,6 +1187,7 @@ function validateStructFieldDefaultValue(
   fieldApiName: string,
   defaultValue: StructFieldDefaultValue | null | undefined,
   seenParameterIds: Set<ParameterId>,
+  defaultSources: Set<string>,
   parameters?: ActionParameter[],
 ): void {
   if (defaultValue == null) return;
@@ -1247,6 +1255,9 @@ function validateStructFieldDefaultValue(
   invariant(
     sourceFieldType.type === targetField.type,
     `${context} has an incompatible source field type`,
+  );
+  defaultSources.add(
+    JSON.stringify([reference.parameterId, reference.propertyTypeId]),
   );
 }
 

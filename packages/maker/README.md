@@ -698,7 +698,16 @@ const modifyEmployee = defineModifyObjectAction({
             },
           },
         },
-        postcode: { defaultValue: null },
+        postcode: {
+          defaultValue: {
+            type: "objectParameterStructListFieldValue",
+            objectParameterStructListFieldValue: {
+              parameterId: MODIFY_OBJECT_PARAMETER,
+              propertyTypeId: "previousAddresses",
+              structFieldApiName: "postcode",
+            },
+          },
+        },
       },
     },
   },
@@ -709,6 +718,11 @@ Use `objectParameterStructFieldValue` for a single struct. Source parameters mus
 be single object references ordered before the struct parameter, with matching
 field types and struct cardinality. Maker resolves field API names to field RIDs
 when generating the Marketplace metadata.
+
+All field defaults for one parameter, including conditional overrides, must
+reference the same source object parameter and property. When switching to another
+source property, override every field that would otherwise receive an automatic
+default from the current property.
 
 A field's `defaultValue: null` suppresses its automatic default. Field
 `conditionalOverrides` also accept `type: "defaultValue"` with a struct field

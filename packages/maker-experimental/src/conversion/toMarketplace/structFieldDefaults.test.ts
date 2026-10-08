@@ -20,7 +20,6 @@ import type { ActionParameter, StructFieldDefaultValue } from "@osdk/maker";
 import {
   CREATE_OR_MODIFY_OBJECT_PARAMETER,
   defineAction,
-  defineCreateObjectAction,
   defineCreateOrModifyObjectAction,
   defineModifyObjectAction,
   defineObject,
@@ -132,9 +131,9 @@ describe("struct field defaults", () => {
       type: "objectParameterStructListFieldValue",
       objectParameterStructListFieldValue: {
         parameterId: MODIFY_OBJECT_PARAMETER,
-        propertyTypeId: "previousVisualizations",
+        propertyTypeId: "visualizationJson",
         structFieldRid: ridGenerator.generateStructFieldRid(
-          "previousVisualizations",
+          "visualizationJson",
           "toolName",
         ),
       },
@@ -158,9 +157,9 @@ describe("struct field defaults", () => {
               type: "objectParameterStructListFieldValue",
               objectParameterStructListFieldValue: {
                 parameterId: MODIFY_OBJECT_PARAMETER,
-                propertyTypeId: "previousVisualizations",
+                propertyTypeId: "visualizationJson",
                 structFieldRid: ridGenerator.generateStructFieldRid(
-                  "previousVisualizations",
+                  "visualizationJson",
                   "input",
                 ),
               },
@@ -172,19 +171,114 @@ describe("struct field defaults", () => {
     assert.equal(Object.hasOwn(configuration.result, "defaultValue"), false);
   });
 
-  it("does not infer existing-object defaults for create actions", () => {
-    const action = defineCreateObjectAction({
+  it("supports prefilling every field from another property", () => {
+    const action = defineModifyObjectAction({
       objectType: defineFixture(),
+      parameterConfiguration: {
+        visualizationJson: {
+          structFieldValidations: Object.fromEntries(
+            Object.keys(structType.structDefinition).map((field) => [
+              field,
+              { defaultValue: listDefault(field, "previousVisualizations") },
+            ]),
+          ),
+        },
+      },
     });
-    const validations = convertActionValidation(
-      action,
-      new OntologyRidGeneratorImpl(getImportedTypes()),
-    ).parameterValidations;
-    for (const field of Object.values(
-      validations.visualizationJson.structFieldValidations,
-    )) {
-      assert.equal(field.defaultValidation.display.prefill, undefined);
+    const ridGenerator = new OntologyRidGeneratorImpl(getImportedTypes());
+    const fields = convertActionValidation(action, ridGenerator)
+      .parameterValidations.visualizationJson.structFieldValidations;
+    for (const [field, validation] of Object.entries(fields)) {
+      assert.deepEqual(validation.defaultValidation.display.prefill, {
+        type: "objectParameterStructListFieldValue",
+        objectParameterStructListFieldValue: {
+          parameterId: MODIFY_OBJECT_PARAMETER,
+          propertyTypeId: "previousVisualizations",
+          structFieldRid: ridGenerator.generateStructFieldRid(
+            "previousVisualizations",
+            field,
+          ),
+        },
+      });
     }
+  });
+
+  for (const [label, propertyId, defaultValue] of [
+    [
+      "struct",
+      "details",
+      scalarDefault("previousDetails", MODIFY_OBJECT_PARAMETER),
+    ],
+    [
+      "struct-list",
+      "visualizationJson",
+      listDefault("title", "previousVisualizations"),
+    ],
+  ] as const) {
+    it(`rejects mixed source properties for ${label} defaults`, () => {
+      assert.throws(
+        () =>
+          defineModifyObjectAction({
+            objectType: defineFixture(),
+            parameterConfiguration: {
+              [propertyId]: {
+                structFieldValidations: { title: { defaultValue } },
+              },
+            },
+          }),
+        /must reference the same source object parameter and property/u,
+      );
+    });
+  }
+
+  it("rejects a different source property in a conditional struct-list default", () => {
+    assert.throws(
+      () =>
+        defineModifyObjectAction({
+          objectType: defineFixture(),
+          parameterConfiguration: {
+            visualizationJson: {
+              structFieldValidations: {
+                title: {
+                  conditionalOverrides: [
+                    {
+                      type: "defaultValue",
+                      condition: { type: "true", true: {} },
+                      defaultValue: listDefault(
+                        "title",
+                        "previousVisualizations",
+                      ),
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        }),
+      /must reference the same source object parameter and property/u,
+    );
+  });
+
+  it("rejects different source properties in conditional-only defaults", () => {
+    assert.throws(
+      () =>
+        defineActionWithConditionalDefaults([
+          scalarDefault(),
+          scalarDefault("previousDetails"),
+        ]),
+      /must reference the same source object parameter and property/u,
+    );
+  });
+
+  it("rejects defaults from different object parameters with the same property", () => {
+    assert.throws(
+      () =>
+        defineActionWithConditionalDefaults([
+          scalarDefault(),
+          scalarDefault("details", "otherSource"),
+        ]),
+      /must reference the same source object parameter and property/u,
+    );
   });
 
   it("does not infer struct defaults from a bulk object parameter", () => {
@@ -201,87 +295,12 @@ describe("struct field defaults", () => {
     );
   });
 
-  it("supports field defaults on explicitly defined actions", () => {
-    const action = defineExplicitAction(scalarDefault());
-    const validation = convertActionValidation(
-      action,
-      new OntologyRidGeneratorImpl(getImportedTypes()),
-    );
-    assert.equal(
-      validation.parameterValidations.details.structFieldValidations.title
-        .defaultValidation.display.prefill?.type,
-      "objectParameterStructFieldValue",
-    );
-  });
-
-  for (const [label, reference, expected] of [
-    [
-      "missing parameter",
-      { parameterId: "missing" },
-      /unknown parameter missing/,
-    ],
-    [
-      "unknown property",
-      { propertyTypeId: "missing" },
-      /unknown or non-struct property missing/,
-    ],
-    [
-      "non-struct property",
-      { propertyTypeId: "name" },
-      /unknown or non-struct property name/,
-    ],
-    [
-      "unknown field",
-      { structFieldApiName: "missing" },
-      /unknown source field missing/,
-    ],
-    [
-      "incompatible field",
-      { propertyTypeId: "counts", structFieldApiName: "count" },
-      /incompatible source field type/,
-    ],
-    [
-      "list source for scalar prefill",
-      { propertyTypeId: "visualizationJson" },
-      /struct cardinality/,
-    ],
-  ] as const) {
-    it(`rejects ${label}`, () => {
-      const defaultValue = scalarDefault();
-      Object.assign(defaultValue.objectParameterStructFieldValue, reference);
-      assert.throws(() => defineExplicitAction(defaultValue), expected);
-    });
-  }
-
-  it("rejects later source parameters", () => {
+  it("rejects an incompatible source field type", () => {
+    const defaultValue = scalarDefault("counts");
+    defaultValue.objectParameterStructFieldValue.structFieldApiName = "count";
     assert.throws(
-      () => defineExplicitAction(scalarDefault(), ["details", "source"]),
-      /earlier parameter/,
-    );
-  });
-
-  it("rejects a scalar default on a struct-list parameter", () => {
-    assert.throws(
-      () => defineExplicitAction(scalarDefault(), undefined, "structList"),
-      /struct cardinality/,
-    );
-  });
-
-  it("rejects an unknown target field", () => {
-    assert.throws(
-      () =>
-        defineExplicitAction(scalarDefault(), undefined, "struct", "missing"),
-      /unknown target field/,
-    );
-  });
-
-  it("validates conditional default references", () => {
-    const defaultValue = scalarDefault();
-    defaultValue.objectParameterStructFieldValue.parameterId = "missing";
-    assert.throws(
-      () =>
-        defineExplicitAction(defaultValue, undefined, "struct", "title", true),
-      /unknown parameter missing/,
+      () => defineActionWithConditionalDefaults([defaultValue]),
+      /incompatible source field type/u,
     );
   });
 
@@ -306,7 +325,7 @@ describe("struct field defaults", () => {
           action,
           new OntologyRidGeneratorImpl(getImportedTypes()),
         ),
-      /cannot define a top-level default value/,
+      /cannot define a top-level default value/u,
     );
   });
 });
@@ -322,6 +341,7 @@ function defineFixture() {
       id: { type: "string" as const },
       name: { type: "string" as const },
       details: { type: structType },
+      previousDetails: { type: structType },
       visualizationJson: { type: structType, array: true },
       previousVisualizations: { type: structType, array: true },
       counts: {
@@ -345,34 +365,33 @@ const structType = {
   },
 } as const;
 
-function listDefault(structFieldApiName: string): StructFieldDefaultValue {
+function listDefault(
+  structFieldApiName: string,
+  propertyTypeId = "visualizationJson",
+): StructFieldDefaultValue {
   return {
     type: "objectParameterStructListFieldValue",
     objectParameterStructListFieldValue: {
       parameterId: MODIFY_OBJECT_PARAMETER,
-      propertyTypeId: "previousVisualizations",
+      propertyTypeId,
       structFieldApiName,
     },
   };
 }
 
-function scalarDefault() {
+function scalarDefault(propertyTypeId = "details", parameterId = "source") {
   return {
     type: "objectParameterStructFieldValue" as const,
     objectParameterStructFieldValue: {
-      parameterId: "source",
-      propertyTypeId: "details",
+      parameterId,
+      propertyTypeId,
       structFieldApiName: "title",
     },
   };
 }
 
-function defineExplicitAction(
-  defaultValue: StructFieldDefaultValue,
-  parameterOrdering?: string[],
-  type: "struct" | "structList" = "struct",
-  field = "title",
-  conditional = false,
+function defineActionWithConditionalDefaults(
+  defaultValues: StructFieldDefaultValue[],
 ) {
   const objectType = defineFixture();
   const structFieldTypes = {
@@ -381,25 +400,18 @@ function defineExplicitAction(
   const target: ActionParameter = {
     id: "details",
     displayName: "Details",
-    type:
-      type === "struct"
-        ? { type, struct: { structFieldTypes } }
-        : { type, structList: { structFieldTypes } },
+    type: { type: "struct", struct: { structFieldTypes } },
     validation: {
       allowedValues: { type: "struct" },
       required: false,
       structFieldValidations: {
-        [field]: conditional
-          ? {
-              conditionalOverrides: [
-                {
-                  type: "defaultValue",
-                  condition: { type: "true", true: {} },
-                  defaultValue,
-                },
-              ],
-            }
-          : { defaultValue },
+        title: {
+          conditionalOverrides: defaultValues.map((defaultValue) => ({
+            type: "defaultValue",
+            condition: { type: "true", true: {} },
+            defaultValue,
+          })),
+        },
       },
     },
   };
@@ -417,20 +429,19 @@ function defineExplicitAction(
         },
       },
     ],
-    parameterOrdering,
     parameters: [
-      {
-        id: "source",
+      ...["source", "otherSource"].map((id) => ({
+        id,
         displayName: "Source",
         type: {
-          type: "objectReference",
+          type: "objectReference" as const,
           objectReference: { objectTypeId: objectType.apiName },
         },
         validation: {
-          allowedValues: { type: "objectQuery" },
+          allowedValues: { type: "objectQuery" as const },
           required: true,
         },
-      },
+      })),
       target,
     ],
   });
