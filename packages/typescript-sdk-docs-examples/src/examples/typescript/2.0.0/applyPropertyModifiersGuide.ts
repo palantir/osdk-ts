@@ -29,7 +29,7 @@ const page = await client(Employee).fetchPage({
   },
 });
 
-type ReducedValue = (typeof page.data)[number]["certifications"];
 for (const object of page.data) {
-  const reducedValue: ReducedValue = object.certifications;
+  // The inferred type is the array element type, not the original array type.
+  const reducedValue = object.certifications;
 }

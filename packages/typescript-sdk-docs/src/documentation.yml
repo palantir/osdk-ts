@@ -1002,9 +1002,9 @@ versions:
                 },
             });
 
-            type ReducedValue = (typeof page.data)[number]["{{arrayProperty}}"];
             for (const object of page.data) {
-                const reducedValue: ReducedValue = object.{{arrayProperty}};
+                // The inferred type is the array element type, not the original array type.
+                const reducedValue = object.{{arrayProperty}};
             }
       orderObjectsGuide:
         - template: |-
