@@ -22,6 +22,8 @@ export async function getGitBranch(cwd?: string): Promise<string | undefined> {
   try {
     const { stdout } = await execa("git", ["branch", "--show-current"], {
       cwd,
+      // Required for this command to always output US English
+      env: { LC_ALL: "C" },
     });
     const branch = stdout.trim();
     if (branch === "") {
@@ -30,6 +32,14 @@ export async function getGitBranch(cwd?: string): Promise<string | undefined> {
     }
     return branch;
   } catch (error) {
+    if (
+      error instanceof Error &&
+      "stderr" in error &&
+      typeof error.stderr === "string" &&
+      error.stderr.includes("fatal: not a git repository")
+    ) {
+      return undefined;
+    }
     consola.warn("Unable to read the current git branch:", error);
     return undefined;
   }
