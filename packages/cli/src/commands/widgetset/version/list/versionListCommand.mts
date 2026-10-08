@@ -34,8 +34,8 @@ export default async function versionListCommand({
   const branch = await getGitBranch();
   consola.start(
     branch == null
-      ? "Fetching versions from the default Foundry branch"
-      : `Fetching versions using Git branch "${branch}"`,
+      ? "Fetching versions"
+      : `Fetching versions from branch "${branch}"`,
   );
 
   const response = await widgetRegistry.listReleases(

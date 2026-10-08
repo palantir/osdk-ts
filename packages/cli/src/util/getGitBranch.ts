@@ -25,11 +25,12 @@ export async function getGitBranch(cwd?: string): Promise<string | undefined> {
     });
     const branch = stdout.trim();
     if (branch === "") {
-      consola.debug("Git HEAD is detached; no current Git branch is available");
+      consola.warn("HEAD is detached; no current git branch is available");
+      return undefined;
     }
-    return branch || undefined;
+    return branch;
   } catch (error) {
-    consola.debug("Unable to read the current Git branch:", error);
+    consola.warn("Unable to read the current git branch:", error);
     return undefined;
   }
 }

@@ -72,8 +72,8 @@ export default async function widgetSetDeployCommand({
 
   consola.start(
     branch == null
-      ? "Publishing widget set files to the default Foundry branch"
-      : `Publishing widget set files using Git branch "${branch}"`,
+      ? "Publishing widget set files"
+      : `Publishing widget set files from branch "${branch}"`,
   );
   await Promise.all([
     widgetRegistry.publishRelease(
