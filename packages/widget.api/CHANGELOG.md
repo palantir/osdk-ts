@@ -1,5 +1,15 @@
 # @osdk/widget.api
 
+## 3.78.0
+
+### Minor Changes
+
+- 630e179: Show the mapTileLayer parameter type in autocomplete suggestions.
+
+### Patch Changes
+
+- @osdk/api@2.78.0
+
 ## 3.77.0
 
 ### Patch Changes

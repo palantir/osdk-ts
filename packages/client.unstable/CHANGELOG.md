@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.78.0
+
+### Minor Changes
+
+- 533f264: Emit relevant interface schema migration output shapes when converting DSL to block-data/shapes in maker-experimental.
+
 ## 2.77.0
 
 ## 2.76.0

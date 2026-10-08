@@ -1,5 +1,15 @@
 # @osdk/functions
 
+## 1.29.0
+
+### Minor Changes
+
+- d72c082: add createMockWriteableClient that records create/update/delete/link/unlink edits via getEdits() and no-ops flushEdits
+
+### Patch Changes
+
+- @osdk/client@2.78.0
+
 ## 1.28.0
 
 ### Patch Changes

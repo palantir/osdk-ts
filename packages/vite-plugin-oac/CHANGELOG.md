@@ -1,5 +1,19 @@
 # @osdk/vite-plugin-oac
 
+## 0.79.0
+
+### Patch Changes
+
+- Updated dependencies [533f264]
+- Updated dependencies [d63eb64]
+- Updated dependencies [5b15676]
+  - @osdk/client.unstable@2.78.0
+  - @osdk/maker@0.79.0
+  - @osdk/generator-converters.ontologyir@2.78.0
+  - @osdk/cli@0.105.0
+  - @osdk/api@2.78.0
+  - @osdk/faux@0.58.0
+
 ## 0.78.0
 
 ### Patch Changes
