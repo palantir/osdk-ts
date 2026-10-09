@@ -100,6 +100,11 @@ export function getWireObjectSet(
 
 /** @internal exported for internal use only */
 export const objectSetDefinitions = new WeakMap<any, WireObjectSet>();
+const objectSetClients = new WeakMap<object, MinimalClient>();
+
+export function getObjectSetClient(objectSet: ObjectSet<any>): MinimalClient {
+  return objectSetClients.get(objectSet)!;
+}
 
 /** @internal */
 export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
@@ -371,6 +376,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   }
 
   objectSetDefinitions.set(base, objectSet);
+  objectSetClients.set(base, clientCtx);
 
   // we are using a type assertion because the marker symbol defined in BaseObjectSet isn't actually used
   // at runtime.

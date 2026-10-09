@@ -16,10 +16,11 @@
 
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import { Trie } from "@wry/trie";
+import invariant from "tiny-invariant";
 
 import { additionalContext } from "../../../Client.js";
 import {
-  createObjectSet,
+  getObjectSetClient,
   getWireObjectSet,
 } from "../../../objectSet/createObjectSet.js";
 import { hasWithProperties } from "../../../util/extractRdpDefinition.js";
@@ -103,6 +104,11 @@ export class ObjectSetHelper extends AbstractHelper<
 
   getQuery(options: ObjectSetQueryOptions): ObjectSetQuery {
     let composed = options.baseObjectSet;
+    invariant(
+      getObjectSetClient(composed).clientCacheKey ===
+        this.store.client[additionalContext].clientCacheKey,
+      "Object set must use the observable client's context",
+    );
     if (options.withProperties)
       composed = composed.withProperties(options.withProperties);
     if (options.where) composed = composed.where(options.where);
@@ -124,17 +130,12 @@ export class ObjectSetHelper extends AbstractHelper<
     );
 
     return this.store.queries.get(objectSetCacheKey, () => {
-      const objectSet = createObjectSet(
-        composed.$objectSetInternals.def,
-        this.store.client[additionalContext],
-        wire,
-      );
       return new ObjectSetQuery(
         this.store,
         this.store.subjects.get(objectSetCacheKey),
         operations,
         objectSetCacheKey,
-        { ...options, baseObjectSet: objectSet },
+        { ...options, baseObjectSet: composed },
       );
     });
   }
