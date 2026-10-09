@@ -115,15 +115,28 @@ export abstract class AbstractHelper<
 
     if (options.mode !== "offline") {
       query.revalidate(options.mode === "force").catch((e: unknown) => {
-        subFn.error(e);
-
-        // we don't want observeObject() to return a promise,
-        // so we settle for logging an error here instead of
-        // dropping it on the floor.
-        if (this.store.logger) {
-          this.store.logger.error("Unhandled error in observeObject", e);
+        if (typeof subFn.error === "function") {
+          try {
+            subFn.error(e);
+          } catch (subscriberError) {
+            if (this.store.logger) {
+              this.store.logger.error(
+                "Unhandled error in observeObject",
+                subscriberError,
+              );
+            } else {
+              throw subscriberError;
+            }
+          }
         } else {
-          throw e;
+          // we don't want observeObject() to return a promise,
+          // so we settle for logging an error here instead of
+          // dropping it on the floor.
+          if (this.store.logger) {
+            this.store.logger.error("Unhandled error in observeObject", e);
+          } else {
+            throw e;
+          }
         }
       });
     }
