@@ -20,6 +20,7 @@ import type {
   ObjectMetadata,
   QueryMetadata,
 } from "@osdk/api";
+import type { AgentDefinitionVersion } from "@osdk/foundry.agents";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
 
@@ -59,6 +60,11 @@ export interface OntologyProvider {
     apiName: string,
     version: string | undefined,
   ) => Promise<QueryMetadata>;
+
+  getAgentDefinition: (
+    apiName: string,
+    version: string,
+  ) => Promise<AgentDefinitionVersion>;
 
   getActionDefinition: (apiName: string) => Promise<ActionMetadata>;
 }

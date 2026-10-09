@@ -22,34 +22,37 @@ import type {
 import * as OntologyObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet";
 
 import { additionalContext, type Client } from "../Client.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 import { normalizeInterfaceLinkSearchArounds } from "../util/normalizeInterfaceLinkSearchArounds.js";
 
 /**
  * Fetches a temporary object set RID from the Foundry stack for the given object set.
  *
- * @param client - An OSDK client.
+ * @param client - An OSDK client or its internal context.
  * @param objectSet - The object set to fetch a RID for.
  * @returns A promise that resolves to the RID of the temporary object set.
  */
 export async function createAndFetchTempObjectSetRid<
   Q extends ObjectOrInterfaceDefinition,
 >(
-  client: Client,
+  client: Client | MinimalClient,
   objectSet: unknown extends CompileTimeMetadata<Q>["objectSet"]
     ? ObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"],
 ): Promise<string> {
+  const minimalClient =
+    additionalContext in client ? client[additionalContext] : client;
   const response = await OntologyObjectSets.createTemporary(
-    client,
-    await client[additionalContext].ontologyRid,
+    minimalClient,
+    await minimalClient.ontologyRid,
     {
       objectSet: await normalizeInterfaceLinkSearchArounds(
-        client[additionalContext],
+        minimalClient,
         getWireObjectSet(objectSet),
       ),
     },
-    { branch: client[additionalContext].branch },
+    { branch: minimalClient.branch },
   );
   return response.objectSetRid;
 }

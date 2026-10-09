@@ -15,5 +15,6 @@
  */
 
 export { noArgsAgent } from "./agents/noArgsAgent.js";
+export { objectArgumentsAgent } from "./agents/objectArgumentsAgent.js";
 export { weatherAgent } from "./agents/weatherAgent.js";
 export * from "./generatedNoCheck/index.js";

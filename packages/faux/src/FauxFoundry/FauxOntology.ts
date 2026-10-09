@@ -174,6 +174,21 @@ export class FauxOntology {
     return impl;
   }
 
+  public getAgentDef(
+    agentApiName: string,
+    version: string,
+  ): Agents.AgentDefinitionVersion {
+    const versionMap = this.#agentDefinitions.get(agentApiName);
+    const def = versionMap?.get(version);
+    if (def === undefined) {
+      throw new OpenApiCallError(
+        404,
+        AgentDefinitionVersionNotFoundError(agentApiName, version),
+      );
+    }
+    return def;
+  }
+
   public getAgentImpl(agentApiName: string, version: string): FauxAgentImpl {
     const versionMap = this.#agentImpl.get(agentApiName);
     const impl = versionMap?.get(version);

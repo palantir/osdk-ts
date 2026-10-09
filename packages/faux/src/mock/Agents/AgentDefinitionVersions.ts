@@ -14,5 +14,15 @@
  * limitations under the License.
  */
 
-export * as AgentDefinitionVersions from "./AgentDefinitionVersions.js";
-export * as AgentSessions from "./AgentSessions.js";
+import * as AgentDefinitionVersions from "@osdk/foundry.agents/AgentDefinitionVersion";
+
+import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
+import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
+
+export const get: CallFactory<
+  "agentDefinitionApiName" | "agentDefinitionVersionVersion",
+  typeof AgentDefinitionVersions.get
+> = handleOpenApiCall(AgentDefinitionVersions.get, [
+  "agentDefinitionApiName",
+  "agentDefinitionVersionVersion",
+]);
