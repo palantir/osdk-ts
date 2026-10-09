@@ -1,5 +1,15 @@
 # @osdk/typescript-sdk-docs-examples
 
+## 0.9.0
+
+### Minor Changes
+
+- 592d119: Adding docs for selectProperties and reducers
+
+### Patch Changes
+
+- @osdk/client@2.80.0
+
 ## 0.8.0
 
 ### Minor Changes

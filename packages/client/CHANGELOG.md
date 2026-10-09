@@ -1,5 +1,14 @@
 # @osdk/client
 
+## 2.80.0
+
+### Patch Changes
+
+- Updated dependencies [e9bf2de]
+  - @osdk/client.unstable@2.80.0
+  - @osdk/api@2.80.0
+  - @osdk/generator-converters@2.80.0
+
 ## 2.79.0
 
 ### Patch Changes

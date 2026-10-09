@@ -1,5 +1,16 @@
 # @osdk/typescript-docs-example-generator
 
+## 0.10.0
+
+### Minor Changes
+
+- 592d119: Adding docs for selectProperties and reducers
+
+### Patch Changes
+
+- Updated dependencies [592d119]
+  - @osdk/typescript-sdk-docs@0.28.0
+
 ## 0.9.0
 
 ### Minor Changes

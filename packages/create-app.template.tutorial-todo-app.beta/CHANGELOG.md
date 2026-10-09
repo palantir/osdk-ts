@@ -1,5 +1,7 @@
 # @osdk/create-app.template.tutorial-todo-app.beta
 
+## 2.80.0
+
 ## 2.79.0
 
 ## 2.78.0
