@@ -85,7 +85,7 @@ export class ObjectsHelper extends AbstractHelper<
         rdpConfig,
       );
       const value =
-        key == null || !batch.changes.writtenObjectCacheKeys.has(key)
+        key == null || !batch.changes.writtenCacheKeys.has(key)
           ? undefined
           : batch.read(key)?.value;
       if (key != null && value != null && typeof value === "object") {
