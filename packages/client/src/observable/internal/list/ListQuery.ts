@@ -29,7 +29,6 @@ import type { Observable, Subscription } from "rxjs";
 import invariant from "tiny-invariant";
 
 import { additionalContext } from "../../../Client.js";
-import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import { extractRdpDefinition } from "../../../util/extractRdpDefinition.js";
@@ -37,17 +36,18 @@ import type { ListPayload } from "../../ListPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { CollectionConnectableParams } from "../base-list/BaseCollectionQuery.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
+import {
+  getListMembershipChanges,
+  type ListObjectChanges,
+  reconcileListChanges,
+} from "../base-list/reconcileListChanges.js";
 import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
-import {
-  API_NAME_IDX as OBJECT_API_NAME_IDX,
-  type ObjectCacheKey,
-} from "../object/ObjectCacheKey.js";
-import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
+import { API_NAME_IDX as OBJECT_API_NAME_IDX } from "../object/ObjectCacheKey.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { PivotInfo } from "../PivotCanonicalizer.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
@@ -76,15 +76,6 @@ export {
   SELECT_IDX,
 } from "./ListCacheKey.js";
 import type { ListQueryOptions } from "./ListQueryOptions.js";
-
-type ExtractRelevantObjectsResult = Record<
-  "added" | "modified",
-  {
-    all: (ObjectHolder | InterfaceHolder)[];
-    strictMatches: Set<ObjectHolder | InterfaceHolder>;
-    sortaMatches: Set<ObjectHolder | InterfaceHolder>;
-  }
->;
 
 /**
  * Base class for filtered and sorted object collection queries.
@@ -469,81 +460,65 @@ export abstract class ListQuery extends BaseListQuery<
     }
 
     try {
-      const relevantObjects =
-        this._extractAndCategorizeRelevantObjects(changes);
+      const relevantObjects = this.extractRelevantObjects(changes);
+      const { retVal: needsRevalidation } = this.store.batch(
+        { optimisticId, changes },
+        (batch) => {
+          const membership = getListMembershipChanges(
+            relevantObjects,
+            this.#whereClause,
+            batch.optimisticWrite,
+          );
+          const existingEntry = batch.read(this.cacheKey);
+          const existingList = new Set(existingEntry?.value?.data);
 
-      // If we got purely strict matches we can just update the list and move
-      // on with our lives. But if we got sorta matches, then we need to revalidate
-      // the list so we preemptively set it to loading to avoid thrashing the store.
-      const status =
-        optimisticId ||
-        relevantObjects.added.sortaMatches.size > 0 ||
-        relevantObjects.modified.sortaMatches.size > 0
-          ? "loading"
-          : "loaded";
-
-      // while we only push updates for the strict matches, we still need to
-      // trigger the list updating if some of our objects changed
-
-      const newList: Array<ObjectCacheKey> = [];
-
-      let needsRevalidation = false;
-      this.store.batch({ optimisticId, changes }, (batch) => {
-        const existingList = new Set(batch.read(this.cacheKey)?.value?.data);
-
-        const toAdd = new Set<ObjectHolder | InterfaceHolder>(
-          // easy case. objects are new to the cache and they match this filter
-          relevantObjects.added.strictMatches,
-        );
-
-        // anything thats been deleted can be removed, so start there
-        const toRemove = new Set<CacheKey>(changes.deleted);
-
-        // deal with the modified objects
-        for (const obj of relevantObjects.modified.all) {
-          if (relevantObjects.modified.strictMatches.has(obj)) {
-            const objectCacheKey = this.getObjectCacheKey(obj);
-
-            if (!existingList.has(objectCacheKey)) {
+          const toAdd = new Set(
+            // easy case. objects are new to the cache and they match this filter
+            membership.added,
+          );
+          // deal with the modified objects
+          for (const obj of membership.modified) {
+            const key = this.store.objects.getCacheKey(obj, this.rdpConfig);
+            if (!existingList.has(key)) {
               // object is new to the list
               toAdd.add(obj);
             }
-            continue;
-          } else if (batch.optimisticWrite) {
-            // we aren't removing objects in optimistic mode
-            // we also don't want to trigger revalidation in optimistic mode
-            // as it should be triggered when the optimistic job is done
-            continue;
-          } else {
-            // object is no longer a strict match
-            const existingObjectCacheKey = this.getObjectCacheKey(obj);
-
-            toRemove.add(existingObjectCacheKey);
-
-            if (relevantObjects.modified.sortaMatches.has(obj)) {
-              // since it might still be in the list we need to revalidate
-              needsRevalidation = true;
-            }
           }
-        }
 
-        for (const key of existingList) {
-          if (toRemove.has(key)) continue;
-          newList.push(key);
-        }
-        for (const obj of toAdd) {
-          newList.push(this.getObjectCacheKey(obj));
-        }
+          // anything thats been deleted can be removed, so start there
+          const keysToRemove = new Set<CacheKey>(changes.deleted);
+          for (const obj of membership.removed) {
+            keysToRemove.add(
+              this.store.objects.getCacheKey(obj, this.rdpConfig),
+            );
+          }
+          const newList = reconcileListChanges(existingList, {
+            keysToInsert: Array.from(toAdd, (obj) =>
+              this.store.objects.getCacheKey(obj, this.rdpConfig),
+            ),
+            keysToRemove,
+          });
 
-        const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
-        this._updateList(
-          newList,
-          status,
-          batch,
-          { type: "clientOrdered" },
-          existingTotalCount,
-        );
-      });
+          // If we got purely strict matches we can just update the list and move
+          // on with our lives. But if we got sorta matches, then we need to revalidate
+          // the list so we preemptively set it to loading to avoid thrashing the store.
+          const status =
+            optimisticId || membership.hasUncertainMatches
+              ? "loading"
+              : "loaded";
+
+          // while we only push updates for the strict matches, we still need to
+          // trigger the list updating if some of our objects changed
+          this._updateList(
+            newList,
+            status,
+            batch,
+            { type: "clientOrdered" },
+            existingEntry?.value?.totalCount,
+          );
+          return membership.needsRevalidation;
+        },
+      );
 
       if (needsRevalidation) {
         return this.revalidate(true);
@@ -558,42 +533,12 @@ export abstract class ListQuery extends BaseListQuery<
     }
   };
 
-  #matchType(obj: ObjectHolder | InterfaceHolder): false | "strict" | "sorta" {
-    // if its a strict match we can just insert it into place
-    if (objectMatchesWhereClause(obj, this.#whereClause, true)) {
-      return "strict";
-    }
-    // sorta match means it used a filter we cannot use on the frontend
-    if (objectMatchesWhereClause(obj, this.#whereClause, false)) {
-      return "sorta";
-    }
-    return false;
-  }
-
-  protected _extractAndCategorizeRelevantObjects(
-    changes: Changes,
-  ): ExtractRelevantObjectsResult {
-    const relevantObjects = this.extractRelevantObjects(changes);
-
-    // categorize
-    for (const group of Object.values(relevantObjects)) {
-      for (const obj of group.all ?? []) {
-        const matchType = this.#matchType(obj);
-        if (matchType) {
-          group[`${matchType}Matches`].add(obj);
-        }
-      }
-    }
-
-    return relevantObjects;
-  }
-
   /**
    * Extract relevant objects for this query type.
    */
   protected abstract extractRelevantObjects(
     changes: Changes,
-  ): ExtractRelevantObjectsResult;
+  ): ListObjectChanges;
 
   registerStreamUpdates(sub: Subscription): void {
     this.createWebsocketSubscription(this.#objectSet, sub, "observeList");
@@ -651,7 +596,10 @@ export abstract class ListQuery extends BaseListQuery<
         "the truth value for our list should exist as we already subscribed",
       );
       if (existing.status === "loaded") {
-        const objectCacheKey = this.getObjectCacheKey(objOrIface);
+        const objectCacheKey = this.store.objects.getCacheKey(
+          objOrIface,
+          this.rdpConfig,
+        );
         // remove the object from the list
         const newObjects = existing.value?.data.filter(
           (o) => o !== objectCacheKey,
@@ -696,19 +644,6 @@ export abstract class ListQuery extends BaseListQuery<
         }
       });
     });
-  }
-
-  private getObjectCacheKey(obj: {
-    $objectType: string;
-    $primaryKey: string | number;
-  }): ObjectCacheKey {
-    const pk = obj.$primaryKey;
-    return this.cacheKeys.get<ObjectCacheKey>(
-      "object",
-      obj.$objectType,
-      pk,
-      this.rdpConfig ?? undefined,
-    );
   }
 }
 
