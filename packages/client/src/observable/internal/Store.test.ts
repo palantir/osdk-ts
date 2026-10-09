@@ -2743,6 +2743,97 @@ describe(Store, () => {
     });
 
     describe("ObjectSetQuery maybeUpdateAndRevalidate", () => {
+      describe("observeObjectSet dependency invalidation", () => {
+        beforeEach(() => {
+          fauxFoundry.getDefaultDataStore().clear();
+        });
+
+        it("refreshes a nested pivot when an intermediate object type changes", async () => {
+          const dataStore = fauxFoundry.getDefaultDataStore();
+          const employee = dataStore.registerObject(Employee, {
+            employeeId: 1,
+            fullName: "Alice",
+          });
+          const office = dataStore.registerObject(Office, {
+            officeId: "london-office",
+            name: "London",
+          });
+          dataStore.registerLink(employee, "officeLink", office, "occupants");
+
+          const objectSet = client(Employee)
+            .where({ employeeId: 1 })
+            .pivotTo("officeLink")
+            .where({ name: "London" })
+            .pivotTo("occupants");
+          const observableClient = new ObservableClientImpl(store);
+          const sub = mockObserver<ObjectSetPayload | undefined>();
+          defer(observableClient.observeObjectSet(objectSet, {}, sub));
+
+          await vi.waitFor(() => {
+            expect(sub.error).not.toHaveBeenCalled();
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                status: "loaded",
+                resolvedList: [expect.objectContaining({ $primaryKey: 1 })],
+              }),
+            );
+          });
+
+          dataStore.replaceObjectOrThrow({ ...office, name: "Paris" });
+          expect((await objectSet.fetchPage()).data).toEqual([]);
+
+          await observableClient.invalidateObjectType(Office);
+
+          await vi.waitFor(() => {
+            expect(sub.error).not.toHaveBeenCalled();
+            expect(sub.next.mock.lastCall?.[0]?.resolvedList).toEqual([]);
+          });
+        });
+
+        it("refreshes an interface object set when an implementing object type changes", async () => {
+          const dataStore = fauxFoundry.getDefaultDataStore();
+          dataStore.registerObject(Employee, {
+            employeeId: 1,
+            fullName: "Alice",
+          });
+
+          const objectSet = client(FooInterface);
+          const observableClient = new ObservableClientImpl(store);
+          const sub = mockObserver<ObjectSetPayload | undefined>();
+          defer(observableClient.observeObjectSet(objectSet, {}, sub));
+
+          await vi.waitFor(() => {
+            expect(sub.error).not.toHaveBeenCalled();
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                status: "loaded",
+                resolvedList: [expect.objectContaining({ $primaryKey: 1 })],
+              }),
+            );
+          });
+
+          dataStore.registerObject(Employee, {
+            employeeId: 2,
+            fullName: "Bob",
+          });
+          const { data } = await objectSet.fetchPage();
+          expect(data.map((object) => object.$primaryKey).sort()).toEqual([
+            1, 2,
+          ]);
+
+          await observableClient.invalidateObjectType(Employee);
+
+          await vi.waitFor(() => {
+            expect(sub.error).not.toHaveBeenCalled();
+            expect(
+              sub.next.mock.lastCall?.[0]?.resolvedList
+                ?.map((object) => object.$primaryKey)
+                .sort(),
+            ).toEqual([1, 2]);
+          });
+        });
+      });
+
       it("should update list in-memory when strict-matching object is added", async () => {
         fauxFoundry.getDefaultDataStore().clear();
 
