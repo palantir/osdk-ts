@@ -151,6 +151,18 @@ describe("ListQuery cache reconciliation", () => {
     });
   }
 
+  function getUncertainMatchQuery() {
+    const withProperties: DerivedProperty.Clause<typeof Employee> = {
+      derivedName: (base) => base.pivotTo("lead").selectProperty("fullName"),
+    };
+    return store.lists.getQuery({
+      type: Employee,
+      where: { fullName: { $contains: "Alice" } },
+      withProperties,
+      mode: "offline",
+    });
+  }
+
   function createEmployee(primaryKey: number): TestEmployee {
     return {
       $apiName: Employee.apiName,
@@ -170,7 +182,7 @@ describe("ListQuery cache reconciliation", () => {
     }).cacheKey;
     const changes = createChangedObjects();
     changes.registerObject(sourceCacheKey, employee, isNew);
-    changes.writtenObjectCacheKeys.add(sourceCacheKey);
+    changes.writtenCacheKeys.add(sourceCacheKey);
     return changes;
   }
 
@@ -186,21 +198,51 @@ describe("ListQuery cache reconciliation", () => {
     );
   }
 
-  it("records object cache writes in the batch's changes", () => {
+  it("records cache writes in the batch's changes", () => {
     const employee = createEmployee(1);
     const objectQuery = store.objects.getQuery({
       apiName: Employee,
       pk: employee.$primaryKey,
     });
+    const listQuery = getRdpQuery();
     const changes = createChangedObjects();
 
     store.batch({ changes }, (batch) => {
       batch.write(objectQuery.cacheKey, employee, "loaded");
+      batch.write(listQuery.cacheKey, { data: [] }, "loaded");
     });
 
-    expect(changes.writtenObjectCacheKeys).toEqual(
-      new Set([objectQuery.cacheKey]),
+    expect(changes.writtenCacheKeys).toEqual(
+      new Set([objectQuery.cacheKey, listQuery.cacheKey]),
     );
+  });
+
+  it("revalidates when an added object has an uncertain filter match", () => {
+    const query = getUncertainMatchQuery();
+    const employee = createEmployee(1);
+    const targetObjectQuery = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: employee.$primaryKey,
+      },
+      query.rdpConfig,
+    );
+    store.batch({}, (batch) => {
+      batch.write(targetObjectQuery.cacheKey, employee, "loaded");
+      query.writeToStore({ data: [] }, "loaded", batch);
+    });
+    const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
+
+    query.maybeUpdateAndRevalidate(
+      createChanges(employee, true, targetObjectQuery.cacheKey),
+      undefined,
+    );
+
+    expect(revalidate).toHaveBeenCalledWith(true);
+    expect(store.getValue(query.cacheKey)).toMatchObject({
+      status: "loading",
+      value: { data: [] },
+    });
   });
 
   it.each([

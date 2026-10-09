@@ -404,7 +404,6 @@ export class ObjectSetQuery extends BaseListQuery<
       relevant.modifiedObjects,
       effectiveWhere,
     );
-
     const { retVal: needsRevalidation } = this.store.batch(
       { optimisticId, changes },
       (batch) => {
@@ -414,6 +413,7 @@ export class ObjectSetQuery extends BaseListQuery<
         const reconciliationPlan = getListReconciliationPlan({
           existingKeys,
           addedDefiniteMatches: addedMatches.definite,
+          addedUncertainMatches: addedMatches.uncertain,
           modifiedObjects: relevant.modifiedObjects,
           modifiedMatches,
           deleted: changes.deleted,
@@ -421,25 +421,21 @@ export class ObjectSetQuery extends BaseListQuery<
           getObjectCacheKey: (obj) => this.#getObjectCacheKey(obj),
           getCachedObjectKey: (obj) => {
             const key = this.#peekObjectCacheKey(obj);
-            if (key == null || !changes.writtenObjectCacheKeys.has(key)) {
+            if (key == null || !changes.writtenCacheKeys.has(key)) {
               return undefined;
             }
             const value = batch.read(key)?.value;
             return value != null && typeof value === "object" ? key : undefined;
           },
         });
-        const { needsRevalidation } = reconciliationPlan;
         const newList = reconcileListChanges(existingKeys, reconciliationPlan);
 
         const isPendingFetchLoading =
           this.pendingFetch != null && existingEntry?.status === "loading";
-        const hasUncertainMatches =
-          addedMatches.uncertain.size > 0 || modifiedMatches.uncertain.size > 0;
         const shouldBeLoading =
           isPendingFetchLoading ||
-          needsRevalidation ||
-          optimisticId != null ||
-          hasUncertainMatches;
+          reconciliationPlan.needsRevalidation ||
+          optimisticId != null;
         const status = shouldBeLoading ? "loading" : "loaded";
 
         const existingTotalCount = existingEntry?.value?.totalCount;
@@ -451,7 +447,7 @@ export class ObjectSetQuery extends BaseListQuery<
           existingTotalCount,
         );
 
-        return needsRevalidation;
+        return reconciliationPlan.needsRevalidation;
       },
     );
 
@@ -580,6 +576,7 @@ function reconcileListChanges(
 function getListReconciliationPlan({
   existingKeys,
   addedDefiniteMatches,
+  addedUncertainMatches,
   modifiedObjects,
   modifiedMatches,
   deleted,
@@ -589,6 +586,7 @@ function getListReconciliationPlan({
 }: {
   existingKeys: ReadonlySet<ObjectCacheKey>;
   addedDefiniteMatches: ReadonlySet<ObjectHolder | InterfaceHolder>;
+  addedUncertainMatches: ReadonlySet<ObjectHolder | InterfaceHolder>;
   modifiedObjects: ReadonlyArray<ObjectHolder>;
   modifiedMatches: {
     definite: ReadonlySet<ObjectHolder | InterfaceHolder>;
@@ -608,7 +606,8 @@ function getListReconciliationPlan({
   const keysToInsert = new Set<ObjectCacheKey>();
   const keysToRemove = new Set<CacheKey>(deleted);
 
-  let needsRevalidation = false;
+  let needsRevalidation =
+    addedUncertainMatches.size > 0 || modifiedMatches.uncertain.size > 0;
   const addIfAvailable = (obj: ObjectHolder | InterfaceHolder): void => {
     const key = getCachedObjectKey(obj);
     if (key == null) {
@@ -629,9 +628,6 @@ function getListReconciliationPlan({
       addIfAvailable(obj);
     } else if (!isOptimistic) {
       keysToRemove.add(getObjectCacheKey(obj));
-      if (modifiedMatches.uncertain.has(obj)) {
-        needsRevalidation = true;
-      }
     }
   }
 

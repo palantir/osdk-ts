@@ -471,13 +471,16 @@ export abstract class ListQuery extends BaseListQuery<
     try {
       const relevantObjects =
         this._extractAndCategorizeRelevantObjects(changes);
+      const hasUncertainMatches =
+        relevantObjects.added.sortaMatches.size > 0 ||
+        relevantObjects.modified.sortaMatches.size > 0;
 
       // while we only push updates for the strict matches, we still need to
       // trigger the list updating if some of our objects changed
 
       const newList: Array<ObjectCacheKey> = [];
 
-      let needsRevalidation = false;
+      let needsRevalidation = hasUncertainMatches;
       this.store.batch({ optimisticId, changes }, (batch) => {
         const existingList = new Set(batch.read(this.cacheKey)?.value?.data);
         const keysToAdd = new Set<ObjectCacheKey>();
@@ -486,7 +489,7 @@ export abstract class ListQuery extends BaseListQuery<
           obj: ObjectHolder | InterfaceHolder,
         ): ObjectCacheKey | undefined => {
           const key = this.peekObjectCacheKey(obj);
-          if (key == null || !changes.writtenObjectCacheKeys.has(key)) {
+          if (key == null || !changes.writtenCacheKeys.has(key)) {
             return undefined;
           }
 
@@ -529,11 +532,6 @@ export abstract class ListQuery extends BaseListQuery<
             const existingObjectCacheKey = this.getObjectCacheKey(obj);
 
             toRemove.add(existingObjectCacheKey);
-
-            if (relevantObjects.modified.sortaMatches.has(obj)) {
-              // since it might still be in the list we need to revalidate
-              needsRevalidation = true;
-            }
           }
         }
 
@@ -551,11 +549,7 @@ export abstract class ListQuery extends BaseListQuery<
         // we can update the list locally. Otherwise, keep it loading until the
         // pending operation or server revalidation supplies the missing data.
         const status =
-          optimisticId ||
-          isPendingFetchLoading ||
-          needsRevalidation ||
-          relevantObjects.added.sortaMatches.size > 0 ||
-          relevantObjects.modified.sortaMatches.size > 0
+          optimisticId || isPendingFetchLoading || needsRevalidation
             ? "loading"
             : "loaded";
 

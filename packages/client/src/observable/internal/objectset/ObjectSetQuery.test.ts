@@ -60,6 +60,17 @@ describe("ObjectSetQuery cache reconciliation", () => {
     });
   }
 
+  function getUncertainMatchQuery() {
+    return store.objectSets.getQuery({
+      baseObjectSet: client(Employee) as ObjectSet<typeof Employee>,
+      where: { fullName: { $contains: "Alice" } },
+      withProperties: {
+        derivedName: (base) => base.pivotTo("lead").selectProperty("fullName"),
+      },
+      mode: "offline",
+    });
+  }
+
   function createEmployee(): ObjectHolder {
     return {
       $apiName: Employee.apiName,
@@ -79,9 +90,34 @@ describe("ObjectSetQuery cache reconciliation", () => {
     }).cacheKey;
     const changes = createChangedObjects();
     changes.registerObject(sourceCacheKey, employee, isNew);
-    changes.writtenObjectCacheKeys.add(sourceCacheKey);
+    changes.writtenCacheKeys.add(sourceCacheKey);
     return changes;
   }
+
+  it("revalidates when an added object has an uncertain filter match", () => {
+    const query = getUncertainMatchQuery();
+    const employee = createEmployee();
+    const targetObjectQuery = store.objects.getQuery(
+      { apiName: Employee, pk: employee.$primaryKey },
+      query.rdpConfig,
+    );
+    store.batch({}, (batch) => {
+      batch.write(targetObjectQuery.cacheKey, employee, "loaded");
+      query.writeToStore({ data: [] }, "loaded", batch);
+    });
+    const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
+
+    query.maybeUpdateAndRevalidate(
+      createChanges(employee, true, targetObjectQuery.cacheKey),
+      undefined,
+    );
+
+    expect(revalidate).toHaveBeenCalledWith(true);
+    expect(store.getValue(query.cacheKey)).toMatchObject({
+      status: "loading",
+      value: { data: [] },
+    });
+  });
 
   it.each([
     ["adds", true],
