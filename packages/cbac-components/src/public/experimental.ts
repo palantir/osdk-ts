@@ -15,29 +15,38 @@
  */
 
 // CBAC Picker - OSDK-aware components
+/** @deprecated Use `@osdk/react-components/experimental/cbac-picker` instead. */
 export { CbacBanner } from "../cbac-picker/CbacBanner.js";
+/** @deprecated Use `@osdk/react-components/experimental/cbac-picker` instead. */
 export { CbacBannerPopover } from "../cbac-picker/CbacBannerPopover.js";
 import { CbacPicker as _CbacPicker } from "../cbac-picker/CbacPicker.js";
 import { withOsdkMetrics } from "../util/withOsdkMetrics.js";
 
+/** @deprecated Use `@osdk/react-components/experimental/cbac-picker` instead. */
 export const CbacPicker: typeof _CbacPicker = withOsdkMetrics(
   _CbacPicker,
   "CbacPicker",
 );
+/** @deprecated Use `@osdk/react-components/experimental/cbac-picker` instead. */
 export { CbacPickerDialog } from "../cbac-picker/CbacPickerDialog.js";
 
 // CBAC Picker - Base components
+/** @deprecated Use `@osdk/react-components/experimental/cbac-picker` instead. */
 export { BaseCbacBanner } from "../cbac-picker/base/BaseCbacBanner.js";
+/** @deprecated Use `@osdk/react-components/experimental/cbac-picker` instead. */
 export { BaseCbacPicker } from "../cbac-picker/base/BaseCbacPicker.js";
+/** @deprecated Use `@osdk/react-components/experimental/cbac-picker` instead. */
 export { BaseCbacPickerDialog } from "../cbac-picker/base/BaseCbacPickerDialog.js";
 
 // CBAC Picker - Selection logic utilities
+/** @deprecated Use `@osdk/react-components/experimental/cbac-picker` instead. */
 export {
   computeMarkingStates,
   groupMarkingsByCategory,
   toggleMarking,
 } from "../cbac-picker/utils/selectionLogic.js";
 // CBAC Picker - Types
+/** @deprecated Use `@osdk/react-components/experimental/cbac-picker` instead. */
 export type {
   CategoryMarkingGroup,
   CbacBannerData,
@@ -49,5 +58,7 @@ export type {
 } from "../cbac-picker/types.js";
 
 // CBAC Picker - MaxClassificationField
+/** @deprecated Use `@osdk/react-components/experimental/cbac-picker` instead. */
 export { MaxClassificationField } from "../cbac-picker/base/MaxClassificationField.js";
+/** @deprecated Use `@osdk/react-components/experimental/cbac-picker` instead. */
 export type { MaxClassificationFieldProps } from "../cbac-picker/base/MaxClassificationField.js";
