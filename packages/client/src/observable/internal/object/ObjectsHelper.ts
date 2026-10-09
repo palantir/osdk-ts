@@ -212,7 +212,12 @@ export class ObjectsHelper extends AbstractHelper<
     if (value === tombstone) {
       batch.changes.deleteObject(sourceCacheKey);
     } else {
-      batch.changes.registerObject(sourceCacheKey, value, !existing);
+      batch.changes.registerObject(
+        sourceCacheKey,
+        value,
+        !existing,
+        selectFields,
+      );
     }
 
     const metadata =

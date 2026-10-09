@@ -22,6 +22,7 @@ import type {
 import type { Observable, Subscription } from "rxjs";
 
 import { additionalContext } from "../../../Client.js";
+import { ObjectDefRef } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import { extractRdpDefinition } from "../../../util/extractRdpDefinition.js";
@@ -286,7 +287,7 @@ export class ObjectSetQuery extends BaseListQuery<
         remaining,
         "loading",
         batch,
-        { type: "clientOrdered" },
+        { type: "serverOrdered", append: false },
         existing.totalCount,
       );
     });
@@ -342,12 +343,42 @@ export class ObjectSetQuery extends BaseListQuery<
     if (!optimisticId && (this.nextPageToken != null || missingSortFields))
       return this.revalidate(true);
 
-    const matches = new Map(
-      [...relevant.addedObjects, ...relevant.modifiedObjects].map(
-        (object) => [object, this.#analysis?.matches(object)] as const,
-      ),
-    );
-    if (!optimisticId && [...matches.values()].includes(undefined)) {
+    const layer = optimisticId
+      ? this.store.layers.top
+      : this.store.layers.truth;
+    const existingKeys = new Set(layer.get(this.cacheKey)?.value?.data);
+    const matches = new Map<ObjectHolder, boolean | undefined>();
+    let incompleteObjects = false;
+    for (const object of [
+      ...relevant.addedObjects,
+      ...relevant.modifiedObjects,
+    ]) {
+      const key = this.#getObjectCacheKey(object);
+      if (changes.deleted.has(key)) continue;
+      const selected = changes.objectSelectFields.get(object);
+      const merged = selected ? (layer.get(key)?.value ?? object) : object;
+      const matchesQuery = this.#analysis?.matches(merged);
+      matches.set(merged, matchesQuery);
+      if (matchesQuery === false) continue;
+      const requiredFields =
+        this.#operations.select ?? Object.keys(object[ObjectDefRef].properties);
+      if (
+        Object.keys(this.#operations.orderBy ?? {}).some(
+          (field) => !(field in merged),
+        ) ||
+        (selected &&
+          !existingKeys.has(key) &&
+          requiredFields.some(
+            (field) => !selected.has(field) && !(field in merged),
+          ))
+      ) {
+        incompleteObjects = true;
+      }
+    }
+    if (
+      !optimisticId &&
+      (incompleteObjects || [...matches.values()].includes(undefined))
+    ) {
       return this.revalidate(true);
     }
 
