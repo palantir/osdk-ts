@@ -2,4 +2,4 @@
 "@osdk/generator-converters.ontologyir": minor
 ---
 
-wip
+Remove getOsdkPropertyType duplication
