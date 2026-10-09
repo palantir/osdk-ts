@@ -1,0 +1,70 @@
+name: Chromatic
+
+env:
+  DO_NOT_TRACK: 1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/react-components/**'
+      - 'packages/react-components-storybook/**'
+      - '.github/actions/build-storybook/**'
+      - '.github/workflows/chromatic.yml'
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'packages/react-components/**'
+      - 'packages/react-components-storybook/**'
+      - '.github/actions/build-storybook/**'
+      - '.github/workflows/chromatic.yml'
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'push' }}
+
+jobs:
+  chromatic:
+    name: Run Chromatic
+    # Fork PRs cannot read repository secrets. Draft PRs are skipped because
+    # every push to one bills a full set of snapshots; ready_for_review in the
+    # trigger list makes the first build land when the PR opens for review.
+    if: >-
+      ${{ github.event_name == 'push'
+        || (github.event.pull_request.draft == false
+          && github.event.pull_request.head.repo.full_name == github.repository) }}
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          # Chromatic uses git history to find baselines across commits.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Build Storybook
+        uses: ./.github/actions/build-storybook
+        with:
+          # Chromatic serves the build from the root of its own domain, so
+          # override the /osdk-ts/storybook/ default used for GitHub Pages.
+          base-path: /
+
+      # --exit-zero-on-changes is temporary: visual diffs are reported but do
+      # not fail the build while the initial baselines settle. Drop it once
+      # main has an accepted baseline for every story and no story diffs run
+      # to run.
+      #
+      # --auto-accept-changes main accepts main's builds as the baseline
+      - name: Publish to Chromatic
+        env:
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        run: |
+          pnpm --filter @osdk/react-components-storybook chromatic \
+            --exit-zero-on-changes \
+            --auto-accept-changes main

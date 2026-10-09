@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
+import { readFileSync } from "node:fs";
+
 import type { StorybookConfig } from "@storybook/react-vite";
 
 const storybookBasePath = process.env.STORYBOOK_BASE_PATH;
+
+const reactComponentsVersion: string = JSON.parse(
+  readFileSync(
+    new URL("../../react-components/package.json", import.meta.url),
+    "utf-8",
+  ),
+).version;
 
 const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)", "../src/**/*.mdx"],
@@ -73,24 +82,82 @@ const config: StorybookConfig = {
       config.base = "/osdk-ts/storybook/";
     }
 
-    // Ensure proper resolution of workspace packages
+    // Ensure proper resolution of workspace packages. Array form because the
+    // workspace-source entries below need regex `find` values, which the
+    // object form cannot express.
+    const priorAlias = config.resolve?.alias;
     config.resolve = {
       ...config.resolve,
-      alias: {
-        ...config.resolve?.alias,
+      alias: [
+        ...(Array.isArray(priorAlias)
+          ? priorAlias
+          : Object.entries(priorAlias ?? {}).map(([find, replacement]) => ({
+              find,
+              replacement,
+            }))),
+        // Resolve the workspace packages that own the stories to their source
+        // rather than their published `build/browser/*` entry points.
+        //
+        // Chromatic TurboSnap decides what to re-capture by mapping
+        // git-changed files onto Vite's dependency graph. Resolving through
+        // package exports fills that graph with gitignored build output, so a
+        // change under `src/` traces to no graph node and TurboSnap falls back
+        // to capturing every story. Pointing at source keeps the graph made of
+        // files git can actually see.
+        // The subpath patterns deliberately match only extensionless
+        // specifiers, so asset exports like `@osdk/react-components/styles.css`
+        // (a postcss-concatenated bundle with no single source file) keep
+        // resolving through package exports.
+        {
+          find: /^@osdk\/react-components\/((?:[^./]+\/)*[^./]+)$/u,
+          replacement: new URL(
+            "../../react-components/src/public/$1.ts",
+            import.meta.url,
+          ).pathname,
+        },
+        {
+          find: /^@osdk\/react-components$/u,
+          replacement: new URL(
+            "../../react-components/src/index.ts",
+            import.meta.url,
+          ).pathname,
+        },
+        {
+          find: /^@osdk\/react\/((?:[^./]+\/)*[^./]+)$/u,
+          replacement: new URL("../../react/src/public/$1.ts", import.meta.url)
+            .pathname,
+        },
+        {
+          find: /^@osdk\/react$/u,
+          replacement: new URL("../../react/src/index.ts", import.meta.url)
+            .pathname,
+        },
         // Resolve @docs/ and @rc/ to the react-components package so MDX
         // wrappers can import .md files without fragile relative paths.
-        "@docs": new URL("../../react-components/docs", import.meta.url)
-          .pathname,
-        "@rc-root": new URL("../../react-components", import.meta.url).pathname,
+        {
+          find: "@docs",
+          replacement: new URL("../../react-components/docs", import.meta.url)
+            .pathname,
+        },
+        {
+          find: "@rc-root",
+          replacement: new URL("../../react-components", import.meta.url)
+            .pathname,
+        },
         // Polyfill Node.js modules for browser
         // This is necessary because MSW (Mock Service Worker) and other dependencies
         // use Node.js built-in modules like crypto.randomUUID() which aren't available
         // in browser environments. These polyfills provide browser-compatible implementations
         // to ensure Storybook stories work correctly across all browsers.
-        "node:crypto": new URL("crypto-polyfill.ts", import.meta.url).pathname,
-        "node:util": new URL("util-polyfill.ts", import.meta.url).pathname,
-      },
+        {
+          find: "node:crypto",
+          replacement: new URL("crypto-polyfill.ts", import.meta.url).pathname,
+        },
+        {
+          find: "node:util",
+          replacement: new URL("util-polyfill.ts", import.meta.url).pathname,
+        },
+      ],
     };
 
     // Define Node.js globals for browser compatibility
@@ -98,6 +165,16 @@ const config: StorybookConfig = {
       ...config.define,
       "import.meta.env.SSR": false,
       global: "globalThis",
+      // Resolving @osdk/react-components and @osdk/react to source (see the
+      // alias block above) means Vite, not the transpile tool, has to
+      // substitute the `process.env` reads in those packages — browsers have no
+      // `process`, so leaving them raw throws at import time. PACKAGE_VERSION
+      // only ends up in a User-Agent string, so one value for both packages is
+      // fine here.
+      "process.env.NODE_ENV": JSON.stringify(
+        config.mode === "production" ? "production" : "development",
+      ),
+      "process.env.PACKAGE_VERSION": JSON.stringify(reactComponentsVersion),
     };
 
     // Turbo watch rebuilds upstream packages on change, which briefly
