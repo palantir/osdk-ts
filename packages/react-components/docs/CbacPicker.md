@@ -104,18 +104,20 @@ function ClassificationDialog() {
 | `onChange`                    | `(markingIds: string[]) => void` | **Required.** Called when the selection changes.                                                                                               |
 | `maxClassificationConstraint` | `MaxClassificationConstraint`    | Optional constraint capping the maximum classification a user may select. When set, the picker surfaces a callout if the selection exceeds it. |
 | `readOnly`                    | `boolean`                        | Disables marking toggle interactions. Defaults to `false`.                                                                                     |
+| `includeDeleted`              | `boolean`                        | Whether deleted markings and marking categories are shown. Defaults to `false`.                                                                |
 | `className`                   | `string`                         | CSS class for the picker container.                                                                                                            |
 
 <!-- AUTOGEN:props END -->
 
 ### CbacPickerDialog
 
-| Prop                | Type                             | Required | Default | Description                                     |
-| ------------------- | -------------------------------- | -------- | ------- | ----------------------------------------------- |
-| `isOpen`            | `boolean`                        | Yes      | -       | Controls dialog visibility                      |
-| `onOpenChange`      | `(open: boolean) => void`        | Yes      | -       | Called when dialog open state changes           |
-| `onConfirm`         | `(markingIds: string[]) => void` | Yes      | -       | Called with the selected marking IDs on confirm |
-| `initialMarkingIds` | `string[]`                       | No       | `[]`    | Initial set of selected marking IDs             |
+| Prop                | Type                             | Required | Default | Description                                               |
+| ------------------- | -------------------------------- | -------- | ------- | --------------------------------------------------------- |
+| `isOpen`            | `boolean`                        | Yes      | -       | Controls dialog visibility                                |
+| `onOpenChange`      | `(open: boolean) => void`        | Yes      | -       | Called when dialog open state changes                     |
+| `onConfirm`         | `(markingIds: string[]) => void` | Yes      | -       | Called with the selected marking IDs on confirm           |
+| `initialMarkingIds` | `string[]`                       | No       | `[]`    | Initial set of selected marking IDs                       |
+| `includeDeleted`    | `boolean`                        | No       | `false` | Whether deleted markings and marking categories are shown |
 
 The dialog title automatically adjusts: "Add classification" when no initial markings are provided, "Edit classification" when editing existing markings. The confirm button is disabled with a tooltip when the selection is invalid (e.g., missing required markings).
 
