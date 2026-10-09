@@ -26,14 +26,14 @@ export async function getWidgetBuildContext(root: string): Promise<{
   version: string;
   inputSpec: WidgetSetInputSpec;
 }> {
-  const loaded = await loadFoundryConfig("widgetSet", root);
+  const loaded = await loadFoundryConfig("widgetSet", { cwd: root });
   if (loaded == null) {
     throw new Error("foundry.config.json file not found.");
   }
   const config = loaded.foundryConfig;
   const version = await autoVersion(
     config.widgetSet.autoVersion ?? { type: "package-json" },
-    root,
+    { cwd: root },
   );
   return {
     widgetSetRid: config.widgetSet.rid,
