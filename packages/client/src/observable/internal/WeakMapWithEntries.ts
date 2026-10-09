@@ -37,45 +37,21 @@ interface WeakMapIterables<K extends WeakKey, V> {
 export class WeakMapWithEntries<K extends WeakKey, V>
   implements WeakMap<K, V>, WeakMapIterables<K, V>
 {
-  #map = new WeakMap<K, V>();
-  #list: WeakRef<K>[] = [];
-  #toClean: WeakRef<WeakKey>[] = [];
-  #needsCleaning = false;
-
-  #registry = new FinalizationRegistry(() => {
-    this.#toClean.push(new WeakRef({}));
-    this.#needsCleaning = true;
-  });
-
-  constructor() {
-    const weakThis = new WeakRef(this);
-    const intervalId = setInterval(() => {
-      const self = weakThis.deref();
-      if (self) {
-        if (this.#needsCleaning) {
-          this.#clean();
-        }
-      } else {
-        clearInterval(intervalId);
-      }
-    }, 1000);
-  }
-
-  #clean() {
-    this.#list = this.#list.filter((ref) => ref.deref() !== undefined);
-  }
+  #map = new WeakMap<K, { value: V; ref: WeakRef<K> }>();
+  #refs = new Set<WeakRef<K>>();
 
   // functions for WeakMap
   delete(key: K): boolean {
-    const ret = this.#map.delete(key);
-    this.#toClean.push(new WeakRef(key));
-    this.#needsCleaning = true;
-
-    return ret;
+    const entry = this.#map.get(key);
+    if (!entry) {
+      return false;
+    }
+    this.#refs.delete(entry.ref);
+    return this.#map.delete(key);
   }
 
   get(key: K): V | undefined {
-    return this.#map.get(key);
+    return this.#map.get(key)?.value;
   }
 
   has(key: K): boolean {
@@ -87,11 +63,14 @@ export class WeakMapWithEntries<K extends WeakKey, V>
    * @param key Must be an object or symbol.
    */
   set(key: K, value: V): this {
-    if (!this.#map.has(key)) {
-      this.#list.push(new WeakRef(key));
+    const entry = this.#map.get(key);
+    if (entry) {
+      entry.value = value;
+    } else {
+      const ref = new WeakRef(key);
+      this.#refs.add(ref);
+      this.#map.set(key, { value, ref });
     }
-    this.#map.set(key, value);
-
     return this;
   }
 
@@ -105,52 +84,39 @@ export class WeakMapWithEntries<K extends WeakKey, V>
 
   /**
    * Returns an iterable of key, value pairs for every entry in the map.
+   * @yields {[K, V]} A key and its stored value.
    */
-  entries(): IterableIterator<[K, V]> {
-    const self = this;
-    function* iter(): IterableIterator<[K, V]> {
-      for (const ref of self.#list) {
-        const key = ref.deref();
-        if (key !== undefined) {
-          yield [key, self.#map.get(key)] as [K, V];
-        }
+  *entries(): IterableIterator<[K, V]> {
+    for (const ref of this.#refs) {
+      const key = ref.deref();
+      if (key === undefined) {
+        this.#refs.delete(ref);
+        continue;
+      }
+      const entry = this.#map.get(key);
+      if (entry) {
+        yield [key, entry.value];
       }
     }
-    return iter();
   }
 
   /**
    * Returns an iterable of keys in the map
+   * @yields {K} A stored key.
    */
-  keys(): IterableIterator<K> {
-    const self = this;
-    function* iter(): IterableIterator<K> {
-      for (const ref of self.#list) {
-        const key = ref.deref();
-        if (key !== undefined) {
-          yield key;
-        }
-      }
+  *keys(): IterableIterator<K> {
+    for (const [key] of this.entries()) {
+      yield key;
     }
-    return iter();
   }
 
   /**
    * Returns an iterable of values in the map
+   * @yields {V} A stored value.
    */
-  values(): IterableIterator<V> {
-    const self = this;
-    function* iter(): IterableIterator<V> {
-      for (const ref of self.#list) {
-        const key = ref.deref();
-        if (key !== undefined) {
-          const value = self.#map.get(key);
-          if (value !== undefined) {
-            yield value;
-          }
-        }
-      }
+  *values(): IterableIterator<V> {
+    for (const [, value] of this.entries()) {
+      yield value;
     }
-    return iter();
   }
 }
