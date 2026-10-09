@@ -36,7 +36,7 @@ import type * as Ontologies from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { ApiName } from "./ApiName.js";
 import { convertValueType } from "./convertValueType.js";
-import { toStructFieldRid } from "./ridUtils.js";
+import { OntologyIrToFullMetadataConverter } from "./OntologyIrToFullMetadataConverter.js";
 
 export class OntologyBlockDataToFullMetadataConverter {
   static getFullMetadataFromBlockData(
@@ -1178,80 +1178,7 @@ export class OntologyBlockDataToFullMetadataConverter {
   static getOsdkPropertyTypeFromBlockData(
     type: Type | InterfacePropertyTypeType,
   ): Ontologies.ObjectPropertyType | null {
-    switch (type.type) {
-      case "array": {
-        const value = type.array;
-        const subType = this.getOsdkPropertyTypeFromBlockData(value.subtype);
-        return subType ? { type: "array", subType, reducers: [] } : null;
-      }
-      case "boolean":
-        return { type: "boolean" };
-      case "byte":
-        return { type: "byte" };
-      case "date":
-        return { type: "date" };
-      case "decimal":
-        return { type: "decimal" };
-      case "double":
-        return { type: "double" };
-      case "float":
-        return { type: "float" };
-      case "geohash":
-        return { type: "geopoint" };
-      case "geoshape":
-        return { type: "geoshape" };
-      case "integer":
-        return { type: "integer" };
-      case "long":
-        return { type: "long" };
-      case "short":
-        return { type: "short" };
-      case "string":
-        return { type: "string" };
-      case "experimentalTimeDependentV1":
-        return null;
-      case "timestamp":
-        return { type: "timestamp" };
-      case "attachment":
-        return { type: "attachment" };
-      case "marking":
-        return { type: "marking" };
-      case "cipherText":
-        return { type: "cipherText" };
-      case "mediaReference":
-        return { type: "mediaReference" };
-      case "vector":
-        return null;
-      case "geotimeSeriesReference":
-        return { type: "geotimeSeriesReference" };
-      case "timestamp":
-        return { type: "timestamp" };
-      case "struct": {
-        const value = type.struct;
-        const structIdentity = JSON.stringify(type);
-        return {
-          type: "struct",
-          structFieldTypes: value.structFields.map(field => {
-            const fieldDataType = this.getOsdkPropertyTypeFromBlockData(
-              field.fieldType,
-            );
-            if (!fieldDataType) {
-              throw new Error(
-                `Unsupported field type in struct: ${field.apiName}`,
-              );
-            }
-            return {
-              apiName: field.apiName,
-              rid: toStructFieldRid(structIdentity, field.apiName),
-              dataType: fieldDataType,
-              typeClasses: [],
-            };
-          }),
-        };
-      }
-      default:
-        return null;
-    }
+    return OntologyIrToFullMetadataConverter.getOsdkPropertyType(type);
   }
 
   private static convertObjectTypeStatusFromBlockData(

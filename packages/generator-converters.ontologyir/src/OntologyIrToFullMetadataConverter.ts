@@ -15,6 +15,7 @@
  */
 
 import type {
+  InterfacePropertyTypeType,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionTypeStatus,
   OntologyIrInterfaceTypeBlockDataV2,
@@ -26,6 +27,7 @@ import type {
   OntologyIrOntologyBlockDataV2,
   OntologyIrSharedPropertyTypeBlockDataV2,
   OntologyIrType,
+  Type,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
@@ -1451,7 +1453,7 @@ export class OntologyIrToFullMetadataConverter {
    * Convert property types from IR to OSDK format
    */
   static getOsdkPropertyType(
-    type: OntologyIrType,
+    type: OntologyIrType | Type | InterfacePropertyTypeType,
   ): Ontologies.ObjectPropertyType | null {
     switch (type.type) {
       case "array": {
@@ -1466,7 +1468,11 @@ export class OntologyIrToFullMetadataConverter {
       case "date":
         return { type: "date" };
       case "decimal":
-        return { type: "decimal" };
+        return {
+          type: "decimal",
+          precision: type.decimal.precision ?? undefined,
+          scale: type.decimal.scale ?? undefined,
+        };
       case "double":
         return { type: "double" };
       case "float":
