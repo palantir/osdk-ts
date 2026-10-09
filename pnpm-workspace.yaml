@@ -20,8 +20,8 @@ packages:
 # considered and is best suited for internal packages with stable APIs.
 catalogs:
   foundry-platform-typescript:
-    "@osdk/docs-spec-core": 0.6.0
-    "@osdk/docs-spec-sdk": 0.17.0
+    "@osdk/docs-spec-core": 0.7.0
+    "@osdk/docs-spec-sdk": 0.23.0
     "@osdk/foundry": 2.78.0
     "@osdk/foundry.agents": 2.81.0
     "@osdk/foundry.core": 2.78.0

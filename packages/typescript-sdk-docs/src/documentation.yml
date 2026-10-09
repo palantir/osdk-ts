@@ -994,6 +994,31 @@ versions:
             catch (e) {
                 throw e;
             }
+      selectPropertiesGuide:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            // Edit this import if your client location differs
+            import { client } from "./client";
+
+            const page = await client({{objectType}}).fetchPage({
+                $select: ["{{titleProperty}}"],
+            });
+      applyPropertyModifiersGuide:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            // Edit this import if your client location differs
+            import { client } from "./client";
+
+            const page = await client({{objectType}}).fetchPage({
+                $applyModifiers: {
+                    {{arrayProperty}}: "applyReducers",
+                },
+            });
+
+            for (const object of page.data) {
+                // The property type is the array element type, not the original array type.
+                const reducedValue = object.{{arrayProperty}};
+            }
       orderObjectsGuide:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";

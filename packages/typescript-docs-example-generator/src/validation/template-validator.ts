@@ -250,6 +250,7 @@ export class TemplateValidator {
       packageName: "",
       objectType: "",
       titleProperty: "",
+      arrayProperty: "",
       property: "",
       otherProperty: "",
       operation: "",
