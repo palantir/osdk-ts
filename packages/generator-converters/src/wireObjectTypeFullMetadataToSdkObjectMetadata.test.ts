@@ -16,6 +16,7 @@
 
 import type { ObjectMetadata } from "@osdk/api";
 import { describe, expect, expectTypeOf, it } from "vitest";
+
 import type {
   supportedIconTypes,
   supportedObjectTypeVisibility,
@@ -25,43 +26,46 @@ import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "./wireObjectTypeF
 
 describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
   it("handles magic nullable properties", () => {
-    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
-      implementsInterfaces: [],
-      implementsInterfaces2: {},
-      linkTypes: [],
-      objectType: {
-        apiName: "apiName",
-        description: "description",
-        displayName: "displayName",
-        pluralDisplayName: "displayNames",
-        aliases: [],
-        datasources: [],
-        icon: { type: "blueprint", name: "blueprint", color: "blue" },
-        primaryKey: "primaryKey",
-        properties: {
-          primaryKey: {
-            dataType: { type: "string" },
-            "rid": "rid",
-            typeClasses: [],
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata(
+      {
+        implementsInterfaces: [],
+        implementsInterfaces2: {},
+        linkTypes: [],
+        objectType: {
+          apiName: "apiName",
+          description: "description",
+          displayName: "displayName",
+          pluralDisplayName: "displayNames",
+          aliases: [],
+          datasources: [],
+          icon: { type: "blueprint", name: "blueprint", color: "blue" },
+          primaryKey: "primaryKey",
+          properties: {
+            primaryKey: {
+              dataType: { type: "string" },
+              rid: "rid",
+              typeClasses: [],
+            },
+            otherKey: {
+              nullable: false,
+              dataType: { type: "string" },
+              rid: "rid",
+              typeClasses: [],
+            },
+            defaulted: {
+              dataType: { type: "string" },
+              rid: "rid",
+              typeClasses: [],
+            },
           },
-          otherKey: {
-            nullable: false,
-            dataType: { type: "string" },
-            rid: "rid",
-            typeClasses: [],
-          },
-          defaulted: {
-            dataType: { type: "string" },
-            rid: "rid",
-            typeClasses: [],
-          },
+          rid: "rid",
+          status: "ACTIVE",
+          titleProperty: "otherKey",
         },
-        rid: "rid",
-        status: "ACTIVE",
-        titleProperty: "otherKey",
+        sharedPropertyTypeMapping: {},
       },
-      sharedPropertyTypeMapping: {},
-    }, true);
+      true,
+    );
 
     // PK is never nullable
     expect(result.properties.primaryKey.nullable).toBe(false);
@@ -76,74 +80,71 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
   it("Is up to date with the enums from API", () => {
     type excludedStatuses = "";
     expectTypeOf<
-      Exclude<
-        typeof supportedReleaseStatus[number],
-        excludedStatuses
-      >
-    >()
-      .toEqualTypeOf<
-        NonNullable<ObjectMetadata["status"]>
-      >();
+      Exclude<(typeof supportedReleaseStatus)[number], excludedStatuses>
+    >().toEqualTypeOf<NonNullable<ObjectMetadata["status"]>>();
 
     type excludedVisibility = "";
     expectTypeOf<
-      Exclude<typeof supportedObjectTypeVisibility[number], excludedVisibility>
-    >().toEqualTypeOf<
-      NonNullable<ObjectMetadata["visibility"]>
-    >();
+      Exclude<
+        (typeof supportedObjectTypeVisibility)[number],
+        excludedVisibility
+      >
+    >().toEqualTypeOf<NonNullable<ObjectMetadata["visibility"]>>();
 
     type excludedIconTypes = "";
     expectTypeOf<
-      Exclude<typeof supportedIconTypes[number], excludedIconTypes>
-    >()
-      .toEqualTypeOf<
-        NonNullable<NonNullable<ObjectMetadata["icon"]>["type"]>
-      >();
+      Exclude<(typeof supportedIconTypes)[number], excludedIconTypes>
+    >().toEqualTypeOf<
+      NonNullable<NonNullable<ObjectMetadata["icon"]>["type"]>
+    >();
   });
 
   it("does not throw when enums don't match", () => {
-    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
-      implementsInterfaces: [],
-      implementsInterfaces2: {},
-      linkTypes: [],
-      objectType: {
-        apiName: "apiName",
-        description: "description",
-        displayName: "displayName",
-        pluralDisplayName: "displayNames",
-        aliases: [],
-        datasources: [],
-        icon: {
-          type: "INVALID_NOT_IN_API",
-          name: "blueprint",
-          color: "blue",
-        } as any,
-        primaryKey: "primaryKey",
-        properties: {
-          primaryKey: {
-            dataType: { type: "string" },
-            "rid": "rid",
-            typeClasses: [],
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata(
+      {
+        implementsInterfaces: [],
+        implementsInterfaces2: {},
+        linkTypes: [],
+        objectType: {
+          apiName: "apiName",
+          description: "description",
+          displayName: "displayName",
+          pluralDisplayName: "displayNames",
+          aliases: [],
+          datasources: [],
+          icon: {
+            type: "INVALID_NOT_IN_API",
+            name: "blueprint",
+            color: "blue",
+          } as any,
+          primaryKey: "primaryKey",
+          properties: {
+            primaryKey: {
+              dataType: { type: "string" },
+              rid: "rid",
+              typeClasses: [],
+            },
+            otherKey: {
+              nullable: false,
+              dataType: { type: "string" },
+              rid: "rid",
+              typeClasses: [],
+            },
+            defaulted: {
+              dataType: { type: "string" },
+              rid: "rid",
+              typeClasses: [],
+            },
           },
-          otherKey: {
-            nullable: false,
-            dataType: { type: "string" },
-            rid: "rid",
-            typeClasses: [],
-          },
-          defaulted: {
-            dataType: { type: "string" },
-            rid: "rid",
-            typeClasses: [],
-          },
+          rid: "rid",
+          status: "INVALID_NOT_IN_API" as any,
+          visibility: "INVALID_NOT_IN_API" as any,
+          titleProperty: "otherKey",
         },
-        rid: "rid",
-        status: "INVALID_NOT_IN_API" as any,
-        visibility: "INVALID_NOT_IN_API" as any,
-        titleProperty: "otherKey",
+        sharedPropertyTypeMapping: {},
       },
-      sharedPropertyTypeMapping: {},
-    }, true);
+      true,
+    );
 
     expect(result.status).toBeUndefined();
     expect(result.visibility).toBeUndefined();
@@ -151,51 +152,54 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
   });
 
   it("sorts the implements array for stable output", () => {
-    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
-      implementsInterfaces: ["InterfaceZ", "InterfaceA", "InterfaceC"],
-      implementsInterfaces2: {
-        "InterfaceZ": {
-          properties: {},
-          propertiesV2: {},
-          links: {},
-          actionTypes: {},
-        },
-        "InterfaceA": {
-          properties: {},
-          propertiesV2: {},
-          links: {},
-          actionTypes: {},
-        },
-        "InterfaceC": {
-          properties: {},
-          propertiesV2: {},
-          links: {},
-          actionTypes: {},
-        },
-      },
-      linkTypes: [],
-      objectType: {
-        apiName: "apiName",
-        description: "description",
-        displayName: "displayName",
-        pluralDisplayName: "displayNames",
-        aliases: [],
-        datasources: [],
-        icon: { type: "blueprint", name: "blueprint", color: "blue" },
-        primaryKey: "primaryKey",
-        properties: {
-          primaryKey: {
-            dataType: { type: "string" },
-            "rid": "rid",
-            typeClasses: [],
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata(
+      {
+        implementsInterfaces: ["InterfaceZ", "InterfaceA", "InterfaceC"],
+        implementsInterfaces2: {
+          InterfaceZ: {
+            properties: {},
+            propertiesV2: {},
+            links: {},
+            actionTypes: {},
+          },
+          InterfaceA: {
+            properties: {},
+            propertiesV2: {},
+            links: {},
+            actionTypes: {},
+          },
+          InterfaceC: {
+            properties: {},
+            propertiesV2: {},
+            links: {},
+            actionTypes: {},
           },
         },
-        rid: "rid",
-        status: "ACTIVE",
-        titleProperty: "primaryKey",
+        linkTypes: [],
+        objectType: {
+          apiName: "apiName",
+          description: "description",
+          displayName: "displayName",
+          pluralDisplayName: "displayNames",
+          aliases: [],
+          datasources: [],
+          icon: { type: "blueprint", name: "blueprint", color: "blue" },
+          primaryKey: "primaryKey",
+          properties: {
+            primaryKey: {
+              dataType: { type: "string" },
+              rid: "rid",
+              typeClasses: [],
+            },
+          },
+          rid: "rid",
+          status: "ACTIVE",
+          titleProperty: "primaryKey",
+        },
+        sharedPropertyTypeMapping: {},
       },
-      sharedPropertyTypeMapping: {},
-    }, true);
+      true,
+    );
 
     // Check that the array is sorted alphabetically
     expect(result.implements).toEqual([
@@ -206,57 +210,60 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
   });
 
   it("sorts the linkTypes array for stable output", () => {
-    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
-      implementsInterfaces: [],
-      implementsInterfaces2: {},
-      linkTypes: [
-        {
-          apiName: "linkZ",
-          cardinality: "ONE",
-          objectTypeApiName: "TargetZ",
-          displayName: "LinkZ",
-          status: "ACTIVE",
-          linkTypeRid: "ridZ",
-        },
-        {
-          apiName: "linkA",
-          cardinality: "MANY",
-          objectTypeApiName: "TargetA",
-          displayName: "LinkA",
-          status: "ACTIVE",
-          linkTypeRid: "ridA",
-        },
-        {
-          apiName: "linkC",
-          cardinality: "ONE",
-          objectTypeApiName: "TargetC",
-          displayName: "LinkC",
-          status: "ACTIVE",
-          linkTypeRid: "ridC",
-        },
-      ],
-      objectType: {
-        apiName: "apiName",
-        description: "description",
-        displayName: "displayName",
-        pluralDisplayName: "displayNames",
-        aliases: [],
-        datasources: [],
-        icon: { type: "blueprint", name: "blueprint", color: "blue" },
-        primaryKey: "primaryKey",
-        properties: {
-          primaryKey: {
-            dataType: { type: "string" },
-            "rid": "rid",
-            typeClasses: [],
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata(
+      {
+        implementsInterfaces: [],
+        implementsInterfaces2: {},
+        linkTypes: [
+          {
+            apiName: "linkZ",
+            cardinality: "ONE",
+            objectTypeApiName: "TargetZ",
+            displayName: "LinkZ",
+            status: "ACTIVE",
+            linkTypeRid: "ridZ",
           },
+          {
+            apiName: "linkA",
+            cardinality: "MANY",
+            objectTypeApiName: "TargetA",
+            displayName: "LinkA",
+            status: "ACTIVE",
+            linkTypeRid: "ridA",
+          },
+          {
+            apiName: "linkC",
+            cardinality: "ONE",
+            objectTypeApiName: "TargetC",
+            displayName: "LinkC",
+            status: "ACTIVE",
+            linkTypeRid: "ridC",
+          },
+        ],
+        objectType: {
+          apiName: "apiName",
+          description: "description",
+          displayName: "displayName",
+          pluralDisplayName: "displayNames",
+          aliases: [],
+          datasources: [],
+          icon: { type: "blueprint", name: "blueprint", color: "blue" },
+          primaryKey: "primaryKey",
+          properties: {
+            primaryKey: {
+              dataType: { type: "string" },
+              rid: "rid",
+              typeClasses: [],
+            },
+          },
+          rid: "rid",
+          status: "ACTIVE",
+          titleProperty: "primaryKey",
         },
-        rid: "rid",
-        status: "ACTIVE",
-        titleProperty: "primaryKey",
+        sharedPropertyTypeMapping: {},
       },
-      sharedPropertyTypeMapping: {},
-    }, true);
+      true,
+    );
 
     // Get the link keys in the order they appear in the result
     const linkKeys = Object.keys(result.links);
@@ -266,64 +273,67 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
   });
 
   it("forwards marking subtype via typeMetadata on marking properties", () => {
-    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
-      implementsInterfaces: [],
-      implementsInterfaces2: {},
-      linkTypes: [],
-      objectType: {
-        apiName: "apiName",
-        description: "description",
-        displayName: "displayName",
-        pluralDisplayName: "displayNames",
-        aliases: [],
-        datasources: [],
-        icon: { type: "blueprint", name: "blueprint", color: "blue" },
-        primaryKey: "primaryKey",
-        properties: {
-          primaryKey: {
-            dataType: { type: "string" },
-            rid: "rid",
-            typeClasses: [],
-          },
-          cbacMarking: {
-            dataType: { type: "marking", markingType: "CBAC" },
-            rid: "rid",
-            typeClasses: [],
-          },
-          mandatoryMarking: {
-            dataType: { type: "marking", markingType: "MANDATORY" },
-            rid: "rid",
-            typeClasses: [],
-          },
-          unspecifiedMarking: {
-            dataType: { type: "marking" },
-            rid: "rid",
-            typeClasses: [],
-          },
-          arrayOfMandatoryMarkings: {
-            dataType: {
-              type: "array",
-              subType: { type: "marking", markingType: "MANDATORY" },
-              reducers: [],
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata(
+      {
+        implementsInterfaces: [],
+        implementsInterfaces2: {},
+        linkTypes: [],
+        objectType: {
+          apiName: "apiName",
+          description: "description",
+          displayName: "displayName",
+          pluralDisplayName: "displayNames",
+          aliases: [],
+          datasources: [],
+          icon: { type: "blueprint", name: "blueprint", color: "blue" },
+          primaryKey: "primaryKey",
+          properties: {
+            primaryKey: {
+              dataType: { type: "string" },
+              rid: "rid",
+              typeClasses: [],
             },
-            rid: "rid",
-            typeClasses: [],
+            cbacMarking: {
+              dataType: { type: "marking", markingType: "CBAC" },
+              rid: "rid",
+              typeClasses: [],
+            },
+            mandatoryMarking: {
+              dataType: { type: "marking", markingType: "MANDATORY" },
+              rid: "rid",
+              typeClasses: [],
+            },
+            unspecifiedMarking: {
+              dataType: { type: "marking" },
+              rid: "rid",
+              typeClasses: [],
+            },
+            arrayOfMandatoryMarkings: {
+              dataType: {
+                type: "array",
+                subType: { type: "marking", markingType: "MANDATORY" },
+                reducers: [],
+              },
+              rid: "rid",
+              typeClasses: [],
+            },
+            unknownMarking: {
+              dataType: {
+                type: "marking",
+                markingType: "INVALID_NOT_IN_API",
+              } as any,
+              rid: "rid",
+              typeClasses: [],
+            },
           },
-          unknownMarking: {
-            dataType: {
-              type: "marking",
-              markingType: "INVALID_NOT_IN_API",
-            } as any,
-            rid: "rid",
-            typeClasses: [],
-          },
+          rid: "rid",
+          status: "ACTIVE",
+          titleProperty: "primaryKey",
         },
-        rid: "rid",
-        status: "ACTIVE",
-        titleProperty: "primaryKey",
+        sharedPropertyTypeMapping: {},
       },
-      sharedPropertyTypeMapping: {},
-    }, true);
+      true,
+    );
 
     expect(result.properties.cbacMarking.typeMetadata).toEqual({
       type: "marking",
@@ -347,34 +357,152 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
   });
 
   it("preserves empty arrays", () => {
-    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
-      implementsInterfaces: [],
-      implementsInterfaces2: {},
-      linkTypes: [],
-      objectType: {
-        apiName: "apiName",
-        description: "description",
-        displayName: "displayName",
-        pluralDisplayName: "displayNames",
-        aliases: [],
-        datasources: [],
-        icon: { type: "blueprint", name: "blueprint", color: "blue" },
-        primaryKey: "primaryKey",
-        properties: {
-          primaryKey: {
-            dataType: { type: "string" },
-            "rid": "rid",
-            typeClasses: [],
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata(
+      {
+        implementsInterfaces: [],
+        implementsInterfaces2: {},
+        linkTypes: [],
+        objectType: {
+          apiName: "apiName",
+          description: "description",
+          displayName: "displayName",
+          pluralDisplayName: "displayNames",
+          aliases: [],
+          datasources: [],
+          icon: { type: "blueprint", name: "blueprint", color: "blue" },
+          primaryKey: "primaryKey",
+          properties: {
+            primaryKey: {
+              dataType: { type: "string" },
+              rid: "rid",
+              typeClasses: [],
+            },
           },
+          rid: "rid",
+          status: "ACTIVE",
+          titleProperty: "primaryKey",
         },
-        rid: "rid",
-        status: "ACTIVE",
-        titleProperty: "primaryKey",
+        sharedPropertyTypeMapping: {},
       },
-      sharedPropertyTypeMapping: {},
-    }, true);
+      true,
+    );
 
     // Check that empty array is preserved
     expect(result.implements).toEqual([]);
+  });
+
+  it("converts interface action mappings from implementsInterfaces2", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata(
+      {
+        implementsInterfaces: ["TicketInterface"],
+        implementsInterfaces2: {
+          TicketInterface: {
+            properties: {},
+            propertiesV2: {},
+            actionTypes: {
+              closeTicket: "closeSupportTicket",
+              reassignTicket: {
+                actionTypeApiName: "reassignSupportTicket",
+                parameterMapping: {
+                  assignee: "newAssignee",
+                },
+              },
+            },
+          } as any,
+        },
+        linkTypes: [],
+        objectType: {
+          apiName: "SupportTicket",
+          description: "Support ticket object",
+          displayName: "Support Ticket",
+          pluralDisplayName: "Support Tickets",
+          aliases: [],
+          datasources: [],
+          icon: { type: "blueprint", name: "ticket", color: "blue" },
+          primaryKey: "id",
+          properties: {
+            id: {
+              dataType: { type: "string" },
+              rid: "idRid",
+              typeClasses: [],
+            },
+          },
+          rid: "ticketRid",
+          status: "ACTIVE",
+          titleProperty: "id",
+        },
+        sharedPropertyTypeMapping: {},
+      },
+      true,
+    );
+
+    expect(result.interfaceActionMap).toEqual({
+      TicketInterface: {
+        closeTicket: "closeSupportTicket",
+        reassignTicket: "reassignSupportTicket",
+      },
+    });
+
+    expect(result.inverseInterfaceActionMap).toEqual({
+      TicketInterface: {
+        closeSupportTicket: "closeTicket",
+        reassignSupportTicket: "reassignTicket",
+      },
+    });
+
+    expect(result.interfaceActionImplementations).toEqual({
+      TicketInterface: {
+        closeTicket: {
+          actionApiName: "closeSupportTicket",
+        },
+        reassignTicket: {
+          actionApiName: "reassignSupportTicket",
+          parameterMapping: {
+            assignee: "newAssignee",
+          },
+        },
+      },
+    });
+  });
+
+  it("omits interfaceActionMap when no action types are defined", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata(
+      {
+        implementsInterfaces: ["TicketInterface"],
+        implementsInterfaces2: {
+          TicketInterface: {
+            properties: {},
+            propertiesV2: {},
+          } as any,
+        },
+        linkTypes: [],
+        objectType: {
+          apiName: "SupportTicket",
+          description: "Support ticket object",
+          displayName: "Support Ticket",
+          pluralDisplayName: "Support Tickets",
+          aliases: [],
+          datasources: [],
+          icon: { type: "blueprint", name: "ticket", color: "blue" },
+          primaryKey: "id",
+          properties: {
+            id: {
+              dataType: { type: "string" },
+              rid: "idRid",
+              typeClasses: [],
+            },
+          },
+          rid: "ticketRid",
+          status: "ACTIVE",
+          titleProperty: "id",
+        },
+        sharedPropertyTypeMapping: {},
+      },
+      true,
+    );
+
+    expect(result.interfaceActionMap).toBeUndefined();
+    expect(result.inverseInterfaceActionMap).toBeUndefined();
+    expect(result.interfaceActionImplementations).toBeUndefined();
   });
 });
