@@ -101,12 +101,12 @@ describe("CbacPicker", () => {
     });
   });
 
-  it("includes deleted markings and categories when includeDeleted is set", () => {
-    render(<CbacPicker onChange={vi.fn()} includeDeleted={true} />);
+  it("excludes deleted markings and categories when includeDeleted is false", () => {
+    render(<CbacPicker onChange={vi.fn()} includeDeleted={false} />);
     expect(useMarkingCategories).toHaveBeenLastCalledWith({
-      includeDeleted: true,
+      includeDeleted: false,
     });
-    expect(useMarkings).toHaveBeenLastCalledWith({ includeDeleted: true });
+    expect(useMarkings).toHaveBeenLastCalledWith({ includeDeleted: false });
   });
 
   it("does not change the selection when readOnly", () => {

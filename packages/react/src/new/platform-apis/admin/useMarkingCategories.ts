@@ -39,10 +39,7 @@ export interface UseMarkingCategoriesOptions {
   /**
    * Whether to include deleted marking categories in the results.
    *
-   * Note: this hook defaults to `false`, whereas the underlying platform API
-   * defaults to `true` when the parameter is omitted.
-   *
-   * @default false
+   * @default true
    */
   includeDeleted?: boolean;
 }
@@ -62,7 +59,7 @@ export interface UseMarkingCategoriesResult {
  */
 export function useMarkingCategories({
   enabled = true,
-  includeDeleted = false,
+  includeDeleted = true,
 }: UseMarkingCategoriesOptions = {}): UseMarkingCategoriesResult {
   const { client } = React.useContext(OsdkContext);
 

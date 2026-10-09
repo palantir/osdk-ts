@@ -3,4 +3,4 @@
 "@osdk/react": minor
 ---
 
--add `includeDeleted` option (default `false`) to `useMarkings`/`useMarkingCategories` and its components
+add `includeDeleted` option to `useMarkings`/`useMarkingCategories` and an `includeDeleted` prop to `CbacPicker`, `CbacPickerDialog`, and `CbacBannerPopover` (default `true`, matching the platform API)

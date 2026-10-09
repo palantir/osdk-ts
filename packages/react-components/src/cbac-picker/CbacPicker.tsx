@@ -54,7 +54,7 @@ export interface CbacPickerProps {
   /**
    * Whether deleted markings and marking categories are shown.
    *
-   * @default false
+   * @default true
    */
   includeDeleted?: boolean;
 
