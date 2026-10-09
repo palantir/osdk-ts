@@ -105,15 +105,19 @@ const WIRE_TYPE_FORMAT: Record<string, { pattern: RegExp; example: string }> = {
 export function validateSeedObject(
   props: Record<string, unknown>,
   objectType: Ontology.ObjectTypeV2,
+  mode: "create" | "copy" = "create",
 ): void {
   const apiName = objectType.apiName;
   const identity = pkIdentity(props, objectType);
   const formatErrors: string[] = [];
 
-  for (const [key, value] of Object.entries(props)) {
-    const wireType = objectType.properties[key]?.dataType.type;
+  const validateProperty = (
+    key: string,
+    value: unknown,
+    dataType: Ontology.ObjectPropertyType | undefined,
+  ): void => {
     invariant(
-      wireType !== undefined,
+      dataType !== undefined,
       () =>
         `Property '${key}' on '${apiName}' object` +
         ` (primary key ${identity}) is not defined in the ontology`,
@@ -129,14 +133,23 @@ export function validateSeedObject(
     );
 
     const format = WIRE_TYPE_FORMAT[wireType];
-    if (!format) continue;
+    if (!format) {
+      return;
+    }
 
-    if (format.pattern.test(value as string)) continue;
+    if (format.pattern.test(value as string)) {
+      return;
+    }
+
     formatErrors.push(
       `property '${key}' has invalid ${wireType}` +
         ` format: '${String(value)}'.` +
         ` Expected format like '${format.example}'`,
     );
+  };
+
+  for (const [key, value] of Object.entries(props)) {
+    validateProperty(key, value, objectType.properties[key]?.dataType);
   }
 
   invariant(formatErrors.length === 0, () =>
