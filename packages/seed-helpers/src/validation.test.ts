@@ -67,23 +67,6 @@ describe("validateSeedObject", () => {
   });
 
   it("throws immediately on structural violations", () => {
-    const nested = makeObjectType("Employee", "id", { data: "struct" });
-    Object.assign(nested.properties.data.dataType, {
-      structFieldTypes: [
-        {
-          apiName: "vector",
-          rid: "ri.field",
-          typeClasses: [],
-          dataType: { type: "vector", dimension: 3, supportsSearchWith: [] },
-        },
-      ],
-    });
-    const props = { data: { vector: [] } };
-    expect(() => validateSeedObject(props, nested)).not.toThrow();
-    expect(() => validateSeedObject(props, nested, "copy")).toThrow(/vector/u);
-    expect(() =>
-      validateSeedObject({ data: { vector: null } }, nested, "copy"),
-    ).not.toThrow();
     // Unknown property name.
     expect(() =>
       validateSeedObject({ employeeId: "emp-001", badProp: "x" }, employeeType),

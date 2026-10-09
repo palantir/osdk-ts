@@ -15,6 +15,7 @@
  */
 
 import type {
+  InterfacePropertyTypeType,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionTypeStatus,
   OntologyIrInterfaceTypeBlockDataV2,
@@ -26,6 +27,7 @@ import type {
   OntologyIrOntologyBlockDataV2,
   OntologyIrSharedPropertyTypeBlockDataV2,
   OntologyIrType,
+  Type,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 

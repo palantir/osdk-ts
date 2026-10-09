@@ -18,7 +18,6 @@ export {
   createSeedWithMetadata,
   SeedBuilder,
   type SeedFunction,
-  type SeedCapture,
 } from "./SeedBuilder.js";
 export type { SeedLinkEntry, SeedOutput, SeedProps, SeedRef } from "./types.js";
 export type { LinkTargetType, LinkTargets } from "./linkTypes.js";

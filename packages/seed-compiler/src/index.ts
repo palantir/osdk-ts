@@ -14,7 +14,4 @@
  * limitations under the License.
  */
 
-export {
-  compileSeedData,
-  type CompileSeedDataOptions,
-} from "./compileSeedData.js";
+export { compileSeedData } from "./compileSeedData.js";

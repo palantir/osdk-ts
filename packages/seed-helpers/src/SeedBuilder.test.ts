@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
 import { Employee, Office } from "@osdk/client.test.ontology";
 import type * as Ontology from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
@@ -79,13 +78,7 @@ function makeObjectType(
         ]),
       ),
     },
-    linkTypes:
-      apiName === "Employee"
-        ? ["officeLink", "peeps", "lead"].map((link) => ({
-            apiName: link,
-            objectTypeApiName: link === "officeLink" ? "Office" : "Employee",
-          }))
-        : [],
+    linkTypes: [],
     implementsInterfaces: [],
     implementsInterfaces2: {},
     sharedPropertyTypeMapping: {},
@@ -135,26 +128,6 @@ describe("SeedBuilder", () => {
         sb.create(Employee, { employeeId: 1, fullName: "Bob" }),
       ).toThrow("Employee with primary key 1 already exists.");
     });
-  });
-
-  it("copies selected declared properties and restores an unselected primary key", () => {
-    const sb = newBuilder();
-    const object: Record<string, unknown> = {
-      ...employeeRef(1),
-      employeeId: undefined,
-      fullName: "Alice",
-      undeclared: "ignored",
-    };
-    expect(sb.copy(object as Osdk.Instance<Employee>).$primaryKey).toBe(1);
-    expect(sb.build().objects.Employee).toEqual([
-      { employeeId: 1, fullName: "Alice" },
-    ]);
-    const unselected: Record<string, unknown> = {
-      ...employeeRef(2),
-      fullName: undefined,
-    };
-    expect(sb.copy(unselected as Osdk.Instance<Employee>).$primaryKey).toBe(2);
-    expect(sb.build().objects.Employee[1]).toEqual({ employeeId: 2 });
   });
 
   describe("ref", () => {
