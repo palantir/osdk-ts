@@ -20,6 +20,7 @@ import path from "node:path";
 import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import type { PreviewOntologyFullMetadata } from "@osdk/generator-converters.preview";
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
+import consola from "consola";
 import invariant from "tiny-invariant";
 import { Agent, fetch as undiciFetch } from "undici";
 
@@ -43,8 +44,45 @@ const transformMetadata = (
       EMPTY_ONTOLOGY_BLOCK_DATA,
       metadata,
     );
+  const interfaceTypeApiNames = new Set<string>(
+    Object.keys(transformed.interfaceTypes),
+  );
+  const objectTypes: OntologyFullMetadata["objectTypes"] = Object.fromEntries(
+    Object.entries(transformed.objectTypes).map(([key, value]) => {
+      const implementsInterfaces = value.implementsInterfaces.filter((n) =>
+        interfaceTypeApiNames.has(n),
+      );
+      const implementsInterfaces2 = Object.fromEntries(
+        Object.entries(value.implementsInterfaces2).filter(([n]) =>
+          interfaceTypeApiNames.has(n),
+        ),
+      );
+      const excluded = [
+        ...value.implementsInterfaces.filter(
+          (n) => !interfaceTypeApiNames.has(n),
+        ),
+        ...Object.keys(value.implementsInterfaces2).filter(
+          ([n]) => !interfaceTypeApiNames.has(n),
+        ),
+      ];
+      if (excluded.length > 0) {
+        consola.warn(
+          `The following interface types were removed from the ontology metadata since they were not imported: ${excluded.join(", ")}`,
+        );
+      }
+      return [
+        key,
+        {
+          ...value,
+          implementsInterfaces,
+          implementsInterfaces2,
+        },
+      ];
+    }),
+  );
   return {
     ...transformed,
+    objectTypes,
     ontology: metadata.ontology,
   };
 };
