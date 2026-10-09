@@ -91,6 +91,24 @@ describe("CbacPicker", () => {
     expect(onChange).toHaveBeenCalledExactlyOnceWith(["m1"]);
   });
 
+  it("defers the includeDeleted default to the hooks", () => {
+    render(<CbacPicker onChange={vi.fn()} />);
+    expect(useMarkingCategories).toHaveBeenLastCalledWith({
+      includeDeleted: undefined,
+    });
+    expect(useMarkings).toHaveBeenLastCalledWith({
+      includeDeleted: undefined,
+    });
+  });
+
+  it("includes deleted markings and categories when includeDeleted is set", () => {
+    render(<CbacPicker onChange={vi.fn()} includeDeleted={true} />);
+    expect(useMarkingCategories).toHaveBeenLastCalledWith({
+      includeDeleted: true,
+    });
+    expect(useMarkings).toHaveBeenLastCalledWith({ includeDeleted: true });
+  });
+
   it("does not change the selection when readOnly", () => {
     const onChange = vi.fn();
     render(<CbacPicker onChange={onChange} readOnly />);
