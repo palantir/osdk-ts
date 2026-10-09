@@ -43,7 +43,7 @@ import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
   generateBackingDatasetBlockResultForLink,
-  getNonEditOnlyProperties,
+  getBackingDatasetProperties,
 } from "./generateBackingDataset.js";
 import { generateBackingMediaSetBlockResult } from "./generateBackingMediaSet.js";
 import { generateDirectDatasourceBlockResult } from "./generateDirectDatasource.js";
@@ -326,7 +326,7 @@ export default async function main(
     );
     if (!objectTypeBlockData) continue;
 
-    const nonEditOnlyProps = getNonEditOnlyProperties(objectTypeBlockData);
+    const backingProperties = getBackingDatasetProperties(objectTypeBlockData);
 
     // The ontology block has inputs with these readable IDs (from shape extraction)
     // Map them to the datasource block's outputs (which use the same readable IDs)
@@ -340,7 +340,7 @@ export default async function main(
       });
     }
 
-    for (const prop of nonEditOnlyProps) {
+    for (const prop of backingProperties) {
       const colInputReadableId = ReadableIdGenerator.getForDatasetColumn(
         apiName,
         prop.apiName!,
