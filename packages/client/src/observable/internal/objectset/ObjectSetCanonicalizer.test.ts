@@ -68,82 +68,224 @@ const withScore = (
   },
 });
 
-const throughManager = (objectSet: WireObjectSet): WireObjectSet =>
-  filter({ type: "searchAround", link: "manager", objectSet }, eq("level", 3));
+const throughManager = (objectSet: WireObjectSet): WireObjectSet => ({
+  type: "searchAround",
+  link: "manager",
+  objectSet,
+});
 
 describe(ObjectSetCanonicalizer, () => {
-  it("gives equivalent nested and flat filters one canonical form", () => {
+  it("matches chained where clauses to one where clause containing both conditions", () => {
     const canonicalizer = new ObjectSetCanonicalizer();
     const employee = base("Employee");
-    const nested = filter(
-      filter(employee, eq("c", 3)),
-      and(
-        eq("b", 2),
-        and(eq("a", 1), { value: 2, field: "b", type: "eq" }),
-        or(eq("z", 6), or(eq("y", 5), eq("z", 6))),
-        {
-          type: "not",
-          value: and(eq("q", 8), eq("p", 7)),
-        },
-        or(eq("d", 4)),
-        { type: "in", field: "rank", value: [3, 1, 2] },
-        or(),
-      ),
+    const chained = filter(
+      filter(employee, eq("active", true)),
+      eq("region", "east"),
     );
-    const expected = filter(
+    const combined = filter(
       employee,
-      and(
-        eq("a", 1),
-        eq("b", 2),
-        eq("c", 3),
-        eq("d", 4),
-        { type: "in", field: "rank", value: [3, 1, 2] },
-        { type: "not", value: and(eq("p", 7), eq("q", 8)) },
-        or(),
-        or(eq("y", 5), eq("z", 6)),
-      ),
+      and(eq("active", true), eq("region", "east")),
     );
 
-    expect(canonicalizer.canonicalize(nested)).toEqual(expected);
-    expect(canonicalizer.canonicalize(expected)).toEqual(expected);
-    expect(canonicalizer.canonicalize(nested)).toBe(
-      canonicalizer.canonicalize(expected),
+    expect(canonicalizer.canonicalize(chained)).toEqual(combined);
+    expect(canonicalizer.canonicalize(chained)).toBe(
+      canonicalizer.canonicalize(combined),
     );
   });
 
-  it("normalizes inside operation and RDP boundaries while retaining operand order", () => {
+  it("matches nested, repeated, and reordered AND/OR conditions, including inside NOT", () => {
     const canonicalizer = new ObjectSetCanonicalizer();
     const employee = base("Employee");
-    const operands = [base("Zebra"), base("Antelope")];
-    const union: WireObjectSet = { type: "union", objectSets: operands };
-    const intersect: WireObjectSet = {
-      type: "intersect",
-      objectSets: operands,
-    };
-    const inputPivot = throughManager(
-      filter(filter(employee, eq("active", true)), eq("region", "east")),
+    const nested = filter(
+      employee,
+      and(
+        eq("active", true),
+        and(eq("level", 3), { value: true, field: "active", type: "eq" }),
+        or(
+          eq("region", "west"),
+          or(eq("region", "east"), eq("region", "west")),
+        ),
+        {
+          type: "not",
+          value: and(eq("suspended", true), eq("contractor", true)),
+        },
+        or(eq("department", "engineering")),
+      ),
     );
-    const expectedPivot = throughManager(
-      filter(employee, and(eq("active", true), eq("region", "east"))),
-    );
-    const methodInput: WireObjectSet = { type: "methodInput" };
-    const inputRdp = withScore(
-      union,
-      filter(filter(methodInput, eq("enabled", true)), eq("rating", 5)),
-    );
-    const expectedRdp = withScore(
-      union,
-      filter(methodInput, and(eq("enabled", true), eq("rating", 5))),
+    const flat = filter(
+      employee,
+      and(
+        eq("department", "engineering"),
+        eq("level", 3),
+        eq("active", true),
+        or(eq("region", "east"), eq("region", "west")),
+        {
+          type: "not",
+          value: and(eq("contractor", true), eq("suspended", true)),
+        },
+      ),
     );
 
-    expect(
+    expect(canonicalizer.canonicalize(nested)).toBe(
+      canonicalizer.canonicalize(flat),
+    );
+  });
+
+  it("leaves predicate value arrays and empty logical groups unchanged", () => {
+    const canonicalizer = new ObjectSetCanonicalizer();
+    const input = filter(
+      base("Employee"),
+      and({ type: "in", field: "rank", value: [3, 1, 2] }, or()),
+    );
+
+    expect(canonicalizer.canonicalize(input)).toEqual(input);
+  });
+
+  it("combines filters on an OT before a pivot without merging them with filters on object type after pivot", () => {
+    const canonicalizer = new ObjectSetCanonicalizer();
+    const employee = base("Employee");
+    const chained = filter(
+      throughManager(
+        filter(filter(employee, eq("active", true)), eq("region", "east")),
+      ),
+      eq("level", 3),
+    );
+    const combined = filter(
+      throughManager(
+        filter(employee, and(eq("active", true), eq("region", "east"))),
+      ),
+      eq("level", 3),
+    );
+
+    expect(canonicalizer.canonicalize(chained)).toEqual(combined);
+    expect(canonicalizer.canonicalize(chained)).toBe(
+      canonicalizer.canonicalize(combined),
+    );
+    expect(canonicalizer.canonicalize(chained)).not.toBe(
+      canonicalizer.canonicalize(
+        filter(
+          throughManager(employee),
+          and(eq("active", true), eq("region", "east"), eq("level", 3)),
+        ),
+      ),
+    );
+  });
+
+  it("matches equivalent filters inside an RDP selection while keeping result filters outside the RDP", () => {
+    const canonicalizer = new ObjectSetCanonicalizer();
+    const employee = base("Employee");
+    const methodInput: WireObjectSet = { type: "methodInput" };
+    const chained = filter(
+      withScore(
+        employee,
+        filter(filter(methodInput, eq("enabled", true)), eq("rating", 5)),
+      ),
+      eq("score", 10),
+    );
+    const combined = filter(
+      withScore(
+        employee,
+        filter(methodInput, and(eq("enabled", true), eq("rating", 5))),
+      ),
+      eq("score", 10),
+    );
+
+    expect(canonicalizer.canonicalize(chained)).toEqual(combined);
+    expect(canonicalizer.canonicalize(chained)).toBe(
+      canonicalizer.canonicalize(combined),
+    );
+  });
+
+  it("matches equivalent filters within union branches without reordering the branches", () => {
+    const canonicalizer = new ObjectSetCanonicalizer();
+    const employee = base("Employee");
+    const otherBranch = filter(employee, eq("department", "engineering"));
+    const chained: WireObjectSet = {
+      type: "union",
+      objectSets: [
+        filter(filter(employee, eq("active", true)), eq("region", "east")),
+        otherBranch,
+      ],
+    };
+    const combined: WireObjectSet = {
+      type: "union",
+      objectSets: [
+        filter(employee, and(eq("active", true), eq("region", "east"))),
+        otherBranch,
+      ],
+    };
+
+    expect(canonicalizer.canonicalize(chained)).toEqual(combined);
+    expect(canonicalizer.canonicalize(chained)).toBe(
+      canonicalizer.canonicalize(combined),
+    );
+    expect(canonicalizer.canonicalize(chained)).not.toBe(
+      canonicalizer.canonicalize({
+        type: "union",
+        objectSets: [...combined.objectSets].reverse(),
+      }),
+    );
+  });
+
+  it("matches equivalent filters within intersect branches without reordering the branches", () => {
+    const canonicalizer = new ObjectSetCanonicalizer();
+    const employee = base("Employee");
+    const otherBranch = filter(employee, eq("department", "engineering"));
+    const chained: WireObjectSet = {
+      type: "intersect",
+      objectSets: [
+        filter(filter(employee, eq("active", true)), eq("region", "east")),
+        otherBranch,
+      ],
+    };
+    const combined: WireObjectSet = {
+      type: "intersect",
+      objectSets: [
+        filter(employee, and(eq("active", true), eq("region", "east"))),
+        otherBranch,
+      ],
+    };
+
+    expect(canonicalizer.canonicalize(chained)).toEqual(combined);
+    expect(canonicalizer.canonicalize(chained)).toBe(
+      canonicalizer.canonicalize(combined),
+    );
+    expect(canonicalizer.canonicalize(chained)).not.toBe(
+      canonicalizer.canonicalize({
+        type: "intersect",
+        objectSets: [...combined.objectSets].reverse(),
+      }),
+    );
+  });
+
+  it("matches equivalent filters within subtract branches without reordering the branches", () => {
+    const canonicalizer = new ObjectSetCanonicalizer();
+    const employee = base("Employee");
+    const otherBranch = filter(employee, eq("department", "engineering"));
+    const chained: WireObjectSet = {
+      type: "subtract",
+      objectSets: [
+        filter(filter(employee, eq("active", true)), eq("region", "east")),
+        otherBranch,
+      ],
+    };
+    const combined: WireObjectSet = {
+      type: "subtract",
+      objectSets: [
+        filter(employee, and(eq("active", true), eq("region", "east"))),
+        otherBranch,
+      ],
+    };
+
+    expect(canonicalizer.canonicalize(chained)).toEqual(combined);
+    expect(canonicalizer.canonicalize(chained)).toBe(
+      canonicalizer.canonicalize(combined),
+    );
+    expect(canonicalizer.canonicalize(chained)).not.toBe(
       canonicalizer.canonicalize({
         type: "subtract",
-        objectSets: [inputPivot, inputRdp, intersect],
+        objectSets: [...combined.objectSets].reverse(),
       }),
-    ).toEqual({
-      type: "subtract",
-      objectSets: [expectedPivot, expectedRdp, intersect],
-    });
+    );
   });
 });

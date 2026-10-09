@@ -28,7 +28,7 @@ export class ObjectSetCanonicalizer extends CachingCanonicalizer<
   WireObjectSet,
   WireObjectSet
 > {
-  #values = new GenericCanonicalizer();
+  #values = new GenericCanonicalizer({ fullFingerprint: true });
 
   constructor(private whereCanonicalizer = new WhereClauseCanonicalizer()) {
     super();
@@ -36,6 +36,19 @@ export class ObjectSetCanonicalizer extends CachingCanonicalizer<
 
   protected lookupOrCreate(objectSet: WireObjectSet): Canonical<WireObjectSet> {
     return this.#values.canonicalize(this.#canonicalizeObjectSet(objectSet));
+  }
+
+  canonicalizeDerivedProperties(
+    definitions: Record<string, DerivedPropertyDefinition>,
+  ): Canonical<Record<string, DerivedPropertyDefinition>> {
+    return this.#values.canonicalize(
+      Object.fromEntries(
+        Object.entries(definitions).map(([name, definition]) => [
+          name,
+          this.#canonicalizeDerivedProperty(definition),
+        ]),
+      ),
+    );
   }
 
   #canonicalizeObjectSet(objectSet: WireObjectSet): WireObjectSet {
@@ -88,13 +101,8 @@ export class ObjectSetCanonicalizer extends CachingCanonicalizer<
         return {
           ...objectSet,
           objectSet: this.canonicalize(objectSet.objectSet),
-          derivedProperties: Object.fromEntries(
-            Object.entries(objectSet.derivedProperties).map(
-              ([name, definition]) => [
-                name,
-                this.#canonicalizeDerivedProperty(definition),
-              ],
-            ),
+          derivedProperties: this.canonicalizeDerivedProperties(
+            objectSet.derivedProperties,
           ),
         };
     }

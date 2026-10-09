@@ -30,7 +30,7 @@ import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 
 export class WhereClauseCanonicalizer {
   #wireCache = new WeakMap<SearchJsonQueryV2, Canonical<SearchJsonQueryV2>>();
-  #wireValues = new GenericCanonicalizer();
+  #wireValues = new GenericCanonicalizer({ fullFingerprint: true });
 
   canonicalizeWire(where: SearchJsonQueryV2): Canonical<SearchJsonQueryV2> {
     const cached = this.#wireCache.get(where);

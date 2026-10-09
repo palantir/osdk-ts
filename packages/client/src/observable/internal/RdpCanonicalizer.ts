@@ -19,10 +19,7 @@ import type {
   ObjectOrInterfaceDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import type {
-  DerivedPropertyDefinition,
-  ObjectSet as WireObjectSet,
-} from "@osdk/foundry.ontologies";
+import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 
 import {
   createDerivedPropertyFromDefinition,
@@ -35,7 +32,16 @@ import { ObjectSetCanonicalizer } from "./objectset/ObjectSetCanonicalizer.js";
 export type Rdp = DerivedProperty.Clause<ObjectOrInterfaceDefinition>;
 
 export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
-  private structuralCache = new Map<Canonical<WireObjectSet>, Canonical<Rdp>>();
+  private structuralCache = new Map<
+    Canonical<Record<string, DerivedPropertyDefinition>>,
+    Canonical<Rdp>
+  >();
+
+  private builderCache = new Map<
+    Canonical<Record<string, DerivedPropertyDefinition>>,
+    Canonical<Rdp>
+  >();
+  private typedInputCache = new WeakMap<Rdp, Map<string, Canonical<Rdp>>>();
 
   constructor(private objectSetCanonicalizer = new ObjectSetCanonicalizer()) {
     super();
@@ -44,18 +50,74 @@ export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
   canonicalizeDefinitions(
     definitions: Record<string, DerivedPropertyDefinition>,
   ): Canonical<Rdp> {
-    return this.canonicalize(
-      Object.fromEntries(
-        Object.entries(definitions).map(([name, definition]) => [
-          name,
-          (builder: object) =>
-            createDerivedPropertyFromDefinition(builder, definition),
-        ]),
-      ) as Rdp,
-    );
+    // Create a canonical key for the computed definitions
+    const canonicalDefinitions =
+      this.objectSetCanonicalizer.canonicalizeDerivedProperties(definitions);
+
+    // Check if we already have a canonical RDP for these definitions
+    let canonical = this.structuralCache.get(canonicalDefinitions);
+
+    if (!canonical) {
+      // Sort entries by key for consistent ordering
+      const sortedKeys = Object.keys(canonicalDefinitions).sort();
+
+      // Create a canonical RDP object with sorted keys
+      const sortedRdp: Rdp = {};
+      for (const key of sortedKeys) {
+        sortedRdp[key] = (builder) =>
+          createDerivedPropertyFromDefinition(
+            builder,
+            canonicalDefinitions[key],
+          );
+      }
+      canonical = sortedRdp as Canonical<Rdp>;
+      this.structuralCache.set(canonicalDefinitions, canonical);
+    }
+
+    return canonical;
+  }
+
+  canonicalizeForType(
+    rdp: Rdp,
+    type: ObjectOrInterfaceDefinition,
+  ): Canonical<Rdp> {
+    let inputs = this.typedInputCache.get(rdp);
+    if (!inputs) this.typedInputCache.set(rdp, (inputs = new Map()));
+    const key = `${type.type}:${type.apiName}`;
+    let canonical = inputs.get(key);
+    if (!canonical) {
+      canonical = this.canonicalizeDefinitions(this.getDefinitions(rdp, type));
+      inputs.set(key, canonical);
+    }
+    return canonical;
   }
 
   protected lookupOrCreate(rdp: Rdp): Canonical<Rdp> {
+    // Create a wrapper holding object type for the builder to let us extract the definition structure
+    const objectTypeHolder = {
+      type: "object" as const,
+      apiName: "__rdp_canonicalizer_holder__",
+    } as ObjectOrInterfaceDefinition;
+    const definitions =
+      this.objectSetCanonicalizer.canonicalizeDerivedProperties(
+        this.getDefinitions(rdp, objectTypeHolder),
+      );
+    let canonical = this.builderCache.get(definitions);
+    if (!canonical) {
+      canonical = Object.fromEntries(
+        Object.keys(rdp)
+          .sort()
+          .map((key) => [key, rdp[key]]),
+      ) as Canonical<Rdp>;
+      this.builderCache.set(definitions, canonical);
+    }
+    return canonical;
+  }
+
+  private getDefinitions(
+    rdp: Rdp,
+    type: ObjectOrInterfaceDefinition,
+  ): Record<string, DerivedPropertyDefinition> {
     // Map from builder result symbols to their definitions
     const definitionMap = new Map<
       DerivedProperty.Definition<
@@ -65,56 +127,17 @@ export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
       DerivedPropertyDefinition
     >();
     const computedProperties: Record<string, DerivedPropertyDefinition> = {};
-
-    // Create a wrapper holding object type for the builder to let us extract the definition structure
-    const objectTypeHolder = {
-      type: "object" as const,
-      apiName: "__rdp_canonicalizer_holder__",
-    } as ObjectOrInterfaceDefinition;
-
     for (const [key, rdpFunction] of Object.entries(rdp)) {
       const builder = createWithPropertiesObjectSet(
-        objectTypeHolder,
+        type,
         { type: "methodInput" },
         definitionMap,
         /* fromBaseObjectSet */ true,
       );
-
       const result = rdpFunction(builder);
       const definition = definitionMap.get(result);
-
-      if (definition) {
-        computedProperties[key] = definition;
-      }
+      if (definition) computedProperties[key] = definition;
     }
-
-    // Sort entries by key for consistent ordering
-    const sortedKeys = Object.keys(computedProperties).sort();
-
-    // Create a canonical key for the computed definitions
-    const sortedDefinitions: Record<string, DerivedPropertyDefinition> = {};
-    for (const key of sortedKeys) {
-      sortedDefinitions[key] = computedProperties[key];
-    }
-    const canonicalObjectSet = this.objectSetCanonicalizer.canonicalize({
-      type: "withProperties",
-      objectSet: { type: "base", objectType: objectTypeHolder.apiName },
-      derivedProperties: sortedDefinitions,
-    });
-
-    // Check if we already have a canonical RDP for these definitions
-    let canonical = this.structuralCache.get(canonicalObjectSet);
-
-    if (!canonical) {
-      // Create a canonical RDP object with sorted keys
-      const sortedRdp: Rdp = {};
-      for (const key of Object.keys(rdp).sort()) {
-        sortedRdp[key] = rdp[key];
-      }
-      canonical = sortedRdp as Canonical<Rdp>;
-      this.structuralCache.set(canonicalObjectSet, canonical);
-    }
-
-    return canonical;
+    return computedProperties;
   }
 }

@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
+import { setFlagsFromString } from "node:v8";
+import { runInNewContext } from "node:vm";
+
+import { Trie } from "@wry/trie";
+import { describe, expect, it, vi } from "vitest";
 
 import { GenericCanonicalizer } from "./GenericCanonicalizer.js";
 
@@ -72,5 +76,41 @@ describe(GenericCanonicalizer, () => {
     const canon2 = gc.canonicalize([{ b: 2 }]);
 
     expect(canon1).not.toBe(canon2);
+  });
+  it("preserves equality and primitive distinctions with full fingerprints", () => {
+    const gc = new GenericCanonicalizer({ fullFingerprint: true });
+    const canonical = gc.canonicalize({
+      value: [null, 1, "1", false],
+      nested: { a: 1, b: 2 },
+    });
+    expect(
+      gc.canonicalize({ nested: { b: 2, a: 1 }, value: [null, 1, "1", false] }),
+    ).toBe(canonical);
+    expect(
+      gc.canonicalize({
+        value: ["null", 1, "1", false],
+        nested: { a: 1, b: 2 },
+      }),
+    ).not.toBe(canonical);
+  });
+
+  it("reclaims unused fingerprints while retaining live canonical identities", async () => {
+    const canonicalizer = new GenericCanonicalizer({ fullFingerprint: true });
+    canonicalizer.canonicalize({ search: "unused" });
+    const live = canonicalizer.canonicalize({ search: "live" });
+    const remove = vi.spyOn(Trie.prototype, "removeArray");
+    setFlagsFromString("--expose_gc");
+    const gc = runInNewContext("gc");
+
+    try {
+      await vi.waitFor(() => {
+        gc();
+        expect(remove).toHaveBeenCalledWith(["search", "unused"]);
+      });
+      expect(remove).not.toHaveBeenCalledWith(["search", "live"]);
+      expect(canonicalizer.canonicalize({ search: "live" })).toBe(live);
+    } finally {
+      remove.mockRestore();
+    }
   });
 });

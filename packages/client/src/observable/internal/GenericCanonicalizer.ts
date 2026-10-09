@@ -30,6 +30,24 @@ export class GenericCanonicalizer extends CachingCanonicalizer<object, object> {
   #existingValues: Map<object, { values: WeakRef<Canonical<object>>[] }> =
     new Map();
 
+  #finalizer = new FinalizationRegistry<{
+    structuralKey: unknown[];
+    cacheKey: object;
+  }>(({ structuralKey, cacheKey }) => {
+    const entry = this.#existingValues.get(cacheKey);
+    if (!entry) return;
+    entry.values = entry.values.filter((value) => value.deref() !== undefined);
+    if (entry.values.length > 0) return;
+    this.#existingValues.delete(cacheKey);
+    if (this.#trie.peekArray(structuralKey) === cacheKey) {
+      this.#trie.removeArray(structuralKey);
+    }
+  });
+
+  constructor(private options: { fullFingerprint?: boolean } = {}) {
+    super();
+  }
+
   canonicalize<T extends object>(input: T): Canonical<T>;
   canonicalize<T extends object>(
     input: T | undefined,
@@ -61,22 +79,28 @@ export class GenericCanonicalizer extends CachingCanonicalizer<object, object> {
 
     const canonical = input as Canonical<object>;
     entry.values.push(new WeakRef(canonical));
+    if (this.options.fullFingerprint) {
+      this.#finalizer.register(canonical, { structuralKey, cacheKey });
+    }
     return canonical;
   }
 
-  #collectSortedKeys(obj: unknown, depth = 0): string[] {
-    if (depth > MAX_FINGERPRINT_DEPTH || !obj || typeof obj !== "object") {
+  #collectSortedKeys(obj: unknown, depth = 0): unknown[] {
+    if (depth > MAX_FINGERPRINT_DEPTH && !this.options.fullFingerprint) {
       return [];
     }
+    if (!obj || typeof obj !== "object") {
+      return this.options.fullFingerprint ? [obj] : [];
+    }
     if (Array.isArray(obj)) {
-      const result = ["[]", String(obj.length)];
+      const result: unknown[] = ["[]", String(obj.length)];
       for (const item of obj) {
         result.push(...this.#collectSortedKeys(item, depth + 1));
       }
       return result;
     }
     const record = obj as Record<string, unknown>;
-    const result: string[] = [];
+    const result: unknown[] = [];
     for (const key of Object.keys(record).sort()) {
       result.push(key);
       result.push(...this.#collectSortedKeys(record[key], depth + 1));
