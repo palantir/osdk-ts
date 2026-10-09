@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.80.0
+
+### Minor Changes
+
+- e9bf2de: Add edge packaging to oac
+
 ## 2.79.0
 
 ## 2.78.0

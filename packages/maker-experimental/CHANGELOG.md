@@ -1,5 +1,18 @@
 # @osdk/maker-experimental
 
+## 0.75.0
+
+### Minor Changes
+
+- e9bf2de: Add edge packaging to oac
+
+### Patch Changes
+
+- Updated dependencies [e9bf2de]
+  - @osdk/client.unstable@2.80.0
+  - @osdk/api@2.80.0
+  - @osdk/generator-converters.ontologyir@2.80.0
+
 ## 0.74.0
 
 ### Minor Changes
