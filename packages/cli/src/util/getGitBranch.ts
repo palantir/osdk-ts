@@ -14,16 +14,33 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
 import { execa } from "execa";
 
-/** The current git branch, or `undefined` if git fails. */
+/** The current git branch, or `undefined` if HEAD is detached or git fails. */
 export async function getGitBranch(cwd?: string): Promise<string | undefined> {
   try {
     const { stdout } = await execa("git", ["branch", "--show-current"], {
       cwd,
+      // Required for this command to always output US English
+      env: { LC_ALL: "C" },
     });
-    return stdout.trim();
-  } catch {
+    const branch = stdout.trim();
+    if (branch === "") {
+      consola.warn("HEAD is detached; no current git branch is available");
+      return undefined;
+    }
+    return branch;
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      "stderr" in error &&
+      typeof error.stderr === "string" &&
+      error.stderr.includes("fatal: not a git repository")
+    ) {
+      return undefined;
+    }
+    consola.warn("Unable to read the current git branch:", error);
     return undefined;
   }
 }

@@ -29,6 +29,7 @@ import { createInternalClientContext, widgetRegistry } from "#net";
 
 import type { StemmaRepositoryRid } from "../../../net/StemmaRepositoryRid.js";
 import type { WidgetSetRid } from "../../../net/WidgetSetRid.js";
+import { getGitBranch } from "../../../util/getGitBranch.js";
 import { loadToken } from "../../../util/token.js";
 import type { WidgetSetDeployArgs } from "./WidgetSetDeployArgs.js";
 
@@ -56,6 +57,7 @@ export default async function widgetSetDeployCommand({
   }
 
   const widgetSetVersion = await findWidgetSetVersion(directory);
+  const branch = await getGitBranch();
   consola.info(`Found version from manifest: ${widgetSetVersion}`);
 
   consola.start("Zipping widget set files");
@@ -68,13 +70,18 @@ export default async function widgetSetDeployCommand({
     consola.debug(`Deploying to repository ${repository} for ${widgetSet}`);
   }
 
-  consola.start("Publishing widget set files");
+  consola.start(
+    branch == null
+      ? "Publishing widget set files"
+      : `Publishing widget set files from branch "${branch}"`,
+  );
   await Promise.all([
     widgetRegistry.publishRelease(
       clientCtx,
       deployRid,
       widgetSetVersion,
       Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesn't align type wise with streams
+      branch,
     ),
     archive.finalize(),
   ]);
