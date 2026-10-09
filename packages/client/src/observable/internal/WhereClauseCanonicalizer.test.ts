@@ -15,12 +15,58 @@
  */
 
 import type { WhereClause } from "@osdk/api";
-import type { Employee } from "@osdk/client.test.ontology";
+import { Employee } from "@osdk/client.test.ontology";
 import { describe, expect, it } from "vitest";
 
+import { modernToLegacyWhereClause } from "../../internal/conversions/modernToLegacyWhereClause.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 describe(WhereClauseCanonicalizer, () => {
+  it("canonicalizes serialized SDK clauses and preconstructed predicates together", () => {
+    const c = new WhereClauseCanonicalizer();
+    const flat: WhereClause<Employee> = {
+      employeeId: 5,
+      fullName: { $ne: "Alice" },
+    };
+    const nested: WhereClause<Employee> = {
+      $and: [
+        { $not: { fullName: "Alice" } },
+        { $and: [{ employeeId: { $eq: 5 } }, { employeeId: 5 }] },
+      ],
+    };
+
+    const wire = modernToLegacyWhereClause(c.canonicalize(flat), Employee);
+    const canonical = c.canonicalizeWire(wire);
+    expect(
+      c.canonicalizeWire(
+        modernToLegacyWhereClause(c.canonicalize(nested), Employee),
+      ),
+    ).toBe(canonical);
+    expect(c.canonicalizeWire(wire)).toBe(canonical);
+    expect(canonical).toEqual({
+      type: "and",
+      value: [
+        { type: "eq", field: "employeeId", value: 5 },
+        {
+          type: "not",
+          value: { type: "eq", field: "fullName", value: "Alice" },
+        },
+      ],
+    });
+    expect(
+      c.canonicalizeWire({ type: "eq", field: "employeeId", value: 6 }),
+    ).not.toBe(canonical);
+    expect(
+      c.canonicalizeWire({
+        type: "eq",
+        propertyIdentifier: { type: "property", apiName: "employeeId" },
+        value: 5,
+      }),
+    ).not.toBe(
+      c.canonicalizeWire({ type: "eq", field: "employeeId", value: 5 }),
+    );
+  });
+
   it("does not merge unrelated queries", () => {
     const c = new WhereClauseCanonicalizer();
     const w1: WhereClause<Employee> = {

@@ -15,7 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition, ObjectSet } from "@osdk/api";
-import { Employee, FooInterface } from "@osdk/client.test.ontology";
+import { Employee, FooInterface, Office } from "@osdk/client.test.ontology";
 import type { SetupServer } from "@osdk/shared.test";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
 import invariant from "tiny-invariant";
@@ -60,34 +60,47 @@ describe(getObjectTypesThatInvalidate, () => {
     const wireObjectSet = objectSetDefinitions.get(osdkObjectSet);
     invariant(wireObjectSet);
 
-    const { resultType, invalidationSet, counts } =
-      await getObjectTypesThatInvalidate(
-        client[additionalContext],
-        wireObjectSet,
-      );
+    const {
+      resultType,
+      invalidationSet,
+      counts,
+      objectTypes,
+      revalidateTypes,
+    } = await getObjectTypesThatInvalidate(
+      client[additionalContext],
+      wireObjectSet,
+    );
 
     return {
       resultType: resultType.apiName,
       invalidationSet,
       counts,
+      objectTypes,
+      revalidateTypes,
     };
   }
 
   it("supports basic object set", async () => {
     const osdkObjectSet = client(Employee);
 
-    const { resultType, invalidationSet } = await helper(osdkObjectSet);
+    const { resultType, invalidationSet, objectTypes, revalidateTypes } =
+      await helper(osdkObjectSet);
     expect(resultType).toEqual("Employee");
     expect([...invalidationSet]).toEqual([]);
+    expect(objectTypes).toEqual(new Set(["Employee"]));
+    expect(revalidateTypes).toEqual(new Set([]));
   });
 
   it("supports basic pivotTo another type", async () => {
     const osdkObjectSet = client(Employee).pivotTo("officeLink");
 
-    const { resultType, invalidationSet } = await helper(osdkObjectSet);
+    const { resultType, invalidationSet, objectTypes, revalidateTypes } =
+      await helper(osdkObjectSet);
 
     expect(resultType).toEqual("Office");
     expect([...invalidationSet]).toEqual(["Employee"]);
+    expect(objectTypes).toEqual(new Set(["Employee", "Office"]));
+    expect(revalidateTypes).toEqual(new Set(["Employee", "Office"]));
   });
 
   it("supports basic pivotTo same type", async () => {
@@ -149,7 +162,7 @@ describe(getObjectTypesThatInvalidate, () => {
   });
 
   // Union/Intersect/Subtract Tests
-  it("supports union of same type", async () => {
+  it("resolves same-type unions and rejects mixed result types", async () => {
     const set1 = client(Employee).where({ employeeId: { $lt: 100 } });
     const set2 = client(Employee).where({ employeeId: { $gt: 200 } });
     const unionSet = set1.union(set2);
@@ -158,6 +171,9 @@ describe(getObjectTypesThatInvalidate, () => {
     console.log(counts);
     expect(resultType).toEqual("Employee");
     expect([...invalidationSet]).toEqual([]);
+    await expect(helper(set1.union(client(Office) as any))).rejects.toThrow(
+      "Incompatible context types found for set operation",
+    );
   });
 
   it("supports crazy unions union of same type", async () => {
@@ -238,6 +254,44 @@ describe(getObjectTypesThatInvalidate, () => {
     expect(Object.keys(counts).length).toBeGreaterThan(0);
   });
 
+  it("preserves pivot dependencies when narrowing to an object type", async () => {
+    const objectSet = client(Employee)
+      .pivotTo("officeLink")
+      .pivotTo("occupants")
+      .narrowToType(FooInterface)
+      .narrowToType(Employee);
+
+    const { resultType, invalidationSet, objectTypes, revalidateTypes } =
+      await helper(objectSet);
+    expect(resultType).toEqual("Employee");
+    expect([...invalidationSet].sort()).toEqual([
+      "Employee",
+      "Office",
+      "Person",
+    ]);
+    expect(objectTypes).toEqual(
+      new Set(["Employee", "FooInterface", "Office", "Person"]),
+    );
+    expect(revalidateTypes).toEqual(
+      new Set(["Employee", "FooInterface", "Office", "Person"]),
+    );
+  });
+
+  it("tracks implementing types when narrowing to an interface", async () => {
+    const objectSet = client(Employee).narrowToType(FooInterface);
+
+    const { resultType, invalidationSet, objectTypes, revalidateTypes } =
+      await helper(objectSet);
+    expect(resultType).toEqual("FooInterface");
+    expect([...invalidationSet].sort()).toEqual(["Employee", "Person"]);
+    expect(objectTypes).toEqual(
+      new Set(["Employee", "FooInterface", "Person"]),
+    );
+    expect(revalidateTypes).toEqual(
+      new Set(["Employee", "FooInterface", "Person"]),
+    );
+  });
+
   it.skip("supports interface link search around", async () => {
     // FIXME, we don't have a good interface link example right now
     // Assuming FooInterface has links - skip if not available
@@ -254,10 +308,13 @@ describe(getObjectTypesThatInvalidate, () => {
       localProp: (b) => b.selectProperty("employeeId"),
     });
 
-    const { resultType, invalidationSet } = await helper(osdkObjectSet);
+    const { resultType, invalidationSet, objectTypes, revalidateTypes } =
+      await helper(osdkObjectSet);
     expect(resultType).toEqual("Employee");
     expect([...invalidationSet]).toContain("Office");
     expect([...invalidationSet]).toContain("Employee"); // from lead pivot
+    expect(objectTypes).toEqual(new Set(["Employee", "Office"]));
+    expect(revalidateTypes).toEqual(new Set(["Employee", "Office"]));
   });
 
   it("supports nested RDP operations", async () => {

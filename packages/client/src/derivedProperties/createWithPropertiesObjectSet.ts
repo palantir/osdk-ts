@@ -25,6 +25,20 @@ import invariant from "tiny-invariant";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import { derivedPropertyDefinitionFactory } from "./derivedPropertyDefinitionFactory.js";
 
+const definitionMaps = new WeakMap<
+  object,
+  Map<any, DerivedPropertyDefinition>
+>();
+
+export function createDerivedPropertyFromDefinition(
+  builder: object,
+  definition: DerivedPropertyDefinition,
+) {
+  const definitions = definitionMaps.get(builder);
+  invariant(definitions, "Expected a derived property builder");
+  return derivedPropertyDefinitionFactory(definition, definitions);
+}
+
 /** @internal */
 export function createWithPropertiesObjectSet<
   Q extends ObjectOrInterfaceDefinition,
@@ -34,7 +48,7 @@ export function createWithPropertiesObjectSet<
   definitionMap: Map<any, DerivedPropertyDefinition>,
   fromBaseObjectSet: boolean = false,
 ): DerivedProperty.SelectPropertyBuilder<Q, false> {
-  return {
+  const builder: DerivedProperty.SelectPropertyBuilder<Q, false> = {
     pivotTo: (link) => {
       return createWithPropertiesObjectSet(
         objectType,
@@ -141,4 +155,6 @@ export function createWithPropertiesObjectSet<
       return selectorResult as any;
     },
   };
+  definitionMaps.set(builder, definitionMap);
+  return builder;
 }

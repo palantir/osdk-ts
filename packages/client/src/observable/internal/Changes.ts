@@ -29,6 +29,7 @@ import type { ObjectSetCacheKey } from "./objectset/ObjectSetCacheKey.js";
 export class Changes {
   modifiedObjects: MultiMap<string, ObjectHolder> = new MultiMap();
   addedObjects: MultiMap<string, ObjectHolder> = new MultiMap();
+  objectSelectFields: Map<ObjectHolder, ReadonlySet<string>> = new Map();
 
   added: Set<
     | AggregationCacheKey
@@ -62,7 +63,9 @@ export class Changes {
     cacheKey: ObjectCacheKey,
     data: ObjectHolder,
     isNew: boolean,
+    selectFields?: ReadonlySet<string>,
   ): void => {
+    if (selectFields?.size) this.objectSelectFields.set(data, selectFields);
     this[isNew ? "addedObjects" : "modifiedObjects"].set(
       data.$objectType ?? data.$apiName,
       data,

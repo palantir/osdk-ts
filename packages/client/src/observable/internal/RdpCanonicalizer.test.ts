@@ -14,14 +14,120 @@
  * limitations under the License.
  */
 
-import type { DerivedProperty } from "@osdk/api";
-import type { Employee } from "@osdk/client.test.ontology";
+import type { DerivedProperty, InterfaceDefinition } from "@osdk/api";
+import { Employee } from "@osdk/client.test.ontology";
+import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
 
+import { createClient } from "../../createClient.js";
+import { createWithPropertiesObjectSet } from "../../derivedProperties/createWithPropertiesObjectSet.js";
+import { getWireObjectSet } from "../../objectSet/createObjectSet.js";
 import { RdpCanonicalizer } from "./RdpCanonicalizer.js";
 import { extractRdpFieldNames } from "./utils/rdpFieldOperations.js";
 
 describe("RdpCanonicalizer", () => {
+  it("preserves interface namespaces when a canonical builder is reused", () => {
+    const client = createClient(
+      "https://example.com",
+      "ri.ontology.test",
+      () => "token",
+    );
+    const person: InterfaceDefinition = {
+      type: "interface",
+      apiName: "com.example.Person",
+    };
+    const rdp: DerivedProperty.Clause<InterfaceDefinition> = {
+      aliceCount: (base) =>
+        base.where({ fullName: "Alice" }).aggregate("$count"),
+    };
+    const canonical = new RdpCanonicalizer().canonicalize(rdp);
+    expect(
+      getWireObjectSet(client(person).withProperties(canonical)),
+    ).toMatchObject({
+      derivedProperties: {
+        aliceCount: {
+          objectSet: {
+            where: { field: "com.example.fullName", value: "Alice" },
+          },
+        },
+      },
+    });
+  });
+
+  it("shares typed builders with definitions when the builders are seen first", () => {
+    const canonicalizer = new RdpCanonicalizer();
+    const rdp: DerivedProperty.Clause<Employee> = {
+      leadName: (base) => base.pivotTo("lead").selectProperty("fullName"),
+    };
+    const definitions: Record<string, DerivedPropertyDefinition> = {
+      leadName: {
+        type: "selection",
+        objectSet: {
+          type: "searchAround",
+          link: "lead",
+          objectSet: { type: "methodInput" },
+        },
+        operation: { type: "get", selectedPropertyApiName: "fullName" },
+      },
+    };
+    const canonical = canonicalizer.canonicalizeForType(rdp, Employee);
+    expect(canonicalizer.canonicalizeDefinitions(definitions)).toBe(canonical);
+    expect(canonicalizer.canonicalizeForType(rdp, Employee)).toBe(canonical);
+    expect(
+      canonicalizer.canonicalizeDefinitions({
+        leadName: { type: "property", apiName: "fullName" },
+      }),
+    ).not.toBe(canonical);
+    const definitionMap = new Map<object, DerivedPropertyDefinition>();
+    const builder = createWithPropertiesObjectSet(
+      Employee,
+      { type: "methodInput" },
+      definitionMap,
+      true,
+    );
+    expect(definitionMap.get(canonical.leadName(builder))).toEqual(
+      definitions.leadName,
+    );
+  });
+
+  it("shares namespaced interface builders with definitions when the definitions are seen first", () => {
+    const canonicalizer = new RdpCanonicalizer();
+    const person: InterfaceDefinition = {
+      type: "interface",
+      apiName: "com.example.Person",
+    };
+    const rdp: DerivedProperty.Clause<InterfaceDefinition> = {
+      aliceCount: (base) =>
+        base.where({ fullName: "Alice" }).aggregate("$count"),
+    };
+    const definitions: Record<string, DerivedPropertyDefinition> = {
+      aliceCount: {
+        type: "selection",
+        objectSet: {
+          type: "filter",
+          objectSet: { type: "methodInput" },
+          where: { type: "eq", field: "com.example.fullName", value: "Alice" },
+        },
+        operation: { type: "count" },
+      },
+    };
+    const canonical = canonicalizer.canonicalizeDefinitions(definitions);
+    expect(canonicalizer.canonicalizeForType(rdp, person)).toBe(canonical);
+    expect(canonicalizer.canonicalizeForType(rdp, Employee)).not.toBe(
+      canonical,
+    );
+    const definitionMap = new Map<object, DerivedPropertyDefinition>();
+    const builder = createWithPropertiesObjectSet(
+      person,
+      { type: "methodInput" },
+      definitionMap,
+      true,
+    );
+    expect(definitionMap.get(canonical.aliceCount(builder))).toEqual(
+      definitions.aliceCount,
+    );
+  });
+
   it("returns same canonical object for functionally identical RDPs with different function references", () => {
     const canonicalizer = new RdpCanonicalizer();
 

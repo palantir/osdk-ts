@@ -130,7 +130,10 @@ export class ListsHelper extends AbstractHelper<
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
     const canonRdp = withProperties
-      ? this.rdpCanonicalizer.canonicalize(withProperties)
+      ? this.rdpCanonicalizer.canonicalizeForType(withProperties, {
+          type,
+          apiName,
+        })
       : undefined;
 
     const canonIntersect =

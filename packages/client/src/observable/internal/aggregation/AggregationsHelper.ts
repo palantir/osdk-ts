@@ -132,7 +132,10 @@ export class AggregationsHelper extends AbstractHelper<
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonRdp = withProperties
-      ? this.rdpCanonicalizer.canonicalize(withProperties)
+      ? this.rdpCanonicalizer.canonicalizeForType(withProperties, {
+          type: typeKind,
+          apiName,
+        })
       : undefined;
     const canonIntersect =
       intersectWith && intersectWith.length > 0
