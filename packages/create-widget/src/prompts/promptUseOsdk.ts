@@ -21,11 +21,13 @@ export async function promptUseOsdk({
   template,
   osdkPackage,
   osdkRegistryUrl,
+  osdkPath,
   skipOsdk,
 }: {
   template: Template;
   osdkPackage?: string;
   osdkRegistryUrl?: string;
+  osdkPath?: string;
   skipOsdk?: boolean;
 }): Promise<boolean> {
   if (!template.supportsOsdk) {
@@ -34,7 +36,7 @@ export async function promptUseOsdk({
   if (skipOsdk) {
     return false;
   }
-  if (osdkPackage != null || osdkRegistryUrl != null) {
+  if (osdkPackage != null || osdkRegistryUrl != null || osdkPath != null) {
     return true;
   }
 

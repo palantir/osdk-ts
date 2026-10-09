@@ -21,6 +21,7 @@ import { dirSync } from "tmp";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import { cli } from "./cli.js";
+import { consola } from "./consola.js";
 import { TEMPLATES } from "./generatedNoCheck/templates.js";
 import type { Template } from "./templates.js";
 
@@ -115,3 +116,100 @@ async function runTest({
   );
   expect(() => JSON.parse(packageJsonContents)).not.toThrow();
 }
+
+test("composes local SDK, custom tooling, and externally managed deployment", async () => {
+  const prompt = vi
+    .spyOn(consola, "prompt")
+    .mockRejectedValue(new Error("Unexpected prompt"));
+  const viteConfig = "export default { server: { port: 8123 } };\n";
+  fs.writeFileSync(path.join(process.cwd(), "custom-vite.ts"), viteConfig);
+  await cli([
+    "node",
+    "create-widget",
+    "widgets",
+    "--template",
+    "widget-react",
+    "--sdkVersion",
+    "2.x",
+    "--osdkPackage",
+    "@example/sdk",
+    "--osdkPath",
+    "../generated sdk",
+    "--viteConfig",
+    "custom-vite.ts",
+    "--buildCommand",
+    "tsc && example-build",
+    "--skipFoundryConfig",
+  ]);
+  expect(prompt).not.toHaveBeenCalled();
+  const root = path.join(process.cwd(), "widgets");
+  expect(fs.existsSync(path.join(root, "foundry.config.json"))).toBe(false);
+  expect(fs.existsSync(path.join(root, ".npmrc"))).toBe(false);
+  const manifest = JSON.parse(
+    fs.readFileSync(path.join(root, "package.json"), "utf-8"),
+  );
+  expect(manifest.scripts.build).toBe("tsc && example-build");
+  expect(manifest.dependencies["@example/sdk"]).toBe("file:../generated sdk");
+  expect(fs.readFileSync(path.join(root, "vite.config.ts"), "utf-8")).toBe(
+    viteConfig,
+  );
+  expect(fs.readFileSync(path.join(root, "src/client.ts"), "utf-8")).toContain(
+    'from "@example/sdk"',
+  );
+});
+
+test("uses a local SDK with standard widget-set deployment", async () => {
+  const prompt = vi
+    .spyOn(consola, "prompt")
+    .mockRejectedValue(new Error("Unexpected prompt"));
+  await cli([
+    "node",
+    "create-widget",
+    "widgets",
+    "--template",
+    "widget-react",
+    "--sdkVersion",
+    "2.x",
+    "--osdkPackage",
+    "@example/sdk",
+    "--osdkPath",
+    "../sdk",
+    "--foundryUrl",
+    "https://example.palantirfoundry.com",
+    "--widgetSet",
+    "ri.widgetregistry..widget-set.fake",
+  ]);
+  expect(prompt).not.toHaveBeenCalled();
+  const root = path.join(process.cwd(), "widgets");
+  expect(fs.existsSync(path.join(root, "foundry.config.json"))).toBe(true);
+  expect(fs.existsSync(path.join(root, ".npmrc"))).toBe(false);
+  const manifest = JSON.parse(
+    fs.readFileSync(path.join(root, "package.json"), "utf-8"),
+  );
+  expect(manifest.scripts.build).toBe("tsc && vite build");
+  expect(manifest.dependencies["@example/sdk"]).toBe("file:../sdk");
+});
+
+test("omits deployment configuration without requiring an SDK or custom tooling", async () => {
+  const prompt = vi
+    .spyOn(consola, "prompt")
+    .mockRejectedValue(new Error("Unexpected prompt"));
+  await cli([
+    "node",
+    "create-widget",
+    "widgets",
+    "--template",
+    "widget-react",
+    "--sdkVersion",
+    "2.x",
+    "--skipOsdk",
+    "--skipFoundryConfig",
+  ]);
+  expect(prompt).not.toHaveBeenCalled();
+  const root = path.join(process.cwd(), "widgets");
+  expect(fs.existsSync(path.join(root, "foundry.config.json"))).toBe(false);
+  expect(fs.existsSync(path.join(root, "src/client.ts"))).toBe(false);
+  expect(fs.readFileSync(path.join(root, "vite.config.ts"), "utf-8")).toContain(
+    "foundryWidgetPlugin()",
+  );
+});
