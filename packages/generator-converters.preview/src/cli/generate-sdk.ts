@@ -169,7 +169,8 @@ async function main(): Promise<void> {
     )
     .options({
       input: {
-        describe: "Path to the OntologyIR JSON file",
+        describe:
+          "Path to the OntologyIR JSON file. If it has a blockResults path, value types are loaded from that block result JSON collection.",
         type: "string",
         coerce: path.resolve,
       },

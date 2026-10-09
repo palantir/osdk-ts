@@ -24,16 +24,15 @@ import type {
 import type { InputShape, OutputShape } from "@osdk/client.unstable/api";
 
 type ValueTypeConnection = { rid: string; output: string };
+type SdkInput = {
+  ontology: OntologyBlockDataV2;
+  valueTypes: Record<string, ValueTypeBlockData>;
+};
 
 export async function loadSdkInput(options: {
   input?: string;
   blockResultsInput?: string;
-}): Promise<
-  {
-    ontology: OntologyBlockDataV2;
-    valueTypes: Record<string, ValueTypeBlockData>;
-  }
-> {
+}): Promise<SdkInput> {
   const inputFile = options.input ?? options.blockResultsInput;
   if (
     inputFile === undefined
@@ -42,15 +41,39 @@ export async function loadSdkInput(options: {
     throw new Error("Provide exactly one of --input or --block-results-input.");
   }
 
-  const data = await readJson(inputFile);
-  if (options.input !== undefined) {
-    return { ontology: getOntologyData(data, inputFile), valueTypes: {} };
+  if (options.input === undefined) {
+    return loadBlockResults(inputFile);
   }
 
-  const blocks = data as Record<string, unknown>[];
+  const data = await readJson(inputFile);
+  if (hasBlockResults(data)) {
+    return loadBlockResults(
+      path.resolve(path.dirname(inputFile), data.blockResults),
+      getOntologyData(data, inputFile),
+    );
+  }
+  return { ontology: getOntologyData(data, inputFile), valueTypes: {} };
+}
+
+function hasBlockResults(data: unknown): data is { blockResults: string } {
+  return typeof data === "object" && data != null && "blockResults" in data
+    && typeof data.blockResults === "string";
+}
+
+async function loadBlockResults(
+  inputFile: string,
+  inputOntology?: OntologyBlockDataV2,
+): Promise<SdkInput> {
+  const data = await readJson(inputFile) as
+    | Record<string, unknown>
+    | Record<string, unknown>[];
+  // TODO(ksethi): remove once maker users have migrated to writing a list of block results
+  const blocks = Array.isArray(data) ? data : [data];
   const ontologyBlock = blocks.find(block => block.block_type === "ONTOLOGY")!;
   const ontologyFile = getBlockFile(ontologyBlock, inputFile, "ontology.json");
-  const ontology = getOntologyData(await readJson(ontologyFile), ontologyFile);
+  // Scripts that wrap the generator can filter the `--input` ontology, so it wins over Maker's copy.
+  const ontology = inputOntology
+    ?? getOntologyData(await readJson(ontologyFile), ontologyFile);
   const connections = getValueTypeConnections(ontology, ontologyBlock);
   const outputs = await loadValueTypeOutputs(blocks, connections, inputFile);
   const valueTypes = Object.fromEntries(
@@ -73,6 +96,10 @@ function getValueTypeConnections(
   const mappings = block.input_mapping_entries as Record<string, string>[];
   const addOn = block.add_on_override as Record<string, unknown>;
   const identities = addOn?.idToBlockShapeId as Record<string, string>;
+  // TODO(ksethi): remove once maker users have migrated to writing block identities
+  if (identities === undefined) {
+    return [];
+  }
 
   // Imported dependencies have no local value-type block to read.
   return mappings

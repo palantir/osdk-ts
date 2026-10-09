@@ -46,6 +46,30 @@ const ontologyBlock = {
   outputs: {},
   input_mapping_entries: [],
 };
+const valueTypeOutput = "produced-value-type-classification-1.0.0";
+const valueTypeOntologyBlock = {
+  ...ontologyBlock,
+  inputs: { classification: { type: "valueType" } },
+  input_mapping_entries: [{ input: "classification", output: valueTypeOutput }],
+};
+const blockIdentities = {
+  idToBlockShapeId: { classification: "generated-id" },
+};
+const valueTypeBlock = {
+  block_type: "VALUE_TYPE",
+  block_data_directory: "classification",
+  outputs: { [valueTypeOutput]: { type: "valueType" } },
+};
+const valueTypeFile = path.resolve("build/classification/value-types.json");
+const valueTypeDefinition: ValueTypeBlockData = {
+  metadata: {
+    apiName: "classification",
+    displayMetadata: { displayName: "Classification" },
+    baseType: { type: "string", string: {} },
+    status: { type: "active", active: {} },
+  },
+  versions: [{ version: "1.0.0", constraints: [], exampleValues: ["A"] }],
+};
 
 function mockFiles(files: Record<string, unknown>): void {
   vi.mocked(fs.readFile).mockImplementation(file =>
@@ -277,5 +301,46 @@ describe("loadSdkInput", () => {
     await expect(loadSdkInput({ blockResultsInput: inputFile })).resolves
       .toEqual({ ontology, valueTypes: {} });
     expect(fs.readFile).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([
+    { name: "relative", blockResults: "../build/block-results.json" },
+    { name: "absolute", blockResults: inputFile },
+  ])(
+    "loads value types from $name blockResults in wrapped ontology input",
+    async ({ blockResults }) => {
+      const wrapperFile = path.resolve("wrapper/sdk-input.json");
+      mockFiles({
+        [wrapperFile]: { ontology, blockResults },
+        [inputFile]: [
+          { ...valueTypeOntologyBlock, add_on_override: blockIdentities },
+          valueTypeBlock,
+        ],
+        [ontologyFile]: { ...ontology, objectTypes: { unfiltered: {} } },
+        [valueTypeFile]: valueTypeDefinition,
+      });
+
+      await expect(loadSdkInput({ input: wrapperFile })).resolves.toEqual({
+        ontology,
+        valueTypes: { "value-type-rid": valueTypeDefinition },
+      });
+      expect(fs.readFile).not.toHaveBeenCalledWith(ontologyFile, "utf-8");
+    },
+  );
+
+  it("loads no value types from block results without block identities", async () => {
+    mockFiles({
+      [inputFile]: [valueTypeOntologyBlock, valueTypeBlock],
+      [ontologyFile]: ontology,
+    });
+    await expect(loadSdkInput({ blockResultsInput: inputFile })).resolves
+      .toEqual({ ontology, valueTypes: {} });
+    expect(fs.readFile).toHaveBeenCalledTimes(2);
+  });
+
+  it("loads the ontology from a single block result", async () => {
+    mockFiles({ [inputFile]: ontologyBlock, [ontologyFile]: ontology });
+    await expect(loadSdkInput({ blockResultsInput: inputFile })).resolves
+      .toEqual({ ontology, valueTypes: {} });
   });
 });
