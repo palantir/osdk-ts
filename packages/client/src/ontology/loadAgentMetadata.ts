@@ -14,5 +14,18 @@
  * limitations under the License.
  */
 
-export * as AgentDefinitionVersions from "./AgentDefinitionVersions.js";
-export * as AgentSessions from "./AgentSessions.js";
+import type { AgentDefinitionVersion } from "@osdk/foundry.agents";
+import * as AgentDefinitionVersions from "@osdk/foundry.agents/AgentDefinitionVersion";
+
+import type { MinimalClient } from "../MinimalClientContext.js";
+
+export async function loadAgentMetadata(
+  client: MinimalClient,
+  agentApiNameAndVersion: string,
+): Promise<AgentDefinitionVersion> {
+  const [apiName, version] = agentApiNameAndVersion.split(":");
+  return await AgentDefinitionVersions.get(client, apiName, version, {
+    ontology: await client.ontologyRid,
+    preview: true,
+  });
+}

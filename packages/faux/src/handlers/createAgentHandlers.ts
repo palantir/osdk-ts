@@ -23,6 +23,16 @@ export const createAgentHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
   fauxFoundry,
 ) => [
+  Agents.AgentDefinitionVersions.get(baseUrl, ({ request, params }) => {
+    const ontology = new URL(request.url).searchParams.get("ontology");
+    invariant(ontology);
+    return fauxFoundry
+      .getOntology(ontology)
+      .getAgentDef(
+        params.agentDefinitionApiName,
+        params.agentDefinitionVersionVersion,
+      );
+  }),
   Agents.AgentSessions.create(baseUrl, async ({ request }) => {
     const body = await request.json();
     invariant(body.agent.type === "agentApiName");

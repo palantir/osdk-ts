@@ -15,11 +15,11 @@
  */
 
 import type { AgentDefinition, AgentSession } from "@osdk/api/unstable";
-import type { JsonValue } from "@osdk/foundry.agents";
 import * as Sessions from "@osdk/foundry.agents/AgentSession";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentHeader } from "../util/addUserAgentHeader.js";
+import { toDataValueAgents } from "../util/toDataValueAgents.js";
 import type { AgentSignatureFromDef } from "./types.js";
 
 export async function createAgentSession<D extends AgentDefinition<unknown>>(
@@ -38,6 +38,14 @@ export async function createAgentSession<D extends AgentDefinition<unknown>>(
   }
   const clientWithHeaders = addUserAgentHeader(client, agent);
   const ontologyRid = await client.ontologyRid;
+  const agentDefinition = await client.ontologyProvider.getAgentDefinition(
+    agent.apiName,
+    agent.version,
+  );
+  const convertedArguments = await toDataValueAgents(args ?? {}, client, {
+    type: "struct",
+    fields: agentDefinition.argumentDefinitions,
+  });
   const response = await Sessions.create(
     clientWithHeaders,
     {
@@ -47,9 +55,7 @@ export async function createAgentSession<D extends AgentDefinition<unknown>>(
         agentApiName: agent.apiName,
       },
       agentVersion: agent.version,
-      // TODO(mhogberg): Rewrite object and objectSet payloads so that they match the format that
-      //  agent-engine expects.
-      arguments: (args ?? {}) as Record<string, JsonValue>,
+      arguments: convertedArguments,
     },
     { preview: true },
   );

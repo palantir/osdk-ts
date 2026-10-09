@@ -14,5 +14,10 @@
  * limitations under the License.
  */
 
-export * as AgentDefinitionVersions from "./AgentDefinitionVersions.js";
-export * as AgentSessions from "./AgentSessions.js";
+import type { ObjectSet } from "@osdk/foundry.ontologies";
+
+export const employeeObjectSet: ObjectSet = {
+  type: "filter",
+  objectSet: { type: "base", objectType: "Employee" },
+  where: { type: "eq", field: "employeeId", value: 50030 },
+};
