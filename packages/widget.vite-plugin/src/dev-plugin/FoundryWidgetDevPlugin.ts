@@ -17,7 +17,6 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { loadFoundryConfig } from "@osdk/foundry-config-json";
 import color from "picocolors";
 import sirv from "sirv";
 import type { Plugin, ViteDevServer } from "vite";
@@ -84,13 +83,7 @@ export function FoundryWidgetDevPlugin(
     /**
      * Check for the required token environment variable in dev mode.
      */
-    async configResolved(resolvedConfig) {
-      const config = await loadFoundryConfig("widgetSet", resolvedConfig.root);
-      if (config?.foundryConfig.build === "local") {
-        throw new Error(
-          "Local widget preview is not supported yet. Use vite build to package widgets.",
-        );
-      }
+    configResolved(resolvedConfig) {
       warnIfWrongDevCommand(resolvedConfig.mode, resolvedConfig.logger);
       getFoundryToken(resolvedConfig.mode);
     },

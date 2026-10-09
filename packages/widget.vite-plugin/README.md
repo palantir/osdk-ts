@@ -170,23 +170,26 @@ This vite plugin will then discover both entrypoints and output a combined `.pal
 
 The vite plugin also automatically configures developer mode so that you can preview the changes you make locally live on your Foundry environment. For developer mode to work, make sure you set a `FOUNDRY_TOKEN` environment variable that has a token with access to your Foundry stack.
 
-## SuperRepo (alpha)
+## Extracting metadata
 
-SuperRepo builds a group of Foundry resources from source into a Marketplace product. Custom widget support is under development. This release supports building package assets; the SuperRepo CLI integration and local preview are still in development.
+Build tools can import `extractWidgetDeclarations` from `@osdk/widget.vite-plugin/extractWidgetDeclarations` to read and validate widget declarations without executing the widget UI or building assets. `extractWidgetManifest` from `@osdk/widget.vite-plugin/extractWidgetManifest` also reads `foundry.config.json`, resolves the version, and discovers SDK inputs. It returns manifest metadata with empty asset lists.
 
-To build widgets for that workflow, use the normal `foundryWidgetPlugin()` and this `foundry.config.json`:
+Configuration, package metadata, and asset paths resolve relative to the Vite project root, so these APIs can be called from another directory.
+
+## Building before installation
+
+When another packaging tool creates the widget set during installation, the existing configuration accepts placeholder strings:
 
 ```json
 {
-  "build": "local",
+  "foundryUrl": "replace-after-installation",
   "widgetSet": {
+    "rid": "replace-after-installation",
     "directory": "dist"
   }
 }
 ```
 
-Local builds require no Foundry URL, widget-set RID, or token. The manifest uses a placeholder RID because the widget set will be created during product installation, and a placeholder version of `0.1.0`. SuperRepo will assign the release version during packaging. SDK inputs and authorizations are discovered as in other widget builds.
+Building assets and extracting metadata do not contact `foundryUrl` or require a Foundry token. The manifest copies `widgetSet.rid` as supplied; the packaging tool must assign the installation identities. Version resolution still uses `widgetSet.autoVersion`, defaulting to the version in `package.json`.
 
-These assets are for Marketplace packaging and cannot be deployed directly with `osdk widgetset deploy`. Local configuration must omit `foundryUrl`, `rid`, `repository`, and `autoVersion`. To build and develop against an existing widget set, keep the usual configuration: omit `build` or set it to `"remote"`. That workflow still requires a Foundry URL and RID and uses the existing `autoVersion` strategy.
-
-Build tools can use `extractWidgetDeclarations` to read and validate widget configuration without executing the widget UI or building assets. `extractWidgetManifest` also reads `foundry.config.json` and discovers SDK inputs to produce manifest metadata with empty asset lists. Both APIs are exported as package subpaths and remain under development.
+For Foundry developer mode or direct deployment with `osdk widgetset deploy`, replace the placeholders with a real Foundry URL and widget set RID.

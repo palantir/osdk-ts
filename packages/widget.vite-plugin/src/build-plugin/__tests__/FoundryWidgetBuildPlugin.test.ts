@@ -28,7 +28,7 @@ import path from "node:path";
 
 import type { WidgetSetManifest } from "@osdk/widget.api";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget.api";
-import { build, createServer } from "vite";
+import { build } from "vite";
 import { afterEach, expect, test, vi } from "vitest";
 
 import FoundryWidgetPlugin from "../../index.js";
@@ -43,8 +43,7 @@ afterEach(async () => {
   );
 });
 
-const widgetSetRid =
-  "ri.widgetregistry.main.widget-set.00000000-0000-0000-0000-000000000000";
+const widgetSetRid = "replace-after-installation";
 const sdkRid =
   "ri.osdk.main.ontology-sdk-package.00000000-0000-0000-0000-000000000000";
 
@@ -57,8 +56,8 @@ async function fixture(ids: string[]) {
   await writeFile(
     path.join(root, "foundry.config.json"),
     JSON.stringify({
-      build: "local",
-      widgetSet: { directory: "output" },
+      foundryUrl: "replace-after-installation",
+      widgetSet: { rid: widgetSetRid, directory: "output" },
     }),
   );
   await writeFile(path.join(root, "src/widget.css"), ".widget { color: red; }");
@@ -112,7 +111,7 @@ async function buildFixture(
 }
 
 test.each(["/", "/nested/widgets/", "./"])(
-  "builds local widgets without a Foundry URL or RID from a different working directory using base %s",
+  "builds with placeholder targets from a different working directory using base %s",
   async (base) => {
     vi.stubEnv("FOUNDRY_TOKEN", undefined);
     const ids = ["first", "second"];
@@ -126,7 +125,7 @@ test.each(["/", "/nested/widgets/", "./"])(
       base,
     );
     expect(manifest.widgetSet.rid).toBe(widgetSetRid);
-    expect(manifest.widgetSet.version).toBe("0.1.0");
+    expect(manifest.widgetSet.version).toBe("9.9.9");
     expect(Object.keys(manifest.widgetSet.widgets)).toEqual(ids);
     expect(manifest.widgetSet.inputSpec).toEqual({ discovered: { sdks: [] } });
     for (const [index, id] of ids.entries()) {
@@ -165,7 +164,10 @@ test("discovers SDK metadata and authorizations relative to the Vite root", asyn
   const root = await fixture(["widget"]);
   await writeFile(
     path.join(root, "package.json"),
-    JSON.stringify({ dependencies: { "@ontology/sdk": "4.5.6" } }),
+    JSON.stringify({
+      version: "9.9.9",
+      dependencies: { "@ontology/sdk": "4.5.6" },
+    }),
   );
   const sdkPath = path.join(root, "node_modules/@ontology/sdk");
   await mkdir(sdkPath, { recursive: true });
@@ -200,7 +202,7 @@ test("rejects duplicate widget identities in a real build", async () => {
   );
 });
 
-test("requires a configuration file to select local or remote builds", async () => {
+test("requires a configuration file", async () => {
   const root = await fixture(["widget"]);
   await rename(
     path.join(root, "foundry.config.json"),
@@ -211,36 +213,18 @@ test("requires a configuration file to select local or remote builds", async () 
   );
 });
 
-test.each([undefined, "remote"])(
-  "builds for an existing widget set with build %s",
-  async (mode) => {
-    const root = await fixture(["widget"]);
-    const remoteRid =
-      "ri.widgetregistry.main.widget-set.11111111-1111-1111-1111-111111111111";
-    await writeFile(
-      path.join(root, "foundry.config.json"),
-      JSON.stringify({
-        build: mode,
-        foundryUrl: "https://example.com",
-        widgetSet: { rid: remoteRid, directory: "output" },
-      }),
-    );
-    const manifest = await buildFixture(root, ["widget"], {});
-    expect(manifest.widgetSet.rid).toBe(remoteRid);
-    expect(manifest.widgetSet.version).toBe("9.9.9");
-  },
-);
-
-test("explains that local preview is unavailable before requiring a Foundry token", async () => {
-  vi.stubEnv("VITEST", undefined);
-  vi.stubEnv("FOUNDRY_TOKEN", undefined);
-  await expect(
-    createServer({
-      root: await fixture(["widget"]),
-      configFile: false,
-      logLevel: "silent",
-      plugins: [FoundryWidgetPlugin()],
-      server: { middlewareMode: true, hmr: false, watch: null },
+test("builds for an existing widget set", async () => {
+  const root = await fixture(["widget"]);
+  const remoteRid =
+    "ri.widgetregistry.main.widget-set.11111111-1111-1111-1111-111111111111";
+  await writeFile(
+    path.join(root, "foundry.config.json"),
+    JSON.stringify({
+      foundryUrl: "https://example.com",
+      widgetSet: { rid: remoteRid, directory: "output" },
     }),
-  ).rejects.toThrow("Local widget preview is not supported yet");
+  );
+  const manifest = await buildFixture(root, ["widget"], {});
+  expect(manifest.widgetSet.rid).toBe(remoteRid);
+  expect(manifest.widgetSet.version).toBe("9.9.9");
 });

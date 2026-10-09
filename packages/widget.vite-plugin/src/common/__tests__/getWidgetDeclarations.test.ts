@@ -46,14 +46,15 @@ async function fixture(
   await writeFile(
     path.join(root, "foundry.config.json"),
     JSON.stringify({
-      build: "local",
-      widgetSet: { directory: "dist" },
+      foundryUrl: "replace-after-installation",
+      widgetSet: { rid: "replace-after-installation", directory: "dist" },
     }),
   );
   await writeFile(
     path.join(root, "package.json"),
     JSON.stringify({
       name: "widget-declarations-test",
+      version: "0.1.0",
       type: "module",
     }),
   );
