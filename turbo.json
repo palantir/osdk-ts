@@ -269,8 +269,13 @@
     "test": {
       "outputLogs": "new-only",
       "env": ["FORCE_COLOR", "CI"],
-      "dependsOn": ["^transpileEsm"],
+      "dependsOn": ["//#test:scripts", "^transpileEsm"],
       "outputs": ["reports/**"]
+    },
+
+    "//#test:scripts": {
+      "inputs": ["scripts/**", "package.json"],
+      "outputs": []
     },
 
     "updateSnapshots": {
@@ -284,6 +289,7 @@
       "inputs": [
         "package.json",
         ".monorepolint.config.mjs",
+        "scripts/transitivePeers.mjs",
         "dprint.json",
         "packages/*/package.json",
         "packages/*/tsconfig.json",
