@@ -36,7 +36,7 @@ export interface UseCbacSelectionResult extends UseCbacPickerStateResult {
 
 export function useCbacSelection(
   initialMarkingIds: string[] | undefined,
-  options: UseCbacPickerStateOptions = {},
+  options?: UseCbacPickerStateOptions,
 ): UseCbacSelectionResult {
   const [selectedIds, setSelectedIds] = React.useState<string[]>(
     initialMarkingIds ?? EMPTY_ARRAY,

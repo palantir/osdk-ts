@@ -108,18 +108,14 @@ describe("useCbacPickerState", () => {
 
   it("forwards includeDeleted to the markings and categories hooks", () => {
     renderHook(() => useCbacPickerState([]));
-    expect(useMarkingCategories).toHaveBeenLastCalledWith({
-      includeDeleted: undefined,
-    });
-    expect(useMarkings).toHaveBeenLastCalledWith({
-      includeDeleted: undefined,
-    });
+    expect(useMarkingCategories).toHaveBeenLastCalledWith(undefined);
+    expect(useMarkings).toHaveBeenLastCalledWith(undefined);
 
-    renderHook(() => useCbacPickerState([], { includeDeleted: true }));
+    renderHook(() => useCbacPickerState([], { includeDeleted: false }));
     expect(useMarkingCategories).toHaveBeenLastCalledWith({
-      includeDeleted: true,
+      includeDeleted: false,
     });
-    expect(useMarkings).toHaveBeenLastCalledWith({ includeDeleted: true });
+    expect(useMarkings).toHaveBeenLastCalledWith({ includeDeleted: false });
   });
 
   it("uses permissive defaults when restrictions have not loaded", () => {
