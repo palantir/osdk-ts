@@ -1,5 +1,15 @@
 # @osdk/react-components
 
+## 0.64.0
+
+### Minor Changes
+
+- 039cae5: Support react-markdown 10.x
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
 ## 0.63.0
 
 ### Minor Changes

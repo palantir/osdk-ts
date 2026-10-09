@@ -1,5 +1,15 @@
 # @osdk/cli
 
+## 0.106.0
+
+### Minor Changes
+
+- a25a34d: Use the current git branch when listing and publishing widget set releases.
+
+### Patch Changes
+
+- @osdk/widget.api@3.79.0
+
 ## 0.105.0
 
 ### Patch Changes

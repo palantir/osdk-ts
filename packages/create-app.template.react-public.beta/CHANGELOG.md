@@ -1,5 +1,7 @@
 # @osdk/create-app.template.react-public.beta
 
+## 2.79.0
+
 ## 2.78.0
 
 ## 2.77.0

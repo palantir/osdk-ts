@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.79.0
+
+### Minor Changes
+
+- 86c708b: Recommend $select in object loading snippets and JSDoc, stop collecting asyncIter() into arrays in "load all objects" snippets, and document snapshot behavior of fetchPage vs asyncIter
+
 ## 2.78.0
 
 ## 2.77.0
