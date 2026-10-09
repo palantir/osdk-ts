@@ -15,6 +15,7 @@
  */
 
 export { autoVersion, AutoVersionError } from "./autoVersion.js";
+export type { AutoVersionOptions } from "./autoVersion.js";
 export { loadFoundryConfig } from "./config.js";
 export type {
   AutoVersionConfig,
@@ -22,6 +23,7 @@ export type {
   FoundryConfig,
   GitDescribeAutoVersionConfig,
   LoadedFoundryConfig,
+  LoadFoundryConfigOptions,
   PackageJsonAutoVersionConfig,
   SiteConfig,
   WidgetSetConfig,
