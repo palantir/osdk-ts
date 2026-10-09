@@ -25,6 +25,7 @@ import {
   type AsyncParameterValueMap,
   type AsyncValue,
   FoundryHostEventTarget,
+  type HostMessage,
   type ParameterConfig,
   type ParameterValueMap,
   type WidgetConfig,
@@ -84,6 +85,9 @@ export interface FoundryWidgetClientContext<
    */
   emitEvent: AugmentedEmitEvent<C>;
   hostEventTarget: FoundryHostEventTarget<C>;
+
+  /** Latest host theme; undefined means the widget should use its own defaults. */
+  theme?: HostMessage.ThemeV1;
 
   /**
    * Object where the individual parameters have their async state represented

@@ -111,6 +111,9 @@ export function createFoundryWidgetClient<
       "host.update-parameters": (payload) => {
         hostEventTarget.dispatchEventMessage("host.update-parameters", payload);
       },
+      "host.update-theme": (payload) => {
+        hostEventTarget.dispatchEventMessage("host.update-theme", payload);
+      },
       _unknown: () => {
         // Do nothing
       },
