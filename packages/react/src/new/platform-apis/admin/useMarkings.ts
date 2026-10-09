@@ -35,6 +35,16 @@ export interface UseMarkingsOptions {
    * @default true
    */
   enabled?: boolean;
+
+  /**
+   * Whether to include deleted markings in the results.
+   *
+   * Note: this hook defaults to `false`, whereas the underlying platform API
+   * defaults to `true` when the parameter is omitted.
+   *
+   * @default false
+   */
+  includeDeleted?: boolean;
 }
 
 export interface UseMarkingsResult {
@@ -52,12 +62,13 @@ export interface UseMarkingsResult {
  */
 export function useMarkings({
   enabled = true,
+  includeDeleted = false,
 }: UseMarkingsOptions = {}): UseMarkingsResult {
   const { client } = React.useContext(OsdkContext);
 
   const handleQuery = React.useCallback(() => {
-    return Markings.list(client);
-  }, [client]);
+    return Markings.list(client, { includeDeleted });
+  }, [client, includeDeleted]);
 
   const query = usePlatformQuery({
     query: handleQuery,
