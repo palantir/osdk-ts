@@ -29,7 +29,13 @@ import type {
   InputShapeMetadata,
   OutputShape,
 } from "@osdk/client.unstable/api";
+import invariant from "tiny-invariant";
 
+import {
+  getDatasetDecimalParameters,
+  isRecord,
+  validateDatasetFieldNames,
+} from "../api/datasetSchemaValidation.js";
 import { typeToConcreteDataType } from "../conversion/toMarketplace/typeVisitors.js";
 import type { ReadableId } from "../util/generateRid.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
@@ -103,30 +109,87 @@ interface FieldSchema {
 /**
  * Build a Foundry schema field object for a column type.
  */
-export function typeToFieldSchema(type: Type, name?: string): FieldSchema {
+export function typeToFieldSchema(
+  type: Type,
+  name?: string,
+  fieldPath: string = name ?? "Dataset field",
+): FieldSchema {
+  invariant(
+    isRecord(type) && typeof type.type === "string",
+    `${fieldPath} must specify a supported type`,
+  );
+  if (name !== undefined) {
+    validateDatasetFieldNames([name], fieldPath);
+  }
+  let arraySubtype: FieldSchema | null = null;
+  let subSchemas: FieldSchema[] | null = null;
+  let decimalParameters: { precision: number; scale: number } | undefined;
+  switch (type.type) {
+    case "decimal":
+      invariant(
+        isRecord(type.decimal),
+        `${fieldPath} must define decimal parameters`,
+      );
+      decimalParameters = getDatasetDecimalParameters(
+        type.decimal.precision,
+        type.decimal.scale,
+        fieldPath,
+      );
+      break;
+    case "array":
+      invariant(
+        isRecord(type.array),
+        `${fieldPath} must define an array subtype`,
+      );
+      arraySubtype = typeToFieldSchema(
+        type.array.subtype,
+        undefined,
+        `${fieldPath}[]`,
+      );
+      break;
+    case "vector":
+      arraySubtype = typeToFieldSchema(
+        { type: "float", float: {} },
+        undefined,
+        `${fieldPath}[]`,
+      );
+      break;
+    case "struct":
+      invariant(
+        isRecord(type.struct) && Array.isArray(type.struct.structFields),
+        `${fieldPath} must define struct fields`,
+      );
+      type.struct.structFields.forEach((field, index) =>
+        invariant(
+          isRecord(field),
+          `${fieldPath}[${index}] must define a struct field`,
+        ),
+      );
+      validateDatasetFieldNames(
+        type.struct.structFields.map((field) => field.apiName),
+        fieldPath,
+      );
+      subSchemas = type.struct.structFields.map((field) =>
+        typeToFieldSchema(
+          field.fieldType,
+          field.apiName,
+          `${fieldPath}.${field.apiName}`,
+        ),
+      );
+      break;
+  }
   return {
     type: propertyTypeToSchemaType(type),
     name: name ?? null,
     nullable: null,
     userDefinedTypeClass: null,
     customMetadata: {},
-    arraySubtype:
-      type.type === "array"
-        ? typeToFieldSchema(type.array.subtype)
-        : type.type === "vector"
-          ? typeToFieldSchema({ type: "float", float: {} })
-          : null,
-    precision:
-      type.type === "decimal" ? (type.decimal.precision ?? null) : null,
-    scale: type.type === "decimal" ? (type.decimal.scale ?? null) : null,
+    arraySubtype,
+    precision: decimalParameters?.precision ?? null,
+    scale: decimalParameters?.scale ?? null,
     mapKeyType: null,
     mapValueType: null,
-    subSchemas:
-      type.type === "struct"
-        ? type.struct.structFields.map((f) =>
-            typeToFieldSchema(f.fieldType, f.apiName),
-          )
-        : null,
+    subSchemas,
   };
 }
 
@@ -173,6 +236,38 @@ interface BackingDatasetColumn {
   type: Type;
 }
 
+export interface DatasetBlockDefinition {
+  name: string;
+  inputType: "batch";
+  schemaType: "tabular";
+  columns: BackingDatasetColumn[];
+}
+
+export function getStandaloneDatasetInternalName(name: string): string {
+  return `standalone.${toBlockShapeId(name)}`;
+}
+
+export function generateDatasetBlockResult(
+  dataset: DatasetBlockDefinition,
+  buildDir: string,
+  randomnessKey?: string,
+): Promise<BlockGeneratorResult> {
+  invariant(
+    dataset.inputType === "batch" && dataset.schemaType === "tabular",
+    `Dataset "${dataset.name}" only supports generation with inputType "batch" and schemaType "tabular"`,
+  );
+  const blockIdentifier = `${dataset.name}-dataset`;
+  return generateBackingDatasetBlock(
+    getStandaloneDatasetInternalName(dataset.name),
+    blockIdentifier,
+    toBlockShapeId(blockIdentifier, randomnessKey),
+    dataset.columns,
+    buildDir,
+    randomnessKey,
+    dataset.name,
+  );
+}
+
 /**
  * Shared logic to generate a STATIC_DATASET BlockGeneratorResult from a list of columns.
  * Used by both object type and link type backing dataset generators.
@@ -184,7 +279,21 @@ async function generateBackingDatasetBlock(
   columns: BackingDatasetColumn[],
   buildDir: string,
   randomnessKey?: string,
+  displayName: string = blockIdentifier,
 ): Promise<BlockGeneratorResult> {
+  const datasetPath = `Dataset "${displayName}"`;
+  validateDatasetFieldNames(
+    columns.map((column) => column.name),
+    datasetPath,
+  );
+  const fieldSchemaList = columns.map((column) =>
+    typeToFieldSchema(
+      column.type,
+      column.name,
+      `${datasetPath}.${column.name}`,
+    ),
+  );
+
   // Build output shapes
   const outputs: Record<ReadableId, OutputShape> = {} as Record<
     ReadableId,
@@ -207,7 +316,7 @@ async function generateBackingDatasetBlock(
     type: "tabularDatasource",
     tabularDatasource: {
       about: {
-        fallbackTitle: blockIdentifier,
+        fallbackTitle: displayName,
         fallbackDescription: "",
         localizedTitle: {},
         localizedDescription: {},
@@ -285,9 +394,7 @@ async function generateBackingDatasetBlock(
 
   // Write schema.json
   const schemaJson = {
-    fieldSchemaList: columns.map((col) =>
-      typeToFieldSchema(col.type, col.name),
-    ),
+    fieldSchemaList,
     primaryKey: null,
     dataFrameReaderClass:
       "com.palantir.foundry.spark.input.ParquetDataFrameReader",
@@ -339,7 +446,7 @@ async function generateBackingDatasetBlock(
     type: "compassResource",
     compassResource: {
       about: {
-        fallbackTitle: blockIdentifier,
+        fallbackTitle: displayName,
         fallbackDescription: "",
         localizedTitle: {},
         localizedDescription: {},

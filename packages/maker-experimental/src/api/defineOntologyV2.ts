@@ -31,7 +31,10 @@ import {
 } from "@osdk/maker";
 import { convertOntologyFullMetadata } from "@osdk/maker-import";
 
+import type { DatasetBlockDefinition } from "../cli/generateBackingDataset.js";
 import type { BlockDataAddOn } from "../cli/marketplaceSerialization/BlockGeneratorResult.js";
+import type { GeneratedBlockExternalRecommendations } from "../cli/marketplaceSerialization/supportingTypes.js";
+import { convertDatasetDefinition } from "../conversion/toMarketplace/convertDatasetDefinition.js";
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
 import {
   type ExternalImportedOntologyMetadata,
@@ -46,6 +49,12 @@ import {
   OntologyRidGeneratorImpl,
   ReadableIdGenerator,
 } from "../util/generateRid.js";
+import { getDatasetBindings } from "./datasetInputMappings.js";
+import {
+  getDatasetDefinitions,
+  initializeDatasetState,
+} from "./defineDataset.js";
+import { writeDatasetExports } from "./writeDatasetExports.js";
 
 export interface OntologyV2Result {
   ontologyIr: OntologyIrV2;
@@ -56,6 +65,8 @@ export interface OntologyV2Result {
   backingDatasourceApiNames: string[];
   backingDatasourceLinkApiNames: string[];
   backingMediaSetNames: string[];
+  datasets: DatasetBlockDefinition[];
+  datasetExternalRecommendations: GeneratedBlockExternalRecommendations[];
 }
 
 export interface FunctionsIr {
@@ -73,6 +84,7 @@ export async function defineOntologyV2(
   externalImportedMetadata?: ExternalImportedOntologyMetadata,
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
+  initializeDatasetState();
 
   try {
     await body();
@@ -113,6 +125,9 @@ export async function defineOntologyV2(
     importedTypes,
     randomnessKey,
   );
+  const datasets = getDatasetDefinitions().map((dataset) =>
+    convertDatasetDefinition(dataset, ridGenerator),
+  );
   const ontDef = convertOntologyDefinition(
     ontologyDefinition,
     ridGenerator,
@@ -126,6 +141,16 @@ export async function defineOntologyV2(
     functionsIr,
     randomnessKey,
   );
+
+  const datasetBindings = getDatasetBindings(
+    ontologyDefinition,
+    ontDef.ontology.objectTypes,
+    datasets,
+    ridGenerator,
+    ns,
+    randomnessKey,
+  );
+  shapes.inputMappings.push(...datasetBindings.inputMappings);
 
   // Generate input shapes for imported entities and merge into main shapes
   const importedShapes = getImportedShapes(
@@ -187,7 +212,13 @@ export async function defineOntologyV2(
   }
 
   if (outputDir) {
-    writeStaticObjects(outputDir);
+    const datasetExports = writeDatasetExports(
+      outputDir,
+      ns,
+      getDatasetDefinitions(),
+      randomnessKey,
+    );
+    writeStaticObjects(outputDir, datasetExports);
   }
   if (dependencyFile) {
     writeDependencyFile(dependencyFile);
@@ -217,5 +248,7 @@ export async function defineOntologyV2(
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
+    datasets,
+    datasetExternalRecommendations: datasetBindings.externalRecommendations,
   };
 }
