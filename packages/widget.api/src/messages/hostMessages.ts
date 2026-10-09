@@ -43,9 +43,16 @@ export namespace HostMessage {
     export interface UpdateParameters<C extends WidgetConfig<C["parameters"]>> {
       parameters: AsyncParameterValueMap<C>;
     }
+
+    export interface SetTheme {
+      theme: unknown;
+    }
   }
 
-  export type Payload = Payload.SetHotkeys | Payload.UpdateParameters<any>;
+  export type Payload =
+    | Payload.SetHotkeys
+    | Payload.UpdateParameters<any>
+    | Payload.SetTheme;
 
   export interface SetHotkeys extends HostBaseMessage<
     "host.set-hotkeys",
@@ -58,11 +65,17 @@ export namespace HostMessage {
     "host.update-parameters",
     Payload.UpdateParameters<C>
   > {}
+
+  export interface SetTheme extends HostBaseMessage<
+    "host.set-theme",
+    Payload.SetTheme
+  > {}
 }
 
 export type HostMessage<C extends WidgetConfig<C["parameters"]>> =
   | HostMessage.SetHotkeys
-  | HostMessage.UpdateParameters<C>;
+  | HostMessage.UpdateParameters<C>
+  | HostMessage.SetTheme;
 
 export function isHostSetHotkeysMessage<
   C extends WidgetConfig<C["parameters"]>,

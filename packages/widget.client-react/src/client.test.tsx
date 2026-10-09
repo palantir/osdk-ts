@@ -87,15 +87,18 @@ describe("FoundryWidget emitEvent race condition handling", () => {
 
   function EmitEventCapture({
     emitEventRef,
+    themeRef,
   }: {
     emitEventRef: { current: EmitEventFn };
+    themeRef?: { current: unknown };
   }) {
     const context = useFoundryWidgetContext<typeof config>();
     emitEventRef.current = context.emitEvent as EmitEventFn;
+    if (themeRef) themeRef.current = context.theme;
     return null;
   }
 
-  const mountWidget = async () => {
+  const mountWidget = async (themeRef?: { current: unknown }) => {
     container = document.createElement("div");
     document.body.append(container);
     root = createRoot(container);
@@ -105,7 +108,7 @@ describe("FoundryWidget emitEvent race condition handling", () => {
     act(() => {
       root.render(
         <FoundryWidget config={config} client={client}>
-          <EmitEventCapture emitEventRef={emitEventRef} />
+          <EmitEventCapture emitEventRef={emitEventRef} themeRef={themeRef} />
         </FoundryWidget>,
       );
     });
@@ -319,5 +322,26 @@ describe("FoundryWidget emitEvent race condition handling", () => {
     expect(mockEmitEvent).toHaveBeenNthCalledWith(5, "eventA", {
       parameterUpdates: { myParam: "fifth" },
     });
+  });
+
+  it("exposes the latest host theme through context", async () => {
+    const themeRef = { current: undefined as unknown };
+    await mountWidget(themeRef);
+    expect(themeRef.current).toBeUndefined();
+
+    const theme = { custom: "value" };
+    act(() => {
+      mockWidgetClient.hostEventTarget.dispatchEventMessage("host.set-theme", {
+        theme,
+      });
+    });
+    expect(themeRef.current).toBe(theme);
+
+    act(() => {
+      mockWidgetClient.hostEventTarget.dispatchEventMessage("host.set-theme", {
+        theme: undefined,
+      });
+    });
+    expect(themeRef.current).toBeUndefined();
   });
 });

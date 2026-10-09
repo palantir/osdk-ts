@@ -83,6 +83,7 @@ export interface FoundryWidgetClientContext<
    * - Errors are not surfaced to the caller
    */
   emitEvent: AugmentedEmitEvent<C>;
+  theme: unknown;
   hostEventTarget: FoundryHostEventTarget<C>;
 
   /**
@@ -132,6 +133,7 @@ export const FoundryWidgetContext: React.Context<
   FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>
 >({
   emitEvent: () => {},
+  theme: undefined,
   hostEventTarget: new FoundryHostEventTarget<WidgetConfig<ParameterConfig>>(),
   asyncParameterValues: {},
   parameters: {
