@@ -77,19 +77,21 @@ export class ListsHelper extends AbstractHelper<
     const ret = super.observe(options, subFn);
 
     if (options.streamUpdates) {
-      if (!options.pivotTo && !options.withProperties) {
+      if (options.pivotTo || options.withProperties) {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            options.pivotTo
+              ? "[@osdk/client] streamUpdates is not supported with pivotTo. " +
+                  "The server does not support websocket subscriptions for " +
+                  "link-traversal queries. Ignoring streamUpdates."
+              : "[@osdk/client] streamUpdates is not supported with withProperties. " +
+                  "The server does not support websocket subscriptions for " +
+                  "object sets that include derived properties. Ignoring streamUpdates.",
+          );
+        }
+      } else {
         ret.query.registerStreamUpdates(ret.subscription);
-      } else if (process.env.NODE_ENV !== "production") {
-        // eslint-disable-next-line no-console
-        console.warn(
-          options.pivotTo
-            ? "[@osdk/client] streamUpdates is not supported with pivotTo. " +
-                "The server does not support websocket subscriptions for " +
-                "link-traversal queries. Ignoring streamUpdates."
-            : "[@osdk/client] streamUpdates is not supported with withProperties. " +
-                "The server does not support websocket subscriptions for " +
-                "object sets that include derived properties. Ignoring streamUpdates.",
-        );
       }
     }
     return ret;
