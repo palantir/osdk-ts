@@ -17,7 +17,10 @@
 import React from "react";
 
 import type { CategoryMarkingGroup } from "./types.js";
-import type { UseCbacPickerStateResult } from "./useCbacPickerState.js";
+import type {
+  UseCbacPickerStateOptions,
+  UseCbacPickerStateResult,
+} from "./useCbacPickerState.js";
 import { useCbacPickerState } from "./useCbacPickerState.js";
 import { EMPTY_ARRAY } from "./utils/cbacPickerUtils.js";
 import { toggleMarking } from "./utils/selectionLogic.js";
@@ -33,6 +36,7 @@ export interface UseCbacSelectionResult extends UseCbacPickerStateResult {
 
 export function useCbacSelection(
   initialMarkingIds: string[] | undefined,
+  options: UseCbacPickerStateOptions = {},
 ): UseCbacSelectionResult {
   const [selectedIds, setSelectedIds] = React.useState<string[]>(
     initialMarkingIds ?? EMPTY_ARRAY,
@@ -44,7 +48,7 @@ export function useCbacSelection(
     setSelectedIds(initialMarkingIds ?? EMPTY_ARRAY);
   }
 
-  const pickerState = useCbacPickerState(selectedIds);
+  const pickerState = useCbacPickerState(selectedIds, options);
 
   const selectedIdsRef = React.useRef(selectedIds);
   selectedIdsRef.current = selectedIds;
