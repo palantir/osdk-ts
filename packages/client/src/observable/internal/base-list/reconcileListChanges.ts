@@ -42,7 +42,7 @@ export function getListMembershipChanges(
   objects: ListObjectChanges,
   whereClause: SimpleWhereClause,
   optimistic: boolean,
-) {
+): ListMembershipContext["result"] {
   const context: ListMembershipContext = {
     whereClause,
     optimistic,
