@@ -1,5 +1,0 @@
-type: improvement
-improvement:
-  description: Finish future client types
-  links:
-  - https://github.com/palantir/osdk-ts/pull/67
