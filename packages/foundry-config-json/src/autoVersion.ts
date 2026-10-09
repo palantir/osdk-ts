@@ -22,6 +22,10 @@ import { valid } from "semver";
 import type { AutoVersionConfig } from "./config.js";
 import { execAsync } from "./execAsync.js";
 
+export interface AutoVersionOptions {
+  cwd?: string;
+}
+
 export class AutoVersionError extends Error {
   constructor(
     public readonly msg: string,
@@ -43,13 +47,13 @@ export class AutoVersionError extends Error {
 // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function autoVersion(
   config: AutoVersionConfig,
-  cwd?: string,
+  options?: AutoVersionOptions,
 ): Promise<string> {
   switch (config.type) {
     case "git-describe":
-      return gitDescribeAutoVersion(config.tagPrefix, cwd);
+      return gitDescribeAutoVersion(config.tagPrefix, options?.cwd);
     case "package-json":
-      return packageJsonAutoVersion(cwd);
+      return packageJsonAutoVersion(options?.cwd);
     default:
       const value: never = config;
       throw new Error(

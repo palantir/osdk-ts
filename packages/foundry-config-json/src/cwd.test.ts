@@ -47,7 +47,9 @@ it("loads widget config from the supplied directory's ancestors", async () => {
   const configFilePath = path.join(root, "foundry.config.json");
   await writeFile(configFilePath, JSON.stringify(config));
 
-  await expect(loadFoundryConfig("widgetSet", nested)).resolves.toEqual({
+  await expect(
+    loadFoundryConfig("widgetSet", { cwd: nested }),
+  ).resolves.toEqual({
     configFilePath,
     foundryConfig: config,
   });
@@ -61,7 +63,7 @@ it("loads site config from the supplied directory", async () => {
   const configFilePath = path.join(root, "foundry.config.json");
   await writeFile(configFilePath, JSON.stringify(config));
 
-  await expect(loadFoundryConfig("site", root)).resolves.toEqual({
+  await expect(loadFoundryConfig("site", { cwd: root })).resolves.toEqual({
     configFilePath,
     foundryConfig: config,
   });
@@ -73,9 +75,9 @@ it("resolves the package version from the supplied directory's ancestors", async
     JSON.stringify({ version: "9.8.7" }),
   );
 
-  await expect(autoVersion({ type: "package-json" }, nested)).resolves.toBe(
-    "9.8.7",
-  );
+  await expect(
+    autoVersion({ type: "package-json" }, { cwd: nested }),
+  ).resolves.toBe("9.8.7");
 });
 
 it("resolves Git tags in the supplied directory's repository", async () => {
@@ -116,6 +118,9 @@ it("resolves Git tags in the supplied directory's repository", async () => {
   );
 
   await expect(
-    autoVersion({ type: "git-describe", tagPrefix: "widget-v" }, nested),
+    autoVersion(
+      { type: "git-describe", tagPrefix: "widget-v" },
+      { cwd: nested },
+    ),
   ).resolves.toBe("9.8.7");
 });
