@@ -63,6 +63,7 @@ export interface ValidateActionResponseV2 {
       result: "VALID" | "INVALID";
       evaluatedConstraints: Array<ParameterEvaluatedConstraint>;
       required: boolean;
+      defaultValue?: any;
     }
   >;
 }
