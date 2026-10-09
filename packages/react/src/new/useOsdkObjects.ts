@@ -31,6 +31,9 @@ import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
+import type { RefetchOptions } from "./RefetchOptions.js";
+
+export type { RefetchOptions } from "./RefetchOptions.js";
 
 /**
  * Restricts `resolveToObjectType` to interface queries only.
@@ -229,7 +232,7 @@ export interface UseOsdkListResult<
 
   objectSet: ObjectSet<T, RDPs> | undefined;
 
-  refetch: () => Promise<void>;
+  refetch: (options?: RefetchOptions) => Promise<void>;
 }
 
 // pivotTo overloads: streamUpdates is forbidden (the server does not support
@@ -319,7 +322,7 @@ export function useOsdkObjects<
 
   const stableRids = React.useMemo(() => rids, [JSON.stringify(rids)]);
 
-  const { subscribe, getSnapShot } = React.useMemo(() => {
+  const { subscribe, getSnapShot, revalidate } = React.useMemo(() => {
     if (!enabled) {
       return makeExternalStore<ObserveObjectsCallbackArgs<Q, RDPs>>(
         () => ({ unsubscribe: () => {} }),
@@ -387,9 +390,19 @@ export function useOsdkObjects<
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  const refetch = React.useCallback(async () => {
-    await observableClient.invalidateObjectType(type.apiName);
-  }, [observableClient, type.apiName]);
+  const refetch = React.useCallback(
+    async (refetchOptions?: RefetchOptions) => {
+      if (!enabled) {
+        return;
+      }
+      if (refetchOptions?.scope === "type") {
+        await observableClient.invalidateObjectType(type.apiName);
+      } else {
+        await revalidate();
+      }
+    },
+    [enabled, observableClient, type.apiName, revalidate],
+  );
 
   return React.useMemo<UseOsdkListResult<Q, RDPs>>(
     () => ({

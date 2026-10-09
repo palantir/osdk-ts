@@ -750,4 +750,5 @@ export function createObservableClient(
 
 export interface Unsubscribable {
   unsubscribe: () => void;
+  revalidate?: (force?: boolean) => Promise<void>;
 }
