@@ -192,6 +192,8 @@ export class Layers {
           });
         }
 
+        changes.writtenCacheKeys.add(cacheKey);
+
         return newValue;
       },
       delete: (cacheKey, status) => {
