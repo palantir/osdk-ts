@@ -99,6 +99,7 @@ function createMockMediaFromUrl(url: string, filename: string): Media {
       Promise.resolve({
         path: filename,
         sizeBytes: 0,
+        sizeBytesLong: "0",
         mediaType: mimeType,
       }),
     getMediaReference: () => ({
@@ -141,6 +142,7 @@ function createMockSpreadsheetMedia(): Media {
       Promise.resolve({
         path: "report.xlsx",
         sizeBytes: xlsxBuffer.byteLength,
+        sizeBytesLong: String(xlsxBuffer.byteLength),
         mediaType:
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       }),

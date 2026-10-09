@@ -2369,7 +2369,7 @@ versions:
             const result = await client({{objectType}}).fetchOne({{{primaryKeyPropertyValueV2}}});
             // Fetch metadata of a media property
             const mediaMetadata = await result.{{property}}?.fetchMetadata();
-            console.log(mediaMetadata?.mediaType, mediaMetadata?.sizeBytes, mediaMetadata?.path);
+            console.log(mediaMetadata?.mediaType, mediaMetadata?.sizeBytesLong, mediaMetadata?.path);
             // Fetch contents of a media property
             const mediaContent = await result.{{property}}?.fetchContents();
             if (mediaContent?.ok) {

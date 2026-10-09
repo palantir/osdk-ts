@@ -103,6 +103,7 @@ export class MediaHelper extends AbstractHelper<
     return {
       path: String(response.path),
       sizeBytes: Number(response.sizeBytes),
+      sizeBytesLong: response.sizeBytes,
       mediaType: response.mediaType,
     };
   }

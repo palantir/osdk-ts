@@ -20,8 +20,73 @@ import { validateMediaItemMetadata } from "./validateMediaItemMetadata.js";
 
 describe("validateMediaItemMetadata", () => {
   it("passes a known variant through unchanged", () => {
-    const raw = { type: "imagery", format: "PNG", sizeBytes: 1024, bands: [] };
+    const raw = {
+      type: "imagery",
+      format: "PNG",
+      sizeBytes: 1024,
+      sizeBytesLong: "1024",
+      bands: [],
+    };
     expect(validateMediaItemMetadata(raw)).toBe(raw);
+  });
+
+  it.each([
+    "audio",
+    "document",
+    "imagery",
+    "spreadsheet",
+    "untyped",
+    "model3d",
+    "video",
+    "dicom",
+    "email",
+  ])("preserves exact and legacy sizes for %s", (type) => {
+    for (const sizeBytesLong of [
+      "2147483647",
+      "2147483648",
+      "9007199254740993",
+    ]) {
+      const raw = { type, sizeBytes: 2147483647, sizeBytesLong };
+      expect(validateMediaItemMetadata(raw)).toBe(raw);
+    }
+  });
+
+  it("adds the long size for an older response without changing its legacy size", () => {
+    const raw = { type: "untyped", sizeBytes: 1024 };
+    expect(validateMediaItemMetadata(raw)).toEqual({
+      type: "untyped",
+      sizeBytes: 1024,
+      sizeBytesLong: "1024",
+    });
+    expect(raw).toEqual({ type: "untyped", sizeBytes: 1024 });
+  });
+
+  it("rejects known metadata without either size field", () => {
+    expect(() => validateMediaItemMetadata({ type: "untyped" })).toThrow();
+  });
+
+  it("rejects a non-string long size instead of using the capped legacy size", () => {
+    expect(() =>
+      validateMediaItemMetadata({
+        type: "untyped",
+        sizeBytes: 2147483647,
+        sizeBytesLong: 2147483648,
+      }),
+    ).toThrow();
+  });
+
+  it("keeps CAD metadata and its exact size in the unknown payload", () => {
+    const raw = {
+      type: "cad",
+      format: "STEP",
+      sizeBytes: 2147483647,
+      sizeBytesLong: "2147483648",
+    };
+    const result = validateMediaItemMetadata(raw);
+    expect(result.type).toBe("unknown");
+    if (result.type === "unknown") {
+      expect(result.raw).toBe(raw);
+    }
   });
 
   it("wraps an unknown variant as UnknownMediaItemMetadata, preserving the raw payload", () => {
