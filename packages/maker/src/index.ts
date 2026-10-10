@@ -131,6 +131,7 @@ export type {
   ObjectTypeDatasourceDefinition_direct,
 } from "./api/object/ObjectTypeDatasourceDefinition.js";
 export type { ObjectTypeDefinition } from "./api/object/ObjectTypeDefinition.js";
+export { resolveDerivedPropertyLinks } from "./api/object/resolveDerivedPropertyLinks.js";
 export type { SecurityConditionDefinition } from "./api/object/SecurityCondition.js";
 export type { Nullability } from "./api/properties/Nullability.js";
 export type {
