@@ -28,6 +28,7 @@ export interface CbacPickerDialogProps {
   onConfirm: (markingIds: string[]) => void;
   initialMarkingIds?: string[];
   maxClassificationConstraint?: MaxClassificationConstraint;
+  includeDeleted?: boolean;
 }
 
 export function CbacPickerDialog({
@@ -36,6 +37,7 @@ export function CbacPickerDialog({
   onConfirm,
   initialMarkingIds,
   maxClassificationConstraint,
+  includeDeleted,
 }: CbacPickerDialogProps): React.ReactElement {
   const {
     selectedIds,
@@ -51,7 +53,7 @@ export function CbacPickerDialog({
     toggle,
     dismiss,
     reset,
-  } = useCbacSelection(initialMarkingIds);
+  } = useCbacSelection(initialMarkingIds, { includeDeleted });
 
   // Parent controls dialog close on confirm (e.g. to show a loading state)
   const handleConfirm = React.useCallback(() => {
