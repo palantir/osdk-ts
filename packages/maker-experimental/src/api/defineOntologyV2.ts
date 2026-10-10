@@ -77,6 +77,8 @@ export async function defineOntologyV2(
   importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
   externalImportedMetadata?: ExternalImportedOntologyMetadata,
   packagingOptions: OntologyPackagingOptions = {},
+  /** Runs once the ontology is fully registered, but before anything is written to disk. */
+  beforeWrite?: (ontology: OntologyDefinition) => void | Promise<void>,
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
 
@@ -109,6 +111,7 @@ export async function defineOntologyV2(
 
   const ontologyDefinition = getOntologyDefinition();
   const importedTypes = getImportedTypes();
+  await beforeWrite?.(ontologyDefinition);
 
   let functionsIr: FunctionsIr | undefined;
   if (functionsIrFile) {

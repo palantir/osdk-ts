@@ -152,3 +152,8 @@ export { wrapWithProxy } from "./api/wrapWithProxy.js";
 export { default } from "./cli/main.js";
 export { convertInterfaceSchemaGracePeriod } from "./conversion/toMarketplace/convertInterfaceSchemaMigrations.js";
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";
+export { DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME } from "./lockfile/OntologySchemaLockfile.js";
+export {
+  reconcileOntologySchemaLockfile,
+  type ReconcileOntologySchemaLockfileOptions,
+} from "./lockfile/reconcileOntologySchemaLockfile.js";
