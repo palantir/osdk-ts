@@ -39,6 +39,7 @@ function expectedOptions(overrides?: {
   cacheKeys?: boolean;
 }) {
   return {
+    objectSetInvalidation: undefined,
     devMode: {
       actionDelayMs: overrides?.actionDelayMs,
       logLevel: overrides?.logLevel,
@@ -53,6 +54,33 @@ function expectedOptions(overrides?: {
 describe("OsdkProvider", () => {
   afterEach(() => {
     vi.clearAllMocks();
+  });
+
+  it("recreates the client when recursive object-set invalidation is enabled", () => {
+    const { rerender } = render(
+      <OsdkProvider client={mockClient}>
+        <div />
+      </OsdkProvider>,
+    );
+    expect(createObservableClientMock).toHaveBeenLastCalledWith(
+      mockClient,
+      expect.any(Function),
+      expectedOptions(),
+    );
+    rerender(
+      <OsdkProvider client={mockClient} objectSetInvalidation="recursive">
+        <div />
+      </OsdkProvider>,
+    );
+    expect(createObservableClientMock).toHaveBeenCalledTimes(2);
+    expect(createObservableClientMock).toHaveBeenLastCalledWith(
+      mockClient,
+      expect.any(Function),
+      {
+        ...expectedOptions(),
+        objectSetInvalidation: "recursive",
+      },
+    );
   });
 
   it("passes the devMode option through to createObservableClient", () => {

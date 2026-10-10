@@ -661,6 +661,12 @@ export type CanonicalizedOptions<T extends CanonicalizeOptionsInput<any>> = {
 
 export interface ObservableClientOptions {
   /**
+   * Opt in to recursive object-set dependency tracking. Defaults to "legacy".
+   * Nested queries refetch when a known dependency changes.
+   */
+  objectSetInvalidation?: "legacy" | "recursive";
+
+  /**
    * Dev-only behaviors of the observable client. These options have no effect
    * in production builds, where the relevant code is stripped at build time.
    */

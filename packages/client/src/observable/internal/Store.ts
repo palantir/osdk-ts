@@ -140,6 +140,7 @@ export class Store {
    */
   #debugRefCounts: boolean;
 
+  readonly recursiveObjectSetInvalidation: boolean;
   readonly cacheKeys: CacheKeys<KnownCacheKey>;
   readonly queries: Queries = new Queries();
 
@@ -182,6 +183,8 @@ export class Store {
       },
     );
     this.client = client;
+    this.recursiveObjectSetInvalidation =
+      options?.objectSetInvalidation === "recursive";
     this.devModeActionDelayMs = options?.devMode?.actionDelayMs ?? 1000;
     this.#debugRefCounts =
       options?.devMode?.debug?.refCounts ?? DEBUG_REFCOUNTS;
