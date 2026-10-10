@@ -19,6 +19,7 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME } from "@osdk/maker";
 import { consola } from "consola";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -90,9 +91,9 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
     ]);
   }
 
-  async function readLockfile(): Promise<unknown> {
+  async function readLockfile(at: string = lockfile): Promise<unknown> {
     const { "//": _header, ...contents } = JSON.parse(
-      await fs.readFile(lockfile, "utf-8"),
+      await fs.readFile(at, "utf-8"),
     );
     return contents;
   }
@@ -176,17 +177,80 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
     );
   });
 
+  it("uses the --lockfile path instead of the default", async () => {
+    const override = path.join(workDir, "custom.lock.json");
+
+    await run("personOptedIn", "--write-locks", "--lockfile", override);
+
+    expect(await readLockfile(override)).toStrictEqual(PERSON_OPTED_IN);
+    expect(await exists(lockfile)).toBe(false);
+  });
+
   // The Foundry CLI can run maker-experimental twice per build, e.g. a second time for
   // function-backed actions.
   it("is idempotent across repeated passes", async () => {
     await run("personLastNameInFlight", "--write-locks");
     await run("personLastNameFinalized", "--write-locks", "--yes");
-    const { mtimeMs } = await fs.stat(lockfile);
+    const contents = await fs.readFile(lockfile, "utf-8");
 
     // Without --yes and without a TTY, this would throw if the finalization were detected again.
     await run("personLastNameFinalized", "--write-locks");
     await run("personLastNameFinalized");
 
-    expect((await fs.stat(lockfile)).mtimeMs).toBe(mtimeMs);
+    expect(await fs.readFile(lockfile, "utf-8")).toBe(contents);
+  });
+
+  describe("function-backed second pass", () => {
+    const blockDataFile = () =>
+      path.join(workDir, "build", "temp_block_data", "ontology.json");
+    const secondPassFlags = () => [
+      "-f",
+      blockDataFile(),
+      "--functionsDir",
+      path.join(workDir, "functions"),
+      "--nodeModulesDir",
+      path.join(workDir, "node_modules"),
+      "--functionsIrOutputFile",
+      path.join(workDir, "functions_ir.json"),
+    ];
+
+    beforeEach(() => {
+      // Real discovery needs a TypeScript functions project; only its IR output matters here.
+      vi.spyOn(
+        OntologyIrToFullMetadataConverter,
+        "discoverTypeScriptFunctions",
+      ).mockImplementation(async (_functionsDir, _nodeModulesDir, irFile) => {
+        await fs.writeFile(
+          irFile!,
+          JSON.stringify({ discoveredFunctions: [] }),
+        );
+        return [];
+      });
+    });
+
+    it("accepts the lockfile written by the first pass", async () => {
+      await run("personOptedIn", "--write-locks");
+      const contents = await fs.readFile(lockfile, "utf-8");
+      await fs.rm(output);
+
+      await run("personOptedIn", ...secondPassFlags());
+
+      expect(
+        OntologyIrToFullMetadataConverter.discoverTypeScriptFunctions,
+      ).toHaveBeenCalledOnce();
+      expect(await exists(output)).toBe(true);
+      expect(await fs.readFile(lockfile, "utf-8")).toBe(contents);
+    });
+
+    it("does not write block data when the lockfile is out of date", async () => {
+      await run("personOptedIn", "--write-locks");
+      await fs.rm(output);
+
+      await expect(
+        run("personLastNameInFlight", ...secondPassFlags()),
+      ).rejects.toThrowError(/is out of date/u);
+      expect(await exists(output)).toBe(false);
+      expect(await readLockfile()).toStrictEqual(PERSON_OPTED_IN);
+    });
   });
 });

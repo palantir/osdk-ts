@@ -33,7 +33,8 @@ import {
   DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME,
   reconcileOntologySchemaLockfile,
 } from "@osdk/maker";
-import { consola } from "consola";
+import type { LogLevel } from "consola";
+import { consola, LogLevels } from "consola";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -88,6 +89,7 @@ export default async function main(
     lockfile?: string;
     writeLocks?: boolean;
     yes?: boolean;
+    verbose: number;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -186,7 +188,17 @@ export default async function main(
         type: "boolean",
         // NB: no default since "implied" below
       },
+      verbose: {
+        alias: "v",
+        describe:
+          "Enable verbose logging: -v for debug, including stack traces on failure, -vv for trace",
+        type: "boolean",
+        count: true,
+      },
     })
+    .middleware(({ verbose }) => {
+      consola.level = logLevelFor(verbose);
+    }, true)
     // --yes only answers the prompt that --write-locks can raise, so on its own it does nothing.
     .implies("yes", "writeLocks")
     // Without this, the usage error that `implies` raises calls `process.exit` from inside the
@@ -316,8 +328,8 @@ export default async function main(
     { targetEnvironment: commandLineOpts.targetEnvironment },
     // An ontology that fails lockfile checks would fail at installation-time, so its block data
     // should never reach disk at all.
-    async (ontology) =>
-      await reconcileOntologySchemaLockfile({
+    (ontology) =>
+      reconcileOntologySchemaLockfile({
         ontology,
         lockfilePath,
         writeLocks: commandLineOpts.writeLocks ?? false,
@@ -596,17 +608,23 @@ export default async function main(
   }
 }
 
+function logLevelFor(verbosity: number): LogLevel {
+  if (verbosity === 0) return LogLevels.info;
+  if (verbosity === 1) return LogLevels.debug;
+  return LogLevels.trace;
+}
+
 async function loadOntology(
   input: string,
   apiNamespace: string,
-  outputDir?: string,
-  dependencyFile?: string,
-  functionsIrFile?: string,
-  randomnessKey?: string,
-  importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
-  externalImportedMetadata?: ExternalImportedOntologyMetadata,
-  packagingOptions?: OntologyPackagingOptions,
-  beforeWrite?: (ontology: OntologyDefinition) => Promise<void>,
+  outputDir: string | undefined,
+  dependencyFile: string | undefined,
+  functionsIrFile: string | undefined,
+  randomnessKey: string | undefined,
+  importedLinkTypeIdsByApiName: LinkTypeIdsByApiName | undefined,
+  externalImportedMetadata: ExternalImportedOntologyMetadata | undefined,
+  packagingOptions: OntologyPackagingOptions,
+  beforeWrite: (ontology: OntologyDefinition) => Promise<void>,
 ) {
   const result = await defineOntologyV2(
     apiNamespace,

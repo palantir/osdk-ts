@@ -77,7 +77,7 @@ export async function defineOntologyV2(
   importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
   externalImportedMetadata?: ExternalImportedOntologyMetadata,
   packagingOptions: OntologyPackagingOptions = {},
-  /** Runs once the ontology is fully registered, but before anything is written to disk. */
+  /** Runs once the ontology is fully converted, but before any block data is written to disk. */
   beforeWrite?: (ontology: OntologyDefinition) => void | Promise<void>,
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
@@ -111,7 +111,6 @@ export async function defineOntologyV2(
 
   const ontologyDefinition = getOntologyDefinition();
   const importedTypes = getImportedTypes();
-  await beforeWrite?.(ontologyDefinition);
 
   let functionsIr: FunctionsIr | undefined;
   if (functionsIrFile) {
@@ -195,6 +194,9 @@ export async function defineOntologyV2(
       },
     );
   }
+
+  // Runs last so that an ontology which fails conversion can't have already updated the lockfile.
+  await beforeWrite?.(ontologyDefinition);
 
   if (outputDir) {
     writeStaticObjects(outputDir);
