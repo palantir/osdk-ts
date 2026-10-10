@@ -30,7 +30,10 @@ import type { BatchContext } from "../BatchContext.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
-import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
+import {
+  getObjectTypesThatInvalidate,
+  type ObjectSetDependencies,
+} from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
 import {
   API_NAME_IDX as OBJECT_API_NAME_IDX,
@@ -60,6 +63,7 @@ export class ObjectSetQuery extends BaseListQuery<
   #objectTypes: Set<string>;
   #requiresServerEvaluation: boolean;
   #resultTypeApiName: string;
+  #loadDependencies?: () => Promise<ObjectSetDependencies>;
 
   // Object types this query's RDPs traverse; an edit to any of these triggers
   // revalidation. Lazily populated on first fetch when `withProperties` is set.
@@ -106,6 +110,29 @@ export class ObjectSetQuery extends BaseListQuery<
 
     this.#resultTypeApiName =
       ObjectSetQuery.#extractTypeFromWireObjectSet(baseWire) ?? "";
+
+    if (store.recursiveObjectSetInvalidation) {
+      this.#requiresServerEvaluation ||=
+        baseWire.type !== "base" || operations.withProperties != null;
+      let dependencies: Promise<ObjectSetDependencies> | undefined;
+      this.#loadDependencies = () =>
+        (dependencies ??= getObjectTypesThatInvalidate(
+          store.client[additionalContext],
+          getWireObjectSet(this.#composedObjectSet),
+        )
+          .then((result) => {
+            this.#objectTypes = new Set([
+              ...Object.keys(result.counts),
+              result.resultType.apiName,
+            ]);
+            this.#rdpInvalidationSet = result.invalidationSet;
+            return result;
+          })
+          .catch((error: unknown) => {
+            dependencies = undefined;
+            throw error;
+          }));
+    }
 
     if (opts.autoFetchMore === true) {
       this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
@@ -215,6 +242,7 @@ export class ObjectSetQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
+    const dependencies = await this.#loadDependencies?.();
     if (
       this.#operations.orderBy &&
       Object.keys(this.#operations.orderBy).length > 0 &&
@@ -222,10 +250,11 @@ export class ObjectSetQuery extends BaseListQuery<
     ) {
       const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
       const { resultType, invalidationSet } =
-        await getObjectTypesThatInvalidate(
+        dependencies ??
+        (await getObjectTypesThatInvalidate(
           this.store.client[additionalContext],
           wireObjectSet,
-        );
+        ));
       this.sortingStrategy = new OrderBySortingStrategy(
         resultType.apiName,
         this.#operations.orderBy,
@@ -317,6 +346,10 @@ export class ObjectSetQuery extends BaseListQuery<
 
     try {
       if (this.#requiresServerEvaluation) {
+        if (optimisticId && this.#loadDependencies) {
+          this.#removeOptimisticallyDeletedObjects(changes, optimisticId);
+          return;
+        }
         return this.#handleServerRevalidation(changes);
       }
       return this.#handleLocalUpdate(changes, optimisticId);
@@ -328,6 +361,28 @@ export class ObjectSetQuery extends BaseListQuery<
       }
     }
   };
+
+  #removeOptimisticallyDeletedObjects(
+    changes: Changes,
+    optimisticId: OptimisticId,
+  ): void {
+    if (changes.deleted.size === 0) return;
+    this.store.batch({ optimisticId, changes }, (batch) => {
+      const existing = batch.read(this.cacheKey)?.value;
+      if (!existing) return;
+      const remaining = existing.data.filter(
+        (key) => !changes.deleted.has(key),
+      );
+      if (remaining.length === existing.data.length) return;
+      this._updateList(
+        remaining,
+        "loading",
+        batch,
+        { type: "serverOrdered", append: false },
+        existing.totalCount,
+      );
+    });
+  }
 
   #handleServerRevalidation(changes: Changes): Promise<void> | undefined {
     for (const objectType of this.#objectTypes) {
@@ -529,6 +584,7 @@ export class ObjectSetQuery extends BaseListQuery<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
+    await this.#loadDependencies?.();
     if (
       this.#objectTypes.has(objectType) ||
       (this.#rdpInvalidationSet?.has(objectType) ?? false)
