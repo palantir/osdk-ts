@@ -33,7 +33,6 @@ interface OsdkProviderOptions {
   children: React.ReactNode;
   client: Client;
   enableDevTools?: boolean;
-  objectSetInvalidation?: ObservableClientOptions["objectSetInvalidation"];
   /**
    * Dev-only behaviors of the underlying observable client. Has no effect in
    * production builds. Use `devMode={{ actionDelayMs: 0 }}` to disable the
@@ -49,7 +48,6 @@ export function OsdkProvider({
   children,
   client,
   enableDevTools,
-  objectSetInvalidation,
   devMode,
 }: OsdkProviderOptions): React.JSX.Element {
   const devtoolsEnabled =
@@ -71,21 +69,13 @@ export function OsdkProvider({
   const baseObservableClient = useMemo(
     () =>
       createObservableClient(client, () => [...userAgentsRef.current], {
-        objectSetInvalidation,
         devMode: {
           actionDelayMs,
           logLevel,
           debug: { refCounts: debugRefCounts, cacheKeys: debugCacheKeys },
         },
       }),
-    [
-      client,
-      objectSetInvalidation,
-      actionDelayMs,
-      logLevel,
-      debugRefCounts,
-      debugCacheKeys,
-    ],
+    [client, actionDelayMs, logLevel, debugRefCounts, debugCacheKeys],
   );
 
   const { client: devToolsClient, wrapChildren } = useDevToolsClient(
