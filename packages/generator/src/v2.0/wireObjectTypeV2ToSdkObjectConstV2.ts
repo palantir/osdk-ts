@@ -489,7 +489,10 @@ function getPropTypeOrValueTypeEnum(
   const enumString = propertyDefinition.type === "string"
     ? stringUnionFrom(enumValues)
     : enumValues.join(" | ") || "never";
-  return shouldWrapWithParentheses ? `(${enumString})` : enumString;
+  // createProps appends "[]" to array properties, and "[]" binds tighter than "|".
+  return shouldWrapWithParentheses || propertyDefinition.multiplicity
+    ? `(${enumString})`
+    : enumString;
 }
 
 function maybeGetEnumValues(
