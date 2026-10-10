@@ -16,6 +16,7 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { OntologyEntityTypeEnum } from "../../api/common/OntologyEntityTypeEnum.js";
 import type { TypeClass } from "../../api/common/TypeClass.js";
 import { defineInterface } from "../../api/defineInterface.js";
 import {
@@ -23,6 +24,7 @@ import {
   getOntologyDefinition,
 } from "../../api/defineOntology.js";
 import { defineSharedPropertyType } from "../../api/defineSpt.js";
+import { importOntologyEntity } from "../../api/importOntologyEntity.js";
 import type { InterfaceType } from "../../api/interface/InterfaceType.js";
 import { defaultTypeClasses } from "../../api/propertyConversionUtils.js";
 import {
@@ -511,6 +513,33 @@ describe("generateOntologySchemaLockfile", () => {
       });
 
       expect(lockedSchema().extendsInterfaces).toEqual(["com.palantir.Named"]);
+    });
+
+    it("records an imported parent without locking the imported interface", () => {
+      const imported: InterfaceType = {
+        apiName: "com.other.Named",
+        displayMetadata: { displayName: "Named" },
+        propertiesV2: {},
+        propertiesV3: {},
+        extendsInterfaces: [],
+        links: [],
+        actionTypeConstraints: [],
+        status: { type: "active", active: {} },
+        schemaMigrationsEnabled: true,
+        __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
+      };
+      importOntologyEntity(imported);
+      defineInterface({
+        apiName: "Person",
+        extends: imported,
+        schemaMigrations: { transitions: [] },
+      });
+
+      const lockfile = generateOntologySchemaLockfile(getOntologyDefinition());
+      expect(Object.keys(lockfile.interfaces)).toEqual(["com.palantir.Person"]);
+      expect(
+        lockfile.interfaces["com.palantir.Person"].schema.extendsInterfaces,
+      ).toEqual(["com.other.Named"]);
     });
 
     it("omits the key for an interface that extends nothing", () => {

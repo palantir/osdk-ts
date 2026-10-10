@@ -21,6 +21,7 @@ import type {
   OntologyIrInterfaceActionTypeConstraint,
 } from "@osdk/client.unstable";
 import type { InterfaceType } from "@osdk/maker";
+import { isSchemaMigrationsOptedIn } from "@osdk/maker";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { resolveInterfaceTypeRid } from "./convertActionParameters.js";
@@ -35,7 +36,8 @@ export function convertInterface(
     __type,
     status,
     linkedInterfaces: _linkedInterfaces,
-    schemaMigrations,
+    schemaMigrations: _schemaMigrations,
+    schemaMigrationsEnabled: _schemaMigrationsEnabled,
     ...other
   } = interfaceType;
   // Normalize deprecated deadline format to match Java (strip .000 milliseconds)
@@ -54,7 +56,7 @@ export function convertInterface(
     // schema migrations travel in their own block data section rather than on the interface type
     // directly; we only use the declared object to determine if the IT is opted in,
     // but exclude the migrations themselves from the IT definition
-    ...(schemaMigrations !== undefined
+    ...(isSchemaMigrationsOptedIn(interfaceType)
       ? { schemaMigrationsEnabled: true }
       : {}),
     status: normalizedStatus,
