@@ -52,6 +52,13 @@ export interface CbacPickerProps {
   readOnly?: boolean;
 
   /**
+   * Whether deleted markings and marking categories are shown.
+   *
+   * @default true
+   */
+  includeDeleted?: boolean;
+
+  /**
    * CSS class for the picker container.
    */
   className?: string;
@@ -62,6 +69,7 @@ export function CbacPicker({
   onChange,
   maxClassificationConstraint,
   readOnly,
+  includeDeleted,
   className,
 }: CbacPickerProps): React.ReactElement {
   const {
@@ -74,7 +82,7 @@ export function CbacPicker({
     isValid,
     isLoading,
     error,
-  } = useCbacSelection(initialMarkingIds);
+  } = useCbacSelection(initialMarkingIds, { includeDeleted });
 
   const handleMarkingToggle = React.useCallback(
     (markingId: string) => {

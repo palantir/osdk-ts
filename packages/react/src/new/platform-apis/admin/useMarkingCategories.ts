@@ -35,6 +35,13 @@ export interface UseMarkingCategoriesOptions {
    * @default true
    */
   enabled?: boolean;
+
+  /**
+   * Whether to include deleted marking categories in the results.
+   *
+   * @default true
+   */
+  includeDeleted?: boolean;
 }
 
 export interface UseMarkingCategoriesResult {
@@ -52,12 +59,13 @@ export interface UseMarkingCategoriesResult {
  */
 export function useMarkingCategories({
   enabled = true,
+  includeDeleted = true,
 }: UseMarkingCategoriesOptions = {}): UseMarkingCategoriesResult {
   const { client } = React.useContext(OsdkContext);
 
   const handleQuery = React.useCallback(() => {
-    return MarkingCategories.list(client);
-  }, [client]);
+    return MarkingCategories.list(client, { includeDeleted });
+  }, [client, includeDeleted]);
 
   const query = usePlatformQuery({
     query: handleQuery,

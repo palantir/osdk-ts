@@ -266,6 +266,7 @@ export async function setupFauxFoundry(): Promise<void> {
         "m-top-secret",
       ],
       createdTime: "2024-01-01T00:00:00Z",
+      deleted: false,
     },
     {
       id: "cat-compartment",
@@ -275,6 +276,7 @@ export async function setupFauxFoundry(): Promise<void> {
       markingType: "CBAC" as const,
       markings: ["m-alpha", "m-bravo", "m-charlie"],
       createdTime: "2024-01-01T00:00:00Z",
+      deleted: false,
     },
     {
       id: "cat-releasability",
@@ -284,6 +286,7 @@ export async function setupFauxFoundry(): Promise<void> {
       markingType: "CBAC" as const,
       markings: ["m-rel-usa", "m-rel-allied", "m-no-foreign"],
       createdTime: "2024-01-01T00:00:00Z",
+      deleted: false,
     },
   ];
 
@@ -293,60 +296,70 @@ export async function setupFauxFoundry(): Promise<void> {
       categoryId: "cat-classification",
       name: "Unclassified",
       createdTime: "2024-01-01T00:00:00Z",
+      deleted: false,
     },
     {
       id: "m-confidential",
       categoryId: "cat-classification",
       name: "Confidential",
       createdTime: "2024-01-01T00:00:00Z",
+      deleted: false,
     },
     {
       id: "m-secret",
       categoryId: "cat-classification",
       name: "Secret",
       createdTime: "2024-01-01T00:00:00Z",
+      deleted: false,
     },
     {
       id: "m-top-secret",
       categoryId: "cat-classification",
       name: "Top Secret",
       createdTime: "2024-01-01T00:00:00Z",
+      deleted: false,
     },
     {
       id: "m-alpha",
       categoryId: "cat-compartment",
       name: "ALPHA",
       createdTime: "2024-01-01T00:00:00Z",
+      deleted: false,
     },
     {
       id: "m-bravo",
       categoryId: "cat-compartment",
       name: "BRAVO",
       createdTime: "2024-01-01T00:00:00Z",
+      deleted: false,
     },
     {
       id: "m-charlie",
       categoryId: "cat-compartment",
       name: "CHARLIE",
       createdTime: "2024-01-01T00:00:00Z",
+      deleted: false,
     },
     {
       id: "m-rel-usa",
       categoryId: "cat-releasability",
       name: "REL USA",
       createdTime: "2024-01-01T00:00:00Z",
+      deleted: false,
     },
     {
       id: "m-rel-allied",
       categoryId: "cat-releasability",
       name: "REL ALLIED",
       createdTime: "2024-01-01T00:00:00Z",
+      deleted: false,
     },
     {
       id: "m-no-foreign",
       categoryId: "cat-releasability",
       name: "NO FOREIGN",
       createdTime: "2024-01-01T00:00:00Z",
+      deleted: false,
     },
   ];
 
