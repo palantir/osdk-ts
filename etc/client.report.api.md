@@ -172,7 +172,7 @@ export { InterfaceDefinition }
 export { InterfaceMetadata }
 
 // @public (undocumented)
-export function isObjectSet(o: object): o is ObjectSet<ObjectOrInterfaceDefinition>;
+export function isObjectSet(o: unknown): o is ObjectSet<ObjectOrInterfaceDefinition>;
 
 export { isOk }
 
