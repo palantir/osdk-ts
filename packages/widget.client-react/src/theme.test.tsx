@@ -24,7 +24,6 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { FoundryWidget } from "./client.js";
-import { useFoundryWidgetContext } from "./context.js";
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -37,11 +36,6 @@ const config = defineConfig({
   parameters: {},
   events: {},
 });
-
-function ThemeDisplay() {
-  const { theme } = useFoundryWidgetContext<typeof config>();
-  return <span>{JSON.stringify(theme) ?? "default"}</span>;
-}
 
 describe("host theme integration", () => {
   let host: EventTarget & { sendMessage: ReturnType<typeof vi.fn> };
@@ -68,7 +62,7 @@ describe("host theme integration", () => {
     act(() => {
       root.render(
         <FoundryWidget config={config}>
-          <ThemeDisplay />
+          <span>Widget content</span>
         </FoundryWidget>,
       );
     });
@@ -82,6 +76,32 @@ describe("host theme integration", () => {
     );
   }
 
+  it.each([undefined, "12px"])(
+    "leaves styles and markup unchanged without theme messages (existing token: %s)",
+    (existingToken) => {
+      const style = document.documentElement.style;
+      if (existingToken != null) {
+        style.setProperty(TOKEN, existingToken, "important");
+      }
+      const originalStyles = style.cssText;
+      const setProperty = vi.spyOn(style, "setProperty");
+      const removeProperty = vi.spyOn(style, "removeProperty");
+
+      mount();
+      expect(container.innerHTML).toBe("<span>Widget content</span>");
+      expect(style.cssText).toBe(originalStyles);
+
+      mount();
+      expect(container.innerHTML).toBe("<span>Widget content</span>");
+      expect(style.cssText).toBe(originalStyles);
+
+      act(() => root.render(null));
+      expect(style.cssText).toBe(originalStyles);
+      expect(setProperty).not.toHaveBeenCalled();
+      expect(removeProperty).not.toHaveBeenCalled();
+    },
+  );
+
   it("receives the theme sent in response to widget.ready", () => {
     const theme: HostMessage.ThemeV1 = { version: 1, borderRadius: "SQUARE" };
     host.sendMessage.mockImplementation((message) => {
@@ -92,14 +112,12 @@ describe("host theme integration", () => {
 
     mount();
 
-    expect(container.textContent).toBe(JSON.stringify(theme));
     expect(document.documentElement.style.getPropertyValue(TOKEN)).toBe("0px");
     expect(container.firstElementChild?.tagName).toBe("SPAN");
   });
 
   it("updates and clears the theme through the real widget client", () => {
     mount();
-    expect(container.textContent).toBe("default");
 
     for (const [borderRadius, radius] of [
       ["SQUARE", "0px"],
@@ -108,7 +126,6 @@ describe("host theme integration", () => {
     ] as const) {
       const theme: HostMessage.ThemeV1 = { version: 1, borderRadius };
       act(() => sendTheme(theme));
-      expect(container.textContent).toBe(JSON.stringify(theme));
       expect(document.documentElement.style.getPropertyValue(TOKEN)).toBe(
         radius,
       );
@@ -118,7 +135,6 @@ describe("host theme integration", () => {
     expect(document.documentElement.style.getPropertyValue(TOKEN)).toBe("");
     act(() => sendTheme({ version: 1, borderRadius: "ROUNDED" }));
     act(() => sendTheme(undefined));
-    expect(container.textContent).toBe("default");
     expect(document.documentElement.style.getPropertyValue(TOKEN)).toBe("");
   });
 
@@ -161,7 +177,7 @@ describe("host theme integration", () => {
       );
     });
 
-    expect(container.textContent).toBe(JSON.stringify(theme));
+    expect(document.documentElement.style.getPropertyValue(TOKEN)).toBe("4px");
   });
 
   it("unsubscribes from the host when the widget unmounts", () => {

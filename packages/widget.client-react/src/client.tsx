@@ -294,7 +294,6 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         {
           emitEvent,
           hostEventTarget: client.hostEventTarget,
-          theme,
           asyncParameterValues,
           parameters: {
             values: allParameterValues.value ?? {},
