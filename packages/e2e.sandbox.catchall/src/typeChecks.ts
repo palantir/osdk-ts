@@ -41,6 +41,10 @@ export async function typeChecks(client: Client): Promise<void> {
     edits.create(Book, { id: "book", title: "Required title" });
     // @ts-expect-error Book.create requires title as well as id.
     edits.create(Book, { id: "book" });
+
+    type BookCreateProps = Parameters<typeof edits.create>[1];
+    expectType<TypeOf<BookCreateProps, { id: string; title: string }>>(true);
+    expectType<TypeOf<BookCreateProps, { id: string }>>(false);
   }
 
   // value type enums are intersected in generated property types
