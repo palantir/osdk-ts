@@ -64,7 +64,7 @@ export namespace ActionMetadata {
     	// (undocumented)
     export namespace DataType {
         		// (undocumented)
-        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "scenarioReference" | "objectType" | "geoshape" | "geohash";
+        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "scenarioReference" | "timeSeriesReference" | "objectType" | "geoshape" | "geohash";
         		// (undocumented)
         export interface Interface<T_Target extends InterfaceDefinition = never> {
             			// (undocumented)
@@ -518,6 +518,8 @@ export interface DataValueClientToWire {
             		}[]
         	}[];
     	// (undocumented)
+    timeSeriesReference: TimeSeriesReference;
+    	// (undocumented)
     timestamp: string;
     	// (undocumented)
     twoDimensionalAggregation: {
@@ -578,6 +580,8 @@ export interface DataValueWireToClient {
             			value: AllowedBucketTypes
             		}[]
         	}[];
+    	// (undocumented)
+    timeSeriesReference: TimeSeriesReference;
     	// (undocumented)
     timestamp: string;
     	// (undocumented)
@@ -2423,6 +2427,24 @@ export type TimeSeriesQuery = {
     	$before?: never
     	$after?: never
     	$unit?: never
+};
+
+// @public
+export type TimeSeriesReference = {
+    	type: "seriesId"
+    	seriesId: string
+} | {
+    	type: "templateRid"
+    	templateRid: {
+        		templateRid: string
+        		templateVersion: string
+        	}
+} | {
+    	type: "qualifiedSeriesId"
+    	qualifiedSeriesId: {
+        		seriesId: string
+        		syncRid: string
+        	}
 };
 
 // @public (undocumented)

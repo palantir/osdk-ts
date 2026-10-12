@@ -68,6 +68,7 @@ export namespace ActionMetadata {
       | "marking"
       | "mediaReference"
       | "scenarioReference"
+      | "timeSeriesReference"
       | "objectType"
       | "geoshape"
       | "geohash";

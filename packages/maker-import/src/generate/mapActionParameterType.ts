@@ -32,6 +32,7 @@ const SIMPLE_PARAM_TYPES: Record<string, ActionParameter["type"]> = {
   geohash: "geohash",
   geoshape: "geoshape",
   mediaReference: "mediaReference",
+  timeSeriesReference: "timeSeriesReference",
   decimal: "decimal",
 };
 
