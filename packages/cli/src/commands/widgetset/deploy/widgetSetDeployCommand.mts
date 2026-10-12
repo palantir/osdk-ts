@@ -38,6 +38,7 @@ export default async function widgetSetDeployCommand({
   foundryUrl,
   directory,
   repository,
+  branchName,
   token,
   tokenFile,
 }: WidgetSetDeployArgs): Promise<void> {
@@ -57,7 +58,7 @@ export default async function widgetSetDeployCommand({
   }
 
   const widgetSetVersion = await findWidgetSetVersion(directory);
-  const branch = await getGitBranch();
+  const branch = branchName ?? (await getGitBranch());
   consola.info(`Found version from manifest: ${widgetSetVersion}`);
 
   consola.start("Zipping widget set files");
