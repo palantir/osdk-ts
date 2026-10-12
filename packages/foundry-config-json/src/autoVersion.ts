@@ -116,6 +116,7 @@ async function gitDescribe(
     );
     gitVersion = stdout;
   } catch (error: any) {
+    const directory = cwd ?? process.cwd();
     if (error instanceof Error) {
       const errorMessage: string = error.message.toLowerCase();
 
@@ -132,7 +133,7 @@ async function gitDescribe(
 
       if (errorMessage.includes("fatal: not a git repository")) {
         throw new AutoVersionError(
-          `Unable to determine auto version using git-describe as the current directory is not a git repository.`,
+          `Unable to determine auto version using git-describe as ${directory} is not a git repository.`,
           `You can run the command in a git repository and try again or supply a --version option to set the version manually`,
         );
       }
@@ -143,14 +144,14 @@ async function gitDescribe(
         )
       ) {
         throw new AutoVersionError(
-          `Unable to determine auto version using git-describe as no matching tags were found.`,
+          `Unable to determine auto version using git-describe as no matching tags were found in ${directory}.`,
           `You can create a tag matching the configured tag prefix and try again or supply a --version option to set the version manually`,
         );
       }
     }
 
     throw new AutoVersionError(
-      `Unable to determine auto version using git-describe: ${error}.`,
+      `Unable to determine auto version using git-describe in ${directory}: ${error}.`,
       `You can supply a --version option to set the version manually`,
     );
   }
