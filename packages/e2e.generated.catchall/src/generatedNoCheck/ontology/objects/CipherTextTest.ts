@@ -72,7 +72,7 @@ export interface CipherTextTest extends $ObjectTypeDefinition {
     props: CipherTextTest.Props;
     linksType: CipherTextTest.Links;
     strictProps: CipherTextTest.StrictProps;
-    requiredCreatePropertyKeys: 'pk';
+    requiredProps: 'pk';
     apiName: 'CipherTextTest';
     description: '';
     displayName: 'CipherTextTest';

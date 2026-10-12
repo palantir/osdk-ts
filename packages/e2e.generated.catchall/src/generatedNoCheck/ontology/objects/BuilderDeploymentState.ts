@@ -60,7 +60,7 @@ export interface BuilderDeploymentState extends $ObjectTypeDefinition {
     props: BuilderDeploymentState.Props;
     linksType: BuilderDeploymentState.Links;
     strictProps: BuilderDeploymentState.StrictProps;
-    requiredCreatePropertyKeys: 'skuId';
+    requiredProps: 'skuId';
     apiName: 'BuilderDeploymentState';
     description: 'Builder Deployment State';
     displayName: 'BuilderDeploymentState';

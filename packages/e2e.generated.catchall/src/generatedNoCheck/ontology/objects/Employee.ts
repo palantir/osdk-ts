@@ -113,7 +113,7 @@ export interface Employee extends $ObjectTypeDefinition {
     props: Employee.Props;
     linksType: Employee.Links;
     strictProps: Employee.StrictProps;
-    requiredCreatePropertyKeys: 'id';
+    requiredProps: 'id';
     apiName: 'Employee';
     description: 'An employee';
     displayName: 'Employee';

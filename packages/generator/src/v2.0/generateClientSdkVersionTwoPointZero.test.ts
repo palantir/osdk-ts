@@ -897,7 +897,7 @@ describe("generator", () => {
             props: Person.Props;
             linksType: Person.Links;
             strictProps: Person.StrictProps;
-            requiredCreatePropertyKeys: 'email';
+            requiredProps: 'email';
             apiName: 'Person';
             description: 'A person';
             displayName: 'Person';
@@ -1011,7 +1011,7 @@ describe("generator", () => {
             props: Todo.Props;
             linksType: Todo.Links;
             strictProps: Todo.StrictProps;
-            requiredCreatePropertyKeys: 'id';
+            requiredProps: 'id';
             apiName: 'Todo';
             description: 'Its a todo item.';
             displayName: 'AwesomeTodoDisplayname';
@@ -1601,7 +1601,7 @@ describe("generator", () => {
             props: Person.Props;
             linksType: Person.Links;
             strictProps: Person.StrictProps;
-            requiredCreatePropertyKeys: 'email';
+            requiredProps: 'email';
             apiName: 'foo.bar.Person';
             description: 'A person';
             displayName: 'Person';
@@ -1715,7 +1715,7 @@ describe("generator", () => {
             props: Todo.Props;
             linksType: Todo.Links;
             strictProps: Todo.StrictProps;
-            requiredCreatePropertyKeys: 'id';
+            requiredProps: 'id';
             apiName: 'foo.bar.Todo';
             description: 'Its a todo item.';
             displayName: 'AwesomeTodoDisplayname';
@@ -2206,7 +2206,7 @@ describe("generator", () => {
               props: UsesForeignSpt.Props;
               linksType: UsesForeignSpt.Links;
               strictProps: UsesForeignSpt.StrictProps;
-              requiredCreatePropertyKeys: 'id';
+              requiredProps: 'id';
               apiName: 'UsesForeignSpt';
               description: undefined;
               displayName: 'Uses Foreign Spt';
@@ -2483,7 +2483,7 @@ describe("generator", () => {
             props: Person.Props;
             linksType: Person.Links;
             strictProps: Person.StrictProps;
-            requiredCreatePropertyKeys: 'email';
+            requiredProps: 'email';
             apiName: 'Person';
             description: 'A person';
             displayName: 'Person';
@@ -2597,7 +2597,7 @@ describe("generator", () => {
             props: Todo.Props;
             linksType: Todo.Links;
             strictProps: Todo.StrictProps;
-            requiredCreatePropertyKeys: 'id';
+            requiredProps: 'id';
             apiName: 'Todo';
             description: 'Its a todo item.';
             displayName: 'AwesomeTodoDisplayname';
@@ -3035,7 +3035,7 @@ describe("generator", () => {
             props: Task.Props;
             linksType: Task.Links;
             strictProps: Task.StrictProps;
-            requiredCreatePropertyKeys: 'taskId';
+            requiredProps: 'taskId';
             apiName: 'com.example.dep.Task';
             description: undefined;
             displayName: 'Task';

@@ -54,7 +54,7 @@ export interface ObjectInterfaceCompileDefinition {
   strictProps?: any;
   linksType?: any;
 
-  requiredCreatePropertyKeys?: string;
+  requiredProps?: string;
 }
 
 export interface VersionBound<V extends VersionString<any, any, any>> {

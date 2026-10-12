@@ -60,7 +60,7 @@ export interface MnayanOsdkMediaObject extends $ObjectTypeDefinition {
     props: MnayanOsdkMediaObject.Props;
     linksType: MnayanOsdkMediaObject.Links;
     strictProps: MnayanOsdkMediaObject.StrictProps;
-    requiredCreatePropertyKeys: 'id';
+    requiredProps: 'id';
     apiName: 'MnayanOsdkMediaObject';
     description: 'Media OT for OSDK e2e testing';
     displayName: 'MnayanOSDKMediaObject';

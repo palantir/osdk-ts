@@ -138,7 +138,7 @@ export interface ThreadsEmbeddedPdfChunk_1 extends $ObjectTypeDefinition {
     props: ThreadsEmbeddedPdfChunk_1.Props;
     linksType: ThreadsEmbeddedPdfChunk_1.Links;
     strictProps: ThreadsEmbeddedPdfChunk_1.StrictProps;
-    requiredCreatePropertyKeys: 'chunkId';
+    requiredProps: 'chunkId';
     apiName: 'ThreadsEmbeddedPdfChunk_1';
     description: '';
     displayName: '[Threads] Embedded PDF Chunk';

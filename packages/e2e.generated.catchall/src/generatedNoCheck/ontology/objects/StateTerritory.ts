@@ -63,7 +63,7 @@ export interface StateTerritory extends $ObjectTypeDefinition {
     props: StateTerritory.Props;
     linksType: StateTerritory.Links;
     strictProps: StateTerritory.StrictProps;
-    requiredCreatePropertyKeys: 'airportStateName';
+    requiredProps: 'airportStateName';
     apiName: 'StateTerritory';
     description: '';
     displayName: 'State/Territory';

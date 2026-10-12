@@ -18,9 +18,12 @@ import type { Osdk, PageResult } from "@osdk/api";
 import type { Client } from "@osdk/client";
 // import type { ObjectSet$Employee } from "@osdk/e2e.generated.catchall";
 import {
+  Book,
   Employee,
   ObjectTypeWithAllPropertyTypes,
 } from "@osdk/e2e.generated.catchall";
+import type { Edits } from "@osdk/functions";
+import { createEditBatch } from "@osdk/functions";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 
@@ -31,6 +34,14 @@ import { expectType } from "ts-expect";
  * @param client
  */
 export async function typeChecks(client: Client): Promise<void> {
+  // Book's title is NOT_NULLABLE in the generated ontology.
+  {
+    const edits = createEditBatch<Edits.Object<Book>>(client);
+    edits.create(Book, { id: "book", title: "Required title" });
+    // @ts-expect-error Book.create requires title as well as id.
+    edits.create(Book, { id: "book" });
+  }
+
   // single link pivot types are correct
   {
     const objectSet = client(Employee).pivotTo("lead");

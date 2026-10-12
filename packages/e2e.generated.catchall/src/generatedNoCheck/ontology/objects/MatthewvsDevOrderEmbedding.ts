@@ -64,7 +64,7 @@ export interface MatthewvsDevOrderEmbedding extends $ObjectTypeDefinition {
     props: MatthewvsDevOrderEmbedding.Props;
     linksType: MatthewvsDevOrderEmbedding.Links;
     strictProps: MatthewvsDevOrderEmbedding.StrictProps;
-    requiredCreatePropertyKeys: 'orderId';
+    requiredProps: 'orderId';
     apiName: 'MatthewvsDevOrderEmbedding';
     description: 'A venture';
     displayName: '[matthewvs-dev] Order Embedding';

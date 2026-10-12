@@ -83,7 +83,7 @@ export interface ExampleEw03osdkTodoProject extends $ObjectTypeDefinition {
     props: ExampleEw03osdkTodoProject.Props;
     linksType: ExampleEw03osdkTodoProject.Links;
     strictProps: ExampleEw03osdkTodoProject.StrictProps;
-    requiredCreatePropertyKeys: 'pk';
+    requiredProps: 'pk';
     apiName: 'ExampleEw03osdkTodoProject';
     description: 'Osdk Project is a collection of tasks which are managed together';
     displayName: '[Example ew03] Osdk Todo Project';

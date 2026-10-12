@@ -40,7 +40,7 @@ import { stringUnionFrom } from "../util/stringUnionFrom.js";
 
 type PropertyApiNameUnion = PropertyApiName | SharedPropertyTypeApiName;
 
-export function getRequiredCreatePropertyKeys(
+export function getRequiredProps(
   objectType: ObjectTypeFullMetadata["objectType"],
 ): string[] {
   const requiredKeys = new Set([objectType.primaryKey]);
@@ -305,8 +305,8 @@ export function createDefinition(
   }: Identifiers,
 ) {
   const definition = object.getCleanedUpDefinition(true);
-  const requiredCreatePropertyKeys = object instanceof EnhancedObjectType
-    ? getRequiredCreatePropertyKeys(object.raw.objectType)
+  const requiredProps = object instanceof EnhancedObjectType
+    ? getRequiredProps(object.raw.objectType)
     : [];
   const propertyMetadata = object instanceof EnhancedObjectType
     ? object.raw.objectType.properties
@@ -335,9 +335,7 @@ export function createDefinition(
       strictProps: ${osdkObjectStrictPropsIdentifier};
       ${
     object instanceof EnhancedObjectType
-      ? `requiredCreatePropertyKeys: ${
-        stringUnionFrom(requiredCreatePropertyKeys)
-      };\n      `
+      ? `requiredProps: ${stringUnionFrom(requiredProps)};\n      `
       : ""
   }${
     stringify(definition, {

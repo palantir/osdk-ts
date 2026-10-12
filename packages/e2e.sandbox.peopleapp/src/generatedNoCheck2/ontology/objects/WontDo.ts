@@ -60,7 +60,7 @@ export interface WontDo extends $ObjectTypeDefinition {
     props: WontDo.Props;
     linksType: WontDo.Links;
     strictProps: WontDo.StrictProps;
-    requiredCreatePropertyKeys: 'wontDoName';
+    requiredProps: 'wontDoName';
     apiName: 'WontDo';
     description: '';
     displayName: 'Wont Do';
