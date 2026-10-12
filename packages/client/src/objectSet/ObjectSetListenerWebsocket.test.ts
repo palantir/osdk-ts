@@ -203,40 +203,45 @@ describe("ObjectSetListenerWebsocket", () => {
       expect(listener.onError).not.toHaveBeenCalled();
     });
 
-    it("includes scenario context in subscription requests", async () => {
-      const scenarioRid = "ri.actions.main.scenario.123";
-      const scopedClient = new ObjectSetListenerWebsocket({
-        ...minimalClient,
-        scenarioRid,
-      });
-
-      const [ws, unsubscribe] = await subscribeAndExpectWebSocket(
-        scopedClient,
-        listener,
-      );
-
-      try {
-        await vi.waitFor(() => {
-          const request = ws.send.mock.calls
-            .map(
-              ([message]) =>
-                JSON.parse(
-                  message.toString(),
-                ) as ObjectSetStreamSubscribeRequests,
-            )
-            .find(({ requests }) => requests.length > 0);
-          expect(request?.requests).toHaveLength(1);
-          expect(request?.requests[0]).toEqual(
-            expect.objectContaining({ scenarioRid }),
-          );
+    it.each([undefined, "ri.foundry.main.branch.test"])(
+      "includes scenario context and branch %s in subscription requests",
+      async (branch) => {
+        const scenarioRid = "ri.actions.main.scenario.123";
+        const scopedClient = new ObjectSetListenerWebsocket({
+          ...minimalClient,
+          branch,
+          scenarioRid,
         });
-      } finally {
-        unsubscribe();
-        setWebSocketState(ws, "close");
-        vi.runAllTicks();
-        expectEqualRemoveAndAddListeners(ws);
-      }
-    });
+
+        const [ws, unsubscribe] = await subscribeAndExpectWebSocket(
+          scopedClient,
+          listener,
+        );
+
+        try {
+          await vi.waitFor(() => {
+            const request = ws.send.mock.calls
+              .map(
+                ([message]) =>
+                  JSON.parse(
+                    message.toString(),
+                  ) as ObjectSetStreamSubscribeRequests,
+              )
+              .find(({ requests }) => requests.length > 0);
+            expect(request?.requests).toHaveLength(1);
+            expect(request?.requests[0]).toEqual(
+              expect.objectContaining({ scenarioRid }),
+            );
+            expect(request?.requests[0]?.branch).toBe(branch);
+          });
+        } finally {
+          unsubscribe();
+          setWebSocketState(ws, "close");
+          vi.runAllTicks();
+          expectEqualRemoveAndAddListeners(ws);
+        }
+      },
+    );
 
     describe("requests subscription", () => {
       let ws: MockedWebSocket;

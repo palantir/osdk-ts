@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetEditorsForObjectTypeRequest as _api_permissions_GetEditorsForObjectTypeRequest,
-  GetEditorsForObjectTypeResponse as _api_permissions_GetEditorsForObjectTypeResponse,
-} from "../__components.js";
+import type { GetEditorsForObjectTypeRequest as _api_permissions_GetEditorsForObjectTypeRequest } from "../__components.js";
+import type { GetEditorsForObjectTypeResponse as _api_permissions_GetEditorsForObjectTypeResponse } from "../__components.js";
 
 /**
  * Returns the ids of the users who have the editor or owner role on the given ObjectType. Or, in the case of

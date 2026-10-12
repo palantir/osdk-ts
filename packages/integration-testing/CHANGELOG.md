@@ -1,5 +1,59 @@
 # @osdk/integration-testing
 
+## 0.11.0
+
+### Patch Changes
+
+- Updated dependencies [d72c082]
+  - @osdk/unit-testing@0.27.0
+  - @osdk/client@2.78.0
+  - @osdk/generator-converters.preview@0.55.0
+  - @osdk/api@2.78.0
+
+## 0.10.0
+
+### Patch Changes
+
+- Updated dependencies [2ab4d7c]
+- Updated dependencies [75a8f07]
+- Updated dependencies [bd50cd9]
+- Updated dependencies [6f2b7e6]
+  - @osdk/api@2.77.0
+  - @osdk/client@2.77.0
+  - @osdk/generator-converters.preview@0.54.0
+  - @osdk/unit-testing@0.26.0
+
+## 0.9.0
+
+### Patch Changes
+
+- Updated dependencies [a9fafd0]
+- Updated dependencies [b1616e3]
+- Updated dependencies [b8f103c]
+  - @osdk/generator-converters.preview@0.53.0
+  - @osdk/client@2.76.0
+  - @osdk/unit-testing@0.26.0
+  - @osdk/api@2.76.0
+
+## 0.8.0
+
+### Patch Changes
+
+- Updated dependencies [aa9fe40]
+- Updated dependencies [6ca7442]
+- Updated dependencies [e316cb7]
+  - @osdk/generator-converters.preview@0.52.0
+  - @osdk/client@2.74.0
+  - @osdk/unit-testing@0.26.0
+  - @osdk/api@2.74.0
+
+## 0.7.0
+
+### Patch Changes
+
+- Updated dependencies [9fa9a26]
+  - @osdk/generator-converters.preview@0.51.0
+
 ## 0.6.0
 
 ### Minor Changes

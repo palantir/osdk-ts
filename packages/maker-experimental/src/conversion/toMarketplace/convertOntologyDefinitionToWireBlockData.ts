@@ -109,6 +109,7 @@ export function convertOntologyDefinitionToWireBlockData(
   ridGenerator: OntologyRidGenerator,
   allOntologies?: OntologyDefinition[],
   functionsIr?: FunctionsIr,
+  packageForEdge = false,
 ): OntologyBlockDataV2 {
   const ontologiesToScan = allOntologies ?? [ontology];
 
@@ -119,7 +120,7 @@ export function convertOntologyDefinitionToWireBlockData(
     >(([apiName, objectType]) => {
       return [
         ridGenerator.generateRidForObjectType(apiName),
-        convertObject(objectType, ridGenerator),
+        convertObject(objectType, ridGenerator, packageForEdge),
       ];
     }),
   );
@@ -188,6 +189,7 @@ export function convertOntologyDefinitionToWireBlockData(
   // Build knownIdentifiers from ridGenerator's BiMaps
   const knownIdentifiers = buildKnownIdentifiers(
     ontology,
+    objectTypes,
     ridGenerator,
     ontologiesToScan,
     interfacePropertyMappings,
@@ -300,6 +302,7 @@ export function convertOntologyDefinitionToWireBlockData(
 
 function buildKnownIdentifiers(
   ontology: OntologyDefinition,
+  objectTypes: Record<string, ObjectTypeBlockDataV2>,
   ridGenerator: OntologyRidGenerator,
   ontologiesToScan: OntologyDefinition[],
   interfacePropertyMappings: Record<string, string>,
@@ -403,9 +406,7 @@ function buildKnownIdentifiers(
     ontologiesToScan.flatMap((ont) =>
       Object.entries(ont[OntologyEntityTypeEnum.OBJECT_TYPE]).map(
         ([objectTypeApiName, objectType]) => [
-          ridGenerator
-            .getObjectTypeIds()
-            .get(ReadableIdGenerator.getForObjectType(objectTypeApiName)),
+          ridGenerator.generateObjectTypeId(objectTypeApiName),
           ridGenerator.toBlockInternalId(
             ReadableIdGenerator.getForObjectType(objectTypeApiName),
           ),
@@ -456,9 +457,7 @@ function buildKnownIdentifiers(
             );
           }
         });
-        const objTypeId = ridGenerator
-          .getObjectTypeIds()
-          .get(ReadableIdGenerator.getForObjectType(objectTypeApiName))!;
+        const objTypeId = ridGenerator.generateObjectTypeId(objectTypeApiName);
         propertyTypeIds[objTypeId] = propMap;
         objectPropertyTypeIdsToRids[objTypeId] = propertyTypeIdsToRids;
       },
@@ -583,27 +582,28 @@ function buildKnownIdentifiers(
         ridGenerator.toBlockInternalId(readableId);
     });
 
-  // Build markings mapping: BlockInternalId -> [markingId]
-  // Collect marking shapes from object type marking properties and additionalMandatoryMarkings
   const markingEntries: Array<{
     markingId: string;
     markingType: "CBAC" | "MANDATORY";
   }> = [];
-  Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).forEach(
-    ([objectTypeApiName, objectType]) => {
-      // Marking properties
-      (objectType.properties ?? []).forEach((prop) => {
-        if (
-          typeof prop.type === "object" &&
-          prop.type.type === "marking" &&
-          prop.type.markingInputGroupName
-        ) {
-          markingEntries.push({
-            markingId: prop.type.markingInputGroupName,
-            markingType: prop.type.markingType as "CBAC" | "MANDATORY",
-          });
-        }
-      });
+  Object.values(objectTypes).forEach((objectType) => {
+    objectType.datasources.forEach((datasource) => {
+      datasource.dataSecurity?.classificationConstraint?.markings.forEach(
+        (markingId) => {
+          markingEntries.push({ markingId, markingType: "CBAC" });
+        },
+      );
+      datasource.dataSecurity?.markingConstraint?.markingIds.forEach(
+        (markingId) => {
+          markingEntries.push({ markingId, markingType: "MANDATORY" });
+        },
+      );
+    });
+  });
+
+  // Collect additionalMandatoryMarkings from property security groups.
+  Object.values(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).forEach(
+    (objectType) => {
       // additionalMandatoryMarkings from property security groups
       (objectType.datasources ?? []).forEach((ds) => {
         if ("propertySecurityGroups" in ds && ds.propertySecurityGroups) {

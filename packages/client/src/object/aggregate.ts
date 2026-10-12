@@ -33,8 +33,9 @@ import { legacyToModernSingleAggregationResult } from "../internal/conversions/l
 import { modernToLegacyAggregationClause } from "../internal/conversions/modernToLegacyAggregationClause.js";
 import { modernToLegacyGroupByClause } from "../internal/conversions/modernToLegacyGroupByClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
+import { addUserAgentHeader } from "../util/addUserAgentHeader.js";
 import type { ArrayElement } from "../util/ArrayElement.js";
+import { normalizeInterfaceLinkSearchArounds } from "../util/normalizeInterfaceLinkSearchArounds.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
 /** @internal */
@@ -62,11 +63,16 @@ export async function aggregate<
     await clientCtx.flushEdits();
   }
 
+  const normalizedObjectSet = await normalizeInterfaceLinkSearchArounds(
+    clientCtx,
+    objectSet,
+  );
+
   const result = await OntologyObjectSets.aggregate(
-    addUserAgentAndRequestContextHeaders(clientCtx, objectType),
+    addUserAgentHeader(clientCtx, objectType),
     await clientCtx.ontologyRid,
     {
-      objectSet,
+      objectSet: normalizedObjectSet,
       groupBy: body.groupBy,
       aggregation: body.aggregation,
     },

@@ -35,6 +35,13 @@ export interface UseMarkingsOptions {
    * @default true
    */
   enabled?: boolean;
+
+  /**
+   * Whether to include deleted markings in the results.
+   *
+   * @default true
+   */
+  includeDeleted?: boolean;
 }
 
 export interface UseMarkingsResult {
@@ -52,12 +59,13 @@ export interface UseMarkingsResult {
  */
 export function useMarkings({
   enabled = true,
+  includeDeleted = true,
 }: UseMarkingsOptions = {}): UseMarkingsResult {
   const { client } = React.useContext(OsdkContext);
 
   const handleQuery = React.useCallback(() => {
-    return Markings.list(client);
-  }, [client]);
+    return Markings.list(client, { includeDeleted });
+  }, [client, includeDeleted]);
 
   const query = usePlatformQuery({
     query: handleQuery,

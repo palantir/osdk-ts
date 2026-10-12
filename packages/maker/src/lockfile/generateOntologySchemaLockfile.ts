@@ -14,21 +14,33 @@
  * limitations under the License.
  */
 
+import type { OntologyIrValueTypeReferenceWithMetadata } from "@osdk/client.unstable";
+
 import type { OntologyDefinition } from "../api/common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../api/common/OntologyEntityTypeEnum.js";
+import type { TypeClass } from "../api/common/TypeClass.js";
 import { mapPropertyNames } from "../api/interface/describeInterfaceSchemaMigrationInstruction.js";
 import {
   getInterfacePropertyTypeType,
   type InterfacePropertyType,
+  interfacePropertyNullability,
+  interfacePropertyPrimaryKeyConstraint,
+  interfacePropertyTypeClasses,
+  interfacePropertyValueType,
   interfacePropertyWireApiName,
+  isInterfacePropertyArray,
   isInterfacePropertyRequired,
+  isInterfaceSharedPropertyType,
 } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceType } from "../api/interface/InterfaceType.js";
+import type { Nullability } from "../api/properties/Nullability.js";
 import { normalizePropertyType } from "./LockedPropertyType.js";
 import type {
   LockedInterfaceSchema,
   LockedInterfaceType,
+  LockedProperty,
   LockedTransition,
+  LockedValueType,
   OntologySchemaLockfile,
 } from "./OntologySchemaLockfile.js";
 import { ONTOLOGY_SCHEMA_LOCKFILE_VERSION } from "./OntologySchemaLockfile.js";
@@ -96,14 +108,92 @@ function lockInterfaceSchema(
       ([propertyApiName, property]) =>
         [
           interfacePropertyWireApiName(property, propertyApiName),
-          {
-            type: normalizePropertyType(getInterfacePropertyTypeType(property)),
-            required: isInterfacePropertyRequired(property),
-          },
+          lockProperty(property),
         ] as const,
     )
     .sort(([a], [b]) => compare(a, b));
-  return { properties: Object.fromEntries(locked) };
+  const extendsInterfaces = lockExtensions(interfaceType);
+
+  return {
+    properties: Object.fromEntries(locked),
+    // NB: spread rather than assigned `undefined` so a lockfile read back from disk (where absents
+    // have no key at all) still compare equal.
+    ...(extendsInterfaces !== undefined && { extendsInterfaces }),
+  };
+}
+
+function lockExtensions(interfaceType: InterfaceType): string[] | undefined {
+  const extended = new Set(
+    interfaceType.extendsInterfaces.map((parent) => parent.apiName),
+  );
+
+  return extended.size === 0 ? undefined : [...extended].sort(compare);
+}
+
+function lockProperty(property: InterfacePropertyType): LockedProperty {
+  const typeClasses = lockTypeClasses(interfacePropertyTypeClasses(property));
+  const primaryKeyConstraint = interfacePropertyPrimaryKeyConstraint(property);
+  const nullability = lockNullability(interfacePropertyNullability(property));
+  const valueType = lockValueType(interfacePropertyValueType(property));
+  return {
+    type: normalizePropertyType(
+      getInterfacePropertyTypeType(property),
+      isInterfacePropertyArray(property),
+    ),
+    required: isInterfacePropertyRequired(property),
+    // NB: spread rather than assigned `undefined` so a lockfile read back from disk (where absents
+    // have no key at all) still compare equal.
+    ...(typeClasses !== undefined && { typeClasses }),
+    ...(isInterfaceSharedPropertyType(property) && {
+      declaredBy: "sharedPropertyType" as const,
+    }),
+    ...(primaryKeyConstraint !== "NO_RESTRICTION" && { primaryKeyConstraint }),
+    ...(nullability !== undefined && { nullability }),
+    ...(valueType !== undefined && { valueType }),
+  };
+}
+
+function lockValueType(
+  valueType: OntologyIrValueTypeReferenceWithMetadata | undefined,
+): LockedValueType | undefined {
+  if (valueType === undefined) {
+    return undefined;
+  }
+
+  // Re-built field-by-field so key order is stable
+  return {
+    packageNamespace: valueType.packageNamespace,
+    apiName: valueType.apiName,
+  };
+}
+
+function lockNullability(
+  nullability: Nullability | undefined,
+): Nullability | undefined {
+  if (
+    nullability === undefined ||
+    (!nullability.noNulls && !nullability.noEmptyCollections)
+  ) {
+    return undefined;
+  }
+
+  // Rebuild to have firm key order
+  return {
+    noNulls: nullability.noNulls,
+    noEmptyCollections: nullability.noEmptyCollections,
+  };
+}
+
+function lockTypeClasses(
+  typeClasses: TypeClass[] | undefined,
+): TypeClass[] | undefined {
+  if (typeClasses === undefined || typeClasses.length === 0) {
+    return undefined;
+  }
+
+  return [...typeClasses].sort(
+    (a, b) => compare(a.kind, b.kind) || compare(a.name, b.name),
+  );
 }
 
 function lockInterfaceSchemaMigrationTransitions(

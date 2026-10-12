@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyRid as _api_OntologyRid } from "../../../api/__components.js";
-import type {
-  ModifyOntologyBranchRequest as _approvals_api_ModifyOntologyBranchRequest,
-  ModifyOntologyBranchResponse as _approvals_api_ModifyOntologyBranchResponse,
-} from "../__components.js";
+import type { ModifyOntologyBranchRequest as _approvals_api_ModifyOntologyBranchRequest } from "../__components.js";
+import type { ModifyOntologyBranchResponse as _approvals_api_ModifyOntologyBranchResponse } from "../__components.js";
 
 /**
  * Modify an existing branch in the provided ontology. Users who can view the branch will be able to modify the branch.

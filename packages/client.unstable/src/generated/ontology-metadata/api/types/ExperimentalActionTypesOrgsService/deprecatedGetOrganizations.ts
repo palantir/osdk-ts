@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  ActionTypeGetOrganizationsRequest as _api_ActionTypeGetOrganizationsRequest,
-  DeprecatedActionTypeGetOrganizationsResponse as _api_DeprecatedActionTypeGetOrganizationsResponse,
-} from "../../__components.js";
+import type { ActionTypeGetOrganizationsRequest as _api_ActionTypeGetOrganizationsRequest } from "../../__components.js";
+import type { DeprecatedActionTypeGetOrganizationsResponse as _api_DeprecatedActionTypeGetOrganizationsResponse } from "../../__components.js";
 
 /**
  * This is an experimental endpoint and does not have any backwards-compatibility guarantees.

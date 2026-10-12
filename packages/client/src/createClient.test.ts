@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid } from "@osdk/api/unstable";
 import { BarInterface } from "@osdk/client.test.ontology";
 import * as SharedClientContext from "@osdk/shared.client.impl";
 import { stubData } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { metadataCacheClient } from "./__unstable/ConjureSupport.js";
 import type { Client } from "./Client.js";
@@ -65,6 +66,46 @@ describe(createClient, () => {
       () => "Token",
       undefined,
       fetchFunction,
+    );
+  });
+
+  describe("branch query parameters", () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it.each([
+      [undefined, "url-branch"],
+      ["explicit-branch", "explicit-branch"],
+      [null, null],
+    ])(
+      "forwards the resolved branch with explicit option %s",
+      async (explicitBranch, expected) => {
+        const location = { search: "?foundryBranchRid=url-branch" };
+        vi.stubGlobal("window", { location });
+        vi.stubGlobal("document", {
+          querySelector: () => ({ getAttribute: () => "html-branch" }),
+        });
+        const branchClient = createClient(
+          "https://mock.com",
+          ontologyRid,
+          () => Promise.resolve("Token"),
+          { UNSTABLE_DO_NOT_USE_BRANCH: explicitBranch },
+          fetchFunction,
+        );
+
+        // An existing client keeps its branch if navigation changes the URL.
+        location.search = "?foundryBranchRid=another-branch";
+        mockInterfaceFetchPageResponse(fetchFunction, { data: [] });
+        await branchClient(BarInterface).fetchPage();
+
+        expect(fetchFunction).toHaveBeenCalledTimes(2);
+        for (const [input] of fetchFunction.mock.calls) {
+          expect(new URL(input as string).searchParams.get("branch")).toBe(
+            expected,
+          );
+        }
+      },
     );
   });
 
@@ -173,6 +214,37 @@ describe(createClient, () => {
         conjureContextSpy.mock.results[0].value.baseUrl +
           conjureContextSpy.mock.results[0].value.servicePath,
       ).toBe("https://mock4.com/ontology-metadata/api");
+    });
+  });
+
+  describe("branch forwarding", () => {
+    it.each([
+      "ri.foundry.main.branch.test",
+      "feature/test branch",
+      undefined,
+      null,
+    ])("fetchPageByRidNoType forwards branch %s", async (branch) => {
+      const scopedClient = createClient(
+        "https://mock.com",
+        ontologyRid,
+        () => "Token",
+        { UNSTABLE_DO_NOT_USE_BRANCH: branch },
+        fetchFunction,
+      );
+      mockFetchResponse(fetchFunction, { data: [] });
+
+      await scopedClient(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+      ).fetchPageByRidNoType([stubData.employee1.__rid]);
+
+      expect(fetchFunction).toHaveBeenCalledTimes(1);
+      const [requestUrl] = fetchFunction.mock.calls[0];
+      const url = new URL(String(requestUrl));
+      expect(url.pathname).toContain(
+        "objectSets/loadObjectsMultipleObjectTypes",
+      );
+      expect(url.searchParams.get("branch")).toBe(branch ?? null);
+      expect(url.searchParams.get("preview")).toBe("true");
     });
   });
 

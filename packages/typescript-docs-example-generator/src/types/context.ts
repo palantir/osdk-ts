@@ -27,6 +27,7 @@ export interface BaseTemplateContext {
   packageName: string;
   objectType: string;
   titleProperty: string;
+  arrayProperty: string;
   property: string;
   otherProperty: string;
   operation: string;

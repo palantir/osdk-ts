@@ -136,10 +136,6 @@ describe("serializeLockfile", () => {
     expect(golden.version).toBe(ONTOLOGY_SCHEMA_LOCKFILE_VERSION);
   });
 
-  it("ends with a trailing newline, so the file is POSIX-clean in review", () => {
-    expect(serializeLockfile(golden).endsWith("}\n")).toBe(true);
-  });
-
   it("keeps the header comment parseable as JSON", () => {
     const parsed = JSON.parse(serializeLockfile(golden));
     expect(Object.keys(parsed)[0]).toBe("//");

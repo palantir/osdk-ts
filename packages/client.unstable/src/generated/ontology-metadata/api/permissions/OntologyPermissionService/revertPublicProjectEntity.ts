@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  RevertPublicProjectEntityRequest as _api_permissions_RevertPublicProjectEntityRequest,
-  RevertPublicProjectEntityResponse as _api_permissions_RevertPublicProjectEntityResponse,
-} from "../__components.js";
+import type { RevertPublicProjectEntityRequest as _api_permissions_RevertPublicProjectEntityRequest } from "../__components.js";
+import type { RevertPublicProjectEntityResponse as _api_permissions_RevertPublicProjectEntityResponse } from "../__components.js";
 
 /**
  * Reverts the permission model for a public-project based entity. Will throw if the specified entity is not

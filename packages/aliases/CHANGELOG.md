@@ -1,5 +1,19 @@
 # @osdk/aliases
 
+## 0.4.0
+
+### Minor Changes
+
+- 051b67f: Resolve custom aliases from the configured Vite base path during Code Workspaces development. Published websites continue loading `/resources.json` from the site origin.
+
+## 0.3.0
+
+### Minor Changes
+
+- 7b737e7: Add the experimental asynchronous `Aliases.custom()` API for browser applications and Functions. Browsers load custom aliases from `/resources.json` at the site's origin, sharing the request across repeated and concurrent calls. Functions reuse the existing filesystem runtime.
+
+  Reject inherited JavaScript properties when looking up aliases; explicitly declared aliases with those names remain supported.
+
 ## 0.2.0
 
 ### Minor Changes

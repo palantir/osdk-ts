@@ -94,7 +94,10 @@ export class MediaHelper extends AbstractHelper<
         coords.objectType,
         String(coords.primaryKey),
         coords.propertyName,
-        { preview: options?.preview ?? true },
+        {
+          branch: this.store.client[additionalContext].branch,
+          preview: options?.preview ?? true,
+        },
       );
 
     return {
@@ -129,7 +132,7 @@ export class MediaHelper extends AbstractHelper<
         coords.objectType,
         String(coords.primaryKey),
         coords.propertyName,
-        { preview },
+        { branch: this.store.client[additionalContext].branch, preview },
       );
     } else if ("fetchContents" in mediaOrLocation) {
       response = await mediaOrLocation.fetchContents();

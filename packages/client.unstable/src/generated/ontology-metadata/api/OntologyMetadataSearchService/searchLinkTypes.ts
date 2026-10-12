@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  LinkTypeSearchRequest as _api_search_LinkTypeSearchRequest,
-  LinkTypeSearchResponse as _api_search_LinkTypeSearchResponse,
-} from "../search/__components.js";
+import type { LinkTypeSearchRequest as _api_search_LinkTypeSearchRequest } from "../search/__components.js";
+import type { LinkTypeSearchResponse as _api_search_LinkTypeSearchResponse } from "../search/__components.js";
 
 /**
  * Endpoint to search LinkTypes based on various filters. Endpoint allows to return results based on relevance

@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetEntityProjectsMigrationStatusRequest as _api_permissions_GetEntityProjectsMigrationStatusRequest,
-  GetEntityProjectsMigrationStatusResponse as _api_permissions_GetEntityProjectsMigrationStatusResponse,
-} from "../__components.js";
+import type { GetEntityProjectsMigrationStatusRequest as _api_permissions_GetEntityProjectsMigrationStatusRequest } from "../__components.js";
+import type { GetEntityProjectsMigrationStatusResponse as _api_permissions_GetEntityProjectsMigrationStatusResponse } from "../__components.js";
 
 /**
  * Returns the public-project migration status of a single entity, read from the migration store. The FE

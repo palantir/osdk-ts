@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import type {
-  CompassProjectRid as _api_CompassProjectRid,
-  OntologyPackageRid as _api_OntologyPackageRid,
-  OntologyRid as _api_OntologyRid,
-  UseCaseRid as _api_UseCaseRid,
-} from "../__components.js";
+import type { OntologyPackageRid as _api_OntologyPackageRid } from "../__components.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type { UseCaseRid as _api_UseCaseRid } from "../__components.js";
+import type { CompassProjectRid as _api_CompassProjectRid } from "../__components.js";
 
 /**
  * Request to get packages for the specified packageRids. At most 100 packageRids can be requested per

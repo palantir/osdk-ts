@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetObjectTypesForSharedPropertyTypesRequest as _api_GetObjectTypesForSharedPropertyTypesRequest,
-  GetObjectTypesForSharedPropertyTypesResponse as _api_GetObjectTypesForSharedPropertyTypesResponse,
-} from "../__components.js";
+import type { GetObjectTypesForSharedPropertyTypesRequest as _api_GetObjectTypesForSharedPropertyTypesRequest } from "../__components.js";
+import type { GetObjectTypesForSharedPropertyTypesResponse as _api_GetObjectTypesForSharedPropertyTypesResponse } from "../__components.js";
 
 /**
  * Gets a map of SharedPropertyTypeRid to the set of ObjectTypeRids that use the SharedPropertyType. At most 50

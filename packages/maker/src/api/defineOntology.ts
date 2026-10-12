@@ -22,7 +22,7 @@ import type {
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrAllowedParameterValues,
-  OntologyIrObjectTypeDatasource,
+  OntologyIrMarketplaceObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
   OntologyIrParameter,
   OntologyIrSection,
@@ -235,7 +235,7 @@ export function buildDatasource(
   definition: OntologyIrObjectTypeDatasourceDefinition,
   classificationMarkingGroupName?: string,
   mandatoryMarkingGroupName?: string,
-): OntologyIrObjectTypeDatasource {
+): OntologyIrMarketplaceObjectTypeDatasource {
   const needsSecurity =
     classificationMarkingGroupName !== undefined ||
     mandatoryMarkingGroupName !== undefined;
@@ -742,7 +742,7 @@ export function renderHintFromBaseType(
       return { type: "dropdown", dropdown: {} };
     case "struct":
     case "structList":
-      throw new Error("Structs are not supported yet");
+      return { type: "textInput", textInput: {} };
     default:
       throw new Error(`Unknown type ${type}`);
   }

@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-import type {
-  ActionTypeIdentifier as _api_ActionTypeIdentifier,
-  ActionTypeParameterIdentifier as _api_ActionTypeParameterIdentifier,
-  ActionTypeRid as _api_ActionTypeRid,
-  FunctionRid as _api_FunctionRid,
-  FunctionVersion as _api_FunctionVersion,
-  LinkTypeId as _api_LinkTypeId,
-  LinkTypeRid as _api_LinkTypeRid,
-  ObjectTypeId as _api_ObjectTypeId,
-  ObjectTypeRid as _api_ObjectTypeRid,
-  ParameterRid as _api_ParameterRid,
-  RelationCardinality as _api_RelationCardinality,
-  WorkflowObjectTypeTraitReference as _api_WorkflowObjectTypeTraitReference,
-} from "../../api/__components.js";
+import type { RelationCardinality as _api_RelationCardinality } from "../../api/__components.js";
+import type { WorkflowObjectTypeTraitReference as _api_WorkflowObjectTypeTraitReference } from "../../api/__components.js";
+import type { LinkTypeRid as _api_LinkTypeRid } from "../../api/__components.js";
+import type { ObjectTypeRid as _api_ObjectTypeRid } from "../../api/__components.js";
+import type { ParameterRid as _api_ParameterRid } from "../../api/__components.js";
+import type { ActionTypeRid as _api_ActionTypeRid } from "../../api/__components.js";
+import type { ActionTypeIdentifier as _api_ActionTypeIdentifier } from "../../api/__components.js";
+import type { ActionTypeParameterIdentifier as _api_ActionTypeParameterIdentifier } from "../../api/__components.js";
+import type { FunctionRid as _api_FunctionRid } from "../../api/__components.js";
+import type { FunctionVersion as _api_FunctionVersion } from "../../api/__components.js";
+import type { LinkTypeId as _api_LinkTypeId } from "../../api/__components.js";
+import type { ObjectTypeId as _api_ObjectTypeId } from "../../api/__components.js";
 import type { BaseParameterType as _api_types_BaseParameterType } from "../../api/types/__components.js";
 
 /**

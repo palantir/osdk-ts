@@ -40,6 +40,7 @@ import { useFilterListState } from "../useFilterListState.js";
 
 vi.mock("@osdk/react", () => ({
   useOsdkMetadata: vi.fn(() => ({ loading: false, metadata: undefined })),
+  useStableObjectSet: vi.fn((os: unknown) => os),
 }));
 
 function createExactMatchState(

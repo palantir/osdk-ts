@@ -17,10 +17,12 @@
 import invariant from "tiny-invariant";
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import type { InterfaceTypeDefinition } from "../defineInterface.js";
 import { defineInterface } from "../defineInterface.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
+import { importOntologyEntity } from "../importOntologyEntity.js";
 import type {
   InterfaceSchemaMigrationInstruction,
   InterfaceSchemaTransition,
@@ -146,6 +148,7 @@ describe("Interface schema migrations", () => {
       const parent = defineInterface({
         apiName: "Parent",
         properties: { inherited: OPTIONAL_STRING },
+        schemaMigrations: { transitions: [] },
       });
 
       expect(() =>
@@ -177,6 +180,140 @@ describe("Interface schema migrations", () => {
               }),
             ],
           },
+        }),
+      ).not.toThrow();
+    });
+  });
+
+  describe("family opt-in", () => {
+    it("accepts a hierarchy that opts in as a whole", () => {
+      const parent = defineInterface({
+        apiName: "Parent",
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(() =>
+        defineInterface({
+          apiName: "Child",
+          extends: parent,
+          schemaMigrations: { transitions: [] },
+        }),
+      ).not.toThrow();
+    });
+
+    it("accepts a hierarchy where nobody opts in", () => {
+      const parent = defineInterface({ apiName: "Parent" });
+
+      expect(() =>
+        defineInterface({ apiName: "Child", extends: parent }),
+      ).not.toThrow();
+    });
+
+    it("rejects opting in an interface whose parent has not", () => {
+      const parent = defineInterface({ apiName: "Parent" });
+
+      expect(() =>
+        defineInterface({
+          apiName: "Child",
+          extends: parent,
+          schemaMigrations: { transitions: [] },
+        }),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Interface com.palantir.Child declares \`schemaMigrations\`, but the interface it extends, com.palantir.Parent, does not. Interface schema migrations must be enabled for an entire interface hierarchy, since an object type implementing com.palantir.Child must implement the properties it inherits from com.palantir.Parent too. Add \`schemaMigrations\` to com.palantir.Parent, or remove it from com.palantir.Child.]`,
+      );
+    });
+
+    it("rejects extending an opted-in interface without opting in", () => {
+      const parent = defineInterface({
+        apiName: "Parent",
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(() =>
+        defineInterface({ apiName: "Child", extends: parent }),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Interface com.palantir.Child extends com.palantir.Parent, which declares \`schemaMigrations\`, but com.palantir.Child does not. Interface schema migrations must be enabled for an entire interface hierarchy, since an object type implementing com.palantir.Child must implement the properties it inherits from com.palantir.Parent too. Add \`schemaMigrations\` to com.palantir.Child, or remove it from com.palantir.Parent.]`,
+      );
+    });
+
+    it("rejects a sibling that has not opted in", () => {
+      const parent = defineInterface({
+        apiName: "Parent",
+        schemaMigrations: { transitions: [] },
+      });
+      defineInterface({
+        apiName: "OptedInChild",
+        extends: parent,
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(() =>
+        defineInterface({ apiName: "OtherChild", extends: parent }),
+      ).toThrow(/Interface com\.palantir\.OtherChild extends/u);
+    });
+
+    it("rejects an ancestor further up that has not opted in", () => {
+      const grandparent = defineInterface({ apiName: "Grandparent" });
+
+      expect(() =>
+        defineInterface({
+          apiName: "Parent",
+          extends: grandparent,
+          schemaMigrations: { transitions: [] },
+        }),
+      ).toThrow(/the interface it extends, com\.palantir\.Grandparent/u);
+    });
+
+    it("checks every parent, not just the first", () => {
+      const optedIn = defineInterface({
+        apiName: "OptedIn",
+        schemaMigrations: { transitions: [] },
+      });
+      const notOptedIn = defineInterface({ apiName: "NotOptedIn" });
+
+      expect(() =>
+        defineInterface({
+          apiName: "Child",
+          extends: [optedIn, notOptedIn],
+          schemaMigrations: { transitions: [] },
+        }),
+      ).toThrow(/the interface it extends, com\.palantir\.NotOptedIn/u);
+    });
+
+    it("does not register the interface when the check fails", () => {
+      const parent = defineInterface({
+        apiName: "Parent",
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(() =>
+        defineInterface({ apiName: "Child", extends: parent }),
+      ).toThrow();
+
+      expect(
+        Object.keys(dumpOntologyFullMetadata().ontology.interfaceTypes),
+      ).toEqual(["com.palantir.Parent"]);
+    });
+
+    it("says nothing about a parent imported from another ontology", () => {
+      const imported: InterfaceType = {
+        apiName: "com.other.Imported",
+        displayMetadata: { displayName: "Imported" },
+        propertiesV2: {},
+        propertiesV3: {},
+        extendsInterfaces: [],
+        links: [],
+        actionTypeConstraints: [],
+        status: { type: "active", active: {} },
+        __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
+      };
+      importOntologyEntity(imported);
+
+      expect(() =>
+        defineInterface({
+          apiName: "Child",
+          extends: imported,
+          schemaMigrations: { transitions: [] },
         }),
       ).not.toThrow();
     });

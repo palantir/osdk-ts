@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  ObjectTypeSearchRequest as _api_search_ObjectTypeSearchRequest,
-  ObjectTypeSearchResponse as _api_search_ObjectTypeSearchResponse,
-} from "../search/__components.js";
+import type { ObjectTypeSearchRequest as _api_search_ObjectTypeSearchRequest } from "../search/__components.js";
+import type { ObjectTypeSearchResponse as _api_search_ObjectTypeSearchResponse } from "../search/__components.js";
 
 /**
  * This endpoint should only be used for batch processing workflows where all matches to a query need

@@ -32,6 +32,7 @@ export const defaultTypeClasses: TypeClass[] = [
 export function shouldNotHaveRenderHints(type: PropertyTypeType): boolean {
   return [
     "struct",
+    "geoshape",
     "mediaReference",
     "geotimeSeries",
     "attachment",

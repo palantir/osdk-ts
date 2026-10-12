@@ -1,5 +1,98 @@
 # @osdk/maker
 
+## 0.79.0
+
+### Minor Changes
+
+- d63eb64: Bring in blueprintjs and re-export icon names
+- 5b15676: Support explicit and conditional struct field defaults in Marketplace actions, and automatically prefill struct and struct-array fields in modify and create-or-modify object actions.
+
+### Patch Changes
+
+- @osdk/generator-converters.ontologyir@2.78.0
+- @osdk/api@2.78.0
+
+## 0.78.0
+
+### Patch Changes
+
+- Updated dependencies [2ab4d7c]
+- Updated dependencies [75a8f07]
+  - @osdk/api@2.77.0
+  - @osdk/typescript-sdk-docs@0.26.0
+  - @osdk/generator-converters.ontologyir@2.77.0
+
+## 0.77.0
+
+### Minor Changes
+
+- de4d83e: Add phonetic search support to string properties.
+
+## 0.76.0
+
+### Minor Changes
+
+- dec2ee4: Preserve action-level validation and failure messages in interface delete actions.
+- c11669e: Fix incomplete Marketplace mappings for SPTs imported ontology objects
+- a38af5a: Regenerate OMS bindings to add phonetic search support and align Maker with marketplace datasource types.
+
+### Patch Changes
+
+- Updated dependencies [43dd010]
+- Updated dependencies [a9fafd0]
+  - @osdk/generator-converters.ontologyir@2.76.0
+  - @osdk/api@2.76.0
+
+## 0.75.0
+
+### Patch Changes
+
+- Updated dependencies [aa9fe40]
+  - @osdk/generator-converters.ontologyir@2.74.0
+  - @osdk/api@2.74.0
+
+## 0.74.0
+
+### Minor Changes
+
+- 2c60601: Fix default geoshape type classes
+- 5e1b2c7: Check for same spt backing multiple props on an object
+
+## 0.73.0
+
+### Minor Changes
+
+- a0d1f1a: Require a whole interface hierarchy to opt into interface schema migrations together, rather than one interface at a time.
+- a3d87ea: Clean up internal ontology schema lockfile validation terminology and tests.
+- 50a7d66: Return a render hint for struct and structList action parameters instead of throwing.
+
+### Patch Changes
+
+- @osdk/api@2.73.0
+- @osdk/generator-converters.ontologyir@2.73.0
+
+## 0.72.0
+
+### Minor Changes
+
+- f6f9da0: Record a property's arrayedness in the ontology schema lockfile, so that adding or dropping `array` on an interface property is reported as the breaking type change it is.
+- e5023d0: Record a property's type classes in the ontology schema lockfile, so that adding, dropping or swapping a render hint on an interface property is reported as the breaking change it is.
+- 88b0ce8: Record whether a shared property type backs an interface property, so that swapping it for an inline definition (or back) is reported as the breaking change it is.
+- 00d9299: Warn when an interface property stops being required, so that relaxing the schema is visible to the author without blocking the release.
+- b3b4987: Record an interface property's primary key constraint in the ontology schema lockfile, rejecting a change that implementing object types would have to be remapped to satisfy, and warning when one is dropped.
+- 56136b6: Record an interface property's nullability in the ontology schema lockfile, rejecting a change that newly forbids nulls or empty collections, and warning when one is loosened.
+- e51927c: Record the value type an interface property references in the ontology schema lockfile, rejecting a change to which value type it is and warning when the reference is dropped.
+- 3d90eb7: Record the interfaces an interface extends in the ontology schema lockfile, rejecting a newly extended interface and warning when one is dropped.
+- 5221028: Document interface schema migrations in the maker README.
+
+### Patch Changes
+
+- Updated dependencies [10e859d]
+- Updated dependencies [7cfd651]
+- Updated dependencies [3ebe3d0]
+  - @osdk/generator-converters.ontologyir@2.72.0
+  - @osdk/api@2.72.0
+
 ## 0.71.0
 
 ### Patch Changes

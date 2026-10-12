@@ -201,7 +201,6 @@ export function createClientMockHelper(): MockClientHelper {
     objectSetFactory: vitest.fn(),
     fetch: vitest.fn(),
     clientCacheKey: {} as any,
-    requestContext: {},
     logger,
     narrowTypeInterfaceOrObjectMapping: {},
   };

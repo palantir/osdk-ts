@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyRid as _api_OntologyRid } from "../../../api/__components.js";
-import type {
-  LoadOntologyBranchWithProposalRequest as _approvals_api_LoadOntologyBranchWithProposalRequest,
-  LoadOntologyBranchWithProposalResponse as _approvals_api_LoadOntologyBranchWithProposalResponse,
-} from "../__components.js";
+import type { LoadOntologyBranchWithProposalRequest as _approvals_api_LoadOntologyBranchWithProposalRequest } from "../__components.js";
+import type { LoadOntologyBranchWithProposalResponse as _approvals_api_LoadOntologyBranchWithProposalResponse } from "../__components.js";
 
 /**
  * Load an existing branch in the provided ontology. Users who can view atleast one entity modified on that branch will be able to load it.

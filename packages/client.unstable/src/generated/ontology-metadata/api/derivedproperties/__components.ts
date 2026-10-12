@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import type {
-  LinkTypeId as _api_LinkTypeId,
-  LinkTypeRid as _api_LinkTypeRid,
-  ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
-  PropertyTypeId as _api_PropertyTypeId,
-  PropertyTypeRid as _api_PropertyTypeRid,
-} from "../__components.js";
+import type { PropertyTypeRid as _api_PropertyTypeRid } from "../__components.js";
+import type { PropertyTypeId as _api_PropertyTypeId } from "../__components.js";
+import type { LinkTypeRid as _api_LinkTypeRid } from "../__components.js";
+import type { LinkTypeId as _api_LinkTypeId } from "../__components.js";
+import type { ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName } from "../__components.js";
 
 /**
  * A derived property that references aggregations on a linked object type.

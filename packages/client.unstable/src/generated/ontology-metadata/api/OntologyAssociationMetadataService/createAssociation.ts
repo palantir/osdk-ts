@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyRid as _api_OntologyRid } from "../__components.js";
-import type {
-  CreateAssociationRequest as _api_association_metadata_CreateAssociationRequest,
-  CreateAssociationResponse as _api_association_metadata_CreateAssociationResponse,
-} from "../association/metadata/__components.js";
+import type { CreateAssociationRequest as _api_association_metadata_CreateAssociationRequest } from "../association/metadata/__components.js";
+import type { CreateAssociationResponse as _api_association_metadata_CreateAssociationResponse } from "../association/metadata/__components.js";
 
 /**
  * Endpoint to register an association between an ontology entity and a resource

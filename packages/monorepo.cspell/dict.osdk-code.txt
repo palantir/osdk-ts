@@ -86,3 +86,4 @@ scalechanging
 updatefindcontrolstate
 updatefindmatchescount
 radiobutton
+Arounds

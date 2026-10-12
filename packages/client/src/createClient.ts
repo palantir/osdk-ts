@@ -33,6 +33,7 @@ import type {
   SelectArg,
 } from "@osdk/api";
 import type {
+  AgentDefinition,
   Experiment,
   ExperimentFns,
   LinkSubscription,
@@ -54,6 +55,8 @@ import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.clie
 
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import { applyAction } from "./actions/applyAction.js";
+import { createAgentSession } from "./agents/createAgentSession.js";
+import type { AgentSignatureFromDef } from "./agents/types.js";
 import { additionalContext, type Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
 import { fetchMetadataInternal } from "./fetchMetadata.js";
@@ -103,6 +106,20 @@ class QueryInvoker<
   }
 
   executeFunction: (...args: any[]) => any;
+}
+
+class AgentClient<
+  D extends AgentDefinition<unknown>,
+> implements AgentSignatureFromDef<D> {
+  constructor(clientCtx: MinimalClient, agentDef: AgentDefinition<unknown>) {
+    this.experimental_createSession = createAgentSession.bind(
+      undefined,
+      clientCtx,
+      agentDef,
+    );
+  }
+
+  experimental_createSession: (...args: any[]) => any;
 }
 
 /** @internal */
@@ -167,6 +184,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       | ObjectOrInterfaceDefinition
       | ActionDefinition<any>
       | QueryDefinition<any>
+      | AgentDefinition<unknown>
       | Experiment<"2.0.8">
       | Experiment<"2.1.0">
       | Experiment<"2.59.0">
@@ -182,14 +200,16 @@ export function createClientFromContext(clientCtx: MinimalClient) {
         ? ActionSignatureFromDef<T>
         : T extends QueryDefinition<any>
           ? QuerySignatureFromDef<T>
-          : T extends
-                | Experiment<"2.0.8">
-                | Experiment<"2.1.0">
-                | Experiment<"2.59.0">
-                | Experiment<"2.8.0">
-                | Experiment<"2.19.0">
-            ? { invoke: ExperimentFns<T> }
-            : never {
+          : T extends AgentDefinition<unknown>
+            ? AgentSignatureFromDef<T>
+            : T extends
+                  | Experiment<"2.0.8">
+                  | Experiment<"2.1.0">
+                  | Experiment<"2.59.0">
+                  | Experiment<"2.8.0">
+                  | Experiment<"2.19.0">
+              ? { invoke: ExperimentFns<T> }
+              : never {
     if (o.type === "object" || o.type === "interface") {
       return clientCtx.objectSetFactory(o, clientCtx) as any;
     } else if (o.type === "action") {
@@ -200,6 +220,10 @@ export function createClientFromContext(clientCtx: MinimalClient) {
     } else if (o.type === "query") {
       return new QueryInvoker(clientCtx, o) as T extends QueryDefinition<any>
         ? QuerySignatureFromDef<T>
+        : never as any;
+    } else if (o.type === "agent") {
+      return new AgentClient(clientCtx, o) as T extends AgentDefinition<unknown>
+        ? AgentSignatureFromDef<T>
         : never as any;
     } else if (o.type === "experiment") {
       switch (o.name) {
@@ -414,10 +438,10 @@ export function createClientFromContext(clientCtx: MinimalClient) {
  * @param options - Optional client configuration: a custom `logger`, an experimental `UNSTABLE_DO_NOT_USE_BRANCH`
  *   for branch-aware requests, and additional `headers` to include on every request.
  *
- *   The client is branch-aware without configuration. If `UNSTABLE_DO_NOT_USE_BRANCH` is not supplied, build
- *   tooling can inject the branch into the application HTML; objects, actions, and queries then read and write
- *   on that branch. An explicitly supplied branch always takes precedence, and `null` pins the client to the
- *   default branch even while checked out on a branch.
+ *   The client is branch-aware without configuration. If `UNSTABLE_DO_NOT_USE_BRANCH` is not supplied, the
+ *   branch is read from the `foundryBranchRid` query parameter in `window.location`, then from the meta tag
+ *   injected by build tooling. Objects, actions, and queries then read and write on that branch. An explicitly
+ *   supplied branch always takes precedence, and `null` pins the client to the default branch.
  * @param fetchFn - An optional `fetch` implementation to use for all requests. Defaults to the global `fetch`.
  * @example
  * ```ts
@@ -449,10 +473,12 @@ export const createClient: (
         /**
          * The Foundry branch to scope every request to.
          *
-         * When omitted (or `undefined`), the branch is read from runtime
-         * configuration injected into the application HTML by OSDK build
-         * tooling. Pass `null` to ignore the injected branch and use the
-         * default branch.
+         * When omitted (or `undefined`), the branch is read from the
+         * `foundryBranchRid` query parameter in the current window's URL,
+         * falling back to the meta tag injected by OSDK build tooling when
+         * the parameter is missing or blank. The branch is resolved when the
+         * client is created. Pass `null` to ignore both sources and use the
+         * default branch. Non-browser environments only use the explicit branch.
          *
          * @beta This is an experimental feature subject to change
          */
@@ -506,20 +532,6 @@ export const createClientWithSubscriptionConnection: (
     undefined,
     undefined,
     createSubscriptionConnection,
-    ...args,
-  ) as Client;
-
-/** @internal */
-export const createClientWithScenario: (
-  scenarioRid: string,
-  ...args: Parameters<typeof createClient>
-) => Client = (scenarioRid, ...args) =>
-  createClientInternal(
-    createObjectSet,
-    undefined,
-    undefined,
-    scenarioRid,
-    undefined,
     ...args,
   ) as Client;
 

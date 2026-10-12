@@ -53,7 +53,6 @@ import {
   fetchPageWithErrorsInternal,
 } from "../object/fetchPage.js";
 import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
-import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
@@ -114,27 +113,21 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   const base: ObjectSet<Q> = {
     aggregate: aggregateForObjectSet.bind(
       globalThis,
-      augmentRequestContext(clientCtx, (_) => ({
-        finalMethodCall: "aggregate",
-      })),
+      clientCtx,
       objectType,
       objectSet,
     ) as ObjectSet<Q>["aggregate"],
 
     fetchPage: fetchPageInternal.bind(
       globalThis,
-      augmentRequestContext(clientCtx, (_) => ({
-        finalMethodCall: "fetchPage",
-      })),
+      clientCtx,
       objectType,
       objectSet,
     ) as ObjectSet<Q>["fetchPage"],
 
     fetchPageWithErrors: fetchPageWithErrorsInternal.bind(
       globalThis,
-      augmentRequestContext(clientCtx, (_) => ({
-        finalMethodCall: "fetchPageWithErrors",
-      })),
+      clientCtx,
       objectType,
       objectSet,
     ) as ObjectSet<Q>["fetchPageWithErrors"],
@@ -212,14 +205,12 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       let $nextPageToken: string | undefined;
       do {
         const result: FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS> =
-          await fetchPageInternal(
-            augmentRequestContext(clientCtx, (_) => ({
-              finalMethodCall: "asyncIter",
-            })),
-            objectType,
-            objectSet,
-            { ...args, $pageSize: 10000, $nextPageToken, $snapshot: true },
-          );
+          await fetchPageInternal(clientCtx, objectType, objectSet, {
+            ...args,
+            $pageSize: 10000,
+            $nextPageToken,
+            $snapshot: true,
+          });
         $nextPageToken = result.nextPageToken;
 
         for (const obj of result.data) {
@@ -234,9 +225,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           options: A,
         ) => {
           return (await fetchSingle(
-            augmentRequestContext(clientCtx, (_) => ({
-              finalMethodCall: "fetchOne",
-            })),
+            clientCtx,
             objectType,
             options,
             await createWithPk(clientCtx, objectType, objectSet, primaryKey),
@@ -252,9 +241,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           options: A,
         ) => {
           return (await fetchSingleWithErrors(
-            augmentRequestContext(clientCtx, (_) => ({
-              finalMethodCall: "fetchOneWithErrors",
-            })),
+            clientCtx,
             objectType,
             options,
             await createWithPk(clientCtx, objectType, objectSet, primaryKey),
@@ -329,9 +316,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       let $nextPageToken: string | undefined;
       do {
         const result = await fetchLinksPage(
-          augmentRequestContext(clientCtx, (_) => ({
-            finalMethodCall: "asyncIterLinks",
-          })),
+          clientCtx,
           objectType,
           objectSet,
           links,

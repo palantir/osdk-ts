@@ -16,6 +16,7 @@
 
 import { client } from "./client.js";
 import { checkUnstableBulkLinks } from "./public/checkUnstableBulkLinks.js";
+import { runAgentsTest } from "./runAgentsTest.js";
 import { runAggregationGroupByDatesTest } from "./runAggregationGroupByDatesTest.js";
 import { runAggregationsTest } from "./runAggregationsTest.js";
 import { runApplyFormatterTest } from "./runApplyFormatterTest.js";
@@ -40,6 +41,8 @@ const testScenarios = false;
 
 async function runTests() {
   try {
+    await runAgentsTest();
+
     await checkUnstableBulkLinks();
 
     if (runOld) {
@@ -88,6 +91,7 @@ async function runTests() {
   } catch (e) {
     console.error(`Caught an error we did not expect, type: ${typeof e}`);
     console.error(e);
+    process.exitCode = 1;
   }
 }
 

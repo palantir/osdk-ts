@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetEntityQueryableSourceRequest as _api_GetEntityQueryableSourceRequest,
-  GetEntityQueryableSourceResponse as _api_GetEntityQueryableSourceResponse,
-} from "../__components.js";
+import type { GetEntityQueryableSourceRequest as _api_GetEntityQueryableSourceRequest } from "../__components.js";
+import type { GetEntityQueryableSourceResponse as _api_GetEntityQueryableSourceResponse } from "../__components.js";
 
 /**
  * Resolves an ontology entity (object or link type) to a suitable delegate source for Spark input.

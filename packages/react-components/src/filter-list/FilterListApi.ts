@@ -85,7 +85,9 @@ export type FilterChangeReason =
   /** Every filter was restored to the state it mounted with. */
   | { type: "FILTER_LIST_RESET" }
   /** The list mounted, reporting the state it started with. */
-  | { type: "FILTER_LIST_INITIALIZED" };
+  | { type: "FILTER_LIST_INITIALIZED" }
+  /** The `objectSet` prop changed; the snapshot reflects the new base with all active filters re-applied. */
+  | { type: "OBJECT_SET_CHANGED" };
 
 /**
  * The payload delivered to `onFilterListChanged`.

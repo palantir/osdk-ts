@@ -82,6 +82,36 @@ export interface SelectArg<
   RDP_KEYS extends string = never,
   PROPERTY_SECURITIES extends boolean = false,
 > {
+  /**
+   * The properties to load for each object. If omitted, the API loads its default property
+   * set (vector properties, for example, are not included). The primary key is always
+   * returned, even when it is not selected.
+   *
+   * Select only the properties your code needs. Loading unused properties wastes bandwidth
+   * and compute and can slow down retrieval, and reading fewer properties afterwards does
+   * not avoid the cost of fetching them.
+   *
+   * Ontology-defined derived properties are not returned by default and must be
+   * included in `$select`.
+   * Include any other properties you need in the same selection.
+   * Runtime-defined derived properties added via `.withProperties(...)` are returned
+   * by default only when `$select` is omitted. If you pass `$select`, include them
+   * in the selection as well.
+   *
+   * @example
+   * ```ts
+   * // Assume leadName is an ontology-defined derived property on Employee.
+   * const page = await client(Employee).fetchPage({
+   *   $select: ["fullName", "leadName"],
+   * });
+   *
+   * for await (const employee of client(Employee).asyncIter({
+   *   $select: ["fullName", "leadName"],
+   * })) {
+   *   console.log(employee.fullName, employee.leadName);
+   * }
+   * ```
+   */
   $select?: readonly L[];
   $includeRid?: R;
   $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
@@ -130,6 +160,10 @@ export interface FetchPageArgs<
   MODIFIERS
 > {
   $nextPageToken?: string;
+  /**
+   * The number of objects in one page. This does not limit the total number of objects:
+   * continue with `nextPageToken` to load further pages.
+   */
   $pageSize?: number;
   $applyModifiers?: ApplyModifiersArg<Q> &
     MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
@@ -143,6 +177,13 @@ export interface FetchPageArgs<
   $EXPERIMENTAL_defaultLoadLevel?: DEFAULT_LOAD_LEVEL;
   /**
    * Ensures paging consistency by freezing the view at the time of query to prevent duplicate or missing items. Setting $snapshot to false ensures that you will always get the latest results.
+   *
+   * Without a snapshot, if objects are added, removed, or edited between requests, later pages
+   * may repeat or skip objects. A snapshot configured for a function run still applies even
+   * when this is `false`. With a snapshot, pass `$snapshot: true` on every page request; paging
+   * fails if the snapshot expires or the backend detects a paging inconsistency
+   * (`PagingInconsistencyDetected`). Stream-backed object types do not provide this snapshot
+   * guarantee across pages. `asyncIter()` always requests a snapshot.
    * @default false
    */
   $snapshot?: boolean;

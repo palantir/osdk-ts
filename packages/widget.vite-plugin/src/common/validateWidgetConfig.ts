@@ -32,6 +32,7 @@ export function validateWidgetConfig(
   validateWidgetName(config.name);
   validateWidgetDescription(config.description);
   validateWidgetParameters(config.parameters);
+  validateReadOnlyParameters(config);
 }
 
 function validateWidgetId(id: string): void {
@@ -84,6 +85,18 @@ function validateWidgetParameters(parameters: ParameterConfig): void {
           `ObjectSet parameter "${parameterId}" must have a valid rid in its metadata, make sure your OSDK was generated with a generator version >=2.6.2. Provided type: '${JSON.stringify(
             parameterConfig.allowedType,
           )}'`,
+        );
+      }
+    }
+  }
+}
+
+function validateReadOnlyParameters(config: WidgetConfig<ParameterConfig>) {
+  for (const [eventId, event] of Object.entries(config.events)) {
+    for (const parameterId of event.parameterUpdateIds) {
+      if (config.parameters[parameterId]?.type === "mapTileLayer") {
+        throw new Error(
+          `Event "${eventId}" cannot update read-only map tile layer parameter "${parameterId}"`,
         );
       }
     }

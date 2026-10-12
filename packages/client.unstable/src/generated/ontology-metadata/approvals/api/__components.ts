@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import type {
-  OntologyBranchRid as _api_OntologyBranchRid,
-  OntologyVersion as _api_OntologyVersion,
-  UserId as _api_UserId,
-} from "../../api/__components.js";
-import type {
-  OntologyBranchAttribution as _branch_api_OntologyBranchAttribution,
-  OntologyBranchDescription as _branch_api_OntologyBranchDescription,
-  OntologyBranchDisplayName as _branch_api_OntologyBranchDisplayName,
-  OntologyBranchModificationData as _branch_api_OntologyBranchModificationData,
-} from "../../branch/api/__components.js";
+import type { OntologyVersion as _api_OntologyVersion } from "../../api/__components.js";
+import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../api/__components.js";
+import type { UserId as _api_UserId } from "../../api/__components.js";
+import type { OntologyBranchDescription as _branch_api_OntologyBranchDescription } from "../../branch/api/__components.js";
+import type { OntologyBranchDisplayName as _branch_api_OntologyBranchDisplayName } from "../../branch/api/__components.js";
+import type { OntologyBranchAttribution as _branch_api_OntologyBranchAttribution } from "../../branch/api/__components.js";
+import type { OntologyBranchModificationData as _branch_api_OntologyBranchModificationData } from "../../branch/api/__components.js";
 
 /**
  * A type to represent OntologyBranch creation request.

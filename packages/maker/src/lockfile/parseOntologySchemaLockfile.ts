@@ -116,6 +116,16 @@ const transitionSchema = z
   )
   .passthrough();
 
+const typeClassSchema = z
+  .object(
+    {
+      kind: z.string({ message: "Expected a type class kind." }),
+      name: z.string({ message: "Expected a type class name." }),
+    },
+    { message: "Expected an object recording a type class." },
+  )
+  .passthrough();
+
 const propertySchema = z
   .object(
     {
@@ -125,6 +135,68 @@ const propertySchema = z
         message: `Expected a recorded property type. Restore the type the last published release declared.`,
       }),
       required: z.boolean({ message: "Expected a boolean." }),
+      typeClasses: z
+        .array(typeClassSchema, {
+          message:
+            `Expected an array of type classes. Restore the type classes the last published ` +
+            `release declared.`,
+        })
+        .optional(),
+      // Absent means its an IDP, so we need only expect the SPT variant here
+      declaredBy: z
+        .literal("sharedPropertyType", {
+          message:
+            `Expected "sharedPropertyType", or no value at all for a property the interface ` +
+            `defines itself. Restore what the last published release declared.`,
+        })
+        .optional(),
+      // NO_RESTRICTION is the absent/default case, so we don't record it in the lockfile
+      primaryKeyConstraint: z
+        .enum(["MUST_BE_PK", "CANNOT_BE_PK"], {
+          message:
+            `Expected "MUST_BE_PK" or "CANNOT_BE_PK", or no value at all for a property that ` +
+            `does not constrain primary key mapping. Restore what the last published release ` +
+            `declared.`,
+        })
+        .optional(),
+      nullability: z
+        .object(
+          {
+            noNulls: z.boolean({ message: "Expected a boolean." }),
+            noEmptyCollections: z.boolean({ message: "Expected a boolean." }),
+          },
+          {
+            message:
+              `Expected an object recording what the property forbids. Restore the nullability ` +
+              `the last published release declared.`,
+          },
+        )
+        .passthrough()
+        .refine(
+          ({ noNulls, noEmptyCollections }) => noNulls || noEmptyCollections,
+          {
+            message:
+              `Expected a nullability that forbids something, or no value at all for a property ` +
+              `that constrains neither nulls nor empty collections.`,
+          },
+        )
+        .optional(),
+      valueType: z
+        .object(
+          {
+            packageNamespace: z.string({
+              message: "Expected a value type package namespace.",
+            }),
+            apiName: z.string({ message: "Expected a value type api name." }),
+          },
+          {
+            message:
+              `Expected an object identifying a value type. Restore the value type the last ` +
+              `published release declared.`,
+          },
+        )
+        .passthrough()
+        .optional(),
     },
     {
       message:
@@ -142,6 +214,24 @@ const interfaceSchema = z
             properties: z.record(z.string(), propertySchema, {
               message: "Expected an object keyed by property api name.",
             }),
+            extendsInterfaces: z
+              .array(
+                z.string({
+                  message: "Expected the api name of an extended interface.",
+                }),
+                {
+                  message:
+                    `Expected an array of extended interface api names. Restore the interfaces ` +
+                    `the last published release extended.`,
+                },
+              )
+              // Absent means "extends nothing", so a committed lockfile should only ever values
+              .nonempty({
+                message:
+                  `Expected a non-empty array of extended interface api names, or no value at ` +
+                  `all for an interface that extends none.`,
+              })
+              .optional(),
           },
           { message: 'Expected an object with a "properties" key.' },
         )

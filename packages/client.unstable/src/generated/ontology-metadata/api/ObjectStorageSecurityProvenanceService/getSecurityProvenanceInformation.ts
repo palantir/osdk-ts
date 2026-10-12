@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetSecurityProvenanceRequest as _api_objectstorage_GetSecurityProvenanceRequest,
-  GetSecurityProvenanceResponse as _api_objectstorage_GetSecurityProvenanceResponse,
-} from "../objectstorage/__components.js";
+import type { GetSecurityProvenanceRequest as _api_objectstorage_GetSecurityProvenanceRequest } from "../objectstorage/__components.js";
+import type { GetSecurityProvenanceResponse as _api_objectstorage_GetSecurityProvenanceResponse } from "../objectstorage/__components.js";
 
 /**
  * Called by OMS ObjectTypeInputManager and LinkTypeInputManager to retrieve security provenance information

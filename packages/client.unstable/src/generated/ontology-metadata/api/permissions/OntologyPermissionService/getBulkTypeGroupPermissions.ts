@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetBulkTypeGroupPermissionsRequest as _api_permissions_GetBulkTypeGroupPermissionsRequest,
-  GetBulkTypeGroupPermissionsResponse as _api_permissions_GetBulkTypeGroupPermissionsResponse,
-} from "../__components.js";
+import type { GetBulkTypeGroupPermissionsRequest as _api_permissions_GetBulkTypeGroupPermissionsRequest } from "../__components.js";
+import type { GetBulkTypeGroupPermissionsResponse as _api_permissions_GetBulkTypeGroupPermissionsResponse } from "../__components.js";
 
 /**
  * Returns which permissions the user has on the TypeGroups provided. Limited to at most 500 entries per

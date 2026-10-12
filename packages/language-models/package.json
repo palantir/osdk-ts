@@ -1,6 +1,6 @@
 {
   "name": "@osdk/language-models",
-  "version": "0.10.0",
+  "version": "0.12.0",
   "description": "Utility methods for calling language models through the Foundry proxy endpoint",
   "access": "public",
   "license": "Apache-2.0",
@@ -49,6 +49,7 @@
     "@osdk/client": "workspace:^"
   },
   "devDependencies": {
+    "@osdk/client": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/node": "^18.19.0",

@@ -50,6 +50,7 @@ import type {
 } from "./object/ObjectTypeDatasourceDefinition.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 import type { ObjectTypeStatus } from "./object/ObjectTypeStatus.js";
+import { resolveDerivedPropertyLinks } from "./object/resolveDerivedPropertyLinks.js";
 import type { PropertyTypeType } from "./properties/PropertyTypeType.js";
 import { isExotic, isStruct } from "./properties/PropertyTypeType.js";
 import {
@@ -85,6 +86,7 @@ export function defineObject(
     isValidObjectApiName(objectDef.apiName),
     `Invalid API name ${objectDef.apiName}. API names must match the regex ${OBJECT_API_NAME_PATTERN}.`,
   );
+  const propertyBySharedPropertyType = new Map<string, string>();
   propertyApiNames.forEach((apiName) => {
     invariant(
       isValidApiName(apiName),
@@ -95,6 +97,18 @@ export function defineObject(
         objectDef.properties[apiName].type === "mediaReference",
       `Property ${apiName} on object ${objectDef.apiName} can only use includeEmptyBackingMediaSet when its type is mediaReference`,
     );
+    const sharedPropertyType =
+      objectDef.properties?.[apiName]?.sharedPropertyType;
+    if (sharedPropertyType !== undefined) {
+      const previousProperty = propertyBySharedPropertyType.get(
+        sharedPropertyType.apiName,
+      );
+      invariant(
+        previousProperty === undefined,
+        `Shared property type "${sharedPropertyType.apiName}" cannot back both "${previousProperty}" and "${apiName}" on object "${objectDef.apiName}". A shared property type can only back one property per object.`,
+      );
+      propertyBySharedPropertyType.set(sharedPropertyType.apiName, apiName);
+    }
   });
   invariant(
     propertyApiNames.includes(objectDef.titlePropertyApiName),
@@ -112,7 +126,7 @@ export function defineObject(
 
   if (objectDef.includeEmptyBackingDatasource && objectDef.datasources) {
     const nonDatasetDatasources = objectDef.datasources.filter(
-      (ds) => ds.type !== "dataset",
+      (ds) => ds.type !== "dataset" && ds.type !== "derived",
     );
     invariant(
       nonDatasetDatasources.length === 0,
@@ -149,7 +163,7 @@ export function defineObject(
   );
   if (derivedDatasources.length > 0) {
     derivedDatasources.forEach((ds) =>
-      validateDerivedDatasource(objectDef, ds),
+      validateDerivedDatasource(objectDef, apiName, ds),
     );
   }
 
@@ -370,6 +384,7 @@ function convertUserObjectPropertyType(
 }
 function validateDerivedDatasource(
   objectDef: ObjectTypeDefinition,
+  objectTypeApiName: string,
   datasource: ObjectTypeDatasourceDefinition_derived,
 ) {
   // there should be at least one link
@@ -400,10 +415,24 @@ function validateDerivedDatasource(
 
   const isLinkedProperties =
     typeof Object.values(datasource.propertyMapping)[0] === "string";
+  const { targetObjectApiName } = resolveDerivedPropertyLinks(
+    objectTypeApiName,
+    datasource.linkDefinition,
+  );
   if (isLinkedProperties) {
-    validateLinkedProperties(datasource, objectDef);
+    validateLinkedProperties(
+      datasource,
+      objectDef,
+      objectTypeApiName,
+      targetObjectApiName,
+    );
   } else {
-    validateAggregations(datasource, objectDef);
+    validateAggregations(
+      datasource,
+      objectDef,
+      objectTypeApiName,
+      targetObjectApiName,
+    );
   }
 }
 
@@ -414,15 +443,15 @@ function validateDerivedDatasource(
 function getPropertiesForValidation(
   linkObject: string | ObjectTypeDefinition | ObjectType,
   objectDef: ObjectTypeDefinition,
+  objectTypeApiName: string,
 ): { apiName: string; hasProperty: (propName: string) => boolean } {
   const targetApiName =
     typeof linkObject === "string" ? linkObject : linkObject.apiName;
-  const selfApiName = namespace + objectDef.apiName;
 
   // Self-referential: use objectDef directly (not yet in registry)
-  if (targetApiName === selfApiName) {
+  if (targetApiName === objectTypeApiName) {
     return {
-      apiName: selfApiName,
+      apiName: objectTypeApiName,
       hasProperty: (propName: string) =>
         objectDef.properties?.[propName] !== undefined,
     };
@@ -440,15 +469,17 @@ function getPropertiesForValidation(
 function validateLinkedProperties(
   datasource: ObjectTypeDatasourceDefinition_derived,
   objectDef: ObjectTypeDefinition,
+  objectTypeApiName: string,
+  targetObjectApiName: string,
 ) {
   const foreignProperties = Object.values(
     datasource.propertyMapping,
   ) as string[];
   // the foreign property must exist in the final object in the link chain
-  const targetObject = datasource.linkDefinition.at(-1)!.linkType.toMany.object;
   const { apiName, hasProperty } = getPropertiesForValidation(
-    targetObject,
+    targetObjectApiName,
     objectDef,
+    objectTypeApiName,
   );
   foreignProperties.forEach((prop) => {
     invariant(
@@ -461,6 +492,8 @@ function validateLinkedProperties(
 function validateAggregations(
   datasource: ObjectTypeDatasourceDefinition_derived,
   objectDef: ObjectTypeDefinition,
+  objectTypeApiName: string,
+  targetObjectApiName: string,
 ) {
   const props = datasource.propertyMapping as Record<
     string,
@@ -510,11 +543,10 @@ function validateAggregations(
     // if a foreign property is referenced, it must exist in the final object
     if (agg.type !== "count") {
       const foreignProperty = agg.property;
-      const targetObject =
-        datasource.linkDefinition.at(-1)!.linkType.toMany.object;
       const { apiName, hasProperty } = getPropertiesForValidation(
-        targetObject,
+        targetObjectApiName,
         objectDef,
+        objectTypeApiName,
       );
       invariant(
         hasProperty(foreignProperty),

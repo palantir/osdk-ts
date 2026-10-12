@@ -53,6 +53,17 @@ export interface AbstractParameterValue<T extends PrimitiveParameterType> {
   value: AsyncValue<PrimitiveParameterTypes[T]>;
 }
 
+/** A read-only map tile layer selected by the host. */
+export interface MapTileLayerParameterValue {
+  type: "mapTileLayer";
+  value: AsyncValue<{
+    /**
+     * The selected tile source ID that can be used in requests to the Tiles Foundry APIs.
+     */
+    tileSourceId: string;
+  }>;
+}
+
 export interface ObjectSetParameterValue<
   _T extends AllowedObjectSetParameterType,
 > {
@@ -78,6 +89,7 @@ export namespace ParameterValue {
   export type Date = AbstractParameterValue<"date">;
   export type Timestamp = AbstractParameterValue<"timestamp">;
   export type Scenario = AbstractParameterValue<"scenario">;
+  export type MapTileLayer = MapTileLayerParameterValue;
   export type ObjectSet<
     T extends AllowedObjectSetParameterType = AllowedObjectSetParameterType,
   > = ObjectSetParameterValue<T>;
@@ -106,5 +118,6 @@ export type ParameterValue =
   | ParameterValue.Date
   | ParameterValue.Timestamp
   | ParameterValue.Scenario
+  | ParameterValue.MapTileLayer
   | ParameterValue.ObjectSet
   | ParameterValue.Array;

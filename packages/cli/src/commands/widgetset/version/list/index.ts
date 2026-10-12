@@ -23,7 +23,17 @@ const command: CommandModule<CommonWidgetSetArgs, VersionListArgs> = {
   command: "list",
   describe: "List widget set versions",
   builder: (argv) => {
-    return argv;
+    return argv
+      .option("branchName", {
+        type: "string",
+        description:
+          "Git branch name used to list widget set versions (defaults to the current git branch).",
+        coerce: (branchName: string) => {
+          const trimmed = branchName.trim();
+          return trimmed === "" ? undefined : trimmed;
+        },
+      })
+      .group(["branchName"], "List Options");
   },
   handler: async (args) => {
     const command = await import("./versionListCommand.mjs");

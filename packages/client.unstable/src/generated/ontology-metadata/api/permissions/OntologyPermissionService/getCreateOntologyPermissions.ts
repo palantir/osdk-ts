@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { GetCreateOntologyPermissionsResponse as _api_permissions_GetCreateOntologyPermissionsResponse } from "../__components.js";
 

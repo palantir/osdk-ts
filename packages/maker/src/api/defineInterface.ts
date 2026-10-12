@@ -42,6 +42,7 @@ import type { InterfaceSchemaMigrations } from "./interface/InterfaceSchemaMigra
 import { type InterfaceType } from "./interface/InterfaceType.js";
 import { mapSimplifiedStatusToInterfaceTypeStatus } from "./interface/mapSimplifiedStatusToInterfaceTypeStatus.js";
 import { validateInterfaceSchemaMigrations } from "./interface/validateInterfaceSchemaMigrations.js";
+import { validateSchemaMigrationsFamilyOptIn } from "./interface/validateSchemaMigrationsFamilyOptIn.js";
 import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
 import { isExotic, isPropertyTypeType } from "./properties/PropertyTypeType.js";
 import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
@@ -241,6 +242,16 @@ export function defineInterface(
       propertiesV3,
     );
   }
+  validateSchemaMigrationsFamilyOptIn(
+    apiName,
+    interfaceDef.schemaMigrations !== undefined,
+    extendsInterfaces.flatMap(
+      (parent) =>
+        ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][
+          parent.apiName
+        ] ?? [],
+    ),
+  );
 
   updateOntology(fullInterface);
   return fullInterface;

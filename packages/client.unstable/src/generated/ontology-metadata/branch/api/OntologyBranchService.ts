@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+export { loadOntologyBranch } from "./OntologyBranchService/loadOntologyBranch.js";
+export { loadOntologyBranchForProposal } from "./OntologyBranchService/loadOntologyBranchForProposal.js";
+export { loadOntologyBranchMarkings } from "./OntologyBranchService/loadOntologyBranchMarkings.js";
+export { loadOntologyBranchByVersion } from "./OntologyBranchService/loadOntologyBranchByVersion.js";
 export { bulkLoadOntologyBranches } from "./OntologyBranchService/bulkLoadOntologyBranches.js";
 export { createOntologyBranch } from "./OntologyBranchService/createOntologyBranch.js";
 export { createOntologyServiceBranch } from "./OntologyBranchService/createOntologyServiceBranch.js";
+export { setOntologyBranchOrganizationMarkings } from "./OntologyBranchService/setOntologyBranchOrganizationMarkings.js";
+export { mergeOntologyServiceBranch } from "./OntologyBranchService/mergeOntologyServiceBranch.js";
+export { setOntologyBranchLock } from "./OntologyBranchService/setOntologyBranchLock.js";
+export { findConflicts } from "./OntologyBranchService/findConflicts.js";
+export { validateOntologyBranch } from "./OntologyBranchService/validateOntologyBranch.js";
 export { discardChangesOnBranch } from "./OntologyBranchService/discardChangesOnBranch.js";
 export { discardChangesOnBranchV2 } from "./OntologyBranchService/discardChangesOnBranchV2.js";
 export { dryRunMergeOntologyBranch } from "./OntologyBranchService/dryRunMergeOntologyBranch.js";
-export { findConflicts } from "./OntologyBranchService/findConflicts.js";
 export { getOntologyBranchRid } from "./OntologyBranchService/getOntologyBranchRid.js";
-export { loadOntologyBranch } from "./OntologyBranchService/loadOntologyBranch.js";
-export { loadOntologyBranchByVersion } from "./OntologyBranchService/loadOntologyBranchByVersion.js";
-export { loadOntologyBranchForProposal } from "./OntologyBranchService/loadOntologyBranchForProposal.js";
-export { loadOntologyBranchMarkings } from "./OntologyBranchService/loadOntologyBranchMarkings.js";
-export { mergeOntologyServiceBranch } from "./OntologyBranchService/mergeOntologyServiceBranch.js";
-export { setOntologyBranchLock } from "./OntologyBranchService/setOntologyBranchLock.js";
-export { setOntologyBranchOrganizationMarkings } from "./OntologyBranchService/setOntologyBranchOrganizationMarkings.js";
-export { validateOntologyBranch } from "./OntologyBranchService/validateOntologyBranch.js";

@@ -18,7 +18,7 @@ import { describe, expect, it } from "vitest";
 
 import type { PropertyTypeType } from "../../api/properties/PropertyTypeType.js";
 import type { LockedPropertyType } from "../LockedPropertyType.js";
-import { normalizePropertyType } from "../LockedPropertyType.js";
+import { describeType, normalizePropertyType } from "../LockedPropertyType.js";
 
 // @ts-expect-error not a property type at all
 const _rejectsNonsense: LockedPropertyType = "not-a-property-type";
@@ -26,6 +26,17 @@ const _rejectsNonsense: LockedPropertyType = "not-a-property-type";
 const _acceptsTheStrippedForm: LockedPropertyType = {
   type: "struct",
   structDefinition: { zip: { fieldType: "string" } },
+};
+
+const _acceptsAnArray: LockedPropertyType = {
+  type: "array",
+  subtype: "string",
+};
+
+const _rejectsNestedArrays: LockedPropertyType = {
+  type: "array",
+  // @ts-expect-error maker's DSL has a single `array` boolean, so arrays are never nested
+  subtype: { type: "array", subtype: "string" },
 };
 
 const _rejectsPresentation: LockedPropertyType = {
@@ -61,12 +72,12 @@ describe("normalizePropertyType", () => {
     { type: "decimal", precision: 10, scale: 2 },
     { type: "marking", markingType: "CBAC", markingInputGroupName: "g" },
   ])("leaves %j alone", (type) => {
-    expect(normalizePropertyType(type)).toEqual(type);
+    expect(normalizePropertyType(type, false)).toEqual(type);
   });
 
   it("drops struct field display metadata", () => {
     expect(
-      normalizePropertyType(structWithZip({ displayName: "ZIP" })),
+      normalizePropertyType(structWithZip({ displayName: "ZIP" }), false),
     ).toEqual(STRIPPED_ZIP);
   });
 
@@ -74,24 +85,31 @@ describe("normalizePropertyType", () => {
     expect(
       normalizePropertyType(
         structWithZip({ displayName: "ZIP", description: "The postal code" }),
+        false,
       ),
     ).toEqual(
-      normalizePropertyType(structWithZip({ displayName: "Postal code" })),
+      normalizePropertyType(
+        structWithZip({ displayName: "Postal code" }),
+        false,
+      ),
     );
   });
 
   it("keeps the rest of a struct field intact", () => {
-    const normalized = normalizePropertyType({
-      type: "struct",
-      structDefinition: {
-        zip: {
-          fieldType: "string",
-          displayMetadata: { displayName: "ZIP" },
-          typeClasses: [{ kind: "render_hint", name: "SORTABLE" }],
-          requireImplementation: true,
+    const normalized = normalizePropertyType(
+      {
+        type: "struct",
+        structDefinition: {
+          zip: {
+            fieldType: "string",
+            displayMetadata: { displayName: "ZIP" },
+            typeClasses: [{ kind: "render_hint", name: "SORTABLE" }],
+            requireImplementation: true,
+          },
         },
       },
-    });
+      false,
+    );
 
     expect(normalized).toEqual({
       type: "struct",
@@ -110,18 +128,21 @@ describe("normalizePropertyType", () => {
       type: "struct",
       structDefinition: { street: "string" },
     };
-    expect(normalizePropertyType(type)).toEqual(type);
+    expect(normalizePropertyType(type, false)).toEqual(type);
   });
 
   it("strips at every depth, not just the fields of the outermost struct", () => {
-    const normalized = normalizePropertyType({
-      type: "struct",
-      structDefinition: { street: "string" },
-      mainValue: {
-        fields: "street",
-        type: structWithZip({ displayName: "ZIP" }),
+    const normalized = normalizePropertyType(
+      {
+        type: "struct",
+        structDefinition: { street: "string" },
+        mainValue: {
+          fields: "street",
+          type: structWithZip({ displayName: "ZIP" }),
+        },
       },
-    });
+      false,
+    );
 
     expect(normalized).toEqual({
       type: "struct",
@@ -131,18 +152,59 @@ describe("normalizePropertyType", () => {
   });
 
   it("drops keys whose value is `undefined`", () => {
-    const normalized = normalizePropertyType({
-      type: "struct",
-      structDefinition: { street: "string" },
-      mainValue: undefined,
-    });
+    const normalized = normalizePropertyType(
+      {
+        type: "struct",
+        structDefinition: { street: "string" },
+        mainValue: undefined,
+      },
+      false,
+    );
 
     expect(Object.keys(normalized)).toEqual(["type", "structDefinition"]);
   });
 
   it("does not mutate its argument", () => {
     const type = structWithZip({ displayName: "ZIP" });
-    normalizePropertyType(type);
+    normalizePropertyType(type, false);
     expect(type).toEqual(structWithZip({ displayName: "ZIP" }));
+  });
+
+  describe("arrayedness", () => {
+    it("records an arrayed property as an array of its declared type", () => {
+      expect(normalizePropertyType("string", true)).toEqual({
+        type: "array",
+        subtype: "string",
+      });
+    });
+
+    it("tells an arrayed property apart from the scalar it wraps", () => {
+      expect(normalizePropertyType("string", true)).not.toEqual(
+        normalizePropertyType("string", false),
+      );
+    });
+
+    it("strips the subtype the same way it strips a scalar", () => {
+      expect(
+        normalizePropertyType(structWithZip({ displayName: "ZIP" }), true),
+      ).toEqual({ type: "array", subtype: STRIPPED_ZIP });
+    });
+  });
+});
+
+describe("describeType", () => {
+  it.each<{ type: LockedPropertyType; expected: string }>([
+    { type: "string", expected: '"string"' },
+    { type: { type: "array", subtype: "string" }, expected: '"string"[]' },
+    {
+      type: { type: "decimal", precision: 10, scale: 2 },
+      expected: '{"type":"decimal","precision":10,"scale":2}',
+    },
+    {
+      type: { type: "array", subtype: { type: "string", isLongText: true } },
+      expected: '{"type":"string","isLongText":true}[]',
+    },
+  ])("renders $expected", ({ type, expected }) => {
+    expect(describeType(type)).toBe(expected);
   });
 });

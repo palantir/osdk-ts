@@ -175,6 +175,174 @@ describe("parseLockfile", () => {
     );
   });
 
+  it("accepts a property that records type classes", () => {
+    const typeClasses = [{ kind: "render_hint", name: "SORTABLE" }];
+    const parsed = parse(withPropertyDefinition({ ...property, typeClasses }));
+    expect(
+      parsed.interfaces.Person.schema.properties.lastName.typeClasses,
+    ).toEqual(typeClasses);
+  });
+
+  it("accepts a property that records no type classes", () => {
+    const parsed = parse(withPropertyDefinition(property));
+    expect(
+      parsed.interfaces.Person.schema.properties.lastName,
+    ).not.toHaveProperty("typeClasses");
+  });
+
+  it.each([
+    ["not an array", { ...property, typeClasses: {} }],
+    ["an array of strings", { ...property, typeClasses: ["SORTABLE"] }],
+  ])("rejects a property whose `typeClasses` is %s", (_name, broken) => {
+    expect(() => parse(withPropertyDefinition(broken))).toThrowError(
+      /properties\.lastName\.typeClasses/u,
+    );
+  });
+
+  it("accepts a property a shared property type backs", () => {
+    const parsed = parse(
+      withPropertyDefinition({ ...property, declaredBy: "sharedPropertyType" }),
+    );
+    expect(parsed.interfaces.Person.schema.properties.lastName.declaredBy).toBe(
+      "sharedPropertyType",
+    );
+  });
+
+  it("rejects a property that spells out the inline default", () => {
+    expect(() =>
+      parse(withPropertyDefinition({ ...property, declaredBy: "interface" })),
+    ).toThrowError(/properties\.lastName\.declaredBy/u);
+  });
+
+  it.each(["MUST_BE_PK", "CANNOT_BE_PK"])(
+    "accepts a property constrained to %s",
+    (primaryKeyConstraint) => {
+      const parsed = parse(
+        withPropertyDefinition({ ...property, primaryKeyConstraint }),
+      );
+      expect(
+        parsed.interfaces.Person.schema.properties.lastName
+          .primaryKeyConstraint,
+      ).toBe(primaryKeyConstraint);
+    },
+  );
+
+  it("rejects a property that spells out the unconstrained default", () => {
+    expect(() =>
+      parse(
+        withPropertyDefinition({
+          ...property,
+          primaryKeyConstraint: "NO_RESTRICTION",
+        }),
+      ),
+    ).toThrowError(/properties\.lastName\.primaryKeyConstraint/u);
+  });
+
+  it("accepts a property that records what it forbids", () => {
+    const nullability = { noNulls: true, noEmptyCollections: false };
+    const parsed = parse(withPropertyDefinition({ ...property, nullability }));
+    expect(
+      parsed.interfaces.Person.schema.properties.lastName.nullability,
+    ).toEqual(nullability);
+  });
+
+  it("rejects a nullability that forbids nothing", () => {
+    expect(() =>
+      parse(
+        withPropertyDefinition({
+          ...property,
+          nullability: { noNulls: false, noEmptyCollections: false },
+        }),
+      ),
+    ).toThrowError(/properties\.lastName\.nullability/u);
+  });
+
+  it("rejects a nullability missing a flag", () => {
+    expect(() =>
+      parse(
+        withPropertyDefinition({ ...property, nullability: { noNulls: true } }),
+      ),
+    ).toThrowError(
+      /properties\.lastName\.nullability\.noEmptyCollections: Expected a boolean/u,
+    );
+  });
+
+  it("accepts an interface that records what it extends", () => {
+    const parsed = parse(
+      withInterface({
+        schema: {
+          properties: { lastName: property },
+          extendsInterfaces: ["com.palantir.Named"],
+        },
+        transitions: [],
+      }),
+    );
+    expect(parsed.interfaces.Person.schema.extendsInterfaces).toEqual([
+      "com.palantir.Named",
+    ]);
+  });
+
+  it("rejects an empty `extendsInterfaces`", () => {
+    expect(() =>
+      parse(
+        withInterface({
+          schema: { properties: { lastName: property }, extendsInterfaces: [] },
+          transitions: [],
+        }),
+      ),
+    ).toThrowError(/schema\.extendsInterfaces/u);
+  });
+
+  it("rejects an `extendsInterfaces` entry that is not an api name", () => {
+    expect(() =>
+      parse(
+        withInterface({
+          schema: {
+            properties: { lastName: property },
+            extendsInterfaces: [{ apiName: "com.palantir.Named" }],
+          },
+          transitions: [],
+        }),
+      ),
+    ).toThrowError(
+      /schema\.extendsInterfaces\[0\]: Expected the api name of an extended interface/u,
+    );
+  });
+
+  it("accepts a property that records a value type", () => {
+    const valueType = { packageNamespace: "com.example", apiName: "Ssn" };
+    const parsed = parse(withPropertyDefinition({ ...property, valueType }));
+    expect(
+      parsed.interfaces.Person.schema.properties.lastName.valueType,
+    ).toEqual(valueType);
+  });
+
+  it("rejects a value type missing its `apiName`", () => {
+    expect(() =>
+      parse(
+        withPropertyDefinition({
+          ...property,
+          valueType: { packageNamespace: "com.example" },
+        }),
+      ),
+    ).toThrowError(
+      /properties\.lastName\.valueType\.apiName: Expected a value type api name/u,
+    );
+  });
+
+  it("rejects a type class missing its `name`", () => {
+    expect(() =>
+      parse(
+        withPropertyDefinition({
+          ...property,
+          typeClasses: [{ kind: "render_hint" }],
+        }),
+      ),
+    ).toThrowError(
+      /properties\.lastName\.typeClasses\[0\]\.name: Expected a type class name/u,
+    );
+  });
+
   /** Builds a lockfile whose sole transition is `wellFormed`'s, overridden by `overrides`. */
   function withTransition(overrides: Record<string, unknown>) {
     return withInterface({
