@@ -697,6 +697,9 @@
                         "status": {
                             "type": "experimental"
                         },
+                        "dataConstraints": {
+                            "nullability": "NOT_NULLABLE"
+                        },
                         "visibility": "NORMAL",
                         "typeClasses": [
                             {
