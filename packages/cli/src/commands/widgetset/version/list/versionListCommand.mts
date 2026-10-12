@@ -25,13 +25,14 @@ import type { VersionListArgs } from "./VersionListArgs.js";
 export default async function versionListCommand({
   foundryUrl,
   widgetSet,
+  branchName,
   token,
   tokenFile,
 }: VersionListArgs): Promise<void> {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
-  const branch = await getGitBranch();
+  const branch = branchName ?? (await getGitBranch());
   consola.start(
     branch == null
       ? "Fetching versions"

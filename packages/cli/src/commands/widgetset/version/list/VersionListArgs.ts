@@ -16,4 +16,6 @@
 
 import type { CommonWidgetSetArgs } from "../../CommonWidgetSetArgs.js";
 
-export interface VersionListArgs extends CommonWidgetSetArgs {}
+export interface VersionListArgs extends CommonWidgetSetArgs {
+  branchName?: string;
+}

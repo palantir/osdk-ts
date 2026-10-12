@@ -1,0 +1,5 @@
+---
+"@osdk/cli": patch
+---
+
+Add `--branchName` to `widgetset deploy` and `widgetset version list` to override the current Git branch.
