@@ -16,6 +16,7 @@
 
 export type { MockClient } from "./MockClient.js";
 export type { MockOsdkObjectOptions } from "./MockOsdkObjectOptions.js";
+export type { MockWriteableClient } from "./MockWriteableClient.js";
 export type {
   AggregateStubBuilder,
   FetchOneStubBuilder,

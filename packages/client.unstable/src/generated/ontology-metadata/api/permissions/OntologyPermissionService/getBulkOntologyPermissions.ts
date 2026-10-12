@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetBulkOntologyPermissionsRequest as _api_permissions_GetBulkOntologyPermissionsRequest,
-  GetBulkOntologyPermissionsResponse as _api_permissions_GetBulkOntologyPermissionsResponse,
-} from "../__components.js";
+import type { GetBulkOntologyPermissionsRequest as _api_permissions_GetBulkOntologyPermissionsRequest } from "../__components.js";
+import type { GetBulkOntologyPermissionsResponse as _api_permissions_GetBulkOntologyPermissionsResponse } from "../__components.js";
 
 /**
  * Returns the Ontology-level permissions which the user has in bulk.

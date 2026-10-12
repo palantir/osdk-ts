@@ -184,6 +184,7 @@ async function transpileWithTsup(format, target) {
   const noExternalList = [
     "@osdk/cli.cmd.typescript",
     "@osdk/cli.common",
+    "@osdk/foundry.agents",
     "@osdk/foundry.ontologies",
     "@osdk/foundry.mediasets",
     "@osdk/foundry.functions",

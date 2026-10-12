@@ -34,8 +34,7 @@ import * as Actions from "@osdk/foundry.ontologies/Action";
 import invariant from "tiny-invariant";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
-import { augmentRequestContext } from "../util/augmentRequestContext.js";
+import { addUserAgentHeader } from "../util/addUserAgentHeader.js";
 import type { NOOP } from "../util/NOOP.js";
 import type { NullableProps } from "../util/NullableProps.js";
 import type { PartialBy } from "../util/partialBy.js";
@@ -114,10 +113,7 @@ export async function applyAction<
   parameters?: P,
   options: Op = {} as Op,
 ): Promise<ActionReturnTypeForOptions<Op>> {
-  const clientWithHeaders = addUserAgentAndRequestContextHeaders(
-    augmentRequestContext(client, (_) => ({ finalMethodCall: "applyAction" })),
-    action,
-  );
+  const clientWithHeaders = addUserAgentHeader(client, action);
   if (Array.isArray(parameters)) {
     invariant(
       client.transactionId == null,

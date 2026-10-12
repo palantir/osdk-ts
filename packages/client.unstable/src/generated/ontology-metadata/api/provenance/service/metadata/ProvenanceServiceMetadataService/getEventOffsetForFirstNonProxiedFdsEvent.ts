@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetEventOffsetForFirstNonProxiedFdsEventResponse as _api_provenance_GetEventOffsetForFirstNonProxiedFdsEventResponse,
-  OmsOpsDependentType as _api_provenance_OmsOpsDependentType,
-} from "../../../__components.js";
+import type { OmsOpsDependentType as _api_provenance_OmsOpsDependentType } from "../../../__components.js";
+import type { GetEventOffsetForFirstNonProxiedFdsEventResponse as _api_provenance_GetEventOffsetForFirstNonProxiedFdsEventResponse } from "../../../__components.js";
 
 /**
  * Endpoint to return the latest offset recorded when we received a stop-order to prohibit

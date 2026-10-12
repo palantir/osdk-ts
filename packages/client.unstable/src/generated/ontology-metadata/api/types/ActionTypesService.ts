@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-export { batchGetEnrichedActionTypeMetadata } from "./ActionTypesService/batchGetEnrichedActionTypeMetadata.js";
-export { loadActionTypes } from "./ActionTypesService/loadActionTypes.js";
-export { loadActionTypesFromOntology } from "./ActionTypesService/loadActionTypesFromOntology.js";
 export { loadActionTypesVersioned } from "./ActionTypesService/loadActionTypesVersioned.js";
+export { loadActionTypes } from "./ActionTypesService/loadActionTypes.js";
 export { loadAllActionTypes } from "./ActionTypesService/loadAllActionTypes.js";
-export { loadAllActionTypesFromOntology } from "./ActionTypesService/loadAllActionTypesFromOntology.js";
 export { modifyActionTypes } from "./ActionTypesService/modifyActionTypes.js";
+export { loadAllActionTypesFromOntology } from "./ActionTypesService/loadAllActionTypesFromOntology.js";
 export { pageLoadAllActionTypesFromOntology } from "./ActionTypesService/pageLoadAllActionTypesFromOntology.js";
+export { loadActionTypesFromOntology } from "./ActionTypesService/loadActionTypesFromOntology.js";
+export { batchGetEnrichedActionTypeMetadata } from "./ActionTypesService/batchGetEnrichedActionTypeMetadata.js";

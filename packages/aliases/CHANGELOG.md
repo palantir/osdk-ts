@@ -1,5 +1,11 @@
 # @osdk/aliases
 
+## 0.4.0
+
+### Minor Changes
+
+- 051b67f: Resolve custom aliases from the configured Vite base path during Code Workspaces development. Published websites continue loading `/resources.json` from the site origin.
+
 ## 0.3.0
 
 ### Minor Changes

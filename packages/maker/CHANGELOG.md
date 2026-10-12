@@ -1,5 +1,63 @@
 # @osdk/maker
 
+## 0.79.0
+
+### Minor Changes
+
+- d63eb64: Bring in blueprintjs and re-export icon names
+- 5b15676: Support explicit and conditional struct field defaults in Marketplace actions, and automatically prefill struct and struct-array fields in modify and create-or-modify object actions.
+
+### Patch Changes
+
+- @osdk/generator-converters.ontologyir@2.78.0
+- @osdk/api@2.78.0
+
+## 0.78.0
+
+### Patch Changes
+
+- Updated dependencies [2ab4d7c]
+- Updated dependencies [75a8f07]
+  - @osdk/api@2.77.0
+  - @osdk/typescript-sdk-docs@0.26.0
+  - @osdk/generator-converters.ontologyir@2.77.0
+
+## 0.77.0
+
+### Minor Changes
+
+- de4d83e: Add phonetic search support to string properties.
+
+## 0.76.0
+
+### Minor Changes
+
+- dec2ee4: Preserve action-level validation and failure messages in interface delete actions.
+- c11669e: Fix incomplete Marketplace mappings for SPTs imported ontology objects
+- a38af5a: Regenerate OMS bindings to add phonetic search support and align Maker with marketplace datasource types.
+
+### Patch Changes
+
+- Updated dependencies [43dd010]
+- Updated dependencies [a9fafd0]
+  - @osdk/generator-converters.ontologyir@2.76.0
+  - @osdk/api@2.76.0
+
+## 0.75.0
+
+### Patch Changes
+
+- Updated dependencies [aa9fe40]
+  - @osdk/generator-converters.ontologyir@2.74.0
+  - @osdk/api@2.74.0
+
+## 0.74.0
+
+### Minor Changes
+
+- 2c60601: Fix default geoshape type classes
+- 5e1b2c7: Check for same spt backing multiple props on an object
+
 ## 0.73.0
 
 ### Minor Changes

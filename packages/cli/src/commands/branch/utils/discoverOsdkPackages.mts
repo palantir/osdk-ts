@@ -53,7 +53,7 @@ export async function discoverOsdkPackages(
     throw new ExitProcessError(
       1,
       "Could not find a package.json in the current directory or any parent.",
-      "Run `@osdk/cli unstable branch sync` from within your project.",
+      "Run `osdk branch sync` from within your project.",
     );
   }
 

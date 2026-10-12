@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../../api/__components.js";
-import type {
-  DiscardChangesRequest as _branch_api_DiscardChangesRequest,
-  DiscardChangesResponseV2 as _branch_api_DiscardChangesResponseV2,
-} from "../__components.js";
+import type { DiscardChangesRequest as _branch_api_DiscardChangesRequest } from "../__components.js";
+import type { DiscardChangesResponseV2 as _branch_api_DiscardChangesResponseV2 } from "../__components.js";
 
 /**
  * Discards the changes applied on the specified entities on the specified branch, such that they are unmodified

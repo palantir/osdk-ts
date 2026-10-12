@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OrganizationRid as _api_OrganizationRid } from "../../__components.js";
-import type {
-  GetOrgSettingsRequest as _api_organization_GetOrgSettingsRequest,
-  GetOrgSettingsResponse as _api_organization_GetOrgSettingsResponse,
-} from "../__components.js";
+import type { GetOrgSettingsRequest as _api_organization_GetOrgSettingsRequest } from "../__components.js";
+import type { GetOrgSettingsResponse as _api_organization_GetOrgSettingsResponse } from "../__components.js";
 
 /**
  * Endpoint to load organization-wide Ontology settings. Returns either the stored value

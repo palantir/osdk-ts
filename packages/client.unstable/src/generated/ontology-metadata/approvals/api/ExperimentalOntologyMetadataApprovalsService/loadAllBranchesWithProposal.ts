@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyRid as _api_OntologyRid } from "../../../api/__components.js";
-import type {
-  LoadAllOntologyBranchesWithProposalPageRequest as _approvals_api_LoadAllOntologyBranchesWithProposalPageRequest,
-  LoadAllOntologyBranchesWithProposalPageResponse as _approvals_api_LoadAllOntologyBranchesWithProposalPageResponse,
-} from "../__components.js";
+import type { LoadAllOntologyBranchesWithProposalPageRequest as _approvals_api_LoadAllOntologyBranchesWithProposalPageRequest } from "../__components.js";
+import type { LoadAllOntologyBranchesWithProposalPageResponse as _approvals_api_LoadAllOntologyBranchesWithProposalPageResponse } from "../__components.js";
 
 /**
  * Loads all the OntologyBranchWithProposal in the provided ontology the user has access to. Users having Viewer access to any of the modified entities in the OntologyBranch will be able to view the branch.

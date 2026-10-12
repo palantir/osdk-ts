@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetBulkActionTypePermissionsRequest as _api_permissions_GetBulkActionTypePermissionsRequest,
-  GetBulkActionTypePermissionsResponse as _api_permissions_GetBulkActionTypePermissionsResponse,
-} from "../__components.js";
+import type { GetBulkActionTypePermissionsRequest as _api_permissions_GetBulkActionTypePermissionsRequest } from "../__components.js";
+import type { GetBulkActionTypePermissionsResponse as _api_permissions_GetBulkActionTypePermissionsResponse } from "../__components.js";
 
 /**
  * Returns which permissions the user has on the ActionTypes provided. Limited to at most 500 entries per call.

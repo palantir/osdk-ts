@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  ActionTypeLoadAllRequest as _api_ActionTypeLoadAllRequest,
-  ActionTypeLoadResponse as _api_ActionTypeLoadResponse,
-} from "../../__components.js";
+import type { ActionTypeLoadAllRequest as _api_ActionTypeLoadAllRequest } from "../../__components.js";
+import type { ActionTypeLoadResponse as _api_ActionTypeLoadResponse } from "../../__components.js";
 
 /**
  * Endpoint to batch load ActionTypes. The returned ActionTypeLoadResponse will only contain ActionTypes that are

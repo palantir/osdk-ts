@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  SearchTitleInCombinedEntityTypeRequest as _api_search_SearchTitleInCombinedEntityTypeRequest,
-  SearchTitleInCombinedEntityTypeResponse as _api_search_SearchTitleInCombinedEntityTypeResponse,
-} from "../search/__components.js";
+import type { SearchTitleInCombinedEntityTypeRequest as _api_search_SearchTitleInCombinedEntityTypeRequest } from "../search/__components.js";
+import type { SearchTitleInCombinedEntityTypeResponse as _api_search_SearchTitleInCombinedEntityTypeResponse } from "../search/__components.js";
 
 /**
  * Endpoint to search a Title string over multiple Ontology entities based on provided filters.

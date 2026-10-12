@@ -18,21 +18,32 @@ import { consola } from "consola";
 
 import { createInternalClientContext, widgetRegistry } from "#net";
 
+import { getGitBranch } from "../../../../util/getGitBranch.js";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionListArgs } from "./VersionListArgs.js";
 
 export default async function versionListCommand({
   foundryUrl,
   widgetSet,
+  branchName,
   token,
   tokenFile,
 }: VersionListArgs): Promise<void> {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
-  consola.start("Fetching versions");
+  const branch = branchName ?? (await getGitBranch());
+  consola.start(
+    branch == null
+      ? "Fetching versions"
+      : `Fetching versions from branch "${branch}"`,
+  );
 
-  const response = await widgetRegistry.listReleases(clientCtx, widgetSet);
+  const response = await widgetRegistry.listReleases(
+    clientCtx,
+    widgetSet,
+    branch,
+  );
   if (response.data.length === 0) {
     consola.info("No widget set versions found");
     return;

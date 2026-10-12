@@ -15,6 +15,7 @@
  */
 
 import { type ObjectTypeDefinition } from "@osdk/api";
+import type * as Agents from "@osdk/foundry.agents";
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type {
   LoadOntologyMetadataRequest,
@@ -26,6 +27,7 @@ import type { ReadonlyDeep } from "type-fest";
 
 import {
   ActionNotFoundError,
+  AgentDefinitionVersionNotFoundError,
   LinkTypeNotFound,
   ObjectNotFoundError,
   ObjectTypeDoesNotExistError,
@@ -34,6 +36,7 @@ import {
 import { camelize } from "../handlers/util/camelize.js";
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
 import type { FauxActionImpl } from "./FauxActionImpl.js";
+import type { FauxAgentImpl } from "./FauxAgentImpl.js";
 import type { FauxQueryImpl } from "./FauxQueryImpl.js";
 import type { TH_ObjectTypeFullMetadata } from "./typeHelpers/TH_ObjectTypeFullMetadata.js";
 
@@ -44,6 +47,14 @@ import type { TH_ObjectTypeFullMetadata } from "./typeHelpers/TH_ObjectTypeFullM
 export class FauxOntology {
   #ontology: OntologiesV2.OntologyFullMetadata;
   #actionImpl: Map<OntologiesV2.ActionTypeApiName, FauxActionImpl> = new Map();
+  #agentDefinitions: Map<
+    Agents.AgentApiName,
+    Map<Agents.AgentVersion, Agents.AgentDefinitionVersion>
+  > = new Map();
+  #agentImpl: Map<
+    Agents.AgentApiName,
+    Map<Agents.AgentVersion, FauxAgentImpl>
+  > = new Map();
   #queryImpl: Map<
     OntologiesV2.QueryApiName,
     Map<OntologiesV2.FunctionVersion, FauxQueryImpl>
@@ -160,6 +171,18 @@ export class FauxOntology {
   public getActionImpl(actionTypeApiName: string): FauxActionImpl {
     const impl = this.#actionImpl.get(camelize(actionTypeApiName));
     invariant(impl, "Action implementation not found for " + actionTypeApiName);
+    return impl;
+  }
+
+  public getAgentImpl(agentApiName: string, version: string): FauxAgentImpl {
+    const versionMap = this.#agentImpl.get(agentApiName);
+    const impl = versionMap?.get(version);
+    if (!impl) {
+      throw new OpenApiCallError(
+        404,
+        AgentDefinitionVersionNotFoundError(agentApiName, version),
+      );
+    }
     return impl;
   }
 
@@ -340,6 +363,28 @@ export class FauxOntology {
     this.#ontology.actionTypes[def.apiName] = def;
     if (implementation) {
       this.#actionImpl.set(def.apiName, implementation);
+    }
+  }
+
+  registerAgentType(
+    agentApiName: string,
+    def: Agents.AgentDefinitionVersion,
+    implementation?: FauxAgentImpl,
+  ): void {
+    if (this.#agentDefinitions.get(agentApiName)?.has(def.version)) {
+      throw new Error(
+        `AgentType ${agentApiName}:${def.version} already registered`,
+      );
+    }
+    if (!this.#agentDefinitions.has(agentApiName)) {
+      this.#agentDefinitions.set(agentApiName, new Map());
+    }
+    this.#agentDefinitions.get(agentApiName)?.set(def.version, def);
+    if (implementation) {
+      if (!this.#agentImpl.has(agentApiName)) {
+        this.#agentImpl.set(agentApiName, new Map());
+      }
+      this.#agentImpl.get(agentApiName)?.set(def.version, implementation);
     }
   }
 

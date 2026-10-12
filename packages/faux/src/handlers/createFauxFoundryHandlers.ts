@@ -19,6 +19,7 @@ import type { RequestHandler } from "msw";
 import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
 import { createActionHandlers } from "./createActionHandlers.js";
 import { createAdminHandlers } from "./createAdminHandlers.js";
+import { createAgentHandlers } from "./createAgentHandlers.js";
 import { createAttachmentHandlers } from "./createAttachmentHandlers.js";
 import { createCipherTextHandlers } from "./createCipherTextHandlers.js";
 import { createLoadObjectsHandlers } from "./createLoadObjectsHandlers.js";
@@ -44,6 +45,7 @@ export function createFauxFoundryHandlers(
     createObjectSetHandlers,
     createOntologyHandlers,
     createQueryHandlers,
+    createAgentHandlers,
     createLoadObjectsHandlers,
     createTimeseriesAndGeotimeHandlers,
     createAttachmentHandlers,

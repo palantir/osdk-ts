@@ -4161,6 +4161,10 @@ describe("Action Types", () => {
               type: "group",
               name: "deleteValidationGroup",
             },
+            displayMetadata: {
+              failureMessage: "You must belong to the delete group.",
+              typeClasses: [],
+            },
           },
         ],
       });
@@ -4204,11 +4208,37 @@ describe("Action Types", () => {
                         "rules": {
                           "0": {
                             "condition": {
-                              "true": {},
-                              "type": "true",
+                              "comparison": {
+                                "left": {
+                                  "type": "userProperty",
+                                  "userProperty": {
+                                    "propertyValue": {
+                                      "groupIds": {},
+                                      "type": "groupIds",
+                                    },
+                                    "userId": {
+                                      "currentUser": {},
+                                      "type": "currentUser",
+                                    },
+                                  },
+                                },
+                                "operator": "INTERSECTS",
+                                "right": {
+                                  "staticValue": {
+                                    "stringList": {
+                                      "strings": [
+                                        "deleteValidationGroup",
+                                      ],
+                                    },
+                                    "type": "stringList",
+                                  },
+                                  "type": "staticValue",
+                                },
+                              },
+                              "type": "comparison",
                             },
                             "displayMetadata": {
-                              "failureMessage": "",
+                              "failureMessage": "You must belong to the delete group.",
                               "typeClasses": [],
                             },
                           },
@@ -4314,7 +4344,15 @@ describe("Action Types", () => {
               },
             },
             "blockPermissionInformation": {
-              "actionTypes": {},
+              "actionTypes": {
+                "com.palantir.delete-interface-object-example-interface": {
+                  "restrictionStatus": {
+                    "hasRolesApplied": true,
+                    "ontologyPackageRid": null,
+                    "publicProject": false,
+                  },
+                },
+              },
               "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
@@ -4392,6 +4430,51 @@ describe("Action Types", () => {
           },
         }
       `);
+    });
+
+    it("Interface delete action validation can reference the target parameter", () => {
+      const exampleInterface = defineInterface({
+        apiName: "exampleInterface",
+        properties: {
+          property1: { type: "string" },
+        },
+      });
+      const matches = {
+        type: "staticValue",
+        staticValue: { type: "null", null: {} },
+      } as const;
+      const deleteAction = defineDeleteInterfaceObjectAction({
+        interfaceType: exampleInterface,
+        actionLevelValidation: [
+          {
+            condition: {
+              type: "parameter",
+              parameterId: DELETE_OBJECT_PARAMETER,
+              matches,
+            },
+          },
+        ],
+      });
+
+      expect(deleteAction.validation).toEqual([
+        {
+          condition: {
+            type: "comparison",
+            comparison: {
+              operator: "EQUALS",
+              left: {
+                type: "parameterId",
+                parameterId: DELETE_OBJECT_PARAMETER,
+              },
+              right: matches,
+            },
+          },
+          displayMetadata: {
+            failureMessage: "Did not satisfy validation",
+            typeClasses: [],
+          },
+        },
+      ]);
     });
 
     it("Interface actions with customizations are properly defined", () => {

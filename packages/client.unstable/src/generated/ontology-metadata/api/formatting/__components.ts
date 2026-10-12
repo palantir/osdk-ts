@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import type {
-  DataType as _api_DataType,
-  OntologyBranchRid as _api_OntologyBranchRid,
-  OntologyRid as _api_OntologyRid,
-  OntologyVersion as _api_OntologyVersion,
-  PropertyTypeId as _api_PropertyTypeId,
-  RuleSetRid as _api_RuleSetRid,
-  ValueReferenceId as _api_ValueReferenceId,
-} from "../__components.js";
+import type { OntologyBranchRid as _api_OntologyBranchRid } from "../__components.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type { OntologyVersion as _api_OntologyVersion } from "../__components.js";
+import type { RuleSetRid as _api_RuleSetRid } from "../__components.js";
+import type { VersionReference as _api_VersionReference } from "../__components.js";
+import type { DataType as _api_DataType } from "../__components.js";
+import type { ValueReferenceId as _api_ValueReferenceId } from "../__components.js";
+import type { PropertyTypeId as _api_PropertyTypeId } from "../__components.js";
 export type Alignment = "LEFT" | "CENTER" | "RIGHT";
 
 /**
@@ -198,6 +197,11 @@ export interface LoadRuleSetsRequest {
     _api_RuleSetRid,
     _api_OntologyBranchRid | null | undefined
   >;
+}
+export interface LoadRuleSetsRequestV2 {
+  includeObjectTypesWithoutSearchableDatasources?: boolean | null | undefined;
+  loadRedacted?: boolean | null | undefined;
+  ruleSets: Record<_api_RuleSetRid, _api_VersionReference | null | undefined>;
 }
 export interface LoadRuleSetsResponse {
   ruleSets: Record<_api_RuleSetRid, RuleSet>;

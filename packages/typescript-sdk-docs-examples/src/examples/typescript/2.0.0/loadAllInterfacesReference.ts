@@ -19,15 +19,20 @@
 
 // Example: loadAllInterfacesReference
 
-import type { Osdk } from "@osdk/client";
-
 import { HasAddress } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const interfaces: Osdk<HasAddress>[] = [];
-
+// asyncIter() fetches page after page until every matching object has been loaded:
+// - Pass $select: [...] with only the properties you read. Without it, the API loads its
+//   default property set.
+// - Handle each object as it arrives rather than collecting them all into an array.
+// - It requests a consistent snapshot, so for non-stream-backed object types a completed traversal
+//   returns each object exactly once. It throws if the snapshot expires or the backend detects a
+//   paging inconsistency. Stream-backed object types do not provide this guarantee across pages.
+//   If it fails, select fewer properties, narrow with a filter, or page with fetchPage().
+// - For counts, sums, or group-bys, use .aggregate() instead; for a sample or the first N
+//   objects, use fetchPage({ $pageSize }).
 for await (const int of client(HasAddress).asyncIter()) {
-  interfaces.push(int);
+  console.log(int.$primaryKey);
 }
-const interface1 = interfaces[0];

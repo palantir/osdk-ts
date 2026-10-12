@@ -19,7 +19,7 @@ import type {
   OntologyIrDerivedPropertyAggregation,
   OntologyIrEditsHistory,
   OntologyIrObjectTypeBlockDataV2,
-  OntologyIrObjectTypeDatasource,
+  OntologyIrMarketplaceObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
   OntologyIrPropertyType,
 } from "@osdk/client.unstable";
@@ -47,7 +47,7 @@ export function convertObject(
   const { derivedDatasources, derivedPropertyNames } =
     extractDerivedDatasources(objectType);
 
-  const propertyDatasources: OntologyIrObjectTypeDatasource[] = (
+  const propertyDatasources: OntologyIrMarketplaceObjectTypeDatasource[] = (
     objectType.properties ?? []
   )
     .filter((prop) => !derivedPropertyNames.includes(prop.apiName))
@@ -185,7 +185,7 @@ export function extractMarkingGroups(
 export function extractPropertyDatasource(
   property: ObjectPropertyType,
   objectTypeApiName: string,
-): OntologyIrObjectTypeDatasource[] {
+): OntologyIrMarketplaceObjectTypeDatasource[] {
   if (!isExotic(property.type)) {
     return [];
   }
@@ -220,7 +220,7 @@ export function extractPropertyDatasource(
 }
 
 function extractDerivedDatasources(objectType: ObjectType): {
-  derivedDatasources: OntologyIrObjectTypeDatasource[];
+  derivedDatasources: OntologyIrMarketplaceObjectTypeDatasource[];
   derivedPropertyNames: string[];
 } {
   const inputDerivedDatasources = (objectType.datasources ?? []).filter(
@@ -250,7 +250,7 @@ function buildDerivedDatasource(
   datasource: ObjectTypeDatasourceDefinition_derived,
   index: number,
   objectTypeApiName: string,
-): OntologyIrObjectTypeDatasource {
+): OntologyIrMarketplaceObjectTypeDatasource {
   const linkDefinition = {
     type: "multiHopLink",
     multiHopLink: {

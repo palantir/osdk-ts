@@ -1,5 +1,32 @@
 # @osdk/client.unstable
 
+## 2.80.0
+
+### Minor Changes
+
+- e9bf2de: Add edge packaging to oac
+
+## 2.79.0
+
+## 2.78.0
+
+### Minor Changes
+
+- 533f264: Emit relevant interface schema migration output shapes when converting DSL to block-data/shapes in maker-experimental.
+
+## 2.77.0
+
+## 2.76.0
+
+### Minor Changes
+
+- 21a0d8c: Export generated executor types from client.unstable for exhaustive smartClient return handling and preserve function failure details.
+- a38af5a: Regenerate OMS bindings to add phonetic search support and align Maker with marketplace datasource types.
+
+## 2.75.0
+
+## 2.74.0
+
 ## 2.73.0
 
 ## 2.72.0

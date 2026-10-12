@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
-import type {
-  OntologyDeleteRequest as _api_modification_OntologyDeleteRequest,
-  OntologyDeleteResponse as _api_modification_OntologyDeleteResponse,
-} from "../../modification/__components.js";
+import type { OntologyDeleteRequest as _api_modification_OntologyDeleteRequest } from "../../modification/__components.js";
+import type { OntologyDeleteResponse as _api_modification_OntologyDeleteResponse } from "../../modification/__components.js";
 
 /**
  * Endpoint to delete an Ontology. The Ontology must be empty in order

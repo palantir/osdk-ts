@@ -41,6 +41,17 @@ export default defineConfig({
     (p) => p !== "**/generated",
   ),
 
+  overrides: [
+    {
+      files: ["src/generated/**/*.ts"],
+      rules: {
+        // Conjure emits a separate import for each referenced type.
+        "import/no-duplicates": "off",
+        "no-duplicate-imports": "off",
+      },
+    },
+  ],
+
   rules: {
     // The generated barrels (`export * from ...` in the per-service index.ts
     // files) re-export the whole tree; barrels are intrinsic to the generated

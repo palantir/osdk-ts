@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetLinkTypesForObjectTypesRequest as _api_GetLinkTypesForObjectTypesRequest,
-  GetLinkTypesForObjectTypesResponse as _api_GetLinkTypesForObjectTypesResponse,
-} from "../__components.js";
+import type { GetLinkTypesForObjectTypesRequest as _api_GetLinkTypesForObjectTypesRequest } from "../__components.js";
+import type { GetLinkTypesForObjectTypesResponse as _api_GetLinkTypesForObjectTypesResponse } from "../__components.js";
 
 /**
  * Endpoint to batch load links associated to given ObjectTypeRid(s), capped at 50 object types per request.

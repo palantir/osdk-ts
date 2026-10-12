@@ -1,5 +1,60 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.80.0
+
+### Patch Changes
+
+- Updated dependencies [e9bf2de]
+  - @osdk/client.unstable@2.80.0
+
+## 2.79.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.79.0
+
+## 2.78.0
+
+### Patch Changes
+
+- Updated dependencies [533f264]
+  - @osdk/client.unstable@2.78.0
+
+## 2.77.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.77.0
+
+## 2.76.0
+
+### Minor Changes
+
+- 43dd010: Skip and warn functions are not osdk compatible
+- a9fafd0: Fix link attachment for imported objects
+
+### Patch Changes
+
+- Updated dependencies [21a0d8c]
+- Updated dependencies [a38af5a]
+  - @osdk/client.unstable@2.76.0
+
+## 2.75.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.75.0
+
+## 2.74.0
+
+### Minor Changes
+
+- aa9fe40: Support intermediary link types
+
+### Patch Changes
+
+- @osdk/client.unstable@2.74.0
+
 ## 2.73.0
 
 ### Patch Changes

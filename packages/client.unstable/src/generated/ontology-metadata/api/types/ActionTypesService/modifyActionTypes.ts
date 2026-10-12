@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  ActionTypeModifyRequest as _api_ActionTypeModifyRequest,
-  ActionTypeModifyResponse as _api_ActionTypeModifyResponse,
-  OntologyRid as _api_OntologyRid,
-} from "../../__components.js";
+import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
+import type { ActionTypeModifyRequest as _api_ActionTypeModifyRequest } from "../../__components.js";
+import type { ActionTypeModifyResponse as _api_ActionTypeModifyResponse } from "../../__components.js";
 
 /**
  * Endpoint to modify ActionTypes.

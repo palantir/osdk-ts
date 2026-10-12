@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  OntologyBranchRid as _api_OntologyBranchRid,
-  RuleSetRid as _api_RuleSetRid,
-} from "../../__components.js";
+import type { RuleSetRid as _api_RuleSetRid } from "../../__components.js";
+import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../__components.js";
 import type { GetRuleSetPermissionsResponse as _api_permissions_GetRuleSetPermissionsResponse } from "../__components.js";
 
 /**

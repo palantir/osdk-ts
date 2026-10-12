@@ -20,8 +20,9 @@
   "dependencies": {
     "@blueprintjs/core": "^6.10.0",
     "@blueprintjs/icons": "^6.7.0",
+    "@osdk/aliases": "workspace:*",
     "@osdk/client": "workspace:*",
-    "@osdk/foundry": "latest",
+    "@osdk/foundry": "^2.75.0",
     "@osdk/oauth": "workspace:*",
     "normalize.css": "^8.0.1",
     "react": "^18",

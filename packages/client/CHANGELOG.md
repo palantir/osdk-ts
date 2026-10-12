@@ -1,5 +1,96 @@
 # @osdk/client
 
+## 2.80.0
+
+### Patch Changes
+
+- Updated dependencies [e9bf2de]
+  - @osdk/client.unstable@2.80.0
+  - @osdk/api@2.80.0
+  - @osdk/generator-converters@2.80.0
+
+## 2.79.0
+
+### Patch Changes
+
+- Updated dependencies [86c708b]
+  - @osdk/api@2.79.0
+  - @osdk/client.unstable@2.79.0
+  - @osdk/generator-converters@2.79.0
+
+## 2.78.0
+
+### Patch Changes
+
+- Updated dependencies [533f264]
+  - @osdk/client.unstable@2.78.0
+  - @osdk/api@2.78.0
+  - @osdk/generator-converters@2.78.0
+  - @osdk/shared.test@2.53.0
+
+## 2.77.0
+
+### Minor Changes
+
+- 75a8f07: Add experimental agent clients with support for creating sessions.
+- bd50cd9: Scenario clients now throw the same `PalantirApiError` (including `errorName` and `parameters`) as base clients instead of a generic `UnknownError`, by reusing the parent client's fetch stack rather than double-wrapping it
+
+### Patch Changes
+
+- Updated dependencies [2ab4d7c]
+- Updated dependencies [75a8f07]
+  - @osdk/api@2.77.0
+  - @osdk/generator-converters@2.77.0
+  - @osdk/shared.test@2.52.0
+  - @osdk/client.unstable@2.77.0
+
+## 2.76.0
+
+### Minor Changes
+
+- b1616e3: Remove legacy final method call request-context telemetry.
+- b8f103c: Read the `foundryBranchRid` query parameter from `window.location` when creating a client, allowing iframe hosts to select a Foundry branch at runtime. Explicit client branch options take precedence over the URL, which takes precedence over the branch meta tag injected by build tooling. Missing or blank query values fall back to the meta tag; an explicit `null` continues to select the default branch.
+
+### Patch Changes
+
+- Updated dependencies [21a0d8c]
+- Updated dependencies [0c09251]
+- Updated dependencies [a38af5a]
+  - @osdk/client.unstable@2.76.0
+  - @osdk/shared.client.impl@1.15.0
+  - @osdk/api@2.76.0
+  - @osdk/generator-converters@2.76.0
+  - @osdk/shared.test@2.51.0
+
+## 2.75.0
+
+### Minor Changes
+
+- a3dd285: Keep observable object set queries loading until objects for their exact derived-property configuration are available.
+
+### Patch Changes
+
+- @osdk/api@2.75.0
+- @osdk/client.unstable@2.75.0
+- @osdk/generator-converters@2.75.0
+
+## 2.74.0
+
+### Minor Changes
+
+- 6ca7442: Fix `pivotTo` emitting an object set the backend rejects with `Api:UnsupportedObjectSet`. On an object set rooted at an interface, every subsequent `pivotTo` emitted an `interfaceLinkSearchAround` node — even once the chain had already followed a link onto a concrete object type, at which point the traversal is an ordinary link and must be a `searchAround`. An interface link cannot be resolved against an object-typed object set, so the request failed.
+
+  Whether a link's target is an object type or an interface type is only known from ontology metadata, which `pivotTo` cannot read synchronously. The wire object set is therefore normalized just before it is sent: any `interfaceLinkSearchAround` whose source resolves to an object type is rewritten to `searchAround`. Chains that stay on interface types the whole way are unaffected, and object sets containing no interface-link traversal are passed through untouched.
+
+  This applies to every path that sends an object set: `fetchPage` (object and interface), `aggregate`, link loading, temporary object set creation, and object sets supplied as action or query parameters. The observable layer inherits the fix because it reads through `fetchPage`.
+
+### Patch Changes
+
+- @osdk/api@2.74.0
+- @osdk/client.unstable@2.74.0
+- @osdk/generator-converters@2.74.0
+- @osdk/shared.test@2.50.0
+
 ## 2.73.0
 
 ### Patch Changes

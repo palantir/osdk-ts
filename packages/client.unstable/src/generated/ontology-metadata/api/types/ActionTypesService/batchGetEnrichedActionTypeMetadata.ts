@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  BatchGetEnrichedActionTypeMetadataRequest as _api_BatchGetEnrichedActionTypeMetadataRequest,
-  BatchGetEnrichedActionTypeMetadataResponse as _api_BatchGetEnrichedActionTypeMetadataResponse,
-} from "../../__components.js";
+import type { BatchGetEnrichedActionTypeMetadataRequest as _api_BatchGetEnrichedActionTypeMetadataRequest } from "../../__components.js";
+import type { BatchGetEnrichedActionTypeMetadataResponse as _api_BatchGetEnrichedActionTypeMetadataResponse } from "../../__components.js";
 
 /**
  * Endpoint to load enriched ActionType metadata that is not present in the ActionTypeMetadata that is

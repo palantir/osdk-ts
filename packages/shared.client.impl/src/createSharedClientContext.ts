@@ -22,6 +22,8 @@ import {
   createRetryingFetch,
 } from "@osdk/shared.net.fetch";
 
+import { createConcurrencyTrackingFetch } from "./createConcurrencyTrackingFetch.js";
+
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 type OldSharedClientContext = import("@osdk/shared.client").SharedClientContext;
 export const USER_AGENT_HEADER = "Fetch-User-Agent";
@@ -44,7 +46,9 @@ export function createSharedClientContext(
   const normalizedBaseUrl = parsedBaseUrl.toString();
 
   const retryingFetchWithAuthOrThrow = createFetchHeaderMutator(
-    createRetryingFetch(createFetchOrThrow(fetchFn)),
+    createRetryingFetch(
+      createFetchOrThrow(createConcurrencyTrackingFetch(fetchFn)),
+    ),
     async (headers) => {
       if (customHeaders != null) {
         for (const [key, value] of Object.entries(customHeaders)) {

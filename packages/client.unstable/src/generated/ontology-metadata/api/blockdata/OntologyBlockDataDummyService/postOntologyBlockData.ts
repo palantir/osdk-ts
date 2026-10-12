@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  PostOntologyBlockDataRequest as _api_blockdata_PostOntologyBlockDataRequest,
-  PostOntologyBlockDataResponse as _api_blockdata_PostOntologyBlockDataResponse,
-} from "../__components.js";
+import type { PostOntologyBlockDataRequest as _api_blockdata_PostOntologyBlockDataRequest } from "../__components.js";
+import type { PostOntologyBlockDataResponse as _api_blockdata_PostOntologyBlockDataResponse } from "../__components.js";
 export async function postOntologyBlockData(
   ctx: ConjureContext,
   request: _api_blockdata_PostOntologyBlockDataRequest,

@@ -15,7 +15,7 @@
  */
 
 import type { DevToolsRegistry } from "@osdk/react/devtools-registry";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterAll, describe, expect, it, vi } from "vitest";
 
 let capturedRegistry: DevToolsRegistry | null = null;
 
@@ -50,24 +50,15 @@ vi.mock("./store/MonitorStore.js", () => {
   };
 });
 
+vi.stubEnv("NODE_ENV", "development");
+await import("./register.js");
+
 describe("register", () => {
-  const originalFetch = globalThis.fetch;
-
-  beforeEach(() => {
-    capturedRegistry = null;
-    vi.stubEnv("NODE_ENV", "development");
-    globalThis.fetch = vi.fn() as typeof fetch;
-  });
-
-  afterEach(() => {
+  afterAll(() => {
     vi.unstubAllEnvs();
-    vi.resetModules();
-    globalThis.fetch = originalFetch;
   });
 
-  it("calls registerDevTools with wrapClient and wrapChildren", async () => {
-    await import("./register.js");
-
+  it("calls registerDevTools with wrapClient and wrapChildren", () => {
     if (capturedRegistry == null) {
       throw new Error("expected capturedRegistry to be defined");
     }
@@ -75,9 +66,7 @@ describe("register", () => {
     expect(typeof capturedRegistry.wrapChildren).toBe("function");
   });
 
-  it("does not include renderPanel in the registry", async () => {
-    await import("./register.js");
-
+  it("does not include renderPanel in the registry", () => {
     if (capturedRegistry == null) {
       throw new Error("expected capturedRegistry to be defined");
     }

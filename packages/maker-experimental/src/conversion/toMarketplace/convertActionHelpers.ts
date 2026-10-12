@@ -404,22 +404,25 @@ function convertFunctionBackedAction(
     );
     const listTypes = [
       ...Object.values(PRIMITIVE_LIST_TYPES),
+      "geohashList",
       "objectReferenceList",
       "interfaceReferenceList",
       "structList",
     ];
+
+    const parameterTypeName =
+      typeof paramType === "string" ? paramType : paramType.type;
 
     syntheticParameters.push({
       id: paramId,
       displayName: uppercaseFirstLetter(paramId),
       type: paramType,
       validation: {
-        required:
-          typeof paramType === "object" && listTypes.includes(paramType.type)
-            ? {
-                listLength: {},
-              }
-            : (input.required ?? true),
+        required: listTypes.includes(parameterTypeName)
+          ? {
+              listLength: {},
+            }
+          : (input.required ?? true),
         defaultVisibility: "editable",
         allowedValues: dataTypeToActionParameterAllowedValues(
           input.dataType,

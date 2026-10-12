@@ -428,6 +428,8 @@ function ComponentOverview(): React.ReactElement {
         flexDirection: "column",
         height: "100%",
         minHeight: 0,
+        color: "var(--osdk-typography-color-default-rest, #1c2127)",
+        backgroundColor: "var(--osdk-background-primary, #ffffff)",
       }}
     >
       <div
@@ -435,6 +437,7 @@ function ComponentOverview(): React.ReactElement {
           display: "flex",
           alignItems: "center",
           flexShrink: 0,
+          backgroundColor: "var(--osdk-background-secondary, #f6f7f9)",
           borderBottom:
             "1px solid var(--osdk-surface-border-color-default, #d1d5db)",
         }}
@@ -487,8 +490,8 @@ function ComponentOverview(): React.ReactElement {
                   "1px solid var(--osdk-surface-border-color-default, #d1d5db)",
                 borderRadius: 4,
                 background:
-                  "var(--osdk-surface-background-color-default, #fff)",
-                color: "var(--osdk-typography-color-default, #111827)",
+                  "var(--osdk-input-bg, var(--osdk-background-primary, #fff))",
+                color: "var(--osdk-typography-color-default-rest, #111827)",
                 padding: "0 8px",
               }}
             >

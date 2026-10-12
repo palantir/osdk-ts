@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  OntologyBulkLoadEntitiesRequest as _api_OntologyBulkLoadEntitiesRequest,
-  OntologyBulkLoadEntitiesResponse as _api_OntologyBulkLoadEntitiesResponse,
-} from "../__components.js";
+import type { OntologyBulkLoadEntitiesRequest as _api_OntologyBulkLoadEntitiesRequest } from "../__components.js";
+import type { OntologyBulkLoadEntitiesResponse as _api_OntologyBulkLoadEntitiesResponse } from "../__components.js";
 
 /**
  * Endpoint to load Ontology entities in bulk. The returned OntologyBulkLoadEntitiesResponse will only
  * contain entities that actually exist and are visible to the user. If the user has requested entities at
  * invalid versions or entities that do not exist in the specified versions, those will not be present
- * in the response.
+ * in the response. If a VersionReference cannot be resolved, the corresponding response entry is empty.
  *
  * There are limits on the number of entities that can be loaded in one request. Please refer to
  * documentation of OntologyBulkLoadEntitiesRequest for the values of these limits.

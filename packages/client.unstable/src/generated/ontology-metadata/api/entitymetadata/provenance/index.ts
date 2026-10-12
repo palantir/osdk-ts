@@ -15,6 +15,7 @@
  */
 
 export type {
+  ActionTypeOwningResource,
   ActionTypeProvenance,
   ActionTypeProvenanceSource,
   BuilderDirectWriter,
@@ -24,9 +25,10 @@ export type {
   EntityProvenanceSource,
   MarketplaceBlockSetInstallationRid,
   MarketplaceEntityProvenance,
-  OntologyIrEditsHistoryProvenance,
-  OntologyIrEntityProvenance,
-  OntologyIrEntityProvenanceSource,
   OntologyMetadataAppEntityProvenance,
   OwningDirectWriter,
+  WorkflowBuilderOwningResource,
+  OntologyIrEntityProvenance,
+  OntologyIrEntityProvenanceSource,
+  OntologyIrEditsHistoryProvenance,
 } from "./__components.js";

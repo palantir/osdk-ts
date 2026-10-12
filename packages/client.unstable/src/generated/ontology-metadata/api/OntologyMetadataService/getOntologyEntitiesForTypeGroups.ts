@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetOntologyEntitiesForTypeGroupsRequest as _api_GetOntologyEntitiesForTypeGroupsRequest,
-  GetOntologyEntitiesForTypeGroupsResponse as _api_GetOntologyEntitiesForTypeGroupsResponse,
-} from "../__components.js";
+import type { GetOntologyEntitiesForTypeGroupsRequest as _api_GetOntologyEntitiesForTypeGroupsRequest } from "../__components.js";
+import type { GetOntologyEntitiesForTypeGroupsResponse as _api_GetOntologyEntitiesForTypeGroupsResponse } from "../__components.js";
 
 /**
  * Gets a map of TypeGroupRids to the rids of all the ontology entities that use the TypeGroup.

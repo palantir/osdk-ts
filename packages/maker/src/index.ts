@@ -41,6 +41,7 @@ export type {
   UuidMappingValue,
 } from "./api/action/MappingValue.js";
 export type { SectionConditionalOverride } from "./api/action/SectionConditionalOverride.js";
+export type { StructFieldDefaultValue } from "./api/action/StructFieldDefaultValue.js";
 export type { SubmissionMetadata } from "./api/action/SubmissionMetadata.js";
 export type { TableConfiguration } from "./api/action/TableConfiguration.js";
 export { addDependency } from "./api/addDependency.js";

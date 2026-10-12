@@ -1,5 +1,107 @@
 # @osdk/vite-plugin-oac
 
+## 0.82.0
+
+### Patch Changes
+
+- Updated dependencies [74891bf]
+  - @osdk/cli@0.108.0
+
+## 0.81.0
+
+### Patch Changes
+
+- Updated dependencies [e9bf2de]
+  - @osdk/client.unstable@2.80.0
+  - @osdk/api@2.80.0
+  - @osdk/generator-converters.ontologyir@2.80.0
+  - @osdk/cli@0.107.0
+
+## 0.80.0
+
+### Patch Changes
+
+- Updated dependencies [86c708b]
+- Updated dependencies [a25a34d]
+  - @osdk/api@2.79.0
+  - @osdk/cli@0.106.0
+  - @osdk/client.unstable@2.79.0
+  - @osdk/generator-converters.ontologyir@2.79.0
+
+## 0.79.0
+
+### Patch Changes
+
+- Updated dependencies [533f264]
+- Updated dependencies [d63eb64]
+- Updated dependencies [5b15676]
+  - @osdk/client.unstable@2.78.0
+  - @osdk/maker@0.79.0
+  - @osdk/generator-converters.ontologyir@2.78.0
+  - @osdk/cli@0.105.0
+  - @osdk/api@2.78.0
+  - @osdk/faux@0.58.0
+
+## 0.78.0
+
+### Patch Changes
+
+- Updated dependencies [2ab4d7c]
+- Updated dependencies [75a8f07]
+- Updated dependencies [c1adfaa]
+  - @osdk/api@2.77.0
+  - @osdk/faux@0.57.0
+  - @osdk/cli@0.104.0
+  - @osdk/maker@0.78.0
+  - @osdk/client.unstable@2.77.0
+  - @osdk/generator-converters.ontologyir@2.77.0
+
+## 0.77.0
+
+### Patch Changes
+
+- Updated dependencies [de4d83e]
+  - @osdk/maker@0.77.0
+  - @osdk/cli@0.103.0
+
+## 0.76.0
+
+### Patch Changes
+
+- Updated dependencies [43dd010]
+- Updated dependencies [dec2ee4]
+- Updated dependencies [a9fafd0]
+- Updated dependencies [c11669e]
+- Updated dependencies [21a0d8c]
+- Updated dependencies [a38af5a]
+  - @osdk/generator-converters.ontologyir@2.76.0
+  - @osdk/maker@0.76.0
+  - @osdk/client.unstable@2.76.0
+  - @osdk/api@2.76.0
+  - @osdk/faux@0.56.0
+  - @osdk/cli@0.102.0
+
+## 0.75.0
+
+### Patch Changes
+
+- @osdk/api@2.75.0
+- @osdk/client.unstable@2.75.0
+- @osdk/generator-converters.ontologyir@2.75.0
+- @osdk/cli@0.101.0
+
+## 0.74.0
+
+### Patch Changes
+
+- Updated dependencies [aa9fe40]
+  - @osdk/generator-converters.ontologyir@2.74.0
+  - @osdk/maker@0.75.0
+  - @osdk/api@2.74.0
+  - @osdk/client.unstable@2.74.0
+  - @osdk/faux@0.55.0
+  - @osdk/cli@0.100.0
+
 ## 0.73.0
 
 ### Patch Changes

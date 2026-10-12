@@ -1,5 +1,54 @@
 # @osdk/maker-import
 
+## 0.45.0
+
+### Patch Changes
+
+- Updated dependencies [533f264]
+- Updated dependencies [d63eb64]
+- Updated dependencies [5b15676]
+  - @osdk/client.unstable@2.78.0
+  - @osdk/maker@0.79.0
+
+## 0.44.0
+
+### Minor Changes
+
+- e365fc1: Preserve imported marking and struct properties in generated Marketplace input shapes.
+
+### Patch Changes
+
+- @osdk/maker@0.78.0
+- @osdk/client.unstable@2.77.0
+
+## 0.43.0
+
+### Minor Changes
+
+- c11669e: Fix incomplete Marketplace mappings for SPTs imported ontology objects
+
+### Patch Changes
+
+- Updated dependencies [dec2ee4]
+- Updated dependencies [c11669e]
+- Updated dependencies [21a0d8c]
+- Updated dependencies [a38af5a]
+  - @osdk/maker@0.76.0
+  - @osdk/client.unstable@2.76.0
+
+## 0.42.0
+
+### Minor Changes
+
+- 47cf6a2: Preserve interface links on import
+
+## 0.41.0
+
+### Patch Changes
+
+- @osdk/maker@0.75.0
+- @osdk/client.unstable@2.74.0
+
 ## 0.40.0
 
 ### Patch Changes

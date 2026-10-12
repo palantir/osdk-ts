@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  OntologyRid as _api_OntologyRid,
-  OrganizationRidsForOntologyResponse as _api_OrganizationRidsForOntologyResponse,
-} from "../__components.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type { OrganizationRidsForOntologyResponse as _api_OrganizationRidsForOntologyResponse } from "../__components.js";
 
 /**
  * Gets the organization rids to which the ontology entities in the given ontology rid belong. If the user has

@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetUsageRequestV2 as _api_usage_GetUsageRequestV2,
-  GetUsageResponseV2 as _api_usage_GetUsageResponseV2,
-} from "../__components.js";
+import type { GetUsageRequestV2 as _api_usage_GetUsageRequestV2 } from "../__components.js";
+import type { GetUsageResponseV2 as _api_usage_GetUsageResponseV2 } from "../__components.js";
 
 /**
  * Endpoint to get the usage of ontology entities over the last 30 days.

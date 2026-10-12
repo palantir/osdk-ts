@@ -1,6 +1,6 @@
 {
   "name": "@osdk/maker",
-  "version": "0.73.0",
+  "version": "0.79.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -40,6 +40,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@blueprintjs/icons": "^6.7.0",
     "@osdk/api": "workspace:~",
     "@osdk/generator-converters.ontologyir": "workspace:~",
     "@osdk/typescript-sdk-docs": "^0.2.0",

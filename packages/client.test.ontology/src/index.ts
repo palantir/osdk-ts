@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
+export { noArgsAgent } from "./agents/noArgsAgent.js";
+export { weatherAgent } from "./agents/weatherAgent.js";
 export * from "./generatedNoCheck/index.js";

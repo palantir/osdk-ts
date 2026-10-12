@@ -296,7 +296,7 @@ describe("--unstableFeatures flag", () => {
     await cli(argsFor(project, ["--unstableFeatures", "true"]));
     const { packageJson, viteConfigTs } = readProject(project);
 
-    const postinstall = "./node_modules/.bin/osdk unstable branch sync";
+    const postinstall = "./node_modules/.bin/osdk branch sync";
     expect(packageJson.scripts.postinstall).toBe(postinstall);
     expect(packageJson.devDependencies["@osdk/cli"]).toBe("latest");
     expect(packageJson.dependencies["@osdk/vite-plugin-branch"]).toBe(
@@ -337,7 +337,7 @@ describe("--unstableFeatures flag", () => {
     );
 
     expect(packageJson.scripts.postinstall).toBe(
-      "./node_modules/.bin/osdk unstable branch sync",
+      "./node_modules/.bin/osdk branch sync",
     );
     expect(packageJson.devDependencies["@osdk/cli"]).toBe("latest");
     expect(

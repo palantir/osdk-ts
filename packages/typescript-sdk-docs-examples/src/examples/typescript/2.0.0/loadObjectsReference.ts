@@ -24,9 +24,27 @@ import type { Osdk, PageResult } from "@osdk/client";
 import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
+// $select only the properties you read; without it, the default property set is loaded.
+// $pageSize is the size of one page. Continue with page.nextPageToken to load more.
 try {
-  const responseNoErrorWrapper: PageResult<Osdk.Instance<Employee>> =
-    await client(Employee).fetchPage({ $pageSize: 30 });
+  const responseNoErrorWrapper: PageResult<
+    Osdk.Instance<Employee, never, "fullName">
+  > = await client(Employee).fetchPage({
+    $select: ["fullName"],
+    $pageSize: 30,
+  });
 } catch (e) {
   throw e;
+}
+
+// Ontology-defined derived properties are not returned by default.
+// Pass their API names in $select, along with any other properties you need.
+// Runtime-defined derived properties added via .withProperties(...) are returned
+// by default only when $select is omitted. If you pass $select, include them
+// in the selection as well.
+function getPageWithSelectedProperties(properties: Employee.PropertyKeys[]) {
+  return client(Employee).fetchPage({
+    $pageSize: 30,
+    $select: properties,
+  });
 }

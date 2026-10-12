@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  InterfaceTypeSearchRequest as _api_search_InterfaceTypeSearchRequest,
-  InterfaceTypeSearchResponse as _api_search_InterfaceTypeSearchResponse,
-} from "../search/__components.js";
+import type { InterfaceTypeSearchRequest as _api_search_InterfaceTypeSearchRequest } from "../search/__components.js";
+import type { InterfaceTypeSearchResponse as _api_search_InterfaceTypeSearchResponse } from "../search/__components.js";
 
 /**
  * Endpoint to search InterfaceTypes based on various filters. Endpoint allows to return results based on

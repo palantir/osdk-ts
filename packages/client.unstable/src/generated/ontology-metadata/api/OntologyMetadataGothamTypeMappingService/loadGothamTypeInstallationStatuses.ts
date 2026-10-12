@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyRid as _api_OntologyRid } from "../__components.js";
-import type {
-  LoadGothamTypeInstallationStatusesRequest as _api_typemapping_LoadGothamTypeInstallationStatusesRequest,
-  LoadGothamTypeInstallationStatusesResponse as _api_typemapping_LoadGothamTypeInstallationStatusesResponse,
-} from "../typemapping/__components.js";
+import type { LoadGothamTypeInstallationStatusesRequest as _api_typemapping_LoadGothamTypeInstallationStatusesRequest } from "../typemapping/__components.js";
+import type { LoadGothamTypeInstallationStatusesResponse as _api_typemapping_LoadGothamTypeInstallationStatusesResponse } from "../typemapping/__components.js";
 
 /**
  * Retrieves the install status of a type by URI. Also returns its corresponding Foundry ontology version

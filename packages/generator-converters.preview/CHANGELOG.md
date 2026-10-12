@@ -1,5 +1,64 @@
 # @osdk/generator-converters.preview
 
+## 0.55.0
+
+### Patch Changes
+
+- Updated dependencies [533f264]
+  - @osdk/client.unstable@2.78.0
+  - @osdk/foundry-sdk-generator@2.78.0
+  - @osdk/generator-converters.ontologyir@2.78.0
+
+## 0.54.0
+
+### Minor Changes
+
+- 6f2b7e6: Remove package.json creation duplication from the OSDK generators
+
+### Patch Changes
+
+- Updated dependencies [6f2b7e6]
+  - @osdk/foundry-sdk-generator@2.77.0
+  - @osdk/client.unstable@2.77.0
+  - @osdk/generator-converters.ontologyir@2.77.0
+
+## 0.53.0
+
+### Minor Changes
+
+- a9fafd0: Fix link attachment for imported objects
+
+### Patch Changes
+
+- Updated dependencies [43dd010]
+- Updated dependencies [a9fafd0]
+- Updated dependencies [21a0d8c]
+- Updated dependencies [a38af5a]
+  - @osdk/generator-converters.ontologyir@2.76.0
+  - @osdk/client.unstable@2.76.0
+  - @osdk/generator@2.76.0
+
+## 0.52.0
+
+### Minor Changes
+
+- aa9fe40: Support intermediary link types
+- e316cb7: Write the TypeScript functions runtime metadata with the plural ontologyRids key required by functions-typescript-runtime 0.311.0 and above
+
+### Patch Changes
+
+- Updated dependencies [aa9fe40]
+- Updated dependencies [f2e0591]
+  - @osdk/generator-converters.ontologyir@2.74.0
+  - @osdk/generator@2.74.0
+  - @osdk/client.unstable@2.74.0
+
+## 0.51.0
+
+### Minor Changes
+
+- 9fa9a26: Support interface types in functions preview
+
 ## 0.50.0
 
 ### Minor Changes

@@ -26,7 +26,7 @@ function generateConjure() {
     rm -rf "$OUT_DIR"
 
     echo "  - Generating typescript"
-    $CONJURE_LITE generate --ir "$CONJURE_PATH" --outDir "$OUT_DIR" --header "/**/"
+    $CONJURE_LITE generate --ir "$CONJURE_PATH" --outDir "$OUT_DIR" --header ""
 
     formatTypescript "$OUT_DIR" "$PACKAGE_PATH"
 }

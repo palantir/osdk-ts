@@ -44,6 +44,8 @@ export function propertyTypeToSchemaType(
 ): string {
   const typeStr = typeof propType === "string" ? propType : propType.type;
   switch (typeStr) {
+    case "geohash":
+    case "geoshape":
     case "marking":
     case "string":
       return "STRING";
@@ -307,6 +309,7 @@ async function generateBackingDatasetBlock(
         columns.map((col, i) => [columnInternalIds[i], col.name]),
       ),
       hasSchema: true,
+      includeData: false,
     },
   };
   await fs.promises.writeFile(

@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  LoadEntityMetadataRequest as _api_entitymetadata_LoadEntityMetadataRequest,
-  LoadEntityMetadataResponse as _api_entitymetadata_LoadEntityMetadataResponse,
-} from "../__components.js";
+import type { LoadEntityMetadataRequest as _api_entitymetadata_LoadEntityMetadataRequest } from "../__components.js";
+import type { LoadEntityMetadataResponse as _api_entitymetadata_LoadEntityMetadataResponse } from "../__components.js";
 
 /**
  * Endpoint to load the EntityMetadata for the specified ObjectTypeRids/LinkTypeRids at the specified

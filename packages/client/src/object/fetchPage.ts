@@ -46,9 +46,10 @@ import invariant from "tiny-invariant";
 
 import { extractNamespace } from "../internal/conversions/extractNamespace.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
+import { addUserAgentHeader } from "../util/addUserAgentHeader.js";
 import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
 import { extractRdpDefinition } from "../util/extractRdpDefinition.js";
+import { normalizeInterfaceLinkSearchArounds } from "../util/normalizeInterfaceLinkSearchArounds.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
 /**
@@ -269,7 +270,7 @@ export async function fetchStaticRidPage<
   }
 
   const result = await OntologyObjectSets.loadMultipleObjectTypes(
-    addUserAgentAndRequestContextHeaders(client, { osdkMetadata: undefined }),
+    addUserAgentHeader(client, { osdkMetadata: undefined }),
     await client.ontologyRid,
     requestBody,
     {
@@ -383,7 +384,7 @@ async function fetchInterfacePage<
   }
 
   const result = await OntologyObjectSets.loadMultipleObjectTypes(
-    addUserAgentAndRequestContextHeaders(client, interfaceType),
+    addUserAgentHeader(client, interfaceType),
     await client.ontologyRid,
     requestBody,
     {
@@ -552,6 +553,7 @@ async function buildAndRemapRequestBody<
   S extends NullabilityAdherence,
   T extends boolean,
   RequestBody extends {
+    objectSet: ObjectSet;
     orderBy?: SearchOrderByV2;
     pageToken?: PageToken;
     pageSize?: PageSize;
@@ -565,7 +567,14 @@ async function buildAndRemapRequestBody<
   client: MinimalClient,
   objectType: Q,
 ): Promise<RequestBody> {
-  const requestBody = await applyFetchArgs(args, baseBody, client, objectType);
+  const withArgs = await applyFetchArgs(args, baseBody, client, objectType);
+
+  const objectSet = await normalizeInterfaceLinkSearchArounds(
+    client,
+    withArgs.objectSet,
+  );
+  const requestBody =
+    objectSet === withArgs.objectSet ? withArgs : { ...withArgs, objectSet };
 
   if (requestBody.selectV2 != null && requestBody.selectV2.length > 0) {
     const remapped = remapSelectV2(objectType, requestBody.selectV2);
@@ -781,7 +790,7 @@ export async function fetchObjectPage<
   }
 
   const r = await OntologyObjectSets.load(
-    addUserAgentAndRequestContextHeaders(client, objectType),
+    addUserAgentHeader(client, objectType),
     await client.ontologyRid,
     requestBody,
     {

@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  LoadAllInterfaceTypesPageRequest as _api_LoadAllInterfaceTypesPageRequest,
-  LoadAllInterfaceTypesPageResponse as _api_LoadAllInterfaceTypesPageResponse,
-  OntologyRid as _api_OntologyRid,
-  OntologyVersion as _api_OntologyVersion,
-} from "../__components.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type { OntologyVersion as _api_OntologyVersion } from "../__components.js";
+import type { LoadAllInterfaceTypesPageRequest as _api_LoadAllInterfaceTypesPageRequest } from "../__components.js";
+import type { LoadAllInterfaceTypesPageResponse as _api_LoadAllInterfaceTypesPageResponse } from "../__components.js";
 
 /**
  * Endpoint to load a paged collection of all interfaces visible to the user from the specified ontology and

@@ -1,5 +1,33 @@
 # @osdk/functions
 
+## 1.29.0
+
+### Minor Changes
+
+- d72c082: add createMockWriteableClient that records create/update/delete/link/unlink edits via getEdits() and no-ops flushEdits
+
+### Patch Changes
+
+- @osdk/client@2.78.0
+
+## 1.28.0
+
+### Patch Changes
+
+- Updated dependencies [051b67f]
+  - @osdk/aliases@0.4.0
+
+## 1.27.0
+
+### Minor Changes
+
+- 5b570fa: Add experimental agent aliases to scope resources for functions and agents.
+
+### Patch Changes
+
+- Updated dependencies [6ca7442]
+  - @osdk/client@2.74.0
+
 ## 1.26.0
 
 ### Patch Changes

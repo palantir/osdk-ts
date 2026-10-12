@@ -22,8 +22,7 @@ import type {
 import * as Functions from "@osdk/foundry.functions/Query";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
-import { augmentRequestContext } from "../util/augmentRequestContext.js";
+import { addUserAgentHeader } from "../util/addUserAgentHeader.js";
 import {
   getRequiredDefinitions,
   remapQueryParams,
@@ -53,12 +52,7 @@ export async function* applyStreamingQuery<
   }
 
   const response = await Functions.streamingExecute(
-    addUserAgentAndRequestContextHeaders(
-      augmentRequestContext(client, (_) => ({
-        finalMethodCall: "applyStreamingQuery",
-      })),
-      query,
-    ),
+    addUserAgentHeader(client, query),
     query.apiName,
     {
       ontology: await client.ontologyRid,

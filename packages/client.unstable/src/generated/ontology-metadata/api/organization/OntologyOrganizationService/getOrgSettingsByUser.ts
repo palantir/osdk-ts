@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetOrgSettingsByUserRequest as _api_organization_GetOrgSettingsByUserRequest,
-  GetOrgSettingsByUserResponse as _api_organization_GetOrgSettingsByUserResponse,
-} from "../__components.js";
+import type { GetOrgSettingsByUserRequest as _api_organization_GetOrgSettingsByUserRequest } from "../__components.js";
+import type { GetOrgSettingsByUserResponse as _api_organization_GetOrgSettingsByUserResponse } from "../__components.js";
 
 /**
  * Endpoint to load organization-wide Ontology settings for the user sending the request based on the

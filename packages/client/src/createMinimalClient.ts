@@ -85,7 +85,6 @@ export function createMinimalClient(
     flushEdits: options.flushEdits,
     scenarioRid: options.scenarioRid,
     clientCacheKey: {} as ClientCacheKey,
-    requestContext: {},
     branch: options.branch,
     narrowTypeInterfaceOrObjectMapping: {},
     createSubscriptionConnection: options.createSubscriptionConnection,

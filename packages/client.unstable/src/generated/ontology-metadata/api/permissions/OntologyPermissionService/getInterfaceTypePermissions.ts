@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { InterfaceTypeRid as _api_InterfaceTypeRid } from "../../__components.js";
 import type { GetInterfaceTypePermissionsResponse as _api_permissions_GetInterfaceTypePermissionsResponse } from "../__components.js";

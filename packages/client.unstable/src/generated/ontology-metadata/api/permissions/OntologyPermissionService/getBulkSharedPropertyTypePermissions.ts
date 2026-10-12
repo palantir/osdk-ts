@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetBulkSharedPropertyTypePermissionsRequest as _api_permissions_GetBulkSharedPropertyTypePermissionsRequest,
-  GetBulkSharedPropertyTypePermissionsResponse as _api_permissions_GetBulkSharedPropertyTypePermissionsResponse,
-} from "../__components.js";
+import type { GetBulkSharedPropertyTypePermissionsRequest as _api_permissions_GetBulkSharedPropertyTypePermissionsRequest } from "../__components.js";
+import type { GetBulkSharedPropertyTypePermissionsResponse as _api_permissions_GetBulkSharedPropertyTypePermissionsResponse } from "../__components.js";
 
 /**
  * Returns which permissions the user has on the SharedPropertyTypes provided. Limited to at most 500 entries per

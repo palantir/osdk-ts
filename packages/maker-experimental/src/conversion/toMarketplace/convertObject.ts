@@ -49,7 +49,10 @@ import invariant from "tiny-invariant";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { buildDatasource } from "./convertActionHelpers.js";
-import { convertDatasourceDefinition } from "./convertDatasourceDefinition.js";
+import {
+  convertDatasourceDefinition,
+  convertDatasourceForEdge,
+} from "./convertDatasourceDefinition.js";
 import { convertObjectPropertyType } from "./convertObjectPropertyType.js";
 
 /**
@@ -109,6 +112,7 @@ function convertImplementingLinkTypeSide(
 export function convertObject(
   objectType: ObjectType,
   ridGenerator: OntologyRidGenerator,
+  packageForEdge = false,
 ): ObjectTypeBlockDataV2 {
   const { derivedDatasources, derivedPropertyNames } =
     extractDerivedDatasources(objectType, ridGenerator);
@@ -326,6 +330,14 @@ export function convertObject(
       ...derivedDatasources,
       objectDatasource,
     ],
+    // Property and derived datasources already work on edge.
+    ...(packageForEdge
+      ? {
+          mappedEdgeOnlyDatasources: [
+            convertDatasourceForEdge(objectDatasource, objectType.apiName),
+          ],
+        }
+      : {}),
     entityMetadata: buildEntityMetadata(objectType, ridGenerator),
     propertySecurityGroupPackagingVersion: { type: "v2", v2: {} },
     schemaMigrations: undefined,

@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { AccessRequestRid as _api_AccessRequestRid } from "../../__components.js";
-import type {
-  UpdateAccessRequestRequest as _api_accessrequest_UpdateAccessRequestRequest,
-  UpdateAccessRequestResponse as _api_accessrequest_UpdateAccessRequestResponse,
-} from "../__components.js";
+import type { UpdateAccessRequestRequest as _api_accessrequest_UpdateAccessRequestRequest } from "../__components.js";
+import type { UpdateAccessRequestResponse as _api_accessrequest_UpdateAccessRequestResponse } from "../__components.js";
 
 /**
  * Throws:

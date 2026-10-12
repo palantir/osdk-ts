@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  BulkGetAccessRequestForOntologyEntityRequest as _api_accessrequest_BulkGetAccessRequestForOntologyEntityRequest,
-  BulkGetAccessRequestsForOntologyEntityResponse as _api_accessrequest_BulkGetAccessRequestsForOntologyEntityResponse,
-} from "../__components.js";
+import type { BulkGetAccessRequestForOntologyEntityRequest as _api_accessrequest_BulkGetAccessRequestForOntologyEntityRequest } from "../__components.js";
+import type { BulkGetAccessRequestsForOntologyEntityResponse as _api_accessrequest_BulkGetAccessRequestsForOntologyEntityResponse } from "../__components.js";
 
 /**
  * Gets the set of access requests that target the specified entities

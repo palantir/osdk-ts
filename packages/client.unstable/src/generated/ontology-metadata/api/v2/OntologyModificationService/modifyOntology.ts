@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
-import type {
-  OntologyModificationRequest as _api_modification_OntologyModificationRequest,
-  OntologyModificationResponse as _api_modification_OntologyModificationResponse,
-} from "../../modification/__components.js";
+import type { OntologyModificationRequest as _api_modification_OntologyModificationRequest } from "../../modification/__components.js";
+import type { OntologyModificationResponse as _api_modification_OntologyModificationResponse } from "../../modification/__components.js";
 export async function modifyOntology(
   ctx: ConjureContext,
   onBehalfOf: string | null | undefined,

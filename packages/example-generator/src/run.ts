@@ -526,6 +526,10 @@ const UPDATE_PACKAGE_JSON: Mutator = {
         `"@osdk/react": "workspace:*"`,
       )
       .replace(
+        /"@osdk\/aliases": "\^.*?"/,
+        `"@osdk/aliases": "workspace:*"`,
+      )
+      .replace(
         // Use locally generated SDK in the monorepo
         /"@osdk\/oauth": "\^.*?"/,
         `"@osdk/oauth": "workspace:*"`,

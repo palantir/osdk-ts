@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  BulkLoadObjectTypeSchemaMigrationsRequest as _api_schemamigrations_BulkLoadObjectTypeSchemaMigrationsRequest,
-  BulkLoadObjectTypeSchemaMigrationsResponse as _api_schemamigrations_BulkLoadObjectTypeSchemaMigrationsResponse,
-} from "../__components.js";
+import type { BulkLoadObjectTypeSchemaMigrationsRequest as _api_schemamigrations_BulkLoadObjectTypeSchemaMigrationsRequest } from "../__components.js";
+import type { BulkLoadObjectTypeSchemaMigrationsResponse as _api_schemamigrations_BulkLoadObjectTypeSchemaMigrationsResponse } from "../__components.js";
 
 /**
  * Endpoint to bulk load schema migrations for ObjectTypes at a given OntologyVersions. Requires viewer

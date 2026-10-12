@@ -1,5 +1,11 @@
 # @osdk/vite-plugin-superrepo
 
+## 0.12.0
+
+### Minor Changes
+
+- 21a0d8c: Export generated executor types from client.unstable for exhaustive smartClient return handling and preserve function failure details.
+
 ## 0.11.0
 
 ### Minor Changes

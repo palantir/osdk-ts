@@ -22,7 +22,7 @@ import type {
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrAllowedParameterValues,
-  OntologyIrObjectTypeDatasource,
+  OntologyIrMarketplaceObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
   OntologyIrParameter,
   OntologyIrSection,
@@ -235,7 +235,7 @@ export function buildDatasource(
   definition: OntologyIrObjectTypeDatasourceDefinition,
   classificationMarkingGroupName?: string,
   mandatoryMarkingGroupName?: string,
-): OntologyIrObjectTypeDatasource {
+): OntologyIrMarketplaceObjectTypeDatasource {
   const needsSecurity =
     classificationMarkingGroupName !== undefined ||
     mandatoryMarkingGroupName !== undefined;

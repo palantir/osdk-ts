@@ -88,8 +88,6 @@ export class OntologyBlockDataToFullMetadataConverter {
     );
     const convertedObjectTypes = this.getOsdkObjectTypesFromBlockData(
       blockData.objectTypes,
-      blockData.linkTypes,
-      objectTypeLookup,
       interfacePropertyApiNames,
       valueTypes,
     );
@@ -101,7 +99,44 @@ export class OntologyBlockDataToFullMetadataConverter {
       ...convertedObjectTypes,
       ...importedTypes?.objectTypes,
     };
+    const propRidToApiName: Record<string, string> = {};
+    for (
+      const properties of Object.values(
+        blockData.knownIdentifiers.objectPropertyTypeIdsToRids ?? {},
+      )
+    ) {
+      for (const [apiName, rid] of Object.entries(properties)) {
+        propRidToApiName[rid] = apiName;
+      }
+    }
+    for (const { objectType } of Object.values(objectTypes)) {
+      for (const [apiName, property] of Object.entries(objectType.properties)) {
+        if (property.rid != null) {
+          propRidToApiName[property.rid] = apiName;
+        }
+      }
+    }
+    const linkMappings = this.getLinkMappingsFromBlockData(
+      Object.values(blockData.linkTypes),
+      propRidToApiName,
+      objectTypeLookup,
+    );
     for (const [objectApiName, objectType] of Object.entries(objectTypes)) {
+      const linkTypes = linkMappings[objectType.objectType.rid];
+      if (linkTypes != null) {
+        objectTypes[objectApiName] = {
+          ...objectType,
+          linkTypes: [
+            ...objectType.linkTypes,
+            ...linkTypes.filter(link =>
+              !objectType.linkTypes.some(existing =>
+                existing.linkTypeRid === link.linkTypeRid
+                && existing.apiName === link.apiName
+              )
+            ),
+          ],
+        };
+      }
       for (
         const interfaceApiName of Object.keys(
           objectType.implementsInterfaces2 ?? {},
@@ -148,8 +183,6 @@ export class OntologyBlockDataToFullMetadataConverter {
 
   static getOsdkObjectTypesFromBlockData(
     objects: Record<string, ObjectTypeBlockDataV2>,
-    links: Record<string, LinkTypeBlockDataV2>,
-    objectTypeLookup: BlockDataApiNameLookup | undefined,
     interfacePropertyApiNames: Record<string, ApiName> = {},
     valueTypes: Record<string, ValueTypeBlockData> = {},
   ): Record<ApiName, Ontologies.ObjectTypeFullMetadata> {
@@ -304,19 +337,13 @@ export class OntologyBlockDataToFullMetadataConverter {
         };
       }
 
-      const linkMappings = this.getLinkMappingsFromBlockData(
-        Object.values(links),
-        propRidToApiName,
-        objectTypeLookup,
-      );
-
       const objectApiName = object.apiName!;
       result[objectApiName] = {
         objectType: objectTypeV2,
         implementsInterfaces: Object.keys(implementsInterfaces2),
         implementsInterfaces2,
         sharedPropertyTypeMapping: sharedPropertyTypeMappings,
-        linkTypes: linkMappings[object.rid] || [],
+        linkTypes: [],
       };
     }
 
@@ -338,8 +365,11 @@ export class OntologyBlockDataToFullMetadataConverter {
 
       let mappings: Record<string, Ontologies.LinkTypeSideV2[]>;
       switch (linkType.definition.type) {
-        case "manyToMany": {
-          const linkDef = linkType.definition.manyToMany;
+        case "manyToMany":
+        case "intermediary": {
+          const linkDef = linkType.definition.type === "manyToMany"
+            ? linkType.definition.manyToMany
+            : linkType.definition.intermediary;
           const sideA: Ontologies.LinkTypeSideV2 = {
             apiName: linkDef.objectTypeAToBLinkMetadata.apiName ?? "",
             displayName: linkDef.objectTypeAToBLinkMetadata

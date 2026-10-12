@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetActionTypesForInterfaceTypesRequest as _api_GetActionTypesForInterfaceTypesRequest,
-  GetActionTypesForInterfaceTypesResponse as _api_GetActionTypesForInterfaceTypesResponse,
-} from "../__components.js";
+import type { GetActionTypesForInterfaceTypesRequest as _api_GetActionTypesForInterfaceTypesRequest } from "../__components.js";
+import type { GetActionTypesForInterfaceTypesResponse as _api_GetActionTypesForInterfaceTypesResponse } from "../__components.js";
 
 /**
  * Gets the action types for multiple interfaces. For each interface, returns the rids of action types that

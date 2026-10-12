@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-components",
-  "version": "0.60.0",
+  "version": "0.64.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -321,15 +321,15 @@
     "postal-mime": "^2.7.4",
     "react-day-picker": "^8.10.0",
     "react-hook-form": "^7.54.0",
-    "react-markdown": "^9.0.3",
+    "react-markdown": "^9.0.3 || ^10.0.0",
     "remark-gfm": "^4.0.1",
     "utif": "^3.1.0",
     "xlsx-republish": "0.20.3"
   },
   "peerDependencies": {
-    "@osdk/api": "^2.8.0",
-    "@osdk/client": "^2.8.0",
-    "@osdk/react": "^2.8.0",
+    "@osdk/api": "^2.78.0",
+    "@osdk/client": "^2.78.0",
+    "@osdk/react": "^2.78.0",
     "@types/react": "^17 || ^18 || ^19",
     "classnames": "^2.0.0",
     "react": "^17 || ^18 || ^19",

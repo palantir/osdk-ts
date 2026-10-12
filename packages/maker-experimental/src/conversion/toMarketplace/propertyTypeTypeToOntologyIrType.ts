@@ -131,6 +131,7 @@ export function propertyTypeTypeToOntologyIrType(
             type.supportsEfficientLeadingWildcard ?? false,
           supportsExactMatching: type.supportsExactMatching ?? true,
           supportsFullTextRegex: type.supportsFullTextRegex,
+          supportsPhonetic: type.supportsPhonetic,
         },
       };
 

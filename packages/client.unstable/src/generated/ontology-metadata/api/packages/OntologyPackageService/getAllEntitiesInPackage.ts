@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  OntologyPackageRid as _api_OntologyPackageRid,
-  PackagedEntityRid as _api_PackagedEntityRid,
-} from "../../__components.js";
+import type { OntologyPackageRid as _api_OntologyPackageRid } from "../../__components.js";
+import type { PackagedEntityRid as _api_PackagedEntityRid } from "../../__components.js";
 
 /**
  * Gets all entities in the specified package.

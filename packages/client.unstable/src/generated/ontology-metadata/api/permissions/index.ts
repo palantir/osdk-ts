@@ -18,6 +18,9 @@ export * as OntologyPermissionService from "./OntologyPermissionService.js";
 
 export type {
   ActionTypePermissionModel,
+  BulkRevertPublicProjectEntitiesFailure,
+  BulkRevertPublicProjectEntitiesRequest,
+  BulkRevertPublicProjectEntitiesResponse,
   BulkUpdateEntityRolesRequest,
   BulkUpdateEntityRolesResponse,
   DatasourceDerived,
@@ -26,6 +29,7 @@ export type {
   EntityMigrationFailed,
   EntityMigrationInProgress,
   EntityMigrationNotMigrating,
+  EntityMoveFailureReason,
   EntityParent,
   EveryPrincipal,
   GetActionTypePermissionsResponse,
@@ -80,6 +84,8 @@ export type {
   MigrateEntitiesToProjectsResult,
   MigrateEntitiesToProjectsSuccess,
   MigrateEntityToProjectRequest,
+  MoveOntologyEntitiesRequest,
+  MoveOntologyEntitiesResponse,
   ObjectTypeDatasourcePermissions,
   ObjectTypePermissionModel,
   OntologyParent,

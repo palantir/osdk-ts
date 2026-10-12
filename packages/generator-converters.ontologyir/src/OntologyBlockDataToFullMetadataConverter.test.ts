@@ -16,6 +16,7 @@
 
 import type {
   InterfaceTypeBlockDataV2,
+  LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
   OntologyBlockDataV2,
   PropertyType,
@@ -293,7 +294,336 @@ function createHierarchyBlockData(): OntologyBlockDataV2 {
   return blockData;
 }
 
+function createLinkBlockData(
+  type: "manyToMany" | "oneToMany" | "intermediary",
+  sameType = false,
+): OntologyBlockDataV2 {
+  const blockData = createBlockData();
+  const targetRid = sameType ? objectRid : "customer-rid";
+  if (!sameType) {
+    const id = { ...createProperty("customerId"), rid: "customer-id-rid" };
+    const taskId = { ...createProperty("taskId"), rid: "customer-task-id-rid" };
+    blockData.objectTypes[targetRid] = {
+      ...createObject(),
+      objectType: {
+        ...createObject().objectType,
+        apiName: "Customer",
+        rid: targetRid,
+        id: "customer",
+        primaryKeys: [id.rid],
+        titlePropertyTypeRid: id.rid,
+        propertyTypes: { [id.rid]: id, [taskId.rid]: taskId },
+        implementsInterfaces: [],
+        implementsInterfaces2: [],
+      },
+    };
+  }
+  const linkMetadata = (apiName: string) => ({
+    apiName,
+    displayMetadata: {
+      displayName: apiName,
+      pluralDisplayName: apiName,
+      visibility: "NORMAL" as const,
+    },
+    typeClasses: [],
+  });
+  const endpoints = {
+    objectTypeRidA: objectRid,
+    objectTypeRidB: targetRid,
+    objectTypeAToBLinkMetadata: linkMetadata("customers"),
+    objectTypeBToALinkMetadata: linkMetadata("tasks"),
+  };
+  let definition: LinkTypeBlockDataV2["linkType"]["definition"];
+  switch (type) {
+    case "oneToMany":
+      definition = {
+        type,
+        oneToMany: {
+          cardinalityHint: "ONE_TO_MANY",
+          objectTypeRidOneSide: objectRid,
+          objectTypeRidManySide: targetRid,
+          oneToManyLinkMetadata: linkMetadata("customers"),
+          manyToOneLinkMetadata: linkMetadata("tasks"),
+          oneSidePrimaryKeyToManySidePropertyMapping: {
+            [objectPropertyRid("id")]: sameType
+              ? objectPropertyRid("taskTitle")
+              : "customer-task-id-rid",
+          },
+        },
+      };
+      break;
+    case "intermediary":
+      definition = {
+        type,
+        intermediary: {
+          ...endpoints,
+          intermediaryObjectTypeRid: "bridge-rid",
+          aToIntermediaryLinkTypeRid: "task-to-bridge-rid",
+          intermediaryToBLinkTypeRid: "customer-to-bridge-rid",
+        },
+      };
+      break;
+    case "manyToMany":
+      definition = {
+        type,
+        manyToMany: {
+          ...endpoints,
+          objectTypeAPrimaryKeyPropertyMapping: {},
+          objectTypeBPrimaryKeyPropertyMapping: {},
+        },
+      };
+      break;
+  }
+  blockData.linkTypes = {
+    "new-link-rid": {
+      linkType: {
+        rid: "new-link-rid",
+        id: "task-to-customer",
+        status: { type: "active", active: {} },
+        definition,
+      },
+      datasources: [],
+    },
+  };
+  return blockData;
+}
+
+describe("links involving imported objects", () => {
+  it("resolves generated foreign-key RIDs for imported properties", () => {
+    const blockData = createLinkBlockData("oneToMany");
+    const importedTypes = OntologyBlockDataToFullMetadataConverter
+      .getFullMetadataFromBlockData({
+        ...blockData,
+        objectTypes: { "customer-rid": blockData.objectTypes["customer-rid"] },
+        linkTypes: {},
+      });
+    delete blockData.objectTypes["customer-rid"];
+    importedTypes.objectTypes.Customer.objectType.properties.taskId.rid =
+      "original-imported-property-rid";
+    blockData.knownIdentifiers.objectPropertyTypeIdsToRids = {
+      customer: { taskId: "customer-task-id-rid" },
+    };
+    const result = OntologyBlockDataToFullMetadataConverter
+      .getFullMetadataFromBlockData(blockData, importedTypes);
+    expect(result.objectTypes.Customer.linkTypes[0].foreignKeyPropertyApiName)
+      .toBe("taskId");
+    expect(result.objectTypes.Customer.objectType.properties.taskId.rid)
+      .toBe("original-imported-property-rid");
+  });
+
+  describe.each(["manyToMany", "oneToMany", "intermediary"] as const)(
+    "%s",
+    type => {
+      it.each([
+        ["both local", []],
+        ["imported source", [objectRid]],
+        ["imported target", ["customer-rid"]],
+        ["both imported", [objectRid, "customer-rid"]],
+      ])("preserves both sides with %s endpoints", (_name, importedRids) => {
+        const blockData = createLinkBlockData(type);
+        const importedTypes = OntologyBlockDataToFullMetadataConverter
+          .getFullMetadataFromBlockData({
+            ...blockData,
+            linkTypes: {},
+            objectTypes: Object.fromEntries(
+              Object.entries(blockData.objectTypes).filter(([rid]) =>
+                importedRids.includes(rid)
+              ),
+            ),
+          });
+        for (const rid of importedRids) {
+          delete blockData.objectTypes[rid];
+        }
+        const originalBlockData = structuredClone(blockData);
+        const originalImportedTypes = structuredClone(importedTypes);
+        const result = OntologyBlockDataToFullMetadataConverter
+          .getFullMetadataFromBlockData(blockData, importedTypes);
+        expect(result.objectTypes[objectApiName].linkTypes).toEqual([{
+          apiName: "customers",
+          displayName: "customers",
+          cardinality: "MANY",
+          objectTypeApiName: "Customer",
+          linkTypeRid: "new-link-rid",
+          status: "ACTIVE",
+        }]);
+        expect(result.objectTypes.Customer.linkTypes).toEqual([{
+          apiName: "tasks",
+          displayName: "tasks",
+          cardinality: type === "oneToMany" ? "ONE" : "MANY",
+          objectTypeApiName: objectApiName,
+          linkTypeRid: "new-link-rid",
+          status: "ACTIVE",
+          ...(type === "oneToMany"
+            ? { foreignKeyPropertyApiName: "taskId" }
+            : {}),
+        }]);
+        for (
+          const [apiName, importedObject] of Object.entries(
+            importedTypes.objectTypes,
+          )
+        ) {
+          expect(result.objectTypes[apiName]).toEqual({
+            ...importedObject,
+            linkTypes: result.objectTypes[apiName].linkTypes,
+          });
+        }
+        expect(
+          OntologyBlockDataToFullMetadataConverter.getFullMetadataFromBlockData(
+            blockData,
+            importedTypes,
+          ),
+        ).toEqual(result);
+        expect(
+          OntologyBlockDataToFullMetadataConverter.getFullMetadataFromBlockData(
+            blockData,
+            result,
+          ),
+        ).toEqual(result);
+        expect(blockData).toEqual(originalBlockData);
+        expect(importedTypes).toEqual(originalImportedTypes);
+      });
+
+      it("preserves existing sides and both directions of an imported self-link", () => {
+        const blockData = createLinkBlockData(type, true);
+        const importedTypes = OntologyBlockDataToFullMetadataConverter
+          .getFullMetadataFromBlockData({ ...blockData, linkTypes: {} });
+        const importedObject = importedTypes.objectTypes[objectApiName];
+        importedObject.linkTypes = [{
+          apiName: "existingTasks",
+          displayName: "Existing tasks",
+          objectTypeApiName: objectApiName,
+          cardinality: "MANY",
+          linkTypeRid: "existing-link-rid",
+          status: "ACTIVE",
+        }, {
+          apiName: "customers",
+          displayName: "Preserved imported display name",
+          objectTypeApiName: objectApiName,
+          cardinality: "MANY",
+          linkTypeRid: "new-link-rid",
+          status: "ACTIVE",
+        }];
+        blockData.objectTypes = {};
+        const originalImportedTypes = structuredClone(importedTypes);
+        const result = OntologyBlockDataToFullMetadataConverter
+          .getFullMetadataFromBlockData(blockData, importedTypes);
+        expect(result.objectTypes[objectApiName]).toEqual({
+          ...importedObject,
+          linkTypes: [...importedObject.linkTypes, {
+            apiName: "tasks",
+            displayName: "tasks",
+            objectTypeApiName: objectApiName,
+            cardinality: type === "oneToMany" ? "ONE" : "MANY",
+            linkTypeRid: "new-link-rid",
+            status: "ACTIVE",
+            ...(type === "oneToMany"
+              ? { foreignKeyPropertyApiName: "taskTitle" }
+              : {}),
+          }],
+        });
+        expect(importedTypes).toEqual(originalImportedTypes);
+        expect(result.objectTypes[objectApiName]).not.toBe(importedObject);
+        expect(result.objectTypes[objectApiName].linkTypes)
+          .not.toBe(importedObject.linkTypes);
+        expect(
+          OntologyBlockDataToFullMetadataConverter.getFullMetadataFromBlockData(
+            blockData,
+            result,
+          ),
+        ).toEqual(result);
+      });
+    },
+  );
+});
+
 describe(OntologyBlockDataToFullMetadataConverter, () => {
+  it.each(
+    [
+      ["manyToMany", "Target"],
+      ["intermediary", "Target"],
+      ["intermediary", "Source"],
+    ] as const,
+  )("converts both directions of %s links to %s", (type, target) => {
+    const targetRid = target === "Source" ? "source-rid" : "target-rid";
+    const endpoints = {
+      objectTypeRidA: "source-rid",
+      objectTypeRidB: targetRid,
+      objectTypeAToBLinkMetadata: {
+        apiName: "targets",
+        displayMetadata: {
+          displayName: "Targets",
+          pluralDisplayName: "Targets",
+          visibility: "NORMAL" as const,
+        },
+        typeClasses: [],
+      },
+      objectTypeBToALinkMetadata: {
+        apiName: "sources",
+        displayMetadata: {
+          displayName: "Sources",
+          pluralDisplayName: "Sources",
+          visibility: "NORMAL" as const,
+        },
+        typeClasses: [],
+      },
+    };
+    const link: LinkTypeBlockDataV2 = {
+      linkType: {
+        rid: "link-rid",
+        id: "source-to-target",
+        status: { type: "active", active: {} },
+        definition: type === "intermediary"
+          ? {
+            type,
+            intermediary: {
+              ...endpoints,
+              intermediaryObjectTypeRid: "bridge-rid",
+              aToIntermediaryLinkTypeRid: "source-to-bridge-rid",
+              intermediaryToBLinkTypeRid: "target-to-bridge-rid",
+            },
+          }
+          : {
+            type,
+            manyToMany: {
+              ...endpoints,
+              objectTypeAPrimaryKeyPropertyMapping: {},
+              objectTypeBPrimaryKeyPropertyMapping: {},
+            },
+          },
+      },
+      datasources: [],
+    };
+    const result = OntologyBlockDataToFullMetadataConverter
+      .getLinkMappingsFromBlockData([link], {}, {
+        byRid: new Map([
+          ["source-rid", "Source"],
+          ["target-rid", "Target"],
+        ]),
+        byHyphenated: new Map(),
+      });
+    const forward = {
+      apiName: "targets",
+      displayName: "Targets",
+      cardinality: "MANY",
+      objectTypeApiName: target,
+      linkTypeRid: "link-rid",
+      status: "ACTIVE",
+    };
+    const reverse = {
+      apiName: "sources",
+      displayName: "Sources",
+      cardinality: "MANY",
+      objectTypeApiName: "Source",
+      linkTypeRid: "link-rid",
+      status: "ACTIVE",
+    };
+    expect(result).toEqual(
+      target === "Source"
+        ? { "source-rid": [forward, reverse] }
+        : { "source-rid": [forward], "target-rid": [reverse] },
+    );
+  });
+
   it("preserves direct interface property implementations", () => {
     const result = OntologyBlockDataToFullMetadataConverter
       .getFullMetadataFromBlockData(createBlockData());

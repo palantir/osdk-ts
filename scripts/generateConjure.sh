@@ -28,7 +28,7 @@ function generateConjure() {
     printf "Fetching conjure IR\n  Coordinate: %s\n  Path: %s\n" "$GROUP_ID:$ARTIFACT_ID" "$OUT_DIR"
     "$SCRIPT_DIR/getConjureIr.sh" "$GROUP_ID" "$ARTIFACT_ID"
     echo "  - Generating typescript"
-    $CONJURE_LITE generate --ir "${SCRIPT_DIR}/../tmp/${ARTIFACT_ID}.conjure.json" --outDir "$OUT_DIR" --header "/**/"
+    $CONJURE_LITE generate --ir "${SCRIPT_DIR}/../tmp/${ARTIFACT_ID}.conjure.json" --outDir "$OUT_DIR" --header ""
 
     formatTypescript "$OUT_DIR" "$PACKAGE_PATH"
 }
@@ -36,6 +36,7 @@ function generateConjure() {
 generateConjure "com.palantir.ontology" "type-registry-api" "${SCRIPT_DIR}/../packages/client.unstable"
 generateConjure "com.palantir.object-set-service" "object-set-service-api" "${SCRIPT_DIR}/../packages/client.unstable"
 generateConjure "com.palantir.ontology" "ontology-metadata-api" "${SCRIPT_DIR}/../packages/client.unstable"
+generateConjure "com.palantir.functions" "function-executor-api" "${SCRIPT_DIR}/../packages/client.unstable"
 generateConjure "com.palantir.foundry.third-party-application-service" "third-party-application-service-api" "${SCRIPT_DIR}/../packages/client.unstable.tpsa"
 
 # Reset git changes if the generated files are only changed by copyright year

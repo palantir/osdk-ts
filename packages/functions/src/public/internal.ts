@@ -27,3 +27,5 @@ export type {
   UpdateObject,
   UpdateObjectForInterface,
 } from "../edits/types.js";
+export type { WriteableClientContext } from "../transactions/WriteableClient.js";
+export { writeableClientContext } from "../transactions/WriteableClient.js";

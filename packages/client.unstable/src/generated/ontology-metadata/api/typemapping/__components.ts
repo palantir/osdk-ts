@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-import type {
-  DatasourceIdentifier as _api_DatasourceIdentifier,
-  ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
-  OntologyRid as _api_OntologyRid,
-  OntologyVersion as _api_OntologyVersion,
-  PropertyTypeRid as _api_PropertyTypeRid,
-  SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
-  StructFieldRid as _api_StructFieldRid,
-  TypeClass as _api_TypeClass,
-  ValueTypeIdInRequest as _api_ValueTypeIdInRequest,
-} from "../__components.js";
+import type { DatasourceIdentifier as _api_DatasourceIdentifier } from "../__components.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type { TypeClass as _api_TypeClass } from "../__components.js";
+import type { PropertyTypeRid as _api_PropertyTypeRid } from "../__components.js";
+import type { StructFieldRid as _api_StructFieldRid } from "../__components.js";
+import type { ValueTypeIdInRequest as _api_ValueTypeIdInRequest } from "../__components.js";
+import type { SharedPropertyTypeRid as _api_SharedPropertyTypeRid } from "../__components.js";
+import type { OntologyVersion as _api_OntologyVersion } from "../__components.js";
+import type { ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName } from "../__components.js";
 import type { SharedPropertyTypeModification as _api_modification_SharedPropertyTypeModification } from "../modification/__components.js";
 
 /**

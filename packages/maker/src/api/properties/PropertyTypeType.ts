@@ -80,6 +80,7 @@ type PropertyTypeTypeString = {
   supportsEfficientLeadingWildcard?: boolean;
   supportsExactMatching?: boolean;
   supportsFullTextRegex?: boolean;
+  supportsPhonetic?: boolean;
   enableAsciiFolding?: boolean;
   analyzerOverride?: Analyzer;
 };

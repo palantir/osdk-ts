@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
+import { win32 } from "node:path";
 import { normalize } from "node:path/posix";
 
 export function customNormalize(pathName: string): string {
-  return normalize(pathName.replace(/\\/g, "/"));
+  const withForwardSlashes = pathName.replace(/\\/g, "/");
+
+  // Windows UNC paths become //c/folder here
+  return withForwardSlashes.startsWith("//")
+    ? win32.normalize(withForwardSlashes).replace(/\\/g, "/")
+    : normalize(withForwardSlashes);
 }

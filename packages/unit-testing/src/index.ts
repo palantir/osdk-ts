@@ -20,6 +20,7 @@ export type {
   FetchPageStubBuilder,
   MockClient,
   MockOsdkObjectOptions,
+  MockWriteableClient,
   QueryStubBuilder,
   StubBuilderFor,
   StubClient,
@@ -29,3 +30,4 @@ export { createMockAttachment } from "./mock/createMockAttachment.js";
 export { createMockClient } from "./mock/createMockClient.js";
 export { createMockObjectSet } from "./mock/createMockObjectSet.js";
 export { createMockOsdkObject } from "./mock/createMockOsdkObject.js";
+export { createMockWriteableClient } from "./mock/createMockWriteableClient.js";

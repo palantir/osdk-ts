@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-import type {
-  DatasourceRid as _api_DatasourceRid,
-  LinkTypeRid as _api_LinkTypeRid,
-  ObjectDbRid as _api_ObjectDbRid,
-  ObjectDbSyncRid as _api_ObjectDbSyncRid,
-  ObjectTypeApiName as _api_ObjectTypeApiName,
-  ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
-  ObjectTypeRid as _api_ObjectTypeRid,
-  OntologyBranchRid as _api_OntologyBranchRid,
-  OntologyRid as _api_OntologyRid,
-  OntologyVersion as _api_OntologyVersion,
-  PropertyTypeRid as _api_PropertyTypeRid,
-} from "../__components.js";
+import type { OntologyVersion as _api_OntologyVersion } from "../__components.js";
+import type { LinkTypeRid as _api_LinkTypeRid } from "../__components.js";
+import type { ObjectTypeRid as _api_ObjectTypeRid } from "../__components.js";
+import type { DatasourceRid as _api_DatasourceRid } from "../__components.js";
+import type { OntologyBranchRid as _api_OntologyBranchRid } from "../__components.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type { ObjectDbRid as _api_ObjectDbRid } from "../__components.js";
+import type { ObjectDbSyncRid as _api_ObjectDbSyncRid } from "../__components.js";
+import type { ObjectTypeApiName as _api_ObjectTypeApiName } from "../__components.js";
+import type { ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName } from "../__components.js";
+import type { PropertyTypeRid as _api_PropertyTypeRid } from "../__components.js";
 import type { ObjectTypeGothamMapping as _api_typemapping_ObjectTypeGothamMapping } from "../typemapping/__components.js";
-import type {
-  EntityProvenance as _api_entitymetadata_provenance_EntityProvenance,
-  OwningDirectWriter as _api_entitymetadata_provenance_OwningDirectWriter,
-} from "./provenance/__components.js";
+import type { EntityProvenance as _api_entitymetadata_provenance_EntityProvenance } from "./provenance/__components.js";
+import type { OwningDirectWriter as _api_entitymetadata_provenance_OwningDirectWriter } from "./provenance/__components.js";
 
 /**
  * Action Log is not required for this ObjectType.

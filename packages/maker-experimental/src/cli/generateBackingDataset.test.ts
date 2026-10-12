@@ -444,6 +444,7 @@ describe("generateBackingDatasetBlockResult", () => {
     );
     expect(blockDataContents.type).toBe("v1");
     expect(blockDataContents.v1.hasSchema).toBe(true);
+    expect(blockDataContents.v1.includeData).toBe(false);
     const columnValues = Object.values(blockDataContents.v1.columns);
     expect(columnValues).toContain("id");
     expect(columnValues).toContain("count");
@@ -511,6 +512,78 @@ describe("generateBackingDatasetBlockResult", () => {
           ReadableIdGenerator.getForDatasetColumnOutput(
             "TestObject",
             "markings",
+          )
+        ],
+      ).toMatchObject({
+        type: "datasourceColumn",
+        datasourceColumn: {
+          type: {
+            type: "concrete",
+            concrete: {
+              type: "array",
+              array: {
+                elementType: {
+                  type: "primitive",
+                  primitive: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+      });
+    },
+  );
+
+  it.each([
+    { type: "geohash", geohash: {} },
+    { type: "geoshape", geoshape: {} },
+  ] satisfies Type[])(
+    "generates backing columns for scalar and array $type properties",
+    async (type) => {
+      const blockData = createObjectTypeBlockData({
+        properties: [
+          { apiName: "id", type: STRING_PROPERTY_TYPE },
+          { apiName: "location", type },
+          { apiName: "locations", type: makeArrayType(type) },
+        ],
+      });
+
+      const result = await generateBackingDatasetBlockResult(
+        blockData,
+        buildDir,
+      );
+      const schema = JSON.parse(
+        await fs.promises.readFile(
+          path.join(result.block_data_directory, "schema.json"),
+          "utf-8",
+        ),
+      );
+      expect(schema.fieldSchemaList).toMatchObject([
+        { name: "id", type: "STRING", arraySubtype: null },
+        { name: "location", type: "STRING", arraySubtype: null },
+        { name: "locations", type: "ARRAY", arraySubtype: { type: "STRING" } },
+      ]);
+      expect(
+        result.outputs[
+          ReadableIdGenerator.getForDatasetColumnOutput(
+            "TestObject",
+            "location",
+          )
+        ],
+      ).toMatchObject({
+        type: "datasourceColumn",
+        datasourceColumn: {
+          type: {
+            type: "concrete",
+            concrete: { type: "primitive", primitive: { type: "string" } },
+          },
+        },
+      });
+      expect(
+        result.outputs[
+          ReadableIdGenerator.getForDatasetColumnOutput(
+            "TestObject",
+            "locations",
           )
         ],
       ).toMatchObject({
@@ -759,6 +832,7 @@ describe("generateBackingDatasetBlockResultForLink", () => {
     );
     expect(blockDataContents.type).toBe("v1");
     expect(blockDataContents.v1.hasSchema).toBe(true);
+    expect(blockDataContents.v1.includeData).toBe(false);
     const columnValues = Object.values(blockDataContents.v1.columns);
     expect(columnValues).toContain("fooId");
     expect(columnValues).toContain("barId");

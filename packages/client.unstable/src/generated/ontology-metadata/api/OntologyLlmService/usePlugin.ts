@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  OntologyLmsRequest as _api_llm_OntologyLmsRequest,
-  OntologyLmsResponse as _api_llm_OntologyLmsResponse,
-} from "../llm/__components.js";
+import type { OntologyLmsRequest as _api_llm_OntologyLmsRequest } from "../llm/__components.js";
+import type { OntologyLmsResponse as _api_llm_OntologyLmsResponse } from "../llm/__components.js";
 
 /**
  * Endpoint to use an Ontology LMS App plugin. This is a union of plugins that can define how we prompt the

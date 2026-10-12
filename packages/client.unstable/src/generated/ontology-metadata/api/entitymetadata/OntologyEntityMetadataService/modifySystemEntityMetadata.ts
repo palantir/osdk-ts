@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
-import type {
-  SystemEntityMetadataModificationRequest as _api_entitymetadata_SystemEntityMetadataModificationRequest,
-  SystemEntityMetadataModificationResponse as _api_entitymetadata_SystemEntityMetadataModificationResponse,
-} from "../__components.js";
+import type { SystemEntityMetadataModificationRequest as _api_entitymetadata_SystemEntityMetadataModificationRequest } from "../__components.js";
+import type { SystemEntityMetadataModificationResponse as _api_entitymetadata_SystemEntityMetadataModificationResponse } from "../__components.js";
 
 /**
  * Endpoint to modify the SystemEntityMetadata for the specified ObjectType(s)/LinkType(s). This is intended to

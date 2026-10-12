@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { SharedPropertyTypeRid as _api_SharedPropertyTypeRid } from "../../__components.js";
 import type { GetSharedPropertyTypePermissionsResponse as _api_permissions_GetSharedPropertyTypePermissionsResponse } from "../__components.js";
