@@ -1,5 +1,12 @@
 # @osdk/vite-plugin-oac
 
+## 0.82.0
+
+### Patch Changes
+
+- Updated dependencies [74891bf]
+  - @osdk/cli@0.108.0
+
 ## 0.81.0
 
 ### Patch Changes
