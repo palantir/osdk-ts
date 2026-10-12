@@ -129,6 +129,11 @@ describe(toDataValueAgents, () => {
         where: { type: "eq", field: "employeeId", value: 50030 },
       },
     },
+    {
+      name: "a wire object set",
+      value: () => deepFreeze({ type: "base", objectType: "Employee" }),
+      objectSet: { type: "base", objectType: "Employee" },
+    },
   ])(
     "converts an object-set argument from $name",
     async ({ value, objectSet }) => {
@@ -144,6 +149,23 @@ describe(toDataValueAgents, () => {
       ).toEqual(objectSet);
     },
   );
+
+  it("passes through an object-set RID without client requests", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>();
+    const ctx = createMinimalClient(
+      { ontologyRid },
+      fauxFoundry.baseUrl,
+      () => Promise.resolve("token"),
+      {},
+      fetch,
+    );
+    const rid = "ri.object-set.main.object-set.existing";
+
+    const converted = await toDataValueAgents(rid, ctx, employeeSetType);
+
+    expect(converted).toBe(rid);
+    expect(fetch).not.toHaveBeenCalled();
+  });
 
   it("recursively converts lists, records, structs, nullable values, and union members", async () => {
     const type: DataType = {
@@ -291,24 +313,35 @@ describe(toDataValueAgents, () => {
     expect(converted).toStrictEqual(input);
   });
 
-  it.each(["object", "objectSet"] as const)(
-    "rejects %s metadata for another ontology",
-    async (type) => {
+  it.each([
+    {
+      name: "object",
+      dataType: employeeType,
+      value: () => 50030,
+    },
+    {
+      name: "OSDK object set",
+      dataType: employeeSetType,
+      value: () => client(Employee),
+    },
+    {
+      name: "wire object set",
+      dataType: employeeSetType,
+      value: () => ({ type: "base", objectType: "Employee" }),
+    },
+  ])(
+    "rejects $name metadata for another ontology",
+    async ({ dataType, value }) => {
       const getObject = vi.spyOn(
         clientCtx.ontologyProvider,
         "getObjectDefinition",
       );
 
       await expect(
-        toDataValueAgents(
-          type === "object" ? 50030 : client(Employee),
-          clientCtx,
-          {
-            type,
-            ontologyApiName: "another-ontology",
-            objectTypeApiName: Employee.apiName,
-          },
-        ),
+        toDataValueAgents(value(), clientCtx, {
+          ...dataType,
+          ontologyApiName: "another-ontology",
+        }),
       ).rejects.toThrow("must reference the client's ontology");
       expect(getObject).not.toHaveBeenCalled();
     },

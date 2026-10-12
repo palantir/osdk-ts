@@ -23,6 +23,7 @@ import { createAsyncClientCache } from "../object/Cache.js";
 import { isObjectSet } from "../objectSet/createObjectSet.js";
 import { createAndFetchTempObjectSetRid } from "../public-utils/createAndFetchTempObjectSetRid.js";
 import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
+import { isWireObjectSet } from "./WireObjectSet.js";
 
 export function toDataValueAgents(
   value: Record<string, unknown>,
@@ -61,6 +62,7 @@ export async function toDataValueAgents(
         : desiredType.objectTypeApiName;
       const objectTypeDefinition =
         await client.ontologyProvider.getObjectDefinition(objectTypeApiName);
+      // TODO(mhogberg): Update the agent APIs to accept simple object primary keys and remove the conversion here.
       return {
         ontologyRid: await client.ontologyRid,
         objectTypeApiName,
@@ -69,11 +71,16 @@ export async function toDataValueAgents(
     }
 
     case "objectSet": {
+      if (typeof value === "string") {
+        return value;
+      }
       invariant(
-        typeof value === "object" && isObjectSet(value),
-        "Expected an OSDK ObjectSet for an agent object-set argument",
+        isWireObjectSet(value) || isObjectSet(value),
+        "Expected an OSDK ObjectSet, wire object set definition, or object set RID string for an agent object set argument",
       );
       await checkOntology(client, desiredType.ontologyApiName);
+      // TODO(mhogberg): Update the agent APIs to accept both object set objects and object set RIDs and
+      //  remove the conversion here.
       return await createAndFetchTempObjectSetRid(client, value);
     }
 

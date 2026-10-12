@@ -19,12 +19,14 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectSet,
 } from "@osdk/api";
+import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import * as OntologyObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet";
 
 import { additionalContext, type Client } from "../Client.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 import { normalizeInterfaceLinkSearchArounds } from "../util/normalizeInterfaceLinkSearchArounds.js";
+import { isWireObjectSet } from "../util/WireObjectSet.js";
 
 /**
  * Fetches a temporary object set RID from the Foundry stack for the given object set.
@@ -37,9 +39,11 @@ export async function createAndFetchTempObjectSetRid<
   Q extends ObjectOrInterfaceDefinition,
 >(
   client: Client | MinimalClient,
-  objectSet: unknown extends CompileTimeMetadata<Q>["objectSet"]
-    ? ObjectSet<Q>
-    : CompileTimeMetadata<Q>["objectSet"],
+  objectSet:
+    | WireObjectSet
+    | (unknown extends CompileTimeMetadata<Q>["objectSet"]
+        ? ObjectSet<Q>
+        : CompileTimeMetadata<Q>["objectSet"]),
 ): Promise<string> {
   const minimalClient =
     additionalContext in client ? client[additionalContext] : client;
@@ -49,7 +53,7 @@ export async function createAndFetchTempObjectSetRid<
     {
       objectSet: await normalizeInterfaceLinkSearchArounds(
         minimalClient,
-        getWireObjectSet(objectSet),
+        isWireObjectSet(objectSet) ? objectSet : getWireObjectSet(objectSet),
       ),
     },
     { branch: minimalClient.branch },
