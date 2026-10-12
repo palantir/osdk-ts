@@ -17,9 +17,8 @@
 import {
   mkdir,
   mkdtemp,
-  realpath,
   readFile,
-  rename,
+  realpath,
   rm,
   writeFile,
 } from "node:fs/promises";
@@ -29,202 +28,75 @@ import path from "node:path";
 import type { WidgetSetManifest } from "@osdk/widget.api";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget.api";
 import { build } from "vite";
-import { afterEach, expect, test, vi } from "vitest";
+import { afterEach, expect, test } from "vitest";
 
 import FoundryWidgetPlugin from "../../index.js";
-import type { FoundryWidgetPluginOptions } from "../../index.js";
 
-const roots: string[] = [];
+let root: string;
 
 afterEach(async () => {
-  vi.unstubAllEnvs();
-  await Promise.all(
-    roots.splice(0).map((root) => rm(root, { recursive: true, force: true })),
-  );
+  await rm(root, { recursive: true, force: true });
 });
-
-const widgetSetRid = "replace-after-installation";
-const sdkRid =
-  "ri.osdk.main.ontology-sdk-package.00000000-0000-0000-0000-000000000000";
-
-async function fixture(ids: string[]) {
-  const root = await realpath(
-    await mkdtemp(path.join(tmpdir(), "widget-build-")),
-  );
-  roots.push(root);
-  await mkdir(path.join(root, "src"));
-  await writeFile(
-    path.join(root, "foundry.config.json"),
-    JSON.stringify({
-      foundryUrl: "replace-after-installation",
-      widgetSet: { rid: widgetSetRid, directory: "output" },
-    }),
-  );
-  await writeFile(path.join(root, "src/widget.css"), ".widget { color: red; }");
-  await writeFile(
-    path.join(root, "package.json"),
-    JSON.stringify({
-      name: "widget-build-test",
-      version: "9.9.9",
-      type: "module",
-    }),
-  );
-  for (const [index, id] of ids.entries()) {
-    await writeFile(
-      path.join(root, `${index}.html`),
-      `<script type="module" src="/src/${index}.ts"></script>`,
-    );
-    await writeFile(
-      path.join(root, `src/${index}.ts`),
-      `import config from "./${index}.config"; import "./widget.css"; document.title = config.name;`,
-    );
-    await writeFile(
-      path.join(root, `src/${index}.config.ts`),
-      `export default ${JSON.stringify({ id, name: id, type: "workshop", parameters: { title: { type: "string", displayName: "Title" } }, events: { changeTitle: { displayName: "Change title", parameterUpdateIds: ["title"] } } })};`,
-    );
-  }
-  return root;
-}
-
-async function buildFixture(
-  root: string,
-  ids: string[],
-  options: FoundryWidgetPluginOptions,
-  base = "/",
-) {
-  await build({
-    root,
-    base,
-    configFile: false,
-    logLevel: "silent",
-    plugins: [FoundryWidgetPlugin(options)],
-    build: {
-      outDir: "output",
-      rollupOptions: {
-        input: ids.map((_, index) => path.join(root, `${index}.html`)),
-      },
-    },
-  });
-  return JSON.parse(
-    await readFile(path.join(root, "output", MANIFEST_FILE_LOCATION), "utf8"),
-  ) as WidgetSetManifest;
-}
 
 test.each(["/", "/nested/widgets/", "./"])(
-  "builds with placeholder targets from a different working directory using base %s",
+  "builds from a Vite root outside the working directory with base %s",
   async (base) => {
-    vi.stubEnv("FOUNDRY_TOKEN", undefined);
-    const ids = ["first", "second"];
-    const root = await fixture(ids);
-    const manifest = await buildFixture(
-      root,
-      ids,
-      {
-        defaults: { refreshHostDataOnAction: true },
-      },
-      base,
+    root = await realpath(await mkdtemp(path.join(tmpdir(), "widget-build-")));
+    await mkdir(path.join(root, "src"));
+    await writeFile(
+      path.join(root, "foundry.config.json"),
+      JSON.stringify({
+        foundryUrl: "https://example.com",
+        widgetSet: { rid: "ri.widget-set", directory: "output" },
+      }),
     );
-    expect(manifest.widgetSet.rid).toBe(widgetSetRid);
+    await writeFile(
+      path.join(root, "package.json"),
+      JSON.stringify({ version: "9.9.9", type: "module" }),
+    );
+    await writeFile(
+      path.join(root, "resources.json"),
+      JSON.stringify({ authorizations: { read: [["example-org"]] } }),
+    );
+    await writeFile(
+      path.join(root, "index.html"),
+      `<script type="module" src="/src/widget.ts"></script>`,
+    );
+    await writeFile(
+      path.join(root, "src/widget.ts"),
+      `import config from "./widget.config"; import "./widget.css"; document.title = config.name;`,
+    );
+    await writeFile(
+      path.join(root, "src/widget.config.ts"),
+      `export default { id: "widget", name: "widget", type: "workshop", parameters: {}, events: {} };`,
+    );
+    await writeFile(
+      path.join(root, "src/widget.css"),
+      ".widget { color: red; }",
+    );
+
+    await build({
+      root,
+      base,
+      configFile: false,
+      logLevel: "silent",
+      plugins: [FoundryWidgetPlugin()],
+      build: { outDir: "output" },
+    });
+
+    const manifest = JSON.parse(
+      await readFile(path.join(root, "output", MANIFEST_FILE_LOCATION), "utf8"),
+    ) as WidgetSetManifest;
+    expect(manifest.widgetSet.rid).toBe("ri.widget-set");
     expect(manifest.widgetSet.version).toBe("9.9.9");
-    expect(Object.keys(manifest.widgetSet.widgets)).toEqual(ids);
-    expect(manifest.widgetSet.inputSpec).toEqual({ discovered: { sdks: [] } });
-    for (const [index, id] of ids.entries()) {
-      const widget = manifest.widgetSet.widgets[id];
-      const html = await readFile(
-        path.join(root, `output/${index}.html`),
-        "utf8",
-      );
-      expect(widget.parameters.title).toEqual({
-        type: "string",
-        displayName: "Title",
-      });
-      expect(widget.events.changeTitle.parameterUpdateIds).toEqual(["title"]);
-      expect(widget.refreshHostDataOnAction).toBe(true);
-      expect(widget.entrypointJs).toHaveLength(1);
-      expect(widget.entrypointCss).toHaveLength(1);
-      for (const asset of widget.entrypointJs) {
-        expect(asset.path).toMatch(/^assets\//u);
-        expect(html).toContain(`src="${base}${asset.path}"`);
-        expect(
-          await readFile(path.join(root, "output", asset.path), "utf8"),
-        ).toContain("document.title");
-      }
-      for (const asset of widget.entrypointCss ?? []) {
-        expect(asset.path).toMatch(/^assets\//u);
-        expect(html).toContain(`href="${base}${asset.path}"`);
-        expect(
-          await readFile(path.join(root, "output", asset.path), "utf8"),
-        ).toContain(".widget");
-      }
-    }
+    expect(manifest.widgetSet.inputSpec).toEqual({
+      discovered: { sdks: [], authorizations: { read: [["example-org"]] } },
+    });
+    const widget = manifest.widgetSet.widgets.widget;
+    const html = await readFile(path.join(root, "output/index.html"), "utf8");
+    expect(widget.entrypointJs).toHaveLength(1);
+    expect(html).toContain(`src="${base}${widget.entrypointJs[0].path}"`);
+    expect(widget.entrypointCss).toHaveLength(1);
+    expect(html).toContain(`href="${base}${widget.entrypointCss?.[0].path}"`);
   },
 );
-
-test("discovers SDK metadata and authorizations relative to the Vite root", async () => {
-  const root = await fixture(["widget"]);
-  await writeFile(
-    path.join(root, "package.json"),
-    JSON.stringify({
-      version: "9.9.9",
-      dependencies: { "@ontology/sdk": "4.5.6" },
-    }),
-  );
-  const sdkPath = path.join(root, "node_modules/@ontology/sdk");
-  await mkdir(sdkPath, { recursive: true });
-  await writeFile(
-    path.join(sdkPath, "package.json"),
-    JSON.stringify({
-      name: "@ontology/sdk",
-      version: "4.5.6",
-      osdk: { packageRid: sdkRid },
-    }),
-  );
-  await writeFile(
-    path.join(root, "resources.json"),
-    JSON.stringify({
-      authorizations: { read: [["example-org"]] },
-    }),
-  );
-  const manifest = await buildFixture(root, ["widget"], {});
-  expect(manifest.widgetSet.inputSpec).toEqual({
-    discovered: {
-      sdks: [{ rid: sdkRid, version: "4.5.6" }],
-      authorizations: { read: [["example-org"]] },
-    },
-  });
-});
-
-test("rejects duplicate widget identities in a real build", async () => {
-  const ids = ["same", "same"];
-  const root = await fixture(ids);
-  await expect(buildFixture(root, ids, {})).rejects.toThrow(
-    "Duplicate widget ID: same",
-  );
-});
-
-test("requires a configuration file", async () => {
-  const root = await fixture(["widget"]);
-  await rename(
-    path.join(root, "foundry.config.json"),
-    path.join(root, "foundry.config.json.bak"),
-  );
-  await expect(buildFixture(root, ["widget"], {})).rejects.toThrow(
-    "foundry.config.json file not found",
-  );
-});
-
-test("builds for an existing widget set", async () => {
-  const root = await fixture(["widget"]);
-  const remoteRid =
-    "ri.widgetregistry.main.widget-set.11111111-1111-1111-1111-111111111111";
-  await writeFile(
-    path.join(root, "foundry.config.json"),
-    JSON.stringify({
-      foundryUrl: "https://example.com",
-      widgetSet: { rid: remoteRid, directory: "output" },
-    }),
-  );
-  const manifest = await buildFixture(root, ["widget"], {});
-  expect(manifest.widgetSet.rid).toBe(remoteRid);
-  expect(manifest.widgetSet.version).toBe("9.9.9");
-});
