@@ -14,43 +14,51 @@
  * limitations under the License.
  */
 
-import type { HostMessage } from "@osdk/widget.client";
-import React, { useLayoutEffect, useMemo } from "react";
 
+import * as React from "react";
+import type { JSX } from "react/jsx-runtime";
 import { customThemeToBlueprintTokens } from "./customThemeToBlueprintTokens.js";
 
-// This provider and token mapping will be imported from a shared library with Workshop.
+// Copied from Workshop 
+export type ThemeBorderRadius = "ROUNDED" | "REGULAR" | "SQUARE";
+
+export interface IWorkshopCustomTheme {
+    readonly version: 1;
+    readonly borderRadius?: ThemeBorderRadius;
+}
+// Move this provider and its theme translation to a shared package for custom widgets and OSDK apps.
 export function BlueprintThemeProvider({
-  children,
-  theme,
-}: React.PropsWithChildren<{ theme: HostMessage.ThemeV1 | undefined }>) {
-  const tokens = useMemo(
-    () => (theme == null ? undefined : customThemeToBlueprintTokens(theme)),
-    [theme],
-  );
+    children,
+    enabled = true,
+    theme,
+}: React.PropsWithChildren<{ enabled?: boolean; theme: IWorkshopCustomTheme | undefined }>): JSX.Element {
+    const tokens = React.useMemo(
+        () => (enabled && theme != null ? customThemeToBlueprintTokens(theme) : undefined),
+        [enabled, theme],
+    );
 
-  useLayoutEffect(() => {
-    if (tokens == null) {
-      return;
-    }
-    // The iframe is dedicated to this widget; root tokens also reach Blueprint portals.
-    const style = document.documentElement.style;
-    const previous = Object.entries(tokens).map(([name, value]) => {
-      const previousValue = style.getPropertyValue(name);
-      const priority = style.getPropertyPriority(name);
-      style.setProperty(name, value);
-      return { name, previousValue, priority };
-    });
-    return () => {
-      for (const { name, previousValue, priority } of previous) {
-        if (previousValue === "") {
-          style.removeProperty(name);
-        } else {
-          style.setProperty(name, previousValue, priority);
+    React.useLayoutEffect(() => {
+        if (tokens == null) {
+            return;
         }
-      }
-    };
-  }, [tokens]);
+        // The iframe is dedicated to this widget; root tokens also reach Blueprint portals.
+        const style = document.documentElement.style;
+        const previous = Object.entries(tokens).map(([name, value]) => {
+        const previousValue = style.getPropertyValue(name);
+        const priority = style.getPropertyPriority(name);
+        style.setProperty(name, value);
+        return { name, previousValue, priority };
+        });
+        return () => {
+        for (const { name, previousValue, priority } of previous) {
+            if (previousValue === "") {
+            style.removeProperty(name);
+            } else {
+            style.setProperty(name, previousValue, priority);
+            }
+        }
+        };
+    }, [tokens]);
 
-  return <>{children}</>;
+    return <>{children}</>;
 }

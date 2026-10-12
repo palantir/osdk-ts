@@ -303,7 +303,8 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         } as FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>
       }
     >
-      <BlueprintThemeProvider theme={theme}>
+      {/* Set enabled to true here. Update theme message will only be received when the feature flag is on */}
+      <BlueprintThemeProvider theme={theme} enabled={true}>
         <ErrorBoundary>{children}</ErrorBoundary>
       </BlueprintThemeProvider>
     </FoundryWidgetContext.Provider>
