@@ -1008,16 +1008,33 @@ versions:
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
+            import type { Osdk } from "@osdk/client";
 
+            // $applyModifiers uses reducers and struct main values configured in the ontology.
+            // The generated SDK must include that configuration for the property:
+            // - "applyReducers" reduces an array to one element using its configured reducers.
+            // - "applyMainValue" extracts a struct's main value: a single configured field returns
+            //   that field's value; multiple fields return a struct containing only those fields.
+            // - "applyReducersAndExtractMainValue" reduces a struct array, then extracts its main
+            //   value. The property must have both reducers and a main value configured.
+            // Properties not listed in $applyModifiers are not modified by this option.
+            // Modifiers are supported by fetchPage() and asyncIter(), but not fetchOne().
+            //
+            // Assume {{arrayProperty}} has reducers configured. When passing $select, include
+            // every modified property using its plain API name, plus any other properties you need.
             const page = await client({{objectType}}).fetchPage({
+                $select: ["{{arrayProperty}}"],
                 $applyModifiers: {
                     {{arrayProperty}}: "applyReducers",
                 },
             });
 
             for (const object of page.data) {
-                // The property type is the array element type, not the original array type.
-                const reducedValue = object.{{arrayProperty}};
+                // fetchPage infers the modified property type, preserving property nullability.
+                // For an explicit type, use "propertyApiName:modifier" in Osdk.Instance's property keys.
+                const reducedObject: Osdk.Instance<{{objectType}}, never, "{{arrayProperty}}:applyReducers"> = object;
+                // The value has the array element type, or undefined if the property is nullable.
+                console.log(reducedObject.{{arrayProperty}});
             }
       orderObjectsGuide:
         - template: |-
@@ -1114,6 +1131,16 @@ versions:
                     $select: properties
                 });
             }
+
+            // Assume {{arrayProperty}} has reducers configured in the ontology and generated SDK.
+            // Include each modified property in $select. The returned property has the array
+            // element type, or undefined if the property is nullable.
+            function getPageWithReducedProperties() {
+                return client({{objectType}}).fetchPage({
+                    $select: ["{{arrayProperty}}"],
+                    $applyModifiers: { {{arrayProperty}}: "applyReducers" }
+                });
+            }
       loadAllObjectsReference:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1150,6 +1177,17 @@ versions:
             async function logAllWithSelectedProperties(properties: {{objectType}}.PropertyKeys[]) {
                 for await (const obj of client({{objectType}}).asyncIter({ $select: properties })) {
                     console.log(obj);
+                }
+            }
+
+            // Assume {{arrayProperty}} has reducers configured in the ontology and generated SDK.
+            // Include each modified property in $select. asyncIter applies the modifiers on every page.
+            async function logAllWithReducedProperties() {
+                for await (const obj of client({{objectType}}).asyncIter({
+                    $select: ["{{arrayProperty}}"],
+                    $applyModifiers: { {{arrayProperty}}: "applyReducers" }
+                })) {
+                    console.log(obj.{{arrayProperty}});
                 }
             }
       loadLinkedObjectReference:

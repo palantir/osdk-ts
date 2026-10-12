@@ -19,17 +19,39 @@
 
 // Example: applyPropertyModifiersGuide
 
+import type { Osdk } from "@osdk/client";
+
 import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
+// $applyModifiers uses reducers and struct main values configured in the ontology.
+// The generated SDK must include that configuration for the property:
+// - "applyReducers" reduces an array to one element using its configured reducers.
+// - "applyMainValue" extracts a struct's main value: a single configured field returns
+//   that field's value; multiple fields return a struct containing only those fields.
+// - "applyReducersAndExtractMainValue" reduces a struct array, then extracts its main
+//   value. The property must have both reducers and a main value configured.
+// Properties not listed in $applyModifiers are not modified by this option.
+// Modifiers are supported by fetchPage() and asyncIter(), but not fetchOne().
+//
+// Assume certifications has reducers configured. When passing $select, include
+// every modified property using its plain API name, plus any other properties you need.
 const page = await client(Employee).fetchPage({
+  $select: ["certifications"],
   $applyModifiers: {
     certifications: "applyReducers",
   },
 });
 
 for (const object of page.data) {
-  // The property type is the array element type, not the original array type.
-  const reducedValue = object.certifications;
+  // fetchPage infers the modified property type, preserving property nullability.
+  // For an explicit type, use "propertyApiName:modifier" in Osdk.Instance's property keys.
+  const reducedObject: Osdk.Instance<
+    Employee,
+    never,
+    "certifications:applyReducers"
+  > = object;
+  // The value has the array element type, or undefined if the property is nullable.
+  console.log(reducedObject.certifications);
 }

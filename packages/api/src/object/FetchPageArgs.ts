@@ -165,6 +165,34 @@ export interface FetchPageArgs<
    * continue with `nextPageToken` to load further pages.
    */
   $pageSize?: number;
+  /**
+   * Applies ontology-configured reducers or struct main values to properties by API name.
+   * Only properties with the corresponding configuration in the generated SDK accept a modifier:
+   *
+   * - `"applyReducers"`: reduces an array to a single element using its configured reducers.
+   * - `"applyMainValue"`: extracts a struct's configured main value. One main-value field
+   *   returns that field's value; multiple fields return a struct containing only those fields.
+   * - `"applyReducersAndExtractMainValue"`: reduces a struct array, then extracts its main value.
+   *   Requires both reducers and a main value.
+   *
+   * When passing `$select`, include every modified property using its plain API name, along
+   * with any other properties you need. Unlisted properties are not modified by this option.
+   * The returned property types reflect the modifiers, preserving property nullability.
+   * For an explicit `Osdk.Instance` type, use `"propertyApiName:modifier"` in its property keys.
+   *
+   * @example
+   * ```ts
+   * // Assume these properties have reducers and/or main values configured in the ontology.
+   * const page = await client(Employee).fetchPage({
+   *   $select: ["fullName", "performanceScores", "employeeProfile", "bonusHistory"],
+   *   $applyModifiers: {
+   *     performanceScores: "applyReducers",
+   *     employeeProfile: "applyMainValue",
+   *     bonusHistory: "applyReducersAndExtractMainValue",
+   *   },
+   * });
+   * ```
+   */
   $applyModifiers?: ApplyModifiersArg<Q> &
     MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
   /**
@@ -205,6 +233,31 @@ export interface AsyncIterArgs<
     SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>,
     OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
   $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
+  /**
+   * Applies ontology-configured reducers or struct main values to properties by API name
+   * on every page loaded by the iterator. Only properties with the corresponding
+   * configuration in the generated SDK accept a modifier:
+   *
+   * - `"applyReducers"`: reduces an array to a single element using its configured reducers.
+   * - `"applyMainValue"`: extracts a struct's configured main value. One main-value field
+   *   returns that field's value; multiple fields return a struct containing only those fields.
+   * - `"applyReducersAndExtractMainValue"`: reduces a struct array, then extracts its main value.
+   *   Requires both reducers and a main value.
+   *
+   * When passing `$select`, include every modified property using its plain API name, along
+   * with any other properties you need. Unlisted properties are not modified by this option.
+   *
+   * @example
+   * ```ts
+   * // Assume performanceScores has reducers configured in the ontology.
+   * for await (const employee of client(Employee).asyncIter({
+   *   $select: ["fullName", "performanceScores"],
+   *   $applyModifiers: { performanceScores: "applyReducers" },
+   * })) {
+   *   console.log(employee.fullName, employee.performanceScores);
+   * }
+   * ```
+   */
   $applyModifiers?: ApplyModifiersArg<Q> &
     MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
 }

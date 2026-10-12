@@ -57,3 +57,14 @@ async function logAllWithSelectedProperties(
     console.log(obj);
   }
 }
+
+// Assume certifications has reducers configured in the ontology and generated SDK.
+// Include each modified property in $select. asyncIter applies the modifiers on every page.
+async function logAllWithReducedProperties() {
+  for await (const obj of client(Employee).asyncIter({
+    $select: ["certifications"],
+    $applyModifiers: { certifications: "applyReducers" },
+  })) {
+    console.log(obj.certifications);
+  }
+}

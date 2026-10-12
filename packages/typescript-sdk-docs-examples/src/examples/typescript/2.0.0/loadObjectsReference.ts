@@ -48,3 +48,13 @@ function getPageWithSelectedProperties(properties: Employee.PropertyKeys[]) {
     $select: properties,
   });
 }
+
+// Assume certifications has reducers configured in the ontology and generated SDK.
+// Include each modified property in $select. The returned property has the array
+// element type, or undefined if the property is nullable.
+function getPageWithReducedProperties() {
+  return client(Employee).fetchPage({
+    $select: ["certifications"],
+    $applyModifiers: { certifications: "applyReducers" },
+  });
+}
