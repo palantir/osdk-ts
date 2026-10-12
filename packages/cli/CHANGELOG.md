@@ -1,5 +1,11 @@
 # @osdk/cli
 
+## 0.108.0
+
+### Minor Changes
+
+- 74891bf: Add `--branchName` to `widgetset deploy` and `widgetset version list` to override the current Git branch.
+
 ## 0.107.0
 
 ### Patch Changes
