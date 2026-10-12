@@ -43,6 +43,7 @@ import {
   isExotic,
   isInterfaceSharedPropertyType,
   OntologyEntityTypeEnum,
+  resolveDerivedPropertyLinks,
   withoutNamespace,
 } from "@osdk/maker";
 import invariant from "tiny-invariant";
@@ -518,11 +519,15 @@ function buildDerivedDatasource(
   objectTypeApiName: string,
   ridGenerator: OntologyRidGenerator,
 ): ObjectTypeDatasource {
-  // TODO: Convert linkType from API name to RID
+  const { steps, targetObjectApiName } = resolveDerivedPropertyLinks(
+    objectTypeApiName,
+    datasource.linkDefinition,
+  );
+
   const linkDefinition = {
     type: "multiHopLink" as const,
     multiHopLink: {
-      steps: datasource.linkDefinition.map((step) => ({
+      steps: steps.map((step) => ({
         type: "searchAround" as const,
         searchAround: {
           linkTypeIdentifier: {
@@ -531,7 +536,7 @@ function buildDerivedDatasource(
               cleanAndValidateLinkTypeId(step.linkType.apiName),
             ),
           },
-          linkTypeSide: step.side ?? "SOURCE",
+          linkTypeSide: step.side,
         },
       })),
     },
@@ -552,7 +557,7 @@ function buildDerivedDatasource(
                   type: "propertyType" as const,
                   propertyType: ridGenerator.generatePropertyRid(
                     targetProp,
-                    objectTypeApiName,
+                    targetObjectApiName,
                   ),
                 },
               ],
@@ -568,7 +573,7 @@ function buildDerivedDatasource(
             Object.entries(datasource.propertyMapping).map(
               ([sourceProp, agg]) => [
                 ridGenerator.generatePropertyRid(sourceProp, objectTypeApiName),
-                buildAggregation(agg, ridGenerator),
+                buildAggregation(agg, targetObjectApiName, ridGenerator),
               ],
             ),
           ),
@@ -589,19 +594,22 @@ function buildDerivedDatasource(
 
 function buildAggregation(
   agg: DerivedPropertyAggregation,
+  targetObjectApiName: string,
   ridGenerator: OntologyRidGenerator,
 ): DerivedPropertyAggregationWire {
   const type = agg.type;
   const limit = "limit" in agg ? agg.limit : undefined;
   const foreignProperty = "property" in agg ? agg.property : undefined;
   const innerDef: any = {};
-  // TODO: Convert property references in aggregations to RIDs
   if (type !== "count") {
     if (["collectList", "collectSet"].includes(type)) {
       innerDef.linkedProperty = {
         type: "propertyType",
         propertyType: foreignProperty
-          ? ridGenerator.generateRid(`property.unknown.${foreignProperty}`)
+          ? ridGenerator.generatePropertyRid(
+              foreignProperty,
+              targetObjectApiName,
+            )
           : undefined,
       };
       innerDef.limit = limit;
@@ -609,7 +617,10 @@ function buildAggregation(
       innerDef.property = {
         type: "propertyType",
         propertyType: foreignProperty
-          ? ridGenerator.generateRid(`property.unknown.${foreignProperty}`)
+          ? ridGenerator.generatePropertyRid(
+              foreignProperty,
+              targetObjectApiName,
+            )
           : undefined,
       };
     }

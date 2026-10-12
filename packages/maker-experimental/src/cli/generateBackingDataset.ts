@@ -131,13 +131,13 @@ export function typeToFieldSchema(type: Type, name?: string): FieldSchema {
 }
 
 /**
- * Extract the set of edit-only property RIDs from the wire format datasources.
+ * Select properties backed by dataset columns, excluding derived and edit-only properties.
  */
-function getEditOnlyPropertyRids(
-  datasources: ObjectTypeBlockDataV2["datasources"],
-): Set<string> {
-  const editOnlyRids = new Set<string>();
-  for (const ds of datasources) {
+export function getBackingDatasetProperties(
+  objectTypeBlockData: ObjectTypeBlockDataV2,
+): PropertyType[] {
+  const mappedRids = new Set<string>();
+  for (const ds of objectTypeBlockData.datasources) {
     const def = ds.datasource;
     let propertyMapping: Record<string, PropertyTypeMappingInfo> | undefined;
     if (def.type === "datasetV2") {
@@ -147,24 +147,14 @@ function getEditOnlyPropertyRids(
     }
     if (propertyMapping) {
       for (const [rid, mapping] of Object.entries(propertyMapping)) {
-        if (mapping.type === "editOnly") {
-          editOnlyRids.add(rid);
+        if (mapping.type === "column" || mapping.type === "struct") {
+          mappedRids.add(rid);
         }
       }
     }
   }
-  return editOnlyRids;
-}
-
-/**
- * Extract non-edit-only properties from ObjectTypeBlockDataV2.
- */
-export function getNonEditOnlyProperties(
-  objectTypeBlockData: ObjectTypeBlockDataV2,
-): PropertyType[] {
-  const editOnlyRids = getEditOnlyPropertyRids(objectTypeBlockData.datasources);
   return Object.entries(objectTypeBlockData.objectType.propertyTypes)
-    .filter(([rid]) => !editOnlyRids.has(rid))
+    .filter(([rid]) => mappedRids.has(rid))
     .map(([_, prop]) => prop);
 }
 
@@ -387,9 +377,9 @@ export async function generateBackingDatasetBlockResult(
   randomnessKey?: string,
 ): Promise<BlockGeneratorResult> {
   const apiName = objectTypeBlockData.objectType.apiName!;
-  const nonEditOnlyProps = getNonEditOnlyProperties(objectTypeBlockData);
+  const backingProperties = getBackingDatasetProperties(objectTypeBlockData);
 
-  const columns: BackingDatasetColumn[] = nonEditOnlyProps.map((prop) => ({
+  const columns: BackingDatasetColumn[] = backingProperties.map((prop) => ({
     name: prop.apiName!,
     type: prop.type,
   }));

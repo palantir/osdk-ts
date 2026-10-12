@@ -32,7 +32,7 @@ import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
   generateBackingDatasetBlockResultForLink,
-  getNonEditOnlyProperties,
+  getBackingDatasetProperties,
   propertyTypeToSchemaType,
   typeToFieldSchema,
 } from "./generateBackingDataset.js";
@@ -317,10 +317,10 @@ describe("typeToFieldSchema", () => {
   });
 });
 
-describe("getNonEditOnlyProperties", () => {
+describe("getBackingDatasetProperties", () => {
   it("returns all properties when none are edit-only", () => {
     const blockData = createObjectTypeBlockData();
-    const props = getNonEditOnlyProperties(blockData);
+    const props = getBackingDatasetProperties(blockData);
     expect(props).toHaveLength(2);
     expect(props.map((p) => p.apiName)).toEqual(["id", "count"]);
   });
@@ -333,7 +333,7 @@ describe("getNonEditOnlyProperties", () => {
         { apiName: "count", type: INTEGER_PROPERTY_TYPE },
       ],
     });
-    const props = getNonEditOnlyProperties(blockData);
+    const props = getBackingDatasetProperties(blockData);
     expect(props).toHaveLength(2);
     expect(props.map((p) => p.apiName)).toEqual(["id", "count"]);
   });
