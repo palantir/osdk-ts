@@ -111,6 +111,7 @@ function changeNames(
     spts: Record<string, string>;
     interfaces: Record<string, string>;
     actions: Record<string, string>;
+    agents: Record<string, string>;
     queries: Record<string, string>;
   },
 ) {
@@ -143,6 +144,16 @@ function changeNames(
       newNames.actions,
       (draft, oldActionName, newActionName) => {
         changeValue(draft, "apiName", oldActionName, newActionName);
+      },
+      true,
+    );
+
+    // Handle agent renames
+    changeEachEntry(
+      draft.agents,
+      newNames.agents,
+      (agent, oldAgentName, newAgentName) => {
+        changeValue(agent, "apiName", oldAgentName, newAgentName);
       },
       true,
     );
@@ -232,6 +243,7 @@ function changeNames(
 }
 
 const referencedOntology = {
+  agents: {},
   ontology: {
     apiName: "dep",
     rid: "ri.ontology.main.ontology.dep",
@@ -352,6 +364,7 @@ const referencedOntology = {
 } satisfies WireOntologyDefinition;
 
 const referencingOntology: WireOntologyDefinition = {
+  agents: {},
   ontology: TodoWireOntology.ontology,
   actionTypes: {
     setTaskBody: {
@@ -504,6 +517,9 @@ const fooBarTodoWireOntology = changeNames(TodoWireOntology, {
   actions: {
     markTodoCompleted: "foo.bar.markTodoCompleted",
     deleteTodos: "foo.bar.deleteTodos",
+  },
+  agents: {
+    weatherAgent: "foo.bar.weatherAgent",
   },
   interfaces: {
     SomeInterface: "foo.bar.SomeInterface",
@@ -824,6 +840,8 @@ describe("generator", () => {
         ",
           "/foo/index.ts": "export { deleteTodos, markTodoCompleted } from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
+        export { weatherAgent } from './ontology/agents.js';
+        export * as $Agents from './ontology/agents.js';
         export { SomeInterface } from './ontology/interfaces.js';
         export * as $Interfaces from './ontology/interfaces.js';
         export { Person, Todo } from './ontology/objects.js';
@@ -1008,6 +1026,29 @@ describe("generator", () => {
           apiName: 'markTodoCompleted',
           type: 'action',
           unsanitizedApiName: 'markTodoCompleted',
+          osdkMetadata: $osdkMetadata,
+        };
+        ",
+          "/foo/ontology/agents.ts": "export { weatherAgent } from './agents/weatherAgent.js';
+        ",
+          "/foo/ontology/agents/weatherAgent.ts": "import type { VersionBound } from '@osdk/client';
+        import type { AgentDefinition } from '@osdk/client/experimental';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+        /** @beta */
+        export interface weatherAgent extends AgentDefinition, VersionBound<$ExpectedClientVersion> {
+          type: 'agent';
+          apiName: 'weatherAgent';
+          version: '1.2.3';
+          osdkMetadata: typeof $osdkMetadata;
+        }
+
+        /** @beta */
+        export const weatherAgent: weatherAgent = {
+          type: 'agent',
+          apiName: 'weatherAgent',
+          version: '1.2.3',
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -1450,7 +1491,7 @@ describe("generator", () => {
         };
         ",
         }
-      `);
+        `);
     },
   );
 
@@ -1528,6 +1569,8 @@ describe("generator", () => {
         ",
           "/foo/index.ts": "export { deleteTodos, markTodoCompleted } from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
+        export { weatherAgent } from './ontology/agents.js';
+        export * as $Agents from './ontology/agents.js';
         export { SomeInterface } from './ontology/interfaces.js';
         export * as $Interfaces from './ontology/interfaces.js';
         export { Person, Todo } from './ontology/objects.js';
@@ -1712,6 +1755,29 @@ describe("generator", () => {
           apiName: 'foo.bar.markTodoCompleted',
           type: 'action',
           unsanitizedApiName: 'foo.bar.markTodoCompleted',
+          osdkMetadata: $osdkMetadata,
+        };
+        ",
+          "/foo/ontology/agents.ts": "export { weatherAgent } from './agents/weatherAgent.js';
+        ",
+          "/foo/ontology/agents/weatherAgent.ts": "import type { VersionBound } from '@osdk/api';
+        import type { AgentDefinition } from '@osdk/api/unstable';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+        /** @beta */
+        export interface weatherAgent extends AgentDefinition, VersionBound<$ExpectedClientVersion> {
+          type: 'agent';
+          apiName: 'foo.bar.weatherAgent';
+          version: '1.2.3';
+          osdkMetadata: typeof $osdkMetadata;
+        }
+
+        /** @beta */
+        export const weatherAgent: weatherAgent = {
+          type: 'agent',
+          apiName: 'foo.bar.weatherAgent',
+          version: '1.2.3',
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -2161,6 +2227,7 @@ describe("generator", () => {
     await generateClientSdkVersionTwoPointZero(
       {
         ontology: TodoWireOntology.ontology,
+        agents: {},
         actionTypes: {},
         actionTypesFullMetadata: {},
         interfaceTypes: {},
@@ -2620,6 +2687,7 @@ describe("generator", () => {
       await generateClientSdkVersionTwoPointZero(
         {
           ontology: TodoWireOntology.ontology,
+          agents: {},
           actionTypes: {},
           actionTypesFullMetadata: {},
           interfaceTypes: {},
@@ -2664,6 +2732,8 @@ describe("generator", () => {
         ",
           "/foo/index.ts": "export {} from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
+        export {} from './ontology/agents.js';
+        export * as $Agents from './ontology/agents.js';
         export {} from './ontology/interfaces.js';
         export * as $Interfaces from './ontology/interfaces.js';
         export { Person, Todo } from './ontology/objects.js';
@@ -2674,6 +2744,8 @@ describe("generator", () => {
         export { $branch, $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export {};
+        ",
+          "/foo/ontology/agents.ts": "export {};
         ",
           "/foo/ontology/interfaces.ts": "export {};
         ",
@@ -3036,13 +3108,14 @@ describe("generator", () => {
         };
         ",
         }
-      `);
+        `);
     });
 
     it("preserves fixed query versions supplied through the legacy API", async () => {
       await generateClientSdkVersionTwoPointZero(
         {
           ontology: TodoWireOntology.ontology,
+          agents: {},
           actionTypes: {},
           actionTypesFullMetadata: {},
           interfaceTypes: {},
@@ -3076,6 +3149,7 @@ describe("generator", () => {
       await expect(generateClientSdkVersionTwoPointZero(
         {
           ontology: TodoWireOntology.ontology,
+          agents: {},
           actionTypes: {},
           actionTypesFullMetadata: {},
           interfaceTypes: {},
@@ -3134,6 +3208,8 @@ describe("generator", () => {
         ",
           "/foo/index.ts": "export {} from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
+        export {} from './ontology/agents.js';
+        export * as $Agents from './ontology/agents.js';
         export { SomeInterface } from './ontology/interfaces.js';
         export * as $Interfaces from './ontology/interfaces.js';
         export { Task } from './ontology/objects.js';
@@ -3144,6 +3220,8 @@ describe("generator", () => {
         export { $branch, $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export {};
+        ",
+          "/foo/ontology/agents.ts": "export {};
         ",
           "/foo/ontology/interfaces.ts": "export { SomeInterface } from './interfaces/SomeInterface.js';
         ",

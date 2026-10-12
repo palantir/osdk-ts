@@ -30,6 +30,10 @@ export async function generateRootIndexTsFile(
       }} from "./ontology/actions${importExt}";
         export * as $Actions from "./ontology/actions${importExt}";
         export {${
+        helper(ontology.agents)
+      }} from "./ontology/agents${importExt}";
+        export * as $Agents from "./ontology/agents${importExt}";
+        export {${
         helper(ontology.interfaceTypes)
       }} from "./ontology/interfaces${importExt}";
         export * as $Interfaces from "./ontology/interfaces${importExt}";

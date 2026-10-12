@@ -326,10 +326,11 @@ async function main(): Promise<void> {
 
   await generatePackage(
     {
-      requestedMetadata: metadata,
+      requestedMetadata: { ...metadata, agents: {} },
       externalObjects: new Map(),
       externalInterfaces: new Map(),
       queryVersionReferences: new Map(),
+      agentVersionReferences: new Map(),
     },
     {
       packageName,

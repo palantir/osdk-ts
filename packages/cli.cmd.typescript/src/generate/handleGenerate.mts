@@ -106,11 +106,16 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
       return false;
     }
 
-    const ontology = await OntologiesV2.getFullMetadata(
+    const ontologyFullMetadata = await OntologiesV2.getFullMetadata(
       ctx,
       ontologies.data[0].apiName as OntologyIdentifier,
       { branch: args.branch },
     );
+
+    const ontology: WireOntologyDefinition = {
+      ...ontologyFullMetadata,
+      agents: {},
+    };
 
     function sortKeys<T extends Record<string, any>>(
       obj: T,

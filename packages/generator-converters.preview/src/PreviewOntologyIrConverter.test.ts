@@ -442,7 +442,7 @@ it("generates both directions of an intermediary link", async () => {
   const writeFile = vi.fn<(file: string, contents: string) => Promise<void>>()
     .mockResolvedValue(undefined);
   await generateClientSdkVersionTwoPointZero(
-    { ...metadata, actionTypes: {} },
+    { ...metadata, agents: {}, actionTypes: {} },
     "test",
     {
       readdir: () => Promise.resolve([]),
@@ -549,7 +549,7 @@ describe("property value type associations", () => {
     const writeFile = vi.fn<(file: string, contents: string) => Promise<void>>()
       .mockResolvedValue(undefined);
     await generateClientSdkVersionTwoPointZero(
-      { ...metadata, actionTypes: {} },
+      { ...metadata, agents: {}, actionTypes: {} },
       "test",
       {
         readdir: () => Promise.resolve([]),
@@ -716,7 +716,7 @@ describe("links involving imported objects", () => {
       >()
         .mockResolvedValue(undefined);
       await generateClientSdkVersionTwoPointZero(
-        { ...metadata, actionTypes: {} },
+        { ...metadata, agents: {}, actionTypes: {} },
         "test",
         {
           readdir: () => Promise.resolve([]),

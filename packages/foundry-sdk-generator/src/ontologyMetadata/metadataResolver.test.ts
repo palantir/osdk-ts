@@ -65,12 +65,14 @@ describe("Load Ontologies Metadata", () => {
 
     expect(ontologyDefinitions.value).toMatchInlineSnapshot(`
       {
+        "agentVersionReferences": Map {},
         "externalInterfaces": Map {},
         "externalObjects": Map {},
         "queryVersionReferences": Map {},
         "requestedMetadata": {
           "actionTypes": {},
           "actionTypesFullMetadata": {},
+          "agents": {},
           "interfaceTypes": {},
           "objectTypes": {},
           "ontology": {
@@ -424,6 +426,206 @@ describe("Load Ontologies Metadata", () => {
         },
       },
     ]);
+  });
+
+  describe("Load ontology metadata with agents", () => {
+    const {
+      weatherAgentApiName,
+      weatherAgentVersion,
+      weatherAgentOtherVersion,
+      noArgsAgentApiName,
+      noArgsAgentVersion,
+    } = stubData;
+    const ontologyRid =
+      "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361";
+
+    it("loads the selected agent versions and preserves their metadata", async () => {
+      const result = await ontologyMetadataResolver.getWireOntologyDefinition(
+        ontologyRid,
+        {
+          agentApiNamesToLoad: [
+            `${weatherAgentApiName}:${weatherAgentOtherVersion.version}`,
+            `${noArgsAgentApiName}:${noArgsAgentVersion.version}`,
+          ],
+        },
+      );
+      if (result.isErr()) {
+        throw new Error(result.error.join("\n"));
+      }
+      expect(result.value.requestedMetadata.agents).toMatchInlineSnapshot(`
+        {
+          "noArgsAgent": {
+            "agentStateType": {
+              "fields": [
+                {
+                  "dataType": {
+                    "type": "integer",
+                  },
+                  "name": "temperature",
+                },
+              ],
+              "type": "struct",
+            },
+            "apiName": "noArgsAgent",
+            "argumentDefinitions": [],
+            "contextItemDefinitions": [
+              {
+                "contextItemType": "weather-result",
+                "dataType": {
+                  "type": "string",
+                },
+              },
+            ],
+            "createdBy": "user",
+            "createdTime": "2026-01-01T00:00:00Z",
+            "eventDefinitions": [
+              {
+                "eventType": "LookupWeather",
+                "payloadType": {
+                  "fields": [
+                    {
+                      "dataType": {
+                        "type": "string",
+                      },
+                      "name": "city",
+                    },
+                  ],
+                  "type": "struct",
+                },
+              },
+            ],
+            "version": "1.2.3",
+          },
+          "weatherAgent": {
+            "agentStateType": {
+              "fields": [
+                {
+                  "dataType": {
+                    "type": "integer",
+                  },
+                  "name": "temperature",
+                },
+              ],
+              "type": "struct",
+            },
+            "apiName": "weatherAgent",
+            "argumentDefinitions": [
+              {
+                "dataType": {
+                  "type": "string",
+                },
+                "name": "city",
+              },
+            ],
+            "contextItemDefinitions": [
+              {
+                "contextItemType": "weather-result",
+                "dataType": {
+                  "type": "string",
+                },
+              },
+            ],
+            "createdBy": "user",
+            "createdTime": "2026-01-01T00:00:00Z",
+            "eventDefinitions": [
+              {
+                "eventType": "LookupWeather",
+                "payloadType": {
+                  "fields": [
+                    {
+                      "dataType": {
+                        "type": "string",
+                      },
+                      "name": "city",
+                    },
+                  ],
+                  "type": "struct",
+                },
+              },
+            ],
+            "version": "2.0.0",
+          },
+        }
+      `);
+      expect(result.value.agentVersionReferences).toEqual(
+        new Map([
+          [weatherAgentApiName, weatherAgentOtherVersion.version],
+          [noArgsAgentApiName, noArgsAgentVersion.version],
+        ]),
+      );
+      expect(result.value.requestedMetadata.objectTypes).toEqual({});
+    });
+
+    it.each([
+      weatherAgentApiName,
+      `${weatherAgentApiName}:`,
+      `:${weatherAgentVersion.version}`,
+    ])(
+      "rejects an incomplete selection: %s",
+      async selection => {
+        const result = await ontologyMetadataResolver.getWireOntologyDefinition(
+          ontologyRid,
+          {
+            agentApiNamesToLoad: [selection],
+          },
+        );
+        if (result.isOk()) {
+          throw new Error("Expected an invalid selection error");
+        }
+        expect(errorDetails(result.error)).toEqual([
+          {
+            message:
+              "Agents require an API name and version in apiName:version format",
+            params: undefined,
+            unsafeParams: { agent: selection },
+          },
+        ]);
+      },
+    );
+
+    it("rejects multiple versions of the same agent", async () => {
+      const result = await ontologyMetadataResolver.getWireOntologyDefinition(
+        ontologyRid,
+        {
+          agentApiNamesToLoad: [
+            `${weatherAgentApiName}:${weatherAgentVersion.version}`,
+            `${weatherAgentApiName}:${weatherAgentOtherVersion.version}`,
+          ],
+        },
+      );
+      if (result.isOk()) {
+        throw new Error("Expected a duplicate agent error");
+      }
+      expect(errorDetails(result.error)).toEqual([
+        {
+          message: "Agent was specified multiple times",
+          params: undefined,
+          unsafeParams: { agentApiName: weatherAgentApiName },
+        },
+      ]);
+    });
+
+    it("reports metadata loading failures", async () => {
+      const result = await ontologyMetadataResolver.getWireOntologyDefinition(
+        ontologyRid,
+        {
+          agentApiNamesToLoad: [`${weatherAgentApiName}:99.0.0`],
+        },
+      );
+      if (result.isOk()) {
+        throw new Error("Expected a metadata loading error");
+      }
+      expect(errorDetails(result.error)).toMatchObject([
+        {
+          message: "Unable to load agent metadata",
+          params: undefined,
+          unsafeParams: {
+            apiName: weatherAgentApiName,
+            version: "99.0.0",
+          },
+        },
+      ]);
+    });
   });
 
   describe("Load ontology metadata with query types with versions", () => {
