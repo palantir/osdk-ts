@@ -41,7 +41,10 @@ import { createClientFromContext } from "../createClient.js";
 import type { QueryReturnType } from "../queries/types.js";
 import { OBSERVABLE_USER_AGENT } from "../util/UserAgent.js";
 import type { Canonical } from "./internal/Canonical.js";
-import type { ObserveObjectSetOptions } from "./internal/objectset/ObjectSetQueryOptions.js";
+import type {
+  ObserveObjectSetOptions,
+  ObserveObjectSetV2Options,
+} from "./internal/objectset/ObjectSetQueryOptions.js";
 import { ObservableClientImpl } from "./internal/ObservableClientImpl.js";
 import { Store } from "./internal/Store.js";
 import type {
@@ -462,6 +465,21 @@ export interface ObservableClient extends ObserveLinks {
   ): Unsubscribable;
 
   /**
+   * Observe a fully constructed ObjectSet with recursive dependency tracking.
+   * Apply filters, derived properties, set operations, and pivots to the set
+   * before observing it. Nested queries refetch when a known dependency changes.
+   * @experimental
+   */
+  EXPERIMENTAL__observeObjectSetV2<
+    T extends ObjectOrInterfaceDefinition,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    objectSet: ObjectSet<T, RDPs>,
+    options: ObserveObjectSetV2Options<T, RDPs>,
+    subFn: Observer<ObserveObjectSetArgs<T, RDPs>>,
+  ): Unsubscribable;
+
+  /**
    * @deprecated Use the async overload with `objectSet` parameter instead.
    * Pass `objectSet: client(YourType)` to get the base object set.
    */
@@ -660,12 +678,6 @@ export type CanonicalizedOptions<T extends CanonicalizeOptionsInput<any>> = {
 };
 
 export interface ObservableClientOptions {
-  /**
-   * Opt in to recursive object-set dependency tracking. Defaults to "legacy".
-   * Nested queries refetch when a known dependency changes.
-   */
-  objectSetInvalidation?: "legacy" | "recursive";
-
   /**
    * Dev-only behaviors of the observable client. These options have no effect
    * in production builds, where the relevant code is stripped at build time.

@@ -112,4 +112,38 @@ describe("ObjectSetHelper RDP canonicalization", () => {
 
     expect(query.rdpConfig).toBeUndefined();
   });
+
+  it("shares RDP object-cache configuration for embedded and option RDPs", () => {
+    const withProperties: DerivedProperty.Clause<typeof Employee> = {
+      leadName: (base) => base.pivotTo("lead").selectProperty("fullName"),
+    };
+    const embedded = store.objectSets.getQuery({
+      baseObjectSet: client(Employee)
+        .withProperties(withProperties)
+        .where({ employeeId: 1 }) as unknown as ObjectSet<any>,
+      experimentalV2: true,
+    });
+    const legacy = store.objectSets.getQuery({
+      baseObjectSet: client(Employee),
+      withProperties,
+    });
+
+    expect(embedded.rdpConfig).toBeDefined();
+    expect(embedded.rdpConfig).toBe(legacy.rdpConfig);
+  });
+
+  it("only tracks RDPs returned after a pivot", () => {
+    const objectSet = client(Employee)
+      .withProperties({
+        employeeName: (base) => base.selectProperty("fullName"),
+      })
+      .pivotTo("officeLink")
+      .withProperties({ officeName: (base) => base.selectProperty("name") });
+    const query = store.objectSets.getQuery({
+      baseObjectSet: objectSet as unknown as ObjectSet<any>,
+      experimentalV2: true,
+    });
+
+    expect(Object.keys(query.rdpConfig!)).toEqual(["officeName"]);
+  });
 });

@@ -33,5 +33,6 @@ export type {
   Unsubscribable,
 } from "../observable/ObservableClient.js";
 export type { Observer } from "../observable/ObservableClient/common.js";
+export type { ObserveObjectSetV2Options } from "../observable/internal/objectset/ObjectSetQueryOptions.js";
 export type { ObserveLinks } from "../observable/ObservableClient/ObserveLink.js";
 export type { QueryParameterType, QueryReturnType } from "../queries/types.js";

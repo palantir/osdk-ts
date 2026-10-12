@@ -2743,10 +2743,9 @@ describe(Store, () => {
     });
 
     describe("ObjectSetQuery maybeUpdateAndRevalidate", () => {
-      describe("observeObjectSet dependency invalidation", () => {
+      describe("EXPERIMENTAL__observeObjectSetV2", () => {
         beforeEach(() => {
           fauxFoundry.getDefaultDataStore().clear();
-          store = new Store(client, { objectSetInvalidation: "recursive" });
         });
 
         it("refreshes a nested pivot when an intermediate object type changes", async () => {
@@ -2766,9 +2765,16 @@ describe(Store, () => {
             .pivotTo("officeLink")
             .where({ name: "London" })
             .pivotTo("occupants");
+          const subscribe = vi.spyOn(objectSet, "subscribe");
           const observableClient = new ObservableClientImpl(store);
           const sub = mockObserver<ObjectSetPayload | undefined>();
-          defer(observableClient.observeObjectSet(objectSet, {}, sub));
+          defer(
+            observableClient.EXPERIMENTAL__observeObjectSetV2(
+              objectSet,
+              { streamUpdates: true },
+              sub,
+            ),
+          );
 
           await vi.waitFor(() => {
             expect(sub.error).not.toHaveBeenCalled();
@@ -2797,6 +2803,7 @@ describe(Store, () => {
               { $primaryKey: 1 },
             ]);
           });
+          expect(subscribe).not.toHaveBeenCalled();
         });
 
         it("refreshes an interface object set when an implementing object type changes", async () => {
@@ -2809,7 +2816,13 @@ describe(Store, () => {
           const objectSet = client(FooInterface);
           const observableClient = new ObservableClientImpl(store);
           const sub = mockObserver<ObjectSetPayload | undefined>();
-          defer(observableClient.observeObjectSet(objectSet, {}, sub));
+          defer(
+            observableClient.EXPERIMENTAL__observeObjectSetV2(
+              objectSet,
+              {},
+              sub,
+            ),
+          );
 
           await vi.waitFor(() => {
             expect(sub.error).not.toHaveBeenCalled();
@@ -2842,52 +2855,61 @@ describe(Store, () => {
           });
         });
 
-        it("keeps nested object-set invalidation unchanged by default", async () => {
+        it("keeps V1 invalidation unchanged when V2 observes the same set", async () => {
           const dataStore = fauxFoundry.getDefaultDataStore();
           const alice = dataStore.registerObject(Employee, {
             employeeId: 1,
             fullName: "Alice",
           });
-          const legacyStore = new Store(client);
+          const observableClient = new ObservableClientImpl(store);
+          const objectSet = client(Employee).where({ fullName: "Alice" });
           const observer = mockObserver<ObjectSetPayload>();
-          const subscription = legacyStore.objectSets.observe(
-            {
-              baseObjectSet: client(Employee).where({ fullName: "Alice" }),
-            },
+          const subscription = observableClient.observeObjectSet(
+            objectSet,
+            {},
             observer,
           );
           defer(subscription);
           await vi.waitFor(() =>
             expect(observer.next.mock.lastCall?.[0]?.status).toBe("loaded"),
           );
-          const fetchPage = vi.spyOn(
-            observer.next.mock.lastCall![0]!.objectSet,
-            "fetchPage",
+
+          const v2Observer = mockObserver<ObjectSetPayload>();
+          defer(
+            observableClient.EXPERIMENTAL__observeObjectSetV2(
+              objectSet,
+              {},
+              v2Observer,
+            ),
+          );
+          await vi.waitFor(() =>
+            expect(v2Observer.next.mock.lastCall?.[0]?.status).toBe("loaded"),
           );
 
           dataStore.replaceObjectOrThrow({ ...alice, fullName: "Bob" });
-          await legacyStore.invalidateObjectType(Employee, undefined);
+          await observableClient.invalidateObjectType(Employee);
 
-          expect(fetchPage).not.toHaveBeenCalled();
+          await vi.waitFor(() =>
+            expect(v2Observer.next.mock.lastCall?.[0]?.resolvedList).toEqual(
+              [],
+            ),
+          );
+
           expect(observer.next.mock.lastCall?.[0]?.resolvedList).toMatchObject([
             { employeeId: 1 },
           ]);
         });
 
-        it("keeps local membership updates for a base type with an option filter", async () => {
+        it("updates a base set locally when an object changes", async () => {
           const dataStore = fauxFoundry.getDefaultDataStore();
           const alice = dataStore.registerObject(Employee, {
             employeeId: 1,
             fullName: "Alice",
           });
           const observer = mockObserver<ObjectSetPayload>();
-          const subscription = store.objectSets.observe(
-            {
-              baseObjectSet: client(Employee),
-              where: { fullName: "Alice" },
-            },
-            observer,
-          );
+          const subscription = new ObservableClientImpl(
+            store,
+          ).EXPERIMENTAL__observeObjectSetV2(client(Employee), {}, observer);
           defer(subscription);
           await vi.waitFor(() =>
             expect(observer.next.mock.lastCall?.[0]?.status).toBe("loaded"),
@@ -2901,7 +2923,9 @@ describe(Store, () => {
           await store.invalidateObject(Employee, 1);
 
           await vi.waitFor(() =>
-            expect(observer.next.mock.lastCall?.[0]?.resolvedList).toEqual([]),
+            expect(
+              observer.next.mock.lastCall?.[0]?.resolvedList,
+            ).toMatchObject([{ employeeId: 1, fullName: "Bob" }]),
           );
           expect(fetchPage).not.toHaveBeenCalled();
         });
@@ -2919,14 +2943,12 @@ describe(Store, () => {
           dataStore.registerLink(alice, "officeLink", office, "occupants");
           const observer = mockObserver<ObjectSetPayload>();
           defer(
-            store.objectSets.observe(
-              {
-                baseObjectSet: client(Employee),
-                withProperties: {
-                  officeName: (base) =>
-                    base.pivotTo("officeLink").selectProperty("name"),
-                },
-              },
+            new ObservableClientImpl(store).EXPERIMENTAL__observeObjectSetV2(
+              client(Employee).withProperties({
+                officeName: (base) =>
+                  base.pivotTo("officeLink").selectProperty("name"),
+              }),
+              {},
               observer,
             ),
           );
@@ -2944,6 +2966,27 @@ describe(Store, () => {
               observer.next.mock.lastCall?.[0]?.resolvedList,
             ).toMatchObject([{ employeeId: 1, officeName: "Paris" }]),
           );
+
+          const plainObserver = mockObserver<ObjectPayload>();
+          defer(
+            new ObservableClientImpl(store).observeObject(
+              Employee,
+              1,
+              { mode: "force" },
+              plainObserver,
+            ),
+          );
+          await vi.waitFor(() =>
+            expect(plainObserver.next.mock.lastCall?.[0]?.status).toBe(
+              "loaded",
+            ),
+          );
+          expect(
+            plainObserver.next.mock.lastCall?.[0]?.object,
+          ).not.toHaveProperty("officeName");
+          expect(observer.next.mock.lastCall?.[0]?.resolvedList).toMatchObject([
+            { employeeId: 1, officeName: "Paris" },
+          ]);
         });
 
         it("preserves server order for optimistic deletion and rollback in a nested query", async () => {
@@ -2961,12 +3004,11 @@ describe(Store, () => {
             fullName: "Alice",
           });
           const observer = mockObserver<ObjectSetPayload>();
-          const subscription = store.objectSets.observe(
-            {
-              baseObjectSet: client(Employee).where({ employeeId: { $gt: 0 } }),
-              select: ["employeeId"],
-              orderBy: { fullName: "asc" },
-            },
+          const subscription = new ObservableClientImpl(
+            store,
+          ).EXPERIMENTAL__observeObjectSetV2(
+            client(Employee).where({ employeeId: { $gt: 0 } }),
+            { select: ["employeeId"], orderBy: { fullName: "asc" } },
             observer,
           );
           defer(subscription);

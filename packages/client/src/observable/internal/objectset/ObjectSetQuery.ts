@@ -15,7 +15,10 @@
  */
 
 import type { ObjectSet, Osdk, PageResult } from "@osdk/api";
-import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
+import type {
+  DerivedPropertyDefinition,
+  ObjectSet as WireObjectSet,
+} from "@osdk/foundry.ontologies";
 import type { Observable, Subscription } from "rxjs";
 
 import { additionalContext } from "../../../Client.js";
@@ -64,6 +67,7 @@ export class ObjectSetQuery extends BaseListQuery<
   #requiresServerEvaluation: boolean;
   #resultTypeApiName: string;
   #loadDependencies?: () => Promise<ObjectSetDependencies>;
+  #rdpConfig: Canonical<Rdp> | undefined;
 
   // Object types this query's RDPs traverse; an edit to any of these triggers
   // revalidation. Lazily populated on first fetch when `withProperties` is set.
@@ -96,6 +100,7 @@ export class ObjectSetQuery extends BaseListQuery<
 
     this.#baseObjectSetWire = baseObjectSetWire;
     this.#operations = operations;
+    this.#rdpConfig = operations.withProperties;
     this.#composedObjectSet = this.#composeObjectSet(opts);
 
     const baseWire: WireObjectSet = JSON.parse(baseObjectSetWire);
@@ -111,9 +116,13 @@ export class ObjectSetQuery extends BaseListQuery<
     this.#resultTypeApiName =
       ObjectSetQuery.#extractTypeFromWireObjectSet(baseWire) ?? "";
 
-    if (store.recursiveObjectSetInvalidation) {
-      this.#requiresServerEvaluation ||=
-        baseWire.type !== "base" || operations.withProperties != null;
+    if (opts.experimentalV2) {
+      const definitions = getResultDerivedProperties(baseWire);
+      if (Object.keys(definitions).length > 0) {
+        this.#rdpConfig =
+          store.rdpCanonicalizer.canonicalizeDefinitions(definitions);
+      }
+      this.#requiresServerEvaluation ||= baseWire.type !== "base";
       let dependencies: Promise<ObjectSetDependencies> | undefined;
       this.#loadDependencies = () =>
         (dependencies ??= getObjectTypesThatInvalidate(
@@ -148,7 +157,7 @@ export class ObjectSetQuery extends BaseListQuery<
   }
 
   public override get rdpConfig(): Canonical<Rdp> | undefined {
-    return this.#operations.withProperties;
+    return this.#rdpConfig;
   }
 
   public get selectFields(): Canonical<readonly string[]> | undefined {
@@ -612,6 +621,23 @@ export class ObjectSetQuery extends BaseListQuery<
       objectSet: this.#composedObjectSet,
       totalCount: params.totalCount,
     };
+  }
+}
+
+function getResultDerivedProperties(
+  objectSet: WireObjectSet,
+): Record<string, DerivedPropertyDefinition> {
+  switch (objectSet.type) {
+    case "withProperties":
+      return {
+        ...getResultDerivedProperties(objectSet.objectSet),
+        ...objectSet.derivedProperties,
+      };
+    case "filter":
+    case "nearestNeighbors":
+      return getResultDerivedProperties(objectSet.objectSet);
+    default:
+      return {};
   }
 }
 
