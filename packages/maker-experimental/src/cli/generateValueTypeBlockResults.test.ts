@@ -20,12 +20,7 @@ import * as path from "node:path";
 
 import type { ValueTypeBlockData } from "@osdk/client.unstable";
 import type { InputShape } from "@osdk/client.unstable/api";
-import {
-  defineValueType,
-  type OntologyDefinition,
-  OntologyEntityTypeEnum,
-  type ValueTypeDefinitionVersion,
-} from "@osdk/maker";
+import { defineValueType, type ValueTypeDefinitionVersion } from "@osdk/maker";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { defineOntologyV2 } from "../api/defineOntologyV2.js";
@@ -34,24 +29,13 @@ import type {
   ValueTypeDependency,
 } from "../conversion/toMarketplace/convertValueTypeToWireBlockData.js";
 import { simulatePackageDependency } from "../testUtils/simulatePackageDependency.js";
-import {
-  OntologyRidGeneratorImpl,
-  ReadableIdGenerator,
-} from "../util/generateRid.js";
+import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateValueTypeBlockResults,
   getValueTypeInternalMappings,
 } from "./generateValueTypeBlockResults.js";
+import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
 import { toBlockShapeId } from "./marketplaceSerialization/CodeBlockSpec.js";
-
-const emptyOntology: OntologyDefinition = {
-  ACTION_TYPE: {},
-  INTERFACE_TYPE: {},
-  LINK_TYPE: {},
-  OBJECT_TYPE: {},
-  SHARED_PROPERTY_TYPE: {},
-  VALUE_TYPE: {},
-};
 
 function makeEntry(apiName: string, versions: string[]): ValueTypeBlockData {
   return {
@@ -80,27 +64,42 @@ function converted(
   return { blockData, dependencies };
 }
 
-function makeDefinition(
-  blockData: ValueTypeBlockData,
-  version: string,
+function defineStringValueType(
+  apiName: string,
+  version = "1.0.0",
 ): ValueTypeDefinitionVersion {
-  const packagedVersion = blockData.versions.find(
-    (candidate) => candidate.version === version,
-  );
-  if (packagedVersion === undefined) {
-    throw new Error(`Missing value type version ${version}`);
-  }
-  return {
-    apiName: blockData.metadata.apiName,
-    packageNamespace: "com.palantir",
-    displayMetadata: blockData.metadata.displayMetadata,
-    status: blockData.metadata.status,
+  return defineValueType({
+    apiName,
+    displayName: apiName,
+    type: { type: "string" },
     version,
-    baseType: packagedVersion.baseType,
-    constraints: [],
-    exampleValues: packagedVersion.exampleValues,
-    __type: OntologyEntityTypeEnum.VALUE_TYPE,
-  };
+  });
+}
+
+function getConvertedBlock(
+  blocks: ConvertedValueTypeBlockData[],
+  apiName: string,
+): ConvertedValueTypeBlockData {
+  const block = blocks.find(
+    ({ blockData }) => blockData.metadata.apiName === apiName,
+  );
+  if (block === undefined) {
+    throw new Error(`Missing converted value type block for ${apiName}`);
+  }
+  return block;
+}
+
+function getBlockResult(
+  results: BlockGeneratorResult[],
+  apiName: string,
+): BlockGeneratorResult {
+  const result = results.find(
+    ({ block_identifier }) => block_identifier === `value-type-${apiName}`,
+  );
+  if (result === undefined) {
+    throw new Error(`Missing generated value type block for ${apiName}`);
+  }
+  return result;
 }
 
 describe("generateValueTypeBlockResults", () => {
@@ -180,101 +179,95 @@ describe("generateValueTypeBlockResults", () => {
     expect(results[0].input_shape_metadata).toEqual({});
   });
 
-  it("generates inputs and mappings for array struct field value types", async () => {
-    const classification = makeEntry("classification", ["1.0.0"]);
-    const classifiedRecord = makeEntry("classifiedRecord", ["1.0.0"]);
-    const reference = new OntologyRidGeneratorImpl(
-      emptyOntology,
-    ).generateRidForValueType("classification", "1.0.0");
-    classifiedRecord.versions[0].baseType = {
-      type: "array",
-      array: {
-        elementType: {
-          type: "structV2",
-          structV2: {
-            fields: [
-              {
-                identifier: "classification",
-                baseType: { type: "string", string: {} },
-              },
-            ],
-          },
-        },
-      },
-    };
-    classifiedRecord.versions[0].constraints = [
-      {
-        constraint: {
-          failureMessage: undefined,
-          constraint: {
-            type: "array",
-            array: {
-              size: undefined,
-              elementsUnique: undefined,
-              elementsConstraint: {
-                type: "structV2",
-                structV2: {
-                  elementConstraints: { classification: reference },
+  it.each([undefined, "123e4567-e89b-12d3-a456-426614174000"])(
+    "generates inputs and mappings for nested value types with randomness key %s",
+    async (randomnessKey) => {
+      const authored = await defineOntologyV2(
+        "com.palantir.",
+        () => {
+          const classification = defineStringValueType("classification");
+          defineValueType({
+            apiName: "classifiedRecords",
+            displayName: "Classified Records",
+            type: {
+              type: {
+                type: "array",
+                elementType: {
+                  type: "struct",
+                  fields: [
+                    { identifier: "classification", baseType: "string" },
+                  ],
                 },
               },
+              constraints: [
+                {
+                  constraint: {
+                    size: undefined,
+                    elementsUnique: undefined,
+                    elementsConstraint: {
+                      type: "structV2",
+                      structV2: {
+                        elementConstraints: { classification },
+                      },
+                    },
+                  },
+                },
+              ],
             },
-          },
+            version: "1.0.0",
+          });
         },
-      },
-    ];
+        undefined,
+        undefined,
+        undefined,
+        randomnessKey,
+      );
+      const convertedBlock = getConvertedBlock(
+        authored.valueTypeBlocks,
+        "classifiedRecords",
+      );
+      expect(convertedBlock.dependencies).toHaveLength(1);
+      const [dependency] = convertedBlock.dependencies;
+      if (dependency.reference.versionId === undefined) {
+        throw new Error(
+          "Temporary value type reference is missing its version",
+        );
+      }
 
-    const dependency: ValueTypeDependency = {
-      reference,
-      target: makeDefinition(classification, "1.0.0"),
-      baseType: { type: "string", string: {} },
-    };
-    const results = await generateValueTypeBlockResults(
-      [converted(classification), converted(classifiedRecord, [dependency])],
-      buildDir,
-      undefined,
-    );
-
-    const result = results.find(
-      ({ block_identifier }) =>
-        block_identifier === "value-type-classifiedRecord",
-    );
-    const consumedId = ReadableIdGenerator.getForConsumedValueType(
-      "classification",
-      "1.0.0",
-    );
-    const producedId = ReadableIdGenerator.getForProducedValueType(
-      "classification",
-      "1.0.0",
-    );
-    if (reference.versionId === undefined) {
-      throw new Error("Temporary value type reference is missing its version");
-    }
-    expect(result?.inputs[consumedId]).toMatchObject({ type: "valueType" });
-    expect(result?.input_mapping_entries).toContainEqual({
-      input: consumedId,
-      output: producedId,
-    });
-    expect(result?.add_on_override).toMatchObject({
-      idToBlockShapeId: {
-        [reference.versionId]: toBlockShapeId(consumedId),
-      },
-    });
-  });
+      const results = await generateValueTypeBlockResults(
+        authored.valueTypeBlocks,
+        buildDir,
+        randomnessKey,
+      );
+      const result = getBlockResult(results, "classifiedRecords");
+      const consumedId = ReadableIdGenerator.getForConsumedValueType(
+        "classification",
+        "1.0.0",
+      );
+      const producedId = ReadableIdGenerator.getForProducedValueType(
+        "classification",
+        "1.0.0",
+      );
+      expect(result.inputs[consumedId]).toMatchObject({ type: "valueType" });
+      expect(result.input_mapping_entries).toContainEqual({
+        input: consumedId,
+        output: producedId,
+      });
+      expect(result.add_on_override).toMatchObject({
+        idToBlockShapeId: {
+          [dependency.reference.versionId]: toBlockShapeId(
+            consumedId,
+            randomnessKey,
+          ),
+        },
+      });
+    },
+  );
 
   it("preserves distinct inputs for value types at the same semantic version", async () => {
     const authored = await defineOntologyV2("com.palantir.", () => {
-      const classification = defineValueType({
-        apiName: "classification",
-        displayName: "Classification",
-        type: { type: "string" },
-        version: "1.0.0",
-      });
-      const countryCode = defineValueType({
-        apiName: "countryCode",
-        displayName: "Country Code",
-        type: { type: "string" },
-        version: "1.0.0",
-      });
+      const classification = defineStringValueType("classification");
+      const countryCode = defineStringValueType("countryCode");
       defineValueType({
         apiName: "classifiedAddress",
         displayName: "Classified Address",
@@ -298,12 +291,10 @@ describe("generateValueTypeBlockResults", () => {
       });
     });
 
-    const classifiedAddress = authored.valueTypeBlocks.find(
-      ({ blockData }) => blockData.metadata.apiName === "classifiedAddress",
+    const classifiedAddress = getConvertedBlock(
+      authored.valueTypeBlocks,
+      "classifiedAddress",
     );
-    if (classifiedAddress === undefined) {
-      throw new Error("Classified address block was not generated");
-    }
     const versionIds = classifiedAddress.dependencies.map(
       ({ reference }) => reference.versionId,
     );
@@ -314,14 +305,7 @@ describe("generateValueTypeBlockResults", () => {
       buildDir,
       undefined,
     );
-    const result = results.find(
-      ({ block_identifier }) =>
-        block_identifier === "value-type-classifiedAddress",
-    );
-    expect(result).toBeDefined();
-    const addOn = result?.add_on_override as
-      | { idToBlockShapeId: Record<string, string> }
-      | undefined;
+    const result = getBlockResult(results, "classifiedAddress");
     for (const dependency of classifiedAddress.dependencies) {
       if (dependency.reference.versionId === undefined) {
         throw new Error(
@@ -332,21 +316,82 @@ describe("generateValueTypeBlockResults", () => {
         dependency.target.apiName,
         dependency.target.version,
       );
-      expect(addOn?.idToBlockShapeId[dependency.reference.versionId]).toBe(
-        toBlockShapeId(consumedId),
-      );
+      expect(result.add_on_override).toMatchObject({
+        idToBlockShapeId: {
+          [dependency.reference.versionId]: toBlockShapeId(consumedId),
+        },
+      });
     }
+  });
+
+  it("deduplicates repeated references to the same value type", async () => {
+    const authored = await defineOntologyV2("com.palantir.", () => {
+      const classification = defineStringValueType("classification");
+      defineValueType({
+        apiName: "classifiedPair",
+        displayName: "Classified Pair",
+        type: {
+          type: {
+            type: "struct",
+            fields: [
+              { identifier: "first", baseType: "string" },
+              { identifier: "second", baseType: "string" },
+            ],
+          },
+          constraints: [
+            {
+              constraint: {
+                elementConstraints: {
+                  first: classification,
+                  second: classification,
+                },
+              },
+            },
+          ],
+        },
+        version: "1.0.0",
+      });
+    });
+    const convertedBlock = getConvertedBlock(
+      authored.valueTypeBlocks,
+      "classifiedPair",
+    );
+    expect(convertedBlock.dependencies).toHaveLength(2);
+    const versionId = convertedBlock.dependencies[0].reference.versionId;
+    if (versionId === undefined) {
+      throw new Error("Temporary value type reference is missing its version");
+    }
+
+    const results = await generateValueTypeBlockResults(
+      authored.valueTypeBlocks,
+      buildDir,
+      undefined,
+    );
+    const result = getBlockResult(results, "classifiedPair");
+    const consumedId = ReadableIdGenerator.getForConsumedValueType(
+      "classification",
+      "1.0.0",
+    );
+    const producedId = ReadableIdGenerator.getForProducedValueType(
+      "classification",
+      "1.0.0",
+    );
+
+    expect(Object.keys(result.inputs)).toEqual([consumedId]);
+    expect(result.input_mapping_entries).toEqual([
+      { input: consumedId, output: producedId },
+    ]);
+    expect(result.add_on_override).toMatchObject({
+      idToBlockShapeId: {
+        [versionId]: toBlockShapeId(consumedId),
+      },
+    });
   });
 
   it("recommends an upstream Maker package for an imported value type", async () => {
     const { downstream } = await simulatePackageDependency(
       () => ({
-        classification: defineValueType({
-          apiName: "classification",
-          displayName: "Classification",
-          type: { type: "string" },
-          version: "1.0.0",
-        }),
+        classification: defineStringValueType("classification"),
       }),
       ({ classification }) => {
         defineValueType({
