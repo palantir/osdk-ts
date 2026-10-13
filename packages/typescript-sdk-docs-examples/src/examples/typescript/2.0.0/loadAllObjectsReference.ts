@@ -19,24 +19,30 @@
 
 // Example: loadAllObjectsReference
 
-import type { Osdk } from "@osdk/client";
-
 import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-async function getAll(): Promise<Array<Osdk.Instance<Employee>>> {
-  const objects: Osdk.Instance<Employee>[] = [];
-  for await (const obj of client(Employee).asyncIter()) {
-    objects.push(obj);
-  }
-
-  return objects;
-}
-
-// If Array.fromAsync() is available in your target environment
-function getAllFromAsync(): Promise<Array<Osdk.Instance<Employee>>> {
-  return Array.fromAsync(client(Employee).asyncIter());
+// Before loading every object, check whether you need to:
+// - Count, sum, or group objects: use .aggregate() instead, which never loads the objects.
+// - Show a sample or the first N objects: use fetchPage({ $pageSize }) instead.
+//
+// asyncIter() fetches page after page until every matching object has been loaded:
+// - $select only the properties you read. Without it, the API loads its default property set,
+//   and reading fewer properties afterwards does not avoid the cost of fetching them. Loading
+//   unused properties wastes bandwidth and compute and can slow down retrieval.
+// - Handle each object as it arrives rather than collecting them all into an array, so that
+//   memory use does not grow with the size of the object set.
+// - asyncIter() requests a consistent snapshot. For non-stream-backed object types, a completed
+//   traversal returns each object exactly once even if the data changes. If the snapshot expires
+//   or the backend detects a paging inconsistency (PagingInconsistencyDetected), it throws.
+//   Stream-backed object types do not provide this guarantee across pages: changes during the
+//   traversal can cause it to throw, and exactly-once traversal is not guaranteed.
+//   If a traversal fails this way, $select fewer properties and narrow the object set with a
+//   filter so it finishes sooner, or page with fetchPage() yourself, which does not request a
+//   snapshot by default but may then return duplicate or missing objects if the data changes.
+for await (const obj of client(Employee).asyncIter({ $select: ["fullName"] })) {
+  console.log(obj.fullName);
 }
 
 // Ontology-defined derived properties are not returned by default.
@@ -44,12 +50,10 @@ function getAllFromAsync(): Promise<Array<Osdk.Instance<Employee>>> {
 // Runtime-defined derived properties added via .withProperties(...) are returned
 // by default only when $select is omitted. If you pass $select, include them
 // in the selection as well.
-async function getAllWithSelectedProperties(
+async function logAllWithSelectedProperties(
   properties: Employee.PropertyKeys[],
 ) {
-  const objects = [];
   for await (const obj of client(Employee).asyncIter({ $select: properties })) {
-    objects.push(obj);
+    console.log(obj);
   }
-  return objects;
 }

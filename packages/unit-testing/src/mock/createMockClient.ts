@@ -212,7 +212,5 @@ export function createMockClient(): MockClient {
     enumerable: false,
   });
 
-  // TODO: Implement WriteableClient operations
-
   return mockClient;
 }

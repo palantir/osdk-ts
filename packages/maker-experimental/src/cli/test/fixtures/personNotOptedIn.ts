@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import { execa } from "execa";
+import { defineInterface } from "@osdk/maker";
 
-/** The current git branch, or `undefined` if git fails. */
-export async function getGitBranch(cwd?: string): Promise<string | undefined> {
-  try {
-    const { stdout } = await execa("git", ["branch", "--show-current"], {
-      cwd,
-    });
-    return stdout.trim();
-  } catch {
-    return undefined;
-  }
-}
+defineInterface({
+  apiName: "Person",
+  displayName: "Person",
+  properties: {
+    firstName: { type: "string" },
+  },
+});

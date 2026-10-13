@@ -563,6 +563,10 @@ export interface ObjectsWritebackDataset {
 export interface ObjectTypeBlockDataV2 {
   datasources: Array<MarketplaceObjectTypeDatasource>;
   entityMetadata?: MarketplaceObjectTypeEntityMetadata | null | undefined;
+  mappedEdgeOnlyDatasources?:
+    | Array<MarketplaceObjectTypeDatasource>
+    | null
+    | undefined;
   objectType: _api_ObjectType;
   propertySecurityGroupPackagingVersion?:
     | PropertySecurityGroupPackagingVersion
@@ -879,6 +883,10 @@ export interface OntologyIrObjectTypeBlockDataV2 {
   datasources: Array<OntologyIrMarketplaceObjectTypeDatasource>;
   entityMetadata?:
     | OntologyIrMarketplaceObjectTypeEntityMetadata
+    | null
+    | undefined;
+  mappedEdgeOnlyDatasources?:
+    | Array<OntologyIrMarketplaceObjectTypeDatasource>
     | null
     | undefined;
   objectType: _api_OntologyIrObjectType;

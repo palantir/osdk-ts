@@ -1,5 +1,17 @@
 # @osdk/typescript-sdk-docs
 
+## 0.28.0
+
+### Minor Changes
+
+- 592d119: Adding docs for selectProperties and reducers
+
+## 0.27.0
+
+### Minor Changes
+
+- 86c708b: Recommend $select in object loading snippets and JSDoc, stop collecting asyncIter() into arrays in "load all objects" snippets, and document snapshot behavior of fetchPage vs asyncIter
+
 ## 0.26.0
 
 ### Minor Changes

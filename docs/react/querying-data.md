@@ -218,6 +218,18 @@ const { data } = useOsdkObjects(Todo, {
 });
 ```
 
+### Selecting Properties with `$select`
+
+Without `$select`, the API loads its default property set (vector properties, for example, are not included). Pass `$select` with only the properties your component reads (the primary key is always returned):
+
+```tsx
+const { data } = useOsdkObjects(Todo, {
+  $select: ["title", "isComplete"],
+});
+```
+
+Loading unused properties wastes bandwidth and compute and can slow down retrieval, and reading fewer properties afterwards does not avoid the cost of fetching them. Unlike `fetchPage` and `asyncIter`, `useOsdkObjects` does not narrow the returned type to the selected properties: reading a property you didn't select still type-checks, but is `undefined` at runtime. Keep `$select` in sync with the properties your component reads.
+
 ### Pagination
 
 Control page size and load more results:
@@ -242,6 +254,12 @@ function TodoList() {
 }
 ```
 
+`pageSize` is the size of one page, not a limit on the total number of objects.
+
+:::note Paging consistency
+Pages are loaded without a snapshot. If objects are added, removed, or edited between page loads, later pages may repeat or skip objects. When you need every object from one consistent view outside of a component, use `asyncIter()` on the client (see [useOsdkClient](#useosdkclient)).
+:::
+
 ### Auto-Fetching Pages
 
 By default, only the first page is fetched. Use `autoFetchMore` to load more automatically:
@@ -260,7 +278,7 @@ const { data, isLoading, fetchMore } = useOsdkObjects(Todo, {
 ```
 
 :::warning Performance Warning
-Using `autoFetchMore: true` on large datasets may cause long load times and high memory usage. Prefer `autoFetchMore: N` with a specific number.
+Using `autoFetchMore: true` on large datasets may cause long load times and high memory usage. Prefer `autoFetchMore: N` with a specific number, or `fetchMore` on demand: a UI can only show so much at once. For counts, sums, or group-bys, use [`useOsdkAggregation`](./advanced-queries.md#useosdkaggregation) instead of loading objects.
 :::
 
 ### Conditional Queries with `enabled`
@@ -651,7 +669,10 @@ function MyComponent() {
   const client = useOsdkClient();
 
   const loadTodos = async () => {
-    const todos = await client(Todo).fetchPage();
+    const todos = await client(Todo).fetchPage({
+      $select: ["title", "isComplete"],
+      $pageSize: 50,
+    });
     // ...
   };
 
@@ -660,6 +681,36 @@ function MyComponent() {
 ```
 
 Use this when you need to perform queries outside the reactive hook system, such as in event handlers or effects where you manage state manually.
+
+### Loading pages vs. loading everything
+
+| Method                     | Loads                                   | Snapshot                                            |
+| -------------------------- | --------------------------------------- | --------------------------------------------------- |
+| `fetchPage({ $pageSize })` | One page; continue with `nextPageToken` | Only with `$snapshot: true` (pass it on every page) |
+| `asyncIter()`              | Every matching object, page after page  | Always                                              |
+| `aggregate({ ... })`       | Counts, sums, and group-bys only        | n/a                                                 |
+
+Without a snapshot, later pages may repeat or skip objects if the data changes between requests. A snapshot configured for a function run still applies regardless of the method. With a snapshot, every page of a non-stream-backed object type reflects the same point in time, so a completed traversal returns each object exactly once. Paging fails if the snapshot expires or the backend detects a paging inconsistency (`PagingInconsistencyDetected`). Stream-backed object types do not provide this snapshot guarantee across pages: changes during a traversal can cause it to fail, and exactly-once traversal is not guaranteed.
+
+If a full `asyncIter()` traversal of a frequently updated object type fails, aggregate instead if you only need a summary, `$select` fewer properties and filter the object set so the traversal finishes sooner, or loop over `fetchPage()` yourself and de-duplicate by `$primaryKey`. Without a snapshot, de-duplication removes repeated objects but does not recover skipped ones.
+
+Both `fetchPage` and `asyncIter` load the API's default property set unless you pass `$select`. With `asyncIter`, handle each object as it arrives rather than collecting all of them into an array:
+
+```ts
+// ✗ Loads the default property set for every object and holds all of them in memory
+const todos = await Array.fromAsync(client(Todo).asyncIter());
+
+// ✓ Loads only the property that is used, one object at a time
+let completed = 0;
+for await (const todo of client(Todo).asyncIter({ $select: ["isComplete"] })) {
+  if (todo.isComplete) completed++;
+}
+
+// ✓✓ Better still for counts: aggregate on the server without loading any objects
+const { $count } = await client(Todo)
+  .where({ isComplete: true })
+  .aggregate({ $select: { $count: "unordered" } });
+```
 
 ---
 

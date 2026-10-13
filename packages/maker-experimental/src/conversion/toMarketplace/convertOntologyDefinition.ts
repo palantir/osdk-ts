@@ -28,6 +28,7 @@ export function convertOntologyDefinition(
   ridGenerator: OntologyRidGeneratorImpl,
   functionsIr?: FunctionsIr,
   randomnessKey?: string,
+  packageForEdge = false,
 ): OntologyIrV2 {
   const importedTypes = getImportedTypes();
   const allOntologies = [ontology, importedTypes];
@@ -36,6 +37,7 @@ export function convertOntologyDefinition(
     ridGenerator,
     allOntologies,
     functionsIr,
+    packageForEdge,
   );
 
   const importedOntology = convertOntologyDefinitionToWireBlockData(

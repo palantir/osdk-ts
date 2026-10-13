@@ -32,7 +32,6 @@ import type {
 import type { AnyEdit } from "../edits/types.js";
 import type { EditRequestManager } from "./EditRequestManager.js";
 
-/** @internal */
 export const writeableClientContext: unique symbol = Symbol(
   "writeableClientContext",
 );

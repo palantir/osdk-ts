@@ -72,6 +72,7 @@ export interface MwaltherPersonOt extends $ObjectTypeDefinition {
     props: MwaltherPersonOt.Props;
     linksType: MwaltherPersonOt.Links;
     strictProps: MwaltherPersonOt.StrictProps;
+    requiredProps: 'id';
     apiName: 'MwaltherPersonOt';
     description: 'asd';
     displayName: '[mwalther] Person';

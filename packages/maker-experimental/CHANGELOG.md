@@ -1,5 +1,37 @@
 # @osdk/maker-experimental
 
+## 0.75.0
+
+### Minor Changes
+
+- e9bf2de: Add edge packaging to oac
+
+### Patch Changes
+
+- Updated dependencies [e9bf2de]
+  - @osdk/client.unstable@2.80.0
+  - @osdk/api@2.80.0
+  - @osdk/generator-converters.ontologyir@2.80.0
+
+## 0.74.0
+
+### Minor Changes
+
+- 533f264: Emit relevant interface schema migration output shapes when converting DSL to block-data/shapes in maker-experimental.
+- 5b15676: Support explicit and conditional struct field defaults in Marketplace actions, and automatically prefill struct and struct-array fields in modify and create-or-modify object actions.
+
+### Patch Changes
+
+- Updated dependencies [533f264]
+- Updated dependencies [d63eb64]
+- Updated dependencies [5b15676]
+  - @osdk/client.unstable@2.78.0
+  - @osdk/maker@0.79.0
+  - @osdk/generator-converters.ontologyir@2.78.0
+  - @osdk/generator-converters.preview@0.55.0
+  - @osdk/maker-import@0.45.0
+  - @osdk/api@2.78.0
+
 ## 0.73.0
 
 ### Patch Changes
