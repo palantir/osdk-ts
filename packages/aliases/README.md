@@ -10,7 +10,7 @@ npm install @osdk/aliases
 
 ## Configure a website alias
 
-In a Vite app, place the file at `public/resources.json`. Vite copies it to the build output root. Ensure the deployed file is available at `/resources.json`.
+Include `resources.json` at the root of your built website so it is available at `/resources.json`. In Vite apps, place it in `public/resources.json`; Vite copies it there when building.
 
 ```json
 {
