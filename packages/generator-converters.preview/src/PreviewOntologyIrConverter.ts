@@ -51,7 +51,7 @@ export class PreviewOntologyIrConverter {
     const baseMetadata = OntologyBlockDataToFullMetadataConverter
       .getFullMetadataFromBlockData(
         blockdata,
-        // Preview exposes local actions only, even when an import has the same API name.
+        // Action types are handled differently due to the need to provide logic rules.
         importedTypes ? { ...importedTypes, actionTypes: {} } : undefined,
         undefined,
         valueTypes,
@@ -126,13 +126,23 @@ export class PreviewOntologyIrConverter {
     blockdata: OntologyBlockDataV2,
     importedTypes?: Ontologies.OntologyFullMetadata,
   ): Record<string, Ontologies.ActionTypeFullMetadata> {
+    const result: Record<string, Ontologies.ActionTypeFullMetadata> = {};
+    if (importedTypes?.actionTypesFullMetadata) {
+      for (
+        const [apiName, actionType] of Object.entries(
+          importedTypes.actionTypesFullMetadata,
+        )
+      ) {
+        result[apiName] = actionType;
+      }
+    }
+
     const actionsByApiName = new Map(
       Object.values(blockdata.actionTypes).map(a => [
         a.actionType.metadata.apiName,
         a,
       ]),
     );
-    const result: Record<string, Ontologies.ActionTypeFullMetadata> = {};
     for (const [apiName, baseActionType] of Object.entries(actionTypes)) {
       const action = actionsByApiName.get(apiName)!;
       result[apiName] = {

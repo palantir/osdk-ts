@@ -350,7 +350,7 @@ describe("preview action metadata", () => {
   );
 
   it.each([true, false])(
-    "excludes imported actions without replacing local definitions (local action: %s)",
+    "preserves imported full action metadata and prefers local definitions (local action: %s)",
     hasLocalAction => {
       const blockData = hasLocalAction
         ? getActionBlockData()
@@ -363,7 +363,22 @@ describe("preview action metadata", () => {
         ...importedTypes.actionTypes.createItem,
         apiName: "importedOnly",
       };
+      importedTypes.actionTypes.withoutFullMetadata = {
+        ...importedTypes.actionTypes.createItem,
+        apiName: "withoutFullMetadata",
+      };
       importedTypes.actionTypesFullMetadata = {
+        createItem: {
+          actionType: importedTypes.actionTypes.createItem,
+          fullLogicRules: [{
+            type: "createObject",
+            objectTypeApiName: "Item",
+            propertyArguments: {
+              classificationProperty: { type: "staticValue", value: "B" },
+            },
+            structPropertyArguments: {},
+          }],
+        },
         importedOnly: {
           actionType: importedTypes.actionTypes.importedOnly,
           fullLogicRules: [],
@@ -374,15 +389,29 @@ describe("preview action metadata", () => {
       const metadata = PreviewOntologyIrConverter
         .getPreviewFullMetadataFromBlockData(blockData, importedTypes);
 
-      expect(Object.keys(metadata.actionTypes)).toEqual(
-        hasLocalAction ? ["createItem"] : [],
-      );
+      expect(Object.keys(metadata.actionTypes).sort()).toEqual([
+        "createItem",
+        "importedOnly",
+      ]);
+      expect(metadata.actionTypes.importedOnly)
+        .toEqual(importedTypes.actionTypesFullMetadata.importedOnly);
       expect(metadata.actionTypesFullMetadata).toBe(metadata.actionTypes);
       if (hasLocalAction) {
         expect(metadata.actionTypes.createItem.actionType).toMatchObject({
           rid: "action-rid",
           description: "Create a local item",
         });
+        expect(metadata.actionTypes.createItem.fullLogicRules).toEqual([{
+          type: "createObject",
+          objectTypeApiName: "Item",
+          propertyArguments: {
+            classificationProperty: { type: "staticValue", value: "A" },
+          },
+          structPropertyArguments: {},
+        }]);
+      } else {
+        expect(metadata.actionTypes.createItem)
+          .toEqual(importedTypes.actionTypesFullMetadata.createItem);
       }
       expect(importedTypes).toEqual(importedBefore);
     },
