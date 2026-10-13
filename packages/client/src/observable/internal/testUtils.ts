@@ -193,6 +193,7 @@ export function createClientMockHelper(): MockClientHelper {
     objectFactory: vitest.fn(),
     ontologyProvider: {
       getActionDefinition: vitest.fn(),
+      getAgentDefinition: vitest.fn(),
       getInterfaceDefinition: vitest.fn(),
       getObjectDefinition: vitest.fn(),
       getQueryDefinition: vitest.fn(),

@@ -48,6 +48,11 @@ import {
   ReadableIdGenerator,
 } from "../util/generateRid.js";
 
+export interface OntologyPackagingOptions {
+  // EDGE packages datasource definitions for both cloud and edge. Defaults to CLOUD.
+  targetEnvironment?: "CLOUD" | "EDGE";
+}
+
 export interface OntologyV2Result {
   /** The wire ontology representation. */
   ontologyIr: OntologyIrV2;
@@ -78,6 +83,9 @@ export async function defineOntologyV2(
   randomnessKey?: string,
   importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
   externalImportedMetadata?: ExternalImportedOntologyMetadata,
+  packagingOptions: OntologyPackagingOptions = {},
+  /** Runs once the ontology is fully converted, but before any block data is written to disk. */
+  beforeWrite?: (ontology: OntologyDefinition) => void | Promise<void>,
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
 
@@ -125,6 +133,7 @@ export async function defineOntologyV2(
     ridGenerator,
     functionsIr,
     randomnessKey,
+    packagingOptions.targetEnvironment === "EDGE",
   );
 
   const shapes = await getShapes(
@@ -192,6 +201,9 @@ export async function defineOntologyV2(
       },
     );
   }
+
+  // Runs last so that an ontology which fails conversion can't have already updated the lockfile.
+  await beforeWrite?.(ontologyDefinition);
 
   if (outputDir) {
     writeStaticObjects(outputDir);

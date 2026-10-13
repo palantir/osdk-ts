@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-import { execa } from "execa";
+import type {
+  AgentSession,
+  CreateAgentSessionRequest,
+} from "@osdk/foundry.agents";
 
-/** The current git branch, or `undefined` if git fails. */
-export async function getGitBranch(cwd?: string): Promise<string | undefined> {
-  try {
-    const { stdout } = await execa("git", ["branch", "--show-current"], {
-      cwd,
-    });
-    return stdout.trim();
-  } catch {
-    return undefined;
-  }
+import type { FauxDataStore } from "./FauxDataStore.js";
+
+export interface FauxAgentImpl {
+  (req: CreateAgentSessionRequest, fauxDataStore: FauxDataStore): AgentSession;
 }

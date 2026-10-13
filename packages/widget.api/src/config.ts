@@ -31,8 +31,7 @@ interface ArrayParameterDefinition<S extends ParameterValue.PrimitiveType> {
   subType: S;
 }
 interface MapTileLayerParameterDefinition {
-  // experimental - this allows us to hide the parameter type as a suggestion
-  type: "mapTileLayer" & Record<never, never>;
+  type: "mapTileLayer";
   displayName: string;
 }
 interface ObjectSetParameterDefinition<

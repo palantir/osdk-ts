@@ -1,5 +1,59 @@
 # @osdk/foundry-sdk-generator
 
+## 2.80.0
+
+### Patch Changes
+
+- Updated dependencies [e9bf2de]
+  - @osdk/client.unstable@2.80.0
+  - @osdk/client@2.80.0
+  - @osdk/api@2.80.0
+  - @osdk/generator-converters@2.80.0
+  - @osdk/generator-utils@2.80.0
+  - @osdk/generator@2.80.0
+
+## 2.79.0
+
+### Patch Changes
+
+- Updated dependencies [86c708b]
+  - @osdk/api@2.79.0
+  - @osdk/client@2.79.0
+  - @osdk/client.unstable@2.79.0
+  - @osdk/generator-converters@2.79.0
+  - @osdk/generator-utils@2.79.0
+  - @osdk/generator@2.79.0
+
+## 2.78.0
+
+### Patch Changes
+
+- Updated dependencies [533f264]
+  - @osdk/client.unstable@2.78.0
+  - @osdk/client@2.78.0
+  - @osdk/api@2.78.0
+  - @osdk/generator-converters@2.78.0
+  - @osdk/generator-utils@2.78.0
+  - @osdk/generator@2.78.0
+
+## 2.77.0
+
+### Minor Changes
+
+- 6f2b7e6: Remove package.json creation duplication from the OSDK generators
+
+### Patch Changes
+
+- Updated dependencies [2ab4d7c]
+- Updated dependencies [75a8f07]
+- Updated dependencies [bd50cd9]
+  - @osdk/api@2.77.0
+  - @osdk/client@2.77.0
+  - @osdk/generator@2.77.0
+  - @osdk/generator-converters@2.77.0
+  - @osdk/client.unstable@2.77.0
+  - @osdk/generator-utils@2.77.0
+
 ## 2.76.0
 
 ### Patch Changes

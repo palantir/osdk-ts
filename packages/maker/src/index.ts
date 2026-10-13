@@ -41,6 +41,7 @@ export type {
   UuidMappingValue,
 } from "./api/action/MappingValue.js";
 export type { SectionConditionalOverride } from "./api/action/SectionConditionalOverride.js";
+export type { StructFieldDefaultValue } from "./api/action/StructFieldDefaultValue.js";
 export type { SubmissionMetadata } from "./api/action/SubmissionMetadata.js";
 export type { TableConfiguration } from "./api/action/TableConfiguration.js";
 export { addDependency } from "./api/addDependency.js";
@@ -130,6 +131,7 @@ export type {
   ObjectTypeDatasourceDefinition_direct,
 } from "./api/object/ObjectTypeDatasourceDefinition.js";
 export type { ObjectTypeDefinition } from "./api/object/ObjectTypeDefinition.js";
+export { resolveDerivedPropertyLinks } from "./api/object/resolveDerivedPropertyLinks.js";
 export type { SecurityConditionDefinition } from "./api/object/SecurityCondition.js";
 export type { Nullability } from "./api/properties/Nullability.js";
 export type {
@@ -155,3 +157,8 @@ export { wrapWithProxy } from "./api/wrapWithProxy.js";
 export { default } from "./cli/main.js";
 export { convertInterfaceSchemaGracePeriod } from "./conversion/toMarketplace/convertInterfaceSchemaMigrations.js";
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";
+export { DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME } from "./lockfile/OntologySchemaLockfile.js";
+export {
+  reconcileOntologySchemaLockfile,
+  type ReconcileOntologySchemaLockfileOptions,
+} from "./lockfile/reconcileOntologySchemaLockfile.js";

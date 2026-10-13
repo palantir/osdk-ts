@@ -21,7 +21,7 @@ import { fileURLToPath } from "node:url";
 import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { resolveDependenciesFromFindUp } from "@osdk/generator-utils";
 
-import type { SlsLogger } from "../../logging/index.js";
+import { SlsLogger } from "../../logging/index.js";
 import type { OntologyInfo } from "../../ontologyMetadata/ontologyMetadataResolver.js";
 import { USER_AGENT } from "../../utils/UserAgent.js";
 import { generateBundles } from "../generateBundles.js";
@@ -32,7 +32,7 @@ import { customNormalize } from "./customNormalize.js";
 import { generatePackageJson } from "./generatePackageJson.js";
 
 const betaPeerDependencies: { [key: string]: string | undefined } = {
-  "@osdk/client": undefined,
+  "@osdk/client": process.env.PACKAGE_CLIENT_VERSION,
 };
 
 export async function generatePackage(
@@ -40,6 +40,7 @@ export async function generatePackage(
   options: {
     packageName: string;
     packageVersion: string;
+    scripts?: Record<string, string>;
     outputDir: string;
     beta: boolean;
     ontologyJsonOnly: boolean;
@@ -47,7 +48,7 @@ export async function generatePackage(
     branch: string | undefined;
     exportOntologyMetadata: boolean | undefined;
   },
-  logger: SlsLogger,
+  logger: SlsLogger = new SlsLogger(),
 ): Promise<void> {
   let success = true;
 
@@ -94,6 +95,7 @@ export async function generatePackage(
     packageName: options.packageName,
     packagePath,
     packageVersion: options.packageVersion,
+    scripts: options.scripts,
     dependencies: [],
     peerDependencies: resolvedPeerDependencies,
     beta: options.beta,

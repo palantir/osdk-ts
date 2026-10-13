@@ -1,5 +1,27 @@
 # @osdk/maker
 
+## 0.79.0
+
+### Minor Changes
+
+- d63eb64: Bring in blueprintjs and re-export icon names
+- 5b15676: Support explicit and conditional struct field defaults in Marketplace actions, and automatically prefill struct and struct-array fields in modify and create-or-modify object actions.
+
+### Patch Changes
+
+- @osdk/generator-converters.ontologyir@2.78.0
+- @osdk/api@2.78.0
+
+## 0.78.0
+
+### Patch Changes
+
+- Updated dependencies [2ab4d7c]
+- Updated dependencies [75a8f07]
+  - @osdk/api@2.77.0
+  - @osdk/typescript-sdk-docs@0.26.0
+  - @osdk/generator-converters.ontologyir@2.77.0
+
 ## 0.77.0
 
 ### Minor Changes

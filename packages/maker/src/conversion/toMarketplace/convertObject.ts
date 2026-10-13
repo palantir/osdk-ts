@@ -37,6 +37,7 @@ import type {
   DerivedPropertyAggregation,
   ObjectTypeDatasourceDefinition_derived,
 } from "../../api/object/ObjectTypeDatasourceDefinition.js";
+import { resolveDerivedPropertyLinks } from "../../api/object/resolveDerivedPropertyLinks.js";
 import { isExotic } from "../../api/properties/PropertyTypeType.js";
 import { convertDatasourceDefinition } from "./convertDatasourceDefinition.js";
 import { convertObjectPropertyType } from "./convertObjectPropertyType.js";
@@ -251,17 +252,21 @@ function buildDerivedDatasource(
   index: number,
   objectTypeApiName: string,
 ): OntologyIrMarketplaceObjectTypeDatasource {
+  const { steps } = resolveDerivedPropertyLinks(
+    objectTypeApiName,
+    datasource.linkDefinition,
+  );
   const linkDefinition = {
     type: "multiHopLink",
     multiHopLink: {
-      steps: datasource.linkDefinition.map((step) => ({
+      steps: steps.map((step) => ({
         type: "searchAround",
         searchAround: {
           linkTypeIdentifier: {
             type: "linkType",
             linkType: cleanAndValidateLinkTypeId(step.linkType.apiName),
           },
-          linkTypeSide: step.side ?? "SOURCE",
+          linkTypeSide: step.side,
         },
       })),
     },

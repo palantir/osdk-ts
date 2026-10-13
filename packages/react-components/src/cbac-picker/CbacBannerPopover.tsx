@@ -33,6 +33,7 @@ export interface CbacBannerPopoverProps {
   markingIds: string[];
   onChange: (markingIds: string[]) => void;
   maxClassificationConstraint?: MaxClassificationConstraint;
+  includeDeleted?: boolean;
   className?: string;
 }
 
@@ -40,6 +41,7 @@ export function CbacBannerPopover({
   markingIds,
   onChange,
   maxClassificationConstraint,
+  includeDeleted,
   className,
 }: CbacBannerPopoverProps): React.ReactElement {
   const {
@@ -53,13 +55,13 @@ export function CbacBannerPopover({
     isLoading: categoriesLoading,
     error: categoriesError,
     refetch: refetchCategories,
-  } = useMarkingCategories();
+  } = useMarkingCategories({ includeDeleted });
   const {
     markings,
     isLoading: markingsLoading,
     error: markingsError,
     refetch: refetchMarkings,
-  } = useMarkings();
+  } = useMarkings({ includeDeleted });
 
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
@@ -118,6 +120,7 @@ export function CbacBannerPopover({
           onConfirm={handleConfirm}
           initialMarkingIds={markingIds}
           maxClassificationConstraint={maxClassificationConstraint}
+          includeDeleted={includeDeleted}
         />
       )}
     </>

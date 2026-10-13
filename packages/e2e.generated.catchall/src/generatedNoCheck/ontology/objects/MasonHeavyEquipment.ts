@@ -482,6 +482,7 @@ export interface MasonHeavyEquipment extends $ObjectTypeDefinition {
     props: MasonHeavyEquipment.Props;
     linksType: MasonHeavyEquipment.Links;
     strictProps: MasonHeavyEquipment.StrictProps;
+    requiredProps: 'id';
     apiName: 'MasonHeavyEquipment';
     description: '';
     displayName: '[mason] Heavy Equipment';

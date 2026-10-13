@@ -82,7 +82,7 @@ function isObjectTypeDefinition(
 }
 
 export function isObjectSet(
-  o: object,
+  o: unknown,
 ): o is ObjectSet<ObjectOrInterfaceDefinition> {
   return (
     o != null &&

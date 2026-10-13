@@ -391,6 +391,12 @@ export interface AdditionalOutputShapeResult {
   resolvedShape: ResolvedOutputShape;
   shape: OutputShape;
 }
+/**
+ * Migration instruction to add a required property to an interface type.
+ */
+export interface AddRequiredInterfacePropertyMigration {
+  interfaceProperty: InterfacePropertyTypeReference;
+}
 export interface AddToDraftGroupRequest {
   versionIds: Array<BlockSetVersionId>;
 }
@@ -13478,6 +13484,7 @@ export interface InterfaceTypeOutputShape {
   links: Array<InterfaceLinkTypeReference>;
   properties: Array<SharedPropertyTypeReference>;
   propertiesV2: Array<InterfacePropertyTypeReference>;
+  schemaTransitionMetadata: Array<InterfaceTypeSchemaTransitionReference>;
 }
 export type InterfaceTypeReference = BlockInternalId;
 
@@ -13490,6 +13497,28 @@ export interface InterfaceTypeReferenceUnresolvable {
   expected: InterfaceTypeReference;
 }
 export type InterfaceTypeRid = string;
+export interface InterfaceTypeSchemaMigrationInstruction_addRequiredProperty {
+  type: "addRequiredProperty";
+  addRequiredProperty: AddRequiredInterfacePropertyMigration;
+}
+/**
+ * A single migration instruction within an interface type schema transition.
+ */
+export type InterfaceTypeSchemaMigrationInstruction =
+  InterfaceTypeSchemaMigrationInstruction_addRequiredProperty;
+
+export type InterfaceTypeSchemaTransitionId = string;
+
+/**
+ * Output shape representing a schema transition for an interface type.
+ */
+export interface InterfaceTypeSchemaTransitionOutputShape {
+  about: LocalizedTitleAndDescription;
+  interfaceType: InterfaceTypeReference;
+  migrations: Array<InterfaceTypeSchemaMigrationInstruction>;
+  transitionId: InterfaceTypeSchemaTransitionId;
+}
+export type InterfaceTypeSchemaTransitionReference = BlockInternalId;
 
 /**
  * The Shape Id that was resolved for the LinkType does not match the shape id expected.
@@ -16758,6 +16787,11 @@ export interface OutputShape_interfaceParameterConstraint {
   interfaceParameterConstraint: InterfaceParameterConstraintShape;
 }
 
+export interface OutputShape_interfaceTypeSchemaTransition {
+  type: "interfaceTypeSchemaTransition";
+  interfaceTypeSchemaTransition: InterfaceTypeSchemaTransitionOutputShape;
+}
+
 export interface OutputShape_linkType {
   type: "linkType";
   linkType: LinkTypeOutputShape;
@@ -17088,6 +17122,7 @@ export type OutputShape =
   | OutputShape_interfacePropertyType
   | OutputShape_interfaceActionTypeConstraint
   | OutputShape_interfaceParameterConstraint
+  | OutputShape_interfaceTypeSchemaTransition
   | OutputShape_linkType
   | OutputShape_logic
   | OutputShape_logicFunction
