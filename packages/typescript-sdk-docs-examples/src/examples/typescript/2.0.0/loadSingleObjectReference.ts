@@ -39,3 +39,18 @@ function getWithSelectedProperties(properties: Employee.PropertyKeys[]) {
     $select: properties,
   });
 }
+
+// Opt in to security metadata for the loaded property values.
+// Values stay on their usual fields; $propertySecurities is keyed by property API name.
+const objectWithSecurity = await client(Employee).fetchOne(12345, {
+  $select: ["fullName"],
+  $loadPropertySecurityMetadata: true,
+});
+console.log(
+  objectWithSecurity.fullName,
+  objectWithSecurity.$propertySecurities.fullName,
+);
+// Scalar properties have PropertySecurity[] of alternative security outcomes.
+// Array properties have PropertySecurity[][], indexed alongside each property value.
+// Each outcome is propertyMarkings, unsupportedPolicy, or errorComputingSecurity.
+// propertyMarkings describes marking requirements, not a list of users or groups.
