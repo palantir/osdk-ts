@@ -21,7 +21,7 @@ import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAsyncClientCache } from "../object/Cache.js";
 import { isObjectSet } from "../objectSet/createObjectSet.js";
-import { createAndFetchTempObjectSetRid } from "../public-utils/createAndFetchTempObjectSetRid.js";
+import { createTemporaryObjectSet } from "../objectSet/createTemporaryObjectSet.js";
 import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
@@ -81,7 +81,7 @@ export async function toDataValueAgents(
       await checkOntology(client, desiredType.ontologyApiName);
       // TODO(mhogberg): Update the agent APIs to accept both object set objects and object set RIDs and
       //  remove the conversion here.
-      return await createAndFetchTempObjectSetRid(client, value);
+      return await createTemporaryObjectSet(client, value);
     }
 
     case "list":

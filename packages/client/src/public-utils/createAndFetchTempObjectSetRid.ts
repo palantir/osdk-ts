@@ -19,44 +19,24 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectSet,
 } from "@osdk/api";
-import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
-import * as OntologyObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet";
 
 import { additionalContext, type Client } from "../Client.js";
-import type { MinimalClient } from "../MinimalClientContext.js";
-import { getWireObjectSet } from "../objectSet/createObjectSet.js";
-import { normalizeInterfaceLinkSearchArounds } from "../util/normalizeInterfaceLinkSearchArounds.js";
-import { isWireObjectSet } from "../util/WireObjectSet.js";
+import { createTemporaryObjectSet } from "../objectSet/createTemporaryObjectSet.js";
 
 /**
  * Fetches a temporary object set RID from the Foundry stack for the given object set.
  *
- * @param client - An OSDK client or its internal context.
+ * @param client - An OSDK client.
  * @param objectSet - The object set to fetch a RID for.
  * @returns A promise that resolves to the RID of the temporary object set.
  */
 export async function createAndFetchTempObjectSetRid<
   Q extends ObjectOrInterfaceDefinition,
 >(
-  client: Client | MinimalClient,
-  objectSet:
-    | WireObjectSet
-    | (unknown extends CompileTimeMetadata<Q>["objectSet"]
-        ? ObjectSet<Q>
-        : CompileTimeMetadata<Q>["objectSet"]),
+  client: Client,
+  objectSet: unknown extends CompileTimeMetadata<Q>["objectSet"]
+    ? ObjectSet<Q>
+    : CompileTimeMetadata<Q>["objectSet"],
 ): Promise<string> {
-  const minimalClient =
-    additionalContext in client ? client[additionalContext] : client;
-  const response = await OntologyObjectSets.createTemporary(
-    minimalClient,
-    await minimalClient.ontologyRid,
-    {
-      objectSet: await normalizeInterfaceLinkSearchArounds(
-        minimalClient,
-        isWireObjectSet(objectSet) ? objectSet : getWireObjectSet(objectSet),
-      ),
-    },
-    { branch: minimalClient.branch },
-  );
-  return response.objectSetRid;
+  return await createTemporaryObjectSet(client[additionalContext], objectSet);
 }
