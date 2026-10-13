@@ -317,6 +317,111 @@ describe(toDataValueAgents, () => {
     {
       name: "object",
       dataType: employeeType,
+      value: true,
+      expected:
+        "an OSDK object, object identifier, or string or number primary key",
+    },
+    {
+      name: "object set",
+      dataType: employeeSetType,
+      value: 42,
+      expected:
+        "an OSDK ObjectSet, object set definition, or object set RID string",
+    },
+    {
+      name: "list",
+      dataType: { type: "list", elementType: employeeType },
+      value: {},
+      expected: "an array",
+    },
+    {
+      name: "record",
+      dataType: { type: "record", valueType: employeeType },
+      value: [],
+      expected: "an object",
+    },
+    {
+      name: "struct",
+      dataType: { type: "struct", fields: [] },
+      value: false,
+      expected: "an object",
+    },
+    {
+      name: "union",
+      dataType: {
+        type: "discriminatedUnion",
+        discriminatorKey: "kind",
+        members: [],
+      },
+      value: "invalid",
+      expected: "an object",
+    },
+  ] satisfies Array<{
+    name: string;
+    dataType: DataType;
+    value: unknown;
+    expected: string;
+  }>)(
+    "reports the argument name and expected input for an invalid $name",
+    async ({ dataType, value, expected }) => {
+      await expect(
+        toDataValueAgents({ input: value }, clientCtx, {
+          type: "struct",
+          fields: [{ name: "input", dataType }],
+        }),
+      ).rejects.toThrow(
+        `Invalid agent argument "input": expected ${expected}.`,
+      );
+    },
+  );
+
+  it("reports invalid root arguments without a path", async () => {
+    await expect(
+      toDataValueAgents([], clientCtx, { type: "struct", fields: [] }),
+    ).rejects.toThrow("Invalid agent argument: expected an object.");
+  });
+
+  it.each([
+    { key: "engineering", path: "groups.engineering[1].value" },
+    { key: "engineering.eu", path: 'groups["engineering.eu"][1].value' },
+  ])(
+    "reports the nested argument path for record key $key",
+    async ({ key, path }) => {
+      const dataType: DataType = {
+        type: "record",
+        valueType: {
+          type: "list",
+          elementType: {
+            type: "nullable",
+            wrappedType: {
+              type: "discriminatedUnion",
+              discriminatorKey: "kind",
+              members: [
+                {
+                  discriminatorValue: "employee",
+                  fields: [{ name: "value", dataType: employeeType }],
+                },
+              ],
+            },
+          },
+        },
+      };
+      await expect(
+        toDataValueAgents(
+          { groups: { [key]: [null, { kind: "employee", value: false }] } },
+          clientCtx,
+          { type: "struct", fields: [{ name: "groups", dataType }] },
+        ),
+      ).rejects.toThrow(
+        `Invalid agent argument "${path}": expected an OSDK object, object identifier, or string or number primary key.`,
+      );
+    },
+  );
+
+  it.each([
+    {
+      name: "object",
+      dataType: employeeType,
       value: () => 50030,
     },
     {
@@ -338,11 +443,18 @@ describe(toDataValueAgents, () => {
       );
 
       await expect(
-        toDataValueAgents(value(), clientCtx, {
-          ...dataType,
-          ontologyApiName: "another-ontology",
+        toDataValueAgents({ input: value() }, clientCtx, {
+          type: "struct",
+          fields: [
+            {
+              name: "input",
+              dataType: { ...dataType, ontologyApiName: "another-ontology" },
+            },
+          ],
         }),
-      ).rejects.toThrow("must reference the client's ontology");
+      ).rejects.toThrow(
+        'Agent argument "input" references ontology "another-ontology", but the client uses ontology "default-ontology".',
+      );
       expect(getObject).not.toHaveBeenCalled();
     },
   );
