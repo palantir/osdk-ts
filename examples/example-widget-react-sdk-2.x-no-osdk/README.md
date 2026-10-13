@@ -13,7 +13,7 @@ Alternatively check out the Custom Widgets docs for a full guide on creating and
 ## Workshop custom theme
 
 `FoundryWidget` automatically converts the host theme into Blueprint CSS tokens on the
-widget iframe's document root, including for portals. This example requires no per-widget
+widget's root div. Portals outside that div do not receive these overrides. This example requires no per-widget
 theme mapping. The SDK must include the theme contract, client forwarding, and React
 provider changes; updating only the host's API package is insufficient.
 
