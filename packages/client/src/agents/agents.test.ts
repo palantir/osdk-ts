@@ -15,14 +15,28 @@
  */
 
 import type { AgentSession } from "@osdk/api/unstable";
-import { noArgsAgent, weatherAgent } from "@osdk/client.test.ontology";
+import {
+  Employee,
+  noArgsAgent,
+  objectArgumentsAgent,
+  weatherAgent,
+} from "@osdk/client.test.ontology";
 import {
   LegacyFauxFoundry,
   type SetupServer,
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
-import { beforeAll, describe, expect, expectTypeOf, it, vi } from "vitest";
+import {
+  afterEach,
+  assert,
+  beforeAll,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+  vi,
+} from "vitest";
 
 import type { Client } from "../Client.js";
 import { createClient, createClientWithTransaction } from "../createClient.js";
@@ -43,6 +57,10 @@ describe("agents", () => {
     return () => {
       apiServer.close();
     };
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("rejects scenario clients before making requests", async () => {
@@ -113,7 +131,7 @@ describe("agents", () => {
     });
 
     expectTypeOf<typeof session>().toEqualTypeOf<AgentSession>();
-    expect(session).toEqual(stubData.weatherAgentResponse);
+    expect(session).toEqual({ id: stubData.weatherAgentResponse.id });
   });
 
   it("creates sessions with the pinned version", async () => {
@@ -121,17 +139,33 @@ describe("agents", () => {
       ...weatherAgent,
       version: "2.0.0",
     }).experimental_createSession({ city: "London" });
-    expect(session).toEqual(stubData.weatherAgentOtherVersionResponse);
+    expect(session).toEqual({
+      id: stubData.weatherAgentOtherVersionResponse.id,
+    });
   });
 
   it("supports a detached experimental_createSession method", async () => {
     const { experimental_createSession } = client(weatherAgent);
     const session = await experimental_createSession({ city: "London" });
-    expect(session).toEqual(stubData.weatherAgentResponse);
+    expect(session).toEqual({ id: stubData.weatherAgentResponse.id });
   });
 
   it("creates a session without arguments", async () => {
     const session = await client(noArgsAgent).experimental_createSession();
-    expect(session).toEqual(stubData.noArgsAgentResponse);
+    expect(session).toEqual({ id: stubData.noArgsAgentResponse.id });
+  });
+
+  it("creates a session with object and object-set arguments", async () => {
+    const employee = await client(Employee).fetchOne(50030);
+    const employees = client(Employee).where({ employeeId: 50030 });
+
+    const session = await client(
+      objectArgumentsAgent,
+    ).experimental_createSession({
+      employee,
+      employees,
+    });
+
+    expect(session).toEqual({ id: stubData.objectArgumentsAgentResponse.id });
   });
 });

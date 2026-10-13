@@ -16,6 +16,8 @@
 
 import type { AgentDefinitionVersion } from "@osdk/foundry.agents";
 
+import { defaultOntologyMetadata } from "./ontologies/defaultOntologyMetadata.js";
+
 export const weatherAgentApiName = "weatherAgent";
 
 export const weatherAgentVersion: AgentDefinitionVersion = {
@@ -50,4 +52,32 @@ export const noArgsAgentApiName = "noArgsAgent";
 export const noArgsAgentVersion: AgentDefinitionVersion = {
   ...weatherAgentVersion,
   argumentDefinitions: [],
+};
+
+export const objectArgumentsAgentApiName = "objectArgumentsAgent";
+export const objectArgumentsAgentVersion: AgentDefinitionVersion = {
+  version: "1.2.3",
+  createdTime: "2026-01-01T00:00:00Z",
+  createdBy: "user",
+  argumentDefinitions: [
+    {
+      name: "employee",
+      dataType: {
+        type: "object",
+        ontologyApiName: defaultOntologyMetadata.apiName,
+        objectTypeApiName: "Employee",
+      },
+    },
+    {
+      name: "employees",
+      dataType: {
+        type: "objectSet",
+        ontologyApiName: defaultOntologyMetadata.apiName,
+        objectTypeApiName: "Employee",
+      },
+    },
+  ],
+  eventDefinitions: [],
+  agentStateType: { type: "struct", fields: [] },
+  contextItemDefinitions: [],
 };

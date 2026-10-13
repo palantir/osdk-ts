@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+export * as AgentDefinitionVersions from "./AgentDefinitionVersions.js";
 export * as AgentSessions from "./AgentSessions.js";

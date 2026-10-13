@@ -23,6 +23,7 @@ export * from "./defaultOntologyForConjure.js";
 export * from "./interfaceTypes.js";
 export * from "./linkTypes.js";
 export * from "./objects.js";
+export * from "./objectSets.js";
 export * from "./objectTypesWithLinkTypes.js";
 export * from "./objectTypeV2.js";
 export * from "./queries.js";

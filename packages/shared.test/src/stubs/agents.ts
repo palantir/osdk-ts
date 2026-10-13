@@ -15,19 +15,24 @@
  */
 
 import type { FauxOntology } from "@osdk/faux";
+import { Errors, OpenApiCallError } from "@osdk/faux";
 import type {
   AgentSession,
   CreateAgentSessionRequest,
 } from "@osdk/foundry.agents";
+import deepEqual from "fast-deep-equal";
 
 import { createLazyAgentImpl } from "../createLazyAgentImpl.js";
 import {
   noArgsAgentApiName,
   noArgsAgentVersion,
+  objectArgumentsAgentApiName,
+  objectArgumentsAgentVersion,
   weatherAgentApiName,
   weatherAgentOtherVersion,
   weatherAgentVersion,
 } from "./agentDefinitions.js";
+import { employeeObjectSet } from "./objectSets.js";
 import { defaultOntologyMetadata } from "./ontologies/defaultOntologyMetadata.js";
 
 export const weatherAgentRequest: CreateAgentSessionRequest = {
@@ -40,7 +45,11 @@ export const weatherAgentRequest: CreateAgentSessionRequest = {
   arguments: { city: "London" },
 };
 
-export const weatherAgentResponse: AgentSession = { id: "weather-session" };
+export const weatherAgentResponse: AgentSession = {
+  id: "weather-session",
+  agentRid: "ri.aip-agents.main.agent.weather",
+  agentVersion: weatherAgentVersion.version,
+};
 
 export const weatherAgentOtherVersionRequest: CreateAgentSessionRequest = {
   ...weatherAgentRequest,
@@ -48,7 +57,9 @@ export const weatherAgentOtherVersionRequest: CreateAgentSessionRequest = {
 };
 
 export const weatherAgentOtherVersionResponse: AgentSession = {
+  ...weatherAgentResponse,
   id: "weather-session-other-version",
+  agentVersion: weatherAgentOtherVersion.version,
 };
 
 export const noArgsAgentRequest: CreateAgentSessionRequest = {
@@ -61,7 +72,38 @@ export const noArgsAgentRequest: CreateAgentSessionRequest = {
   arguments: {},
 };
 
-export const noArgsAgentResponse: AgentSession = { id: "no-args-session" };
+export const noArgsAgentResponse: AgentSession = {
+  id: "no-args-session",
+  agentRid: "ri.aip-agents.main.agent.no-args",
+  agentVersion: noArgsAgentVersion.version,
+};
+
+export function objectArgumentsAgentRequest(
+  objectSetRid: string,
+): CreateAgentSessionRequest {
+  return {
+    agent: {
+      type: "agentApiName",
+      ontology: defaultOntologyMetadata.rid as string,
+      agentApiName: objectArgumentsAgentApiName,
+    },
+    agentVersion: objectArgumentsAgentVersion.version,
+    arguments: {
+      employee: {
+        ontologyRid: defaultOntologyMetadata.rid,
+        objectTypeApiName: "Employee",
+        primaryKey: { employeeId: 50030 },
+      },
+      employees: objectSetRid,
+    },
+  };
+}
+
+export const objectArgumentsAgentResponse: AgentSession = {
+  id: "object-arguments-session",
+  agentRid: "ri.aip-agents.main.agent.object-arguments",
+  agentVersion: objectArgumentsAgentVersion.version,
+};
 
 const agentRequestHandlers: {
   [agentApiName: string]: {
@@ -107,4 +149,30 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
       createLazyAgentImpl(lazyHandlerMap),
     );
   }
+
+  // objectArgumentsAgent has an object set argument. For object set arguments we create temporary
+  // object sets with new RIDs on each request, which means that we can't use exact request matching
+  // for this agent. Here we pull out the object set RID from the request and use it to validate the
+  // request.
+  fauxOntology.registerAgentType(
+    objectArgumentsAgentApiName,
+    objectArgumentsAgentVersion,
+    (request, dataStore) => {
+      const objectSetRid = request.arguments.employees;
+      if (
+        typeof objectSetRid !== "string" ||
+        !deepEqual(request, objectArgumentsAgentRequest(objectSetRid)) ||
+        !deepEqual(
+          dataStore.getObjectSetOrThrow(objectSetRid),
+          employeeObjectSet,
+        )
+      ) {
+        throw new OpenApiCallError(
+          400,
+          Errors.InvalidRequest("Invalid Agent Session Request"),
+        );
+      }
+      return objectArgumentsAgentResponse;
+    },
+  );
 }
