@@ -6,6 +6,66 @@
         "description": ""
     },
     "actionTypes": {
+        "create-osdk-decimal-action-test": {
+            "apiName": "create-osdk-decimal-action-test",
+            "displayName": "Create OSDK Decimal Action Test",
+            "status": "EXPERIMENTAL",
+            "parameters": {
+                "amount": {
+                    "displayName": "Amount",
+                    "dataType": {
+                        "type": "decimal",
+                        "precision": 5,
+                        "scale": 2
+                    },
+                    "required": true,
+                    "typeClasses": []
+                },
+                "amounts": {
+                    "displayName": "Amounts",
+                    "dataType": {
+                        "type": "array",
+                        "subType": {
+                            "type": "decimal",
+                            "precision": 5,
+                            "scale": 2
+                        }
+                    },
+                    "required": true,
+                    "typeClasses": []
+                }
+            },
+            "rid": "ri.actions.main.action-type.f249bc74-7aff-4c6c-8923-fde8207216fe",
+            "operations": [
+                {
+                    "type": "createObject",
+                    "objectTypeApiName": "OsdkDecimalActionTest"
+                }
+            ]
+        },
+        "delete-osdk-decimal-action-test": {
+            "apiName": "delete-osdk-decimal-action-test",
+            "displayName": "Delete OSDK Decimal Action Test",
+            "status": "EXPERIMENTAL",
+            "parameters": {
+                "OsdkDecimalActionTest": {
+                    "displayName": "OSDK Decimal Action Test",
+                    "dataType": {
+                        "type": "object",
+                        "objectTypeApiName": "OsdkDecimalActionTest"
+                    },
+                    "required": true,
+                    "typeClasses": []
+                }
+            },
+            "rid": "ri.actions.main.action-type.ed1c2190-a90c-4248-821b-912327c5a1e3",
+            "operations": [
+                {
+                    "type": "deleteObject",
+                    "objectTypeApiName": "OsdkDecimalActionTest"
+                }
+            ]
+        },
         "delete-scenario-test-osdk": {
             "apiName": "delete-scenario-test-osdk",
             "displayName": "Delete Scenario Test Osdk",
@@ -531,6 +591,87 @@
         }
     },
     "objectTypes": {
+        "OsdkDecimalActionTest": {
+            "objectType": {
+                "apiName": "OsdkDecimalActionTest",
+                "displayName": "OSDK Decimal Action Test",
+                "status": "EXPERIMENTAL",
+                "description": "Smoke test fixture for decimal and decimal-list action parameters in the TypeScript OSDK (PR 4083).",
+                "pluralDisplayName": "OSDK Decimal Action Tests",
+                "icon": {
+                    "type": "blueprint",
+                    "color": "#4C90F0",
+                    "name": "cube"
+                },
+                "primaryKey": "id",
+                "properties": {
+                    "amount": {
+                        "displayName": "Amount",
+                        "dataType": {
+                            "type": "decimal",
+                            "precision": 5,
+                            "scale": 2
+                        },
+                        "rid": "ri.ontology.main.property.1e692a2f-a3b3-4a54-b550-ff458785fe3f",
+                        "status": {
+                            "type": "experimental"
+                        },
+                        "visibility": "NORMAL",
+                        "typeClasses": []
+                    },
+                    "amounts": {
+                        "displayName": "Amounts",
+                        "dataType": {
+                            "type": "array",
+                            "subType": {
+                                "type": "decimal",
+                                "precision": 5,
+                                "scale": 2
+                            }
+                        },
+                        "rid": "ri.ontology.main.property.496118dd-a65d-4700-873c-faec133ce7e6",
+                        "status": {
+                            "type": "experimental"
+                        },
+                        "visibility": "NORMAL",
+                        "typeClasses": [
+                            {
+                                "kind": "render_hint",
+                                "name": "SORTABLE"
+                            }
+                        ]
+                    },
+                    "id": {
+                        "displayName": "Id",
+                        "dataType": {
+                            "type": "string"
+                        },
+                        "rid": "ri.ontology.main.property.1eca1cd6-113e-4762-bcc1-9215069f2798",
+                        "status": {
+                            "type": "experimental"
+                        },
+                        "visibility": "NORMAL",
+                        "typeClasses": [
+                            {
+                                "kind": "render_hint",
+                                "name": "SELECTABLE"
+                            },
+                            {
+                                "kind": "render_hint",
+                                "name": "SORTABLE"
+                            }
+                        ]
+                    }
+                },
+                "rid": "ri.ontology.main.object-type.00f2a957-69ce-4e37-8ced-68c7c17f7605",
+                "titleProperty": "id",
+                "visibility": "NORMAL"
+            },
+            "linkTypes": [],
+            "implementsInterfaces": [],
+            "implementsInterfaces2": {},
+            "sharedPropertyTypeMapping": {}
+        },
         "Game": {
             "implementsInterfaces": [
                 "LibraryItem"

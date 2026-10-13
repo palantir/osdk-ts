@@ -321,6 +321,30 @@ export const ActionTakesAttachment: ActionTypeV2 = {
   status: "ACTIVE",
 };
 
+export const ActionTakesDecimal: ActionTypeV2 = {
+  apiName: "actionTakesDecimal",
+  parameters: {
+    amount: {
+      displayName: "Amount",
+      dataType: { type: "decimal", precision: 38, scale: 18 },
+      required: true,
+      typeClasses: [],
+    },
+    amounts: {
+      displayName: "Amounts",
+      dataType: {
+        type: "array",
+        subType: { type: "decimal", precision: 38, scale: 18 },
+      },
+      required: true,
+      typeClasses: [],
+    },
+  },
+  rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f4",
+  operations: [],
+  status: "ACTIVE",
+};
+
 export const ActionTakesMedia: ActionTypeV2 = {
   apiName: "actionTakesMedia",
   description: "An action which takes a mediaReference parameter",

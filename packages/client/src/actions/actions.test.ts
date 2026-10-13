@@ -23,6 +23,7 @@ import type {
 import {
   $Actions,
   actionTakesAttachment,
+  actionTakesDecimal,
   actionTakesMedia,
   addGeoshape,
   createFooInterface,
@@ -332,6 +333,99 @@ describe.each([
 
     expectTypeOf<typeof result2>().toEqualTypeOf<undefined>();
     expect(result2).toBeUndefined();
+  });
+
+  it.each(["12345678901234567890.123456789012345678", 123.45])(
+    "preserves decimal scalar %s and list parameters",
+    async (amount) => {
+      const action = client(actionTakesDecimal);
+      type InferredParamType = Parameters<typeof action.applyAction>[0];
+      expectTypeOf<InferredParamType>().toEqualTypeOf<{
+        readonly amount: string | number;
+        readonly amounts: ReadonlyArray<string | number>;
+      }>();
+
+      await apiServer.boundary(async () => {
+        let requestBody: unknown;
+        apiServer.use(
+          MockOntologiesV2.Actions.apply(baseUrl, async ({ request }) => {
+            requestBody = await request.json();
+            return {
+              validation: {
+                result: "VALID",
+                submissionCriteria: [],
+                parameters: {},
+              },
+            };
+          }),
+        );
+
+        const result = await action.applyAction({
+          amount,
+          amounts: ["12345678901234567890.123456789012345678", 123.45],
+        });
+
+        expect(result).toBeUndefined();
+        expect(requestBody).toEqual({
+          parameters: {
+            amount,
+            amounts: ["12345678901234567890.123456789012345678", 123.45],
+          },
+          options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+        });
+      })();
+    },
+  );
+
+  it("preserves decimal scalar and list parameters in batch actions", async () => {
+    const action = client(actionTakesDecimal);
+    type InferredBatchParamType = Parameters<typeof action.batchApplyAction>[0];
+    expectTypeOf<InferredBatchParamType>().toEqualTypeOf<
+      ReadonlyArray<{
+        readonly amount: string | number;
+        readonly amounts: ReadonlyArray<string | number>;
+      }>
+    >();
+
+    await apiServer.boundary(async () => {
+      let requestBody: unknown;
+      apiServer.use(
+        MockOntologiesV2.Actions.applyBatch(baseUrl, async ({ request }) => {
+          requestBody = await request.json();
+          return {};
+        }),
+      );
+
+      const result = await action.batchApplyAction([
+        {
+          amount: "12345678901234567890.123456789012345678",
+          amounts: ["0.123456789012345678", 123.45],
+        },
+        {
+          amount: 123.45,
+          amounts: [123.45, "0.123456789012345678"],
+        },
+      ]);
+
+      expect(result).toBeUndefined();
+      expect(requestBody).toEqual({
+        requests: [
+          {
+            parameters: {
+              amount: "12345678901234567890.123456789012345678",
+              amounts: ["0.123456789012345678", 123.45],
+            },
+          },
+          {
+            parameters: {
+              amount: 123.45,
+              amounts: [123.45, "0.123456789012345678"],
+            },
+          },
+        ],
+        options: { returnEdits: "NONE" },
+      });
+    })();
   });
 
   it("Accepts media reference", async () => {
@@ -714,6 +808,7 @@ describe("ActionResponse remapping", () => {
     const actions = Object.keys($Actions);
     expect(actions).toStrictEqual([
       "actionTakesAttachment",
+      "actionTakesDecimal",
       "actionTakesMedia",
       "actionTakesObjectSet",
       "addGeoshape",

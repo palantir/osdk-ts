@@ -25,6 +25,7 @@ export { NihalbCastingObjectTypeA } from './objects/NihalbCastingObjectTypeA.js'
 export { NihalbCastingObjectTypeB } from './objects/NihalbCastingObjectTypeB.js';
 export { NihalbCastingObjectTypeC } from './objects/NihalbCastingObjectTypeC.js';
 export { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes.js';
+export { OsdkDecimalActionTest } from './objects/OsdkDecimalActionTest.js';
 export { OsdkTestObject } from './objects/OsdkTestObject.js';
 export { Person } from './objects/Person.js';
 export { ReducerTest } from './objects/ReducerTest.js';
