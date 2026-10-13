@@ -114,6 +114,36 @@ export interface SelectArg<
    */
   $select?: readonly L[];
   $includeRid?: R;
+  /**
+   * Load security metadata alongside property values. Defaults to false.
+   *
+   * When true, returned objects expose `$propertySecurities`, keyed by property
+   * API name. Property values remain available on their usual fields.
+   * A scalar property's metadata is a `PropertySecurity` array of
+   * alternative security outcomes. An array property's metadata is an array of
+   * those arrays, indexed alongside the individual property values.
+   *
+   * Outcomes contain marking requirements, or indicate `unsupportedPolicy` or
+   * `errorComputingSecurity`. They do not enumerate user or group permissions.
+   *
+   * @example
+   * ```ts
+   * const employee = await client(Employee).fetchOne(employeeId, {
+   *   $select: ["fullName"],
+   *   $loadPropertySecurityMetadata: true,
+   * });
+   * console.log(employee.fullName, employee.$propertySecurities.fullName);
+   *
+   * // The same option is supported by fetchPage.
+   * const page = await client(Employee).fetchPage({
+   *   $select: ["fullName"],
+   *   $loadPropertySecurityMetadata: true,
+   * });
+   * for (const object of page.data) {
+   *   console.log(object.fullName, object.$propertySecurities.fullName);
+   * }
+   * ```
+   */
   $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
   $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
 }

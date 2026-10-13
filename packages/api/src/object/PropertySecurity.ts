@@ -17,6 +17,14 @@
 /**
  * A discriminated union representing different types of property security outcomes.
  *
+ * Request `$loadPropertySecurityMetadata: true` when loading objects to access
+ * these outcomes through `object.$propertySecurities[propertyApiName]`.
+ * Scalar properties have a `PropertySecurity[]` of alternative security outcomes
+ * (a disjunction). Array properties have a `PropertySecurity[][]`, where each
+ * index contains the outcomes for the property value at the same index.
+ * Property values remain on their usual fields; this metadata describes marking
+ * requirements and does not enumerate user or group permissions.
+ *
  * The type field determines which security outcome is represented:
  *   - "propertyMarkings": Successfully computed security markings for the property
  *   - "unsupportedPolicy": The property is backed by a restricted view that doesn't support property securities

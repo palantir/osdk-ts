@@ -48,3 +48,18 @@ function getPageWithSelectedProperties(properties: Employee.PropertyKeys[]) {
     $select: properties,
   });
 }
+
+// Opt in to security metadata for each loaded property value.
+// Include this option on subsequent page requests too.
+const pageWithSecurity = await client(Employee).fetchPage({
+  $select: ["fullName"],
+  $pageSize: 30,
+  $loadPropertySecurityMetadata: true,
+});
+for (const object of pageWithSecurity.data) {
+  console.log(object.fullName, object.$propertySecurities.fullName);
+}
+// Scalar properties have PropertySecurity[] of alternative security outcomes.
+// Array properties have PropertySecurity[][], indexed alongside each property value.
+// Each outcome is propertyMarkings, unsupportedPolicy, or errorComputingSecurity.
+// propertyMarkings describes marking requirements, not a list of users or groups.

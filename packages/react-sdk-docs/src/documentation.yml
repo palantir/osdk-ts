@@ -266,6 +266,7 @@ versions:
             }
       loadSingleObjectReference:
         - template: |-
+            import type { Osdk } from "@osdk/api";
             import { {{objectType}} } from "{{{packageName}}}";
             import { useOsdkObject } from "@osdk/react";
 
@@ -280,8 +281,24 @@ versions:
                 </div>
               );
             }
+
+            // Opt in when you need marking requirements for individual property values.
+            function {{objectType}}PropertySecurity({ primaryKey }: { primaryKey: Osdk.Instance<{{objectType}}>["$primaryKey"] }) {
+              const { object } = useOsdkObject({{objectType}}, primaryKey, {
+                $select: ["{{titleProperty}}"],
+                $loadPropertySecurityMetadata: true,
+              });
+              // Hook return types do not currently reflect this option. The assertion describes
+              // the requested metadata; keep access optional for objects from the cache.
+              const objectWithSecurity = object as Osdk.Instance<{{objectType}}, "$propertySecurities"> | undefined;
+              return <pre>{JSON.stringify(objectWithSecurity?.$propertySecurities?.{{titleProperty}}, null, 2)}</pre>;
+            }
+            // Scalar properties have PropertySecurity[]; arrays have PropertySecurity[][] per element.
+            // Outcomes are propertyMarkings, unsupportedPolicy, or errorComputingSecurity.
+            // propertyMarkings contains marking requirements, not a list of users or groups.
       loadObjectsReference:
         - template: |-
+            import type { Osdk } from "@osdk/api";
             import { {{objectType}} } from "{{{packageName}}}";
             import { useOsdkObjects } from "@osdk/react";
 
@@ -304,6 +321,23 @@ versions:
                 </div>
               );
             }
+
+            // Opt in when you need marking requirements for individual property values.
+            function {{objectType}}PropertySecurities() {
+              const { data } = useOsdkObjects({{objectType}}, {
+                $select: ["{{titleProperty}}"],
+                $loadPropertySecurityMetadata: true,
+              });
+              // Hook return types do not currently reflect this option. The assertion describes
+              // the requested metadata; keep access optional for objects from the cache.
+              const objectsWithSecurity = data as Osdk.Instance<{{objectType}}, "$propertySecurities">[] | undefined;
+              return <>{objectsWithSecurity?.map(object => (
+                <pre key={object.$primaryKey}>{JSON.stringify(object.$propertySecurities?.{{titleProperty}}, null, 2)}</pre>
+              ))}</>;
+            }
+            // Scalar properties have PropertySecurity[]; arrays have PropertySecurity[][] per element.
+            // Outcomes are propertyMarkings, unsupportedPolicy, or errorComputingSecurity.
+            // propertyMarkings contains marking requirements, not a list of users or groups.
       loadAllObjectsReference:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";

@@ -2246,8 +2246,7 @@ export interface SelectArg<
 > {
     	// (undocumented)
     $includeRid?: R;
-    	// (undocumented)
-    $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
+    	$loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
     	$select?: readonly L[];
     	// (undocumented)
     $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;

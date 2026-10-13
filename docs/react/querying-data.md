@@ -418,6 +418,49 @@ function ManagerReports() {
 }
 ```
 
+### Property-value security metadata
+
+Pass `$loadPropertySecurityMetadata: true` to load security metadata alongside property values. Values remain on their usual fields, and `$propertySecurities` contains the metadata keyed by property API name.
+
+```tsx
+import type { Osdk } from "@osdk/api";
+
+const { data } = useOsdkObjects(Todo, {
+  $select: ["title"],
+  $loadPropertySecurityMetadata: true,
+});
+
+// The hook's return type does not currently reflect the security option.
+// This assertion describes the metadata requested above; it does not load it.
+const todos = data as Osdk.Instance<Todo, "$propertySecurities">[] | undefined;
+const titleSecurity = todos?.[0]?.$propertySecurities?.title;
+```
+
+The same option works with [`useOsdkObject`](#loading-with-options). Keep the metadata access optional while working with objects from the cache.
+
+For a scalar property, the metadata is a `PropertySecurity[]` of alternative security outcomes (a disjunction). For an array-valued property, it is a `PropertySecurity[][]`: entry `i` describes the value at index `i` in the property array. Each outcome has a `type`:
+
+| Type                     | Meaning                                                                                       |
+| ------------------------ | --------------------------------------------------------------------------------------------- |
+| `propertyMarkings`       | The marking requirements were computed successfully.                                          |
+| `unsupportedPolicy`      | The property is backed by a restricted view that does not support property security metadata. |
+| `errorComputingSecurity` | The server could not compute security metadata for this property value.                       |
+
+For `propertyMarkings`, all markings in `conjunctive` must be satisfied. The `disjunctive` field is an array of arrays: at least one marking in each inner array must be satisfied, and every inner array must be satisfied. `containerConjunctive` and `containerDisjunctive` have the same semantics for the value's container, such as the project of a backing dataset, and also apply to access.
+
+This metadata describes marking requirements; it does not enumerate user or group permissions. Missing metadata and the `unsupportedPolicy` or `errorComputingSecurity` outcomes do not mean that a value has no security requirements.
+
+Outside React, `fetchOne` and `fetchPage` accept the same option and infer the `$propertySecurities` type:
+
+```ts
+const todo = await client(Todo).fetchOne(todoId, {
+  $select: ["title"],
+  $loadPropertySecurityMetadata: true,
+});
+
+console.log(todo.title, todo.$propertySecurities.title);
+```
+
 ### All Options
 
 ```ts
@@ -515,6 +558,17 @@ const { object } = useOsdkObject(Todo, todoId, {
   $loadPropertySecurityMetadata: true,
 });
 ```
+
+To read the metadata, account for the hook's current return type:
+
+```tsx
+import type { Osdk } from "@osdk/api";
+
+const todo = object as Osdk.Instance<Todo, "$propertySecurities"> | undefined;
+const titleSecurity = todo?.$propertySecurities?.title;
+```
+
+See [Property-value security metadata](#property-value-security-metadata) for the returned shape and marking semantics.
 
 Or pass a boolean to disable the query:
 

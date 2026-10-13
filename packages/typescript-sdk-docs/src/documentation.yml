@@ -1085,6 +1085,18 @@ versions:
                 });
             }
 
+            // Opt in to security metadata for the loaded property values.
+            // Values stay on their usual fields; $propertySecurities is keyed by property API name.
+            const objectWithSecurity = await client({{objectType}}).fetchOne({{{primaryKeyPropertyValueV2}}}, {
+                $select: ["{{titleProperty}}"],
+                $loadPropertySecurityMetadata: true,
+            });
+            console.log(objectWithSecurity.{{titleProperty}}, objectWithSecurity.$propertySecurities.{{titleProperty}});
+            // Scalar properties have PropertySecurity[] of alternative security outcomes.
+            // Array properties have PropertySecurity[][], indexed alongside each property value.
+            // Each outcome is propertyMarkings, unsupportedPolicy, or errorComputingSecurity.
+            // propertyMarkings describes marking requirements, not a list of users or groups.
+
           computedVariables:
             - primaryKeyPropertyValueV2
 
@@ -1114,6 +1126,21 @@ versions:
                     $select: properties
                 });
             }
+
+            // Opt in to security metadata for each loaded property value.
+            // Include this option on subsequent page requests too.
+            const pageWithSecurity = await client({{objectType}}).fetchPage({
+                $select: ["{{titleProperty}}"],
+                $pageSize: 30,
+                $loadPropertySecurityMetadata: true,
+            });
+            for (const object of pageWithSecurity.data) {
+                console.log(object.{{titleProperty}}, object.$propertySecurities.{{titleProperty}});
+            }
+            // Scalar properties have PropertySecurity[] of alternative security outcomes.
+            // Array properties have PropertySecurity[][], indexed alongside each property value.
+            // Each outcome is propertyMarkings, unsupportedPolicy, or errorComputingSecurity.
+            // propertyMarkings describes marking requirements, not a list of users or groups.
       loadAllObjectsReference:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
