@@ -218,7 +218,7 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
       value,
       client,
       actionMetadata,
-      actionMetadata.parameters[key]?.type,
+      actionMetadata.parameters[key].type,
     );
   }
 
