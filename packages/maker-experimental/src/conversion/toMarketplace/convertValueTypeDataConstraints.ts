@@ -15,18 +15,25 @@
  */
 
 import type {
+  BaseType,
   DataConstraints,
   PropertyTypeDataConstraintsWrapper,
-  ValueTypeDataConstraint,
 } from "@osdk/client.unstable";
-import type { ObjectPropertyType } from "@osdk/maker";
+import type {
+  AuthoringValueTypeDataConstraint,
+  ObjectPropertyType,
+} from "@osdk/maker";
 
+import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
+import { convertConstraint } from "./convertValueTypeToWireBlockData.js";
 import { dataConstraintToPropertyTypeDataConstraint } from "./dataConstraintToPropertyTypeDataConstraint.js";
 
 export function convertValueTypeDataConstraints(
   property: ObjectPropertyType,
-  dataConstraints: ValueTypeDataConstraint[],
+  dataConstraints: AuthoringValueTypeDataConstraint[],
+  baseType: BaseType,
+  ridGenerator: OntologyRidGenerator,
 ): DataConstraints | undefined {
   const nullabilityDataConstraints =
     convertNullabilityToDataConstraint(property);
@@ -38,7 +45,11 @@ export function convertValueTypeDataConstraints(
     dataConstraints.map(
       (constraint): PropertyTypeDataConstraintsWrapper => ({
         constraints: dataConstraintToPropertyTypeDataConstraint(
-          constraint.constraint.constraint,
+          convertConstraint(
+            constraint.constraint.constraint,
+            baseType,
+            ridGenerator,
+          ),
         ),
         failureMessage: constraint.constraint.failureMessage,
       }),

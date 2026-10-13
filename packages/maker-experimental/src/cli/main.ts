@@ -241,6 +241,7 @@ export default async function main(
 
   const {
     ontologyIr,
+    valueTypeBlocks,
     importedTypes,
     shapes,
     blockDataAddOn,
@@ -297,7 +298,7 @@ export default async function main(
   let valueTypeResults: BlockGeneratorResult[] = [];
   if (ontologyIr.valueTypes.length > 0) {
     valueTypeResults = await generateValueTypeBlockResults(
-      ontologyIr.valueTypes,
+      valueTypeBlocks,
       commandLineOpts.buildDir,
       commandLineOpts.randomnessKey,
     );

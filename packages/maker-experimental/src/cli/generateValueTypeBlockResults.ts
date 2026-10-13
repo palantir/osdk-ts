@@ -20,24 +20,42 @@ import * as path from "node:path";
 import type { ValueTypeBlockData } from "@osdk/client.unstable";
 import type { InputShape, OutputShape } from "@osdk/client.unstable/api";
 
+import type {
+  ConvertedValueTypeBlockData,
+  ValueTypeDependency,
+} from "../conversion/toMarketplace/convertValueTypeToWireBlockData.js";
 import { typeToMarketplaceBaseType } from "../conversion/toMarketplace/typeVisitors.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
 import { toBlockShapeId } from "./marketplaceSerialization/CodeBlockSpec.js";
-import type { InputMappingEntry } from "./marketplaceSerialization/supportingTypes.js";
+import type {
+  GeneratedBlockExternalRecommendations,
+  InputMappingEntry,
+  ReadableIdMappingPair,
+} from "./marketplaceSerialization/supportingTypes.js";
 
 /**
  * Generates a BlockGeneratorResult for each value type entry in the IR.
  * Port of Java's ValueTypesBlockGenerator.
  */
 export async function generateValueTypeBlockResults(
-  bulkValueTypeBlockData: ValueTypeBlockData[],
+  valueTypeBlocks: ConvertedValueTypeBlockData[],
   buildDir: string,
-  randomnessKey?: string,
+  randomnessKey: string | undefined,
 ): Promise<BlockGeneratorResult[]> {
   const results: BlockGeneratorResult[] = [];
+  const producedValueTypes = new Set(
+    valueTypeBlocks.flatMap(({ blockData }) =>
+      blockData.versions.map((version) =>
+        valueTypeKey(blockData.metadata.apiName, version.version),
+      ),
+    ),
+  );
 
-  for (const entry of bulkValueTypeBlockData) {
+  for (const {
+    blockData: entry,
+    dependencies: rawDependencies,
+  } of valueTypeBlocks) {
     const blockIdentifier = "value-type-" + entry.metadata.apiName;
     const outputDir = path.join(buildDir, blockIdentifier);
 
@@ -58,17 +76,31 @@ export async function generateValueTypeBlockResults(
       ]),
     );
 
+    const dependencies = buildDependencies(
+      rawDependencies,
+      producedValueTypes,
+      randomnessKey,
+    );
+
     results.push({
       block_identifier: blockIdentifier,
       block_data_directory: outputDir,
       oci_block_data_metadata: undefined,
       maven_block_data_metadata: undefined,
-      inputs: {},
+      inputs: Object.fromEntries(dependencies.inputs),
       outputs: Object.fromEntries(outputs),
-      input_mapping_entries: [],
-      external_recommendations: [],
+      input_mapping_entries: dependencies.mappings,
+      external_recommendations: buildExternalRecommendations(
+        rawDependencies,
+        producedValueTypes,
+      ),
       add_on_override: {
-        idToBlockShapeId,
+        idToBlockShapeId: {
+          ...idToBlockShapeId,
+          // Type Registry resolves constraint references by their temporary
+          // version IDs, so map those IDs to the corresponding input shapes.
+          ...Object.fromEntries(dependencies.idToBlockShapeIds),
+        },
         idToInputGroupId: {},
         outputToLocationInput: {},
       },
@@ -78,6 +110,136 @@ export async function generateValueTypeBlockResults(
   }
 
   return results;
+}
+
+type ValueTypeDependencies = {
+  inputs: Map<string, InputShape>;
+  idToBlockShapeIds: Map<string, string>;
+  mappings: InputMappingEntry[];
+};
+
+function buildDependencies(
+  rawDependencies: ValueTypeDependency[],
+  producedValueTypes: Set<string>,
+  randomnessKey: string | undefined,
+): ValueTypeDependencies {
+  const inputs = new Map<string, InputShape>();
+  const idToBlockShapeIds = new Map<string, string>();
+  const mappings = new Map<string, InputMappingEntry>();
+
+  for (const dependency of dedupeDependencies(rawDependencies)) {
+    const { reference, target, baseType } = dependency;
+    const consumedId = ReadableIdGenerator.getForConsumedValueType(
+      target.apiName,
+      target.version,
+    );
+    inputs.set(consumedId, {
+      type: "valueType",
+      valueType: {
+        about: {
+          fallbackTitle: target.displayMetadata.displayName,
+          fallbackDescription: target.displayMetadata.description ?? "",
+          localizedTitle: {},
+          localizedDescription: {},
+        },
+        baseType: typeToMarketplaceBaseType(baseType),
+      },
+    });
+
+    // Maker creates local and imported references through
+    // generateRidForValueType, which always identifies a specific version.
+    if (reference.versionId === undefined) {
+      throw new Error(
+        `Value type reference ${reference.rid} must include a version`,
+      );
+    }
+    idToBlockShapeIds.set(
+      reference.versionId,
+      toBlockShapeId(consumedId, randomnessKey),
+    );
+
+    if (producedValueTypes.has(valueTypeKey(target.apiName, target.version))) {
+      mappings.set(consumedId, {
+        input: consumedId,
+        output: ReadableIdGenerator.getForProducedValueType(
+          target.apiName,
+          target.version,
+        ),
+      });
+    }
+  }
+
+  return { inputs, idToBlockShapeIds, mappings: [...mappings.values()] };
+}
+
+function dedupeDependencies(
+  dependencies: ValueTypeDependency[],
+): ValueTypeDependency[] {
+  // Keep this aligned with Type Registry's
+  // ValueTypeInputShapeUtils#getShapeSpecInputIdentifiers: it groups references
+  // by BaseTypeAndValueTypeRid and uses the lexicographically smallest referenced
+  // version ID to identify the shared block input.
+  const byRidAndBaseType = new Map<string, ValueTypeDependency>();
+  for (const dependency of dependencies) {
+    const { reference } = dependency;
+    if (reference.versionId === undefined) {
+      throw new Error(
+        `Value type reference ${reference.rid} must include a version`,
+      );
+    }
+    const key = `${reference.rid}:${JSON.stringify(dependency.baseType)}`;
+    const existing = byRidAndBaseType.get(key);
+    if (
+      existing?.reference.versionId === undefined ||
+      reference.versionId < existing.reference.versionId
+    ) {
+      byRidAndBaseType.set(key, dependency);
+    }
+  }
+  return [...byRidAndBaseType.values()];
+}
+
+function buildExternalRecommendations(
+  rawDependencies: ValueTypeDependency[],
+  producedValueTypes: Set<string>,
+): GeneratedBlockExternalRecommendations[] {
+  const mappingsByPackage = new Map<
+    string,
+    Map<string, ReadableIdMappingPair>
+  >();
+
+  for (const { target } of dedupeDependencies(rawDependencies)) {
+    if (producedValueTypes.has(valueTypeKey(target.apiName, target.version))) {
+      continue;
+    }
+    // Now we know the value type dependency isn't defined locally so
+    // "target" here refers to the imported ValueTypeDefinitionVersion
+    const consumedId = ReadableIdGenerator.getForConsumedValueType(
+      target.apiName,
+      target.version,
+    );
+    const packageMappings =
+      mappingsByPackage.get(target.packageNamespace) ??
+      new Map<string, ReadableIdMappingPair>();
+    packageMappings.set(consumedId, {
+      targetInputReadableId: consumedId,
+      upstreamOutputReadableId: ReadableIdGenerator.getForProducedValueType(
+        target.apiName,
+        target.version,
+      ),
+    });
+    mappingsByPackage.set(target.packageNamespace, packageMappings);
+  }
+
+  return [...mappingsByPackage].map(([upstreamPackageName, mappings]) => ({
+    upstreamPackageName,
+    upstreamVersionCompatibility: { from: "0.0.0", until: "x.x.x" },
+    mappings: [...mappings.values()],
+  }));
+}
+
+function valueTypeKey(apiName: string, version: string): string {
+  return `${apiName}:${version}`;
 }
 
 function buildOutputShapes(

@@ -33,6 +33,7 @@ import { convertOntologyFullMetadata } from "@osdk/maker-import";
 
 import type { BlockDataAddOn } from "../cli/marketplaceSerialization/BlockGeneratorResult.js";
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
+import type { ConvertedValueTypeBlockData } from "../conversion/toMarketplace/convertValueTypeToWireBlockData.js";
 import {
   type ExternalImportedOntologyMetadata,
   getImportedShapes,
@@ -48,7 +49,13 @@ import {
 } from "../util/generateRid.js";
 
 export interface OntologyV2Result {
+  /** The wire ontology representation. */
   ontologyIr: OntologyIrV2;
+  /**
+   * Locally produced value type blocks with the dependencies needed to generate their Marketplace
+   * inputs and recommendations.
+   */
+  valueTypeBlocks: ConvertedValueTypeBlockData[];
   importedTypes: OntologyDefinition;
   shapes: BlockShapes;
   blockDataAddOn: BlockDataAddOn;
@@ -113,7 +120,7 @@ export async function defineOntologyV2(
     importedTypes,
     randomnessKey,
   );
-  const ontDef = convertOntologyDefinition(
+  const { ontologyIr, valueTypeBlocks } = convertOntologyDefinition(
     ontologyDefinition,
     ridGenerator,
     functionsIr,
@@ -121,7 +128,7 @@ export async function defineOntologyV2(
   );
 
   const shapes = await getShapes(
-    ontDef.ontology,
+    ontologyIr.ontology,
     ridGenerator,
     functionsIr,
     randomnessKey,
@@ -129,7 +136,7 @@ export async function defineOntologyV2(
 
   // Generate input shapes for imported entities and merge into main shapes
   const importedShapes = getImportedShapes(
-    ontDef.importedOntology,
+    ontologyIr.importedOntology,
     ridGenerator,
     importedLinkTypeIdsByApiName,
     externalImportedMetadata,
@@ -209,7 +216,8 @@ export async function defineOntologyV2(
   };
 
   return {
-    ontologyIr: ontDef,
+    ontologyIr,
+    valueTypeBlocks,
     importedTypes,
     shapes,
     blockDataAddOn,

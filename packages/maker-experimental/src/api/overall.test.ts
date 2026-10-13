@@ -1250,6 +1250,121 @@ describe("Experimental Test Suite", () => {
     ).toBe("The imported employee identifier");
   });
 
+  it("materializes value type references in struct field constraints", async () => {
+    const result = await defineOntologyV2("com.palantir.", () => {
+      const classification = defineValueType({
+        apiName: "classification",
+        displayName: "Classification",
+        type: { type: "string" },
+        version: "1.0.0",
+      });
+
+      defineValueType({
+        apiName: "classifiedRecord",
+        displayName: "Classified Record",
+        type: {
+          type: {
+            type: "struct",
+            fields: [{ identifier: "classification", baseType: "string" }],
+          },
+          constraints: [
+            {
+              constraint: {
+                elementConstraints: { classification },
+              },
+            },
+          ],
+        },
+        version: "1.0.0",
+      });
+    });
+
+    const classifiedRecord = result.ontologyIr.valueTypes.find(
+      (valueType) => valueType.metadata.apiName === "classifiedRecord",
+    );
+    const constraint =
+      classifiedRecord?.versions[0].constraints[0]?.constraint.constraint;
+    invariant(
+      constraint?.type === "structV2",
+      "Struct value type constraint is missing",
+    );
+
+    expect(constraint.structV2.elementConstraints.classification).toEqual({
+      rid: expect.any(String),
+      versionId: expect.any(String),
+    });
+
+    const convertedBlock = result.valueTypeBlocks.find(
+      ({ blockData }) => blockData.metadata.apiName === "classifiedRecord",
+    );
+    expect(convertedBlock?.dependencies).toMatchObject([
+      {
+        reference: constraint.structV2.elementConstraints.classification,
+        target: { apiName: "classification", version: "1.0.0" },
+        baseType: { type: "string" },
+      },
+    ]);
+  });
+
+  it("materializes value type references in array struct constraints", async () => {
+    const result = await defineOntologyV2("com.palantir.", () => {
+      const classification = defineValueType({
+        apiName: "classification",
+        displayName: "Classification",
+        type: { type: "string" },
+        version: "1.0.0",
+      });
+
+      defineValueType({
+        apiName: "classifiedRecords",
+        displayName: "Classified Records",
+        type: {
+          type: {
+            type: "array",
+            elementType: {
+              type: "struct",
+              fields: [{ identifier: "classification", baseType: "string" }],
+            },
+          },
+          constraints: [
+            {
+              constraint: {
+                size: undefined,
+                elementsUnique: undefined,
+                elementsConstraint: {
+                  type: "structV2",
+                  structV2: {
+                    elementConstraints: { classification },
+                  },
+                },
+              },
+            },
+          ],
+        },
+        version: "1.0.0",
+      });
+    });
+
+    const classifiedRecords = result.ontologyIr.valueTypes.find(
+      (valueType) => valueType.metadata.apiName === "classifiedRecords",
+    );
+    const constraint =
+      classifiedRecords?.versions[0].constraints[0]?.constraint.constraint;
+    invariant(
+      constraint?.type === "array" &&
+        constraint.array.elementsConstraint?.type === "structV2",
+      "Array struct value type constraint is missing",
+    );
+
+    expect(
+      constraint.array.elementsConstraint.structV2.elementConstraints
+        .classification,
+    ).toEqual({
+      rid: expect.any(String),
+      versionId: expect.any(String),
+    });
+  });
+
   it.each([undefined, "123e4567-e89b-12d3-a456-426614174000"])(
     "materializes consumed value type identities with randomness key %s",
     async (randomnessKey) => {

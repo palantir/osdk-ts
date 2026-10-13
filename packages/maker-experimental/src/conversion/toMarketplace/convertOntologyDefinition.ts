@@ -21,14 +21,24 @@ import { getImportedTypes } from "@osdk/maker";
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import { OntologyRidGeneratorImpl } from "../../util/generateRid.js";
 import { convertOntologyDefinitionToWireBlockData } from "./convertOntologyDefinitionToWireBlockData.js";
-import { convertValueTypeToWireBlockData } from "./convertValueTypeToWireBlockData.js";
+import {
+  type ConvertedValueTypeBlockData,
+  convertValueTypeToWireBlockData,
+} from "./convertValueTypeToWireBlockData.js";
+
+export interface ConvertedOntologyDefinition {
+  /** The complete wire representation of the wire block. */
+  ontologyIr: OntologyIrV2;
+  /** Locally produced value type block data and its dependencies. */
+  valueTypeBlocks: ConvertedValueTypeBlockData[];
+}
 
 export function convertOntologyDefinition(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGeneratorImpl,
   functionsIr?: FunctionsIr,
   randomnessKey?: string,
-): OntologyIrV2 {
+): ConvertedOntologyDefinition {
   const importedTypes = getImportedTypes();
   const allOntologies = [ontology, importedTypes];
   const mainOntology = convertOntologyDefinitionToWireBlockData(
@@ -93,12 +103,26 @@ export function convertOntologyDefinition(
     throwawayRidGenerator,
   );
 
+  const valueTypeBlocks = convertValueTypeToWireBlockData(
+    ontology,
+    ridGenerator,
+  );
+  const importedValueTypeBlocks = convertValueTypeToWireBlockData(
+    importedTypes,
+    ridGenerator,
+  );
+
   return {
-    ontology: mainOntology,
-    importedOntology,
-    transitiveImportedOntology,
-    valueTypes: convertValueTypeToWireBlockData(ontology),
-    importedValueTypes: convertValueTypeToWireBlockData(importedTypes),
-    randomnessKey,
+    ontologyIr: {
+      ontology: mainOntology,
+      importedOntology,
+      transitiveImportedOntology,
+      valueTypes: valueTypeBlocks.map(({ blockData }) => blockData),
+      importedValueTypes: importedValueTypeBlocks.map(
+        ({ blockData }) => blockData,
+      ),
+      randomnessKey,
+    },
+    valueTypeBlocks,
   };
 }

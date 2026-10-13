@@ -14,39 +14,287 @@
  * limitations under the License.
  */
 
-import type { ValueTypeBlockData } from "@osdk/client.unstable";
 import type {
+  BaseType,
+  DataConstraint,
+  ValueTypeBlockData,
+  ValueTypeDataConstraint,
+  ValueTypeDataConstraintReference,
+} from "@osdk/client.unstable";
+import type {
+  AuthoringDataConstraint,
+  AuthoringValueTypeDataConstraint,
   OntologyDefinition,
   ValueTypeDefinitionVersion,
 } from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
 
+import type { OntologyRidGenerator } from "../../util/generateRid.js";
+import { convertValueType } from "./convertValueType.js";
+
+export interface ValueTypeDependency {
+  /** The temporary identity written into the wire constraint. */
+  reference: ValueTypeDataConstraintReference;
+  /** The authored (or imported) target, retained to help to construct block shape inputs. */
+  target: ValueTypeDefinitionVersion;
+  /** The base type expected by the field that consumes the target, also needed to construct block shape inputs */
+  baseType: BaseType;
+}
+
+export interface ConvertedValueTypeBlockData {
+  blockData: ValueTypeBlockData;
+  dependencies: ValueTypeDependency[];
+}
+
 export function convertValueTypeToWireBlockData(
   ontology: OntologyDefinition,
-): ValueTypeBlockData[] {
-  return Object.values(
-    ontology[OntologyEntityTypeEnum.VALUE_TYPE],
-  ).map<ValueTypeBlockData>((definitions) => {
-    const version = getLatestVersion(definitions);
-    return {
-      metadata: {
-        apiName: definitions[0].apiName,
-        baseType: version.baseType,
-        displayMetadata: definitions[0].displayMetadata,
-        status: definitions[0].status,
-      },
-      versions: Array.from(
+  ridGenerator: OntologyRidGenerator,
+): ConvertedValueTypeBlockData[] {
+  return Object.values(ontology[OntologyEntityTypeEnum.VALUE_TYPE]).map(
+    (definitions): ConvertedValueTypeBlockData => {
+      const latestVersion = getLatestVersion(definitions);
+      const convertedVersions = Array.from(
         new Map(
           definitions.map((definition) => [definition.version, definition]),
         ).values(),
-      ).map((definition) => ({
-        version: definition.version,
-        baseType: definition.baseType,
-        constraints: definition.constraints,
-        exampleValues: definition.exampleValues,
-      })),
+      ).map((definition) => {
+        const convertedConstraints = convertConstraints(
+          definition.constraints,
+          definition.baseType,
+          ridGenerator,
+        );
+        return {
+          version: {
+            version: definition.version,
+            baseType: definition.baseType,
+            constraints: convertedConstraints.constraints,
+            exampleValues: definition.exampleValues,
+          },
+          dependencies: convertedConstraints.dependencies,
+        };
+      });
+      const blockData: ValueTypeBlockData = {
+        metadata: {
+          apiName: definitions[0].apiName,
+          baseType: latestVersion.baseType,
+          displayMetadata: definitions[0].displayMetadata,
+          status: definitions[0].status,
+        },
+        versions: convertedVersions.map(({ version }) => version),
+      };
+      return {
+        blockData,
+        dependencies: convertedVersions.flatMap(
+          ({ dependencies }) => dependencies,
+        ),
+      };
+    },
+  );
+}
+
+interface ConvertedConstraints {
+  constraints: ValueTypeDataConstraint[];
+  dependencies: ValueTypeDependency[];
+}
+
+function convertConstraints(
+  constraints: AuthoringValueTypeDataConstraint[],
+  baseType: BaseType,
+  ridGenerator: OntologyRidGenerator,
+): ConvertedConstraints {
+  const converted = constraints.map((valueTypeConstraint) => {
+    const wrapper = valueTypeConstraint.constraint;
+    const convertedConstraint = convertConstraintWithDependencies(
+      wrapper.constraint,
+      baseType,
+      ridGenerator,
+    );
+    return {
+      constraint: {
+        constraint: {
+          constraint: convertedConstraint.constraint,
+          failureMessage: wrapper.failureMessage,
+        },
+      },
+      dependencies: convertedConstraint.dependencies,
     };
   });
+  return {
+    constraints: converted.map(({ constraint }) => constraint),
+    dependencies: converted.flatMap(({ dependencies }) => dependencies),
+  };
+}
+
+interface ConvertedConstraint {
+  constraint: DataConstraint;
+  dependencies: ValueTypeDependency[];
+}
+
+export function convertConstraint(
+  constraint: AuthoringDataConstraint,
+  baseType: BaseType,
+  ridGenerator: OntologyRidGenerator,
+): DataConstraint {
+  return convertConstraintWithDependencies(constraint, baseType, ridGenerator)
+    .constraint;
+}
+
+function convertConstraintWithDependencies(
+  constraint: AuthoringDataConstraint,
+  baseType: BaseType,
+  ridGenerator: OntologyRidGenerator,
+): ConvertedConstraint {
+  switch (constraint.type) {
+    case "array": {
+      if (baseType.type !== "array") {
+        throwConstraintTypeMismatch("array", baseType.type);
+      }
+      const elementsConstraint =
+        constraint.array.elementsConstraint === undefined
+          ? undefined
+          : convertConstraintWithDependencies(
+              constraint.array.elementsConstraint,
+              baseType.array.elementType,
+              ridGenerator,
+            );
+      return {
+        constraint: {
+          type: "array",
+          array: {
+            size: constraint.array.size,
+            elementsConstraint: elementsConstraint?.constraint,
+            elementsUnique: constraint.array.elementsUnique,
+          },
+        },
+        dependencies: elementsConstraint?.dependencies ?? [],
+      };
+    }
+    case "map": {
+      if (baseType.type !== "map") {
+        throwConstraintTypeMismatch("map", baseType.type);
+      }
+      const keyConstraints = constraint.map.keyTypeDataConstraints.map(
+        (nestedConstraint) =>
+          convertConstraintWithDependencies(
+            nestedConstraint,
+            baseType.map.keyType,
+            ridGenerator,
+          ),
+      );
+      const valueConstraints = constraint.map.valueTypeDataConstraints.map(
+        (nestedConstraint) =>
+          convertConstraintWithDependencies(
+            nestedConstraint,
+            baseType.map.valueType,
+            ridGenerator,
+          ),
+      );
+      return {
+        constraint: {
+          type: "map",
+          map: {
+            keyTypeDataConstraints: keyConstraints.map(
+              ({ constraint }) => constraint,
+            ),
+            valueTypeDataConstraints: valueConstraints.map(
+              ({ constraint }) => constraint,
+            ),
+            uniqueValues: constraint.map.uniqueValues,
+          },
+        },
+        dependencies: [...keyConstraints, ...valueConstraints].flatMap(
+          ({ dependencies }) => dependencies,
+        ),
+      };
+    }
+    case "struct": {
+      if (baseType.type !== "struct") {
+        throwConstraintTypeMismatch("struct", baseType.type);
+      }
+      const fieldTypes = new Map(
+        baseType.struct.fields.map((field) => [field.name, field.type]),
+      );
+      const elements = Object.entries(constraint.struct.elementConstraints).map(
+        ([field, nestedConstraint]) => {
+          const fieldType = fieldTypes.get(field);
+          if (fieldType === undefined) {
+            throw new Error(`Missing base type for struct field ${field}`);
+          }
+          return {
+            field,
+            converted: convertConstraintWithDependencies(
+              nestedConstraint,
+              fieldType,
+              ridGenerator,
+            ),
+          };
+        },
+      );
+      return {
+        constraint: {
+          type: "struct",
+          struct: {
+            elementConstraints: Object.fromEntries(
+              elements.map(({ field, converted }) => [
+                field,
+                converted.constraint,
+              ]),
+            ),
+          },
+        },
+        dependencies: elements.flatMap(
+          ({ converted }) => converted.dependencies,
+        ),
+      };
+    }
+    case "structV2": {
+      if (baseType.type !== "structV2") {
+        throwConstraintTypeMismatch("structV2", baseType.type);
+      }
+      const fieldTypes = new Map(
+        baseType.structV2.fields.map((field) => [
+          field.identifier,
+          field.baseType,
+        ]),
+      );
+      const elements = Object.entries(
+        constraint.structV2.elementConstraints,
+      ).map(([field, valueType]) => {
+        const fieldType = fieldTypes.get(field);
+        if (fieldType === undefined) {
+          throw new Error(`Missing base type for struct field ${field}`);
+        }
+        const reference = convertValueType(valueType, ridGenerator);
+        return {
+          field,
+          reference,
+          dependency: { reference, target: valueType, baseType: fieldType },
+        };
+      });
+      return {
+        constraint: {
+          type: "structV2",
+          structV2: {
+            elementConstraints: Object.fromEntries(
+              elements.map(({ field, reference }) => [field, reference]),
+            ),
+          },
+        },
+        dependencies: elements.map(({ dependency }) => dependency),
+      };
+    }
+    default:
+      return { constraint, dependencies: [] };
+  }
+}
+
+function throwConstraintTypeMismatch(
+  constraintType: AuthoringDataConstraint["type"],
+  baseType: BaseType["type"],
+): never {
+  throw new Error(
+    `Constraint type ${constraintType} does not match base type ${baseType}`,
+  );
 }
 
 function getLatestVersion(

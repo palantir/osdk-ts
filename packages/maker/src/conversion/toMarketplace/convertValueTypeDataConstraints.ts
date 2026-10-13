@@ -17,16 +17,16 @@
 import type {
   DataConstraints,
   PropertyTypeDataConstraintsWrapper,
-  ValueTypeDataConstraint,
 } from "@osdk/client.unstable";
 
 import type { ObjectPropertyType } from "../../api/object/ObjectPropertyType.js";
+import type { AuthoringValueTypeDataConstraint } from "../../api/values/ValueTypeType.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
 import { dataConstraintToPropertyTypeDataConstraint } from "./dataConstraintToPropertyTypeDataConstraint.js";
 
 export function convertValueTypeDataConstraints(
   property: ObjectPropertyType,
-  dataConstraints: ValueTypeDataConstraint[],
+  dataConstraints: AuthoringValueTypeDataConstraint[],
 ): DataConstraints | undefined {
   const nullabilityDataConstraints =
     convertNullabilityToDataConstraint(property);
