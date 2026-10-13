@@ -423,20 +423,31 @@ function ManagerReports() {
 Pass `$loadPropertySecurityMetadata: true` to load security metadata alongside property values. Values remain on their usual fields, and `$propertySecurities` contains the metadata keyed by property API name.
 
 ```tsx
-import type { Osdk } from "@osdk/api";
-
 const { data } = useOsdkObjects(Todo, {
   $select: ["title"],
   $loadPropertySecurityMetadata: true,
 });
 
-// The hook's return type does not currently reflect the security option.
-// This assertion describes the metadata requested above; it does not load it.
-const todos = data as Osdk.Instance<Todo, "$propertySecurities">[] | undefined;
-const titleSecurity = todos?.[0]?.$propertySecurities?.title;
+const titleSecurity = data?.[0]?.$propertySecurities?.title;
 ```
 
-The same option works with [`useOsdkObject`](#loading-with-options). Keep the metadata access optional while working with objects from the cache.
+The same option works with [`useOsdkObject`](#loading-with-options).
+
+In hooks, `$propertySecurities` is typed as possibly `undefined`. Hooks return objects from the shared cache, and security metadata is only valid for the exact value it was loaded with. If another query loads the same object without metadata, the cached value is replaced and its `$propertySecurities` becomes `undefined`.
+
+To pass these objects to other components, use the `OsdkInstanceWithPropertySecurities` type:
+
+```tsx
+import type { OsdkInstanceWithPropertySecurities } from "@osdk/react";
+
+function TitleMarkings({
+  todo,
+}: {
+  todo: OsdkInstanceWithPropertySecurities<Todo>;
+}) {
+  return <pre>{JSON.stringify(todo.$propertySecurities?.title, null, 2)}</pre>;
+}
+```
 
 For a scalar property, the metadata is a `PropertySecurity[]` of alternative security outcomes (a disjunction). For an array-valued property, it is a `PropertySecurity[][]`: entry `i` describes the value at index `i` in the property array. Each outcome has a `type`:
 
@@ -450,7 +461,7 @@ For `propertyMarkings`, all markings in `conjunctive` must be satisfied. The `di
 
 This metadata describes marking requirements; it does not enumerate user or group permissions. Missing metadata and the `unsupportedPolicy` or `errorComputingSecurity` outcomes do not mean that a value has no security requirements.
 
-Outside React, `fetchOne` and `fetchPage` accept the same option and infer the `$propertySecurities` type:
+Outside React, `fetchOne` and `fetchPage` accept the same option. Their results come straight from the server, so `$propertySecurities` is always present:
 
 ```ts
 const todo = await client(Todo).fetchOne(todoId, {
@@ -559,13 +570,10 @@ const { object } = useOsdkObject(Todo, todoId, {
 });
 ```
 
-To read the metadata, account for the hook's current return type:
+With `$loadPropertySecurityMetadata`, the object has `$propertySecurities`. It may be `undefined` if the cached value was replaced by a load without metadata:
 
 ```tsx
-import type { Osdk } from "@osdk/api";
-
-const todo = object as Osdk.Instance<Todo, "$propertySecurities"> | undefined;
-const titleSecurity = todo?.$propertySecurities?.title;
+const titleSecurity = object?.$propertySecurities?.title;
 ```
 
 See [Property-value security metadata](#property-value-security-metadata) for the returned shape and marking semantics.
