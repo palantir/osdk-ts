@@ -330,6 +330,12 @@ export const ActionTakesDecimal: ActionTypeV2 = {
       required: true,
       typeClasses: [],
     },
+    optionalAmount: {
+      displayName: "Optional Amount",
+      dataType: { type: "decimal", precision: 38, scale: 18 },
+      required: false,
+      typeClasses: [],
+    },
     amounts: {
       displayName: "Amounts",
       dataType: {

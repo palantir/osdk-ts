@@ -33,6 +33,7 @@ import {
   deleteFooInterface,
   Employee,
   moveOffice,
+  promoteEmployee,
 } from "@osdk/client.test.ontology";
 import type {
   BatchApplyActionResponseV2,
@@ -335,14 +336,21 @@ describe.each([
     expect(result2).toBeUndefined();
   });
 
-  it.each(["12345678901234567890.123456789012345678", 123.45])(
-    "preserves decimal scalar %s and list parameters",
-    async (amount) => {
+  it.each([
+    {
+      amount: "12345678901234567890.123456789012345678",
+      expectedAmount: "12345678901234567890.123456789012345678",
+    },
+    { amount: 123.45, expectedAmount: "123.45" },
+  ])(
+    "serializes decimal scalar $amount and list parameters as strings",
+    async ({ amount, expectedAmount }) => {
       const action = client(actionTakesDecimal);
       type InferredParamType = Parameters<typeof action.applyAction>[0];
       expectTypeOf<InferredParamType>().toEqualTypeOf<{
         readonly amount: string | number;
         readonly amounts: ReadonlyArray<string | number>;
+        readonly optionalAmount?: string | number | null;
       }>();
 
       await apiServer.boundary(async () => {
@@ -363,13 +371,15 @@ describe.each([
         const result = await action.applyAction({
           amount,
           amounts: ["12345678901234567890.123456789012345678", 123.45],
+          optionalAmount: null,
         });
 
         expect(result).toBeUndefined();
         expect(requestBody).toEqual({
           parameters: {
-            amount,
-            amounts: ["12345678901234567890.123456789012345678", 123.45],
+            amount: expectedAmount,
+            amounts: ["12345678901234567890.123456789012345678", "123.45"],
+            optionalAmount: null,
           },
           options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
         });
@@ -377,13 +387,14 @@ describe.each([
     },
   );
 
-  it("preserves decimal scalar and list parameters in batch actions", async () => {
+  it("serializes decimal scalar and list parameters as strings in batch actions", async () => {
     const action = client(actionTakesDecimal);
     type InferredBatchParamType = Parameters<typeof action.batchApplyAction>[0];
     expectTypeOf<InferredBatchParamType>().toEqualTypeOf<
       ReadonlyArray<{
         readonly amount: string | number;
         readonly amounts: ReadonlyArray<string | number>;
+        readonly optionalAmount?: string | number | null;
       }>
     >();
 
@@ -403,7 +414,12 @@ describe.each([
         },
         {
           amount: 123.45,
-          amounts: [123.45, "0.123456789012345678"],
+          amounts: [-123.45, "0.123456789012345678"],
+        },
+        {
+          amount: 0,
+          amounts: [],
+          optionalAmount: undefined,
         },
       ]);
 
@@ -413,17 +429,49 @@ describe.each([
           {
             parameters: {
               amount: "12345678901234567890.123456789012345678",
-              amounts: ["0.123456789012345678", 123.45],
+              amounts: ["0.123456789012345678", "123.45"],
             },
           },
           {
             parameters: {
-              amount: 123.45,
-              amounts: [123.45, "0.123456789012345678"],
+              amount: "123.45",
+              amounts: ["-123.45", "0.123456789012345678"],
+            },
+          },
+          {
+            parameters: {
+              amount: "0",
+              amounts: [],
             },
           },
         ],
         options: { returnEdits: "NONE" },
+      });
+    })();
+  });
+
+  it("keeps integer and double action parameters as numbers", async () => {
+    await apiServer.boundary(async () => {
+      let requestBody: unknown;
+      apiServer.use(
+        MockOntologiesV2.Actions.apply(baseUrl, async ({ request }) => {
+          requestBody = await request.json();
+          return {};
+        }),
+      );
+
+      await client(promoteEmployee).applyAction({
+        employeeId: 50030,
+        newTitle: "Engineer",
+        newCompensation: 123.45,
+      });
+
+      expect(requestBody).toMatchObject({
+        parameters: {
+          employeeId: 50030,
+          newTitle: "Engineer",
+          newCompensation: 123.45,
+        },
       });
     })();
   });

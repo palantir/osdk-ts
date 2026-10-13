@@ -46,11 +46,16 @@ export async function toDataValue(
   value: unknown,
   client: MinimalClient,
   actionMetadata: ActionMetadata,
+  parameterType?: ActionMetadata.Parameter["type"],
 ): Promise<DataValue> {
   if (value == null) {
     // typeof null is 'object' so do this first
     // Sending null over the wire clears the data, whereas undefined is dropped at request time.
     return value;
+  }
+
+  if (parameterType === "decimal" && typeof value === "number") {
+    return String(value);
   }
 
   // arrays and sets are both sent over the wire as arrays
@@ -71,7 +76,7 @@ export async function toDataValue(
     const promiseArray = Array.from(
       value,
       async (innerValue) =>
-        await toDataValue(innerValue, client, actionMetadata),
+        await toDataValue(innerValue, client, actionMetadata, parameterType),
     );
     return Promise.all(promiseArray);
   }

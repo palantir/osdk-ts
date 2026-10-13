@@ -214,7 +214,12 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
 
   const parameterMap: { [parameterName: string]: unknown } = {};
   for (const [key, value] of Object.entries(params)) {
-    parameterMap[key] = await toDataValue(value, client, actionMetadata);
+    parameterMap[key] = await toDataValue(
+      value,
+      client,
+      actionMetadata,
+      actionMetadata.parameters[key]?.type,
+    );
   }
 
   return parameterMap;
