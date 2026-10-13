@@ -43,5 +43,3 @@ const welcomeMessage = await Aliases.custom("welcomeMessage");
 ```
 
 Alias values are public because they are served with the website. Do not put secrets in them.
-
-Functions have their own alias configuration and API; see the [Functions custom aliases guide](https://www.palantir.com/docs/foundry/functions/custom-aliases).
