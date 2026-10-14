@@ -20,13 +20,12 @@
 // Example: loadRelativeGeotimeSeriesPointsSnippet
 
 import type { Osdk } from "@osdk/client";
-
 import { type Employee } from "../../../generatedNoCheck/index.js";
 
 // Only supports ranges in the past
 function getRelativeTimeSeriesPoints(obj: Osdk.Instance<Employee>) {
-  return obj.travelHistory?.getAllValues({
-    $before: 1,
-    $unit: "hours",
-  });
+    return obj.travelHistory?.getAllValues({
+        $before: 1,
+        $unit: "hours",
+    })
 }

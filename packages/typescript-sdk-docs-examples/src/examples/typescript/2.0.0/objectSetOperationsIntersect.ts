@@ -19,19 +19,16 @@
 
 // Example: objectSetOperationsIntersect
 
-import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
+import { Employee } from "../../../generatedNoCheck/index.js";
 
-const objectSetA = client(Employee).where({
-  fullName: { $containsAnyTerm: "a" },
-});
-const objectSetB = client(Employee).where({
-  fullName: { $containsAnyTerm: "b" },
-});
-const objectSetC = client(Employee).where({
-  fullName: { $containsAnyTerm: "c" },
-});
+const objectSetA = client(Employee).where({ fullName: { $containsAnyTerm: "a"}})
+const objectSetB = client(Employee).where({ fullName: { $containsAnyTerm: "b"}})
+const objectSetC = client(Employee).where({ fullName: { $containsAnyTerm: "c"}})
+
 
 // Return all objects common to objectSetA, objectSetB and objectSetC
-const result = objectSetA.intersect(objectSetB).intersect(objectSetC); // alternatively: objectSetA.intersect(objectSetB, objectSetC)
+const result = objectSetA
+  .intersect(objectSetB)
+  .intersect(objectSetC) // alternatively: objectSetA.intersect(objectSetB, objectSetC)

@@ -19,20 +19,16 @@
 
 // Example: objectSetOperationsGuide
 
-import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
+import { Employee } from "../../../generatedNoCheck/index.js";
 
-const objectSetA = client(Employee).where({
-  fullName: { $containsAnyTerm: "a" },
-});
-const objectSetB = client(Employee).where({
-  fullName: { $containsAnyTerm: "b" },
-});
-const objectSetC = client(Employee).where({
-  fullName: { $containsAnyTerm: "c" },
-});
+const objectSetA = client(Employee).where({ fullName: { $containsAnyTerm: "a"}})
+const objectSetB = client(Employee).where({ fullName: { $containsAnyTerm: "b"}})
+const objectSetC = client(Employee).where({ fullName: { $containsAnyTerm: "c"}})
 
 // Object set operations can be chained. e.g. To find all objects in objectSetA
 // that are present in objectSetB but do not exist in objectSetC:
-const result = objectSetA.intersect(objectSetB).subtract(objectSetC);
+const result = objectSetA
+  .intersect(objectSetB)
+  .subtract(objectSetC)

@@ -19,11 +19,10 @@
 
 // Example: uploadMedia
 
-import type { MediaUpload } from "@osdk/api";
-
-import { documentEquipment } from "../../../generatedNoCheck/index.js";
+import { documentEquipment } from "../../../generatedNoCheck/index.js"
 // Edit this import if your client location differs
 import { client } from "./client.js";
+import type { MediaUpload } from "@osdk/api";
 // To upload media with 2.x, it has to be linked to an Action call
 const file = await fetch("file.json");
 const data = await file.blob();
@@ -31,6 +30,6 @@ const data = await file.blob();
 // and links the resulting media item to the object.
 const mediaUpload: MediaUpload = { data, fileName: "myFile" };
 const actionResult = client(documentEquipment).applyAction({
-  equipmentId: "mac-1234",
-  instructionalVideo: mediaUpload,
+    equipmentId: "mac-1234",
+    instructionalVideo: mediaUpload
 });
