@@ -437,6 +437,9 @@ function renderType(
     case "objectType": {
       return `"${type.objectTypeApiName}"`;
     }
+    case "scenarioReference": {
+      return `"${type.rid}"`;
+    }
     case "map": {
       if (type.keyType.type === "object") {
         return `{[${getMapKeyObjectName(

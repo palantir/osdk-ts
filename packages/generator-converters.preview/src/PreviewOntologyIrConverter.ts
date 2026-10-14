@@ -15,14 +15,11 @@
  */
 
 import type {
-  ActionTypeBlockDataV2,
   OntologyBlockDataV2,
   ValueTypeBlockData,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import {
-  buildBlockDataInterfaceTypeLookup,
-  buildBlockDataObjectTypeLookup,
   OntologyBlockDataToFullMetadataConverter,
   toUuid,
 } from "@osdk/generator-converters.ontologyir";
@@ -54,13 +51,14 @@ export class PreviewOntologyIrConverter {
     const baseMetadata = OntologyBlockDataToFullMetadataConverter
       .getFullMetadataFromBlockData(
         blockdata,
-        importedTypes,
+        // Action types are handled differently due to the need to provide logic rules.
+        importedTypes ? { ...importedTypes, actionTypes: {} } : undefined,
         undefined,
         valueTypes,
       );
 
-    const actionTypes = this.convertActionTypesWithFullLogicRulesFromBlockData(
-      blockdata.actionTypes,
+    const actionTypes = this.addActionLogicRules(
+      baseMetadata.actionTypes,
       blockdata,
       importedTypes,
     );
@@ -123,37 +121,29 @@ export class PreviewOntologyIrConverter {
     return result;
   }
 
-  /**
-   * Convert IR action types to ActionTypeFullMetadata format.
-   * Reuses base converter for action type conversion, then process
-   * RIDs to use UUID-based format and adds fullLogicRules.
-   */
-  private static convertActionTypesWithFullLogicRulesFromBlockData(
-    actions: Record<string, ActionTypeBlockDataV2>,
+  private static addActionLogicRules(
+    actionTypes: Record<string, Ontologies.ActionTypeV2>,
     blockdata: OntologyBlockDataV2,
     importedTypes?: Ontologies.OntologyFullMetadata,
   ): Record<string, Ontologies.ActionTypeFullMetadata> {
-    const objectTypeLookup = buildBlockDataObjectTypeLookup(
-      blockdata,
-      importedTypes,
-    );
-    const interfaceTypeLookup = buildBlockDataInterfaceTypeLookup(
-      blockdata,
-      importedTypes,
-    );
-    const baseActionTypes = OntologyBlockDataToFullMetadataConverter
-      .getOsdkActionTypesFromBlockData(
-        blockdata,
-        objectTypeLookup,
-        interfaceTypeLookup,
-      );
-
-    // Build a lookup from apiName to the original IR action for logic rules
-    const actionsByApiName = new Map(
-      Object.values(actions).map(a => [a.actionType.metadata.apiName, a]),
-    );
     const result: Record<string, Ontologies.ActionTypeFullMetadata> = {};
-    for (const [apiName, baseActionType] of Object.entries(baseActionTypes)) {
+    if (importedTypes?.actionTypesFullMetadata) {
+      for (
+        const [apiName, actionType] of Object.entries(
+          importedTypes.actionTypesFullMetadata,
+        )
+      ) {
+        result[apiName] = actionType;
+      }
+    }
+
+    const actionsByApiName = new Map(
+      Object.values(blockdata.actionTypes).map(a => [
+        a.actionType.metadata.apiName,
+        a,
+      ]),
+    );
+    for (const [apiName, baseActionType] of Object.entries(actionTypes)) {
       const action = actionsByApiName.get(apiName)!;
       result[apiName] = {
         actionType: {

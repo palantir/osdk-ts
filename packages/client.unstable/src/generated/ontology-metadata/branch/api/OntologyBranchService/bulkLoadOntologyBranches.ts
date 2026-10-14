@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  BulkLoadOntologyBranchesRequest as _branch_api_BulkLoadOntologyBranchesRequest,
-  BulkLoadOntologyBranchesResponse as _branch_api_BulkLoadOntologyBranchesResponse,
-} from "../__components.js";
+import type { BulkLoadOntologyBranchesRequest as _branch_api_BulkLoadOntologyBranchesRequest } from "../__components.js";
+import type { BulkLoadOntologyBranchesResponse as _branch_api_BulkLoadOntologyBranchesResponse } from "../__components.js";
 
 /**
  * Bulk load ontology branches using the provided branch identifier.

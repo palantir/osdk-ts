@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GlobalBranchRid as _api_GlobalBranchRid,
-  OntologyBranchRid as _api_OntologyBranchRid,
-} from "../../../api/__components.js";
+import type { GlobalBranchRid as _api_GlobalBranchRid } from "../../../api/__components.js";
+import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../../api/__components.js";
 
 /**
  * Endpoint get the corresponding OntologyBranchRid for a global BranchRid given by BranchService.

@@ -1,5 +1,67 @@
 # @osdk/client
 
+## 2.80.0
+
+### Patch Changes
+
+- Updated dependencies [e9bf2de]
+  - @osdk/client.unstable@2.80.0
+  - @osdk/api@2.80.0
+  - @osdk/generator-converters@2.80.0
+
+## 2.79.0
+
+### Patch Changes
+
+- Updated dependencies [86c708b]
+  - @osdk/api@2.79.0
+  - @osdk/client.unstable@2.79.0
+  - @osdk/generator-converters@2.79.0
+
+## 2.78.0
+
+### Patch Changes
+
+- Updated dependencies [533f264]
+  - @osdk/client.unstable@2.78.0
+  - @osdk/api@2.78.0
+  - @osdk/generator-converters@2.78.0
+  - @osdk/shared.test@2.53.0
+
+## 2.77.0
+
+### Minor Changes
+
+- 75a8f07: Add experimental agent clients with support for creating sessions.
+- bd50cd9: Scenario clients now throw the same `PalantirApiError` (including `errorName` and `parameters`) as base clients instead of a generic `UnknownError`, by reusing the parent client's fetch stack rather than double-wrapping it
+
+### Patch Changes
+
+- Updated dependencies [2ab4d7c]
+- Updated dependencies [75a8f07]
+  - @osdk/api@2.77.0
+  - @osdk/generator-converters@2.77.0
+  - @osdk/shared.test@2.52.0
+  - @osdk/client.unstable@2.77.0
+
+## 2.76.0
+
+### Minor Changes
+
+- b1616e3: Remove legacy final method call request-context telemetry.
+- b8f103c: Read the `foundryBranchRid` query parameter from `window.location` when creating a client, allowing iframe hosts to select a Foundry branch at runtime. Explicit client branch options take precedence over the URL, which takes precedence over the branch meta tag injected by build tooling. Missing or blank query values fall back to the meta tag; an explicit `null` continues to select the default branch.
+
+### Patch Changes
+
+- Updated dependencies [21a0d8c]
+- Updated dependencies [0c09251]
+- Updated dependencies [a38af5a]
+  - @osdk/client.unstable@2.76.0
+  - @osdk/shared.client.impl@1.15.0
+  - @osdk/api@2.76.0
+  - @osdk/generator-converters@2.76.0
+  - @osdk/shared.test@2.51.0
+
 ## 2.75.0
 
 ### Minor Changes

@@ -16,6 +16,7 @@
 
 import type {
   MarkingType,
+  ObjectTypeDatasource,
   ObjectTypeDatasourceDefinition,
   PropertySecurityGroup,
   PropertySecurityGroups,
@@ -203,6 +204,85 @@ export function convertDatasourceDefinition(
         },
       };
   }
+}
+
+/** Convert the primary datasource emitted by maker, preserving its cloud identity. */
+export function convertDatasourceForEdge(
+  source: ObjectTypeDatasource,
+  objectApiName: string,
+): ObjectTypeDatasource {
+  const definition = source.datasource;
+  let direct: {
+    directSourceRid: string;
+    propertyMapping: Record<string, PropertyTypeMappingInfo>;
+    propertySecurityGroups?: PropertySecurityGroups | null;
+  };
+  switch (definition.type) {
+    case "direct":
+    case "editsOnly":
+      return source;
+    case "datasetV2":
+    case "datasetV3": {
+      const dataset =
+        definition.type === "datasetV2"
+          ? definition.datasetV2
+          : definition.datasetV3;
+      direct = {
+        directSourceRid: dataset.datasetRid,
+        propertyMapping: dataset.propertyMapping,
+        propertySecurityGroups:
+          definition.type === "datasetV3"
+            ? definition.datasetV3.propertySecurityGroups
+            : undefined,
+      };
+      break;
+    }
+    case "streamV2":
+      direct = {
+        directSourceRid: definition.streamV2.streamLocator.streamLocatorRid,
+        propertyMapping: Object.fromEntries(
+          Object.entries(definition.streamV2.propertyMapping).map(
+            ([property, column]) => [property, { type: "column", column }],
+          ),
+        ),
+        propertySecurityGroups: definition.streamV2.propertySecurityGroups,
+      };
+      break;
+    default:
+      throw new Error(
+        `Cannot package object "${objectApiName}" datasource "${source.rid}" for edge: unsupported datasource type "${definition.type}" with PSG v2 packaging.`,
+      );
+  }
+  return {
+    ...source,
+    datasource: {
+      type: "direct",
+      direct: {
+        ...direct,
+        propertySecurityGroups: direct.propertySecurityGroups?.groups.length
+          ? direct.propertySecurityGroups
+          : {
+              groups: [
+                {
+                  // Match OMS's stable PSG identity for a remapped datasource.
+                  rid: source.rid.replace(
+                    ".datasource.",
+                    ".property-security-group.",
+                  ),
+                  properties: Object.keys(direct.propertyMapping),
+                  type: { type: "primaryKey", primaryKey: {} },
+                  security: {
+                    type: "mandatoryOnly",
+                    mandatoryOnly: {
+                      policy: { markings: [], assumedMarkings: [] },
+                    },
+                  },
+                },
+              ],
+            },
+      },
+    },
+  };
 }
 
 function convertPropertySecurityGroups(

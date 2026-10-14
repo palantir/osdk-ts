@@ -16,11 +16,14 @@
 
 export * from "./actions.js";
 export * from "./actionTypes.js";
+export * from "./agentDefinitions.js";
+export * from "./agents.js";
 export * from "./complexImplementationTypes.js";
 export * from "./defaultOntologyForConjure.js";
 export * from "./interfaceTypes.js";
 export * from "./linkTypes.js";
 export * from "./objects.js";
+export * from "./objectSets.js";
 export * from "./objectTypesWithLinkTypes.js";
 export * from "./objectTypeV2.js";
 export * from "./queries.js";

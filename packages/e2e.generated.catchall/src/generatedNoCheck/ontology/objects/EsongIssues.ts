@@ -124,6 +124,7 @@ export interface EsongIssues extends $ObjectTypeDefinition {
     props: EsongIssues.Props;
     linksType: EsongIssues.Links;
     strictProps: EsongIssues.StrictProps;
+    requiredProps: 'id';
     apiName: 'EsongIssues';
     description: '';
     displayName: '[esong] Issues';

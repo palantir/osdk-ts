@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export { bulkLoadObjectTypeSchemaMigrations } from "./OntologySchemaMigrationService/bulkLoadObjectTypeSchemaMigrations.js";
 export { loadObjectTypeSchemaMigrations } from "./OntologySchemaMigrationService/loadObjectTypeSchemaMigrations.js";
+export { bulkLoadObjectTypeSchemaMigrations } from "./OntologySchemaMigrationService/bulkLoadObjectTypeSchemaMigrations.js";
+export { loadInterfaceTypeSchemaMigrationStatuses } from "./OntologySchemaMigrationService/loadInterfaceTypeSchemaMigrationStatuses.js";
+export { loadInterfaceTypeSchemaMigrationObjectTypeCompliance } from "./OntologySchemaMigrationService/loadInterfaceTypeSchemaMigrationObjectTypeCompliance.js";
+export { loadInterfaceTypeSchemaMigrationStatusesByImplementingObjectType } from "./OntologySchemaMigrationService/loadInterfaceTypeSchemaMigrationStatusesByImplementingObjectType.js";

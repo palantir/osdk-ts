@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetObjectTypesForTypeGroupsRequest as _api_GetObjectTypesForTypeGroupsRequest,
-  GetObjectTypesForTypeGroupsResponse as _api_GetObjectTypesForTypeGroupsResponse,
-} from "../__components.js";
+import type { GetObjectTypesForTypeGroupsRequest as _api_GetObjectTypesForTypeGroupsRequest } from "../__components.js";
+import type { GetObjectTypesForTypeGroupsResponse as _api_GetObjectTypesForTypeGroupsResponse } from "../__components.js";
 
 /**
  * Gets a map of TypeGroupRids to the set of ObjectTypeRids that use the TypeGroup. At most 50 TypeGroupRids

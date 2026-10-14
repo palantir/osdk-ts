@@ -19,7 +19,7 @@ import type {
   OntologyIrDerivedPropertyAggregation,
   OntologyIrEditsHistory,
   OntologyIrObjectTypeBlockDataV2,
-  OntologyIrObjectTypeDatasource,
+  OntologyIrMarketplaceObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
   OntologyIrPropertyType,
 } from "@osdk/client.unstable";
@@ -37,6 +37,7 @@ import type {
   DerivedPropertyAggregation,
   ObjectTypeDatasourceDefinition_derived,
 } from "../../api/object/ObjectTypeDatasourceDefinition.js";
+import { resolveDerivedPropertyLinks } from "../../api/object/resolveDerivedPropertyLinks.js";
 import { isExotic } from "../../api/properties/PropertyTypeType.js";
 import { convertDatasourceDefinition } from "./convertDatasourceDefinition.js";
 import { convertObjectPropertyType } from "./convertObjectPropertyType.js";
@@ -47,7 +48,7 @@ export function convertObject(
   const { derivedDatasources, derivedPropertyNames } =
     extractDerivedDatasources(objectType);
 
-  const propertyDatasources: OntologyIrObjectTypeDatasource[] = (
+  const propertyDatasources: OntologyIrMarketplaceObjectTypeDatasource[] = (
     objectType.properties ?? []
   )
     .filter((prop) => !derivedPropertyNames.includes(prop.apiName))
@@ -185,7 +186,7 @@ export function extractMarkingGroups(
 export function extractPropertyDatasource(
   property: ObjectPropertyType,
   objectTypeApiName: string,
-): OntologyIrObjectTypeDatasource[] {
+): OntologyIrMarketplaceObjectTypeDatasource[] {
   if (!isExotic(property.type)) {
     return [];
   }
@@ -220,7 +221,7 @@ export function extractPropertyDatasource(
 }
 
 function extractDerivedDatasources(objectType: ObjectType): {
-  derivedDatasources: OntologyIrObjectTypeDatasource[];
+  derivedDatasources: OntologyIrMarketplaceObjectTypeDatasource[];
   derivedPropertyNames: string[];
 } {
   const inputDerivedDatasources = (objectType.datasources ?? []).filter(
@@ -250,18 +251,22 @@ function buildDerivedDatasource(
   datasource: ObjectTypeDatasourceDefinition_derived,
   index: number,
   objectTypeApiName: string,
-): OntologyIrObjectTypeDatasource {
+): OntologyIrMarketplaceObjectTypeDatasource {
+  const { steps } = resolveDerivedPropertyLinks(
+    objectTypeApiName,
+    datasource.linkDefinition,
+  );
   const linkDefinition = {
     type: "multiHopLink",
     multiHopLink: {
-      steps: datasource.linkDefinition.map((step) => ({
+      steps: steps.map((step) => ({
         type: "searchAround",
         searchAround: {
           linkTypeIdentifier: {
             type: "linkType",
             linkType: cleanAndValidateLinkTypeId(step.linkType.apiName),
           },
-          linkTypeSide: step.side ?? "SOURCE",
+          linkTypeSide: step.side,
         },
       })),
     },

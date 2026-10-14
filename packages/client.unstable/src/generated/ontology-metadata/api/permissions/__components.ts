@@ -15,27 +15,26 @@
  */
 
 import type { WorkflowRid as _workflow_api_WorkflowRid } from "../../workflow/api/__components.js";
-import type {
-  ActionTypeRid as _api_ActionTypeRid,
-  CompassFolderRid as _api_CompassFolderRid,
-  DatasourceRid as _api_DatasourceRid,
-  GroupId as _api_GroupId,
-  InterfaceTypeRid as _api_InterfaceTypeRid,
-  LinkTypeRid as _api_LinkTypeRid,
-  MarkingId as _api_MarkingId,
-  ObjectTypeRid as _api_ObjectTypeRid,
-  OntologyBranchRid as _api_OntologyBranchRid,
-  OntologyPackageRid as _api_OntologyPackageRid,
-  OntologyRid as _api_OntologyRid,
-  PackagedEntityRid as _api_PackagedEntityRid,
-  PrincipalId as _api_PrincipalId,
-  ProjectEntityRid as _api_ProjectEntityRid,
-  PropertySecurityGroupRid as _api_PropertySecurityGroupRid,
-  RoleId as _api_RoleId,
-  SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
-  TypeGroupRid as _api_TypeGroupRid,
-  UserId as _api_UserId,
-} from "../__components.js";
+import type { ProjectEntityRid as _api_ProjectEntityRid } from "../__components.js";
+import type { OntologyPackageRid as _api_OntologyPackageRid } from "../__components.js";
+import type { ActionTypeRid as _api_ActionTypeRid } from "../__components.js";
+import type { UserId as _api_UserId } from "../__components.js";
+import type { OntologyBranchRid as _api_OntologyBranchRid } from "../__components.js";
+import type { InterfaceTypeRid as _api_InterfaceTypeRid } from "../__components.js";
+import type { LinkTypeRid as _api_LinkTypeRid } from "../__components.js";
+import type { ObjectTypeRid as _api_ObjectTypeRid } from "../__components.js";
+import type { SharedPropertyTypeRid as _api_SharedPropertyTypeRid } from "../__components.js";
+import type { TypeGroupRid as _api_TypeGroupRid } from "../__components.js";
+import type { DatasourceRid as _api_DatasourceRid } from "../__components.js";
+import type { PropertySecurityGroupRid as _api_PropertySecurityGroupRid } from "../__components.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type { PrincipalId as _api_PrincipalId } from "../__components.js";
+import type { GroupId as _api_GroupId } from "../__components.js";
+import type { CompassFolderRid as _api_CompassFolderRid } from "../__components.js";
+import type { MarkingId as _api_MarkingId } from "../__components.js";
+import type { CompassProjectRid as _api_CompassProjectRid } from "../__components.js";
+import type { RoleId as _api_RoleId } from "../__components.js";
+import type { PackagedEntityRid as _api_PackagedEntityRid } from "../__components.js";
 export interface ActionTypePermissionModel_preRoles {
   type: "preRoles";
   preRoles: PreRolesPermissionModel;
@@ -61,6 +60,19 @@ export type ActionTypePermissionModel =
   | ActionTypePermissionModel_package
   | ActionTypePermissionModel_publicProject;
 
+export interface BulkRevertPublicProjectEntitiesFailure {
+  entity: _api_ProjectEntityRid;
+  errorMessage: string;
+  errorType: string;
+}
+export interface BulkRevertPublicProjectEntitiesRequest {
+  entityRids: Array<_api_ProjectEntityRid>;
+  revertToRoles: boolean;
+}
+export interface BulkRevertPublicProjectEntitiesResponse {
+  failures: Array<BulkRevertPublicProjectEntitiesFailure>;
+  successfullyMigratedEntities: Array<_api_ProjectEntityRid>;
+}
 /**
  * Request to update the roles on an ontology entity.
  * - The RoleSet of the ontology project must be in the Ontology context.
@@ -109,6 +121,10 @@ export interface EntityMigrationInProgress {
  * the moment: they were either successfully migrated, or not migrated at all.
  */
 export interface EntityMigrationNotMigrating {}
+/**
+ * The error describing why an entity failed to move to its target Compass project or folder.
+ */
+export type EntityMoveFailureReason = string;
 export interface EntityParent_package {
   type: "package";
   package: PackageParent;
@@ -605,6 +621,23 @@ export interface MigrateEntitiesToProjectsSuccess {}
 export interface MigrateEntityToProjectRequest {
   markings: Array<_api_MarkingId>;
   rid: _api_ProjectEntityRid;
+}
+/**
+ * Request to move ontology entities that live in the default ontology across Compass projects, folders, and/or
+ * namespaces.
+ * Each entity is moved to its associated target Compass project or folder. Entities that do not belong to the
+ * default ontology are reported as failures instead of being moved, and every entity that does belong to the
+ * default ontology must use the public project permission model.
+ */
+export interface MoveOntologyEntitiesRequest {
+  entitiesToMove: Record<string, _api_CompassProjectRid>;
+}
+/**
+ * Indicates which entities were moved successfully and which had failures during the move.
+ */
+export interface MoveOntologyEntitiesResponse {
+  failedEntities: Record<string, EntityMoveFailureReason>;
+  movedEntities: Array<string>;
 }
 /**
  * The operations the user has on a datasource.

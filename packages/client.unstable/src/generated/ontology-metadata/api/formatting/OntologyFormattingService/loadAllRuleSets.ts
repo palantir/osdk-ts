@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  LoadAllRuleSetsRequest as _api_formatting_LoadAllRuleSetsRequest,
-  LoadRuleSetsResponse as _api_formatting_LoadRuleSetsResponse,
-} from "../__components.js";
+import type { LoadAllRuleSetsRequest as _api_formatting_LoadAllRuleSetsRequest } from "../__components.js";
+import type { LoadRuleSetsResponse as _api_formatting_LoadRuleSetsResponse } from "../__components.js";
 
 /**
  * Endpoint to load rule sets from a given (or otherwise default) OntologyRid at a given (or otherwise

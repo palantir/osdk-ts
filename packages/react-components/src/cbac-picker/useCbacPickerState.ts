@@ -36,6 +36,10 @@ import {
 
 const EMPTY_GROUPS: string[][] = [];
 
+export interface UseCbacPickerStateOptions {
+  includeDeleted?: boolean;
+}
+
 export interface UseCbacPickerStateResult {
   categoryGroups: CategoryMarkingGroup[];
   markingStates: Map<string, MarkingSelectionState>;
@@ -62,6 +66,7 @@ function useStableArray(arr: string[]): string[] {
 
 export function useCbacPickerState(
   selectedIds: string[],
+  options?: UseCbacPickerStateOptions,
 ): UseCbacPickerStateResult {
   const stableSelectedIds = useStableArray(selectedIds);
   const {
@@ -69,13 +74,13 @@ export function useCbacPickerState(
     isLoading: categoriesLoading,
     error: categoriesError,
     refetch: refetchCategories,
-  } = useMarkingCategories();
+  } = useMarkingCategories(options);
   const {
     markings: rawMarkings,
     isLoading: markingsLoading,
     error: markingsError,
     refetch: refetchMarkings,
-  } = useMarkings();
+  } = useMarkings(options);
   const {
     banner: latestBanner,
     isLoading: bannerLoading,

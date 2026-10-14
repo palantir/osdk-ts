@@ -21,6 +21,22 @@ import { importedTypes } from "./defineOntology.js";
 export function importOntologyEntity<T extends OntologyEntityBase>(e: T): void {
   if (e.__type !== OntologyEntityTypeEnum.VALUE_TYPE) {
     importedTypes[e.__type][e.apiName] = e as any;
+    if (e.__type === OntologyEntityTypeEnum.OBJECT_TYPE) {
+      const objectType = importedTypes.OBJECT_TYPE[e.apiName];
+      for (const property of objectType.properties ?? []) {
+        const sharedPropertyType = property.sharedPropertyType;
+        if (
+          sharedPropertyType !== undefined &&
+          !Object.hasOwn(
+            importedTypes.SHARED_PROPERTY_TYPE,
+            sharedPropertyType.apiName,
+          )
+        ) {
+          importedTypes.SHARED_PROPERTY_TYPE[sharedPropertyType.apiName] =
+            sharedPropertyType;
+        }
+      }
+    }
     return;
   }
   // value types are a special case

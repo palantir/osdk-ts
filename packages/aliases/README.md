@@ -1,0 +1,45 @@
+# `@osdk/aliases`
+
+This package provides named string configuration values for websites. Its browser API is experimental.
+
+## Install
+
+```sh
+npm install @osdk/aliases
+```
+
+## Configure a website alias
+
+Include `resources.json` at the root of your built website so it is available at `/resources.json`. In Vite apps, place it in `public/resources.json`; Vite copies it there when building.
+
+```json
+{
+  "aliases": {
+    "custom": {
+      "welcomeMessage": {
+        "value": "Welcome to our application!",
+        "description": "Message shown on the welcome page",
+        "required": false
+      }
+    }
+  }
+}
+```
+
+Each key under `aliases.custom` is a name your code can request, and each `value` must be a string:
+
+- `value` is the default string value.
+- `description` is optional help text shown with the Marketplace input.
+- `required` is a boolean that defaults to `false`. Set it to `true` to make the input mandatory.
+
+When packaging a website hosted through Developer Console in Foundry Marketplace, its custom aliases appear as configurable inputs. Installers can override values; optional inputs left unspecified use the defaults from `resources.json`.
+
+## Read an alias
+
+```ts
+import { Aliases } from "@osdk/aliases/experimental";
+
+const welcomeMessage = await Aliases.custom("welcomeMessage");
+```
+
+Alias values are public because they are served with the website. Do not put secrets in them.

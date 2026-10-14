@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { OntologyIrLinkTypeBlockDataV2 } from "@osdk/client.unstable";
+import type {
+  OntologyIrLinkTypeBlockDataV2,
+  VectorPropertyType,
+} from "@osdk/client.unstable";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
 import { isInjectedRuntimeInput } from "./convertDataType.js";
@@ -46,6 +49,44 @@ vi.mock("@foundry/functions-typescript-osdk-discovery", () => ({
 }));
 
 describe(OntologyIrToFullMetadataConverter, () => {
+  it.each(
+    [
+      {
+        vector: { dimension: 128, supportsSearchWith: [] },
+        expected: { type: "vector", dimension: 128, supportsSearchWith: [] },
+      },
+      {
+        vector: {
+          dimension: 1536,
+          supportsSearchWith: [
+            "COSINE_SIMILARITY",
+            "DOT_PRODUCT",
+            "EUCLIDEAN_DISTANCE",
+          ],
+        },
+        expected: {
+          type: "vector",
+          dimension: 1536,
+          supportsSearchWith: [
+            { value: "COSINE_SIMILARITY" },
+            { value: "DOT_PRODUCT" },
+            { value: "EUCLIDEAN_DISTANCE" },
+          ],
+        },
+      },
+    ] satisfies { vector: VectorPropertyType; expected: unknown }[],
+  )(
+    "preserves vector dimensions and search capabilities: $vector.dimension",
+    ({ vector, expected }) => {
+      expect(
+        OntologyIrToFullMetadataConverter.getOsdkPropertyType({
+          type: "vector",
+          vector,
+        }),
+      ).toEqual(expected);
+    },
+  );
+
   it.each(
     [
       ["manyToMany", "Target"],
@@ -234,6 +275,23 @@ describe(OntologyIrToFullMetadataConverter, () => {
                       "type": "active",
                       "active": {},
                     },
+                  },
+                  "embedding": {
+                    "apiName": "embedding",
+                    "displayMetadata": {
+                      "displayName": "Embedding",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "type": {
+                      "type": "vector",
+                      "vector": {
+                        "dimension": 1536,
+                        "supportsSearchWith": ["COSINE_SIMILARITY"],
+                      },
+                    },
+                    "typeClasses": [],
+                    "status": { "type": "active", "active": {} },
                   },
                   "proposedLocation": {
                     "apiName": "proposedLocation",
@@ -3323,6 +3381,25 @@ describe(OntologyIrToFullMetadataConverter, () => {
               "pluralDisplayName": "",
               "primaryKey": "primaryKey_",
               "properties": {
+                "embedding": {
+                  "dataType": {
+                    "dimension": 1536,
+                    "supportsSearchWith": [
+                      {
+                        "value": "COSINE_SIMILARITY",
+                      },
+                    ],
+                    "type": "vector",
+                  },
+                  "description": undefined,
+                  "displayName": "Embedding",
+                  "rid": "ri.Dc3DistributionCenterProposal.embedding",
+                  "status": {
+                    "type": "active",
+                  },
+                  "typeClasses": [],
+                  "visibility": "NORMAL",
+                },
                 "footprint": {
                   "dataType": {
                     "structFieldTypes": [

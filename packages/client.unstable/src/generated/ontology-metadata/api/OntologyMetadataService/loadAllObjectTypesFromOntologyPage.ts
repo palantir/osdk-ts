@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  LoadAllObjectTypesFromOntologyPageRequest as _api_LoadAllObjectTypesFromOntologyPageRequest,
-  LoadAllObjectTypesFromOntologyPageResponse as _api_LoadAllObjectTypesFromOntologyPageResponse,
-} from "../__components.js";
+import type { LoadAllObjectTypesFromOntologyPageRequest as _api_LoadAllObjectTypesFromOntologyPageRequest } from "../__components.js";
+import type { LoadAllObjectTypesFromOntologyPageResponse as _api_LoadAllObjectTypesFromOntologyPageResponse } from "../__components.js";
 
 /**
  * Endpoint to load a paged collection of all ObjectTypes visible to the user from the specified Ontology and

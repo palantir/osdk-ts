@@ -109,6 +109,7 @@ export function convertOntologyDefinitionToWireBlockData(
   ridGenerator: OntologyRidGenerator,
   allOntologies?: OntologyDefinition[],
   functionsIr?: FunctionsIr,
+  packageForEdge = false,
 ): OntologyBlockDataV2 {
   const ontologiesToScan = allOntologies ?? [ontology];
 
@@ -119,7 +120,7 @@ export function convertOntologyDefinitionToWireBlockData(
     >(([apiName, objectType]) => {
       return [
         ridGenerator.generateRidForObjectType(apiName),
-        convertObject(objectType, ridGenerator),
+        convertObject(objectType, ridGenerator, packageForEdge),
       ];
     }),
   );
@@ -405,9 +406,7 @@ function buildKnownIdentifiers(
     ontologiesToScan.flatMap((ont) =>
       Object.entries(ont[OntologyEntityTypeEnum.OBJECT_TYPE]).map(
         ([objectTypeApiName, objectType]) => [
-          ridGenerator
-            .getObjectTypeIds()
-            .get(ReadableIdGenerator.getForObjectType(objectTypeApiName)),
+          ridGenerator.generateObjectTypeId(objectTypeApiName),
           ridGenerator.toBlockInternalId(
             ReadableIdGenerator.getForObjectType(objectTypeApiName),
           ),
@@ -458,9 +457,7 @@ function buildKnownIdentifiers(
             );
           }
         });
-        const objTypeId = ridGenerator
-          .getObjectTypeIds()
-          .get(ReadableIdGenerator.getForObjectType(objectTypeApiName))!;
+        const objTypeId = ridGenerator.generateObjectTypeId(objectTypeApiName);
         propertyTypeIds[objTypeId] = propMap;
         objectPropertyTypeIdsToRids[objTypeId] = propertyTypeIdsToRids;
       },

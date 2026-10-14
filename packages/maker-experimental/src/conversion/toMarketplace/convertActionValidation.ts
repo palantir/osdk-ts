@@ -21,6 +21,7 @@ import type {
   ParameterRequiredConfiguration,
   StructFieldConditionalOverride,
   StructFieldConditionalValidationBlock,
+  StructFieldPrefill,
   StructFieldValidationBlockOverride,
 } from "@osdk/client.unstable";
 import type {
@@ -28,6 +29,7 @@ import type {
   ActionParameterAllowedValues,
   ActionParameterRequirementConstraint,
   ActionType,
+  StructFieldDefaultValue,
   StructFieldValidationConfiguration,
 } from "@osdk/maker";
 import { extractAllowedValuesFromActionParameterType } from "@osdk/maker";
@@ -317,6 +319,12 @@ function convertStructFieldValidations(
               visibility: convertActionVisibility(
                 configuration.defaultVisibility,
               ),
+              ...(configuration.defaultValue != null && {
+                prefill: convertStructFieldDefaultValue(
+                  configuration.defaultValue,
+                  ridGenerator,
+                ),
+              }),
             },
             validation: {
               allowedValues: extractAllowedStructFieldValues(
@@ -413,6 +421,17 @@ function convertStructFieldConditionalOverride(
 ): StructFieldConditionalOverride {
   let structFieldBlockOverride: StructFieldValidationBlockOverride;
   switch (override.type) {
+    case "defaultValue":
+      structFieldBlockOverride = {
+        type: "prefill",
+        prefill: {
+          prefill: convertStructFieldDefaultValue(
+            override.defaultValue,
+            ridGenerator,
+          ),
+        },
+      };
+      break;
     case "required":
       structFieldBlockOverride = {
         type: "parameterRequired",
@@ -476,4 +495,31 @@ function convertParameterRequirementConstraint(
     type: "listLengthValidation",
     listLengthValidation: { minLength: min, maxLength: max },
   };
+}
+
+function convertStructFieldDefaultValue(
+  defaultValue: StructFieldDefaultValue,
+  ridGenerator: OntologyRidGenerator,
+): StructFieldPrefill {
+  const reference =
+    defaultValue.type === "objectParameterStructFieldValue"
+      ? defaultValue.objectParameterStructFieldValue
+      : defaultValue.objectParameterStructListFieldValue;
+  const value = {
+    parameterId: reference.parameterId,
+    propertyTypeId: reference.propertyTypeId,
+    structFieldRid: ridGenerator.generateStructFieldRid(
+      reference.propertyTypeId,
+      reference.structFieldApiName,
+    ),
+  };
+  return defaultValue.type === "objectParameterStructFieldValue"
+    ? {
+        type: "objectParameterStructFieldValue",
+        objectParameterStructFieldValue: value,
+      }
+    : {
+        type: "objectParameterStructListFieldValue",
+        objectParameterStructListFieldValue: value,
+      };
 }

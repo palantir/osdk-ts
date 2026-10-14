@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  OntologyRidsForEntitiesRequest as _api_OntologyRidsForEntitiesRequest,
-  OntologyRidsForEntitiesResponse as _api_OntologyRidsForEntitiesResponse,
-} from "../__components.js";
+import type { OntologyRidsForEntitiesRequest as _api_OntologyRidsForEntitiesRequest } from "../__components.js";
+import type { OntologyRidsForEntitiesResponse as _api_OntologyRidsForEntitiesResponse } from "../__components.js";
 
 /**
  * Gets the ontology rids to which the given ontology entities belong.
@@ -27,7 +25,8 @@ import type {
  * contain ontology rids for entities that actually exist and which belong to an Ontology that the user
  * has access to. If the user has requested entities that do not exist in any of the latest Ontology versions,
  * or which belong to an Ontology which the user does not have access to, those will not be present in the
- * response.
+ * response. Unless `includeTrashed` is set, trashed entities are not considered "existing" and therefore
+ * are not included.
  */
 export async function getOntologyRidsForEntities(
   ctx: ConjureContext,

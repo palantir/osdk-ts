@@ -14,24 +14,274 @@
  * limitations under the License.
  */
 
-import type {
-  InterfaceTypeApiName as _api_InterfaceTypeApiName,
-  InterfaceTypeRid as _api_InterfaceTypeRid,
-  InterfaceTypeRidOrIdInRequest as _api_InterfaceTypeRidOrIdInRequest,
-  MediaItemRid as _api_MediaItemRid,
-  MediaSetRid as _api_MediaSetRid,
-  MediaSetViewRid as _api_MediaSetViewRid,
-  ObjectTypeApiName as _api_ObjectTypeApiName,
-  ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
-  ObjectTypeId as _api_ObjectTypeId,
-  OntologyIrQualifiedSeriesIdPropertyValue as _api_OntologyIrQualifiedSeriesIdPropertyValue,
-  PropertyTypeId as _api_PropertyTypeId,
-  QualifiedSeriesIdPropertyValue as _api_QualifiedSeriesIdPropertyValue,
-  ScenarioRid as _api_ScenarioRid,
-  SeriesIdPropertyValue as _api_SeriesIdPropertyValue,
-  TemplateRidPropertyValue as _api_TemplateRidPropertyValue,
-} from "../__components.js";
+import type { ValueTypeReference as _api_ValueTypeReference } from "../__components.js";
+import type { ActionTypeRid as _api_ActionTypeRid } from "../__components.js";
+import type { InterfaceTypeRid as _api_InterfaceTypeRid } from "../__components.js";
+import type { InterfaceTypeRidOrIdInRequest as _api_InterfaceTypeRidOrIdInRequest } from "../__components.js";
+import type { MediaItemRid as _api_MediaItemRid } from "../__components.js";
+import type { MediaSetRid as _api_MediaSetRid } from "../__components.js";
+import type { MediaSetViewRid as _api_MediaSetViewRid } from "../__components.js";
+import type { PropertyTypeId as _api_PropertyTypeId } from "../__components.js";
+import type { ObjectTypeId as _api_ObjectTypeId } from "../__components.js";
+import type { InterfaceTypeApiName as _api_InterfaceTypeApiName } from "../__components.js";
+import type { ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName } from "../__components.js";
+import type { ObjectTypeApiName as _api_ObjectTypeApiName } from "../__components.js";
+import type { SeriesIdPropertyValue as _api_SeriesIdPropertyValue } from "../__components.js";
+import type { TemplateRidPropertyValue as _api_TemplateRidPropertyValue } from "../__components.js";
+import type { OntologyIrQualifiedSeriesIdPropertyValue as _api_OntologyIrQualifiedSeriesIdPropertyValue } from "../__components.js";
+import type { ScenarioRid as _api_ScenarioRid } from "../__components.js";
+import type { QualifiedSeriesIdPropertyValue as _api_QualifiedSeriesIdPropertyValue } from "../__components.js";
 
+/**
+ * Configuration for the value returned when an Action is applied.
+ */
+export interface ActionReturnConfiguration {
+  returnType?: ActionReturnType | null | undefined;
+}
+export interface ActionReturnType_boolean {
+  type: "boolean";
+  boolean: BooleanType;
+}
+
+export interface ActionReturnType_byte {
+  type: "byte";
+  byte: ByteType;
+}
+
+export interface ActionReturnType_short {
+  type: "short";
+  short: ShortType;
+}
+
+export interface ActionReturnType_integer {
+  type: "integer";
+  integer: IntegerType;
+}
+
+export interface ActionReturnType_long {
+  type: "long";
+  long: LongType;
+}
+
+export interface ActionReturnType_float {
+  type: "float";
+  float: FloatType;
+}
+
+export interface ActionReturnType_double {
+  type: "double";
+  double: DoubleType;
+}
+
+export interface ActionReturnType_decimal {
+  type: "decimal";
+  decimal: DecimalType;
+}
+
+export interface ActionReturnType_string {
+  type: "string";
+  string: StringType;
+}
+
+export interface ActionReturnType_binary {
+  type: "binary";
+  binary: BinaryType;
+}
+
+export interface ActionReturnType_date {
+  type: "date";
+  date: DateType;
+}
+
+export interface ActionReturnType_timestamp {
+  type: "timestamp";
+  timestamp: TimestampType;
+}
+
+export interface ActionReturnType_objectReference {
+  type: "objectReference";
+  objectReference: ObjectReferenceType;
+}
+
+export interface ActionReturnType_list {
+  type: "list";
+  list: ActionReturnType;
+}
+
+export interface ActionReturnType_set {
+  type: "set";
+  set: ActionReturnType;
+}
+
+export interface ActionReturnType_map {
+  type: "map";
+  map: MapReturnType;
+}
+
+export interface ActionReturnType_struct {
+  type: "struct";
+  struct: StructReturnType;
+}
+
+export interface ActionReturnType_optional {
+  type: "optional";
+  optional: ActionReturnType;
+}
+
+export interface ActionReturnType_objectSet {
+  type: "objectSet";
+  objectSet: ObjectSetRidType;
+}
+
+export interface ActionReturnType_interface {
+  type: "interface";
+  interface: InterfaceReferenceType;
+}
+
+export interface ActionReturnType_interfaceObjectSet {
+  type: "interfaceObjectSet";
+  interfaceObjectSet: InterfaceObjectSetRidType;
+}
+
+export interface ActionReturnType_attachment {
+  type: "attachment";
+  attachment: AttachmentType;
+}
+
+export interface ActionReturnType_mediaReference {
+  type: "mediaReference";
+  mediaReference: MediaReferenceType;
+}
+
+export interface ActionReturnType_marking {
+  type: "marking";
+  marking: MarkingReturnType;
+}
+
+export interface ActionReturnType_timeSeries {
+  type: "timeSeries";
+  timeSeries: TimeSeriesValueType;
+}
+
+export interface ActionReturnType_geoShape {
+  type: "geoShape";
+  geoShape: GeoShapeReturnType;
+}
+
+export interface ActionReturnType_vector {
+  type: "vector";
+  vector: VectorType;
+}
+
+export interface ActionReturnType_range {
+  type: "range";
+  range: RangeType;
+}
+
+export interface ActionReturnType_twoDimensionalAggregation {
+  type: "twoDimensionalAggregation";
+  twoDimensionalAggregation: TwoDimensionalAggregationType;
+}
+
+export interface ActionReturnType_threeDimensionalAggregation {
+  type: "threeDimensionalAggregation";
+  threeDimensionalAggregation: ThreeDimensionalAggregationType;
+}
+
+export interface ActionReturnType_logicalType {
+  type: "logicalType";
+  logicalType: _api_ValueTypeReference;
+}
+
+export interface ActionReturnType_action {
+  type: "action";
+  action: ActionValueReturnType;
+}
+
+export interface ActionReturnType_user {
+  type: "user";
+  user: UserType;
+}
+
+export interface ActionReturnType_group {
+  type: "group";
+  group: GroupType;
+}
+
+export interface ActionReturnType_principal {
+  type: "principal";
+  principal: PrincipalType;
+}
+
+export interface ActionReturnType_notification {
+  type: "notification";
+  notification: NotificationType;
+}
+
+export interface ActionReturnType_modelGraph {
+  type: "modelGraph";
+  modelGraph: ModelGraphType;
+}
+
+export interface ActionReturnType_ontologyEdit {
+  type: "ontologyEdit";
+  ontologyEdit: OntologyEditType;
+}
+
+export interface ActionReturnType_void {
+  type: "void";
+  void: VoidReturnType;
+}
+/**
+ * Type of value returned to the caller when an Action is applied.
+ */
+export type ActionReturnType =
+  | ActionReturnType_boolean
+  | ActionReturnType_byte
+  | ActionReturnType_short
+  | ActionReturnType_integer
+  | ActionReturnType_long
+  | ActionReturnType_float
+  | ActionReturnType_double
+  | ActionReturnType_decimal
+  | ActionReturnType_string
+  | ActionReturnType_binary
+  | ActionReturnType_date
+  | ActionReturnType_timestamp
+  | ActionReturnType_objectReference
+  | ActionReturnType_list
+  | ActionReturnType_set
+  | ActionReturnType_map
+  | ActionReturnType_struct
+  | ActionReturnType_optional
+  | ActionReturnType_objectSet
+  | ActionReturnType_interface
+  | ActionReturnType_interfaceObjectSet
+  | ActionReturnType_attachment
+  | ActionReturnType_mediaReference
+  | ActionReturnType_marking
+  | ActionReturnType_timeSeries
+  | ActionReturnType_geoShape
+  | ActionReturnType_vector
+  | ActionReturnType_range
+  | ActionReturnType_twoDimensionalAggregation
+  | ActionReturnType_threeDimensionalAggregation
+  | ActionReturnType_logicalType
+  | ActionReturnType_action
+  | ActionReturnType_user
+  | ActionReturnType_group
+  | ActionReturnType_principal
+  | ActionReturnType_notification
+  | ActionReturnType_modelGraph
+  | ActionReturnType_ontologyEdit
+  | ActionReturnType_void;
+
+/**
+ * An action return type carrying the referenced action type rids.
+ */
+export interface ActionValueReturnType {
+  actionTypeRids: Array<_api_ActionTypeRid>;
+}
 /**
  * Constraint that the implementing parameter must be an interface object set, without specifying the interface type.
  */
@@ -322,6 +572,16 @@ export interface BaseParameterConstraintType_anyStructList {
   type: "anyStructList";
   anyStructList: AnyStructListType;
 }
+
+export interface BaseParameterConstraintType_implementingObjectReference {
+  type: "implementingObjectReference";
+  implementingObjectReference: ImplementingObjectReferenceType;
+}
+
+export interface BaseParameterConstraintType_implementingObjectReferenceList {
+  type: "implementingObjectReferenceList";
+  implementingObjectReferenceList: ImplementingObjectReferenceListType;
+}
 /**
  * All of the possible types for parameter constraints on InterfaceActionTypeConstraints.
  * Includes all BaseParameterType types plus simplified constraint types that don't
@@ -378,7 +638,9 @@ export type BaseParameterConstraintType =
   | BaseParameterConstraintType_anyInterfaceReferenceList
   | BaseParameterConstraintType_anyInterfaceObjectSetRid
   | BaseParameterConstraintType_anyStruct
-  | BaseParameterConstraintType_anyStructList;
+  | BaseParameterConstraintType_anyStructList
+  | BaseParameterConstraintType_implementingObjectReference
+  | BaseParameterConstraintType_implementingObjectReferenceList;
 
 export interface BaseParameterConstraintTypeModification_boolean {
   type: "boolean";
@@ -614,6 +876,16 @@ export interface BaseParameterConstraintTypeModification_anyStructList {
   type: "anyStructList";
   anyStructList: AnyStructListType;
 }
+
+export interface BaseParameterConstraintTypeModification_implementingObjectReference {
+  type: "implementingObjectReference";
+  implementingObjectReference: ImplementingObjectReferenceType;
+}
+
+export interface BaseParameterConstraintTypeModification_implementingObjectReferenceList {
+  type: "implementingObjectReferenceList";
+  implementingObjectReferenceList: ImplementingObjectReferenceListType;
+}
 /**
  * All of the possible types for parameter constraints on InterfaceActionTypeConstraint modifications.
  * Includes all BaseParameterTypeModification types plus simplified constraint types that don't
@@ -670,7 +942,9 @@ export type BaseParameterConstraintTypeModification =
   | BaseParameterConstraintTypeModification_anyInterfaceReferenceList
   | BaseParameterConstraintTypeModification_anyInterfaceObjectSetRid
   | BaseParameterConstraintTypeModification_anyStruct
-  | BaseParameterConstraintTypeModification_anyStructList;
+  | BaseParameterConstraintTypeModification_anyStructList
+  | BaseParameterConstraintTypeModification_implementingObjectReference
+  | BaseParameterConstraintTypeModification_implementingObjectReferenceList;
 
 export interface BaseParameterType_boolean {
   type: "boolean";
@@ -1149,6 +1423,10 @@ export type BaseParameterTypeModification =
   | BaseParameterTypeModification_structList;
 
 /**
+ * BinaryType specifies that this return value must be binary.
+ */
+export interface BinaryType {}
+/**
  * BooleanListType specifies that this parameter must be a list of Booleans.
  */
 export interface BooleanListType {}
@@ -1166,10 +1444,86 @@ export interface BooleanType {}
  * A parameter value type that is a Boolean.
  */
 export type BooleanValue = boolean;
+export interface BucketKeyType_double {
+  type: "double";
+  double: DoubleType;
+}
+
+export interface BucketKeyType_integer {
+  type: "integer";
+  integer: IntegerType;
+}
+
+export interface BucketKeyType_date {
+  type: "date";
+  date: DateType;
+}
+
+export interface BucketKeyType_timestamp {
+  type: "timestamp";
+  timestamp: TimestampType;
+}
+
+export interface BucketKeyType_range {
+  type: "range";
+  range: RangeType;
+}
+
+export interface BucketKeyType_string {
+  type: "string";
+  string: StringType;
+}
+
+export interface BucketKeyType_boolean {
+  type: "boolean";
+  boolean: BooleanType;
+}
+/**
+ * The key type of an aggregation bucket.
+ */
+export type BucketKeyType =
+  | BucketKeyType_double
+  | BucketKeyType_integer
+  | BucketKeyType_date
+  | BucketKeyType_timestamp
+  | BucketKeyType_range
+  | BucketKeyType_string
+  | BucketKeyType_boolean;
+
+export interface BucketValueType_double {
+  type: "double";
+  double: DoubleType;
+}
+
+export interface BucketValueType_timestamp {
+  type: "timestamp";
+  timestamp: TimestampType;
+}
+
+export interface BucketValueType_date {
+  type: "date";
+  date: DateType;
+}
+/**
+ * The value type of an aggregation bucket.
+ */
+export type BucketValueType =
+  | BucketValueType_double
+  | BucketValueType_timestamp
+  | BucketValueType_date;
+
+/**
+ * ByteType specifies that this return value must be a Byte.
+ */
+export interface ByteType {}
 export interface CbacMarkingPicker {}
 export interface Checkbox {
   layout?: MultipleChoiceItemLayoutOptions | null | undefined;
 }
+/**
+ * ClassificationMarkingType specifies a CBAC classification marking.
+ */
+export interface ClassificationMarkingType {}
 /**
  * An id for ConditionValues stored in ObjectSetFilters
  */
@@ -1488,7 +1842,15 @@ export type DoubleValue = number | "NaN" | "Infinity" | "-Infinity";
 export interface Dropdown {
   shouldRemoveListQueryAfterSelection?: boolean | null | undefined;
 }
+/**
+ * EnumTimeSeriesType specifies an enum time series.
+ */
+export interface EnumTimeSeriesType {}
 export interface FilePicker {}
+/**
+ * FloatType specifies that this return value must be a Float.
+ */
+export interface FloatType {}
 export type GeoFormat = "DEG" | "MGRS";
 
 /**
@@ -1516,6 +1878,14 @@ export interface GeohashValue {
   geohash: string;
 }
 /**
+ * GeometryCollectionType specifies a collection of geometries.
+ */
+export interface GeometryCollectionType {}
+/**
+ * GeoPointType specifies a geo point.
+ */
+export interface GeoPointType {}
+/**
  * This value is guaranteed to be a valid GeoJSON.
  */
 export type Geoshape = any;
@@ -1530,6 +1900,58 @@ export interface GeoshapeListType {}
 export interface GeoshapeListValue {
   geoshapes: Array<Geoshape>;
 }
+/**
+ * A geo shape return type.
+ */
+export interface GeoShapeReturnType {
+  subType?: GeoShapeSubType | null | undefined;
+}
+export interface GeoShapeSubType_geoPoint {
+  type: "geoPoint";
+  geoPoint: GeoPointType;
+}
+
+export interface GeoShapeSubType_polygon {
+  type: "polygon";
+  polygon: PolygonType;
+}
+
+export interface GeoShapeSubType_lineString {
+  type: "lineString";
+  lineString: LineStringType;
+}
+
+export interface GeoShapeSubType_multiGeoPoint {
+  type: "multiGeoPoint";
+  multiGeoPoint: MultiGeoPointType;
+}
+
+export interface GeoShapeSubType_multiPolygon {
+  type: "multiPolygon";
+  multiPolygon: MultiPolygonType;
+}
+
+export interface GeoShapeSubType_multiLineString {
+  type: "multiLineString";
+  multiLineString: MultiLineStringType;
+}
+
+export interface GeoShapeSubType_geometryCollection {
+  type: "geometryCollection";
+  geometryCollection: GeometryCollectionType;
+}
+/**
+ * The kind of geo shape returned.
+ */
+export type GeoShapeSubType =
+  | GeoShapeSubType_geoPoint
+  | GeoShapeSubType_polygon
+  | GeoShapeSubType_lineString
+  | GeoShapeSubType_multiGeoPoint
+  | GeoShapeSubType_multiPolygon
+  | GeoShapeSubType_multiLineString
+  | GeoShapeSubType_geometryCollection;
+
 /**
  * GeoshapeType specifies that this parameter must be a Geoshape.
  */
@@ -1565,6 +1987,12 @@ export interface GeotimeSeriesReferenceValue {
   integrationRid: string;
   seriesId: string;
 }
+/**
+ * GroupType specifies that this return value must be a group.
+ */
+export interface GroupType {}
+export interface ImplementingObjectReferenceListType {}
+export interface ImplementingObjectReferenceType {}
 /**
  * IntegerListType specifies that this parameter must be a list of Integers.
  */
@@ -1612,6 +2040,11 @@ export interface InterfaceReferenceTypeModification {
   interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
 }
 export type IntermediaryLinkTypeSide = "A_SIDE" | "B_SIDE";
+
+/**
+ * LineStringType specifies a line string.
+ */
+export interface LineStringType {}
 export interface LinkTypeSide_oneToManyLinkTypeSide {
   type: "oneToManyLinkTypeSide";
   oneToManyLinkTypeSide: OneToManyLinkTypeSide;
@@ -1665,7 +2098,19 @@ export interface LongType {}
  */
 export type LongValue = number;
 export interface MandatoryMarkingPicker {}
+/**
+ * MandatoryMarkingType specifies a mandatory marking.
+ */
+export interface MandatoryMarkingType {}
 export type ManyToManyLinkTypeSide = "A_SIDE" | "B_SIDE";
+
+/**
+ * A map return type. Keys and values are return types.
+ */
+export interface MapReturnType {
+  keyType: ActionReturnType;
+  valueType: ActionReturnType;
+}
 export interface MarkdownEditor {
   initialHeight?: number | null | undefined;
 }
@@ -1679,6 +2124,22 @@ export interface MarkingListType {}
 export interface MarkingListValue {
   markings: Array<string>;
 }
+export interface MarkingReturnType_classification {
+  type: "classification";
+  classification: ClassificationMarkingType;
+}
+
+export interface MarkingReturnType_mandatory {
+  type: "mandatory";
+  mandatory: MandatoryMarkingType;
+}
+/**
+ * The kind of marking returned.
+ */
+export type MarkingReturnType =
+  | MarkingReturnType_classification
+  | MarkingReturnType_mandatory;
+
 /**
  * MarkingType specifies that this parameter must be a CBAC or Madatory Marking type.
  */
@@ -1729,13 +2190,54 @@ export interface MediaViewItemReference {
  * Expected to match mime format from  https://www.iana.org/assignments/media-types/media-types.xhtml
  */
 export type MimeType = string;
+
+/**
+ * ModelGraphType specifies that this return value must be a model graph.
+ */
+export interface ModelGraphType {}
+/**
+ * MultiGeoPointType specifies a collection of geo points.
+ */
+export interface MultiGeoPointType {}
+/**
+ * MultiLineStringType specifies a collection of line strings.
+ */
+export interface MultiLineStringType {}
 export type MultipleChoiceItemLayoutOptions = "STACKED" | "INLINE";
+
+/**
+ * MultiPolygonType specifies a collection of polygons.
+ */
+export interface MultiPolygonType {}
+/**
+ * A nested aggregation bucket.
+ */
+export interface NestedBucketType {
+  keyType: BucketKeyType;
+  subBucketType: SingleBucketType;
+}
+/**
+ * NotificationType specifies that this return value must be a notification.
+ */
+export interface NotificationType {}
 export interface NowValue {}
 /**
  * A parameter value type representing null.
  */
 export interface NullValue {}
 export interface NumericInput {}
+/**
+ * NumericTimeSeriesType specifies a numeric time series.
+ */
+export interface NumericTimeSeriesType {}
+/**
+ * Dropdown for object reference parameters. Unlike Dropdown, it can be configured with picker search
+ * settings that only apply to object references.
+ */
+export interface ObjectDropdown {
+  searchableProperties: Array<_api_PropertyTypeId>;
+  shouldRemoveListQueryAfterSelection?: boolean | null | undefined;
+}
 export interface ObjectLocator {
   objectTypeId: _api_ObjectTypeId;
   primaryKey: ObjectPrimaryKey;
@@ -1784,6 +2286,11 @@ export interface ObjectTypeValue {
   objectTypeId: _api_ObjectTypeId;
 }
 export type OneToManyLinkTypeSide = "ONE_SIDE" | "MANY_SIDE";
+
+/**
+ * OntologyEditType specifies that this return value must be an ontology edit.
+ */
+export interface OntologyEditType {}
 export interface OntologyIrBaseParameterConstraintType_boolean {
   type: "boolean";
   boolean: BooleanType;
@@ -2018,6 +2525,16 @@ export interface OntologyIrBaseParameterConstraintType_anyStructList {
   type: "anyStructList";
   anyStructList: AnyStructListType;
 }
+
+export interface OntologyIrBaseParameterConstraintType_implementingObjectReference {
+  type: "implementingObjectReference";
+  implementingObjectReference: ImplementingObjectReferenceType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_implementingObjectReferenceList {
+  type: "implementingObjectReferenceList";
+  implementingObjectReferenceList: ImplementingObjectReferenceListType;
+}
 /**
  * All of the possible types for parameter constraints on InterfaceActionTypeConstraints.
  * Includes all BaseParameterType types plus simplified constraint types that don't
@@ -2074,7 +2591,9 @@ export type OntologyIrBaseParameterConstraintType =
   | OntologyIrBaseParameterConstraintType_anyInterfaceReferenceList
   | OntologyIrBaseParameterConstraintType_anyInterfaceObjectSetRid
   | OntologyIrBaseParameterConstraintType_anyStruct
-  | OntologyIrBaseParameterConstraintType_anyStructList;
+  | OntologyIrBaseParameterConstraintType_anyStructList
+  | OntologyIrBaseParameterConstraintType_implementingObjectReference
+  | OntologyIrBaseParameterConstraintType_implementingObjectReferenceList;
 
 export interface OntologyIrBaseParameterType_boolean {
   type: "boolean";
@@ -2544,6 +3063,14 @@ export interface OntologyIrInterfaceReferenceListType {
 export interface OntologyIrInterfaceReferenceType {
   interfaceTypeRid: _api_InterfaceTypeApiName;
 }
+/**
+ * Dropdown for object reference parameters. Unlike Dropdown, it can be configured with picker search
+ * settings that only apply to object references.
+ */
+export interface OntologyIrObjectDropdown {
+  searchableProperties: Array<_api_ObjectTypeFieldApiName>;
+  shouldRemoveListQueryAfterSelection?: boolean | null | undefined;
+}
 export interface OntologyIrObjectLocator {
   objectTypeId: _api_ObjectTypeApiName;
   primaryKey: OntologyIrObjectPrimaryKey;
@@ -2588,6 +3115,100 @@ export interface OntologyIrObjectSetRidType {
 export interface OntologyIrObjectTypeValue {
   objectTypeId: _api_ObjectTypeApiName;
 }
+export interface OntologyIrParameterRenderHint_dropdown {
+  type: "dropdown";
+  dropdown: Dropdown;
+}
+
+export interface OntologyIrParameterRenderHint_userDropdown {
+  type: "userDropdown";
+  userDropdown: UserDropdown;
+}
+
+export interface OntologyIrParameterRenderHint_radio {
+  type: "radio";
+  radio: Radio;
+}
+
+export interface OntologyIrParameterRenderHint_checkbox {
+  type: "checkbox";
+  checkbox: Checkbox;
+}
+
+export interface OntologyIrParameterRenderHint_numericInput {
+  type: "numericInput";
+  numericInput: NumericInput;
+}
+
+export interface OntologyIrParameterRenderHint_objectDropdown {
+  type: "objectDropdown";
+  objectDropdown: OntologyIrObjectDropdown;
+}
+
+export interface OntologyIrParameterRenderHint_textInput {
+  type: "textInput";
+  textInput: TextInput;
+}
+
+export interface OntologyIrParameterRenderHint_textArea {
+  type: "textArea";
+  textArea: TextArea;
+}
+
+export interface OntologyIrParameterRenderHint_dateTimePicker {
+  type: "dateTimePicker";
+  dateTimePicker: DateTimePicker;
+}
+
+export interface OntologyIrParameterRenderHint_filePicker {
+  type: "filePicker";
+  filePicker: FilePicker;
+}
+
+export interface OntologyIrParameterRenderHint_resourcePicker {
+  type: "resourcePicker";
+  resourcePicker: ResourcePicker;
+}
+
+export interface OntologyIrParameterRenderHint_cbacMarkingPicker {
+  type: "cbacMarkingPicker";
+  cbacMarkingPicker: CbacMarkingPicker;
+}
+
+export interface OntologyIrParameterRenderHint_mandatoryMarkingPicker {
+  type: "mandatoryMarkingPicker";
+  mandatoryMarkingPicker: MandatoryMarkingPicker;
+}
+
+export interface OntologyIrParameterRenderHint_valueTypeRenderHint {
+  type: "valueTypeRenderHint";
+  valueTypeRenderHint: DelegateToValueTypeRenderHint;
+}
+
+export interface OntologyIrParameterRenderHint_markdownEditor {
+  type: "markdownEditor";
+  markdownEditor: MarkdownEditor;
+}
+/**
+ * When the parameter is tied to a value type, we will enforce the type of render hint on the front end
+ */
+export type OntologyIrParameterRenderHint =
+  | OntologyIrParameterRenderHint_dropdown
+  | OntologyIrParameterRenderHint_userDropdown
+  | OntologyIrParameterRenderHint_radio
+  | OntologyIrParameterRenderHint_checkbox
+  | OntologyIrParameterRenderHint_numericInput
+  | OntologyIrParameterRenderHint_objectDropdown
+  | OntologyIrParameterRenderHint_textInput
+  | OntologyIrParameterRenderHint_textArea
+  | OntologyIrParameterRenderHint_dateTimePicker
+  | OntologyIrParameterRenderHint_filePicker
+  | OntologyIrParameterRenderHint_resourcePicker
+  | OntologyIrParameterRenderHint_cbacMarkingPicker
+  | OntologyIrParameterRenderHint_mandatoryMarkingPicker
+  | OntologyIrParameterRenderHint_valueTypeRenderHint
+  | OntologyIrParameterRenderHint_markdownEditor;
+
 export interface OntologyIrStructFieldBaseParameterType_boolean {
   type: "boolean";
   boolean: BooleanType;
@@ -2824,6 +3445,11 @@ export interface ParameterRenderHint_numericInput {
   numericInput: NumericInput;
 }
 
+export interface ParameterRenderHint_objectDropdown {
+  type: "objectDropdown";
+  objectDropdown: ObjectDropdown;
+}
+
 export interface ParameterRenderHint_textInput {
   type: "textInput";
   textInput: TextInput;
@@ -2877,6 +3503,7 @@ export type ParameterRenderHint =
   | ParameterRenderHint_radio
   | ParameterRenderHint_checkbox
   | ParameterRenderHint_numericInput
+  | ParameterRenderHint_objectDropdown
   | ParameterRenderHint_textInput
   | ParameterRenderHint_textArea
   | ParameterRenderHint_dateTimePicker
@@ -2929,6 +3556,10 @@ export type ParameterVisibility =
   | ParameterVisibility_disabled
   | ParameterVisibility_hidden;
 
+/**
+ * PolygonType specifies a polygon.
+ */
+export interface PolygonType {}
 export interface PrimaryKeyValue_boolean {
   type: "boolean";
   boolean: BooleanValue;
@@ -2972,9 +3603,41 @@ export type PrimaryKeyValue =
   | PrimaryKeyValue_date
   | PrimaryKeyValue_timestamp;
 
+/**
+ * PrincipalType specifies that this return value must be a principal.
+ */
+export interface PrincipalType {}
 export interface Radio {
   layout?: MultipleChoiceItemLayoutOptions | null | undefined;
 }
+export interface RangeType_integer {
+  type: "integer";
+  integer: IntegerType;
+}
+
+export interface RangeType_double {
+  type: "double";
+  double: DoubleType;
+}
+
+export interface RangeType_timestamp {
+  type: "timestamp";
+  timestamp: TimestampType;
+}
+
+export interface RangeType_date {
+  type: "date";
+  date: DateType;
+}
+/**
+ * A range return type. The bound is one of the ordered primitives.
+ */
+export type RangeType =
+  | RangeType_integer
+  | RangeType_double
+  | RangeType_timestamp
+  | RangeType_date;
+
 /**
  * Side of a relation.
  */
@@ -3009,6 +3672,17 @@ export type SectionVisibility =
   | SectionVisibility_hidden;
 
 export interface SectionVisible {}
+/**
+ * ShortType specifies that this return value must be a Short.
+ */
+export interface ShortType {}
+/**
+ * A single aggregation bucket.
+ */
+export interface SingleBucketType {
+  keyType: BucketKeyType;
+  valueType: BucketValueType;
+}
 export interface SpecifiedTimezone {
   timezone: string;
 }
@@ -3204,6 +3878,12 @@ export interface StructParameterField {
 export type StructParameterFieldApiName = string;
 
 /**
+ * A struct return type. Field types are return types to support nested structs.
+ */
+export interface StructReturnType {
+  structFieldTypes: Record<StructParameterFieldApiName, ActionReturnType>;
+}
+/**
  * StructType specifies that this parameter must be a Struct.
  */
 export interface StructType {
@@ -3221,6 +3901,12 @@ export interface StructValue {
 export type TemporalUnit = "SECOND" | "MINUTE" | "HOUR" | "DAY" | "WEEK";
 export interface TextArea {}
 export interface TextInput {}
+/**
+ * A three-dimensional aggregation return type.
+ */
+export interface ThreeDimensionalAggregationType {
+  nestedBucketType: NestedBucketType;
+}
 export interface TimeDependentPropertyValue_seriesId {
   type: "seriesId";
   seriesId: _api_SeriesIdPropertyValue;
@@ -3276,6 +3962,22 @@ export interface TimeSeriesReferenceType {}
 export interface TimeSeriesReferenceValue {
   timeSeriesReference: TimeDependentPropertyValue;
 }
+export interface TimeSeriesValueType_numeric {
+  type: "numeric";
+  numeric: NumericTimeSeriesType;
+}
+
+export interface TimeSeriesValueType_enum {
+  type: "enum";
+  enum: EnumTimeSeriesType;
+}
+/**
+ * The value type of a time series return.
+ */
+export type TimeSeriesValueType =
+  | TimeSeriesValueType_numeric
+  | TimeSeriesValueType_enum;
+
 /**
  * The timezone configuration of a timestamp value
  */
@@ -3306,6 +4008,13 @@ export interface TimestampType {
  * A parameter value type that is a Timestamp.
  */
 export type TimestampValue = string;
+
+/**
+ * A two-dimensional aggregation return type.
+ */
+export interface TwoDimensionalAggregationType {
+  bucketType: SingleBucketType;
+}
 export interface UserDropdown {
   shouldRemoveListQueryAfterSelection?: boolean | null | undefined;
 }
@@ -3313,3 +4022,27 @@ export interface UserDropdown {
  * UserInput is a type used to denote the user has opted for user-inputted PKs. Object creation will be handled within Actions Service.
  */
 export interface UserInput {}
+/**
+ * UserType specifies that this return value must be a user.
+ */
+export interface UserType {}
+export interface VectorElementType_double {
+  type: "double";
+  double: DoubleType;
+}
+/**
+ * The element type of a vector return.
+ */
+export type VectorElementType = VectorElementType_double;
+
+/**
+ * A vector return type.
+ */
+export interface VectorType {
+  dimension: number;
+  elementType: VectorElementType;
+}
+/**
+ * VoidReturnType specifies that this action returns no value, mirroring a function's void output.
+ */
+export interface VoidReturnType {}
