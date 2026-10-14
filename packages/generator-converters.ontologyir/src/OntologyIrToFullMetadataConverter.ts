@@ -1502,7 +1502,13 @@ export class OntologyIrToFullMetadataConverter {
       case "mediaReference":
         return { type: "mediaReference" };
       case "vector":
-        return null;
+        return {
+          type: "vector",
+          dimension: type.vector.dimension,
+          supportsSearchWith: type.vector.supportsSearchWith.map(value => ({
+            value,
+          })),
+        };
       case "geotimeSeriesReference":
         return { type: "geotimeSeriesReference" };
       case "struct": {
