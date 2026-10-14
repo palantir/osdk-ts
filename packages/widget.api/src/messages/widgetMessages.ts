@@ -50,12 +50,19 @@ export namespace WidgetMessage {
       height: number;
     }
 
+    export type HotkeyForward = {
+      hotkey: HostMessage.Payload.HotkeyList["hotkeys"][number];
+    };
+
     export type EmitEvent<C extends WidgetConfig<C["parameters"]>> =
       EmitEventIdMap<C>[EventId<C>];
   }
 
   export type Payload<C extends WidgetConfig<C["parameters"]>> =
     | Payload.Ready
+    | Payload.Reload
+    | Payload.Resize
+    | Payload.HotkeyForward
     | Payload.EmitEvent<C>;
 
   /**
@@ -83,6 +90,14 @@ export namespace WidgetMessage {
   > {}
 
   /**
+   * Emit when the widget forwards a hotkey to the host
+   */
+  export interface HotkeyForward extends WidgetBaseMessage<
+    "widget.hotkey-forward",
+    Payload.HotkeyForward
+  > {}
+
+  /**
    * Event payload that the widget sends to the host Foundry UI
    */
   export interface EmitEvent<
@@ -94,6 +109,7 @@ export type WidgetMessage<C extends WidgetConfig<C["parameters"]>> =
   | WidgetMessage.Ready
   | WidgetMessage.Reload
   | WidgetMessage.Resize
+  | WidgetMessage.HotkeyForward
   | WidgetMessage.EmitEvent<C>;
 
 export function isWidgetReadyMessage<C extends WidgetConfig<C["parameters"]>>(
@@ -112,6 +128,12 @@ export function isWidgetResizeMessage<C extends WidgetConfig<C["parameters"]>>(
   event: WidgetMessage<C>,
 ): event is WidgetMessage.Resize {
   return event.type === "widget.resize";
+}
+
+export function isWidgetHotkeyForwardMessage<
+  C extends WidgetConfig<C["parameters"]>,
+>(event: WidgetMessage<C>): event is WidgetMessage.HotkeyForward {
+  return event.type === "widget.hotkey-forward";
 }
 
 export function isWidgetEmitEventMessage<
