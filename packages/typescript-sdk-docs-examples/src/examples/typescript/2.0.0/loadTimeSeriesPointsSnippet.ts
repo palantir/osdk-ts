@@ -20,8 +20,9 @@
 // Example: loadTimeSeriesPointsSnippet
 
 import type { Osdk } from "@osdk/client";
+
 import { type Employee } from "../../../generatedNoCheck/index.js";
 
 function getAllTimeSeriesPoints(obj: Osdk.Instance<Employee>) {
-    return obj.employeeStatus?.getAllPoints();
+  return obj.employeeStatus?.getAllPoints();
 }

@@ -19,22 +19,23 @@
 
 // Example: searchInterfacesReference (Variation: ^structSubPropertyApiName)
 
+import { type Osdk, type PageResult } from "@osdk/client";
+
 import { HasAddress } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
-import { type Osdk, type PageResult } from "@osdk/client";
 
 try {
-    const page: PageResult<Osdk<HasAddress>> = await client(HasAddress)
-        .where({
-            address: { $startsWith: "foo" }
-        })
-        .fetchPage({
-            $pageSize: 30
-        });
+  const page: PageResult<Osdk<HasAddress>> = await client(HasAddress)
+    .where({
+      address: { $startsWith: "foo" },
+    })
+    .fetchPage({
+      $pageSize: 30,
+    });
 
-    const interfaces = page.data;
-    const interface1 = interfaces[0];
+  const interfaces = page.data;
+  const interface1 = interfaces[0];
 } catch (e) {
-    throw e;
+  throw e;
 }

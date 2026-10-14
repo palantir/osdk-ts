@@ -19,14 +19,15 @@
 
 // Example: loadAllInterfacesReference
 
+import type { Osdk } from "@osdk/client";
+
 import { HasAddress } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
-import type { Osdk } from "@osdk/client";
 
 const interfaces: Osdk<HasAddress>[] = [];
 
-for await(const int of client(HasAddress).asyncIter()) {
-    interfaces.push(int);
+for await (const int of client(HasAddress).asyncIter()) {
+  interfaces.push(int);
 }
 const interface1 = interfaces[0];

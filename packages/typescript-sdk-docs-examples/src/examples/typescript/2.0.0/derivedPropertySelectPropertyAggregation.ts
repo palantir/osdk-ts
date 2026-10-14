@@ -24,7 +24,8 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 const sumEmployee = await client(Employee)
-    .withProperties({
-      "newPropertyName": (baseObjectSet) =>
-        baseObjectSet.pivotTo("lead").selectProperty("fullName")
-    }).fetchPage();
+  .withProperties({
+    newPropertyName: (baseObjectSet) =>
+      baseObjectSet.pivotTo("lead").selectProperty("fullName"),
+  })
+  .fetchPage();

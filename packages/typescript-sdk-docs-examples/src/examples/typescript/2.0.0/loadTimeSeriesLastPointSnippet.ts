@@ -20,8 +20,9 @@
 // Example: loadTimeSeriesLastPointSnippet
 
 import type { Osdk } from "@osdk/client";
+
 import { type Employee } from "../../../generatedNoCheck/index.js";
 
 function getLastTimeSeriesPoint(obj: Osdk.Instance<Employee>) {
-    return obj.employeeStatus?.getLastPoint();
+  return obj.employeeStatus?.getLastPoint();
 }

@@ -34,4 +34,3 @@
 
 // nearestNeighborsVectorQuery
 // See: ./nearestNeighborsVectorQuery.ts
-
