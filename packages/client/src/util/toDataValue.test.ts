@@ -150,10 +150,11 @@ describe(toDataValue, () => {
     });
   });
 
-  it("passes GeoJSON geometries through as objects", async () => {
-    const point: GeoJSON.Point = {
+  it("recursively converts GeoJSON geometries and foreign members", async () => {
+    const point: GeoJSON.Point & { labels: Set<string> } = {
       type: "Point",
       coordinates: [-74.0, 40.7],
+      labels: new Set(["office", "headquarters"]),
     };
     const polygon: GeoJSON.Polygon = {
       type: "Polygon",
@@ -167,7 +168,11 @@ describe(toDataValue, () => {
       ],
     };
 
-    expect(await toDataValue(point, clientCtx, "geohash")).toEqual(point);
+    expect(await toDataValue(point, clientCtx, "geohash")).toEqual({
+      type: "Point",
+      coordinates: [-74.0, 40.7],
+      labels: ["office", "headquarters"],
+    });
     expect(await toDataValue(polygon, clientCtx, "geoshape")).toEqual(polygon);
   });
 
