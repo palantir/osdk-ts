@@ -647,6 +647,7 @@ export type FieldType =
   | "geoshape"
   | "geohash"
   | "scenarioReference"
+  | "timeSeriesReference"
   | { type: "object"; object: string }
   | { type: "objectSet"; objectSet: string }
   | { type: "interface"; interface: string }
@@ -721,6 +722,7 @@ export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
                           | "geohash"
                           | "geoshape"
                           | "objectType"
+                          | "timeSeriesReference"
                       ? "UNSUPPORTED"
                       : P extends
                             | "double"

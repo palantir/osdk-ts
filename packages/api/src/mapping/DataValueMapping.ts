@@ -16,6 +16,7 @@
 
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
 import type { Media, MediaReference, MediaUpload } from "../object/Media.js";
+import type { TimeSeriesReference } from "../timeseries/timeseries.js";
 
 /**
  * Map from the DataValue type to the typescript type that we return
@@ -51,6 +52,7 @@ export interface DataValueWireToClient {
   geohash: GeoJSON.Point;
   geoshape: GeoJSON.GeoJSON;
   scenarioReference: never;
+  timeSeriesReference: TimeSeriesReference;
 }
 
 /**
@@ -80,6 +82,7 @@ export interface DataValueClientToWire {
    * avoid a circular dependency on `@osdk/client`.
    */
   scenarioReference: { getScenarioReference(): string };
+  timeSeriesReference: TimeSeriesReference;
   twoDimensionalAggregation: {
     key: AllowedBucketKeyTypes;
     value: AllowedBucketTypes;

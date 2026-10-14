@@ -306,6 +306,23 @@ function validateActionParameterType(
       return;
     }
 
+    case "timeSeriesReference": {
+      const refType = (value as { type?: unknown } | null)?.type;
+      if (
+        !value ||
+        typeof value !== "object" ||
+        (refType !== "seriesId" &&
+          refType !== "templateRid" &&
+          refType !== "qualifiedSeriesId")
+      ) {
+        ret.result = "INVALID";
+        ret.parameters[paramKey] = {
+          ...baseParam,
+        };
+      }
+      return;
+    }
+
     default: {
       const _assertNever: never = dataType;
       throw new Error(`validateDataType: unknown type`);
