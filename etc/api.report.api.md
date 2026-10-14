@@ -2431,20 +2431,15 @@ export type TimeSeriesQuery = {
 
 // @public
 export type TimeSeriesReference = {
-    	type: "seriesId"
-    	seriesId: string
+    	$seriesId: string
+    	$syncRid?: string
+    	$templateRid?: never
+    	$templateVersion?: never
 } | {
-    	type: "templateRid"
-    	templateRid: {
-        		templateRid: string
-        		templateVersion: string
-        	}
-} | {
-    	type: "qualifiedSeriesId"
-    	qualifiedSeriesId: {
-        		seriesId: string
-        		syncRid: string
-        	}
+    	$templateRid: string
+    	$templateVersion?: string
+    	$seriesId?: never
+    	$syncRid?: never
 };
 
 // @public (undocumented)

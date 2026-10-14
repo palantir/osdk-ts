@@ -196,16 +196,19 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
 
 /**
  * A reference to a time series, used as the value of a `timeSeriesReference`
- * Action parameter. The series can be identified by a raw series id, a time
- * series catalog template, or a series id qualified by a sync rid.
+ * Action parameter. The series is identified either by a series id (optionally
+ * qualified by a sync rid) or by a time series catalog template.
  */
 export type TimeSeriesReference =
-  | { type: "seriesId"; seriesId: string }
   | {
-      type: "templateRid";
-      templateRid: { templateRid: string; templateVersion: string };
+      $seriesId: string;
+      $syncRid?: string;
+      $templateRid?: never;
+      $templateVersion?: never;
     }
   | {
-      type: "qualifiedSeriesId";
-      qualifiedSeriesId: { seriesId: string; syncRid: string };
+      $templateRid: string;
+      $templateVersion?: string;
+      $seriesId?: never;
+      $syncRid?: never;
     };

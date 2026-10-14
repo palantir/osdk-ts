@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionMetadata } from "@osdk/api";
+import type { ActionMetadata, TimeSeriesReference } from "@osdk/api";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import { type DataValue } from "@osdk/foundry.ontologies";
 import * as Attachments from "@osdk/foundry.ontologies/Attachment";
@@ -135,6 +135,28 @@ export async function toDataValue(
     return value.getScenarioReference();
   }
 
+  if (isTimeSeriesReference(value)) {
+    if (value.$templateRid != null) {
+      return {
+        type: "templateRid",
+        templateRid: {
+          templateRid: value.$templateRid,
+          templateVersion: value.$templateVersion,
+        },
+      };
+    }
+    if (value.$syncRid != null) {
+      return {
+        type: "qualifiedSeriesId",
+        qualifiedSeriesId: {
+          seriesId: value.$seriesId,
+          syncRid: value.$syncRid,
+        },
+      };
+    }
+    return { type: "seriesId", seriesId: value.$seriesId };
+  }
+
   // TODO (during queries implementation)
   // two dimensional aggregation
   // three dimensional aggregation
@@ -153,4 +175,12 @@ export async function toDataValue(
 
   // expected to pass through - boolean, byte, date, decimal, float, double, integer, long, short, string, timestamp, object type reference
   return value;
+}
+
+function isTimeSeriesReference(value: unknown): value is TimeSeriesReference {
+  return (
+    typeof value === "object" &&
+    value != null &&
+    ("$seriesId" in value || "$templateRid" in value)
+  );
 }
