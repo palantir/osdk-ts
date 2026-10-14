@@ -69,8 +69,17 @@ describe("Load Ontologies Metadata", () => {
             "POST",
           ]);
           expect(new URL(requests[1].url).pathname).toMatch(/\/metadata$/);
+          const spanIds = requests.map(request =>
+            request.headers.get("X-B3-SpanId")
+          );
           for (const request of requests) {
             expect(request.headers.get("X-B3-TraceId")).toBe(traceId || null);
+            const spanId = request.headers.get("X-B3-SpanId");
+            if (traceId) {
+              expect(spanId).toMatch(/^[0-9a-f]{16}$/);
+            } else {
+              expect(spanId).toBeNull();
+            }
             expect(request.headers.get("Authorization")).toBe(
               "Bearer myAccessToken",
             );
@@ -78,6 +87,9 @@ describe("Load Ontologies Metadata", () => {
               "foundry-typescript-osdk-generator/",
             );
             expect(request.headers.has("X-B3-Sampled")).toBe(false);
+          }
+          if (traceId) {
+            expect(new Set(spanIds).size).toBe(requests.length);
           }
           expect(await requests[1].clone().json()).toMatchObject({
             objectTypes: ["Employee"],

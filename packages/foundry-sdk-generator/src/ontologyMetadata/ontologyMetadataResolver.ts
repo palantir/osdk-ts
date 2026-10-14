@@ -27,6 +27,7 @@ import type {
   QueryTypeV2,
 } from "@osdk/foundry.ontologies";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
+import { randomBytes } from "node:crypto";
 import { Result } from "./Result.js";
 
 /**
@@ -73,6 +74,12 @@ export class OntologyMetadataResolver {
 
   private getClientContext() {
     const traceId = process.env.TRACE_ID;
+    const traceHeaders = traceId
+      ? {
+        "X-B3-TraceId": traceId,
+        "X-B3-SpanId": randomBytes(8).toString("hex"),
+      }
+      : undefined;
     return createSharedClientContext(
       this.stackName.match(/^https?:\/\//)
         ? this.stackName
@@ -80,7 +87,7 @@ export class OntologyMetadataResolver {
       () => Promise.resolve(this.#authToken),
       `foundry-typescript-osdk-generator/${process.env.npm_package_version!}`,
       undefined,
-      traceId ? { "X-B3-TraceId": traceId } : undefined,
+      traceHeaders,
     );
   }
 
