@@ -4,4 +4,4 @@
 "@osdk/widget.client-react": minor
 ---
 
-Forward versioned host theme updates to widgets, automatically applying matching Blueprint CSS tokens on the widget's root div.
+Forward versioned host theme updates to widgets, automatically applying matching Blueprint CSS tokens on the widget iframe's document root, including portals.

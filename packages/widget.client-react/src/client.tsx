@@ -308,14 +308,38 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
     >
       {/* Set enabled to true here. Update theme message will only be received when the feature flag is on */}
       <BlueprintThemeProvider theme={theme} enabled={true}>
-        <BlueprintThemeContext.Consumer>
-          {(style) => (
-            <div style={style}>
-              <ErrorBoundary>{children}</ErrorBoundary>
-            </div>
-          )}
-        </BlueprintThemeContext.Consumer>
+        <FoundryWidgetDocumentTheme />
+        <ErrorBoundary>{children}</ErrorBoundary>
       </BlueprintThemeProvider>
     </FoundryWidgetContext.Provider>
   );
 };
+
+function FoundryWidgetDocumentTheme() {
+  const tokens = React.useContext(BlueprintThemeContext);
+
+  React.useLayoutEffect(() => {
+    if (tokens == null) {
+      return;
+    }
+    // Only the widget iframe is themed; host Dev Mode controls remain untouched.
+    const style = document.documentElement.style;
+    const previous = Object.entries(tokens).map(([name, value]) => {
+      const previousValue = style.getPropertyValue(name);
+      const priority = style.getPropertyPriority(name);
+      style.setProperty(name, String(value));
+      return { name, previousValue, priority };
+    });
+    return () => {
+      for (const { name, previousValue, priority } of previous) {
+        if (previousValue === "") {
+          style.removeProperty(name);
+        } else {
+          style.setProperty(name, previousValue, priority);
+        }
+      }
+    };
+  }, [tokens]);
+
+  return null;
+}
