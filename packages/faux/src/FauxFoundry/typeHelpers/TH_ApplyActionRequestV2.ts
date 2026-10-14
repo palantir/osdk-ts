@@ -24,23 +24,42 @@ import type {
   ParameterId,
 } from "@osdk/foundry.ontologies";
 
+/**
+ * The wire `DataValue` shape of a time series reference apply-action parameter.
+ * The client-facing `TimeSeriesReference` type (`$`-prefixed) is marshalled to
+ * this discriminated union by `toDataValue` before it reaches the gateway.
+ */
+type TH_TimeSeriesReference =
+  | { type: "seriesId"; seriesId: string }
+  | {
+      type: "qualifiedSeriesId";
+      qualifiedSeriesId: { seriesId: string; syncRid: string };
+    }
+  | {
+      type: "templateRid";
+      templateRid: { templateRid: string; templateVersion?: string };
+    };
+
 type TH_ActionParameterType_Primitive<X extends ActionParameterType> =
   X extends { type: "attachment" }
     ? AttachmentRid
     : X extends { type: "scenarioReference" }
       ? { scenarioRid: string }
-      : ActionParam.PrimitiveType<
-          Exclude<
-            X["type"],
-            | "object"
-            | "array"
-            | "objectSet"
-            | "interfaceObject"
-            | "attachment"
-            | "vector"
-            | "scenarioReference"
-          >
-        >;
+      : X extends { type: "timeSeriesReference" }
+        ? TH_TimeSeriesReference
+        : ActionParam.PrimitiveType<
+            Exclude<
+              X["type"],
+              | "object"
+              | "array"
+              | "objectSet"
+              | "interfaceObject"
+              | "attachment"
+              | "vector"
+              | "scenarioReference"
+              | "timeSeriesReference"
+            >
+          >;
 
 type TH_ActionParameterType<X extends ActionParameterType> = X extends {
   type: "array";
@@ -54,7 +73,9 @@ type TH_ActionParameterType<X extends ActionParameterType> = X extends {
         ? { objectTypeApiName: string; primaryKeyValue: string }
         : X extends { type: "scenarioReference" }
           ? { scenarioRid: string }
-          : TH_ActionParameterType_Primitive<X>;
+          : X extends { type: "timeSeriesReference" }
+            ? TH_TimeSeriesReference
+            : TH_ActionParameterType_Primitive<X>;
 
 type TH_Parameters<X extends Record<ParameterId, ActionParameterV2>> = {
   [K in keyof X & string as X[K]["required"] extends true
