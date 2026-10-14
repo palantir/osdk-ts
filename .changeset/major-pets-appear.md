@@ -1,5 +1,4 @@
 ---
-"@osdk/typescript-sdk-docs-examples": minor
 "@osdk/react-components-storybook": minor
 "@osdk/foundry-sdk-generator": minor
 "@osdk/generator-converters": minor
