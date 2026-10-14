@@ -217,7 +217,6 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
     parameterMap[key] = await toDataValue(
       value,
       client,
-      actionMetadata,
       actionMetadata.parameters[key].type,
     );
   }

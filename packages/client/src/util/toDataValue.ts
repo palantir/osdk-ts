@@ -45,7 +45,6 @@ import { isWireObjectSet } from "./WireObjectSet.js";
 export async function toDataValue(
   value: unknown,
   client: MinimalClient,
-  actionMetadata: ActionMetadata,
   parameterType: ActionMetadata.Parameter["type"],
 ): Promise<DataValue> {
   if (value == null) {
@@ -69,16 +68,14 @@ export async function toDataValue(
     ) {
       const converted = [];
       for (const value of values) {
-        converted.push(
-          await toDataValue(value, client, actionMetadata, parameterType),
-        );
+        converted.push(await toDataValue(value, client, parameterType));
       }
       return converted;
     }
     const promiseArray = Array.from(
       value,
       async (innerValue) =>
-        await toDataValue(innerValue, client, actionMetadata, parameterType),
+        await toDataValue(innerValue, client, parameterType),
     );
     return Promise.all(promiseArray);
   }
@@ -88,31 +85,21 @@ export async function toDataValue(
     const attachment = await Attachments.upload(client, value.data, {
       filename: value.name,
     });
-    return await toDataValue(
-      attachment.rid,
-      client,
-      actionMetadata,
-      parameterType,
-    );
+    return await toDataValue(attachment.rid, client, parameterType);
   }
 
   if (isAttachmentFile(value)) {
     const attachment = await Attachments.upload(client, value, {
       filename: value.name as string,
     });
-    return await toDataValue(
-      attachment.rid,
-      client,
-      actionMetadata,
-      parameterType,
-    );
+    return await toDataValue(attachment.rid, client, parameterType);
   }
 
   if (isMediaUpload(value)) {
     const mediaRef = await MediaSets.uploadMedia(client, value.data, {
       filename: value.fileName,
     });
-    return await toDataValue(mediaRef, client, actionMetadata, parameterType);
+    return await toDataValue(mediaRef, client, parameterType);
   }
 
   if (isMedia(value)) {
@@ -125,21 +112,11 @@ export async function toDataValue(
 
   // objects just send the JSON'd primaryKey
   if (isOntologyObjectV2(value)) {
-    return await toDataValue(
-      value.__primaryKey,
-      client,
-      actionMetadata,
-      parameterType,
-    );
+    return await toDataValue(value.__primaryKey, client, parameterType);
   }
 
   if (isObjectSpecifiersObject(value)) {
-    return await toDataValue(
-      value.$primaryKey,
-      client,
-      actionMetadata,
-      parameterType,
-    );
+    return await toDataValue(value.$primaryKey, client, parameterType);
   }
 
   // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
@@ -180,12 +157,7 @@ export async function toDataValue(
           typeof fieldDefinition === "object" && "nullable" in fieldDefinition
             ? fieldDefinition.type
             : fieldDefinition;
-        acc[key] = await toDataValue(
-          structValue,
-          client,
-          actionMetadata,
-          fieldType,
-        );
+        acc[key] = await toDataValue(structValue, client, fieldType);
         return acc;
       },
       Promise.resolve({} as { [key: string]: DataValue }),
