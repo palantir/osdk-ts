@@ -142,17 +142,23 @@ export async function toDataValue(
   // two dimensional aggregation
   // three dimensional aggregation
 
-  // struct
-  if (typeof value === "object") {
+  // GeoJSON passes through; structs need per-field conversion.
+  if (parameterType === "geohash" || parameterType === "geoshape") {
+    return value;
+  }
+
+  if (
+    typeof value === "object" &&
+    typeof parameterType === "object" &&
+    parameterType.type === "struct"
+  ) {
     return Object.entries(value).reduce(
       async (promisedAcc, [key, structValue]) => {
         const acc = await promisedAcc;
         const fieldDefinition:
           | ActionMetadata.Parameter["type"]
           | ActionMetadata.DataType.StructFieldDefinition<ActionMetadata.DataType.BaseActionParameterTypes> =
-          typeof parameterType === "object" && parameterType.type === "struct"
-            ? parameterType.struct[key]
-            : parameterType;
+          parameterType.struct[key];
         const fieldType =
           typeof fieldDefinition === "object" && "nullable" in fieldDefinition
             ? fieldDefinition.type
