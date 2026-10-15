@@ -16,7 +16,6 @@
 
 import * as fs from "fs";
 
-import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { InputPreset } from "@osdk/client.unstable/api";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import type { LinkType, ObjectType, OntologyDefinition } from "@osdk/maker";
@@ -33,7 +32,6 @@ import { convertOntologyFullMetadata } from "@osdk/maker-import";
 
 import type { BlockDataAddOn } from "../cli/marketplaceSerialization/BlockGeneratorResult.js";
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
-import type { ConvertedValueTypeBlockData } from "../conversion/toMarketplace/convertValueTypeToWireBlockData.js";
 import {
   type ExternalImportedOntologyMetadata,
   getImportedShapes,
@@ -47,6 +45,7 @@ import {
   OntologyRidGeneratorImpl,
   ReadableIdGenerator,
 } from "../util/generateRid.js";
+import type { OntologyIrV2 } from "./OntologyIrV2.js";
 
 export interface OntologyPackagingOptions {
   // EDGE packages datasource definitions for both cloud and edge. Defaults to CLOUD.
@@ -54,13 +53,7 @@ export interface OntologyPackagingOptions {
 }
 
 export interface OntologyV2Result {
-  /** The wire ontology representation. */
   ontologyIr: OntologyIrV2;
-  /**
-   * Locally produced value type blocks with the dependencies needed to generate their Marketplace
-   * inputs and recommendations.
-   */
-  valueTypeBlocks: ConvertedValueTypeBlockData[];
   importedTypes: OntologyDefinition;
   shapes: BlockShapes;
   blockDataAddOn: BlockDataAddOn;
@@ -128,7 +121,7 @@ export async function defineOntologyV2(
     importedTypes,
     randomnessKey,
   );
-  const { ontologyIr, valueTypeBlocks } = convertOntologyDefinition(
+  const ontologyIr = convertOntologyDefinition(
     ontologyDefinition,
     ridGenerator,
     functionsIr,
@@ -229,7 +222,6 @@ export async function defineOntologyV2(
 
   return {
     ontologyIr,
-    valueTypeBlocks,
     importedTypes,
     shapes,
     blockDataAddOn,

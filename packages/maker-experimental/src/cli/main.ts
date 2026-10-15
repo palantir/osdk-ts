@@ -309,7 +309,6 @@ export default async function main(
 
   const {
     ontologyIr,
-    valueTypeBlocks,
     importedTypes,
     shapes,
     blockDataAddOn,
@@ -376,7 +375,7 @@ export default async function main(
   let valueTypeResults: BlockGeneratorResult[] = [];
   if (ontologyIr.valueTypes.length > 0) {
     valueTypeResults = await generateValueTypeBlockResults(
-      valueTypeBlocks,
+      ontologyIr.valueTypes,
       commandLineOpts.buildDir,
       commandLineOpts.randomnessKey,
     );
@@ -492,8 +491,11 @@ export default async function main(
     }
   }
 
+  const producedValueTypes = ontologyIr.valueTypes.map(
+    ({ blockData }) => blockData,
+  );
   ontologyInputMappingEntries.push(
-    ...getValueTypeInternalMappings(ontologyIr.valueTypes, shapes.inputShapes),
+    ...getValueTypeInternalMappings(producedValueTypes, shapes.inputShapes),
   );
 
   // Generate backing datasource BlockGeneratorResults for objects with includeEmptyBackingDatasource
@@ -571,7 +573,7 @@ export default async function main(
     input_mapping_entries: ontologyInputMappingEntries,
     external_recommendations: getExternalRecommendations(
       ontologyIr.importedOntology,
-      ontologyIr.valueTypes,
+      producedValueTypes,
       importedTypes,
       shapes.inputShapes,
     ),

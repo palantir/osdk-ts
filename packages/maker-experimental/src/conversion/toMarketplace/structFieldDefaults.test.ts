@@ -52,7 +52,7 @@ describe("struct field defaults", () => {
       const metadata = convertOntologyDefinition(
         getOntologyDefinition(),
         ridGenerator,
-      ).ontologyIr.ontology;
+      ).ontology;
       const validations = Object.values(metadata.actionTypes)[0].actionType
         .actionTypeLogic.validation.parameterValidations;
       const objectMetadata = Object.values(metadata.objectTypes)[0].objectType;

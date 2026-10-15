@@ -14,24 +14,14 @@
  * limitations under the License.
  */
 
-import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { InterfaceType, OntologyDefinition } from "@osdk/maker";
 import { getImportedTypes } from "@osdk/maker";
 
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
+import type { OntologyIrV2 } from "../../api/OntologyIrV2.js";
 import { OntologyRidGeneratorImpl } from "../../util/generateRid.js";
 import { convertOntologyDefinitionToWireBlockData } from "./convertOntologyDefinitionToWireBlockData.js";
-import {
-  type ConvertedValueTypeBlockData,
-  convertValueTypeToWireBlockData,
-} from "./convertValueTypeToWireBlockData.js";
-
-export interface ConvertedOntologyDefinition {
-  /** The complete wire representation of the wire block. */
-  ontologyIr: OntologyIrV2;
-  /** Locally produced value type block data and its dependencies. */
-  valueTypeBlocks: ConvertedValueTypeBlockData[];
-}
+import { convertValueTypeToWireBlockData } from "./convertValueTypeToWireBlockData.js";
 
 export function convertOntologyDefinition(
   ontology: OntologyDefinition,
@@ -39,7 +29,7 @@ export function convertOntologyDefinition(
   functionsIr?: FunctionsIr,
   randomnessKey?: string,
   packageForEdge = false,
-): ConvertedOntologyDefinition {
+): OntologyIrV2 {
   const importedTypes = getImportedTypes();
   const allOntologies = [ontology, importedTypes];
   const mainOntology = convertOntologyDefinitionToWireBlockData(
@@ -105,26 +95,20 @@ export function convertOntologyDefinition(
     throwawayRidGenerator,
   );
 
-  const valueTypeBlocks = convertValueTypeToWireBlockData(
-    ontology,
-    ridGenerator,
-  );
+  const valueTypes = convertValueTypeToWireBlockData(ontology, ridGenerator);
   const importedValueTypeBlocks = convertValueTypeToWireBlockData(
     importedTypes,
     ridGenerator,
   );
 
   return {
-    ontologyIr: {
-      ontology: mainOntology,
-      importedOntology,
-      transitiveImportedOntology,
-      valueTypes: valueTypeBlocks.map(({ blockData }) => blockData),
-      importedValueTypes: importedValueTypeBlocks.map(
-        ({ blockData }) => blockData,
-      ),
-      randomnessKey,
-    },
-    valueTypeBlocks,
+    ontology: mainOntology,
+    importedOntology,
+    transitiveImportedOntology,
+    valueTypes,
+    importedValueTypes: importedValueTypeBlocks.map(
+      ({ blockData }) => blockData,
+    ),
+    randomnessKey,
   };
 }

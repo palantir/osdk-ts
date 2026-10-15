@@ -35,13 +35,16 @@ import { convertValueType } from "./convertValueType.js";
 export interface ValueTypeDependency {
   /** The temporary identity written into the wire constraint. */
   reference: ValueTypeDataConstraintReference;
-  /** The authored (or imported) target, retained to help to construct block shape inputs. */
-  target: ValueTypeDefinitionVersion;
-  /** The base type expected by the field that consumes the target, also needed to construct block shape inputs */
+  /** Target metadata used for input shapes and upstream package recommendations. */
+  target: Pick<
+    ValueTypeDefinitionVersion,
+    "apiName" | "version" | "displayMetadata" | "packageNamespace"
+  >;
+  /** The base type expected by the consuming field. */
   baseType: BaseType;
 }
 
-export interface ConvertedValueTypeBlockData {
+export interface ValueTypeBlockDataWithDependencies {
   blockData: ValueTypeBlockData;
   dependencies: ValueTypeDependency[];
 }
@@ -49,9 +52,9 @@ export interface ConvertedValueTypeBlockData {
 export function convertValueTypeToWireBlockData(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGenerator,
-): ConvertedValueTypeBlockData[] {
+): ValueTypeBlockDataWithDependencies[] {
   return Object.values(ontology[OntologyEntityTypeEnum.VALUE_TYPE]).map(
-    (definitions): ConvertedValueTypeBlockData => {
+    (definitions): ValueTypeBlockDataWithDependencies => {
       const latestVersion = getLatestVersion(definitions);
       const convertedVersions = Array.from(
         new Map(
@@ -268,7 +271,16 @@ function convertConstraintWithDependencies(
         return {
           field,
           reference,
-          dependency: { reference, target: valueType, baseType: fieldType },
+          dependency: {
+            reference,
+            target: {
+              apiName: valueType.apiName,
+              version: valueType.version,
+              displayMetadata: valueType.displayMetadata,
+              packageNamespace: valueType.packageNamespace,
+            },
+            baseType: fieldType,
+          },
         };
       });
       return {

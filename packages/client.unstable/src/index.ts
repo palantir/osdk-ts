@@ -94,7 +94,6 @@ export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVe
 export type {
   OntologyIr,
   OntologyIrOntologyBlockDataV2,
-  OntologyIrV2,
 } from "./blockDataIr.js";
 
 export type {

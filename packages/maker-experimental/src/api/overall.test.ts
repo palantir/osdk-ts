@@ -1280,10 +1280,11 @@ describe("Experimental Test Suite", () => {
     });
 
     const classifiedRecord = result.ontologyIr.valueTypes.find(
-      (valueType) => valueType.metadata.apiName === "classifiedRecord",
+      ({ blockData }) => blockData.metadata.apiName === "classifiedRecord",
     );
     const constraint =
-      classifiedRecord?.versions[0].constraints[0]?.constraint.constraint;
+      classifiedRecord?.blockData.versions[0].constraints[0]?.constraint
+        .constraint;
     invariant(
       constraint?.type === "structV2",
       "Struct value type constraint is missing",
@@ -1294,10 +1295,7 @@ describe("Experimental Test Suite", () => {
       versionId: expect.any(String),
     });
 
-    const convertedBlock = result.valueTypeBlocks.find(
-      ({ blockData }) => blockData.metadata.apiName === "classifiedRecord",
-    );
-    expect(convertedBlock?.dependencies).toMatchObject([
+    expect(classifiedRecord?.dependencies).toMatchObject([
       {
         reference: constraint.structV2.elementConstraints.classification,
         target: { apiName: "classification", version: "1.0.0" },
@@ -1346,10 +1344,11 @@ describe("Experimental Test Suite", () => {
     });
 
     const classifiedRecords = result.ontologyIr.valueTypes.find(
-      (valueType) => valueType.metadata.apiName === "classifiedRecords",
+      ({ blockData }) => blockData.metadata.apiName === "classifiedRecords",
     );
     const constraint =
-      classifiedRecords?.versions[0].constraints[0]?.constraint.constraint;
+      classifiedRecords?.blockData.versions[0].constraints[0]?.constraint
+        .constraint;
     invariant(
       constraint?.type === "array" &&
         constraint.array.elementsConstraint?.type === "structV2",

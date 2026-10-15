@@ -21,7 +21,7 @@ import type { ValueTypeBlockData } from "@osdk/client.unstable";
 import type { InputShape, OutputShape } from "@osdk/client.unstable/api";
 
 import type {
-  ConvertedValueTypeBlockData,
+  ValueTypeBlockDataWithDependencies,
   ValueTypeDependency,
 } from "../conversion/toMarketplace/convertValueTypeToWireBlockData.js";
 import { typeToMarketplaceBaseType } from "../conversion/toMarketplace/typeVisitors.js";
@@ -39,7 +39,7 @@ import type {
  * Port of Java's ValueTypesBlockGenerator.
  */
 export async function generateValueTypeBlockResults(
-  valueTypeBlocks: ConvertedValueTypeBlockData[],
+  valueTypeBlocks: ValueTypeBlockDataWithDependencies[],
   buildDir: string,
   randomnessKey: string | undefined,
 ): Promise<BlockGeneratorResult[]> {
@@ -212,8 +212,6 @@ function buildExternalRecommendations(
     if (producedValueTypes.has(valueTypeKey(target.apiName, target.version))) {
       continue;
     }
-    // Now we know the value type dependency isn't defined locally so
-    // "target" here refers to the imported ValueTypeDefinitionVersion
     const consumedId = ReadableIdGenerator.getForConsumedValueType(
       target.apiName,
       target.version,

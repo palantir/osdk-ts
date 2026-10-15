@@ -25,7 +25,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { defineOntologyV2 } from "../api/defineOntologyV2.js";
 import type {
-  ConvertedValueTypeBlockData,
+  ValueTypeBlockDataWithDependencies,
   ValueTypeDependency,
 } from "../conversion/toMarketplace/convertValueTypeToWireBlockData.js";
 import { simulatePackageDependency } from "../testUtils/simulatePackageDependency.js";
@@ -60,7 +60,7 @@ function makeEntry(apiName: string, versions: string[]): ValueTypeBlockData {
 function converted(
   blockData: ValueTypeBlockData,
   dependencies: ValueTypeDependency[] = [],
-): ConvertedValueTypeBlockData {
+): ValueTypeBlockDataWithDependencies {
   return { blockData, dependencies };
 }
 
@@ -77,9 +77,9 @@ function defineStringValueType(
 }
 
 function getConvertedBlock(
-  blocks: ConvertedValueTypeBlockData[],
+  blocks: ValueTypeBlockDataWithDependencies[],
   apiName: string,
-): ConvertedValueTypeBlockData {
+): ValueTypeBlockDataWithDependencies {
   const block = blocks.find(
     ({ blockData }) => blockData.metadata.apiName === apiName,
   );
@@ -223,7 +223,7 @@ describe("generateValueTypeBlockResults", () => {
         randomnessKey,
       );
       const convertedBlock = getConvertedBlock(
-        authored.valueTypeBlocks,
+        authored.ontologyIr.valueTypes,
         "classifiedRecords",
       );
       expect(convertedBlock.dependencies).toHaveLength(1);
@@ -235,7 +235,7 @@ describe("generateValueTypeBlockResults", () => {
       }
 
       const results = await generateValueTypeBlockResults(
-        authored.valueTypeBlocks,
+        authored.ontologyIr.valueTypes,
         buildDir,
         randomnessKey,
       );
@@ -292,7 +292,7 @@ describe("generateValueTypeBlockResults", () => {
     });
 
     const classifiedAddress = getConvertedBlock(
-      authored.valueTypeBlocks,
+      authored.ontologyIr.valueTypes,
       "classifiedAddress",
     );
     const versionIds = classifiedAddress.dependencies.map(
@@ -301,7 +301,7 @@ describe("generateValueTypeBlockResults", () => {
     expect(new Set(versionIds).size).toBe(2);
 
     const results = await generateValueTypeBlockResults(
-      authored.valueTypeBlocks,
+      authored.ontologyIr.valueTypes,
       buildDir,
       undefined,
     );
@@ -353,7 +353,7 @@ describe("generateValueTypeBlockResults", () => {
       });
     });
     const convertedBlock = getConvertedBlock(
-      authored.valueTypeBlocks,
+      authored.ontologyIr.valueTypes,
       "classifiedPair",
     );
     expect(convertedBlock.dependencies).toHaveLength(2);
@@ -363,7 +363,7 @@ describe("generateValueTypeBlockResults", () => {
     }
 
     const results = await generateValueTypeBlockResults(
-      authored.valueTypeBlocks,
+      authored.ontologyIr.valueTypes,
       buildDir,
       undefined,
     );
@@ -416,7 +416,7 @@ describe("generateValueTypeBlockResults", () => {
     );
 
     const [result] = await generateValueTypeBlockResults(
-      downstream.valueTypeBlocks,
+      downstream.ontologyIr.valueTypes,
       buildDir,
       undefined,
     );
