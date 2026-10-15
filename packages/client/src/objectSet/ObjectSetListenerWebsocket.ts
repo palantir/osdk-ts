@@ -44,6 +44,7 @@ import {
 import { constructWebsocketUrl, nextUuid } from "./websocketUtils.js";
 
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
+const MAX_AUTHENTICATION_RETRIES = 3;
 
 /** Noop function to reduce conditional checks */
 function doNothing() {}
@@ -106,6 +107,7 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
   }
 
   #endedSubscriptions = new Set<string>();
+  #authenticationRetries = 0;
 
   // DO NOT CONSTRUCT DIRECTLY. ONLY EXPOSED AS A TESTING SEAM
   constructor(
@@ -162,6 +164,10 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
 
   protected override onSubscriptionEnded(sub: Subscription<any, any>): void {
     this.#endedSubscriptions.add(sub.subscriptionId);
+  }
+
+  protected override reconnect(): void {
+    void this.ensureWebsocket().catch((error) => this.#failAll(error));
   }
 
   async subscribe<
@@ -222,7 +228,9 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
       loadRids: shouldLoadRids,
     };
 
+    if (this.subscriptions.size === 0) this.#authenticationRetries = 0;
     this.subscriptions.set(sub.subscriptionId, sub);
+    this.cancelIdleDisconnect();
 
     // actually prepares the subscription, ensures the ws is ready, and sends
     // a subscribe message. We don't want to block on this.
@@ -261,7 +269,9 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
       loadRids: shouldLoadRids,
     };
 
+    if (this.subscriptions.size === 0) this.#authenticationRetries = 0;
     this.subscriptions.set(sub.subscriptionId, sub);
+    this.cancelIdleDisconnect();
 
     void this.#initiateSubscribe(sub);
 
@@ -298,8 +308,10 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
         this.sendSubscribeMessage();
       }
     } catch (error) {
+      if (isSubscriptionDone(sub)) return;
       this.logger?.error(error, "Error in #initiateSubscribe");
       this.#tryCatchOnError(sub, true, error);
+      this.endSubscription(sub, "error");
     }
   }
 
@@ -331,6 +343,7 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
   }
 
   #handleMessage_objectSetChanged = async (payload: ObjectSetUpdates) => {
+    const connection = this.ws;
     const sub = this.subscriptions.get(payload.id);
     if (sub == null) return;
 
@@ -373,6 +386,7 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
       }),
     );
 
+    if (this.ws !== connection) return;
     for (const update of osdkObjectsWithReferenceUpdates) {
       if (update != null) {
         try {
@@ -426,6 +440,7 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
       }),
     );
 
+    if (this.ws !== connection) return;
     for (const osdkObject of osdkObjects) {
       if (osdkObject != null) {
         try {
@@ -470,12 +485,43 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
     const { id, responses } = payload;
 
     const subs = this.pendingSubscriptions.get(id);
-    invariant(subs, `should have a pending subscription for ${id}`);
+    if (subs == null) return;
     this.pendingSubscriptions.delete(id);
+
+    // Inspect the entire batch before changing subscription state. A success in
+    // the same batch as an authentication failure must not reset the retry
+    // budget or establish subscriptions on the connection we are discarding.
+    const unauthorized = responses.find(
+      (response, index) =>
+        subs[index] != null &&
+        !isSubscriptionDone(subs[index]) &&
+        response.type === "error" &&
+        response.errors.some(isUnauthorized),
+    );
+    if (unauthorized?.type === "error") {
+      this.disconnectWebsocket();
+      // Unrelated subscription errors remain terminal, even in a mixed batch.
+      for (let i = 0; i < responses.length; i++) {
+        const sub = subs[i];
+        const response = responses[i];
+        if (
+          sub != null &&
+          !isSubscriptionDone(sub) &&
+          response.type === "error" &&
+          !response.errors.some(isUnauthorized)
+        ) {
+          this.#tryCatchOnError(sub, true, response.errors);
+          this.endSubscription(sub, "error");
+        }
+      }
+      this.#recoverAuthentication(unauthorized.errors);
+      return;
+    }
 
     for (let i = 0; i < responses.length; i++) {
       const sub = subs[i];
       const response = responses[i];
+      if (sub == null || isSubscriptionDone(sub)) continue;
 
       switch (response.type) {
         case "error":
@@ -486,9 +532,10 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
         case "qos":
           // the server has requested that we tear down our websocket and reconnect to help load balance
           this.cycleWebsocket();
-          break;
+          return;
 
         case "success":
+          this.#authenticationRetries = 0;
           // `"preparing"` should only be the status on an initial subscribe.
           const shouldFireOutOfDate =
             sub.status === "expired" || sub.status === "reconnecting";
@@ -524,8 +571,35 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
     const sub = this.subscriptions.get(payload.id);
     if (sub == null && this.#endedSubscriptions.has(payload.id)) return;
     invariant(sub, `Expected subscription id ${payload.id}`);
+    if (payload.cause.type === "error" && isUnauthorized(payload.cause)) {
+      this.#recoverAuthentication(payload.cause);
+      return;
+    }
     this.#tryCatchOnError(sub, true, payload.cause);
     this.endSubscription(sub, "error");
+  }
+
+  #recoverAuthentication(error: unknown): void {
+    // Opening a WebSocket does not mean that its token was accepted for
+    // subscriptions. Only a successful subscription resets this retry budget.
+    if (this.#authenticationRetries >= MAX_AUTHENTICATION_RETRIES) {
+      this.#failAll(error);
+      return;
+    }
+    this.#authenticationRetries++;
+    this.cycleWebsocket();
+  }
+
+  #failAll(error: unknown): void {
+    this.disconnectWebsocket();
+    this.#authenticationRetries = 0;
+    // Error callbacks may add subscriptions; only terminate the original set.
+    const subscriptions = [...this.subscriptions.values()];
+    for (const sub of subscriptions) {
+      if (isSubscriptionDone(sub)) continue;
+      this.#tryCatchOnError(sub, true, error);
+      this.endSubscription(sub, "error");
+    }
   }
 
   #tryCatchOnError = (
@@ -556,4 +630,8 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
       }
     }
   };
+}
+
+function isUnauthorized(error: { error: string }): boolean {
+  return error.error === "Default:Unauthorized";
 }
