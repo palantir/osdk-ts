@@ -83,6 +83,27 @@ beforeEach(() => {
 describe("CbacPicker", () => {
   afterEach(cleanup);
 
+  it.each([undefined, false, true, 200])(
+    "passes autoFetchMore=%s to both catalogue hooks",
+    (autoFetchMore) => {
+      render(
+        <CbacPicker
+          onChange={vi.fn()}
+          autoFetchMore={autoFetchMore}
+          includeDeleted={false}
+        />,
+      );
+      expect(useMarkings).toHaveBeenCalledWith({
+        autoFetchMore,
+        includeDeleted: false,
+      });
+      expect(useMarkingCategories).toHaveBeenCalledWith({
+        autoFetchMore,
+        includeDeleted: false,
+      });
+    },
+  );
+
   it("fires onChange with the updated selection when a marking is toggled", () => {
     const onChange = vi.fn();
     render(<CbacPicker onChange={onChange} />);
@@ -94,9 +115,11 @@ describe("CbacPicker", () => {
   it("defers the includeDeleted default to the hooks", () => {
     render(<CbacPicker onChange={vi.fn()} />);
     expect(useMarkingCategories).toHaveBeenLastCalledWith({
+      autoFetchMore: undefined,
       includeDeleted: undefined,
     });
     expect(useMarkings).toHaveBeenLastCalledWith({
+      autoFetchMore: undefined,
       includeDeleted: undefined,
     });
   });
@@ -104,9 +127,13 @@ describe("CbacPicker", () => {
   it("excludes deleted markings and categories when includeDeleted is false", () => {
     render(<CbacPicker onChange={vi.fn()} includeDeleted={false} />);
     expect(useMarkingCategories).toHaveBeenLastCalledWith({
+      autoFetchMore: undefined,
       includeDeleted: false,
     });
-    expect(useMarkings).toHaveBeenLastCalledWith({ includeDeleted: false });
+    expect(useMarkings).toHaveBeenLastCalledWith({
+      autoFetchMore: undefined,
+      includeDeleted: false,
+    });
   });
 
   it("does not change the selection when readOnly", () => {

@@ -51,9 +51,10 @@ export function UserProfile({ userId }: { userId: string }) {
   const { user, isLoading, error } = useFoundryUser(userId);
 
   if (error != null) {
-    const errorMessage = error instanceof PalantirApiError
-      ? error.errorDescription
-      : error.message;
+    const errorMessage =
+      error instanceof PalantirApiError
+        ? error.errorDescription
+        : error.message;
 
     return <div>Failed to load user: {errorMessage}</div>;
   }
@@ -104,9 +105,10 @@ export function CurrentUserBadge() {
   const { currentUser, isLoading, error } = useCurrentFoundryUser();
 
   if (error != null) {
-    const errorMessage = error instanceof PalantirApiError
-      ? error.errorDescription
-      : error.message;
+    const errorMessage =
+      error instanceof PalantirApiError
+        ? error.errorDescription
+        : error.message;
 
     return <div>Failed to load current user: {errorMessage}</div>;
   }
@@ -147,9 +149,10 @@ export function UsersList() {
   const { users, isLoading, error } = useFoundryUsersList();
 
   if (error != null) {
-    const errorMessage = error instanceof PalantirApiError
-      ? error.errorDescription
-      : error.message;
+    const errorMessage =
+      error instanceof PalantirApiError
+        ? error.errorDescription
+        : error.message;
 
     return <div>Failed to load user list: {errorMessage}</div>;
   }
@@ -160,9 +163,7 @@ export function UsersList() {
       {users && (
         <ul>
           {users.map((user) => (
-            <li key={user.id}>
-              {user.username}
-            </li>
+            <li key={user.id}>{user.username}</li>
           ))}
         </ul>
       )}
@@ -202,9 +203,10 @@ export function UsersList() {
   });
 
   if (error != null) {
-    const errorMessage = error instanceof PalantirApiError
-      ? error.errorDescription
-      : error.message;
+    const errorMessage =
+      error instanceof PalantirApiError
+        ? error.errorDescription
+        : error.message;
 
     return <div>Failed to load users: {errorMessage}</div>;
   }
@@ -215,7 +217,9 @@ export function UsersList() {
       {users && (
         <>
           <ul>
-            {users.map((user) => <li key={user.id}>{user.username}</li>)}
+            {users.map((user) => (
+              <li key={user.id}>{user.username}</li>
+            ))}
           </ul>
 
           {nextPageToken && (
@@ -232,3 +236,80 @@ export function UsersList() {
   );
 }
 ```
+
+---
+
+## useMarkings and useMarkingCategories
+
+`useMarkings` returns markings in `markings`; `useMarkingCategories` returns
+categories in `categories`. Both fetch the first page by default and expose the
+same pagination controls as `useOsdkObjects` and `useObjectSet`.
+
+### Options
+
+- `enabled`: Enable automatic fetching (default: `true`).
+- `includeDeleted`: Include deleted markings and categories (default: `true`).
+- `pageSize`: Preferred items per page (default: `100`).
+- `autoFetchMore`: `true` loads all pages; a number loads until at least that many
+  items are available or no pages remain. `false` or `undefined` loads one page
+  and leaves subsequent pages to `fetchMore()` (default: `undefined`).
+
+### Manual pagination
+
+```tsx
+import { useMarkings } from "@osdk/react/platform-apis";
+
+export function MarkingsList() {
+  const { markings, isLoading, error, fetchMore, hasMore, refetch } =
+    useMarkings({
+      pageSize: 25,
+    });
+
+  return (
+    <div>
+      {isLoading && <span>Loading markings...</span>}
+      {error && <button onClick={refetch}>Retry from the first page</button>}
+      <ul>
+        {markings?.map((marking) => (
+          <li key={marking.id}>{marking.name}</li>
+        ))}
+      </ul>
+      {hasMore && (
+        <button disabled={isLoading} onClick={() => void fetchMore?.()}>
+          Load more
+        </button>
+      )}
+    </div>
+  );
+}
+```
+
+`fetchMore()` appends the next page in API response order. Concurrent calls on the
+same hook instance share the pending request. `fetchMore` becomes undefined when
+there are no more pages; `hasMore` indicates that the server returned a continuation
+token. Check loading and errors as well as `hasMore` before treating data as complete.
+
+### Automatic pagination
+
+```tsx
+const { markings, isLoading, error, hasMore } = useMarkings({
+  autoFetchMore: true,
+});
+const { categories } = useMarkingCategories({ autoFetchMore: 200 });
+```
+
+Automatic pagination follows continuation tokens even after short or empty pages.
+A numeric target is a minimum, so the last page can take the list above that count.
+`isLoading` stays true until the target is reached, the catalogue is exhausted, or
+an error occurs. Loaded pages remain available during loading and errors. A failed
+page sets `error` and ends loading; it does not mark the catalogue complete.
+`fetchMore()` can retry that page. Repeated tokens and cycles report an error.
+
+`refetch()` clears the list and error and starts again from the first page, using
+the current automatic-fetch setting. Changing the client, `includeDeleted`, `pageSize`, or
+`autoFetchMore` also starts a new traversal. Superseded requests cannot replace the
+current result. Disabling the hook stops automatic continuation.
+
+Large catalogues require multiple sequential requests per hook. Separate mounts
+fetch independently; shared in-flight requests and a catalogue cache remain
+separate work.
