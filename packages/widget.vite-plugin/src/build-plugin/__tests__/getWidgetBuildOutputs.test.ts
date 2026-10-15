@@ -28,7 +28,9 @@ vi.mock("../../common/extractWidgetConfig.js");
 const MOCK_BUILD_DIR = "/build";
 const MOCK_INPUT = "index.html";
 const MOCK_WIDGET_ID = "widget-id";
-const MOCK_SERVER = {} as ViteDevServer;
+const MOCK_SERVER = {
+  config: { root: process.cwd(), base: "/" },
+} as ViteDevServer;
 
 beforeEach(() => {
   vi.clearAllMocks();
