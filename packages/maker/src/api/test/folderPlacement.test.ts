@@ -111,12 +111,11 @@ describe("folder placement", () => {
 
   describe.each(entityFactories)("$name", ({ define }) => {
     it.each(["a//b/", "/", ""])(
-      "normalizes %s and serializes publicProject permissions",
+      "preserves folder %s and serializes publicProject permissions",
       (folder) => {
         const entity = define({ folder, permission: "publicProject" });
-        const expectedFolder = folder === "a//b/" ? "/a/b" : "/";
         expect(entity).toMatchObject({
-          folder: expectedFolder,
+          folder,
           permission: "publicProject",
         });
         const registeredEntities = Object.values(getOntologyDefinition())
@@ -125,7 +124,7 @@ describe("folder placement", () => {
         expect(registeredEntities).toContainEqual(
           expect.objectContaining({
             apiName: entity.apiName,
-            folder: expectedFolder,
+            folder,
             permission: "publicProject",
           }),
         );
@@ -142,7 +141,7 @@ describe("folder placement", () => {
       expect(
         define({ folder: "a", permission: "publicProject" }),
       ).toMatchObject({
-        folder: "/a",
+        folder: "a",
         permission: "publicProject",
       });
     });
@@ -150,25 +149,26 @@ describe("folder placement", () => {
     it.each<EntityPermission>([
       "roles",
       { type: "ontologyPackage", ontologyPackageRid: "ri.ontology..package" },
-    ])("rejects incompatible permission %j", (permission) => {
-      expect(() => define({ folder: "/", permission })).toThrow(
-        'folder placement requires permission to be explicitly set to "publicProject"',
-      );
+    ])("preserves permission %j for experimental conversion", (permission) => {
+      expect(define({ folder: "/", permission })).toMatchObject({
+        folder: "/",
+        permission,
+      });
     });
 
     it.each(["", "/", "/a/b"])(
-      "rejects %j without explicit permission",
+      "preserves %j without defaulting permission",
       (folder) => {
-        expect(() => define({ folder })).toThrow(
-          'folder placement requires permission to be explicitly set to "publicProject"',
-        );
+        const entity = define({ folder });
+        expect(entity.folder).toBe(folder);
+        expect(entity.permission).toBeUndefined();
       },
     );
 
-    it("rejects traversal", () => {
-      expect(() =>
-        define({ folder: "a/../b", permission: "publicProject" }),
-      ).toThrow('folder must not contain "." or ".." path segments');
+    it("retains un-validated paths for experimental conversion", () => {
+      expect(
+        define({ folder: "a/../b", permission: "publicProject" }).folder,
+      ).toBe("a/../b");
     });
 
     it.each([undefined, "roles"] as const)(
@@ -188,14 +188,14 @@ describe("folder placement", () => {
       folder: "a//b/",
     });
     expect(defineObject(input)).toMatchObject({
-      folder: "/a/b",
+      folder: "a//b/",
       permission: "publicProject",
     });
     expect(input.folder).toBe("a//b/");
     expect(input.permission).toBe("publicProject");
   });
 
-  it("normalizes value types without introducing ontology permissions", () => {
+  it("preserves value type placement without introducing ontology permissions", () => {
     const input = Object.freeze({
       apiName: "Name",
       displayName: "Name",
@@ -204,17 +204,17 @@ describe("folder placement", () => {
       folder: "a//b/",
     });
     const valueType = defineValueType(input);
-    expect(valueType.folder).toBe("/a/b");
+    expect(valueType.folder).toBe("a//b/");
     expect(valueType).not.toHaveProperty("permission");
     expect(getOntologyDefinition().VALUE_TYPE.Name).toEqual([valueType]);
     expect(input.folder).toBe("a//b/");
-    expect(() =>
+    expect(
       defineValueType({
         ...input,
         version: "2.0.0",
         folder: "a/./b",
       }),
-    ).toThrow('folder must not contain "." or ".." path segments');
+    ).toMatchObject({ folder: "a/./b" });
   });
 
   it.each([
@@ -222,7 +222,7 @@ describe("folder placement", () => {
     defineCreateOrModifyObjectAction,
     defineModifyObjectAction,
     defineDeleteObjectAction,
-  ])("%s validates placement independently of its object", (define) => {
+  ])("%s preserves placement independently of its object", (define) => {
     const objectType = defineObject({
       ...objectDefinition,
       permission: "publicProject",
@@ -234,19 +234,17 @@ describe("folder placement", () => {
       folder: "actions//people/",
     });
     expect(action).toMatchObject({
-      folder: "/actions/people",
+      folder: "actions//people/",
       permission: "publicProject",
     });
-    expect(() =>
+    expect(
       define({
         apiName: "incompatible-action",
         objectType,
         folder: "/actions",
         permission: "roles",
       }),
-    ).toThrow(
-      'folder placement requires permission to be explicitly set to "publicProject"',
-    );
+    ).toMatchObject({ folder: "/actions", permission: "roles" });
     expect(
       define({ apiName: "root-action", objectType }).folder,
     ).toBeUndefined();
@@ -256,7 +254,7 @@ describe("folder placement", () => {
     defineCreateInterfaceObjectAction,
     defineModifyInterfaceObjectAction,
     defineDeleteInterfaceObjectAction,
-  ])("%s validates placement independently of its interface", (define) => {
+  ])("%s preserves placement independently of its interface", (define) => {
     const interfaceType = defineInterface({
       apiName: "Person",
       permission: "publicProject",
@@ -269,23 +267,21 @@ describe("folder placement", () => {
         folder: "actions//people/",
       }),
     ).toMatchObject({
-      folder: "/actions/people",
+      folder: "actions//people/",
       permission: "publicProject",
     });
-    expect(() =>
+    expect(
       define({
         apiName: "incompatible-action",
         interfaceType,
         folder: "/actions",
         permission: "roles",
       }),
-    ).toThrow(
-      'folder placement requires permission to be explicitly set to "publicProject"',
-    );
+    ).toMatchObject({ folder: "/actions", permission: "roles" });
   });
 
   it.each([defineCreateInterfaceLinkAction, defineDeleteInterfaceLinkAction])(
-    "%s validates placement",
+    "%s preserves placement",
     (define) => {
       const person = defineInterface({ apiName: "Person" });
       const company = defineInterface({ apiName: "Company" });
@@ -301,19 +297,17 @@ describe("folder placement", () => {
           folder: "actions//links/",
         }),
       ).toMatchObject({
-        folder: "/actions/links",
+        folder: "actions//links/",
         permission: "publicProject",
       });
-      expect(() =>
+      expect(
         define({
           apiName: "incompatible-action",
           interfaceLink,
           folder: "/actions",
           permission: "roles",
         }),
-      ).toThrow(
-        'folder placement requires permission to be explicitly set to "publicProject"',
-      );
+      ).toMatchObject({ folder: "/actions", permission: "roles" });
     },
   );
 });

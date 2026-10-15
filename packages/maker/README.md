@@ -29,13 +29,13 @@ npm install @osdk/maker
 
 Ontology entity definitions accept an optional `folder: string`, including objects, interfaces, actions, links, shared property types, and value types. Action helpers also accept this option, including function-backed actions in `@osdk/maker-experimental`.
 
-The path is relative to the installation root: `folder: "/a/b"` describes nested folders `a` and `b`, while omitting `folder` or using `""` or `"/"` denotes the installation root. Maker normalizes `""` to `"/"` and `"a//b/"` to `"/a/b"`, using forward slashes as separators. Names are preserved, including spaces and case. `.` or `..` segments, malformed Unicode, and folder names exceeding Compass's 700-byte UTF-8 limit are rejected.
+The path is relative to the installation root: `folder: "/a/b"` describes nested folders `a` and `b`, while omitting `folder` or using `""` or `"/"` denotes the installation root. Maker stores the supplied string. During maker-experimental conversion, `""` is normalized to `"/"` and `"a//b/"` to `"/a/b"`, using forward slashes as separators. Names are preserved, including spaces and case. Conversion rejects `.` or `..` segments, malformed Unicode, and folder names exceeding Compass's 700-byte UTF-8 limit.
 
-An explicit `folder`, including `""` or `"/"`, requires objects, interfaces, actions, links, and shared property types to explicitly set `permission: "publicProject"`. Omitted permissions, `"roles"`, and ontology-package permissions are rejected. Omitting `folder` preserves existing permission defaults and explicit permissions. Value types use the same path validation but do not have an ontology permission setting.
+During maker-experimental conversion, an explicit `folder`, including `""` or `"/"`, requires objects, interfaces, actions, links, and shared property types to explicitly set `permission: "publicProject"`. Omitted permissions, `"roles"`, and ontology-package permissions are rejected. Omitting `folder` preserves existing permission defaults and explicit permissions. Value types use the same path validation but do not have an ontology permission setting.
 
-Folder placement is separate from the entity's API name and identity. Each entity specifies its own placement; actions do not inherit the folder of their object or interface. Maker preserves the normalized path in its entity model without changing the caller's definition.
+Folder placement is separate from the entity's API name and identity. Each entity specifies its own placement; actions do not inherit the folder of their object or interface. Experimental conversion returns normalized paths in `outputFolderPaths` without changing maker's entity definitions.
 
-Serialized IR placement metadata and folder creation during packaging and installation will be added separately.
+Folder creation and installation placement in maker-experimental will be added separately.
 
 ## Defining Shared Property Types
 

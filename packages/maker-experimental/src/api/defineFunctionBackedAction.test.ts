@@ -18,20 +18,21 @@ import { defineOntology, dumpOntologyFullMetadata } from "@osdk/maker";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { defineFunctionBackedAction } from "./defineFunctionBackedAction.js";
+import { defineOntologyV2 } from "./defineOntologyV2.js";
 
 describe("function-backed action folder placement", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, undefined);
   });
 
-  it("normalizes folders with explicit publicProject permissions", () => {
+  it("preserves raw folders and explicit permissions", () => {
     const action = defineFunctionBackedAction({
       functionApiName: "updatePerson",
       permission: "publicProject",
       folder: "actions//people/",
     });
     expect(action).toMatchObject({
-      folder: "/actions/people",
+      folder: "actions//people/",
       permission: "publicProject",
     });
     expect(
@@ -40,23 +41,27 @@ describe("function-backed action folder placement", () => {
     ).toBe(true);
   });
 
-  it("rejects traversal through the helper", () => {
-    expect(() =>
-      defineFunctionBackedAction({
-        functionApiName: "updatePerson",
-        permission: "publicProject",
-        folder: "actions/../people",
+  it("rejects traversal during experimental conversion", async () => {
+    await expect(
+      defineOntologyV2("com.palantir.", () => {
+        defineFunctionBackedAction({
+          functionApiName: "updatePerson",
+          permission: "publicProject",
+          folder: "actions/../people",
+        });
       }),
-    ).toThrow('folder must not contain "." or ".." path segments');
+    ).rejects.toThrow('folder must not contain "." or ".." path segments');
   });
 
-  it("requires explicit publicProject permission", () => {
-    expect(() =>
-      defineFunctionBackedAction({
-        functionApiName: "updatePerson",
-        folder: "",
+  it("requires explicit publicProject permission during conversion", async () => {
+    await expect(
+      defineOntologyV2("com.palantir.", () => {
+        defineFunctionBackedAction({
+          functionApiName: "updatePerson",
+          folder: "",
+        });
       }),
-    ).toThrow(
+    ).rejects.toThrow(
       'folder placement requires permission to be explicitly set to "publicProject"',
     );
   });

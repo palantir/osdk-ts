@@ -16,10 +16,43 @@
 
 import { describe, expect, it } from "vitest";
 
-import { validateAndNormalizeFolderPath } from "./validateAndNormalizeFolderPath.js";
+import { validateAndNormalizeFolderPath } from "./foldersUtil.js";
 
 describe("validateAndNormalizeFolderPath", () => {
   const apiName = "com.palantir.Person";
+
+  it("preserves an omitted folder without requiring project permissions", () => {
+    expect(
+      validateAndNormalizeFolderPath(undefined, undefined, apiName),
+    ).toBeUndefined();
+    expect(
+      validateAndNormalizeFolderPath(undefined, "roles", apiName),
+    ).toBeUndefined();
+  });
+
+  it.each([
+    undefined,
+    "roles",
+    { type: "ontologyPackage", ontologyPackageRid: "ri.ontology..package" },
+  ] as const)(
+    "requires explicit publicProject permission instead of %j",
+    (permission) => {
+      expect(() =>
+        validateAndNormalizeFolderPath("", permission, apiName),
+      ).toThrow(
+        'folder placement requires permission to be explicitly set to "publicProject"',
+      );
+    },
+  );
+
+  it("validates value type paths without an ontology permission setting", () => {
+    expect(
+      validateAndNormalizeFolderPath("a//b/", undefined, apiName, false),
+    ).toBe("/a/b");
+    expect(() =>
+      validateAndNormalizeFolderPath("a/../b", undefined, apiName, false),
+    ).toThrow('folder must not contain "." or ".." path segments');
+  });
 
   it.each([
     ["", "/"],

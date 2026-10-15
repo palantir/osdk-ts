@@ -79,7 +79,6 @@ import {
   type PropertyTypeType,
   type PropertyTypeTypeStruct,
 } from "./properties/PropertyTypeType.js";
-import { validateAndNormalizeFolderPath } from "./validateAndNormalizeFolderPath.js";
 import {
   ACTION_DESCRIPTION_LIMIT,
   ACTION_DISPLAY_NAME_LIMIT,
@@ -153,11 +152,6 @@ export type InterfaceActionTypeUserDefinition = {
 export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
   const actionDef = cloneDefinition(actionDefInput);
   const apiName = namespace + actionDef.apiName;
-  actionDef.folder = validateAndNormalizeFolderPath(
-    actionDef.folder,
-    actionDef.permission,
-    apiName,
-  );
   const parameterIds = (actionDef.parameters ?? []).map((p) => p.id);
 
   if (

@@ -40,7 +40,6 @@ import {
   hasRenderHints,
   shouldNotHaveRenderHints,
 } from "./propertyConversionUtils.js";
-import { validateAndNormalizeFolderPath } from "./validateAndNormalizeFolderPath.js";
 import {
   validateDisplayMetadataLengths,
   validateStructFieldMetadata,
@@ -70,11 +69,6 @@ export function defineSharedPropertyType(
 ): SharedPropertyType {
   const sptDef = cloneDefinition(sptDefInput);
   const apiName = namespace + sptDef.apiName;
-  sptDef.folder = validateAndNormalizeFolderPath(
-    sptDef.folder,
-    sptDef.permission,
-    apiName,
-  );
   invariant(
     ontologyDefinition[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][apiName] ===
       undefined,

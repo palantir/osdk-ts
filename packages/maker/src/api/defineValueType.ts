@@ -32,7 +32,6 @@ import {
   ontologyDefinition,
   updateOntology,
 } from "./defineOntology.js";
-import { validateAndNormalizeFolderPath } from "./validateAndNormalizeFolderPath.js";
 import {
   validateMetadataLength,
   VALUE_TYPE_DESCRIPTION_LIMIT,
@@ -163,12 +162,6 @@ export function defineValueType(
     namespacePrefix,
   } = valueTypeDef;
   const apiName = namespacePrefix ? namespace + inputApiName : inputApiName;
-  valueTypeDef.folder = validateAndNormalizeFolderPath(
-    valueTypeDef.folder,
-    undefined,
-    apiName,
-    false,
-  );
   const semverValidation =
     /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/u;
   invariant(semverValidation.test(version), "Version is not a valid semver");

@@ -46,7 +46,6 @@ import { validateSchemaMigrationsFamilyOptIn } from "./interface/validateSchemaM
 import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
 import { isExotic, isPropertyTypeType } from "./properties/PropertyTypeType.js";
 import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
-import { validateAndNormalizeFolderPath } from "./validateAndNormalizeFolderPath.js";
 import {
   validateDisplayMetadataLengths,
   validateStructFieldMetadata,
@@ -84,11 +83,6 @@ export function defineInterface(
 ): InterfaceType {
   const interfaceDef = cloneDefinition(interfaceDefInput);
   const apiName = namespace + interfaceDef.apiName;
-  interfaceDef.folder = validateAndNormalizeFolderPath(
-    interfaceDef.folder,
-    interfaceDef.permission,
-    apiName,
-  );
   invariant(
     ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][apiName] ===
       undefined,
