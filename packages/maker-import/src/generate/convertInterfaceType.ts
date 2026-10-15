@@ -97,6 +97,11 @@ export function convertInterfaceType(
     propertiesV2,
     propertiesV3,
     searchable: true,
+    // TODO: read `iface.schemaMigrationsEnabled` directly once the API declares it
+    ...("schemaMigrationsEnabled" in iface &&
+    typeof iface.schemaMigrationsEnabled === "boolean"
+      ? { schemaMigrationsEnabled: iface.schemaMigrationsEnabled }
+      : {}),
   };
 }
 
