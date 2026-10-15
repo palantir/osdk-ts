@@ -746,6 +746,27 @@ describe("generator", () => {
       },
     );
 
+    it("wraps string enums on array properties", async () => {
+      const ontology = immer.produce(TodoWireOntology, draft => {
+        draft.valueTypes.tagValueType = {
+          ...draft.valueTypes.emailValueType,
+          apiName: "tagValueType",
+          rid: "tagValueTypeRid",
+          constraints: [enumConstraint],
+        };
+        draft.objectTypes.Todo.objectType.properties.array.valueTypeApiName =
+          "tagValueType";
+      });
+      await generateClientSdkVersionTwoPointZero(
+        ontology,
+        "",
+        helper.minimalFiles,
+        BASE_PATH,
+      );
+      expect(helper.getFiles()[`${BASE_PATH}/ontology/objects/Todo.ts`])
+        .toContain("readonly array: ('A' | 'B')[] | undefined;");
+    });
+
     it("intersects interface property enums", async () => {
       const ontology = immer.produce(TodoWireOntology, draft => {
         draft.valueTypes.interfaceValueType = {
