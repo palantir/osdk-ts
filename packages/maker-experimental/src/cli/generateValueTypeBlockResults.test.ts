@@ -24,10 +24,8 @@ import { defineValueType, type ValueTypeDefinitionVersion } from "@osdk/maker";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { defineOntologyV2 } from "../api/defineOntologyV2.js";
-import type {
-  ValueTypeBlockDataWithDependencies,
-  ValueTypeDependency,
-} from "../conversion/toMarketplace/convertValueTypeToWireBlockData.js";
+import type { ValueTypeDependency } from "../conversion/toMarketplace/convertValueTypeDataConstraints.js";
+import type { ValueTypeBlockDataWithDependencies } from "../conversion/toMarketplace/convertValueTypeToWireBlockData.js";
 import { simulatePackageDependency } from "../testUtils/simulatePackageDependency.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {

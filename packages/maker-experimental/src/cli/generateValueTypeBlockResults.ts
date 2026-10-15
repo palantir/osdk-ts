@@ -20,10 +20,8 @@ import * as path from "node:path";
 import type { ValueTypeBlockData } from "@osdk/client.unstable";
 import type { InputShape, OutputShape } from "@osdk/client.unstable/api";
 
-import type {
-  ValueTypeBlockDataWithDependencies,
-  ValueTypeDependency,
-} from "../conversion/toMarketplace/convertValueTypeToWireBlockData.js";
+import type { ValueTypeDependency } from "../conversion/toMarketplace/convertValueTypeDataConstraints.js";
+import type { ValueTypeBlockDataWithDependencies } from "../conversion/toMarketplace/convertValueTypeToWireBlockData.js";
 import { typeToMarketplaceBaseType } from "../conversion/toMarketplace/typeVisitors.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
