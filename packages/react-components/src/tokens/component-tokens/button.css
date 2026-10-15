@@ -4,14 +4,14 @@
   --osdk-button-min-height: calc(var(--osdk-surface-spacing) * 7.5);
   --osdk-button-border-color: color-mix(
     in oklch,
-    var(--bp-palette-black) 20%,
+    var(--bp-palette-black-1000) 20%,
     transparent
   );
   --osdk-button-border: none;
   --osdk-button-border-radius: var(--osdk-surface-border-radius);
   --osdk-button-drop-shadow-color: color-mix(
     in oklch,
-    var(--bp-palette-black) 10%,
+    var(--bp-palette-black-1000) 10%,
     transparent
   );
   --osdk-button-shadow:
@@ -79,18 +79,18 @@
 .bp6-dark {
   --osdk-button-secondary-bg: color-mix(
     in srgb,
-    var(--bp-intent-default-rest) 40%,
-    var(--bp-palette-black)
+    var(--bp-surface-background-color-neutral-rest) 40%,
+    var(--bp-palette-black-1000)
   );
-  --osdk-button-secondary-color: var(--bp-intent-default-foreground);
+  --osdk-button-secondary-color: var(--bp-intent-neutral-foreground);
   --osdk-button-border-color: color-mix(
     in oklch,
-    var(--bp-surface-border-color-default) 50%,
+    var(--bp-surface-divider-color-default) 50%,
     transparent
   );
   --osdk-button-drop-shadow-color: color-mix(
     in oklch,
-    var(--bp-palette-black) 20%,
+    var(--bp-palette-black-1000) 20%,
     transparent
   );
   --osdk-button-shadow:
