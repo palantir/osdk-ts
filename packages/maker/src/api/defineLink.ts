@@ -36,10 +36,16 @@ import type {
   OneToManyObjectLinkReference,
   OneToManyObjectLinkReferenceUserDefinition,
 } from "./links/LinkType.js";
+import { validateAndNormalizeFolderPath } from "./validateAndNormalizeFolderPath.js";
 import { validateDisplayMetadataLengths } from "./validateMetadataLengths.js";
 
 export function defineLink(linkDefinitionInput: LinkTypeDefinition): LinkType {
   const linkDefinition = cloneDefinition(linkDefinitionInput);
+  linkDefinition.folder = validateAndNormalizeFolderPath(
+    linkDefinition.folder,
+    linkDefinition.permission,
+    linkDefinition.apiName,
+  );
   if (
     ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE][
       linkDefinition.apiName

@@ -40,6 +40,8 @@ export type ObjectType = OntologyEntityBase &
     includeEmptyBackingDatasource?: boolean;
     permission?: EntityPermission;
     __type: OntologyEntityTypeEnum.OBJECT_TYPE;
+    /** Folder path relative to the installation root. Defaults to the root */
+    folder?: string;
   };
 
 export interface ObjectTypeInner extends Omit<

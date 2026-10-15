@@ -53,6 +53,7 @@ import type { ObjectTypeStatus } from "./object/ObjectTypeStatus.js";
 import { resolveDerivedPropertyLinks } from "./object/resolveDerivedPropertyLinks.js";
 import type { PropertyTypeType } from "./properties/PropertyTypeType.js";
 import { isExotic, isStruct } from "./properties/PropertyTypeType.js";
+import { validateAndNormalizeFolderPath } from "./validateAndNormalizeFolderPath.js";
 import {
   OBJECT_PROPERTY_DISPLAY_NAME_LIMIT,
   validateDisplayMetadataLengths,
@@ -71,6 +72,11 @@ export function defineObject(
 ): ObjectTypeDefinition {
   const objectDef = cloneDefinition(objectDefInput);
   const apiName = namespace + objectDef.apiName;
+  objectDef.folder = validateAndNormalizeFolderPath(
+    objectDef.folder,
+    objectDef.permission,
+    apiName,
+  );
   const propertyApiNames = objectDef.properties
     ? Object.keys(objectDef.properties)
     : [];

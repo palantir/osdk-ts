@@ -37,6 +37,8 @@ export interface SharedPropertyType extends OntologyEntityBase, PropertyType {
   baseFormatter?: OntologyIrBaseFormatter;
   permission?: EntityPermission;
   __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE;
+  /** Folder path relative to the installation root. Defaults to the root */
+  folder?: string;
 }
 export interface PropertyType {
   type: PropertyTypeType;

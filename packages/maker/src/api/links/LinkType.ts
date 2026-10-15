@@ -80,7 +80,7 @@ export interface OneToManyLinkTypeDefinition {
   permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   redacted?: boolean;
-  /** Folder path relative to the installation root. Omitted or "/" denotes the root. */
+  /** Folder path relative to the installation root. Defaults to the root */
   folder?: string;
 }
 
@@ -99,7 +99,7 @@ export interface OneToManyLinkTypeUserDefinition {
   permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   cardinality?: "OneToMany" | "OneToOne" | undefined;
-  /** Folder path relative to the installation root. Omitted or "/" denotes the root. */
+  /** Folder path relative to the installation root. Defaults to the root */
   folder?: string;
 }
 
@@ -118,7 +118,7 @@ export interface ManyToManyLinkTypeDefinition {
   status?: UserLinkTypeStatus;
   redacted?: boolean;
   includeEmptyBackingDatasource?: boolean;
-  /** Folder path relative to the installation root. Omitted or "/" denotes the root. */
+  /** Folder path relative to the installation root. Defaults to the root */
   folder?: string;
 }
 
@@ -136,7 +136,7 @@ export interface ManyToManyLinkTypeUserDefinition {
   permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   includeEmptyBackingDatasource?: boolean;
-  /** Folder path relative to the installation root. Omitted or "/" denotes the root. */
+  /** Folder path relative to the installation root. Defaults to the root */
   folder?: string;
 }
 
@@ -155,7 +155,7 @@ export interface IntermediaryLinkTypeDefinition {
   permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   redacted?: boolean;
-  /** Folder path relative to the installation root. Omitted or "/" denotes the root. */
+  /** Folder path relative to the installation root. Defaults to the root */
   folder?: string;
 }
 
@@ -174,7 +174,7 @@ export interface IntermediaryLinkTypeUserDefinition {
   editsEnabled?: boolean;
   permission?: EntityPermission;
   status?: UserLinkTypeStatus;
-  /** Folder path relative to the installation root. Omitted or "/" denotes the root. */
+  /** Folder path relative to the installation root. Defaults to the root */
   folder?: string;
 }
 

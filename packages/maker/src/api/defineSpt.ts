@@ -40,6 +40,7 @@ import {
   hasRenderHints,
   shouldNotHaveRenderHints,
 } from "./propertyConversionUtils.js";
+import { validateAndNormalizeFolderPath } from "./validateAndNormalizeFolderPath.js";
 import {
   validateDisplayMetadataLengths,
   validateStructFieldMetadata,
@@ -60,7 +61,7 @@ export interface SharedPropertyTypeDefinition {
   gothamMapping?: SharedPropertyTypeGothamMapping;
   baseFormatter?: OntologyIrBaseFormatter;
   permission?: EntityPermission;
-  /** Folder path relative to the installation root. Omitted or "/" denotes the root. */
+  /** Folder path relative to the installation root. Defaults to the root */
   folder?: string;
 }
 
@@ -69,6 +70,11 @@ export function defineSharedPropertyType(
 ): SharedPropertyType {
   const sptDef = cloneDefinition(sptDefInput);
   const apiName = namespace + sptDef.apiName;
+  sptDef.folder = validateAndNormalizeFolderPath(
+    sptDef.folder,
+    sptDef.permission,
+    apiName,
+  );
   invariant(
     ontologyDefinition[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][apiName] ===
       undefined,

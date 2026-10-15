@@ -51,4 +51,6 @@ export interface InterfaceType
   status: InterfaceTypeStatus;
   schemaMigrations?: InterfaceSchemaMigrations;
   __type: OntologyEntityTypeEnum.INTERFACE_TYPE;
+  /** Folder path relative to the installation root. Defaults to the root */
+  folder?: string;
 }

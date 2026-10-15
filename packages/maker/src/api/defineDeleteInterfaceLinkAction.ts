@@ -61,7 +61,7 @@ type DeleteInterfaceLinkActionBaseDefinition = {
   submissionMetadata?: SubmissionMetadata;
   permission?: EntityPermission;
   icon?: { locator: BlueprintIcon; color: string };
-  /** Folder path relative to the installation root. Omitted or "/" denotes the root. */
+  /** Folder path relative to the installation root. Defaults to the root */
   folder?: string;
 };
 
