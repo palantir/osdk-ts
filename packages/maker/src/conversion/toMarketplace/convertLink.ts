@@ -190,11 +190,13 @@ export function convertLink(linkType: LinkType): OntologyIrLinkTypeBlockDataV2 {
 }
 function validateLink(linkDefinition: LinkType) {
   const linkStatus = convertLinkStatus(linkDefinition.status).type;
+
   const endpoints = [
     "one" in linkDefinition ? linkDefinition.one : linkDefinition.many,
     linkDefinition.toMany,
   ].map((endpoint) => {
     const { apiName, object } = getObject(endpoint.object);
+
     return {
       apiName,
       status:
@@ -203,17 +205,20 @@ function validateLink(linkDefinition: LinkType) {
           : (object.status ?? "active"),
     };
   });
+
   const constrainedEndpoint =
     endpoints.find((endpoint) => endpoint.status === "deprecated") ??
     endpoints.find(
       (endpoint) =>
         endpoint.status === "experimental" || endpoint.status === "example",
     );
+
   if (constrainedEndpoint !== undefined) {
     const requiresDeprecated = constrainedEndpoint.status === "deprecated";
     const correction = requiresDeprecated
       ? '{ type: "deprecated", message, deadline } with an explicit message and deadline'
       : '"experimental" or "example"';
+
     invariant(
       requiresDeprecated
         ? linkStatus === "deprecated"
