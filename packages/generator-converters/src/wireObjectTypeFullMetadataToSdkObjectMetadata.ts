@@ -20,6 +20,7 @@ import type {
   PropertyApiName,
   PropertyV2,
 } from "@osdk/foundry.ontologies";
+
 import { GeneratorError } from "./GeneratorError.js";
 import { wirePropertyV2ToSdkPrimaryKeyTypeDefinition } from "./wirePropertyV2ToSdkPrimaryKeyTypeDefinition.js";
 import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition.js";
@@ -34,8 +35,9 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
   log?: { info: (msg: string) => void },
 ): ObjectMetadata {
   if (
-    objectTypeWithLink.objectType
-      .properties[objectTypeWithLink.objectType.primaryKey] === undefined
+    objectTypeWithLink.objectType.properties[
+      objectTypeWithLink.objectType.primaryKey
+    ] === undefined
   ) {
     throw new GeneratorError("Primary key not found in object type", {
       primaryKey: objectTypeWithLink.objectType.primaryKey,
@@ -45,8 +47,8 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
 
   // saved ontology.json files may not have this implementsInterfaces2 so we need to handle
   if (
-    objectTypeWithLink.implementsInterfaces2 == null
-    && objectTypeWithLink.implementsInterfaces != null
+    objectTypeWithLink.implementsInterfaces2 == null &&
+    objectTypeWithLink.implementsInterfaces != null
   ) {
     throw new Error(
       "Your ontology.json file is missing the implementsInterfaces2 field. Please regenerate it.",
@@ -60,45 +62,88 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
 
   const interfaceMap = objectTypeWithLink.implementsInterfaces2
     ? Object.fromEntries(
-      Object.entries(objectTypeWithLink.implementsInterfaces2).sort(
-        ([a], [b]) => a.localeCompare(b),
-      ).map(
-        ([interfaceApiName, impl]) => {
-          // prefer V2 if available and non-empty
-          if (
-            impl.propertiesV2
-            && Object.keys(impl.propertiesV2).length > 0
-          ) {
-            const propMap: Record<string, string> = {};
-            const implMap: Record<
-              string,
-              ObjectMetadata.InterfacePropertyImplementation
-            > = {};
-            for (
-              const [iptApiName, implementation] of Object.entries(
-                impl.propertiesV2,
-              )
+        Object.entries(objectTypeWithLink.implementsInterfaces2)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([interfaceApiName, impl]) => {
+            // prefer V2 if available and non-empty
+            if (
+              impl.propertiesV2 &&
+              Object.keys(impl.propertiesV2).length > 0
             ) {
-              const converted = convertInterfacePropertyImplementation(
-                implementation,
-              );
-              if (converted == null) continue;
-              implMap[iptApiName] = converted;
-              if (converted.type === "localProperty") {
-                propMap[iptApiName] = converted.propertyApiName;
+              const propMap: Record<string, string> = {};
+              const implMap: Record<
+                string,
+                ObjectMetadata.InterfacePropertyImplementation
+              > = {};
+              for (const [iptApiName, implementation] of Object.entries(
+                impl.propertiesV2,
+              )) {
+                const converted =
+                  convertInterfacePropertyImplementation(implementation);
+                if (converted == null) continue;
+                implMap[iptApiName] = converted;
+                if (converted.type === "localProperty") {
+                  propMap[iptApiName] = converted.propertyApiName;
+                }
               }
+              if (Object.keys(implMap).length > 0) {
+                interfaceImplementations[interfaceApiName] = implMap;
+              }
+              return [interfaceApiName, propMap];
             }
-            if (Object.keys(implMap).length > 0) {
-              interfaceImplementations[interfaceApiName] = implMap;
-            }
-            return [interfaceApiName, propMap];
-          }
-          // fall back to V1
-          return [interfaceApiName, impl.properties];
-        },
-      ),
-    )
+            // fall back to V1
+            return [interfaceApiName, impl.properties];
+          }),
+      )
     : {};
+
+  const interfaceActionMap: Record<string, Record<string, string>> = {};
+  const interfaceActionImplementations: Record<
+    string,
+    Record<string, ObjectMetadata.InterfaceActionImplementation>
+  > = {};
+
+  if (objectTypeWithLink.implementsInterfaces2) {
+    for (const [interfaceApiName, impl] of Object.entries(
+      objectTypeWithLink.implementsInterfaces2,
+    ).sort(([a], [b]) => a.localeCompare(b))) {
+      const actionTypes =
+        (impl as any).actionTypes ?? (impl as any).actionTypeImplementations;
+      if (actionTypes && Object.keys(actionTypes).length > 0) {
+        const actionMap: Record<string, string> = {};
+        const actionImplMap: Record<
+          string,
+          ObjectMetadata.InterfaceActionImplementation
+        > = {};
+        for (const [constraintApiName, actionImpl] of Object.entries(
+          actionTypes as Record<string, any>,
+        ).sort(([a], [b]) => a.localeCompare(b))) {
+          if (typeof actionImpl === "string") {
+            actionMap[constraintApiName] = actionImpl;
+            actionImplMap[constraintApiName] = { actionApiName: actionImpl };
+          } else if (actionImpl && typeof actionImpl === "object") {
+            const actionApiName =
+              actionImpl.actionTypeApiName ?? actionImpl.actionApiName;
+            if (typeof actionApiName === "string") {
+              actionMap[constraintApiName] = actionApiName;
+              actionImplMap[constraintApiName] = {
+                actionApiName,
+                ...(actionImpl.parameterMapping
+                  ? { parameterMapping: actionImpl.parameterMapping }
+                  : {}),
+              };
+            }
+          }
+        }
+        if (Object.keys(actionMap).length > 0) {
+          interfaceActionMap[interfaceApiName] = actionMap;
+        }
+        if (Object.keys(actionImplMap).length > 0) {
+          interfaceActionImplementations[interfaceApiName] = actionImplMap;
+        }
+      }
+    }
+  }
 
   return {
     type: "object",
@@ -106,45 +151,64 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
     description: objectTypeWithLink.objectType.description,
     primaryKeyApiName: objectTypeWithLink.objectType.primaryKey,
     primaryKeyType: wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
-      objectTypeWithLink.objectType
-        .properties[objectTypeWithLink.objectType.primaryKey],
+      objectTypeWithLink.objectType.properties[
+        objectTypeWithLink.objectType.primaryKey
+      ],
     ),
     links: Object.fromEntries(
-      [...objectTypeWithLink.linkTypes].sort((a, b) =>
-        a.apiName.localeCompare(b.apiName)
-      ).map(linkType => {
-        return [linkType.apiName, {
-          multiplicity: linkType.cardinality === "MANY",
-          targetType: linkType.objectTypeApiName,
-        }];
-      }),
+      [...objectTypeWithLink.linkTypes]
+        .sort((a, b) => a.apiName.localeCompare(b.apiName))
+        .map((linkType) => {
+          return [
+            linkType.apiName,
+            {
+              multiplicity: linkType.cardinality === "MANY",
+              targetType: linkType.objectTypeApiName,
+            },
+          ];
+        }),
     ),
     properties: Object.fromEntries(
-      Object.entries(objectTypeWithLink.objectType.properties).map((
-        [key, value],
-      ) => [
-        key,
-        wirePropertyV2ToSdkPropertyDefinition(
-          value,
-          !(v2 && objectTypeWithLink.objectType.primaryKey === key),
-          log,
-        ),
-      ]).filter(([_, value]) => value != null)
+      Object.entries(objectTypeWithLink.objectType.properties)
+        .map(([key, value]) => [
+          key,
+          wirePropertyV2ToSdkPropertyDefinition(
+            value,
+            !(v2 && objectTypeWithLink.objectType.primaryKey === key),
+            log,
+          ),
+        ])
+        .filter(([_, value]) => value != null)
         .sort(([a], [b]) => (a as string).localeCompare(b as string)),
     ),
     implements: objectTypeWithLink.implementsInterfaces
       ? [...objectTypeWithLink.implementsInterfaces].sort((a, b) =>
-        a.localeCompare(b)
-      )
+          a.localeCompare(b),
+        )
       : objectTypeWithLink.implementsInterfaces,
     interfaceMap,
     inverseInterfaceMap: Object.fromEntries(
-      Object.entries(interfaceMap).map((
-        [interfaceApiName, props],
-      ) => [interfaceApiName, invertProps(props)]),
+      Object.entries(interfaceMap).map(([interfaceApiName, props]) => [
+        interfaceApiName,
+        invertProps(props),
+      ]),
     ),
     ...(Object.keys(interfaceImplementations).length > 0
       ? { interfaceImplementations }
+      : {}),
+    ...(Object.keys(interfaceActionMap).length > 0
+      ? {
+          interfaceActionMap,
+          inverseInterfaceActionMap: Object.fromEntries(
+            Object.entries(interfaceActionMap).map(
+              ([interfaceApiName, actions]) => [
+                interfaceApiName,
+                invertProps(actions),
+              ],
+            ),
+          ),
+          interfaceActionImplementations,
+        }
       : {}),
     icon: supportedIconTypes.includes(objectTypeWithLink.objectType.icon.type)
       ? objectTypeWithLink.objectType.icon
@@ -167,10 +231,11 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
 function invertProps(
   a?: Record<string, string>,
 ): typeof a extends undefined ? typeof a : Record<string, string> {
-  return (a
-    ? Object.fromEntries(Object.entries(a).map(([k, v]) => [v, k]))
-    : undefined) as typeof a extends undefined ? typeof a
-      : Record<string, string>;
+  return (
+    a
+      ? Object.fromEntries(Object.entries(a).map(([k, v]) => [v, k]))
+      : undefined
+  ) as typeof a extends undefined ? typeof a : Record<string, string>;
 }
 
 type WireInterfacePropertyImplementation = NonNullable<
@@ -205,16 +270,22 @@ function convertInterfacePropertyImplementation(
         mapping: Object.fromEntries(
           Object.entries(wire.mapping).map(([fieldName, entry]) => {
             if (entry.type === "structFieldOfProperty") {
-              return [fieldName, {
-                type: "structFieldOfProperty" as const,
-                propertyApiName: entry.propertyApiName,
-                structFieldApiName: entry.structFieldApiName,
-              }];
+              return [
+                fieldName,
+                {
+                  type: "structFieldOfProperty" as const,
+                  propertyApiName: entry.propertyApiName,
+                  structFieldApiName: entry.structFieldApiName,
+                },
+              ];
             }
-            return [fieldName, {
-              type: "property" as const,
-              propertyApiName: entry.propertyApiName,
-            }];
+            return [
+              fieldName,
+              {
+                type: "property" as const,
+                propertyApiName: entry.propertyApiName,
+              },
+            ];
           }),
         ),
       };
@@ -239,8 +310,7 @@ function convertNestedInterfacePropertyImplementation(
   | ObjectMetadata.InterfacePropertyLocalImplementation
   | ObjectMetadata.InterfacePropertyStructFieldImplementation
   | ObjectMetadata.InterfacePropertyStructImplementation
-  | undefined
-{
+  | undefined {
   const converted = convertInterfacePropertyImplementation(wire);
   if (converted == null || converted.type === "reduced") return undefined;
   return converted;
