@@ -18,7 +18,10 @@ import { describe, expect, it } from "vitest";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
 import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
-import type { WireAgentDefinitionVersion } from "../WireOntologyDefinition.js";
+import type {
+  WireAgentDefinitionVersion,
+  WireOntologyDefinition,
+} from "../WireOntologyDefinition.js";
 import { generatePerAgentDataFiles } from "./generatePerAgentDataFiles.js";
 
 const agent: WireAgentDefinitionVersion = {
@@ -55,19 +58,29 @@ describe(generatePerAgentDataFiles, () => {
     },
   );
 
-  it("generates an empty export if there are no agents", async () => {
-    const helper = createMockMinimalFiles();
-    await generatePerAgentDataFiles({
-      fs: helper.minimalFiles,
-      outDir: "/foo",
-      agentVersionReferences: new Map(),
-      ontology: enhanceOntology({
-        sanitized: { ...TodoWireOntology, agents: {} },
-        importExt: ".js",
-      }),
-    });
-    expect(helper.getFiles()).toEqual({
-      "/foo/ontology/agents.ts": "export {};\n",
-    });
-  });
+  it.each(["empty", "omitted"])(
+    "generates an empty export if agents are %s",
+    async mode => {
+      const ontology: WireOntologyDefinition = {
+        ...TodoWireOntology,
+        agents: {},
+      };
+      if (mode === "omitted") {
+        delete ontology.agents;
+      }
+      const helper = createMockMinimalFiles();
+      await generatePerAgentDataFiles({
+        fs: helper.minimalFiles,
+        outDir: "/foo",
+        agentVersionReferences: new Map(),
+        ontology: enhanceOntology({
+          sanitized: ontology,
+          importExt: ".js",
+        }),
+      });
+      expect(helper.getFiles()).toEqual({
+        "/foo/ontology/agents.ts": "export {};\n",
+      });
+    },
+  );
 });

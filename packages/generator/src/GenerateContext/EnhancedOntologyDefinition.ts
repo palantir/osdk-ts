@@ -146,18 +146,18 @@ export class EnhancedOntologyDefinition {
 }
 
 function remap<T, X>(
-  r: Record<string, T>,
+  r: Record<string, T> | undefined,
   common: EnhanceCommon,
   Constructor: { new(common: EnhanceCommon, og: T): X },
 ): Record<string, X>;
 function remap<T, X>(
-  r: Record<string, T>,
+  r: Record<string, T> | undefined,
   common: EnhanceCommon,
   Constructor: { new(common: EnhanceCommon, original: T): X },
   externalMap?: Map<string, string>,
 ): Record<string, X | ForeignType>;
 function remap<T, X, const Q extends Map<string, string> | undefined>(
-  r: Record<string, T>,
+  r: Record<string, T> | undefined,
   common: EnhanceCommon,
   Constructor: { new(common: EnhanceCommon, og: T): X },
   externalMap?: Q,

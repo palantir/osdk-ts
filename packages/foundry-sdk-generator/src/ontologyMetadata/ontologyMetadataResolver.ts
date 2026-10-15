@@ -16,7 +16,6 @@
 
 import type { Sdk, SdkPackage } from "@osdk/client.unstable.tpsa";
 import { getSdk, getSdkPackage } from "@osdk/client.unstable.tpsa";
-import type { AgentApiName } from "@osdk/foundry.agents";
 import * as AgentDefinitionVersions from "@osdk/foundry.agents/AgentDefinitionVersion";
 import type {
   ActionParameterType,
@@ -28,10 +27,7 @@ import type {
   QueryDataType,
   QueryTypeV2,
 } from "@osdk/foundry.ontologies";
-import type {
-  WireAgentDefinitionVersion,
-  WireOntologyDefinition,
-} from "@osdk/generator";
+import type { WireOntologyDefinition } from "@osdk/generator";
 import { GeneratorError } from "@osdk/generator-converters";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { Result } from "./Result.js";
@@ -237,7 +233,7 @@ export class OntologyMetadataResolver {
       ]);
     }
 
-    const agents: Record<AgentApiName, WireAgentDefinitionVersion> = {};
+    const agents: WireOntologyDefinition["agents"] = {};
     const agentVersionReferences = new Map<string, string>();
 
     for (const agent of entities.agentApiNamesToLoad ?? []) {
@@ -268,6 +264,8 @@ export class OntologyMetadataResolver {
 
     for (const [apiName, version] of agentVersionReferences) {
       try {
+        // TODO(mhogberg): This will be slow for large SDKs. Bulk load instead of loading
+        //  one-by-one.
         const agentDefinitionVersion = await AgentDefinitionVersions.get(
           this.getClientContext(),
           apiName,

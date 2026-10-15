@@ -149,14 +149,16 @@ function changeNames(
     );
 
     // Handle agent renames
-    changeEachEntry(
-      draft.agents,
-      newNames.agents,
-      (agent, oldAgentName, newAgentName) => {
-        changeValue(agent, "apiName", oldAgentName, newAgentName);
-      },
-      true,
-    );
+    if (draft.agents) {
+      changeEachEntry(
+        draft.agents,
+        newNames.agents,
+        (agent, oldAgentName, newAgentName) => {
+          changeValue(agent, "apiName", oldAgentName, newAgentName);
+        },
+        true,
+      );
+    }
 
     // Handle interface renames
     changeEachEntry(

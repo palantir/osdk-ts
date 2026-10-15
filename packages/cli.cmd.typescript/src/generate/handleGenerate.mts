@@ -114,6 +114,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
 
     const ontology: WireOntologyDefinition = {
       ...ontologyFullMetadata,
+      // TODO(mhogberg): Support agents on this code path.
       agents: {},
     };
 

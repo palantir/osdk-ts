@@ -22,10 +22,12 @@ import type * as gateway from "@osdk/foundry.ontologies";
 
 // TODO(mhogberg): Update APIs to include apiName in AgentDefinitionVersion,
 // remove WireAgentDefinitionVersion from here.
+/** @beta */
 export interface WireAgentDefinitionVersion extends AgentDefinitionVersion {
   apiName: AgentApiName;
 }
 
 export interface WireOntologyDefinition extends gateway.OntologyFullMetadata {
-  agents: Record<AgentApiName, WireAgentDefinitionVersion>;
+  /** @beta */
+  agents?: Record<AgentApiName, WireAgentDefinitionVersion>;
 }

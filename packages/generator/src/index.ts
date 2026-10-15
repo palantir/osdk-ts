@@ -27,7 +27,4 @@ export {
   ONTOLOGY_METADATA_DTS_PATH,
   ONTOLOGY_METADATA_JSON_PATH,
 } from "./v2.0/generateMetadata.js";
-export type {
-  WireAgentDefinitionVersion,
-  WireOntologyDefinition,
-} from "./WireOntologyDefinition.js";
+export type { WireOntologyDefinition } from "./WireOntologyDefinition.js";
