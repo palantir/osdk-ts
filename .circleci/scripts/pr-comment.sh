@@ -8,8 +8,10 @@
 # "## size-limit report"). It is how we find a previous comment to edit instead
 # of spamming the PR with one comment per push.
 #
-# Requires GITHUB_TOKEN with `pull-requests: write`. Every failure mode here is
-# non-fatal: a CI job must not go red because we could not decorate a PR.
+# Requires a GitHub App with `pull-requests: write` (GITHUB_APP_ID,
+# GITHUB_APP_PRIVATE_KEY as a base64-encoded .pem, GITHUB_APP_INSTALLATION_ID).
+# Every failure mode here is non-fatal: a CI job must not go red because we
+# could not decorate a PR.
 
 set -uo pipefail
 
@@ -19,8 +21,17 @@ BODY_FILE="${2:?usage: pr-comment.sh <marker> <body-file>}"
 REPO="${CIRCLE_PROJECT_USERNAME:-}/${CIRCLE_PROJECT_REPONAME:-}"
 API="https://api.github.com"
 
-if [ -z "${GITHUB_TOKEN:-}" ]; then
-  echo "GITHUB_TOKEN is not set; skipping PR comment. Body would have been:"
+# Authenticates as a GitHub App: it is scoped to this repo and its installation
+# tokens expire after an hour.
+token=""
+if [ -n "${GITHUB_APP_ID:-}" ] && [ -n "${GITHUB_APP_PRIVATE_KEY:-}" ] && [ -n "${GITHUB_APP_INSTALLATION_ID:-}" ]; then
+  token="$(node "$(dirname "$0")/github-app-token.mjs")"
+else
+  echo "GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY and GITHUB_APP_INSTALLATION_ID must all be set."
+fi
+
+if [ -z "$token" ]; then
+  echo "No GitHub App token; skipping PR comment. Body would have been:"
   cat "$BODY_FILE"
   exit 0
 fi
@@ -35,7 +46,7 @@ gh_api() {
   shift 2
   curl --silent --show-error --fail-with-body \
     --request "$method" \
-    --header "Authorization: Bearer $GITHUB_TOKEN" \
+    --header "Authorization: Bearer $token" \
     --header "Accept: application/vnd.github+json" \
     --header "X-GitHub-Api-Version: 2022-11-28" \
     "$@" \
