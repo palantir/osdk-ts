@@ -25,29 +25,43 @@ import { generateNpmRc } from "./generate/generateNpmRc.js";
 import { green } from "./highlight.js";
 import type { SdkVersion, Template, TemplateContext } from "./templates.js";
 
-interface RunArgs {
+type RunArgs = {
   project: string;
   overwrite: boolean;
   template: Template;
   sdkVersion: SdkVersion;
-  foundryUrl: string;
-  widgetSet: string;
-  repository: string | undefined;
   osdkPackage?: string;
   osdkRegistryUrl?: string;
-}
+  osdkPath?: string;
+  viteConfig?: string;
+  buildCommand?: string;
+} & (
+  | { skipFoundryConfig: true; foundryUrl?: string }
+  | {
+      skipFoundryConfig?: false;
+      foundryUrl: string;
+      widgetSet: string;
+      repository: string | undefined;
+    }
+);
 
-export async function run({
-  project,
-  overwrite,
-  template,
-  sdkVersion,
-  foundryUrl,
-  widgetSet,
-  repository,
-  osdkPackage,
-  osdkRegistryUrl,
-}: RunArgs): Promise<void> {
+export async function run(args: RunArgs): Promise<void> {
+  const {
+    project,
+    overwrite,
+    template,
+    sdkVersion,
+    foundryUrl,
+    osdkPackage,
+    osdkRegistryUrl,
+  } = args;
+  if (args.osdkPath != null && osdkPackage == null) {
+    throw new Error("A local SDK requires an OSDK package name");
+  }
+  const viteConfig =
+    args.viteConfig == null
+      ? undefined
+      : fs.readFileSync(path.resolve(args.viteConfig), "utf-8");
   consola.log("");
   consola.start(
     `Creating project ${green(project)} using template ${green(template.id)}`,
@@ -95,7 +109,7 @@ export async function run({
   const templateContext: TemplateContext = {
     project,
     foundryUrl,
-    widgetSet,
+    widgetSet: args.skipFoundryConfig ? undefined : args.widgetSet,
     osdkPackage,
   };
   const processFiles = function (dir: string) {
@@ -149,24 +163,42 @@ export async function run({
   };
   processFiles(root);
 
-  const useOsdk = osdkPackage != null || osdkRegistryUrl != null;
-  if (useOsdk) {
-    if (osdkPackage == null || osdkRegistryUrl == null) {
+  if (viteConfig != null) {
+    fs.writeFileSync(path.join(root, "vite.config.ts"), viteConfig);
+  }
+  if (args.buildCommand != null || args.osdkPath != null) {
+    const packagePath = path.join(root, "package.json");
+    const packageJson = JSON.parse(fs.readFileSync(packagePath, "utf-8"));
+    if (args.buildCommand != null)
+      packageJson.scripts.build = args.buildCommand;
+    if (args.osdkPath != null && osdkPackage != null) {
+      packageJson.dependencies[osdkPackage] =
+        `file:${args.osdkPath.replaceAll("\\", "/")}`;
+    }
+    fs.writeFileSync(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`);
+  }
+
+  const useRemoteOsdk =
+    args.osdkPath == null && (osdkPackage != null || osdkRegistryUrl != null);
+  if (useRemoteOsdk) {
+    if (osdkPackage == null || osdkRegistryUrl == null || foundryUrl == null) {
       throw new Error(
-        `Template ${template.id} requires OSDK package and registry URL`,
+        `Template ${template.id} requires OSDK package, registry URL, and Foundry URL`,
       );
     }
     const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl, foundryUrl });
     fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
   }
 
-  const foundryConfigJson = generateFoundryConfigJson({
-    foundryUrl,
-    widgetSet,
-    repository,
-    directory: template.buildDirectory,
-  });
-  fs.writeFileSync(path.join(root, "foundry.config.json"), foundryConfigJson);
+  if (!args.skipFoundryConfig) {
+    const foundryConfigJson = generateFoundryConfigJson({
+      foundryUrl: args.foundryUrl,
+      widgetSet: args.widgetSet,
+      repository: args.repository,
+      directory: template.buildDirectory,
+    });
+    fs.writeFileSync(path.join(root, "foundry.config.json"), foundryConfigJson);
+  }
 
   consola.success("Success");
 
@@ -176,7 +208,9 @@ export async function run({
       `Done! Run the following commands to get started:\n` +
       `\n` +
       `  \`cd ${cdRelative}\`\n` +
-      `  \`export FOUNDRY_TOKEN=<token>\`\n` +
+      (args.skipFoundryConfig && osdkRegistryUrl == null
+        ? ""
+        : `  \`export FOUNDRY_TOKEN=<token>\`\n`) +
       `  \`npm install\`\n` +
       `  \`npm run dev\``,
     style: {
