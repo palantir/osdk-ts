@@ -73,16 +73,24 @@ export function makeExternalStore<X>(
 ): {
   subscribe: (notifyUpdate: () => void) => () => void;
   getSnapShot: () => Snapshot<X>;
+  revalidate: (force?: boolean) => Promise<void>;
 } {
   let lastResult: Snapshot<X> = initialValue;
+  let currentSubscription: Unsubscribable | undefined;
 
   function getSnapShot(): Snapshot<X> {
     return lastResult;
   }
 
+  async function revalidate(force: boolean = true): Promise<void> {
+    if (currentSubscription?.revalidate) {
+      await currentSubscription.revalidate(force);
+    }
+  }
+
   function subscribe(notifyUpdate: () => void) {
     const obs = createObservation({
-      next: (payload) => {
+      next: (payload: X | undefined) => {
         lastResult = payload as Snapshot<X>;
         notifyUpdate();
       },
@@ -95,13 +103,15 @@ export function makeExternalStore<X>(
       },
       complete: () => {},
     });
+    currentSubscription = obs;
 
     return (): void => {
+      currentSubscription = undefined;
       obs.unsubscribe();
     };
   }
 
-  const store = { subscribe, getSnapShot };
+  const store = { subscribe, getSnapShot, revalidate };
   if (__DEV__ && _metadata != null) {
     Object.defineProperty(store, OSDK_HOOK_METADATA, {
       value: _metadata,
@@ -127,19 +137,36 @@ export function makeExternalStoreAsync<X>(
 ): {
   subscribe: (notifyUpdate: () => void) => () => void;
   getSnapShot: () => Snapshot<X>;
+  revalidate: (force?: boolean) => Promise<void>;
 } {
   let lastResult: Snapshot<X> = initialValue;
+  let currentSubscription: Unsubscribable | undefined;
+  let subscriptionPromise: Promise<Unsubscribable> | undefined;
 
   function getSnapShot(): Snapshot<X> {
     return lastResult;
   }
 
+  async function revalidate(force: boolean = true): Promise<void> {
+    if (currentSubscription?.revalidate) {
+      await currentSubscription.revalidate(force);
+    } else if (subscriptionPromise) {
+      try {
+        const sub = await subscriptionPromise;
+        if (sub?.revalidate) {
+          await sub.revalidate(force);
+        }
+      } catch {
+        // subscription error is handled by observer.error
+      }
+    }
+  }
+
   function subscribe(notifyUpdate: () => void) {
     let isActive = true;
-    let currentSubscription: Unsubscribable | undefined;
 
-    const subscriptionPromise = createObservation({
-      next: (payload) => {
+    subscriptionPromise = createObservation({
+      next: (payload: X | undefined) => {
         if (isActive) {
           lastResult = payload as Snapshot<X>;
           notifyUpdate();
@@ -177,13 +204,15 @@ export function makeExternalStoreAsync<X>(
 
     return (): void => {
       isActive = false;
+      subscriptionPromise = undefined;
       if (currentSubscription) {
         currentSubscription.unsubscribe();
+        currentSubscription = undefined;
       }
     };
   }
 
-  const store = { subscribe, getSnapShot };
+  const store = { subscribe, getSnapShot, revalidate };
   if (__DEV__ && _metadata != null) {
     Object.defineProperty(store, OSDK_HOOK_METADATA, {
       value: _metadata,

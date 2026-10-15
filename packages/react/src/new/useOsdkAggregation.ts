@@ -34,6 +34,9 @@ import {
   makeExternalStoreAsync,
 } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
+import type { RefetchOptions } from "./RefetchOptions.js";
+
+export type { RefetchOptions } from "./RefetchOptions.js";
 
 interface UseOsdkAggregationBaseOptions<
   T extends ObjectOrInterfaceDefinition,
@@ -111,7 +114,7 @@ export interface UseOsdkAggregationResult<
   data: AggregationsResults<T, A> | undefined;
   isLoading: boolean;
   error: Error | undefined;
-  refetch: () => Promise<void>;
+  refetch: (options?: RefetchOptions) => Promise<void>;
 }
 
 /**
@@ -198,7 +201,7 @@ export function useOsdkAggregation<
   const objectSetRef = React.useRef(objectSet);
   objectSetRef.current = objectSet;
 
-  const { subscribe, getSnapShot } = React.useMemo(() => {
+  const { subscribe, getSnapShot, revalidate } = React.useMemo(() => {
     if (!enabled) {
       return makeExternalStore<ObserveAggregationArgs<Q, A>>(
         () => ({ unsubscribe: () => {} }),
@@ -269,12 +272,19 @@ export function useOsdkAggregation<
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  const refetch = React.useCallback(async () => {
-    if (!enabled) {
-      return;
-    }
-    await observableClient.invalidateObjectType(type.apiName);
-  }, [observableClient, type.apiName, enabled]);
+  const refetch = React.useCallback(
+    async (refetchOptions?: RefetchOptions) => {
+      if (!enabled) {
+        return;
+      }
+      if (refetchOptions?.scope === "type") {
+        await observableClient.invalidateObjectType(type.apiName);
+      } else {
+        await revalidate();
+      }
+    },
+    [observableClient, type.apiName, enabled, revalidate],
+  );
 
   return React.useMemo(
     () => ({
