@@ -20,7 +20,11 @@ import * as path from "node:path";
 
 import type { ValueTypeBlockData } from "@osdk/client.unstable";
 import type { InputShape } from "@osdk/client.unstable/api";
-import { defineValueType, type ValueTypeDefinitionVersion } from "@osdk/maker";
+import {
+  defineObject,
+  defineValueType,
+  type ValueTypeDefinitionVersion,
+} from "@osdk/maker";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { defineOntologyV2 } from "../api/defineOntologyV2.js";
@@ -389,9 +393,30 @@ describe("generateValueTypeBlockResults", () => {
   it("recommends an upstream Maker package for an imported value type", async () => {
     const { downstream } = await simulatePackageDependency(
       () => ({
-        classification: defineStringValueType("classification"),
+        classification: defineValueType({
+          apiName: "classification",
+          displayName: "Classification",
+          description: "An upstream value type description",
+          type: { type: "string" },
+          version: "1.0.0",
+        }),
       }),
       ({ classification }) => {
+        defineObject({
+          apiName: "classifiedObject",
+          displayName: "Classified Object",
+          pluralDisplayName: "Classified Objects",
+          primaryKeyPropertyApiName: "id",
+          titlePropertyApiName: "id",
+          properties: {
+            id: { type: "string" },
+            classification: {
+              type: "string",
+              displayName: "Imported classification",
+              valueType: classification,
+            },
+          },
+        });
         defineValueType({
           apiName: "classifiedRecord",
           displayName: "Classified Record",
@@ -419,6 +444,18 @@ describe("generateValueTypeBlockResults", () => {
       undefined,
     );
 
+    const consumedId = ReadableIdGenerator.getForConsumedValueType(
+      "classification",
+      "1.0.0",
+    );
+    expect(result.inputs[consumedId]).toEqual(
+      downstream.shapes.inputShapes.get(consumedId),
+    );
+    expect(result.inputs[consumedId]).toMatchObject({
+      valueType: {
+        about: { fallbackTitle: consumedId, fallbackDescription: "" },
+      },
+    });
     expect(result.external_recommendations).toEqual([
       {
         upstreamPackageName: "upstream",

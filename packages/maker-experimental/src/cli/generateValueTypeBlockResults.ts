@@ -131,12 +131,13 @@ function buildDependencies(
       target.apiName,
       target.version,
     );
+    // Shared inputs must have identical metadata regardless of the consuming property.
     inputs.set(consumedId, {
       type: "valueType",
       valueType: {
         about: {
-          fallbackTitle: target.displayMetadata.displayName,
-          fallbackDescription: target.displayMetadata.description ?? "",
+          fallbackTitle: consumedId,
+          fallbackDescription: "",
           localizedTitle: {},
           localizedDescription: {},
         },
