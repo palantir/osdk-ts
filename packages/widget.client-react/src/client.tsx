@@ -15,7 +15,10 @@
  */
 
 import type { Client, ObjectSet } from "@osdk/client";
-import type { AllowedObjectSetParameterType } from "@osdk/widget.api";
+import type {
+  AllowedObjectSetParameterType,
+  HostMessage,
+} from "@osdk/widget.api";
 import {
   type AsyncValue,
   createFoundryWidgetClient,
@@ -141,7 +144,11 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
   );
 
   useEffect(() => {
+    let hostHotkeys: HostMessage.Payload.HotkeyList["hotkeys"] = [];
     client.subscribe();
+    client.hostEventTarget.addEventListener("host.hotkey-list", (payload) => {
+      hostHotkeys = payload.detail.hotkeys;
+    });
     client.hostEventTarget.addEventListener(
       "host.update-parameters",
       (payload) => {
@@ -260,12 +267,41 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
       import.meta.hot.on("vite:beforeFullReload", handleFullReload);
     }
 
+    const handleHotkey = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || event.isComposing) {
+        return;
+      }
+      const matches = hostHotkeys.some(
+        (hotkey) =>
+          hotkey.key.toLowerCase() === event.key.toLowerCase() &&
+          hotkey.altKey === event.altKey &&
+          hotkey.ctrlKey === event.ctrlKey &&
+          hotkey.metaKey === event.metaKey &&
+          hotkey.shiftKey === event.shiftKey,
+      );
+      if (!matches) {
+        return;
+      }
+      event.preventDefault();
+      client.hotkeyForward({
+        hotkey: {
+          key: event.key,
+          altKey: event.altKey,
+          ctrlKey: event.ctrlKey,
+          metaKey: event.metaKey,
+          shiftKey: event.shiftKey,
+        },
+      });
+    };
+    window.addEventListener("keydown", handleHotkey);
+
     return () => {
       client.unsubscribe();
       resizeObserver.disconnect();
       if (import.meta.hot?.off) {
         import.meta.hot.off("vite:beforeFullReload", handleFullReload);
       }
+      window.removeEventListener("keydown", handleHotkey);
     };
   }, []);
 
