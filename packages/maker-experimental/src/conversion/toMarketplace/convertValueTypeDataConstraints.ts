@@ -37,8 +37,6 @@ import { dataConstraintToPropertyTypeDataConstraint } from "./dataConstraintToPr
 export function convertValueTypeDataConstraints(
   property: ObjectPropertyType,
   dataConstraints: AuthoringValueTypeDataConstraint[],
-  baseType: BaseType,
-  ridGenerator: OntologyRidGenerator,
 ): DataConstraints | undefined {
   const nullabilityDataConstraints =
     convertNullabilityToDataConstraint(property);
@@ -50,11 +48,7 @@ export function convertValueTypeDataConstraints(
     dataConstraints.map(
       (constraint): PropertyTypeDataConstraintsWrapper => ({
         constraints: dataConstraintToPropertyTypeDataConstraint(
-          convertConstraint(
-            constraint.constraint.constraint,
-            baseType,
-            ridGenerator,
-          ),
+          constraint.constraint.constraint,
         ),
         failureMessage: constraint.constraint.failureMessage,
       }),
@@ -114,15 +108,6 @@ export function convertConstraints(
 interface ConvertedConstraint {
   constraint: DataConstraint;
   dependencies: ValueTypeDependency[];
-}
-
-function convertConstraint(
-  constraint: AuthoringDataConstraint,
-  baseType: BaseType,
-  ridGenerator: OntologyRidGenerator,
-): DataConstraint {
-  return convertConstraintWithDependencies(constraint, baseType, ridGenerator)
-    .constraint;
 }
 
 function convertConstraintWithDependencies(

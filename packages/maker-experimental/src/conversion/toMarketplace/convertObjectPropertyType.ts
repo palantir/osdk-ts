@@ -93,8 +93,6 @@ export function convertObjectPropertyType(
       ? convertValueTypeDataConstraints(
           property,
           property.valueType.constraints,
-          property.valueType.baseType,
-          ridGenerator,
         )
       : convertNullabilityToDataConstraint(property),
     // TODO: Convert sharedPropertyTypeRid from API name to RID
