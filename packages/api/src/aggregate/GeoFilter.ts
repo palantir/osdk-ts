@@ -17,12 +17,12 @@
 import type { BBox, Point, Polygon } from "geojson";
 
 import type { Just } from "./Just.js";
-import type { DistanceUnitMapping } from "./WhereClause.js";
+import type { DistanceUnit } from "./WhereClause.js";
 
 export interface GeoFilterOptions {
   $within:
     | {
-        $distance: [number, keyof typeof DistanceUnitMapping];
+        $distance: [number, DistanceUnit];
         $of: [number, number] | Readonly<Point>;
         $bbox?: never;
         $polygon?: never;

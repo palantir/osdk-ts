@@ -55,29 +55,55 @@ export type PossibleWhereClauseFilters =
   | "$interval"
   | "$matchesRegex";
 
-// the value side of this needs to match DistanceUnit from @osdk/foundry but we don't
-// want the dependency
+// DistanceUnit needs to match the gateway specification:
+// MILLIMETERS | CENTIMETERS | METERS | KILOMETERS | INCHES | FEET | YARDS | MILES | NAUTICAL_MILES
+export type DistanceUnit =
+  | "MILLIMETERS"
+  | "CENTIMETERS"
+  | "METERS"
+  | "KILOMETERS"
+  | "INCHES"
+  | "FEET"
+  | "YARDS"
+  | "MILES"
+  | "NAUTICAL_MILES";
+
+/**
+ * @deprecated Use {@link DistanceUnit} instead. The SDK now restricts distance units directly to the gateway specification values.
+ */
 export const DistanceUnitMapping: {
-  centimeter: "CENTIMETERS";
-  centimeters: "CENTIMETERS";
-  cm: "CENTIMETERS";
-  meter: "METERS";
-  meters: "METERS";
-  m: "METERS";
-  kilometer: "KILOMETERS";
-  kilometers: "KILOMETERS";
-  km: "KILOMETERS";
-  inch: "INCHES";
-  inches: "INCHES";
-  foot: "FEET";
-  feet: "FEET";
-  yard: "YARDS";
-  yards: "YARDS";
-  mile: "MILES";
-  miles: "MILES";
-  nautical_mile: "NAUTICAL_MILES";
-  nauticalMile: "NAUTICAL_MILES";
-  "nautical miles": "NAUTICAL_MILES";
+  readonly centimeter: "CENTIMETERS";
+  readonly centimeters: "CENTIMETERS";
+  readonly cm: "CENTIMETERS";
+  readonly meter: "METERS";
+  readonly meters: "METERS";
+  readonly m: "METERS";
+  readonly kilometer: "KILOMETERS";
+  readonly kilometers: "KILOMETERS";
+  readonly km: "KILOMETERS";
+  readonly inch: "INCHES";
+  readonly inches: "INCHES";
+  readonly foot: "FEET";
+  readonly feet: "FEET";
+  readonly yard: "YARDS";
+  readonly yards: "YARDS";
+  readonly mile: "MILES";
+  readonly miles: "MILES";
+  readonly nautical_mile: "NAUTICAL_MILES";
+  readonly nauticalMile: "NAUTICAL_MILES";
+  readonly "nautical miles": "NAUTICAL_MILES";
+  readonly millimeter: "MILLIMETERS";
+  readonly millimeters: "MILLIMETERS";
+  readonly mm: "MILLIMETERS";
+  readonly MILLIMETERS: "MILLIMETERS";
+  readonly CENTIMETERS: "CENTIMETERS";
+  readonly METERS: "METERS";
+  readonly KILOMETERS: "KILOMETERS";
+  readonly INCHES: "INCHES";
+  readonly FEET: "FEET";
+  readonly YARDS: "YARDS";
+  readonly MILES: "MILES";
+  readonly NAUTICAL_MILES: "NAUTICAL_MILES";
 } = {
   centimeter: "CENTIMETERS",
   centimeters: "CENTIMETERS",
@@ -99,22 +125,24 @@ export const DistanceUnitMapping: {
   nautical_mile: "NAUTICAL_MILES",
   nauticalMile: "NAUTICAL_MILES",
   "nautical miles": "NAUTICAL_MILES",
-} satisfies Record<
-  string,
-  | "CENTIMETERS"
-  | "METERS"
-  | "KILOMETERS"
-  | "INCHES"
-  | "FEET"
-  | "YARDS"
-  | "MILES"
-  | "NAUTICAL_MILES"
->;
+  millimeter: "MILLIMETERS",
+  millimeters: "MILLIMETERS",
+  mm: "MILLIMETERS",
+  MILLIMETERS: "MILLIMETERS",
+  CENTIMETERS: "CENTIMETERS",
+  METERS: "METERS",
+  KILOMETERS: "KILOMETERS",
+  INCHES: "INCHES",
+  FEET: "FEET",
+  YARDS: "YARDS",
+  MILES: "MILES",
+  NAUTICAL_MILES: "NAUTICAL_MILES",
+};
 
 export type GeoFilter_Within = {
   $within:
     | {
-        $distance: [number, keyof typeof DistanceUnitMapping];
+        $distance: [number, DistanceUnit];
         $of: [number, number] | Readonly<Point>;
         $bbox?: never;
         $polygon?: never;

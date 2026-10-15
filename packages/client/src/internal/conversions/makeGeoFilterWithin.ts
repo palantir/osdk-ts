@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { GeoFilterOptions } from "@osdk/api";
+import type { DistanceUnit, GeoFilterOptions } from "@osdk/api";
 import { DistanceUnitMapping } from "@osdk/api";
 import type {
   PropertyIdentifier,
@@ -57,7 +57,12 @@ export function makeGeoFilterWithin(
           : withinBody.$of,
         distance: {
           value: withinBody.$distance[0],
-          unit: DistanceUnitMapping[withinBody.$distance[1]],
+          unit:
+            withinBody.$distance[1] in DistanceUnitMapping
+              ? DistanceUnitMapping[
+                  withinBody.$distance[1] as keyof typeof DistanceUnitMapping
+                ]
+              : (withinBody.$distance[1] as DistanceUnit),
         },
       },
     };
