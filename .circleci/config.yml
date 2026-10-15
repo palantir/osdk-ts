@@ -394,7 +394,6 @@ jobs:
           command: |
             # Artifact URLs are deterministic, so no CircleCI API token is needed to look them up.
             url="https://output.circle-artifacts.com/output/job/$CIRCLE_WORKFLOW_JOB_ID/artifacts/${CIRCLE_NODE_INDEX:-0}/storybook-static/index.html"
-            echo "Storybook preview: $url"
             # The invisible marker line lets pr-comment.sh edit this comment on later pushes.
             cat > /tmp/storybook-preview.md \<<EOF
             <!-- storybook-preview -->
