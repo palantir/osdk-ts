@@ -78,6 +78,7 @@ function createMockEmailMedia(emlContent: string): Media {
       Promise.resolve({
         path: "email.eml",
         sizeBytes: emlContent.length,
+        sizeBytesLong: String(emlContent.length),
         mediaType: "message/rfc822",
       }),
     getMediaReference: () => ({

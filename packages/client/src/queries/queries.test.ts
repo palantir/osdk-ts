@@ -585,6 +585,7 @@ describe("queries", () => {
         fetchMetadata: () => ({
           path: "/test.png",
           sizeBytes: 1000,
+          sizeBytesLong: "1000",
           mediaType: "image/png",
         }),
         getMediaReference: () => mediaRef,

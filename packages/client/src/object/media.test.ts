@@ -18,8 +18,11 @@ import {
   $ontologyRid,
   objectTypeWithAllPropertyTypes,
 } from "@osdk/client.test.ontology";
+import type { SetupServer } from "@osdk/shared.test";
 import {
   LegacyFauxFoundry,
+  MockOntologiesV2,
+  msw,
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
@@ -28,15 +31,25 @@ import { beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMediaFromReference } from "../createMediaFromReference.js";
-import type { MinimalClient } from "../MinimalClientContext.js";
 
 describe("media", () => {
   let client: Client;
+  let apiServer: SetupServer;
+  let baseUrl: string;
+
+  const reference = stubData.objectWithAllPropertyTypes1.mediaReference;
+  const { mediaSetRid, mediaItemRid } = reference.reference.mediaSetViewItem;
+  const sizeCases = [
+    { sizeBytesLong: "2147483647", sizeBytes: 2147483647 },
+    { sizeBytesLong: "2147483648", sizeBytes: 2147483647 },
+    { sizeBytesLong: "9007199254740993", sizeBytes: 2147483647 },
+  ];
 
   beforeAll(() => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
 
-    ({ client } = testSetup);
+    ({ client, apiServer } = testSetup);
+    baseUrl = testSetup.fauxFoundry.baseUrl.replace(/\/$/u, "");
 
     testSetup.fauxFoundry
       .getDataStore($ontologyRid)
@@ -67,6 +80,7 @@ describe("media", () => {
       path: "file1.txt",
       mediaType: "application/json",
       sizeBytes: 25,
+      sizeBytesLong: "25",
     });
   });
 
@@ -82,6 +96,7 @@ describe("media", () => {
       itemMetadata: {
         type: "untyped",
         sizeBytes: 25,
+        sizeBytesLong: "25",
       },
     });
   });
@@ -89,19 +104,219 @@ describe("media", () => {
   it("reads full media metadata via createMediaFromReference", async () => {
     // Covers the non-ontology Media path (used by query results and the functions runtime).
     // Routes through MediaSets.metadata, same as the ontology-backed path above.
-    const reference = stubData.objectWithAllPropertyTypes1.mediaReference;
-    const media = createMediaFromReference(
-      client as unknown as MinimalClient,
-      reference,
-    );
+    const media = createMediaFromReference(client, reference);
 
     const fullMetadata = await media.fetchFullMetadata?.();
     expect(fullMetadata).toEqual({
       itemMetadata: {
         type: "untyped",
         sizeBytes: 25,
+        sizeBytesLong: "25",
       },
     });
+  });
+
+  it.each(sizeCases)(
+    "reads raw-reference basic metadata with sizeBytesLong=$sizeBytesLong",
+    async ({ sizeBytesLong }) => {
+      await apiServer.boundary(async () => {
+        apiServer.use(
+          msw.http.get(
+            `${baseUrl}/api/v2/mediasets/${mediaSetRid}/items/${mediaItemRid}`,
+            () =>
+              msw.HttpResponse.json({
+                mimeType: "application/json",
+                path: "file1.txt",
+                sizeBytesLong,
+                ...(sizeBytesLong === "2147483647"
+                  ? { sizeBytes: 2147483647 }
+                  : {}),
+              }),
+          ),
+        );
+
+        const metadata = await createMediaFromReference(
+          client,
+          reference,
+        ).fetchMetadata();
+
+        expect(metadata).toEqual({
+          mediaType: "application/json",
+          path: "file1.txt",
+          sizeBytes: Number(sizeBytesLong),
+          sizeBytesLong,
+        });
+      })();
+    },
+  );
+
+  it("reads raw-reference basic metadata from older responses", async () => {
+    await apiServer.boundary(async () => {
+      apiServer.use(
+        msw.http.get(
+          `${baseUrl}/api/v2/mediasets/${mediaSetRid}/items/${mediaItemRid}`,
+          () =>
+            msw.HttpResponse.json({
+              mimeType: "application/json",
+              path: "file1.txt",
+              sizeBytes: 25,
+            }),
+        ),
+      );
+
+      expect(
+        await createMediaFromReference(client, reference).fetchMetadata(),
+      ).toEqual({
+        mediaType: "application/json",
+        path: "file1.txt",
+        sizeBytes: 25,
+        sizeBytesLong: "25",
+      });
+    })();
+  });
+
+  it.each(sizeCases)(
+    "reads object-property basic metadata with sizeBytesLong=$sizeBytesLong",
+    async ({ sizeBytesLong }) => {
+      await apiServer.boundary(async () => {
+        apiServer.use(
+          MockOntologiesV2.MediaReferenceProperties.getMediaMetadata(
+            baseUrl,
+            () => ({
+              mediaType: "application/json",
+              path: "file1.txt",
+              sizeBytes: sizeBytesLong,
+            }),
+          ),
+        );
+
+        const result = await client(objectTypeWithAllPropertyTypes)
+          .where({ id: stubData.objectWithAllPropertyTypes1.id })
+          .fetchPage();
+        const metadata = await result.data[0].mediaReference?.fetchMetadata();
+
+        expect(metadata).toEqual({
+          mediaType: "application/json",
+          path: "file1.txt",
+          sizeBytes: Number(sizeBytesLong),
+          sizeBytesLong,
+        });
+      })();
+    },
+  );
+
+  describe.each(["raw reference", "object property"])(
+    "full metadata through %s",
+    (source) => {
+      it.each(sizeCases)(
+        "preserves sizeBytesLong=$sizeBytesLong and legacy sizeBytes=$sizeBytes",
+        async ({ sizeBytesLong, sizeBytes }) => {
+          await apiServer.boundary(async () => {
+            apiServer.use(
+              msw.http.get(
+                `${baseUrl}/api/v2/mediasets/${mediaSetRid}/items/${mediaItemRid}/metadata`,
+                () =>
+                  msw.HttpResponse.json({
+                    type: "untyped",
+                    sizeBytes,
+                    sizeBytesLong,
+                  }),
+              ),
+            );
+
+            const result =
+              source === "object property"
+                ? await client(objectTypeWithAllPropertyTypes)
+                    .where({ id: stubData.objectWithAllPropertyTypes1.id })
+                    .fetchPage()
+                : undefined;
+            const media =
+              source === "object property"
+                ? result?.data[0].mediaReference
+                : createMediaFromReference(client, reference);
+
+            expect(await media?.fetchFullMetadata?.()).toEqual({
+              itemMetadata: { type: "untyped", sizeBytes, sizeBytesLong },
+            });
+          })();
+        },
+      );
+
+      it("reads full metadata from older responses", async () => {
+        await apiServer.boundary(async () => {
+          apiServer.use(
+            msw.http.get(
+              `${baseUrl}/api/v2/mediasets/${mediaSetRid}/items/${mediaItemRid}/metadata`,
+              () => msw.HttpResponse.json({ type: "untyped", sizeBytes: 25 }),
+            ),
+          );
+
+          const result =
+            source === "object property"
+              ? await client(objectTypeWithAllPropertyTypes)
+                  .where({ id: stubData.objectWithAllPropertyTypes1.id })
+                  .fetchPage()
+              : undefined;
+          const media =
+            source === "object property"
+              ? result?.data[0].mediaReference
+              : createMediaFromReference(client, reference);
+
+          expect(await media?.fetchFullMetadata?.()).toEqual({
+            itemMetadata: {
+              type: "untyped",
+              sizeBytes: 25,
+              sizeBytesLong: "25",
+            },
+          });
+        })();
+      });
+    },
+  );
+
+  it("forwards read tokens for raw-reference metadata requests", async () => {
+    await apiServer.boundary(async () => {
+      const tokens: Array<string | null> = [];
+      apiServer.use(
+        msw.http.get(
+          `${baseUrl}/api/v2/mediasets/${mediaSetRid}/items/${mediaItemRid}`,
+          ({ request }) => {
+            tokens.push(request.headers.get("ReadToken"));
+            return msw.HttpResponse.json({
+              mimeType: "application/json",
+              sizeBytesLong: "2147483648",
+            });
+          },
+        ),
+        msw.http.get(
+          `${baseUrl}/api/v2/mediasets/${mediaSetRid}/items/${mediaItemRid}/metadata`,
+          ({ request }) => {
+            tokens.push(request.headers.get("ReadToken"));
+            return msw.HttpResponse.json({
+              type: "untyped",
+              sizeBytes: 2147483647,
+              sizeBytesLong: "2147483648",
+            });
+          },
+        ),
+      );
+
+      const media = createMediaFromReference(client, {
+        ...reference,
+        reference: {
+          ...reference.reference,
+          mediaSetViewItem: {
+            ...reference.reference.mediaSetViewItem,
+            token: "test-read-token",
+          },
+        },
+      });
+
+      await media.fetchMetadata();
+      await media.fetchFullMetadata?.();
+
+      expect(tokens).toEqual(["test-read-token", "test-read-token"]);
+    })();
   });
 
   it("reads media content successfully", async () => {

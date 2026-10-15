@@ -167,6 +167,42 @@ describe("MediaHelper", () => {
     expect(() => mediaHelper.dispose()).not.toThrow();
   });
 
+  it.each(["2147483647", "2147483648", "9007199254740993"])(
+    "preserves the exact Ontologies metadata size %s",
+    async (sizeBytesLong) => {
+      const coords: MediaPropertyLocation = {
+        objectType: "Employee",
+        primaryKey: "123",
+        propertyName: "avatar",
+      };
+      const getMediaMetadata = vi.mocked(
+        OntologiesV2.MediaReferenceProperties.getMediaMetadata,
+      );
+      getMediaMetadata.mockResolvedValue({
+        mediaType: "image/png",
+        path: "avatar.png",
+        sizeBytes: sizeBytesLong,
+      });
+
+      expect(
+        await mediaHelper.fetchMetadata(coords, { preview: false }),
+      ).toEqual({
+        mediaType: "image/png",
+        path: "avatar.png",
+        sizeBytes: Number(sizeBytesLong),
+        sizeBytesLong,
+      });
+      expect(getMediaMetadata).toHaveBeenCalledWith(
+        mockStore.client[additionalContext],
+        "ri.ontology.rid",
+        coords.objectType,
+        coords.primaryKey,
+        coords.propertyName,
+        { branch: undefined, preview: false },
+      );
+    },
+  );
+
   describe("getCachedContent preview cache key", () => {
     const coords: MediaPropertyLocation = {
       objectType: "Employee",

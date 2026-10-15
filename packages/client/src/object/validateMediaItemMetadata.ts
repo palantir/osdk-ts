@@ -15,6 +15,36 @@
  */
 
 import type { MediaItemMetadata, UnknownMediaItemMetadata } from "@osdk/api";
+import type { MediaItemMetadata as PlatformMediaItemMetadata } from "@osdk/foundry.mediasets";
+import type { IsEqual, Simplify } from "type-fest";
+
+import { getMediaSizeBytesLong } from "./getMediaSizeBytesLong.js";
+
+type AssertPlatformParity<T extends true> = T;
+// older platform bindings omit the long field; newer bindings must match it exactly
+type WithSizeBytesLong<T> = T extends unknown
+  ? "sizeBytesLong" extends keyof T
+    ? T
+    : T & { sizeBytesLong: string }
+  : never;
+type MediaSizeFields<
+  T extends { type: string; sizeBytes: number; sizeBytesLong?: unknown },
+> = T extends unknown ? Pick<T, "type" | "sizeBytes" | "sizeBytesLong"> : never;
+type _MediaItemSizeFieldsMatchPlatform = AssertPlatformParity<
+  IsEqual<
+    Simplify<MediaSizeFields<MediaItemMetadata>>,
+    Simplify<
+      MediaSizeFields<
+        WithSizeBytesLong<
+          Extract<
+            PlatformMediaItemMetadata,
+            { type: MediaItemMetadata["type"] }
+          >
+        >
+      >
+    >
+  >
+>;
 
 /**
  * Compile-time enforcement: every member of `MediaItemMetadata["type"]` must appear as a key.
@@ -44,15 +74,23 @@ const KNOWN_VARIANTS: ReadonlySet<string> = new Set(
  * can track; without this check, an unknown `type` string would slip through the type cast
  * and silently break downstream `switch (itemMetadata.type)` narrowing in caller code.
  *
- * Known variants pass through unchanged. Unknown variants are wrapped as
+ * known variants preserve the response's sizeBytes and expose its exact sizeBytesLong
+ * older responses derive the string from sizeBytes, preserving any legacy rounding or cap
+ *
+ * Unknown variants are wrapped as
  * `UnknownMediaItemMetadata` with the raw wire payload preserved on `raw`, so callers can
  * handle the forward-compat case explicitly instead of relying on a runtime throw.
  */
 export function validateMediaItemMetadata(raw: {
   type: string;
+  sizeBytes?: unknown;
+  sizeBytesLong?: unknown;
 }): MediaItemMetadata | UnknownMediaItemMetadata {
   if (KNOWN_VARIANTS.has(raw.type)) {
-    return raw as MediaItemMetadata;
+    const sizeBytesLong = getMediaSizeBytesLong(raw);
+    return (
+      raw.sizeBytesLong === sizeBytesLong ? raw : { ...raw, sizeBytesLong }
+    ) as MediaItemMetadata;
   }
   return {
     type: "unknown",

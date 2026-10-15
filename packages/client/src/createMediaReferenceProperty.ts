@@ -71,6 +71,7 @@ export class MediaReferencePropertyImpl implements Media {
     return {
       path: r.path as string,
       sizeBytes: Number(r.sizeBytes),
+      sizeBytesLong: r.sizeBytes,
       mediaType: r.mediaType,
     };
   }

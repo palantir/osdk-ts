@@ -30,6 +30,7 @@ function createMockMedia(url: string, filename: string): Media {
       Promise.resolve({
         path: filename,
         sizeBytes: 0,
+        sizeBytesLong: "0",
         mediaType: "video/mp4",
       }),
     getMediaReference: () => ({
@@ -104,6 +105,7 @@ export const WithErrorCallback: Story = {
         Promise.resolve({
           path: "broken.mp4",
           sizeBytes: 0,
+          sizeBytesLong: "0",
           mediaType: "video/mp4",
         }),
       getMediaReference: () => ({
