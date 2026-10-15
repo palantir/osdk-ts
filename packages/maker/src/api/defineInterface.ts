@@ -74,6 +74,8 @@ export type InterfaceTypeDefinition = {
   searchable?: boolean;
   permission?: EntityPermission;
   schemaMigrations?: InterfaceSchemaMigrations;
+  /** Folder path relative to the installation root. Omitted or "/" denotes the root. */
+  folder?: string;
 };
 
 export function defineInterface(
@@ -188,6 +190,7 @@ export function defineInterface(
 
   const fullInterface: InterfaceType = {
     apiName,
+    ...(interfaceDef.folder !== undefined && { folder: interfaceDef.folder }),
     displayMetadata: {
       displayName: interfaceDef.displayName ?? interfaceDef.apiName,
       description:

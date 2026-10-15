@@ -5,6 +5,7 @@ The Maker package provides a type-safe, programmatic way to define ontologies, w
 ## Table of Contents
 
 - [Getting Started](#getting-started)
+- [Folder Placement Metadata](#folder-placement-metadata)
 - [Key Concepts](#key-concepts)
 - [Defining an Ontology](#defining-an-ontology)
 - [Defining Shared Property Types](#defining-shared-property-types)
@@ -23,6 +24,14 @@ To get started with the maker package, install it as a dependency in your projec
 ```bash
 npm install @osdk/maker
 ```
+
+## Folder Placement Metadata
+
+Ontology entity definitions accept an optional `folder: string`, including objects, interfaces, actions, links, shared property types, and value types. Action helpers also accept this option, including function-backed actions in `@osdk/maker-experimental`.
+
+The path is relative to the installation root: `folder: "/a/b"` describes nested folders `a` and `b`, while omitting `folder` or using `"/"` denotes the installation root. Folder placement is separate from the entity's API name and identity. Each entity specifies its own placement; actions do not inherit the folder of their object or interface.
+
+This API currently preserves the supplied string in maker's entity model. Path normalization and validation, permission validation, serialized IR placement metadata, and folder creation during packaging and installation will be added separately.
 
 ## Defining Shared Property Types
 

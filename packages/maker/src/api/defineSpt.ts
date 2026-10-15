@@ -60,6 +60,8 @@ export interface SharedPropertyTypeDefinition {
   gothamMapping?: SharedPropertyTypeGothamMapping;
   baseFormatter?: OntologyIrBaseFormatter;
   permission?: EntityPermission;
+  /** Folder path relative to the installation root. Omitted or "/" denotes the root. */
+  folder?: string;
 }
 
 export function defineSharedPropertyType(

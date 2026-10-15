@@ -42,4 +42,6 @@ export type ObjectTypeDefinition = {
   aliases?: Array<string>;
   includeEmptyBackingDatasource?: boolean;
   permission?: EntityPermission;
+  /** Folder path relative to the installation root. Omitted or "/" denotes the root. */
+  folder?: string;
 };

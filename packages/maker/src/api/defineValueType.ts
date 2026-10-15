@@ -136,6 +136,8 @@ export type ValueTypeDefinition = {
   version: string;
   status?: UserValueTypeStatus;
   namespacePrefix?: boolean;
+  /** Folder path relative to the installation root. Omitted or "/" denotes the root. */
+  folder?: string;
 };
 
 export type UserValueTypeStatus =
@@ -195,6 +197,7 @@ export function defineValueType(
 
   const vt: ValueTypeDefinitionVersion = {
     apiName,
+    ...(valueTypeDef.folder !== undefined && { folder: valueTypeDef.folder }),
     packageNamespace: namespace.substring(0, namespace.length - 1),
     displayMetadata: {
       displayName: displayName,

@@ -19,4 +19,9 @@ import type { OntologyEntityTypeEnum } from "./OntologyEntityTypeEnum.js";
 export interface OntologyEntityBase {
   __type: OntologyEntityTypeEnum;
   apiName: string;
+  /**
+   * Folder path relative to the installation root, for example "/a/b".
+   * Omitted or "/" denotes the installation root. Placement does not affect entity identity.
+   */
+  folder?: string;
 }

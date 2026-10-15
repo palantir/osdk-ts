@@ -23,6 +23,8 @@ export type FunctionBackedActionTypeUserDefinition = {
   displayName?: string;
   description?: string;
   status?: ActionStatus;
+  /** Folder path relative to the installation root. Omitted or "/" denotes the root. */
+  folder?: string;
 };
 
 export function defineFunctionBackedAction(
@@ -34,6 +36,7 @@ export function defineFunctionBackedAction(
     apiName: def.apiName ?? `${def.functionApiName.toLowerCase()}-action`,
     displayName: def.displayName ?? `Function action ${def.functionApiName}`,
     description: def.description,
+    ...(def.folder !== undefined && { folder: def.folder }),
     rules: [
       {
         type: "functionRule",

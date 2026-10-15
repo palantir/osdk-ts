@@ -61,6 +61,8 @@ type DeleteInterfaceLinkActionBaseDefinition = {
   submissionMetadata?: SubmissionMetadata;
   permission?: EntityPermission;
   icon?: { locator: BlueprintIcon; color: string };
+  /** Folder path relative to the installation root. Omitted or "/" denotes the root. */
+  folder?: string;
 };
 
 export type DeleteInterfaceLinkActionUserDefinition =
@@ -204,6 +206,7 @@ export function defineDeleteInterfaceLinkAction(
       submissionMetadata: def.submissionMetadata,
     }),
     ...(def.permission && { permission: def.permission }),
+    ...(def.folder !== undefined && { folder: def.folder }),
     ...(def.icon && { icon: def.icon }),
   });
 }
