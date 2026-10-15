@@ -27,7 +27,7 @@ import {
   OntologyIrToFullMetadataConverter,
 } from "@osdk/generator-converters.ontologyir";
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
-import type { OntologyDefinition } from "@osdk/maker";
+import type { OntologyDefinition, OntologyPackagingOptions } from "@osdk/maker";
 import {
   cleanAndValidateLinkTypeId,
   DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME,
@@ -39,10 +39,7 @@ import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-import {
-  defineOntologyV2,
-  type OntologyPackagingOptions,
-} from "../api/defineOntologyV2.js";
+import { defineOntologyV2 } from "../api/defineOntologyV2.js";
 import { getExternalRecommendations } from "../conversion/toMarketplace/RecommendationUtils.js";
 import type {
   ExternalImportedOntologyMetadata,
@@ -86,6 +83,7 @@ export default async function main(
     randomnessKey?: string;
     importJson?: string;
     targetEnvironment: "CLOUD" | "EDGE";
+    targetEmbeddedOntology: boolean;
     lockfile?: string;
     writeLocks?: boolean;
     yes?: boolean;
@@ -125,6 +123,12 @@ export default async function main(
         describe: "Package for CLOUD, or for both cloud and edge with EDGE",
         choices: ["CLOUD", "EDGE"] as const,
         default: "CLOUD" as const,
+      },
+      targetEmbeddedOntology: {
+        describe:
+          "Generate OSDK for an embedded ontology (with `vector` propertyTypes excluded)",
+        type: "boolean",
+        default: true,
       },
       buildDir: {
         alias: "b",
@@ -325,7 +329,10 @@ export default async function main(
     commandLineOpts.randomnessKey,
     importedLinkTypeIdsByApiName,
     externalImportedMetadata,
-    { targetEnvironment: commandLineOpts.targetEnvironment },
+    {
+      targetEnvironment: commandLineOpts.targetEnvironment,
+      targetEmbeddedOntology: commandLineOpts.targetEmbeddedOntology,
+    },
     // An ontology that fails lockfile checks would fail at installation-time, so its block data
     // should never reach disk at all.
     (ontology) =>

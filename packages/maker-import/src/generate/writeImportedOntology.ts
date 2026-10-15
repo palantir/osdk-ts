@@ -18,7 +18,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 
 import type * as Ontologies from "@osdk/foundry.ontologies";
-import type { OntologyDefinition } from "@osdk/maker";
+import type { OntologyDefinition, OntologyPackagingOptions } from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
 
 import { convertActionType } from "./convertActionType.js";
@@ -49,6 +49,7 @@ interface EntityEntry {
 
 export function convertOntologyFullMetadata(
   metadata: Ontologies.OntologyFullMetadata,
+  packagingOptions: OntologyPackagingOptions,
 ): OntologyDefinition {
   const result: OntologyDefinition = {
     [OntologyEntityTypeEnum.OBJECT_TYPE]: {},
@@ -60,14 +61,18 @@ export function convertOntologyFullMetadata(
   };
 
   for (const spt of Object.values(metadata.sharedPropertyTypes)) {
-    const converted = convertSharedPropertyType(spt);
+    const converted = convertSharedPropertyType(spt, packagingOptions);
     if (converted) {
       result[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][converted.apiName] =
         converted;
     }
   }
   for (const iface of Object.values(metadata.interfaceTypes)) {
-    const converted = convertInterfaceType(iface, metadata.interfaceTypes);
+    const converted = convertInterfaceType(
+      iface,
+      metadata.interfaceTypes,
+      packagingOptions,
+    );
     result[OntologyEntityTypeEnum.INTERFACE_TYPE][converted.apiName] =
       converted;
   }
@@ -75,6 +80,7 @@ export function convertOntologyFullMetadata(
     const converted = convertObjectType(
       objectType,
       result[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE],
+      packagingOptions,
     );
     result[OntologyEntityTypeEnum.OBJECT_TYPE][converted.apiName] = converted;
   }
@@ -133,6 +139,7 @@ export function resolveVarNames(apiNames: string[]): string[] {
 export function writeImportedOntology(
   metadata: Ontologies.OntologyFullMetadata,
   outputDir: string,
+  packagingOptions: OntologyPackagingOptions = {},
 ): void {
   const codegenDir = path.resolve(outputDir, "codegen");
 
@@ -147,7 +154,10 @@ export function writeImportedOntology(
 
   // Pass 1: Convert all entities
   const entries: EntityEntry[] = [];
-  const convertedOntology = convertOntologyFullMetadata(metadata);
+  const convertedOntology = convertOntologyFullMetadata(
+    metadata,
+    packagingOptions,
+  );
 
   for (const entityType of [
     OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,

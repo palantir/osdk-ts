@@ -18,6 +18,7 @@ import type * as Ontologies from "@osdk/foundry.ontologies";
 import type {
   ObjectPropertyType,
   ObjectType,
+  OntologyPackagingOptions,
   SharedPropertyType,
 } from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
@@ -29,6 +30,7 @@ import { withoutNamespace } from "./utils.js";
 export function convertObjectType(
   fullMetadata: Ontologies.ObjectTypeFullMetadata,
   sharedPropertyTypes: Readonly<Record<string, SharedPropertyType>>,
+  packagingOptions: OntologyPackagingOptions,
 ): ObjectType {
   const obj = fullMetadata.objectType;
   const properties: Array<ObjectPropertyType> = [];
@@ -42,7 +44,7 @@ export function convertObjectType(
   );
 
   for (const [propApiName, propV2] of Object.entries(obj.properties)) {
-    const mapped = mapPropertyType(propV2.dataType);
+    const mapped = mapPropertyType(propV2.dataType, packagingOptions);
     if (!mapped) {
       consola.warn(
         `Skipping property "${propApiName}" on object "${obj.apiName}": unsupported type "${propV2.dataType.type}"`,

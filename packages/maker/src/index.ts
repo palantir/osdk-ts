@@ -49,6 +49,7 @@ export type { BlueprintIcon } from "./api/common/BlueprintIcons.js";
 export type { EntityPermission } from "./api/common/EntityPermission.js";
 export type { OntologyDefinition } from "./api/common/OntologyDefinition.js";
 export { OntologyEntityTypeEnum } from "./api/common/OntologyEntityTypeEnum.js";
+export type { OntologyPackagingOptions } from "./api/common/OntologyPackagingOptions.js";
 export {
   CREATE_INTERFACE_OBJECT_PARAMETER,
   CREATE_OR_MODIFY_OBJECT_PARAMETER,

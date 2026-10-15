@@ -20,14 +20,11 @@ import type {
   PropertySecurityGroups,
   PropertyTypeMappingInfo,
 } from "@osdk/client.unstable";
-import { defineObject } from "@osdk/maker";
+import { defineObject, type OntologyPackagingOptions } from "@osdk/maker";
 import { describe, expect, it } from "vitest";
 
 import { convertDatasourceForEdge } from "../conversion/toMarketplace/convertDatasourceDefinition.js";
-import {
-  defineOntologyV2,
-  type OntologyPackagingOptions,
-} from "./defineOntologyV2.js";
+import { defineOntologyV2 } from "./defineOntologyV2.js";
 import { defineImportObject } from "./importObjectType.js";
 
 const DATASOURCE_RID = "ri.ontology.main.datasource.source";

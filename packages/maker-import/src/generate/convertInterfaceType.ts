@@ -18,6 +18,7 @@ import type * as Ontologies from "@osdk/foundry.ontologies";
 import type {
   InterfacePropertyType,
   InterfaceType,
+  OntologyPackagingOptions,
   SharedPropertyType,
 } from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
@@ -35,6 +36,7 @@ import { withoutNamespace } from "./utils.js";
 export function convertInterfaceType(
   iface: Ontologies.InterfaceType,
   allInterfaces: Record<string, Ontologies.InterfaceType>,
+  packagingOptions: OntologyPackagingOptions,
 ): InterfaceType {
   const shortName = withoutNamespace(iface.apiName);
 
@@ -47,7 +49,7 @@ export function convertInterfaceType(
 
   for (const [_propApiName, prop] of Object.entries(iface.propertiesV2)) {
     if (prop.type === "interfaceSharedPropertyType") {
-      const converted = convertSharedPropertyType(prop);
+      const converted = convertSharedPropertyType(prop, packagingOptions);
       if (converted) {
         const entry = {
           sharedPropertyType: converted,
@@ -57,7 +59,7 @@ export function convertInterfaceType(
         propertiesV3[withoutNamespace(prop.apiName)] = entry;
       }
     } else if (prop.type === "interfaceDefinedPropertyType") {
-      const mapped = mapPropertyType(prop.dataType);
+      const mapped = mapPropertyType(prop.dataType, packagingOptions);
       if (mapped) {
         propertiesV3[withoutNamespace(prop.apiName)] = {
           type: mapped.type,
@@ -79,7 +81,9 @@ export function convertInterfaceType(
   for (const extApiName of iface.extendsInterfaces) {
     const extIface = allInterfaces[extApiName];
     if (extIface) {
-      extendsInterfaces.push(convertInterfaceType(extIface, allInterfaces));
+      extendsInterfaces.push(
+        convertInterfaceType(extIface, allInterfaces, packagingOptions),
+      );
     }
   }
 

@@ -19,7 +19,12 @@ import * as fs from "fs";
 import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { InputPreset } from "@osdk/client.unstable/api";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
-import type { LinkType, ObjectType, OntologyDefinition } from "@osdk/maker";
+import type {
+  LinkType,
+  ObjectType,
+  OntologyDefinition,
+  OntologyPackagingOptions,
+} from "@osdk/maker";
 import {
   getImportedTypes,
   getOntologyDefinition,
@@ -46,11 +51,6 @@ import {
   OntologyRidGeneratorImpl,
   ReadableIdGenerator,
 } from "../util/generateRid.js";
-
-export interface OntologyPackagingOptions {
-  // EDGE packages datasource definitions for both cloud and edge. Defaults to CLOUD.
-  targetEnvironment?: "CLOUD" | "EDGE";
-}
 
 export interface OntologyV2Result {
   ontologyIr: OntologyIrV2;
@@ -96,6 +96,7 @@ export async function defineOntologyV2(
   if (externalImportedMetadata) {
     const importedOntology = convertOntologyFullMetadata(
       externalImportedMetadata,
+      packagingOptions,
     );
     for (const entityType of [
       OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,

@@ -15,7 +15,11 @@
  */
 
 import type { ObjectPropertyType } from "@osdk/foundry.ontologies";
-import type { PropertyTypeType } from "@osdk/maker";
+import type {
+  OntologyPackagingOptions,
+  PropertyTypeType,
+  PropertyTypeTypeVector,
+} from "@osdk/maker";
 import { consola } from "consola";
 
 /**
@@ -35,6 +39,7 @@ export interface MappedPropertyType {
  */
 export function mapPropertyType(
   dataType: ObjectPropertyType,
+  packagingOptions: OntologyPackagingOptions,
 ): MappedPropertyType | undefined {
   switch (dataType.type) {
     case "string":
@@ -94,7 +99,7 @@ export function mapPropertyType(
       const structDefinition: PropertyTypeTypeStruct["structDefinition"] = {};
 
       for (const field of dataType.structFieldTypes) {
-        const mappedField = mapPropertyType(field.dataType);
+        const mappedField = mapPropertyType(field.dataType, packagingOptions);
         if (
           mappedField === undefined ||
           mappedField.array === true ||
@@ -117,6 +122,7 @@ export function mapPropertyType(
       if (dataType.mainValue !== undefined) {
         const mappedMainValue = mapPropertyType(
           dataType.mainValue.mainValueType,
+          packagingOptions,
         );
         if (mappedMainValue === undefined || mappedMainValue.array === true) {
           return undefined;
@@ -141,11 +147,64 @@ export function mapPropertyType(
         consola.warn("Array type missing subType, skipping");
         return undefined;
       }
-      const inner = mapPropertyType(subType);
+      const inner = mapPropertyType(subType, packagingOptions);
       if (!inner) {
         return undefined;
       }
       return { type: inner.type, array: true };
+    }
+    case "vector": {
+      if (packagingOptions.targetEmbeddedOntology) {
+        return undefined;
+      }
+      if (dataType.supportsSearchWith.length !== 1) {
+        consola.warn(
+          `Can only map vectors with exactly one "supportsSearchWith", found ${dataType.supportsSearchWith.length}`,
+        );
+        return undefined;
+      }
+      if (!dataType.supportsSearchWith[0].value) {
+        consola.warn(
+          'Cannot map vectors with undefined "supportsSearchWith" value',
+        );
+        return undefined;
+      }
+      let embeddingModel: PropertyTypeTypeVector["embeddingModel"];
+      if (dataType.embeddingModel?.type === "lms") {
+        embeddingModel = {
+          type: "text",
+          text: { type: "lms", lms: dataType.embeddingModel.value },
+        };
+      }
+      if (dataType.embeddingModel?.type === "foundryLiveDeployment") {
+        const { rid, inputParamName, outputParamName } =
+          dataType.embeddingModel;
+        if (
+          rid === undefined ||
+          inputParamName === undefined ||
+          outputParamName === undefined
+        ) {
+          consola.warn(
+            "Cannot map vector embedding model with missing live deployment configuration",
+          );
+          return undefined;
+        }
+        embeddingModel = {
+          type: "text",
+          text: {
+            type: "foundryLiveDeployment",
+            foundryLiveDeployment: { rid, inputParamName, outputParamName },
+          },
+        };
+      }
+      return {
+        type: {
+          type: "vector",
+          dimension: dataType.dimension,
+          supportsSearchWith: dataType.supportsSearchWith[0].value,
+          embeddingModel,
+        },
+      };
     }
     default:
       return undefined;
