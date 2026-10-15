@@ -23,6 +23,7 @@ import type {
 import {
   $Actions,
   actionTakesAttachment,
+  actionTakesDecimal,
   actionTakesMedia,
   addGeoshape,
   createFooInterface,
@@ -32,6 +33,7 @@ import {
   deleteFooInterface,
   Employee,
   moveOffice,
+  promoteEmployee,
 } from "@osdk/client.test.ontology";
 import type {
   BatchApplyActionResponseV2,
@@ -332,6 +334,146 @@ describe.each([
 
     expectTypeOf<typeof result2>().toEqualTypeOf<undefined>();
     expect(result2).toBeUndefined();
+  });
+
+  it.each([
+    {
+      amount: "12345678901234567890.123456789012345678",
+      expectedAmount: "12345678901234567890.123456789012345678",
+    },
+    { amount: 123.45, expectedAmount: "123.45" },
+  ])(
+    "serializes decimal scalar $amount and list parameters as strings",
+    async ({ amount, expectedAmount }) => {
+      const action = client(actionTakesDecimal);
+      type InferredParamType = Parameters<typeof action.applyAction>[0];
+      expectTypeOf<InferredParamType>().toEqualTypeOf<{
+        readonly amount: string | number;
+        readonly amounts: ReadonlyArray<string | number>;
+        readonly optionalAmount?: string | number | null;
+      }>();
+
+      await apiServer.boundary(async () => {
+        let requestBody: unknown;
+        apiServer.use(
+          MockOntologiesV2.Actions.apply(baseUrl, async ({ request }) => {
+            requestBody = await request.json();
+            return {
+              validation: {
+                result: "VALID",
+                submissionCriteria: [],
+                parameters: {},
+              },
+            };
+          }),
+        );
+
+        const result = await action.applyAction({
+          amount,
+          amounts: ["12345678901234567890.123456789012345678", 123.45],
+          optionalAmount: null,
+        });
+
+        expect(result).toBeUndefined();
+        expect(requestBody).toEqual({
+          parameters: {
+            amount: expectedAmount,
+            amounts: ["12345678901234567890.123456789012345678", "123.45"],
+            optionalAmount: null,
+          },
+          options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+        });
+      })();
+    },
+  );
+
+  it("serializes decimal scalar and list parameters as strings in batch actions", async () => {
+    const action = client(actionTakesDecimal);
+    type InferredBatchParamType = Parameters<typeof action.batchApplyAction>[0];
+    expectTypeOf<InferredBatchParamType>().toEqualTypeOf<
+      ReadonlyArray<{
+        readonly amount: string | number;
+        readonly amounts: ReadonlyArray<string | number>;
+        readonly optionalAmount?: string | number | null;
+      }>
+    >();
+
+    await apiServer.boundary(async () => {
+      let requestBody: unknown;
+      apiServer.use(
+        MockOntologiesV2.Actions.applyBatch(baseUrl, async ({ request }) => {
+          requestBody = await request.json();
+          return {};
+        }),
+      );
+
+      const result = await action.batchApplyAction([
+        {
+          amount: "12345678901234567890.123456789012345678",
+          amounts: ["0.123456789012345678", 123.45],
+        },
+        {
+          amount: 123.45,
+          amounts: [-123.45, "0.123456789012345678"],
+        },
+        {
+          amount: 0,
+          amounts: [],
+          optionalAmount: undefined,
+        },
+      ]);
+
+      expect(result).toBeUndefined();
+      expect(requestBody).toEqual({
+        requests: [
+          {
+            parameters: {
+              amount: "12345678901234567890.123456789012345678",
+              amounts: ["0.123456789012345678", "123.45"],
+            },
+          },
+          {
+            parameters: {
+              amount: "123.45",
+              amounts: ["-123.45", "0.123456789012345678"],
+            },
+          },
+          {
+            parameters: {
+              amount: "0",
+              amounts: [],
+            },
+          },
+        ],
+        options: { returnEdits: "NONE" },
+      });
+    })();
+  });
+
+  it("keeps integer and double action parameters as numbers", async () => {
+    await apiServer.boundary(async () => {
+      let requestBody: unknown;
+      apiServer.use(
+        MockOntologiesV2.Actions.apply(baseUrl, async ({ request }) => {
+          requestBody = await request.json();
+          return {};
+        }),
+      );
+
+      await client(promoteEmployee).applyAction({
+        employeeId: 50030,
+        newTitle: "Engineer",
+        newCompensation: 123.45,
+      });
+
+      expect(requestBody).toMatchObject({
+        parameters: {
+          employeeId: 50030,
+          newTitle: "Engineer",
+          newCompensation: 123.45,
+        },
+      });
+    })();
   });
 
   it("Accepts media reference", async () => {
@@ -714,6 +856,7 @@ describe("ActionResponse remapping", () => {
     const actions = Object.keys($Actions);
     expect(actions).toStrictEqual([
       "actionTakesAttachment",
+      "actionTakesDecimal",
       "actionTakesMedia",
       "actionTakesObjectSet",
       "addGeoshape",
