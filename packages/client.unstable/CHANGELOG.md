@@ -1,5 +1,7 @@
 # @osdk/client.unstable
 
+## 2.81.0
+
 ## 2.80.0
 
 ### Minor Changes

@@ -1,5 +1,18 @@
 # @osdk/generator
 
+## 2.81.0
+
+### Minor Changes
+
+- 23701c5: Compile time checks for invalid batch.create operations missing a required field
+
+### Patch Changes
+
+- Updated dependencies [24630ae]
+- Updated dependencies [23701c5]
+  - @osdk/api@2.81.0
+  - @osdk/generator-converters@2.81.0
+
 ## 2.80.0
 
 ### Patch Changes

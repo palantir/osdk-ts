@@ -1,5 +1,28 @@
 # @osdk/maker-experimental
 
+## 0.76.0
+
+### Minor Changes
+
+- d9eb929: Resolve derived property traversal directions consistently during validation and generation, and reference the final linked object's property RIDs. Allow derived datasources alongside empty backing datasets and exclude derived properties from generated backing columns.
+- 1ab9e14: Enforce the interface schema migration lockfile in `maker-experimental` before writing block data, with `--lockfile`, `--write-locks`, and `--yes` options matching `maker`.
+
+### Patch Changes
+
+- Updated dependencies [24630ae]
+- Updated dependencies [d9eb929]
+- Updated dependencies [1ab9e14]
+- Updated dependencies [23701c5]
+- Updated dependencies [bc63bd9]
+- Updated dependencies [f28586c]
+- Updated dependencies [8bc6e4a]
+  - @osdk/api@2.81.0
+  - @osdk/maker@0.80.0
+  - @osdk/generator-converters.preview@0.56.0
+  - @osdk/generator-converters.ontologyir@2.81.0
+  - @osdk/client.unstable@2.81.0
+  - @osdk/maker-import@0.46.0
+
 ## 0.75.0
 
 ### Minor Changes

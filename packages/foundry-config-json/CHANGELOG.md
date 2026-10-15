@@ -1,5 +1,11 @@
 # @osdk/foundry-config-json
 
+## 1.14.0
+
+### Minor Changes
+
+- c7d3f6c: Allow config loading and version resolution from a caller-supplied working directory using the cwd option.
+
 ## 1.13.0
 
 ### Minor Changes
