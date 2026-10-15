@@ -389,6 +389,21 @@ jobs:
       - store_artifacts:
           path: packages/react-components-storybook/storybook-static
           destination: storybook-static
+      - run:
+          name: Comment with the Storybook preview link
+          command: |
+            # Artifact URLs are deterministic, so no CircleCI API token is needed to look them up.
+            url="https://output.circle-artifacts.com/output/job/$CIRCLE_WORKFLOW_JOB_ID/artifacts/${CIRCLE_NODE_INDEX:-0}/storybook-static/index.html"
+            echo "Storybook preview: $url"
+            # The invisible marker line lets pr-comment.sh edit this comment on later pushes.
+            cat > /tmp/storybook-preview.md \<<EOF
+            <!-- storybook-preview -->
+            <h3>$(git --no-pager log --pretty=format:%s -1)</h3>
+            Build artifact links for this commit: <strong><a href="$url">storybook</a></strong>
+
+            <em>This is an automated comment from the build-storybook CircleCI job.</em>
+            EOF
+            .circleci/scripts/pr-comment.sh "<!-- storybook-preview -->" /tmp/storybook-preview.md
       - save-turbo-cache:
           scope: storybook
 
