@@ -1,5 +1,13 @@
 # @osdk/cli
 
+## 0.109.0
+
+### Patch Changes
+
+- Updated dependencies [c7d3f6c]
+  - @osdk/foundry-config-json@1.14.0
+  - @osdk/widget.api@3.81.0
+
 ## 0.108.0
 
 ### Minor Changes

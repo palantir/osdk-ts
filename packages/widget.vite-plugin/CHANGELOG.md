@@ -1,5 +1,13 @@
 # @osdk/widget.vite-plugin
 
+## 3.81.0
+
+### Patch Changes
+
+- Updated dependencies [c7d3f6c]
+  - @osdk/foundry-config-json@1.14.0
+  - @osdk/widget.api@3.81.0
+
 ## 3.80.0
 
 ### Patch Changes

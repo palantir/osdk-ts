@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 2.54.0
+
+### Minor Changes
+
+- 3677309: Convert agent session arguments containing OSDK objects and object sets, including nested values.
+
+### Patch Changes
+
+- Updated dependencies [24630ae]
+- Updated dependencies [23701c5]
+  - @osdk/api@2.81.0
+  - @osdk/generator-converters@2.81.0
+
 ## 2.53.0
 
 ### Patch Changes

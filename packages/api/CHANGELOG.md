@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.81.0
+
+### Minor Changes
+
+- 24630ae: Document `$applyModifiers` on `FetchPageArgs` and `AsyncIterArgs`.
+- 23701c5: Compile time checks for invalid batch.create operations missing a required field
+
 ## 2.80.0
 
 ## 2.79.0
