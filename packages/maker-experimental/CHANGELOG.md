@@ -1,5 +1,22 @@
 # @osdk/maker-experimental
 
+## 0.78.0
+
+### Minor Changes
+
+- 4c59807: Support authored value type references in struct constraints, including inline constraints on struct and array-of-struct object properties, and package their Marketplace dependencies with consistent value type input titles and descriptions across blocks. Move `OntologyIrV2` from `@osdk/client.unstable` to `@osdk/maker-experimental` and include value type dependencies in its `valueTypes` entries.
+
+### Patch Changes
+
+- Updated dependencies [8818fcf]
+- Updated dependencies [4c59807]
+  - @osdk/maker-import@0.48.0
+  - @osdk/client.unstable@2.83.0
+  - @osdk/maker@0.82.0
+  - @osdk/generator-converters.ontologyir@2.83.0
+  - @osdk/generator-converters.preview@0.58.0
+  - @osdk/api@2.83.0
+
 ## 0.77.0
 
 ### Patch Changes
