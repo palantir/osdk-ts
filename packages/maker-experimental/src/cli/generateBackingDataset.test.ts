@@ -27,7 +27,6 @@ import type {
 } from "@osdk/client.unstable";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import type { ReadableId } from "../util/generateRid.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
@@ -36,6 +35,8 @@ import {
   propertyTypeToSchemaType,
   typeToFieldSchema,
 } from "./generateBackingDataset.js";
+import type { BlockDataAddOn } from "./marketplaceSerialization/BlockGeneratorResult.js";
+import { toBlockShapeId } from "./marketplaceSerialization/CodeBlockSpec.js";
 
 function makePropertyType(
   apiName: string,
@@ -407,17 +408,16 @@ describe("generateBackingDatasetBlockResult", () => {
       (countCol.datasourceColumn as Record<string, unknown>).about,
     ).toHaveProperty("fallbackTitle", "count");
 
-    // compassResource input
-    const compassKey = "TestObject-backing-ds-compass-resource" as ReadableId;
-    expect(result.inputs[compassKey]).toBeDefined();
-    expect(result.inputs[compassKey].type).toBe("compassResource");
+    // Without a folder, the dataset uses the installation root.
+    expect(result.inputs).toEqual({});
+    expect(result.input_shape_metadata).toEqual({});
 
     // add_on_override
     expect(result.add_on_override).toBeDefined();
     const override = result.add_on_override as Record<string, unknown>;
     expect(override.idToBlockShapeId).toBeDefined();
     expect(override.idToInputGroupId).toEqual({});
-    expect(override.outputToLocationInput).toBeDefined();
+    expect(override.outputToLocationInput).toEqual({});
 
     // schema.json
     const schema = JSON.parse(
@@ -466,6 +466,55 @@ describe("generateBackingDatasetBlockResult", () => {
     expect(zipBuffer[2]).toBe(0x05);
     expect(zipBuffer[3]).toBe(0x06);
   });
+
+  it.each([undefined, "123e4567-e89b-12d3-a456-426614174000"])(
+    "preserves dataset identity when moving between folders and root with randomness key %s",
+    async (randomnessKey) => {
+      const blockData = createObjectTypeBlockData();
+      const root = await generateBackingDatasetBlockResult(
+        blockData,
+        buildDir,
+        randomnessKey,
+      );
+      const outputId = ReadableIdGenerator.getForDatasetOutput("TestObject");
+      const outputShapeId = toBlockShapeId(outputId, randomnessKey);
+      for (const folder of [
+        "/Aquarium/Animals/Fish",
+        "/Aquarium/Habitats",
+        "/",
+      ]) {
+        const placed = await generateBackingDatasetBlockResult(
+          blockData,
+          buildDir,
+          randomnessKey,
+          folder,
+        );
+        expect(placed.block_identifier).toBe(root.block_identifier);
+        expect(placed.outputs).toEqual(root.outputs);
+        const addOn = placed.add_on_override as BlockDataAddOn;
+        expect(addOn.idToBlockShapeId["dataset-internal-shape-id"]).toBe(
+          outputShapeId,
+        );
+        if (folder === "/") {
+          expect(placed).toEqual(root);
+        } else {
+          const inputId = ReadableIdGenerator.getForCompassFolder(folder);
+          expect(addOn.outputToLocationInput).toEqual({
+            [outputShapeId]: inputId,
+          });
+          expect(addOn.idToBlockShapeId[inputId]).toBe(
+            toBlockShapeId(inputId, randomnessKey),
+          );
+          expect(placed.input_mapping_entries).toEqual([
+            {
+              input: inputId,
+              output: ReadableIdGenerator.getForCompassFolderOutput(folder),
+            },
+          ]);
+        }
+      }
+    },
+  );
 
   it.each(["CBAC", "MANDATORY"] as const)(
     "generates backing columns for scalar and array %s markings",
@@ -804,11 +853,12 @@ describe("generateBackingDatasetBlockResultForLink", () => {
     // Total outputs: 1 tabularDatasource + 2 datasourceColumn
     expect(Object.keys(result.outputs)).toHaveLength(3);
 
-    // compassResource input
-    const compassKey =
-      `${linkApiName}-link-backing-ds-compass-resource` as ReadableId;
-    expect(result.inputs[compassKey]).toBeDefined();
-    expect(result.inputs[compassKey].type).toBe("compassResource");
+    // Without a folder, the dataset uses the installation root.
+    expect(result.inputs).toEqual({});
+    expect(result.input_shape_metadata).toEqual({});
+    expect(
+      (result.add_on_override as BlockDataAddOn).outputToLocationInput,
+    ).toEqual({});
 
     // schema.json
     const schema = JSON.parse(

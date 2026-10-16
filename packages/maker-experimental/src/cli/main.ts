@@ -526,6 +526,7 @@ export default async function main(
           objectTypeBlockData!,
           commandLineOpts.buildDir,
           commandLineOpts.randomnessKey,
+          outputFolderPaths[ReadableIdGenerator.getForObjectType(apiName)],
         );
       }),
   );
@@ -548,6 +549,11 @@ export default async function main(
           ontologyIr.ontology.objectTypes,
           commandLineOpts.buildDir,
           commandLineOpts.randomnessKey,
+          outputFolderPaths[
+            ReadableIdGenerator.getForLinkType(
+              cleanAndValidateLinkTypeId(linkApiName),
+            )
+          ],
         );
       })
       .filter((p): p is Promise<BlockGeneratorResult> => p !== undefined),

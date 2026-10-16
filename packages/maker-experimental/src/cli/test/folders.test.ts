@@ -175,4 +175,89 @@ describe("maker-experimental CLI folder blocks", () => {
     const results = await run("personNotOptedIn");
     expect(results.map((result) => result.block_type)).toEqual(["ONTOLOGY"]);
   });
+
+  it("installs generated backing datasets in their owning object or link folder", async () => {
+    const results = await run("backingDatasetFolders");
+    const datasets = results.filter(
+      (result) => result.block_type === "STATIC_DATASET",
+    );
+    expect(datasets).toHaveLength(6);
+    const ontology = results.find(
+      (result) => result.block_type === "ONTOLOGY",
+    )!;
+    const ontologyAddOn = ontology.add_on_override as BlockDataAddOn;
+
+    for (const { datasetName, ownerOutputId, folder } of [
+      {
+        datasetName: "Fish",
+        ownerOutputId: ReadableIdGenerator.getForObjectType("Fish"),
+        folder: "/Aquarium/Animals/Fish",
+      },
+      {
+        datasetName: "Tank",
+        ownerOutputId: ReadableIdGenerator.getForObjectType("Tank"),
+        folder: "/Aquarium/Habitats/Tanks",
+      },
+      {
+        datasetName: "link.fishVisitedTanks",
+        ownerOutputId: ReadableIdGenerator.getForLinkType("fish-visited-tanks"),
+        folder: "/Aquarium/Relationships",
+      },
+    ]) {
+      const outputId = ReadableIdGenerator.getForDatasetOutput(datasetName);
+      const dataset = datasets.find(
+        (result) => result.outputs[outputId] !== undefined,
+      )!;
+      const inputId = ReadableIdGenerator.getForCompassFolder(folder);
+      const folderOutputId =
+        ReadableIdGenerator.getForCompassFolderOutput(folder);
+      expect(
+        results.filter(
+          (result) => result.outputs[folderOutputId] !== undefined,
+        ),
+      ).toHaveLength(1);
+      expect(dataset.inputs[inputId]).toEqual(ontology.inputs[inputId]);
+      expect(dataset.input_shape_metadata[inputId]).toEqual({
+        isOptional: false,
+        isAccessedInReconcile: true,
+        reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+      });
+      const mapping = { input: inputId, output: folderOutputId };
+      expect(dataset.input_mapping_entries).toEqual([mapping]);
+      expect(ontology.input_mapping_entries).toContainEqual(mapping);
+      const addOn = dataset.add_on_override as BlockDataAddOn;
+      expect(addOn.outputToLocationInput).toEqual({
+        [toBlockShapeId(outputId, RANDOMNESS_KEY)]: inputId,
+      });
+      expect(
+        ontologyAddOn.outputToLocationInput[
+          toBlockShapeId(ownerOutputId, RANDOMNESS_KEY)
+        ],
+      ).toBe(inputId);
+      expect(addOn.idToBlockShapeId[inputId]).toBe(
+        toBlockShapeId(inputId, RANDOMNESS_KEY),
+      );
+    }
+
+    for (const apiName of ["Root", "EmptyRoot", "DefaultRoot"]) {
+      const outputId = ReadableIdGenerator.getForDatasetOutput(apiName);
+      const dataset = datasets.find(
+        (result) => result.outputs[outputId] !== undefined,
+      )!;
+      expect(dataset.inputs).toEqual({});
+      expect(dataset.input_mapping_entries).toEqual([]);
+      expect(dataset.input_shape_metadata).toEqual({});
+      expect(
+        (dataset.add_on_override as BlockDataAddOn).outputToLocationInput,
+      ).toEqual({});
+      expect(
+        ontologyAddOn.outputToLocationInput[
+          toBlockShapeId(
+            ReadableIdGenerator.getForObjectType(apiName),
+            RANDOMNESS_KEY,
+          )
+        ],
+      ).toBeUndefined();
+    }
+  });
 });
