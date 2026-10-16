@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-import type { AgentDefinitionVersion, DataType } from "@osdk/foundry.agents";
+import type {
+  AgentDefinitionVersion,
+  DataType,
+  ObjectReferenceType,
+} from "@osdk/foundry.agents";
 
 export function isPinnedAgentVersion(version: string): boolean {
   return /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/
     .test(version);
 }
 
-export function getAgentObjectTypeRids(
+export function getAgentObjectTypes(
   agent: AgentDefinitionVersion,
-): Set<string> {
-  const rids = new Set<string>();
+): ObjectReferenceType[] {
+  const objectTypes = new Map<string, ObjectReferenceType>();
   const visit = (type: DataType): void => {
     switch (type.type) {
       case "object":
       case "objectSet":
-        rids.add(type.objectTypeRid);
+        objectTypes.set(
+          JSON.stringify([type.ontologyApiName, type.objectTypeApiName]),
+          {
+            ontologyApiName: type.ontologyApiName,
+            objectTypeApiName: type.objectTypeApiName,
+          },
+        );
         break;
       case "nullable":
         visit(type.wrappedType);
@@ -53,5 +63,5 @@ export function getAgentObjectTypeRids(
   agent.eventDefinitions.forEach(event => visit(event.payloadType));
   visit(agent.agentStateType);
   agent.contextItemDefinitions.forEach(item => visit(item.dataType));
-  return rids;
+  return [...objectTypes.values()];
 }

@@ -24,18 +24,32 @@ import {
 } from "../objectSet/createObjectSet.js";
 import { convertAgentData } from "./agentData.js";
 
-const objectType = { apiName: "Todo", rid: "ri.object.type", primaryKey: "id" };
+const ontology = { apiName: "test", rid: "ri.ontology.test" };
+const objectType = {
+  apiName: "Todo",
+  rid: "ri.object.type",
+  primaryKey: "id",
+  icon: { type: "blueprint", color: "#000000", name: "document" },
+  properties: { id: { dataType: { type: "integer" } } },
+};
 const reference = {
   ontologyRid: "ri.ontology.test",
   objectTypeApiName: "Todo",
   primaryKey: { id: 123 },
 };
-const object: DataType = { type: "object", objectTypeRid: objectType.rid };
+const object: DataType = {
+  type: "object",
+  ontologyApiName: ontology.apiName,
+  objectTypeApiName: objectType.apiName,
+};
 const definition = { type: "object", apiName: "Todo" } as const;
 function setup() {
   const fetcher = vi.fn<typeof fetch>((url) => {
-    if (String(url).includes("getByRidBatch"))
-      return Promise.resolve(Response.json({ data: [objectType] }));
+    const path = new URL(String(url)).pathname;
+    if (path.endsWith("/ontologies/ri.ontology.test"))
+      return Promise.resolve(Response.json(ontology));
+    if (path.endsWith("/objectTypes/Todo/fullMetadata"))
+      return Promise.resolve(Response.json({ objectType, linkTypes: [] }));
     if (String(url).includes("objectSets/createTemporary"))
       return Promise.resolve(Response.json({ objectSetRid: "ri.object.set" }));
     throw new Error(`Unexpected request: ${url}`);
@@ -101,13 +115,14 @@ describe("agent data conversion", () => {
     const { client, fetcher } = setup();
     const type: DataType = {
       type: "objectSet",
-      objectTypeRid: objectType.rid,
+      ontologyApiName: ontology.apiName,
+      objectTypeApiName: objectType.apiName,
     };
     const set = createObjectSet(definition, client);
     expect(await convertAgentData(client, type, set, "input")).toBe(
       "ri.object.set",
     );
-    expect(JSON.parse(String(fetcher.mock.calls[0][1]?.body))).toEqual({
+    expect(JSON.parse(String(fetcher.mock.calls[1][1]?.body))).toEqual({
       objectSet: { type: "base", objectType: "Todo" },
     });
     const result = await convertAgentData(
@@ -129,17 +144,82 @@ describe("agent data conversion", () => {
     const { client, fetcher } = setup();
     await convertAgentData(client, object, 123, "input");
     await convertAgentData(client, object, reference, "output");
-    expect(fetcher).toHaveBeenCalledTimes(1);
-    expect(JSON.parse(String(fetcher.mock.calls[0][1]?.body))).toEqual({
-      requests: [{ objectTypeRid: objectType.rid }],
-    });
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(String(fetcher.mock.calls[0][0])).toContain(
+      "/ontologies/ri.ontology.test",
+    );
+    expect(String(fetcher.mock.calls[1][0])).toContain(
+      "/objectTypes/Todo/fullMetadata",
+    );
+    expect(
+      fetcher.mock.calls.some(([url]) => String(url).includes("getByRidBatch")),
+    ).toBe(false);
   });
 
   it("reports inaccessible object types", async () => {
     const { client, fetcher } = setup();
-    fetcher.mockResolvedValueOnce(Response.json({ data: [] }));
+    fetcher
+      .mockResolvedValueOnce(Response.json(ontology))
+      .mockResolvedValueOnce(
+        Response.json(
+          {
+            errorCode: "NOT_FOUND",
+            errorName: "ObjectTypeNotFound",
+            parameters: { objectType: "Todo" },
+          },
+          { status: 404 },
+        ),
+      );
     await expect(
       convertAgentData(client, object, 123, "input"),
-    ).rejects.toThrow("unavailable");
+    ).rejects.toMatchObject({ statusCode: 404 });
+  });
+
+  it("converts object references and object sets in struct fields", async () => {
+    const { client } = setup();
+    const type: DataType = {
+      type: "struct",
+      fields: [
+        { name: "object", dataType: object },
+        { name: "objects", dataType: { ...object, type: "objectSet" } },
+      ],
+    };
+    const input = {
+      object: { $apiName: "Todo", $primaryKey: 123 },
+      objects: createObjectSet(definition, client),
+    };
+    const wire = await convertAgentData(client, type, input, "input");
+    expect(wire).toEqual({ object: reference, objects: "ri.object.set" });
+    const result = (await convertAgentData(
+      client,
+      type,
+      wire,
+      "output",
+    )) as typeof input;
+    expect(result.object).toMatchObject(input.object);
+    expect(getWireObjectSet(result.objects)).toMatchObject({
+      type: "intersect",
+      objectSets: [
+        { type: "base", objectType: "Todo" },
+        { type: "reference", reference: "ri.object.set" },
+      ],
+    });
+  });
+
+  it("rejects object references and object sets belonging to another ontology", async () => {
+    const { client, fetcher } = setup();
+    const foreignObject: DataType = { ...object, ontologyApiName: "other" };
+    await expect(
+      convertAgentData(client, foreignObject, 123, "input"),
+    ).rejects.toThrow("belongs to ontology other, expected test");
+    await expect(
+      convertAgentData(
+        client,
+        { ...foreignObject, type: "objectSet" },
+        createObjectSet(definition, client),
+        "input",
+      ),
+    ).rejects.toThrow("belongs to ontology other, expected test");
+    expect(fetcher).toHaveBeenCalledTimes(1);
   });
 });

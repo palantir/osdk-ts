@@ -27,14 +27,13 @@ import type {
   QueryDataType,
   QueryTypeV2,
 } from "@osdk/foundry.ontologies";
-import * as ObjectTypes from "@osdk/foundry.ontologies/ObjectTypeV2";
 import type {
   WireAgentDefinition,
   WireOntologyDefinition,
 } from "@osdk/generator";
 import {
   GeneratorError,
-  getAgentObjectTypeRids,
+  getAgentObjectTypes,
   isPinnedAgentVersion,
 } from "@osdk/generator-converters";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
@@ -281,35 +280,21 @@ export class OntologyMetadataResolver {
           enumerable: true,
         });
       }
-      const rids = [
-        ...new Set(
-          Object.values(agentTypes).flatMap(
-            agent => [...getAgentObjectTypeRids(agent)],
-          ),
-        ),
-      ];
-      for (let offset = 0; offset < rids.length; offset += 100) {
-        const batch = rids.slice(offset, offset + 100);
-        const response = await ObjectTypes.getByRidBatch(
-          this.getClientContext(),
-          ontology.rid as OntologyIdentifier,
-          {
-            requests: batch.map(objectTypeRid => ({ objectTypeRid })),
-          },
-          { preview: true },
-        );
-        for (const rid of batch) {
-          const object = response.data.find(candidate => candidate.rid === rid);
-          if (!object) {
+      for (const agent of Object.values(agentTypes)) {
+        for (const objectType of getAgentObjectTypes(agent)) {
+          if (objectType.ontologyApiName !== ontology.apiName) {
             return Result.err([
               new GeneratorError(
-                "Agent schema references an unavailable object type",
-                undefined,
-                { objectTypeRid: rid },
+                "Agent object type belongs to a different ontology",
+                {
+                  objectTypeApiName: objectType.objectTypeApiName,
+                  expectedOntologyApiName: ontology.apiName,
+                  actualOntologyApiName: objectType.ontologyApiName,
+                },
               ),
             ]);
           }
-          agentObjectApiNames.add(object.apiName);
+          agentObjectApiNames.add(objectType.objectTypeApiName);
         }
       }
       if (agentObjectApiNames.size > 0) {

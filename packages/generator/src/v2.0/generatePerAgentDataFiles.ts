@@ -43,11 +43,6 @@ export async function generatePerAgentDataFiles(
     const imports = new Set<
       ReturnType<EnhancedOntologyDefinition["requireObjectType"]>
     >();
-    const objectByRid = new Map(
-      Object.values(ctx.ontology.raw.objectTypes).map((
-        { objectType },
-      ) => [objectType.rid, objectType.apiName]),
-    );
     const fields = (
       structFields: StructField[],
       mode: "Param" | "Result",
@@ -96,15 +91,17 @@ export async function generatePerAgentDataFiles(
           }).join(" | ") || "never";
         case "object":
         case "objectSet": {
-          const apiName = objectByRid.get(type.objectTypeRid);
-          if (!apiName) {
+          if (type.ontologyApiName !== ctx.ontology.raw.ontology.apiName) {
             throw new GeneratorError(
-              "Missing object type referenced by agent",
-              { apiName: raw.apiName },
-              { objectTypeRid: type.objectTypeRid },
+              "Agent object type belongs to a different ontology",
+              {
+                objectTypeApiName: type.objectTypeApiName,
+                expectedOntologyApiName: ctx.ontology.raw.ontology.apiName,
+                actualOntologyApiName: type.ontologyApiName,
+              },
             );
           }
-          const target = ctx.ontology.requireObjectType(apiName);
+          const target = ctx.ontology.requireObjectType(type.objectTypeApiName);
           imports.add(target);
           return `Query${mode}.${
             type.type === "object" ? "ObjectType" : "ObjectSetType"

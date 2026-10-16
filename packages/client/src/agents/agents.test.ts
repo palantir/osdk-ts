@@ -331,7 +331,8 @@ describe("agent sessions", () => {
                           name: "set",
                           dataType: {
                             type: "objectSet",
-                            objectTypeRid: objectType.rid,
+                            ontologyApiName: "test",
+                            objectTypeApiName: objectType.apiName,
                           },
                         },
                       ],
@@ -373,8 +374,12 @@ describe("agent sessions", () => {
       ),
     );
     fetcher.mockImplementation((url, init) => {
-      if (String(url).includes("getByRidBatch"))
-        return Promise.resolve(json({ data: [objectType] }));
+      if (
+        new URL(String(url)).pathname.endsWith("/ontologies/ri.ontology.test")
+      )
+        return Promise.resolve(
+          json({ rid: "ri.ontology.test", apiName: "test" }),
+        );
       if (String(url).endsWith("/aggregate")) return aggregate();
       return originalFetch(url, init);
     });

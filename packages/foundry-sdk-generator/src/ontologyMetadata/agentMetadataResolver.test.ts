@@ -37,11 +37,6 @@ function setup(agentSchema = schema) {
   const fetcher = vi.fn<typeof fetch>(async (url, init) => {
     const path = new URL(String(url)).pathname;
     if (path.includes("/agentDefinitions/")) return Response.json(agentSchema);
-    if (path.endsWith("/objectTypes/getByRidBatch")) {
-      return Response.json({
-        data: [{ apiName: "Todo", rid: "ri.object.type" }],
-      });
-    }
     if (path.endsWith("/metadata")) {
       const request = JSON.parse(String(init?.body)) as {
         objectTypes: string[];
@@ -127,13 +122,47 @@ describe("agent metadata loading", () => {
   it("discovers object types nested in schemas and includes them in ontology loading", async () => {
     const { resolver, fetcher } = setup({
       ...schema,
+      argumentDefinitions: [{
+        name: "object",
+        dataType: {
+          type: "object",
+          ontologyApiName: "test",
+          objectTypeApiName: "Todo",
+        },
+      }],
+      eventDefinitions: [{
+        eventType: "UseObject",
+        payloadType: {
+          type: "struct",
+          fields: [{
+            name: "object",
+            dataType: {
+              type: "object",
+              ontologyApiName: "test",
+              objectTypeApiName: "Todo",
+            },
+          }],
+        },
+      }],
+      contextItemDefinitions: [{
+        contextItemType: "objects",
+        dataType: {
+          type: "objectSet",
+          ontologyApiName: "test",
+          objectTypeApiName: "Todo",
+        },
+      }],
       agentStateType: {
         type: "record",
         valueType: {
           type: "nullable",
           wrappedType: {
             type: "list",
-            elementType: { type: "objectSet", objectTypeRid: "ri.object.type" },
+            elementType: {
+              type: "objectSet",
+              ontologyApiName: "test",
+              objectTypeApiName: "Todo",
+            },
           },
         },
       },
@@ -146,12 +175,38 @@ describe("agent metadata loading", () => {
     expect(result.value.requestedMetadata.objectTypes.Todo.objectType.rid).toBe(
       "ri.object.type",
     );
-    expect(JSON.parse(String(fetcher.mock.calls[2][1]?.body))).toEqual({
-      requests: [{ objectTypeRid: "ri.object.type" }],
-    });
-    expect(JSON.parse(String(fetcher.mock.calls[3][1]?.body))).toMatchObject({
+    expect(JSON.parse(String(fetcher.mock.calls[2][1]?.body))).toMatchObject({
       objectTypes: ["Todo"],
     });
+    expect(
+      fetcher.mock.calls.some(([url]) => String(url).includes("getByRidBatch")),
+    ).toBe(false);
+  });
+
+  it("rejects object types belonging to another ontology before loading them", async () => {
+    const { resolver, fetcher } = setup({
+      ...schema,
+      argumentDefinitions: [{
+        name: "object",
+        dataType: {
+          type: "object",
+          ontologyApiName: "other",
+          objectTypeApiName: "Todo",
+        },
+      }],
+    });
+    const result = await resolver.getWireOntologyDefinition(ontology.rid, {
+      agentTypesApiNamesToLoad: ["weatherAgent:1.2.3"],
+    });
+    expect(result.isErr()).toBe(true);
+    if (result.isOk()) throw new Error("Expected foreign ontology rejection");
+    expect(result.error[0].message).toContain("different ontology");
+    expect(result.error[0].unsafeParams).toEqual({
+      objectTypeApiName: "Todo",
+      expectedOntologyApiName: "test",
+      actualOntologyApiName: "other",
+    });
+    expect(fetcher).toHaveBeenCalledTimes(2);
   });
 
   it("reports missing agent metadata", async () => {

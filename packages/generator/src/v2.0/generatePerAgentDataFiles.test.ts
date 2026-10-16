@@ -27,7 +27,10 @@ import type {
 import { generateClientSdkVersionTwoPointZero } from "./generateClientSdkVersionTwoPointZero.js";
 import { generatePerAgentDataFiles } from "./generatePerAgentDataFiles.js";
 
-const objectTypeRid = TodoWireOntology.objectTypes.Todo.objectType.rid;
+const objectType = {
+  ontologyApiName: TodoWireOntology.ontology.apiName,
+  objectTypeApiName: "Todo",
+};
 const agent: WireAgentDefinition = {
   apiName: "weatherAgent",
   version: "1.2.3-rc1",
@@ -52,12 +55,12 @@ const agent: WireAgentDefinition = {
       eventType: "use-todos",
       payloadType: {
         type: "list",
-        elementType: { type: "object", objectTypeRid },
+        elementType: { type: "object", ...objectType },
       },
     },
     {
       eventType: "SetTodos",
-      payloadType: { type: "objectSet", objectTypeRid },
+      payloadType: { type: "objectSet", ...objectType },
     },
   ],
   agentStateType: {
@@ -70,7 +73,7 @@ const agent: WireAgentDefinition = {
           discriminatorValue: "todo",
           fields: [{
             name: "todo",
-            dataType: { type: "object", objectTypeRid },
+            dataType: { type: "object", ...objectType },
           }],
         },
         {
@@ -90,7 +93,7 @@ const agent: WireAgentDefinition = {
     },
     {
       contextItemType: "todos",
-      dataType: { type: "objectSet", objectTypeRid },
+      dataType: { type: "objectSet", ...objectType },
     },
   ],
 };

@@ -18,14 +18,16 @@ import type { ObjectTypeDefinition } from "@osdk/api";
 import type {
   AgentDefinitionVersion,
   DataType,
+  ObjectReferenceType,
   StructField,
 } from "@osdk/foundry.agents";
 import * as AgentDefinitionVersions from "@osdk/foundry.agents/AgentDefinitionVersion";
-import type { ObjectTypeV2 } from "@osdk/foundry.ontologies";
-import * as ObjectTypes from "@osdk/foundry.ontologies/ObjectTypeV2";
+import type { Ontology } from "@osdk/foundry.ontologies";
 import * as ObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet";
+import * as Ontologies from "@osdk/foundry.ontologies/OntologyV2";
 
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
+import { createAsyncClientCache } from "../object/Cache.js";
 import {
   createObjectSet,
   getWireObjectSet,
@@ -38,7 +40,9 @@ const metadata = new WeakMap<
   ClientCacheKey,
   Map<string, AgentDefinitionVersion>
 >();
-const objectTypes = new WeakMap<ClientCacheKey, Map<string, ObjectTypeV2>>();
+const ontologies = createAsyncClientCache<string, Ontology>((client, rid) =>
+  Ontologies.get(client, rid),
+);
 
 export async function loadAgentSchema(
   client: MinimalClient,
@@ -65,24 +69,16 @@ function record(value: unknown): Record<string, unknown> {
   return value as Record<string, unknown>;
 }
 
-async function loadObjectType(
+async function validateObjectTypeOntology(
   client: MinimalClient,
-  rid: string,
-): Promise<ObjectTypeV2> {
-  let cache = objectTypes.get(client.clientCacheKey);
-  if (!cache) objectTypes.set(client.clientCacheKey, (cache = new Map()));
-  const cached = cache.get(rid);
-  if (cached) return cached;
-  const response = await ObjectTypes.getByRidBatch(
-    client,
-    await client.ontologyRid,
-    { requests: [{ objectTypeRid: rid }] },
-    { preview: true },
-  );
-  const found = response.data.find((type) => type.rid === rid);
-  if (!found) throw new Error(`Agent object type is unavailable: ${rid}`);
-  cache.set(rid, found);
-  return found;
+  type: ObjectReferenceType,
+): Promise<void> {
+  const ontology = await ontologies.get(client, await client.ontologyRid);
+  if (type.ontologyApiName !== ontology.apiName) {
+    throw new Error(
+      `Agent object type ${type.objectTypeApiName} belongs to ontology ${type.ontologyApiName}, expected ${ontology.apiName}`,
+    );
+  }
 }
 
 export async function convertAgentFields(
@@ -183,7 +179,10 @@ export async function convertAgentData(
         : data;
     }
     case "object": {
-      const objectType = await loadObjectType(client, type.objectTypeRid);
+      await validateObjectTypeOntology(client, type);
+      const objectType = await client.ontologyProvider.getObjectDefinition(
+        type.objectTypeApiName,
+      );
       if (direction === "input") {
         const primaryKey =
           typeof value === "object" ? record(value).$primaryKey : value;
@@ -192,11 +191,13 @@ export async function convertAgentData(
         return {
           ontologyRid: await client.ontologyRid,
           objectTypeApiName: objectType.apiName,
-          primaryKey: { [objectType.primaryKey]: primaryKey },
+          primaryKey: { [objectType.primaryKeyApiName]: primaryKey },
         };
       }
       const reference = record(value);
-      const primaryKey = record(reference.primaryKey)[objectType.primaryKey];
+      const primaryKey = record(reference.primaryKey)[
+        objectType.primaryKeyApiName
+      ];
       if (typeof primaryKey !== "string" && typeof primaryKey !== "number")
         throw new Error("Invalid agent object reference");
       const definition: ObjectTypeDefinition = {
@@ -206,6 +207,7 @@ export async function convertAgentData(
       return createQueryObjectResponse(primaryKey, definition);
     }
     case "objectSet": {
+      await validateObjectTypeOntology(client, type);
       if (direction === "input") {
         if (typeof value !== "object" || !isObjectSet(value))
           throw new Error("Expected an OSDK object set");
@@ -223,14 +225,13 @@ export async function convertAgentData(
       }
       if (typeof value !== "string")
         throw new Error("Expected an object set RID");
-      const objectType = await loadObjectType(client, type.objectTypeRid);
       return createObjectSet(
-        { type: "object", apiName: objectType.apiName },
+        { type: "object", apiName: type.objectTypeApiName },
         objectSetClient,
         {
           type: "intersect",
           objectSets: [
-            { type: "base", objectType: objectType.apiName },
+            { type: "base", objectType: type.objectTypeApiName },
             { type: "reference", reference: value },
           ],
         },
