@@ -126,7 +126,7 @@ export async function defineOntologyV2(
     importedTypes,
     randomnessKey,
   );
-  const ontDef = convertOntologyDefinition(
+  const ontologyIr = convertOntologyDefinition(
     ontologyDefinition,
     ridGenerator,
     functionsIr,
@@ -135,7 +135,7 @@ export async function defineOntologyV2(
   );
 
   const shapes = await getShapes(
-    ontDef.ontology,
+    ontologyIr.ontology,
     ridGenerator,
     functionsIr,
     randomnessKey,
@@ -155,7 +155,7 @@ export async function defineOntologyV2(
     shapes.inputShapeMetadata.set(id, metadata);
   }
   shapes.inputMappings.push(...folderLocations.inputMappings);
-  ontDef.ontology.blockOutputCompassLocations = Object.fromEntries(
+  ontologyIr.ontology.blockOutputCompassLocations = Object.fromEntries(
     Array.from(folderLocations.outputToLocationInput, ([output, input]) => [
       ridGenerator.toBlockInternalId(output),
       ridGenerator.toBlockInternalId(input),
@@ -164,7 +164,7 @@ export async function defineOntologyV2(
 
   // Generate input shapes for imported entities and merge into main shapes
   const importedShapes = getImportedShapes(
-    ontDef.importedOntology,
+    ontologyIr.importedOntology,
     ridGenerator,
     importedLinkTypeIdsByApiName,
     externalImportedMetadata,
@@ -252,7 +252,7 @@ export async function defineOntologyV2(
   };
 
   return {
-    ontologyIr: ontDef,
+    ontologyIr,
     importedTypes,
     shapes,
     blockDataAddOn,
