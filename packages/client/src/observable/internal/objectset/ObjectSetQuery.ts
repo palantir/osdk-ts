@@ -19,24 +19,23 @@ import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import type { Observable, Subscription } from "rxjs";
 
 import { additionalContext } from "../../../Client.js";
-import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
-import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import { extractRdpDefinition } from "../../../util/extractRdpDefinition.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
+import {
+  getListMembershipChanges,
+  type ListObjectChanges,
+  reconcileListChanges,
+} from "../base-list/reconcileListChanges.js";
 import type { BatchContext } from "../BatchContext.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
-import {
-  API_NAME_IDX as OBJECT_API_NAME_IDX,
-  type ObjectCacheKey,
-} from "../object/ObjectCacheKey.js";
-import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
+import { API_NAME_IDX as OBJECT_API_NAME_IDX } from "../object/ObjectCacheKey.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
@@ -350,11 +349,7 @@ export class ObjectSetQuery extends BaseListQuery<
     return undefined;
   }
 
-  #getRelevantChanges(
-    changes: Changes,
-  ):
-    | { addedObjects: ObjectHolder[]; modifiedObjects: ObjectHolder[] }
-    | undefined {
+  #getRelevantChanges(changes: Changes): ListObjectChanges | undefined {
     const resultApiName = this.#resultTypeApiName;
     const addedObjects = changes.addedObjects.get(resultApiName) ?? [];
     const modifiedObjects = changes.modifiedObjects.get(resultApiName) ?? [];
@@ -378,7 +373,7 @@ export class ObjectSetQuery extends BaseListQuery<
       return undefined;
     }
 
-    return { addedObjects, modifiedObjects };
+    return { added: addedObjects, modified: modifiedObjects };
   }
 
   #handleLocalUpdate(
@@ -396,50 +391,42 @@ export class ObjectSetQuery extends BaseListQuery<
       return undefined;
     }
 
-    const addedMatches = this.#classifyByWhereMatch(
-      relevant.addedObjects,
-      effectiveWhere,
-    );
-    const modifiedMatches = this.#classifyByWhereMatch(
-      relevant.modifiedObjects,
-      effectiveWhere,
-    );
-
     const { retVal: needsRevalidation } = this.store.batch(
       { optimisticId, changes },
       (batch) => {
+        const membership = getListMembershipChanges(
+          relevant,
+          effectiveWhere,
+          batch.optimisticWrite,
+        );
         const existingEntry = batch.read(this.cacheKey);
         const existingKeys = new Set(existingEntry?.value?.data);
-
-        const reconciliationPlan = getListReconciliationPlan({
-          existingKeys,
-          addedDefiniteMatches: addedMatches.definite,
-          modifiedObjects: relevant.modifiedObjects,
-          modifiedMatches,
-          deleted: changes.deleted,
-          isOptimistic: batch.optimisticWrite,
-          getObjectCacheKey: (obj) => this.#getObjectCacheKey(obj),
-          getCachedObjectKey: (obj) => {
-            const key = this.#peekObjectCacheKey(obj);
-            if (key == null) {
-              return undefined;
-            }
-            const value = batch.read(key)?.value;
-            return value != null && typeof value === "object" ? key : undefined;
-          },
+        const { keys, hasMissingObjects } =
+          this.store.objects.getAvailableCacheKeys(
+            [...membership.added, ...membership.modified],
+            this.rdpConfig,
+            batch,
+          );
+        const keysToRemove = new Set<CacheKey>(changes.deleted);
+        for (const obj of membership.removed) {
+          keysToRemove.add(this.store.objects.getCacheKey(obj, this.rdpConfig));
+        }
+        const newList = reconcileListChanges(existingKeys, {
+          keysToInsert: Array.from(keys).filter(
+            (key) => !existingKeys.has(key),
+          ),
+          keysToRemove,
         });
-        const { needsRevalidation } = reconciliationPlan;
-        const newList = reconcileListChanges(existingKeys, reconciliationPlan);
+        const requiresRefresh =
+          membership.needsRevalidation || hasMissingObjects;
 
         const isPendingFetchLoading =
           this.pendingFetch != null && existingEntry?.status === "loading";
-        const hasUncertainMatches =
-          addedMatches.uncertain.size > 0 || modifiedMatches.uncertain.size > 0;
         const shouldBeLoading =
           isPendingFetchLoading ||
-          needsRevalidation ||
+          requiresRefresh ||
           optimisticId != null ||
-          hasUncertainMatches;
+          membership.hasUncertainMatches;
         const status = shouldBeLoading ? "loading" : "loaded";
 
         const existingTotalCount = existingEntry?.value?.totalCount;
@@ -451,7 +438,7 @@ export class ObjectSetQuery extends BaseListQuery<
           existingTotalCount,
         );
 
-        return needsRevalidation;
+        return requiresRefresh;
       },
     );
 
@@ -459,25 +446,6 @@ export class ObjectSetQuery extends BaseListQuery<
       return this.revalidate(true);
     }
     return undefined;
-  }
-
-  #classifyByWhereMatch(
-    objects: ReadonlyArray<ObjectHolder | InterfaceHolder>,
-    whereClause: Canonical<SimpleWhereClause>,
-  ): {
-    definite: ReadonlySet<ObjectHolder | InterfaceHolder>;
-    uncertain: ReadonlySet<ObjectHolder | InterfaceHolder>;
-  } {
-    const definite = new Set<ObjectHolder | InterfaceHolder>();
-    const uncertain = new Set<ObjectHolder | InterfaceHolder>();
-    for (const obj of objects) {
-      if (objectMatchesWhereClause(obj, whereClause, true)) {
-        definite.add(obj);
-      } else if (objectMatchesWhereClause(obj, whereClause, false)) {
-        uncertain.add(obj);
-      }
-    }
-    return { definite, uncertain };
   }
 
   async #computeInvalidationTypes(
@@ -496,31 +464,6 @@ export class ObjectSetQuery extends BaseListQuery<
       );
       return new Set();
     }
-  }
-
-  #getObjectCacheKey(obj: {
-    $objectType: string;
-    $primaryKey: string | number;
-  }): ObjectCacheKey {
-    const pk = obj.$primaryKey;
-    return this.cacheKeys.get<ObjectCacheKey>(
-      "object",
-      obj.$objectType,
-      pk,
-      this.rdpConfig ?? undefined,
-    );
-  }
-
-  #peekObjectCacheKey(obj: {
-    $objectType: string;
-    $primaryKey: string | number;
-  }): ObjectCacheKey | undefined {
-    return this.cacheKeys.peek<ObjectCacheKey>(
-      "object",
-      obj.$objectType,
-      obj.$primaryKey,
-      this.rdpConfig ?? undefined,
-    );
   }
 
   // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
@@ -557,83 +500,4 @@ export class ObjectSetQuery extends BaseListQuery<
       totalCount: params.totalCount,
     };
   }
-}
-
-function reconcileListChanges(
-  existingKeys: ReadonlySet<ObjectCacheKey>,
-  plan: {
-    keysToInsert: ReadonlySet<ObjectCacheKey>;
-    keysToRemove: ReadonlySet<CacheKey>;
-  },
-): ObjectCacheKey[] {
-  const newList: ObjectCacheKey[] = [];
-  for (const key of existingKeys) {
-    if (!plan.keysToRemove.has(key)) {
-      newList.push(key);
-    }
-  }
-  newList.push(...plan.keysToInsert);
-
-  return newList;
-}
-
-function getListReconciliationPlan({
-  existingKeys,
-  addedDefiniteMatches,
-  modifiedObjects,
-  modifiedMatches,
-  deleted,
-  isOptimistic,
-  getObjectCacheKey,
-  getCachedObjectKey,
-}: {
-  existingKeys: ReadonlySet<ObjectCacheKey>;
-  addedDefiniteMatches: ReadonlySet<ObjectHolder | InterfaceHolder>;
-  modifiedObjects: ReadonlyArray<ObjectHolder>;
-  modifiedMatches: {
-    definite: ReadonlySet<ObjectHolder | InterfaceHolder>;
-    uncertain: ReadonlySet<ObjectHolder | InterfaceHolder>;
-  };
-  deleted: ReadonlySet<CacheKey>;
-  isOptimistic: boolean;
-  getObjectCacheKey: (obj: ObjectHolder | InterfaceHolder) => ObjectCacheKey;
-  getCachedObjectKey: (
-    obj: ObjectHolder | InterfaceHolder,
-  ) => ObjectCacheKey | undefined;
-}): {
-  keysToInsert: ReadonlySet<ObjectCacheKey>;
-  keysToRemove: ReadonlySet<CacheKey>;
-  needsRevalidation: boolean;
-} {
-  const keysToInsert = new Set<ObjectCacheKey>();
-  const keysToRemove = new Set<CacheKey>(deleted);
-
-  let needsRevalidation = false;
-  const addIfAvailable = (obj: ObjectHolder | InterfaceHolder): void => {
-    const key = getCachedObjectKey(obj);
-    if (key == null) {
-      needsRevalidation = true;
-      return;
-    }
-    if (existingKeys.has(key)) {
-      return;
-    }
-    keysToInsert.add(key);
-  };
-
-  for (const obj of addedDefiniteMatches) {
-    addIfAvailable(obj);
-  }
-  for (const obj of modifiedObjects) {
-    if (modifiedMatches.definite.has(obj)) {
-      addIfAvailable(obj);
-    } else if (!isOptimistic) {
-      keysToRemove.add(getObjectCacheKey(obj));
-      if (modifiedMatches.uncertain.has(obj)) {
-        needsRevalidation = true;
-      }
-    }
-  }
-
-  return { keysToInsert, keysToRemove, needsRevalidation };
 }
