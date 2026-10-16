@@ -20,11 +20,13 @@ import {
   type AsyncValue,
   createFoundryWidgetClient,
   type FoundryWidgetClient,
+  type HostMessage,
   type ParameterConfig,
   type WidgetConfig,
 } from "@osdk/widget.client";
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 
+import { BlueprintThemeProvider } from "./blueprint-theme/BlueprintThemeProvider.js";
 import type {
   AugmentedEmitEvent,
   ExtendedAsyncParameterValueMap,
@@ -33,6 +35,7 @@ import type {
 } from "./context.js";
 import { FoundryWidgetContext } from "./context.js";
 import { ErrorBoundary } from "./ErrorBoundary.js";
+import { FoundryWidgetDocumentTheme } from "./FoundryWidgetDocumentTheme.js";
 import { extendParametersWithObjectSets } from "./utils/extendParametersWithObjectSets.js";
 import { initializeParameters } from "./utils/initializeParameters.js";
 import { transformEmitEventPayload } from "./utils/transformEmitEventPayload.js";
@@ -83,6 +86,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
   client: osdkClient,
 }: FoundryWidgetProps<C>): React.ReactElement<FoundryWidgetProps<C>> => {
   const client = useMemo(() => createFoundryWidgetClient<C>(), []);
+  const [theme, setTheme] = React.useState<HostMessage.ThemeV1>();
   const [asyncParameterValues, setAsyncParameterValues] = React.useState<
     ExtendedAsyncParameterValueMap<C>
   >(initialValues ?? initializeParameters(config, "not-started"));
@@ -141,6 +145,18 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
   );
 
   useEffect(() => {
+    const handleThemeUpdate = (
+      event: CustomEvent<HostMessage.Payload.UpdateTheme>,
+    ) => {
+      const nextTheme = event.detail.theme;
+      if (nextTheme == null || nextTheme.version === 1) {
+        setTheme(nextTheme);
+      }
+    };
+    client.hostEventTarget.addEventListener(
+      "host.update-theme",
+      handleThemeUpdate,
+    );
     client.subscribe();
     client.hostEventTarget.addEventListener(
       "host.update-parameters",
@@ -262,6 +278,10 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
 
     return () => {
       client.unsubscribe();
+      client.hostEventTarget.removeEventListener(
+        "host.update-theme",
+        handleThemeUpdate,
+      );
       resizeObserver.disconnect();
       if (import.meta.hot?.off) {
         import.meta.hot.off("vite:beforeFullReload", handleFullReload);
@@ -284,7 +304,11 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         } as FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>
       }
     >
-      <ErrorBoundary>{children}</ErrorBoundary>
+      {/* Set enabled to true here. Update theme message will only be received when the feature flag is on */}
+      <BlueprintThemeProvider theme={theme} enabled={true}>
+        <FoundryWidgetDocumentTheme />
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </BlueprintThemeProvider>
     </FoundryWidgetContext.Provider>
   );
 };

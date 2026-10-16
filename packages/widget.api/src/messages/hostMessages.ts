@@ -26,13 +26,23 @@ export namespace HostMessage {
   export const Version = "1.0.0";
   export type Version = typeof Version;
 
+  export interface ThemeV1 {
+    version: 1;
+    borderRadius?: "ROUNDED" | "REGULAR" | "SQUARE";
+  }
+
   export namespace Payload {
     export interface UpdateParameters<C extends WidgetConfig<C["parameters"]>> {
       parameters: AsyncParameterValueMap<C>;
     }
+
+    export interface UpdateTheme {
+      /** An absent theme clears any previously supplied overrides. */
+      theme?: ThemeV1;
+    }
   }
 
-  export type Payload = Payload.UpdateParameters<any>;
+  export type Payload = Payload.UpdateParameters<any> | Payload.UpdateTheme;
 
   export interface UpdateParameters<
     C extends WidgetConfig<C["parameters"]>,
@@ -40,10 +50,16 @@ export namespace HostMessage {
     "host.update-parameters",
     Payload.UpdateParameters<C>
   > {}
+
+  export interface UpdateTheme extends HostBaseMessage<
+    "host.update-theme",
+    Payload.UpdateTheme
+  > {}
 }
 
 export type HostMessage<C extends WidgetConfig<C["parameters"]>> =
-  HostMessage.UpdateParameters<C>;
+  | HostMessage.UpdateParameters<C>
+  | HostMessage.UpdateTheme;
 
 export function isHostParametersUpdatedMessage<
   C extends WidgetConfig<C["parameters"]>,
