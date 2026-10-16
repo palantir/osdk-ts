@@ -19,6 +19,7 @@
     "syncpack": "syncpack lint",
     "tag-release": "./scripts/tag-release.sh",
     "test": "FORCE_COLOR=1 turbo run test",
+    "test:scripts": "cd scripts && node --test",
     "test:watch": "FORCE_COLOR=1 turbo run test:watch",
     "typecheckAll": "tsc --build packages/* examples-extra/basic/*",
     "updateSnapshots": "FORCE_COLOR=1 turbo run updateSnapshots"
