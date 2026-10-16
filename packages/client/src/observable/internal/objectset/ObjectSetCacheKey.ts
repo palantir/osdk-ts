@@ -39,5 +39,9 @@ export interface ObjectSetCacheKey extends CacheKey<
   "objectSet",
   ObjectSetStorageData,
   ObjectSetQuery,
-  [baseObjectSetWire: string, operations: Canonical<ObjectSetOperations>]
+  [
+    baseObjectSetWire: string,
+    operations: Canonical<ObjectSetOperations>,
+    version?: 2,
+  ]
 > {}
