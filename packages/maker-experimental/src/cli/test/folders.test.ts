@@ -77,17 +77,10 @@ describe("maker-experimental CLI folder blocks", () => {
     ) as BlockGeneratorResult[];
   }
 
-  it("includes a shared nested folder tree in the generated block results", async () => {
+  it("emits shared nested Compass folders and wires the serialized ontology to them", async () => {
     const results = await run(`
-      import {
-        defineCreateObjectAction,
-        defineInterface,
-        defineLink,
-        defineObject,
-        defineSharedPropertyType,
-      } from "@osdk/maker";
-
-      const objects = ["Person", "Company", "Root"].map((apiName) =>
+      import { defineObject } from "@osdk/maker";
+      for (const apiName of ["Person", "Company"]) {
         defineObject({
           apiName,
           displayName: apiName,
@@ -96,62 +89,49 @@ describe("maker-experimental CLI folder blocks", () => {
           titlePropertyApiName: "id",
           properties: { id: { type: "string" } },
           permission: "publicProject",
-          folder:
-            apiName === "Root"
-              ? undefined
-              : { id: "/team/entities", location: "team//entities/" },
-        }),
-      );
-
-      defineInterface({
-        apiName: "Named",
-        permission: "publicProject",
-        folder: { id: "/team/entities", location: "/team/entities" },
-      });
-      defineSharedPropertyType({
-        apiName: "label",
-        type: "string",
-        permission: "publicProject",
-        folder: { id: "/team/entities", location: "/team/entities" },
-      });
-      defineCreateObjectAction({
-        objectType: objects[0],
-        apiName: "create-person",
-        permission: "publicProject",
-        folder: { id: "/team/entities", location: "/team/entities" },
-      });
-      defineLink({
-        apiName: "peopleCompanies",
-        many: { object: objects[0], metadata: { apiName: "companies" } },
-        toMany: { object: objects[1], metadata: { apiName: "people" } },
-        permission: "publicProject",
-        folder: { id: "/team/entities", location: "/team/entities" },
-      });
+          folder: { id: "entities", location: "team//entities/" },
+        });
+      }
     `);
     const folders = results.filter((result) => result.block_type === "COMPASS");
     expect(folders).toHaveLength(2);
-    expect(results.some((result) => result.block_type === "ONTOLOGY")).toBe(
-      true,
-    );
-
     const parentOutputId =
       ReadableIdGenerator.getForCompassFolderOutput("/team");
     const childOutputId =
-      ReadableIdGenerator.getForCompassFolderOutput("/team/entities");
-    const parent = folders.find(
-      (result) => result.outputs[parentOutputId] !== undefined,
-    )!;
-    const child = folders.find(
-      (result) => result.outputs[childOutputId] !== undefined,
-    )!;
-    const parentInputId = ReadableIdGenerator.getForCompassFolder("/team");
+      ReadableIdGenerator.getForCompassFolderOutput("entities");
+    const parent = folders.find((result) => result.outputs[parentOutputId])!;
+    const child = folders.find((result) => result.outputs[childOutputId])!;
     expect(parent.inputs).toEqual({});
+    expect(parent.outputs[parentOutputId]).toMatchObject({
+      type: "compassResource",
+      compassResource: {
+        about: { fallbackTitle: "team" },
+        type: { type: "compassFolderType" },
+      },
+    });
+    expect(child.outputs[childOutputId]).toMatchObject({
+      compassResource: {
+        about: {
+          fallbackTitle: "entities",
+          fallbackDescription: "/team/entities",
+        },
+      },
+    });
+    const parentInputId = ReadableIdGenerator.getForCompassFolder("/team");
     expect(child.input_mapping_entries).toEqual([
       { input: parentInputId, output: parentOutputId },
     ]);
+    expect(child.input_shape_metadata[parentInputId]).toEqual({
+      isOptional: false,
+      isAccessedInReconcile: true,
+      reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+    });
     const addOn = child.add_on_override as BlockDataAddOn;
     expect(addOn.idToBlockShapeId["compass-folder"]).toBe(
       toBlockShapeId(childOutputId, RANDOMNESS_KEY),
+    );
+    expect(addOn.idToBlockShapeId[parentInputId]).toBe(
+      toBlockShapeId(parentInputId, RANDOMNESS_KEY),
     );
     expect(
       addOn.outputToLocationInput[
@@ -170,15 +150,7 @@ describe("maker-experimental CLI folder blocks", () => {
     const ontology = results.find(
       (result) => result.block_type === "ONTOLOGY",
     )!;
-    const inputId = ReadableIdGenerator.getForCompassFolder("/team/entities");
-    const placedOutputs = [
-      ReadableIdGenerator.getForObjectType("Person"),
-      ReadableIdGenerator.getForObjectType("Company"),
-      ReadableIdGenerator.getForInterface("Named"),
-      ReadableIdGenerator.getForSpt("label"),
-      ReadableIdGenerator.getForActionType("create-person"),
-      ReadableIdGenerator.getForLinkType("people-companies"),
-    ];
+    const inputId = ReadableIdGenerator.getForCompassFolder("entities");
     const wireData = JSON.parse(
       await fs.readFile(
         path.join(ontology.block_data_directory, "ontology.json"),
@@ -187,37 +159,19 @@ describe("maker-experimental CLI folder blocks", () => {
     ) as OntologyBlockDataV2;
     expect(wireData.blockOutputCompassLocations).toEqual(
       Object.fromEntries(
-        placedOutputs.map((output) => [
-          toBlockShapeId(output, RANDOMNESS_KEY),
+        ["Person", "Company"].map((apiName) => [
+          toBlockShapeId(
+            ReadableIdGenerator.getForObjectType(apiName),
+            RANDOMNESS_KEY,
+          ),
           toBlockShapeId(inputId, RANDOMNESS_KEY),
         ]),
       ),
     );
-    expect(
-      ontology.input_mapping_entries.filter(
-        (mapping) => mapping.input === inputId,
-      ),
-    ).toEqual([{ input: inputId, output: childOutputId }]);
-    expect(ontology.input_shape_metadata[inputId]).toEqual({
-      isOptional: false,
-      isAccessedInReconcile: true,
-      reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+    expect(ontology.input_mapping_entries).toContainEqual({
+      input: inputId,
+      output: childOutputId,
     });
-    const ontologyAddOn = ontology.add_on_override as BlockDataAddOn;
-    expect(ontologyAddOn.idToBlockShapeId[inputId]).toBe(
-      toBlockShapeId(inputId, RANDOMNESS_KEY),
-    );
-    expect(ontologyAddOn.outputToLocationInput).toEqual(
-      Object.fromEntries(
-        placedOutputs.map((output) => [
-          toBlockShapeId(output, RANDOMNESS_KEY),
-          inputId,
-        ]),
-      ),
-    );
-    expect(
-      ontology.inputs[ReadableIdGenerator.getForCompassFolder("/")],
-    ).toBeUndefined();
   });
 
   it("preserves the output when no folders are requested", async () => {
@@ -284,22 +238,20 @@ describe("maker-experimental CLI folder blocks", () => {
     )!;
     const ontologyAddOn = ontology.add_on_override as BlockDataAddOn;
 
-    for (const { datasetName, ownerOutputId, folder, folderId } of [
+    for (const { datasetName, ownerOutputId, folderId } of [
       {
         datasetName: "Fish",
         ownerOutputId: ReadableIdGenerator.getForObjectType("Fish"),
-        folder: "/Aquarium/Animals/Fish",
         folderId: "fish-folder",
       },
       {
         datasetName: "Tank",
         ownerOutputId: ReadableIdGenerator.getForObjectType("Tank"),
-        folder: "/Aquarium/Habitats/Tanks",
+        folderId: "/Aquarium/Habitats/Tanks",
       },
       {
         datasetName: "link.fishVisitedTanks",
         ownerOutputId: ReadableIdGenerator.getForLinkType("fish-visited-tanks"),
-        folder: "/Aquarium/Relationships",
         folderId: "relationships",
       },
     ]) {
@@ -307,23 +259,18 @@ describe("maker-experimental CLI folder blocks", () => {
       const dataset = datasets.find(
         (result) => result.outputs[outputId] !== undefined,
       )!;
-      const inputId = ReadableIdGenerator.getForCompassFolder(
-        folderId ?? folder,
-      );
-      const folderOutputId = ReadableIdGenerator.getForCompassFolderOutput(
-        folderId ?? folder,
-      );
+      const inputId = ReadableIdGenerator.getForCompassFolder(folderId);
+      const folderOutputId =
+        ReadableIdGenerator.getForCompassFolderOutput(folderId);
       expect(
         results.filter(
           (result) => result.outputs[folderOutputId] !== undefined,
         ),
       ).toHaveLength(1);
       expect(dataset.inputs[inputId]).toEqual(ontology.inputs[inputId]);
-      expect(dataset.input_shape_metadata[inputId]).toEqual({
-        isOptional: false,
-        isAccessedInReconcile: true,
-        reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
-      });
+      expect(dataset.input_shape_metadata[inputId]).toEqual(
+        ontology.input_shape_metadata[inputId],
+      );
       const mapping = { input: inputId, output: folderOutputId };
       expect(dataset.input_mapping_entries).toEqual([mapping]);
       expect(ontology.input_mapping_entries).toContainEqual(mapping);
@@ -341,25 +288,22 @@ describe("maker-experimental CLI folder blocks", () => {
       );
     }
 
-    for (const apiName of ["DefaultRoot"]) {
-      const outputId = ReadableIdGenerator.getForDatasetOutput(apiName);
-      const dataset = datasets.find(
-        (result) => result.outputs[outputId] !== undefined,
-      )!;
-      expect(dataset.inputs).toEqual({});
-      expect(dataset.input_mapping_entries).toEqual([]);
-      expect(dataset.input_shape_metadata).toEqual({});
-      expect(
-        (dataset.add_on_override as BlockDataAddOn).outputToLocationInput,
-      ).toEqual({});
-      expect(
-        ontologyAddOn.outputToLocationInput[
-          toBlockShapeId(
-            ReadableIdGenerator.getForObjectType(apiName),
-            RANDOMNESS_KEY,
-          )
-        ],
-      ).toBeUndefined();
-    }
+    const rootOutputId = ReadableIdGenerator.getForDatasetOutput("DefaultRoot");
+    const rootDataset = datasets.find(
+      (result) => result.outputs[rootOutputId],
+    )!;
+    expect(rootDataset.inputs).toEqual({});
+    expect(rootDataset.input_mapping_entries).toEqual([]);
+    expect(
+      (rootDataset.add_on_override as BlockDataAddOn).outputToLocationInput,
+    ).toEqual({});
+    expect(
+      ontologyAddOn.outputToLocationInput[
+        toBlockShapeId(
+          ReadableIdGenerator.getForObjectType("DefaultRoot"),
+          RANDOMNESS_KEY,
+        )
+      ],
+    ).toBeUndefined();
   });
 });

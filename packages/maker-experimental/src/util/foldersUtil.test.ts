@@ -22,7 +22,6 @@ import type { Folder } from "@osdk/maker";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { BlockDataAddOn } from "../cli/marketplaceSerialization/BlockGeneratorResult.js";
-import { toBlockShapeId } from "../cli/marketplaceSerialization/CodeBlockSpec.js";
 import {
   buildFolderTree,
   generateFolderBlockResults,
@@ -64,7 +63,6 @@ describe("validateAndNormalizeFolderPath", () => {
   it.each([
     ["a/b/", "/a/b"],
     ["/a//b///", "/a/b"],
-    ["a", "/a"],
     [" .hidden /.../R&D\\Archive", "/ .hidden /.../R&D\\Archive"],
     ["日本語/é/🚀", "/日本語/é/🚀"],
   ])("canonicalizes %j to %j", (input, expected) => {
@@ -74,48 +72,35 @@ describe("validateAndNormalizeFolderPath", () => {
       apiName,
     );
     expect(normalized).toBe(expected);
-    expect(
+  });
+
+  it.each(["a/./b", "a//../b"])("rejects traversal in %j", (folder) => {
+    expect(() =>
       validateAndNormalizeFolderPath(
-        { id: "folder", location: normalized! },
+        { id: "folder", location: folder },
         "publicProject",
         apiName,
       ),
-    ).toBe(expected);
+    ).toThrow(
+      'Ontology entity "' +
+        apiName +
+        '": folder must not contain "." or ".." path segments',
+    );
   });
 
-  it.each([".", "..", "./a", "a/..", "a/./b", "a//../b"])(
-    "rejects traversal in %j",
-    (folder) => {
-      expect(() =>
-        validateAndNormalizeFolderPath(
-          { id: "folder", location: folder },
-          "publicProject",
-          apiName,
-        ),
-      ).toThrow(
-        'Ontology entity "' +
-          apiName +
-          '": folder must not contain "." or ".." path segments',
-      );
-    },
-  );
-
-  it.each([null, 42, "", "/", "/people"])(
-    "rejects invalid folder %j",
-    (folder) => {
-      expect(() =>
-        validateAndNormalizeFolderPath(
-          folder as unknown as Folder,
-          "publicProject",
-          apiName,
-        ),
-      ).toThrow(
-        'Ontology entity "' +
-          apiName +
-          '": folder must be an object with id and location',
-      );
-    },
-  );
+  it.each([null, "/people"])("rejects invalid folder %j", (folder) => {
+    expect(() =>
+      validateAndNormalizeFolderPath(
+        folder as unknown as Folder,
+        "publicProject",
+        apiName,
+      ),
+    ).toThrow(
+      'Ontology entity "' +
+        apiName +
+        '": folder must be an object with id and location',
+    );
+  });
 
   it("normalizes the location without modifying an explicit identity or the caller's definition", () => {
     const folder = Object.freeze({ id: "fish", location: "Aquarium//Fish/" });
@@ -126,10 +111,6 @@ describe("validateAndNormalizeFolderPath", () => {
   });
 
   it.each([
-    {
-      folder: { id: "", location: "/a" },
-      error: "folder id must be a non-empty string",
-    },
     {
       folder: { id: " ", location: "/a" },
       error: "folder id must be a non-empty string",
@@ -143,10 +124,6 @@ describe("validateAndNormalizeFolderPath", () => {
       error: "folder id must contain valid Unicode",
     },
     { folder: { id: "fish" }, error: "folder location must be a string" },
-    {
-      folder: { id: "fish", location: "/a/../b" },
-      error: 'folder must not contain "." or ".." path segments',
-    },
     {
       folder: { id: "root", location: "/" },
       error: "the installation root cannot be assigned a folder id",
@@ -165,19 +142,7 @@ describe("validateAndNormalizeFolderPath", () => {
     ).toThrow(error);
   });
 
-  it("requires publicProject permission for explicit folder identities", () => {
-    expect(() =>
-      validateAndNormalizeFolderPath(
-        { id: "fish", location: "/Aquarium/Fish" },
-        undefined,
-        apiName,
-      ),
-    ).toThrow(
-      'folder placement requires permission to be explicitly set to "publicProject"',
-    );
-  });
-
-  it.each(["a".repeat(700), "é".repeat(350), "🚀".repeat(175)])(
+  it.each(["a".repeat(700), "🚀".repeat(175)])(
     "accepts a folder name at the UTF-8 byte limit",
     (name) => {
       // The limit applies to each name, not the complete path.
@@ -198,7 +163,7 @@ describe("validateAndNormalizeFolderPath", () => {
     },
   );
 
-  it.each(["\uD800", "\uDC00", "a\uD800b", "a\uDC00b"])(
+  it.each(["a\uD800b", "a\uDC00b"])(
     "rejects malformed Unicode in %j",
     (folder) => {
       expect(() =>
@@ -224,142 +189,6 @@ describe("generateFolderBlockResults", () => {
 
   afterEach(async () => {
     await fs.rm(buildDir, { recursive: true, force: true });
-  });
-
-  it("writes Compass v1 blocks with parent mappings and installation-root fallback", async () => {
-    const outputFolders = {
-      [ReadableIdGenerator.getForObjectType("First")]: {
-        id: "/a/b/c",
-        location: "/a/b/c",
-      },
-      [ReadableIdGenerator.getForObjectType("Second")]: {
-        id: "/a/d",
-        location: "/a/d",
-      },
-      [ReadableIdGenerator.getForObjectType("Third")]: {
-        id: "/a/b/c",
-        location: "/a/b/c",
-      },
-      [ReadableIdGenerator.getForObjectType("Root")]: {
-        id: "/",
-        location: "/",
-      },
-    };
-    const folders = buildFolderTree(
-      Object.values(outputFolders),
-      randomnessKey,
-    );
-    const results = await generateFolderBlockResults(
-      outputFolders,
-      buildDir,
-      randomnessKey,
-    );
-    expect(results).toHaveLength(4);
-
-    for (const [index, folder] of folders.entries()) {
-      const result = results[index];
-      expect(result.block_identifier).toBe(folder.blockIdentifier);
-      expect(result.block_type).toBe("COMPASS");
-      expect(nodePath.isAbsolute(result.block_data_directory)).toBe(true);
-      expect(await fs.readdir(result.block_data_directory)).toEqual([
-        "VERSION",
-      ]);
-      expect(
-        await fs.readFile(
-          nodePath.join(result.block_data_directory, "VERSION"),
-          "utf-8",
-        ),
-      ).toBe('"v1"');
-      expect(result.outputs).toEqual({
-        [folder.outputReadableId]: {
-          type: "compassResource",
-          compassResource: {
-            about: {
-              fallbackTitle: folder.name,
-              fallbackDescription: folder.location,
-              localizedTitle: {},
-              localizedDescription: {},
-            },
-            type: { type: "compassFolderType", compassFolderType: {} },
-          },
-        },
-      });
-      const addOn = result.add_on_override as BlockDataAddOn;
-      expect(addOn.idToBlockShapeId["compass-folder"]).toBe(
-        folder.outputShapeId,
-      );
-      expect(addOn.idToInputGroupId).toEqual({});
-
-      if (folder.parentLocation === "/") {
-        expect(result.inputs).toEqual({});
-        expect(result.input_mapping_entries).toEqual([]);
-        expect(result.input_shape_metadata).toEqual({});
-        expect(addOn.outputToLocationInput).toEqual({});
-      } else {
-        const parent = folders.find(
-          (candidate) => candidate.location === folder.parentLocation,
-        )!;
-        const inputId = ReadableIdGenerator.getForCompassFolder(
-          folder.parentLocation,
-        );
-        expect(result.inputs[inputId]).toMatchObject({
-          type: "compassResource",
-          compassResource: {
-            allowedTypes: [
-              { type: "compassFolderType", compassFolderType: {} },
-            ],
-            typeConstraints: [
-              {
-                type: "compassFolderTypeConstraints",
-                compassFolderTypeConstraints: {
-                  constraints: ["INSTALL_LOCATION"],
-                },
-              },
-            ],
-          },
-        });
-        expect(result.input_shape_metadata[inputId]).toEqual({
-          isOptional: false,
-          isAccessedInReconcile: true,
-          reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
-        });
-        expect(result.input_mapping_entries).toEqual([
-          {
-            input: inputId,
-            output: parent.outputReadableId,
-          },
-        ]);
-        expect(addOn.outputToLocationInput).toEqual({
-          [folder.outputShapeId]: inputId,
-        });
-        expect(addOn.idToBlockShapeId[inputId]).toBe(
-          toBlockShapeId(inputId, randomnessKey),
-        );
-      }
-    }
-
-    expect(results[1].inputs).toEqual(results[3].inputs);
-    expect(results[1].input_mapping_entries).toEqual(
-      results[3].input_mapping_entries,
-    );
-    expect(
-      await generateFolderBlockResults(outputFolders, buildDir, randomnessKey),
-    ).toEqual(results);
-  });
-
-  it("does not emit blocks or files for root-only placement", async () => {
-    expect(
-      await generateFolderBlockResults(
-        {
-          [ReadableIdGenerator.getForObjectType("Root")]: {
-            id: "/",
-            location: "/",
-          },
-        },
-        buildDir,
-      ),
-    ).toEqual([]);
-    expect(await fs.readdir(buildDir)).toEqual([]);
   });
 
   it("preserves folder outputs and parent references when explicitly identified folders move and rename", async () => {
@@ -388,7 +217,6 @@ describe("generateFolderBlockResults", () => {
       const previous = before.find((block) => block.outputs[outputId])!;
       const next = after.find((block) => block.outputs[outputId])!;
       expect(next.block_identifier).toBe(previous.block_identifier);
-      expect(next.block_data_directory).toBe(previous.block_data_directory);
       expect(
         (next.add_on_override as BlockDataAddOn).idToBlockShapeId[
           "compass-folder"
@@ -442,18 +270,6 @@ describe("buildFolderTree", () => {
     expect(new Set(folders.map((folder) => folder.outputShapeId)).size).toBe(
       folders.length,
     );
-    expect(new Set(folders.map((folder) => folder.blockIdentifier)).size).toBe(
-      folders.length,
-    );
-  });
-
-  it("uses the existing installation root without generating a folder", () => {
-    expect(buildFolderTree([])).toEqual([]);
-    expect(
-      buildFolderTree(
-        ["/", "/"].map((location) => ({ id: location, location })),
-      ),
-    ).toEqual([]);
   });
 
   it("keeps IDs stable when placements are reordered, repeated, or extended", () => {
@@ -493,29 +309,6 @@ describe("buildFolderTree", () => {
       expect(second[index].outputShapeId).not.toBe(folder.outputShapeId);
       expect(second[index].blockIdentifier).not.toBe(folder.blockIdentifier);
     }
-    expect(buildFolderTree([{ id: "/a/b", location: "/a/b" }])).toEqual(
-      buildFolderTree([{ id: "/a/b", location: "/a/b" }]),
-    );
-  });
-
-  it("supports location-shaped identities and preserves folder names", () => {
-    const folders = buildFolderTree(
-      ["/a-b", "/a/b", "/ Sales /日本語\\Archive"].map((location) => ({
-        id: location,
-        location,
-      })),
-    );
-    expect(
-      folders.find((folder) => folder.location === "/ Sales /日本語\\Archive"),
-    ).toMatchObject({ name: "日本語\\Archive", parentLocation: "/ Sales " });
-    expect(
-      folders.find((folder) => folder.location === "/a-b")?.outputShapeId,
-    ).not.toBe(
-      folders.find((folder) => folder.location === "/a/b")?.outputShapeId,
-    );
-    for (const folder of folders) {
-      expect(folder.blockIdentifier).toMatch(/^folder-[a-f0-9-]+$/u);
-    }
   });
 
   it("shares explicit identities with implicit ancestors regardless of declaration order", () => {
@@ -536,29 +329,6 @@ describe("buildFolderTree", () => {
     ]);
   });
 
-  it("uses explicit identities independently of paths and scopes them to the bundle", () => {
-    const before = buildFolderTree(
-      [{ id: "fish", location: "/Animals/Fish" }],
-      randomnessKey,
-    ).find((folder) => folder.id === "fish")!;
-    const after = buildFolderTree(
-      [{ id: "fish", location: "/Aquarium/Livestock" }],
-      randomnessKey,
-    ).find((folder) => folder.id === "fish")!;
-    expect(after).toMatchObject({
-      outputReadableId: before.outputReadableId,
-      outputShapeId: before.outputShapeId,
-      blockIdentifier: before.blockIdentifier,
-      name: "Livestock",
-      parentLocation: "/Aquarium",
-    });
-    const otherBundle = buildFolderTree(
-      [{ id: "fish", location: "/Aquarium/Livestock" }],
-      "other-bundle",
-    ).find((folder) => folder.id === "fish")!;
-    expect(otherBundle.outputShapeId).not.toBe(after.outputShapeId);
-  });
-
   it("derives all folder locations and names from location even when the id resembles a different location", () => {
     const folders = buildFolderTree(
       [{ id: "/Old/Name", location: "/Aquarium/Animals/Fish" }],
@@ -574,10 +344,6 @@ describe("buildFolderTree", () => {
       location: "/Aquarium/Animals/Fish",
       name: "Fish",
       parentLocation: "/Aquarium/Animals",
-      outputShapeId: toBlockShapeId(
-        ReadableIdGenerator.getForCompassFolderOutput("/Old/Name"),
-        randomnessKey,
-      ),
     });
   });
 

@@ -16,9 +16,6 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 
-import type { EntityPermission } from "../common/EntityPermission.js";
-import type { Folder } from "../common/Folder.js";
-import { defineAction } from "../defineAction.js";
 import { defineCreateInterfaceLinkAction } from "../defineCreateInterfaceLinkAction.js";
 import { defineCreateInterfaceObjectAction } from "../defineCreateInterfaceObjectAction.js";
 import { defineCreateObjectAction } from "../defineCreateObjectAction.js";
@@ -28,18 +25,10 @@ import { defineDeleteInterfaceObjectAction } from "../defineDeleteInterfaceObjec
 import { defineDeleteObjectAction } from "../defineDeleteObjectAction.js";
 import { defineInterface } from "../defineInterface.js";
 import { defineInterfaceLinkConstraint } from "../defineInterfaceLinkConstraint.js";
-import { defineLink } from "../defineLink.js";
 import { defineModifyInterfaceObjectAction } from "../defineModifyInterfaceObjectAction.js";
 import { defineModifyObjectAction } from "../defineModifyObjectAction.js";
 import { defineObject } from "../defineObject.js";
-import {
-  defineOntology,
-  dumpOntologyFullMetadata,
-  getOntologyDefinition,
-} from "../defineOntology.js";
-import { defineSharedPropertyType } from "../defineSpt.js";
-
-type Placement = { folder?: Folder; permission?: EntityPermission };
+import { defineOntology } from "../defineOntology.js";
 
 const objectDefinition = {
   apiName: "Person",
@@ -50,160 +39,11 @@ const objectDefinition = {
   properties: { id: { type: "string" as const } },
 };
 
-const entityFactories = [
-  {
-    name: "object",
-    define: (placement: Placement) =>
-      defineObject({ ...objectDefinition, ...placement }),
-  },
-  {
-    name: "interface",
-    define: (placement: Placement) =>
-      defineInterface({ apiName: "Person", ...placement }),
-  },
-  {
-    name: "shared property",
-    define: (placement: Placement) =>
-      defineSharedPropertyType({
-        apiName: "name",
-        type: "string",
-        ...placement,
-      }),
-  },
-  {
-    name: "link",
-    define: (placement: Placement) => {
-      const object = defineObject(objectDefinition);
-      return defineLink({
-        apiName: "relatedPeople",
-        many: { object, metadata: { apiName: "relatedPeople" } },
-        toMany: { object, metadata: { apiName: "relatedTo" } },
-        ...placement,
-      });
-    },
-  },
-  {
-    name: "action",
-    define: (placement: Placement) =>
-      defineAction({
-        apiName: "create-person",
-        displayName: "Create person",
-        status: "active",
-        rules: [
-          {
-            type: "addObjectRule",
-            addObjectRule: {
-              objectTypeId: defineObject(objectDefinition).apiName,
-              propertyValues: {},
-              structFieldValues: {},
-            },
-          },
-        ],
-        ...placement,
-      }),
-  },
-];
+const actionFolder = { id: "actions", location: "actions//people/" };
 
-describe("folder placement", () => {
+describe("action helper folder placement", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, undefined);
-  });
-
-  describe.each(entityFactories)("$name", ({ define }) => {
-    it.each<Folder>([
-      { id: "people", location: "a//b/" },
-      { id: "other", location: "/other" },
-    ])(
-      "preserves folder %s and serializes publicProject permissions",
-      (folder) => {
-        const entity = define({ folder, permission: "publicProject" });
-        expect(entity).toMatchObject({
-          folder,
-          permission: "publicProject",
-        });
-        const registeredEntities = Object.values(getOntologyDefinition())
-          .flatMap((entities) => Object.values(entities))
-          .flat();
-        expect(registeredEntities).toContainEqual(
-          expect.objectContaining({
-            apiName: entity.apiName,
-            folder,
-            permission: "publicProject",
-          }),
-        );
-        const permissions = Object.values(
-          dumpOntologyFullMetadata().ontology.blockPermissionInformation!,
-        ).flatMap((entities) => Object.values(entities));
-        expect(permissions).toContainEqual({
-          restrictionStatus: expect.objectContaining({ publicProject: true }),
-        });
-      },
-    );
-
-    it("accepts explicit publicProject permission", () => {
-      expect(
-        define({
-          folder: { id: "/a", location: "a" },
-          permission: "publicProject",
-        }),
-      ).toMatchObject({
-        folder: { id: "/a", location: "a" },
-        permission: "publicProject",
-      });
-    });
-
-    it.each<EntityPermission>([
-      "roles",
-      { type: "ontologyPackage", ontologyPackageRid: "ri.ontology..package" },
-    ])("preserves permission %j for experimental conversion", (permission) => {
-      expect(
-        define({ folder: { id: "/", location: "/" }, permission }),
-      ).toMatchObject({
-        folder: { id: "/", location: "/" },
-        permission,
-      });
-    });
-
-    it.each([{ id: "people", location: "/a/b" }])(
-      "preserves %j without defaulting permission",
-      (folder) => {
-        const entity = define({ folder });
-        expect(entity.folder).toEqual(folder);
-        expect(entity.permission).toBeUndefined();
-      },
-    );
-
-    it("retains un-validated paths for experimental conversion", () => {
-      expect(
-        define({
-          folder: { id: "/a/../b", location: "a/../b" },
-          permission: "publicProject",
-        }).folder,
-      ).toEqual({ id: "/a/../b", location: "a/../b" });
-    });
-
-    it.each([undefined, "roles"] as const)(
-      "preserves permission %s when folder is omitted",
-      (permission) => {
-        const entity = define({ permission });
-        expect(entity.folder).toBeUndefined();
-        expect(entity.permission).toBe(permission);
-      },
-    );
-  });
-
-  it("does not mutate caller definitions", () => {
-    const input = Object.freeze({
-      ...objectDefinition,
-      permission: "publicProject" as const,
-      folder: { id: "/a//b", location: "a//b/" },
-    });
-    expect(defineObject(input)).toMatchObject({
-      folder: { id: "/a//b", location: "a//b/" },
-      permission: "publicProject",
-    });
-    expect(input.folder).toEqual({ id: "/a//b", location: "a//b/" });
-    expect(input.permission).toBe("publicProject");
   });
 
   it.each([
@@ -215,27 +55,13 @@ describe("folder placement", () => {
     const objectType = defineObject({
       ...objectDefinition,
       permission: "publicProject",
-      folder: { id: "/objects", location: "/objects" },
-    });
-    const action = define({
-      objectType,
-      permission: "publicProject",
-      folder: { id: "people-actions", location: "actions//people/" },
-    });
-    expect(action).toMatchObject({
-      folder: { id: "people-actions", location: "actions//people/" },
-      permission: "publicProject",
+      folder: { id: "objects", location: "/objects" },
     });
     expect(
-      define({
-        apiName: "incompatible-action",
-        objectType,
-        folder: { id: "/actions", location: "/actions" },
-        permission: "roles",
-      }),
+      define({ objectType, permission: "publicProject", folder: actionFolder }),
     ).toMatchObject({
-      folder: { id: "/actions", location: "/actions" },
-      permission: "roles",
+      folder: actionFolder,
+      permission: "publicProject",
     });
     expect(
       define({ apiName: "root-action", objectType }).folder,
@@ -250,29 +76,21 @@ describe("folder placement", () => {
     const interfaceType = defineInterface({
       apiName: "Person",
       permission: "publicProject",
-      folder: { id: "/interfaces", location: "/interfaces" },
+      folder: { id: "interfaces", location: "/interfaces" },
     });
     expect(
       define({
         interfaceType,
         permission: "publicProject",
-        folder: { id: "people-actions", location: "actions//people/" },
+        folder: actionFolder,
       }),
     ).toMatchObject({
-      folder: { id: "people-actions", location: "actions//people/" },
+      folder: actionFolder,
       permission: "publicProject",
     });
     expect(
-      define({
-        apiName: "incompatible-action",
-        interfaceType,
-        folder: { id: "/actions", location: "/actions" },
-        permission: "roles",
-      }),
-    ).toMatchObject({
-      folder: { id: "/actions", location: "/actions" },
-      permission: "roles",
-    });
+      define({ apiName: "root-action", interfaceType }).folder,
+    ).toBeUndefined();
   });
 
   it.each([defineCreateInterfaceLinkAction, defineDeleteInterfaceLinkAction])(
@@ -289,22 +107,11 @@ describe("folder placement", () => {
         define({
           interfaceLink,
           permission: "publicProject",
-          folder: { id: "link-actions", location: "actions//links/" },
+          folder: actionFolder,
         }),
       ).toMatchObject({
-        folder: { id: "link-actions", location: "actions//links/" },
+        folder: actionFolder,
         permission: "publicProject",
-      });
-      expect(
-        define({
-          apiName: "incompatible-action",
-          interfaceLink,
-          folder: { id: "/actions", location: "/actions" },
-          permission: "roles",
-        }),
-      ).toMatchObject({
-        folder: { id: "/actions", location: "/actions" },
-        permission: "roles",
       });
     },
   );

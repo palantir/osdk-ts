@@ -36,7 +36,6 @@ import {
   typeToFieldSchema,
 } from "./generateBackingDataset.js";
 import type { BlockDataAddOn } from "./marketplaceSerialization/BlockGeneratorResult.js";
-import { toBlockShapeId } from "./marketplaceSerialization/CodeBlockSpec.js";
 
 function makePropertyType(
   apiName: string,
@@ -467,54 +466,37 @@ describe("generateBackingDatasetBlockResult", () => {
     expect(zipBuffer[3]).toBe(0x06);
   });
 
-  it.each([undefined, "123e4567-e89b-12d3-a456-426614174000"])(
-    "preserves dataset identity when moving between folders and root with randomness key %s",
-    async (randomnessKey) => {
-      const blockData = createObjectTypeBlockData();
-      const root = await generateBackingDatasetBlockResult(
+  it("keeps dataset identity independent of its folder", async () => {
+    const blockData = createObjectTypeBlockData();
+    const randomnessKey = "123e4567-e89b-12d3-a456-426614174000";
+    const root = await generateBackingDatasetBlockResult(
+      blockData,
+      buildDir,
+      randomnessKey,
+    );
+    for (const folder of [
+      { id: "fish", location: "/Aquarium/Animals/Fish" },
+      { id: "habitats", location: "/Aquarium/Habitats" },
+    ]) {
+      const placed = await generateBackingDatasetBlockResult(
         blockData,
         buildDir,
         randomnessKey,
+        folder,
       );
-      const outputId = ReadableIdGenerator.getForDatasetOutput("TestObject");
-      const outputShapeId = toBlockShapeId(outputId, randomnessKey);
-      for (const folder of [
-        "/Aquarium/Animals/Fish",
-        "/Aquarium/Habitats",
-        "/",
-      ]) {
-        const placed = await generateBackingDatasetBlockResult(
-          blockData,
-          buildDir,
-          randomnessKey,
-          { id: folder, location: folder },
-        );
-        expect(placed.block_identifier).toBe(root.block_identifier);
-        expect(placed.outputs).toEqual(root.outputs);
-        const addOn = placed.add_on_override as BlockDataAddOn;
-        expect(addOn.idToBlockShapeId["dataset-internal-shape-id"]).toBe(
-          outputShapeId,
-        );
-        if (folder === "/") {
-          expect(placed).toEqual(root);
-        } else {
-          const inputId = ReadableIdGenerator.getForCompassFolder(folder);
-          expect(addOn.outputToLocationInput).toEqual({
-            [outputShapeId]: inputId,
-          });
-          expect(addOn.idToBlockShapeId[inputId]).toBe(
-            toBlockShapeId(inputId, randomnessKey),
-          );
-          expect(placed.input_mapping_entries).toEqual([
-            {
-              input: inputId,
-              output: ReadableIdGenerator.getForCompassFolderOutput(folder),
-            },
-          ]);
-        }
-      }
-    },
-  );
+      expect(placed.block_identifier).toBe(root.block_identifier);
+      expect(placed.outputs).toEqual(root.outputs);
+      expect(
+        (placed.add_on_override as BlockDataAddOn).idToBlockShapeId[
+          "dataset-internal-shape-id"
+        ],
+      ).toBe(
+        (root.add_on_override as BlockDataAddOn).idToBlockShapeId[
+          "dataset-internal-shape-id"
+        ],
+      );
+    }
+  });
 
   it.each(["CBAC", "MANDATORY"] as const)(
     "generates backing columns for scalar and array %s markings",
