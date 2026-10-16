@@ -318,15 +318,14 @@ function getConsumedValueTypes(
   }
 
   for (const versions of Object.values(importedTypes.VALUE_TYPE)) {
-    if (versions.length === 0) continue;
-    const firstVersion = versions[0];
-    const consumedId = ReadableIdGenerator.getForConsumedValueType(
-      firstVersion.apiName,
-      firstVersion.version,
-    );
-    if (!inputShapes.has(consumedId)) continue;
     for (const valueType of versions) {
-      addReference(valueType);
+      const consumedId = ReadableIdGenerator.getForConsumedValueType(
+        valueType.apiName,
+        valueType.version,
+      );
+      if (inputShapes.has(consumedId)) {
+        addReference(valueType);
+      }
     }
   }
 
@@ -351,7 +350,7 @@ function getConsumedValueTypes(
   return consumed;
 }
 
-function externalRecsForValueTypes(
+export function getValueTypeExternalRecommendations(
   producedValueTypes: ValueTypeBlockData[],
   importedTypes: OntologyDefinition,
   inputShapes: Map<string, InputShape>,
@@ -367,7 +366,14 @@ function externalRecsForValueTypes(
   for (const [apiName, versions] of consumed) {
     if (producedApiNames.has(apiName)) continue;
 
-    const mappings: ReadableIdMappingPair[] = versions.map((v) => ({
+    const consumedVersions = versions.filter((version) =>
+      inputShapes.has(
+        ReadableIdGenerator.getForConsumedValueType(apiName, version.version),
+      ),
+    );
+    if (consumedVersions.length === 0) continue;
+
+    const mappings: ReadableIdMappingPair[] = consumedVersions.map((v) => ({
       targetInputReadableId: ReadableIdGenerator.getForConsumedValueType(
         apiName,
         v.version,
@@ -379,7 +385,7 @@ function externalRecsForValueTypes(
     }));
 
     results.push({
-      upstreamPackageName: versions[0].packageNamespace,
+      upstreamPackageName: consumedVersions[0].packageNamespace,
       upstreamVersionCompatibility: DEFAULT_VERSION_RANGE,
       mappings,
     });
@@ -408,7 +414,7 @@ export function getExternalRecommendations(
     ...externalRecsForLinks(importedOntology),
     ...externalRecsForActions(importedOntology),
     ...externalRecsForActionParams(importedOntology),
-    ...externalRecsForValueTypes(
+    ...getValueTypeExternalRecommendations(
       producedValueTypes,
       importedTypes,
       inputShapes,

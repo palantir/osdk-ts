@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { InterfaceType, OntologyDefinition } from "@osdk/maker";
 import { getImportedTypes } from "@osdk/maker";
 
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
+import type { OntologyIrV2 } from "../../api/OntologyIrV2.js";
 import { OntologyRidGeneratorImpl } from "../../util/generateRid.js";
 import { convertOntologyDefinitionToWireBlockData } from "./convertOntologyDefinitionToWireBlockData.js";
 import { convertValueTypeToWireBlockData } from "./convertValueTypeToWireBlockData.js";
@@ -95,12 +95,20 @@ export function convertOntologyDefinition(
     throwawayRidGenerator,
   );
 
+  const valueTypes = convertValueTypeToWireBlockData(ontology, ridGenerator);
+  const importedValueTypeBlocks = convertValueTypeToWireBlockData(
+    importedTypes,
+    ridGenerator,
+  );
+
   return {
     ontology: mainOntology,
     importedOntology,
     transitiveImportedOntology,
-    valueTypes: convertValueTypeToWireBlockData(ontology),
-    importedValueTypes: convertValueTypeToWireBlockData(importedTypes),
+    valueTypes,
+    importedValueTypes: importedValueTypeBlocks.map(
+      ({ blockData }) => blockData,
+    ),
     randomnessKey,
   };
 }

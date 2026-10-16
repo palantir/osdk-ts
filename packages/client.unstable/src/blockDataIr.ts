@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-import type {
-  OntologyBlockDataV2,
-  OntologyIrOntologyBlockDataV2,
-} from "./generated/ontology-metadata/api/blockdata/index.js";
-import type {
-  OntologyIrValueTypeBlockData,
-  ValueTypeBlockData,
-} from "./generated/type-registry-marketplace/__components.js";
+import type { OntologyIrOntologyBlockDataV2 } from "./generated/ontology-metadata/api/blockdata/index.js";
+import type { OntologyIrValueTypeBlockData } from "./generated/type-registry-marketplace/__components.js";
 
 export type InterfaceTypeApiName = string;
 export type ObjectTypeFieldApiName = string;
@@ -33,14 +27,5 @@ export interface OntologyIr {
   importedOntology: OntologyIrOntologyBlockDataV2;
   valueTypes: OntologyIrValueTypeBlockData;
   importedValueTypes: OntologyIrValueTypeBlockData;
-  randomnessKey?: string;
-}
-
-export interface OntologyIrV2 {
-  ontology: OntologyBlockDataV2;
-  importedOntology: OntologyBlockDataV2;
-  valueTypes: ValueTypeBlockData[];
-  importedValueTypes: ValueTypeBlockData[];
-  transitiveImportedOntology: OntologyBlockDataV2;
   randomnessKey?: string;
 }

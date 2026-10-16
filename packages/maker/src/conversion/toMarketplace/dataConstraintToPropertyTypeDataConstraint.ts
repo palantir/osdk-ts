@@ -15,7 +15,6 @@
  */
 
 import type {
-  DataConstraint,
   PropertyTypeDataConstraints,
   PropertyTypeDataConstraints_array,
   PropertyTypeDataConstraints_boolean,
@@ -31,10 +30,11 @@ import type {
   PropertyTypeDataConstraints_timestamp,
 } from "@osdk/client.unstable";
 
+import type { AuthoringDataConstraint } from "../../api/values/ValueTypeType.js";
 import { convertDataConstraintToDataConstraints } from "./convertDataConstraintToDataConstraints.js";
 
 export function dataConstraintToPropertyTypeDataConstraint(
-  dc: DataConstraint,
+  dc: AuthoringDataConstraint,
 ): PropertyTypeDataConstraints {
   switch (dc.type) {
     case "array":
