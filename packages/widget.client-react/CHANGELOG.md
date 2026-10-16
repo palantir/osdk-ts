@@ -1,5 +1,12 @@
 # @osdk/widget.client-react
 
+## 3.83.0
+
+### Patch Changes
+
+- @osdk/client@2.83.0
+- @osdk/widget.client@3.83.0
+
 ## 3.82.0
 
 ### Patch Changes

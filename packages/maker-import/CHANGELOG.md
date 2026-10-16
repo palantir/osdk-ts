@@ -1,5 +1,17 @@
 # @osdk/maker-import
 
+## 0.48.0
+
+### Minor Changes
+
+- 8818fcf: Correctly map vector types, error on impossible type conversion instead of silent failure
+
+### Patch Changes
+
+- Updated dependencies [4c59807]
+  - @osdk/client.unstable@2.83.0
+  - @osdk/maker@0.82.0
+
 ## 0.47.0
 
 ### Patch Changes
