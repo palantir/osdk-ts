@@ -19,6 +19,7 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import type { OntologyBlockDataV2 } from "@osdk/client.unstable";
 import { consola } from "consola";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -84,17 +85,17 @@ describe("maker-experimental CLI folder blocks", () => {
       true,
     );
 
-    const parentOutputId = ReadableIdGenerator.getForCompassFolder("/team");
+    const parentOutputId =
+      ReadableIdGenerator.getForCompassFolderOutput("/team");
     const childOutputId =
-      ReadableIdGenerator.getForCompassFolder("/team/entities");
+      ReadableIdGenerator.getForCompassFolderOutput("/team/entities");
     const parent = folders.find(
       (result) => result.outputs[parentOutputId] !== undefined,
     )!;
     const child = folders.find(
       (result) => result.outputs[childOutputId] !== undefined,
     )!;
-    const parentInputId =
-      ReadableIdGenerator.getForCompassFolderLocation("/team");
+    const parentInputId = ReadableIdGenerator.getForCompassFolder("/team");
     expect(parent.inputs).toEqual({});
     expect(child.input_mapping_entries).toEqual([
       { input: parentInputId, output: parentOutputId },
@@ -116,6 +117,58 @@ describe("maker-experimental CLI folder blocks", () => {
         ),
       ).toBe('"v1"');
     }
+
+    const ontology = results.find(
+      (result) => result.block_type === "ONTOLOGY",
+    )!;
+    const inputId = ReadableIdGenerator.getForCompassFolder("/team/entities");
+    const placedOutputs = [
+      ReadableIdGenerator.getForObjectType("Person"),
+      ReadableIdGenerator.getForObjectType("Company"),
+      ReadableIdGenerator.getForInterface("Named"),
+      ReadableIdGenerator.getForSpt("label"),
+      ReadableIdGenerator.getForActionType("create-person"),
+      ReadableIdGenerator.getForLinkType("people-companies"),
+    ];
+    const wireData = JSON.parse(
+      await fs.readFile(
+        path.join(ontology.block_data_directory, "ontology.json"),
+        "utf-8",
+      ),
+    ) as OntologyBlockDataV2;
+    expect(wireData.blockOutputCompassLocations).toEqual(
+      Object.fromEntries(
+        placedOutputs.map((output) => [
+          toBlockShapeId(output, RANDOMNESS_KEY),
+          toBlockShapeId(inputId, RANDOMNESS_KEY),
+        ]),
+      ),
+    );
+    expect(
+      ontology.input_mapping_entries.filter(
+        (mapping) => mapping.input === inputId,
+      ),
+    ).toEqual([{ input: inputId, output: childOutputId }]);
+    expect(ontology.input_shape_metadata[inputId]).toEqual({
+      isOptional: false,
+      isAccessedInReconcile: true,
+      reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+    });
+    const ontologyAddOn = ontology.add_on_override as BlockDataAddOn;
+    expect(ontologyAddOn.idToBlockShapeId[inputId]).toBe(
+      toBlockShapeId(inputId, RANDOMNESS_KEY),
+    );
+    expect(ontologyAddOn.outputToLocationInput).toEqual(
+      Object.fromEntries(
+        placedOutputs.map((output) => [
+          toBlockShapeId(output, RANDOMNESS_KEY),
+          inputId,
+        ]),
+      ),
+    );
+    expect(
+      ontology.inputs[ReadableIdGenerator.getForCompassFolder("/")],
+    ).toBeUndefined();
   });
 
   it("preserves the output when no folders are requested", async () => {

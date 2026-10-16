@@ -37,6 +37,4 @@ export type ValueTypeDefinitionVersion = OntologyEntityBase & {
   constraints: ValueTypeDataConstraint[];
   exampleValues: ExampleValue[];
   __type: OntologyEntityTypeEnum.VALUE_TYPE;
-  /** Folder path relative to the installation root. Defaults to the root */
-  folder?: string;
 };

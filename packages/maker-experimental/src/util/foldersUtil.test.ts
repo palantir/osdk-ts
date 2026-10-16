@@ -56,15 +56,6 @@ describe("validateAndNormalizeFolderPath", () => {
     },
   );
 
-  it("validates value type paths without an ontology permission setting", () => {
-    expect(
-      validateAndNormalizeFolderPath("a//b/", undefined, apiName, false),
-    ).toBe("/a/b");
-    expect(() =>
-      validateAndNormalizeFolderPath("a/../b", undefined, apiName, false),
-    ).toThrow('folder must not contain "." or ".." path segments');
-  });
-
   it.each([
     ["", "/"],
     ["/", "/"],
@@ -211,7 +202,7 @@ describe("generateFolderBlockResults", () => {
         const parent = folders.find(
           (candidate) => candidate.path === folder.parentPath,
         )!;
-        const inputId = ReadableIdGenerator.getForCompassFolderLocation(
+        const inputId = ReadableIdGenerator.getForCompassFolder(
           folder.parentPath,
         );
         expect(result.inputs[inputId]).toMatchObject({

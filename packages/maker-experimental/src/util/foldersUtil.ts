@@ -48,24 +48,27 @@ export interface FolderNode {
   outputShapeId: string;
 }
 
+export interface FolderLocationInputs {
+  inputShapes: Map<ReadableId, InputShape>;
+  inputShapeMetadata: Map<ReadableId, InputShapeMetadata>;
+  inputMappings: InputMappingEntry[];
+  outputToLocationInput: Map<ReadableId, ReadableId>;
+}
+
 export function validateAndNormalizeFolderPath(
   folder: string | undefined,
   permission: EntityPermission | undefined,
   apiName: string,
-  // Value types do not have an ontology permission setting.
-  requiresProjectPermissions: boolean = true,
 ): string | undefined {
   if (folder === undefined) {
     return undefined;
   }
 
   const context = `Ontology entity "${apiName}"`;
-  if (requiresProjectPermissions) {
-    invariant(
-      permission === "publicProject",
-      `${context}: folder placement requires permission to be explicitly set to "publicProject"`,
-    );
-  }
+  invariant(
+    permission === "publicProject",
+    `${context}: folder placement requires permission to be explicitly set to "publicProject"`,
+  );
   invariant(typeof folder === "string", `${context}: folder must be a string`);
 
   const segments = folder.split("/").filter((segment) => segment.length > 0);
@@ -124,27 +127,58 @@ export function getOutputFolderPaths(
     }
   }
 
-  // Value type versions are outputs of separate blocks, not the ontology block.
-  for (const definitions of Object.values(ontology.VALUE_TYPE)) {
-    for (const definition of definitions) {
-      const folder = validateAndNormalizeFolderPath(
-        definition.folder,
-        undefined,
-        definition.apiName,
-        false,
-      );
-      if (folder !== undefined) {
-        outputFolderPaths[
-          ReadableIdGenerator.getForProducedValueType(
-            definition.apiName,
-            definition.version,
-          )
-        ] = folder;
-      }
-    }
+  return outputFolderPaths;
+}
+
+export function getFolderLocationInputs(
+  outputFolderPaths: Readonly<Record<ReadableId, string>>,
+  outputIds: Iterable<ReadableId>,
+): FolderLocationInputs {
+  const result: FolderLocationInputs = {
+    inputShapes: new Map(),
+    inputShapeMetadata: new Map(),
+    inputMappings: [],
+    outputToLocationInput: new Map(),
+  };
+
+  for (const outputId of outputIds) {
+    const folder = outputFolderPaths[outputId];
+    // Installers fall back to the installation root when no location input is mapped.
+    if (folder === undefined || folder === "/") continue;
+    const inputId = ReadableIdGenerator.getForCompassFolder(folder);
+    result.outputToLocationInput.set(outputId, inputId);
+    if (result.inputShapes.has(inputId)) continue;
+
+    result.inputShapes.set(inputId, {
+      type: "compassResource",
+      compassResource: {
+        about: {
+          fallbackTitle: folder,
+          fallbackDescription: "Folder installation location",
+          localizedTitle: {},
+          localizedDescription: {},
+        },
+        allowedTypes: [{ type: "compassFolderType", compassFolderType: {} }],
+        typeConstraints: [
+          {
+            type: "compassFolderTypeConstraints",
+            compassFolderTypeConstraints: { constraints: ["INSTALL_LOCATION"] },
+          },
+        ],
+      },
+    });
+    result.inputShapeMetadata.set(inputId, {
+      isOptional: false,
+      isAccessedInReconcile: true,
+      reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+    });
+    result.inputMappings.push({
+      input: inputId,
+      output: ReadableIdGenerator.getForCompassFolderOutput(folder),
+    });
   }
 
-  return outputFolderPaths;
+  return result;
 }
 
 /** Builds a tree from normalized placement paths, excluding the installation root. */
@@ -169,7 +203,7 @@ export function buildFolderTree(
     .map((folderPath) => {
       const lastSlash = folderPath.lastIndexOf("/");
       const outputReadableId =
-        ReadableIdGenerator.getForCompassFolder(folderPath);
+        ReadableIdGenerator.getForCompassFolderOutput(folderPath);
       const outputShapeId = toBlockShapeId(outputReadableId, randomnessKey);
       return {
         path: folderPath,
@@ -193,58 +227,28 @@ export function generateFolderBlockResults(
   );
   return Promise.all(
     folders.map(async (folder): Promise<BlockGeneratorResult> => {
-      const inputs: Record<ReadableId, InputShape> = {};
-      const inputShapeMetadata: Record<ReadableId, InputShapeMetadata> = {};
-      const inputMappings: InputMappingEntry[] = [];
+      const folderLocations = getFolderLocationInputs(
+        { [folder.outputReadableId]: folder.parentPath },
+        [folder.outputReadableId],
+      );
       const addOn: BlockDataAddOn = {
         idToBlockShapeId: {
           [COMPASS_FOLDER_INTERNAL_SHAPE_ID]: folder.outputShapeId,
+          ...Object.fromEntries(
+            Array.from(folderLocations.inputShapes.keys(), (input) => [
+              input,
+              toBlockShapeId(input, randomnessKey),
+            ]),
+          ),
         },
         idToInputGroupId: {},
-        outputToLocationInput: {},
+        outputToLocationInput: Object.fromEntries(
+          Array.from(
+            folderLocations.outputToLocationInput,
+            ([output, input]) => [toBlockShapeId(output, randomnessKey), input],
+          ),
+        ),
       };
-
-      if (folder.parentPath !== "/") {
-        const parentInputId = ReadableIdGenerator.getForCompassFolderLocation(
-          folder.parentPath,
-        );
-        inputs[parentInputId] = {
-          type: "compassResource",
-          compassResource: {
-            about: {
-              fallbackTitle: folder.parentPath,
-              fallbackDescription: "Folder installation location",
-              localizedTitle: {},
-              localizedDescription: {},
-            },
-            allowedTypes: [
-              { type: "compassFolderType", compassFolderType: {} },
-            ],
-            typeConstraints: [
-              {
-                type: "compassFolderTypeConstraints",
-                compassFolderTypeConstraints: {
-                  constraints: ["INSTALL_LOCATION"],
-                },
-              },
-            ],
-          },
-        };
-        inputShapeMetadata[parentInputId] = {
-          isOptional: false,
-          isAccessedInReconcile: true,
-          reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
-        };
-        addOn.idToBlockShapeId[parentInputId] = toBlockShapeId(
-          parentInputId,
-          randomnessKey,
-        );
-        addOn.outputToLocationInput[folder.outputShapeId] = parentInputId;
-        inputMappings.push({
-          input: parentInputId,
-          output: ReadableIdGenerator.getForCompassFolder(folder.parentPath),
-        });
-      }
 
       const blockDataDirectory = path.resolve(buildDir, folder.blockIdentifier);
       await fs.mkdir(blockDataDirectory, { recursive: true });
@@ -256,7 +260,7 @@ export function generateFolderBlockResults(
       return {
         block_identifier: folder.blockIdentifier,
         block_data_directory: blockDataDirectory,
-        inputs,
+        inputs: Object.fromEntries(folderLocations.inputShapes),
         outputs: {
           [folder.outputReadableId]: {
             type: "compassResource",
@@ -271,10 +275,12 @@ export function generateFolderBlockResults(
             },
           },
         },
-        input_mapping_entries: inputMappings,
+        input_mapping_entries: folderLocations.inputMappings,
         external_recommendations: [],
         add_on_override: addOn,
-        input_shape_metadata: inputShapeMetadata,
+        input_shape_metadata: Object.fromEntries(
+          folderLocations.inputShapeMetadata,
+        ),
         block_type: "COMPASS",
       };
     }),

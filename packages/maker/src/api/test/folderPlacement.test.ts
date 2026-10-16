@@ -37,7 +37,6 @@ import {
   getOntologyDefinition,
 } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
-import { defineValueType } from "../defineValueType.js";
 
 type Placement = { folder?: string; permission?: EntityPermission };
 
@@ -193,28 +192,6 @@ describe("folder placement", () => {
     });
     expect(input.folder).toBe("a//b/");
     expect(input.permission).toBe("publicProject");
-  });
-
-  it("preserves value type placement without introducing ontology permissions", () => {
-    const input = Object.freeze({
-      apiName: "Name",
-      displayName: "Name",
-      version: "1.0.0",
-      type: { type: "string" as const },
-      folder: "a//b/",
-    });
-    const valueType = defineValueType(input);
-    expect(valueType.folder).toBe("a//b/");
-    expect(valueType).not.toHaveProperty("permission");
-    expect(getOntologyDefinition().VALUE_TYPE.Name).toEqual([valueType]);
-    expect(input.folder).toBe("a//b/");
-    expect(
-      defineValueType({
-        ...input,
-        version: "2.0.0",
-        folder: "a/./b",
-      }),
-    ).toMatchObject({ folder: "a/./b" });
   });
 
   it.each([

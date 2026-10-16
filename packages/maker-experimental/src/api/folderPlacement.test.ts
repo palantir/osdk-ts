@@ -24,13 +24,13 @@ import {
   defineLink,
   defineObject,
   defineSharedPropertyType,
-  defineValueType,
   getOntologyDefinition,
   importOntologyEntity,
 } from "@osdk/maker";
 import { describe, expect, it } from "vitest";
 
-import type { ReadableId } from "../util/generateRid.js";
+import { toBlockShapeId } from "../cli/marketplaceSerialization/CodeBlockSpec.js";
+import { type ReadableId, ReadableIdGenerator } from "../util/generateRid.js";
 import { defineFunctionBackedAction } from "./defineFunctionBackedAction.js";
 import { defineOntologyV2, type FunctionsIr } from "./defineOntologyV2.js";
 
@@ -65,20 +65,10 @@ function defineEntities(folder?: string): void {
     permission: "publicProject",
     folder,
   });
-  for (const version of ["1.0.0", "2.0.0"]) {
-    defineValueType({
-      apiName: "Thing",
-      namespacePrefix: true,
-      displayName: "Thing",
-      type: { type: "string" },
-      version,
-      folder,
-    });
-  }
 }
 
 describe("experimental folder placement conversion", () => {
-  it("preserves normalized paths for every entity kind and value type version", async () => {
+  it("preserves normalized paths for every supported entity kind", async () => {
     const result = await defineOntologyV2("com.example.", () =>
       defineEntities("domain//entities/"),
     );
@@ -89,14 +79,9 @@ describe("experimental folder placement conversion", () => {
       "shared-property-type-com.example.thing": "/domain/entities",
       "action-type-com.example.create-thing": "/domain/entities",
       "link-type-related-things": "/domain/entities",
-      "produced-value-type-com.example.Thing-1.0.0": "/domain/entities",
-      "produced-value-type-com.example.Thing-2.0.0": "/domain/entities",
     });
     expect(
       getOntologyDefinition().OBJECT_TYPE["com.example.Thing"].folder,
-    ).toBe("domain//entities/");
-    expect(
-      getOntologyDefinition().VALUE_TYPE["com.example.Thing"][0].folder,
     ).toBe("domain//entities/");
     const serializedResult = JSON.stringify(result);
     expect(JSON.parse(serializedResult).outputFolderPaths).toEqual(
@@ -106,10 +91,55 @@ describe("experimental folder placement conversion", () => {
       Object.values(result.ontologyIr.ontology.interfaceTypes)[0].interfaceType,
     ).not.toHaveProperty("folder");
     for (const id of Object.keys(result.outputFolderPaths)) {
-      if (!id.startsWith("produced-value-type-")) {
-        expect(result.shapes.outputShapes.has(id as ReadableId)).toBe(true);
-      }
+      expect(result.shapes.outputShapes.has(id as ReadableId)).toBe(true);
     }
+    const inputId = ReadableIdGenerator.getForCompassFolder("/domain/entities");
+    expect(result.shapes.inputShapes.get(inputId)).toMatchObject({
+      type: "compassResource",
+      compassResource: {
+        typeConstraints: [
+          {
+            type: "compassFolderTypeConstraints",
+            compassFolderTypeConstraints: { constraints: ["INSTALL_LOCATION"] },
+          },
+        ],
+      },
+    });
+    expect(result.shapes.inputShapeMetadata.get(inputId)).toEqual({
+      isOptional: false,
+      isAccessedInReconcile: true,
+      reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+    });
+    expect(
+      result.shapes.inputMappings.filter(
+        (mapping) => mapping.input === inputId,
+      ),
+    ).toEqual([
+      {
+        input: inputId,
+        output:
+          ReadableIdGenerator.getForCompassFolderOutput("/domain/entities"),
+      },
+    ]);
+    const ontologyOutputs = Object.keys(result.outputFolderPaths).filter((id) =>
+      result.shapes.outputShapes.has(id as ReadableId),
+    );
+    expect(result.ontologyIr.ontology.blockOutputCompassLocations).toEqual(
+      Object.fromEntries(
+        ontologyOutputs.map((id) => [
+          toBlockShapeId(id),
+          toBlockShapeId(inputId),
+        ]),
+      ),
+    );
+    expect(result.blockDataAddOn.outputToLocationInput).toEqual(
+      Object.fromEntries(
+        ontologyOutputs.map((id) => [toBlockShapeId(id), inputId]),
+      ),
+    );
+    expect(result.blockDataAddOn.idToBlockShapeId[inputId]).toBe(
+      toBlockShapeId(inputId),
+    );
   });
 
   it.each(["", "/"])("preserves explicit root placement %j", async (folder) => {
@@ -117,8 +147,15 @@ describe("experimental folder placement conversion", () => {
       defineEntities(folder),
     );
     expect(Object.values(result.outputFolderPaths)).toEqual(
-      Array.from({ length: 7 }, () => "/"),
+      Array.from({ length: 5 }, () => "/"),
     );
+    expect(result.ontologyIr.ontology.blockOutputCompassLocations).toEqual({});
+    expect(result.blockDataAddOn.outputToLocationInput).toEqual({});
+    expect(
+      result.shapes.inputShapes.has(
+        ReadableIdGenerator.getForCompassFolder("/"),
+      ),
+    ).toBe(false);
   });
 
   it("omits entities without an explicit folder", async () => {
@@ -171,7 +208,7 @@ describe("experimental folder placement conversion", () => {
   );
 
   it.each([undefined, "123e4567-e89b-12d3-a456-426614174000"])(
-    "preserves wire data, RIDs, and shapes when placement changes with randomness key %s",
+    "preserves entity identity when placement changes with randomness key %s",
     async (randomnessKey) => {
       const before = await defineOntologyV2(
         "com.example.",
@@ -189,12 +226,55 @@ describe("experimental folder placement conversion", () => {
         undefined,
         randomnessKey,
       );
-      const { outputFolderPaths: beforePaths, ...beforeConversion } = before;
-      const { outputFolderPaths: afterPaths, ...afterConversion } = after;
-      expect(afterConversion).toEqual(beforeConversion);
-      expect(Object.keys(afterPaths)).toEqual(Object.keys(beforePaths));
-      expect(new Set(Object.values(beforePaths))).toEqual(new Set(["/before"]));
-      expect(new Set(Object.values(afterPaths))).toEqual(new Set(["/after"]));
+      const {
+        blockOutputCompassLocations: beforeLocations,
+        ...beforeOntology
+      } = before.ontologyIr.ontology;
+      const { blockOutputCompassLocations: afterLocations, ...afterOntology } =
+        after.ontologyIr.ontology;
+      expect(afterOntology).toEqual(beforeOntology);
+      expect(after.shapes.outputShapes).toEqual(before.shapes.outputShapes);
+      expect(Object.keys(afterLocations)).toEqual(Object.keys(beforeLocations));
+      expect(new Set(Object.values(afterLocations))).toEqual(
+        new Set([
+          toBlockShapeId(
+            ReadableIdGenerator.getForCompassFolder("/after"),
+            randomnessKey,
+          ),
+        ]),
+      );
+      expect(new Set(Object.values(beforeLocations))).toEqual(
+        new Set([
+          toBlockShapeId(
+            ReadableIdGenerator.getForCompassFolder("/before"),
+            randomnessKey,
+          ),
+        ]),
+      );
+      for (const output of before.shapes.outputShapes.keys()) {
+        expect(after.blockDataAddOn.idToBlockShapeId[output]).toBe(
+          before.blockDataAddOn.idToBlockShapeId[output],
+        );
+      }
+
+      const root = await defineOntologyV2(
+        "com.example.",
+        () => defineEntities("/"),
+        undefined,
+        undefined,
+        undefined,
+        randomnessKey,
+      );
+      expect(root.shapes.outputShapes).toEqual(before.shapes.outputShapes);
+      expect(root.ontologyIr.ontology).toEqual({
+        ...beforeOntology,
+        blockOutputCompassLocations: {},
+      });
+      expect(root.shapes.inputMappings).not.toContainEqual(
+        expect.objectContaining({
+          input: ReadableIdGenerator.getForCompassFolder("/before"),
+        }),
+      );
     },
   );
 
@@ -203,14 +283,10 @@ describe("experimental folder placement conversion", () => {
     const upstream = getOntologyDefinition();
     const result = await defineOntologyV2("com.example.", () => {
       importOntologyEntity(upstream.OBJECT_TYPE["upstream.Thing"]);
-      for (const version of upstream.VALUE_TYPE["upstream.Thing"]) {
-        importOntologyEntity(version);
-      }
     });
     expect(
       Object.keys(result.ontologyIr.importedOntology.objectTypes),
     ).toHaveLength(1);
-    expect(result.ontologyIr.importedValueTypes).toHaveLength(1);
     expect(result.outputFolderPaths).toEqual({});
   });
 

@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import { defineObject } from "@osdk/maker";
+import {
+  defineCreateObjectAction,
+  defineInterface,
+  defineLink,
+  defineObject,
+  defineSharedPropertyType,
+} from "@osdk/maker";
 
-for (const apiName of ["Person", "Company", "Root"]) {
+const objects = ["Person", "Company", "Root"].map((apiName) =>
   defineObject({
     apiName,
     displayName: apiName,
@@ -26,5 +32,30 @@ for (const apiName of ["Person", "Company", "Root"]) {
     properties: { id: { type: "string" } },
     permission: "publicProject",
     folder: apiName === "Root" ? "/" : "team//entities/",
-  });
-}
+  }),
+);
+
+defineInterface({
+  apiName: "Named",
+  permission: "publicProject",
+  folder: "/team/entities",
+});
+defineSharedPropertyType({
+  apiName: "label",
+  type: "string",
+  permission: "publicProject",
+  folder: "/team/entities",
+});
+defineCreateObjectAction({
+  objectType: objects[0],
+  apiName: "create-person",
+  permission: "publicProject",
+  folder: "/team/entities",
+});
+defineLink({
+  apiName: "peopleCompanies",
+  many: { object: objects[0], metadata: { apiName: "companies" } },
+  toMany: { object: objects[1], metadata: { apiName: "people" } },
+  permission: "publicProject",
+  folder: "/team/entities",
+});
