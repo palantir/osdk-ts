@@ -16,7 +16,10 @@
 
 import { describe, expect, it } from "vitest";
 
-import { validateAndNormalizeFolderPath } from "./foldersUtil.js";
+import {
+  buildFolderTree,
+  validateAndNormalizeFolderPath,
+} from "./foldersUtil.js";
 
 describe("validateAndNormalizeFolderPath", () => {
   const apiName = "com.palantir.Person";
@@ -123,4 +126,85 @@ describe("validateAndNormalizeFolderPath", () => {
       ).toThrow("folder names must contain valid Unicode");
     },
   );
+});
+
+describe("buildFolderTree", () => {
+  const randomnessKey = "123e4567-e89b-12d3-a456-426614174000";
+
+  it("creates shared ancestors once and records parents before children", () => {
+    const folders = buildFolderTree(
+      ["/a/b", "/a/c", "/a/b", "/a", "/d/b", "/"],
+      randomnessKey,
+    );
+
+    expect(
+      folders.map(({ path, name, parentPath }) => ({
+        path,
+        name,
+        parentPath,
+      })),
+    ).toEqual([
+      { path: "/a", name: "a", parentPath: "/" },
+      { path: "/a/b", name: "b", parentPath: "/a" },
+      { path: "/a/c", name: "c", parentPath: "/a" },
+      { path: "/d", name: "d", parentPath: "/" },
+      { path: "/d/b", name: "b", parentPath: "/d" },
+    ]);
+    expect(new Set(folders.map((folder) => folder.outputShapeId)).size).toBe(
+      folders.length,
+    );
+    expect(new Set(folders.map((folder) => folder.blockIdentifier)).size).toBe(
+      folders.length,
+    );
+  });
+
+  it("uses the existing installation root without generating a folder", () => {
+    expect(buildFolderTree([])).toEqual([]);
+    expect(buildFolderTree(["/", "/"])).toEqual([]);
+  });
+
+  it("keeps IDs stable when placements are reordered, repeated, or extended", () => {
+    const original = buildFolderTree(["/a/b", "/c"], randomnessKey);
+    expect(buildFolderTree(["/c", "/a/b", "/a/b"], randomnessKey)).toEqual(
+      original,
+    );
+
+    const extended = buildFolderTree(["/a/b", "/a/d", "/c"], randomnessKey);
+    for (const folder of original) {
+      expect(
+        extended.find((candidate) => candidate.path === folder.path),
+      ).toEqual(folder);
+    }
+  });
+
+  it("scopes block and shape IDs using the bundle randomness key", () => {
+    const first = buildFolderTree(["/a/b"], randomnessKey);
+    const second = buildFolderTree(
+      ["/a/b"],
+      "123e4567-e89b-12d3-a456-426614174001",
+    );
+    for (const [index, folder] of first.entries()) {
+      expect(second[index].outputReadableId).toBe(folder.outputReadableId);
+      expect(second[index].outputShapeId).not.toBe(folder.outputShapeId);
+      expect(second[index].blockIdentifier).not.toBe(folder.blockIdentifier);
+    }
+    expect(buildFolderTree(["/a/b"])).toEqual(buildFolderTree(["/a/b"]));
+  });
+
+  it("uses full paths for identity and preserves folder names", () => {
+    const folders = buildFolderTree([
+      "/a-b",
+      "/a/b",
+      "/ Sales /日本語\\Archive",
+    ]);
+    expect(
+      folders.find((folder) => folder.path === "/ Sales /日本語\\Archive"),
+    ).toMatchObject({ name: "日本語\\Archive", parentPath: "/ Sales " });
+    expect(
+      folders.find((folder) => folder.path === "/a-b")?.outputShapeId,
+    ).not.toBe(folders.find((folder) => folder.path === "/a/b")?.outputShapeId);
+    for (const folder of folders) {
+      expect(folder.blockIdentifier).toMatch(/^folder-[a-f0-9-]+$/u);
+    }
+  });
 });

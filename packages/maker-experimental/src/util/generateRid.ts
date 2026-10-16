@@ -244,6 +244,10 @@ export class ReadableIdGenerator {
     return `object-type-${objectTypeApiName}` as ReadableId;
   }
 
+  static getForCompassFolder(folderPath: string): ReadableId {
+    return `compass-folder-${folderPath}` as ReadableId;
+  }
+
   static getForStream(streamName: string): ReadableId {
     return `stream-datasource-${streamName}` as ReadableId;
   }

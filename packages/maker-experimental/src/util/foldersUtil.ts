@@ -19,11 +19,21 @@ import type { EntityPermission, OntologyDefinition } from "@osdk/maker";
 import { cleanAndValidateLinkTypeId } from "@osdk/maker";
 import invariant from "tiny-invariant";
 
+import { toBlockShapeId } from "../cli/marketplaceSerialization/CodeBlockSpec.js";
 import { type ReadableId, ReadableIdGenerator } from "./generateRid.js";
 
 // Matches Compass's MAX_RESOURCE_NAME_LENGTH.
 const FOLDER_NAME_LIMIT = 700;
 const encoder = new TextEncoder();
+
+export interface FolderNode {
+  path: string;
+  name: string;
+  parentPath: string;
+  blockIdentifier: string;
+  outputReadableId: ReadableId;
+  outputShapeId: string;
+}
 
 export function validateAndNormalizeFolderPath(
   folder: string | undefined,
@@ -122,4 +132,39 @@ export function getOutputFolderPaths(
   }
 
   return outputFolderPaths;
+}
+
+/** Builds a tree from normalized placement paths, excluding the installation root. */
+export function buildFolderTree(
+  folderPaths: Iterable<string>,
+  randomnessKey?: string,
+): FolderNode[] {
+  const paths = new Set<string>();
+  for (const folderPath of folderPaths) {
+    let currentPath = "";
+    for (const name of folderPath
+      .split("/")
+      .filter((segment) => segment.length > 0)) {
+      currentPath += "/" + name;
+      paths.add(currentPath);
+    }
+  }
+
+  // Lexical ordering is deterministic and places each parent before its descendants.
+  return Array.from(paths)
+    .sort()
+    .map((folderPath) => {
+      const lastSlash = folderPath.lastIndexOf("/");
+      const outputReadableId =
+        ReadableIdGenerator.getForCompassFolder(folderPath);
+      const outputShapeId = toBlockShapeId(outputReadableId, randomnessKey);
+      return {
+        path: folderPath,
+        name: folderPath.slice(lastSlash + 1),
+        parentPath: folderPath.slice(0, lastSlash) || "/",
+        blockIdentifier: `folder-${outputShapeId}`,
+        outputReadableId,
+        outputShapeId,
+      };
+    });
 }

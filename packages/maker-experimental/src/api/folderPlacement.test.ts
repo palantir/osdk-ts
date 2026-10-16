@@ -93,6 +93,15 @@ describe("experimental folder placement conversion", () => {
       "produced-value-type-com.example.Thing-2.0.0": "/domain/entities",
     });
     expect(
+      result.folders.map((folder) => ({
+        path: folder.path,
+        parentPath: folder.parentPath,
+      })),
+    ).toEqual([
+      { path: "/domain", parentPath: "/" },
+      { path: "/domain/entities", parentPath: "/domain" },
+    ]);
+    expect(
       getOntologyDefinition().OBJECT_TYPE["com.example.Thing"].folder,
     ).toBe("domain//entities/");
     expect(
@@ -119,6 +128,7 @@ describe("experimental folder placement conversion", () => {
     expect(Object.values(result.outputFolderPaths)).toEqual(
       Array.from({ length: 7 }, () => "/"),
     );
+    expect(result.folders).toEqual([]);
   });
 
   it("omits entities without an explicit folder", async () => {
@@ -126,6 +136,7 @@ describe("experimental folder placement conversion", () => {
       defineEntities(),
     );
     expect(result.outputFolderPaths).toEqual({});
+    expect(result.folders).toEqual([]);
   });
 
   it.each([
@@ -189,9 +200,22 @@ describe("experimental folder placement conversion", () => {
         undefined,
         randomnessKey,
       );
-      const { outputFolderPaths: beforePaths, ...beforeConversion } = before;
-      const { outputFolderPaths: afterPaths, ...afterConversion } = after;
+      const {
+        outputFolderPaths: beforePaths,
+        folders: beforeFolders,
+        ...beforeConversion
+      } = before;
+      const {
+        outputFolderPaths: afterPaths,
+        folders: afterFolders,
+        ...afterConversion
+      } = after;
       expect(afterConversion).toEqual(beforeConversion);
+      expect(beforeFolders.map((folder) => folder.path)).toEqual(["/before"]);
+      expect(afterFolders.map((folder) => folder.path)).toEqual(["/after"]);
+      expect(afterFolders[0].outputShapeId).not.toBe(
+        beforeFolders[0].outputShapeId,
+      );
       expect(Object.keys(afterPaths)).toEqual(Object.keys(beforePaths));
       expect(new Set(Object.values(beforePaths))).toEqual(new Set(["/before"]));
       expect(new Set(Object.values(afterPaths))).toEqual(new Set(["/after"]));
