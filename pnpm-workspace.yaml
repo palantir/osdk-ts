@@ -29,7 +29,7 @@ catalogs:
     "@osdk/foundry.functions": 2.78.0
     "@osdk/foundry.geo": 2.78.0
     "@osdk/foundry.admin": 2.83.0
-    "@osdk/foundry.mediasets": 2.78.0
+    "@osdk/foundry.mediasets": 2.85.0
     "@osdk/foundry.ontologies": 2.78.0
     "@osdk/foundry.thirdpartyapplications": 2.78.0
     "@osdk/internal.foundry.ontologies": 2.78.0
