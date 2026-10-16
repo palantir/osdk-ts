@@ -18,6 +18,7 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 
+import type { Folder } from "@osdk/maker";
 import {
   defineCreateObjectAction,
   defineInterface,
@@ -34,7 +35,7 @@ import { type ReadableId, ReadableIdGenerator } from "../util/generateRid.js";
 import { defineFunctionBackedAction } from "./defineFunctionBackedAction.js";
 import { defineOntologyV2, type FunctionsIr } from "./defineOntologyV2.js";
 
-function defineEntities(folder?: string): void {
+function defineEntities(folder?: Folder): void {
   const object = defineObject({
     apiName: "Thing",
     displayName: "Thing",
@@ -70,27 +71,42 @@ function defineEntities(folder?: string): void {
 describe("experimental folder placement conversion", () => {
   it("preserves normalized paths for every supported entity kind", async () => {
     const result = await defineOntologyV2("com.example.", () =>
-      defineEntities("domain//entities/"),
+      defineEntities({ id: "/domain/entities", location: "domain//entities/" }),
     );
 
-    expect(result.outputFolderPaths).toEqual({
-      "object-type-com.example.Thing": "/domain/entities",
-      "interface-com.example.Thing": "/domain/entities",
-      "shared-property-type-com.example.thing": "/domain/entities",
-      "action-type-com.example.create-thing": "/domain/entities",
-      "link-type-related-things": "/domain/entities",
+    expect(result.outputFolders).toEqual({
+      "object-type-com.example.Thing": {
+        id: "/domain/entities",
+        location: "/domain/entities",
+      },
+      "interface-com.example.Thing": {
+        id: "/domain/entities",
+        location: "/domain/entities",
+      },
+      "shared-property-type-com.example.thing": {
+        id: "/domain/entities",
+        location: "/domain/entities",
+      },
+      "action-type-com.example.create-thing": {
+        id: "/domain/entities",
+        location: "/domain/entities",
+      },
+      "link-type-related-things": {
+        id: "/domain/entities",
+        location: "/domain/entities",
+      },
     });
     expect(
       getOntologyDefinition().OBJECT_TYPE["com.example.Thing"].folder,
-    ).toBe("domain//entities/");
+    ).toEqual({ id: "/domain/entities", location: "domain//entities/" });
     const serializedResult = JSON.stringify(result);
-    expect(JSON.parse(serializedResult).outputFolderPaths).toEqual(
-      result.outputFolderPaths,
+    expect(JSON.parse(serializedResult).outputFolders).toEqual(
+      result.outputFolders,
     );
     expect(
       Object.values(result.ontologyIr.ontology.interfaceTypes)[0].interfaceType,
     ).not.toHaveProperty("folder");
-    for (const id of Object.keys(result.outputFolderPaths)) {
+    for (const id of Object.keys(result.outputFolders)) {
       expect(result.shapes.outputShapes.has(id as ReadableId)).toBe(true);
     }
     const inputId = ReadableIdGenerator.getForCompassFolder("/domain/entities");
@@ -121,7 +137,7 @@ describe("experimental folder placement conversion", () => {
           ReadableIdGenerator.getForCompassFolderOutput("/domain/entities"),
       },
     ]);
-    const ontologyOutputs = Object.keys(result.outputFolderPaths).filter((id) =>
+    const ontologyOutputs = Object.keys(result.outputFolders).filter((id) =>
       result.shapes.outputShapes.has(id as ReadableId),
     );
     expect(result.ontologyIr.ontology.blockOutputCompassLocations).toEqual(
@@ -142,43 +158,118 @@ describe("experimental folder placement conversion", () => {
     );
   });
 
-  it.each(["", "/"])("preserves explicit root placement %j", async (folder) => {
-    const result = await defineOntologyV2("com.example.", () =>
-      defineEntities(folder),
-    );
-    expect(Object.values(result.outputFolderPaths)).toEqual(
-      Array.from({ length: 5 }, () => "/"),
-    );
-    expect(result.ontologyIr.ontology.blockOutputCompassLocations).toEqual({});
-    expect(result.blockDataAddOn.outputToLocationInput).toEqual({});
-    expect(
-      result.shapes.inputShapes.has(
-        ReadableIdGenerator.getForCompassFolder("/"),
-      ),
-    ).toBe(false);
-  });
-
   it("omits entities without an explicit folder", async () => {
     const result = await defineOntologyV2("com.example.", () =>
       defineEntities(),
     );
-    expect(result.outputFolderPaths).toEqual({});
+    expect(result.outputFolders).toEqual({});
+  });
+
+  it("keeps all entity location mappings stable when an explicitly identified folder moves", async () => {
+    const before = await defineOntologyV2("com.example.", () =>
+      defineEntities({ id: "shared-folder", location: "Aquarium//Fish/" }),
+    );
+    expect(Object.values(before.outputFolders)).toEqual(
+      Array.from({ length: 5 }, () => ({
+        id: "shared-folder",
+        location: "/Aquarium/Fish",
+      })),
+    );
+    expect(
+      getOntologyDefinition().OBJECT_TYPE["com.example.Thing"].folder,
+    ).toEqual({ id: "shared-folder", location: "Aquarium//Fish/" });
+    const after = await defineOntologyV2("com.example.", () =>
+      defineEntities({ id: "shared-folder", location: "/Animals/Livestock" }),
+    );
+    expect(after.ontologyIr.ontology).toEqual(before.ontologyIr.ontology);
+    expect(after.shapes.outputShapes).toEqual(before.shapes.outputShapes);
+    expect(after.shapes.inputMappings).toEqual(before.shapes.inputMappings);
+    expect(after.blockDataAddOn).toEqual(before.blockDataAddOn);
+    const inputId = ReadableIdGenerator.getForCompassFolder("shared-folder");
+    expect(after.shapes.inputShapes.get(inputId)).toMatchObject({
+      compassResource: { about: { fallbackTitle: "/Animals/Livestock" } },
+    });
+    expect(after.shapes.inputMappings).toContainEqual({
+      input: inputId,
+      output: ReadableIdGenerator.getForCompassFolderOutput("shared-folder"),
+    });
+    const serializedResult = JSON.stringify(after);
+    expect(JSON.parse(serializedResult).outputFolders).toEqual(
+      after.outputFolders,
+    );
+  });
+
+  it("shares one folder identity across normalized references", async () => {
+    const result = await defineOntologyV2("com.example.", () => {
+      defineEntities({ id: "fish", location: "/Aquarium/Fish" });
+      defineInterface({
+        apiName: "Fish",
+        permission: "publicProject",
+        folder: { id: "fish", location: "Aquarium//Fish/" },
+      });
+    });
+    expect(Object.values(result.outputFolders)).toEqual(
+      Array.from({ length: 6 }, () => ({
+        id: "fish",
+        location: "/Aquarium/Fish",
+      })),
+    );
+    const inputId = ReadableIdGenerator.getForCompassFolder("fish");
+    expect(
+      new Set(Object.values(result.blockDataAddOn.outputToLocationInput)),
+    ).toEqual(new Set([inputId]));
+    expect(result.shapes.inputMappings).toContainEqual({
+      input: inputId,
+      output: ReadableIdGenerator.getForCompassFolderOutput("fish"),
+    });
   });
 
   it.each([
     {
-      folder: "a/../b",
+      first: { id: "same", location: "/a" },
+      second: { id: "same", location: "/b" },
+      error: 'Folder id "same" is used for both',
+    },
+    {
+      first: { id: "first", location: "/a" },
+      second: { id: "second", location: "a//" },
+      error: 'Folder location "/a" has conflicting ids',
+    },
+    {
+      first: { id: "/a", location: "/a/b" },
+      second: { id: "child", location: "/a/b/c" },
+      error: 'Folder id "/a" is used for both',
+    },
+  ])(
+    "rejects conflicting folder identities during conversion: $error",
+    async ({ first, second, error }) => {
+      await expect(
+        defineOntologyV2("com.example.", () => {
+          defineEntities(first);
+          defineInterface({
+            apiName: "Other",
+            permission: "publicProject",
+            folder: second,
+          });
+        }),
+      ).rejects.toThrow(error);
+    },
+  );
+
+  it.each([
+    {
+      folder: { id: "folder", location: "a/../b" },
       permission: "publicProject",
       error: 'folder must not contain "." or ".." path segments',
     },
     {
-      folder: "",
+      folder: { id: "folder", location: "" },
       permission: undefined,
       error:
         'folder placement requires permission to be explicitly set to "publicProject"',
     },
     {
-      folder: "a",
+      folder: { id: "folder", location: "a" },
       permission: "roles",
       error:
         'folder placement requires permission to be explicitly set to "publicProject"',
@@ -199,7 +290,7 @@ describe("experimental folder placement conversion", () => {
             folder,
             permission,
           });
-          expect(object.folder).toBe(folder);
+          expect(object.folder).toEqual(folder);
           bodyCompleted = true;
         }),
       ).rejects.toThrow(error);
@@ -212,7 +303,7 @@ describe("experimental folder placement conversion", () => {
     async (randomnessKey) => {
       const before = await defineOntologyV2(
         "com.example.",
-        () => defineEntities("/before"),
+        () => defineEntities({ id: "/before", location: "/before" }),
         undefined,
         undefined,
         undefined,
@@ -220,7 +311,7 @@ describe("experimental folder placement conversion", () => {
       );
       const after = await defineOntologyV2(
         "com.example.",
-        () => defineEntities("/after"),
+        () => defineEntities({ id: "/after", location: "/after" }),
         undefined,
         undefined,
         undefined,
@@ -259,7 +350,7 @@ describe("experimental folder placement conversion", () => {
 
       const root = await defineOntologyV2(
         "com.example.",
-        () => defineEntities("/"),
+        () => defineEntities(),
         undefined,
         undefined,
         undefined,
@@ -279,7 +370,9 @@ describe("experimental folder placement conversion", () => {
   );
 
   it("excludes imported entities even when their definitions contain folders", async () => {
-    await defineOntologyV2("upstream.", () => defineEntities("/upstream"));
+    await defineOntologyV2("upstream.", () =>
+      defineEntities({ id: "/upstream", location: "/upstream" }),
+    );
     const upstream = getOntologyDefinition();
     const result = await defineOntologyV2("com.example.", () => {
       importOntologyEntity(upstream.OBJECT_TYPE["upstream.Thing"]);
@@ -287,7 +380,7 @@ describe("experimental folder placement conversion", () => {
     expect(
       Object.keys(result.ontologyIr.importedOntology.objectTypes),
     ).toHaveLength(1);
-    expect(result.outputFolderPaths).toEqual({});
+    expect(result.outputFolders).toEqual({});
   });
 
   it("includes function-backed actions only after they produce an output", async () => {
@@ -319,14 +412,14 @@ describe("experimental folder placement conversion", () => {
         apiName: "update-thing",
         functionApiName: "updateThing",
         permission: "publicProject",
-        folder: "/actions",
+        folder: { id: "/actions", location: "/actions" },
       });
     };
 
     try {
       fs.writeFileSync(functionsIrFile, JSON.stringify(functionsIr));
       const beforeDiscovery = await defineOntologyV2("com.example.", define);
-      expect(beforeDiscovery.outputFolderPaths).toEqual({});
+      expect(beforeDiscovery.outputFolders).toEqual({});
       const afterDiscovery = await defineOntologyV2(
         "com.example.",
         define,
@@ -334,8 +427,11 @@ describe("experimental folder placement conversion", () => {
         undefined,
         functionsIrFile,
       );
-      expect(afterDiscovery.outputFolderPaths).toEqual({
-        "action-type-com.example.update-thing": "/actions",
+      expect(afterDiscovery.outputFolders).toEqual({
+        "action-type-com.example.update-thing": {
+          id: "/actions",
+          location: "/actions",
+        },
       });
     } finally {
       fs.rmSync(buildDir, { recursive: true, force: true });

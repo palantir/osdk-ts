@@ -181,17 +181,18 @@ describe("maker-experimental CLI folder blocks", () => {
     const datasets = results.filter(
       (result) => result.block_type === "STATIC_DATASET",
     );
-    expect(datasets).toHaveLength(6);
+    expect(datasets).toHaveLength(4);
     const ontology = results.find(
       (result) => result.block_type === "ONTOLOGY",
     )!;
     const ontologyAddOn = ontology.add_on_override as BlockDataAddOn;
 
-    for (const { datasetName, ownerOutputId, folder } of [
+    for (const { datasetName, ownerOutputId, folder, folderId } of [
       {
         datasetName: "Fish",
         ownerOutputId: ReadableIdGenerator.getForObjectType("Fish"),
         folder: "/Aquarium/Animals/Fish",
+        folderId: "fish-folder",
       },
       {
         datasetName: "Tank",
@@ -202,15 +203,19 @@ describe("maker-experimental CLI folder blocks", () => {
         datasetName: "link.fishVisitedTanks",
         ownerOutputId: ReadableIdGenerator.getForLinkType("fish-visited-tanks"),
         folder: "/Aquarium/Relationships",
+        folderId: "relationships",
       },
     ]) {
       const outputId = ReadableIdGenerator.getForDatasetOutput(datasetName);
       const dataset = datasets.find(
         (result) => result.outputs[outputId] !== undefined,
       )!;
-      const inputId = ReadableIdGenerator.getForCompassFolder(folder);
-      const folderOutputId =
-        ReadableIdGenerator.getForCompassFolderOutput(folder);
+      const inputId = ReadableIdGenerator.getForCompassFolder(
+        folderId ?? folder,
+      );
+      const folderOutputId = ReadableIdGenerator.getForCompassFolderOutput(
+        folderId ?? folder,
+      );
       expect(
         results.filter(
           (result) => result.outputs[folderOutputId] !== undefined,
@@ -239,7 +244,7 @@ describe("maker-experimental CLI folder blocks", () => {
       );
     }
 
-    for (const apiName of ["Root", "EmptyRoot", "DefaultRoot"]) {
+    for (const apiName of ["DefaultRoot"]) {
       const outputId = ReadableIdGenerator.getForDatasetOutput(apiName);
       const dataset = datasets.find(
         (result) => result.outputs[outputId] !== undefined,

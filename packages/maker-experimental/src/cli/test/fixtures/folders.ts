@@ -31,31 +31,34 @@ const objects = ["Person", "Company", "Root"].map((apiName) =>
     titlePropertyApiName: "id",
     properties: { id: { type: "string" } },
     permission: "publicProject",
-    folder: apiName === "Root" ? "/" : "team//entities/",
+    folder:
+      apiName === "Root"
+        ? undefined
+        : { id: "/team/entities", location: "team//entities/" },
   }),
 );
 
 defineInterface({
   apiName: "Named",
   permission: "publicProject",
-  folder: "/team/entities",
+  folder: { id: "/team/entities", location: "/team/entities" },
 });
 defineSharedPropertyType({
   apiName: "label",
   type: "string",
   permission: "publicProject",
-  folder: "/team/entities",
+  folder: { id: "/team/entities", location: "/team/entities" },
 });
 defineCreateObjectAction({
   objectType: objects[0],
   apiName: "create-person",
   permission: "publicProject",
-  folder: "/team/entities",
+  folder: { id: "/team/entities", location: "/team/entities" },
 });
 defineLink({
   apiName: "peopleCompanies",
   many: { object: objects[0], metadata: { apiName: "companies" } },
   toMany: { object: objects[1], metadata: { apiName: "people" } },
   permission: "publicProject",
-  folder: "/team/entities",
+  folder: { id: "/team/entities", location: "/team/entities" },
 });

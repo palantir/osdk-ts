@@ -22,6 +22,7 @@ import type {
 } from "@osdk/client.unstable";
 
 import type { EntityPermission } from "../common/EntityPermission.js";
+import type { Folder } from "../common/Folder.js";
 import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import type { TypeClass } from "../common/TypeClass.js";
@@ -38,7 +39,7 @@ export interface SharedPropertyType extends OntologyEntityBase, PropertyType {
   permission?: EntityPermission;
   __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE;
   /** Folder path relative to the installation root. Defaults to the root */
-  folder?: string;
+  folder?: Folder;
 }
 export interface PropertyType {
   type: PropertyTypeType;

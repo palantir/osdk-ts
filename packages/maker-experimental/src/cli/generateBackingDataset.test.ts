@@ -487,7 +487,7 @@ describe("generateBackingDatasetBlockResult", () => {
           blockData,
           buildDir,
           randomnessKey,
-          folder,
+          { id: folder, location: folder },
         );
         expect(placed.block_identifier).toBe(root.block_identifier);
         expect(placed.outputs).toEqual(root.outputs);

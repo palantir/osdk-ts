@@ -25,21 +25,24 @@ describe("function-backed action folder placement", () => {
     await defineOntology("com.palantir.", () => {}, undefined);
   });
 
-  it("preserves raw folders and explicit permissions", () => {
-    const action = defineFunctionBackedAction({
-      functionApiName: "updatePerson",
-      permission: "publicProject",
-      folder: "actions//people/",
-    });
-    expect(action).toMatchObject({
-      folder: "actions//people/",
-      permission: "publicProject",
-    });
-    expect(
-      dumpOntologyFullMetadata().ontology.blockPermissionInformation
-        ?.actionTypes[action.apiName].restrictionStatus.publicProject,
-    ).toBe(true);
-  });
+  it.each([{ id: "people-actions", location: "actions//people/" }])(
+    "preserves raw folder %j and explicit permissions",
+    (folder) => {
+      const action = defineFunctionBackedAction({
+        functionApiName: "updatePerson",
+        permission: "publicProject",
+        folder,
+      });
+      expect(action).toMatchObject({
+        folder,
+        permission: "publicProject",
+      });
+      expect(
+        dumpOntologyFullMetadata().ontology.blockPermissionInformation
+          ?.actionTypes[action.apiName].restrictionStatus.publicProject,
+      ).toBe(true);
+    },
+  );
 
   it("rejects traversal during experimental conversion", async () => {
     await expect(
@@ -47,7 +50,7 @@ describe("function-backed action folder placement", () => {
         defineFunctionBackedAction({
           functionApiName: "updatePerson",
           permission: "publicProject",
-          folder: "actions/../people",
+          folder: { id: "people-actions", location: "actions/../people" },
         });
       }),
     ).rejects.toThrow('folder must not contain "." or ".." path segments');
@@ -58,7 +61,7 @@ describe("function-backed action folder placement", () => {
       defineOntologyV2("com.palantir.", () => {
         defineFunctionBackedAction({
           functionApiName: "updatePerson",
-          folder: "",
+          folder: { id: "people-actions", location: "/actions" },
         });
       }),
     ).rejects.toThrow(

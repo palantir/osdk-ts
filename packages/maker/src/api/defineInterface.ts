@@ -26,6 +26,7 @@ import {
 import { cloneDefinition } from "./cloneDefinition.js";
 import type { BlueprintIcon } from "./common/BlueprintIcons.js";
 import type { EntityPermission } from "./common/EntityPermission.js";
+import type { Folder } from "./common/Folder.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
   namespace,
@@ -75,7 +76,7 @@ export type InterfaceTypeDefinition = {
   permission?: EntityPermission;
   schemaMigrations?: InterfaceSchemaMigrations;
   /** Folder path relative to the installation root. Defaults to the root */
-  folder?: string;
+  folder?: Folder;
 };
 
 export function defineInterface(

@@ -19,7 +19,12 @@ import * as fs from "fs";
 import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { InputPreset } from "@osdk/client.unstable/api";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
-import type { LinkType, ObjectType, OntologyDefinition } from "@osdk/maker";
+import type {
+  Folder,
+  LinkType,
+  ObjectType,
+  OntologyDefinition,
+} from "@osdk/maker";
 import {
   getImportedTypes,
   getOntologyDefinition,
@@ -40,7 +45,7 @@ import {
 } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import {
   getFolderLocationInputs,
-  getOutputFolderPaths,
+  getOutputFolders,
 } from "../util/foldersUtil.js";
 
 export type { ExternalImportedOntologyMetadata } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
@@ -65,7 +70,7 @@ export interface OntologyV2Result {
   backingDatasourceApiNames: string[];
   backingDatasourceLinkApiNames: string[];
   backingMediaSetNames: string[];
-  outputFolderPaths: Record<ReadableId, string>;
+  outputFolders: Record<ReadableId, Folder>;
 }
 
 export interface FunctionsIr {
@@ -140,12 +145,12 @@ export async function defineOntologyV2(
     functionsIr,
     randomnessKey,
   );
-  const outputFolderPaths = getOutputFolderPaths(
+  const outputFolders = getOutputFolders(
     ontologyDefinition,
     shapes.outputShapes,
   );
   const folderLocations = getFolderLocationInputs(
-    outputFolderPaths,
+    outputFolders,
     shapes.outputShapes.keys(),
   );
   for (const [id, input] of folderLocations.inputShapes) {
@@ -260,6 +265,6 @@ export async function defineOntologyV2(
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
-    outputFolderPaths,
+    outputFolders,
   };
 }

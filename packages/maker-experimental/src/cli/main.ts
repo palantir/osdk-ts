@@ -317,7 +317,7 @@ export default async function main(
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
-    outputFolderPaths,
+    outputFolders,
   } = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
@@ -375,7 +375,7 @@ export default async function main(
   consola.info(`Wrote oac-imported-metadata.json to ${importedMetadataPath}`);
 
   const folderResults = await generateFolderBlockResults(
-    outputFolderPaths,
+    outputFolders,
     commandLineOpts.buildDir,
     commandLineOpts.randomnessKey,
   );
@@ -526,7 +526,7 @@ export default async function main(
           objectTypeBlockData!,
           commandLineOpts.buildDir,
           commandLineOpts.randomnessKey,
-          outputFolderPaths[ReadableIdGenerator.getForObjectType(apiName)],
+          outputFolders[ReadableIdGenerator.getForObjectType(apiName)],
         );
       }),
   );
@@ -549,7 +549,7 @@ export default async function main(
           ontologyIr.ontology.objectTypes,
           commandLineOpts.buildDir,
           commandLineOpts.randomnessKey,
-          outputFolderPaths[
+          outputFolders[
             ReadableIdGenerator.getForLinkType(
               cleanAndValidateLinkTypeId(linkApiName),
             )

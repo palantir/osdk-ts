@@ -25,6 +25,7 @@ import type {
   Type,
 } from "@osdk/client.unstable";
 import type { OutputShape } from "@osdk/client.unstable/api";
+import type { Folder } from "@osdk/maker";
 
 import { typeToConcreteDataType } from "../conversion/toMarketplace/typeVisitors.js";
 import { getFolderLocationInputs } from "../util/foldersUtil.js";
@@ -174,7 +175,7 @@ async function generateBackingDatasetBlock(
   columns: BackingDatasetColumn[],
   buildDir: string,
   randomnessKey?: string,
-  folder?: string,
+  folder?: Folder,
 ): Promise<BlockGeneratorResult> {
   // Build output shapes
   const outputs: Record<ReadableId, OutputShape> = {} as Record<
@@ -241,7 +242,7 @@ async function generateBackingDatasetBlock(
   );
 
   const folderLocations = getFolderLocationInputs(
-    { [datasourceReadableId]: folder ?? "/" },
+    { [datasourceReadableId]: folder ?? { id: "/", location: "/" } },
     [datasourceReadableId],
   );
 
@@ -350,7 +351,7 @@ export async function generateBackingDatasetBlockResult(
   objectTypeBlockData: ObjectTypeBlockDataV2,
   buildDir: string,
   randomnessKey?: string,
-  folder?: string,
+  folder?: Folder,
 ): Promise<BlockGeneratorResult> {
   const apiName = objectTypeBlockData.objectType.apiName!;
   const backingProperties = getBackingDatasetProperties(objectTypeBlockData);
@@ -382,7 +383,7 @@ export async function generateBackingDatasetBlockResultForLink(
   objectTypes: Record<string, ObjectTypeBlockDataV2>,
   buildDir: string,
   randomnessKey?: string,
-  folder?: string,
+  folder?: Folder,
 ): Promise<BlockGeneratorResult> {
   const definition = linkTypeBlockData.linkType.definition;
   if (definition.type !== "manyToMany") {

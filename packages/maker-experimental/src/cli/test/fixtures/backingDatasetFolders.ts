@@ -17,10 +17,17 @@
 import { defineLink, defineObject } from "@osdk/maker";
 
 const [fish, tank] = [
-  { apiName: "Fish", folder: "Aquarium//Animals/Fish/" },
-  { apiName: "Tank", folder: "/Aquarium/Habitats/Tanks" },
-  { apiName: "Root", folder: "/" },
-  { apiName: "EmptyRoot", folder: "" },
+  {
+    apiName: "Fish",
+    folder: { id: "fish-folder", location: "Aquarium//Animals/Fish/" },
+  },
+  {
+    apiName: "Tank",
+    folder: {
+      id: "/Aquarium/Habitats/Tanks",
+      location: "/Aquarium/Habitats/Tanks",
+    },
+  },
   { apiName: "DefaultRoot", folder: undefined },
 ].map(({ apiName, folder }) =>
   defineObject({
@@ -42,5 +49,5 @@ defineLink({
   toMany: { object: tank, metadata: { apiName: "visitingFish" } },
   includeEmptyBackingDatasource: true,
   permission: "publicProject",
-  folder: "/Aquarium/Relationships",
+  folder: { id: "relationships", location: "/Aquarium/Relationships" },
 });

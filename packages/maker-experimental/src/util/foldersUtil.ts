@@ -22,7 +22,7 @@ import type {
   InputShapeMetadata,
   OutputShape,
 } from "@osdk/client.unstable/api";
-import type { EntityPermission, OntologyDefinition } from "@osdk/maker";
+import type { EntityPermission, Folder, OntologyDefinition } from "@osdk/maker";
 import { cleanAndValidateLinkTypeId } from "@osdk/maker";
 import invariant from "tiny-invariant";
 
@@ -39,10 +39,9 @@ const FOLDER_NAME_LIMIT = 700;
 const encoder = new TextEncoder();
 const COMPASS_FOLDER_INTERNAL_SHAPE_ID = "compass-folder";
 
-export interface FolderNode {
-  path: string;
+export interface FolderNode extends Folder {
   name: string;
-  parentPath: string;
+  parentLocation: string;
   blockIdentifier: string;
   outputReadableId: ReadableId;
   outputShapeId: string;
@@ -56,7 +55,7 @@ export interface FolderLocationInputs {
 }
 
 export function validateAndNormalizeFolderPath(
-  folder: string | undefined,
+  folder: Folder | undefined,
   permission: EntityPermission | undefined,
   apiName: string,
 ): string | undefined {
@@ -69,9 +68,29 @@ export function validateAndNormalizeFolderPath(
     permission === "publicProject",
     `${context}: folder placement requires permission to be explicitly set to "publicProject"`,
   );
-  invariant(typeof folder === "string", `${context}: folder must be a string`);
+  invariant(
+    typeof folder === "object" && folder != null,
+    `${context}: folder must be an object with id and location`,
+  );
+  const { id, location } = folder;
+  invariant(
+    typeof location === "string",
+    `${context}: folder location must be a string`,
+  );
+  invariant(
+    typeof id === "string" && id.trim().length > 0,
+    `${context}: folder id must be a non-empty string`,
+  );
+  invariant(
+    !/[\uD800-\uDFFF]/u.test(id),
+    `${context}: folder id must contain valid Unicode`,
+  );
 
-  const segments = folder.split("/").filter((segment) => segment.length > 0);
+  const segments = location.split("/").filter((segment) => segment.length > 0);
+  invariant(
+    segments.length > 0,
+    `${context}: the installation root cannot be assigned a folder id`,
+  );
   for (const segment of segments) {
     invariant(
       segment !== "." && segment !== "..",
@@ -92,11 +111,11 @@ export function validateAndNormalizeFolderPath(
   return "/" + segments.join("/");
 }
 
-export function getOutputFolderPaths(
+export function getOutputFolders(
   ontology: OntologyDefinition,
   outputShapes: ReadonlyMap<ReadableId, OutputShape>,
-): Record<ReadableId, string> {
-  const outputFolderPaths: Record<ReadableId, string> = {};
+): Record<ReadableId, Folder> {
+  const outputFolders: Record<ReadableId, Folder> = {};
 
   const entityGroups = [
     [ontology.OBJECT_TYPE, ReadableIdGenerator.getForObjectType],
@@ -112,26 +131,28 @@ export function getOutputFolderPaths(
 
   for (const [entities, getReadableId] of entityGroups) {
     for (const entity of Object.values(entities)) {
-      const folder = validateAndNormalizeFolderPath(
+      const location = validateAndNormalizeFolderPath(
         entity.folder,
         entity.permission,
         entity.apiName,
       );
-      if (folder !== undefined) {
+      if (location !== undefined) {
         const readableId = getReadableId(entity.apiName);
         // Function-backed actions can be skipped until functions have been discovered.
         if (outputShapes.has(readableId)) {
-          outputFolderPaths[readableId] = folder;
+          outputFolders[readableId] = { id: entity.folder!.id, location };
         }
       }
     }
   }
 
-  return outputFolderPaths;
+  // Validate identities against both declared folders and generated ancestors.
+  resolveFoldersByLocation(Object.values(outputFolders));
+  return outputFolders;
 }
 
 export function getFolderLocationInputs(
-  outputFolderPaths: Readonly<Record<ReadableId, string>>,
+  outputFolders: Readonly<Record<ReadableId, Folder>>,
   outputIds: Iterable<ReadableId>,
 ): FolderLocationInputs {
   const result: FolderLocationInputs = {
@@ -142,10 +163,10 @@ export function getFolderLocationInputs(
   };
 
   for (const outputId of outputIds) {
-    const folder = outputFolderPaths[outputId];
+    const folder = outputFolders[outputId];
     // Installers fall back to the installation root when no location input is mapped.
-    if (folder === undefined || folder === "/") continue;
-    const inputId = ReadableIdGenerator.getForCompassFolder(folder);
+    if (folder === undefined || folder.location === "/") continue;
+    const inputId = ReadableIdGenerator.getForCompassFolder(folder.id);
     result.outputToLocationInput.set(outputId, inputId);
     if (result.inputShapes.has(inputId)) continue;
 
@@ -153,7 +174,7 @@ export function getFolderLocationInputs(
       type: "compassResource",
       compassResource: {
         about: {
-          fallbackTitle: folder,
+          fallbackTitle: folder.location,
           fallbackDescription: "Folder installation location",
           localizedTitle: {},
           localizedDescription: {},
@@ -174,41 +195,72 @@ export function getFolderLocationInputs(
     });
     result.inputMappings.push({
       input: inputId,
-      output: ReadableIdGenerator.getForCompassFolderOutput(folder),
+      output: ReadableIdGenerator.getForCompassFolderOutput(folder.id),
     });
   }
 
   return result;
 }
 
-/** Builds a tree from normalized placement paths, excluding the installation root. */
-export function buildFolderTree(
-  folderPaths: Iterable<string>,
-  randomnessKey?: string,
-): FolderNode[] {
-  const paths = new Set<string>();
-  for (const folderPath of folderPaths) {
-    let currentPath = "";
-    for (const name of folderPath
-      .split("/")
-      .filter((segment) => segment.length > 0)) {
-      currentPath += "/" + name;
-      paths.add(currentPath);
+/** Resolves explicit identities before filling in path-based identities for ancestors. */
+function resolveFoldersByLocation(
+  folders: Iterable<Folder>,
+): Map<string, Folder> {
+  const definitions = Array.from(folders);
+  const foldersByLocation = new Map<string, Folder>([
+    ["/", { id: "/", location: "/" }],
+  ]);
+  for (const folder of definitions) {
+    const existing = foldersByLocation.get(folder.location);
+    invariant(
+      existing === undefined || existing.id === folder.id,
+      `Folder location "${folder.location}" has conflicting ids "${existing?.id}" and "${folder.id}"`,
+    );
+    foldersByLocation.set(folder.location, folder);
+  }
+  for (const folder of definitions) {
+    let location = folder.location;
+    while (location !== "/") {
+      if (!foldersByLocation.has(location)) {
+        foldersByLocation.set(location, { id: location, location });
+      }
+      location = location.slice(0, location.lastIndexOf("/")) || "/";
     }
   }
+  const locationsById = new Map<string, string>();
+  for (const { id, location } of foldersByLocation.values()) {
+    const existing = locationsById.get(id);
+    invariant(
+      existing === undefined || existing === location,
+      `Folder id "${id}" is used for both "${existing}" and "${location}"`,
+    );
+    locationsById.set(id, location);
+  }
+  return foldersByLocation;
+}
+
+/** Builds a tree from normalized placements, excluding the installation root. */
+export function buildFolderTree(
+  folderDefinitions: Iterable<Folder>,
+  randomnessKey?: string,
+): FolderNode[] {
+  const foldersByLocation = resolveFoldersByLocation(folderDefinitions);
 
   // Lexical ordering is deterministic and places each parent before its descendants.
-  return Array.from(paths)
+  return Array.from(foldersByLocation.keys())
+    .filter((location) => location !== "/")
     .sort()
-    .map((folderPath) => {
-      const lastSlash = folderPath.lastIndexOf("/");
+    .map((location) => {
+      const lastSlash = location.lastIndexOf("/");
+      const { id } = foldersByLocation.get(location)!;
       const outputReadableId =
-        ReadableIdGenerator.getForCompassFolderOutput(folderPath);
+        ReadableIdGenerator.getForCompassFolderOutput(id);
       const outputShapeId = toBlockShapeId(outputReadableId, randomnessKey);
       return {
-        path: folderPath,
-        name: folderPath.slice(lastSlash + 1),
-        parentPath: folderPath.slice(0, lastSlash) || "/",
+        id,
+        location,
+        name: location.slice(lastSlash + 1),
+        parentLocation: location.slice(0, lastSlash) || "/",
         blockIdentifier: `folder-${outputShapeId}`,
         outputReadableId,
         outputShapeId,
@@ -217,18 +269,23 @@ export function buildFolderTree(
 }
 
 export function generateFolderBlockResults(
-  outputFolderPaths: Readonly<Record<ReadableId, string>>,
+  outputFolders: Readonly<Record<ReadableId, Folder>>,
   buildDir: string,
   randomnessKey?: string,
 ): Promise<BlockGeneratorResult[]> {
-  const folders = buildFolderTree(
-    Object.values(outputFolderPaths),
-    randomnessKey,
+  const folders = buildFolderTree(Object.values(outputFolders), randomnessKey);
+  const foldersByLocation = new Map(
+    folders.map((folder) => [folder.location, folder]),
   );
   return Promise.all(
     folders.map(async (folder): Promise<BlockGeneratorResult> => {
       const folderLocations = getFolderLocationInputs(
-        { [folder.outputReadableId]: folder.parentPath },
+        {
+          [folder.outputReadableId]: {
+            id: foldersByLocation.get(folder.parentLocation)?.id ?? "/",
+            location: folder.parentLocation,
+          },
+        },
         [folder.outputReadableId],
       );
       const addOn: BlockDataAddOn = {
@@ -267,7 +324,7 @@ export function generateFolderBlockResults(
             compassResource: {
               about: {
                 fallbackTitle: folder.name,
-                fallbackDescription: folder.path,
+                fallbackDescription: folder.location,
                 localizedTitle: {},
                 localizedDescription: {},
               },
