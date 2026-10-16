@@ -18,6 +18,7 @@ import type { Visibility } from "@osdk/client.unstable";
 
 import type { BlueprintIcon } from "../common/BlueprintIcons.js";
 import type { EntityPermission } from "../common/EntityPermission.js";
+import type { Folder } from "../common/Folder.js";
 import type { EditsHistoryConfig } from "./EditsHistoryConfig.js";
 import type { InterfaceImplementation } from "./InterfaceImplementation.js";
 import type { ObjectPropertyTypeUserDefinition } from "./ObjectPropertyTypeUserDefinition.js";
@@ -42,4 +43,6 @@ export type ObjectTypeDefinition = {
   aliases?: Array<string>;
   includeEmptyBackingDatasource?: boolean;
   permission?: EntityPermission;
+  /** Folder path relative to the installation root. Defaults to the root */
+  folder?: Folder;
 };

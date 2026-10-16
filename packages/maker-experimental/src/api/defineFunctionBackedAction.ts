@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { ActionStatus, ActionType } from "@osdk/maker";
+import type {
+  ActionStatus,
+  ActionType,
+  EntityPermission,
+  Folder,
+} from "@osdk/maker";
 import { defineAction, kebab } from "@osdk/maker";
 
 export type FunctionBackedActionTypeUserDefinition = {
@@ -23,6 +28,9 @@ export type FunctionBackedActionTypeUserDefinition = {
   displayName?: string;
   description?: string;
   status?: ActionStatus;
+  permission?: EntityPermission;
+  /** Folder path relative to the installation root. Defaults to the root */
+  folder?: Folder;
 };
 
 export function defineFunctionBackedAction(
@@ -34,6 +42,8 @@ export function defineFunctionBackedAction(
     apiName: def.apiName ?? `${def.functionApiName.toLowerCase()}-action`,
     displayName: def.displayName ?? `Function action ${def.functionApiName}`,
     description: def.description,
+    ...(def.folder !== undefined && { folder: def.folder }),
+    ...(def.permission !== undefined && { permission: def.permission }),
     rules: [
       {
         type: "functionRule",

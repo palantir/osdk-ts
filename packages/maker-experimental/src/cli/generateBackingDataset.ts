@@ -24,16 +24,17 @@ import type {
   PropertyTypeMappingInfo,
   Type,
 } from "@osdk/client.unstable";
-import type {
-  InputShape,
-  InputShapeMetadata,
-  OutputShape,
-} from "@osdk/client.unstable/api";
+import type { OutputShape } from "@osdk/client.unstable/api";
+import type { Folder } from "@osdk/maker";
 
 import { typeToConcreteDataType } from "../conversion/toMarketplace/typeVisitors.js";
+import { getFolderLocationInputs } from "../util/foldersUtil.js";
 import type { ReadableId } from "../util/generateRid.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
-import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
+import type {
+  BlockDataAddOn,
+  BlockGeneratorResult,
+} from "./marketplaceSerialization/BlockGeneratorResult.js";
 import { toBlockShapeId } from "./marketplaceSerialization/CodeBlockSpec.js";
 
 /**
@@ -174,6 +175,7 @@ async function generateBackingDatasetBlock(
   columns: BackingDatasetColumn[],
   buildDir: string,
   randomnessKey?: string,
+  folder?: Folder,
 ): Promise<BlockGeneratorResult> {
   // Build output shapes
   const outputs: Record<ReadableId, OutputShape> = {} as Record<
@@ -239,23 +241,25 @@ async function generateBackingDatasetBlock(
     toBlockShapeId(`column-internal-${datasetName}-${col.name}`, randomnessKey),
   );
 
-  const compassReadableId = `${blockIdentifier}-compass-resource` as ReadableId;
-  const compassBlockShapeId = toBlockShapeId(compassReadableId, randomnessKey);
+  const folderLocations = getFolderLocationInputs(
+    { [datasourceReadableId]: folder ?? { id: "/", location: "/" } },
+    [datasourceReadableId],
+  );
 
   const datasourceInternalId = toBlockShapeId(
     `datasource-internal-${datasetName}`,
     randomnessKey,
   );
-  const locationInternalId = toBlockShapeId(
-    `location-internal-${datasetName}`,
-    randomnessKey,
-  );
-
-  const addOnOverride: Record<string, unknown> = {
+  const addOnOverride: BlockDataAddOn = {
     idToBlockShapeId: {
       "dataset-internal-shape-id": datasourceBlockInternalId,
       [datasourceInternalId]: datasourceBlockInternalId,
-      [locationInternalId]: compassBlockShapeId,
+      ...Object.fromEntries(
+        Array.from(folderLocations.inputShapes.keys(), (input) => [
+          input,
+          toBlockShapeId(input, randomnessKey),
+        ]),
+      ),
       ...Object.fromEntries(
         columnInternalIds.map((internalId, i) => [
           internalId,
@@ -264,9 +268,12 @@ async function generateBackingDatasetBlock(
       ),
     },
     idToInputGroupId: {},
-    outputToLocationInput: {
-      [datasourceBlockInternalId]: compassBlockShapeId,
-    },
+    outputToLocationInput: Object.fromEntries(
+      Array.from(folderLocations.outputToLocationInput, ([output, input]) => [
+        toBlockShapeId(output, randomnessKey),
+        input,
+      ]),
+    ),
   };
 
   // Create block data directory
@@ -318,50 +325,19 @@ async function generateBackingDatasetBlock(
   ]);
   await fs.promises.writeFile(path.join(dsBlockDataDir, "files.zip"), emptyZip);
 
-  // Build inputs (compassResource for install location)
-  const inputs: Record<ReadableId, InputShape> = {} as Record<
-    ReadableId,
-    InputShape
-  >;
-  const input_shape_metadata: Record<ReadableId, InputShapeMetadata> =
-    {} as Record<ReadableId, InputShapeMetadata>;
-  inputs[compassReadableId] = {
-    type: "compassResource",
-    compassResource: {
-      about: {
-        fallbackTitle: blockIdentifier,
-        fallbackDescription: "",
-        localizedTitle: {},
-        localizedDescription: {},
-      },
-      allowedTypes: [],
-      typeConstraints: [
-        {
-          type: "compassFolderTypeConstraints",
-          compassFolderTypeConstraints: {
-            constraints: ["INSTALL_LOCATION"],
-          },
-        },
-      ],
-    },
-  } as InputShape;
-  input_shape_metadata[compassReadableId] = {
-    isOptional: true,
-    reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
-    isAccessedInReconcile: true,
-  } as InputShapeMetadata;
-
   return {
     block_identifier: blockIdentifier,
     block_data_directory: dsBlockDataDir,
     oci_block_data_metadata: undefined,
     maven_block_data_metadata: undefined,
-    inputs,
+    inputs: Object.fromEntries(folderLocations.inputShapes),
     outputs,
-    input_mapping_entries: [],
+    input_mapping_entries: folderLocations.inputMappings,
     external_recommendations: [],
     add_on_override: addOnOverride,
-    input_shape_metadata,
+    input_shape_metadata: Object.fromEntries(
+      folderLocations.inputShapeMetadata,
+    ),
     block_type: "STATIC_DATASET",
   };
 }
@@ -375,6 +351,7 @@ export async function generateBackingDatasetBlockResult(
   objectTypeBlockData: ObjectTypeBlockDataV2,
   buildDir: string,
   randomnessKey?: string,
+  folder?: Folder,
 ): Promise<BlockGeneratorResult> {
   const apiName = objectTypeBlockData.objectType.apiName!;
   const backingProperties = getBackingDatasetProperties(objectTypeBlockData);
@@ -391,6 +368,7 @@ export async function generateBackingDatasetBlockResult(
     columns,
     buildDir,
     randomnessKey,
+    folder,
   );
 }
 
@@ -405,6 +383,7 @@ export async function generateBackingDatasetBlockResultForLink(
   objectTypes: Record<string, ObjectTypeBlockDataV2>,
   buildDir: string,
   randomnessKey?: string,
+  folder?: Folder,
 ): Promise<BlockGeneratorResult> {
   const definition = linkTypeBlockData.linkType.definition;
   if (definition.type !== "manyToMany") {
@@ -453,5 +432,6 @@ export async function generateBackingDatasetBlockResultForLink(
     ],
     buildDir,
     randomnessKey,
+    folder,
   );
 }

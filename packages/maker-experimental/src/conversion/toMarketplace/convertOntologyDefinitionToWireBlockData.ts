@@ -201,7 +201,6 @@ export function convertOntologyDefinitionToWireBlockData(
     interfaceTypes,
     linkTypes,
     actionTypes,
-    // TODO: Add proper blockOutputCompassLocations mapping
     blockOutputCompassLocations: {},
     knownIdentifiers,
     ruleSets: {},
