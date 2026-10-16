@@ -2317,125 +2317,205 @@ describe("Experimental Test Suite", () => {
       });
     });
 
-    it("produces output shapes for interface with action type constraints", async () => {
-      const result = await defineOntologyV2("com.palantir.", () => {
-        const iface = defineInterface({ apiName: "MyInterface" });
+    it.each([
+      {
+        state: "absent",
+        parameterRequirement: {},
+        requireImplementation: true,
+        expected: undefined,
+      },
+      {
+        state: "false",
+        parameterRequirement: { isRequiredParameterOnConcreteAction: false },
+        requireImplementation: true,
+        expected: false,
+      },
+      {
+        state: "true",
+        parameterRequirement: { isRequiredParameterOnConcreteAction: true },
+        requireImplementation: false,
+        expected: true,
+      },
+    ])(
+      "preserves $state concrete-parameter requirement in output shapes and block data independently of implementation",
+      async ({ parameterRequirement, requireImplementation, expected }) => {
+        const result = await defineOntologyV2("com.palantir.", () => {
+          const iface = defineInterface({ apiName: "MyInterface" });
 
-        defineInterfaceActionTypeConstraint({
-          interfaceType: iface,
-          apiName: "myConstraint",
-          displayName: "My Constraint",
-          description: "A constraint",
-          requireImplementation: false,
-          parameters: [
-            {
-              apiName: "boolParam",
+          defineInterfaceActionTypeConstraint({
+            interfaceType: iface,
+            apiName: "myConstraint",
+            displayName: "My Constraint",
+            description: "A constraint",
+            requireImplementation: false,
+            parameters: [
+              {
+                apiName: "boolParam",
+                displayName: "Bool Param",
+                type: { type: "boolean", boolean: {} },
+                requireImplementation,
+                ...parameterRequirement,
+              },
+            ],
+          });
+        });
+
+        const constraintOutputShapes = Array.from(
+          result.shapes.outputShapes.entries(),
+        ).filter(
+          ([_, shape]) => shape.type === "interfaceActionTypeConstraint",
+        );
+        expect(constraintOutputShapes).toHaveLength(1);
+        expect(constraintOutputShapes[0][1]).toMatchObject({
+          type: "interfaceActionTypeConstraint",
+          interfaceActionTypeConstraint: {
+            about: { fallbackTitle: "My Constraint" },
+            requireImplementation: false,
+          },
+        });
+
+        const paramOutputShapes = Array.from(
+          result.shapes.outputShapes.entries(),
+        ).filter(([_, shape]) => shape.type === "interfaceParameterConstraint");
+        expect(paramOutputShapes).toHaveLength(1);
+        const paramShape = paramOutputShapes[0][1];
+        expect(paramShape).toMatchObject({
+          type: "interfaceParameterConstraint",
+          interfaceParameterConstraint: {
+            about: { fallbackTitle: "Bool Param" },
+            requireImplementation,
+          },
+        });
+        invariant(paramShape.type === "interfaceParameterConstraint");
+        expect(
+          paramShape.interfaceParameterConstraint
+            .isRequiredParameterOnConcreteAction,
+        ).toBe(expected);
+
+        const interfaceBlockData = Object.values(
+          result.ontologyIr.ontology.interfaceTypes,
+        )[0];
+        const blockParameters = Object.values(
+          interfaceBlockData.interfaceType.actionTypeConstraints[0].parameters,
+        );
+        expect(blockParameters).toEqual([
+          {
+            displayMetadata: {
               displayName: "Bool Param",
-              type: { type: "boolean", boolean: {} },
-              requireImplementation: false,
+              apiName: "boolParam",
             },
-          ],
-        });
-      });
-
-      const constraintOutputShapes = Array.from(
-        result.shapes.outputShapes.entries(),
-      ).filter(([_, shape]) => shape.type === "interfaceActionTypeConstraint");
-      expect(constraintOutputShapes).toHaveLength(1);
-      expect(constraintOutputShapes[0][1]).toMatchObject({
-        type: "interfaceActionTypeConstraint",
-        interfaceActionTypeConstraint: {
-          about: { fallbackTitle: "My Constraint" },
-          requireImplementation: false,
-        },
-      });
-
-      const paramOutputShapes = Array.from(
-        result.shapes.outputShapes.entries(),
-      ).filter(([_, shape]) => shape.type === "interfaceParameterConstraint");
-      expect(paramOutputShapes).toHaveLength(1);
-      expect(paramOutputShapes[0][1]).toMatchObject({
-        type: "interfaceParameterConstraint",
-        interfaceParameterConstraint: {
-          about: { fallbackTitle: "Bool Param" },
-          requireImplementation: false,
-        },
-      });
-    });
-
-    it("produces input shapes for imported interface with action type constraints", async () => {
-      const result = await defineOntologyV2("com.palantir.", () => {
-        const importedInterface: InterfaceType = {
-          apiName: "importedInterface",
-          displayMetadata: {
-            displayName: "Imported Interface",
-            description: "An imported interface",
+            type: { type: "boolean", boolean: {} },
+            requireImplementation,
+            isRequiredParameterOnConcreteAction: expected,
           },
-          propertiesV2: {},
-          propertiesV3: {},
-          extendsInterfaces: [],
-          actionTypeConstraints: [
-            {
-              metadata: {
-                apiName: "importedConstraint",
-                displayName: "Imported Constraint",
-                description: "An imported constraint",
-              },
-              parameters: {
-                boolParam: {
-                  displayMetadata: {
-                    displayName: "Bool Param",
-                    apiName: "boolParam",
-                  },
-                  type: { type: "boolean", boolean: {} },
-                  requireImplementation: false,
+        ]);
+      },
+    );
+
+    it.each([
+      {
+        state: "absent",
+        parameterRequirement: {},
+        requireImplementation: true,
+        expected: undefined,
+      },
+      {
+        state: "false",
+        parameterRequirement: { isRequiredParameterOnConcreteAction: false },
+        requireImplementation: true,
+        expected: false,
+      },
+      {
+        state: "true",
+        parameterRequirement: { isRequiredParameterOnConcreteAction: true },
+        requireImplementation: false,
+        expected: true,
+      },
+    ])(
+      "preserves $state concrete-parameter requirement in imported input shapes independently of implementation",
+      async ({ parameterRequirement, requireImplementation, expected }) => {
+        const result = await defineOntologyV2("com.palantir.", () => {
+          const importedInterface: InterfaceType = {
+            apiName: "importedInterface",
+            displayMetadata: {
+              displayName: "Imported Interface",
+              description: "An imported interface",
+            },
+            propertiesV2: {},
+            propertiesV3: {},
+            extendsInterfaces: [],
+            actionTypeConstraints: [
+              {
+                metadata: {
+                  apiName: "importedConstraint",
+                  displayName: "Imported Constraint",
+                  description: "An imported constraint",
                 },
+                parameters: {
+                  boolParam: {
+                    displayMetadata: {
+                      displayName: "Bool Param",
+                      apiName: "boolParam",
+                    },
+                    type: { type: "boolean", boolean: {} },
+                    requireImplementation,
+                    ...parameterRequirement,
+                  },
+                },
+                requireImplementation: false,
               },
-              requireImplementation: false,
-            },
-          ],
-          status: { type: "active", active: {} },
-          links: [],
-          __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
-        };
-        importOntologyEntity(importedInterface);
+            ],
+            status: { type: "active", active: {} },
+            links: [],
+            __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
+          };
+          importOntologyEntity(importedInterface);
 
-        defineObject({
-          apiName: "localObj",
-          displayName: "Local Obj",
-          pluralDisplayName: "Local Objs",
-          titlePropertyApiName: "id",
-          primaryKeyPropertyApiName: "id",
-          properties: {
-            id: { type: "string" },
+          defineObject({
+            apiName: "localObj",
+            displayName: "Local Obj",
+            pluralDisplayName: "Local Objs",
+            titlePropertyApiName: "id",
+            primaryKeyPropertyApiName: "id",
+            properties: {
+              id: { type: "string" },
+            },
+          });
+        });
+
+        const constraintInputShapes = Array.from(
+          result.shapes.inputShapes.entries(),
+        ).filter(
+          ([_, shape]) => shape.type === "interfaceActionTypeConstraint",
+        );
+        expect(constraintInputShapes).toHaveLength(1);
+        expect(constraintInputShapes[0][1]).toMatchObject({
+          type: "interfaceActionTypeConstraint",
+          interfaceActionTypeConstraint: {
+            about: { fallbackTitle: "Imported Constraint" },
+            requireImplementation: false,
           },
         });
-      });
 
-      const constraintInputShapes = Array.from(
-        result.shapes.inputShapes.entries(),
-      ).filter(([_, shape]) => shape.type === "interfaceActionTypeConstraint");
-      expect(constraintInputShapes).toHaveLength(1);
-      expect(constraintInputShapes[0][1]).toMatchObject({
-        type: "interfaceActionTypeConstraint",
-        interfaceActionTypeConstraint: {
-          about: { fallbackTitle: "Imported Constraint" },
-          requireImplementation: false,
-        },
-      });
-
-      const paramInputShapes = Array.from(
-        result.shapes.inputShapes.entries(),
-      ).filter(([_, shape]) => shape.type === "interfaceParameterConstraint");
-      expect(paramInputShapes).toHaveLength(1);
-      expect(paramInputShapes[0][1]).toMatchObject({
-        type: "interfaceParameterConstraint",
-        interfaceParameterConstraint: {
-          about: { fallbackTitle: "Bool Param" },
-          requireImplementation: false,
-        },
-      });
-    });
+        const paramInputShapes = Array.from(
+          result.shapes.inputShapes.entries(),
+        ).filter(([_, shape]) => shape.type === "interfaceParameterConstraint");
+        expect(paramInputShapes).toHaveLength(1);
+        const paramShape = paramInputShapes[0][1];
+        expect(paramShape).toMatchObject({
+          type: "interfaceParameterConstraint",
+          interfaceParameterConstraint: {
+            about: { fallbackTitle: "Bool Param" },
+            requireImplementation,
+          },
+        });
+        invariant(paramShape.type === "interfaceParameterConstraint");
+        expect(
+          paramShape.interfaceParameterConstraint
+            .isRequiredParameterOnConcreteAction,
+        ).toBe(expected);
+      },
+    );
   });
 
   it("converts direct datasources into marketplace inputs and mappings", async () => {

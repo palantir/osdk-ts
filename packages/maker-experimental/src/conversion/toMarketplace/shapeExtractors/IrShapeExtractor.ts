@@ -699,6 +699,8 @@ function getInterfaceParameterConstraintOutputShape(
     ),
     actionTypeConstraint: actionTypeConstraintRef,
     requireImplementation: paramConstraint.requireImplementation,
+    isRequiredParameterOnConcreteAction:
+      paramConstraint.isRequiredParameterOnConcreteAction,
     type: convertParameterConstraintTypeReferencesToShape(
       paramConstraint.type,
       knownMarketplaceIdentifiers,
