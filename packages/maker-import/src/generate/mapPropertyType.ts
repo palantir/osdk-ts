@@ -39,7 +39,7 @@ export interface MappedPropertyType {
  */
 export function mapPropertyType(
   dataType: ObjectPropertyType,
-  packagingOptions: OntologyPackagingOptions,
+  packagingOptions: OntologyPackagingOptions = {},
 ): MappedPropertyType | undefined {
   switch (dataType.type) {
     case "string":
@@ -154,9 +154,11 @@ export function mapPropertyType(
       return { type: inner.type, array: true };
     }
     case "vector": {
-      if (packagingOptions.targetEmbeddedOntology) {
+      // Default behavior is to generate for embedded ontology if targetEmbeddedOntology is unspecified
+      if (packagingOptions.targetEmbeddedOntology !== false) {
         return undefined;
       }
+
       if (dataType.supportsSearchWith.length !== 1) {
         consola.warn(
           `Can only map vectors with exactly one "supportsSearchWith", found ${dataType.supportsSearchWith.length}`,

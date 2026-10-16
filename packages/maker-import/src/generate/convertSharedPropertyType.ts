@@ -24,7 +24,7 @@ import { withoutNamespace } from "./utils.js";
 
 export function convertSharedPropertyType(
   spt: Ontologies.SharedPropertyType,
-  packagingOptions: OntologyPackagingOptions,
+  packagingOptions: OntologyPackagingOptions = {},
 ): SharedPropertyType | undefined {
   const mapped = mapPropertyType(spt.dataType, packagingOptions);
   if (!mapped) {

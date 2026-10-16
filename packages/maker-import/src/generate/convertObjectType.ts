@@ -30,7 +30,7 @@ import { withoutNamespace } from "./utils.js";
 export function convertObjectType(
   fullMetadata: Ontologies.ObjectTypeFullMetadata,
   sharedPropertyTypes: Readonly<Record<string, SharedPropertyType>>,
-  packagingOptions: OntologyPackagingOptions,
+  packagingOptions: OntologyPackagingOptions = {},
 ): ObjectType {
   const obj = fullMetadata.objectType;
   const properties: Array<ObjectPropertyType> = [];

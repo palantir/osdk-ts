@@ -36,7 +36,7 @@ import { withoutNamespace } from "./utils.js";
 export function convertInterfaceType(
   iface: Ontologies.InterfaceType,
   allInterfaces: Record<string, Ontologies.InterfaceType>,
-  packagingOptions: OntologyPackagingOptions,
+  packagingOptions: OntologyPackagingOptions = {},
 ): InterfaceType {
   const shortName = withoutNamespace(iface.apiName);
 

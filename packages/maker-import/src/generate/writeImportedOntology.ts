@@ -49,7 +49,7 @@ interface EntityEntry {
 
 export function convertOntologyFullMetadata(
   metadata: Ontologies.OntologyFullMetadata,
-  packagingOptions: OntologyPackagingOptions,
+  packagingOptions: OntologyPackagingOptions = {},
 ): OntologyDefinition {
   const result: OntologyDefinition = {
     [OntologyEntityTypeEnum.OBJECT_TYPE]: {},
