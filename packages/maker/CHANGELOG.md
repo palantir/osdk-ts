@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.81.0
+
+### Minor Changes
+
+- 2089ca9: Extend link validation to match upstream
+
+### Patch Changes
+
+- Updated dependencies [9f97981]
+  - @osdk/api@2.82.0
+  - @osdk/generator-converters.ontologyir@2.82.0
+
 ## 0.80.0
 
 ### Minor Changes

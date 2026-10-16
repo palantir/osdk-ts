@@ -1,5 +1,17 @@
 # @osdk/shared.test
 
+## 0.60.0
+
+### Minor Changes
+
+- 553461f: Add client generation for agents.
+
+### Patch Changes
+
+- Updated dependencies [9f97981]
+  - @osdk/api@2.82.0
+  - @osdk/generator-converters@2.82.0
+
 ## 0.59.0
 
 ### Minor Changes

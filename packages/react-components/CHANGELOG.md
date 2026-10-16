@@ -1,5 +1,15 @@
 # @osdk/react-components
 
+## 0.66.0
+
+### Minor Changes
+
+- 9f97981: Support decimal and decimal list action parameters in generated SDKs and serialize numeric decimal action arguments as strings.
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
 ## 0.65.0
 
 ### Minor Changes
