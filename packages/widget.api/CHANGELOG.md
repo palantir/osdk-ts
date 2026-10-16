@@ -1,5 +1,12 @@
 # @osdk/widget.api
 
+## 3.82.0
+
+### Patch Changes
+
+- Updated dependencies [9f97981]
+  - @osdk/api@2.82.0
+
 ## 3.81.0
 
 ### Patch Changes

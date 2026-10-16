@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.82.0
+
+### Minor Changes
+
+- 9f97981: Support decimal and decimal list action parameters in generated SDKs and serialize numeric decimal action arguments as strings.
+
 ## 2.81.0
 
 ### Minor Changes
