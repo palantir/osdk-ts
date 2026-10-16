@@ -52,10 +52,10 @@ describe("maker-experimental CLI folder blocks", () => {
     await fs.rm(inputDir, { recursive: true, force: true });
   });
 
-  async function run(fixture: string): Promise<BlockGeneratorResult[]> {
+  async function run(source: string): Promise<BlockGeneratorResult[]> {
     const input = path.join(inputDir, "ontology.ts");
     const output = path.join(workDir, "blocks.json");
-    await fs.copyFile(path.join(TEST_DIR, "fixtures", fixture + ".ts"), input);
+    await fs.writeFile(input, source);
     await main([
       "node",
       "maker-experimental",
@@ -78,7 +78,56 @@ describe("maker-experimental CLI folder blocks", () => {
   }
 
   it("includes a shared nested folder tree in the generated block results", async () => {
-    const results = await run("folders");
+    const results = await run(`
+      import {
+        defineCreateObjectAction,
+        defineInterface,
+        defineLink,
+        defineObject,
+        defineSharedPropertyType,
+      } from "@osdk/maker";
+
+      const objects = ["Person", "Company", "Root"].map((apiName) =>
+        defineObject({
+          apiName,
+          displayName: apiName,
+          pluralDisplayName: apiName,
+          primaryKeyPropertyApiName: "id",
+          titlePropertyApiName: "id",
+          properties: { id: { type: "string" } },
+          permission: "publicProject",
+          folder:
+            apiName === "Root"
+              ? undefined
+              : { id: "/team/entities", location: "team//entities/" },
+        }),
+      );
+
+      defineInterface({
+        apiName: "Named",
+        permission: "publicProject",
+        folder: { id: "/team/entities", location: "/team/entities" },
+      });
+      defineSharedPropertyType({
+        apiName: "label",
+        type: "string",
+        permission: "publicProject",
+        folder: { id: "/team/entities", location: "/team/entities" },
+      });
+      defineCreateObjectAction({
+        objectType: objects[0],
+        apiName: "create-person",
+        permission: "publicProject",
+        folder: { id: "/team/entities", location: "/team/entities" },
+      });
+      defineLink({
+        apiName: "peopleCompanies",
+        many: { object: objects[0], metadata: { apiName: "companies" } },
+        toMany: { object: objects[1], metadata: { apiName: "people" } },
+        permission: "publicProject",
+        folder: { id: "/team/entities", location: "/team/entities" },
+      });
+    `);
     const folders = results.filter((result) => result.block_type === "COMPASS");
     expect(folders).toHaveLength(2);
     expect(results.some((result) => result.block_type === "ONTOLOGY")).toBe(
@@ -172,12 +221,60 @@ describe("maker-experimental CLI folder blocks", () => {
   });
 
   it("preserves the output when no folders are requested", async () => {
-    const results = await run("personNotOptedIn");
+    const results = await run(`
+      import { defineInterface } from "@osdk/maker";
+
+      defineInterface({
+        apiName: "Person",
+        displayName: "Person",
+        properties: {
+          firstName: { type: "string" },
+        },
+      });
+    `);
     expect(results.map((result) => result.block_type)).toEqual(["ONTOLOGY"]);
   });
 
   it("installs generated backing datasets in their owning object or link folder", async () => {
-    const results = await run("backingDatasetFolders");
+    const results = await run(`
+      import { defineLink, defineObject } from "@osdk/maker";
+
+      const [fish, tank] = [
+        {
+          apiName: "Fish",
+          folder: { id: "fish-folder", location: "Aquarium//Animals/Fish/" },
+        },
+        {
+          apiName: "Tank",
+          folder: {
+            id: "/Aquarium/Habitats/Tanks",
+            location: "/Aquarium/Habitats/Tanks",
+          },
+        },
+        { apiName: "DefaultRoot", folder: undefined },
+      ].map(({ apiName, folder }) =>
+        defineObject({
+          apiName,
+          displayName: apiName,
+          pluralDisplayName: apiName,
+          primaryKeyPropertyApiName: "id",
+          titlePropertyApiName: "id",
+          properties: { id: { type: "string" } },
+          includeEmptyBackingDatasource: true,
+          permission: "publicProject",
+          folder,
+        }),
+      );
+
+      defineLink({
+        apiName: "fishVisitedTanks",
+        many: { object: fish, metadata: { apiName: "visitedTanks" } },
+        toMany: { object: tank, metadata: { apiName: "visitingFish" } },
+        includeEmptyBackingDatasource: true,
+        permission: "publicProject",
+        folder: { id: "relationships", location: "/Aquarium/Relationships" },
+      });
+    `);
     const datasets = results.filter(
       (result) => result.block_type === "STATIC_DATASET",
     );
