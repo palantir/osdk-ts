@@ -21,7 +21,6 @@ import type {
   SharedPropertyType,
 } from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
-import { consola } from "consola";
 
 import { mapPropertyType } from "./mapPropertyType.js";
 import { withoutNamespace } from "./utils.js";
@@ -43,13 +42,6 @@ export function convertObjectType(
 
   for (const [propApiName, propV2] of Object.entries(obj.properties)) {
     const mapped = mapPropertyType(propV2.dataType);
-    if (!mapped) {
-      consola.warn(
-        `Skipping property "${propApiName}" on object "${obj.apiName}": unsupported type "${propV2.dataType.type}"`,
-      );
-      continue;
-    }
-
     const sharedPropertyTypeApiName =
       sharedPropertyTypeApiNameByPropertyApiName.get(propApiName);
     let sharedPropertyType: SharedPropertyType | undefined;
