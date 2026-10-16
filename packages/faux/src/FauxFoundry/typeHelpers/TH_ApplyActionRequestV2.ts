@@ -24,21 +24,10 @@ import type {
   ParameterId,
 } from "@osdk/foundry.ontologies";
 
-/**
- * The wire `DataValue` shape of a time series reference apply-action parameter.
- * The client-facing `TimeSeriesReference` type (`$`-prefixed) is marshalled to
- * this discriminated union by `toDataValue` before it reaches the gateway.
- */
 type TH_TimeSeriesReference =
-  | { type: "seriesId"; seriesId: string }
-  | {
-      type: "qualifiedSeriesId";
-      qualifiedSeriesId: { seriesId: string; syncRid: string };
-    }
-  | {
-      type: "templateRid";
-      templateRid: { templateRid: string; templateVersion?: string };
-    };
+  | string
+  | { seriesId: string; syncRid: string }
+  | { templateRid: string; templateVersion?: string };
 
 type TH_ActionParameterType_Primitive<X extends ActionParameterType> =
   X extends { type: "attachment" }

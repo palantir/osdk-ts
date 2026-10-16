@@ -332,13 +332,13 @@ describe(toDataValue, () => {
     expect(converted).toBe("ri.actions..scenario.abc");
   });
 
-  it("converts a time series reference by series id", async () => {
+  it("converts a time series reference by series id to a bare series id string", async () => {
     const converted = await toDataValue(
       { $seriesId: "sensor-123" },
       clientCtx,
       mockActionMetadata,
     );
-    expect(converted).toEqual({ type: "seriesId", seriesId: "sensor-123" });
+    expect(converted).toEqual("sensor-123");
   });
 
   it("converts a time series reference qualified by a sync rid", async () => {
@@ -348,11 +348,8 @@ describe(toDataValue, () => {
       mockActionMetadata,
     );
     expect(converted).toEqual({
-      type: "qualifiedSeriesId",
-      qualifiedSeriesId: {
-        seriesId: "sensor-123",
-        syncRid: "ri.time-series.main.sync.abc",
-      },
+      seriesId: "sensor-123",
+      syncRid: "ri.time-series.main.sync.abc",
     });
   });
 
@@ -366,11 +363,8 @@ describe(toDataValue, () => {
       mockActionMetadata,
     );
     expect(converted).toEqual({
-      type: "templateRid",
-      templateRid: {
-        templateRid: "ri.time-series.main.template.abc",
-        templateVersion: "1",
-      },
+      templateRid: "ri.time-series.main.template.abc",
+      templateVersion: "1",
     });
   });
 });

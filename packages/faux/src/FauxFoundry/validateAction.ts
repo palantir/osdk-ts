@@ -307,14 +307,15 @@ function validateActionParameterType(
     }
 
     case "timeSeriesReference": {
-      const refType = (value as { type?: unknown } | null)?.type;
-      if (
-        !value ||
-        typeof value !== "object" ||
-        (refType !== "seriesId" &&
-          refType !== "templateRid" &&
-          refType !== "qualifiedSeriesId")
-      ) {
+      const ref = value as Record<string, unknown> | null;
+      const valid =
+        typeof value === "string" ||
+        (!!ref &&
+          typeof ref === "object" &&
+          ((typeof ref.seriesId === "string" &&
+            typeof ref.syncRid === "string") ||
+            typeof ref.templateRid === "string"));
+      if (!valid) {
         ret.result = "INVALID";
         ret.parameters[paramKey] = {
           ...baseParam,

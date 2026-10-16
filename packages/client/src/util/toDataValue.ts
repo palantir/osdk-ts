@@ -137,24 +137,18 @@ export async function toDataValue(
 
   if (isTimeSeriesReference(value)) {
     if (value.$templateRid != null) {
+      // DerivedTimeSeriesProperty
       return {
-        type: "templateRid",
-        templateRid: {
-          templateRid: value.$templateRid,
-          templateVersion: value.$templateVersion,
-        },
+        templateRid: value.$templateRid,
+        templateVersion: value.$templateVersion,
       };
     }
     if (value.$syncRid != null) {
-      return {
-        type: "qualifiedSeriesId",
-        qualifiedSeriesId: {
-          seriesId: value.$seriesId,
-          syncRid: value.$syncRid,
-        },
-      };
+      // QualifiedTimeseriesProperty
+      return { seriesId: value.$seriesId, syncRid: value.$syncRid };
     }
-    return { type: "seriesId", seriesId: value.$seriesId };
+    // SeriesId (a bare string)
+    return value.$seriesId;
   }
 
   // TODO (during queries implementation)
