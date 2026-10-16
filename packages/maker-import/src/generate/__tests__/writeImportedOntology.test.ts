@@ -152,8 +152,8 @@ describe("mapPropertyType", () => {
     });
   });
 
-  it("returns undefined when a struct field is unsupported", () => {
-    expect(
+  it("throws when a struct field is unsupported", () => {
+    expect(() =>
       mapPropertyType({
         type: "struct",
         structFieldTypes: [
@@ -165,21 +165,28 @@ describe("mapPropertyType", () => {
           },
         ],
       }),
-    ).toBeUndefined();
+    ).toThrowError('Unsupported property type "timeseries"');
   });
 
-  it("returns undefined for unsupported types", () => {
-    expect(
+  it("throws for unsupported types", () => {
+    expect(() =>
       mapPropertyType({ type: "timeseries", itemType: { type: "string" } }),
-    ).toBeUndefined();
-    expect(
+    ).toThrowError('Unsupported property type "timeseries"');
+    expect(() => mapPropertyType({ type: "cipherText" })).toThrowError(
+      'Unsupported property type "cipherText"',
+    );
+  });
+
+  it("throws for vectors without a search configuration", () => {
+    expect(() =>
       mapPropertyType({
         type: "vector",
         dimension: 1,
         supportsSearchWith: [],
       }),
-    ).toBeUndefined();
-    expect(mapPropertyType({ type: "cipherText" })).toBeUndefined();
+    ).toThrowError(
+      'Can only map vectors with exactly one "supportsSearchWith", found 0',
+    );
   });
 });
 
@@ -288,14 +295,14 @@ describe("mapActionParameterType", () => {
     );
   });
 
-  it("returns undefined for unsupported types", () => {
-    expect(
+  it("throws for unsupported types", () => {
+    expect(() =>
       mapActionParameterType({
         type: "vector",
         dimension: 1,
         supportsSearchWith: [],
       }),
-    ).toBeUndefined();
+    ).toThrowError("Cannot map vector parameter type: no maker equivalent");
   });
 });
 
