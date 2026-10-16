@@ -132,7 +132,8 @@ export async function runInterfacesTest2(): Promise<void> {
     interfaceAFilteredByPk,
   );
 
-  const huh3 = await interfaceA.data[0].$link.esongPds.fetchOne();
+  const huh3 = await interfaceA.data[0].$link.esongIssues.fetchOne();
+  const huh4 = await interfaceA.data[0].$link.esongPds.fetchPage();
 
   const implementObjectTypeAAndB = await client(NihalbCastingInterfaceTypeA)
     .narrowToType(NihalbCastingInterfaceB)
