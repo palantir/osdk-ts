@@ -14,17 +14,30 @@
  * limitations under the License.
  */
 
-import type { OutputShape } from "@osdk/client.unstable/api";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
+
+import type {
+  InputShape,
+  InputShapeMetadata,
+  OutputShape,
+} from "@osdk/client.unstable/api";
 import type { EntityPermission, OntologyDefinition } from "@osdk/maker";
 import { cleanAndValidateLinkTypeId } from "@osdk/maker";
 import invariant from "tiny-invariant";
 
+import type {
+  BlockDataAddOn,
+  BlockGeneratorResult,
+} from "../cli/marketplaceSerialization/BlockGeneratorResult.js";
 import { toBlockShapeId } from "../cli/marketplaceSerialization/CodeBlockSpec.js";
+import type { InputMappingEntry } from "../cli/marketplaceSerialization/supportingTypes.js";
 import { type ReadableId, ReadableIdGenerator } from "./generateRid.js";
 
 // Matches Compass's MAX_RESOURCE_NAME_LENGTH.
 const FOLDER_NAME_LIMIT = 700;
 const encoder = new TextEncoder();
+const COMPASS_FOLDER_INTERNAL_SHAPE_ID = "compass-folder";
 
 export interface FolderNode {
   path: string;
@@ -167,4 +180,103 @@ export function buildFolderTree(
         outputShapeId,
       };
     });
+}
+
+export function generateFolderBlockResults(
+  outputFolderPaths: Readonly<Record<ReadableId, string>>,
+  buildDir: string,
+  randomnessKey?: string,
+): Promise<BlockGeneratorResult[]> {
+  const folders = buildFolderTree(
+    Object.values(outputFolderPaths),
+    randomnessKey,
+  );
+  return Promise.all(
+    folders.map(async (folder): Promise<BlockGeneratorResult> => {
+      const inputs: Record<ReadableId, InputShape> = {};
+      const inputShapeMetadata: Record<ReadableId, InputShapeMetadata> = {};
+      const inputMappings: InputMappingEntry[] = [];
+      const addOn: BlockDataAddOn = {
+        idToBlockShapeId: {
+          [COMPASS_FOLDER_INTERNAL_SHAPE_ID]: folder.outputShapeId,
+        },
+        idToInputGroupId: {},
+        outputToLocationInput: {},
+      };
+
+      if (folder.parentPath !== "/") {
+        const parentInputId = ReadableIdGenerator.getForCompassFolderLocation(
+          folder.parentPath,
+        );
+        inputs[parentInputId] = {
+          type: "compassResource",
+          compassResource: {
+            about: {
+              fallbackTitle: folder.parentPath,
+              fallbackDescription: "Folder installation location",
+              localizedTitle: {},
+              localizedDescription: {},
+            },
+            allowedTypes: [
+              { type: "compassFolderType", compassFolderType: {} },
+            ],
+            typeConstraints: [
+              {
+                type: "compassFolderTypeConstraints",
+                compassFolderTypeConstraints: {
+                  constraints: ["INSTALL_LOCATION"],
+                },
+              },
+            ],
+          },
+        };
+        inputShapeMetadata[parentInputId] = {
+          isOptional: false,
+          isAccessedInReconcile: true,
+          reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+        };
+        addOn.idToBlockShapeId[parentInputId] = toBlockShapeId(
+          parentInputId,
+          randomnessKey,
+        );
+        addOn.outputToLocationInput[folder.outputShapeId] = parentInputId;
+        inputMappings.push({
+          input: parentInputId,
+          output: ReadableIdGenerator.getForCompassFolder(folder.parentPath),
+        });
+      }
+
+      const blockDataDirectory = path.resolve(buildDir, folder.blockIdentifier);
+      await fs.mkdir(blockDataDirectory, { recursive: true });
+      await fs.writeFile(
+        path.join(blockDataDirectory, "VERSION"),
+        JSON.stringify("v1"),
+      );
+
+      return {
+        block_identifier: folder.blockIdentifier,
+        block_data_directory: blockDataDirectory,
+        inputs,
+        outputs: {
+          [folder.outputReadableId]: {
+            type: "compassResource",
+            compassResource: {
+              about: {
+                fallbackTitle: folder.name,
+                fallbackDescription: folder.path,
+                localizedTitle: {},
+                localizedDescription: {},
+              },
+              type: { type: "compassFolderType", compassFolderType: {} },
+            },
+          },
+        },
+        input_mapping_entries: inputMappings,
+        external_recommendations: [],
+        add_on_override: addOn,
+        input_shape_metadata: inputShapeMetadata,
+        block_type: "COMPASS",
+      };
+    }),
+  );
 }

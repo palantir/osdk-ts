@@ -38,11 +38,7 @@ import {
   getImportedShapes,
   type LinkTypeIdsByApiName,
 } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
-import {
-  buildFolderTree,
-  type FolderNode,
-  getOutputFolderPaths,
-} from "../util/foldersUtil.js";
+import { getOutputFolderPaths } from "../util/foldersUtil.js";
 
 export type { ExternalImportedOntologyMetadata } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
@@ -67,7 +63,6 @@ export interface OntologyV2Result {
   backingDatasourceLinkApiNames: string[];
   backingMediaSetNames: string[];
   outputFolderPaths: Record<ReadableId, string>;
-  folders: FolderNode[];
 }
 
 export interface FunctionsIr {
@@ -145,10 +140,6 @@ export async function defineOntologyV2(
   const outputFolderPaths = getOutputFolderPaths(
     ontologyDefinition,
     shapes.outputShapes,
-  );
-  const folders = buildFolderTree(
-    Object.values(outputFolderPaths),
-    randomnessKey,
   );
 
   // Generate input shapes for imported entities and merge into main shapes
@@ -245,6 +236,5 @@ export async function defineOntologyV2(
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
     outputFolderPaths,
-    folders,
   };
 }

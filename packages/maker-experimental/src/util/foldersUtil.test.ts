@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
+import * as fs from "node:fs/promises";
+import * as os from "node:os";
+import * as nodePath from "node:path";
 
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
+import type { BlockDataAddOn } from "../cli/marketplaceSerialization/BlockGeneratorResult.js";
+import { toBlockShapeId } from "../cli/marketplaceSerialization/CodeBlockSpec.js";
 import {
   buildFolderTree,
+  generateFolderBlockResults,
   validateAndNormalizeFolderPath,
 } from "./foldersUtil.js";
+import { ReadableIdGenerator } from "./generateRid.js";
 
 describe("validateAndNormalizeFolderPath", () => {
   const apiName = "com.palantir.Person";
@@ -126,6 +134,144 @@ describe("validateAndNormalizeFolderPath", () => {
       ).toThrow("folder names must contain valid Unicode");
     },
   );
+});
+
+describe("generateFolderBlockResults", () => {
+  let buildDir: string;
+  const randomnessKey = "123e4567-e89b-12d3-a456-426614174000";
+
+  beforeEach(async () => {
+    buildDir = await fs.mkdtemp(
+      nodePath.join(os.tmpdir(), "maker-compass-folders-"),
+    );
+  });
+
+  afterEach(async () => {
+    await fs.rm(buildDir, { recursive: true, force: true });
+  });
+
+  it("writes Compass v1 blocks with parent mappings and installation-root fallback", async () => {
+    const outputFolderPaths = {
+      [ReadableIdGenerator.getForObjectType("First")]: "/a/b/c",
+      [ReadableIdGenerator.getForObjectType("Second")]: "/a/d",
+      [ReadableIdGenerator.getForObjectType("Third")]: "/a/b/c",
+      [ReadableIdGenerator.getForObjectType("Root")]: "/",
+    };
+    const folders = buildFolderTree(
+      Object.values(outputFolderPaths),
+      randomnessKey,
+    );
+    const results = await generateFolderBlockResults(
+      outputFolderPaths,
+      buildDir,
+      randomnessKey,
+    );
+    expect(results).toHaveLength(4);
+
+    for (const [index, folder] of folders.entries()) {
+      const result = results[index];
+      expect(result.block_identifier).toBe(folder.blockIdentifier);
+      expect(result.block_type).toBe("COMPASS");
+      expect(nodePath.isAbsolute(result.block_data_directory)).toBe(true);
+      expect(await fs.readdir(result.block_data_directory)).toEqual([
+        "VERSION",
+      ]);
+      expect(
+        await fs.readFile(
+          nodePath.join(result.block_data_directory, "VERSION"),
+          "utf-8",
+        ),
+      ).toBe('"v1"');
+      expect(result.outputs).toEqual({
+        [folder.outputReadableId]: {
+          type: "compassResource",
+          compassResource: {
+            about: {
+              fallbackTitle: folder.name,
+              fallbackDescription: folder.path,
+              localizedTitle: {},
+              localizedDescription: {},
+            },
+            type: { type: "compassFolderType", compassFolderType: {} },
+          },
+        },
+      });
+      const addOn = result.add_on_override as BlockDataAddOn;
+      expect(addOn.idToBlockShapeId["compass-folder"]).toBe(
+        folder.outputShapeId,
+      );
+      expect(addOn.idToInputGroupId).toEqual({});
+
+      if (folder.parentPath === "/") {
+        expect(result.inputs).toEqual({});
+        expect(result.input_mapping_entries).toEqual([]);
+        expect(result.input_shape_metadata).toEqual({});
+        expect(addOn.outputToLocationInput).toEqual({});
+      } else {
+        const parent = folders.find(
+          (candidate) => candidate.path === folder.parentPath,
+        )!;
+        const inputId = ReadableIdGenerator.getForCompassFolderLocation(
+          folder.parentPath,
+        );
+        expect(result.inputs[inputId]).toMatchObject({
+          type: "compassResource",
+          compassResource: {
+            allowedTypes: [
+              { type: "compassFolderType", compassFolderType: {} },
+            ],
+            typeConstraints: [
+              {
+                type: "compassFolderTypeConstraints",
+                compassFolderTypeConstraints: {
+                  constraints: ["INSTALL_LOCATION"],
+                },
+              },
+            ],
+          },
+        });
+        expect(result.input_shape_metadata[inputId]).toEqual({
+          isOptional: false,
+          isAccessedInReconcile: true,
+          reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+        });
+        expect(result.input_mapping_entries).toEqual([
+          {
+            input: inputId,
+            output: parent.outputReadableId,
+          },
+        ]);
+        expect(addOn.outputToLocationInput).toEqual({
+          [folder.outputShapeId]: inputId,
+        });
+        expect(addOn.idToBlockShapeId[inputId]).toBe(
+          toBlockShapeId(inputId, randomnessKey),
+        );
+      }
+    }
+
+    expect(results[1].inputs).toEqual(results[3].inputs);
+    expect(results[1].input_mapping_entries).toEqual(
+      results[3].input_mapping_entries,
+    );
+    expect(
+      await generateFolderBlockResults(
+        outputFolderPaths,
+        buildDir,
+        randomnessKey,
+      ),
+    ).toEqual(results);
+  });
+
+  it("does not emit blocks or files for root-only placement", async () => {
+    expect(
+      await generateFolderBlockResults(
+        { [ReadableIdGenerator.getForObjectType("Root")]: "/" },
+        buildDir,
+      ),
+    ).toEqual([]);
+    expect(await fs.readdir(buildDir)).toEqual([]);
+  });
 });
 
 describe("buildFolderTree", () => {

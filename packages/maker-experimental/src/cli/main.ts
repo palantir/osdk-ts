@@ -48,6 +48,7 @@ import type {
   ExternalImportedOntologyMetadata,
   LinkTypeIdsByApiName,
 } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
+import { generateFolderBlockResults } from "../util/foldersUtil.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
@@ -316,6 +317,7 @@ export default async function main(
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
+    outputFolderPaths,
   } = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
@@ -371,6 +373,12 @@ export default async function main(
     ),
   );
   consola.info(`Wrote oac-imported-metadata.json to ${importedMetadataPath}`);
+
+  const folderResults = await generateFolderBlockResults(
+    outputFolderPaths,
+    commandLineOpts.buildDir,
+    commandLineOpts.randomnessKey,
+  );
 
   let valueTypeResults: BlockGeneratorResult[] = [];
   if (ontologyIr.valueTypes.length > 0) {
@@ -583,6 +591,7 @@ export default async function main(
   const blockGeneratorResultJson = JSON.stringify(
     [
       blockGeneratorResult,
+      ...folderResults,
       ...directDatasourceGeneratorResults,
       ...backingDsGeneratorResults,
       ...backingDsLinkGeneratorResults,
