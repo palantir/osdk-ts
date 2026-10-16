@@ -5721,6 +5721,9 @@ importers:
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
     devDependencies:
       '@osdk/faux':
         specifier: workspace:~

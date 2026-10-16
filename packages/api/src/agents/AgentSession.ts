@@ -15,6 +15,35 @@
  */
 
 /** @beta */
+export interface AgentSendEventOptions {
+  /**
+   * The duration in milliseconds to wait for the event to be accepted.
+   *
+   * Defaults to 30 seconds.
+   */
+  $timeoutMs?: number;
+
+  /**
+   * The delay in milliseconds between attempts when the session is not ready to accept events.
+   *
+   * Defaults to 1 second.
+   */
+  pollIntervalMs?: number;
+}
+
+/** @beta */
 export interface AgentSession {
   readonly id: string;
+
+  /**
+   * Sends an event to a session. Blocks until the event has been accepted, up to the specified timeout.
+   *
+   * @throws {AgentSendEventTimeoutError} if the session does not become ready to accept events within the specified timeout.
+   *
+   * @beta
+   */
+  experimental_sendEvent(
+    event: Record<string, unknown>,
+    options?: AgentSendEventOptions,
+  ): Promise<void>;
 }

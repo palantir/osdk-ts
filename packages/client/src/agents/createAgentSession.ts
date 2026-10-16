@@ -20,6 +20,7 @@ import * as Sessions from "@osdk/foundry.agents/AgentSession";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentHeader } from "../util/addUserAgentHeader.js";
 import { toDataValueAgents } from "../util/toDataValueAgents.js";
+import { sendEventToAgentSession } from "./sendEventToAgentSession.js";
 import type { AgentSignatureFromDef } from "./types.js";
 
 export async function createAgentSession<D extends AgentDefinition<unknown>>(
@@ -59,5 +60,15 @@ export async function createAgentSession<D extends AgentDefinition<unknown>>(
     },
     { preview: true },
   );
-  return { id: response.id };
+  return {
+    id: response.id,
+    experimental_sendEvent: (event, options) =>
+      sendEventToAgentSession(
+        clientWithHeaders,
+        response.id,
+        agentDefinition.eventDefinitions,
+        event,
+        options,
+      ),
+  };
 }
