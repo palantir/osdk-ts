@@ -18,7 +18,7 @@ import { Errors, type FauxAgentImpl, OpenApiCallError } from "@osdk/faux";
 import type { AgentSession, SendEventResponse } from "@osdk/foundry.agents";
 import { z } from "zod/v4";
 
-const eventIdSchema = z.uuidv4();
+const eventIdSchema = z.uuid({ version: "v4" });
 
 export function createLazyAgentImpl(
   createSession: Record<string, AgentSession> | FauxAgentImpl["createSession"],

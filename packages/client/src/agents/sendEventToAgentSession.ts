@@ -81,8 +81,6 @@ export async function sendEventToAgentSession(
       throw new AgentSendEventTimeoutError();
     }
 
-    await new Promise((resolve) =>
-      setTimeout(resolve, pollIntervalMs),
-    );
+    await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
   }
 }
