@@ -4326,6 +4326,9 @@ importers:
       '@osdk/client.unstable.tpsa':
         specifier: workspace:*
         version: link:../client.unstable.tpsa
+      '@osdk/foundry.agents':
+        specifier: catalog:foundry-platform-typescript
+        version: 2.83.0
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
         version: 2.78.0
@@ -4451,6 +4454,9 @@ importers:
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
+      '@osdk/foundry.agents':
+        specifier: catalog:foundry-platform-typescript
+        version: 2.83.0
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
         version: 2.78.0

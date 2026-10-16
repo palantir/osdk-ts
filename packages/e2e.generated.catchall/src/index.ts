@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { osdkTestFixture } from "./agents/osdkTestFixture.js";
 export * from "./generatedNoCheck/index.js";

@@ -24,6 +24,7 @@ import {
   generateOntologyMetadataTypeFile,
 } from "./generateMetadata.js";
 import { generatePerActionDataFiles } from "./generatePerActionDataFiles.js";
+import { generatePerAgentDataFiles } from "./generatePerAgentDataFiles.js";
 import { generatePerInterfaceDataFiles } from "./generatePerInterfaceDataFiles.js";
 import { generatePerObjectDataFiles } from "./generatePerObjectDataFiles.js";
 import { generatePerQueryDataFilesV2 } from "./generatePerQueryDataFiles.js";
@@ -43,6 +44,7 @@ export async function generateClientSdkVersionTwoPointZero(
   fixedVersionQueryTypes: string[] = [],
   exportOntologyMetadata: boolean = false,
   queryVersionReferences: ReadonlyMap<string, string> = new Map(),
+  agentVersionReferences: ReadonlyMap<string, string> = new Map(),
 ): Promise<void> {
   const duplicateQueryType = fixedVersionQueryTypes.find(queryType =>
     queryVersionReferences.has(queryType)
@@ -86,6 +88,7 @@ export async function generateClientSdkVersionTwoPointZero(
     outDir,
     forInternalUse,
     queryVersionReferences: normalizedQueryVersionReferences,
+    agentVersionReferences,
   };
 
   await generateRootIndexTsFile(ctx);
@@ -94,5 +97,6 @@ export async function generateClientSdkVersionTwoPointZero(
   await generatePerObjectDataFiles(ctx);
   await generatePerInterfaceDataFiles(ctx);
   await generatePerActionDataFiles(ctx);
+  await generatePerAgentDataFiles(ctx);
   await generatePerQueryDataFilesV2(ctx, true);
 }

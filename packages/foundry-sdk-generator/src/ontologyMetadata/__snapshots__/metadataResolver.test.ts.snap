@@ -2,6 +2,7 @@
 
 exports[`Load Ontologies Metadata > Loads action types with media refs, interface props, and structs 1`] = `
 {
+  "agentVersionReferences": Map {},
   "externalInterfaces": Map {},
   "externalObjects": Map {},
   "queryVersionReferences": Map {},
@@ -135,6 +136,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
       },
     },
     "actionTypesFullMetadata": {},
+    "agents": {},
     "interfaceTypes": {
       "FooInterface": {
         "allExtendsInterfaces": [],
@@ -611,6 +613,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
 
 exports[`Load Ontologies Metadata > Loads object and action types using only specified link types 1`] = `
 {
+  "agentVersionReferences": Map {},
   "externalInterfaces": Map {},
   "externalObjects": Map {},
   "queryVersionReferences": Map {},
@@ -656,6 +659,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
       },
     },
     "actionTypesFullMetadata": {},
+    "agents": {},
     "interfaceTypes": {},
     "objectTypes": {
       "Employee": {
@@ -1004,6 +1008,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
 
 exports[`Load Ontologies Metadata > Loads object, action, interface types without link types 1`] = `
 {
+  "agentVersionReferences": Map {},
   "externalInterfaces": Map {},
   "externalObjects": Map {},
   "queryVersionReferences": Map {},
@@ -1049,6 +1054,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
       },
     },
     "actionTypesFullMetadata": {},
+    "agents": {},
     "interfaceTypes": {
       "FooInterface": {
         "allExtendsInterfaces": [],

@@ -143,7 +143,7 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
       );
     }
 
-    fauxOntology.registerAgentType(
+    fauxOntology.registerAgent(
       apiName,
       definition,
       createLazyAgentImpl(lazyHandlerMap),
@@ -154,7 +154,7 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
   // object sets with new RIDs on each request, which means that we can't use exact request matching
   // for this agent. Here we pull out the object set RID from the request and use it to validate the
   // request.
-  fauxOntology.registerAgentType(
+  fauxOntology.registerAgent(
     objectArgumentsAgentApiName,
     objectArgumentsAgentVersion,
     (request, dataStore) => {
