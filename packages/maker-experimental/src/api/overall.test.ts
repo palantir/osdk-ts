@@ -89,6 +89,38 @@ function resolvedShapePreset(resolvedShape: ResolvedBlockSetInputShape) {
   };
 }
 
+async function withFunctionsIr<T>(
+  inputs: FunctionsIr["discoveredFunctions"][number]["inputs"],
+  run: (functionsIrFile: string) => Promise<T>,
+): Promise<T> {
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), "maker-fba-"));
+  const functionsIrFile = path.join(outputDir, "functions-ir.json");
+  const functionsIr: FunctionsIr = {
+    discoveredFunctions: [
+      {
+        locator: {
+          type: "typescript",
+          typescript: { functionName: "updateTags" },
+        },
+        inputs,
+        output: { type: "void" },
+        customTypes: {},
+        ontologyProvenance: {
+          editedObjects: { "com.palantir.TaggedObject": {} },
+          editedLinks: {},
+          editedInterfaces: {},
+        },
+      },
+    ],
+  };
+  try {
+    fs.writeFileSync(functionsIrFile, JSON.stringify(functionsIr));
+    return await run(functionsIrFile);
+  } finally {
+    fs.rmSync(outputDir, { recursive: true, force: true });
+  }
+}
+
 describe("Experimental Test Suite", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, undefined);
@@ -134,32 +166,48 @@ describe("Experimental Test Suite", () => {
     ] as const)(
       "uses %s-compatible requirements for %j with required=%s",
       async (parameterType, dataType, required, requirementType) => {
-        const outputDir = fs.mkdtempSync(
-          path.join(os.tmpdir(), "maker-function-action-requirements-"),
+        const result = await withFunctionsIr(
+          [{ name: "tags", dataType, required }],
+          (functionsIrFile) =>
+            defineOntologyV2(
+              "com.palantir.",
+              () => {
+                defineObject({
+                  apiName: "TaggedObject",
+                  displayName: "Tagged object",
+                  pluralDisplayName: "Tagged objects",
+                  titlePropertyApiName: "id",
+                  primaryKeyPropertyApiName: "id",
+                  properties: {
+                    id: { type: "string" },
+                    tags: { type: "string", array: true },
+                  },
+                });
+                defineFunctionBackedAction({ functionApiName: "updateTags" });
+              },
+              undefined,
+              undefined,
+              functionsIrFile,
+            ),
         );
-        const functionsIrFile = path.join(outputDir, "functions-ir.json");
-        const functionsIr: FunctionsIr = {
-          discoveredFunctions: [
-            {
-              locator: {
-                type: "typescript",
-                typescript: { functionName: "updateTags" },
-              },
-              inputs: [{ name: "tags", dataType, required }],
-              output: { type: "void" },
-              customTypes: {},
-              ontologyProvenance: {
-                editedObjects: { "com.palantir.TaggedObject": {} },
-                editedLinks: {},
-                editedInterfaces: {},
-              },
-            },
-          ],
-        };
+        const actions = Object.values(result.ontologyIr.ontology.actionTypes);
+        expect(actions).toHaveLength(1);
+        const action = actions[0].actionType;
+        expect(action.metadata.parameters.tags.type.type).toBe(parameterType);
+        expect(
+          action.actionTypeLogic.validation.parameterValidations.tags
+            .defaultValidation.validation.required,
+        ).toEqual({ type: requirementType, [requirementType]: {} });
+      },
+    );
+  });
 
-        try {
-          fs.writeFileSync(functionsIrFile, JSON.stringify(functionsIr));
-          const result = await defineOntologyV2(
+  describe("Function-backed action display configuration", () => {
+    it("passes form, submission, permission and icon settings through", async () => {
+      const result = await withFunctionsIr(
+        [{ name: "tag", dataType: { type: "string" } }],
+        (functionsIrFile) =>
+          defineOntologyV2(
             "com.palantir.",
             () => {
               defineObject({
@@ -168,30 +216,55 @@ describe("Experimental Test Suite", () => {
                 pluralDisplayName: "Tagged objects",
                 titlePropertyApiName: "id",
                 primaryKeyPropertyApiName: "id",
-                properties: {
-                  id: { type: "string" },
-                  tags: { type: "string", array: true },
-                },
+                properties: { id: { type: "string" } },
               });
-              defineFunctionBackedAction({ functionApiName: "updateTags" });
+              defineFunctionBackedAction({
+                functionApiName: "updateTags",
+                defaultFormat: "TABLE",
+                enableLayoutSwitch: true,
+                submissionMetadata: {
+                  successMessage: "Tags updated",
+                  undoButtonConfiguration: true,
+                },
+                permission: "publicProject",
+                icon: { locator: "tag", color: "#2D72D2" },
+              });
             },
             undefined,
             undefined,
             functionsIrFile,
-          );
-          const actions = Object.values(result.ontologyIr.ontology.actionTypes);
-          expect(actions).toHaveLength(1);
-          const action = actions[0].actionType;
-          expect(action.metadata.parameters.tags.type.type).toBe(parameterType);
-          expect(
-            action.actionTypeLogic.validation.parameterValidations.tags
-              .defaultValidation.validation.required,
-          ).toEqual({ type: requirementType, [requirementType]: {} });
-        } finally {
-          fs.rmSync(outputDir, { recursive: true, force: true });
+          ),
+      );
+      const [[actionRid, { actionType }]] = Object.entries(
+        result.ontologyIr.ontology.actionTypes,
+      );
+      const { displayMetadata } = actionType.metadata;
+      expect(displayMetadata.configuration).toMatchObject({
+        defaultLayout: "TABLE",
+        enableLayoutUserSwitch: true,
+      });
+      expect(displayMetadata.icon).toEqual({
+        type: "blueprint",
+        blueprint: { locator: "tag", color: "#2D72D2" },
+      });
+      expect(displayMetadata.successMessage).toEqual([
+        { type: "message", message: "Tags updated" },
+      ]);
+      expect(displayMetadata.undoButtonConfiguration).toBe(true);
+      expect(
+        result.ontologyIr.ontology.blockPermissionInformation?.actionTypes[
+          actionRid
+        ],
+      ).toMatchInlineSnapshot(`
+        {
+          "restrictionStatus": {
+            "hasRolesApplied": true,
+            "ontologyPackageRid": null,
+            "publicProject": true,
+          },
         }
-      },
-    );
+      `);
+    });
   });
 
   describe("Empty backing Media Sets", () => {
