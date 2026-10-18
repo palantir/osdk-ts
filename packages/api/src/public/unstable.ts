@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export type { AgentParam } from "../agents/AgentParam.js";
 export type { AgentDefinition } from "../agents/AgentDefinition.js";
 export { AgentSendEventTimeoutError } from "../agents/AgentSendEventTimeoutError.js";
 export type {
