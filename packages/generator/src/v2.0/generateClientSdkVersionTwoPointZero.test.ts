@@ -1034,12 +1034,23 @@ describe("generator", () => {
           "/foo/ontology/agents.ts": "export { weatherAgent } from './agents/weatherAgent.js';
         ",
           "/foo/ontology/agents/weatherAgent.ts": "import type { VersionBound } from '@osdk/client';
-        import type { AgentDefinition } from '@osdk/client/experimental';
+        import type { AgentDefinition, AgentParam, AgentSession } from '@osdk/client/experimental';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
         /** @beta */
-        export interface weatherAgent extends AgentDefinition, VersionBound<$ExpectedClientVersion> {
+        export namespace weatherAgent {
+          export interface Signatures {
+            experimental_createSession(args: weatherAgent.CreateSessionArguments): Promise<AgentSession>;
+          }
+
+          export interface CreateSessionArguments {
+            readonly city: string;
+          }
+        }
+
+        /** @beta */
+        export interface weatherAgent extends AgentDefinition<weatherAgent.Signatures>, VersionBound<$ExpectedClientVersion> {
           type: 'agent';
           apiName: 'weatherAgent';
           version: '1.2.3';
@@ -1493,7 +1504,7 @@ describe("generator", () => {
         };
         ",
         }
-        `);
+      `);
     },
   );
 
@@ -1763,12 +1774,23 @@ describe("generator", () => {
           "/foo/ontology/agents.ts": "export { weatherAgent } from './agents/weatherAgent.js';
         ",
           "/foo/ontology/agents/weatherAgent.ts": "import type { VersionBound } from '@osdk/api';
-        import type { AgentDefinition } from '@osdk/api/unstable';
+        import type { AgentDefinition, AgentParam, AgentSession } from '@osdk/api/unstable';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
         /** @beta */
-        export interface weatherAgent extends AgentDefinition, VersionBound<$ExpectedClientVersion> {
+        export namespace weatherAgent {
+          export interface Signatures {
+            experimental_createSession(args: weatherAgent.CreateSessionArguments): Promise<AgentSession>;
+          }
+
+          export interface CreateSessionArguments {
+            readonly city: string;
+          }
+        }
+
+        /** @beta */
+        export interface weatherAgent extends AgentDefinition<weatherAgent.Signatures>, VersionBound<$ExpectedClientVersion> {
           type: 'agent';
           apiName: 'foo.bar.weatherAgent';
           version: '1.2.3';
