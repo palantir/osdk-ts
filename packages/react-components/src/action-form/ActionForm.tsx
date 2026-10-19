@@ -41,7 +41,6 @@ function extractSubmissionCriteriaErrors(
   for (const criterion of response.submissionCriteria) {
     if (criterion.result === "INVALID") {
       errors.push({
-        label: "Submission criteria",
         message:
           criterion.configuredFailureMessage ?? "Submission criteria not met",
       });

@@ -335,9 +335,10 @@ function ErrorIndicator({
           <Tooltip.Popup>
             <Tooltip.Arrow />
             <ul className={styles.osdkFormErrorList}>
-              {errorEntries.map((entry) => (
-                <li key={entry.label}>
-                  <strong>{entry.label}:</strong> {entry.message}
+              {errorEntries.map((entry, i) => (
+                <li key={entry.label ?? i}>
+                  {entry.label != null && <strong>{entry.label}: </strong>}
+                  {entry.message}
                 </li>
               ))}
             </ul>

@@ -189,7 +189,7 @@ export type BaseFormProps = BaseFormCommonProps &
  * A label + message pair surfaced in the form footer error indicator.
  */
 export interface ErrorEntry {
-  label: string;
+  label?: string;
   message: string;
 }
 
