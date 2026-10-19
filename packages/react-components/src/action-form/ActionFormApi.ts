@@ -74,6 +74,7 @@ interface ActionFormConfigProps<
 
   /**
    * If not supplied, field definitions are constructed from action metadata.
+   * Ignored when `formContentDefinitions` is provided.
    */
   formFieldDefinitions?: ReadonlyArray<FormFieldDefinition<Q>>;
 
