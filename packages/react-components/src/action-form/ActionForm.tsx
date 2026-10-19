@@ -25,11 +25,13 @@ import type {
   FormState,
 } from "./ActionFormApi.js";
 import { BaseForm } from "./BaseForm.js";
-import type { RendererFieldDefinition } from "./FormFieldApi.js";
+import type {
+  FormFieldDefinition,
+  RendererFieldDefinition,
+} from "./FormFieldApi.js";
 import { coerceFieldValue } from "./utils/coerceFieldValue.js";
 import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.js";
 
-const EMPTY_FIELD_DEFINITIONS: ReadonlyArray<RendererFieldDefinition> = [];
 const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
 
 export const ActionForm: <Q extends ActionDefinition<unknown>>(
@@ -41,6 +43,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   formTitle,
   showFormTitle = false,
   formFieldDefinitions,
+  formContentDefinitions,
   formState: controlledFormState,
   onFormStateChange,
   isSubmitDisabled,
@@ -68,46 +71,56 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
 
   const parameters = metadata?.parameters;
 
-  const customFieldDefinitions: ReadonlyArray<RendererFieldDefinition> | null =
-    useMemo(() => {
-      if (formFieldDefinitions == null) {
-        return null;
-      }
-      // RendererFieldDefinition is a discriminated union keyed by fieldComponent.
-      // TypeScript can't verify that the spread preserves the fieldComponent ↔
-      // fieldComponentProps pairing, but FormFieldDefinition guarantees it.
-      return formFieldDefinitions.map((def) => {
-        const { defaultValue, ...fieldDefinition } = def;
-        return {
-          ...fieldDefinition,
-          fieldKey: String(def.fieldKey),
-          fieldType: parameters?.[String(def.fieldKey)]?.type,
-          fieldComponentProps:
-            defaultValue === undefined
-              ? def.fieldComponentProps
-              : { ...def.fieldComponentProps, defaultValue },
-        } as RendererFieldDefinition;
-      });
-    }, [formFieldDefinitions, parameters]);
-
-  const rendererFieldDefinitions = useMemo(
-    () =>
-      customFieldDefinitions ??
-      (metadata != null
-        ? getDefaultFieldDefinitions(metadata)
-        : EMPTY_FIELD_DEFINITIONS),
-    [customFieldDefinitions, metadata],
+  const toRendererDef = useCallback(
+    (def: FormFieldDefinition<Q>): RendererFieldDefinition => {
+      const { defaultValue, ...fieldDefinition } = def;
+      return {
+        ...fieldDefinition,
+        fieldKey: String(def.fieldKey),
+        fieldType: parameters?.[String(def.fieldKey)]?.type,
+        fieldComponentProps:
+          defaultValue === undefined
+            ? def.fieldComponentProps
+            : { ...def.fieldComponentProps, defaultValue },
+      } as RendererFieldDefinition;
+    },
+    [parameters],
   );
 
-  const formContent = useMemo(
-    (): ReadonlyArray<FormContentItem> =>
-      rendererFieldDefinitions.length === 0
+  const formContent = useMemo((): ReadonlyArray<FormContentItem> => {
+    if (formContentDefinitions != null) {
+      return formContentDefinitions.map(
+        (item): FormContentItem =>
+          item.type === "field"
+            ? { type: "field", definition: toRendererDef(item.definition) }
+            : {
+                type: "section",
+                key: item.key,
+                definition: {
+                  ...item.definition,
+                  fields: item.definition.fields.map(toRendererDef),
+                },
+              },
+      );
+    }
+    if (formFieldDefinitions != null) {
+      return formFieldDefinitions.map(
+        (def): FormContentItem => ({
+          type: "field",
+          definition: toRendererDef(def),
+        }),
+      );
+    }
+    if (metadata != null) {
+      const defaults = getDefaultFieldDefinitions(metadata);
+      return defaults.length === 0
         ? EMPTY_FORM_CONTENT
-        : rendererFieldDefinitions.map(
+        : defaults.map(
             (def): FormContentItem => ({ type: "field", definition: def }),
-          ),
-    [rendererFieldDefinitions],
-  );
+          );
+    }
+    return EMPTY_FORM_CONTENT;
+  }, [formContentDefinitions, formFieldDefinitions, metadata, toRendererDef]);
 
   const coerceFormState = useCallback(
     (rawState: Record<string, unknown>): Record<string, unknown> => {

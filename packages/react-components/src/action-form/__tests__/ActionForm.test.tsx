@@ -21,6 +21,7 @@ import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ActionForm } from "../ActionForm.js";
+import type { ActionFormContentItem } from "../ActionFormApi.js";
 import type { FormFieldDefinition } from "../FormFieldApi.js";
 
 vi.mock("@osdk/react", () => ({
@@ -376,6 +377,167 @@ describe("ActionForm", () => {
           expect.objectContaining({ name: "Ada Lovelace" }),
         );
       });
+    });
+  });
+
+  describe("formContentDefinitions", () => {
+    it("renders fields inside a section", () => {
+      const contentDefs: Array<ActionFormContentItem<TestActionDef>> = [
+        {
+          type: "section",
+          key: "personal",
+          definition: {
+            title: "Personal Info",
+            fields: [
+              {
+                fieldKey: "name",
+                label: "Full Name",
+                fieldComponent: "TEXT_INPUT",
+                fieldComponentProps: {},
+              },
+              {
+                fieldKey: "email",
+                label: "Email",
+                fieldComponent: "TEXT_INPUT",
+                fieldComponentProps: {},
+              },
+            ],
+          },
+        },
+      ];
+
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formContentDefinitions={contentDefs}
+        />,
+      );
+
+      const sectionTitle = screen.getByText("Personal Info");
+      const sectionRoot = sectionTitle.closest("[class*='osdkFormSectionBox']");
+      expect(sectionRoot).not.toBeNull();
+      expect(sectionRoot!.querySelector("input[id='name']")).not.toBeNull();
+      expect(sectionRoot!.querySelector("input[id='email']")).not.toBeNull();
+    });
+
+    it("renders standalone fields alongside sections", () => {
+      const contentDefs: Array<ActionFormContentItem<TestActionDef>> = [
+        {
+          type: "field",
+          definition: {
+            fieldKey: "name",
+            label: "Full Name",
+            fieldComponent: "TEXT_INPUT",
+            fieldComponentProps: {},
+          },
+        },
+        {
+          type: "section",
+          key: "contact",
+          definition: {
+            title: "Contact",
+            fields: [
+              {
+                fieldKey: "email",
+                label: "Email",
+                fieldComponent: "TEXT_INPUT",
+                fieldComponentProps: {},
+              },
+            ],
+          },
+        },
+      ];
+
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formContentDefinitions={contentDefs}
+        />,
+      );
+
+      expect(screen.getByRole("textbox", { name: "Full Name" })).toBeDefined();
+      expect(screen.getByText("Contact")).toBeDefined();
+      expect(screen.getByRole("textbox", { name: "Email" })).toBeDefined();
+    });
+
+    it("submits values from fields inside sections", async () => {
+      const contentDefs: Array<ActionFormContentItem<TestActionDef>> = [
+        {
+          type: "section",
+          key: "personal",
+          definition: {
+            title: "Personal Info",
+            fields: [
+              {
+                fieldKey: "name",
+                label: "Full Name",
+                fieldComponent: "TEXT_INPUT",
+                defaultValue: "Alice",
+                fieldComponentProps: {},
+              },
+              {
+                fieldKey: "email",
+                label: "Email",
+                fieldComponent: "TEXT_INPUT",
+                defaultValue: "alice@test.com",
+                fieldComponentProps: {},
+              },
+            ],
+          },
+        },
+      ];
+
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formContentDefinitions={contentDefs}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await vi.waitFor(() => {
+        expect(mockApplyAction).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: "Alice",
+            email: "alice@test.com",
+          }),
+        );
+      });
+    });
+
+    it("takes precedence over formFieldDefinitions when both are provided", () => {
+      const fieldDefs: Array<FormFieldDefinition<TestActionDef>> = [
+        {
+          fieldKey: "name",
+          label: "Name (from fieldDefs)",
+          fieldComponent: "TEXT_INPUT",
+          fieldComponentProps: {},
+        },
+      ];
+
+      const contentDefs: Array<ActionFormContentItem<TestActionDef>> = [
+        {
+          type: "field",
+          definition: {
+            fieldKey: "name",
+            label: "Name (from contentDefs)",
+            fieldComponent: "TEXT_INPUT",
+            fieldComponentProps: {},
+          },
+        },
+      ];
+
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formFieldDefinitions={fieldDefs}
+          formContentDefinitions={contentDefs}
+        />,
+      );
+
+      expect(screen.getByText("Name (from contentDefs)")).toBeDefined();
+      expect(screen.queryByText("Name (from fieldDefs)")).toBeNull();
     });
   });
 

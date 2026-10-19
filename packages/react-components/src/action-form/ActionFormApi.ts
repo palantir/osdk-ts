@@ -78,6 +78,12 @@ interface ActionFormConfigProps<
   formFieldDefinitions?: ReadonlyArray<FormFieldDefinition<Q>>;
 
   /**
+   * Ordered list of fields and sections that define the form layout.
+   * When provided, takes precedence over `formFieldDefinitions`.
+   */
+  formContentDefinitions?: ReadonlyArray<ActionFormContentItem<Q>>;
+
+  /**
    * If supplied, this will override the default submit action.
    * By default, the action's applyAction will be called.
    *
@@ -127,6 +133,53 @@ export type FormState<Q extends ActionDefinition<unknown>> = {
 export type FormError =
   | { type: "submission"; error: unknown }
   | { type: "unknown"; error: unknown };
+
+/**
+ * A single item in the ActionForm content array — either a standalone
+ * field or a section that groups multiple fields.
+ */
+export type ActionFormContentItem<Q extends ActionDefinition<unknown>> =
+  | { type: "field"; definition: FormFieldDefinition<Q> }
+  | {
+      type: "section";
+      key: string;
+      definition: ActionFormSectionDefinition<Q>;
+    };
+
+/**
+ * Configuration for a section in the ActionForm — a visual group of
+ * fields with optional title bar, collapse behavior, and multi-column layout.
+ */
+export interface ActionFormSectionDefinition<
+  Q extends ActionDefinition<unknown>,
+> {
+  /** Section heading. */
+  title: string;
+  /** Optional description below the heading. */
+  description?: string;
+  /** The fields rendered inside this section. */
+  fields: ReadonlyArray<FormFieldDefinition<Q>>;
+  /**
+   * Whether the section starts collapsed.
+   * @default false
+   */
+  collapsedByDefault?: boolean;
+  /**
+   * Whether to show the title bar.
+   * @default true
+   */
+  showTitleBar?: boolean;
+  /**
+   * Number of columns for fields.
+   * @default 1
+   */
+  columnCount?: 1 | 2;
+  /**
+   * Visual style. `"box"` = bordered card, `"minimal"` = heading only.
+   * @default "box"
+   */
+  style?: "box" | "minimal";
+}
 
 /**
  * A single item in the form content array — either a standalone field
