@@ -23,7 +23,11 @@ import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { useAsyncAction } from "../shared/hooks/useAsyncAction.js";
-import type { BaseFormProps, FormContentItem } from "./ActionFormApi.js";
+import type {
+  BaseFormProps,
+  ErrorEntry,
+  FormContentItem,
+} from "./ActionFormApi.js";
 import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
@@ -43,6 +47,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   className,
   submitButtonText = "Submit",
   submitButtonVariant = "primary",
+  validationErrors,
 }: BaseFormProps): React.ReactElement {
   const portalContainerRef = useRef<HTMLFormElement>(null);
   const isControlled = controlledFormState != null;
@@ -116,10 +121,16 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   );
 
   // RHF reuses the same errors object reference across renders so we cannot memoize errorEntries
-  const errorEntries = Object.entries(errors).map(([key, entry]) => ({
-    label: labelByFieldKey.get(key) ?? key,
-    message: entry?.message ?? "Invalid",
-  }));
+  const fieldErrorEntries: ErrorEntry[] = Object.entries(errors).map(
+    ([key, entry]) => ({
+      label: labelByFieldKey.get(key) ?? key,
+      message: entry?.message ?? "Invalid",
+    }),
+  );
+  const errorEntries: ReadonlyArray<ErrorEntry> =
+    validationErrors != null && validationErrors.length > 0
+      ? [...fieldErrorEntries, ...validationErrors]
+      : fieldErrorEntries;
   const areErrorsPresent = errorEntries.length > 0;
   const buttonErrorMessage = areErrorsPresent
     ? "Some fields are invalid"
@@ -243,11 +254,6 @@ function buildDefaultValues(
     }
   }
   return values;
-}
-
-interface ErrorEntry {
-  label: string;
-  message: string;
 }
 
 interface SubmitButtonProps {

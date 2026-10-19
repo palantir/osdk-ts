@@ -185,6 +185,14 @@ export type BaseFormProps = BaseFormCommonProps &
       }
   );
 
+/**
+ * A label + message pair surfaced in the form footer error indicator.
+ */
+export interface ErrorEntry {
+  label: string;
+  message: string;
+}
+
 interface BaseFormCommonProps {
   /** Title shown in the form header. Omit to hide the header. */
   formTitle?: string;
@@ -204,4 +212,6 @@ interface BaseFormCommonProps {
   submitButtonText?: string;
   /** Visual variant of the submit button. Default `"primary"`. */
   submitButtonVariant?: "primary" | "secondary";
+  /** External validation errors to display in the footer error indicator alongside field errors. */
+  validationErrors?: ReadonlyArray<ErrorEntry>;
 }

@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition } from "@osdk/api";
+import type { ActionDefinition, ActionValidationResponse } from "@osdk/api";
 import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { typedReactMemo } from "../shared/typedMemo.js";
 import type {
   ActionFormProps,
+  ErrorEntry,
   FormContentItem,
   FormState,
 } from "./ActionFormApi.js";
@@ -31,6 +32,23 @@ import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.j
 
 const EMPTY_FIELD_DEFINITIONS: ReadonlyArray<RendererFieldDefinition> = [];
 const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
+const EMPTY_VALIDATION_ERRORS: ReadonlyArray<ErrorEntry> = [];
+
+function extractSubmissionCriteriaErrors(
+  response: ActionValidationResponse,
+): ReadonlyArray<ErrorEntry> {
+  const errors: ErrorEntry[] = [];
+  for (const criterion of response.submissionCriteria) {
+    if (criterion.result === "INVALID") {
+      errors.push({
+        label: "Submission criteria",
+        message:
+          criterion.configuredFailureMessage ?? "Submission criteria not met",
+      });
+    }
+  }
+  return errors.length > 0 ? errors : EMPTY_VALIDATION_ERRORS;
+}
 
 export const ActionForm: <Q extends ActionDefinition<unknown>>(
   props: ActionFormProps<Q>,
@@ -45,12 +63,15 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   onFormStateChange,
   isSubmitDisabled,
   onSubmit,
-  onValidationResponse: _onValidationResponse,
+  onValidationResponse,
   onSuccess,
   onError,
 }: ActionFormProps<Q>): React.ReactElement {
-  const { applyAction: osdkApplyAction, isPending } =
-    useOsdkAction(actionDefinition);
+  const {
+    applyAction: osdkApplyAction,
+    validateAction: osdkValidateAction,
+    isPending,
+  } = useOsdkAction(actionDefinition);
   const {
     metadata,
     loading: metadataLoading,
@@ -67,6 +88,10 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   );
 
   const parameters = metadata?.parameters;
+
+  const [validationErrors, setValidationErrors] = useState<
+    ReadonlyArray<ErrorEntry>
+  >(EMPTY_VALIDATION_ERRORS);
 
   const customFieldDefinitions: ReadonlyArray<RendererFieldDefinition> | null =
     useMemo(() => {
@@ -124,6 +149,15 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     async (rawFormState: Record<string, unknown>) => {
       const formState = coerceFormState(rawFormState) as FormState<Q>;
       try {
+        const validation = await osdkValidateAction(formState);
+        if (validation != null) {
+          onValidationResponse?.(validation);
+          if (validation.result === "INVALID") {
+            setValidationErrors(extractSubmissionCriteriaErrors(validation));
+            return;
+          }
+        }
+        setValidationErrors(EMPTY_VALIDATION_ERRORS);
         if (onSubmit != null) {
           await onSubmit(formState, osdkApplyAction);
         } else {
@@ -134,11 +168,20 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
         onError?.({ type: "submission", error: e });
       }
     },
-    [coerceFormState, onSubmit, osdkApplyAction, onSuccess, onError],
+    [
+      coerceFormState,
+      osdkValidateAction,
+      onValidationResponse,
+      onSubmit,
+      osdkApplyAction,
+      onSuccess,
+      onError,
+    ],
   );
 
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) => {
+      setValidationErrors(EMPTY_VALIDATION_ERRORS);
       onFormStateChange?.(
         (prev) =>
           ({
@@ -164,6 +207,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     isPending,
     isLoading: metadataLoading,
     onFieldValueChange: handleFieldValueChange,
+    validationErrors,
   };
 
   if (!isControlled) {

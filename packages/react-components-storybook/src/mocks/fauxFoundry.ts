@@ -47,6 +47,17 @@ export const updateEmployeeStoryAction = TypeHelpers.actionTypeBuilder(
   .addParameter("isFullTime", "boolean", false)
   .build();
 
+export const submissionCriteriaStoryAction = TypeHelpers.actionTypeBuilder(
+  TypeHelpers.createActionType({
+    apiName: "submissionCriteriaStoryAction",
+    displayName: "Assign employee to team",
+    parameters: {},
+  }),
+)
+  .addParameter("fullName", "string", true)
+  .addParameter("teamName", "string", false)
+  .build();
+
 export const toggleRemoteStoryAction = TypeHelpers.actionTypeBuilder(
   TypeHelpers.createActionType({
     apiName: "toggleRemoteStoryAction",
@@ -203,6 +214,34 @@ export async function setupFauxFoundry(): Promise<void> {
     .registerActionType(
       unsupportedFieldsStoryAction.actionTypeV2,
       () => undefined,
+    );
+  fauxFoundry
+    .getDefaultOntology()
+    .registerActionType(
+      submissionCriteriaStoryAction.actionTypeV2,
+      (_batch, req) => {
+        if (req.options?.mode === "VALIDATE_ONLY") {
+          return {
+            validation: {
+              result: "INVALID",
+              submissionCriteria: [
+                {
+                  result: "INVALID",
+                  configuredFailureMessage:
+                    "Employee must belong to at least one team",
+                },
+                {
+                  result: "INVALID",
+                  configuredFailureMessage:
+                    "Employee department must match their manager's department",
+                },
+              ],
+              parameters: {},
+            },
+          };
+        }
+        return undefined;
+      },
     );
 
   // Add mock data from JSON file. We synthesize marking values so the
