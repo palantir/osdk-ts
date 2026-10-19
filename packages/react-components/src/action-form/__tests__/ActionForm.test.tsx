@@ -505,40 +505,6 @@ describe("ActionForm", () => {
         );
       });
     });
-
-    it("takes precedence over formFieldDefinitions when both are provided", () => {
-      const fieldDefs: Array<FormFieldDefinition<TestActionDef>> = [
-        {
-          fieldKey: "name",
-          label: "Name (from fieldDefs)",
-          fieldComponent: "TEXT_INPUT",
-          fieldComponentProps: {},
-        },
-      ];
-
-      const contentDefs: Array<ActionFormContentItem<TestActionDef>> = [
-        {
-          type: "field",
-          definition: {
-            fieldKey: "name",
-            label: "Name (from contentDefs)",
-            fieldComponent: "TEXT_INPUT",
-            fieldComponentProps: {},
-          },
-        },
-      ];
-
-      render(
-        <ActionForm
-          actionDefinition={TestAction}
-          formFieldDefinitions={fieldDefs}
-          formContentDefinitions={contentDefs}
-        />,
-      );
-
-      expect(screen.getByText("Name (from contentDefs)")).toBeDefined();
-      expect(screen.queryByText("Name (from fieldDefs)")).toBeNull();
-    });
   });
 
   describe("controlled mode", () => {
