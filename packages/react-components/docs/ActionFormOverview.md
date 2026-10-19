@@ -90,6 +90,7 @@ This form is generated from the `BaseFormProps` type in [`ActionFormApi.ts`](htt
 | `className`           | `string`                                                        | Additional CSS class name for the root element.                                                                                                |
 | `submitButtonText`    | `string`                                                        | Label for the submit button. Default `"Submit"`.                                                                                               |
 | `submitButtonVariant` | `"primary" \| "secondary"`                                      | Visual variant of the submit button. Default `"primary"`.                                                                                      |
+| `validationErrors`    | `ReadonlyArray<ErrorEntry>`                                     | External validation errors to display in the footer error indicator alongside field errors.                                                    |
 | `formState`           | `Record<string, unknown>`                                       | The current field values keyed by field key. If provided, the form state is controlled.                                                        |
 | `onFieldValueChange`  | `(fieldKey: string, value: unknown) => void`                    | Called when a field value changes. Required when the form state is controlled; also fires in uncontrolled mode so callers can observe changes. |
 
