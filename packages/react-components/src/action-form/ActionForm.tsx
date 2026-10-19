@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition } from "@osdk/api";
+import type { ActionDefinition, ActionMetadata } from "@osdk/api";
 import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
 import React, { useCallback, useEffect, useMemo } from "react";
 
@@ -33,6 +33,22 @@ import { coerceFieldValue } from "./utils/coerceFieldValue.js";
 import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.js";
 
 const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
+
+function toRendererDef<Q extends ActionDefinition<unknown>>(
+  def: FormFieldDefinition<Q>,
+  parameters: ActionMetadata["parameters"] | undefined,
+): RendererFieldDefinition {
+  const { defaultValue, ...fieldDefinition } = def;
+  return {
+    ...fieldDefinition,
+    fieldKey: String(def.fieldKey),
+    fieldType: parameters?.[String(def.fieldKey)]?.type,
+    fieldComponentProps:
+      defaultValue === undefined
+        ? def.fieldComponentProps
+        : { ...def.fieldComponentProps, defaultValue },
+  } as RendererFieldDefinition;
+}
 
 export const ActionForm: <Q extends ActionDefinition<unknown>>(
   props: ActionFormProps<Q>,
@@ -71,34 +87,21 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
 
   const parameters = metadata?.parameters;
 
-  const toRendererDef = useCallback(
-    (def: FormFieldDefinition<Q>): RendererFieldDefinition => {
-      const { defaultValue, ...fieldDefinition } = def;
-      return {
-        ...fieldDefinition,
-        fieldKey: String(def.fieldKey),
-        fieldType: parameters?.[String(def.fieldKey)]?.type,
-        fieldComponentProps:
-          defaultValue === undefined
-            ? def.fieldComponentProps
-            : { ...def.fieldComponentProps, defaultValue },
-      } as RendererFieldDefinition;
-    },
-    [parameters],
-  );
-
   const formContent = useMemo((): ReadonlyArray<FormContentItem> => {
+    const convert = (def: FormFieldDefinition<Q>): RendererFieldDefinition =>
+      toRendererDef(def, parameters);
+
     if (formContentDefinitions != null) {
       return formContentDefinitions.map(
         (item): FormContentItem =>
           item.type === "field"
-            ? { type: "field", definition: toRendererDef(item.definition) }
+            ? { type: "field", definition: convert(item.definition) }
             : {
                 type: "section",
                 key: item.key,
                 definition: {
                   ...item.definition,
-                  fields: item.definition.fields.map(toRendererDef),
+                  fields: item.definition.fields.map(convert),
                 },
               },
       );
@@ -107,7 +110,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
       return formFieldDefinitions.map(
         (def): FormContentItem => ({
           type: "field",
-          definition: toRendererDef(def),
+          definition: convert(def),
         }),
       );
     }
@@ -120,7 +123,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
           );
     }
     return EMPTY_FORM_CONTENT;
-  }, [formContentDefinitions, formFieldDefinitions, metadata, toRendererDef]);
+  }, [formContentDefinitions, formFieldDefinitions, metadata, parameters]);
 
   const coerceFormState = useCallback(
     (rawState: Record<string, unknown>): Record<string, unknown> => {
