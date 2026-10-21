@@ -15,7 +15,14 @@
  */
 import { baseOptions } from "@/lib/layout";
 import { HomeLayout } from "fumadocs-ui/layouts/home";
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Page not found",
+  robots: { index: false },
+  alternates: { canonical: null },
+};
 
 export default function NotFound() {
   return (
