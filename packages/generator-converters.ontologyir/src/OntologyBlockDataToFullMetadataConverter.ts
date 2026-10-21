@@ -161,7 +161,7 @@ export class OntologyBlockDataToFullMetadataConverter {
         ? { ...sharedPropertyTypes, ...importedTypes.sharedPropertyTypes }
         : sharedPropertyTypes,
       objectTypes,
-      queryTypes: {},
+      queryTypes: { ...importedTypes?.queryTypes },
       actionTypes: importedTypes
         ? { ...actionTypes, ...importedTypes.actionTypes }
         : actionTypes,
