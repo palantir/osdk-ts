@@ -49,3 +49,7 @@ html > body[data-scroll-locked] {
 .prose :where(table):not(:where(.not-prose *)) {
   font-size: 0.875rem;
 }
+
+.prose :where(td code):not(:where(.not-prose *)) {
+  overflow-wrap: anywhere;
+}

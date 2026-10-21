@@ -15,9 +15,10 @@
  */
 
 export const site = {
-  name: "OSDK TypeScript",
+  name: "Palantir Foundry OSDK for TypeScript",
+  shortName: "Palantir Foundry OSDK",
   description:
-    "Build applications on the Palantir Ontology with type-safe TypeScript and React SDKs.",
+    "Build applications on Palantir Foundry with type-safe TypeScript and React SDKs for the Ontology, Platform APIs, and AIP.",
   origin: "https://palantir.github.io",
   basePath: "/osdk-ts",
   github: {
@@ -28,6 +29,13 @@ export const site = {
 };
 
 export const siteUrl = `${site.origin}${site.basePath}`;
+
+export const ogImage = {
+  url: `${siteUrl}/og.png`,
+  width: 1200,
+  height: 630,
+  alt: site.name,
+};
 
 export const githubUrl =
   `https://github.com/${site.github.owner}/${site.github.repo}`;

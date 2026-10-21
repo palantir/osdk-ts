@@ -19,14 +19,15 @@ import {
   DocsPage,
   DocsTitle,
   MarkdownCopyButton,
-  ViewOptionsPopover,
 } from "fumadocs-ui/layouts/notebook/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getMDXComponents } from "@/components/mdx";
+import { OpenPageMenu } from "@/components/open-page-menu";
 import { markdownTwinUrl } from "@/lib/llms";
-import { markdownPath, withBasePath } from "@/lib/site";
+import { ogSize, pageOgUrl } from "@/lib/og";
+import { markdownPath, site, siteUrl, withBasePath } from "@/lib/site";
 import { editUrl, source } from "@/lib/source";
 
 export default async function Page(props: PageProps<"/[...slug]">) {
@@ -45,7 +46,7 @@ export default async function Page(props: PageProps<"/[...slug]">) {
       <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
       <div className="flex flex-row items-center gap-2 border-b pb-6">
         <MarkdownCopyButton markdownUrl={markdownUrl} />
-        <ViewOptionsPopover
+        <OpenPageMenu
           markdownUrl={markdownUrl}
           githubUrl={editUrl(page)}
           pageUrl={markdownTwinUrl(page)}
@@ -75,11 +76,30 @@ export async function generateMetadata(
     notFound();
   }
 
+  const url = `${siteUrl}${page.url}`;
+  const title = `${page.data.title} | ${site.shortName}`;
+  const image = { url: pageOgUrl(page), ...ogSize, alt: title };
+
   return {
     title: page.data.title,
     description: page.data.description,
     alternates: {
+      canonical: url,
       types: { "text/markdown": markdownTwinUrl(page) },
+    },
+    openGraph: {
+      type: "article",
+      siteName: site.name,
+      title,
+      description: page.data.description,
+      url,
+      images: [image],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: page.data.description,
+      images: [image],
     },
   };
 }
