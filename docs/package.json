@@ -8,7 +8,7 @@
     "url": "https://github.com/palantir/osdk-ts.git"
   },
   "scripts": {
-    "build": "next build && node scripts/postbuild.mjs",
+    "build": "next build --webpack && node scripts/postbuild.mjs",
     "dev": "next dev",
     "typecheck": "next typegen && tsc --noEmit"
   },

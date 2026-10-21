@@ -49,6 +49,11 @@ function readPackage(pkg, context) {
     pkg.dependencies.micromatch = "~4.0.8";
   }
 
+  if (pkg.name === "fumadocs-mdx" && pkg.peerDependencies?.vite) {
+    delete pkg.peerDependencies.vite;
+    delete pkg.peerDependenciesMeta?.vite;
+  }
+
   return pkg;
 }
 
