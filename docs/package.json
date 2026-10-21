@@ -38,8 +38,5 @@
     "typescript": "~5.9.0",
     "vfile": "^6.0.3"
   },
-  "engines": {
-    "node": ">=20.9"
-  },
   "type": "module"
 }
