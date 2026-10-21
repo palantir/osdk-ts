@@ -1,0 +1,151 @@
+import{j as e}from"./iframe-Czm_u8Ar.js";import{useMDXComponents as s}from"./index-D52qOoqp.js";import{b as r,c as a}from"./blocks-DA8C7y3U.js";import{f as i}from"./formatGithubAlerts-DFDLIJ49.js";import"./preload-helper-BuAj_jN-.js";import"./index-C3TofrwO.js";import"./index-D17LzocE.js";import"./index-DqRB57_4.js";const l=`# Prerequisites
+
+Install the dependencies, create an OSDK client, and import the styles that \`@osdk/react-components\` needs before you render a component.
+
+## Install dependencies
+
+> [!TIP]
+> If your tooling already installs dependencies, skip this step.
+
+Use whichever package manager your project uses:
+
+\`\`\`bash
+# npm
+npm install @osdk/api @osdk/client @osdk/oauth @osdk/react
+npm install @osdk/react-components
+npm install react react-dom classnames
+
+# pnpm
+pnpm add @osdk/api @osdk/client @osdk/oauth @osdk/react
+pnpm add @osdk/react-components
+pnpm add react react-dom classnames
+
+# yarn
+yarn add @osdk/api @osdk/client @osdk/oauth @osdk/react
+yarn add @osdk/react-components
+yarn add react react-dom classnames
+\`\`\`
+
+## Configure the OSDK client
+
+Create an OSDK client with a \`createPublicOauthClient\` token provider and wrap your app with \`OsdkProvider\`. Use the client ID and redirect URL from your application's OAuth settings in Developer Console:
+
+\`\`\`tsx
+import { createClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
+import { OsdkProvider } from "@osdk/react";
+
+const foundryUrl = "https://your-stack.palantirfoundry.com";
+
+const auth = createPublicOauthClient(
+  "your-client-id",
+  foundryUrl,
+  "http://localhost:8080/auth/callback",
+);
+
+const client = createClient(
+  foundryUrl,
+  "ri.ontology.main.ontology.{UUID}",
+  auth,
+);
+
+function App() {
+  return <OsdkProvider client={client}>{/* your app */}</OsdkProvider>;
+}
+\`\`\`
+
+All component packages require an \`OsdkProvider\` wrapping your app. Without it, data fetching hooks will throw.
+
+## CSS setup
+
+### IMPORTANT: Portal isolation (required)
+
+Components use [Base UI](https://base-ui.com) portals, which require stacking context isolation:
+
+\`\`\`css
+.root {
+  isolation: isolate;
+}
+\`\`\`
+
+Apply this to your root element. See the [Base UI docs](https://base-ui.com/react/overview/quick-start#portals) for details.
+
+### Layers
+
+Import the component styles into a CSS [\`@layer\`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) in your application's entry CSS file (e.g., \`index.css\`). Using a layer keeps the cascade predictable: later layers always win when styles conflict, regardless of selector specificity, so your own styles and theme overrides take precedence over the defaults.
+
+The examples below import the styles into a layer named \`osdk.components\`; declare any of your own layers after it to override.
+
+#### Without Tailwind
+
+\`\`\`css
+/* index.css */
+@layer osdk.components;
+
+@import "@osdk/react-components/styles.css" layer(osdk.components);
+\`\`\`
+
+#### With Tailwind CSS v4
+
+\`\`\`css
+/* index.css */
+@layer tailwind, osdk.components;
+
+@import "tailwindcss" layer(tailwind);
+
+@import "@osdk/react-components/styles.css" layer(osdk.components);
+\`\`\`
+
+#### Custom theme overrides
+
+Add a custom layer after the OSDK layers to override any token:
+
+\`\`\`css
+@layer osdk.components, user.brand;
+
+@import "@osdk/react-components/styles.css" layer(osdk.components);
+@import "./user-brand.css" layer(user.brand);
+\`\`\`
+
+### Token scopes
+
+All components resolve their visual properties through CSS custom properties. There are two scopes of tokens you can target when theming:
+
+- **OSDK tokens (\`--osdk-*\`)** — every visual property used inside OSDK components resolves through a token prefixed with \`--osdk-\` (e.g. \`--osdk-table-header-bg\`, \`--osdk-form-section-content-padding-inline\`). Override these to theme **OSDK components only**, leaving other Blueprint components in your app untouched.
+- **Blueprint tokens (\`--bp-*\`)** — the underlying Blueprint design tokens that most \`--osdk-*\` tokens map to. Override these for consistent theming across **both Blueprint and OSDK components**. (A few \`--osdk-*\` tokens hold raw values rather than mapping to a \`--bp-*\` token — override those \`--osdk-*\` tokens directly.)
+
+Per-component references list the \`--osdk-*\` variables each component exposes — see, for example, [ObjectTable › Theming](./ObjectTable.md#theming). The full catalog of variables lives in [CSSVariables.md](./CSSVariables.md).
+
+### Light and dark mode
+
+OSDK components ship a built-in dark theme. Wrap your app in \`<OsdkThemeProvider>\` to activate it and to let users override the OS preference at runtime:
+
+\`\`\`tsx
+import { OsdkThemeProvider } from "@osdk/react-components/experimental/theme";
+
+function App() {
+  return (
+    <OsdkProvider client={client}>
+      <OsdkThemeProvider>
+        {/* defaults to "system" */}
+        {/* your app */}
+      </OsdkThemeProvider>
+    </OsdkProvider>
+  );
+}
+\`\`\`
+
+By default the provider follows \`prefers-color-scheme\` and writes the resolved value to \`data-bp-color-scheme\` on \`<html>\` — matching [Blueprint's convention](https://blueprintjs.com/docs/#core/colors) so the theme also applies to portaled overlays (popovers, dialogs, tooltips).
+
+See [OsdkThemeProvider](./OsdkThemeProvider.md) for the full reference, including the \`defaultTheme\` modes, the \`useOsdkTheme\` hook, persisting the user's choice, and integrating with an external theme store via controlled mode.
+
+### Accessibility
+
+When overriding theme tokens, keep the result accessible:
+
+- **Color contrast (WCAG AA):** 4.5:1 for normal text, 3:1 for large text.
+- **Distinct interactive states:** rest, hover, active, selected, and focused should each be visually distinguishable — the default \`--osdk-table-row-bg-*\` and \`--osdk-table-row-border-color-*\` tokens are designed to meet WCAG AA; preserve that intent in custom themes.
+`;function o(n){return e.jsxs(e.Fragment,{children:[`
+`,`
+`,e.jsx(r,{title:"Docs/Installation"}),`
+`,e.jsx(a,{children:i(l)})]})}function f(n={}){const{wrapper:t}={...s(),...n.components};return t?e.jsx(t,{...n,children:e.jsx(o,{...n})}):o()}export{f as default};
