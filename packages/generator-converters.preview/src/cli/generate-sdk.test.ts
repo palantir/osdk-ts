@@ -24,7 +24,9 @@ import type {
 } from "@osdk/foundry.ontologies";
 import type * as OntologyIrConverters from "@osdk/generator-converters.ontologyir";
 import { consola } from "consola";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { main } from "./generate-sdk.js";
 
 const { getOsdkQueryTypes } = vi.hoisted(() => ({
   getOsdkQueryTypes: vi.fn<() => Promise<OntologyFullMetadata["queryTypes"]>>(),
@@ -56,7 +58,6 @@ vi.mock("consola", () => ({
 const inputFile = path.resolve("ontology.json");
 const importFile = path.resolve("external-imports/ontology-full-metadata.json");
 const outputDir = path.resolve("osdk-output");
-const originalArgv = process.argv;
 const query: QueryTypeV2 = {
   apiName: "getGreeting",
   rid: "ri.function-registry.main.function.greeting",
@@ -96,31 +97,12 @@ const imported: OntologyFullMetadata = {
 };
 
 beforeEach(() => {
-  vi.resetModules();
   vi.clearAllMocks();
-  process.argv = [
-    originalArgv[0],
-    "generate-sdk",
-    "--input",
-    inputFile,
-    "--package-name",
-    "ontology",
-    "--version",
-    "0.0.0",
-    "--output-dir",
-    outputDir,
-    "--import-json",
-    importFile,
-  ];
   vi.mocked(fs.readFile).mockImplementation(file =>
     Promise.resolve(
       JSON.stringify(String(file) === importFile ? imported : ontology),
     )
   );
-});
-
-afterEach(() => {
-  process.argv = originalArgv;
 });
 
 describe("imported queries in SDK generation", () => {
@@ -139,18 +121,27 @@ describe("imported queries in SDK generation", () => {
       discovered: { getGreeting: { ...localQuery, apiName: "getGreeting" } },
     },
   ])("preserves imported queries $name", async ({ discovered }) => {
+    const args = [
+      "--input",
+      inputFile,
+      "--package-name",
+      "ontology",
+      "--version",
+      "0.0.0",
+      "--output-dir",
+      outputDir,
+      "--import-json",
+      importFile,
+    ];
     if (discovered !== undefined) {
-      process.argv.push(
+      args.push(
         "--functions-dir",
         path.resolve("functions/src/functions"),
       );
       getOsdkQueryTypes.mockResolvedValue(discovered);
     }
 
-    await import("./generate-sdk.js");
-    await vi.waitFor(() =>
-      expect(consola.success).toHaveBeenCalledWith("Done!")
-    );
+    await main(args);
 
     const expected = { ...imported.queryTypes, ...discovered };
     expect(generatePackage).toHaveBeenCalledExactlyOnceWith(

@@ -20,6 +20,7 @@ import * as fsSync from "node:fs";
 import * as fs from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
+import { pathToFileURL } from "node:url";
 
 import { generatePackage } from "@osdk/foundry-sdk-generator";
 import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
@@ -159,8 +160,10 @@ function generatePythonSdk(
   consola.info(`Python SDK installed to ${destPackage}`);
 }
 
-async function main(): Promise<void> {
-  const argv = await yargs(hideBin(process.argv))
+export async function main(
+  args: string[] = hideBin(process.argv),
+): Promise<void> {
+  const argv = await yargs(args)
     .strict()
     .help()
     .version(false) // so that we can use --version argument for the package version
@@ -472,7 +475,13 @@ async function main(): Promise<void> {
   consola.success("Done!");
 }
 
-main().catch((err: unknown) => {
-  consola.error(err instanceof Error ? err.message : err);
-  process.exit(1);
-});
+if (
+  process.argv[1]
+  && import.meta.url
+    === pathToFileURL(fsSync.realpathSync(process.argv[1])).href
+) {
+  main().catch((err: unknown) => {
+    consola.error(err instanceof Error ? err.message : err);
+    process.exit(1);
+  });
+}
