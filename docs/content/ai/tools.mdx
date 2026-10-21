@@ -1,6 +1,9 @@
 ---
 title: Tool calling
 description: Let a Foundry-hosted model call your code to query the Ontology and propose actions, with JSON Schema tools and a confirm-before-apply loop.
+foundryDocs:
+  - title: Supported LLMs
+    path: aip/supported-llms
 ---
 
 Tools let the model ask your app to run code, such as an Ontology query, and then answer from the result. With `@osdk/aip-core`, the model returns tool calls and your code runs them, so you decide what executes and when.

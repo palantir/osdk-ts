@@ -27,9 +27,10 @@ import {
 } from "fumadocs-typescript";
 import { icons } from "lucide-react";
 import { createElement } from "react";
+import { z } from "zod";
 import { remarkGithubAlerts } from "./remark-github-alerts";
 import { remarkTitleFromHeading } from "./remark-title-from-heading";
-import { markdownPath, siteUrl } from "./site";
+import { foundryDocsUrl, markdownPath, siteUrl } from "./site";
 
 const typeTableGenerator = createGenerator({
   tsconfigPath: "./tsconfig.reference.json",
@@ -45,10 +46,15 @@ const typeTableOptions: GenerateOptions = {
   },
 };
 
+const foundryDocsSchema = z.object({
+  foundryDocs: z.array(z.object({ title: z.string(), path: z.string() }))
+    .optional(),
+});
+
 const guides = defineDocs({
   dir: "content",
   docs: {
-    schema: pageSchema,
+    schema: pageSchema.extend(foundryDocsSchema.shape),
     mdxOptions: applyMdxPreset({
       remarkPlugins: [
         remarkGithubAlerts,
@@ -66,7 +72,7 @@ const guides = defineDocs({
 const components = defineDocs({
   dir: "../packages/react-components/docs",
   docs: {
-    schema: pageSchema.partial({ title: true }),
+    schema: pageSchema.partial({ title: true }).extend(foundryDocsSchema.shape),
     files: [
       "Welcome.md",
       "Prerequisites.md",
@@ -144,6 +150,12 @@ export const docsLlms = llms(source, {
     ];
     if (page.data.description) {
       header.push("", `> ${page.data.description}`);
+    }
+    if (page.data.foundryDocs?.length) {
+      header.push("", "Related Palantir Foundry documentation:");
+      for (const link of page.data.foundryDocs) {
+        header.push(`- [${link.title}](${foundryDocsUrl(link.path)})`);
+      }
     }
     const body = stripLeadingTitle(
       await page.data.getText("processed"),

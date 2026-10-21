@@ -41,6 +41,16 @@ In `.md` files, use GitHub alerts (`> [!NOTE]`, `> [!TIP]`, `> [!WARNING]`). The
 
 Link between pages with relative file paths (`./actions.mdx`, `../concepts/caching.mdx`). The build resolves them and fails on broken ones.
 
+When the Palantir Foundry docs cover the same topic, list those pages in `foundryDocs` frontmatter. Each `path` is relative to `https://www.palantir.com/docs/foundry/`, and each `title` is a short button label. They render as buttons under the page description and as links in the Markdown version.
+
+```yaml
+foundryDocs:
+  - title: Custom widgets
+    path: custom-widgets/overview
+```
+
+That site returns a "Page Not Found" page with status 200 for missing paths, so open each link before you add it.
+
 ## AI readers
 
 Every page is also published as Markdown (`<page>.md`), and in `/llms.txt` and `/llms-full.txt`. Write so a page stands alone: name the package and import path in each sample, and do not rely on surrounding pages for context.
