@@ -25,7 +25,7 @@ import {
 import React, { useCallback, useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { FormContentItem } from "../ActionFormApi.js";
+import type { FormContentItem, FormErrorEntry } from "../ActionFormApi.js";
 import { BaseForm } from "../BaseForm.js";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
 
@@ -838,6 +838,69 @@ describe("BaseForm", () => {
         expect(onSubmit).toHaveBeenCalledWith(
           expect.objectContaining({ name: "Alice" }),
         );
+      });
+    });
+  });
+
+  describe("validationErrors", () => {
+    it("shows error count for validation errors without labels", async () => {
+      const validationErrors: FormErrorEntry[] = [
+        { message: "Employee must belong to a team" },
+        { message: "Department must match manager" },
+      ];
+
+      render(
+        <BaseForm
+          formContent={[field(makeDef("name"))]}
+          onSubmit={vi.fn()}
+          validationErrors={validationErrors}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await waitFor(() => {
+        expect(screen.getByText("2 issues")).toBeDefined();
+      });
+    });
+
+    it("merges field errors with validation errors in the count", async () => {
+      const validationErrors: FormErrorEntry[] = [
+        { message: "Submission criteria not met" },
+      ];
+
+      render(
+        <BaseForm
+          formContent={[field(makeDef("name", { isRequired: true }))]}
+          onSubmit={vi.fn()}
+          validationErrors={validationErrors}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await waitFor(() => {
+        expect(screen.getByText("2 issues")).toBeDefined();
+      });
+    });
+
+    it("shows error count for validation errors with labels", async () => {
+      const validationErrors: FormErrorEntry[] = [
+        { label: "Server", message: "Internal check failed" },
+      ];
+
+      render(
+        <BaseForm
+          formContent={[field(makeDef("name"))]}
+          onSubmit={vi.fn()}
+          validationErrors={validationErrors}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await waitFor(() => {
+        expect(screen.getByText("1 issue")).toBeDefined();
       });
     });
   });

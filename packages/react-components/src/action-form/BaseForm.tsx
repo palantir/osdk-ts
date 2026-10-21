@@ -25,7 +25,7 @@ import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { useAsyncAction } from "../shared/hooks/useAsyncAction.js";
 import type {
   BaseFormProps,
-  ErrorEntry,
+  FormErrorEntry,
   FormContentItem,
 } from "./ActionFormApi.js";
 import { FieldBridge } from "./fields/FieldBridge.js";
@@ -121,19 +121,21 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   );
 
   // RHF reuses the same errors object reference across renders so we cannot memoize errorEntries
-  const fieldErrorEntries: ErrorEntry[] = Object.entries(errors).map(
+  const fieldErrorEntries: FormErrorEntry[] = Object.entries(errors).map(
     ([key, entry]) => ({
       label: labelByFieldKey.get(key) ?? key,
       message: entry?.message ?? "Invalid",
     }),
   );
-  const errorEntries: ReadonlyArray<ErrorEntry> =
+  const errorEntries: ReadonlyArray<FormErrorEntry> =
     validationErrors != null && validationErrors.length > 0
       ? [...fieldErrorEntries, ...validationErrors]
       : fieldErrorEntries;
   const areErrorsPresent = errorEntries.length > 0;
   const buttonErrorMessage = areErrorsPresent
-    ? "Some fields are invalid"
+    ? fieldErrorEntries.length > 0
+      ? "Some fields are invalid"
+      : "Submission criteria not met"
     : submissionErrorMessage;
   const isFormPending = isPending || isSubmitting;
   const isSubmitButtonDisabled =
@@ -309,7 +311,7 @@ const SubmitButton = memo(function SubmitButtonFn({
 });
 
 interface ErrorIndicatorProps {
-  errorEntries: ReadonlyArray<ErrorEntry>;
+  errorEntries: ReadonlyArray<FormErrorEntry>;
 }
 
 // memo omitted: errorEntries is always a new array (RHF reuses the same errors ref)
@@ -336,7 +338,7 @@ function ErrorIndicator({
             <Tooltip.Arrow />
             <ul className={styles.osdkFormErrorList}>
               {errorEntries.map((entry, i) => (
-                <li key={entry.label ?? i}>
+                <li key={`${entry.label ?? ""}:${entry.message}`}>
                   {entry.label != null && <strong>{entry.label}: </strong>}
                   {entry.message}
                 </li>

@@ -21,7 +21,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { typedReactMemo } from "../shared/typedMemo.js";
 import type {
   ActionFormProps,
-  ErrorEntry,
+  FormErrorEntry,
   FormContentItem,
   FormState,
 } from "./ActionFormApi.js";
@@ -32,21 +32,51 @@ import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.j
 
 const EMPTY_FIELD_DEFINITIONS: ReadonlyArray<RendererFieldDefinition> = [];
 const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
-const EMPTY_VALIDATION_ERRORS: ReadonlyArray<ErrorEntry> = [];
+const EMPTY_VALIDATION_ERRORS: ReadonlyArray<FormErrorEntry> = [];
 
-function extractSubmissionCriteriaErrors(
+function getValidationErrors(
   response: ActionValidationResponse,
-): ReadonlyArray<ErrorEntry> {
-  const errors: ErrorEntry[] = [];
+): ReadonlyArray<FormErrorEntry> {
+  const errors: FormErrorEntry[] = [];
+
   for (const criterion of response.submissionCriteria) {
     if (criterion.result === "INVALID") {
       errors.push({
         message:
-          criterion.configuredFailureMessage ?? "Submission criteria not met",
+          criterion.configuredFailureMessage ??
+          "Submission criteria not met. Review the values and try again.",
       });
     }
   }
+
+  for (const [paramKey, param] of Object.entries(response.parameters)) {
+    if (param.result === "INVALID") {
+      errors.push({
+        label: paramKey,
+        message: getParameterErrorMessage(param.evaluatedConstraints),
+      });
+    }
+  }
+
+  if (errors.length === 0 && response.result === "INVALID") {
+    errors.push({ message: "Validation failed" });
+  }
+
   return errors.length > 0 ? errors : EMPTY_VALIDATION_ERRORS;
+}
+
+function getParameterErrorMessage(
+  constraints: ReadonlyArray<{
+    type: string;
+    configuredFailureMessage?: string;
+  }>,
+): string {
+  for (const c of constraints) {
+    if ("configuredFailureMessage" in c && c.configuredFailureMessage != null) {
+      return c.configuredFailureMessage;
+    }
+  }
+  return "Invalid value";
 }
 
 export const ActionForm: <Q extends ActionDefinition<unknown>>(
@@ -89,7 +119,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   const parameters = metadata?.parameters;
 
   const [validationErrors, setValidationErrors] = useState<
-    ReadonlyArray<ErrorEntry>
+    ReadonlyArray<FormErrorEntry>
   >(EMPTY_VALIDATION_ERRORS);
 
   const customFieldDefinitions: ReadonlyArray<RendererFieldDefinition> | null =
@@ -148,18 +178,18 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     async (rawFormState: Record<string, unknown>) => {
       const formState = coerceFormState(rawFormState) as FormState<Q>;
       try {
-        const validation = await osdkValidateAction(formState);
-        if (validation != null) {
-          onValidationResponse?.(validation);
-          if (validation.result === "INVALID") {
-            setValidationErrors(extractSubmissionCriteriaErrors(validation));
-            return;
-          }
-        }
-        setValidationErrors(EMPTY_VALIDATION_ERRORS);
         if (onSubmit != null) {
           await onSubmit(formState, osdkApplyAction);
         } else {
+          const validation = await osdkValidateAction(formState);
+          if (validation != null) {
+            onValidationResponse?.(validation);
+            if (validation.result === "INVALID") {
+              setValidationErrors(getValidationErrors(validation));
+              return;
+            }
+          }
+          setValidationErrors(EMPTY_VALIDATION_ERRORS);
           const result = await osdkApplyAction(formState);
           onSuccess?.(result);
         }

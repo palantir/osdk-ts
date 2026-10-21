@@ -499,6 +499,92 @@ describe("ActionForm", () => {
       });
     });
 
+    it("shows error for parameter-only INVALID response", async () => {
+      mockValidateAction.mockResolvedValue({
+        result: "INVALID",
+        submissionCriteria: [{ result: "VALID" }],
+        parameters: {
+          name: {
+            result: "INVALID",
+            evaluatedConstraints: [{ type: "stringLength", gte: 2 }],
+            required: true,
+          },
+        },
+      });
+
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      fireEvent.input(screen.getByRole("textbox", { name: /^name/u }), {
+        target: { value: "A" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await vi.waitFor(() => {
+        expect(screen.getByText("1 issue")).toBeDefined();
+      });
+
+      expect(mockApplyAction).not.toHaveBeenCalled();
+    });
+
+    it("uses default fallback when submission criterion has no configuredFailureMessage", async () => {
+      mockValidateAction.mockResolvedValue({
+        result: "INVALID",
+        submissionCriteria: [{ result: "INVALID" }],
+        parameters: {},
+      });
+
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      fireEvent.input(screen.getByRole("textbox", { name: /^name/u }), {
+        target: { value: "Alice" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await vi.waitFor(() => {
+        expect(screen.getByText("1 issue")).toBeDefined();
+      });
+
+      expect(mockApplyAction).not.toHaveBeenCalled();
+    });
+
+    it("shows generic fallback when INVALID but no criteria or parameters fail", async () => {
+      mockValidateAction.mockResolvedValue({
+        result: "INVALID",
+        submissionCriteria: [{ result: "VALID" }],
+        parameters: {},
+      });
+
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      fireEvent.input(screen.getByRole("textbox", { name: /^name/u }), {
+        target: { value: "Alice" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await vi.waitFor(() => {
+        expect(screen.getByText("1 issue")).toBeDefined();
+      });
+
+      expect(mockApplyAction).not.toHaveBeenCalled();
+    });
+
+    it("skips validation when onSubmit is provided", async () => {
+      const onSubmit = vi.fn();
+
+      render(<ActionForm actionDefinition={TestAction} onSubmit={onSubmit} />);
+
+      fireEvent.input(screen.getByRole("textbox", { name: /^name/u }), {
+        target: { value: "Alice" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await vi.waitFor(() => {
+        expect(onSubmit).toHaveBeenCalled();
+      });
+
+      expect(mockValidateAction).not.toHaveBeenCalled();
+    });
+
     it("proceeds to applyAction when validation passes", async () => {
       const onSuccess = vi.fn();
       const result = { editedObjectTypes: [] };

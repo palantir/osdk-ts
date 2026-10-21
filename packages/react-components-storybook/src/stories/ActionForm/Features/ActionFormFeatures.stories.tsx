@@ -874,10 +874,26 @@ const submissionCriteriaActionDefinition =
   submissionCriteriaStoryAction.actionDefinition;
 
 function SubmissionCriteriaActionFormStory(): React.ReactElement {
-  const { handleStoryError, handleStorySubmit, submission } =
-    useActionFormSubmission({
-      applyStoryAction: (formState, applyAction) => applyAction(formState),
-    });
+  const [submission, setSubmission] = useState<StorySubmissionSnapshot>({
+    status: "idle",
+  });
+
+  const handleSuccess = useCallback(
+    (result: ActionEditResponse | undefined) => {
+      setSubmission({
+        status: "success",
+        submittedValues: {},
+        response: result,
+      });
+      successSpy(result);
+    },
+    [],
+  );
+
+  const handleError = useCallback((error: { type: string; error: unknown }) => {
+    setSubmission((prev) => ({ ...prev, status: "error", error }));
+    errorSpy(error);
+  }, []);
 
   return (
     <FormStoryLayout
@@ -890,8 +906,8 @@ function SubmissionCriteriaActionFormStory(): React.ReactElement {
     >
       <ActionForm
         actionDefinition={submissionCriteriaActionDefinition}
-        onError={handleStoryError}
-        onSubmit={handleStorySubmit}
+        onError={handleError}
+        onSuccess={handleSuccess}
         showFormTitle={true}
       />
     </FormStoryLayout>
@@ -928,9 +944,8 @@ export const SubmissionCriteriaFailure: Story = {
 // footer error indicator alongside any field-level errors.
 <ActionForm
   actionDefinition={submissionCriteriaStoryAction}
-  onValidationResponse={(response) =>
-    console.log("Validation result", response)
-  }
+  onError={(error) => console.log("Error", error)}
+  onSuccess={(result) => console.log("Applied", result)}
 />`,
       },
     },

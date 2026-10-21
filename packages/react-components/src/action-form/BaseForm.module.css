@@ -89,5 +89,5 @@
 .osdkFormErrorList {
   list-style: disc;
   margin: 0;
-  padding-left: 1.25em;
+  padding-left: calc(var(--osdk-surface-spacing) * 2.5);
 }
