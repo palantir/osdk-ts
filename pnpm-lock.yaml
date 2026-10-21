@@ -60,7 +60,7 @@ overrides:
   '@cspell/dict-html': ^4.0.12
   '@cspell/dict-html-symbol-entities': ^4.0.4
 
-pnpmfileChecksum: sha256-YHLemJVT3/Ct8aHIK4IhYaZobCdIpStZ//hUxmuWmHQ=
+pnpmfileChecksum: sha256-S6pIHXsjXlGohU82J/QK59W4XjrfRhyxXdViSCcgrS4=
 
 importers:
 
@@ -316,7 +316,7 @@ importers:
         version: 16.17.5(@mdx-js/mdx@3.1.1)(@tanstack/react-router@1.114.35(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@types/estree-jsx@1.0.5)(@types/hast@3.0.5)(@types/mdast@4.0.4)(@types/react@18.3.24)(algoliasearch@5.46.0)(lucide-react@1.59.0(@types/react@18.3.24)(react@19.3.1))(next@16.4.2(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.97.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)
       fumadocs-mdx:
         specifier: ^15.4.0
-        version: 15.4.7(@types/mdast@4.0.4)(@types/mdx@2.0.14)(@types/react@18.3.24)(fumadocs-core@16.17.5(@mdx-js/mdx@3.1.1)(@tanstack/react-router@1.114.35(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@types/estree-jsx@1.0.5)(@types/hast@3.0.5)(@types/mdast@4.0.4)(@types/react@18.3.24)(algoliasearch@5.46.0)(lucide-react@1.59.0(@types/react@18.3.24)(react@19.3.1))(next@16.4.2(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.97.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7))(mdast-util-directive@3.1.0)(next@16.4.2(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.97.3))(react@19.3.1)(vite@8.0.8(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.5.1)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.1))
+        version: 15.4.7(@types/mdast@4.0.4)(@types/mdx@2.0.14)(@types/react@18.3.24)(fumadocs-core@16.17.5(@mdx-js/mdx@3.1.1)(@tanstack/react-router@1.114.35(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@types/estree-jsx@1.0.5)(@types/hast@3.0.5)(@types/mdast@4.0.4)(@types/react@18.3.24)(algoliasearch@5.46.0)(lucide-react@1.59.0(@types/react@18.3.24)(react@19.3.1))(next@16.4.2(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.97.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7))(mdast-util-directive@3.1.0)(next@16.4.2(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.97.3))(react@19.3.1)
       fumadocs-typescript:
         specifier: ^5.5.2
         version: 5.5.2(9f787372ec97f6aa1d1b7c26da456fe6)
@@ -8717,7 +8717,7 @@ packages:
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
-    engines: {'0': node >=0.10.0}
+    engines: {node: '>=0.10.0'}
 
   '@expo/cli@0.22.26':
     resolution: {integrity: sha512-I689wc8Fn/AX7aUGiwrh3HnssiORMJtR2fpksX+JIe8Cj/EDleblYMSwRPd0025wrwOV9UN1KM/RuEt/QjCS3Q==}
@@ -16323,7 +16323,6 @@ packages:
       react: ^19.2.0
       rolldown: '*'
       satteri: ^0.10.5
-      vite: 7.x.x || 8.x.x
     peerDependenciesMeta:
       '@fumadocs/satteri':
         optional: true
@@ -16342,8 +16341,6 @@ packages:
       rolldown:
         optional: true
       satteri:
-        optional: true
-      vite:
         optional: true
 
   fumadocs-typescript@5.5.2:
@@ -34395,7 +34392,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  fumadocs-mdx@15.4.7(@types/mdast@4.0.4)(@types/mdx@2.0.14)(@types/react@18.3.24)(fumadocs-core@16.17.5(@mdx-js/mdx@3.1.1)(@tanstack/react-router@1.114.35(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@types/estree-jsx@1.0.5)(@types/hast@3.0.5)(@types/mdast@4.0.4)(@types/react@18.3.24)(algoliasearch@5.46.0)(lucide-react@1.59.0(@types/react@18.3.24)(react@19.3.1))(next@16.4.2(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.97.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7))(mdast-util-directive@3.1.0)(next@16.4.2(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.97.3))(react@19.3.1)(vite@8.0.8(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.5.1)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.1)):
+  fumadocs-mdx@15.4.7(@types/mdast@4.0.4)(@types/mdx@2.0.14)(@types/react@18.3.24)(fumadocs-core@16.17.5(@mdx-js/mdx@3.1.1)(@tanstack/react-router@1.114.35(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@types/estree-jsx@1.0.5)(@types/hast@3.0.5)(@types/mdast@4.0.4)(@types/react@18.3.24)(algoliasearch@5.46.0)(lucide-react@1.59.0(@types/react@18.3.24)(react@19.3.1))(next@16.4.2(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.97.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7))(mdast-util-directive@3.1.0)(next@16.4.2(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.97.3))(react@19.3.1):
     dependencies:
       '@mdx-js/mdx': 3.1.1
       '@standard-schema/spec': 1.1.0
@@ -34423,7 +34420,6 @@ snapshots:
       mdast-util-directive: 3.1.0
       next: 16.4.2(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.97.3)
       react: 19.3.1
-      vite: 8.0.8(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.5.1)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -41849,27 +41845,6 @@ snapshots:
       terser: 5.44.0
       tsx: 4.20.5
       yaml: 2.9.1
-
-  vite@8.0.8(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.5.1)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.1):
-    dependencies:
-      lightningcss: 1.32.0
-      picomatch: 4.0.7
-      postcss: 8.5.30
-      rolldown: 1.0.0-rc.15
-      tinyglobby: 0.2.17
-    optionalDependencies:
-      '@types/node': 22.20.5
-      esbuild: 0.28.2
-      fsevents: 2.3.3
-      jiti: 2.7.0
-      less: 4.5.1
-      sass: 1.97.3
-      sass-embedded: 1.97.3
-      stylus: 0.62.0
-      terser: 5.44.0
-      tsx: 4.20.5
-      yaml: 2.9.1
-    optional: true
 
   vite@8.0.8(@types/node@26.1.1)(esbuild@0.28.2)(jiti@2.7.0)(less@4.5.1)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.1):
     dependencies:
