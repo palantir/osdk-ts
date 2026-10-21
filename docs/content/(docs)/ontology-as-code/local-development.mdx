@@ -1,6 +1,9 @@
 ---
 title: Local development
 description: Use @osdk/vite-plugin-oac to compile your ontology, generate an SDK, and serve a seeded mock Foundry API from the Vite dev server.
+foundryDocs:
+  - title: SuperRepo
+    path: superrepo/overview
 ---
 
 `@osdk/vite-plugin-oac` lets you build an app against your ontology-as-code definitions before they exist in Foundry. On every change to `.ontology/`, it compiles the ontology again, regenerates an SDK into `.osdk/src`, and answers OSDK requests from the Vite dev server with data from a seed file.

@@ -40,6 +40,12 @@ export const ogImage = {
 export const githubUrl =
   `https://github.com/${site.github.owner}/${site.github.repo}`;
 
+export const foundryDocsBaseUrl = "https://www.palantir.com/docs/foundry";
+
+export function foundryDocsUrl(path: string): string {
+  return `${foundryDocsBaseUrl}/${path.replace(/^\/+/, "")}`;
+}
+
 export function withBasePath(path: string): string {
   return `${site.basePath}${path}`;
 }

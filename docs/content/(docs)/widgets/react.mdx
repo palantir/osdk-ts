@@ -1,6 +1,11 @@
 ---
 title: React widgets
 description: Render a widget with FoundryWidget, read typed parameters and loading states with useFoundryWidgetContext, and emit events back to the host.
+foundryDocs:
+  - title: Develop a widget set
+    path: custom-widgets/development
+  - title: Use OSDK in a widget set
+    path: custom-widgets/use-osdk
 ---
 
 `@osdk/widget.client-react` connects a React tree to the Foundry host. `FoundryWidget` handles the message protocol, and `useFoundryWidgetContext` gives every component typed parameter values and an `emitEvent` function derived from your [widget config](./parameters-and-events.mdx).

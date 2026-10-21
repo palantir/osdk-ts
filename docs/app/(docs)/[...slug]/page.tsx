@@ -23,6 +23,7 @@ import {
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { FoundryDocsLinks } from "@/components/foundry-docs-links";
 import { getMDXComponents } from "@/components/mdx";
 import { OpenPageMenu } from "@/components/open-page-menu";
 import { markdownTwinUrl } from "@/lib/llms";
@@ -44,13 +45,16 @@ export default async function Page(props: PageProps<"/[...slug]">) {
     <DocsPage toc={page.data.toc} full={page.data.full}>
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
-      <div className="flex flex-row items-center gap-2 border-b pb-6">
+      <div className="flex flex-row flex-wrap items-center gap-2 border-b pb-6">
         <MarkdownCopyButton markdownUrl={markdownUrl} />
         <OpenPageMenu
           markdownUrl={markdownUrl}
           githubUrl={editUrl(page)}
           pageUrl={markdownTwinUrl(page)}
         />
+        {page.data.foundryDocs?.length
+          ? <FoundryDocsLinks links={page.data.foundryDocs} />
+          : null}
       </div>
       <DocsBody>
         <MDX
