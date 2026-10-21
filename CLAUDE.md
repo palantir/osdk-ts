@@ -36,7 +36,8 @@
 - @osdk/react hooks may have data while loading (reloading invalidated data). Incorporate loading state comprehensively, not as shortcuts
 - Call actions: `const { applyAction } = useOsdkAction(modifyEmployee)` then `applyAction({ employee, primary_office_id })`
 - Direct client: `$(modifyEmployee).applyAction({ employee, primary_office_id })`
-- Read docs/react/getting-started.md when working with @osdk/react
+- Read packages/react/AGENTS.md and the guides in docs/content/react/ when working with @osdk/react
+- Follow docs/AGENTS.md when writing or editing documentation
 
 ## Project Management
 

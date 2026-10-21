@@ -1,0 +1,72 @@
+---
+title: Osdk.Instance
+description: The type of a loaded object, with its properties plus $-prefixed fields for identity, links, and conversion.
+---
+
+```ts
+import type { Osdk } from "@osdk/client";
+
+namespace Osdk {
+  type Instance<
+    Q extends ObjectOrInterfaceDefinition,
+    OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never,
+    P extends PropertyKeys<Q> = PropertyKeys<Q>,
+    R extends Record<string, SimplePropertyDef> = {},
+  >;
+}
+```
+
+Every object returned by `fetchPage`, `fetchOne`, `asyncIter`, and the `@osdk/react` hooks has this type. It holds the properties in `P`, the derived properties in `R`, and the fields below. Generated SDKs export a shorthand, such as `Employee.OsdkInstance`.
+
+| Type parameter | Description |
+| --- | --- |
+| `Q` | The object type or interface. |
+| `OPTIONS` | Extra fields: `"$rid"` adds `$rid`, `"$propertySecurities"` adds `$propertySecurities`, and `"$allBaseProperties"` marks an interface instance that carries every property of its object type. |
+| `P` | The loaded properties. Narrowed by `$select`. |
+| `R` | Derived properties added with `withProperties`. |
+
+## Fields
+
+`Osdk.Instance` is an intersection of mapped and conditional types, so this table is written by hand.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `$apiName` | `Q["apiName"]` | The API name of `Q`. For an interface instance, the interface name. |
+| `$objectType` | `string` | The API name of the underlying object type, also for interface instances. |
+| `$primaryKey` | `PrimaryKeyType<Q>` | The primary key value. |
+| `$title` | `string \| undefined` | The value of the type's title property. |
+| `$objectSpecifier` | `ObjectSpecifier<Q>` | A string that identifies the object across object types. |
+| `$link` | `{ [link]: SingleLinkAccessor \| ObjectSet }` | Links of the object. A single link has `fetchOne` and `fetchOneWithErrors`; a many link is an [`ObjectSet`](./object-set.mdx). |
+| `$as` | `(type) => Osdk.Instance` | Converts between an object type and an interface it implements, mapping property names. |
+| `$clone` | `(updates?) => Osdk.Instance` | Returns a copy with some properties replaced. Use it to build optimistic updates. |
+| `$rid` | `string` | The object's RID. Present only when loaded with `$includeRid: true`. |
+| `$propertySecurities` | `ObjectPropertySecurities` | Per-property marking requirements. Present only when loaded with `$loadPropertySecurityMetadata: true`. |
+| `$score` | `number` | Relevance score. Present only when ordered by `"relevance"`. |
+
+## Example
+
+```ts title="src/describeEmployee.ts"
+import { Employee, Worker } from "@my-app/sdk";
+import type { Client, Osdk } from "@osdk/client";
+
+export async function describeEmployee(client: Client, employeeId: number) {
+  const employee: Osdk.Instance<Employee> = await client(Employee).fetchOne(employeeId);
+
+  const lead = await employee.$link.lead.fetchOne();
+  const reports = await employee.$link.reports.fetchPage({ $pageSize: 5 });
+  const asWorker = employee.$as(Worker);
+
+  return {
+    key: `${employee.$objectType}:${employee.$primaryKey}`,
+    title: employee.$title,
+    lead: lead.fullName,
+    reports: reports.data.map((r) => r.fullName),
+    workerName: asWorker.name,
+  };
+}
+```
+
+## See also
+
+- [Load objects](/sdk/objects)
+- [Interfaces](/sdk/interfaces)

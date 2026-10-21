@@ -1,0 +1,212 @@
+---
+title: Agents
+description: Converse with AIP Agents through the Platform SDK, start sessions for agents in your generated SDK, and read injected clients with @osdk/agents.
+---
+
+An agent is configured in Foundry and runs its own model calls, tools, and retrieval; your app sends it input and reads its answers. Use this page to call an AIP Agent built in AIP Agent Studio, to start a session for an agent included in your generated SDK, or to reach the OSDK clients from code inside an agent.
+
+<Callout type="warn">
+  Every API on this page is pre-release. The AIP Agents platform endpoints are marked beta, the generated-SDK session method is `experimental_createSession`, the Agents session endpoints are marked alpha, and `@osdk/agents` is at version 0.x with its client helpers under `/experimental`.
+</Callout>
+
+| You want to | Use |
+| --- | --- |
+| Chat with an agent built in AIP Agent Studio | `Sessions` from `@osdk/foundry.aipagents` |
+| Start a session for an agent your generated SDK exports | `client(agent).experimental_createSession()` from `@osdk/client` |
+| Call the Ontology from code that runs inside an agent | `getClient()` from `@osdk/agents/experimental` |
+| Chat with a language model directly, without an agent | [`generateText`](./chat.mdx) or [`useChat`](./react.mdx) |
+
+The `AipAgentChat` component chats with a language model, not with an AIP Agent.
+
+## Chat with an AIP Agent
+
+`@osdk/foundry.aipagents` is the Platform SDK package for AIP Agents. It works with the `Client` from `createClient` or a `PlatformClient`; see [Platform SDK setup](../platform/setup.mdx).
+
+```npm
+npm install @osdk/foundry.aipagents
+```
+
+| Function | Required scope | Description |
+| --- | --- | --- |
+| `Sessions.create(client, agentRid, { agentVersion? })` | `api:aip-agents-write` | Starts a session. Omit `agentVersion` for the latest published version. |
+| `Sessions.blockingContinue(client, agentRid, sessionRid, body)` | `api:aip-agents-write` | Sends a message and resolves with the full answer. |
+| `Sessions.streamingContinue(client, agentRid, sessionRid, body)` | `api:aip-agents-write` | Sends a message and resolves with a `Response` whose body streams the answer as Markdown text. |
+| `Sessions.cancel(client, agentRid, sessionRid, { messageId, response? })` | `api:aip-agents-write` | Cancels a streamed exchange, optionally replacing the answer. |
+| `Sessions.list(client, agentRid)`, `Sessions.get(client, agentRid, sessionRid)` | `api:aip-agents-read` | Reads sessions this client created. |
+
+Each function takes query parameters as its last argument. Pass `{ preview: true }` while the endpoints are in beta. Find the agent RID in AIP Agent Studio.
+
+### Send a message
+
+```ts title="src/askAgent.ts"
+import { Sessions } from "@osdk/foundry.aipagents";
+import { client } from "./client";
+
+const agentRid = "ri.aip-agents..agent.<id>";
+
+const session = await Sessions.create(client, agentRid, {}, { preview: true });
+
+const result = await Sessions.blockingContinue(
+  client,
+  agentRid,
+  session.rid,
+  {
+    userInput: { text: "Which offices have open desks this week?" },
+    parameterInputs: {},
+  },
+  { preview: true },
+);
+
+console.log(result.agentMarkdownResponse);
+console.log(result.totalTokensUsed);
+```
+
+| Request field | Type | Description |
+| --- | --- | --- |
+| `userInput` | `{ text: string }` | The user's message. |
+| `parameterInputs` | `Record<string, ParameterValue>` | Values for the agent's application variables. Pass `{}` if it has none. |
+| `contextsOverride` | `Array<InputContext>` | Replaces the context the agent would retrieve for this message. |
+| `messageId` | `string` | Streaming only. An id you choose, so you can cancel the exchange. |
+| `sessionTraceId` | `string` | An id for tracing this exchange. |
+
+`blockingContinue` resolves with `agentMarkdownResponse`, `parameterUpdates`, `totalTokensUsed`, `interruptedOutput`, and `sessionTraceId`.
+
+### Stream the answer
+
+`streamingContinue` resolves with a `Response`. Read its body as text:
+
+```ts title="src/streamAgent.ts"
+import { Sessions } from "@osdk/foundry.aipagents";
+import { client } from "./client";
+
+export async function streamAgentAnswer(
+  agentRid: string,
+  sessionRid: string,
+  text: string,
+  onText: (markdown: string) => void,
+): Promise<void> {
+  const messageId = crypto.randomUUID();
+  const response = await Sessions.streamingContinue(
+    client,
+    agentRid,
+    sessionRid,
+    { userInput: { text }, parameterInputs: {}, messageId },
+    { preview: true },
+  );
+  if (response.body == null) {
+    return;
+  }
+
+  const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+  let markdown = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) {
+      break;
+    }
+    markdown += value;
+    onText(markdown);
+  }
+}
+```
+
+A session handles one exchange at a time: wait for the answer, or cancel it with `Sessions.cancel` and the same `messageId`, before sending the next message. Cancelling does not close the stream, so also stop reading it.
+
+## Start a session for a generated agent
+
+When your generated SDK includes agents, it exports each one alongside your object types, and all of them as `$Agents`. Pass one to the client and call `experimental_createSession` with the agent's arguments:
+
+```ts title="src/startSession.ts"
+import { Employee, employeeAssistant } from "@my-app/sdk";
+import { client } from "./client";
+
+const employee = await client(Employee).fetchOne(50030);
+
+const session = await client(employeeAssistant).experimental_createSession({
+  employee,
+  team: client(Employee).where({ department: "Engineering" }),
+});
+
+console.log(session.id);
+```
+
+| Behavior | Details |
+| --- | --- |
+| Arguments | A record keyed by argument name. OSDK objects and object sets are converted to the agent's argument types, including nested values. Omit the argument for agents that take none. |
+| Return value | `AgentSession`, `{ id: string }`. |
+| Version | The version pinned in your generated SDK. Override it with `client({ ...employeeAssistant, version: "2.0.0" })`. |
+| Unsupported clients | Throws before sending a request on branch, scenario, and transaction clients. |
+| Scopes | Loads the agent definition (`api:agents-read`) and creates the session (`api:agents-write`). |
+
+Creating a session runs agent logic and can modify platform data.
+
+### Send events to a session
+
+After creation, interact with the session through `AgentSessions` in `@osdk/foundry.agents`. These endpoints are alpha and take `{ preview: true }`.
+
+```npm
+npm install @osdk/foundry.agents
+```
+
+```ts title="src/sendEvent.ts"
+import { AgentSessions } from "@osdk/foundry.agents";
+import { client } from "./client";
+
+export async function sendToAgent(sessionId: string, payload: unknown) {
+  const { result } = await AgentSessions.sendEvent(
+    client,
+    sessionId,
+    {
+      event: { id: crypto.randomUUID(), eventType: "<event-type>", payload },
+    },
+    { preview: true },
+  );
+
+  if (result.type === "sessionNotReady") {
+    return undefined;
+  }
+  return AgentSessions.getSessionState(client, sessionId, {
+    consistencyKey: result.consistencyKey,
+    preview: true,
+  });
+}
+```
+
+| Function | Description |
+| --- | --- |
+| `sendEvent(client, sessionId, { event })` | Sends an event of a type the agent declared when it was published. `result.type` is `"accepted"`, with a `consistencyKey`, or `"sessionNotReady"`; retry the latter after a short delay. |
+| `getSessionState(client, sessionId, { consistencyKey? })` | Reads the session. `type` is `"available"`, with `status`, `agentState`, `arguments`, and context items; `"behind"` when it has not yet caught up to `consistencyKey`; or `"notReady"`. |
+| `get(client, sessionId)` | Reads the session's agent RID and version. |
+
+The event types and payload shapes are defined by the agent, so check its published definition.
+
+## Reach the clients from agent code
+
+`@osdk/agents` is for code that runs inside a Foundry agent, not for apps that call one. Foundry injects an Ontology `Client` and a `PlatformClient` into each invocation; `@osdk/agents/experimental` reads them.
+
+```npm
+npm install @osdk/agents @osdk/client @osdk/functions
+```
+
+| Export | Description |
+| --- | --- |
+| `getClient()` | The Ontology SDK `Client` for the current invocation. Throws if no Ontology is imported into the repository. |
+| `getPlatformClient()` | The `PlatformClient` for the current invocation. |
+| `withClients(clients, run)` | Runs `run` with `clients` as the current clients. Use it in tests. |
+| `ScopeResources`, `ScopeAuthorization`, `Scope` | Resource and authorization scope declarations, re-exported from `@osdk/functions/experimental`. |
+
+The `AgentConfig` type from `@osdk/agents` describes the `export const config` an agent declares alongside its code: `locator: string`, plus optional `apiName`, `sources: Array<string>`, and an experimental `scope`.
+
+```ts title="src/lookUpEmployee.ts"
+import { Employee } from "@my-app/sdk";
+import { getClient } from "@osdk/agents/experimental";
+
+export async function lookUpEmployee(employeeId: number) {
+  const employee = await getClient()(Employee).fetchOne(employeeId);
+  return { fullName: employee.fullName, jobTitle: employee.jobTitle };
+}
+```
+
+The clients exist only while an invocation runs. Call `getClient()` and `getPlatformClient()` inside your handlers, not at module load and not from work that outlives the invocation.
+
+To call a language model from agent code, pass `getPlatformClient()` to [`foundryModel`](./chat.mdx#create-a-model).

@@ -1,48 +1,52 @@
----
-sidebar_position: 1
----
-
 # Prerequisites
 
-Setup required before using `@osdk/react-components`.
+Install the dependencies, create an OSDK client, and import the styles that `@osdk/react-components` needs before you render a component.
 
 ## Install dependencies
 
-> **Tip:** If your tooling already installs dependencies, skip this step.
+> [!TIP]
+> If your tooling already installs dependencies, skip this step.
 
 Use whichever package manager your project uses:
 
 ```bash
 # npm
-npm install @osdk/api @osdk/client @osdk/react
+npm install @osdk/api @osdk/client @osdk/oauth @osdk/react
 npm install @osdk/react-components
 npm install react react-dom classnames
 
 # pnpm
-pnpm add @osdk/api @osdk/client @osdk/react
+pnpm add @osdk/api @osdk/client @osdk/oauth @osdk/react
 pnpm add @osdk/react-components
 pnpm add react react-dom classnames
 
 # yarn
-yarn add @osdk/api @osdk/client @osdk/react
+yarn add @osdk/api @osdk/client @osdk/oauth @osdk/react
 yarn add @osdk/react-components
 yarn add react react-dom classnames
 ```
 
 ## Configure the OSDK client
 
-Create an OSDK client and wrap your app with `OsdkProvider`:
+Create an OSDK client with a `createPublicOauthClient` token provider and wrap your app with `OsdkProvider`. Use the client ID and redirect URL from your application's OAuth settings in Developer Console:
 
 ```tsx
 import { createClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
 import { OsdkProvider } from "@osdk/react";
 
+const foundryUrl = "https://your-stack.palantirfoundry.com";
+
+const auth = createPublicOauthClient(
+  "your-client-id",
+  foundryUrl,
+  "http://localhost:8080/auth/callback",
+);
+
 const client = createClient(
-  "https://your-stack.palantirfoundry.com",
+  foundryUrl,
   "ri.ontology.main.ontology.{UUID}",
-  async () => {
-    // return your auth token
-  },
+  auth,
 );
 
 function App() {

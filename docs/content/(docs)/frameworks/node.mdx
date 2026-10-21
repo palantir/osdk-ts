@@ -1,0 +1,247 @@
+---
+title: Node.js
+description: Use @osdk/client in Node.js scripts, servers, and serverless functions, with service-user or token auth, custom fetch, and a bulk-edit example.
+---
+
+`@osdk/client` runs in Node.js without a browser or bundler, so you can query the Ontology and apply actions from scripts, backend services, scheduled jobs, and serverless functions. This page covers what changes outside the browser: authentication, module format, `fetch`, and configuration.
+
+## Requirements
+
+| Requirement | Details |
+| --- | --- |
+| Node.js | A version with a global `fetch`: Node 18 or later. The client and `@osdk/oauth` use `globalThis.fetch` unless you pass your own. |
+| Module format | `@osdk/client`, `@osdk/api`, `@osdk/oauth`, and generated SDKs ship both ESM and CommonJS builds. The samples on this page use top-level `await`, which needs ESM: set `"type": "module"` in `package.json` or use `.mjs` and `.mts` files. |
+| TypeScript | Set `"module": "NodeNext"` (or `"moduleResolution": "Bundler"` if you bundle). Older `node` resolution ignores package `exports` and cannot find subpaths such as `@osdk/client/unstable-do-not-use`. With `NodeNext`, relative imports need a `.js` extension, as in `./client.js`. |
+
+Subscriptions work in Node without a polyfill: `@osdk/client` depends on `ws` and uses it for WebSocket connections in Node.
+
+## Install
+
+Install the client, the OAuth helpers, and your generated SDK. The SDK comes from your Foundry npm registry, so set up `.npmrc` first as described in [Installation](../installation.mdx).
+
+```npm
+npm install @osdk/client @osdk/api @osdk/oauth @my-app/sdk@latest
+```
+
+`@osdk/react` is not needed in Node.
+
+## Authenticate
+
+A Node process has no browser to run the sign-in redirect, so `createPublicOauthClient` does not apply. Use one of these instead:
+
+| Token provider | Requests run as | Use it for |
+| --- | --- | --- |
+| `createConfidentialOauthClient` from `@osdk/oauth` | The service user of a confidential application in Developer Console | Servers, scheduled jobs, CI, and serverless functions. The client fetches a new token when the current one expires. |
+| A function that returns a token you already have | Whoever owns the token, such as you with a personal token | One-off scripts and local tools. The token is not refreshed; requests fail with `401` once it expires. |
+
+Both options, and the scopes the confidential client requests, are covered on [Authentication](../authentication.mdx).
+
+## Create the client
+
+Read the Foundry URL and credentials from environment variables and create one client at module scope. Other modules import it.
+
+<Tabs items={["Service user", "Existing token"]}>
+<Tab value="Service user">
+
+```ts title="src/client.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import { createClient } from "@osdk/client";
+import { createConfidentialOauthClient } from "@osdk/oauth";
+
+const foundryUrl = process.env.FOUNDRY_URL;
+const clientId = process.env.FOUNDRY_CLIENT_ID;
+const clientSecret = process.env.FOUNDRY_CLIENT_SECRET;
+
+if (foundryUrl == null || clientId == null || clientSecret == null) {
+  throw new Error("Set FOUNDRY_URL, FOUNDRY_CLIENT_ID, and FOUNDRY_CLIENT_SECRET");
+}
+
+const auth = createConfidentialOauthClient(clientId, clientSecret, foundryUrl);
+
+export const client = createClient(foundryUrl, $ontologyRid, auth);
+```
+
+</Tab>
+<Tab value="Existing token">
+
+```ts title="src/client.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import { createClient } from "@osdk/client";
+
+const foundryUrl = process.env.FOUNDRY_URL;
+const token = process.env.FOUNDRY_TOKEN;
+
+if (foundryUrl == null || token == null) {
+  throw new Error("Set FOUNDRY_URL and FOUNDRY_TOKEN");
+}
+
+export const client = createClient(foundryUrl, $ontologyRid, () => Promise.resolve(token));
+```
+
+</Tab>
+</Tabs>
+
+`createClient` takes the same arguments in Node as in the browser; see [Create a client](../client.mdx) for every option. Only an explicit `UNSTABLE_DO_NOT_USE_BRANCH` sets the branch in Node, because there is no page URL or meta tag to read it from.
+
+### Environment variables
+
+The OSDK packages do not read environment variables themselves. These names are a convention used on this page:
+
+| Variable | Used for |
+| --- | --- |
+| `FOUNDRY_URL` | The base URL of your Foundry stack, such as `https://example.palantirfoundry.com`. |
+| `FOUNDRY_CLIENT_ID` | The confidential application's client ID. |
+| `FOUNDRY_CLIENT_SECRET` | The confidential application's client secret. |
+| `FOUNDRY_TOKEN` | A bearer token, for the existing-token option. |
+
+Keep secrets out of source control. Locally, put them in a `.env` file that git ignores and load it with `node --env-file=.env` (Node 20.6 and later). In production, use your platform's secret store.
+
+## Page through every object and apply an action
+
+This script finds every `Employee` whose department is `Eng` and renames the department to `Engineering` with the `modifyEmployee` action. Pass `--dry-run` to validate each edit without applying it.
+
+```ts title="src/renameDepartment.ts"
+import { Employee, modifyEmployee } from "@my-app/sdk";
+import { ActionValidationError } from "@osdk/client";
+import { client } from "./client.js";
+
+const dryRun = process.argv.includes("--dry-run");
+
+const employeeIds: number[] = [];
+for await (const employee of client(Employee)
+  .where({ department: "Eng" })
+  .asyncIter({ $select: ["employeeId"] })) {
+  employeeIds.push(employee.$primaryKey);
+}
+console.log(`Found ${employeeIds.length} employees`);
+
+let failures = 0;
+for (const employeeId of employeeIds) {
+  const params = { employee: employeeId, department: "Engineering" };
+  try {
+    if (dryRun) {
+      const validation = await client(modifyEmployee).applyAction(params, {
+        $validateOnly: true,
+      });
+      if (validation.result === "INVALID") {
+        failures++;
+        console.warn(`Employee ${employeeId} would fail validation`, validation);
+      }
+    } else {
+      await client(modifyEmployee).applyAction(params);
+    }
+  } catch (e) {
+    failures++;
+    if (e instanceof ActionValidationError) {
+      console.error(`Employee ${employeeId} failed validation`, e.validation);
+    } else {
+      console.error(`Employee ${employeeId} failed`, e);
+    }
+  }
+}
+
+console.log(`${dryRun ? "Validated" : "Updated"} ${employeeIds.length - failures} employees`);
+if (failures > 0) {
+  process.exitCode = 1;
+}
+```
+
+Run it with a TypeScript runner such as `tsx`, or compile it with `tsc` first:
+
+```sh
+npx tsx src/renameDepartment.ts --dry-run
+```
+
+How it works:
+
+- `asyncIter` fetches page after page until every matching object has loaded. It reads from a consistent snapshot, so each object arrives once even when data changes during the loop. Page size is chosen by the client; `asyncIter` has no `$pageSize` option.
+- The script collects primary keys first and applies the action afterwards. A long-running loop can outlive the snapshot, and `asyncIter` throws when the snapshot expires, so keep slow work out of the iteration.
+- Object parameters such as `employee` accept a primary key or a loaded object.
+- `applyAction` throws `ActionValidationError` when validation fails, with details in `error.validation`. Other request failures, such as a missing permission, throw `PalantirApiError` from `@osdk/client`. Catching per object lets the rest of the run continue.
+- With `{ $validateOnly: true }`, `applyAction` returns the validation result instead of applying the action. Its `result` is `"VALID"` or `"INVALID"`.
+
+### Apply in batches
+
+`batchApplyAction` applies an array of parameter objects in one request, which is faster than one request per object. It does not support `$validateOnly`. Send the edits in chunks:
+
+```ts title="src/renameDepartmentBatched.ts"
+import { modifyEmployee } from "@my-app/sdk";
+import { client } from "./client.js";
+
+declare const employeeIds: number[];
+
+const chunkSize = 20;
+for (let i = 0; i < employeeIds.length; i += chunkSize) {
+  const chunk = employeeIds.slice(i, i + chunkSize);
+  await client(modifyEmployee).batchApplyAction(
+    chunk.map((employeeId) => ({ employee: employeeId, department: "Engineering" })),
+  );
+  console.log(`Updated ${i + chunk.length} of ${employeeIds.length}`);
+}
+```
+
+Pass `{ $returnEdits: true }` as the second argument to get the objects each batch added and modified.
+
+## Use a custom `fetch`
+
+Pass a `fetch` implementation as the fifth argument of `createClient`, and as the `fetchFn` argument of `createConfidentialOauthClient` so token requests use it too. A common reason is a stack whose TLS certificate is signed by a private certificate authority. With `undici`:
+
+```npm
+npm install undici
+```
+
+```ts title="src/client.ts"
+import { readFile } from "node:fs/promises";
+import { $ontologyRid } from "@my-app/sdk";
+import { createClient } from "@osdk/client";
+import { createConfidentialOauthClient } from "@osdk/oauth";
+import { Agent, fetch as undiciFetch } from "undici";
+
+const foundryUrl = process.env.FOUNDRY_URL;
+const clientId = process.env.FOUNDRY_CLIENT_ID;
+const clientSecret = process.env.FOUNDRY_CLIENT_SECRET;
+const caCertPath = process.env.FOUNDRY_CA_CERT;
+
+if (foundryUrl == null || clientId == null || clientSecret == null || caCertPath == null) {
+  throw new Error("Set FOUNDRY_URL, FOUNDRY_CLIENT_ID, FOUNDRY_CLIENT_SECRET, and FOUNDRY_CA_CERT");
+}
+
+const agent = new Agent({ connect: { ca: await readFile(caCertPath) } });
+const fetchWithCa = ((input, init) =>
+  undiciFetch(input, { ...init, dispatcher: agent })) satisfies typeof undiciFetch as unknown as typeof fetch;
+
+const auth = createConfidentialOauthClient(
+  clientId,
+  clientSecret,
+  foundryUrl,
+  undefined,
+  fetchWithCa,
+);
+
+export const client = createClient(foundryUrl, $ontologyRid, auth, undefined, fetchWithCa);
+```
+
+Passing `undefined` for the scopes keeps the default scopes.
+
+## Logging
+
+By default the client prints errors to the console. Pass a `logger` to route its output elsewhere. The `Logger` interface from `@osdk/api` matches [pino](https://getpino.io), so a pino logger works as-is:
+
+```ts title="src/client.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import { createClient } from "@osdk/client";
+import { pino } from "pino";
+
+declare const auth: () => Promise<string>;
+declare const foundryUrl: string;
+
+const logger = pino({ level: "info" });
+
+export const client = createClient(foundryUrl, $ontologyRid, auth, { logger });
+```
+
+## Servers and serverless functions
+
+- Create the client once at module scope, not per request. The token provider caches its access token in memory, so reusing the client avoids a token request for every call. In serverless functions, warm invocations reuse the module and its client.
+- A confidential client acts as one service user for every request. To run a request as the user who called your server, create a client per request with that user's token, and do not share it across users.
+- Never ship the client secret to a browser. Keep `createConfidentialOauthClient` in server code only.

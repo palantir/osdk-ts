@@ -1,0 +1,75 @@
+---
+title: createPublicOauthClient
+description: Create a browser token provider that signs users in with the OAuth authorization code flow and PKCE.
+---
+
+```ts
+import { createPublicOauthClient } from "@osdk/oauth";
+
+function createPublicOauthClient(
+  clientId: string,
+  url: string,
+  redirectUrl: string,
+  options?: PublicOauthClientOptions,
+): PublicOauthClient;
+```
+
+Returns a function you pass as the `tokenProvider` of `createClient`. The first call without a stored token redirects the browser to Foundry to sign in. After the redirect back to `redirectUrl`, the client exchanges the code, stores the refresh token per `tokenStorage`, and refreshes the access token one minute before it expires.
+
+An older overload takes `useHistory`, `loginPage`, `postLoginPage`, `scopes`, `fetchFn`, and `ctxPath` as positional arguments. Prefer `options`, which also accepts `refreshTokenMarker`, `tokenStorage`, and `logger`.
+
+## Parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `clientId` | `string` | The client ID of your Developer Console application. |
+| `url` | `string` | The base URL of your Foundry stack. |
+| `redirectUrl` | `string` | The redirect URL registered on the application. It must be a route of your app. |
+| `options` | `PublicOauthClientOptions` | See below. |
+
+## Options
+
+<auto-type-table path="../../../../packages/oauth/src/createPublicOauthClient.ts" name="PublicOauthClientOptions" />
+
+When `scopes` is omitted, the client requests `api:read-data`, `api:write-data`, `api:use-ontologies-read`, and `api:use-ontologies-write`. Unless `tokenStorage` is `"none"`, it also requests `offline_access` to get a refresh token.
+
+## Returns
+
+`PublicOauthClient`. The interface has no JSDoc, so this table is written by hand.
+
+| Member | Type | Description |
+| --- | --- | --- |
+| `()` | `() => Promise<string>` | Returns a valid access token, signing in or refreshing first if needed. |
+| `getTokenOrUndefined` | `() => string \| undefined` | The current access token without signing in, or `undefined`. |
+| `signIn` | `() => Promise<Token>` | Signs in: uses the stored refresh token, completes a pending redirect, or redirects to Foundry. Concurrent calls share one attempt. |
+| `signOut` | `() => Promise<void>` | Revokes the access token and removes the stored refresh token. Throws when not signed in. |
+| `refresh` | `() => Promise<Token \| undefined>` | Refreshes the access token with the stored refresh token. Throws when none is stored or the refresh fails. |
+| `addEventListener` | `(type, listener, options?) => void` | Listens for `"signIn"`, `"signOut"`, or `"refresh"`. `signIn` and `refresh` events carry the `Token` in `detail`. |
+| `removeEventListener` | `(type, listener, options?) => void` | Removes a listener. |
+
+`Token` is `{ access_token: string; expires_in: number; refresh_token?: string; expires_at: number }`.
+
+## Example
+
+```ts title="src/auth.ts"
+import { createPublicOauthClient } from "@osdk/oauth";
+
+export const auth = createPublicOauthClient(
+  "<your-client-id>",
+  "https://example.palantirfoundry.com",
+  "http://localhost:8080/auth/callback",
+  {
+    scopes: ["api:use-ontologies-read", "api:use-ontologies-write"],
+    tokenStorage: "sessionStorage",
+  },
+);
+
+auth.addEventListener("signOut", () => {
+  window.location.assign("/");
+});
+```
+
+## See also
+
+- [Authentication](/authentication)
+- [createClient](../client/create-client.mdx)

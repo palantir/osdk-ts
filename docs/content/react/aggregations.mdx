@@ -1,0 +1,256 @@
+---
+title: Aggregate objects
+description: Count, sum, average, and group objects on the server with useOsdkAggregation, without loading the objects into the browser.
+---
+
+{/* cspell:ignore refetches */}
+
+`useOsdkAggregation` asks the server for counts, sums, averages, and other metrics over a set of objects, optionally grouped by property values. Only the results come back, so a total over a million objects costs one small response.
+
+## Count and summarize
+
+Pass an object type and an `aggregate` with a `$select`. Each key in `$select` is a metric to compute:
+
+```tsx title="src/PayrollSummary.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkAggregation } from "@osdk/react";
+
+export function PayrollSummary() {
+  const { data, isLoading, error, refetch } = useOsdkAggregation(Employee, {
+    aggregate: {
+      $select: {
+        $count: "unordered",
+        "salary:avg": "unordered",
+        "salary:max": "unordered",
+        "startDate:min": "unordered",
+      },
+    },
+  });
+
+  return (
+    <dl>
+      {error && (
+        <p role="alert">
+          {error.message} <button onClick={() => void refetch()}>Retry</button>
+        </p>
+      )}
+      {isLoading && !data && <p>Calculating…</p>}
+      {data && (
+        <>
+          <dt>Employees</dt>
+          <dd>{data.$count}</dd>
+          <dt>Average salary</dt>
+          <dd>{data.salary.avg?.toFixed(0) ?? "n/a"}</dd>
+          <dt>Highest salary</dt>
+          <dd>{data.salary.max ?? "n/a"}</dd>
+          <dt>Earliest start date</dt>
+          <dd>{data.startDate.min ?? "n/a"}</dd>
+        </>
+      )}
+    </dl>
+  );
+}
+```
+
+`$count` is read as `data.$count`. A `"property:metric"` key is read as `data.property.metric`, so `"salary:avg"` becomes `data.salary.avg`. The result is fully typed from the keys you pass.
+
+### Metrics
+
+| Key | Property types | Result |
+| --- | --- | --- |
+| `$count` | | `number` |
+| `"property:sum"`, `"property:avg"` | Numeric | `number`, or `undefined` when no object has a value |
+| `"property:min"`, `"property:max"` | Numeric, date, timestamp | Same type as the property, or `undefined` |
+| `"property:exactDistinct"` | All | `number` of distinct values |
+| `"property:approximateDistinct"` | All | Estimated `number` of distinct values. Faster on large object types. |
+
+TypeScript rejects a metric that does not fit the property, such as `avg` on a string.
+
+## Filter before aggregating
+
+`where` takes the same clause as [`useOsdkObjects`](./objects.mdx#filter-with-where). `intersectWith` adds clauses that every object must also match.
+
+```tsx
+const { data } = useOsdkAggregation(Employee, {
+  where: { department: "Engineering" },
+  intersectWith: [{ where: { startDate: { $gte: "2024-01-01" } } }],
+  aggregate: {
+    $select: { $count: "unordered", "salary:sum": "unordered" },
+  },
+});
+```
+
+`withProperties` defines [derived properties](./object-sets.mdx#add-derived-properties) that `where` can filter on.
+
+## Group results
+
+Add `$groupBy` to get one row per group. `data` is then an array; each row has a `$group` object with the group's values, plus the metrics from `$select`.
+
+```tsx title="src/HeadcountByDepartment.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkAggregation } from "@osdk/react";
+
+export function HeadcountByDepartment() {
+  const { data, isLoading } = useOsdkAggregation(Employee, {
+    where: { department: { $isNull: false } },
+    aggregate: {
+      $groupBy: { department: "exact" },
+      $select: { $count: "desc", "salary:avg": "unordered" },
+    },
+  });
+
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Department</th>
+          <th>Headcount</th>
+          <th>Average salary</th>
+        </tr>
+      </thead>
+      <tbody>
+        {isLoading && !data && (
+          <tr>
+            <td colSpan={3}>Loading…</td>
+          </tr>
+        )}
+        {data?.map((row) => (
+          <tr key={row.$group.department}>
+            <td>{row.$group.department}</td>
+            <td>{row.$count}</td>
+            <td>{row.salary.avg?.toFixed(0)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+The value of each `$select` key sets the order of the rows: `"asc"` or `"desc"` sorts by that metric, and `"unordered"` leaves it to the server. Above, departments come back largest first.
+
+### Grouping strategies
+
+| Strategy | Property types | Groups by |
+| --- | --- | --- |
+| `"exact"` | All | Each distinct value. |
+| `{ $exactWithLimit: n }` | All | Each distinct value, at most `n` groups. |
+| `{ $exact: { $limit?, $includeNullValue: true } }` | All | Each distinct value, plus a group for missing values. `$group` values are then nullable. |
+| `{ $exact: { $limit?, $defaultValue: "…" } }` | All | Each distinct value, with missing values grouped under the default. |
+| `{ $fixedWidth: n }` | Numeric | Buckets of width `n`. |
+| `{ $ranges: [[start, end], …] }` | Numeric, date, timestamp | The ranges you list. `$group` holds `{ startValue, endValue }`. |
+| `{ $duration: [n, unit] }` | Date, timestamp | Time buckets, such as `[1, "years"]` or `[1, "month"]`. Dates accept day units and up; timestamps also accept seconds, minutes, and hours. |
+
+Group by several properties to get one row per combination:
+
+```tsx
+const { data } = useOsdkAggregation(Employee, {
+  aggregate: {
+    $groupBy: { department: "exact", salary: { $fixedWidth: 25000 } },
+    $select: { $count: "unordered" },
+  },
+});
+```
+
+<Callout type="info" title="Typing $ranges and $duration">
+  The hook infers `aggregate` as a constant, which makes the tuples in `$ranges` and `$duration` read-only. TypeScript then loses the result type and `row.$group` has no properties. Assert the tuple type to keep it: `{ $ranges: [[0, 50000], [50000, 100000]] as [number, number][] }` or `{ $duration: [1, "years"] as [1, "years"] }`.
+</Callout>
+
+```tsx title="src/SalaryBands.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkAggregation } from "@osdk/react";
+
+export function SalaryBands() {
+  const { data } = useOsdkAggregation(Employee, {
+    aggregate: {
+      $groupBy: {
+        salary: {
+          $ranges: [
+            [0, 75000],
+            [75000, 150000],
+            [150000, 1000000],
+          ] as [number, number][],
+        },
+      },
+      $select: { $count: "unordered" },
+    },
+  });
+
+  return (
+    <ul>
+      {data?.map((row) => (
+        <li key={row.$group.salary.startValue}>
+          {row.$group.salary.startValue} to {row.$group.salary.endValue}: {row.$count}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## Aggregate an object set
+
+To aggregate a set that a type and a `where` cannot express, such as a pivot or a union, pass it as `objectSet`. The first argument must be the type of that set. `where`, `intersectWith`, and `withProperties` still apply on top of it.
+
+```tsx title="src/SalesOfficesByCity.tsx"
+import { Employee, Office } from "@my-app/sdk";
+import { useOsdkAggregation, useOsdkClient } from "@osdk/react";
+import { useMemo } from "react";
+
+export function SalesOfficesByCity() {
+  const client = useOsdkClient();
+  const salesOffices = useMemo(
+    () => client(Employee).where({ department: "Sales" }).pivotTo("office"),
+    [client],
+  );
+
+  const { data } = useOsdkAggregation(Office, {
+    objectSet: salesOffices,
+    aggregate: {
+      $groupBy: { city: "exact" },
+      $select: { $count: "desc" },
+    },
+  });
+
+  return (
+    <ul>
+      {data?.map((row) => (
+        <li key={row.$group.city}>
+          {row.$group.city}: {row.$count} offices
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+`objectSet` must be an `ObjectSet`, not `undefined`, and works with object types only. The `objectSet` field returned by [`useOsdkObjects`](./objects.mdx) and [`useObjectSet`](./object-sets.mdx) is `undefined` until their first page loads, so build the set with the client as above when you need it on the first render. See [Work with object sets](./object-sets.mdx) for union, intersect, and subtract.
+
+## Refresh and disable
+
+Aggregations recompute when an action changes the object type, like other queries. `refetch` invalidates the object type, which refetches every cached query for that type.
+
+With `enabled: false`, the hook does not fetch and returns `data: undefined`, `isLoading: false`, and `error: undefined`. `refetch` does nothing while disabled.
+
+## Reference
+
+### `useOsdkAggregation(type, options)`
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `aggregate` | `{ $select, $groupBy? }` | Required | The metrics to compute and the optional grouping. |
+| `aggregate.$select` | `{ [metric]: "unordered" \| "asc" \| "desc" }` | Required | Metric keys, such as `$count` or `"salary:avg"`, and how to order groups by them. |
+| `aggregate.$groupBy` | `{ [property]: strategy }` | | Group by these properties. See [Grouping strategies](#grouping-strategies). |
+| `where` | `WhereClause<T>` | | Filter the objects first. |
+| `intersectWith` | `Array<{ where: WhereClause<T> }>` | | Additional filters that every object must also match. |
+| `withProperties` | `DerivedProperty.Clause` | | Derived properties that `where` can reference. |
+| `objectSet` | `ObjectSet<T>` | | Aggregate this set instead of every object of `type`. Object types only. |
+| `enabled` | `boolean` | `true` | When `false`, no request is made. |
+| `dedupeIntervalMs` | `number` | `2000` | Identical aggregations within this window share one request. |
+
+| Return | Type | Description |
+| --- | --- | --- |
+| `data` | Result object, array of rows, or `undefined` | An object of metrics without `$groupBy`; an array of rows with `$group` and metrics with it. |
+| `isLoading` | `boolean` | `true` while a request is in flight. |
+| `error` | `Error \| undefined` | The last error, if the aggregation failed. |
+| `refetch` | `() => Promise<void>` | Invalidate the object type and recompute. No-op while disabled. |

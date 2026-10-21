@@ -1,0 +1,312 @@
+---
+title: Integration testing
+description: Run OSDK code against a local Ontology server with @osdk/integration-testing, seed it with objects and links, and stub functions in Vitest.
+---
+
+`@osdk/integration-testing` starts a local Ontology server from the Foundry CLI, fills it with seed objects and links, and gives you a real `Client` connected to it. Use it to test code that queries objects, filters, and follows links end to end, without a Foundry stack. To test React components with mocks instead, see [Testing](/react/testing).
+
+<Callout type="warn">
+  `@osdk/integration-testing` is a `0.x` package and depends on the experimental `--experimentalOntologyMetadata` generator flag. Its API may change between releases.
+</Callout>
+
+## How it works
+
+| Piece | What it does |
+| --- | --- |
+| `createIntegrationServer` | Writes your Ontology metadata to a temporary `.test-run-*` directory and runs `foundry start ontology` from the Foundry CLI. |
+| Seed client | Writes objects and links to the local server. Each call replaces the server's data with the seed built so far. |
+| Integration client | A `Client` from `@osdk/client` pointed at the local server. Object and interface calls, such as `fetchPage`, `where`, and `pivotTo`, run against the seeded data. |
+| Function stubs | The local Ontology cannot run functions, so the integration client sends function calls to an in-memory mock from `@osdk/unit-testing`. Register results with `whenQuery`. |
+
+## Requirements
+
+| Requirement | Details |
+| --- | --- |
+| Node.js | The package starts a subprocess and reads files, so tests run in Node, not a browser. |
+| Foundry CLI | The `foundry` binary, version `0.224.0` or later, on your `PATH`. Pass `foundryCliPath` to use a binary elsewhere. |
+| Ontology metadata | The full Ontology metadata your SDK was generated from, as JSON. See [Get the Ontology metadata](#get-the-ontology-metadata). |
+| `@osdk/seed-helpers` | A peer dependency, `>=0.25.0 <1.0.0`, that builds seed data. |
+
+## Install
+
+```npm
+npm install --save-dev @osdk/integration-testing @osdk/seed-helpers vitest
+```
+
+`@osdk/client` and `@osdk/api` are peer dependencies as well; install them as described in [Installation](../installation.mdx).
+
+### Foundry CLI
+
+On install, a postinstall script checks for the Foundry CLI:
+
+- If `foundry` is installed and recent enough, it does nothing.
+- If it is too old, the install fails and asks you to run `foundry update self`.
+- If it is missing, it downloads the installer from your Foundry stack and runs it. If that fails, the install continues with a warning, and creating a client fails until the CLI is installed.
+
+To find your stack and authenticate the download, the script reads, in order:
+
+| Value | Sources |
+| --- | --- |
+| Foundry host | `FOUNDRY_EXTERNAL_HOST` or `FOUNDRY_HOSTNAME`, then the host of the git remote `origin`. |
+| Token | `FOUNDRY_TOKEN` when `FOUNDRY_HOSTNAME`, `FOUNDRY_TOKEN`, and `FOUNDRY_USERNAME` are all set, otherwise the credentials in the git remote URL. Foundry CI and Code Workspaces provide their own token automatically. |
+
+Set the three variables before installing on a machine whose git remote does not point at Foundry:
+
+```sh
+export FOUNDRY_HOSTNAME=example.palantirfoundry.com
+export FOUNDRY_USERNAME=<your-username>
+export FOUNDRY_TOKEN=<token>
+npm install
+```
+
+## Get the Ontology metadata
+
+`createIntegrationServer` needs the Ontology metadata as an `OntologyFullMetadata` object. The SDK generator writes it when you generate locally with the experimental `--experimentalOntologyMetadata` flag:
+
+```sh
+npx @osdk/cli unstable typescript generate \
+  --foundryUrl https://example.palantirfoundry.com \
+  --clientId <your-client-id> \
+  --outDir src/generatedNoCheck \
+  --version dev \
+  --beta true \
+  --packageType module \
+  --experimentalOntologyMetadata
+```
+
+The metadata lands in `experimental/ontology-metadata.json` inside `--outDir`. An SDK package generated with the flag also exports it as the `./experimental/ontology-metadata` subpath, which the examples below import. For the other generate options, see [Generate your SDK](./generate-sdk.mdx).
+
+## Write a test
+
+This example uses Vitest. One server starts per Vitest worker, and every test resets the seed before it runs.
+
+<Steps>
+<Step>
+
+### Create a fixture
+
+`test.extend` creates the server, seed client, and integration client once per worker and passes them to each test. `stop()` runs in `finally`, so a server that fails to start does not leave its process or `.test-run-*` directory behind.
+
+```ts title="test/fixture.ts"
+import metadata from "@my-app/sdk/experimental/ontology-metadata";
+import {
+  createIntegrationServer,
+  type IntegrationClient,
+  type IntegrationServer,
+  type SeedClient,
+} from "@osdk/integration-testing";
+import { test as baseTest } from "vitest";
+
+export { metadata };
+
+export interface IntegrationFixtures {
+  server: IntegrationServer;
+  client: IntegrationClient;
+  seed: SeedClient;
+}
+
+export const test = baseTest.extend<IntegrationFixtures>({
+  server: [
+    // eslint-disable-next-line no-empty-pattern
+    async ({}, use) => {
+      const server = await createIntegrationServer({ metadata });
+      try {
+        await server.start();
+        await use(server);
+      } finally {
+        await server.stop();
+      }
+    },
+    { scope: "worker" },
+  ],
+  seed: [async ({ server }, use) => use(await server.getSeedClient()), { scope: "worker" }],
+  client: [async ({ server }, use) => use(await server.getClient()), { scope: "worker" }],
+});
+```
+
+</Step>
+<Step>
+
+### Build the seed data
+
+`createSeedWithMetadata` from `@osdk/seed-helpers` builds seed data without a server, and returns it with whatever your function returns. `create` returns a reference with the object's properties, `$apiName`, and `$primaryKey`; `link` connects two references by link name.
+
+```ts title="test/seed.ts"
+import { Employee, Office } from "@my-app/sdk";
+import { createSeedWithMetadata } from "@osdk/seed-helpers";
+import { metadata } from "./fixture.js";
+
+export const baseSeed = createSeedWithMetadata(metadata, (seed) => {
+  const london = seed.create(Office, { officeId: "lon", name: "London", city: "London" });
+  const ada = seed.create(Employee, {
+    employeeId: 1,
+    fullName: "Ada Lovelace",
+    department: "Engineering",
+  });
+  const grace = seed.create(Employee, {
+    employeeId: 2,
+    fullName: "Grace Hopper",
+    department: "Engineering",
+  });
+  seed.link(grace, "lead", ada);
+  seed.link(ada, "office", london);
+  return { london, ada, grace };
+});
+```
+
+`create` throws when an object of that type with the same primary key already exists, and when the properties do not match the metadata.
+
+</Step>
+<Step>
+
+### Test against the local server
+
+Reset the seed before each test so tests do not see each other's writes, and clear function stubs after each one.
+
+```ts title="test/employees.test.ts"
+import { countEmployees, Employee } from "@my-app/sdk";
+import { afterEach, beforeEach, expect } from "vitest";
+import { test, type IntegrationFixtures } from "./fixture.js";
+import { baseSeed } from "./seed.js";
+
+beforeEach<IntegrationFixtures>(async ({ seed }) => {
+  await seed.set(baseSeed.output);
+});
+
+afterEach<IntegrationFixtures>(({ client }) => {
+  client.clearStubs();
+});
+
+test("lists engineers", async ({ client }) => {
+  const page = await client(Employee).where({ department: "Engineering" }).fetchPage();
+  expect(page.data.map((employee) => employee.fullName).sort()).toEqual([
+    "Ada Lovelace",
+    "Grace Hopper",
+  ]);
+});
+
+test("follows the lead link", async ({ client }) => {
+  const leads = await client(Employee)
+    .where({ employeeId: baseSeed.context.grace.employeeId })
+    .pivotTo("lead")
+    .fetchPage();
+  expect(leads.data.map((employee) => employee.$primaryKey)).toEqual([
+    baseSeed.context.ada.employeeId,
+  ]);
+});
+
+test("stubs a function", async ({ client }) => {
+  client.whenQuery(countEmployees).thenReturn(2);
+  await expect(client(countEmployees).executeFunction()).resolves.toBe(2);
+});
+```
+
+Replace `countEmployees` with a function from your SDK. Pass its parameters as the second argument of `whenQuery` to stub one call: `client.whenQuery(fn, params).thenReturn(result)`. Use `thenThrow(error)` to make the call fail.
+
+</Step>
+<Step>
+
+### Run the tests
+
+```sh
+npx vitest run
+```
+
+Starting the Ontology server can take a while on the first run. If the fixture times out, raise Vitest's `hookTimeout` and `testTimeout`. Each server's `.test-run-*` directory is removed when it stops; add `.test-run-*` to `.gitignore` in case a run is killed first.
+
+</Step>
+</Steps>
+
+## Change data inside a test
+
+Each seed client method updates the seed and writes it to the server before it resolves, so a test can set up extra data right before it queries:
+
+```ts title="test/offices.test.ts"
+import { Employee, Office } from "@my-app/sdk";
+import { expect } from "vitest";
+import { test } from "./fixture.js";
+
+test("lists an office's occupants", async ({ client, seed }) => {
+  await seed.set();
+  const paris = await seed.create(Office, { officeId: "par", name: "Paris", city: "Paris" });
+  const alan = await seed.create(Employee, { employeeId: 3, fullName: "Alan Turing" });
+  await seed.link(paris, "occupants", [alan]);
+
+  const occupants = await client(Office)
+    .where({ officeId: paris.officeId })
+    .pivotTo("occupants")
+    .fetchPage();
+  expect(occupants.data.map((employee) => employee.fullName)).toEqual(["Alan Turing"]);
+});
+```
+
+## API reference
+
+### `createIntegrationServer(config)`
+
+Returns a `Promise<IntegrationServer>`. Creating the server writes the metadata to disk; `start()` launches the CLI.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `metadata` | `OntologyFullMetadata` | | The Ontology metadata to serve. Required. |
+| `foundryCliPath` | `string` | `foundry` on `PATH` | Path to the Foundry CLI binary. |
+| `projectPath` | `string` | The working directory | An existing directory to create the server's `.test-run-*` directory in. Servers that share a `projectPath` stay isolated. |
+
+| `IntegrationServer` member | Description |
+| --- | --- |
+| `start()` | Starts the Ontology service and resolves once it reports ready. |
+| `stop()` | Stops the service and deletes the server's `.test-run-*` directory. |
+| `getOntologyUrl()` | The local server's URL, or `undefined` before it starts. |
+| `getClient()` | Resolves to the `IntegrationClient` for this server. Repeated calls return the same client. |
+| `getSeedClient()` | Resolves to the `SeedClient` for this server. Repeated calls return the same seed client. |
+
+`getClient()` and `getSeedClient()` throw `Ontology server is not ready` when called before `start()` resolves.
+
+### `SeedClient`
+
+Every method applies the full seed to the server before it resolves.
+
+| Member | Description |
+| --- | --- |
+| `seed(fn)` | Calls `fn` with a `SeedBuilder`, applies the result, and resolves to what `fn` returns. |
+| `seed(output)` | Adds a `SeedOutput`, such as `baseSeed.output`, to the seed and applies it. |
+| `set(output?)` | Replaces the whole seed with `output` and applies it. With no argument, clears all data. |
+| `addAll(output)` | Merges a `SeedOutput` into the current seed. |
+| `create(type, props)` | Creates an object and resolves to its reference. Throws if the primary key already exists. |
+| `update(ref, props)` | Merges `props` into the object, leaving other properties unchanged. Creates the object if it does not exist. |
+| `delete(ref)` | Removes the object. Does nothing if it does not exist. |
+| `link(source, linkName, target)` | Links `source` to one reference, or an array for many-valued links. Re-adding a link does nothing. |
+| `unlink(source, linkName, target)` | Removes matching links. Does nothing if none exist. |
+| `ref(type, primaryKey)` | Returns the reference for an object already in the seed, or `undefined`. Does not write to the server. |
+
+### `IntegrationClient`
+
+A `Client` from `@osdk/client` with two extra members:
+
+| Member | Description |
+| --- | --- |
+| `whenQuery(query, params?)` | Starts a function stub. Finish it with `.thenReturn(result)` or `.thenThrow(error)`. |
+| `clearStubs()` | Removes every function stub. |
+
+### Other exports
+
+| Export | Description |
+| --- | --- |
+| `createIntegrationClient(config)` | Creates an `IntegrationClient` for a server that is already running, with `baseUrl` and `metadata`, and optionally `caCertPath` for the server's certificate. Without `caCertPath`, the client skips TLS certificate checks. Throws if the Foundry CLI is not installed. |
+| `checkFoundryCliVersion()` | Resolves to `{ type: "installed", version }`, `{ type: "version-incompatible", version }`, `{ type: "version-error" }`, or `{ type: "not-found" }`. Use it to skip integration tests on machines without the CLI, for example with `describe.runIf`. |
+
+```ts title="test/employees.test.ts"
+import { Employee } from "@my-app/sdk";
+import { checkFoundryCliVersion } from "@osdk/integration-testing";
+import { describe, expect } from "vitest";
+import { test } from "./fixture.js";
+
+const foundryCli = await checkFoundryCliVersion();
+
+describe.runIf(foundryCli.type === "installed")("employees", () => {
+  test("loads an employee", async ({ client }) => {
+    const employee = await client(Employee).fetchOne(1);
+    expect(employee.fullName).toBe("Ada Lovelace");
+  });
+});
+```

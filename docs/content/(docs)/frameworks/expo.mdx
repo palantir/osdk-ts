@@ -1,0 +1,347 @@
+---
+title: Expo and React Native
+description: Build an iOS, Android, and web app on OSDK with the create-app Expo template, sign in with expo-auth-session, and query objects from React Native screens.
+---
+
+{/* cspell:ignore Metro metro PKCE inlines */}
+
+The `expo` template of `@osdk/create-app` gives you an Expo Router app that signs in to Foundry and calls `@osdk/client` on iOS, Android, and the web. Sign-in works differently from the browser templates, so read [Sign in](#sign-in) before you configure redirect URLs.
+
+## Create an Expo app
+
+Run `@osdk/create-app` with the `expo` template:
+
+```npm
+npx @osdk/create-app@latest my-expo-app --template expo --corsProxy false
+```
+
+The CLI asks for your Foundry URL, application RID, OAuth client ID, and SDK package. [Quickstart](../quickstart.mdx#run-the-cli) lists every prompt and its flag. The Expo template supports SDK version 2.x only.
+
+<Callout type="warn">
+  Answer **No** to the CORS proxy prompt, or pass `--corsProxy false`. The Expo template has no proxy server, but a **Yes** still sets `EXPO_PUBLIC_FOUNDRY_API_URL` to `http://localhost:8080` in `.env.development`, so every request goes to the Expo dev server instead of Foundry.
+</Callout>
+
+Then install and start the app:
+
+```sh
+cd my-expo-app
+export FOUNDRY_TOKEN=<token>
+npm install
+npm run dev
+```
+
+`FOUNDRY_TOKEN` must be able to read your SDK's npm registry; see [Installation](../installation.mdx).
+
+| Script | Runs | Use it to |
+| --- | --- | --- |
+| `dev`, `start` | `expo start --port 8080` | Start the dev server, then press `i`, `a`, or `w` to open iOS, Android, or web. |
+| `ios` | `expo start --ios` | Start and open the iOS simulator. |
+| `android` | `expo start --android` | Start and open the Android emulator. |
+| `web` | `expo start --web --port 8080` | Start and open the web build. |
+| `build` | `expo export -p web` | Export the web build to `dist/` for [hosting](../deploy/hosting.mdx). |
+| `test` | `vitest run --passWithNoTests` | Run tests. |
+| `reset-project` | `node ./scripts/reset-project.js` | Move the starter screens to `app-example/` and start from an empty `app/`. |
+
+## What the template generates
+
+<Files>
+  <File name=".env.development" />
+  <File name=".env.production" />
+  <File name=".npmrc" />
+  <File name="app.json" />
+  <File name="foundry.config.json" />
+  <File name="metro.config.js" />
+  <File name="package.json" />
+  <Folder name="app" defaultOpen>
+    <File name="_layout.tsx" />
+    <Folder name="(tabs)" defaultOpen>
+      <File name="_layout.tsx" />
+      <File name="explore.tsx" />
+      <File name="index.tsx" />
+      <File name="login.tsx" />
+    </Folder>
+  </Folder>
+  <Folder name="foundry" defaultOpen>
+    <File name="Auth.ts" />
+    <File name="client.ts" />
+    <File name="osdkConst.ts" />
+  </Folder>
+</Files>
+
+| File | Purpose |
+| --- | --- |
+| `.env.development`, `.env.production` | `EXPO_PUBLIC_FOUNDRY_API_URL`, `EXPO_PUBLIC_FOUNDRY_CLIENT_ID`, and `EXPO_PUBLIC_FOUNDRY_ONTOLOGY_RID`. Expo inlines `EXPO_PUBLIC_` variables into the bundle. |
+| `foundry/osdkConst.ts` | Reads those variables and throws `Missing environment variable` if one is unset. |
+| `foundry/Auth.ts` | Holds the access token in memory and exposes `getValidAuthToken` as the client's token provider. |
+| `foundry/client.ts` | Creates `client` with `createClient`. |
+| `app/(tabs)/login.tsx` | The **Login** tab, which runs the OAuth flow with `expo-auth-session`. |
+| `app/(tabs)/index.tsx` | The **Home** tab. On web it also completes the sign-in popup. |
+| `app/(tabs)/explore.tsx` | Lists the object types, actions, and functions in your SDK. |
+| `metro.config.js` | Lets Metro resolve the OSDK packages. See [Metro configuration](#metro-configuration). |
+| `app.json` | Expo config, including the URL `scheme` used for native sign-in redirects. |
+
+The generated `.env` files also contain `EXPO_PUBLIC_FOUNDRY_REDIRECT_URL`. The Expo template does not read it: the redirect URL comes from `makeRedirectUri`, described below.
+
+## Sign in
+
+The browser templates use `createPublicOauthClient` from `@osdk/oauth`, which signs in by navigating the page to Foundry and back. A native app cannot do that, so the Expo template runs the same authorization code flow with PKCE through `expo-auth-session` instead, which opens Foundry's sign-in page in a system browser session and returns the code to the app.
+
+### Store the token
+
+`foundry/Auth.ts` keeps the token response in a module variable. `getValidAuthToken` is the token provider you pass to `createClient`; it throws until the user has signed in:
+
+```ts title="foundry/Auth.ts"
+import { TokenResponse } from "expo-auth-session";
+
+let authToken: TokenResponse | undefined = undefined;
+
+export const setAuthToken = (authTokenResponse: TokenResponse): void => {
+  authToken = authTokenResponse;
+};
+
+export const getValidAuthToken = async (): Promise<string> => {
+  if (authToken != null) {
+    return Promise.resolve(authToken.accessToken);
+  } else {
+    throw new Error("No valid auth token");
+  }
+};
+```
+
+```ts title="foundry/client.ts"
+import { createClient, type Client } from "@osdk/client";
+import { getValidAuthToken } from "./Auth";
+import { FOUNDRY_URL, ONTOLOGY_RID } from "./osdkConst";
+
+export const client: Client = createClient(
+  FOUNDRY_URL,
+  ONTOLOGY_RID,
+  getValidAuthToken,
+);
+```
+
+The token lives only in memory. The template neither refreshes nor persists it, so the user signs in again when the app restarts or the access token expires.
+
+### Run the authorization flow
+
+The **Login** tab points `useAuthRequest` at Foundry's authorize and token endpoints under `/multipass/api/oauth2`, then exchanges the returned code for a token. This version adds error handling to the generated screen:
+
+```tsx title="app/(tabs)/login.tsx"
+import { setAuthToken } from "@/foundry/Auth";
+import { CLIENT_ID, FOUNDRY_URL } from "@/foundry/osdkConst";
+import {
+  exchangeCodeAsync,
+  makeRedirectUri,
+  useAuthRequest,
+} from "expo-auth-session";
+import { useRouter } from "expo-router";
+import { useCallback, useMemo, useState } from "react";
+import { Button, Text, View } from "react-native";
+
+const discovery = {
+  authorizationEndpoint: `${FOUNDRY_URL}/multipass/api/oauth2/authorize`,
+  tokenEndpoint: `${FOUNDRY_URL}/multipass/api/oauth2/token`,
+};
+
+export default function Login() {
+  const router = useRouter();
+  const [error, setError] = useState<string>();
+  const redirectUri = useMemo(() => makeRedirectUri({ path: "" }), []);
+  const [request, , promptAsync] = useAuthRequest(
+    {
+      clientId: CLIENT_ID,
+      scopes: [
+        "api:read-data",
+        "api:write-data",
+        "api:use-ontologies-read",
+        "api:use-ontologies-write",
+      ],
+      redirectUri,
+      usePKCE: true,
+    },
+    discovery,
+  );
+
+  const onLogin = useCallback(async () => {
+    setError(undefined);
+    try {
+      const result = await promptAsync();
+      if (result.type !== "success") {
+        return;
+      }
+      const tokenResponse = await exchangeCodeAsync(
+        {
+          clientId: CLIENT_ID,
+          code: result.params.code,
+          redirectUri,
+          extraParams: request?.codeVerifier
+            ? { code_verifier: request.codeVerifier }
+            : undefined,
+        },
+        discovery,
+      );
+      setAuthToken(tokenResponse);
+      router.navigate("/(tabs)/explore");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  }, [promptAsync, redirectUri, request?.codeVerifier, router]);
+
+  return (
+    <View>
+      <Button title="Login" onPress={onLogin} disabled={request == null} />
+      {error != null && <Text>{error}</Text>}
+    </View>
+  );
+}
+```
+
+Request only the scopes your app needs, and allow each of them for your application on **OAuth & scopes** in Developer Console.
+
+On web, `promptAsync` opens Foundry in a popup. Foundry redirects the popup to your app's root URL, where `app/(tabs)/index.tsx` calls `WebBrowser.maybeCompleteAuthSession()` from `expo-web-browser`. That call hands the result back to the original window and closes the popup. Keep it in whichever screen renders at the redirect path.
+
+### Register redirect URLs
+
+`makeRedirectUri({ path: "" })` returns a different URL on each platform, and each one must be registered exactly on **OAuth & scopes**:
+
+| Where the app runs | Redirect URL |
+| --- | --- |
+| Web, local development | `http://localhost:8080`, with no `/auth/callback` path |
+| Web, hosted on Foundry | Your site's root URL, such as `https://<subdomain>.<your-domain>.palantirfoundry.com` |
+| iOS and Android | A URL with the `scheme` from `app.json`. The template's scheme is `my-app`; change it to one unique to your app. |
+
+To see the exact value on a device, render or log `redirectUri` from the **Login** screen and copy it into Developer Console.
+
+## Query objects
+
+Call the client from a screen once the user has signed in. Keep the list on screen while it reloads:
+
+```tsx title="app/(tabs)/employees.tsx"
+import { client } from "@/foundry/client";
+import { Employee } from "@my-app/sdk";
+import type { Osdk } from "@osdk/client";
+import { useCallback, useEffect, useState } from "react";
+import { Button, FlatList, Text, View } from "react-native";
+
+export default function Employees() {
+  const [employees, setEmployees] = useState<Osdk.Instance<Employee>[]>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string>();
+
+  const load = useCallback(async () => {
+    setIsLoading(true);
+    setError(undefined);
+    try {
+      const page = await client(Employee)
+        .where({ department: "Engineering" })
+        .fetchPage({ $orderBy: { fullName: "asc" }, $pageSize: 50 });
+      setEmployees(page.data);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  return (
+    <View>
+      {error != null && (
+        <View>
+          <Text>Could not load employees: {error}</Text>
+          <Button title="Retry" onPress={() => void load()} />
+        </View>
+      )}
+      {isLoading && employees == null && <Text>Loading employees…</Text>}
+      <FlatList
+        data={employees}
+        keyExtractor={(employee) => String(employee.$primaryKey)}
+        renderItem={({ item }) => (
+          <Text>
+            {item.fullName}, {item.jobTitle}
+          </Text>
+        )}
+      />
+    </View>
+  );
+}
+```
+
+A request made before sign-in fails with `No valid auth token`. Send users to the **Login** tab first, as the template does by making it the initial route. The rest of the client API is the same as on the web; see [Use the client without React](../client.mdx#use-the-client-without-react).
+
+## Use `@osdk/react` hooks
+
+`@osdk/react` does not touch the DOM, so its hooks work in React Native screens. The template lists `@osdk/react` in `package.json` but does not use it, and pins it to `^0.7.0`, a release line from before `@osdk/react` shared a version number with `@osdk/client`. Install the same version as your `@osdk/client` first, for example:
+
+```npm
+npm install @osdk/react@2.83.0
+```
+
+[Version compatibility](../installation.mdx#version-compatibility) explains the rule. `react-dom`, a peer dependency of `@osdk/react`, is already in the template for the web build. Then wrap the root layout in `OsdkProvider`:
+
+```tsx title="app/_layout.tsx"
+import { client } from "@/foundry/client";
+import { OsdkProvider } from "@osdk/react";
+import { Stack } from "expo-router";
+
+export default function RootLayout() {
+  return (
+    <OsdkProvider client={client}>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="+not-found" />
+      </Stack>
+    </OsdkProvider>
+  );
+}
+```
+
+The generated layout also loads fonts, controls the splash screen, and sets a theme; keep those and add `OsdkProvider` around the `Stack`. Screens can now use the hooks:
+
+```tsx title="app/(tabs)/team.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkObjects } from "@osdk/react";
+import { Button, FlatList, Text, View } from "react-native";
+
+export default function Team() {
+  const { data, isLoading, error, refetch } = useOsdkObjects(Employee, {
+    where: { department: "Engineering" },
+  });
+
+  return (
+    <View>
+      {error && (
+        <View>
+          <Text>Could not load employees: {error.message}</Text>
+          <Button title="Retry" onPress={() => void refetch()} />
+        </View>
+      )}
+      {isLoading && !data && <Text>Loading employees…</Text>}
+      <FlatList
+        data={data}
+        keyExtractor={(employee) => String(employee.$primaryKey)}
+        renderItem={({ item }) => <Text>{item.fullName}</Text>}
+      />
+    </View>
+  );
+}
+```
+
+Hooks fetch as soon as a screen mounts, so mount data screens only after sign-in. Everything else about the hooks is covered under [Query objects](/react/objects) and [Apply actions](/react/actions). `@osdk/react-components` renders HTML, so it works in the web build only.
+
+## Metro configuration
+
+`metro.config.js` makes three changes to Expo's default Metro config:
+
+- **Enables package exports** (`resolver.unstable_enablePackageExports: true`), because the OSDK packages publish their entry points, such as `@osdk/client/observable`, through the `exports` field.
+- **Resolves `@osdk` packages with the `browser`, `require`, and `import` conditions**, so Metro picks their browser builds on every platform.
+- **Loads `.env.development` with `dotenv`** and adds `react-native-svg-transformer` for `.svg` imports.
+
+Keep the first two if you replace the file. The template adds no polyfills.
+
+## Deploy the web build
+
+`npm run build` exports the web build to `dist/`, which `foundry.config.json` points at. Register your site's root URL as a redirect URL first, then follow [Hosting](../deploy/hosting.mdx). Publishing to the App Store or Google Play uses Expo's own build tooling and is not covered by the template.

@@ -1,0 +1,69 @@
+---
+title: streamText
+description: Stream a text response from a Foundry language model as it is generated.
+---
+
+```ts
+import { streamText } from "@osdk/aip-core";
+
+function streamText<TOOLS extends ToolSet = ToolSet>(
+  options: StreamTextOptions<TOOLS>,
+): StreamTextResult;
+```
+
+Starts the request immediately and returns streams and promises without awaiting. Read `textStream` for text only, or `fullStream` for every chunk, including reasoning, tool calls, and the finish event. Like `generateText`, the call is single-step.
+
+## Options
+
+<auto-type-table path="../../../../packages/aip-core/src/streamText.ts" name="StreamTextOptions" />
+
+Pass either `prompt` or `messages`, not both. `streamText` throws synchronously when both are set, or when `system`, `prompt`, and `messages` are all empty. Aborting `abortSignal` or cancelling the stream stops the request.
+
+## Returns
+
+<auto-type-table path="../../../../packages/aip-core/src/streamText.ts" name="StreamTextResult" />
+
+On failure, `fullStream` emits `{ type: "error", error }` and then errors, and the promises reject, except `warnings`, which still resolves.
+
+### `TextStreamChunk`
+
+| `type` | Fields |
+| --- | --- |
+| `"text-delta"` | `id`, `delta` |
+| `"reasoning-delta"` | `id`, `delta` |
+| `"tool-call"` | `toolCallId`, `toolName`, `input` |
+| `"finish"` | `finishReason`, `rawFinishReason`, `usage` |
+| `"error"` | `error` |
+
+## Example
+
+```ts title="src/streamAnswer.ts"
+import { foundryModel, streamText } from "@osdk/aip-core";
+import type { PlatformClient } from "@osdk/client";
+
+export async function streamAnswer(
+  client: PlatformClient,
+  question: string,
+  onText: (delta: string) => void,
+) {
+  const result = streamText({
+    model: foundryModel({ client, model: "gpt-4o" }),
+    prompt: question,
+  });
+
+  const reader = result.textStream.getReader();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    onText(value);
+  }
+
+  return result.finishReason;
+}
+```
+
+## See also
+
+- [Chat and text generation](/ai/chat)
+- [generateText](./generate-text.mdx)
+- [LmsChatTransport](./lms-chat-transport.mdx)

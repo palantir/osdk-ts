@@ -1,0 +1,45 @@
+---
+title: useOsdkMetadata
+description: Fetch the runtime metadata of an object type, interface, or action, such as display names and property descriptions.
+---
+
+```ts
+import { useOsdkMetadata } from "@osdk/react";
+
+function useOsdkMetadata<T extends ObjectOrInterfaceDefinition | ActionDefinition<any>>(
+  type: T,
+): UseOsdkMetadataResult<T>;
+```
+
+Calls `client.fetchMetadata(type)` and returns the result. The metadata type follows the definition you pass: `ObjectMetadata` for an object type, `InterfaceMetadata` for an interface, and `ActionMetadata` for an action. The result is held in component state, not in the shared cache, so each component that calls the hook fetches once.
+
+## Returns
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `loading` | `boolean` | `true` until the request settles. |
+| `metadata` | `ObjectMetadata \| InterfaceMetadata \| ActionMetadata \| undefined` | The metadata, once loaded. |
+| `error` | `string \| undefined` | The error message if the request failed. |
+
+## Example
+
+```tsx title="src/EmployeeHeading.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkMetadata } from "@osdk/react";
+
+export function EmployeeHeading() {
+  const { metadata, loading, error } = useOsdkMetadata(Employee);
+
+  return (
+    <header aria-busy={loading}>
+      {error && <p role="alert">{error}</p>}
+      <h1>{metadata?.pluralDisplayName ?? "Employees"}</h1>
+      <p>{metadata?.description}</p>
+    </header>
+  );
+}
+```
+
+## See also
+
+- [Load objects](/react/objects)

@@ -1,0 +1,277 @@
+---
+title: Create a client
+description: Configure createClient with your Foundry URL, Ontology RID, and token provider, share it through OsdkProvider, and query without React.
+---
+
+The client from `@osdk/client` sends every OSDK request: it fetches objects, applies actions, and executes functions. Create it once per app, then hand it to `OsdkProvider` for React or call it directly.
+
+## `createClient`
+
+```ts
+createClient(baseUrl, ontologyRid, tokenProvider, options?, fetchFn?)
+```
+
+| Argument | Type | Description |
+| --- | --- | --- |
+| `baseUrl` | `string` | The base URL of your Foundry stack, such as `https://example.palantirfoundry.com`. In local development behind a CORS proxy, your dev server's origin. |
+| `ontologyRid` | `string \| Promise<string>` | The Ontology to query, such as `ri.ontology.main.ontology.<id>`. Usually `$ontologyRid` from your generated SDK. |
+| `tokenProvider` | `() => Promise<string>` | Returns a bearer token for each request. Usually an OAuth client from `@osdk/oauth`. See [Authentication](./authentication.mdx). |
+| `options` | `object` | Optional settings, listed below. |
+| `fetchFn` | `typeof fetch` | The `fetch` used for every request. Defaults to the global `fetch`. |
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `headers` | `Record<string, string>` | | Extra headers added to every request. |
+| `logger` | `Logger` | A minimal built-in logger | A `Logger`, as defined in `@osdk/api`, that receives the client's log output. |
+| `UNSTABLE_DO_NOT_USE_BRANCH` | `string \| null` | Read from the page | Beta. The Foundry branch to read and write on. When omitted in a browser, the client uses the `foundryBranchRid` query parameter, then the branch meta tag injected by OSDK build tooling. `null` pins the default branch. |
+
+`createClient` throws `Invalid ontology RID` when `ontologyRid` is a string that does not start with `ri.`.
+
+```ts title="src/client.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import { createClient, type Client } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
+
+const foundryUrl = "https://example.palantirfoundry.com";
+
+export const auth = createPublicOauthClient(
+  "<your-client-id>",
+  foundryUrl,
+  "http://localhost:8080/auth/callback",
+);
+
+export const client: Client = createClient(foundryUrl, $ontologyRid, auth);
+```
+
+Some generated SDKs omit `$ontologyRid`, because they are built to run on more than one Foundry stack and an embedded RID would only be correct on one. Pass the RID from configuration instead.
+
+## Keep one client per app
+
+Create the client at module scope in a single file, such as `src/client.ts`, and import it everywhere. `OsdkProvider` builds its cache from the client instance, so a new instance starts over with an empty cache.
+
+Read configuration from your environment instead of hard-coding it. With Vite, use `import.meta.env`:
+
+```ts title="src/client.ts"
+import { createClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
+
+const foundryUrl = import.meta.env.VITE_FOUNDRY_API_URL;
+const clientId = import.meta.env.VITE_FOUNDRY_CLIENT_ID;
+const redirectUrl = import.meta.env.VITE_FOUNDRY_REDIRECT_URL;
+const ontologyRid = import.meta.env.VITE_FOUNDRY_ONTOLOGY_RID;
+
+export const auth = createPublicOauthClient(clientId, foundryUrl, redirectUrl);
+export const client = createClient(foundryUrl, ontologyRid, auth);
+```
+
+The React template from `@osdk/create-app` goes one step further: `index.html` renders the env values into `<meta>` tags, such as `<meta name="osdk-foundryUrl" content="%VITE_FOUNDRY_API_URL%" />`, and `src/client.ts` reads them at startup. Hosting can then change configuration by rewriting the HTML, without a new JavaScript build:
+
+```ts title="src/client.ts"
+function getMetaTagContent(tagName: string): string {
+  const elements = document.querySelectorAll(`meta[name="${tagName}"]`);
+  const value = elements.item(elements.length - 1)?.getAttribute("content");
+  if (value == null || value === "") {
+    throw new Error(`Meta tag ${tagName} not found or empty`);
+  }
+  return value;
+}
+
+const foundryUrl = getMetaTagContent("osdk-foundryUrl");
+const ontologyRid = getMetaTagContent("osdk-ontologyRid");
+```
+
+### Platform API only clients
+
+`createPlatformClient(baseUrl, tokenProvider, options?, fetchFn?)` creates a client for Foundry Platform APIs, such as `@osdk/foundry.admin`, without an Ontology. Use it in apps that have no generated SDK. A client from `createClient` also works with the `@osdk/foundry.*` Platform SDK functions, so most apps need only one client. The exception is the AI helpers in `@osdk/aip-core`, such as `foundryModel`, which require a client from `createPlatformClient` (see [Chat and streaming](../ai/chat.mdx)):
+
+```ts title="src/currentUser.ts"
+import { Users } from "@osdk/foundry.admin";
+import { client } from "./client";
+
+const me = await Users.getCurrent(client);
+console.log(me.username);
+```
+
+## Provide the client to React
+
+Wrap your app's root in `OsdkProvider` from `@osdk/react`. Every `@osdk/react` hook reads the client and its cache from the provider.
+
+```tsx title="src/main.tsx"
+import { OsdkProvider } from "@osdk/react";
+import ReactDOM from "react-dom/client";
+import { App } from "./App";
+import { client } from "./client";
+
+const rootElement = document.getElementById("root");
+if (rootElement == null) {
+  throw new Error("Root element not found");
+}
+
+ReactDOM.createRoot(rootElement).render(
+  <OsdkProvider client={client}>
+    <App />
+  </OsdkProvider>,
+);
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `client` | `Client` | | The client from `createClient`. The provider creates its cache from this instance. |
+| `children` | `ReactNode` | | Your app. |
+| `enableDevTools` | `boolean` | `true` when `@osdk/react-devtools` is registered | Turns the [OSDK Devtools](../react/devtools/index.mdx) panel on or off. Has no effect in production builds. |
+| `devMode` | `object` | | Development-only cache behavior, ignored in production builds. See below. |
+
+| `devMode` field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `actionDelayMs` | `number` | `1000` | Delays the result of an action that has an optimistic update, so you can see the optimistic state. Set `0` to turn it off. |
+| `logLevel` | `"trace" \| "debug" \| "info" \| "warn" \| "error" \| "fatal"` | `"error"` | Log level of the cache layer. `"debug"` shows its tracing. |
+| `debug.refCounts` | `boolean` | `false` | Logs cache entry reference counts and cleanup, and shortens retention so cleanup happens sooner. |
+| `debug.cacheKeys` | `boolean` | `false` | Logs cache key lookups. |
+
+```tsx
+<OsdkProvider client={client} devMode={{ actionDelayMs: 0, logLevel: "debug" }}>
+  <App />
+</OsdkProvider>
+```
+
+Put the provider above everything that uses OSDK data, including headers and navigation, and pass it a client created at module scope. `<OsdkProvider client={createClient(...)}>` inside a component creates a new client, and an empty cache, on every render.
+
+A hook rendered outside the provider throws:
+
+```txt
+No OsdkProvider found. Did you forget to wrap your component tree with <OsdkProvider>?
+```
+
+To call the client inside a component, for example in an event handler, read it from the provider with `useOsdkClient`:
+
+```tsx title="src/ExportButton.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkClient } from "@osdk/react";
+
+export function ExportButton() {
+  const client = useOsdkClient();
+
+  async function handleClick() {
+    const names: string[] = [];
+    for await (const employee of client(Employee).asyncIter({ $select: ["fullName"] })) {
+      names.push(employee.fullName ?? "");
+    }
+    await navigator.clipboard.writeText(names.join("\n"));
+  }
+
+  return (
+    <button type="button" onClick={() => void handleClick()}>
+      Copy all names
+    </button>
+  );
+}
+```
+
+For data you render, prefer the hooks, such as `useOsdkObjects` and `useOsdkAction`: they cache results and update when objects change. Direct client calls bypass the cache.
+
+## Use the client without React
+
+Call `client` with a definition from your SDK. What it returns depends on the definition:
+
+| You pass | You get | Main methods |
+| --- | --- | --- |
+| Object type, such as `Employee` | An object set of all objects of that type | `where`, `fetchPage`, `fetchOne`, `asyncIter`, `aggregate`, `pivotTo` |
+| Interface | An object set over every type that implements it | Object set methods except `fetchOne`; see [Interfaces](../sdk/interfaces.mdx) |
+| Action, such as `modifyEmployee` | An action invoker | `applyAction`, `batchApplyAction` |
+| Function (query) | A function invoker | `executeFunction` |
+
+### Fetch objects
+
+`fetchPage` returns one page with `data`, `nextPageToken`, and `totalCount`. `where` narrows the set and returns a new object set, so you can chain it:
+
+```ts title="src/employees.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const page = await client(Employee)
+  .where({ department: "Engineering" })
+  .fetchPage({
+    $select: ["fullName", "jobTitle"],
+    $orderBy: { fullName: "asc" },
+    $pageSize: 50,
+  });
+
+for (const employee of page.data) {
+  console.log(employee.$primaryKey, employee.fullName, employee.jobTitle);
+}
+
+if (page.nextPageToken != null) {
+  const next = await client(Employee)
+    .where({ department: "Engineering" })
+    .fetchPage({ $pageSize: 50, $nextPageToken: page.nextPageToken });
+  console.log(next.data.length);
+}
+```
+
+Without `$select`, the response includes the type's default properties. Select only what you read. `$pageSize` sizes each page; it does not cap the total.
+
+Fetch one object by primary key with `fetchOne`, and follow links from it through `$link`:
+
+```ts
+const employee = await client(Employee).fetchOne(12345);
+const office = await employee.$link.office.fetchOne();
+```
+
+To process every matching object, iterate with `asyncIter`. It fetches page after page from a consistent snapshot, so each object arrives once even if the data changes during the loop:
+
+```ts
+for await (const employee of client(Employee).asyncIter({ $select: ["fullName"] })) {
+  console.log(employee.fullName);
+}
+```
+
+For counts, sums, and group-bys, use `aggregate` instead of loading every object.
+
+### Apply an action
+
+`applyAction` takes the action's parameters and an optional options object. Object parameters accept an object instance or its primary key:
+
+```ts title="src/promote.ts"
+import { modifyEmployee } from "@my-app/sdk";
+import { ActionValidationError } from "@osdk/client";
+import { client } from "./client";
+
+try {
+  const edits = await client(modifyEmployee).applyAction(
+    { employee: 12345, jobTitle: "Senior Engineer" },
+    { $returnEdits: true },
+  );
+  console.log(edits);
+} catch (e) {
+  if (e instanceof ActionValidationError) {
+    console.error("Invalid parameters", e.validation);
+  } else {
+    throw e;
+  }
+}
+```
+
+| Option | Returns |
+| --- | --- |
+| none | `undefined` |
+| `{ $returnEdits: true }` | The edits the action made: objects added, modified, and deleted. |
+| `{ $validateOnly: true }` | The validation result, without applying the action. |
+
+`applyAction` throws `ActionValidationError` when the parameters fail validation, with the details in `error.validation`. `batchApplyAction` takes an array of parameter objects and applies them in one request.
+
+### Execute a function
+
+```ts
+const result = await client(getEmployeeCount).executeFunction({ department: "Engineering" });
+```
+
+Replace `getEmployeeCount` with a function from your SDK. Its parameters and return type come from the function's definition.
+
+### Read metadata
+
+`client.fetchMetadata(definition)` returns runtime metadata, such as display names and descriptions, for an object type, interface, action, or function:
+
+```ts
+const metadata = await client.fetchMetadata(Employee);
+console.log(metadata.displayName, metadata.description);
+```

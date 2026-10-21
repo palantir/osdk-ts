@@ -1,16 +1,9 @@
 # AipAgentChat
 
-A React component for rendering an AI chat surface backed by Foundry's
-LMS via `useChat` from `@osdk/react/experimental/aip`. Importing the
-component is sufficient — consumers do not need to import `useChat` or
-`foundryModel` themselves.
+`AipAgentChat` renders an AI chat interface backed by a Foundry language model through `useChat` from `@osdk/react/experimental/aip`.
 
-## Table of Contents
-
-- [Import](#import)
-- [Basic Usage](#basic-usage)
-- [Props Reference](#props-reference)
-- [Theming](#theming)
+Importing the component is sufficient. You do not need to import `useChat` or
+`foundryModel` yourself.
 
 ## Import
 
@@ -160,9 +153,10 @@ function MyChat() {
 
 ### Drop further: useChat directly
 
-For full control over the chat hook (regenerate, multi-step agent
-loops, custom transports), call `useChat` from `@osdk/react/experimental/aip`
-yourself and feed the result into your own UI.
+For full control over the chat hook (regenerate, custom transports), call
+`useChat` from `@osdk/react/experimental/aip` yourself and feed the result
+into your own UI. `useChat` is text-only: it does not run tools or multi-step
+agent loops.
 
 ```tsx
 import { foundryModel } from "@osdk/aip-core";
@@ -192,7 +186,7 @@ function MyChat() {
 
 ## Props Reference
 
-See [`AipAgentChatApi.ts`](../src/aip-agent-chat/AipAgentChatApi.ts) for
+See [`AipAgentChatApi.ts`](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/src/aip-agent-chat/AipAgentChatApi.ts) for
 the full prop list with JSDoc. `client` is the only required prop.
 `model` (controlled) and `defaultModel` (uncontrolled) are both
 optional; if neither is supplied the chat falls back to the first
@@ -215,7 +209,7 @@ CSS variables are documented in
 Agent Chat**. The `--osdk-aip-agent-chat-*` namespace covers the
 container, spacing, message bubbles, composer, empty state, and the
 3-dot streaming loader. Defaults live in
-[`src/tokens/component-tokens/aip-agent-chat.css`](../src/tokens/component-tokens/aip-agent-chat.css);
+[`src/tokens/component-tokens/aip-agent-chat.css`](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/src/tokens/component-tokens/aip-agent-chat.css);
 color, spacing, and radius tokens derive from `--osdk-*` semantic
 tokens, so brand overrides applied at the `--osdk-*` layer flow through
 automatically.

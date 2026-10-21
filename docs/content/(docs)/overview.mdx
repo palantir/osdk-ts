@@ -1,0 +1,131 @@
+---
+title: What is OSDK
+description: The Ontology SDK gives TypeScript apps a typed client for your Foundry Ontology's objects, links, actions, functions, and interfaces.
+---
+
+The Ontology SDK (OSDK) lets you read and write your Foundry Ontology from TypeScript with types generated from your own object types, actions, and functions. Use it in browser apps, Node.js services, and scripts, and add `@osdk/react` to get cached, reactive hooks in React.
+
+## How it works
+
+You pick the Ontology resources your app needs in Developer Console, and Foundry generates an npm package for them, such as `@my-app/sdk`. The generated package contains typed definitions only. The runtime that sends requests, pages results, and applies actions lives in `@osdk/client`, and you pass definitions to it:
+
+```ts
+const employees = await client(Employee).fetchPage();
+```
+
+| Ontology concept | Generated export | How you use it |
+| --- | --- | --- |
+| Object type | `Employee`, `Office` | `client(Employee).where(...).fetchPage()`, or `useOsdkObjects(Employee)` in React |
+| Link type | `$link` on each object | `employee.$link.office.fetchOne()`, or `useLinks` in React |
+| Action type | `modifyEmployee` | `client(modifyEmployee).applyAction(...)`, or `useOsdkAction(modifyEmployee)` in React |
+| Function (query) | A function definition per query | `client(fn).executeFunction(...)`, or `useOsdkFunction(fn)` in React |
+| Interface | One definition per interface | `client(MyInterface).fetchPage()` returns objects of every type that implements it |
+
+Because the SDK holds metadata rather than generated implementation code, its size grows with the number of types you include, unused definitions tree-shake away, and fixes to the client ship as a dependency bump without regenerating your SDK. The generated package also exports namespaces such as `$Objects`, `$Actions`, and `$Queries`, so `import * as Sdk from "@my-app/sdk"` gives you autocomplete over everything in it.
+
+Dates and timestamps arrive as ISO 8601 strings. OSDK does not bundle a date library, so parse them with the one your app already uses.
+
+## Packages
+
+| Package | Role |
+| --- | --- |
+| `@osdk/client` | The runtime. `createClient` returns the `client` you call with definitions to fetch objects, follow links, apply actions, and execute functions. |
+| `@osdk/api` | Shared type definitions that `@osdk/client` and generated SDKs both depend on. Install it alongside `@osdk/client`. |
+| Generated SDK (`@my-app/sdk`) | Your Ontology's object types, interfaces, actions, and functions, generated in Developer Console and installed from your Foundry npm registry. |
+| `@osdk/oauth` | Token providers: `createPublicOauthClient` for browser apps, `createConfidentialOauthClient` for servers, `createAuthlessClient` for public apps. |
+| `@osdk/react` | `OsdkProvider` and hooks such as `useOsdkObjects`, `useOsdkObject`, `useLinks`, `useOsdkAction`, and `useOsdkFunction`, backed by a normalized cache. |
+| `@osdk/react-components` | Ontology-aware React components, such as `ObjectTable`, `FilterList`, and `ActionForm`, built on `@osdk/react`. |
+| `@osdk/create-app` | A CLI that scaffolds a React, Vue, or Expo app with authentication, client setup, and your SDK already wired in. |
+| `@osdk/react-devtools` | A development panel and Vite plugin for inspecting the queries, cache entries, and actions of a running `@osdk/react` app. |
+
+## A first query
+
+Create a client once, then pass it a definition from your SDK. `createClient` takes the Foundry URL, your Ontology RID, and a token provider, here the OAuth client from `@osdk/oauth`:
+
+```ts title="src/client.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import { createClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
+
+const foundryUrl = "https://example.palantirfoundry.com";
+
+const auth = createPublicOauthClient(
+  "<your-client-id>",
+  foundryUrl,
+  "http://localhost:8080/auth/callback",
+);
+
+export const client = createClient(foundryUrl, $ontologyRid, auth);
+```
+
+```ts title="src/listEngineers.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const page = await client(Employee)
+  .where({ department: "Engineering" })
+  .fetchPage({ $pageSize: 25, $orderBy: { fullName: "asc" } });
+
+for (const employee of page.data) {
+  console.log(employee.$primaryKey, employee.fullName);
+}
+```
+
+In React, wrap your app in `OsdkProvider` with the same client, and read the data with a hook. The hook loads the page, caches it, and re-renders the component when the objects change:
+
+```tsx title="src/EmployeeList.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkObjects } from "@osdk/react";
+
+export function EmployeeList() {
+  const { data, isLoading, error } = useOsdkObjects(Employee, {
+    where: { department: "Engineering" },
+    orderBy: { fullName: "asc" },
+    pageSize: 25,
+  });
+
+  return (
+    <div>
+      {isLoading && <p>Loading…</p>}
+      {error && <p role="alert">{error.message}</p>}
+      <ul>
+        {data?.map((employee) => (
+          <li key={employee.$primaryKey}>{employee.fullName}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+See [Create a client](./client.mdx) for `OsdkProvider` setup and the full `createClient` reference.
+
+## Why use `@osdk/react`
+
+You can call `@osdk/client` from any data layer, including TanStack Query. `@osdk/react` adds behavior that a generic request cache cannot reproduce because it understands Ontology objects:
+
+- **Normalized object cache.** Each object, such as `Employee:42`, is stored once. When it changes, every list, link, and detail view that contains it re-renders with the new values.
+- **Deduplicated requests.** Components that ask for the same objects with the same options share one cache entry and one request.
+- **Updates after actions.** An action's response lists the objects it added, modified, and deleted. The cache reloads those objects and re-evaluates affected lists against their `where` clauses, with no manual invalidation.
+- **Optimistic updates with rollback.** Pass `$optimisticUpdate` to `applyAction` to show the expected result immediately. If the action fails, the cache restores the previous state.
+- **Live data.** `streamUpdates: true` keeps a list current over a WebSocket subscription instead of polling.
+- **Function dependencies.** `useOsdkFunction` reruns a function when objects it depends on change, using `dependsOn` for object types or `dependsOnObjects` for specific instances.
+
+Use `@osdk/react` for Ontology data and keep a general-purpose library such as TanStack Query for non-Foundry APIs. The two work side by side. [Caching](./concepts/caching.mdx) explains how the cache stores and shares entries.
+
+## Next steps
+
+<Cards>
+  <Card href="/quickstart" title="Quickstart">
+    Scaffold a React app with `@osdk/create-app` and run your first query and action.
+  </Card>
+  <Card href="/installation" title="Installation">
+    Add OSDK packages and your generated SDK to an existing app.
+  </Card>
+  <Card href="/react/objects" title="Load objects">
+    Fetch lists and single objects with `useOsdkObjects` and `useOsdkObject`.
+  </Card>
+  <Card href="/components" title="Components">
+    Build with Ontology-aware tables, filters, and action forms.
+  </Card>
+</Cards>

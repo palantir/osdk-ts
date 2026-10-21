@@ -1,0 +1,255 @@
+---
+title: Build and publish
+description: Configure @osdk/widget.vite-plugin, build a widget set and its manifest, deploy versions with osdk widgetset deploy, and manage them.
+---
+
+{/* cspell:ignore widgetregistry widgetset */}
+
+Publishing a widget set takes two commands: `vite build` produces your widget files and a manifest, and `osdk widgetset deploy` uploads them to Foundry as a new version. This page covers the Vite plugin, `foundry.config.json`, versioning, and the CLI.
+
+## Add the Vite plugin
+
+`@osdk/widget.vite-plugin` writes the manifest during `vite build` and runs [developer mode](./index.mdx#run-locally) during `vite`. Projects from `@osdk/create-widget` already include it.
+
+```npm
+npm install -D @osdk/widget.vite-plugin
+```
+
+```ts title="vite.config.ts"
+import foundryWidgetPlugin from "@osdk/widget.vite-plugin";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [react(), foundryWidgetPlugin()],
+  server: {
+    port: 8080,
+    cors: true,
+  },
+  build: {
+    rollupOptions: {
+      input: ["./index.html"],
+    },
+  },
+});
+```
+
+The plugin supports Vite 6 and 7. It takes one optional argument:
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `defaults.refreshHostDataOnAction` | `boolean` | | The `refreshHostDataOnAction` value for every widget whose config does not set it. See [Config fields](./parameters-and-events.mdx#config-fields). |
+
+```ts title="vite.config.ts"
+foundryWidgetPlugin({ defaults: { refreshHostDataOnAction: true } });
+```
+
+## How the plugin finds configs
+
+Each HTML file in `build.rollupOptions.input` is one widget. For each one, the plugin looks for a widget config among the modules its entry script imports:
+
+- The file name, minus its extension, ends in `.config`, such as `main.config.ts`.
+- The file lives under `src/` and the entrypoint script imports it directly. Developer mode only tracks direct imports.
+- The default export is the config from `defineConfig`.
+
+If you do not need the config object at runtime, a side-effect import such as `import "./main.config.js";` is enough. Each entrypoint must import exactly one config.
+
+## Build multiple widgets
+
+Add an HTML file per widget, each loading its own script that imports its own config:
+
+<Files>
+  <File name="index.html" />
+  <File name="second.html" />
+  <File name="vite.config.ts" />
+  <Folder name="src" defaultOpen>
+    <File name="main.tsx" />
+    <File name="main.config.ts" />
+    <File name="second.tsx" />
+    <File name="second.config.ts" />
+  </Folder>
+</Files>
+
+Then list every HTML file as a build input. Both the array and object forms of `input` work:
+
+```ts title="vite.config.ts"
+import foundryWidgetPlugin from "@osdk/widget.vite-plugin";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [react(), foundryWidgetPlugin()],
+  build: {
+    rollupOptions: {
+      input: ["./index.html", "./second.html"],
+    },
+  },
+});
+```
+
+The build writes one manifest with an entry per widget, keyed by each config's `id`, so every widget in the set needs a different ID.
+
+## Build
+
+```sh
+npm run build
+```
+
+The template's `build` script runs `tsc && vite build`. Vite writes your HTML, scripts, and styles to its output directory, `dist/` by default, and the plugin then adds the manifest:
+
+<Files>
+  <Folder name="dist" defaultOpen>
+    <File name="index.html" />
+    <Folder name="assets">
+      <File name="index-[hash].js" />
+      <File name="index-[hash].css" />
+    </Folder>
+    <Folder name=".palantir" defaultOpen>
+      <File name="widgets.config.json" />
+    </Folder>
+  </Folder>
+</Files>
+
+To write the manifest, the plugin reads each built HTML file for its script and stylesheet tags, evaluates each widget config in a separate Vite server, computes the version, and scans `package.json` dependencies for SDK packages. [Parameters and events](./parameters-and-events.mdx#how-the-config-maps-to-the-manifest) shows the result field by field.
+
+Build errors from the plugin:
+
+| Error | Cause |
+| --- | --- |
+| `foundry.config.json file not found.` | No `foundry.config.json` in the working directory or any parent. |
+| `No widget config files found for entrypoint ...` | The entrypoint does not import a `*.config` module. |
+| `Multiple widget config files found for entrypoint ...` | The entrypoint's bundle includes more than one `*.config` module. |
+| `No default export found in ...` | The config file has no default export. |
+| `Duplicate widget ID: ...` | Two configs share an `id`. |
+| `Entrypoint chunk not found for input file: ...` | The built HTML's script paths do not match a bundle entry. Keep Vite's `base` at its default, `/`. |
+| `Unexpected inline content found in Vite HTML output` | The built HTML has an inline `<script>` or `<link>` with content. Load scripts with `src`. |
+| `Unexpected ... attribute found in Vite HTML output` | A `<script>` has attributes other than `src`, `type`, and `crossorigin`, or a stylesheet `<link>` has attributes other than `rel`, `href`, and `crossorigin`. |
+| `Invalid script type attribute found in Vite HTML output: ...` | A `<script>` `type` other than `module` or `text/javascript`. |
+| `The version string ... is not SemVer compliant.` | The computed version is not valid SemVer. See [Versioning](#versioning). |
+
+Config validation errors, such as a widget ID that is not camelCase, are listed in [Parameters and events](./parameters-and-events.mdx#config-fields).
+
+## `foundry.config.json`
+
+The plugin and `osdk widgetset` commands read `foundry.config.json` from the working directory or the nearest parent. `@osdk/create-widget` writes it for you:
+
+```json title="foundry.config.json"
+{
+  "foundryUrl": "https://example.palantirfoundry.com",
+  "widgetSet": {
+    "rid": "ri.widgetregistry..widget-set.<id>",
+    "directory": "./dist",
+    "autoVersion": {
+      "type": "package-json"
+    }
+  }
+}
+```
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `foundryUrl` | `string` | Required | Your Foundry stack. Developer mode and the CLI send requests here. |
+| `widgetSet.rid` | `string` | Required | The widget set RID, written to the manifest and used as the deploy target. |
+| `widgetSet.directory` | `string` | Required | The build output to deploy. Match Vite's `build.outDir`. |
+| `widgetSet.repository` | `string` | | A code repository RID to publish through instead of the widget set. See [Deploy](#deploy). |
+| `widgetSet.autoVersion` | `{ type: "package-json" }` or `{ type: "git-describe", tagPrefix?: string }` | `package-json` | How the build computes the version. |
+
+The file is validated on load. Unknown top-level fields fail with `does not match the expected schema`.
+
+## Versioning
+
+Every deployed version needs a [SemVer](https://semver.org) version string. The build computes it once and writes it to the manifest's `widgetSet.version`; `osdk widgetset deploy` reads it from there and has no version flag.
+
+<Tabs items={["package-json", "git-describe"]}>
+<Tab value="package-json">
+
+The default. The version is the `version` field of the nearest `package.json`. Bump it, then rebuild before you deploy:
+
+```sh
+npm version minor
+npm run build
+```
+
+</Tab>
+<Tab value="git-describe">
+
+The version comes from `git describe --tags --first-parent --dirty`:
+
+```json title="foundry.config.json"
+{
+  "foundryUrl": "https://example.palantirfoundry.com",
+  "widgetSet": {
+    "rid": "ri.widgetregistry..widget-set.<id>",
+    "directory": "./dist",
+    "autoVersion": {
+      "type": "git-describe",
+      "tagPrefix": ""
+    }
+  }
+}
+```
+
+With an empty `tagPrefix`, the build uses the most recent tag reachable from `HEAD` and strips a leading `v`, so `v1.4.0` becomes `1.4.0`. With a prefix such as `widgets/`, it only matches tags that start with the prefix and strips it, so `widgets/1.4.0` becomes `1.4.0`. Commits after the tag and uncommitted changes add a suffix such as `1.4.0-3-g1a2b3c4-dirty`. The build fails if git is missing, the directory is not a repository, or no tag matches.
+
+</Tab>
+</Tabs>
+
+## Deploy
+
+`osdk widgetset deploy` from `@osdk/cli` zips the build output and publishes it as a new version.
+
+<Steps>
+<Step>
+
+### Build
+
+```sh
+npm run build
+```
+
+</Step>
+<Step>
+
+### Deploy
+
+```sh
+export FOUNDRY_TOKEN=<token>
+npx @osdk/cli@latest widgetset deploy
+```
+
+The CLI reads the version from `.palantir/widgets.config.json` in the directory, zips everything in the directory, and uploads it. When `repository` is set, it uploads to that code repository on behalf of the widget set, which works only if the repository is authorized to publish the widget set. It passes the current git branch along, unless HEAD is detached or the project is not a git repository.
+
+</Step>
+</Steps>
+
+Every option defaults to the matching `foundry.config.json` field where one exists:
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `--widgetSet` | `widgetSet.rid` | The widget set RID. |
+| `--foundryUrl` | `foundryUrl` | The Foundry URL. Must start with `https://`. |
+| `--directory` | `widgetSet.directory` | The directory to upload. It must contain `.palantir/widgets.config.json`. |
+| `--repository` | `widgetSet.repository` | A code repository RID to publish through. |
+| `--branchName` | The current git branch | The branch to publish from. |
+| `--token` | | A Foundry token. Conflicts with `--tokenFile`. |
+| `--tokenFile` | | A file containing a Foundry token. |
+| `--verbose`, `-v` | | Verbose logging. Repeat for more. |
+
+Without `--token` or `--tokenFile`, the CLI reads `FOUNDRY_TOKEN`. The deprecated `FOUNDRY_SDK_AUTH_TOKEN` still works with a warning. The token must be a JWT.
+
+After the first version is published, the widget appears in Workshop's **Widget setup** panel. Until then you can still preview it with [developer mode](./index.mdx#run-locally).
+
+## Manage versions
+
+The same options select the widget set and credentials:
+
+| Command | Description |
+| --- | --- |
+| `osdk widgetset version list` | Lists published versions, newest first, for the current git branch or `--branchName`. |
+| `osdk widgetset version info <version>` | Prints the details of one version as JSON. |
+| `osdk widgetset version delete <version>` | Deletes a version after a confirmation prompt. `--yes` or `-y` skips the prompt. Deletion cannot be undone. |
+
+```sh
+npx @osdk/cli@latest widgetset version list
+npx @osdk/cli@latest widgetset version delete 1.3.0 --yes
+```

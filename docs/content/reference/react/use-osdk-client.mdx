@@ -1,0 +1,42 @@
+---
+title: useOsdkClient
+description: Return the OSDK Client passed to the nearest OsdkProvider.
+---
+
+```ts
+import { useOsdkClient } from "@osdk/react";
+
+function useOsdkClient(): Client;
+```
+
+Returns the `client` prop of the surrounding `OsdkProvider`. Use it to build object sets for `useObjectSet` or to call the client directly, for example in an event handler. Calls made directly on the client bypass the shared cache.
+
+## Returns
+
+`Client`: the client from `createClient` in `@osdk/client`.
+
+## Example
+
+```tsx title="src/ExportButton.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkClient } from "@osdk/react";
+
+export function ExportButton() {
+  const client = useOsdkClient();
+
+  async function exportNames() {
+    const names: string[] = [];
+    for await (const employee of client(Employee).asyncIter({ $select: ["fullName"] })) {
+      names.push(employee.fullName ?? "");
+    }
+    console.log(names.join("\n"));
+  }
+
+  return <button onClick={() => void exportNames().catch(console.error)}>Export</button>;
+}
+```
+
+## See also
+
+- [Create a client](/client)
+- [createClient](../client/create-client.mdx)

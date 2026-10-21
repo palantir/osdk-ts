@@ -1,0 +1,29 @@
+---
+title: Console
+description: Use the Console tab in OSDK Devtools to search and filter browser console output captured while your OSDK React app runs.
+---
+
+The Console tab captures browser console output while the panel is active and keeps it as you navigate within the app. Use it to match an Errors & warnings count on [Overview](./overview.mdx) to the original message, or to keep a brief warning visible after the page changes.
+
+![Console tab](/img/react-devtools/console.png)
+
+## Search and filter
+
+- **Filter logs** searches the serialized arguments of each entry.
+- The level menu shows all entries, or only `log`, `info`, `warn`, `error`, or `debug`.
+- **Clear logs**, in the same menu, empties the feed. It does not reset the other devtools metrics.
+
+The toolbar shows counts for errors, warnings, and other entries. When a search or level filter hides entries, it also shows how many are hidden.
+
+## Log entries
+
+Each entry shows its level, timestamp, arguments, and source location when the browser provides one. Objects and errors are serialized with depth and size limits, so a large payload cannot take over the panel.
+
+## Limits
+
+| Limit | Value |
+| --- | --- |
+| Entries stored | 1,000 most recent |
+| Entries rendered | 200 most recent that match the current search and level |
+
+Narrow the search or level filter to bring an older matching entry back into the rendered list.

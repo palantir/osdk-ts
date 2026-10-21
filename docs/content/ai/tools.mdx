@@ -1,0 +1,347 @@
+---
+title: Tool calling
+description: Let a Foundry-hosted model call your code to query the Ontology and propose actions, with JSON Schema tools and a confirm-before-apply loop.
+---
+
+Tools let the model ask your app to run code, such as an Ontology query, and then answer from the result. With `@osdk/aip-core`, the model returns tool calls and your code runs them, so you decide what executes and when.
+
+<Callout type="warn">
+  `@osdk/aip-core` is at version 0.x and its API can change in any minor release. Two limits shape this page:
+
+  - Each `generateText` or `streamText` call is one model step. Tools are never executed for you; you run them and loop.
+  - `inputSchema` must be a plain JSON Schema object. A Zod schema is not converted: the tool is sent with empty parameters and a warning. For Zod schemas and an automatic loop, use the [AI SDK provider](#use-the-ai-sdk).
+</Callout>
+
+## Set up the clients
+
+Tool code needs two clients: the Ontology `Client` to run queries and actions, and a model built on a `PlatformClient`. Create both from one token provider. This Node.js setup uses a service user; the scopes must include `api:use-language-models-execute`.
+
+```ts title="src/client.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import { foundryModel } from "@osdk/aip-core";
+import { createClient, createPlatformClient } from "@osdk/client";
+import { createConfidentialOauthClient } from "@osdk/oauth";
+
+const foundryUrl = process.env.FOUNDRY_URL;
+const clientId = process.env.FOUNDRY_CLIENT_ID;
+const clientSecret = process.env.FOUNDRY_CLIENT_SECRET;
+
+if (foundryUrl == null || clientId == null || clientSecret == null) {
+  throw new Error("Set FOUNDRY_URL, FOUNDRY_CLIENT_ID, and FOUNDRY_CLIENT_SECRET");
+}
+
+const auth = createConfidentialOauthClient(clientId, clientSecret, foundryUrl, [
+  "api:read-data",
+  "api:write-data",
+  "api:use-ontologies-read",
+  "api:use-ontologies-write",
+  "api:use-language-models-execute",
+]);
+
+export const client = createClient(foundryUrl, $ontologyRid, auth);
+export const platformClient = createPlatformClient(foundryUrl, auth);
+export const model = foundryModel({ client: platformClient, model: "gpt-4o" });
+```
+
+In a browser, use `createPublicOauthClient` with the same scopes, as shown in [Generate and stream text](./chat.mdx#create-a-model).
+
+## Define tools
+
+A `ToolSet` maps tool names to definitions. The name is what the model calls, so make it descriptive.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `description` | `string` | When and why to use the tool. The model reads this to decide. |
+| `inputSchema` | JSON Schema object | The arguments, as `{ type: "object", properties, required }`. |
+| `providerOptions` | `Record<string, Record<string, unknown>>` | Provider-specific options. |
+
+```ts title="src/tools.ts"
+import type { ToolSet } from "@osdk/aip-core";
+
+export const tools = {
+  searchEmployees: {
+    description:
+      "List employees in a department. Returns at most 20, with id, name, and job title.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        department: {
+          type: "string",
+          description: "Exact department name, such as Engineering",
+        },
+      },
+      required: ["department"],
+      additionalProperties: false,
+    },
+  },
+} satisfies ToolSet;
+```
+
+`satisfies ToolSet` keeps the literal tool names, so `toolName` on each returned call is typed as `"searchEmployees"`.
+
+### Control tool choice
+
+| `toolChoice` | Behavior |
+| --- | --- |
+| `"auto"` | The model decides whether to call a tool. The default when tools are present. |
+| `"required"` | The model must call at least one tool. |
+| `"none"` | The model must answer in text. |
+| `{ type: "tool", toolName: "searchEmployees" }` | The model must call that tool. |
+
+## Read tool calls
+
+When the model wants a tool, `finishReason` is `"tool-calls"` and `toolCalls` lists each call:
+
+```ts title="src/firstStep.ts"
+import { generateText } from "@osdk/aip-core";
+import { model } from "./client";
+import { tools } from "./tools";
+
+const result = await generateText({
+  model,
+  prompt: "Who works in Engineering?",
+  tools,
+});
+
+for (const call of result.toolCalls) {
+  console.log(call.toolCallId, call.toolName, call.input);
+}
+```
+
+| `ToolCall` field | Type | Description |
+| --- | --- | --- |
+| `toolCallId` | `string` | Pass it back with the result. |
+| `toolName` | `string` | The tool to run. |
+| `input` | `unknown` | Arguments parsed from the model's JSON. If the JSON is invalid, the raw string, with a warning. |
+
+`input` is whatever the model produced. It is not validated against `inputSchema`, so check it before use.
+
+## Run the loop
+
+To finish the answer, append the model's message and a `tool` message with your results, then call the model again. Stop when it answers without tool calls, or after a step limit.
+
+```ts title="src/answer.ts"
+import { Employee } from "@my-app/sdk";
+import {
+  generateText,
+  type ModelMessage,
+  type ToolCall,
+  type ToolResultOutput,
+  type ToolResultPart,
+} from "@osdk/aip-core";
+import { client, model } from "./client";
+import { tools } from "./tools";
+
+function readString(input: unknown, key: string): string | undefined {
+  if (typeof input !== "object" || input == null) {
+    return undefined;
+  }
+  const value = (input as Record<string, unknown>)[key];
+  return typeof value === "string" ? value : undefined;
+}
+
+async function runTool(call: ToolCall): Promise<ToolResultOutput> {
+  switch (call.toolName) {
+    case "searchEmployees": {
+      const department = readString(call.input, "department");
+      if (department == null) {
+        return { type: "error-text", value: "department must be a string" };
+      }
+      const page = await client(Employee)
+        .where({ department })
+        .fetchPage({ $pageSize: 20, $select: ["employeeId", "fullName", "jobTitle"] });
+      return {
+        type: "json",
+        value: page.data.map((e) => ({
+          employeeId: e.employeeId,
+          fullName: e.fullName,
+          jobTitle: e.jobTitle,
+        })),
+      };
+    }
+    default:
+      return { type: "error-text", value: `Unknown tool: ${call.toolName}` };
+  }
+}
+
+export async function answer(question: string, maxSteps = 5): Promise<string> {
+  const messages: Array<ModelMessage> = [{ role: "user", content: question }];
+
+  for (let step = 0; step < maxSteps; step++) {
+    const result = await generateText({
+      model,
+      system: "Answer questions about employees. Use tools to look up data.",
+      messages,
+      tools,
+    });
+
+    messages.push(...(result.response?.messages ?? []));
+    if (result.toolCalls.length === 0) {
+      return result.text;
+    }
+
+    const content: Array<ToolResultPart> = [];
+    for (const call of result.toolCalls) {
+      let output: ToolResultOutput;
+      try {
+        output = await runTool(call);
+      } catch (error) {
+        output = { type: "error-text", value: String(error) };
+      }
+      content.push({
+        type: "tool-result",
+        toolCallId: call.toolCallId,
+        toolName: call.toolName,
+        output,
+      });
+    }
+    messages.push({ role: "tool", content });
+  }
+
+  throw new Error(`No answer after ${maxSteps} steps`);
+}
+```
+
+`result.response.messages` holds the assistant message, including its tool-call parts. Each `tool-result` part must use the `toolCallId` of the call it answers.
+
+A tool result `output` is one of:
+
+| `type` | `value` | Sent to the model as |
+| --- | --- | --- |
+| `"text"` | `string` | The string. |
+| `"json"` | `unknown` | `JSON.stringify(value)`. |
+| `"error-text"` | `string` | The string. Use it so the model can recover from bad input. |
+| `"error-json"` | `unknown` | `JSON.stringify(value)`. |
+| `"content"` | Array of `{ type: "text", text }` and media parts | The text parts joined by newlines. Media is dropped. |
+
+### Keep tool results small
+
+Every tool result is sent back as input tokens on the next step.
+
+- Pass `$select` so the query loads only the properties the model needs. See [Load objects](../sdk/objects.mdx).
+- Set a small `$pageSize` and say the limit in the tool description.
+- Map OSDK objects to plain fields, as above, instead of returning whole instances.
+- Filter on the server with `where` instead of asking the model to filter a long list. See [Filter objects](../sdk/filtering.mdx).
+
+## Propose actions, then confirm
+
+A model can misread a request or be steered by text in the data it reads. Do not apply an action from inside a tool. Have the tool record a proposal, show it to the user, and apply it only after they confirm.
+
+```ts title="src/proposals.ts"
+import { modifyEmployee } from "@my-app/sdk";
+import type { ToolCall, ToolResultOutput, ToolSet } from "@osdk/aip-core";
+import { client } from "./client";
+
+export interface JobTitleProposal {
+  employeeId: number;
+  jobTitle: string;
+}
+
+export const actionTools = {
+  proposeJobTitleChange: {
+    description:
+      "Propose a new job title for an employee. This does not change anything; the user reviews and confirms it.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        employeeId: { type: "integer" },
+        jobTitle: { type: "string" },
+      },
+      required: ["employeeId", "jobTitle"],
+      additionalProperties: false,
+    },
+  },
+} satisfies ToolSet;
+
+export const proposals: Array<JobTitleProposal> = [];
+
+export async function runProposalTool(call: ToolCall): Promise<ToolResultOutput> {
+  const input = call.input as Partial<Record<string, unknown>>;
+  const { employeeId, jobTitle } = input;
+  if (typeof employeeId !== "number" || typeof jobTitle !== "string") {
+    return { type: "error-text", value: "employeeId must be a number and jobTitle a string" };
+  }
+
+  const validation = await client(modifyEmployee).applyAction(
+    { employee: employeeId, jobTitle },
+    { $validateOnly: true },
+  );
+  if (validation.result !== "VALID") {
+    return { type: "error-json", value: validation.parameters };
+  }
+
+  proposals.push({ employeeId, jobTitle });
+  return { type: "text", value: "Proposal recorded. The user must confirm it." };
+}
+
+export async function applyProposal(proposal: JobTitleProposal): Promise<void> {
+  try {
+    await client(modifyEmployee).applyAction({
+      employee: proposal.employeeId,
+      jobTitle: proposal.jobTitle,
+    });
+  } catch (error) {
+    console.error("Could not apply the change", error);
+    throw error;
+  }
+}
+```
+
+Call `runProposalTool` from your loop's `runTool` for `proposeJobTitleChange`, and pass `{ ...tools, ...actionTools }` to `generateText`. `$validateOnly: true` checks the parameters against the action's rules without applying it, so the model learns about invalid input while it can still correct it. Show `proposals` in your UI and call `applyProposal` from the user's confirm button. See [Apply actions](../sdk/actions.mdx) for the validation result and errors.
+
+## Stream with tools
+
+`streamText` takes the same `tools` and `toolChoice`. Tool calls arrive on `fullStream` as `"tool-call"` chunks after the text, once the model finishes, and `toolCalls` resolves to the same list. Run them and call `streamText` again with the extended `messages`. `(await result.response)?.messages` holds the assistant message to append.
+
+## Use the AI SDK
+
+The AI SDK provider in `@osdk/aip-core/ai-sdk` accepts Zod schemas, runs each tool's `execute` for you, and loops until a stop condition. It needs `ai` version 6.
+
+```npm
+npm install @osdk/aip-core ai @ai-sdk/provider zod
+```
+
+```ts title="src/aiSdkTools.ts"
+import { Employee } from "@my-app/sdk";
+import { createFoundryAI } from "@osdk/aip-core/ai-sdk";
+import { generateText, stepCountIs, tool } from "ai";
+import { z } from "zod";
+import { client, platformClient } from "./client";
+
+const foundry = createFoundryAI({ client: platformClient });
+
+const result = await generateText({
+  model: foundry("gpt-4o"),
+  system: "Answer questions about employees. Use tools to look up data.",
+  prompt: "Who works in Engineering?",
+  stopWhen: stepCountIs(5),
+  tools: {
+    searchEmployees: tool({
+      description: "List employees in a department. Returns at most 20.",
+      inputSchema: z.object({ department: z.string() }),
+      execute: async ({ department }) => {
+        const page = await client(Employee)
+          .where({ department })
+          .fetchPage({ $pageSize: 20, $select: ["employeeId", "fullName", "jobTitle"] });
+        return page.data.map((e) => ({
+          employeeId: e.employeeId,
+          fullName: e.fullName,
+          jobTitle: e.jobTitle,
+        }));
+      },
+    }),
+  },
+});
+
+console.log(result.text);
+```
+
+`execute` runs without asking anyone, so keep action tools on the propose-then-confirm pattern above: `execute` records the proposal and your UI applies it.
+
+## Safety checklist
+
+- Treat tool `input` as untrusted. Check types and ranges before you query or write.
+- Tool calls run with the signed-in user's permissions, or the service user's in Node. Give a service user only the scopes and data access the feature needs.
+- Never apply an action, send a message, or delete data without an explicit user confirmation.
+- Limit the number of steps so a confused model cannot loop forever.
+- Text in Ontology data can contain instructions. Do not let tool results grant the model new permissions.

@@ -1,0 +1,320 @@
+---
+title: React chat UIs
+description: Build streaming chat interfaces with useChat from @osdk/react/experimental/aip, custom chat transports, or the prebuilt AipAgentChat component.
+---
+
+`useChat` streams a conversation with a Foundry-hosted model into React state: you render `messages` and call `sendMessage`. For a finished UI, drop in the `AipAgentChat` component instead.
+
+<Callout type="warn">
+  `useChat` is exported from the experimental entry point `@osdk/react/experimental/aip`, and `AipAgentChat` from `@osdk/react-components/experimental/aip-agent-chat`. Both can change in any minor release. The current version is text-only: it does not send tools, run multi-step loops, or resume a dropped stream, and it does not render reasoning text.
+</Callout>
+
+## Choose an approach
+
+| Approach | You write | Use it when |
+| --- | --- | --- |
+| [`AipAgentChat`](/components/aip-agent-chat) | One element | You want a complete chat panel with a composer, message list, and optional model picker. |
+| `useChat` | The UI | You need your own layout, message rendering, or controls. |
+| `useChat` with a custom `transport` | The UI and the transport | You need to observe or change the stream, such as recording token usage. |
+
+## Install
+
+```npm
+npm install @osdk/react @osdk/aip-core @osdk/client @osdk/oauth
+```
+
+`@osdk/react` already depends on `@osdk/aip-core`; install it directly because your code imports `foundryModel` from it. `useChat` does not read from `OsdkProvider`, so it works inside or outside one.
+
+## Create the model once
+
+`useChat` needs a model from `foundryModel`, which takes a `PlatformClient` and the model's LMS API name. Create it at module scope so it stays the same object across renders. A new model object rebuilds the hook's transport.
+
+```ts title="src/model.ts"
+import { foundryModel } from "@osdk/aip-core";
+import { createPlatformClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
+
+const foundryUrl = "https://example.palantirfoundry.com";
+
+export const auth = createPublicOauthClient(
+  "<your-client-id>",
+  foundryUrl,
+  "http://localhost:8080/auth/callback",
+  {
+    scopes: [
+      "api:read-data",
+      "api:write-data",
+      "api:use-ontologies-read",
+      "api:use-ontologies-write",
+      "api:use-language-models-execute",
+    ],
+  },
+);
+
+export const platformClient = createPlatformClient(foundryUrl, auth);
+
+export const model = foundryModel({ client: platformClient, model: "gpt-4o" });
+```
+
+If your app already has an Ontology client, pass the same `auth` to `createClient` so the user signs in once. Model selection and scopes are covered in [Generate and stream text](./chat.mdx#create-a-model).
+
+## Build a chat with `useChat`
+
+```tsx title="src/ChatMessage.tsx"
+import { getUIMessageText } from "@osdk/aip-core";
+import type { UIMessage } from "@osdk/react/experimental/aip";
+
+export function ChatMessage({ message }: { message: UIMessage }) {
+  return (
+    <div className={`message message-${message.role}`}>
+      <strong>{message.role === "user" ? "You" : "Assistant"}</strong>
+      <p style={{ whiteSpace: "pre-wrap" }}>{getUIMessageText(message)}</p>
+    </div>
+  );
+}
+```
+
+```tsx title="src/Chat.tsx"
+import { useChat } from "@osdk/react/experimental/aip";
+import { type FormEvent, useState } from "react";
+import { ChatMessage } from "./ChatMessage";
+import { model } from "./model";
+
+export function Chat() {
+  const { messages, status, error, sendMessage, stop, clearError } = useChat({
+    model,
+    system: "You are a concise assistant for employees.",
+  });
+  const [input, setInput] = useState("");
+  const busy = status === "submitted" || status === "streaming";
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const text = input.trim();
+    if (text === "" || busy) {
+      return;
+    }
+    setInput("");
+    void sendMessage({ text });
+  }
+
+  return (
+    <div className="chat">
+      {messages.map((message) => (
+        <ChatMessage key={message.id} message={message} />
+      ))}
+      {status === "submitted" && <p className="thinking">Thinking…</p>}
+      {error != null && (
+        <p role="alert">
+          {error.message} <button onClick={clearError}>Dismiss</button>
+        </p>
+      )}
+      <form onSubmit={handleSubmit}>
+        <input
+          value={input}
+          onChange={(event) => setInput(event.target.value)}
+          placeholder="Ask a question"
+        />
+        {busy ? (
+          <button type="button" onClick={stop}>
+            Stop
+          </button>
+        ) : (
+          <button type="submit">Send</button>
+        )}
+      </form>
+    </div>
+  );
+}
+```
+
+The list keeps rendering while a reply streams and after an error, so earlier messages never disappear.
+
+### How streaming renders
+
+1. `sendMessage` appends the user message and sets `status` to `"submitted"`.
+2. On the first text token, an assistant message is added and `status` becomes `"streaming"`. Its single text part grows as tokens arrive.
+3. Updates are batched every 50 ms by default, so a fast stream does not render once per token. Change it with `experimentalThrottle`.
+4. When the stream ends, `status` returns to `"ready"` and `onFinish` fires with the final message.
+
+`stop()` aborts the request and keeps the partial reply; `status` returns to `"ready"` with no error. A failed request sets `status` to `"error"`, fills `error`, and calls `onError`. `sendMessage` resolves in every case; it does not reject.
+
+## Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `model` | `LanguageModel` | | The model from `foundryModel`. Required unless you pass `transport`. |
+| `system` | `string` | | System prompt sent with every request. Replaces any system messages in `messages`. |
+| `temperature`, `maxOutputTokens`, `topP`, `presencePenalty`, `frequencyPenalty`, `stopSequences`, `seed` | | | Sampling options, as in [`generateText`](./chat.mdx#sampling-options). |
+| `headers` | `Record<string, string \| undefined>` | | Extra HTTP headers on each request. |
+| `id` | `string` | Generated | Chat id. Changing it starts a new, empty store seeded from `messages`. |
+| `messages` | `ReadonlyArray<UIMessage>` | `[]` | Initial messages. Read once per `id`. |
+| `transport` | `ChatTransport<UIMessage>` | `new LmsChatTransport(...)` | Replaces the default transport. When set, `model`, `system`, sampling options, and `headers` are ignored. |
+| `experimentalThrottle` | `number` | `50` | Minimum milliseconds between re-renders while streaming. |
+| `onError` | `(error: Error) => void` | | Called when a request or stream fails. Not called for `stop()`. |
+| `onFinish` | `(event: { message, messages }) => void` | | Called once after a reply completes. |
+
+Changing `model` or a sampling option takes effect on the next message and keeps the conversation, which is how a model picker works.
+
+## Return value
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | The chat id. |
+| `messages` | `ReadonlyArray<UIMessage>` | The conversation, including the reply in progress. |
+| `status` | `ChatStatus` | `"ready"`, `"submitted"`, `"streaming"`, or `"error"`. |
+| `error` | `Error \| undefined` | The last failure, while `status` is `"error"`. |
+| `sendMessage` | `(input: SendMessageInput) => Promise<void>` | Sends `{ text }`, or `{ role: "user", parts }`. |
+| `regenerate` | `(options?: { messageId?: string }) => Promise<void>` | Removes the last assistant message, or the one with `messageId` and everything after it, and generates again. |
+| `stop` | `() => void` | Aborts the reply in progress. |
+| `setMessages` | `(messages \| (prev) => messages) => void` | Replaces the conversation. Ignored while `status` is `"submitted"` or `"streaming"`; call `stop()` first. |
+| `clearError` | `() => void` | Resets `status` from `"error"` to `"ready"`. |
+| `resumeStream` | `() => Promise<void>` | Reconnects to a dropped stream. The LMS transport cannot reconnect, so this does nothing. |
+
+Clear the conversation with `setMessages([])`, or render a new chat by changing `id`.
+
+## Messages
+
+A `UIMessage` is what the UI renders:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Stable id. Use it as the React `key`. |
+| `role` | `"system" \| "user" \| "assistant"` | Who wrote it. |
+| `parts` | `Array<UIMessagePart>` | `{ type: "text", text }`, `{ type: "reasoning", text }`, or `{ type: "file", url, mediaType }`. |
+| `metadata` | `Record<string, unknown>` | Optional app data. |
+
+Only text parts reach the model. `getUIMessageText(message)` from `@osdk/aip-core` joins a message's text parts. To restore a saved conversation, pass it as `messages` with a stable `id`, and persist the final list from `onFinish`.
+
+## Custom transports
+
+A transport turns the conversation into a stream of `UIMessageChunk` events. The default, `LmsChatTransport` from `@osdk/aip-core`, calls `streamText` and takes the same model, `system`, sampling, and `headers` options as `useChat`. Write your own to observe or change the stream.
+
+A `ChatTransport` has two methods:
+
+| Method | Description |
+| --- | --- |
+| `sendMessages({ trigger, chatId, messageId, messages, abortSignal, headers })` | Returns `Promise<ReadableStream<UIMessageChunk>>`. `trigger` is `"submit-message"` or `"regenerate-message"`; `messageId` is the id for the assistant reply. Honor `abortSignal` so `stop()` works. |
+| `reconnectToStream({ chatId })` | Returns a stream to resume, or `null`. |
+
+This transport wraps `LmsChatTransport` and reports token usage from the `"finish"` chunk:
+
+```ts title="src/UsageTrackingTransport.ts"
+import {
+  type ChatTransport,
+  type ChatTransportReconnectArgs,
+  type ChatTransportSendMessagesArgs,
+  type LanguageModel,
+  type LanguageModelUsage,
+  LmsChatTransport,
+  type UIMessage,
+  type UIMessageChunk,
+} from "@osdk/aip-core";
+
+export class UsageTrackingTransport implements ChatTransport<UIMessage> {
+  private readonly inner: LmsChatTransport;
+  private readonly onUsage: (usage: LanguageModelUsage) => void;
+
+  constructor(
+    model: LanguageModel,
+    system: string,
+    onUsage: (usage: LanguageModelUsage) => void,
+  ) {
+    this.inner = new LmsChatTransport({ model, system });
+    this.onUsage = onUsage;
+  }
+
+  async sendMessages(
+    args: ChatTransportSendMessagesArgs<UIMessage>,
+  ): Promise<ReadableStream<UIMessageChunk>> {
+    const stream = await this.inner.sendMessages(args);
+    const onUsage = this.onUsage;
+    return stream.pipeThrough(
+      new TransformStream<UIMessageChunk, UIMessageChunk>({
+        transform(chunk, controller) {
+          if (chunk.type === "finish" && chunk.messageMetadata?.usage != null) {
+            onUsage(chunk.messageMetadata.usage);
+          }
+          controller.enqueue(chunk);
+        },
+      }),
+    );
+  }
+
+  reconnectToStream(
+    args: ChatTransportReconnectArgs,
+  ): Promise<ReadableStream<UIMessageChunk> | null> {
+    return this.inner.reconnectToStream(args);
+  }
+}
+```
+
+```tsx title="src/ChatWithUsage.tsx"
+import { useChat } from "@osdk/react/experimental/aip";
+import { useMemo, useState } from "react";
+import { ChatMessage } from "./ChatMessage";
+import { model } from "./model";
+import { UsageTrackingTransport } from "./UsageTrackingTransport";
+
+export function ChatWithUsage() {
+  const [totalTokens, setTotalTokens] = useState(0);
+  const transport = useMemo(
+    () =>
+      new UsageTrackingTransport(model, "You are a concise assistant.", (usage) =>
+        setTotalTokens((total) => total + (usage.totalTokens ?? 0)),
+      ),
+    [],
+  );
+  const { messages, sendMessage } = useChat({ transport });
+
+  return (
+    <div>
+      <p>Tokens used: {totalTokens}</p>
+      {messages.map((message) => (
+        <ChatMessage key={message.id} message={message} />
+      ))}
+      <button onClick={() => void sendMessage({ text: "Summarize my week" })}>
+        Summarize
+      </button>
+    </div>
+  );
+}
+```
+
+Keep the transport stable with `useMemo` or module scope, for the same reason as the model.
+
+### Stream chunks
+
+`LmsChatTransport` emits these chunks in order. `useChat` reads `"text-delta"` and `"error"`; the others are there for custom transports and consumers.
+
+| `type` | Fields | Meaning |
+| --- | --- | --- |
+| `"start"` | `messageId` | The reply started. |
+| `"start-step"`, `"finish-step"` | | Bracket the model call. |
+| `"text-start"`, `"text-delta"`, `"text-end"` | `id`, plus `delta` on deltas | Answer text. |
+| `"reasoning-start"`, `"reasoning-delta"`, `"reasoning-end"` | `id`, plus `delta` on deltas | Reasoning text, for models that return it. |
+| `"tool-input-available"` | `toolCallId`, `toolName`, `input` | A tool call. `useChat` sends no tools, so this appears only from custom transports. |
+| `"finish"` | `messageMetadata?: { finishReason?, usage? }` | The reply finished. |
+| `"error"` | `errorText` | The stream failed. |
+
+## Use the prebuilt component
+
+`AipAgentChat` wraps `useChat` in a styled chat panel. It takes the `PlatformClient` and model API names and builds the model itself:
+
+```tsx title="src/AssistantPanel.tsx"
+import { AipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
+import { platformClient } from "./model";
+
+export function AssistantPanel() {
+  return (
+    <AipAgentChat
+      client={platformClient}
+      defaultModel="gpt-4o"
+      availableModels={["gpt-4o", "gpt-4o-mini"]}
+      system="You are a concise assistant for employees."
+    />
+  );
+}
+```
+
+Despite the name, it chats with a language model through the Language Model Service, not with an agent built in AIP Agent Studio. For props, render slots, `BaseAipAgentChat`, and theming, see [AipAgentChat](/components/aip-agent-chat); for the stylesheet setup, see [Prerequisites](/components/prerequisites). To call AIP Agents, see [Agents](./agents.mdx).

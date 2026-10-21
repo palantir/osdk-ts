@@ -1,0 +1,243 @@
+---
+title: Call functions
+description: Run Foundry functions from React with useOsdkFunction and useOsdkFunctions, with caching, dependency-based refetching, and error handling.
+---
+
+{/* cspell:ignore refetched refetches refetching */}
+
+Use `useOsdkFunction` to call a Foundry function (an ontology query) and render its result. The result is cached and shared across components, and you can tell the cache which objects the function reads so it reruns after actions change them.
+
+## Call a function
+
+Pass the function from your generated SDK and its parameters:
+
+```tsx title="src/EmployeeMetrics.tsx"
+import { getEmployeeMetrics } from "@my-app/sdk";
+import { useOsdkFunction } from "@osdk/react";
+
+export function EmployeeMetrics({ department }: { department: string }) {
+  const { data, isLoading, error } = useOsdkFunction(getEmployeeMetrics, {
+    params: { department },
+  });
+
+  return (
+    <section>
+      {isLoading && <span>Updating…</span>}
+      {error && <p role="alert">Could not load metrics: {error.message}</p>}
+      {data && <p>Headcount: {data.headcount}</p>}
+    </section>
+  );
+}
+```
+
+`params` is typed from the function's signature. Required parameters must be present, and optional ones can be left out. A function with no parameters takes no options:
+
+```tsx title="src/EmployeeCount.tsx"
+import { countEmployees } from "@my-app/sdk";
+import { useOsdkFunction } from "@osdk/react";
+
+export function EmployeeCount() {
+  const { data } = useOsdkFunction(countEmployees);
+
+  return <span>{data ?? "…"} employees</span>;
+}
+```
+
+### Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `params` | Function parameters | `undefined` | Arguments for the function. Omit for functions without parameters. |
+| `dependsOn` | `Array<ObjectTypeDefinition \| string>` | `undefined` | Object types the function reads. A change to any object of these types refetches it. Pass the type from your SDK or its API name. |
+| `dependsOnObjects` | `Array<Osdk.Instance \| ObjectSet>` | `undefined` | Specific objects, or object sets, the function reads. See [Refetch when specific objects change](#refetch-when-specific-objects-change). |
+| `dedupeIntervalMs` | `number` | `2000` | Within this many milliseconds of the last fetch, a new subscriber reuses the cached result instead of calling the function again. |
+| `enabled` | `boolean` | `true` | When `false`, the function is not called and `data` stays `undefined`. |
+
+### Return value
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `data` | Function return type `\| undefined` | The result. `undefined` before the first result arrives and after an error. |
+| `isLoading` | `boolean` | `true` while a call is in flight, including refetches. The previous `data` stays available while it refetches. |
+| `error` | `Error \| undefined` | Set when the last call failed. |
+| `lastUpdated` | `number` | Time of the last successful call, in milliseconds since the epoch. `0` before the first result. |
+| `refetch` | `() => Promise<void>` | Calls the function again with the same parameters, ignoring `dedupeIntervalMs`. |
+
+## How results are cached
+
+Each result is cached under the function's API name, its version, and its parameters. Parameters are compared by value, so two components that call `getEmployeeMetrics` with `{ department: "Sales" }` share one cache entry and one network request. A different `department` is a separate entry.
+
+A cached result does not expire on a timer. It is refetched when:
+
+- you call `refetch`, or invalidate it through the observable client (see [Invalidate the cache](./cache-invalidation.mdx)),
+- an action edits an object the function depends on (`dependsOn` or `dependsOnObjects`), or
+- a component subscribes after `dedupeIntervalMs` has passed since the last call.
+
+Without `dependsOn` or `dependsOnObjects`, actions never refetch the function, because the cache cannot know what it reads. For the full cache model, see [Caching](../(docs)/concepts/caching.mdx).
+
+## Refetch when objects change
+
+Declare the object types your function reads with `dependsOn`. After an action adds, modifies, or deletes an object of one of those types, the function runs again:
+
+```tsx title="src/DepartmentHeadcount.tsx"
+import { Employee, getEmployeeMetrics } from "@my-app/sdk";
+import { useOsdkFunction } from "@osdk/react";
+
+export function DepartmentHeadcount({ department }: { department: string }) {
+  const { data, isLoading, refetch } = useOsdkFunction(getEmployeeMetrics, {
+    params: { department },
+    dependsOn: [Employee],
+  });
+
+  return (
+    <div>
+      {data && <span>Headcount: {data.headcount}</span>}
+      {isLoading && <span> (updating)</span>}
+      <button onClick={() => void refetch()}>Refresh</button>
+    </div>
+  );
+}
+```
+
+`dependsOn` also accepts API name strings, such as `dependsOn: ["Employee"]`, which is useful when you do not import the type.
+
+### Refetch when specific objects change
+
+`dependsOnObjects` narrows the trigger. Pass object instances, and the function reruns only when one of those exact objects (matched by type and primary key) is edited:
+
+```tsx title="src/EmployeeReport.tsx"
+import { Employee, getEmployeeReport } from "@my-app/sdk";
+import { useOsdkFunction } from "@osdk/react";
+
+export function EmployeeReport({ employee }: { employee: Employee.OsdkInstance }) {
+  const { data } = useOsdkFunction(getEmployeeReport, {
+    params: { employeeId: employee.$primaryKey },
+    dependsOnObjects: [employee],
+  });
+
+  return <pre>{data ? JSON.stringify(data, null, 2) : "Loading report…"}</pre>;
+}
+```
+
+`dependsOnObjects` also accepts object sets. The cache looks up the set's object type in the background and then treats it like `dependsOn` for that type: a change to any object of that type refetches the function, not only changes to objects in the set. Because the result is the same, pass the type to `dependsOn` instead. It takes effect immediately and avoids a type error, since a typed object set such as `Employee.ObjectSet` is not assignable to the option's `ObjectSet<ObjectTypeDefinition>` type.
+
+<Callout type="warn">
+  The first component to subscribe to a function and parameter combination sets its dependencies. A later component that passes different `dependsOn` or `dependsOnObjects` for the same parameters shares the existing entry and its dependencies. Pass the same dependency options everywhere you call a function with the same parameters.
+</Callout>
+
+## Wait for inputs
+
+Hooks cannot be called conditionally. To hold a call until its inputs exist, set `enabled`:
+
+```tsx title="src/ReportForEmployee.tsx"
+import { Employee, getEmployeeReport } from "@my-app/sdk";
+import { useOsdkFunction, useOsdkObject } from "@osdk/react";
+
+export function ReportForEmployee({ employeeId }: { employeeId: number }) {
+  const { object: employee } = useOsdkObject(Employee, employeeId);
+
+  const { data, isLoading } = useOsdkFunction(getEmployeeReport, {
+    params: { employeeId },
+    dependsOnObjects: employee ? [employee] : [],
+    enabled: employee != null,
+  });
+
+  return (
+    <div>
+      <h2>{employee?.fullName ?? "Loading employee…"}</h2>
+      {isLoading && <span>Loading report…</span>}
+      {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+    </div>
+  );
+}
+```
+
+While `enabled` is `false`, `isLoading` is `false` and `data` is `undefined`.
+
+## Handle errors
+
+When a call fails, `error` holds the `Error` and `data` becomes `undefined`. The error stays until a later call succeeds, so render it next to the rest of the component rather than in place of it. `refetch` doubles as a retry:
+
+```tsx title="src/MetricsWithRetry.tsx"
+import { getEmployeeMetrics } from "@my-app/sdk";
+import { useOsdkFunction } from "@osdk/react";
+
+export function MetricsWithRetry({ department }: { department: string }) {
+  const { data, error, isLoading, refetch } = useOsdkFunction(
+    getEmployeeMetrics,
+    { params: { department } },
+  );
+
+  return (
+    <section>
+      {data && <p>Headcount: {data.headcount}</p>}
+      {error && (
+        <p role="alert">
+          {error.message}{" "}
+          <button disabled={isLoading} onClick={() => void refetch()}>
+            Retry
+          </button>
+        </p>
+      )}
+    </section>
+  );
+}
+```
+
+Errors from Foundry are `PalantirApiError` instances, exported from `@osdk/client`, which carry `errorName`, `errorCode`, and `errorInstanceId`. See [Loading and errors](../(docs)/concepts/loading-and-errors.mdx) for patterns that apply to every hook.
+
+## Call several functions
+
+`useOsdkFunctions` runs a list of function calls and returns one result per call, in the same order. Each result has the same shape as the `useOsdkFunction` return value.
+
+```ts title="src/functionCall.ts"
+import type { QueryDefinition } from "@osdk/client";
+import type { UseOsdkFunctionOptions, UseOsdkFunctionsProps } from "@osdk/react";
+
+type FunctionCall = UseOsdkFunctionsProps["queries"][number];
+
+export function functionCall<Q extends QueryDefinition<unknown>>(
+  queryDefinition: Q,
+  options?: UseOsdkFunctionOptions<Q>,
+): FunctionCall {
+  return { queryDefinition, options } as unknown as FunctionCall;
+}
+```
+
+```tsx title="src/DepartmentCards.tsx"
+import { getEmployeeMetrics } from "@my-app/sdk";
+import { useOsdkFunctions } from "@osdk/react";
+import { functionCall } from "./functionCall";
+
+export function DepartmentCards({ departments }: { departments: string[] }) {
+  const results = useOsdkFunctions({
+    queries: departments.map((department) =>
+      functionCall(getEmployeeMetrics, { params: { department } }),
+    ),
+    maxConcurrent: 4,
+  });
+
+  return (
+    <ul>
+      {results.map((result, index) => (
+        <li key={departments[index]}>
+          {departments[index]}:{" "}
+          {result.error
+            ? result.error.message
+            : result.isLoading
+              ? "…"
+              : JSON.stringify(result.data)}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+Each call is cached exactly as if it came from `useOsdkFunction`, so a call that another component already made is served from the cache. Because the list can mix functions, `queries` is typed for any function and does not accept a specific function's `params` as written. The `functionCall` helper above checks `params` against each function, then widens the entry. Narrow or cast each result's `data` before use.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `queries` | `Array<{ queryDefinition, options? }>` | Required | The calls to make. `options` takes the same fields as the `useOsdkFunction` options: `params`, `dependsOn`, `dependsOnObjects`, `dedupeIntervalMs`, and `enabled`. |
+| `enabled` | `boolean` | `true` | When `false`, no call runs. A call whose own `options.enabled` is `false` is skipped either way. |
+| `maxConcurrent` | `number` | `undefined` | Limit on calls in flight at once. The next call starts when a running one finishes, successfully or not. Use it for functions that are slow or return large payloads. Without it, all calls start together. |

@@ -1,0 +1,83 @@
+---
+title: createClient
+description: Create the OSDK Client that queries objects, applies actions, and executes functions against one Ontology.
+---
+
+```ts
+import { createClient } from "@osdk/client";
+
+function createClient(
+  baseUrl: string,
+  ontologyRid: string | Promise<string>,
+  tokenProvider: () => Promise<string>,
+  options?: {
+    logger?: Logger;
+    UNSTABLE_DO_NOT_USE_BRANCH?: string | null;
+    headers?: Record<string, string>;
+  },
+  fetchFn?: typeof fetch,
+): Client;
+```
+
+Returns a `Client` bound to one Foundry stack and Ontology. Call the client with a definition from your generated SDK to get the matching operations, such as `client(Employee)` for an [`ObjectSet`](./object-set.mdx).
+
+## Parameters
+
+The options type is inline in the source, so these tables are written by hand.
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `baseUrl` | `string` | | The base URL of your Foundry stack, such as `https://example.palantirfoundry.com`. |
+| `ontologyRid` | `string \| Promise<string>` | | The Ontology RID, usually `$ontologyRid` from the generated SDK. A string that does not start with `ri.` throws `Invalid ontology RID`. |
+| `tokenProvider` | `() => Promise<string>` | | Returns a bearer token for each request, such as a client from `@osdk/oauth`. |
+| `options` | `object` | | See below. |
+| `fetchFn` | `typeof fetch` | The global `fetch` | The `fetch` implementation for every request. |
+
+### Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `logger` | `Logger` | A minimal built-in logger | Receives the client's log output. |
+| `headers` | `Record<string, string>` | | Extra headers sent with every request. |
+| `UNSTABLE_DO_NOT_USE_BRANCH` | `string \| null` | Read from the page | Beta. The Foundry branch for every request. When omitted in a browser, the client reads the `foundryBranchRid` query parameter, then the branch meta tag injected by OSDK build tooling. `null` uses the default branch. |
+
+## Returns
+
+`Client`, a function with one call signature per definition kind, plus `fetchMetadata`.
+
+| Call | Returns |
+| --- | --- |
+| `client(objectType)` or `client(interface)` | The `ObjectSet` declared by the generated SDK for that type. See [ObjectSet](./object-set.mdx). Without a declared set, an interface gets a `MinimalObjectSet`, which has only `fetchPage`, `fetchPageWithErrors`, `asyncIter`, `where`, `subscribe`, and `experimental_asyncIterLinks`. |
+| `client(action)` | `{ applyAction, batchApplyAction }`. |
+| `client(query)` | `{ executeFunction }`. |
+| `client.fetchMetadata(definition)` | `Promise` of `ObjectMetadata`, `InterfaceMetadata`, `ActionMetadata`, or `QueryMetadata`, matching the definition. |
+
+## Example
+
+```ts title="src/client.ts"
+import { $ontologyRid, Employee } from "@my-app/sdk";
+import { createClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
+
+const foundryUrl = "https://example.palantirfoundry.com";
+
+const auth = createPublicOauthClient(
+  "<your-client-id>",
+  foundryUrl,
+  "http://localhost:8080/auth/callback",
+);
+
+export const client = createClient(foundryUrl, $ontologyRid, auth);
+
+export async function firstEngineers() {
+  const page = await client(Employee)
+    .where({ department: "Engineering" })
+    .fetchPage({ $pageSize: 10, $select: ["fullName"] });
+  return page.data;
+}
+```
+
+## See also
+
+- [Create a client](/client)
+- [Authentication](/authentication)

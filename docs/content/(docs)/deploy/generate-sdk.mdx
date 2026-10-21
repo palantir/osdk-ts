@@ -1,0 +1,171 @@
+---
+title: Generate an SDK
+description: Generate your Ontology SDK in Developer Console or locally with osdk unstable typescript generate or @osdk/foundry-sdk-generator, and update it when the Ontology changes.
+---
+
+{/* cspell:ignore postinstall */}
+
+Your generated SDK holds typed definitions for the object types, links, actions, functions, and interfaces your app uses. Generate it in Developer Console and install it from your Foundry npm registry, or generate it yourself from the command line.
+
+## Choose a method
+
+| Method | Output | Use it when |
+| --- | --- | --- |
+| Developer Console | A versioned npm package in your Foundry registry. | Almost always. Apps from `@osdk/create-app` expect it. |
+| `osdk unstable typescript generate` | TypeScript source files in a folder of your project. | You want the SDK in your repository, or you work offline from a saved Ontology file. |
+| `@osdk/foundry-sdk-generator` | A built npm package directory you can pack or publish. | You publish SDK packages from your own pipeline. |
+
+## Generate in Developer Console
+
+<Steps>
+<Step>
+
+### Choose the resources
+
+In your application in Developer Console, add the object types, link types, actions, functions, and interfaces your app uses to the application's SDK. Only those resources are generated.
+
+</Step>
+<Step>
+
+### Generate a version
+
+On **SDK versions**, generate a new version with the **npm** package type and the latest generator. The install instructions show the package name, such as `@my-app/sdk`, and your registry URL.
+
+</Step>
+<Step>
+
+### Install it
+
+Point your SDK's npm scope at the Foundry registry in `.npmrc`, then install:
+
+```npm
+npm install @my-app/sdk@latest
+```
+
+[Installation](../installation.mdx) covers the `.npmrc` lines, the token, and the other packages you need.
+
+</Step>
+</Steps>
+
+### What the package exports
+
+| Export | Description |
+| --- | --- |
+| Object types, such as `Employee` | Pass to `client(Employee)` to query. |
+| Actions, such as `modifyEmployee` | Pass to `client(modifyEmployee).applyAction(...)`. |
+| Functions and interfaces | Pass to `client(...)` the same way. |
+| `$ontologyRid` | The Ontology RID, for `createClient`. |
+| `$branch` | The Foundry branch RID the SDK was generated on, or `undefined` for main. See [Develop on Foundry branches](./branches.mdx). |
+
+## Update the SDK when the Ontology changes
+
+The SDK is a snapshot of the Ontology when you generated it. When you add a resource to the SDK, or a property, parameter, or link you use changes:
+
+1. Generate a new version in Developer Console.
+2. Install it:
+
+   ```npm
+   npm install @my-app/sdk@latest
+   ```
+
+3. Run your type checker. Renamed or removed properties and parameters show up as type errors where your code uses them.
+
+The SDK has a peer dependency on the `@osdk/client` version that generated it. If npm reports a peer conflict, align `@osdk/client`, `@osdk/api`, and `@osdk/react` as described in [Version compatibility](../installation.mdx#version-compatibility). On a Foundry branch, `osdk branch sync` picks the branch's SDK version instead of `latest`.
+
+## Generate locally
+
+`osdk unstable typescript generate` from `@osdk/cli` writes the SDK as TypeScript source files into your project. It is unstable: flags and output can change in any release.
+
+<Tabs items={["From Foundry", "From a saved file"]}>
+<Tab value="From Foundry">
+
+```sh
+npx @osdk/cli@latest unstable typescript generate \
+  --foundryUrl https://example.palantirfoundry.com \
+  --clientId <your-client-id> \
+  --outDir src/generatedNoCheck \
+  --version dev \
+  --packageType module \
+  --ontologyWritePath ontology.json
+```
+
+The CLI opens your browser to sign in, with `http://localhost:8080/auth/callback` as the redirect URL, so allow that URL on **OAuth & scopes** and keep port 8080 free. It generates every object type, action, function, and interface the client can see in the Ontology, except functions that return Ontology edits. If the client can see more than one Ontology, pass `--ontologyRid`. Pass `--branch <branch RID>` to read a branch's Ontology.
+
+`--ontologyWritePath` saves the loaded metadata so you can regenerate later without signing in.
+
+</Tab>
+<Tab value="From a saved file">
+
+```sh
+npx @osdk/cli@latest unstable typescript generate \
+  --ontologyPath ontology.json \
+  --outDir src/generatedNoCheck \
+  --version dev \
+  --packageType module \
+  --clean
+```
+
+`--ontologyPath` takes an Ontology metadata file written by `--ontologyWritePath`.
+
+</Tab>
+</Tabs>
+
+Import from the generated folder instead of a package:
+
+```ts title="src/client.ts"
+import { createClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
+import { $ontologyRid } from "./generatedNoCheck/index.js";
+
+const foundryUrl = "https://example.palantirfoundry.com";
+
+const auth = createPublicOauthClient(
+  "<your-client-id>",
+  foundryUrl,
+  "http://localhost:8080/auth/callback",
+);
+
+export const client = createClient(foundryUrl, $ontologyRid, auth);
+```
+
+Unless you pass `--skipPackageJsonUpdate`, the command also edits the nearest `package.json` above `--outDir`: it adds `@osdk/api` and `@osdk/client` as peer dependencies and `@osdk/api` as a dev dependency, and sets any existing `@osdk/api` and `@osdk/client` entries to the versions the CLI was built with. Install `@osdk/client` as a regular dependency of your app yourself.
+
+All flags are in the [CLI reference](./cli.mdx#osdk-unstable-typescript-generate).
+
+## Build a package with `@osdk/foundry-sdk-generator`
+
+`@osdk/foundry-sdk-generator` loads the resources you name from Foundry and writes a compiled npm package with ESM, CommonJS, and bundled type definitions.
+
+```sh
+npx @osdk/foundry-sdk-generator generatePackage \
+  --authToken "$FOUNDRY_TOKEN" \
+  --foundryHostname example.palantirfoundry.com \
+  --ontology ri.ontology.main.ontology.<id> \
+  --objectTypes Employee Office \
+  --linkTypes Employee.lead Employee.reports Employee.office Office.occupants \
+  --actionTypes modifyEmployee \
+  --interfaceTypes Worker \
+  --packageName @my-app/sdk \
+  --packageVersion 0.1.0 \
+  --outputDir ./out
+```
+
+The package is written to `<outputDir>/<packageName>`, here `./out/@my-app/sdk`, with a `peerDependencies` entry for `@osdk/client`. Pack or publish it from there with npm.
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `--authToken` | `string` | A Foundry token. Required. |
+| `--foundryHostname` | `string` | Your stack, such as `example.palantirfoundry.com`. A full `https://` URL also works. Required. |
+| `--ontology` | `string` | The Ontology RID or API name. |
+| `--packageName` | `string` | The npm package name. Required. |
+| `--packageVersion` | `string` | The package version. Must be SemVer. Required. |
+| `--outputDir` | `string` | The directory to write the package under. Required. |
+| `--objectTypes` | `string[]` | Object type API names. |
+| `--linkTypes` | `string[]` | Links to include, as `ObjectTypeApiName.linkApiName`. |
+| `--actionTypes` | `string[]` | Action type API names. |
+| `--queryTypes` | `string[]` | Function API names. Add `:<version>` to pin a version, such as `countEmployees:1.2.0`. |
+| `--interfaceTypes` | `string[]` | Interface API names. |
+| `--agents` | `string[]` | AIP Agents, as `apiName:version`. |
+| `--experimentalOntologyMetadata` | `boolean` | Also export the raw metadata at `./experimental/ontology-metadata`. Experimental. |
+
+Each list flag takes space-separated values. The generator includes only what you list: an object type's links are left out unless you pass them in `--linkTypes`, and generation fails if a requested resource is missing.

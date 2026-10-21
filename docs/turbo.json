@@ -1,0 +1,27 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "inputs": [
+        "app/**",
+        "components/**",
+        "content/**",
+        "lib/**",
+        "public/**",
+        "scripts/**",
+        "*.mjs",
+        "*.json",
+        "$TURBO_ROOT$/packages/react-components/docs/**"
+      ],
+      "outputs": ["out/**", ".next/**", "!.next/cache/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "typecheck": {
+      "dependsOn": []
+    }
+  }
+}

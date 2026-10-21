@@ -1,0 +1,273 @@
+---
+title: Users and groups
+description: Look up users, search and list them, read group memberships, manage group members, and read markings with @osdk/foundry.admin.
+---
+
+{/* cspell:ignore CBAC Uncategorized */}
+
+`@osdk/foundry.admin` reads and manages Foundry users, groups, and markings. Use it to show who is signed in, resolve user IDs to names, check group membership, and list the markings a user can view.
+
+```npm
+npm install @osdk/client @osdk/oauth @osdk/foundry.admin
+```
+
+Every sample takes a `client` from `createClient` or `createPlatformClient`; see [Set up](./setup.mdx). Reads need the `api:admin-read` scope and writes need `api:admin-write`. In React, the hooks in `@osdk/react/platform-apis` wrap several of these calls; see [Users and markings in React](/react/platform-apis).
+
+## Get the signed-in user
+
+`Users.getCurrent` returns the user the token belongs to:
+
+```ts title="src/currentUser.ts"
+import type { Client } from "@osdk/client";
+import { Users } from "@osdk/foundry.admin";
+
+export async function displayName(client: Client): Promise<string> {
+  const user = await Users.getCurrent(client);
+  const fullName = [user.givenName, user.familyName].filter(Boolean).join(" ");
+  return fullName || user.username;
+}
+```
+
+A `User` has these fields:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | The user ID. Other endpoints take this as `userId` or `principalId`. |
+| `username` | `string` | The username. |
+| `givenName` | `string \| undefined` | First name. |
+| `familyName` | `string \| undefined` | Last name. |
+| `email` | `string \| undefined` | Email address. |
+| `realm` | `string` | The authentication realm the user belongs to. |
+| `organization` | `string \| undefined` | RID of the user's primary organization. |
+| `status` | `"ACTIVE" \| "DELETED"` | Whether the user is active. |
+| `attributes` | `Record<string, string[]>` | Attributes from the identity provider. |
+
+## Look up users by ID
+
+`Users.get` takes a user ID. Pass `status: "DELETED"` to resolve a user who has been removed, for example the author of an old record:
+
+```ts title="src/lookupUser.ts"
+import type { Client } from "@osdk/client";
+import { Users } from "@osdk/foundry.admin";
+
+export async function lookupUser(client: Client, userId: string) {
+  const active = await Users.get(client, userId);
+  const deleted = await Users.get(client, userId, { status: "DELETED" });
+  return { active, deleted };
+}
+```
+
+To resolve many IDs at once, use `Users.getBatch`. It takes up to 500 elements and returns a map keyed by user ID. IDs that do not resolve are missing from the map:
+
+```ts title="src/resolveUsers.ts"
+import type { Client } from "@osdk/client";
+import { Users, type User } from "@osdk/foundry.admin";
+
+export async function resolveUsers(
+  client: Client,
+  userIds: string[],
+): Promise<Map<string, User>> {
+  const { data } = await Users.getBatch(
+    client,
+    userIds.map((userId) => ({ userId })),
+  );
+  return new Map(Object.entries(data));
+}
+```
+
+## Search and list users
+
+`Users.search` runs a case-insensitive prefix search on username, given name, and family name. It only returns active users:
+
+```ts title="src/searchUsers.ts"
+import type { Client } from "@osdk/client";
+import { Users } from "@osdk/foundry.admin";
+
+export async function searchUsers(client: Client, prefix: string) {
+  const { data, nextPageToken } = await Users.search(client, {
+    where: { type: "queryString", value: prefix },
+    pageSize: 20,
+  });
+  return { users: data, nextPageToken };
+}
+```
+
+`Users.list` lists every user, one page at a time. Its query parameters:
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `include` | `"ACTIVE" \| "DELETED"` | Active users | Which users to list. Pass `"DELETED"` to list removed users. |
+| `pageSize` | `number` | | Preferred page size. The server can return more or fewer. |
+| `pageToken` | `string` | | `nextPageToken` from the previous page. |
+
+To read every page, use the `paginate` helper from [Call platform APIs](./calling-apis.mdx#paginate).
+
+## Show a profile picture
+
+`Users.profilePicture` returns the image as a `Response`:
+
+```ts title="src/profilePicture.ts"
+import type { Client } from "@osdk/client";
+import { Users } from "@osdk/foundry.admin";
+
+export async function profilePictureUrl(client: Client, userId: string): Promise<string> {
+  const response = await Users.profilePicture(client, userId);
+  return URL.createObjectURL(await response.blob());
+}
+```
+
+A user without a picture rejects with a `ProfilePictureNotFound` error.
+
+## Read group memberships
+
+`Groups.listCurrent` returns every group the signed-in user belongs to, directly or through another group. It needs no scope, so any signed-in user can call it, but it is a preview endpoint:
+
+```ts title="src/myGroups.ts"
+import type { Client } from "@osdk/client";
+import { Groups } from "@osdk/foundry.admin";
+
+export async function isInGroup(client: Client, groupName: string): Promise<boolean> {
+  const { data } = await Groups.listCurrent(client, { preview: true });
+  return data.some((group) => group.name === groupName);
+}
+```
+
+For any other user, `GroupMemberships.list` returns the IDs of their groups. Set `transitive: true` to include groups they belong to through other groups, then resolve the IDs with `Groups.getBatch`:
+
+```ts title="src/userGroups.ts"
+import type { Client } from "@osdk/client";
+import { GroupMemberships, Groups } from "@osdk/foundry.admin";
+
+export async function userGroupNames(client: Client, userId: string): Promise<string[]> {
+  const memberships = await GroupMemberships.list(client, userId, { transitive: true });
+  const { data } = await Groups.getBatch(
+    client,
+    memberships.data.map(({ groupId }) => ({ groupId })),
+  );
+  return Object.values(data).map((group) => group.name);
+}
+```
+
+This reads one page. Paginate with `pageToken` for users in many groups.
+
+A `Group` has `id`, `name`, `description`, `realm`, `organizations` (organization RIDs), and `attributes`.
+
+## Find groups and their members
+
+`Groups.search` runs a prefix search on group name. `GroupMembers.list` returns a group's members, which can be users or groups:
+
+```ts title="src/groupMembers.ts"
+import type { Client } from "@osdk/client";
+import { GroupMembers, Groups, Users } from "@osdk/foundry.admin";
+
+export async function memberUsernames(client: Client, groupName: string): Promise<string[]> {
+  const { data: groups } = await Groups.search(client, {
+    where: { type: "queryString", value: groupName },
+  });
+  const group = groups.find((g) => g.name === groupName);
+  if (group == null) {
+    return [];
+  }
+
+  const members = await GroupMembers.list(client, group.id, { transitive: true });
+  const userIds = members.data
+    .filter((member) => member.principalType === "USER")
+    .map((member) => ({ userId: member.principalId }));
+  const { data: users } = await Users.getBatch(client, userIds);
+  return Object.values(users).map((user) => user.username);
+}
+```
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `transitive` | `boolean` | Include members of nested groups. |
+| `includeExpirations` | `boolean` | Include each member's `expiration`, when one is set. |
+| `pageSize`, `pageToken` | | Pagination. See [Paginate](./calling-apis.mdx#paginate). |
+
+Each member is `{ principalType: "USER" | "GROUP", principalId, expiration? }`.
+
+## Add and remove group members
+
+Adding and removing members needs `api:admin-write` and permission to manage the group. Both take the group ID and a list of principal IDs, which can be user or group IDs, and resolve to `undefined`:
+
+```ts title="src/manageMembers.ts"
+import type { Client } from "@osdk/client";
+import { GroupMembers } from "@osdk/foundry.admin";
+
+export async function addTemporaryMember(client: Client, groupId: string, userId: string) {
+  await GroupMembers.add(client, groupId, {
+    principalIds: [userId],
+    expiration: "2026-12-31T23:59:59Z",
+  });
+}
+
+export async function removeMember(client: Client, groupId: string, userId: string) {
+  await GroupMembers.remove(client, groupId, { principalIds: [userId] });
+}
+```
+
+`expiration` is optional. Without it, the membership does not expire.
+
+## Read markings
+
+Markings restrict who can view a resource. `Users.getMarkings` returns the IDs of the markings a user is a member of, and `Markings.list` and `MarkingCategories.list` return the markings and categories the token can see. Join them on `categoryId`:
+
+```ts title="src/userMarkings.ts"
+import type { Client } from "@osdk/client";
+import { MarkingCategories, Markings, Users } from "@osdk/foundry.admin";
+
+export async function describeUserMarkings(client: Client, userId: string): Promise<string[]> {
+  const [{ view }, markings, categories] = await Promise.all([
+    Users.getMarkings(client, userId),
+    Markings.list(client, { includeDeleted: false, pageSize: 100 }),
+    MarkingCategories.list(client, { includeDeleted: false, pageSize: 100 }),
+  ]);
+
+  const categoryName = new Map(categories.data.map((c) => [c.id, c.name] as const));
+  const viewable = new Set(view);
+  return markings.data
+    .filter((marking) => viewable.has(marking.id))
+    .map((marking) => `${categoryName.get(marking.categoryId) ?? "Uncategorized"}: ${marking.name}`);
+}
+```
+
+`Markings.list` and `MarkingCategories.list` accept at most 100 per page and include deleted entries unless you pass `includeDeleted: false`. Paginate to read them all. To look up specific markings, use `Markings.get` or `Markings.getBatch`.
+
+| Marking field | Description |
+| --- | --- |
+| `id` | The marking ID. |
+| `categoryId` | The category it belongs to. |
+| `name`, `description` | Display text. |
+| `organization` | The organization RID, for organization markings. |
+| `deleted` | Whether the marking has been deleted. |
+| `createdTime`, `createdBy` | When and by whom it was created. |
+
+Listing who can view a marking, with `MarkingMembers.list`, needs `api:admin-write` because only marking administrators can see its members.
+
+For classification-based access control (CBAC), `CbacBanners.get` returns the banner text and colors for a set of marking IDs. It is a preview endpoint; see the example in [Call platform APIs](./calling-apis.mdx#preview-endpoints).
+
+## Reference
+
+| Function | Endpoint | Scope | Status |
+| --- | --- | --- | --- |
+| `Users.getCurrent(client)` | `GET /v2/admin/users/getCurrent` | `api:admin-read` | Stable |
+| `Users.get(client, userId, { status? })` | `GET /v2/admin/users/{userId}` | `api:admin-read` | Stable |
+| `Users.getBatch(client, elements)` | `POST /v2/admin/users/getBatch` | `api:admin-read` | Stable |
+| `Users.list(client, { include?, pageSize?, pageToken? })` | `GET /v2/admin/users` | `api:admin-read` | Stable |
+| `Users.search(client, body)` | `POST /v2/admin/users/search` | `api:admin-read` | Stable |
+| `Users.profilePicture(client, userId)` | `GET /v2/admin/users/{userId}/profilePicture` | `api:admin-read` | Stable |
+| `Users.getMarkings(client, userId)` | `GET /v2/admin/users/{userId}/getMarkings` | `api:admin-read` | Stable |
+| `Groups.listCurrent(client, { preview })` | `GET /v2/admin/groups/listCurrent` | None | Beta |
+| `Groups.get(client, groupId)` | `GET /v2/admin/groups/{groupId}` | `api:admin-read` | Stable |
+| `Groups.getBatch(client, elements)` | `POST /v2/admin/groups/getBatch` | `api:admin-read` | Stable |
+| `Groups.search(client, body)` | `POST /v2/admin/groups/search` | `api:admin-read` | Stable |
+| `GroupMemberships.list(client, userId, query?)` | `GET /v2/admin/users/{userId}/groupMemberships` | `api:admin-read` | Stable |
+| `GroupMembers.list(client, groupId, query?)` | `GET /v2/admin/groups/{groupId}/groupMembers` | `api:admin-read` | Stable |
+| `GroupMembers.add(client, groupId, body)` | `POST /v2/admin/groups/{groupId}/groupMembers/add` | `api:admin-write` | Stable |
+| `GroupMembers.remove(client, groupId, body)` | `POST /v2/admin/groups/{groupId}/groupMembers/remove` | `api:admin-write` | Stable |
+| `Markings.list(client, query?)` | `GET /v2/admin/markings` | `api:admin-read` | Stable |
+| `MarkingCategories.list(client, query?)` | `GET /v2/admin/markingCategories` | `api:admin-read` | Stable |
+| `MarkingMembers.list(client, markingId, query?)` | `GET /v2/admin/markings/{markingId}/markingMembers` | `api:admin-write` | Stable |
+| `CbacBanners.get(client, { markingIds, preview })` | `GET /v2/admin/cbacBanner` | `api:admin-read` | Beta |
+
+The package also covers creating and deleting users and groups, organizations, roles, enrollments, and authentication providers. Browse the exports of `@osdk/foundry.admin` in your editor for the full list.

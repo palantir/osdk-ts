@@ -1,0 +1,120 @@
+---
+title: Errors
+description: The errors @osdk/client throws, the fields of PalantirApiError and ActionValidationError, Result-returning methods, retries, and patterns for handling them.
+---
+
+Every `@osdk/client` method that sends a request rejects on failure. This page lists what it rejects with, which fields to branch on, and the methods that return a result instead of throwing.
+
+## Error types
+
+| Error | Import | Thrown when |
+| --- | --- | --- |
+| `PalantirApiError` | `@osdk/client` | Foundry returned an error response. Also the base class for the next row. |
+| `UnknownError` | Not exported. Check `error.name === "UnknownError"`. | The request never got a response, such as a DNS, TLS, CORS, or connection failure, or the response was not JSON. A subclass of `PalantirApiError`. |
+| `ActionValidationError` | `@osdk/client` | `applyAction` ran the action's validation and it failed. |
+| `Error` | Built in | The client rejected your input before sending anything. See [Errors before a request](#errors-before-a-request). |
+
+Errors thrown by your token provider pass through unchanged.
+
+## `PalantirApiError`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `message` | `string` | The server's message, or `Failed to fetch <status> <statusText>`. |
+| `errorCode` | `string \| undefined` | The category, such as `PERMISSION_DENIED`, `NOT_FOUND`, `INVALID_ARGUMENT`, `CONFLICT`, or `TIMEOUT`. |
+| `errorName` | `string \| undefined` | The specific error, such as `ObjectTypeNotFound` or `ActionNotFound`. |
+| `errorDescription` | `string \| undefined` | A longer description. |
+| `statusCode` | `number \| undefined` | The HTTP status. `undefined` when no response arrived. |
+| `errorInstanceId` | `string \| undefined` | An ID for this occurrence. Log it, and include it when you report a problem to your Foundry administrator. |
+| `parameters` | `unknown` | Error-specific details, such as the API name that was not found. |
+
+On an `UnknownError`, `originalError` holds the underlying error when there is one, such as the `TypeError` from a failed `fetch`.
+
+When no object matches, `fetchOne` and `$link.<link>.fetchOne` reject with a `PalantirApiError` that carries only a message, `Expected a single result but got 0 instead`, and no `statusCode`, `errorCode`, or `errorName`.
+
+Branch on `statusCode` and `errorCode`, which are stable. Use `errorName` for a specific case. Do not parse `message`.
+
+```ts title="src/describeError.ts"
+import { PalantirApiError } from "@osdk/client";
+
+export function describeError(error: unknown): string {
+  if (!(error instanceof PalantirApiError)) {
+    return error instanceof Error ? error.message : String(error);
+  }
+  if (error.name === "UnknownError") {
+    return "Could not reach Foundry. Check the network and the Foundry URL.";
+  }
+  if (error.statusCode === 401) {
+    return "The token is missing or expired.";
+  }
+  if (error.errorCode === "PERMISSION_DENIED" || error.statusCode === 403) {
+    return "You do not have access to this data.";
+  }
+  if (error.errorCode === "NOT_FOUND") {
+    return `Not found: ${error.errorName ?? error.message}`;
+  }
+  return `${error.message} (error instance ${error.errorInstanceId ?? "unknown"})`;
+}
+```
+
+A `NOT_FOUND` error can also mean that the user cannot see a resource that exists.
+
+## `ActionValidationError`
+
+`applyAction` throws `ActionValidationError` when the server ran the action's submission criteria and parameter constraints and they failed. It is not a `PalantirApiError`. Its `validation` field has `result`, `submissionCriteria`, and `parameters`. See [Actions](./actions.mdx#handle-validation-errors) for the shape and a message helper.
+
+`batchApplyAction` does not throw it. A batch that fails validation rejects with a `PalantirApiError`.
+
+## Methods that return a result
+
+Three methods resolve to a `Result` instead of rejecting:
+
+| Method | On |
+| --- | --- |
+| `fetchOneWithErrors(primaryKey, options?)` | Object type sets |
+| `fetchPageWithErrors(options?)` | Every object set |
+| `$link.<link>.fetchOneWithErrors(options?)` | Single links |
+
+A `Result` is `{ value }` on success or `{ error }` on failure, where `error` is an `Error`. Narrow it with `isOk` from `@osdk/client`:
+
+```ts title="src/optionalLead.ts"
+import { Employee } from "@my-app/sdk";
+import { isOk } from "@osdk/client";
+import { client } from "./client";
+
+const result = await client(Employee).fetchOneWithErrors(12345, { $select: ["fullName"] });
+
+if (isOk(result)) {
+  console.log(result.value.fullName);
+} else {
+  console.warn("Employee not available:", result.error.message);
+}
+```
+
+`error` is the same error the throwing variant would have thrown, so the narrowing above still applies.
+
+## Retries
+
+The client retries a request that fails with `429 Too Many Requests` or `503 Service Unavailable`, up to three times, unless the response sets the header `QoS-Retry-Hint: do-not-retry`. The delays grow exponentially from about one second, with random jitter. Other errors, including network failures, are not retried. Your code sees the error only after the last attempt.
+
+## Errors before a request
+
+These throw a plain `Error` before any request is sent:
+
+| Error | Cause |
+| --- | --- |
+| `Invalid ontology RID` | `createClient` got an Ontology RID string that does not start with `ri.`. If you pass a `Promise`, the check runs when it resolves and surfaces as an unhandled rejection instead. |
+| `baseUrl cannot be empty` | `createClient` got an empty base URL. A malformed URL throws a `TypeError` from `new URL`. |
+| `Cannot filter on property "<name>" with an undefined or null value` | A `where` clause had a `null` or `undefined` value. See [Filter objects](./filtering.mdx#how-a-clause-combines). |
+| `A WhereClause Filter with multiple clauses/fields is not allowed` | One property in a `where` clause had more than one operator. |
+| `Object does not implement interface '<name>'` | `$as` was called with an interface the object type does not implement. See [Interfaces](./interfaces.mdx#convert-one-object-with-as). |
+| `Union return types are not yet supported` | A function returned a union type. See [Functions](./functions.mdx#return-values). |
+
+## Patterns
+
+- Await every call inside `try`/`catch`, or attach `.catch`. A rejected promise that nothing handles crashes a Node.js process and logs an unhandled rejection in the browser.
+- Catch `ActionValidationError` before `PalantirApiError`, and show the validation messages to the user. Other action errors usually need a retry or an administrator.
+- For loads where a missing object is expected, use the `WithErrors` variants instead of catching.
+- In long jobs, log `errorInstanceId` and `errorName` with each failure, and keep going instead of stopping at the first error.
+
+For errors in `@osdk/react` hooks, see [Loading and errors](../(docs)/concepts/loading-and-errors.mdx).

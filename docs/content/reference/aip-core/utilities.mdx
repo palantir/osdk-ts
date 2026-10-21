@@ -1,0 +1,44 @@
+---
+title: Utilities
+description: generateMessageId and getUIMessageText, helpers for working with UIMessage conversations in @osdk/aip-core.
+---
+
+```ts
+import { generateMessageId, getUIMessageText } from "@osdk/aip-core";
+
+function generateMessageId(): string;
+function getUIMessageText(message: UIMessage): string;
+```
+
+Helpers for building and reading the `UIMessage` objects that [`LmsChatTransport`](./lms-chat-transport.mdx) consumes.
+
+## `generateMessageId`
+
+Returns `crypto.randomUUID()` when available, otherwise a random `msg-` prefixed ID.
+
+## `getUIMessageText`
+
+Concatenates the `text` parts of `message` and ignores reasoning and file parts.
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `message` | `UIMessage` | `{ id, role, parts, metadata? }`, where `role` is `"system"`, `"user"`, or `"assistant"`. |
+
+## Example
+
+```ts title="src/messages.ts"
+import { generateMessageId, getUIMessageText, type UIMessage } from "@osdk/aip-core";
+
+export function userMessage(text: string): UIMessage {
+  return { id: generateMessageId(), role: "user", parts: [{ type: "text", text }] };
+}
+
+export function lastReply(messages: UIMessage[]): string {
+  const reply = messages.findLast((m) => m.role === "assistant");
+  return reply ? getUIMessageText(reply) : "";
+}
+```
+
+## See also
+
+- [Chat and text generation](/ai/chat)

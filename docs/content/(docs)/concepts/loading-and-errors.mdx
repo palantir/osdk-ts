@@ -1,0 +1,245 @@
+---
+title: Loading and errors
+description: Render @osdk/react hooks correctly while data loads, refreshes, or fails, and narrow errors to PalantirApiError and ActionValidationError.
+---
+
+{/* cspell:ignore refetched refetches */}
+
+`@osdk/react` hooks can return data and report loading at the same time. This page shows the loading pattern that avoids flashing UI, the error shape of each hook, and how to turn an error into a message the user can act on.
+
+## Loading is not the same as empty
+
+`isLoading` means a request for the hook's data is in flight. It does not mean `data` is missing. The cache serves what it has and refreshes in the background, so `isLoading` is `true` with data present when:
+
+- The component mounts onto data that another component already cached.
+- An action edits an object and a list must refetch to decide whether the object still belongs in it.
+- You call `refetch`, or something invalidates the entry.
+- An optimistic update is applied to a list.
+
+The states you can see are:
+
+| `data` | `isLoading` | Meaning | Render |
+| --- | --- | --- | --- |
+| `undefined` | `true` | First load, nothing cached. | A placeholder or skeleton. |
+| Present | `true` | Refreshing cached data. | The data, with a small refreshing indicator. |
+| Present | `false` | Up to date. | The data. |
+| `undefined` | `false` | The hook is disabled with `enabled: false`, or the load failed. | An empty state, or the error. |
+
+See [Caching and reactivity](./caching.mdx) for when hooks refetch.
+
+## Keep rendering while loading
+
+Do not return early on `isLoading`. An early return replaces the content with a spinner every time the cache refreshes, which makes the page flash and resets scroll position and focus. The only early return that is safe is the initial state, when there is no data yet:
+
+```tsx title="src/EmployeeList.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkObjects } from "@osdk/react";
+
+export function EmployeeList() {
+  const { data, isLoading, error, refetch, fetchMore } = useOsdkObjects(
+    Employee,
+    { where: { department: "Engineering" }, orderBy: { fullName: "asc" } },
+  );
+
+  if (data == null && isLoading) {
+    return <p>Loading employees…</p>;
+  }
+
+  return (
+    <section aria-busy={isLoading}>
+      <header>
+        <h2>Engineering</h2>
+        {isLoading && <span>Refreshing…</span>}
+      </header>
+
+      {error != null && (
+        <div role="alert">
+          <p>Could not load employees: {error.message}</p>
+          <button onClick={() => void refetch()}>Retry</button>
+        </div>
+      )}
+
+      <ul>
+        {data?.map(employee => (
+          <li key={employee.$primaryKey}>{employee.fullName}</li>
+        ))}
+      </ul>
+
+      {fetchMore != null && (
+        <button onClick={() => void fetchMore()} disabled={isLoading}>
+          Load more
+        </button>
+      )}
+    </section>
+  );
+}
+```
+
+The component checks `error` separately from `data`. A refresh can fail after earlier data loaded, so both can be set at once.
+
+<Callout type="warn">
+  Do not write `if (isLoading) return <Spinner />`. Use `if (data == null && isLoading)` for the initial load, and render an inline indicator for refreshes.
+</Callout>
+
+## Loading and error fields by hook
+
+The hooks do not all use the same field names. Check this table before you destructure:
+
+| Hook | Data | Loading | Error | Retry |
+| --- | --- | --- | --- | --- |
+| `useOsdkObjects` | `data` | `isLoading` | `error: Error \| undefined` | `refetch()` |
+| `useObjectSet` | `data` | `isLoading` | `error: Error \| undefined` | `refetch()` |
+| `useOsdkObject` | `object` | `isLoading` | `error: Error \| undefined` | None |
+| `useLinks` | `links` | `isLoading` | `error: Error \| undefined` | None |
+| `useOsdkAggregation` | `data` | `isLoading` | `error: Error \| undefined` | `refetch()` |
+| `useOsdkFunction` | `data` | `isLoading` | `error: Error \| undefined` | `refetch()` |
+| `useOsdkAction` | `data` | `isPending`, `isValidating` | `error: { actionValidation?, unknown? } \| undefined` | Call `applyAction` again |
+| `useOsdkMetadata` | `metadata` | `loading` | `error: string \| undefined` | None |
+
+Details that differ between hooks:
+
+- **`refetch` scope.** On `useOsdkObjects`, `useObjectSet`, and `useOsdkAggregation`, `refetch` invalidates the whole object type, so every list and aggregation of that type refetches. On `useOsdkFunction`, it refetches only that function call with those parameters. To refetch more narrowly, use the methods in [Cache invalidation](/react/cache-invalidation).
+- **`useOsdkObject`.** `isLoading` is `false` as soon as `error` is set.
+- **`useObjectSet`.** When the object set changes, `data` keeps the last loaded result until the new set loads.
+- **`useOsdkFunction`.** `isLoading` is `true` only while a request is in flight, so the first render can report `isLoading: false` with no data. Treat `data === undefined && error == null` as the initial state, or check `lastUpdated === 0`.
+- **`useOsdkMetadata`.** It uses `loading`, not `isLoading`, and `error` is the error's message as a string, not an `Error`. It does not retry after a failure.
+- **Disabled hooks.** With `enabled: false` (or `false` as the last argument to `useOsdkObject`), `isLoading` is `false` and no request is sent.
+
+## Narrow API errors
+
+Errors from Foundry are instances of `PalantirApiError`, which `@osdk/client` exports. Data hooks type `error` as `Error`, so narrow it with `instanceof`:
+
+```tsx title="src/describeError.ts"
+import { PalantirApiError } from "@osdk/client";
+
+export function describeError(error: Error): string {
+  if (!(error instanceof PalantirApiError)) {
+    return error.message;
+  }
+  if (error.statusCode === 401) {
+    return "Your session has expired. Sign in again.";
+  }
+  if (error.errorCode === "PERMISSION_DENIED" || error.statusCode === 403) {
+    return "You do not have access to this data.";
+  }
+  if (error.errorCode === "NOT_FOUND") {
+    return "This item no longer exists, or you cannot see it.";
+  }
+  return error.message;
+}
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `message` | `string` | The server's message, or `Failed to fetch <status> <statusText>`. |
+| `errorCode` | `string \| undefined` | The error category, such as `PERMISSION_DENIED`, `NOT_FOUND`, `INVALID_ARGUMENT`, `CONFLICT`, or `TIMEOUT`. |
+| `errorName` | `string \| undefined` | The specific error, such as `ObjectNotFound`. |
+| `errorDescription` | `string \| undefined` | A longer description of the error. |
+| `statusCode` | `number \| undefined` | The HTTP status code. |
+| `errorInstanceId` | `string \| undefined` | An ID for this occurrence. Include it when you report a problem to your Foundry administrator. |
+| `parameters` | `unknown` | Error-specific details, such as the object type that was not found. |
+
+Some errors carry only a message:
+
+- When a request fails before reaching Foundry, or the response is not JSON, the error is a `PalantirApiError` subclass whose `name` is `"UnknownError"`. `statusCode` is set if a response arrived.
+- `useOsdkObject(Employee, id)` for an object that does not exist, or that you cannot see, reports a `PalantirApiError` with the message `Object not found: <id>` and no `errorCode` or `statusCode`.
+
+The client retries requests that fail with `429` or `503` up to three times, with exponential backoff, before the error reaches your hook.
+
+## Handle action errors
+
+`useOsdkAction` splits errors into two kinds:
+
+| Field | Set when | Type |
+| --- | --- | --- |
+| `error.actionValidation` | The server ran the action's validation and it failed: a submission criterion or a parameter constraint was not met. | `ActionValidationError` |
+| `error.unknown` | Anything else, such as a network failure, a permission error, or a server error. | `unknown` |
+
+`applyAction` also rethrows the error, so always await it in `try`/`catch` or attach `.catch`. Otherwise a failed action becomes an unhandled promise rejection:
+
+```tsx title="src/MoveEmployeeButton.tsx"
+import { type Employee, modifyEmployee } from "@my-app/sdk";
+import { ActionValidationError } from "@osdk/client";
+import { useOsdkAction } from "@osdk/react";
+import { useState } from "react";
+
+export function MoveEmployeeButton(
+  { employee }: { employee: Employee.OsdkInstance },
+) {
+  const { applyAction, isPending } = useOsdkAction(modifyEmployee);
+  const [message, setMessage] = useState<string>();
+
+  async function handleClick() {
+    setMessage(undefined);
+    try {
+      await applyAction({ employee, primary_office_id: "nyc-1" });
+    } catch (e) {
+      setMessage(
+        e instanceof ActionValidationError
+          ? validationMessage(e)
+          : "Could not move the employee. Try again.",
+      );
+    }
+  }
+
+  return (
+    <div>
+      <button onClick={handleClick} disabled={isPending}>
+        {isPending ? "Saving…" : "Move to New York"}
+      </button>
+      {message != null && <p role="alert">{message}</p>}
+    </div>
+  );
+}
+
+function validationMessage(error: ActionValidationError): string {
+  const criteria = error.validation.submissionCriteria
+    .filter(c => c.result === "INVALID")
+    .flatMap(c => c.configuredFailureMessage ?? []);
+
+  const parameters = Object.entries(error.validation.parameters)
+    .filter(([, p]) => p.result === "INVALID")
+    .map(([id]) => id);
+
+  if (criteria.length > 0) {
+    return criteria.join(" ");
+  }
+  if (parameters.length > 0) {
+    return `Check these fields: ${parameters.join(", ")}.`;
+  }
+  return "The action is not valid.";
+}
+```
+
+### `.validation`, not `.message`
+
+`ActionValidationError.message` is `"Validation Error: "` followed by the validation response as JSON. It is useful in logs, not in UI. Read `.validation` instead:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `validation.result` | `"VALID" \| "INVALID"` | The overall result. |
+| `validation.submissionCriteria` | Array of `{ result, configuredFailureMessage? }` | One entry per submission criterion. `configuredFailureMessage` is the message the action's author wrote. |
+| `validation.parameters` | Record of parameter ID to `{ result, required, evaluatedConstraints }` | Per-parameter results. Use it to highlight form fields. |
+
+### Validate before you apply
+
+`validateAction` runs the same validation without applying the action. An invalid result does not throw: it resolves to the validation response, which the hook also stores as `validationResult`. `validateAction` throws only for other failures, and resolves to `undefined` if a newer validation or an `applyAction` call supersedes it.
+
+```tsx
+const { validateAction } = useOsdkAction(modifyEmployee);
+
+const result = await validateAction({ employee, primary_office_id: "nyc-1" });
+const invalidFields =
+  result?.result === "INVALID"
+    ? Object.entries(result.parameters)
+      .filter(([, p]) => p.result === "INVALID")
+      .map(([id]) => id)
+    : [];
+```
+
+The hook clears `error` when you call `applyAction` or `validateAction` again.
+
+## Related
+
+- [Actions](/react/actions): apply, validate, and batch actions.
+- [Troubleshooting](../troubleshooting.mdx): fixes for setup, version, and auth errors.

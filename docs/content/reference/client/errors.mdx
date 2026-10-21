@@ -1,0 +1,74 @@
+---
+title: Errors
+description: PalantirApiError and ActionValidationError, the error classes thrown by @osdk/client.
+---
+
+```ts
+import { ActionValidationError, PalantirApiError } from "@osdk/client";
+
+class PalantirApiError extends Error {
+  errorName?: string;
+  errorCode?: string;
+  errorDescription?: string;
+  statusCode?: number;
+  errorInstanceId?: string;
+  parameters?: any;
+}
+
+class ActionValidationError extends Error {
+  validation: ActionValidationResponse;
+}
+```
+
+Requests that Foundry rejects throw `PalantirApiError`. Network failures and responses that are not JSON also throw a `PalantirApiError` subclass, with `name` set to `"UnknownError"` and no `errorCode`. Applying an action whose parameters fail validation throws `ActionValidationError` instead. Check with `instanceof`.
+
+## `PalantirApiError`
+
+The class has no JSDoc and inherits `Error` fields, so this table is written by hand.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `message` | `string` | A readable summary of the error. |
+| `errorName` | `string \| undefined` | The Foundry error name, such as `ObjectNotFound`. |
+| `errorCode` | `string \| undefined` | The error category, such as `NOT_FOUND` or `PERMISSION_DENIED`. |
+| `errorDescription` | `string \| undefined` | A longer description from the server. |
+| `statusCode` | `number \| undefined` | The HTTP status code. |
+| `errorInstanceId` | `string \| undefined` | An ID for this occurrence. Include it when you report an issue to Palantir support. |
+| `parameters` | `any` | Error-specific details, such as the primary key that was not found. |
+
+## `ActionValidationError`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `message` | `string` | `"Validation Error: "` followed by the validation response as JSON. |
+| `validation.result` | `"VALID" \| "INVALID"` | The overall result. |
+| `validation.submissionCriteria` | `SubmissionCriteriaEvaluation[]` | Each submission criterion and whether it passed. |
+| `validation.parameters` | `Record<string, ParameterEvaluationResult>` | The evaluation of each parameter, by parameter ID. |
+
+## Example
+
+```ts title="src/promote.ts"
+import { Employee, modifyEmployee } from "@my-app/sdk";
+import { ActionValidationError, PalantirApiError, type Client } from "@osdk/client";
+
+export async function promote(client: Client, employeeId: number) {
+  try {
+    const employee = await client(Employee).fetchOne(employeeId);
+    await client(modifyEmployee).applyAction({ employee, jobTitle: "Lead" });
+  } catch (e) {
+    if (e instanceof ActionValidationError) {
+      return { ok: false, reason: e.validation.result };
+    }
+    if (e instanceof PalantirApiError) {
+      return { ok: false, reason: `${e.errorName ?? "Error"} (${e.statusCode})` };
+    }
+    throw e;
+  }
+  return { ok: true };
+}
+```
+
+## See also
+
+- [Errors](/sdk/errors)
+- [useOsdkAction](../react/use-osdk-action.mdx)

@@ -1,0 +1,124 @@
+---
+title: TypeScript library
+description: Scaffold a standalone TypeScript package with the create-app typescript-library template, and add OSDK code that apps can share.
+---
+
+{/* cspell:ignore Ultracite ultracite oxlint oxfmt nvmrc */}
+
+The `typescript-library` template of `@osdk/create-app` creates a TypeScript package that builds ESM and type declarations with `tsc`, tests with Vitest, and lints with Ultracite. Use it to start a package of shared code, such as Ontology helpers that several of your OSDK apps import.
+
+<Callout type="info">
+  This template is beta and hidden from the CLI's framework list. Select it with `--template typescript-library`. It contains no OSDK code or dependencies; you add those yourself.
+</Callout>
+
+## When to use it
+
+| You want to | Use |
+| --- | --- |
+| Share functions, types, or object-set helpers between several apps | This template |
+| Build a browser app | The `react`, `vue`, or `expo` template. See [Quickstart](../quickstart.mdx). |
+| Run a script, server, or serverless function | A plain Node project. See [Node.js](./node.mdx). |
+
+## Create the library
+
+Run `@osdk/create-app` with the template, and pass `--skipOsdk` to skip the SDK prompts. `--skipOsdk` only works with an explicit `--sdkVersion 2.x`:
+
+```npm
+npx @osdk/create-app@latest my-library --template typescript-library --sdkVersion 2.x --skipOsdk
+```
+
+The CLI still asks for a Foundry URL, application RID, and client ID, and writes `.env.development`, `.env.production`, `.npmrc`, and `foundry.config.json` from them. The library does not read the `.env` files or `foundry.config.json`; delete them if you do not need them. Keep `.npmrc` if you will install your SDK from the Foundry registry.
+
+Then install and build:
+
+```sh
+cd my-library
+npm install
+npm run build
+```
+
+## Project structure
+
+<Files>
+  <File name=".nvmrc" />
+  <File name="AGENTS.md" />
+  <File name="oxfmt.config.ts" />
+  <File name="oxlint.config.ts" />
+  <File name="package.json" />
+  <File name="tsconfig.json" />
+  <Folder name=".claude">
+    <File name="CLAUDE.md" />
+    <File name="settings.json" />
+  </Folder>
+  <Folder name=".vscode">
+    <File name="extensions.json" />
+  </Folder>
+  <Folder name="src" defaultOpen>
+    <File name="index.ts" />
+    <Folder name="__tests__" defaultOpen>
+      <File name="index.test.ts" />
+    </Folder>
+  </Folder>
+</Files>
+
+| File | Purpose |
+| --- | --- |
+| `src/index.ts` | The package entry point. Everything it exports is the library's public API. The template exports a sample `greet` function. |
+| `src/__tests__/` | Vitest tests. `tsconfig.json` excludes them from the build. |
+| `package.json` | An ESM package (`"type": "module"`) whose `exports`, `main`, and `types` point at `dist/`. Only `dist/` is published. |
+| `tsconfig.json` | Strict settings that compile `src/` to `dist/` with declaration files, declaration maps, and source maps. Targets ES2022. |
+| `oxlint.config.ts`, `oxfmt.config.ts` | The Ultracite presets for oxlint and oxfmt. Lint warns on function expressions and prefers named function declarations. |
+| `.nvmrc` | Pins Node.js `v24.14.1`. |
+| `AGENTS.md`, `.claude/` | Coding standards for AI agents. `.claude/settings.json` runs `npx ultracite fix` after every file edit Claude Code makes. |
+| `.vscode/extensions.json` | Recommends the Oxc extension. |
+
+## Scripts
+
+| Script | Runs | Does |
+| --- | --- | --- |
+| `build` | `tsc` | Type-checks and emits JavaScript and `.d.ts` files to `dist/`. |
+| `clean` | `rm -rf dist` | Deletes the build output. |
+| `test` | `vitest run` | Runs the tests once. |
+| `test:watch` | `vitest` | Runs the tests in watch mode. |
+| `lint` | `ultracite check` | Checks formatting and lint rules. |
+| `fix` | `ultracite fix` | Fixes formatting and lint issues. |
+| `format` | `oxfmt .` | Formats every file. |
+
+The generated `README.md` mentions `npm run check`. The script is named `lint`.
+
+## Add OSDK code
+
+Install `@osdk/client` and your SDK. Your SDK comes from your Foundry npm registry, so set up `.npmrc` first as described in [Installation](../installation.mdx):
+
+```npm
+npm install --save-dev @osdk/client @my-app/sdk
+```
+
+Also list both in `peerDependencies`, so an app that installs your library provides them. The app and your library then share one `@osdk/client` and one copy of the SDK. Your generated SDK already declares `@osdk/client` as a peer.
+
+Take the `Client` as a parameter instead of creating one in the library. The app keeps a single client with its own authentication, and your functions use it:
+
+```ts title="src/engineers.ts"
+import { Employee } from "@my-app/sdk";
+import type { Client, Osdk } from "@osdk/client";
+
+export async function listEngineers(
+  client: Client,
+): Promise<Osdk.Instance<Employee>[]> {
+  const engineers: Osdk.Instance<Employee>[] = [];
+  for await (const employee of client(Employee)
+    .where({ department: "Engineering" })
+    .asyncIter()) {
+    engineers.push(employee);
+  }
+  return engineers;
+}
+```
+
+Export it from the entry point:
+
+```ts title="src/index.ts"
+export { listEngineers } from "./engineers.js";
+```
+
+`tsc` does not rewrite import paths. Write relative imports with the `.js` extension, as above, so `dist/` also loads in Node.js without a bundler. [Create a client](../client.mdx#use-the-client-without-react) lists the client methods you can call.
