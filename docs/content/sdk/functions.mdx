@@ -1,0 +1,111 @@
+---
+title: Functions
+description: Execute Foundry functions (queries) with executeFunction, pass objects and object sets as parameters, and read struct, object, and object set results.
+---
+
+Functions published to the Ontology, called queries in the API, appear in your generated SDK next to object types and actions. `client(myFunction).executeFunction(params)` runs one on the server and resolves to its typed return value.
+
+The samples use these functions, which stand in for functions in your own SDK:
+
+| Function | Parameters | Returns |
+| --- | --- | --- |
+| `countEmployees` | None | `integer` |
+| `getEmployeeMetrics` | `department: string` | Struct `{ headcount: integer }` |
+| `summarizeTeam` | `team: ObjectSet<Employee>` | `string` |
+| `getTopEarners` | `department: string`, `limit?: integer` | `ObjectSet<Employee>` |
+| `getManager` | `employee: Employee` | `Employee` |
+
+## Execute a function
+
+```ts title="src/metrics.ts"
+import { countEmployees, getEmployeeMetrics } from "@my-app/sdk";
+import { client } from "./client";
+
+const total = await client(countEmployees).executeFunction();
+
+const metrics = await client(getEmployeeMetrics).executeFunction({ department: "Engineering" });
+console.log(`${metrics.headcount} of ${total} employees are engineers`);
+```
+
+`executeFunction` takes one object with a key per parameter, or no argument when the function has no parameters. Nullable parameters are optional. It rejects with a `PalantirApiError` when the function fails or times out on the server; see [Errors](./errors.mdx).
+
+If your SDK was generated with a pinned function version, the client calls that version. Otherwise it calls the latest published version.
+
+## Parameter values
+
+| Parameter type | Pass |
+| --- | --- |
+| Primitive | A value of the parameter's TypeScript type. Dates and timestamps are ISO 8601 strings. `long` and `decimal` accept a `number` or a `string`. |
+| Object | A loaded object, its primary key, or `{ $apiName, $primaryKey }`. |
+| Interface | An object loaded through the interface, or `{ $objectType, $primaryKey }`, where `$objectType` is the concrete object type. |
+| Object set | An object set, such as `client(Employee).where({ ... })`. The server receives its definition, not its objects. |
+| List, set | An array, or a `Set` for set parameters. |
+| Struct | An object whose keys are the struct's fields. |
+| Map | An object keyed by the map's keys. For object keys, use each object's `$objectSpecifier`. |
+| Attachment | An attachment RID, a `File`, or the result of `createAttachmentUpload`. The client uploads it first. |
+| Media reference | A `MediaUpload`, a `Media` from an object, or a `MediaReference`. |
+
+Pass an object set to let the function work on a filtered set without loading it in the client:
+
+```ts title="src/summarize.ts"
+import { Employee, summarizeTeam } from "@my-app/sdk";
+import { client } from "./client";
+
+const summary = await client(summarizeTeam).executeFunction({
+  team: client(Employee).where({ department: "Sales", startDate: { $gte: "2025-01-01" } }),
+});
+```
+
+## Return values
+
+| Return type | You get |
+| --- | --- |
+| Primitive | The value. `long` and `decimal` are strings; dates and timestamps are ISO 8601 strings. |
+| List, set | An array. |
+| Struct | A plain object. |
+| Map | A plain object keyed by the map's keys. Object keys become object specifier strings. |
+| Object | An object reference with `$apiName`, `$objectType`, and `$primaryKey`. It has no properties. |
+| Object set | An object set. Load it with `fetchPage`, `asyncIter`, or `aggregate`. |
+| Attachment | An `Attachment`. See [Attachments and media](./media.mdx). |
+| Media reference | A `Media`. See [Attachments and media](./media.mdx). |
+| Two-dimensional aggregation | `{ key, value }[]` |
+| Three-dimensional aggregation | `{ key, groups: { key, value }[] }[]` |
+| Nullable, when the function returns nothing | `undefined` |
+
+Union return types are not supported: the client throws `Union return types are not yet supported`.
+
+### Object results
+
+A returned object is a reference, not a loaded object. Load it by primary key to read its properties:
+
+```ts title="src/manager.ts"
+import { Employee, getManager } from "@my-app/sdk";
+import { client } from "./client";
+
+const employee = await client(Employee).fetchOne(12345);
+const managerRef = await client(getManager).executeFunction({ employee });
+
+const manager = await client(Employee).fetchOne(managerRef.$primaryKey, {
+  $select: ["fullName", "jobTitle"],
+});
+```
+
+### Object set results
+
+A returned object set is like any other. Filter, sort, page, and aggregate it before loading:
+
+```ts title="src/topEarners.ts"
+import { getTopEarners } from "@my-app/sdk";
+import { client } from "./client";
+
+const topEarners = await client(getTopEarners).executeFunction({ department: "Sales", limit: 10 });
+
+const page = await topEarners.fetchPage({
+  $select: ["fullName", "salary"],
+  $orderBy: { salary: "desc" },
+});
+```
+
+## In React
+
+`useOsdkFunction` from `@osdk/react` executes a function, caches the result by its parameters, and can refetch when objects it depends on change. See [Functions in React](/react/functions).

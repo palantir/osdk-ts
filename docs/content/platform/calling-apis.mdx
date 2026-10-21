@@ -1,0 +1,260 @@
+---
+title: Call platform APIs
+description: The calling convention for @osdk/foundry functions, including argument order, pagination, errors, binary responses, and preview endpoints.
+---
+
+{/* cspell:ignore mediasets */}
+
+Every Platform SDK function takes the client first, then the endpoint's path, body, query, and header arguments, in that order. This page covers that convention and how to handle pagination, errors, binary content, and preview endpoints.
+
+## Import a namespace
+
+Each package exports one namespace per resource, named in the plural: `Users`, `Groups`, `Datasets`, `Files`, `MediaSets`. Each function in a namespace maps to one REST endpoint.
+
+```ts title="src/currentUser.ts"
+import type { Client } from "@osdk/client";
+import { Users, type User } from "@osdk/foundry.admin";
+
+export async function currentUser(client: Client): Promise<User> {
+  return Users.getCurrent(client);
+}
+```
+
+Request and response types, such as `User`, `Group`, and `ListUsersResponse`, are exported by name from the same package. Identifier types such as `UserId` and `PageToken` are strings, so plain string values work wherever they are expected.
+
+## Argument order
+
+After the client, a function takes up to four groups of arguments, always in this order:
+
+| Position | Argument | Example |
+| --- | --- | --- |
+| 1 | The client | `client` |
+| 2 | Path parameters, one positional argument each, in URL order | `datasetRid`, `filePath` |
+| 3 | The request body, for `POST` and `PUT` endpoints | `{ where: { type: "queryString", value: "jane" } }` |
+| 4 | Query parameters, as one object | `{ pageSize: 100, preview: true }` |
+| 5 | Header parameters, as one object | `{ ReadToken: token }` |
+
+A function only takes the groups its endpoint has:
+
+```ts title="src/examples.ts"
+import type { Client } from "@osdk/client";
+import { GroupMembers, Groups, Users } from "@osdk/foundry.admin";
+import { Files } from "@osdk/foundry.datasets";
+
+export async function examples(client: Client, groupId: string, userId: string) {
+  // Path parameter only
+  const group = await Groups.get(client, groupId);
+
+  // Path parameter, then query parameters
+  const members = await GroupMembers.list(client, groupId, { transitive: true });
+
+  // Body only
+  const matches = await Users.search(client, {
+    where: { type: "queryString", value: "jane" },
+  });
+
+  // Path parameter, then body
+  await GroupMembers.add(client, groupId, { principalIds: [userId] });
+
+  // Two path parameters, a binary body, then query parameters
+  const file = await Files.upload(
+    client,
+    "ri.foundry.main.dataset.<id>",
+    "reports/summary.csv",
+    new Blob(["name,count\nalpha,1\n"], { type: "text/csv" }),
+    { transactionType: "UPDATE" },
+  );
+
+  return { group, members, matches, file };
+}
+```
+
+When a function has optional query parameters and you need to pass headers, pass `undefined` or an object for the query parameters first. Your editor shows the parameter names, such as `$queryParams` and `$headerParams`, on hover.
+
+## Responses
+
+| Endpoint returns | The function resolves to |
+| --- | --- |
+| JSON | The parsed body, typed, such as `User` or `ListGroupsResponse`. |
+| No content (`204`) | `undefined`. The return type is `Promise<void>`. |
+| Binary content | The `Response`. Read it with `.blob()`, `.arrayBuffer()`, `.text()`, or `.body`. |
+
+Binary endpoints include `Files.content`, `Datasets.readTable`, `MediaSets.read`, and `Users.profilePicture`. Their return type is `Promise<Response>`:
+
+```ts title="src/avatar.ts"
+import type { Client } from "@osdk/client";
+import { Users } from "@osdk/foundry.admin";
+
+export async function avatarUrl(client: Client, userId: string): Promise<string> {
+  const response = await Users.profilePicture(client, userId);
+  const blob = await response.blob();
+  return URL.createObjectURL(blob);
+}
+```
+
+Call `URL.revokeObjectURL` when you no longer show the image.
+
+Upload endpoints such as `Files.upload` and `MediaSets.upload` take the bytes as a `Blob`. A `File` from an `<input type="file">` is a `Blob`, so you can pass it directly.
+
+## Paginate
+
+List and search endpoints return one page at a time as `{ data, nextPageToken }`. Pass `nextPageToken` back as `pageToken` to get the next page. The last page has no `nextPageToken`.
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `pageSize` | `number` | Preferred page size. The server can return more or fewer items, and some endpoints cap it. |
+| `pageToken` | `string` | Token from the previous page. Omit it for the first page. |
+
+For `GET` endpoints, such as `Users.list`, these are query parameters. For `POST` endpoints, such as `Users.search`, they go in the body.
+
+A small async generator turns any paged endpoint into a stream of items:
+
+```ts title="src/paginate.ts"
+export async function* paginate<T>(
+  fetchPage: (
+    pageToken: string | undefined,
+  ) => Promise<{ data: T[]; nextPageToken?: string }>,
+): AsyncGenerator<T> {
+  let pageToken: string | undefined;
+  do {
+    const page = await fetchPage(pageToken);
+    for (const item of page.data) {
+      yield item;
+    }
+    pageToken = page.nextPageToken;
+  } while (pageToken != null);
+}
+```
+
+Use it with query-parameter and body pagination alike:
+
+```ts title="src/listAllUsers.ts"
+import type { Client } from "@osdk/client";
+import { Users, type User } from "@osdk/foundry.admin";
+import { paginate } from "./paginate";
+
+export async function listAllUsers(client: Client): Promise<User[]> {
+  const users: User[] = [];
+  for await (const user of paginate((pageToken) =>
+    Users.list(client, { pageSize: 1000, pageToken }),
+  )) {
+    users.push(user);
+  }
+  return users;
+}
+
+export async function findUsers(client: Client, prefix: string, limit: number) {
+  const found: User[] = [];
+  for await (const user of paginate((pageToken) =>
+    Users.search(client, {
+      where: { type: "queryString", value: prefix },
+      pageSize: 100,
+      pageToken,
+    }),
+  )) {
+    found.push(user);
+    if (found.length >= limit) {
+      break;
+    }
+  }
+  return found;
+}
+```
+
+Breaking out of the loop stops further requests.
+
+## Batch requests
+
+Resources with many lookups have a `getBatch` function that takes an array of request elements and returns a `data` map keyed by ID. Each documents its maximum batch size in JSDoc; `Users.getBatch` accepts up to 500:
+
+```ts title="src/usernames.ts"
+import type { Client } from "@osdk/client";
+import { Users } from "@osdk/foundry.admin";
+
+export async function usernames(client: Client, userIds: string[]) {
+  const { data } = await Users.getBatch(
+    client,
+    userIds.map((userId) => ({ userId })),
+  );
+  return userIds.map((id) => data[id]?.username ?? "Unknown user");
+}
+```
+
+## Handle errors
+
+A failed call rejects with a `PalantirApiError`, exported from `@osdk/client`. This includes network failures and error responses that are not JSON; those have no `errorName`, and the underlying error is on `cause`. If the token provider itself throws, the call rejects with a plain `Error`.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `message` | `string` | The server's message, or `Failed to fetch <status> <statusText>`. |
+| `errorName` | `string \| undefined` | Stable identifier, such as `UserNotFound` or `ApiFeaturePreviewUsageOnly`. Switch on this. |
+| `errorCode` | `string \| undefined` | Category, such as `NOT_FOUND`, `PERMISSION_DENIED`, `INVALID_ARGUMENT`, or `CONFLICT`. |
+| `errorDescription` | `string \| undefined` | Human-readable description. |
+| `statusCode` | `number \| undefined` | HTTP status. |
+| `errorInstanceId` | `string \| undefined` | Server-side ID for this occurrence. Include it in support requests. |
+| `parameters` | `object \| undefined` | Context for the error, such as `{ userId }`. |
+
+```ts title="src/findUser.ts"
+import { PalantirApiError, type Client } from "@osdk/client";
+import { Users, type User } from "@osdk/foundry.admin";
+
+export async function findUser(client: Client, userId: string): Promise<User | undefined> {
+  try {
+    return await Users.get(client, userId);
+  } catch (error) {
+    if (error instanceof PalantirApiError && error.errorName === "UserNotFound") {
+      return undefined;
+    }
+    throw error;
+  }
+}
+```
+
+Each package exports a type for every error it can return, with the exact `errorName`, `errorCode`, and `parameters`. Import them to see what to expect:
+
+```ts
+import type { UserNotFound } from "@osdk/foundry.admin";
+// { errorCode: "NOT_FOUND"; errorName: "UserNotFound"; parameters: { userId: unknown }; ... }
+```
+
+Shared errors, such as `ApiFeaturePreviewUsageOnly`, `InvalidPageToken`, and `ApiUsageDenied`, are exported from `@osdk/foundry.core`.
+
+The client retries `429` and `503` responses up to three times before rejecting. Other errors reject immediately.
+
+## Preview endpoints
+
+Functions tagged `@beta` or `@alpha` in JSDoc call preview endpoints. They take a `preview` query parameter, and the server rejects the call with `ApiFeaturePreviewUsageOnly` unless you set it to `true`:
+
+```ts title="src/classificationBanner.ts"
+import type { Client } from "@osdk/client";
+import { CbacBanners } from "@osdk/foundry.admin";
+
+export async function classificationBanner(client: Client, markingIds: string[]) {
+  const banner = await CbacBanners.get(client, { markingIds, preview: true });
+  return banner.classificationString;
+}
+```
+
+`preview` always goes in the query-parameter object, after any body:
+
+```ts title="src/parseClassification.ts"
+import type { Client } from "@osdk/client";
+import { Markings } from "@osdk/foundry.admin";
+
+export async function parseClassification(client: Client, classification: string) {
+  return Markings.parseClassifications(
+    client,
+    { classificationStrings: [classification] },
+    { preview: true },
+  );
+}
+```
+
+Preview endpoints can change shape between package versions. Pin the package version, and check the changelog when you upgrade.
+
+## Next steps
+
+- [Users and groups](./users-and-groups.mdx)
+- [Datasets](./datasets.mdx)
+- [Media sets](./media-sets.mdx)
+- [Ontology metadata](./ontology-metadata.mdx)

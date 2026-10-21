@@ -1,0 +1,59 @@
+---
+title: React SDK
+description: Build reactive Foundry apps with @osdk/react hooks backed by one shared, normalized cache.
+---
+
+`@osdk/react` wraps the OSDK client in hooks. Every hook reads from one normalized cache, so a list, a detail view, and a link panel that show the same object stay in sync, and an action updates them all without manual refetching.
+
+```tsx title="src/EmployeeList.tsx"
+import { useOsdkObjects } from "@osdk/react";
+import { Employee } from "@my-app/sdk";
+
+export function EmployeeList() {
+  const { data, isLoading, error } = useOsdkObjects(Employee, {
+    where: { department: "Engineering" },
+    orderBy: { fullName: "asc" },
+  });
+
+  return (
+    <section aria-busy={isLoading}>
+      {error != null && <p role="alert">Could not load employees.</p>}
+      <ul>
+        {data?.map((employee) => (
+          <li key={employee.$primaryKey}>{employee.fullName}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+```
+
+New to OSDK? Start with the [Quickstart](../(docs)/quickstart.mdx), then [create a client and add OsdkProvider](../(docs)/client.mdx).
+
+## Hooks
+
+| Hook | Use it to | Guide |
+| --- | --- | --- |
+| `useOsdkObjects` | Load a list of objects with filters, sorting, and paging | [Query objects](./objects.mdx) |
+| `useOsdkObject` | Load one object by primary key | [Query objects](./objects.mdx#load-one-object) |
+| `useLinks` | Load the objects linked to an object | [Follow links](./links.mdx) |
+| `useObjectSet` | Combine, intersect, subtract, or pivot object sets | [Work with object sets](./object-sets.mdx) |
+| `useStableObjectSet` | Keep an object set referentially stable across renders | [Work with object sets](./object-sets.mdx) |
+| `useOsdkAggregation` | Count, sum, average, and group on the server | [Aggregate data](./aggregations.mdx) |
+| `useOsdkAction` | Apply and validate actions | [Apply actions](./actions.mdx) |
+| `useDebouncedCallback` | Debounce validation while a user types | [Apply actions](./actions.mdx) |
+| `useOsdkFunction`, `useOsdkFunctions` | Call Ontology functions with caching | [Call functions](./functions.mdx) |
+| `useObservableClient` | Invalidate cached data by hand | [Invalidate the cache](./cache-invalidation.mdx) |
+| `useOsdkClient` | Get the client for one-off, imperative calls | [Create a client](../(docs)/client.mdx) |
+| `useOsdkMetadata` | Read object and action type metadata | [Reference](/reference) |
+
+User, group, and marking hooks live in `@osdk/react/platform-apis`; see [Users and markings](./platform-apis.mdx). Test utilities live in `@osdk/react/testing`; see [Test your app](./testing.mdx).
+
+## How data flows
+
+<Cards>
+  <Card title="Caching and reactivity" href="/concepts/caching">How hooks share one cache and stay current.</Card>
+  <Card title="Loading and errors" href="/concepts/loading-and-errors">Render without flashing while data refreshes.</Card>
+  <Card title="Optimistic updates" href="/react/optimistic-updates">Show the result of an action before the server confirms it.</Card>
+  <Card title="Devtools" href="/devtools">Inspect the cache, queries, and actions in your running app.</Card>
+</Cards>

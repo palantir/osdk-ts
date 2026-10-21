@@ -1,6 +1,6 @@
 # TiffViewer
 
-A React component for rendering TIFF images from raw byte arrays. Also provides an OSDK Media wrapper for fetching TIFF contents directly from Foundry.
+`TiffViewer` renders a TIFF image from an OSDK `Media` object, and `BaseTiffViewer` renders one from raw bytes.
 
 ## Import
 

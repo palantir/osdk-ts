@@ -1,0 +1,354 @@
+---
+title: React widgets
+description: Render a widget with FoundryWidget, read typed parameters and loading states with useFoundryWidgetContext, and emit events back to the host.
+---
+
+`@osdk/widget.client-react` connects a React tree to the Foundry host. `FoundryWidget` handles the message protocol, and `useFoundryWidgetContext` gives every component typed parameter values and an `emitEvent` function derived from your [widget config](./parameters-and-events.mdx).
+
+## Install
+
+Projects from `@osdk/create-widget` already include these packages. To add them to an existing Vite and React project:
+
+```npm
+npm install @osdk/widget.client @osdk/widget.client-react
+```
+
+```npm
+npm install -D @osdk/widget.vite-plugin
+```
+
+`@osdk/widget.client-react` supports React 18 and 19 and lists `@osdk/client` as a peer dependency. Add `@osdk/client`, `@osdk/react`, and your SDK package to call the Ontology.
+
+## Render `FoundryWidget`
+
+Wrap the widget's root in `FoundryWidget` and pass its config. Importing the config in the entrypoint is also what lets the Vite plugin find it.
+
+```ts title="src/main.config.ts"
+import { defineConfig } from "@osdk/widget.client";
+
+export default defineConfig({
+  id: "todoList",
+  name: "Todo list",
+  description: "A checklist backed by Workshop variables",
+  type: "workshop",
+  parameters: {
+    headerText: {
+      displayName: "Widget title",
+      type: "string",
+    },
+    showWarning: {
+      displayName: "Show warning callout",
+      type: "boolean",
+    },
+    todoItems: {
+      displayName: "Todo items",
+      type: "array",
+      subType: "string",
+    },
+  },
+  events: {
+    updateTodoItems: {
+      displayName: "Update todo items",
+      parameterUpdateIds: ["todoItems"],
+    },
+  },
+});
+```
+
+```tsx title="src/main.tsx"
+import { FoundryWidget } from "@osdk/widget.client-react";
+import { createRoot } from "react-dom/client";
+import MainConfig from "./main.config.js";
+import { TodoWidget } from "./TodoWidget.js";
+
+createRoot(document.getElementById("root")!).render(
+  <FoundryWidget config={MainConfig}>
+    <TodoWidget />
+  </FoundryWidget>,
+);
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `config` | The return type of `defineConfig` | Required | The widget config. Every parameter and event type in the context comes from it. |
+| `children` | `React.ReactNode` | Required | The widget. |
+| `client` | `Client` from `@osdk/client` | | An OSDK client, used to hydrate object set parameters and to serialize object sets you emit. Required by the types when the config has an `objectSet` parameter. |
+| `initialValues` | Async value per parameter ID | Every parameter `not-started` | Starting values for `asyncParameterValues` before the host's first update. |
+
+On mount, `FoundryWidget`:
+
+1. Subscribes to host messages and sends `widget.ready`, so the host sends the first parameter values.
+2. Observes the size of `document.body` and sends `widget.resize` with its border-box width and height on every change.
+3. Sends `widget.reload` before a Vite full-page reload in development.
+4. Wraps `children` in an error boundary. An uncaught render error shows its stack trace, plus troubleshooting tips when `NODE_ENV` is not `production`. Add your own error boundary inside `FoundryWidget` to show a custom message instead.
+
+Render one `FoundryWidget` per widget, at the root. It creates the widget client once, when it mounts.
+
+## Read parameters
+
+`useFoundryWidgetContext` returns the context for the nearest `FoundryWidget`. The context is not generic at runtime, so bind your config's type once with `withTypes` and import that hook everywhere:
+
+```ts title="src/context.ts"
+import type { FoundryWidgetClientContext } from "@osdk/widget.client-react";
+import { useFoundryWidgetContext } from "@osdk/widget.client-react";
+import type MainConfig from "./main.config.js";
+
+export const useWidgetContext: () => FoundryWidgetClientContext<
+  typeof MainConfig
+> = useFoundryWidgetContext.withTypes<typeof MainConfig>();
+```
+
+`useFoundryWidgetContext<typeof MainConfig>()` is equivalent. Outside a `FoundryWidget`, the hook returns a default context; see [Render outside Foundry](#render-outside-foundry).
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `parameters.values` | Each parameter's value, all optional | The latest values, typed from the config: `headerText` is `string \| undefined`, `todoItems` is `string[] \| undefined`. |
+| `parameters.state` | `"not-started" \| "loading" \| "loaded" \| "reloading" \| "failed"` | One loading state for the widget's parameters. See [Loading states](#loading-states). |
+| `asyncParameterValues` | Per parameter ID: `{ type, value }`, where `value` is an `AsyncValue` | The individual state of each parameter, for widgets that load parameters independently. |
+| `emitEvent` | `(eventId, { parameterUpdates }) => void` | Sends one of the config's events. See [Emit events](#emit-events). |
+| `hostEventTarget` | `FoundryHostEventTarget` | The raw stream of host messages. See [Listen to host messages](#listen-to-host-messages). |
+
+## Loading states
+
+`parameters.state` summarizes the parameters in the host's most recent update, in this order of precedence:
+
+| State | When |
+| --- | --- |
+| `"failed"` | Any parameter failed. `parameters.values` keeps the values that did arrive. |
+| `"loading"` | Any parameter is loading for the first time. |
+| `"reloading"` | Any parameter is reloading. Values keep their previous contents. |
+| `"not-started"` | Any parameter has not started loading. |
+| `"loaded"` | Every parameter loaded. |
+
+While the state is `not-started` or `loading`, `parameters.values` is `{}`, so give every read a fallback and keep rendering. Show progress next to the content instead of replacing it:
+
+```tsx title="src/TodoWidget.tsx"
+import { useCallback, useState } from "react";
+import { useWidgetContext } from "./context.js";
+
+export function TodoWidget() {
+  const { parameters, emitEvent } = useWidgetContext();
+  const headerText = parameters.values.headerText ?? "Todo list";
+  const todoItems = parameters.values.todoItems ?? [];
+  const isPending =
+    parameters.state === "not-started" ||
+    parameters.state === "loading" ||
+    parameters.state === "reloading";
+  const [newItem, setNewItem] = useState("");
+
+  const handleAdd = useCallback(() => {
+    emitEvent("updateTodoItems", {
+      parameterUpdates: { todoItems: [...todoItems, newItem] },
+    });
+    setNewItem("");
+  }, [emitEvent, todoItems, newItem]);
+
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) =>
+      setNewItem(event.target.value),
+    [],
+  );
+
+  return (
+    <section aria-busy={isPending}>
+      <h2>{headerText}</h2>
+      {parameters.state === "failed" && (
+        <p role="alert">Some values failed to load.</p>
+      )}
+      {parameters.values.showWarning === true && (
+        <p role="status">This is a data warning</p>
+      )}
+      <ul>
+        {todoItems.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+      <input value={newItem} onChange={handleChange} placeholder="Add item" />
+      <button onClick={handleAdd} disabled={newItem === ""}>
+        Add item
+      </button>
+    </section>
+  );
+}
+```
+
+To react to one parameter without waiting on the others, read `asyncParameterValues`:
+
+```tsx title="src/Header.tsx"
+import { useWidgetContext } from "./context.js";
+
+export function Header() {
+  const { asyncParameterValues } = useWidgetContext();
+  const header = asyncParameterValues.headerText.value;
+
+  return (
+    <h2 aria-busy={header.type === "loading" || header.type === "reloading"}>
+      {header.value ?? "Todo list"}
+      {header.type === "failed" && ` (failed: ${header.error.message})`}
+    </h2>
+  );
+}
+```
+
+## Emit events
+
+`emitEvent(eventId, { parameterUpdates })` sends a `widget.emit-event` message. TypeScript limits `eventId` to the config's events and requires a value for every ID in the event's `parameterUpdateIds`. The call returns nothing and does not report whether the host acted on the event.
+
+In the example above, `handleAdd` emits `updateTodoItems` with the new list. The widget does not keep its own copy: when the host writes the update to the variable bound to `todoItems`, the new list arrives through `parameters.values` and the widget re-renders. The template's counter works the same way, reading `counterValue` and emitting `setCounterValue` with the next number.
+
+## Object set parameters
+
+For an `objectSet` parameter, the host sends an object set RID. Pass an OSDK `client` to `FoundryWidget`, and the value in `parameters.values` gains an `objectSet` you can query, typed by the parameter's `allowedType`.
+
+```ts title="src/directory.config.ts"
+import { Employee } from "@my-app/sdk";
+import { defineConfig } from "@osdk/widget.client";
+
+export default defineConfig({
+  id: "employeeDirectory",
+  name: "Employee directory",
+  type: "workshop",
+  parameters: {
+    employees: {
+      displayName: "Employees",
+      type: "objectSet",
+      allowedType: Employee,
+    },
+    selectedEmployees: {
+      displayName: "Selected employees",
+      type: "objectSet",
+      allowedType: Employee,
+    },
+  },
+  events: {
+    selectEmployee: {
+      displayName: "Select employee",
+      parameterUpdateIds: ["selectedEmployees"],
+    },
+  },
+});
+```
+
+```tsx title="src/directory.tsx"
+import { OsdkProvider } from "@osdk/react";
+import { FoundryWidget } from "@osdk/widget.client-react";
+import { createRoot } from "react-dom/client";
+import { client } from "./client.js";
+import DirectoryConfig from "./directory.config.js";
+import { EmployeeDirectory } from "./EmployeeDirectory.js";
+
+createRoot(document.getElementById("root")!).render(
+  <FoundryWidget config={DirectoryConfig} client={client}>
+    <OsdkProvider client={client}>
+      <EmployeeDirectory />
+    </OsdkProvider>
+  </FoundryWidget>,
+);
+```
+
+Query the set with `useObjectSet` from `@osdk/react`. Hydrated object sets are cached per parameter, so the `objectSet` reference only changes when the host sends a new RID, and it is safe to pass straight to hooks. To emit an object set, pass an `ObjectSet` from `@osdk/client`:
+
+```tsx title="src/EmployeeDirectory.tsx"
+import { useObjectSet } from "@osdk/react";
+import { useFoundryWidgetContext } from "@osdk/widget.client-react";
+import { useCallback } from "react";
+import type DirectoryConfig from "./directory.config.js";
+
+const useDirectoryContext =
+  useFoundryWidgetContext.withTypes<typeof DirectoryConfig>();
+
+export function EmployeeDirectory() {
+  const { parameters, emitEvent } = useDirectoryContext();
+  const employees = parameters.values.employees?.objectSet;
+  const { data, isLoading, error } = useObjectSet(employees, {
+    orderBy: { fullName: "asc" },
+  });
+
+  const handleSelect = useCallback(
+    (employeeId: number) => {
+      if (employees == null) {
+        return;
+      }
+      emitEvent("selectEmployee", {
+        parameterUpdates: {
+          selectedEmployees: employees.where({ employeeId }),
+        },
+      });
+    },
+    [employees, emitEvent],
+  );
+
+  return (
+    <div aria-busy={isLoading}>
+      {error != null && <p role="alert">{error.message}</p>}
+      <ul>
+        {data?.map((employee) => (
+          <li key={employee.$primaryKey}>
+            <button onClick={() => handleSelect(employee.employeeId)}>
+              {employee.fullName}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+`emitEvent` turns each `ObjectSet` into a temporary object set RID with an extra request before it sends the event. Because of that step:
+
+- If you emit the same event again before the request finishes, only the last call is sent.
+- Errors, such as a failed request, are not reported to the caller.
+- Emitting an object set without a `client` on `FoundryWidget` fails, and so does receiving one.
+
+See [Work with object sets](/react/object-sets) for filtering, pivoting, and combining the sets you receive.
+
+## Listen to host messages
+
+`hostEventTarget` dispatches every `host.update-parameters` message, with the raw payload in `event.detail`. Use it to log or react to updates beyond what `parameters` exposes:
+
+```tsx title="src/useLogParameterUpdates.ts"
+import { useEffect } from "react";
+import { useWidgetContext } from "./context.js";
+
+export function useLogParameterUpdates() {
+  const { hostEventTarget } = useWidgetContext();
+
+  useEffect(() => {
+    const listener = (event: CustomEvent) => {
+      console.log("Parameters updated", event.detail);
+    };
+    hostEventTarget.addEventListener("host.update-parameters", listener);
+    return () =>
+      hostEventTarget.removeEventListener("host.update-parameters", listener);
+  }, [hostEventTarget]);
+}
+```
+
+## Render outside Foundry
+
+`FoundryWidget` needs the host API that Foundry injects. Outside Foundry and developer mode, it throws `Invariant failed: [FoundryWidgetClient] Missing __PALANTIR_WIDGET_API__ in window` when it renders.
+
+Components below it still render on their own: without a `FoundryWidget` ancestor, `useFoundryWidgetContext` returns a default context whose `parameters.state` is `not-started`, whose `parameters.values` is `{}`, and whose `emitEvent` does nothing. Because widget components already handle empty values, you can render them directly in unit tests and Storybook.
+
+To start `asyncParameterValues` in a known state before the host's first update, pass `initialValues` to `FoundryWidget`. It does not affect `parameters.values` or `parameters.state`, which stay `{}` and `not-started` until the first `host.update-parameters` message.
+
+```tsx title="src/main.tsx"
+import { FoundryWidget } from "@osdk/widget.client-react";
+import { createRoot } from "react-dom/client";
+import { Header } from "./Header.js";
+import MainConfig from "./main.config.js";
+
+createRoot(document.getElementById("root")!).render(
+  <FoundryWidget
+    config={MainConfig}
+    initialValues={{
+      headerText: { type: "string", value: { type: "loading" } },
+      showWarning: { type: "boolean", value: { type: "loading" } },
+      todoItems: { type: "array", subType: "string", value: { type: "loading" } },
+    }}
+  >
+    <Header />
+  </FoundryWidget>,
+);
+```

@@ -1,0 +1,94 @@
+---
+title: FAQ
+description: Short answers about @osdk/react versus React Query, using OSDK without React or on a server, package versions, dates, templates, and changelogs.
+---
+
+Short answers to common questions about the OSDK TypeScript and React SDKs. Each answer links to the page that covers the topic in full.
+
+<Accordions>
+  <Accordion title="How is @osdk/react different from React Query or SWR?">
+    React Query and SWR cache responses by a key you choose. `@osdk/react` knows the Ontology, so it caches objects themselves:
+
+    - Each object is stored once by type and primary key, and every list, link, and detail view that contains it updates together.
+    - Actions report which objects they added, modified, or deleted, and the cache applies those edits without manual invalidation.
+    - Optimistic updates roll back automatically if the action fails.
+    - `streamUpdates: true` keeps lists live over a WebSocket.
+
+    Use `@osdk/react` for Foundry data and keep React Query or SWR for other APIs. They work side by side, but do not copy OSDK data into another cache. See [Caching and reactivity](./concepts/caching.mdx).
+  </Accordion>
+
+  <Accordion title="Can I use OSDK without React?">
+    Yes. `@osdk/client` has no UI dependency and works in any browser or JavaScript runtime with `fetch`. Create a client with `createClient` and call `client(Employee).fetchPage()`, `client(modifyEmployee).applyAction()`, and so on. See [Use the client without React](./client.mdx#use-the-client-without-react).
+
+    For the normalized cache outside React, `createObservableClient` from `@osdk/client/observable` is the same engine `OsdkProvider` uses.
+  </Accordion>
+
+  <Accordion title="Which packages must share versions?">
+    `@osdk/api`, `@osdk/client`, and `@osdk/react` are released together with one version number. Install the same version of all three, and keep prereleases together. Your generated SDK has a peer dependency on `@osdk/client`, so generate a new SDK version when you upgrade the client across many versions.
+
+    `@osdk/react-components`, `@osdk/react-devtools`, and `@osdk/oauth` have their own version numbers. Upgrade them alongside the three core packages. See [Version compatibility](./installation.mdx#version-compatibility).
+  </Accordion>
+
+  <Accordion title="Why are dates and timestamps strings?">
+    Date and timestamp properties are ISO 8601 strings, such as `"2024-03-15"` and `"2024-03-15T09:30:00Z"`. Bundling a date library would add weight to every app, often duplicating a library you already use, and parsing every value costs time even when you never read it. Parse values with `Date` or your date library when you need date math. See [Dates and timestamps](./concepts/ontology.mdx#dates-and-timestamps).
+  </Accordion>
+
+  <Accordion title="Can I use OSDK on a server or in Node.js?">
+    Yes, with `@osdk/client` and a confidential OAuth client. `createConfidentialOauthClient` from `@osdk/oauth` uses the client credentials grant, so requests act as the application's service user, not a signed-in person:
+
+    ```ts title="src/server/client.ts"
+    import { createClient } from "@osdk/client";
+    import { createConfidentialOauthClient } from "@osdk/oauth";
+
+    const auth = createConfidentialOauthClient(
+      process.env.FOUNDRY_CLIENT_ID!,
+      process.env.FOUNDRY_CLIENT_SECRET!,
+      process.env.FOUNDRY_URL!,
+    );
+
+    export const client = createClient(
+      process.env.FOUNDRY_URL!,
+      process.env.FOUNDRY_ONTOLOGY_RID!,
+      auth,
+    );
+    ```
+
+    Keep the client secret on the server; never ship it to a browser. `@osdk/react` is for browser apps. See [Authenticate a server or service](./authentication.mdx#authenticate-a-server-or-service).
+  </Accordion>
+
+  <Accordion title="Is there a Vue template?">
+    Yes. `@osdk/create-app` has React, Vue, and Expo templates, plus a React template for public apps without sign-in. Choose one at the prompt, or pass it directly:
+
+    ```bash
+    npx @osdk/create-app@latest my-app --template vue
+    ```
+
+    The Vue template uses `@osdk/client` and `@osdk/oauth` directly. `@osdk/react` and its components are React-only.
+  </Accordion>
+
+  <Accordion title="Where do I find the Ontology RID and client ID?">
+    Both come from your application in Developer Console:
+
+    | Value | Where to find it |
+    | --- | --- |
+    | Client ID | The **OAuth & scopes** page. |
+    | Ontology RID | The **Ontology SDK** page. Your generated SDK also exports it as `$ontologyRid` when it was generated for a single environment. |
+    | Redirect URL | Also on **OAuth & scopes**. The value in your app must match one listed there exactly. |
+
+    Apps created with `@osdk/create-app` store these in `.env.development` and `.env.production` as `VITE_FOUNDRY_CLIENT_ID`, `VITE_FOUNDRY_ONTOLOGY_RID`, and `VITE_FOUNDRY_REDIRECT_URL`.
+  </Accordion>
+
+  <Accordion title="Why do I call client(Employee) instead of client.objects.Employee?">
+    The generated SDK exports definitions, and the client does the work. Importing definitions by name lets your bundler drop the parts of the Ontology you do not use, and lets several SDKs share one `@osdk/client`. See [Why `client(Employee)`](./concepts/ontology.mdx#why-clientemployee).
+  </Accordion>
+
+  <Accordion title="Where is the changelog?">
+    Each package has a `CHANGELOG.md` on GitHub and in its npm package:
+
+    - [`@osdk/react` changelog](https://github.com/palantir/osdk-ts/blob/main/packages/react/CHANGELOG.md)
+    - [`@osdk/client` changelog](https://github.com/palantir/osdk-ts/blob/main/packages/client/CHANGELOG.md)
+    - [`@osdk/react-components` changelog](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/CHANGELOG.md)
+
+    Locally, open `node_modules/@osdk/react/CHANGELOG.md` to read the notes for the version you have installed.
+  </Accordion>
+</Accordions>

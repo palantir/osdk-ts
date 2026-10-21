@@ -1,0 +1,179 @@
+---
+title: Host on Foundry
+description: Build your OSDK app with Vite and deploy it to Foundry website hosting with osdk site deploy, foundry.config.json, versions, previews, and rollbacks.
+---
+
+Foundry website hosting serves your app's static build from a subdomain of your Foundry stack. You upload each build as a version with `@osdk/cli`, and one version at a time is live. This page covers configuring production, deploying, and managing versions; the [CLI reference](./cli.mdx#osdk-site) lists every flag.
+
+## Before you start
+
+| You need | Where to get it |
+| --- | --- |
+| An application in Developer Console with website hosting set up | Developer Console. Note the subdomain, such as `https://myapp.example.palantirfoundry.com`. |
+| The application RID | The application's Developer Console URL, `/workspace/developer-console/app/<rid>`. |
+| A Foundry token | Set it as `FOUNDRY_TOKEN`. The CLI accepts only JWTs. |
+| A static build | Any framework works. Apps from `@osdk/create-app` build to `./dist` with Vite. |
+
+## Deploy your app
+
+<Steps>
+<Step>
+
+### Add `foundry.config.json`
+
+Apps from `@osdk/create-app` already have this file. Otherwise, create it in your project root:
+
+```json title="foundry.config.json"
+{
+  "foundryUrl": "https://example.palantirfoundry.com",
+  "site": {
+    "application": "ri.third-party-applications.main.application.1c66b352-4e00-40d2-995d-061c9d533ace",
+    "directory": "./dist",
+    "autoVersion": {
+      "type": "git-describe",
+      "tagPrefix": ""
+    }
+  }
+}
+```
+
+The CLI reads it from the current directory or the nearest parent, so you do not repeat these values on every command. All fields are described in [`foundry.config.json`](#foundryconfigjson).
+
+</Step>
+<Step>
+
+### Set the production redirect URL
+
+After sign-in, Foundry sends users back to your app's redirect URL, which must point at the hosted subdomain in production. In an app from `@osdk/create-app`, set it in `.env.production`:
+
+```ini title=".env.production"
+VITE_FOUNDRY_REDIRECT_URL=https://myapp.example.palantirfoundry.com/auth/callback
+VITE_FOUNDRY_API_URL=https://example.palantirfoundry.com
+VITE_FOUNDRY_CLIENT_ID=<your-client-id>
+```
+
+If you skipped the production URL when you created the app, the redirect line is commented out with a placeholder. Then add the same URL as a redirect URL on **OAuth & scopes** in Developer Console. The two must match exactly. See [Authentication](../authentication.mdx#handle-the-redirect-callback).
+
+The React template includes a test that fails while any of these variables is missing or still a placeholder:
+
+```sh
+VERIFY_ENV_PRODUCTION=true npm test
+```
+
+</Step>
+<Step>
+
+### Build
+
+```sh
+npm run build
+```
+
+In the React templates from `@osdk/create-app` this runs `tsc && vite build` (`vue-tsc && vite build` for Vue, `expo export -p web` for Expo). Vite builds in `production` mode, reads `.env.production`, and writes to `./dist`. Your Vite config must define `process.env.NODE_ENV`; see [Use OSDK with Vite](../guides/vite.mdx).
+
+</Step>
+<Step>
+
+### Deploy
+
+```sh
+export FOUNDRY_TOKEN=<token>
+npx @osdk/cli@latest site deploy
+```
+
+The CLI computes the version, zips `./dist`, uploads it, makes it live, and prints the site URL. To set the version yourself, pass `--version 1.2.0`.
+
+</Step>
+</Steps>
+
+## `foundry.config.json`
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `foundryUrl` | `string` | Yes | The Foundry stack URL. Must start with `https://`. |
+| `site.application` | `string` | Yes | The Developer Console application RID. |
+| `site.directory` | `string` | Yes | The directory to upload, relative to where you run the CLI. |
+| `site.autoVersion` | `object` | No | How to compute versions. `{ "type": "git-describe", "tagPrefix"?: string }` or `{ "type": "package-json" }`. |
+| `site.uploadOnly` | `boolean` | No | Upload new versions without making them live. Defaults to `false`. |
+
+The file must not contain other top-level fields. A `widgetSet` block, used by [widget sets](../widgets/publish.mdx), cannot share a file with `site`. Command-line flags and `OSDK_*` environment variables override the file; see [Configuration](./cli.mdx#configuration).
+
+## Automatic versions
+
+Every version must be valid [SemVer](https://semver.org) and unique: Foundry rejects a version that already exists. Pass `--version`, or let the CLI compute it.
+
+| `autoVersion.type` | Version comes from |
+| --- | --- |
+| `git-describe` | `git describe --tags --first-parent --dirty`, limited to tags starting with `tagPrefix` when it is set. |
+| `package-json` | The `version` field of the nearest `package.json`. |
+
+With `git-describe`, the CLI strips `tagPrefix` from the result, or a leading `v` when there is no prefix. The result depends on where you are relative to the newest tag:
+
+| Repository state | Example tag | Version |
+| --- | --- | --- |
+| On the tagged commit | `v1.2.0` | `1.2.0` |
+| Three commits after the tag | `v1.2.0` | `1.2.0-3-g1a2b3c4` |
+| Uncommitted changes | `v1.2.0` | `1.2.0-dirty` |
+| Tag prefix `my-app@` | `my-app@1.2.0` | `1.2.0` |
+
+The deploy fails if git is missing, the directory is not a git repository, no tag matches, or the result is not SemVer. In CI, check out tags as well as commits, or `git describe` finds no tag.
+
+To use the version in `package.json`, bump it before each deploy:
+
+```json title="foundry.config.json"
+{
+  "foundryUrl": "https://example.palantirfoundry.com",
+  "site": {
+    "application": "ri.third-party-applications.main.application.1c66b352-4e00-40d2-995d-061c9d533ace",
+    "directory": "./dist",
+    "autoVersion": { "type": "package-json" }
+  }
+}
+```
+
+## Preview before going live
+
+Upload a version without making it live with `--uploadOnly`, or set `site.uploadOnly` to `true` to make that the default:
+
+```sh
+npx @osdk/cli@latest site deploy --uploadOnly
+```
+
+The CLI prints a preview link, `https://<subdomain>/.system/preview?previewVersion=<version>`. When it looks right, make it live:
+
+```sh
+npx @osdk/cli@latest site version set 1.3.0
+```
+
+Use the same flow when Foundry reports that a version is still being scanned for vulnerabilities: upload with `--uploadOnly`, wait for the scan, then set the version live with the CLI or from **Website hosting** in Developer Console.
+
+## Roll back
+
+To roll back, set an earlier uploaded version live:
+
+```sh
+npx @osdk/cli@latest site version list
+npx @osdk/cli@latest site version set 1.2.0
+```
+
+`list` shows each version, newest first, and marks the live one. `osdk site version get` prints only the live version.
+
+## Clean up old versions
+
+An application has a version limit. When you reach it, deploys fail with `The site contains too many versions`. Delete versions you no longer need:
+
+```sh
+npx @osdk/cli@latest site version delete 1.0.0 --yes
+```
+
+You cannot delete the live version. To take the site offline, clear the live version with `osdk site version unset`; the site is unreachable until you set one again.
+
+## Host somewhere else
+
+The build is static files, so any web server or CDN can host it. Foundry website hosting sets up cross-origin access to your stack for you; elsewhere you configure it yourself:
+
+| Requirement | Why |
+| --- | --- |
+| Your stack allows your origin for CORS | The browser calls Foundry APIs directly from your origin. Ask your Foundry administrator to allow it. |
+| The redirect URL is on **OAuth & scopes** | Foundry only redirects to listed URLs. Use your origin plus `/auth/callback`, and set the same value in `.env.production`. |
+| The server returns your app for `/auth/callback` | Sign-in lands on that path. A server that returns `404` for paths without a file breaks sign-in, so serve `index.html` for unknown paths. |

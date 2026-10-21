@@ -1,0 +1,127 @@
+---
+title: Subscriptions
+description: Receive live updates when objects in an object set are added, changed, or removed, with subscribe, its four callbacks, and unsubscribe.
+---
+
+`subscribe` opens a live connection to an object set. The server pushes each change to an object in the set, so you can keep a local copy current without polling.
+
+```ts title="src/watchEngineers.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const subscription = client(Employee)
+  .where({ department: "Engineering" })
+  .subscribe(
+    {
+      onChange(update) {
+        console.log(update.state, update.object.$primaryKey, update.object.fullName);
+      },
+      onSuccessfulSubscription() {
+        console.log("Subscribed");
+      },
+      onOutOfDate() {
+        console.log("Missed changes; reload the set");
+      },
+      onError({ subscriptionClosed, error }) {
+        console.error("Subscription error", { subscriptionClosed, error });
+      },
+    },
+    { properties: ["fullName", "jobTitle"] },
+  );
+
+subscription.unsubscribe();
+```
+
+`subscribe` works on any object set, including filtered sets, pivots, and [interfaces](./interfaces.mdx). It returns immediately with `{ unsubscribe }`; the connection opens in the background.
+
+## Callbacks
+
+All callbacks are optional.
+
+| Callback | Called when |
+| --- | --- |
+| `onSuccessfulSubscription()` | The server accepted the subscription. Changes from here on reach `onChange`. |
+| `onChange(update)` | An object in the set changed. See [Updates](#updates). |
+| `onOutOfDate()` | The client cannot account for every change, for example after the connection dropped and reconnected. Reload the whole set. |
+| `onError({ subscriptionClosed, error })` | Something failed. When `subscriptionClosed` is `true`, no more updates arrive. When it is `false`, the subscription continues. |
+
+An exception thrown inside `onChange` or another callback does not stop the subscription. The client reports it to `onError` with `subscriptionClosed: false`. If `onError` itself throws, the client closes the subscription.
+
+## Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `properties` | `PropertyKeys[]` | Every property of the type | The properties to receive. `update.object` is typed to these. |
+| `includeRid` | `boolean` | `false` | Adds `$rid` to each updated object. Not available when `properties` includes a geotime series reference property. |
+
+Request only the properties you display. Without `properties`, each update can carry every property of the type.
+
+## Updates
+
+`onChange` receives `{ object, state }`:
+
+| `state` | Meaning |
+| --- | --- |
+| `"ADDED_OR_UPDATED"` | The object was created, was edited, or now matches the set's filter. `object` has the latest values of the subscribed properties. |
+| `"REMOVED"` | The object was deleted, or no longer matches the filter. Drop it by `$primaryKey`. |
+
+Updates to a geotime series reference property arrive as separate updates that carry only the primary key and that property. Merge each update into your copy of the object rather than replacing it, so a property missing from an update keeps its last value.
+
+## Keep a local copy current
+
+Load the set once the subscription is live, apply each change, and reload on `onOutOfDate`:
+
+```ts title="src/liveRoster.ts"
+import { Employee } from "@my-app/sdk";
+import type { Osdk } from "@osdk/client";
+import { client } from "./client";
+
+type Row = Osdk.Instance<Employee, never, "fullName" | "jobTitle">;
+
+const engineers = client(Employee).where({ department: "Engineering" });
+const roster = new Map<number, Row>();
+
+async function reload() {
+  roster.clear();
+  for await (const employee of engineers.asyncIter({ $select: ["fullName", "jobTitle"] })) {
+    roster.set(employee.$primaryKey, employee);
+  }
+}
+
+const subscription = engineers.subscribe(
+  {
+    onSuccessfulSubscription() {
+      void reload();
+    },
+    onOutOfDate() {
+      void reload();
+    },
+    onChange({ object, state }) {
+      if (state === "REMOVED") {
+        roster.delete(object.$primaryKey);
+        return;
+      }
+      const existing = roster.get(object.$primaryKey);
+      roster.set(object.$primaryKey, existing == null ? object : existing.$clone(object));
+    },
+    onError({ subscriptionClosed, error }) {
+      if (subscriptionClosed) {
+        console.error("Roster is no longer live", error);
+      }
+    },
+  },
+  { properties: ["fullName", "jobTitle"] },
+);
+```
+
+Loading after `onSuccessfulSubscription`, not before, means a change made while the first load runs still reaches `onChange`.
+
+## Connection
+
+All subscriptions from one client share a single WebSocket. When the connection drops, the client reconnects with exponential backoff, resubscribes, and calls `onOutOfDate` on each subscription it restored. In Node.js, the client uses the `ws` package, so no polyfill is needed.
+
+Call `unsubscribe` when you no longer need updates, such as when a component unmounts or a request handler finishes. An open subscription keeps the connection open.
+
+## In React
+
+`useOsdkObjects` and `useObjectSet` accept `streamUpdates: true`, which subscribes for you and writes each change into the shared cache. See [Objects in React](/react/objects).

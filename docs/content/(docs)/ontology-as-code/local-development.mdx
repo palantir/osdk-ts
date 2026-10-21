@@ -1,0 +1,232 @@
+---
+title: Local development
+description: Use @osdk/vite-plugin-oac to compile your ontology, generate an SDK, and serve a seeded mock Foundry API from the Vite dev server.
+---
+
+`@osdk/vite-plugin-oac` lets you build an app against your ontology-as-code definitions before they exist in Foundry. On every change to `.ontology/`, it compiles the ontology again, regenerates an SDK into `.osdk/src`, and answers OSDK requests from the Vite dev server with data from a seed file.
+
+<Callout type="warn">
+  In `@osdk/vite-plugin-oac` 0.85.0, the step that converts the IR to Ontology metadata reads a `blockData` key, but `@osdk/maker` 0.82.0 writes the IR under `ontology`. The conversion fails with `Cannot read properties of undefined (reading 'interfaceTypes')`, so no SDK is generated and the mock serves no types. Check the changelog for a fix before you adopt the plugin.
+</Callout>
+
+## How it works
+
+| Step | Tool | Output |
+| --- | --- | --- |
+| 1. Compile the ontology | `pnpm exec maker -i <ontologyDir>/ontology.mts` | `node_modules/.osdk/.oac/.ontology.ir.json` |
+| 2. Convert the IR to Ontology metadata | `@osdk/generator-converters.ontologyir` | `node_modules/.osdk/.oac/.ontology.json` |
+| 3. Generate an SDK | `pnpm exec osdk unstable typescript generate` | `.osdk/src`, then `pnpm exec tsc` in `.osdk` |
+| 4. Start the mock (dev server only) | `@osdk/faux` | Ontology metadata and `seed.ts` data, served from the dev server |
+
+The plugin writes the SDK to a temporary directory first, then copies only the files whose contents changed into `.osdk/src` and deletes files that are no longer generated.
+
+| Command | What runs |
+| --- | --- |
+| `vite` (dev server) | All four steps before the server starts, then all four again on every add, change, or delete under the ontology directory. After each successful run, the browser does a full reload. Failures are logged, and the server keeps running. |
+| `vite build` | Steps 1 to 3 in the `buildStart` hook. The build fails if any step fails. No mock server. |
+
+## Requirements
+
+- **pnpm.** The plugin runs `maker`, `osdk`, and `tsc` with `pnpm exec`, so pnpm must be on your `PATH` and each binary must be installed in your project.
+- **Vite** and a Node.js version that can import `.mts` files natively: 22.18 or later, or 23.6 or later.
+- **A `tsconfig.json` in `.osdk`.** After generating, the plugin runs `tsc` with `.osdk` as the working directory and fails if it exits with an error.
+
+## Install
+
+```npm
+npm install --save-dev @osdk/vite-plugin-oac @osdk/maker @osdk/cli @osdk/faux typescript
+```
+
+The app itself needs `@osdk/client` and `@osdk/api`, which the generated SDK imports, plus `@osdk/react` if you use React. `@osdk/faux` is only needed for the seed file's types.
+
+## Configure Vite
+
+Add `ontologyAsCode` to your Vite config:
+
+```ts title="vite.config.ts"
+import { fileURLToPath } from "node:url";
+
+import { ontologyAsCode } from "@osdk/vite-plugin-oac";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [
+    ontologyAsCode({
+      ontologyDir: fileURLToPath(new URL("./.ontology", import.meta.url)),
+    }),
+  ],
+  resolve: {
+    alias: {
+      "@my-app/sdk": fileURLToPath(new URL("./.osdk/src/index.ts", import.meta.url)),
+    },
+  },
+});
+```
+
+Pass `ontologyDir` as an absolute path: the plugin ignores a changed file unless its path starts with `ontologyDir`, and Vite's watcher reports absolute paths. The `resolve.alias` entry is one way to import the generated SDK as `@my-app/sdk`; add a matching `paths` entry to your app's `tsconfig.json` so TypeScript resolves it too.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `ontologyDir` | `string` | | Required. The directory that holds `ontology.mts` and `seed.ts`. Created if it does not exist. |
+| `loggerLevel` | `"debug" \| "info" \| "warn" \| "error"` | `"info"` | The lowest level the plugin logs. Messages are prefixed with `[osdk]`. |
+| `hooks.preSeed` | `(ontology: FauxOntology) => Promise<void>` | | Runs after the plugin registers the generated metadata with the mock and before it applies the seed. Errors are logged and ignored. |
+
+Create `.osdk/tsconfig.json` for the `tsc` step. The generated code uses ES module imports with `.js` extensions:
+
+```json title=".osdk/tsconfig.json"
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": ["src"]
+}
+```
+
+Add `.osdk/src` to `.gitignore`, or commit it so the app builds without running the plugin. Do not edit it by hand.
+
+## Seed data
+
+The mock starts empty. The plugin loads `seed.ts` from the ontology directory after every regeneration and calls its default export with the mock's `FauxFoundry`. The file is required: without it, each regeneration logs an error and the browser does not reload.
+
+```ts title=".ontology/seed.ts"
+import type { FauxFoundry } from "@osdk/faux";
+
+export default function seed(fauxFoundry: FauxFoundry): void {
+  const store = fauxFoundry.getDefaultDataStore();
+
+  const london = store.registerObject({
+    __apiName: "Office",
+    __primaryKey: "lon",
+    officeId: "lon",
+    name: "London",
+    city: "London",
+  });
+
+  const ada = store.registerObject({
+    __apiName: "Employee",
+    __primaryKey: 1,
+    employeeId: 1,
+    fullName: "Ada Lovelace",
+    jobTitle: "Engineer",
+    department: "Research",
+    startDate: "2024-01-15",
+    salary: 120000,
+    skills: ["math", "analysis"],
+  });
+
+  const grace = store.registerObject({
+    __apiName: "Employee",
+    __primaryKey: 2,
+    employeeId: 2,
+    fullName: "Grace Hopper",
+    jobTitle: "Engineering Manager",
+    department: "Research",
+    startDate: "2023-06-01",
+    salary: 150000,
+    skills: ["compilers"],
+  });
+
+  store.registerLink(london, "occupants", ada, "office");
+  store.registerLink(grace, "reports", ada, "lead");
+}
+```
+
+`registerObject` takes the object's API name in `__apiName`, its primary key in `__primaryKey`, and property values in their wire format, such as ISO 8601 strings for dates. `registerLink(source, linkName, target, reverseLinkName)` takes both sides' link names and sets the foreign key for you, so this seed sets Ada's `officeId` to `"lon"` and her `leadId` to `2`.
+
+Every regeneration rebuilds the mock from the seed, so edits made through actions last only until the next change to `.ontology/`.
+
+## Connect your app
+
+The mock answers on the dev server's own origin, and passes any request it does not handle on to Vite. Create the client with the dev server's origin, the mock's Ontology RID, and the token the mock accepts:
+
+```ts title="src/client.ts"
+import { createClient } from "@osdk/client";
+
+const LOCAL_ONTOLOGY_RID = "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000";
+
+export const client = createClient(
+  window.location.origin,
+  LOCAL_ONTOLOGY_RID,
+  async () => "myAccessToken",
+);
+```
+
+| Value | Why |
+| --- | --- |
+| `window.location.origin` | The mock runs inside the Vite dev server. |
+| `ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000` | The RID of the mock's only ontology. Do not use the generated SDK's `$ontologyRid`; a locally generated SDK sets it to a placeholder. |
+| `"myAccessToken"` | The mock rejects any other bearer token with `401`. |
+
+From there, use the client as you would against Foundry. With `@osdk/react`, pass it to `OsdkProvider` and query the generated types:
+
+```tsx title="src/EmployeeList.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkObjects } from "@osdk/react";
+
+export function EmployeeList() {
+  const { data, isLoading, error } = useOsdkObjects(Employee);
+
+  return (
+    <div>
+      {isLoading && <p>Loading…</p>}
+      {error != null && <p>Could not load employees.</p>}
+      <ul>
+        {data?.map((employee) => (
+          <li key={employee.$primaryKey}>
+            {employee.fullName}, {employee.jobTitle}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+See [Create a client](../client.mdx) for `OsdkProvider`, and [Load objects](/react/objects) for the hooks.
+
+## Limitations
+
+The mock is an approximation of Foundry built from the generated metadata.
+
+| Area | Behavior |
+| --- | --- |
+| Actions | Create, modify, and delete object rules work. Add and delete link rules are only partly supported. Interface create, modify, and delete rules throw `not implemented`. |
+| Numeric primary keys | The mock accepts an object parameter only as a string, while the client sends the primary key as it is. Modify and delete actions on object types with numeric primary keys, such as `employeeId`, fail validation with `INVALID`. Use string primary keys for types you edit locally. |
+| Interfaces | Only shared-property-type properties reach the generated SDK and the mock, every interface property is optional, and object types do not record which interfaces they implement. Interface-defined properties are missing. |
+| Functions | The generated metadata has no queries, so there are no functions to call. |
+| Schema migrations | The plugin runs `maker` without `--write-locks`. If an interface uses [schema migrations](./interfaces.mdx#schema-migrations), commit an up-to-date `ontology-schema-lock.json` or compilation fails. |
+
+## Seed data for the local Ontology server
+
+`@osdk/seed-helpers` and `@osdk/seed-compiler` build seed data for a different local server: the Ontology server that `@osdk/integration-testing` starts, which loads seed JSON into SQLite. They do not seed the Vite plugin's mock. To use them in tests, see [Integration testing](../deploy/integration-testing.mdx).
+
+`seed-compiler` merges a directory of seed files into one JSON file:
+
+```sh
+npx seed-compiler --metadata ontology-metadata.json --seed-dir seed --output seed-data.json
+```
+
+| Option | Description |
+| --- | --- |
+| `--metadata` | Required. The `ontology-metadata.json` that the SDK generator writes with `--experimentalOntologyMetadata`. |
+| `--seed-dir` | Required. A directory of seed files. Every top-level `.mts` file whose name does not start with `$` is loaded, in file name order. |
+| `-o`, `--output` | Required. Where to write the merged JSON. |
+
+Each seed file default-exports the result of `createSeedWithMetadata` from `@osdk/seed-helpers`, or its `output`. All files are merged through one builder, so primary keys must be unique across the whole directory, and a link can reference objects created in any file:
+
+```ts title="seed/employees.mts"
+import { Employee, Office } from "@my-app/sdk";
+import metadata from "@my-app/sdk/experimental/ontology-metadata";
+import { createSeedWithMetadata } from "@osdk/seed-helpers";
+
+export default createSeedWithMetadata(metadata, (seed) => {
+  const london = seed.create(Office, { officeId: "lon", name: "London", city: "London" });
+  const ada = seed.create(Employee, { employeeId: 1, fullName: "Ada Lovelace" });
+  seed.link(ada, "office", london);
+});
+```

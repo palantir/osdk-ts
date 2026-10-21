@@ -1,0 +1,394 @@
+---
+title: Object types
+description: Define object types with defineObject from @osdk/maker, including property types, primary keys, titles, value types, and datasources.
+---
+
+{/* cspell:ignore geospatial */}
+
+An object type describes one kind of thing in your ontology, such as an employee or an office: its properties, which property identifies each object, and where its data comes from. Define one with `defineObject` from `@osdk/maker` in your `.ontology/ontology.mts` file.
+
+## Define an object type
+
+```ts title=".ontology/ontology.mts"
+import { defineObject } from "@osdk/maker";
+
+export const employee = defineObject({
+  apiName: "Employee",
+  displayName: "Employee",
+  pluralDisplayName: "Employees",
+  description: "A person employed by the company.",
+  icon: { locator: "person", color: "#2D72D2" },
+  primaryKeyPropertyApiName: "employeeId",
+  titlePropertyApiName: "fullName",
+  properties: {
+    employeeId: { type: "integer", displayName: "Employee ID" },
+    fullName: { type: "string", displayName: "Full name" },
+    jobTitle: { type: "string" },
+    department: { type: "string" },
+    startDate: { type: "date" },
+    salary: { type: "double" },
+    skills: { type: "string", array: true },
+  },
+});
+```
+
+`defineObject` registers the type and returns its definition with the namespaced API name, so `employee.apiName` is `com.example.Employee` when you compile with `--apiNamespace com.example`. Pass the returned value wherever another definition needs the object type, such as a link or an action.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `apiName` | `string` | | Required. The API name, without the namespace. |
+| `displayName` | `string` | | Required. The singular name shown in Foundry. |
+| `pluralDisplayName` | `string` | | Required. The plural name shown in Foundry. |
+| `primaryKeyPropertyApiName` | `string` | | Required. The property whose value identifies each object. |
+| `titlePropertyApiName` | `string` | | Required. The property shown as each object's title. |
+| `properties` | `Record<string, PropertyDefinition>` | | The properties, keyed by API name. See [Properties](#properties). |
+| `description` | `string` | | A description shown in Foundry. |
+| `icon` | `{ locator: BlueprintIcon; color: string }` | | A [Blueprint](https://blueprintjs.com/docs/#icons) icon name and a hex color. |
+| `visibility` | `"PROMINENT" \| "NORMAL" \| "HIDDEN"` | | How prominently Foundry shows the type. |
+| `status` | `ObjectTypeStatus` | `"active"` | See [Status](#status). |
+| `implementsInterfaces` | `Array<InterfaceImplementation>` | | Interfaces the type implements. See [Interfaces](./interfaces.mdx#implement-an-interface). |
+| `datasources` | `Array<DatasourceDefinition>` | A dataset | Where property values come from. See [Datasources](#datasources). |
+| `editsEnabled` | `boolean` | | Whether users can edit objects of this type. |
+| `editsHistoryConfig` | `{ enabled: boolean; storeAllPreviousProperties?: boolean }` | | Whether to keep a history of edits. |
+| `aliases` | `Array<string>` | | Other names to find the type by in search. |
+| `includeEmptyBackingDatasource` | `boolean` | | Ask `@osdk/maker-experimental` to package an empty backing dataset. Only valid when every datasource is `dataset` or `derived`. The `maker` CLI ignores it. |
+| `permission` | `"roles" \| "publicProject" \| { type: "ontologyPackage"; ontologyPackageRid: string }` | | The permission model for the type. |
+
+## Primary key and title
+
+The primary key and title must both name properties of the object type, and `defineObject` throws if either is missing.
+
+- **Primary key.** Must be a primitive type, such as `string` or `integer`, and cannot be `editOnly`. Every object needs a unique value.
+- **Title.** Must be a primitive type, or a struct whose `mainValue` is primitive.
+
+## Properties
+
+Each entry in `properties` maps an API name to a property definition. Only `type` is required. Property API names start with a letter and contain letters, digits, and `_`.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `type` | `PropertyTypeType` | | Required. See [Property types](#property-types). |
+| `displayName` | `string` | The API name with its first letter capitalized | The name shown in Foundry. |
+| `description` | `string` | | A description shown in Foundry. |
+| `array` | `boolean` | `false` | Store a list of values of `type`. |
+| `reducers` | `Array<{ direction: "ascending" \| "descending"; structField?: string }>` | | For arrays, how to reduce the list to one value for display. |
+| `valueType` | `ValueTypeDefinitionVersion` | | A value type from `defineValueType`. Its constraints apply to the property. See [Value types](#value-types). |
+| `sharedPropertyType` | `SharedPropertyType` | | Back the property with a shared property type. A shared property type can back only one property per object type. See [Shared property types](./interfaces.mdx#shared-property-types). |
+| `nullability` | `{ noNulls: boolean; noEmptyCollections: boolean }` | | Disallow nulls or empty lists. Generated actions make the parameter required when `noNulls` is set. |
+| `visibility` | `"PROMINENT" \| "NORMAL" \| "HIDDEN"` | `"NORMAL"` | How prominently Foundry shows the property. |
+| `status` | `ObjectTypeStatus` | | The property's status. Must match the object's status unless the object is active. |
+| `editOnly` | `boolean` | | The property has no datasource column and only holds values written by edits. |
+| `indexedForSearch` | `boolean` | `true`, except `attachment` | Whether the property is searchable. |
+| `typeClasses` | `Array<{ kind: string; name: string }>` | `SELECTABLE` and `SORTABLE` render hints | Type classes. `struct`, `geoshape`, `mediaReference`, `geotimeSeries`, `attachment`, and `vector` properties cannot have render hints. |
+| `baseFormatter` | `OntologyIrBaseFormatter` | | How Foundry formats values for display. |
+| `includeEmptyBackingMediaSet` | `boolean` | | For `mediaReference` properties, ask `@osdk/maker-experimental` to package an empty media set. The `maker` CLI ignores it. |
+
+### Property types
+
+`type` takes a string for most types and an object for types with options.
+
+| Type | Value | Notes |
+| --- | --- | --- |
+| Boolean | `"boolean"` | |
+| Integers | `"byte"`, `"short"`, `"integer"`, `"long"` | |
+| Decimals | `"float"`, `"double"`, `"decimal"` | `{ type: "decimal", precision?: number, scale?: number }` sets precision and scale. |
+| String | `"string"` | `{ type: "string", ... }` sets search options; see below. |
+| Date and time | `"date"`, `"timestamp"` | |
+| Attachment | `"attachment"` | |
+| Geospatial | `"geopoint"`, `"geoshape"` | |
+| Media | `"mediaReference"` | Each `mediaReference` property gets its own media set datasource. |
+| Time series | `"geotimeSeries"` | |
+| Marking | `{ type: "marking", markingType: "MANDATORY" \| "CBAC", markingInputGroupName: string }` | `markingInputGroupName` names the marking input chosen when the ontology is installed. |
+| Struct | `{ type: "struct", structDefinition, mainValue? }` | See [Struct properties](#struct-properties). |
+| Vector | `{ type: "vector", dimension: number, supportsSearchWith, embeddingModel?, quantization? }` | `supportsSearchWith` is `"COSINE_SIMILARITY"`, `"DOT_PRODUCT"`, or `"EUCLIDEAN_DISTANCE"`. `dimension` must be an integer of at least 1, and a vector property cannot be an array. |
+
+The object form of `string` accepts `isLongText`, `supportsEfficientLeadingWildcard`, `supportsExactMatching`, `supportsFullTextRegex`, `supportsPhonetic`, `enableAsciiFolding`, and `analyzerOverride`:
+
+```ts title=".ontology/ontology.mts"
+import { defineObject } from "@osdk/maker";
+
+export const article = defineObject({
+  apiName: "Article",
+  displayName: "Article",
+  pluralDisplayName: "Articles",
+  primaryKeyPropertyApiName: "articleId",
+  titlePropertyApiName: "headline",
+  properties: {
+    articleId: { type: "string" },
+    headline: { type: "string" },
+    body: { type: { type: "string", isLongText: true, supportsPhonetic: true } },
+  },
+});
+```
+
+### Struct properties
+
+A struct property groups named fields into one value. Each field is a type name, or an object with `fieldType` and `displayMetadata`. Fields cannot be structs, markings, or vectors. `mainValue` names the field or fields that represent the struct when it is shown as a single value, such as a title.
+
+```ts title=".ontology/ontology.mts"
+import { defineObject } from "@osdk/maker";
+
+export const customer = defineObject({
+  apiName: "Customer",
+  displayName: "Customer",
+  pluralDisplayName: "Customers",
+  primaryKeyPropertyApiName: "customerId",
+  titlePropertyApiName: "customerId",
+  properties: {
+    customerId: { type: "string" },
+    address: {
+      type: {
+        type: "struct",
+        structDefinition: {
+          street: "string",
+          city: "string",
+          postcode: {
+            fieldType: "string",
+            displayMetadata: { displayName: "Postcode", description: "Postal code" },
+          },
+        },
+        mainValue: { fields: "street", type: "string" },
+      },
+    },
+  },
+});
+```
+
+## Value types
+
+A value type is a reusable, versioned type with constraints, such as "a string that looks like an email address". Define it with `defineValueType`, then reference it from a property with `valueType`. Value types are written to `value-types.json` as well as the IR.
+
+```ts title=".ontology/ontology.mts"
+import { defineObject, defineValueType } from "@osdk/maker";
+
+export const emailAddress = defineValueType({
+  apiName: "emailAddress",
+  displayName: "Email address",
+  version: "1.0.0",
+  type: {
+    type: "string",
+    constraints: [
+      {
+        constraint: {
+          type: "regex",
+          regex: { regexPattern: "^[^@]+@[^@]+$", usePartialMatch: false },
+        },
+        failureMessage: { message: "Enter a valid email address." },
+      },
+    ],
+  },
+});
+
+export const contact = defineObject({
+  apiName: "Contact",
+  displayName: "Contact",
+  pluralDisplayName: "Contacts",
+  primaryKeyPropertyApiName: "contactId",
+  titlePropertyApiName: "email",
+  properties: {
+    contactId: { type: "string" },
+    email: { type: "string", valueType: emailAddress },
+  },
+});
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `apiName` | `string` | | Required. The value type's API name. |
+| `displayName` | `string` | | Required. The name shown in Foundry. |
+| `version` | `string` | | Required. A semantic version. You can define several versions of the same API name; each version must be unique. |
+| `type` | `{ type, constraints? }` | | Required. The base type and its constraints. |
+| `description` | `string` | | A description shown in Foundry. |
+| `status` | `"active" \| { type: "deprecated"; message: string; deadline: string; replacedBy?: string }` | `"active"` | Deprecate a version. |
+| `namespacePrefix` | `boolean` | `false` | Prefix the API name with `--apiNamespace`. |
+
+`type.type` is one of `boolean`, `binary`, `byte`, `short`, `integer`, `long`, `float`, `double`, `decimal`, `string`, `date`, `timestamp`, `array`, `map`, `optional`, or `structV2`. Each entry in `constraints` has a `constraint` for that base type and an optional `failureMessage`. String constraints are `regex`, `oneOf`, `length`, `isUuid`, and `isRid`:
+
+```ts title=".ontology/ontology.mts"
+import { defineValueType } from "@osdk/maker";
+
+export const seniority = defineValueType({
+  apiName: "seniority",
+  displayName: "Seniority",
+  version: "1.0.0",
+  type: {
+    type: "string",
+    constraints: [
+      {
+        constraint: {
+          type: "oneOf",
+          oneOf: { values: ["junior", "senior", "principal"], useIgnoreCase: false },
+        },
+      },
+    ],
+  },
+});
+```
+
+## Status
+
+`status` is `"active"`, `"experimental"`, `"example"`, or `{ type: "deprecated", message, deadline }`, where `deadline` is an ISO 8601 date or date-time. An experimental, example, or deprecated object type can only contain properties with the same status, and a link to it must have a matching status. See [Link status](./links-and-actions.mdx#status).
+
+```ts title=".ontology/ontology.mts"
+import { defineObject } from "@osdk/maker";
+
+export const legacyBadge = defineObject({
+  apiName: "LegacyBadge",
+  displayName: "Legacy badge",
+  pluralDisplayName: "Legacy badges",
+  primaryKeyPropertyApiName: "badgeId",
+  titlePropertyApiName: "badgeId",
+  properties: { badgeId: { type: "string" } },
+  status: {
+    type: "deprecated",
+    message: "Use BadgeScan instead.",
+    deadline: "2027-01-01",
+  },
+});
+```
+
+## Datasources
+
+`datasources` says where property values come from. Without it, a dataset backs every property. Give an object type one base datasource (`dataset`, `stream`, `restrictedView`, or `direct`) plus any number of `derived` datasources; `defineObject` throws if you list more than one `dataset`, `stream`, or `restrictedView`. Properties not mapped by a `derived` datasource come from the base datasource.
+
+| `type` | Options | Description |
+| --- | --- | --- |
+| `"dataset"` | `objectSecurityPolicy?`, `propertySecurityGroups?` | A dataset backs the properties. |
+| `"stream"` | `retentionPeriod?` | A stream backs the properties. `retentionPeriod` is an ISO 8601 duration, such as `"P90D"`. |
+| `"restrictedView"` | | A restricted view backs the properties. |
+| `"direct"` | `objectSecurityPolicy?`, `propertySecurityGroups?` | A direct source backs the properties. |
+| `"derived"` | `linkDefinition`, `propertyMapping` | Properties computed from linked objects. See [Derived properties](#derived-properties). |
+
+```ts title=".ontology/ontology.mts"
+import { defineObject } from "@osdk/maker";
+
+export const badgeScan = defineObject({
+  apiName: "BadgeScan",
+  displayName: "Badge scan",
+  pluralDisplayName: "Badge scans",
+  primaryKeyPropertyApiName: "scanId",
+  titlePropertyApiName: "scanId",
+  properties: {
+    scanId: { type: "string" },
+    scannedAt: { type: "timestamp" },
+  },
+  datasources: [{ type: "stream", retentionPeriod: "P90D" }],
+});
+```
+
+### Property security
+
+On `dataset` and `direct` datasources, `propertySecurityGroups` restricts who can read a set of properties, and `objectSecurityPolicy` restricts who can read the objects. Each takes a `name`, an optional `granularPolicy` condition, and optional `appliedMarkings` and `assumedMarkings` maps from a marking input name to `"CBAC"` or `"MANDATORY"`.
+
+A `granularPolicy` condition is one of:
+
+| Condition | Passes when |
+| --- | --- |
+| `{ type: "group", name }` | The user is in the group chosen for the input `name` when the ontology is installed. |
+| `{ type: "groupProperty", property }` | The user is in a group listed in `property`. |
+| `{ type: "markingProperty", property }` | The user satisfies the markings in the marking property `property`. |
+| `{ type: "and" \| "or", conditions }` | All or any of `conditions` pass. |
+
+```ts title=".ontology/ontology.mts"
+import { defineObject } from "@osdk/maker";
+
+export const caseFile = defineObject({
+  apiName: "CaseFile",
+  displayName: "Case file",
+  pluralDisplayName: "Case files",
+  primaryKeyPropertyApiName: "caseId",
+  titlePropertyApiName: "caseId",
+  properties: {
+    caseId: { type: "string" },
+    summary: { type: "string" },
+    classification: {
+      type: { type: "marking", markingType: "MANDATORY", markingInputGroupName: "caseMarkings" },
+    },
+  },
+  datasources: [
+    {
+      type: "dataset",
+      propertySecurityGroups: [
+        {
+          name: "restrictedSummary",
+          properties: ["summary"],
+          granularPolicy: {
+            type: "and",
+            conditions: [
+              { type: "markingProperty", property: "classification" },
+              { type: "group", name: "investigators" },
+            ],
+          },
+        },
+      ],
+    },
+  ],
+});
+```
+
+### Derived properties
+
+A `derived` datasource computes properties from objects reached through one or more links. `linkDefinition` lists the links to follow in order, and `propertyMapping` maps each derived property to either a property on the linked object or an aggregation.
+
+| Aggregation | Derived property must be | Description |
+| --- | --- | --- |
+| `{ type: "count" }` | Any | The number of linked objects. |
+| `{ type: "sum" \| "avg", property }` | Numeric | The sum or average of `property`. |
+| `{ type: "min" \| "max", property }` | Primitive | The smallest or largest value of `property`. |
+| `{ type: "approximateCardinality" \| "exactCardinality", property }` | Primitive | The number of distinct values of `property`. |
+| `{ type: "collectList" \| "collectSet", property, limit }` | An array | Up to `limit` values of `property`, at most 100. |
+
+Aggregations skip linked objects where the property is null. Generated create and create-or-modify actions leave derived properties out of their parameters.
+
+The link must be defined before the object that uses it. When the object is not defined yet, refer to it from the link by its API name:
+
+```ts title=".ontology/ontology.mts"
+import { defineLink, defineObject } from "@osdk/maker";
+
+export const employee = defineObject({
+  apiName: "Employee",
+  displayName: "Employee",
+  pluralDisplayName: "Employees",
+  primaryKeyPropertyApiName: "employeeId",
+  titlePropertyApiName: "fullName",
+  properties: {
+    employeeId: { type: "integer" },
+    fullName: { type: "string" },
+    officeId: { type: "string" },
+  },
+});
+
+export const officeOccupants = defineLink({
+  apiName: "office-occupants",
+  one: { object: "Office", metadata: { apiName: "occupants" } },
+  toMany: { object: employee, metadata: { apiName: "office" } },
+  manyForeignKeyProperty: "officeId",
+});
+
+export const office = defineObject({
+  apiName: "Office",
+  displayName: "Office",
+  pluralDisplayName: "Offices",
+  primaryKeyPropertyApiName: "officeId",
+  titlePropertyApiName: "name",
+  properties: {
+    officeId: { type: "string" },
+    name: { type: "string" },
+    headcount: { type: "integer" },
+    occupantNames: { type: "string", array: true },
+  },
+  datasources: [
+    { type: "dataset" },
+    {
+      type: "derived",
+      linkDefinition: [{ linkType: officeOccupants }],
+      propertyMapping: {
+        headcount: { type: "count" },
+        occupantNames: { type: "collectList", property: "fullName", limit: 100 },
+      },
+    },
+  ],
+});
+```
+
+When you compile with `--apiNamespace`, the string reference must include the namespace, such as `"com.example.Office"`.

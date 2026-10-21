@@ -1,24 +1,14 @@
 # FilterList
 
-A comprehensive guide for using the FilterList component from `@osdk/react-components`.
+`FilterList` renders filter controls for an OSDK object type or object set, backed by aggregations, and reports the combined `where` clause or filtered object set.
 
 ## Prerequisites
 
-Before using FilterList, make sure you have completed the library setup described in the [README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md#setup), including:
+Before using FilterList, make sure you have completed the library setup described in [Prerequisites](https://palantir.github.io/osdk-ts/components/prerequisites), including:
 
 - Installing the required dependencies
 - Wrapping your app with `OsdkProvider`
 - Adding the CSS imports
-
-## Table of Contents
-
-- [Import](#import)
-- [Basic Usage](#basic-usage)
-- [Props Reference](#props-reference)
-- [Filter Definitions](#filter-definitions)
-- [Examples](#examples)
-- [Styling](#styling)
-- [Best Practices](#best-practices)
 
 ## Import
 
@@ -28,14 +18,13 @@ import { FilterList } from "@osdk/react-components/filter-list";
 
 ## Basic Usage
 
-:::note About `@my/osdk` and `./client`
-`@my/osdk` is a placeholder for **your generated SDK package** (e.g. `@your-app/sdk`). `./client` is the file in your app where you exported the OSDK client returned by `createClient(...)`. Replace both with the actual paths in your project.
-:::
+> [!NOTE]
+> `@my-app/sdk` is a placeholder for your generated SDK package. `./client` is the file in your app where you exported the OSDK client returned by `createClient(...)`. Replace both with the actual paths in your project.
 
 The simplest way to use FilterList is with an objectSet and a few filter definitions:
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import { FilterList } from "@osdk/react-components/filter-list";
 import client from "./client";
 
@@ -322,7 +311,7 @@ When using `type: "PROPERTY"` or `type: "LINKED_PROPERTY"`, specify a `filterCom
 FilterList owns its filter state. Read the clause out with `onFilterClauseChanged` and pass it to `ObjectTable`:
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import type { WhereClause } from "@osdk/api";
 import { FilterList } from "@osdk/react-components/filter-list";
 import { ObjectTable } from "@osdk/react-components/object-table";
@@ -503,7 +492,7 @@ const handleFilterRemoved = (filterKey) => {
 Pass a `.where()` objectSet to scope filter dropdown values. For example, to only show Engineering employees:
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import { FilterList } from "@osdk/react-components/filter-list";
 import { useMemo } from "react";
 import client from "./client";

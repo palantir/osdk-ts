@@ -1,0 +1,150 @@
+---
+title: "@osdk/react/platform-apis"
+description: Hooks for Foundry users, markings, and CBAC banners and restrictions, built on @osdk/foundry.admin.
+---
+
+These hooks call Foundry platform APIs with the client from `OsdkProvider`. Install the optional peer dependencies first:
+
+```npm
+npm install @osdk/foundry.admin @osdk/foundry.core
+```
+
+All hooks share these behaviors:
+
+- Each hook instance fetches on mount and keeps its result in component state. Results are not shared through the OSDK cache, so two components that call the same hook make two requests.
+- `isLoading` is `true` while enabled and no response has arrived. When `enabled` is `false`, the hook does not fetch and `isLoading` is `false`.
+- `refetch()` reruns the request. The data field is `undefined` until the new response arrives.
+- `error` holds the request error, if any.
+
+## useCurrentFoundryUser
+
+```ts
+function useCurrentFoundryUser(
+  options?: UseCurrentFoundryUserOptions,
+): UseCurrentFoundryUserResult;
+```
+
+Gets the signed-in user.
+
+<auto-type-table path="../../../../packages/react/src/new/platform-apis/admin/useCurrentFoundryUser.ts" name="UseCurrentFoundryUserOptions" />
+
+Returns `{ currentUser, isLoading, error, refetch }`, where `currentUser` is a `User` from `@osdk/foundry.admin`.
+
+## useFoundryUser
+
+```ts
+function useFoundryUser(
+  userId: string,
+  options?: UseFoundryUserOptions,
+): UseFoundryUserResult;
+```
+
+Gets one user by ID.
+
+<auto-type-table path="../../../../packages/react/src/new/platform-apis/admin/useFoundryUser.ts" name="UseFoundryUserOptions" />
+
+Returns `{ user, isLoading, error, refetch }`, where `user` is a `User`.
+
+## useFoundryUsersList
+
+```ts
+function useFoundryUsersList(
+  options?: UseFoundryUsersListOptions,
+): UseFoundryUsersListResult;
+```
+
+Lists users one page at a time. A page can hold more or fewer users than `pageSize`.
+
+<auto-type-table path="../../../../packages/react/src/new/platform-apis/admin/useFoundryUsersList.ts" name="UseFoundryUsersListOptions" />
+
+Returns `{ users, nextPageToken, isLoading, error, refetch }`. Pass `nextPageToken` as `pageToken` to load the next page; it is `undefined` on the last page.
+
+## useMarkings
+
+```ts
+function useMarkings(options?: UseMarkingsOptions): UseMarkingsResult;
+```
+
+Lists markings.
+
+<auto-type-table path="../../../../packages/react/src/new/platform-apis/admin/useMarkings.ts" name="UseMarkingsOptions" />
+
+Returns `{ markings, isLoading, error, refetch }`, where `markings` is a `Marking[]`.
+
+## useMarkingCategories
+
+```ts
+function useMarkingCategories(
+  options?: UseMarkingCategoriesOptions,
+): UseMarkingCategoriesResult;
+```
+
+Lists marking categories.
+
+<auto-type-table path="../../../../packages/react/src/new/platform-apis/admin/useMarkingCategories.ts" name="UseMarkingCategoriesOptions" />
+
+Returns `{ categories, isLoading, error, refetch }`, where `categories` is a `MarkingCategory[]`.
+
+## useUserViewMarkings
+
+```ts
+function useUserViewMarkings(
+  options?: UseUserViewMarkingsOptions,
+): UseUserViewMarkingsResult;
+```
+
+Gets the IDs of the markings a user can view. Without `userId`, the hook first looks up the current user, then fetches their markings.
+
+<auto-type-table path="../../../../packages/react/src/new/platform-apis/admin/useUserMarkings.ts" name="UseUserViewMarkingsOptions" />
+
+Returns `{ markingIds, isLoading, error, refetch }`, where `markingIds` is a `string[]`.
+
+## useCbacBanner
+
+```ts
+function useCbacBanner(options: UseCbacBannerOptions): UseCbacBannerResult;
+```
+
+Gets the classification banner for a set of marking IDs. The hook does not fetch while `markingIds` is empty. It calls a preview endpoint.
+
+<auto-type-table path="../../../../packages/react/src/new/platform-apis/admin/useCbacBanner.ts" name="UseCbacBannerOptions" />
+
+Returns `{ banner, isLoading, error, refetch }`, where `banner` is:
+
+<auto-type-table path="../../../../packages/react/src/new/platform-apis/admin/useCbacBanner.ts" name="CbacBannerData" />
+
+## useCbacMarkingRestrictions
+
+```ts
+function useCbacMarkingRestrictions(
+  options: UseCbacMarkingRestrictionsOptions,
+): UseCbacMarkingRestrictionsResult;
+```
+
+Gets the markings that a set of marking IDs implies, disallows, and requires, and whether the current user satisfies them. The hook does not fetch while `markingIds` is empty. It calls a preview endpoint.
+
+<auto-type-table path="../../../../packages/react/src/new/platform-apis/admin/useCbacMarkingRestrictions.ts" name="UseCbacMarkingRestrictionsOptions" />
+
+Returns `{ restrictions, isLoading, error, refetch }`, where `restrictions` is:
+
+<auto-type-table path="../../../../packages/react/src/new/platform-apis/admin/useCbacMarkingRestrictions.ts" name="CbacMarkingRestrictionsData" />
+
+## Example
+
+```tsx title="src/CurrentUserBadge.tsx"
+import { useCurrentFoundryUser } from "@osdk/react/platform-apis";
+
+export function CurrentUserBadge() {
+  const { currentUser, isLoading, error } = useCurrentFoundryUser();
+
+  return (
+    <span aria-busy={isLoading}>
+      {error ? "Unknown user" : (currentUser?.givenName ?? currentUser?.username)}
+    </span>
+  );
+}
+```
+
+## See also
+
+- [Users and markings](/react/platform-apis)

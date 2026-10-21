@@ -16,7 +16,8 @@
 
 import { Meta, Markdown } from "@storybook/addon-docs/blocks";
 import aipAgentChatDocs from "@docs/AipAgentChat.md?raw";
+import { formatGithubAlerts } from "../../util/formatGithubAlerts.js";
 
 <Meta title="Components/AipAgentChat/Docs" tags={["beta"]}/>
 
-<Markdown>{aipAgentChatDocs}</Markdown>
+<Markdown>{formatGithubAlerts(aipAgentChatDocs)}</Markdown>

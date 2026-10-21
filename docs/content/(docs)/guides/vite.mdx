@@ -1,0 +1,113 @@
+---
+title: Use OSDK with Vite
+description: Configure Vite for OSDK apps, including the process.env fix, a local CORS proxy to Foundry, and the OSDK Devtools plugin.
+---
+
+Vite is the default bundler for apps created with `@osdk/create-app`. This page covers the Vite settings an OSDK app needs and why.
+
+<Callout type="info">
+  The React template in `@osdk/create-app` already includes these settings in its generated `vite.config.ts`. Read on if you add OSDK to an existing Vite app or want to know what the generated config does.
+</Callout>
+
+## Define `process.env.NODE_ENV`
+
+OSDK packages read `process.env.NODE_ENV` to decide how much to log and to strip development-only code from production builds. Vite does not replace `process.env` by default, so the browser throws:
+
+```txt
+ReferenceError: process is not defined
+```
+
+Tell Vite to replace `process.env.NODE_ENV` with the current mode:
+
+```ts title="vite.config.ts"
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+
+export default defineConfig(({ mode }) => {
+  return {
+    plugins: [react()],
+    define: {
+      "process.env.NODE_ENV": JSON.stringify(mode),
+    },
+  };
+});
+```
+
+`vite dev` runs in `development` mode and `vite build` in `production` mode, so production bundles get `"production"`.
+
+## Proxy Foundry requests in development
+
+The browser blocks requests from `http://localhost:8080` to your Foundry stack unless the stack allows that origin for CORS. If you cannot get localhost allowed, proxy the requests through the Vite dev server instead. `@osdk/create-app` generates this setup when you answer yes to the CORS proxy prompt or pass `--corsProxy true`:
+
+<Steps>
+<Step>
+
+### Proxy the API paths
+
+Forward `/api` and `/multipass/api` to your Foundry URL:
+
+```ts title="vite.config.ts"
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+
+export default defineConfig(({ mode }) => {
+  return {
+    plugins: [react()],
+    server: {
+      port: 8080,
+      proxy: {
+        "^(/multipass/api|/api)": {
+          target: "https://your-stack.palantirfoundry.com",
+          changeOrigin: true,
+          secure: true,
+        },
+      },
+    },
+    define: {
+      "process.env.NODE_ENV": JSON.stringify(mode),
+    },
+  };
+});
+```
+
+</Step>
+<Step>
+
+### Point the client at the dev server
+
+Set the Foundry URL that the client uses to the dev server's origin, so requests go through the proxy:
+
+```sh title=".env.development"
+VITE_FOUNDRY_API_URL=http://localhost:8080
+VITE_FOUNDRY_REDIRECT_URL=http://localhost:8080/auth/callback
+```
+
+Pass that URL to both `createPublicOauthClient` and `createClient`. The OAuth calls under `/multipass/api` and the data calls under `/api` then reach Foundry through the proxy.
+
+</Step>
+<Step>
+
+### Allow the redirect URL
+
+Add `http://localhost:8080/auth/callback` as a redirect URL on the OAuth client in Developer Console.
+
+</Step>
+</Steps>
+
+The proxy runs only under `vite dev`. Production builds call Foundry directly, so keep the real Foundry URL in `.env.production`. Once your stack allows `http://localhost:8080` for CORS, you can remove the proxy and set `VITE_FOUNDRY_API_URL` back to the Foundry URL.
+
+## Add OSDK Devtools
+
+`@osdk/react-devtools` ships a Vite plugin that injects an inspection panel into your app during `vite dev` and does nothing in production builds:
+
+```ts title="vite.config.ts"
+import { osdkDevTools } from "@osdk/react-devtools/vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [react(), osdkDevTools()],
+});
+```
+
+See [OSDK Devtools](../../react/devtools/index.mdx) for installation, options, and the panel tabs.

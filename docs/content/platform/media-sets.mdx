@@ -1,0 +1,265 @@
+---
+title: Media sets
+description: Upload media items, read their content and metadata, and run transformations with @osdk/foundry.mediasets.
+---
+
+{/* cspell:ignore mediasets webp dicom */}
+
+`@osdk/foundry.mediasets` works with media sets: Foundry collections of images, documents, audio, video, and other files. Use it to upload items to a media set, download them, read their metadata, and convert them with transformations.
+
+```npm
+npm install @osdk/client @osdk/oauth @osdk/foundry.mediasets
+```
+
+Every sample takes a `client` from `createClient` or `createPlatformClient`; see [Set up](./setup.mdx). Reads need the `api:mediasets-read` scope, uploads need `api:mediasets-write`, and transformations need `api:mediasets-transform`. All functions are on the `MediaSets` namespace.
+
+<Callout type="info">
+  To read media from an object property or upload a file as an action parameter, use the OSDK instead. It handles the media reference and read token for you. See [Media](../sdk/media.mdx).
+</Callout>
+
+## Identify a media item
+
+A media set has a RID such as `ri.mio.main.media-set.<id>`, and each item in it has a media item RID. Functions take both as path parameters, in that order.
+
+When you only have the item's path in the set, look up its RID with `getRidByPath`. It is a preview endpoint:
+
+```ts title="src/findItem.ts"
+import type { Client } from "@osdk/client";
+import { MediaSets } from "@osdk/foundry.mediasets";
+
+export async function findItem(client: Client, mediaSetRid: string, path: string) {
+  const { mediaItemRid } = await MediaSets.getRidByPath(client, mediaSetRid, {
+    mediaItemPath: path,
+    preview: true,
+  });
+  return mediaItemRid;
+}
+```
+
+`mediaItemRid` is `undefined` when no item has that path.
+
+## Download an item
+
+`MediaSets.read` resolves to a `Response` with the item's content:
+
+```ts title="src/downloadItem.ts"
+import type { Client } from "@osdk/client";
+import { MediaSets } from "@osdk/foundry.mediasets";
+
+export async function itemObjectUrl(
+  client: Client,
+  mediaSetRid: string,
+  mediaItemRid: string,
+): Promise<string> {
+  const response = await MediaSets.read(client, mediaSetRid, mediaItemRid);
+  return URL.createObjectURL(await response.blob());
+}
+```
+
+If the set converted the file on upload, `read` returns the converted content. `MediaSets.readOriginal` returns the file as it was uploaded.
+
+## Read metadata
+
+`MediaSets.info` returns basic information, and `MediaSets.metadata` returns details that depend on the media type:
+
+```ts title="src/describeItem.ts"
+import type { Client } from "@osdk/client";
+import { MediaSets } from "@osdk/foundry.mediasets";
+
+export async function describeItem(client: Client, mediaSetRid: string, mediaItemRid: string) {
+  const [info, metadata] = await Promise.all([
+    MediaSets.info(client, mediaSetRid, mediaItemRid),
+    MediaSets.metadata(client, mediaSetRid, mediaItemRid),
+  ]);
+
+  const details =
+    metadata.type === "imagery" && metadata.dimensions != null
+      ? `${metadata.dimensions.width}×${metadata.dimensions.height}`
+      : metadata.type === "document"
+        ? `${metadata.pages ?? "?"} pages`
+        : metadata.type;
+
+  return `${info.path ?? mediaItemRid} (${info.mimeType ?? "unknown type"}, ${info.sizeBytes ?? 0} bytes): ${details}`;
+}
+```
+
+| `info` field | Description |
+| --- | --- |
+| `path` | The item's path in the media set, if it has one. |
+| `mimeType` | The item's media type. |
+| `originallyUploadedFileMimeType` | The media type of the file as uploaded, when it was converted. |
+| `sizeBytes` | Size in bytes. |
+| `viewRid` | The media set view the item belongs to. |
+| `logicalTimestamp` | When the item was added. |
+
+`metadata.type` is one of `"imagery"`, `"document"`, `"spreadsheet"`, `"audio"`, `"video"`, `"cad"`, `"model3d"`, `"dicom"`, `"email"`, or `"untyped"`. Narrow on it to read type-specific fields, such as `dimensions` for images or `pages` for documents. Every variant has `sizeBytes`.
+
+## Pass a read token
+
+A media reference from an Ontology object carries a read token that grants access to that one item. Pass it as the `ReadToken` header parameter, after any query parameters:
+
+```ts title="src/readWithToken.ts"
+import type { Client } from "@osdk/client";
+import { MediaSets } from "@osdk/foundry.mediasets";
+
+export async function readWithToken(
+  client: Client,
+  mediaSetRid: string,
+  mediaItemRid: string,
+  readToken: string,
+): Promise<Response> {
+  return MediaSets.read(client, mediaSetRid, mediaItemRid, { ReadToken: readToken });
+}
+```
+
+`read`, `readOriginal`, `info`, and `metadata` take the header object as their fourth argument. Preview functions such as `reference` take query parameters first: `MediaSets.reference(client, mediaSetRid, mediaItemRid, { preview: true }, { ReadToken })`.
+
+## Upload an item
+
+`MediaSets.upload` adds a file to a media set. It is a preview endpoint, so pass `preview: true`:
+
+```ts title="src/uploadItem.ts"
+import type { Client } from "@osdk/client";
+import { MediaSets } from "@osdk/foundry.mediasets";
+
+export async function uploadPhoto(client: Client, mediaSetRid: string, file: File) {
+  const { mediaItemRid } = await MediaSets.upload(client, mediaSetRid, file, {
+    mediaItemPath: `photos/${file.name}`,
+    preview: true,
+  });
+  return mediaItemRid;
+}
+```
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `mediaItemPath` | `string` | The item's path in the set. Some media sets require one. |
+| `branchName`, `branchRid`, `viewRid` | `string` | Where to upload. Set at most one; without any, the item goes to the default branch. |
+| `transactionId` | `string` | An open transaction to upload into. |
+| `preview` | `boolean` | Must be `true`. |
+
+The content is a `Blob`; a `File` from `<input type="file">` works directly. The response has the new `mediaItemRid` and the `mediaSetViewRid`.
+
+### Upload into a transaction
+
+Some media sets require uploads in a transaction. `MediaSets.get` returns the set's `transactionPolicy`; when its `type` is `"batchTransactions"`, open a transaction, upload, then commit:
+
+```ts title="src/uploadBatch.ts"
+import type { Client } from "@osdk/client";
+import { MediaSets } from "@osdk/foundry.mediasets";
+
+export async function uploadBatch(client: Client, mediaSetRid: string, files: File[]) {
+  const mediaSet = await MediaSets.get(client, mediaSetRid, { preview: true });
+  if (mediaSet.transactionPolicy.type !== "batchTransactions") {
+    for (const file of files) {
+      await MediaSets.upload(client, mediaSetRid, file, {
+        mediaItemPath: file.name,
+        preview: true,
+      });
+    }
+    return;
+  }
+
+  const transactionId = await MediaSets.create(client, mediaSetRid, { preview: true });
+  try {
+    for (const file of files) {
+      await MediaSets.upload(client, mediaSetRid, file, {
+        mediaItemPath: file.name,
+        transactionId,
+        preview: true,
+      });
+    }
+    await MediaSets.commit(client, mediaSetRid, transactionId, { preview: true });
+  } catch (error) {
+    await MediaSets.abort(client, mediaSetRid, transactionId, { preview: true });
+    throw error;
+  }
+}
+```
+
+`MediaSets.create` resolves to the transaction ID as a string. Items uploaded in a transaction appear when it is committed; aborting deletes them.
+
+### Upload temporary media
+
+`MediaSets.uploadMedia` uploads a file that is not yet in any media set, and returns a `MediaReference`. Pass the reference to an action parameter or media property to keep the file; otherwise it is deleted after one hour. It needs `api:ontologies-read` and `api:ontologies-write` instead of the media set scopes:
+
+```ts title="src/uploadTemporary.ts"
+import type { Client } from "@osdk/client";
+import { MediaSets } from "@osdk/foundry.mediasets";
+
+export async function uploadTemporary(client: Client, file: File) {
+  const reference = await MediaSets.uploadMedia(client, file, { filename: file.name });
+  return reference;
+}
+```
+
+The reference has `mimeType` and `reference.mediaSetViewItem`, with `mediaSetRid`, `mediaSetViewRid`, `mediaItemRid`, and a read `token`. The OSDK uses this endpoint when you pass a file to an action; prefer that path when you are applying an action.
+
+## Transform an item
+
+Transformations convert a media item, for example resizing an image or extracting text from a document. Start a job with `MediaSets.transform`, poll `getStatus` until it is `"SUCCESSFUL"` or `"FAILED"`, then download the output with `getResult`. All three are preview endpoints and need `api:mediasets-transform`:
+
+```ts title="src/thumbnail.ts"
+import type { Client } from "@osdk/client";
+import { MediaSets } from "@osdk/foundry.mediasets";
+
+export async function webpThumbnail(
+  client: Client,
+  mediaSetRid: string,
+  mediaItemRid: string,
+): Promise<Blob> {
+  let job = await MediaSets.transform(
+    client,
+    mediaSetRid,
+    mediaItemRid,
+    {
+      transformation: {
+        type: "image",
+        encoding: { type: "webp" },
+        operations: [{ type: "resizeToFitBoundingBox", width: 256, height: 256 }],
+      },
+    },
+    { preview: true },
+  );
+
+  while (job.status === "PENDING") {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    job = await MediaSets.getStatus(client, mediaSetRid, mediaItemRid, job.jobId, {
+      preview: true,
+    });
+  }
+  if (job.status === "FAILED") {
+    throw new Error(`Transformation ${job.jobId} failed`);
+  }
+
+  const result = await MediaSets.getResult(client, mediaSetRid, mediaItemRid, job.jobId, {
+    preview: true,
+  });
+  return result.blob();
+}
+```
+
+`transformation.type` selects the conversion, such as `"image"`, `"documentToImage"`, `"documentToText"`, `"audioToText"`, or `"videoToImage"`. Each type has its own options; your editor lists them from the `Transformation` type. To transform an item you can only read through a read token, pass it as the `Token` header parameter.
+
+## Reference
+
+| Function | Scope | Status | Returns |
+| --- | --- | --- | --- |
+| `read(client, mediaSetRid, mediaItemRid, headers?)` | `api:mediasets-read` | Stable | `Response` |
+| `readOriginal(client, mediaSetRid, mediaItemRid, headers?)` | `api:mediasets-read` | Stable | `Response` |
+| `info(client, mediaSetRid, mediaItemRid, headers?)` | `api:mediasets-read` | Stable | `GetMediaItemInfoResponse` |
+| `metadata(client, mediaSetRid, mediaItemRid, headers?)` | `api:mediasets-read` | Stable | `MediaItemMetadata` |
+| `uploadMedia(client, blob, { filename }, headers?)` | `api:ontologies-read`, `api:ontologies-write` | Stable | `MediaReference` |
+| `get(client, mediaSetRid, query?)` | `api:mediasets-read` | Beta | `GetMediaSetResponse` |
+| `getRidByPath(client, mediaSetRid, query)` | `api:mediasets-read` | Beta | `GetMediaItemRidByPathResponse` |
+| `reference(client, mediaSetRid, mediaItemRid, query?, headers?)` | `api:mediasets-read` | Beta | `MediaReference` |
+| `upload(client, mediaSetRid, blob, query?)` | `api:mediasets-write` | Beta | `PutMediaItemResponse` |
+| `create(client, mediaSetRid, query?)` | `api:mediasets-write` | Beta | Transaction ID |
+| `commit(client, mediaSetRid, transactionId, query?)` | `api:mediasets-write` | Beta | `void` |
+| `abort(client, mediaSetRid, transactionId, query?)` | `api:mediasets-write` | Beta | `void` |
+| `clear(client, mediaSetRid, query)` | `api:mediasets-write` | Beta | `void` |
+| `transform(client, mediaSetRid, mediaItemRid, body, query?, headers?)` | `api:mediasets-transform` | Beta | `TransformMediaItemResponse` |
+| `getStatus(client, mediaSetRid, mediaItemRid, jobId, query?, headers?)` | `api:mediasets-transform` | Beta | `GetTransformationJobStatusResponse` |
+| `getResult(client, mediaSetRid, mediaItemRid, jobId, query?, headers?)` | `api:mediasets-transform` | Beta | `Response` |
+
+Beta functions need `preview: true`. See [Preview endpoints](./calling-apis.mdx#preview-endpoints).

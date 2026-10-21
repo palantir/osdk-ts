@@ -1,0 +1,292 @@
+---
+title: Quickstart
+description: Scaffold a React app with @osdk/create-app, sign in to Foundry, and run your first OSDK query and action.
+---
+
+Use `@osdk/create-app` to generate a React and Vite app that already signs users in, creates an OSDK client, and installs your generated SDK. By the end of this page you have a local app that lists `Employee` objects and applies the `modifyEmployee` action.
+
+To add OSDK to an app you already have, see [Installation](./installation.mdx) instead.
+
+## Before you start
+
+You need Node.js and an application in Foundry Developer Console. The CLI asks for these values, so collect them first:
+
+| Value | Example | Where to find it in Developer Console |
+| --- | --- | --- |
+| Foundry URL | `https://example.palantirfoundry.com` | The URL of your Foundry stack. |
+| Application RID | `ri.third-party-applications.main.application.1c66b352-…` | The application's Developer Console URL, `/workspace/developer-console/app/<rid>`. |
+| OAuth client ID | `2650385ab6c5e0df3b44aff776b00a42` | **OAuth & scopes**. |
+| Ontology RID | `ri.ontology.main.ontology.1df1ce4c-…` | **Ontology SDK**. |
+| SDK package name | `@my-app/sdk` | The npm install instructions of a generated SDK version. Must match `@<scope>/sdk`. |
+| npm registry URL | `https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.<id>/contents/release/npm` | The SDK's npm install instructions. |
+
+In Developer Console, also:
+
+1. Add the object types, link types, actions, and functions your app uses to the application's SDK, then generate a new version on **SDK versions** with the **npm** package type and the latest generator. Generate a new version whenever you change the resources.
+2. On **OAuth & scopes**, add `http://localhost:8080/auth/callback` as a redirect URL. The generated app runs on port 8080 and handles the sign-in redirect at that path.
+3. Get a Foundry token with access to the SDK's npm registry. The generated `.npmrc` reads it from the `FOUNDRY_TOKEN` environment variable when you install packages.
+
+## Create the app
+
+<Steps>
+<Step>
+
+### Run the CLI
+
+Run `@osdk/create-app` and pass the project directory name:
+
+```npm
+npx @osdk/create-app@latest my-osdk-app
+```
+
+`npm create @osdk/app@latest` runs the same CLI. The prompts, in order:
+
+| Prompt | Default | Flag |
+| --- | --- | --- |
+| Project name (letters, digits, `-`, `_`) | `my-osdk-app` | positional `[project]` |
+| Framework: React, React (Public), Expo, or Vue | | `--template` |
+| Foundry URL (must start with `https://`) | | `--foundryUrl` |
+| Do you know your production URL? | | `--applicationUrl` or `--skipApplicationUrl` |
+| Application RID | | `--application` |
+| OAuth client ID | | `--clientId` |
+| Will you use an OSDK? (No means Platform APIs only) | | `--skipOsdk` |
+| Ontology RID | | `--ontology` |
+| SDK package name | | `--osdkPackage` |
+| npm registry URL | | `--osdkRegistryUrl` |
+| Include a CORS proxy for local development? | No | `--corsProxy` |
+| OAuth scopes | `api:read-data api:write-data api:use-ontologies-read api:use-ontologies-write` | `--scopes` |
+
+Choose **React** for this guide. Answer **Yes** to the CORS proxy unless your Foundry administrator has allowed `http://localhost:8080` as a CORS origin.
+
+To skip every prompt, pass all values as flags:
+
+```npm
+npx @osdk/create-app@latest my-osdk-app \
+  --template react \
+  --foundryUrl https://example.palantirfoundry.com \
+  --skipApplicationUrl \
+  --application ri.third-party-applications.main.application.<id> \
+  --clientId <client-id> \
+  --ontology ri.ontology.main.ontology.<id> \
+  --osdkPackage @my-app/sdk \
+  --osdkRegistryUrl https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.<id>/contents/release/npm \
+  --corsProxy true
+```
+
+</Step>
+<Step>
+
+### Install dependencies
+
+Export your token so npm can reach your SDK's registry, then install:
+
+```sh
+cd my-osdk-app
+export FOUNDRY_TOKEN=<token>
+npm install
+```
+
+A `401` or `404` for `@my-app/sdk` means `FOUNDRY_TOKEN` is missing, expired, or lacks access to the registry.
+
+</Step>
+<Step>
+
+### Start the dev server
+
+```sh
+npm run dev
+```
+
+Open `http://localhost:8080`. The app sends you to Foundry to sign in, Foundry redirects back to `/auth/callback`, and the app returns you to the home page. If Foundry reports an invalid redirect URL, add `http://localhost:8080/auth/callback` on **OAuth & scopes** in Developer Console.
+
+</Step>
+</Steps>
+
+## What the CLI generates
+
+<Files>
+  <File name=".env.development" />
+  <File name=".env.production" />
+  <File name=".npmrc" />
+  <File name="foundry.config.json" />
+  <File name="index.html" />
+  <File name="package.json" />
+  <File name="vite.config.ts" />
+  <Folder name="public" defaultOpen>
+    <File name="resources.json" />
+  </Folder>
+  <Folder name="src" defaultOpen>
+    <File name="AuthCallback.tsx" />
+    <File name="client.ts" />
+    <File name="env.test.ts" />
+    <File name="Home.tsx" />
+    <File name="main.tsx" />
+    <File name="router.tsx" />
+    <Folder name="components">
+      <File name="ErrorBoundary.tsx" />
+      <File name="Header.tsx" />
+      <File name="Loading.tsx" />
+      <File name="NextSteps.tsx" />
+      <File name="Osdk.tsx" />
+    </Folder>
+  </Folder>
+</Files>
+
+| File | Purpose |
+| --- | --- |
+| `.env.development`, `.env.production` | `VITE_FOUNDRY_API_URL`, `VITE_FOUNDRY_CLIENT_ID`, `VITE_FOUNDRY_REDIRECT_URL`, and `VITE_FOUNDRY_ONTOLOGY_RID` for each mode. With the CORS proxy, the development API URL is `http://localhost:8080`. |
+| `index.html` | Copies the env values into `<meta>` tags such as `osdk-foundryUrl` and `osdk-clientId`, so you can change configuration without rebuilding JavaScript. |
+| `src/client.ts` | Reads the meta tags, creates `auth` with `createPublicOauthClient`, and exports `client` from `createClient`. |
+| `src/main.tsx` | Renders the router inside `<OsdkProvider client={client}>`. |
+| `src/router.tsx` | Maps `/` to `Home` and `/auth/callback` to `AuthCallback`. |
+| `src/AuthCallback.tsx` | Calls `auth.signIn()` to finish the OAuth redirect, then navigates to `/`. |
+| `vite.config.ts` | Serves on port 8080, proxies `/api` and `/multipass/api` to Foundry when you chose the CORS proxy, and defines `process.env.NODE_ENV`. See [Use OSDK with Vite](./guides/vite.mdx). |
+| `.npmrc` | Points your SDK's npm scope at the Foundry registry and authenticates with `${FOUNDRY_TOKEN}`. |
+| `foundry.config.json` | Deployment settings for Foundry website hosting with `@osdk/cli`. Delete it if you host elsewhere. |
+| `src/env.test.ts` | A test that checks `.env.production` is filled in before you deploy. |
+
+The generated `src/client.ts` looks like this:
+
+```ts title="src/client.ts"
+import { createClient, type Client } from "@osdk/client";
+import { createPublicOauthClient, type PublicOauthClient } from "@osdk/oauth";
+
+function getMetaTagContent(tagName: string): string {
+  const elements = document.querySelectorAll(`meta[name="${tagName}"]`);
+  const element = elements.item(elements.length - 1);
+  const value = element ? element.getAttribute("content") : null;
+  if (value == null || value === "") {
+    throw new Error(`Meta tag ${tagName} not found or empty`);
+  }
+  if (value.match(/%.+%/)) {
+    throw new Error(
+      `Meta tag ${tagName} contains placeholder value. Please add ${value.replace(
+        /%/g,
+        "",
+      )} to your .env files`,
+    );
+  }
+  return value;
+}
+
+const foundryUrl = getMetaTagContent("osdk-foundryUrl");
+const clientId = getMetaTagContent("osdk-clientId");
+const redirectUrl = getMetaTagContent("osdk-redirectUrl");
+const ontologyRid = getMetaTagContent("osdk-ontologyRid");
+
+export const auth: PublicOauthClient = createPublicOauthClient(
+  clientId,
+  foundryUrl,
+  redirectUrl,
+);
+
+export const client: Client = createClient(foundryUrl, ontologyRid, auth);
+
+export default client;
+```
+
+[Authentication](./authentication.mdx) explains the sign-in flow and the callback route. [Create a client](./client.mdx) covers `createClient` and `OsdkProvider`.
+
+## Run your first query
+
+Create a component that lists employees with `useOsdkObjects`. Replace `Employee`, `department`, and `fullName` with an object type and properties from your SDK:
+
+```tsx title="src/EmployeeList.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkObjects } from "@osdk/react";
+import { PromoteButton } from "./PromoteButton";
+
+export function EmployeeList() {
+  const { data, isLoading, error } = useOsdkObjects(Employee, {
+    where: { department: "Engineering" },
+    orderBy: { fullName: "asc" },
+    pageSize: 25,
+  });
+
+  return (
+    <section>
+      {isLoading && <p>Loading…</p>}
+      {error && <p role="alert">Could not load employees: {error.message}</p>}
+      <ul>
+        {data?.map((employee) => (
+          <li key={employee.$primaryKey}>
+            {employee.fullName} ({employee.jobTitle}){" "}
+            <PromoteButton employee={employee} />
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+```
+
+Render it from `src/Home.tsx`:
+
+```tsx title="src/Home.tsx"
+import React from "react";
+import css from "./Home.module.css";
+import { EmployeeList } from "./EmployeeList";
+import Header from "@/components/Header";
+
+function Home(): React.ReactElement {
+  return (
+    <div className={css.home}>
+      <Header />
+      <EmployeeList />
+    </div>
+  );
+}
+
+export default Home;
+```
+
+The list keeps rendering while it loads and reloads, so show the loading indicator next to the data instead of in place of it. See [Load objects](../react/objects.mdx) for filters, pagination, and live updates.
+
+## Apply your first action
+
+Add a button that applies `modifyEmployee`. `useOsdkAction` tracks the pending state and the last error, and `applyAction` rethrows, so attach a `catch`:
+
+```tsx title="src/PromoteButton.tsx"
+import { type Employee, modifyEmployee } from "@my-app/sdk";
+import type { Osdk } from "@osdk/client";
+import { useOsdkAction } from "@osdk/react";
+
+export function PromoteButton({ employee }: { employee: Osdk.Instance<Employee> }) {
+  const { applyAction, isPending, error } = useOsdkAction(modifyEmployee);
+
+  function handleClick() {
+    applyAction({ employee, jobTitle: "Senior Engineer" }).catch((e: unknown) => {
+      console.error("modifyEmployee failed", e);
+    });
+  }
+
+  return (
+    <>
+      <button type="button" onClick={handleClick} disabled={isPending}>
+        {isPending ? "Saving…" : "Promote"}
+      </button>
+      {error?.actionValidation && <span role="alert">The action is not valid for this employee.</span>}
+      {error?.unknown != null && <span role="alert">Something went wrong. Try again.</span>}
+    </>
+  );
+}
+```
+
+When the action succeeds, the list updates without a refetch call: the action response tells the cache which objects changed. See [Apply actions](../react/actions.mdx) for validation, batches, and optimistic updates.
+
+## Next steps
+
+<Cards>
+  <Card href="/react/objects" title="Load objects">
+    Filter, sort, paginate, and stream updates with `useOsdkObjects`.
+  </Card>
+  <Card href="/react/actions" title="Apply actions">
+    Validate parameters and show optimistic results.
+  </Card>
+  <Card href="/components" title="Components">
+    Drop in `ObjectTable`, `FilterList`, and `ActionForm`.
+  </Card>
+  <Card href="/devtools" title="Devtools">
+    Inspect your app's queries and cache while you develop.
+  </Card>
+</Cards>

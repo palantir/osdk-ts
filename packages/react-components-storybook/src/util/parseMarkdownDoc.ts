@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { formatGithubAlerts } from "./formatGithubAlerts.js";
+
 export interface ParsedMarkdownDoc {
   title: string;
   description: string;
@@ -31,12 +33,12 @@ export interface ParsedMarkdownDoc {
 export function parseMarkdownDoc(raw: string): ParsedMarkdownDoc {
   const match = raw.match(/^---\n([\s\S]*?)\n---\n/u);
   if (match == null) {
-    return { title: "", description: "", body: raw };
+    return { title: "", description: "", body: formatGithubAlerts(raw) };
   }
   const frontmatter = match[1];
   return {
     title: frontmatter.match(/^title:(.*)$/mu)?.[1].trim() ?? "",
     description: frontmatter.match(/^description:(.*)$/mu)?.[1].trim() ?? "",
-    body: raw.slice(match[0].length),
+    body: formatGithubAlerts(raw.slice(match[0].length)),
   };
 }

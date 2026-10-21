@@ -1,0 +1,345 @@
+---
+title: Test your app
+description: Unit test OSDK React components with Vitest and Testing Library, using @osdk/react/testing and the mocks in @osdk/unit-testing.
+---
+
+{/* cspell:ignore jsdom msw MSW stubbable */}
+
+Test components that use `@osdk/react` without a Foundry stack. Stub the hooks a component calls, give components that read the OSDK context a test provider, and use mock clients and objects from `@osdk/unit-testing` for code that calls the client directly.
+
+## Choose an approach
+
+| What the code under test uses | Approach | Tools |
+| --- | --- | --- |
+| Ontology hooks: `useOsdkObjects`, `useOsdkObject`, `useOsdkAction`, `useOsdkFunction`, and the rest | Replace the hook with a stub that returns the state you want to test | `vi.mock`, `createMockOsdkObject` |
+| `useOsdkClient`, `useObservableClient`, or the hooks in `@osdk/react/platform-apis` | Render inside `TestOsdkProvider` | `@osdk/react/testing`, `createMockClient`, MSW |
+| The `Client` directly, in a helper or hook | Pass a mock client with stubbed responses | `createMockClient`, `createMockObjectSet` |
+
+Stubbing the ontology hooks keeps tests fast and lets you set loading, error, and optimistic states directly. The mock client from `@osdk/unit-testing` cannot power `OsdkProvider` or the ontology hooks, because they need the observable client that `OsdkProvider` builds from a real client.
+
+## Set up
+
+Install Vitest, a DOM environment, Testing Library, and the OSDK test helpers. `@osdk/unit-testing` has `@osdk/functions` as a peer dependency, and MSW is only needed for the platform API example:
+
+```npm
+npm install --save-dev vitest jsdom @testing-library/react @osdk/unit-testing @osdk/functions msw
+```
+
+Run tests in a DOM environment:
+
+```ts title="vitest.config.ts"
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: "jsdom",
+  },
+});
+```
+
+`TestOsdkProvider` and `fakeObservableClient` ship in `@osdk/react` under `@osdk/react/testing`, so they need no extra install.
+
+## Test a component that loads objects
+
+This component lists employees with `useOsdkObjects`:
+
+```tsx title="src/EmployeeList.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkObjects } from "@osdk/react";
+
+export function EmployeeList() {
+  const { data, isLoading, error } = useOsdkObjects(Employee, {
+    orderBy: { fullName: "asc" },
+  });
+
+  return (
+    <div>
+      {isLoading && <p>Loading…</p>}
+      {error && <p role="alert">{error.message}</p>}
+      <ul>
+        {data?.map((employee) => (
+          <li key={employee.$primaryKey}>{employee.fullName}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+Replace `useOsdkObjects` with a Vitest mock, keep the rest of `@osdk/react` real, and build objects with `createMockOsdkObject`:
+
+```tsx title="src/EmployeeList.test.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkObjects } from "@osdk/react";
+import { createMockOsdkObject } from "@osdk/unit-testing";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { EmployeeList } from "./EmployeeList";
+
+vi.mock("@osdk/react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@osdk/react")>()),
+  useOsdkObjects: vi.fn(),
+}));
+
+type ListResult = ReturnType<typeof useOsdkObjects>;
+
+function listResult(
+  overrides: Omit<Partial<ListResult>, "data"> & { data?: unknown[] },
+): ListResult {
+  return {
+    data: undefined,
+    isLoading: false,
+    error: undefined,
+    isOptimistic: false,
+    hasMore: false,
+    fetchMore: undefined,
+    objectSet: undefined,
+    refetch: vi.fn(),
+    ...overrides,
+  } as ListResult;
+}
+
+describe("EmployeeList", () => {
+  afterEach(cleanup);
+
+  it("renders employees", () => {
+    const ada = createMockOsdkObject(Employee, { employeeId: 1, fullName: "Ada Lovelace" });
+    const alan = createMockOsdkObject(Employee, { employeeId: 2, fullName: "Alan Turing" });
+    vi.mocked(useOsdkObjects).mockReturnValue(
+      listResult({ data: [ada, alan] }),
+    );
+
+    render(<EmployeeList />);
+
+    expect(screen.getAllByRole("listitem").map((li) => li.textContent)).toEqual([
+      "Ada Lovelace",
+      "Alan Turing",
+    ]);
+  });
+
+  it("keeps rendering data while it reloads", () => {
+    const ada = createMockOsdkObject(Employee, { employeeId: 1, fullName: "Ada Lovelace" });
+    vi.mocked(useOsdkObjects).mockReturnValue(
+      listResult({ data: [ada], isLoading: true }),
+    );
+
+    render(<EmployeeList />);
+
+    expect(screen.getByText("Loading…")).toBeTruthy();
+    expect(screen.getByText("Ada Lovelace")).toBeTruthy();
+  });
+
+  it("shows errors", () => {
+    vi.mocked(useOsdkObjects).mockReturnValue(
+      listResult({ error: new Error("Permission denied") }),
+    );
+
+    render(<EmployeeList />);
+
+    expect(screen.getByRole("alert").textContent).toBe("Permission denied");
+  });
+
+  it("asks for employees sorted by name", () => {
+    vi.mocked(useOsdkObjects).mockReturnValue(listResult({}));
+
+    render(<EmployeeList />);
+
+    expect(useOsdkObjects).toHaveBeenCalledWith(Employee, {
+      orderBy: { fullName: "asc" },
+    });
+  });
+});
+```
+
+`createMockOsdkObject(type, properties, options?)` returns an object instance with `$apiName`, `$objectType`, `$primaryKey`, `$rid`, `$clone`, and `$link`. The primary key property must be in `properties`. Pass `options.links` to stub linked objects, and `options.titlePropertyApiName` to set `$title`.
+
+## Test a component that applies an action
+
+Stub `useOsdkAction` and assert on the `applyAction` mock. This test drives the `PromoteButton` from [Apply actions](./actions.mdx):
+
+```tsx title="src/PromoteButton.test.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkAction } from "@osdk/react";
+import { createMockOsdkObject } from "@osdk/unit-testing";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { PromoteButton } from "./PromoteButton";
+
+vi.mock("@osdk/react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@osdk/react")>()),
+  useOsdkAction: vi.fn(),
+}));
+
+const applyAction = vi.fn();
+
+function actionResult(overrides: Partial<ReturnType<typeof useOsdkAction>> = {}) {
+  return {
+    applyAction,
+    validateAction: vi.fn(),
+    data: undefined,
+    error: undefined,
+    isPending: false,
+    isValidating: false,
+    validationResult: undefined,
+    ...overrides,
+  };
+}
+
+describe("PromoteButton", () => {
+  const employee = createMockOsdkObject(Employee, { employeeId: 1, fullName: "Ada Lovelace" });
+
+  beforeEach(() => {
+    applyAction.mockReset().mockResolvedValue(undefined);
+    vi.mocked(useOsdkAction).mockReturnValue(actionResult());
+  });
+  afterEach(cleanup);
+
+  it("applies modifyEmployee with the new title", async () => {
+    render(<PromoteButton employee={employee} jobTitle="Staff Engineer" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Make Staff Engineer" }));
+
+    await waitFor(() =>
+      expect(applyAction).toHaveBeenCalledWith({ employee, jobTitle: "Staff Engineer" }),
+    );
+  });
+
+  it("disables the button while the action runs", () => {
+    vi.mocked(useOsdkAction).mockReturnValue(actionResult({ isPending: true }));
+
+    render(<PromoteButton employee={employee} jobTitle="Staff Engineer" />);
+
+    expect(screen.getByRole("button").hasAttribute("disabled")).toBe(true);
+  });
+
+  it("shows the failure", () => {
+    vi.mocked(useOsdkAction).mockReturnValue(
+      actionResult({ error: { unknown: new Error("Network error") } }),
+    );
+
+    render(<PromoteButton employee={employee} jobTitle="Staff Engineer" />);
+
+    expect(screen.getByRole("alert").textContent).toContain("Could not update");
+  });
+});
+```
+
+The hook's state does not change by itself when the mock is called, so set `isPending`, `error`, or `validationResult` in each test rather than expecting `applyAction` to update them. To simulate a rejection, use `applyAction.mockRejectedValue(new Error("..."))`.
+
+## Provide the OSDK context
+
+`TestOsdkProvider` from `@osdk/react/testing` puts a `client` and an `observableClient` of your choice into context, without the devtools and user-agent setup of `OsdkProvider`. Use it when the code under test calls `useOsdkClient`, `useObservableClient`, or a platform API hook.
+
+| Export | Description |
+| --- | --- |
+| `TestOsdkProvider` | Provider with `client` and `observableClient` props, both required. Use it only in tests. |
+| `fakeObservableClient` | An `ObservableClient` whose every method throws. Pass it when the code under test never uses the observable client, so an unexpected call fails loudly. |
+
+Platform API hooks call Foundry over HTTP with the context's `client`. A client from `createMockClient` sends those requests to `https://mock.invalid/`, so intercept them with MSW. This test renders the `CurrentUserBadge` from [Users and markings](./platform-apis.mdx):
+
+```tsx title="src/CurrentUserBadge.test.tsx"
+import { fakeObservableClient, TestOsdkProvider } from "@osdk/react/testing";
+import { createMockClient } from "@osdk/unit-testing";
+import { cleanup, render, screen } from "@testing-library/react";
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
+import { afterAll, afterEach, beforeAll, expect, it } from "vitest";
+import { CurrentUserBadge } from "./CurrentUserBadge";
+
+const server = setupServer();
+
+beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
+afterEach(() => {
+  server.resetHandlers();
+  cleanup();
+});
+afterAll(() => server.close());
+
+it("greets the signed-in user", async () => {
+  server.use(
+    http.get("https://mock.invalid/api/v2/admin/users/getCurrent", () =>
+      HttpResponse.json({
+        id: "user-1",
+        username: "ada",
+        givenName: "Ada",
+        realm: "default",
+        status: "ACTIVE",
+        attributes: {},
+      }),
+    ),
+  );
+
+  render(
+    <TestOsdkProvider client={createMockClient()} observableClient={fakeObservableClient}>
+      <CurrentUserBadge />
+    </TestOsdkProvider>,
+  );
+
+  expect(await screen.findByText("Signed in as Ada")).toBeTruthy();
+});
+```
+
+## Test code that calls the client
+
+For a helper or hook that calls the `Client` itself, pass a client from `createMockClient` and register the responses it should get. Stubs match on the exact chain of calls, including arguments:
+
+```ts title="src/loadDepartmentRoster.ts"
+import { Employee } from "@my-app/sdk";
+import type { Client } from "@osdk/client";
+
+export async function loadDepartmentRoster(client: Client, department: string) {
+  const page = await client(Employee)
+    .where({ department: { $eq: department } })
+    .fetchPage();
+  return page.data.map((employee) => employee.fullName ?? "Unknown");
+}
+```
+
+```ts title="src/loadDepartmentRoster.test.ts"
+import { Employee, getEmployeeMetrics } from "@my-app/sdk";
+import { createMockClient, createMockOsdkObject } from "@osdk/unit-testing";
+import { expect, it } from "vitest";
+import { loadDepartmentRoster } from "./loadDepartmentRoster";
+
+it("lists the people in a department", async () => {
+  const client = createMockClient();
+  client
+    .when((stub) =>
+      stub(Employee)
+        .where({ department: { $eq: "Platform" } })
+        .fetchPage(),
+    )
+    .thenReturnObjects([
+      createMockOsdkObject(Employee, { employeeId: 1, fullName: "Ada Lovelace" }),
+    ]);
+
+  expect(await loadDepartmentRoster(client, "Platform")).toEqual(["Ada Lovelace"]);
+});
+
+it("stubs function calls", async () => {
+  const client = createMockClient();
+  client.whenQuery(getEmployeeMetrics, { department: "Sales" }).thenReturn({ headcount: 12 });
+
+  const result = await client(getEmployeeMetrics).executeFunction({ department: "Sales" });
+
+  expect(result).toEqual({ headcount: 12 });
+});
+```
+
+A call with no matching stub throws, with `No stub for request` for object set calls or `No stub for query '<name>'` for functions. When several stubs match, the last one registered wins.
+
+### `@osdk/unit-testing` reference
+
+| Export | Description |
+| --- | --- |
+| `createMockClient()` | A `Client` whose responses you stub. Use it with `TestOsdkProvider` or pass it to code that takes a `Client`. It does not stub actions. |
+| `client.when(callback)` | Stub an object set call chain that ends in `fetchPage`, `fetchOne`, `aggregate`, or similar. Complete it with `thenReturnObjects`, `thenReturnObject`, or `thenReturnAggregation`, depending on the call. |
+| `client.whenObjectSet(objectSet, callback)` | Stub calls on an object set created with `createMockObjectSet`, for code that takes an `ObjectSet` argument. |
+| `client.whenQuery(fn, params?)` | Stub a function call. Complete it with `thenReturn(value)` or `thenThrow(error)`. |
+| `client.clearStubs()` | Remove every stub. |
+| `createMockOsdkObject(type, properties, options?)` | An object instance. See [Test a component that loads objects](#test-a-component-that-loads-objects). |
+| `createMockObjectSet(type)` | A standalone object set to pass as an argument and stub with `whenObjectSet`. |
+| `createMockAttachment(rid, blob?, metadata?)` | An attachment whose `fetchContents` and `fetchMetadata` return the given values. |
+| `createMockWriteableClient()` | A mock client that records edits, for testing Foundry functions written with `@osdk/functions`. Read the edits with `getEdits()`. |

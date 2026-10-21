@@ -1,0 +1,137 @@
+---
+title: Installation
+description: Add @osdk/client, @osdk/oauth, @osdk/react, and your generated SDK to an existing app, with the npm registry setup and version rules they need.
+---
+
+Add OSDK to an app you already have by installing the client packages and your generated SDK from your Foundry npm registry. To start from a new project with everything configured, use the [Quickstart](./quickstart.mdx) instead.
+
+## Before you start
+
+Generate an SDK for your application in Developer Console with the **npm** package type, and note three values from its install instructions:
+
+| Value | Example |
+| --- | --- |
+| SDK package name | `@my-app/sdk` |
+| npm registry URL | `https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.<id>/contents/release/npm` |
+| Foundry token | A token that can read that registry. Keep it out of source control. |
+
+## Install
+
+<Steps>
+<Step>
+
+### Point your SDK's scope at the Foundry registry
+
+The generated SDK is not on the public npm registry. Add two lines to `.npmrc` in your project root: one maps your SDK's scope to the Foundry registry, and one authenticates every request to Foundry's artifacts API with a token from the environment.
+
+```ini title=".npmrc"
+//example.palantirfoundry.com/artifacts/api/:_authToken=${FOUNDRY_TOKEN}
+@my-app:registry=https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.<id>/contents/release/npm/
+```
+
+Replace `example.palantirfoundry.com` with your Foundry host, `@my-app` with your SDK's scope, and the registry URL with yours. Keep the trailing `/` on the registry URL, which pnpm requires. This is the same file `@osdk/create-app` writes.
+
+Export the token before you install, and set it as a secret in CI:
+
+```sh
+export FOUNDRY_TOKEN=<token>
+```
+
+</Step>
+<Step>
+
+### Install the client packages and your SDK
+
+```npm
+npm install @osdk/client @osdk/api @osdk/oauth @my-app/sdk@latest
+```
+
+| Package | Why you need it |
+| --- | --- |
+| `@osdk/client` | `createClient` and the runtime that runs queries and actions. |
+| `@osdk/api` | Types shared by the client and your SDK. |
+| `@osdk/oauth` | Token providers for signing users in. See [Authentication](./authentication.mdx). |
+| `@my-app/sdk` | Your Ontology's generated definitions. |
+
+</Step>
+<Step>
+
+### Add the React packages
+
+Skip this step if you do not use React.
+
+```npm
+npm install @osdk/react react react-dom
+```
+
+`@osdk/react` supports React 17, 18, and 19. For prebuilt components, also install `@osdk/react-components`; its setup is on [Components prerequisites](/components/prerequisites).
+
+</Step>
+<Step>
+
+### Create the client
+
+Create one client for your app and wrap your React tree in `OsdkProvider`. [Create a client](./client.mdx) walks through both.
+
+</Step>
+</Steps>
+
+## Version compatibility
+
+`@osdk/client`, `@osdk/api`, and `@osdk/react` are released together and share a version number. `@osdk/react` imports its cache runtime from `@osdk/client/observable`, which is tied to the exact release line, so a mismatch fails at build time even when npm's peer ranges are satisfied.
+
+- **Install the same version of all three.** If `@osdk/react` is `2.83.0`, use `@osdk/client@2.83.0` and `@osdk/api@2.83.0`.
+- **Keep prereleases together.** A prerelease `@osdk/react`, such as `-beta.3`, needs the same prerelease of `@osdk/client` and `@osdk/api`. Pairing it with stable releases breaks.
+- **Upgrade them in one command.** Bump the three packages together, and include `@osdk/react-components` if you use it:
+
+  ```npm
+  npm install @osdk/client@latest @osdk/api@latest @osdk/react@latest
+  ```
+
+- **Your generated SDK has a peer dependency on `@osdk/client`.** It is set to the client version that generated it, so install an `@osdk/client` that satisfies the SDK's peer range. When you upgrade the client across many versions, generate a new SDK version too.
+
+A version mismatch usually shows up as one of these errors:
+
+| Error | Cause | Fix |
+| --- | --- | --- |
+| `"<name>" is not exported by @osdk/client/.../observable.js` (or `@osdk/api/...`) | `@osdk/client` or `@osdk/api` is on a different release line than `@osdk/react`, often a prerelease paired with stable versions. | Install the exact `@osdk/client` and `@osdk/api` versions that match `@osdk/react`. |
+| npm or pnpm peer warning for `@osdk/client` or `@osdk/api` | The declared peer ranges are broader than the real coupling. | Pin the matching versions instead of ignoring the warning. |
+
+<Accordions>
+  <Accordion title="Find matching versions for an older @osdk/react">
+    Before `2.15.0`, `@osdk/react` was versioned separately (`0.x`). To find the `@osdk/client` and `@osdk/api` versions it was built against:
+
+    1. Open `node_modules/@osdk/react/CHANGELOG.md`.
+    2. Find the heading for your installed `@osdk/react` version.
+    3. If that entry has an **Updated dependencies** section, install the exact `@osdk/client` and `@osdk/api` versions it lists.
+    4. If it does not, walk back to the closest earlier entry that does, and use those versions.
+
+    Upgrading to `2.15.0` or later is simpler: from then on the three versions match.
+  </Accordion>
+  <Accordion title="npm cannot resolve peer dependencies">
+    If npm reports a peer conflict for OSDK packages after you have aligned versions, tell it to reuse your direct dependency versions with `overrides`:
+
+    ```json title="package.json"
+    {
+      "overrides": {
+        "@osdk/client": "$@osdk/client",
+        "@osdk/react": "$@osdk/react"
+      }
+    }
+    ```
+  </Accordion>
+</Accordions>
+
+## Optional peers for Platform APIs
+
+Hooks from `@osdk/react/platform-apis`, such as `useCurrentFoundryUser`, `useFoundryUser`, and `useMarkings`, call Foundry Platform APIs through two optional peer dependencies. Install them only if you import from that entry point:
+
+```npm
+npm install @osdk/foundry.admin @osdk/foundry.core
+```
+
+Without them, a build that imports `@osdk/react/platform-apis` fails with `Rollup failed to resolve import "@osdk/foundry.admin"` (or `@osdk/foundry.core`). See [Platform APIs](../react/platform-apis.mdx).
+
+## Bundler setup
+
+OSDK packages read `process.env.NODE_ENV`, which Vite does not define by default. Without it the browser throws `ReferenceError: process is not defined`. [Use OSDK with Vite](./guides/vite.mdx) shows the `define` setting and a local CORS proxy to Foundry.
