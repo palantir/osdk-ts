@@ -1,5 +1,3 @@
-<!-- cspell:ignore Fumadocs frontmatter llms -->
-
 # Writing the OSDK docs
 
 The site at https://palantir.github.io/osdk-ts/ is a [Fumadocs](https://fumadocs.dev) app (Next.js, static export). These rules apply to every page.

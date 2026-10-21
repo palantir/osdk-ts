@@ -23,7 +23,7 @@ export default function NotFound() {
       <main className="mx-auto flex w-full max-w-xl flex-1 flex-col items-start justify-center gap-4 px-6 py-24">
         <p className="font-mono text-sm text-fd-primary">404</p>
         <h1 className="text-3xl font-semibold tracking-tight">
-          This page doesn&rsquo;t exist.
+          This page does not exist.
         </h1>
         <p className="text-fd-muted-foreground">
           It may have moved when the docs were reorganized. Search with
