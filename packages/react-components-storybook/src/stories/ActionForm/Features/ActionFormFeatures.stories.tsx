@@ -281,6 +281,15 @@ function UpdateEmployeeActionFormStory({
       onSubmit,
     });
 
+  const commonProps = {
+    actionDefinition,
+    formTitle,
+    isSubmitDisabled,
+    onError: handleStoryError,
+    onSubmit: handleStorySubmit,
+    showFormTitle,
+  } as const;
+
   return (
     <FormStoryLayout
       output={
@@ -290,15 +299,14 @@ function UpdateEmployeeActionFormStory({
         />
       }
     >
-      <ActionForm
-        actionDefinition={actionDefinition}
-        formFieldDefinitions={formFieldDefinitions}
-        formTitle={formTitle}
-        isSubmitDisabled={isSubmitDisabled}
-        onError={handleStoryError}
-        onSubmit={handleStorySubmit}
-        showFormTitle={showFormTitle}
-      />
+      {formFieldDefinitions != null ? (
+        <ActionForm
+          {...commonProps}
+          formFieldDefinitions={formFieldDefinitions}
+        />
+      ) : (
+        <ActionForm {...commonProps} />
+      )}
     </FormStoryLayout>
   );
 }
