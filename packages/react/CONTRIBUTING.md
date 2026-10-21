@@ -342,18 +342,18 @@ pnpm --dir packages/react vitest
 
 User-facing documentation lives in `docs/content/react/` at the monorepo root and is published to https://palantir.github.io/osdk-ts/. Follow [`docs/AGENTS.md`](../../docs/AGENTS.md) when writing it. The same files ship in this package's `docs/` folder.
 
-| File                      | Covers                                                                    |
-| ------------------------- | ------------------------------------------------------------------------- |
-| `objects.mdx`             | `useOsdkObjects`, `useOsdkObject`, filtering, sorting, pagination         |
-| `links.mdx`               | `useLinks`, `pivotTo`                                                     |
-| `object-sets.mdx`         | `useObjectSet`, `useStableObjectSet`, derived properties                  |
-| `aggregations.mdx`        | `useOsdkAggregation`                                                      |
-| `functions.mdx`           | `useOsdkFunction`, `useOsdkFunctions`                                     |
-| `actions.mdx`             | `useOsdkAction`, validation, `useDebouncedCallback`                       |
-| `optimistic-updates.mdx`  | Optimistic edits and `devMode`                                            |
-| `cache-invalidation.mdx`  | Manual invalidation with `useObservableClient`                            |
-| `platform-apis.mdx`       | `@osdk/react/platform-apis` user and marking hooks                        |
-| `testing.mdx`             | `@osdk/react/testing` and `@osdk/unit-testing`                            |
+| File                     | Covers                                                            |
+| ------------------------ | ----------------------------------------------------------------- |
+| `objects.mdx`            | `useOsdkObjects`, `useOsdkObject`, filtering, sorting, pagination |
+| `links.mdx`              | `useLinks`, `pivotTo`                                             |
+| `object-sets.mdx`        | `useObjectSet`, `useStableObjectSet`, derived properties          |
+| `aggregations.mdx`       | `useOsdkAggregation`                                              |
+| `functions.mdx`          | `useOsdkFunction`, `useOsdkFunctions`                             |
+| `actions.mdx`            | `useOsdkAction`, validation, `useDebouncedCallback`               |
+| `optimistic-updates.mdx` | Optimistic edits and `devMode`                                    |
+| `cache-invalidation.mdx` | Manual invalidation with `useObservableClient`                    |
+| `platform-apis.mdx`      | `@osdk/react/platform-apis` user and marking hooks                |
+| `testing.mdx`            | `@osdk/react/testing` and `@osdk/unit-testing`                    |
 
 Setup and concepts live one level up: `installation.mdx`, `client.mdx`, and `concepts/`.
 
