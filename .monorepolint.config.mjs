@@ -595,7 +595,7 @@ const archetypeRules = archetypes(standardPackageRules, {
       vitestPool: "threads",
     },
   )
-  .addArchetype("docs", ["@osdk/docs", "@osdk/docs-site"], {
+  .addArchetype("docs", ["@osdk/docs"], {
     ...LIBRARY_RULES,
     minimalChangesOnly: true,
     private: true,

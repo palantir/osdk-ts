@@ -6,7 +6,6 @@ packages:
   - "tests/*"
   - "benchmarks/*/*"
   - "docs"
-  - "docs-site"
 
 # WARNING: Changesets does not detect catalog version bumps as changes to
 # consuming packages (https://github.com/changesets/changesets/issues/1707).

@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - 'docs/**'
+      - 'packages/react-components/docs/**'
+      - '.github/workflows/deploy-docs.yml'
   workflow_dispatch:
 
 permissions:
@@ -39,16 +41,14 @@ jobs:
           
           # Copy storybook directory if it exists
           if [ -d "gh-pages-temp/storybook" ]; then
-            mkdir docs/build/storybook
-            cp -r gh-pages-temp/storybook/* docs/build/storybook
+            mkdir docs/out/storybook
+            cp -r gh-pages-temp/storybook/* docs/out/storybook
           fi
           
           # Clean up temp directory
           rm -rf gh-pages-temp
           
-          # Deploy from docs/build as before
-          cd docs/build
-          touch .nojekyll
+          cd docs/out
           git init
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

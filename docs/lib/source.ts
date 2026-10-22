@@ -137,7 +137,7 @@ export function editUrl(page: Page): string {
     ? `packages/react-components/docs/${
       page.path.slice(componentsPrefix.length + 1)
     }`
-    : `docs-site/content/${page.path}`;
+    : `docs/content/${page.path}`;
   return `https://github.com/palantir/osdk-ts/blob/main/${path}`;
 }
 

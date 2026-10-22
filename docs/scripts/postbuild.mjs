@@ -49,6 +49,17 @@ for await (const file of walk(markdownRoot)) {
   count++;
 }
 
+const redirects = (await import("../redirects.mjs")).default;
+for (const [from, to] of Object.entries(redirects)) {
+  const href = `/osdk-ts${to}`;
+  const target = path.join(out, `${from}.html`);
+  await mkdir(path.dirname(target), { recursive: true });
+  await writeFile(
+    target,
+    `<!doctype html><meta charset="utf-8"><title>Redirecting…</title><link rel="canonical" href="${href}"><meta http-equiv="refresh" content="0; url=${href}"><a href="${href}">${href}</a>\n`,
+  );
+}
+
 await writeFile(path.join(out, ".nojekyll"), "");
 
 const basePath = "/osdk-ts";
@@ -92,4 +103,8 @@ if (broken.length > 0) {
   }
   process.exitCode = 1;
 }
-console.log(`postbuild: wrote ${count} Markdown twins`);
+console.log(
+  `postbuild: wrote ${count} Markdown twins and ${
+    Object.keys(redirects).length
+  } redirects`,
+);

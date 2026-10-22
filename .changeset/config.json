@@ -35,7 +35,6 @@
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": [
-    "@osdk/docs-site",
     "@osdk/examples.*",
     "@osdk/monorepo.*",
     "@osdk/tests.*",
