@@ -1,1 +1,0 @@
-const A={NOTE:"Note",TIP:"Tip",IMPORTANT:"Important",WARNING:"Warning",CAUTION:"Caution"};function n(t){return t.replaceAll(/^(\s*>\s*)\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*$/gmu,(I,T,N)=>`${T}**${A[N]}**`)}export{n as f};
