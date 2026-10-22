@@ -1,7 +1,12 @@
 {
   "title": "OSDK TypeScript",
   "pages": [
+    "(docs)",
+    "sdk",
+    "react",
     "components",
-    "ai"
+    "platform",
+    "ai",
+    "reference"
   ]
 }

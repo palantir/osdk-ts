@@ -1,0 +1,305 @@
+---
+title: Custom widgets
+description: Build React or plain TypeScript widgets that run inside Foundry UIs such as Workshop, exchange parameters and events with the host, and call the OSDK.
+foundryDocs:
+  - title: Custom widgets
+    path: custom-widgets/overview
+  - title: Create a widget set
+    path: custom-widgets/create
+---
+
+{/* cspell:ignore widgetregistry */}
+
+A custom widget is a web page you build with Vite that Foundry embeds inside a host UI such as Workshop. The host passes values into the widget as parameters, the widget sends events back to update them, and the widget can read and write your Ontology through the OSDK.
+
+## How it works
+
+Widgets ship in a **widget set**, a Foundry resource with a RID such as `ri.widgetregistry..widget-set.<id>`. One project builds one widget set, and each HTML entrypoint in its Vite config becomes one widget in the set. You deploy the set as numbered versions, and the host loads the scripts and stylesheets that the version's manifest lists.
+
+Each widget declares its contract in a config file built with `defineConfig`: an ID and name, the parameters the host can set, and the events the widget can emit. At build time, `@osdk/widget.vite-plugin` turns those configs into the manifest at `.palantir/widgets.config.json`, which tells Foundry what to show in the widget's setup panel. See [Parameters and events](./parameters-and-events.mdx).
+
+At runtime the host injects `window.__PALANTIR_WIDGET_API__` into the widget's page, and the two sides exchange typed messages through it:
+
+| Message | Direction | Payload | When |
+| --- | --- | --- | --- |
+| `widget.ready` | Widget to host | `{ apiVersion: "1.0.0" }` | The widget is listening and wants its first parameter values. |
+| `host.update-parameters` | Host to widget | `{ parameters }`, one async value per parameter ID | Parameter values or their loading states change. |
+| `widget.emit-event` | Widget to host | `{ eventId, parameterUpdates }` | The widget fires one of its declared events. |
+| `widget.resize` | Widget to host | `{ width, height }` of the document body's border box | The widget's content changes size. |
+| `widget.reload` | Widget to host | `{}` | The widget needs a full reload, such as a Vite full-page reload in development. |
+
+`FoundryWidget` from `@osdk/widget.client-react` sends `widget.ready`, `widget.resize`, and `widget.reload` for you and exposes the rest through a hook. See [React widgets](./react.mdx).
+
+## Packages
+
+| Package | Use it for |
+| --- | --- |
+| `@osdk/widget.api` | The contract itself: message, manifest, and parameter value types, `BrowserPermission`, and `MANIFEST_FILE_LOCATION`. `@osdk/widget.client` re-exports the parts you need, so you rarely import it directly. |
+| `@osdk/widget.client` | `defineConfig` for widget configs, `createFoundryWidgetClient` for widgets without React, and `createFoundryWidgetTokenProvider` for OSDK clients inside a widget. |
+| `@osdk/widget.client-react` | The `FoundryWidget` provider and the `useFoundryWidgetContext` hook. Supports React 18 and 19. |
+| `@osdk/widget.vite-plugin` | Generates the manifest during `vite build` and runs developer mode during `vite`. Supports Vite 6 and 7. |
+| `@osdk/create-widget` | A CLI that scaffolds a React widget set project with all of the above wired in. |
+| `@osdk/cli` | `osdk widgetset deploy` and `osdk widgetset version` for publishing and managing versions. See [Build and publish](./publish.mdx). |
+
+## Create a widget set project
+
+Before you start, you need:
+
+1. A widget set in Foundry and its RID, `ri.widgetregistry..widget-set.<id>`.
+2. A Foundry token in the `FOUNDRY_TOKEN` environment variable. Developer mode, `osdk widgetset deploy`, and installing your SDK package from Foundry's npm registry all read it.
+3. To call the Ontology, the name of your widget set's SDK package, such as `@my-app/sdk`, and the URL of the npm registry that hosts it. The registry URL has the form `https://<stack>/artifacts/api/repositories/ri.artifacts.main.repository.<id>/contents/release/npm`.
+
+<Steps>
+<Step>
+
+### Run the CLI
+
+```npm
+npx @osdk/create-widget@latest my-osdk-widget
+```
+
+`npm create @osdk/widget@latest` runs the same CLI. It prompts for each value you do not pass as a flag:
+
+| Prompt | Flag | Accepted values |
+| --- | --- | --- |
+| Project name | positional `[project]` | Letters, digits, `-`, and `_`. Defaults to `my-osdk-widget`. |
+| Overwrite the existing directory? | `--overwrite` | Asked only if the directory exists. `--overwrite` removes its files; `--no-overwrite` keeps them and writes over matching paths. |
+| Framework | `--template` | `widget-react`, listed as **OSDK React**: React, Vite, and Blueprint. |
+| OSDK version | `--sdkVersion` | `2.x`, the only version the React template supports. Not prompted unless the value is invalid. |
+| Foundry URL | `--foundryUrl` | Must start with `https://`, such as `https://example.palantirfoundry.com`. |
+| Will you be using an OSDK? | `--skipOsdk` | Passing `--osdkPackage` or `--osdkRegistryUrl` answers yes. `--skipOsdk` answers no and conflicts with both. |
+| OSDK package name | `--osdkPackage` | Must match `@<scope>/sdk`, such as `@my-app/sdk`. |
+| npm registry URL | `--osdkRegistryUrl` | The Foundry Artifacts URL ending in `/contents/release/npm`. |
+| Widget set RID | `--widgetSet` | `ri.widgetregistry..widget-set.<id>`. |
+| None | `--repository` | Optional code repository RID, written to `foundry.config.json` for `osdk widgetset deploy`. |
+
+To skip every prompt:
+
+```npm
+npx @osdk/create-widget@latest my-osdk-widget \
+  --template widget-react \
+  --foundryUrl https://example.palantirfoundry.com \
+  --widgetSet ri.widgetregistry..widget-set.<id> \
+  --osdkPackage @my-app/sdk \
+  --osdkRegistryUrl https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.<id>/contents/release/npm
+```
+
+</Step>
+<Step>
+
+### Install dependencies
+
+```sh
+cd my-osdk-widget
+export FOUNDRY_TOKEN=<token>
+npm install
+```
+
+The generated `.npmrc` sends `FOUNDRY_TOKEN` to your Foundry npm registry, so a `401` or `404` for your SDK package means the token is missing, expired, or lacks access.
+
+</Step>
+<Step>
+
+### Start developer mode
+
+```sh
+npm run dev
+```
+
+The terminal prints a setup URL. Open it to load your local widgets in Foundry, as described in [Run locally](#run-locally).
+
+</Step>
+</Steps>
+
+## Project layout
+
+<Files>
+  <File name=".gitignore" />
+  <File name=".npmrc" />
+  <File name="README.md" />
+  <File name="eslint.config.mjs" />
+  <File name="foundry.config.json" />
+  <File name="index.html" />
+  <File name="package.json" />
+  <File name="tsconfig.json" />
+  <File name="tsconfig.node.json" />
+  <File name="vite.config.ts" />
+  <Folder name="src" defaultOpen>
+    <File name="client.ts" />
+    <File name="main.config.ts" />
+    <File name="main.css" />
+    <File name="main.tsx" />
+    <File name="useDarkTheme.ts" />
+    <File name="vite-env.d.ts" />
+    <File name="Widget.module.css" />
+    <File name="Widget.tsx" />
+  </Folder>
+</Files>
+
+| File | Purpose |
+| --- | --- |
+| `foundry.config.json` | The Foundry URL and widget set settings that the Vite plugin and `osdk widgetset deploy` read. See [Build and publish](./publish.mdx#foundryconfigjson). |
+| `.npmrc` | Points your SDK package's scope at your Foundry registry and authenticates with `${FOUNDRY_TOKEN}`. Only generated with an OSDK. |
+| `vite.config.ts` | Adds `@vitejs/plugin-react` and `@osdk/widget.vite-plugin`, serves on port 8080 with CORS enabled, and lists `./index.html` as the build input. |
+| `index.html` | The widget's entrypoint. It loads `/src/main.tsx`. |
+| `src/main.config.ts` | The widget config: ID `widgetId`, a `greetingName` string parameter, a `counterValue` number parameter, and a `setCounterValue` event. |
+| `src/main.tsx` | Renders `Widget` inside `FoundryWidget`, and inside `OsdkProvider` when you use an OSDK. Importing `main.config.ts` here is what lets the Vite plugin find it. |
+| `src/client.ts` | Creates the OSDK client. Only generated with an OSDK. |
+| `src/Widget.tsx` | Reads both parameters, increments the counter every second by emitting `setCounterValue`, and renders a reset button. |
+| `src/useDarkTheme.ts` | Tracks `prefers-color-scheme: dark` so the widget can apply Blueprint's dark theme. |
+
+Without an OSDK, the CLI omits `.npmrc` and `src/client.ts`, and `package.json` drops `@osdk/client`, `@osdk/react`, and the SDK package.
+
+The `package.json` scripts:
+
+| Script | Command | Description |
+| --- | --- | --- |
+| `dev` | `vite` | Starts the dev server and developer mode. |
+| `build` | `tsc && vite build` | Typechecks, builds to `dist/`, and writes `dist/.palantir/widgets.config.json`. |
+| `lint` | `eslint . --report-unused-disable-directives --max-warnings 0` | Lints the project. |
+| `test` | `vitest run --passWithNoTests` | Runs tests. |
+| `preview` | `vite preview` | Serves the production build locally. |
+
+## Run locally
+
+Developer mode loads widget code from your dev server into Foundry, so you can preview changes against real host data without deploying a version.
+
+<Steps>
+<Step>
+
+### Start the dev server
+
+Export `FOUNDRY_TOKEN` and run `npm run dev`. The plugin stops with `FOUNDRY_TOKEN environment variable not found` if the variable is missing. Instead of the usual local URL, Vite prints:
+
+```txt
+➜  Click to enter developer mode for your widget set: http://localhost:8080/.palantir/setup/
+```
+
+</Step>
+<Step>
+
+### Open the setup URL
+
+The setup page loads each HTML entrypoint so Vite parses its widget config, then builds a development manifest whose scripts point at your dev server. It sends that manifest for the widget set in `foundry.config.json` to Foundry, enables developer mode, and redirects you to the widget set's preview page at `<foundryUrl>/workspace/custom-widgets/preview/<widgetSetRid>`.
+
+If a widget's config is never found, the page gives up after 10 attempts with `Timed out waiting for widget config files to be parsed. Are you sure a widget config is imported?`.
+
+</Step>
+<Step>
+
+### Edit your code
+
+Component changes reach the embedded widget through Vite hot module replacement. A change to a widget config file does not: the terminal warns that the config changed, and you open the setup URL again to send the new parameters and events to Foundry.
+
+</Step>
+</Steps>
+
+You do not need to publish a widget set before developing on it. To place the widget in a Workshop module, publish a version once so the widget appears in Workshop's **Widget setup** panel. See [Build and publish](./publish.mdx).
+
+### Code Workspaces
+
+In Foundry Code Workspaces, run Vite in the `code-workspaces` mode instead:
+
+```json title="package.json"
+{
+  "scripts": {
+    "dev:remote": "vite --mode code-workspaces"
+  }
+}
+```
+
+In this mode the plugin reads the Foundry URL from `FOUNDRY_PROXY_URL`, the token from the file named by `FOUNDRY_PROXY_TOKEN`, and the dev server address from `DEV_SERVER_DOMAIN` and `DEV_SERVER_BASE_PATH`, all set by the workspace. Open the preview panel to enter developer mode, and refresh it after you change a widget config. The plugin warns when you run `npm run dev` inside a workspace, or the `code-workspaces` mode outside one.
+
+## Use the OSDK in a widget
+
+Inside Foundry, a widget authenticates through the host instead of OAuth. Create the client against the page origin with the widget token provider:
+
+```ts title="src/client.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import { createClient } from "@osdk/client";
+import { createFoundryWidgetTokenProvider } from "@osdk/widget.client";
+
+export const client = createClient(
+  window.location.origin,
+  $ontologyRid,
+  createFoundryWidgetTokenProvider(),
+);
+```
+
+`createFoundryWidgetTokenProvider` resolves to a placeholder that Foundry replaces with real credentials on each request. Pass the client to `FoundryWidget`, which needs it to resolve object set parameters, and to `OsdkProvider` so `@osdk/react` hooks work inside the widget:
+
+```tsx title="src/main.tsx"
+import { OsdkProvider } from "@osdk/react";
+import { FoundryWidget } from "@osdk/widget.client-react";
+import { createRoot } from "react-dom/client";
+import { client } from "./client.js";
+import MainConfig from "./main.config.js";
+import { Widget } from "./Widget.js";
+
+createRoot(document.getElementById("root")!).render(
+  <FoundryWidget config={MainConfig} client={client}>
+    <OsdkProvider client={client}>
+      <Widget />
+    </OsdkProvider>
+  </FoundryWidget>,
+);
+```
+
+From there, query with the hooks in [Query objects](/react/objects) or read object sets the host passes in, as shown in [React widgets](./react.mdx#object-set-parameters). At build time, the Vite plugin also lists every installed package whose `package.json` has an `osdk.packageRid` field, with its version, in the manifest's `inputSpec`.
+
+## Build a widget without React
+
+`createFoundryWidgetClient` from `@osdk/widget.client` speaks the same protocol without a framework. Outside a Foundry host or developer mode, it throws `Invariant failed: [FoundryWidgetClient] Missing __PALANTIR_WIDGET_API__ in window`.
+
+```ts title="src/main.ts"
+import { createFoundryWidgetClient } from "@osdk/widget.client";
+import MainConfig from "./main.config.js";
+
+const widget = createFoundryWidgetClient<typeof MainConfig>();
+
+widget.hostEventTarget.addEventListener("host.update-parameters", (event) => {
+  const greeting = event.detail.parameters.greetingName?.value;
+  if (greeting?.type === "loaded" || greeting?.type === "reloading") {
+    document.body.textContent = `Hello, ${greeting.value ?? "World"}!`;
+  }
+});
+
+document.body.addEventListener("click", () => {
+  widget.emitEvent("setCounterValue", {
+    parameterUpdates: { counterValue: 0 },
+  });
+});
+
+new ResizeObserver(() => {
+  const { width, height } = document.body.getBoundingClientRect();
+  widget.resize({ width, height });
+}).observe(document.body);
+
+widget.subscribe();
+widget.ready();
+```
+
+| Member | Description |
+| --- | --- |
+| `subscribe()` | Starts forwarding host messages to `hostEventTarget`. Call it before `ready()`. |
+| `unsubscribe()` | Stops forwarding host messages. |
+| `ready()` | Sends `widget.ready` so the host sends the first parameter values. |
+| `emitEvent(eventId, { parameterUpdates })` | Sends `widget.emit-event`. Typed against the events in your config. |
+| `resize({ width, height })` | Sends `widget.resize`. |
+| `reload()` | Sends `widget.reload`. |
+| `sendMessage(message)` | Sends any widget message. Prefer the methods above. |
+| `hostEventTarget` | An `EventTarget` that dispatches `host.update-parameters` with the message payload in `event.detail`. |
+
+## Next steps
+
+<Cards>
+  <Card href="/widgets/parameters-and-events" title="Parameters and events">
+    Every parameter type, event, permission, and how they map to the manifest.
+  </Card>
+  <Card href="/widgets/react" title="React widgets">
+    Read parameters, emit events, and handle loading states with `FoundryWidget`.
+  </Card>
+  <Card href="/widgets/publish" title="Build and publish">
+    Configure the Vite plugin, build the manifest, and deploy versions.
+  </Card>
+</Cards>

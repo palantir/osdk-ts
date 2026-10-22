@@ -1,9 +1,8 @@
 # Usage with OSDK
 
-`@osdk/react-components` is built on top of
-[`@osdk/react`](https://github.com/palantir/osdk-ts/tree/main/packages/react),
-which provides hooks for fetching Ontology data. Components accept OSDK types
-directly and handle data loading, caching, and state management automatically.
+`@osdk/react-components` builds on the `@osdk/react` hooks, so components accept OSDK types directly and handle data loading, caching, and state for you.
+
+See the [`@osdk/react` documentation](https://palantir.github.io/osdk-ts/react/objects) for the hooks themselves.
 
 ## How it works
 
@@ -26,12 +25,21 @@ supplies the OSDK client that hooks use for network requests.
 
 ```tsx
 import { createClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
 import { OsdkProvider } from "@osdk/react";
 
+const foundryUrl = "https://your-stack.palantirfoundry.com";
+
+const auth = createPublicOauthClient(
+  "your-client-id",
+  foundryUrl,
+  "http://localhost:8080/auth/callback",
+);
+
 const client = createClient(
-  "https://your-stack.palantirfoundry.com",
-  "your-ontology-rid",
-  async () => "your-auth-token",
+  foundryUrl,
+  "ri.ontology.main.ontology.{UUID}",
+  auth,
 );
 
 function App() {

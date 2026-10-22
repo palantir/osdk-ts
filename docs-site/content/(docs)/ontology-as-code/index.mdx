@@ -1,0 +1,209 @@
+---
+title: Ontology as code
+description: Define object types, links, actions, and interfaces in TypeScript with @osdk/maker, compile them to Ontology IR, and develop against them locally.
+foundryDocs:
+  - title: Ontology as code
+    path: superrepo/core-concepts#ontology-as-code
+---
+
+Ontology as code lets you define Ontology types in TypeScript files that live next to your app. `@osdk/maker` validates the definitions and compiles them into an Ontology intermediate representation (IR) file, and `@osdk/vite-plugin-oac` turns that IR into a generated SDK and a mock Foundry server for local development.
+
+<Callout type="warn">
+  Every ontology-as-code package is pre-1.0 (`@osdk/maker` 0.82, `@osdk/vite-plugin-oac` 0.85, `@osdk/maker-import` 0.48) and treated as experimental. Definitions, CLI flags, and the IR format can change in any release. Pin exact versions and read the changelog before you upgrade.
+</Callout>
+
+## Packages
+
+| Package | What it does |
+| --- | --- |
+| `@osdk/maker` | The `define*` functions you write your ontology with, and the `maker` CLI that compiles it to IR. |
+| `@osdk/vite-plugin-oac` | A Vite plugin that compiles the ontology on every change, generates an SDK from it, and serves a mock Foundry API from the dev server. See [Local development](./local-development.mdx). |
+| `@osdk/maker-import` | Converts the metadata of an existing Foundry ontology into TypeScript files you can reference from your definitions. See [Import existing types](./import.mdx). |
+| `@osdk/seed-helpers`, `@osdk/seed-compiler` | Build seed objects and links for the local Ontology server. See [Local development](./local-development.mdx#seed-data-for-the-local-ontology-server). |
+
+## How it works
+
+1. **Define.** You write object types, links, actions, interfaces, shared property types, and value types in `.ontology/ontology.mts`. Each `define*` call validates its input and registers the type.
+2. **Compile.** The `maker` CLI imports that file and writes the IR to `ontology.json`, plus `value-types.json` when you define value types.
+3. **Develop locally.** In a Vite app, `@osdk/vite-plugin-oac` runs `maker` on every change, converts the IR to Ontology metadata, generates an SDK into `.osdk/src`, and answers OSDK requests from the dev server with seeded data.
+4. **Ship.** The IR file is the artifact. None of these packages uploads or installs it into a Foundry stack.
+
+## Install
+
+```npm
+npm install --save-dev @osdk/maker
+```
+
+`@osdk/maker` installs a `maker` binary. For local development, also install the Vite plugin; see [Local development](./local-development.mdx#install).
+
+The CLI loads your ontology file with Node's own `import()`, so a `.mts` or `.ts` entry file needs a Node.js version that strips TypeScript types natively: 22.18 or later, or 23.6 or later. On older versions, write the file as `.mjs`.
+
+## Project layout
+
+<Files>
+  <Folder name=".ontology" defaultOpen>
+    <File name="ontology.mts" />
+    <File name="seed.ts" />
+    <File name="ontology-schema-lock.json" />
+  </Folder>
+  <Folder name=".osdk">
+    <Folder name="src" />
+  </Folder>
+  <Folder name="src" />
+  <File name="package.json" />
+  <File name="vite.config.ts" />
+</Files>
+
+| Path | Purpose |
+| --- | --- |
+| `.ontology/ontology.mts` | Your definitions. The Vite plugin reads exactly this file name. |
+| `.ontology/seed.ts` | Mock data for the Vite plugin's local server. |
+| `.ontology/ontology-schema-lock.json` | Written by `maker --write-locks` once an interface opts into [schema migrations](./interfaces.mdx#schema-migrations). Commit it. |
+| `.osdk/src` | The SDK the Vite plugin generates. Do not edit it by hand. |
+
+## Write an ontology
+
+The ontology file is a module whose top-level `define*` calls register types as they run. Export each result so other files, such as a seed file or another ontology, can import it.
+
+This file defines the `Employee` and `Office` object types, the links between them, a `Worker` interface, and a `modifyEmployee` action:
+
+```ts title=".ontology/ontology.mts"
+import {
+  defineInterface,
+  defineLink,
+  defineModifyObjectAction,
+  defineObject,
+  defineSharedPropertyType,
+} from "@osdk/maker";
+
+export const name = defineSharedPropertyType({
+  apiName: "name",
+  type: "string",
+  displayName: "Name",
+});
+
+export const worker = defineInterface({
+  apiName: "Worker",
+  displayName: "Worker",
+  properties: { name },
+});
+
+export const office = defineObject({
+  apiName: "Office",
+  displayName: "Office",
+  pluralDisplayName: "Offices",
+  primaryKeyPropertyApiName: "officeId",
+  titlePropertyApiName: "name",
+  properties: {
+    officeId: { type: "string", displayName: "Office ID" },
+    name: { type: "string" },
+    city: { type: "string" },
+  },
+});
+
+export const employee = defineObject({
+  apiName: "Employee",
+  displayName: "Employee",
+  pluralDisplayName: "Employees",
+  primaryKeyPropertyApiName: "employeeId",
+  titlePropertyApiName: "fullName",
+  properties: {
+    employeeId: { type: "integer", displayName: "Employee ID" },
+    fullName: { type: "string", displayName: "Full name" },
+    jobTitle: { type: "string" },
+    department: { type: "string" },
+    startDate: { type: "date" },
+    salary: { type: "double" },
+    skills: { type: "string", array: true },
+    leadId: { type: "integer" },
+    officeId: { type: "string" },
+  },
+  implementsInterfaces: [
+    {
+      implements: worker,
+      propertyMapping: [{ interfaceProperty: "name", mapsTo: "fullName" }],
+    },
+  ],
+});
+
+export const officeOccupants = defineLink({
+  apiName: "office-occupants",
+  one: { object: office, metadata: { apiName: "occupants" } },
+  toMany: { object: employee, metadata: { apiName: "office" } },
+  manyForeignKeyProperty: "officeId",
+});
+
+export const employeeReports = defineLink({
+  apiName: "employee-reports",
+  one: { object: employee, metadata: { apiName: "reports" } },
+  toMany: { object: employee, metadata: { apiName: "lead" } },
+  manyForeignKeyProperty: "leadId",
+});
+
+export const modifyEmployee = defineModifyObjectAction({
+  apiName: "modify-employee",
+  objectType: employee,
+});
+```
+
+In the SDK generated from this file, `Employee` has the links `office` and `lead` (one object each) and `reports` (many), `Office` has `occupants`, and the action is `modifyEmployee`: action API names must be lowercase and hyphenated, and the SDK generator converts them to camelCase. The `leadId` and `officeId` properties are the foreign keys the links join on.
+
+Compile it:
+
+```sh
+npx maker -i .ontology/ontology.mts -o ontology.json
+```
+
+Each `define*` function throws when its input is invalid, for example when a title or primary key property is missing, an API name breaks the naming rules, or two types share an API name. `maker` reports the first error and exits with code 1; run it with `-v` to print the stack trace.
+
+## API names and namespaces
+
+`--apiNamespace com.example` prefixes the API names of the object types, interfaces, shared property types, and action types you define, so `Employee` becomes `com.example.Employee`. Pass names without the prefix in your definitions. Link type API names are not prefixed, and value types are prefixed only when you set `namespacePrefix: true`.
+
+| Name | Rule |
+| --- | --- |
+| Object type | Starts with a letter, then letters and digits, with optional `.`-separated segments, at most 100 characters. |
+| Property, link side | Starts with a letter, then letters, digits, and `_`, at most 100 characters. |
+| Action type | Lowercase letters and digits, in segments separated by `-` or `.`. |
+| Link type | Converted to a lowercase, hyphenated ID (`officeOccupants` and `office_occupants` both become `office-occupants`), which must start with a letter. |
+| All | Cannot be a reserved word: `ontology`, `object`, `property`, `link`, `relation`, `rid`, `primaryKey`, `typeId`, or `ontologyObject`, in any case. |
+
+## `maker` CLI
+
+```sh
+maker [options]
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `-i`, `--input` | `string` | `.ontology/ontology.ts` | The ontology file to load. |
+| `-o`, `--output` | `string` | `ontology.json` | Where to write the IR. |
+| `--valueTypesOutput` | `string` | `value-types.json` | Where to write value types. Written only when the ontology defines or imports value types. |
+| `--apiNamespace` | `string` | `""` | Prefix for API names, such as `com.example`. A trailing `.` is added for you. Must match `^[a-z0-9-]+(\.[a-z0-9-]+)*\.$`. |
+| `-d`, `--outputDir` | `string` | | Also write each defined type as a TypeScript module under `<dir>/codegen`, with an `index.ts` that re-exports them. Other ontologies can import this output; see [Import existing types](./import.mdx#share-types-between-ontology-as-code-projects). |
+| `--dependencies` | `string` | | Write the namespaces and versions of imported ontology packages to this JSON file. |
+| `--generateCodeSnippets` | `boolean` | `false` | Write OSDK usage snippets for each object type, action type, and interface. |
+| `--codeSnippetPackageName` | `string` | `""` | The SDK package name shown in the snippets. |
+| `--codeSnippetDir` | `string` | `./` | Where to write the snippets. |
+| `--randomnessKey` | `string` | | A UUID recorded in the IR to keep generated entities unique. Rejected if it is not a UUID. |
+| `--lockfile` | `string` | `ontology-schema-lock.json` next to the input | The interface schema lockfile. |
+| `--writeLocks` | `boolean` | | Update the lockfile instead of failing when it is out of date. |
+| `-y`, `--yes` | `boolean` | | Accept detected schema migration finalizations and deletions without a prompt. Requires `--writeLocks`. |
+| `-v`, `--verbose` | `count` | | `-v` logs debug output and stack traces; `-vv` logs trace output. |
+
+## Next steps
+
+<Cards>
+  <Card href="/ontology-as-code/object-types" title="Object types">
+    Properties, primary keys, value types, and datasources.
+  </Card>
+  <Card href="/ontology-as-code/links-and-actions" title="Links and actions">
+    Relate object types and define the actions that edit them.
+  </Card>
+  <Card href="/ontology-as-code/interfaces" title="Interfaces and shared properties">
+    Share properties and contracts across object types.
+  </Card>
+  <Card href="/ontology-as-code/local-development" title="Local development">
+    Generate an SDK and run a mock Foundry API with Vite.
+  </Card>
+</Cards>

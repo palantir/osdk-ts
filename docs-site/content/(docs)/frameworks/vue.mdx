@@ -1,0 +1,344 @@
+---
+title: Vue
+description: Build a Vue app on OSDK with the create-app Vue template, set up sign-in, and query objects and apply actions from components with @osdk/client.
+---
+
+{/* cspell:ignore composable refetches */}
+
+Use `@osdk/client` directly from Vue components: there is no Vue-specific OSDK package. The `vue` template of `@osdk/create-app` gives you a Vite app with sign-in, routing, and a configured client.
+
+## Create a Vue app
+
+Run `@osdk/create-app` with the `vue` template:
+
+```npm
+npx @osdk/create-app@latest my-vue-app --template vue
+```
+
+The CLI asks for your Foundry URL, application RID, OAuth client ID, and SDK package, the same prompts as the React template. [Quickstart](../quickstart.mdx#run-the-cli) lists every prompt and its flag. The template uses SDK version 2.x unless you pass `--sdkVersion 1.x`.
+
+Then install and start the dev server:
+
+```sh
+cd my-vue-app
+export FOUNDRY_TOKEN=<token>
+npm install
+npm run dev
+```
+
+Open `http://localhost:8080`. `FOUNDRY_TOKEN` must be able to read your SDK's npm registry; see [Installation](../installation.mdx).
+
+## What the template generates
+
+<Files>
+  <File name=".env.development" />
+  <File name=".env.production" />
+  <File name=".npmrc" />
+  <File name="foundry.config.json" />
+  <File name="index.html" />
+  <File name="package.json" />
+  <File name="vite.config.ts" />
+  <Folder name="src" defaultOpen>
+    <File name="AuthCallback.vue" />
+    <File name="client.ts" />
+    <File name="env.test.ts" />
+    <File name="Home.vue" />
+    <File name="main.ts" />
+    <File name="router.ts" />
+    <Folder name="components">
+      <File name="Header.vue" />
+      <File name="NextSteps.vue" />
+      <File name="Osdk.vue" />
+    </Folder>
+  </Folder>
+</Files>
+
+| File | Purpose |
+| --- | --- |
+| `.env.development`, `.env.production` | `VITE_FOUNDRY_API_URL`, `VITE_FOUNDRY_CLIENT_ID`, `VITE_FOUNDRY_REDIRECT_URL`, and `VITE_FOUNDRY_ONTOLOGY_RID` for each mode. |
+| `index.html` | Copies the env values into `<meta>` tags such as `osdk-foundryUrl` and `osdk-clientId`. |
+| `src/client.ts` | Reads the meta tags, creates `auth` with `createPublicOauthClient`, and exports `client` from `createClient`. |
+| `src/router.ts` | A `vue-router` router with `/` and the redirect route `/auth/callback`. |
+| `src/AuthCallback.vue` | Completes sign-in when Foundry redirects back. |
+| `src/env.test.ts` | Fails the test run when `.env.production` is missing a value or still has a `<placeholder>`. It runs only when `VERIFY_ENV_PRODUCTION=true`. |
+| `vite.config.ts` | Serves on port `8080`, defines `process.env.NODE_ENV`, and adds the optional CORS proxy. |
+| `foundry.config.json` | Settings for deploying to Foundry. See [Hosting](../deploy/hosting.mdx). |
+
+The generated `package.json` depends on `@osdk/client`, `@osdk/oauth`, `@osdk/foundry`, your SDK, `vue`, and `vue-router`, and has these scripts:
+
+| Script | Runs |
+| --- | --- |
+| `dev` | `vite` |
+| `build` | `vue-tsc && vite build`, which type-checks `.vue` files, then writes `dist/`. |
+| `test` | `vitest run` |
+| `preview` | `vite preview` |
+
+`vite.config.ts` aliases `vue` to `vue/dist/vue.esm-bundler`, the build that includes the template compiler, because `src/main.ts` mounts the root component from a template string (`"<router-view />"`). Keep the alias, or change `main.ts` to mount a compiled `.vue` component instead.
+
+## Set up the client and sign-in
+
+`src/client.ts` exports one `auth` and one `client` for the whole app. It reads its configuration from the `<meta>` tags in `index.html`, so you can change values per environment without touching code:
+
+```ts title="src/client.ts"
+import { createClient, type Client } from "@osdk/client";
+import { createPublicOauthClient, type PublicOauthClient } from "@osdk/oauth";
+
+function getMetaTagContent(tagName: string): string {
+  const elements = document.querySelectorAll(`meta[name="${tagName}"]`);
+  const element = elements.item(elements.length - 1);
+  const value = element ? element.getAttribute("content") : null;
+  if (value == null || value === "") {
+    throw new Error(`Meta tag ${tagName} not found or empty`);
+  }
+  return value;
+}
+
+const foundryUrl = getMetaTagContent("osdk-foundryUrl");
+const clientId = getMetaTagContent("osdk-clientId");
+const redirectUrl = getMetaTagContent("osdk-redirectUrl");
+const ontologyRid = getMetaTagContent("osdk-ontologyRid");
+
+export const auth: PublicOauthClient = createPublicOauthClient(
+  clientId,
+  foundryUrl,
+  redirectUrl,
+);
+
+export const client: Client = createClient(foundryUrl, ontologyRid, auth);
+```
+
+The generated file also throws when a tag still holds an unreplaced `%VITE_...%` value, which means the variable is missing from your `.env` file.
+
+The first request starts sign-in. Foundry redirects back to `/auth/callback`, where `AuthCallback.vue` exchanges the code and returns to `/`:
+
+```vue title="src/AuthCallback.vue"
+<script setup lang="ts">
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import { auth } from "./client";
+
+const router = useRouter();
+const error = ref<string>();
+
+onMounted(() => {
+  auth
+    .signIn()
+    .then(() => router.replace("/"))
+    .catch((e: unknown) => {
+      error.value = e instanceof Error ? e.message : String(e);
+    });
+});
+</script>
+
+<template>
+  <div>{{ error != null ? error : "Authenticating…" }}</div>
+</template>
+```
+
+`VITE_FOUNDRY_REDIRECT_URL` must exactly match a redirect URL on **OAuth & scopes** in Developer Console. [Authentication](../authentication.mdx) covers scopes, token storage, and sign-out, all of which work the same in Vue.
+
+## Query objects in a component
+
+Call the client from `<script setup>` and keep the result in a `shallowRef`. This component loads the first page of engineers and keeps the list on screen while it reloads:
+
+```vue title="src/components/EmployeeList.vue"
+<script setup lang="ts">
+import { Employee } from "@my-app/sdk";
+import type { Osdk } from "@osdk/client";
+import { onMounted, ref, shallowRef } from "vue";
+import { client } from "../client";
+
+const employees = shallowRef<Osdk.Instance<Employee>[]>();
+const isLoading = ref(false);
+const error = ref<string>();
+
+async function load() {
+  isLoading.value = true;
+  error.value = undefined;
+  try {
+    const page = await client(Employee)
+      .where({ department: "Engineering" })
+      .fetchPage({ $orderBy: { fullName: "asc" }, $pageSize: 50 });
+    employees.value = page.data;
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : String(e);
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+onMounted(load);
+</script>
+
+<template>
+  <p v-if="error" role="alert">
+    Could not load employees: {{ error }}
+    <button type="button" @click="load">Retry</button>
+  </p>
+  <p v-if="isLoading && !employees">Loading employees…</p>
+  <ul>
+    <li v-for="employee in employees" :key="employee.$primaryKey">
+      {{ employee.fullName }}, {{ employee.jobTitle }}
+    </li>
+  </ul>
+</template>
+```
+
+Every method on the client, including `fetchOne`, `asyncIter`, `aggregate`, and `$link`, works the same in Vue. See [Use the client without React](../client.mdx#use-the-client-without-react) for the full API.
+
+### Refetch when inputs change
+
+Use `watch` with `immediate: true` to load data from reactive inputs, such as a filter bound to a `<select>`. Mark each run as stale in `onCleanup`, so a slow response for an old value cannot overwrite a newer one:
+
+```vue title="src/components/EmployeesByDepartment.vue"
+<script setup lang="ts">
+import { Employee } from "@my-app/sdk";
+import type { Osdk } from "@osdk/client";
+import { ref, shallowRef, watch } from "vue";
+import { client } from "../client";
+
+const department = ref("Engineering");
+const employees = shallowRef<Osdk.Instance<Employee>[]>();
+const error = ref<string>();
+
+watch(
+  department,
+  async (value, _previous, onCleanup) => {
+    let stale = false;
+    onCleanup(() => {
+      stale = true;
+    });
+    try {
+      const page = await client(Employee).where({ department: value }).fetchPage();
+      if (!stale) {
+        employees.value = page.data;
+        error.value = undefined;
+      }
+    } catch (e) {
+      if (!stale) {
+        error.value = e instanceof Error ? e.message : String(e);
+      }
+    }
+  },
+  { immediate: true },
+);
+</script>
+
+<template>
+  <select v-model="department">
+    <option>Engineering</option>
+    <option>Design</option>
+  </select>
+  <p v-if="error" role="alert">{{ error }}</p>
+  <ul>
+    <li v-for="employee in employees" :key="employee.$primaryKey">
+      {{ employee.fullName }}
+    </li>
+  </ul>
+</template>
+```
+
+## Apply an action
+
+Put the action in its own component. Await `applyAction` inside `try`/`catch`, and emit an event on success so the parent reloads; the client does not update objects you already fetched:
+
+```vue title="src/components/PromoteButton.vue"
+<script setup lang="ts">
+import { Employee, modifyEmployee } from "@my-app/sdk";
+import type { Osdk } from "@osdk/client";
+import { ref } from "vue";
+import { client } from "../client";
+
+const props = defineProps<{ employee: Osdk.Instance<Employee> }>();
+const emit = defineEmits<{ promoted: [] }>();
+const isPending = ref(false);
+const error = ref<string>();
+
+async function promote() {
+  isPending.value = true;
+  error.value = undefined;
+  try {
+    await client(modifyEmployee).applyAction({
+      employee: props.employee,
+      jobTitle: "Senior Engineer",
+    });
+    emit("promoted");
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : String(e);
+  } finally {
+    isPending.value = false;
+  }
+}
+</script>
+
+<template>
+  <button type="button" :disabled="isPending" @click="promote">Promote</button>
+  <span v-if="error" role="alert">{{ error }}</span>
+</template>
+```
+
+In `EmployeeList.vue`, render `<PromoteButton :employee="employee" @promoted="load" />` inside each `<li>`. Validation failures throw `ActionValidationError`; [Apply an action](../client.mdx#apply-an-action) shows how to read them.
+
+## Reactivity tips
+
+- **Store results in `shallowRef`.** OSDK objects are frozen. Vue does not wrap frozen objects in reactive proxies, so changes are never detected inside them anyway. Replace the whole value when new data arrives.
+- **Never mutate an object to update the UI.** Assigning to `employee.jobTitle` throws in strict mode. Apply an action, then fetch again.
+- **Key lists by `$primaryKey`.** It is unique within an object type and stable across fetches.
+- **Create the client once.** Import `client` from `src/client.ts` in every component. Do not call `createClient` inside `setup`.
+- **Do not reach for `@osdk/react`.** Its hooks need React. For a shared cache in Vue, use the observable client below.
+
+### Keep lists live with the observable client
+
+`createObservableClient` from `@osdk/client/observable` is the cache that powers `@osdk/react`. It deduplicates requests, shares objects between subscribers, and refetches affected lists after an action you apply through it. Wrap it in a composable:
+
+```ts title="src/useEmployees.ts"
+import { Employee } from "@my-app/sdk";
+import {
+  createObservableClient,
+  type ObserveObjectsCallbackArgs,
+} from "@osdk/client/observable";
+import { ref, shallowRef, watchEffect } from "vue";
+import { client } from "./client";
+
+export const observableClient = createObservableClient(client);
+
+type EmployeeList = ObserveObjectsCallbackArgs<Employee>;
+
+export function useEmployees(department: () => string) {
+  const employees = shallowRef<EmployeeList["resolvedList"]>();
+  const status = ref<EmployeeList["status"]>("init");
+  const error = shallowRef<unknown>();
+  const hasMore = ref(false);
+  let fetchMore: EmployeeList["fetchMore"] = () => Promise.resolve();
+
+  watchEffect((onCleanup) => {
+    const subscription = observableClient.observeList<Employee>(
+      { type: Employee, where: { department: department() }, pageSize: 50 },
+      {
+        next: (payload) => {
+          employees.value = payload.resolvedList;
+          status.value = payload.status;
+          hasMore.value = payload.hasMore;
+          fetchMore = payload.fetchMore;
+        },
+        error: (e: unknown) => {
+          error.value = e;
+          status.value = "error";
+        },
+        complete: () => {},
+      },
+    );
+    onCleanup(() => subscription.unsubscribe());
+  });
+
+  return { employees, status, error, hasMore, loadMore: () => fetchMore() };
+}
+```
+
+`watchEffect` resubscribes when `department()` changes and unsubscribes when the component unmounts. Call `useEmployees(() => props.department)` from `<script setup>`.
+
+Apply actions through `observableClient.applyAction(modifyEmployee, { ... })` instead of `client(modifyEmployee).applyAction(...)`. When it resolves, every subscribed list and object of the edited types refetches, so the component updates without a manual reload. It throws like `applyAction`, so await it in `try`/`catch`.
+
+## Deploy
+
+`npm run build` writes the app to `dist/`, which `foundry.config.json` already points at. Before you build for production, set `VITE_FOUNDRY_REDIRECT_URL` in `.env.production` to your hosted app's `/auth/callback` and add that URL on **OAuth & scopes**. [Hosting](../deploy/hosting.mdx) covers uploading the build to Foundry.

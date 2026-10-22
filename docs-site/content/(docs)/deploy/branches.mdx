@@ -1,0 +1,201 @@
+---
+title: Develop on Foundry branches
+description: Point your OSDK app at a Foundry global branch with osdk branch sync, @osdk/vite-plugin-branch, and the beta UNSTABLE_DO_NOT_USE_BRANCH client option.
+foundryDocs:
+  - title: Global Branching
+    path: global-branching/overview
+  - title: Branching applications
+    path: developer-console/branching-integration
+---
+
+{/* cspell:ignore postinstall */}
+
+Develop against Ontology changes on a Foundry global branch before they merge, using the SDK versions generated for that branch and sending every request to it. Three pieces work together: `osdk branch sync` installs the branch's SDK, `@osdk/vite-plugin-branch` tells the client which branch you are on, and the client sends that branch with its requests.
+
+<Callout type="warn">
+  Branch support is beta. The client option is named `UNSTABLE_DO_NOT_USE_BRANCH`, and `@osdk/create-app` only sets it up behind `--unstableFeatures`. Names and behavior can change in any release.
+</Callout>
+
+## How it works
+
+| Piece | What it does |
+| --- | --- |
+| Branched SDK versions | An SDK generated on a branch is published as a prerelease under the npm dist tag `<branch>-latest`. Its `package.json` records the branch RID in `osdk.branch`, and the SDK exports it as `$branch`. |
+| `osdk branch sync` | Reads your git branch and installs the matching SDK version: the branch's prerelease on a branch, the stable `latest` on `main`. |
+| `@osdk/vite-plugin-branch` | Injects the current branch into your app's HTML, and reloads the page when you switch git branches. |
+| `@osdk/client` | Reads the injected branch when you create the client, then reads and writes objects, actions, and queries on that branch. |
+
+Both the CLI and the plugin take the branch from `git branch --show-current`, so use the same name for your git branch and the Foundry branch you develop against.
+
+## Set up a new app
+
+Pass `--unstableFeatures` to `@osdk/create-app`:
+
+```npm
+npx @osdk/create-app@latest my-osdk-app --unstableFeatures
+```
+
+For an app with an SDK, this adds three things to the generated project:
+
+- `@osdk/cli` as a dev dependency.
+- A `postinstall` script that runs `osdk branch sync`, so every install picks the SDK for your branch.
+- `@osdk/vite-plugin-branch`, registered in `vite.config.ts`, for the Vite templates.
+
+## Add to an existing app
+
+<Steps>
+<Step>
+
+### Install the packages
+
+Install `@osdk/vite-plugin-branch` at the same version as `@osdk/client`. It supports Vite 6, 7, and 8.
+
+```npm
+npm install @osdk/vite-plugin-branch
+npm install --save-dev @osdk/cli
+```
+
+</Step>
+<Step>
+
+### Sync the SDK on install
+
+```json title="package.json"
+{
+  "scripts": {
+    "postinstall": "osdk branch sync"
+  }
+}
+```
+
+</Step>
+<Step>
+
+### Register the Vite plugin
+
+```ts title="vite.config.ts"
+import { branchPlugin } from "@osdk/vite-plugin-branch";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+
+export default defineConfig(({ mode }) => ({
+  plugins: [react(), branchPlugin()],
+  define: {
+    "process.env.NODE_ENV": JSON.stringify(mode),
+  },
+}));
+```
+
+`branchPlugin()` takes no options.
+
+</Step>
+</Steps>
+
+## Install the branch's SDK
+
+```sh
+npx osdk branch sync
+```
+
+For each dependency in your root `package.json` whose installed `package.json` has an `osdk` block, the command reads the package's npm dist tags and picks a target:
+
+| You are on | Installed SDK | Target |
+| --- | --- | --- |
+| A branch | Any | The `<branch>-latest` dist tag, if one is published. Otherwise the SDK is left alone. |
+| `main`, `master`, or a detached `HEAD` | Generated on a branch | The `latest` dist tag. |
+| `main`, `master`, or a detached `HEAD` | Generated on main | Left alone. |
+
+It installs every SDK whose declared version differs from its target in one `npm install <pkg>@<version> --save-exact`, so your `package.json` pins exact versions. It always runs `npm`, and only looks at `dependencies`, not `devDependencies`.
+
+| Option | Description |
+| --- | --- |
+| `--branchName <name>` | Sync to this branch instead of the current git branch. |
+| `--packageName <name>` | Sync only this SDK. |
+| `--dryRun` | Print `Would install <pkg>@<version>` lines without installing. |
+
+The command reads dist tags from your registry, so it needs the same `.npmrc` and `FOUNDRY_TOKEN` as a normal install. A `401` from the registry fails with `Not authorized to read <pkg>`. See [Installation](../installation.mdx).
+
+## Inject the branch with Vite
+
+`branchPlugin()` adds a meta tag to the `<head>` of your HTML:
+
+```html
+<meta name="osdk-foundry-branch-rid" content="my-feature" />
+```
+
+It decides the value in this order:
+
+| Condition | Value |
+| --- | --- |
+| `FOUNDRY_BRANCH_RID` is set in the environment or a `.env` file | That value. |
+| The git branch is `main` or `master` | Empty, which means the default branch. |
+| Any other git branch | The branch name. |
+| No branch: detached `HEAD`, or not a git repository, during `vite dev` | `ri.branch..branch.unknown`. Requests fail instead of silently reading the default branch. |
+| No branch during `vite build` | Empty, which means the default branch. |
+
+`FOUNDRY_BRANCH_RID` has no `VITE_` prefix, so Vite does not expose it to your client code. Use it to pin a branch RID, or to build for a branch in CI where HEAD is detached:
+
+```sh
+FOUNDRY_BRANCH_RID=ri.branch..branch.<id> npm run build
+```
+
+The dev server logs the branch it uses, such as `Using Foundry branch "my-feature".` While it runs, it checks the git branch every second and reloads open pages when it changes, so you do not restart the server. Reloading needs HMR, which is on by default.
+
+A production build fixes the branch at build time. Rebuild to deploy for another branch.
+
+## Choose the branch in the client
+
+`createClient` resolves the branch once, when you create the client:
+
+1. The `UNSTABLE_DO_NOT_USE_BRANCH` option, when you pass it. `null` forces the default branch.
+2. The `foundryBranchRid` query parameter in the page URL, such as `?foundryBranchRid=ri.branch..branch.<id>`. This lets a page that embeds your app in an iframe choose the branch.
+3. The `osdk-foundry-branch-rid` meta tag from the Vite plugin.
+
+Blank values count as unset. Outside a browser, only the option applies.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `UNSTABLE_DO_NOT_USE_BRANCH` | `string \| null` | `undefined` | Beta. The branch for every request. `undefined` reads the query parameter, then the meta tag. `null` ignores both and uses the default branch. |
+
+To pin a client to the branch your SDK was generated on, pass the SDK's `$branch` export. It is `undefined` for SDKs generated on main, which keeps the default lookup:
+
+```ts title="src/client.ts"
+import { $branch, $ontologyRid } from "@my-app/sdk";
+import { createClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
+
+const foundryUrl = "https://example.palantirfoundry.com";
+
+const auth = createPublicOauthClient(
+  "<your-client-id>",
+  foundryUrl,
+  "http://localhost:8080/auth/callback",
+);
+
+export const client = createClient(foundryUrl, $ontologyRid, auth, {
+  UNSTABLE_DO_NOT_USE_BRANCH: $branch,
+});
+```
+
+In Node.js scripts there is no meta tag, so pass the branch explicitly:
+
+```ts title="scripts/client.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import { createClient } from "@osdk/client";
+
+const token = process.env.FOUNDRY_TOKEN;
+if (token == null) {
+  throw new Error("Set FOUNDRY_TOKEN");
+}
+
+export const client = createClient(
+  "https://example.palantirfoundry.com",
+  $ontologyRid,
+  () => Promise.resolve(token),
+  { UNSTABLE_DO_NOT_USE_BRANCH: process.env.FOUNDRY_BRANCH_RID ?? null },
+);
+```
+
+## Generate an SDK on a branch
+
+To generate SDK files locally from a branch's Ontology, pass the branch RID to `osdk unstable typescript generate --branch`. See [Generate an SDK](./generate-sdk.mdx#generate-locally).

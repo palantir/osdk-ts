@@ -1,0 +1,52 @@
+---
+title: useOsdkFunction
+description: Execute a Foundry function and cache its result, refetching when the objects it depends on change.
+---
+
+```ts
+import { useOsdkFunction } from "@osdk/react";
+
+function useOsdkFunction<Q extends QueryDefinition<unknown>>(
+  queryDef: Q,
+  options?: UseOsdkFunctionOptions<Q>,
+): UseOsdkFunctionResult<Q>;
+```
+
+Runs the function when the component mounts and again when `params` change. Calls with the same function and `params` share one cached result. Use `dependsOn` or `dependsOnObjects` to refetch after actions change related objects.
+
+## Options
+
+<auto-type-table path="../../../../packages/react/src/new/useOsdkFunction.ts" name="UseOsdkFunctionOptions" />
+
+## Returns
+
+<auto-type-table path="../../../../packages/react/src/new/useOsdkFunction.ts" name="UseOsdkFunctionResult" />
+
+`isLoading` is `true` only while a request is in flight. On the first render, before the hook subscribes, and while it is disabled, `isLoading` is `false` and `data` is `undefined`, so check both.
+
+## Example
+
+```tsx title="src/EmployeeReport.tsx"
+import { Employee, getEmployeeReport } from "@my-app/sdk";
+import { useOsdkFunction } from "@osdk/react";
+
+export function EmployeeReport({ employee }: { employee: Employee.OsdkInstance }) {
+  const { data, isLoading, error, refetch } = useOsdkFunction(getEmployeeReport, {
+    params: { employeeId: employee.$primaryKey },
+    dependsOnObjects: [employee],
+  });
+
+  return (
+    <section aria-busy={isLoading}>
+      {error && <p role="alert">{error.message}</p>}
+      <p>{data}</p>
+      <button onClick={() => void refetch()}>Refresh</button>
+    </section>
+  );
+}
+```
+
+## See also
+
+- [Functions](/react/functions)
+- [useOsdkFunctions](./use-osdk-functions.mdx)

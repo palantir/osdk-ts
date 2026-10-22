@@ -3,5 +3,14 @@
   "description": "Build LLM features on Foundry and give coding assistants accurate OSDK context.",
   "icon": "Sparkles",
   "root": true,
-  "pages": ["---AI-assisted development---", "llms"]
+  "pages": [
+    "---Build with AI---",
+    "index",
+    "chat",
+    "tools",
+    "react",
+    "agents",
+    "---AI-assisted development---",
+    "llms"
+  ]
 }

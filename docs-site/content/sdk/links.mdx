@@ -1,0 +1,148 @@
+---
+title: Links and object sets
+description: Traverse links from an object with $link, pivot whole object sets with pivotTo, and combine object sets with union, intersect, and subtract.
+foundryDocs:
+  - title: Link types
+    path: object-link-types/link-types-overview
+---
+
+Links connect objects of one type to objects of another, such as an `Employee` to their `Office`. You can follow a link from one loaded object with `$link`, or from a whole object set with `pivotTo`. Object sets also combine with `union`, `intersect`, and `subtract`, all on the server.
+
+In the example SDK, `Employee` has three links: `lead` (one `Employee`), `reports` (many `Employee`), and `office` (one `Office`). `Office` has `occupants` (many `Employee`).
+
+## Follow a link from an object
+
+Every object has a `$link` field with one entry per link type. What the entry is depends on the link's cardinality:
+
+| Link | `$link` entry | Methods |
+| --- | --- | --- |
+| One, such as `office` | A single-link accessor | `fetchOne(options?)`, `fetchOneWithErrors(options?)` |
+| Many, such as `reports` | An object set of the linked type | Everything an object set has: `where`, `fetchPage`, `asyncIter`, `aggregate`, `pivotTo`, and more |
+
+### One-to-one and many-to-one links
+
+```ts title="src/employeeOffice.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const employee = await client(Employee).fetchOne(12345);
+
+const office = await employee.$link.office.fetchOne({ $select: ["name", "city"] });
+console.log(`${employee.fullName} works in ${office.name}, ${office.city}`);
+```
+
+`fetchOne` takes `$select` and `$includeRid`. It rejects when the object has no linked object, with a `PalantirApiError` whose message is `Expected a single result but got 0 instead`. If the link is optional, use `fetchOneWithErrors` and check the result:
+
+```ts title="src/employeeLead.ts"
+import { Employee } from "@my-app/sdk";
+import { isOk } from "@osdk/client";
+import { client } from "./client";
+
+const employee = await client(Employee).fetchOne(12345);
+const lead = await employee.$link.lead.fetchOneWithErrors({ $select: ["fullName"] });
+
+console.log(isOk(lead) ? `Reports to ${lead.value.fullName}` : "No lead");
+```
+
+### One-to-many and many-to-many links
+
+A many link is an object set, so you can filter, sort, page, and aggregate it before loading anything:
+
+```ts title="src/directReports.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const lead = await client(Employee).fetchOne(12345);
+
+const engineers = await lead.$link.reports
+  .where({ department: "Engineering" })
+  .fetchPage({ $select: ["fullName", "jobTitle"], $orderBy: { fullName: "asc" } });
+
+const { $count } = await lead.$link.reports.aggregate({ $select: { $count: "unordered" } });
+console.log(`${engineers.data.length} engineers of ${$count} reports`);
+```
+
+`$link` sends no request until you call a load method. You do not need to `$select` anything for `$link` to work: the link resolves from the object's primary key.
+
+## Pivot an object set
+
+`pivotTo(link)` returns the set of objects linked to any object in the source set. Use it to traverse links for many objects in one request instead of one request per object:
+
+```ts title="src/engineeringOffices.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const offices = await client(Employee)
+  .where({ department: "Engineering" })
+  .pivotTo("office")
+  .fetchPage({ $select: ["name", "city"] });
+```
+
+The result has no duplicates: an office with ten engineers appears once. Pivots chain, and the result is a full object set:
+
+```ts title="src/skipLevel.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const skipLevelReports = client(Employee)
+  .where({ employeeId: 12345 })
+  .pivotTo("reports")
+  .pivotTo("reports");
+
+const result = await skipLevelReports
+  .where({ jobTitle: { $containsAnyTerm: "manager" } })
+  .aggregate({ $select: { $count: "unordered" } });
+```
+
+The link name must exist on the source type. `pivotTo("occupants")` on an `Employee` set does not typecheck.
+
+## Combine object sets
+
+`union`, `intersect`, and `subtract` take one or more object sets of the same type and return a new object set. Nothing loads until you call a load method:
+
+| Method | Returns |
+| --- | --- |
+| `a.union(b, c)` | Objects in any of the sets. |
+| `a.intersect(b, c)` | Objects in every set. |
+| `a.subtract(b, c)` | Objects in `a` that are in none of the other sets. |
+
+```ts title="src/promotionCandidates.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const longTenure = client(Employee).where({ startDate: { $lt: "2020-01-01" } });
+const highRated = client(Employee).where({ jobTitle: { $containsAnyTerm: "senior" } });
+const leads = client(Employee).where({ employeeId: { $in: [101, 102] } }).pivotTo("lead");
+
+const candidates = longTenure.intersect(highRated).subtract(leads);
+
+const page = await candidates.fetchPage({ $select: ["fullName", "jobTitle"] });
+```
+
+The sets must be of the same object type. An `Employee` set and a `Worker` interface set do not combine; see [Interfaces](./interfaces.mdx) to convert between them with `narrowToType`.
+
+## Load links in bulk
+
+`experimental_asyncIterLinks(links)` iterates over the links of every object in a set and yields `{ source, target, linkType }`, where `source` and `target` carry `$apiName` and `$primaryKey`. It is experimental and may change. Use it to build an in-memory graph:
+
+```ts title="src/orgChart.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const managerOf = new Map<number, number>();
+
+for await (const { source, target } of client(Employee).experimental_asyncIterLinks(["lead"])) {
+  managerOf.set(source.$primaryKey, target.$primaryKey);
+}
+```
+
+Limits:
+
+- Links can be stale: a returned primary key may no longer exist.
+- The server loads source objects in pages. If one page has more than 100,000 links, the result for that page is cut off at 100,000.
+- Object Storage V1 links are not supported and throw.
+- Interface links are not supported.
+
+## In React
+
+`@osdk/react` wraps these calls in hooks that cache and update: `useLinks` for `$link`, and `useObjectSet` for pivots and set operations. See [Links in React](/react/links) and [Object sets in React](/react/object-sets).

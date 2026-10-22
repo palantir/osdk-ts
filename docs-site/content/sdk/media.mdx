@@ -1,0 +1,147 @@
+---
+title: Attachments and media
+description: Read attachment and media reference properties with fetchContents and fetchMetadata, and upload files by passing them to action parameters.
+foundryDocs:
+  - title: Media set API
+    path: api/v2/media-sets-v2-resources/media-sets/media-set-basics
+---
+
+Objects store files in two property types. Attachment properties hold files uploaded through actions. Media reference properties point to items in a Foundry media set, such as images, documents, audio, and video. Both load lazily: the object holds a handle, and you download the content when you need it.
+
+The samples assume `Employee` has an attachment property `resume` and a media reference property `photo`, and that an action `updateEmployeeFiles` takes `employee`, `resume` (attachment), and `photo` (media reference).
+
+## Read an attachment
+
+An attachment property is an `Attachment`:
+
+| Member | Type | Description |
+| --- | --- | --- |
+| `rid` | `string` | The attachment RID. |
+| `fetchMetadata()` | `Promise<AttachmentMetadata>` | Loads `rid`, `filename`, `sizeBytes`, and `mediaType`. |
+| `fetchContents()` | `Promise<Response>` | Downloads the file. Read it with `blob()`, `arrayBuffer()`, or `text()`. |
+
+```ts title="src/downloadResume.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const employee = await client(Employee).fetchOne(12345, { $select: ["resume"] });
+
+if (employee.resume != null) {
+  const metadata = await employee.resume.fetchMetadata();
+  console.log(metadata.filename, metadata.mediaType, metadata.sizeBytes);
+
+  const response = await employee.resume.fetchContents();
+  if (response.ok) {
+    const blob = await response.blob();
+    console.log(`Downloaded ${blob.size} bytes`);
+  }
+}
+```
+
+## Read a media reference
+
+A media reference property is a `Media`:
+
+| Member | Type | Description |
+| --- | --- | --- |
+| `fetchMetadata()` | `Promise<MediaMetadata>` | Loads `mediaType`, `sizeBytes`, and `path` when the item has one. |
+| `fetchFullMetadata?()` | `Promise<MediaFullMetadata>` | Loads type-specific metadata, such as page count for documents and dimensions for images. Optional in the type, but every `Media` the client returns has it. |
+| `fetchContents()` | `Promise<Response>` | Downloads the item. |
+| `getMediaReference()` | `MediaReference` | The reference itself: the MIME type and the media set item it points to. Pass it to an action or function. |
+
+```ts title="src/employeePhoto.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const employee = await client(Employee).fetchOne(12345, { $select: ["photo"] });
+
+const metadata = await employee.photo?.fetchMetadata();
+console.log(metadata?.mediaType, metadata?.sizeBytes);
+
+const full = await employee.photo?.fetchFullMetadata?.();
+if (full?.itemMetadata.type === "imagery") {
+  console.log(full.itemMetadata.dimensions);
+}
+
+const response = await employee.photo?.fetchContents();
+if (response?.ok) {
+  const image = await response.blob();
+}
+```
+
+`itemMetadata.type` is one of `"document"`, `"imagery"`, `"audio"`, `"video"`, `"dicom"`, `"email"`, `"model3d"`, `"spreadsheet"`, or `"untyped"`. When the server returns a type this client version does not know, `type` is `"unknown"` and the payload is on `raw`.
+
+`fetchContents` resolves to a standard `Response`. A non-2xx status does not reject, so check `response.ok`.
+
+## Upload through an action
+
+The client does not write files to objects directly. Pass the file as an action parameter, and the client uploads it before it applies the action:
+
+| Parameter type | Pass |
+| --- | --- |
+| Attachment | `createAttachmentUpload(blob, fileName)`, a `File`, or the RID of an existing attachment. |
+| Media reference | A `MediaUpload` (`{ data: blob, fileName }`), a `Media` from another object, or a `MediaReference`. |
+
+<Tabs items={["Node.js", "Browser"]}>
+<Tab value="Node.js">
+
+```ts title="src/uploadFiles.ts"
+import { updateEmployeeFiles } from "@my-app/sdk";
+import { createAttachmentUpload, type MediaUpload } from "@osdk/client";
+import { openAsBlob } from "node:fs";
+import { client } from "./client";
+
+const resume = await openAsBlob("./resume.pdf", { type: "application/pdf" });
+const photo: MediaUpload = {
+  data: await openAsBlob("./photo.png", { type: "image/png" }),
+  fileName: "photo.png",
+};
+
+await client(updateEmployeeFiles).applyAction({
+  employee: 12345,
+  resume: createAttachmentUpload(resume, "resume.pdf"),
+  photo,
+});
+```
+
+`openAsBlob` needs Node.js 19.8 or later.
+
+</Tab>
+<Tab value="Browser">
+
+```ts title="src/uploadFiles.ts"
+import { updateEmployeeFiles } from "@my-app/sdk";
+import { client } from "./client";
+
+export async function uploadResume(employeeId: number, input: HTMLInputElement) {
+  const file = input.files?.[0];
+  if (file == null) {
+    return;
+  }
+  await client(updateEmployeeFiles).applyAction({ employee: employeeId, resume: file });
+}
+```
+
+A `File` from an `<input type="file">` already has a name, so you can pass it as is.
+
+</Tab>
+</Tabs>
+
+To reuse a file that is already in Foundry, pass its handle instead of uploading again:
+
+```ts title="src/copyPhoto.ts"
+import { Employee, updateEmployeeFiles } from "@my-app/sdk";
+import { client } from "./client";
+
+const source = await client(Employee).fetchOne(12345, { $select: ["resume", "photo"] });
+
+await client(updateEmployeeFiles).applyAction({
+  employee: 67890,
+  resume: source.resume?.rid,
+  photo: source.photo,
+});
+```
+
+Uploads are temporary until an action links them to an object. If the action fails, or you never apply one, Foundry deletes the uploaded file after one hour.
+
+Functions accept the same values for attachment and media reference parameters. See [Functions](./functions.mdx#parameter-values).

@@ -1,7 +1,6 @@
 # Color Tokens
 
-All color values in `@osdk/react-components` are exposed as CSS custom
-properties. Override them to theme components without touching source code.
+Every color in `@osdk/react-components` is a CSS custom property that you can override to theme components without changing their source.
 
 ## Palette Tokens
 

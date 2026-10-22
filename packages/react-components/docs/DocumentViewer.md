@@ -2,7 +2,7 @@
 
 # DocumentViewer
 
-A React component that automatically selects the correct viewer for an OSDK `Media` object based on its MIME type. Supports PDF, TIFF, common image formats, video, and markdown.
+`DocumentViewer` renders an OSDK `Media` object with the viewer that matches its MIME type: PDF, TIFF, image, video, Markdown, spreadsheet, email, or XML.
 
 ## Import
 
