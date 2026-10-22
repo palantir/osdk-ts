@@ -93,6 +93,15 @@ function loadFonts() {
   return fonts;
 }
 
+let logo: Promise<string> | undefined;
+
+function loadLogo() {
+  logo ??= readFile(path.join(process.cwd(), "app/icon.svg")).then(
+    (svg) => `data:image/svg+xml;base64,${svg.toString("base64")}`,
+  );
+  return logo;
+}
+
 function truncate(text: string, max: number): string {
   if (text.length <= max) {
     return text;
@@ -150,7 +159,7 @@ export async function renderOgImage({
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-              <DevConsoleIcon size={44} />
+              <img src={await loadLogo()} alt="" width={44} height={44} />
               <div style={{ display: "flex", fontSize: 26, fontWeight: 500 }}>
                 Palantir Foundry
                 <span style={{ color: "#52525b", margin: "0 12px" }}>/</span>
@@ -277,27 +286,5 @@ function Frame() {
         </svg>
       ))}
     </>
-  );
-}
-
-function DevConsoleIcon({ size }: { size: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <rect width="24" height="24" rx="2" fill="#304139" />
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M3 15.5V19L6 21L18 14V10L6.00001 3L3.00001 5V8.5L9 12L3 15.5ZM5.00001 7.4L13 12L5 16.6L5 18.0147L6 18.7L16 13V11L6 5.3L5.00001 6V7.4Z"
-        fill="#5BEAAA"
-      />
-      <rect
-        x="18"
-        y="18"
-        width="2"
-        height="2"
-        stroke="#5BEAAA"
-        strokeWidth={2}
-      />
-    </svg>
   );
 }
