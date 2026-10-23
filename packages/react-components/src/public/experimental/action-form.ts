@@ -23,8 +23,17 @@ import * as Stable from "../action-form.js";
 export const ActionForm: typeof Stable.ActionForm = Stable.ActionForm;
 
 /** @deprecated Import from `@osdk/react-components/action-form` instead. */
+export type ActionFormContentItem<Q extends Api.ActionDefinition<unknown>> =
+  Stable.ActionFormContentItem<Q>;
+
+/** @deprecated Import from `@osdk/react-components/action-form` instead. */
 export type ActionFormProps<Q extends Api.ActionDefinition<unknown>> =
   Stable.ActionFormProps<Q>;
+
+/** @deprecated Import from `@osdk/react-components/action-form` instead. */
+export type ActionFormSectionDefinition<
+  Q extends Api.ActionDefinition<unknown>,
+> = Stable.ActionFormSectionDefinition<Q>;
 
 /** @deprecated Import from `@osdk/react-components/action-form` instead. */
 export type BaseFormProps = Stable.BaseFormProps;

@@ -337,7 +337,20 @@ function dedupe(lists) {
   return out;
 }
 
-/** Merge union branches: a prop is optional if optional in or absent from any. */
+/** True when a member's type is `undefined` or `never` — a stub branch in a
+ * discriminated union that exists only to make the prop syntactically present. */
+function isStubType(member) {
+  if (member.type == null) return false;
+  const kind = member.type.kind;
+  return (
+    kind === ts.SyntaxKind.UndefinedKeyword ||
+    kind === ts.SyntaxKind.NeverKeyword
+  );
+}
+
+/** Merge union branches: a prop is optional if optional in or absent from any.
+ * When multiple branches define the same prop, prefer the branch whose type is
+ * not `undefined` / `never` so the generated table shows the real type and JSDoc. */
 function mergeUnion(branches) {
   const present = branches.map((list) => new Set(list.map((e) => e.name)));
   const byName = new Map();
@@ -349,6 +362,8 @@ function mergeUnion(branches) {
         agg = { ...entry };
         byName.set(entry.name, agg);
         order.push(agg);
+      } else if (isStubType(agg.member) && !isStubType(entry.member)) {
+        agg.member = entry.member;
       }
       if (entry.forcedOptional) agg.forcedOptional = true;
     }
