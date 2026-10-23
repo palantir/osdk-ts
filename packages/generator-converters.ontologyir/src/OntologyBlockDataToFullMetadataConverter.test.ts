@@ -21,6 +21,7 @@ import type {
   OntologyBlockDataV2,
   PropertyType,
 } from "@osdk/client.unstable";
+import type { QueryTypeV2 } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
 import { OntologyBlockDataToFullMetadataConverter } from "./OntologyBlockDataToFullMetadataConverter.js";
 
@@ -812,5 +813,35 @@ describe(OntologyBlockDataToFullMetadataConverter, () => {
     expect(result.interfaceTypes[interfaceApiName]).not.toBe(importedInterface);
     expect(result.interfaceTypes[interfaceApiName].implementedByObjectTypes)
       .not.toBe(importedInterface.implementedByObjectTypes);
+  });
+});
+
+describe("imported query metadata", () => {
+  it("preserves query signatures and versioned keys without mutating the import", () => {
+    const blockData = createBlockData({ interface: false, object: false });
+    const imported = OntologyBlockDataToFullMetadataConverter
+      .getFullMetadataFromBlockData(blockData);
+    const query: QueryTypeV2 = {
+      apiName: "getGreeting",
+      rid: "ri.function-registry.main.function.greeting",
+      version: "1.2.3",
+      parameters: {
+        name: { dataType: { type: "string" }, required: true },
+      },
+      output: { type: "string" },
+      typeReferences: {},
+    };
+    imported.queryTypes = {
+      getGreeting: query,
+      "getGreeting:1.2.3": query,
+    };
+    const original = structuredClone(imported);
+
+    const result = OntologyBlockDataToFullMetadataConverter
+      .getFullMetadataFromBlockData(blockData, imported);
+
+    expect(result.queryTypes).toEqual(original.queryTypes);
+    expect(imported).toEqual(original);
+    expect(result.queryTypes).not.toBe(imported.queryTypes);
   });
 });

@@ -262,6 +262,58 @@ describe("loadSdkInput", () => {
       .toBe("classification");
   });
 
+  it("generates typed exports for imported queries", async () => {
+    mockFiles({ [inputFile]: ontology });
+    const loaded = await loadSdkInput({ input: inputFile });
+    const imported: OntologyFullMetadata = {
+      ...PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData(
+        loaded.ontology,
+      ),
+      actionTypes: {},
+      queryTypes: {
+        getGreeting: {
+          apiName: "getGreeting",
+          rid: "ri.function-registry.main.function.greeting",
+          version: "1.2.3",
+          parameters: {
+            name: { dataType: { type: "string" }, required: true },
+          },
+          output: { type: "string" },
+          typeReferences: {},
+        },
+      },
+    };
+    const metadata = PreviewOntologyIrConverter
+      .getPreviewFullMetadataFromBlockData(loaded.ontology, imported);
+    const files = new Map<string, string>();
+    await generateClientSdkVersionTwoPointZero(
+      { ...metadata, agents: {}, actionTypes: {} },
+      "test",
+      {
+        readdir: () => Promise.resolve([]),
+        mkdir: () => Promise.resolve(),
+        writeFile: (file, contents) => {
+          files.set(file, contents);
+          return Promise.resolve();
+        },
+      },
+      "/virtual-sdk",
+      "module",
+    );
+
+    expect(files.get("/virtual-sdk/index.ts")).toContain("getGreeting");
+    expect(files.get("/virtual-sdk/ontology/queries.ts")).toContain(
+      "getGreeting",
+    );
+    const queryFile = files.get("/virtual-sdk/ontology/queries/getGreeting.ts");
+    expect(queryFile).toContain("QueryDefinition<getGreeting.Signature>");
+    expect(queryFile).toContain(
+      "readonly name: QueryParam.PrimitiveType<'string'>",
+    );
+    expect(queryFile).toContain("QueryResult.PrimitiveType<'string'>");
+    expect(queryFile).toContain("version: '1.2.3'");
+  });
+
   it("does not read value type blocks for external inputs without local mappings", async () => {
     mockFiles({
       [inputFile]: [
