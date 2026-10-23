@@ -478,11 +478,7 @@ function buildKnownIdentifiers(
   // Only set when the schema migration inputs shape is emitted, as in OMS.
   const hasSchemaMigrationCandidates =
     Object.keys(
-      getSchemaMigrationCandidates(
-        objectTypes,
-        { propertyTypes: propertyRids },
-        ridGenerator,
-      ).candidates,
+      getSchemaMigrationCandidates(objectTypes, ridGenerator).candidates,
     ).length > 0;
 
   // Datasource columns: BlockInternalId -> ResolvedDatasourceColumnShape

@@ -407,13 +407,6 @@ export class ReadableIdGenerator {
     return `marking-${markingId}-${supportedMarkingsType}` as ReadableId;
   }
 
-  static getForSchemaMigrationCandidateInput(
-    objectTypeApiName: string,
-    propertyApiName: string,
-  ): ReadableId {
-    return `schema-migration-candidate-input-${objectTypeApiName}-${propertyApiName}` as ReadableId;
-  }
-
   static getForFunction(functionApiName: string): ReadableId {
     return `function-${functionApiName}` as ReadableId;
   }

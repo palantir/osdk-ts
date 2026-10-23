@@ -15,7 +15,6 @@
  */
 
 import type {
-  KnownMarketplaceIdentifiers,
   MarkingType,
   ObjectType,
   ObjectTypeBlockDataV2,
@@ -33,10 +32,9 @@ import type {
 } from "@osdk/client.unstable/api";
 import invariant from "tiny-invariant";
 
-import {
-  type OntologyRidGenerator,
-  type ReadableId,
-  ReadableIdGenerator,
+import type {
+  OntologyRidGenerator,
+  ReadableId,
 } from "../../../util/generateRid.js";
 
 export const SCHEMA_MIGRATION_INPUTS_SHAPE_READABLE_ID: ReadableId =
@@ -57,9 +55,9 @@ export interface SchemaMigrationCandidates {
  */
 export function getSchemaMigrationCandidates(
   objectTypes: Record<string, ObjectTypeBlockDataV2>,
-  knownIdentifiers: Pick<KnownMarketplaceIdentifiers, "propertyTypes">,
   ridGenerator: OntologyRidGenerator,
 ): SchemaMigrationCandidates {
+  const propertyReadableIdsByRid = ridGenerator.getPropertyTypeRids().inverse();
   const result: SchemaMigrationCandidates = {
     candidates: {},
     markingsInputs: new Map(),
@@ -89,12 +87,13 @@ export function getSchemaMigrationCandidates(
         continue;
       }
 
-      const propertyBlockInternalId =
-        knownIdentifiers.propertyTypes[propertyRid];
+      const propertyReadableId = propertyReadableIdsByRid.get(propertyRid);
       invariant(
-        propertyBlockInternalId != null,
-        `Missing block internal id for property ${propertyRid}`,
+        propertyReadableId != null,
+        `Missing readable id for property ${propertyRid}`,
       );
+      const propertyBlockInternalId =
+        ridGenerator.toBlockInternalId(propertyReadableId);
       const candidateId: OntologySchemaMigrationCandidateId = `property//${propertyBlockInternalId}//set-property-value-if-unset`;
       const labels = getCandidateLabels(objectType, propertyType);
 
@@ -103,10 +102,7 @@ export function getSchemaMigrationCandidates(
       const markingType = getMarkingType(propertyType.type);
       if (markingType != null) {
         const markingsInputReadableId =
-          ReadableIdGenerator.getForSchemaMigrationCandidateInput(
-            objectType.apiName ?? objectType.id,
-            propertyType.apiName ?? propertyType.id,
-          );
+          `schema-migration-candidate-input-${propertyReadableId}-set-property-value-if-unset` as ReadableId;
         result.markingsInputs.set(markingsInputReadableId, {
           about: createLocalizedAbout(
             `Markings to backfill for property '${labels.propertyTypeDisplayName}' on object type '${labels.objectTypeDisplayName}'`,

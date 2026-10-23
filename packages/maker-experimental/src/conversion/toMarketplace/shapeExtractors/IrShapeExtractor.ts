@@ -969,7 +969,6 @@ function getSchemaMigrationInputsShapes(
 ): BlockShapes {
   const { candidates, markingsInputs } = getSchemaMigrationCandidates(
     ontologyBlockDataV2.objectTypes,
-    ontologyBlockDataV2.knownIdentifiers,
     ridGenerator,
   );
   const blockShapes: BlockShapes = {

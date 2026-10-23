@@ -22,7 +22,7 @@ import {
   defineOntologyV2,
   type OntologyPackagingOptions,
 } from "../../../api/defineOntologyV2.js";
-import { ReadableIdGenerator } from "../../../util/generateRid.js";
+import type { ReadableId } from "../../../util/generateRid.js";
 import { SCHEMA_MIGRATION_INPUTS_SHAPE_READABLE_ID } from "./SchemaMigrationCandidatesExtractor.js";
 
 type ObjectProperties = Parameters<typeof defineObject>[0]["properties"];
@@ -264,11 +264,9 @@ describe("schema migration candidates", () => {
 
       const propertyId = propertyBlockInternalId("classification");
       const candidateId = candidateIdFor(propertyId);
+      // Matches OMS's ontology-as-code SchemaMigrationCandidateShapeExtractor.
       const markingsReadableId =
-        ReadableIdGenerator.getForSchemaMigrationCandidateInput(
-          OBJECT_API_NAME,
-          "classification",
-        );
+        `schema-migration-candidate-input-${OBJECT_API_NAME}-property-type-classification-set-property-value-if-unset` as ReadableId;
       const identifierClause = `API name: '${OBJECT_API_NAME}.classification'`;
 
       expect(result.shapes.inputShapes.get(markingsReadableId)).toEqual({
