@@ -35,6 +35,8 @@ import {
 } from "@monorepolint/rules";
 import * as semver from "semver";
 
+import { findTransitivePeerConflicts } from "./scripts/transitivePeers.mjs";
+
 const rootPackageJson = JSON.parse(
   await fs.readFile(
     path.join(path.dirname(fileURLToPath(import.meta.url)), "package.json"),
@@ -601,6 +603,24 @@ const archetypeRules = archetypes(standardPackageRules, {
     private: true,
   });
 
+const transitivePeerCompatibility = createRuleFactory({
+  name: "transitivePeerCompatibility",
+  check: async (context) => {
+    const root = context.getPackageJson();
+    if (root.private || !root.peerDependencies) return;
+    const directories = await context.getWorkspaceContext()
+      .getPackageNameToDir();
+    const packages = new Map([...directories].map(([name, directory]) => [
+      name,
+      context.host.readJson(path.join(directory, "package.json")),
+    ]));
+    for (const message of findTransitivePeerConflicts(root, packages)) {
+      context.addError({ message, file: context.getPackageJsonPath() });
+    }
+  },
+  validateOptions: () => {},
+});
+
 /**
  * We don't want to allow `workspace:^` in our regular dependencies because our current release
  * branch strategy only allows for patch changes in the release branch and minors elsewhere.
@@ -616,7 +636,8 @@ const archetypeRules = archetypes(standardPackageRules, {
  *
  * Using `workspace:~` prevents this as `~` can only resolve patch changes.
  *
- * However, peerDependencies are the exception: they MUST use `workspace:^`. With `workspace:~`,
+ * Workspace peerDependencies use `workspace:^`; explicit supported ranges are also allowed.
+ * With `workspace:~`,
  * a minor bump in a peer dep (e.g. @osdk/api 2.8.0 -> 2.9.0) falls outside the tilde range
  * (`~2.8.0`), so changesets treats it as a breaking change and forces a major bump on the
  * consuming package. Using `workspace:^` keeps minor bumps in range (`^2.8.0` accepts `2.9.0`).
@@ -1454,6 +1475,7 @@ function standardPackageRules(shared, options) {
  */
 export default {
   rules: [
+    transitivePeerCompatibility({}),
     fileContents({
       includePackages: ["@osdk/create-app.template.*"],
       options: {
