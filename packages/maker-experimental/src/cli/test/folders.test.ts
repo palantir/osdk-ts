@@ -79,8 +79,8 @@ describe("maker-experimental CLI folder blocks", () => {
 
   it("emits shared nested Compass folders and wires the serialized ontology to them", async () => {
     const results = await run(`
-      import { defineObject } from "@osdk/maker";
-      for (const apiName of ["Person", "Company"]) {
+      import { defineFolder, defineObject } from "@osdk/maker";
+      const [person] = ["Person", "Company"].map((apiName) =>
         defineObject({
           apiName,
           displayName: apiName,
@@ -89,9 +89,9 @@ describe("maker-experimental CLI folder blocks", () => {
           titlePropertyApiName: "id",
           properties: { id: { type: "string" } },
           permission: "publicProject",
-          folder: { id: "entities", location: "team//entities/" },
-        });
-      }
+        })
+      );
+      defineFolder({ id: "entities", folder: "team//entities/", resources: [person, "Company"] });
     `);
     const folders = results.filter((result) => result.block_type === "COMPASS");
     expect(folders).toHaveLength(2);
@@ -121,11 +121,6 @@ describe("maker-experimental CLI folder blocks", () => {
     expect(child.input_mapping_entries).toEqual([
       { input: parentInputId, output: parentOutputId },
     ]);
-    expect(child.input_shape_metadata[parentInputId]).toEqual({
-      isOptional: false,
-      isAccessedInReconcile: true,
-      reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
-    });
     const addOn = child.add_on_override as BlockDataAddOn;
     expect(addOn.idToBlockShapeId["compass-folder"]).toBe(
       toBlockShapeId(childOutputId, RANDOMNESS_KEY),
@@ -174,6 +169,40 @@ describe("maker-experimental CLI folder blocks", () => {
     });
   });
 
+  it("emits empty folders and uses explicit parent identities independent of declaration order", async () => {
+    const results = await run(`
+      import { defineFolder, defineInterface } from "@osdk/maker";
+      defineFolder({ id: "people", folder: "/team/people", resources: ["Person"] });
+      defineInterface({ apiName: "Person", permission: "publicProject" });
+      defineFolder({ id: "empty", folder: "/team/empty", resources: [] });
+      defineFolder({ id: "team", folder: "/team", resources: [] });
+    `);
+    const folders = results.filter((result) => result.block_type === "COMPASS");
+    expect(folders).toHaveLength(3);
+    const ontology = results.find(
+      (result) => result.block_type === "ONTOLOGY",
+    )!;
+    for (const id of ["empty", "team"]) {
+      expect(ontology.inputs).not.toHaveProperty(
+        ReadableIdGenerator.getForCompassFolder(id),
+      );
+    }
+    const parentOutput = ReadableIdGenerator.getForCompassFolderOutput("team");
+    expect(
+      folders.find((result) => result.outputs[parentOutput])!.inputs,
+    ).toEqual({});
+    for (const id of ["people", "empty"]) {
+      const output = ReadableIdGenerator.getForCompassFolderOutput(id);
+      const folder = folders.find((result) => result.outputs[output])!;
+      expect(folder.input_mapping_entries).toEqual([
+        {
+          input: ReadableIdGenerator.getForCompassFolder("team"),
+          output: parentOutput,
+        },
+      ]);
+    }
+  });
+
   it("preserves the output when no folders are requested", async () => {
     const results = await run(`
       import { defineInterface } from "@osdk/maker";
@@ -191,22 +220,9 @@ describe("maker-experimental CLI folder blocks", () => {
 
   it("installs generated backing datasets in their owning object or link folder", async () => {
     const results = await run(`
-      import { defineLink, defineObject } from "@osdk/maker";
+      import { defineFolder, defineLink, defineObject } from "@osdk/maker";
 
-      const [fish, tank] = [
-        {
-          apiName: "Fish",
-          folder: { id: "fish-folder", location: "Aquarium//Animals/Fish/" },
-        },
-        {
-          apiName: "Tank",
-          folder: {
-            id: "/Aquarium/Habitats/Tanks",
-            location: "/Aquarium/Habitats/Tanks",
-          },
-        },
-        { apiName: "DefaultRoot", folder: undefined },
-      ].map(({ apiName, folder }) =>
+      const [fish, tank] = ["Fish", "Tank", "DefaultRoot"].map((apiName) =>
         defineObject({
           apiName,
           displayName: apiName,
@@ -216,7 +232,6 @@ describe("maker-experimental CLI folder blocks", () => {
           properties: { id: { type: "string" } },
           includeEmptyBackingDatasource: true,
           permission: "publicProject",
-          folder,
         }),
       );
 
@@ -226,8 +241,10 @@ describe("maker-experimental CLI folder blocks", () => {
         toMany: { object: tank, metadata: { apiName: "visitingFish" } },
         includeEmptyBackingDatasource: true,
         permission: "publicProject",
-        folder: { id: "relationships", location: "/Aquarium/Relationships" },
       });
+      defineFolder({ id: "fish-folder", folder: "Aquarium//Animals/Fish/", resources: ["Fish"] });
+      defineFolder({ id: "/Aquarium/Habitats/Tanks", folder: "/Aquarium/Habitats/Tanks", resources: ["Tank"] });
+      defineFolder({ id: "relationships", folder: "/Aquarium/Relationships", resources: ["fishVisitedTanks"] });
     `);
     const datasets = results.filter(
       (result) => result.block_type === "STATIC_DATASET",

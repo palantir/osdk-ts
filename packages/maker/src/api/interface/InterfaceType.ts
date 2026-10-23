@@ -20,7 +20,6 @@ import type {
 } from "@osdk/client.unstable";
 
 import type { EntityPermission } from "../common/EntityPermission.js";
-import type { Folder } from "../common/Folder.js";
 import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import type {
@@ -52,6 +51,4 @@ export interface InterfaceType
   status: InterfaceTypeStatus;
   schemaMigrations?: InterfaceSchemaMigrations;
   __type: OntologyEntityTypeEnum.INTERFACE_TYPE;
-  /** Folder path relative to the installation root. Defaults to the root */
-  folder?: Folder;
 }

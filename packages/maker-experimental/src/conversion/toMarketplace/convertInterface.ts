@@ -35,7 +35,6 @@ export function convertInterface(
     __type,
     status,
     linkedInterfaces: _linkedInterfaces,
-    folder: _folder,
     schemaMigrations,
     ...other
   } = interfaceType;

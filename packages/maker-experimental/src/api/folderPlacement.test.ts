@@ -18,9 +18,10 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 
-import type { Folder } from "@osdk/maker";
+import type { FolderDefinition } from "@osdk/maker";
 import {
   defineCreateObjectAction,
+  defineFolder,
   defineInterface,
   defineLink,
   defineObject,
@@ -35,7 +36,13 @@ import { ReadableIdGenerator } from "../util/generateRid.js";
 import { defineFunctionBackedAction } from "./defineFunctionBackedAction.js";
 import { defineOntologyV2, type FunctionsIr } from "./defineOntologyV2.js";
 
-function defineEntities(folder?: Folder): void {
+function defineEntities(folder?: Pick<FolderDefinition, "id" | "folder">) {
+  if (folder) {
+    defineFolder({
+      ...folder,
+      resources: ["Thing", "IThing", "thing", "create-thing", "relatedThings"],
+    });
+  }
   const object = defineObject({
     apiName: "Thing",
     displayName: "Thing",
@@ -44,75 +51,53 @@ function defineEntities(folder?: Folder): void {
     primaryKeyPropertyApiName: "id",
     properties: { id: { type: "string" } },
     permission: "publicProject",
-    folder,
   });
-  defineInterface({ apiName: "Thing", permission: "publicProject", folder });
-  defineSharedPropertyType({
+  const interfaceType = defineInterface({
+    apiName: "IThing",
+    permission: "publicProject",
+  });
+  const sharedProperty = defineSharedPropertyType({
     apiName: "thing",
     type: "string",
     permission: "publicProject",
-    folder,
   });
-  defineCreateObjectAction({
+  const action = defineCreateObjectAction({
     objectType: object,
     apiName: "create-thing",
     permission: "publicProject",
-    folder,
   });
-  defineLink({
+  const link = defineLink({
     apiName: "relatedThings",
     many: { object, metadata: { apiName: "relatedThings" } },
     toMany: { object, metadata: { apiName: "relatedTo" } },
     permission: "publicProject",
-    folder,
   });
+  return [object, interfaceType, sharedProperty, action, link] as const;
 }
 
 describe("experimental folder placement conversion", () => {
-  it("normalizes and wires placement for every supported entity kind", async () => {
-    const result = await defineOntologyV2("com.example.", () =>
-      defineEntities({ id: "entities", location: "domain//entities/" }),
-    );
+  it("wires mixed resource definitions and a forward reference after the async body completes", async () => {
+    const result = await defineOntologyV2("com.example.", async () => {
+      const resources = defineEntities();
+      defineFolder({
+        id: "entities",
+        folder: "domain//entities/",
+        resources: [...resources, "Future"],
+      });
+      await Promise.resolve();
+      defineInterface({ apiName: "Future", permission: "publicProject" });
+    });
     const outputs = [
       "object-type-com.example.Thing",
-      "interface-com.example.Thing",
+      "interface-com.example.IThing",
       "shared-property-type-com.example.thing",
       "action-type-com.example.create-thing",
       "link-type-related-things",
+      "interface-com.example.Future",
     ];
-    expect(result.outputFolders).toEqual(
-      Object.fromEntries(
-        outputs.map((output) => [
-          output,
-          { id: "entities", location: "/domain/entities" },
-        ]),
-      ),
-    );
-    expect(
-      getOntologyDefinition().OBJECT_TYPE["com.example.Thing"].folder,
-    ).toEqual({
-      id: "entities",
-      location: "domain//entities/",
-    });
-    expect(
-      Object.values(result.ontologyIr.ontology.interfaceTypes)[0].interfaceType,
-    ).not.toHaveProperty("folder");
-    for (const kind of [
-      "objectTypes",
-      "interfaceTypes",
-      "sharedPropertyTypes",
-      "actionTypes",
-      "linkTypes",
-    ] as const) {
-      expect(
-        Object.values(
-          result.ontologyIr.ontology.blockPermissionInformation![kind],
-        ),
-      ).toEqual([
-        { restrictionStatus: expect.objectContaining({ publicProject: true }) },
-      ]);
-    }
-
+    expect(result.folders).toEqual([
+      { id: "entities", location: "/domain/entities", outputIds: outputs },
+    ]);
     const inputId = ReadableIdGenerator.getForCompassFolder("entities");
     expect(result.shapes.inputShapes.get(inputId)).toMatchObject({
       type: "compassResource",
@@ -121,7 +106,9 @@ describe("experimental folder placement conversion", () => {
         typeConstraints: [
           {
             type: "compassFolderTypeConstraints",
-            compassFolderTypeConstraints: { constraints: ["INSTALL_LOCATION"] },
+            compassFolderTypeConstraints: {
+              constraints: ["INSTALL_LOCATION"],
+            },
           },
         ],
       },
@@ -159,13 +146,54 @@ describe("experimental folder placement conversion", () => {
     );
   });
 
+  it.each([
+    {
+      apiName: "Missing",
+      error: 'resource "Missing" is not defined in this ontology',
+    },
+    { apiName: "Thing", error: 'resource "Thing" is ambiguous' },
+  ])(
+    "rejects invalid resource name $apiName after all definitions and before writing",
+    async ({ apiName, error }) => {
+      let bodyCompleted = false;
+      let beforeWriteCalled = false;
+      await expect(
+        defineOntologyV2(
+          "com.example.",
+          () => {
+            defineFolder({
+              id: "entities",
+              folder: "/entities",
+              resources: [apiName],
+            });
+            defineEntities();
+            defineInterface({ apiName: "Thing", permission: "publicProject" });
+            bodyCompleted = true;
+          },
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          {},
+          () => {
+            beforeWriteCalled = true;
+          },
+        ),
+      ).rejects.toThrow(error);
+      expect(bodyCompleted).toBe(true);
+      expect(beforeWriteCalled).toBe(false);
+    },
+  );
+
   it("keeps entity location mappings stable when the destination folder moves", async () => {
-    const before = await defineOntologyV2("com.example.", () =>
-      defineEntities({ id: "shared-folder", location: "/Aquarium/Fish" }),
-    );
-    const after = await defineOntologyV2("com.example.", () =>
-      defineEntities({ id: "shared-folder", location: "/Animals/Livestock" }),
-    );
+    const before = await defineOntologyV2("com.example.", () => {
+      defineEntities({ id: "shared-folder", folder: "/Aquarium/Fish" });
+    });
+    const after = await defineOntologyV2("com.example.", () => {
+      defineEntities({ id: "shared-folder", folder: "/Animals/Livestock" });
+    });
     expect(after.ontologyIr.ontology).toEqual(before.ontologyIr.ontology);
     expect(after.shapes.outputShapes).toEqual(before.shapes.outputShapes);
     expect(after.shapes.inputMappings).toEqual(before.shapes.inputMappings);
@@ -179,40 +207,13 @@ describe("experimental folder placement conversion", () => {
     });
   });
 
-  it("rejects conflicting identities after normalizing folder locations", async () => {
-    await expect(
-      defineOntologyV2("com.example.", () => {
-        defineEntities({ id: "first", location: "/a" });
-        defineInterface({
-          apiName: "Other",
-          permission: "publicProject",
-          folder: { id: "second", location: "a//" },
-        });
-      }),
-    ).rejects.toThrow('Folder location "/a" has conflicting ids');
-  });
-
-  it("requires explicit publicProject permission during conversion rather than definition", async () => {
-    let bodyCompleted = false;
-    await expect(
-      defineOntologyV2("com.example.", () => {
-        defineInterface({
-          apiName: "Thing",
-          folder: { id: "things", location: "/things" },
-        });
-        bodyCompleted = true;
-      }),
-    ).rejects.toThrow(
-      'folder placement requires permission to be explicitly set to "publicProject"',
-    );
-    expect(bodyCompleted).toBe(true);
-  });
-
   it("preserves entity identity when switching destination folders or returning to root", async () => {
-    const convert = (folder?: Folder) =>
-      defineOntologyV2("com.example.", () => defineEntities(folder));
-    const before = await convert({ id: "before", location: "/before" });
-    const after = await convert({ id: "after", location: "/after" });
+    const convert = (folder?: Pick<FolderDefinition, "id" | "folder">) =>
+      defineOntologyV2("com.example.", () => {
+        defineEntities(folder);
+      });
+    const before = await convert({ id: "before", folder: "/before" });
+    const after = await convert({ id: "after", folder: "/after" });
     const root = await convert();
     const { blockOutputCompassLocations: beforeLocations, ...beforeOntology } =
       before.ontologyIr.ontology;
@@ -233,13 +234,13 @@ describe("experimental folder placement conversion", () => {
       blockOutputCompassLocations: {},
     });
     expect(root.blockDataAddOn.outputToLocationInput).toEqual({});
-    expect(root.outputFolders).toEqual({});
+    expect(root.folders).toEqual([]);
   });
 
-  it("excludes imported entities even when their definitions contain folders", async () => {
-    await defineOntologyV2("upstream.", () =>
-      defineEntities({ id: "/upstream", location: "/upstream" }),
-    );
+  it("does not inherit upstream folder declarations when importing entities", async () => {
+    await defineOntologyV2("upstream.", () => {
+      defineEntities({ id: "/upstream", folder: "/upstream" });
+    });
     const upstream = getOntologyDefinition();
     const result = await defineOntologyV2("com.example.", () => {
       importOntologyEntity(upstream.OBJECT_TYPE["upstream.Thing"]);
@@ -247,7 +248,7 @@ describe("experimental folder placement conversion", () => {
     expect(
       Object.keys(result.ontologyIr.importedOntology.objectTypes),
     ).toHaveLength(1);
-    expect(result.outputFolders).toEqual({});
+    expect(result.folders).toEqual([]);
   });
 
   it("includes function-backed actions only after they produce an output", async () => {
@@ -275,18 +276,20 @@ describe("experimental folder placement conversion", () => {
     };
     const define = () => {
       defineEntities();
-      defineFunctionBackedAction({
+      const action = defineFunctionBackedAction({
         apiName: "update-thing",
         functionApiName: "updateThing",
         permission: "publicProject",
-        folder: { id: "/actions", location: "/actions" },
       });
+      defineFolder({ id: "/actions", folder: "/actions", resources: [action] });
     };
 
     try {
       fs.writeFileSync(functionsIrFile, JSON.stringify(functionsIr));
       const beforeDiscovery = await defineOntologyV2("com.example.", define);
-      expect(beforeDiscovery.outputFolders).toEqual({});
+      expect(beforeDiscovery.folders).toEqual([
+        { id: "/actions", location: "/actions", outputIds: [] },
+      ]);
       const afterDiscovery = await defineOntologyV2(
         "com.example.",
         define,
@@ -294,12 +297,13 @@ describe("experimental folder placement conversion", () => {
         undefined,
         functionsIrFile,
       );
-      expect(afterDiscovery.outputFolders).toEqual({
-        "action-type-com.example.update-thing": {
+      expect(afterDiscovery.folders).toEqual([
+        {
           id: "/actions",
           location: "/actions",
+          outputIds: ["action-type-com.example.update-thing"],
         },
-      });
+      ]);
     } finally {
       fs.rmSync(buildDir, { recursive: true, force: true });
     }

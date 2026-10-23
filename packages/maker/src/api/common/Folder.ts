@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * A folder with an identity that survives renames and moves.
- * Omit the folder to use the installation root.
- */
+import type { OntologyEntityTypeEnum } from "./OntologyEntityTypeEnum.js";
+
+/** An installation folder with resolved resource references. */
 export interface Folder {
-  /** Stable identity to preserve folder shapes if moved or renamed. Changing this will create a new folder on upgrade */
-  id: string;
-  /**
-   * Folder path relative to the installation root. Determines the folder's name and parent.
-   * Note the entire folder hierarchy is materialized during an installation (i.e. `location: "a/b"` will create both folder `a` and subfolder `b`)
-   */
-  location: string;
+  /** Stable identity. Keep this unchanged when renaming or moving the folder. */
+  readonly id: string;
+  /** Path relative to the installation root. Ancestor folders are created automatically. */
+  readonly folder: string;
+  readonly resources: readonly {
+    readonly __type: Exclude<
+      OntologyEntityTypeEnum,
+      OntologyEntityTypeEnum.VALUE_TYPE
+    >;
+    readonly apiName: string;
+  }[];
 }

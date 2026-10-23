@@ -22,8 +22,12 @@ import type {
   InputShapeMetadata,
   OutputShape,
 } from "@osdk/client.unstable/api";
-import type { EntityPermission, Folder, OntologyDefinition } from "@osdk/maker";
-import { cleanAndValidateLinkTypeId } from "@osdk/maker";
+import type { Folder, FolderDefinition, OntologyDefinition } from "@osdk/maker";
+import {
+  addNamespaceIfNone,
+  cleanAndValidateLinkTypeId,
+  OntologyEntityTypeEnum,
+} from "@osdk/maker";
 import invariant from "tiny-invariant";
 
 import type {
@@ -34,12 +38,18 @@ import { toBlockShapeId } from "../cli/marketplaceSerialization/CodeBlockSpec.js
 import type { InputMappingEntry } from "../cli/marketplaceSerialization/supportingTypes.js";
 import { type ReadableId, ReadableIdGenerator } from "./generateRid.js";
 
-// Matches Compass's MAX_RESOURCE_NAME_LENGTH.
-const FOLDER_NAME_LIMIT = 700;
-const encoder = new TextEncoder();
 const COMPASS_FOLDER_INTERNAL_SHAPE_ID = "compass-folder";
 
-export interface FolderNode extends Folder {
+export interface FolderPlacement {
+  id: string;
+  location: string;
+}
+
+export interface OntologyFolder extends FolderPlacement {
+  outputIds: ReadableId[];
+}
+
+export interface FolderNode extends FolderPlacement {
   name: string;
   parentLocation: string;
   blockIdentifier: string;
@@ -54,106 +64,88 @@ export interface FolderLocationInputs {
   outputToLocationInput: Map<ReadableId, ReadableId>;
 }
 
-export function validateAndNormalizeFolderPath(
-  folder: Folder | undefined,
-  permission: EntityPermission | undefined,
-  apiName: string,
-): string | undefined {
-  if (folder === undefined) {
-    return undefined;
-  }
-
-  const context = `Ontology entity "${apiName}"`;
-  invariant(
-    permission === "publicProject",
-    `${context}: folder placement requires permission to be explicitly set to "publicProject"`,
-  );
-  invariant(
-    typeof folder === "object" && folder != null,
-    `${context}: folder must be an object with id and location`,
-  );
-  const { id, location } = folder;
-  invariant(
-    typeof location === "string",
-    `${context}: folder location must be a string`,
-  );
-  invariant(
-    typeof id === "string" && id.trim().length > 0,
-    `${context}: folder id must be a non-empty string`,
-  );
-  invariant(
-    !/[\uD800-\uDFFF]/u.test(id),
-    `${context}: folder id must contain valid Unicode`,
-  );
-
-  const segments = location.split("/").filter((segment) => segment.length > 0);
-  invariant(
-    segments.length > 0,
-    `${context}: the installation root cannot be assigned a folder id`,
-  );
-  for (const segment of segments) {
-    invariant(
-      segment !== "." && segment !== "..",
-      `${context}: folder must not contain "." or ".." path segments`,
-    );
-    // In Unicode mode, this range matches unpaired surrogates, not valid pairs.
-    invariant(
-      !/[\uD800-\uDFFF]/u.test(segment),
-      `${context}: folder names must contain valid Unicode`,
-    );
-    const length = encoder.encode(segment).length;
-    invariant(
-      length <= FOLDER_NAME_LIMIT,
-      `${context}: folder name must be at most ${FOLDER_NAME_LIMIT} UTF-8 bytes (got ${length})`,
-    );
-  }
-
-  return "/" + segments.join("/");
+export function resolveFolderDefinitions(
+  definitions: Iterable<FolderDefinition>,
+  ontology: OntologyDefinition,
+): Folder[] {
+  const assignments = new Map<string, string>();
+  return Array.from(definitions, ({ id, folder, resources }) => ({
+    id,
+    folder,
+    resources: resources.map((resource) => {
+      const apiName =
+        typeof resource === "string" ? resource : resource.apiName;
+      const matches =
+        typeof resource === "string"
+          ? Array.from(new Set([apiName, addNamespaceIfNone(apiName)])).flatMap(
+              (name) =>
+                [
+                  ontology.OBJECT_TYPE[name],
+                  ontology.INTERFACE_TYPE[name],
+                  ontology.SHARED_PROPERTY_TYPE[name],
+                  ontology.ACTION_TYPE[name],
+                  ontology.LINK_TYPE[name],
+                ].filter((entity) => entity?.apiName === name),
+            )
+          : [
+              ontology[
+                "__type" in resource
+                  ? resource.__type
+                  : OntologyEntityTypeEnum.OBJECT_TYPE
+              ][apiName],
+            ].filter((entity) => entity?.apiName === apiName);
+      invariant(
+        matches.length > 0,
+        `Folder "${id}": resource "${apiName}" is not defined in this ontology`,
+      );
+      invariant(
+        matches.length === 1,
+        `Folder "${id}": resource "${apiName}" is ambiguous; matches ${matches.map((resource) => `${resource.__type} "${resource.apiName}"`).join(", ")}`,
+      );
+      const entity = matches[0];
+      invariant(
+        entity.permission === "publicProject",
+        `Ontology entity "${entity.apiName}": folder placement requires permission to be explicitly set to "publicProject"`,
+      );
+      const key = `${entity.__type}:${entity.apiName}`;
+      invariant(
+        !assignments.has(key),
+        `Resource "${entity.apiName}" (${entity.__type}) is already assigned to folder "${assignments.get(key)}"`,
+      );
+      assignments.set(key, id);
+      return { __type: entity.__type, apiName: entity.apiName };
+    }),
+  }));
 }
 
-export function getOutputFolders(
-  ontology: OntologyDefinition,
+export function getOntologyFolders(
+  folders: Folder[],
   outputShapes: ReadonlyMap<ReadableId, OutputShape>,
-): Record<ReadableId, Folder> {
-  const outputFolders: Record<ReadableId, Folder> = {};
+): OntologyFolder[] {
+  const getReadableId = {
+    OBJECT_TYPE: ReadableIdGenerator.getForObjectType,
+    INTERFACE_TYPE: ReadableIdGenerator.getForInterface,
+    SHARED_PROPERTY_TYPE: ReadableIdGenerator.getForSpt,
+    ACTION_TYPE: ReadableIdGenerator.getForActionType,
+    LINK_TYPE: (apiName: string) =>
+      ReadableIdGenerator.getForLinkType(cleanAndValidateLinkTypeId(apiName)),
+  };
 
-  const entityGroups = [
-    [ontology.OBJECT_TYPE, ReadableIdGenerator.getForObjectType],
-    [ontology.INTERFACE_TYPE, ReadableIdGenerator.getForInterface],
-    [ontology.SHARED_PROPERTY_TYPE, ReadableIdGenerator.getForSpt],
-    [ontology.ACTION_TYPE, ReadableIdGenerator.getForActionType],
-    [
-      ontology.LINK_TYPE,
-      (apiName: string) =>
-        ReadableIdGenerator.getForLinkType(cleanAndValidateLinkTypeId(apiName)),
-    ],
-  ] as const;
-
-  for (const [entities, getReadableId] of entityGroups) {
-    for (const entity of Object.values(entities)) {
-      const location = validateAndNormalizeFolderPath(
-        entity.folder,
-        entity.permission,
-        entity.apiName,
-      );
-      if (location !== undefined) {
-        const readableId = getReadableId(entity.apiName);
-        // Function-backed actions can be skipped until functions have been discovered.
-        if (outputShapes.has(readableId)) {
-          outputFolders[readableId] = { id: entity.folder!.id, location };
-        }
-      }
-    }
-  }
-
-  // Validate identities against both declared folders and generated ancestors.
-  resolveFoldersByLocation(Object.values(outputFolders));
-  return outputFolders;
+  const ontologyFolders = folders.map(({ id, folder, resources }) => ({
+    id,
+    location: folder,
+    outputIds: resources
+      .map((resource) => getReadableId[resource.__type](resource.apiName))
+      // Function-backed actions can be skipped until functions have been discovered.
+      .filter((outputId) => outputShapes.has(outputId)),
+  }));
+  // Include empty folders and explicitly identified ancestors in identity validation.
+  resolveFoldersByLocation(ontologyFolders);
+  return ontologyFolders;
 }
 
 export function getFolderLocationInputs(
-  outputFolders: Readonly<Record<ReadableId, Folder>>,
-  outputIds: Iterable<ReadableId>,
+  folders: Iterable<OntologyFolder>,
 ): FolderLocationInputs {
   const result: FolderLocationInputs = {
     inputShapes: new Map(),
@@ -162,12 +154,13 @@ export function getFolderLocationInputs(
     outputToLocationInput: new Map(),
   };
 
-  for (const outputId of outputIds) {
-    const folder = outputFolders[outputId];
+  for (const folder of folders) {
     // Installers fall back to the installation root when no location input is mapped.
-    if (folder === undefined || folder.location === "/") continue;
+    if (folder.outputIds.length === 0 || folder.location === "/") continue;
     const inputId = ReadableIdGenerator.getForCompassFolder(folder.id);
-    result.outputToLocationInput.set(outputId, inputId);
+    for (const outputId of folder.outputIds) {
+      result.outputToLocationInput.set(outputId, inputId);
+    }
     if (result.inputShapes.has(inputId)) continue;
 
     result.inputShapes.set(inputId, {
@@ -204,10 +197,10 @@ export function getFolderLocationInputs(
 
 /** Resolves explicit identities before filling in path-based identities for ancestors. */
 function resolveFoldersByLocation(
-  folders: Iterable<Folder>,
-): Map<string, Folder> {
+  folders: Iterable<FolderPlacement>,
+): Map<string, FolderPlacement> {
   const definitions = Array.from(folders);
-  const foldersByLocation = new Map<string, Folder>([
+  const foldersByLocation = new Map<string, FolderPlacement>([
     ["/", { id: "/", location: "/" }],
   ]);
   for (const folder of definitions) {
@@ -241,7 +234,7 @@ function resolveFoldersByLocation(
 
 /** Builds a tree from normalized placements, excluding the installation root. */
 export function buildFolderTree(
-  folderDefinitions: Iterable<Folder>,
+  folderDefinitions: Iterable<FolderPlacement>,
   randomnessKey?: string,
 ): FolderNode[] {
   const foldersByLocation = resolveFoldersByLocation(folderDefinitions);
@@ -269,25 +262,23 @@ export function buildFolderTree(
 }
 
 export function generateFolderBlockResults(
-  outputFolders: Readonly<Record<ReadableId, Folder>>,
+  folderDefinitions: Iterable<FolderPlacement>,
   buildDir: string,
   randomnessKey?: string,
 ): Promise<BlockGeneratorResult[]> {
-  const folders = buildFolderTree(Object.values(outputFolders), randomnessKey);
+  const folders = buildFolderTree(folderDefinitions, randomnessKey);
   const foldersByLocation = new Map(
     folders.map((folder) => [folder.location, folder]),
   );
   return Promise.all(
     folders.map(async (folder): Promise<BlockGeneratorResult> => {
-      const folderLocations = getFolderLocationInputs(
+      const folderLocations = getFolderLocationInputs([
         {
-          [folder.outputReadableId]: {
-            id: foldersByLocation.get(folder.parentLocation)?.id ?? "/",
-            location: folder.parentLocation,
-          },
+          id: foldersByLocation.get(folder.parentLocation)?.id ?? "/",
+          location: folder.parentLocation,
+          outputIds: [folder.outputReadableId],
         },
-        [folder.outputReadableId],
-      );
+      ]);
       const addOn: BlockDataAddOn = {
         idToBlockShapeId: {
           [COMPASS_FOLDER_INTERNAL_SHAPE_ID]: folder.outputShapeId,

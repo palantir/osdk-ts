@@ -59,7 +59,6 @@ export function defineDeleteObjectAction(
         }
       : {}),
     ...(def.permission && { permission: def.permission }),
-    ...(def.folder !== undefined && { folder: def.folder }),
     ...(def.icon && { icon: def.icon }),
   });
 }

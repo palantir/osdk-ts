@@ -19,7 +19,6 @@ import type { OntologyIrObjectType, Visibility } from "@osdk/client.unstable";
 import type { RequiredFields } from "../../util/RequiredFields.js";
 import type { BlueprintIcon } from "../common/BlueprintIcons.js";
 import type { EntityPermission } from "../common/EntityPermission.js";
-import type { Folder } from "../common/Folder.js";
 import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import type { EditsHistoryConfig } from "./EditsHistoryConfig.js";
@@ -41,8 +40,6 @@ export type ObjectType = OntologyEntityBase &
     includeEmptyBackingDatasource?: boolean;
     permission?: EntityPermission;
     __type: OntologyEntityTypeEnum.OBJECT_TYPE;
-    /** Folder path relative to the installation root. Defaults to the root */
-    folder?: Folder;
   };
 
 export interface ObjectTypeInner extends Omit<

@@ -18,13 +18,9 @@ import * as fs from "fs";
 
 import type { InputPreset } from "@osdk/client.unstable/api";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
-import type {
-  Folder,
-  LinkType,
-  ObjectType,
-  OntologyDefinition,
-} from "@osdk/maker";
+import type { LinkType, ObjectType, OntologyDefinition } from "@osdk/maker";
 import {
+  getFolderDefinitions,
   getImportedTypes,
   getOntologyDefinition,
   importOntologyEntity,
@@ -44,7 +40,9 @@ import {
 } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import {
   getFolderLocationInputs,
-  getOutputFolders,
+  getOntologyFolders,
+  type OntologyFolder,
+  resolveFolderDefinitions,
 } from "../util/foldersUtil.js";
 
 export type { ExternalImportedOntologyMetadata } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
@@ -70,7 +68,7 @@ export interface OntologyV2Result {
   backingDatasourceApiNames: string[];
   backingDatasourceLinkApiNames: string[];
   backingMediaSetNames: string[];
-  outputFolders: Record<ReadableId, Folder>;
+  folders: OntologyFolder[];
 }
 
 export interface FunctionsIr {
@@ -121,6 +119,10 @@ export async function defineOntologyV2(
 
   const ontologyDefinition = getOntologyDefinition();
   const importedTypes = getImportedTypes();
+  const folderDefinitions = resolveFolderDefinitions(
+    getFolderDefinitions(),
+    ontologyDefinition,
+  );
 
   let functionsIr: FunctionsIr | undefined;
   if (functionsIrFile) {
@@ -145,14 +147,8 @@ export async function defineOntologyV2(
     functionsIr,
     randomnessKey,
   );
-  const outputFolders = getOutputFolders(
-    ontologyDefinition,
-    shapes.outputShapes,
-  );
-  const folderLocations = getFolderLocationInputs(
-    outputFolders,
-    shapes.outputShapes.keys(),
-  );
+  const folders = getOntologyFolders(folderDefinitions, shapes.outputShapes);
+  const folderLocations = getFolderLocationInputs(folders);
   for (const [id, input] of folderLocations.inputShapes) {
     shapes.inputShapes.set(id, input);
   }
@@ -265,6 +261,6 @@ export async function defineOntologyV2(
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
-    outputFolders,
+    folders,
   };
 }
