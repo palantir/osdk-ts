@@ -20,9 +20,9 @@ import { expect, screen, userEvent } from "storybook/test";
 import { Employee } from "../../../types/Employee.js";
 import {
   defaultEmployeeColumns,
+  findTableData,
   objectTableMeta,
   openHeaderMenu,
-  TARGET_DATA,
 } from "../objectTableStoryHelpers.js";
 import type { EmployeeTableProps } from "../objectTableStoryHelpers.js";
 import {
@@ -62,7 +62,7 @@ export const HeaderMenuInsideBlueprintDrawer: Story = {
   // The drawer opens by default. The header menu must portal *above* the drawer
   // and stay interactive. The drawer renders to document.body, so query `screen`.
   play: async () => {
-    await screen.findByText(TARGET_DATA);
+    await findTableData(screen);
 
     await openHeaderMenu(screen, "fullName");
     await expect(
@@ -95,7 +95,7 @@ export const HeaderMenuInsideBlueprintDialog: Story = {
   render: (args) => <ObjectTableInBlueprintDialog tableProps={args} />,
   // The dialog opens by default; the header menu must portal above it.
   play: async () => {
-    await screen.findByText(TARGET_DATA);
+    await findTableData(screen);
 
     await openHeaderMenu(screen, "fullName");
     await expect(
@@ -128,7 +128,7 @@ export const HeaderMenuInsideBaseUIDialog: Story = {
   render: (args) => <ObjectTableInBaseUIDialog tableProps={args} />,
   // The Base UI dialog opens by default; the header menu must portal above it.
   play: async () => {
-    await screen.findByText(TARGET_DATA);
+    await findTableData(screen);
 
     await openHeaderMenu(screen, "fullName");
     await expect(
