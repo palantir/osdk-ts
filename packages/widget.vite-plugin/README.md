@@ -166,6 +166,21 @@ This vite plugin will then discover both entrypoints and output a combined `.pal
 }
 ```
 
+### Entrypoint CSS limit
+
+The Foundry widget registry allows at most 10 CSS files per widget entrypoint. If an entrypoint references more than 10 CSS files (which can happen when using Vite's default CSS code splitting across shared chunks), the build will fail with an error.
+
+To avoid this, you can disable CSS code splitting in your Vite configuration to bundle all CSS into a single stylesheet:
+
+```js
+export default defineConfig({
+  plugins: [foundryWidgetPlugin()],
+  build: {
+    cssCodeSplit: false,
+  },
+});
+```
+
 ## Developer mode
 
 The vite plugin also automatically configures developer mode so that you can preview the changes you make locally live on your Foundry environment. For developer mode to work, make sure you set a `FOUNDRY_TOKEN` environment variable that has a token with access to your Foundry stack.

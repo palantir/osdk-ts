@@ -250,6 +250,23 @@ describe("buildWidgetSetManifest", () => {
       "styles/widget.css",
     );
   });
+
+  test("throws when an entrypoint exceeds max CSS count", () => {
+    const stylesheets = Array.from(
+      { length: 11 },
+      (_, i) => `/styles/widget-${i}.css`,
+    );
+    expect(() =>
+      buildWidgetSetManifest(
+        WIDGET_SET_RID,
+        WIDGET_SET_VERSION,
+        [createMockWidgetBuild("widget", undefined, undefined, stylesheets)],
+        {},
+      ),
+    ).toThrow(
+      "Entrypoint CSS count can be at most 10. Widget 'widget' has 11 CSS files. Consider setting 'build.cssCodeSplit: false' in your Vite config to combine CSS into a single stylesheet.",
+    );
+  });
 });
 
 function createMockWidgetBuild(
