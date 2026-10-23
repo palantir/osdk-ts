@@ -250,38 +250,54 @@ describe(toDataValue, () => {
     expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/iu);
   });
 
-  it("converts media uploads correctly", () => {
-    const file: MediaUpload = {
-      data: new Blob([JSON.stringify({ name: "Hello World" }, null, 2)], {
-        type: "application/json",
-      }),
-      fileName: "file.txt",
-    };
+  // cspell:ignore openxmlformats officedocument wordprocessingml
+  it.each([
+    {
+      mimeType:
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      expectedContentType:
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    },
+    { mimeType: "", expectedContentType: "application/octet-stream" },
+  ])(
+    "uploads media with Content-Type $expectedContentType",
+    async ({ mimeType, expectedContentType }) => {
+      const content = "media file contents";
+      const file: MediaUpload = {
+        data: new Blob([content], { type: mimeType }),
+        fileName: "file.docx",
+      };
 
-    // TODO: Mock MediaUpload properly in FauxFoundry
-    apiServer.boundary(async () => {
-      apiServer.use(
-        MockOntologiesV2.MediaReferenceProperties.uploadMedia(
-          "https://stack.palantir.com",
-          () => {
-            return {
-              mimeType: "application/json",
-              reference: {
-                type: "mediaSetViewItem",
-                mediaSetViewItem: {
-                  mediaItemRid: "media-item-rid",
-                  mediaSetRid: "media-set-rid",
-                  mediaSetViewRid: "media-set-view-rid",
+      await apiServer.boundary(async () => {
+        let uploadedContentType: string | null | undefined;
+        let uploadedContent: string | undefined;
+        apiServer.use(
+          MockOntologiesV2.MediaReferenceProperties.uploadMedia(
+            "https://stack.palantir.com",
+            async ({ request }) => {
+              uploadedContentType = request.headers.get("Content-Type");
+              uploadedContent = await request.text();
+              return {
+                mimeType: expectedContentType,
+                reference: {
+                  type: "mediaSetViewItem",
+                  mediaSetViewItem: {
+                    mediaItemRid: "media-item-rid",
+                    mediaSetRid: "media-set-rid",
+                    mediaSetViewRid: "media-set-view-rid",
+                  },
                 },
-              },
-            };
-          },
-        ),
-      );
-      const converted = await toDataValue(file, clientCtx, "mediaReference");
-      expect(isMediaReference(converted)).toBe(true);
-    });
-  });
+              };
+            },
+          ),
+        );
+        const converted = await toDataValue(file, clientCtx, "mediaReference");
+        expect(uploadedContentType).toBe(expectedContentType);
+        expect(uploadedContent).toBe(content);
+        expect(isMediaReference(converted)).toBe(true);
+      })();
+    },
+  );
 
   it("converts media reference correctly", async () => {
     const mediaReference: MediaReference = {
