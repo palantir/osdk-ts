@@ -202,7 +202,7 @@ export async function getShapes(
     consumeBlockShapes(allBlockShapes, groupShapes);
   }
 
-  // Migration shape
+  // Migration shapes
   const migrationShapes = getMigrationShape();
   consumeBlockShapes(allBlockShapes, migrationShapes);
   consumeBlockShapes(
@@ -959,10 +959,6 @@ function getMigrationShape(): BlockShapes {
   };
 }
 
-/**
- * Port of OMS's SchemaMigrationCandidatesPackager.addOntologySchemaMigrationInputsShapeToBlock(); emits nothing
- * when there are no candidates.
- */
 function getSchemaMigrationInputsShapes(
   ontologyBlockDataV2: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,

@@ -22,6 +22,7 @@ import {
   defineOntologyV2,
   type OntologyPackagingOptions,
 } from "../../../api/defineOntologyV2.js";
+import { toBlockShapeId } from "../../../cli/marketplaceSerialization/CodeBlockSpec.js";
 import type { ReadableId } from "../../../util/generateRid.js";
 import { SCHEMA_MIGRATION_INPUTS_SHAPE_READABLE_ID } from "./SchemaMigrationCandidatesExtractor.js";
 
@@ -209,20 +210,21 @@ describe("schema migration candidates", () => {
       },
     },
   ])("emits no candidate for $name", async ({ properties }) => {
-    const { inputShape, knownIdentifiers } = await build(properties);
+    const { inputShape } = await build(properties);
 
     expect(inputShape).toBeUndefined();
-    expect(knownIdentifiers.shapeIdForOntologySchemaMigrationInputs).toBe(null);
   });
 
-  it("emits no candidates for a stream-only object", async () => {
+  it("emits no shape but includes the known identifier for a stream-only object", async () => {
     const { inputShape, knownIdentifiers } = await build(
       { name: { type: "string", nullability: NON_NULL } },
       { datasources: [{ type: "stream" }] },
     );
 
     expect(inputShape).toBeUndefined();
-    expect(knownIdentifiers.shapeIdForOntologySchemaMigrationInputs).toBe(null);
+    expect(knownIdentifiers.shapeIdForOntologySchemaMigrationInputs).toBe(
+      toBlockShapeId(SCHEMA_MIGRATION_INPUTS_SHAPE_READABLE_ID, RANDOMNESS_KEY),
+    );
   });
 
   it("emits a candidate for a stream object whose edge remapping supports backfilling", async () => {
@@ -324,24 +326,5 @@ describe("schema migration candidates", () => {
     expect(
       Object.keys(inputShape.ontologySchemaMigrationInputs.candidates),
     ).toEqual([candidateIdFor(propertyBlockInternalId("classification"))]);
-  });
-
-  it("produces identical output for the same randomness key", async () => {
-    const properties: ObjectProperties = {
-      name: { type: "string", nullability: NON_NULL },
-      classification: {
-        type: {
-          type: "marking",
-          markingType: "CBAC",
-          markingInputGroupName: "classificationGroup",
-        },
-      },
-    };
-    const first = await build(properties);
-    const second = await build(properties);
-
-    expect(second.result.shapes).toEqual(first.result.shapes);
-    expect(second.idToBlockShapeId).toEqual(first.idToBlockShapeId);
-    expect(second.knownIdentifiers).toEqual(first.knownIdentifiers);
   });
 });

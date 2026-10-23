@@ -53,10 +53,7 @@ import {
   getMultiInterfaceSptApiNames,
   MIGRATION_SHAPE_READABLE_ID,
 } from "./shapeExtractors/IrShapeExtractor.js";
-import {
-  getSchemaMigrationCandidates,
-  SCHEMA_MIGRATION_INPUTS_SHAPE_READABLE_ID,
-} from "./shapeExtractors/SchemaMigrationCandidatesExtractor.js";
+import { SCHEMA_MIGRATION_INPUTS_SHAPE_READABLE_ID } from "./shapeExtractors/SchemaMigrationCandidatesExtractor.js";
 
 function toActionTypeRestrictionStatus(
   p: EntityPermission,
@@ -475,12 +472,6 @@ function buildKnownIdentifiers(
     ),
   );
 
-  // Only set when the schema migration inputs shape is emitted, as in OMS.
-  const hasSchemaMigrationCandidates =
-    Object.keys(
-      getSchemaMigrationCandidates(objectTypes, ridGenerator).candidates,
-    ).length > 0;
-
   // Datasource columns: BlockInternalId -> ResolvedDatasourceColumnShape
   const datasourceColumns = Object.fromEntries(
     [
@@ -677,11 +668,9 @@ function buildKnownIdentifiers(
     shapeIdForOntologyAllowSchemaMigrations: ridGenerator.toBlockInternalId(
       MIGRATION_SHAPE_READABLE_ID,
     ),
-    shapeIdForOntologySchemaMigrationInputs: hasSchemaMigrationCandidates
-      ? ridGenerator.toBlockInternalId(
-          SCHEMA_MIGRATION_INPUTS_SHAPE_READABLE_ID,
-        )
-      : null,
+    shapeIdForOntologySchemaMigrationInputs: ridGenerator.toBlockInternalId(
+      SCHEMA_MIGRATION_INPUTS_SHAPE_READABLE_ID,
+    ),
     shapeIdForInstallPrefix: null,
     structFieldRidsToApiNames,
     timeSeriesSyncs,

@@ -49,10 +49,6 @@ export interface SchemaMigrationCandidates {
   markingsInputs: Map<ReadableId, MarkingsShape>;
 }
 
-/**
- * Port of OMS's SchemaMigrationCandidatesPackager: a set-property-value-if-unset candidate for every property an
- * installation could be asked to backfill.
- */
 export function getSchemaMigrationCandidates(
   objectTypes: Record<string, ObjectTypeBlockDataV2>,
   ridGenerator: OntologyRidGenerator,
@@ -65,7 +61,6 @@ export function getSchemaMigrationCandidates(
 
   for (const block of Object.values(objectTypes)) {
     const { objectType } = block;
-    // Any over all: if either a cloud or an edge datasource could need backfilling, the candidate is embedded.
     const propertiesSupportingBackfill = new Set(
       [
         ...block.datasources,
@@ -112,8 +107,8 @@ export function getSchemaMigrationCandidates(
           affectedShapes: [propertyBlockInternalId],
           supportedMarkingsType: markingType,
           stableId: `schema-migration-candidate-input//${candidateId}//value`,
-          // Minimum of zero, since otherwise Marketplace would always require a value, even if unused.
           sizeConstraints: {
+            // Minimum of zero, since otherwise Marketplace would always require a value, even if unused.
             minNumberInclusive: 0,
             maxNumberInclusive: propertyType.type.type === "array" ? 100 : 1,
           },
@@ -154,7 +149,6 @@ export function getMarkingType(type: Type): MarkingType | undefined {
   return type.type === "marking" ? type.marking.markingType : undefined;
 }
 
-/** Port of OMS's SetPropertyValueIfUnsetMigrationUtils.isSupportedFor. */
 function isSupportedType(type: Type): boolean {
   switch (type.type) {
     case "array":
@@ -189,7 +183,6 @@ function isSupportedType(type: Type): boolean {
   }
 }
 
-/** Port of OMS's PropertyTypeNullabilityUtils.isNullable. */
 function isNullable({ dataConstraints }: PropertyType): boolean {
   return (
     dataConstraints?.nullability !== "NO_EXPLICIT_NULLS" &&
@@ -197,10 +190,6 @@ function isNullable({ dataConstraints }: PropertyType): boolean {
   );
 }
 
-/**
- * The properties a datasource backs, if OMS supports backfilling its datasource type; port of OMS's
- * SetPropertyValueIfUnsetMigrationUtils.isSupportedForDatasourceType.
- */
 function getPropertiesSupportingBackfill(
   datasource: ObjectTypeDatasourceDefinition,
 ): Array<PropertyTypeRid> {
