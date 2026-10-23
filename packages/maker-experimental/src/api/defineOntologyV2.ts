@@ -18,7 +18,12 @@ import * as fs from "fs";
 
 import type { InputPreset } from "@osdk/client.unstable/api";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
-import type { LinkType, ObjectType, OntologyDefinition } from "@osdk/maker";
+import type {
+  Folder,
+  LinkType,
+  ObjectType,
+  OntologyDefinition,
+} from "@osdk/maker";
 import {
   getImportedTypes,
   getOntologyDefinition,
@@ -37,6 +42,10 @@ import {
   getImportedShapes,
   type LinkTypeIdsByApiName,
 } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
+import {
+  getFolderLocationInputs,
+  getOutputFolders,
+} from "../util/foldersUtil.js";
 
 export type { ExternalImportedOntologyMetadata } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
@@ -61,6 +70,7 @@ export interface OntologyV2Result {
   backingDatasourceApiNames: string[];
   backingDatasourceLinkApiNames: string[];
   backingMediaSetNames: string[];
+  outputFolders: Record<ReadableId, Folder>;
 }
 
 export interface FunctionsIr {
@@ -134,6 +144,27 @@ export async function defineOntologyV2(
     ridGenerator,
     functionsIr,
     randomnessKey,
+  );
+  const outputFolders = getOutputFolders(
+    ontologyDefinition,
+    shapes.outputShapes,
+  );
+  const folderLocations = getFolderLocationInputs(
+    outputFolders,
+    shapes.outputShapes.keys(),
+  );
+  for (const [id, input] of folderLocations.inputShapes) {
+    shapes.inputShapes.set(id, input);
+  }
+  for (const [id, metadata] of folderLocations.inputShapeMetadata) {
+    shapes.inputShapeMetadata.set(id, metadata);
+  }
+  shapes.inputMappings.push(...folderLocations.inputMappings);
+  ontologyIr.ontology.blockOutputCompassLocations = Object.fromEntries(
+    Array.from(folderLocations.outputToLocationInput, ([output, input]) => [
+      ridGenerator.toBlockInternalId(output),
+      ridGenerator.toBlockInternalId(input),
+    ]),
   );
 
   // Generate input shapes for imported entities and merge into main shapes
@@ -217,7 +248,12 @@ export async function defineOntologyV2(
       ]),
     ),
     idToInputGroupId: {},
-    outputToLocationInput: {},
+    outputToLocationInput: Object.fromEntries(
+      Array.from(folderLocations.outputToLocationInput, ([output, input]) => [
+        ridGenerator.toBlockInternalId(output),
+        input,
+      ]),
+    ),
   };
 
   return {
@@ -229,5 +265,6 @@ export async function defineOntologyV2(
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
+    outputFolders,
   };
 }

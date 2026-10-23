@@ -27,6 +27,7 @@ import type { TableConfiguration } from "./action/TableConfiguration.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import type { BlueprintIcon } from "./common/BlueprintIcons.js";
 import type { EntityPermission } from "./common/EntityPermission.js";
+import type { Folder } from "./common/Folder.js";
 import { convertValidationRule, defineAction, kebab } from "./defineAction.js";
 import type { InterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
 import {
@@ -61,6 +62,8 @@ type CreateInterfaceLinkActionBaseDefinition = {
   submissionMetadata?: SubmissionMetadata;
   permission?: EntityPermission;
   icon?: { locator: BlueprintIcon; color: string };
+  /** Folder path relative to the installation root. Defaults to the root */
+  folder?: Folder;
 };
 
 export type CreateInterfaceLinkActionUserDefinition =
@@ -205,6 +208,7 @@ export function defineCreateInterfaceLinkAction(
       submissionMetadata: def.submissionMetadata,
     }),
     ...(def.permission && { permission: def.permission }),
+    ...(def.folder !== undefined && { folder: def.folder }),
     ...(def.icon && { icon: def.icon }),
   });
 }
