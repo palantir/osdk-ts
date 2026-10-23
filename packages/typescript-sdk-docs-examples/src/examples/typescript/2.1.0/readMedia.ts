@@ -27,7 +27,7 @@ const result = await client(Equipment).fetchOne("mac-1234");
 const mediaMetadata = await result.trainingMaterial?.fetchMetadata();
 console.log(
   mediaMetadata?.mediaType,
-  mediaMetadata?.sizeBytes,
+  mediaMetadata?.sizeBytesLong,
   mediaMetadata?.path,
 );
 // Fetch contents of a media property

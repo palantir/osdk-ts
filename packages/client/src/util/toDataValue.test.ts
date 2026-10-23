@@ -325,6 +325,7 @@ describe(toDataValue, () => {
     const mockMedia: Media = {
       fetchMetadata: () => ({
         sizeBytes: 1024,
+        sizeBytesLong: "1024",
         mediaType: "image/png",
       }),
       fetchContents: () => new Response(),

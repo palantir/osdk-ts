@@ -342,8 +342,10 @@ export type AudioDecodeFormat = "FLAC" | "MP2" | "MP3" | "MP4" | "NIST_SPHERE" |
 export interface AudioMediaItemMetadata {
     	// (undocumented)
     format: AudioDecodeFormat;
-    	// (undocumented)
+    	// @deprecated (undocumented)
     sizeBytes: number;
+    	// (undocumented)
+    sizeBytesLong: string;
     	// (undocumented)
     specification: AudioSpecification;
 }
@@ -703,8 +705,10 @@ export interface DicomMediaItemMetadata {
     metaInformation: DicomMetaInformation;
     	// (undocumented)
     otherDataElements: Record<DicomDataElementKey, any>;
-    	// (undocumented)
+    	// @deprecated (undocumented)
     sizeBytes: number;
+    	// (undocumented)
+    sizeBytesLong: string;
 }
 
 // @public (undocumented)
@@ -768,8 +772,10 @@ export interface DocumentMediaItemMetadata {
     format: DocumentDecodeFormat;
     	// (undocumented)
     pages?: number;
-    	// (undocumented)
+    	// @deprecated (undocumented)
     sizeBytes: number;
+    	// (undocumented)
+    sizeBytesLong: string;
     	// (undocumented)
     title?: string;
 }
@@ -836,8 +842,10 @@ export interface EmailMediaItemMetadata {
     format: EmailDecodeFormat;
     	// (undocumented)
     sender: Array<Mailbox>;
-    	// (undocumented)
+    	// @deprecated (undocumented)
     sizeBytes: number;
+    	// (undocumented)
+    sizeBytesLong: string;
     	// (undocumented)
     subject?: string;
     	// (undocumented)
@@ -1067,8 +1075,10 @@ export interface ImageryMediaItemMetadata {
     orientation?: Orientation;
     	// (undocumented)
     pages?: number;
-    	// (undocumented)
+    	// @deprecated (undocumented)
     sizeBytes: number;
+    	// (undocumented)
+    sizeBytesLong: string;
 }
 
 // @public (undocumented)
@@ -1290,8 +1300,9 @@ interface MediaMetadata_2 {
     mediaType: string;
     	// (undocumented)
     path?: string;
-    	// (undocumented)
+    	// @deprecated (undocumented)
     sizeBytes: number;
+    	sizeBytesLong: string;
 }
 export { MediaMetadata_2 as MediaMetadata }
 
@@ -1352,8 +1363,10 @@ export interface Model3dMediaItemMetadata {
     format: Model3dDecodeFormat;
     	// (undocumented)
     modelType: Model3dType;
-    	// (undocumented)
+    	// @deprecated (undocumented)
     sizeBytes: number;
+    	// (undocumented)
+    sizeBytesLong: string;
 }
 
 // @public (undocumented)
@@ -2312,8 +2325,10 @@ export interface SpreadsheetMediaItemMetadata {
     format: SpreadsheetDecodeFormat;
     	// (undocumented)
     sheetNames: Array<string>;
-    	// (undocumented)
+    	// @deprecated (undocumented)
     sizeBytes: number;
+    	// (undocumented)
+    sizeBytesLong: string;
     	// (undocumented)
     title?: string;
 }
@@ -2456,8 +2471,10 @@ export interface UnknownMediaItemMetadata {
 
 // @public (undocumented)
 export interface UntypedMediaItemMetadata {
-    	// (undocumented)
+    	// @deprecated (undocumented)
     sizeBytes: number;
+    	// (undocumented)
+    sizeBytesLong: string;
 }
 
 // @public
@@ -2494,8 +2511,10 @@ export type VideoDecodeFormat = "MP4" | "MKV" | "MOV" | "TS";
 export interface VideoMediaItemMetadata {
     	// (undocumented)
     format: VideoDecodeFormat;
-    	// (undocumented)
+    	// @deprecated (undocumented)
     sizeBytes: number;
+    	// (undocumented)
+    sizeBytesLong: string;
     	// (undocumented)
     specification: VideoSpecification;
 }

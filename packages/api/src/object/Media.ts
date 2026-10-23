@@ -21,7 +21,7 @@ export interface Media {
    * ```ts
    * const equipment = await client(Equipment).fetchOne(12345);
    * const mediaMetadata = await equipment.trainingMaterial?.fetchMetadata();
-   * console.log(mediaMetadata?.mediaType, mediaMetadata?.sizeBytes, mediaMetadata?.path);
+   * console.log(mediaMetadata?.mediaType, mediaMetadata?.sizeBytesLong, mediaMetadata?.path);
    * ```
    * @returns the media metadata, including media type, size, and (when available) path
    */
@@ -109,7 +109,10 @@ export interface MediaUpload {
  */
 export interface MediaMetadata {
   path?: string;
+  /** @deprecated use sizeBytesLong; numeric sizes may lose precision */
   sizeBytes: number;
+  /** size in bytes as a decimal string; older servers may return a rounded value */
+  sizeBytesLong: string;
   mediaType: string;
 }
 
@@ -165,7 +168,9 @@ export interface UnknownMediaItemMetadata {
 export interface DocumentMediaItemMetadata {
   format: DocumentDecodeFormat;
   pages?: number;
+  /** @deprecated use sizeBytesLong; sizeBytes saturates at 2147483647 */
   sizeBytes: number;
+  sizeBytesLong: string;
   title?: string;
   author?: string;
 }
@@ -179,19 +184,25 @@ export interface ImageryMediaItemMetadata {
   geo?: GeoMetadata;
   pages?: number;
   orientation?: Orientation;
+  /** @deprecated use sizeBytesLong; sizeBytes saturates at 2147483647 */
   sizeBytes: number;
+  sizeBytesLong: string;
 }
 
 export interface AudioMediaItemMetadata {
   format: AudioDecodeFormat;
   specification: AudioSpecification;
+  /** @deprecated use sizeBytesLong; sizeBytes saturates at 2147483647 */
   sizeBytes: number;
+  sizeBytesLong: string;
 }
 
 export interface VideoMediaItemMetadata {
   format: VideoDecodeFormat;
   specification: VideoSpecification;
+  /** @deprecated use sizeBytesLong; sizeBytes saturates at 2147483647 */
   sizeBytes: number;
+  sizeBytesLong: string;
 }
 
 export interface DicomMediaItemMetadata {
@@ -199,12 +210,16 @@ export interface DicomMediaItemMetadata {
   mediaType: DicomMediaType;
   commonDataElements: CommonDicomDataElements;
   otherDataElements: Record<DicomDataElementKey, any>;
+  /** @deprecated use sizeBytesLong; sizeBytes saturates at 2147483647 */
   sizeBytes: number;
+  sizeBytesLong: string;
 }
 
 export interface EmailMediaItemMetadata {
   format: EmailDecodeFormat;
+  /** @deprecated use sizeBytesLong; sizeBytes saturates at 2147483647 */
   sizeBytes: number;
+  sizeBytesLong: string;
   sender: Array<Mailbox>;
   date: string;
   attachmentCount: number;
@@ -217,19 +232,25 @@ export interface EmailMediaItemMetadata {
 export interface Model3dMediaItemMetadata {
   format: Model3dDecodeFormat;
   modelType: Model3dType;
+  /** @deprecated use sizeBytesLong; sizeBytes saturates at 2147483647 */
   sizeBytes: number;
+  sizeBytesLong: string;
 }
 
 export interface SpreadsheetMediaItemMetadata {
   format: SpreadsheetDecodeFormat;
   sheetNames: Array<string>;
+  /** @deprecated use sizeBytesLong; sizeBytes saturates at 2147483647 */
   sizeBytes: number;
+  sizeBytesLong: string;
   title?: string;
   author?: string;
 }
 
 export interface UntypedMediaItemMetadata {
+  /** @deprecated use sizeBytesLong; sizeBytes saturates at 2147483647 */
   sizeBytes: number;
+  sizeBytesLong: string;
 }
 
 // ─── Format enums ────────────────────────────────────────────────────────────

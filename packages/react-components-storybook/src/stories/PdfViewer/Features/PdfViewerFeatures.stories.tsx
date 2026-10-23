@@ -39,6 +39,7 @@ function createMockMedia(url: string, filename: string): Media {
       Promise.resolve({
         path: filename,
         sizeBytes: 1024000,
+        sizeBytesLong: "1024000",
         mediaType: "application/pdf",
       }),
     getMediaReference: () => ({

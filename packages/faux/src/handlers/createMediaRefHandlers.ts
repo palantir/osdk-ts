@@ -78,6 +78,7 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
     async () => ({
       type: "untyped" as const,
       sizeBytes: 25,
+      sizeBytesLong: "25",
     }),
   ),
 

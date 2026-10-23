@@ -143,6 +143,7 @@ export class MediaMetadataQuery extends Query<
       const metadata: MediaMetadata = {
         path: String(response.path),
         sizeBytes: Number(response.sizeBytes),
+        sizeBytesLong: response.sizeBytes,
         mediaType: response.mediaType,
       };
 
