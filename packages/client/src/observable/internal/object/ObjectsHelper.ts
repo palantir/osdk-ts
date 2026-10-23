@@ -58,6 +58,42 @@ export class ObjectsHelper extends AbstractHelper<
     return super.observe(options, subFn);
   }
 
+  getCacheKey(
+    object: Pick<ObjectHolder, "$objectType" | "$primaryKey">,
+    rdpConfig?: Canonical<Rdp> | null,
+  ): ObjectCacheKey {
+    return this.cacheKeys.get<ObjectCacheKey>(
+      "object",
+      object.$objectType,
+      object.$primaryKey,
+      rdpConfig ?? undefined,
+    );
+  }
+
+  getAvailableCacheKeys(
+    objects: Iterable<Pick<ObjectHolder, "$objectType" | "$primaryKey">>,
+    rdpConfig: Canonical<Rdp> | undefined,
+    batch: BatchContext,
+  ): { keys: ReadonlySet<ObjectCacheKey>; hasMissingObjects: boolean } {
+    const keys = new Set<ObjectCacheKey>();
+    let hasMissingObjects = false;
+    for (const object of objects) {
+      const key = this.cacheKeys.peek<ObjectCacheKey>(
+        "object",
+        object.$objectType,
+        object.$primaryKey,
+        rdpConfig,
+      );
+      const value = key == null ? undefined : batch.read(key)?.value;
+      if (key != null && value != null && typeof value === "object") {
+        keys.add(key);
+      } else {
+        hasMissingObjects = true;
+      }
+    }
+    return { keys, hasMissingObjects };
+  }
+
   getQuery<T extends ObjectOrInterfaceDefinition>(
     options: ObserveObjectOptions<T>,
     rdpConfig?: Canonical<Rdp> | null,
