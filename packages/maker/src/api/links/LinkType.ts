@@ -24,7 +24,6 @@ import type {
 import type { OptionalFields } from "../../util/OptionalFields.js";
 import type { RequiredFields } from "../../util/RequiredFields.js";
 import type { EntityPermission } from "../common/EntityPermission.js";
-import type { Folder } from "../common/Folder.js";
 import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import type { TypeClass } from "../common/TypeClass.js";
@@ -81,8 +80,6 @@ export interface OneToManyLinkTypeDefinition {
   permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   redacted?: boolean;
-  /** Folder path relative to the installation root. Defaults to the root */
-  folder?: Folder;
 }
 
 export interface OneToManyObjectLinkReference {
@@ -100,8 +97,6 @@ export interface OneToManyLinkTypeUserDefinition {
   permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   cardinality?: "OneToMany" | "OneToOne" | undefined;
-  /** Folder path relative to the installation root. Defaults to the root */
-  folder?: Folder;
 }
 
 export interface OneToManyObjectLinkReferenceUserDefinition {
@@ -119,8 +114,6 @@ export interface ManyToManyLinkTypeDefinition {
   status?: UserLinkTypeStatus;
   redacted?: boolean;
   includeEmptyBackingDatasource?: boolean;
-  /** Folder path relative to the installation root. Defaults to the root */
-  folder?: Folder;
 }
 
 export interface ManyToManyObjectLinkReference {
@@ -137,8 +130,6 @@ export interface ManyToManyLinkTypeUserDefinition {
   permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   includeEmptyBackingDatasource?: boolean;
-  /** Folder path relative to the installation root. Defaults to the root */
-  folder?: Folder;
 }
 
 export interface ManyToManyObjectLinkReferenceUserDefinition {
@@ -156,8 +147,6 @@ export interface IntermediaryLinkTypeDefinition {
   permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   redacted?: boolean;
-  /** Folder path relative to the installation root. Defaults to the root */
-  folder?: Folder;
 }
 
 export interface IntermediaryObjectLinkReference {
@@ -175,8 +164,6 @@ export interface IntermediaryLinkTypeUserDefinition {
   editsEnabled?: boolean;
   permission?: EntityPermission;
   status?: UserLinkTypeStatus;
-  /** Folder path relative to the installation root. Defaults to the root */
-  folder?: Folder;
 }
 
 export interface IntermediaryObjectLinkReferenceUserDefinition {

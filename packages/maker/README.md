@@ -27,9 +27,9 @@ npm install @osdk/maker
 
 ## Folder Placement
 
-Objects, interfaces, actions, links, and shared property types accept `folder: { id: "objects", location: "/objects" }` with `permission: "publicProject"`.
+Use `defineFolder({ id: "objects", folder: "/objects", resources: ["FutureObject", MyObject] })` with API-name strings or object, interface, action, link, and shared-property definitions. Resources must have `permission: "publicProject"` and can belong to only one folder.
 
-`location` is relative to the installation root; maker-experimental creates nested folders automatically. Keep `id` stable across renames and moves. Omit `folder` to use the root. Each entity specifies its own placement.
+Paths are relative to the installation root; maker-experimental creates nested folders automatically. Keep `id` stable across renames and moves. Use `resources: []` for empty folders or explicit parents. Unassigned resources use the root.
 
 ## Defining Shared Property Types
 
