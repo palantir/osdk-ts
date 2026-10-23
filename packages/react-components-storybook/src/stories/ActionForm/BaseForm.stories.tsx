@@ -15,7 +15,7 @@
  */
 
 import { Button, Dialog } from "@blueprintjs/core";
-import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition, Osdk } from "@osdk/api";
 import type {
   BaseFormFieldProps,
   FormContentItem,
@@ -82,6 +82,12 @@ const USER_DIRECTORY: Record<string, { name: string; team: string }> = {
   usr_grace: { name: "Grace Hopper", team: "Compilers" },
   usr_katherine: { name: "Katherine Johnson", team: "Flight dynamics" },
 };
+
+function employeeItemToStringLabel(
+  employee: Osdk.Instance<ObjectTypeDefinition>,
+): string {
+  return `${employee.$title ?? "Untitled"} (#${employee.$primaryKey})`;
+}
 
 const formContent: ReadonlyArray<FormContentItem> = [
   field({
@@ -2027,6 +2033,7 @@ const objectSelectFormContent: ReadonlyArray<FormContentItem> = [
     fieldComponentProps: {
       objectType: { type: "object" as const, apiName: "Employee" },
       placeholder: "Search employees\u2026",
+      itemToStringLabel: employeeItemToStringLabel,
     },
   }),
 ];
@@ -2119,6 +2126,9 @@ export const WithObjectSelect: Story = {
     fieldComponentProps: {
       objectType: { type: "object" as const, apiName: "Employee" },
       placeholder: "Search employees\u2026",
+      itemToStringLabel: (employee) =>
+        (employee.$title ?? "Untitled") +
+        " (#" + employee.$primaryKey + ")",
     },
   },
 ];
