@@ -11344,6 +11344,11 @@ export interface InputShape_ontologyDatasourceRetention {
   ontologyDatasourceRetention: OntologyDatasourceRetentionShape;
 }
 
+export interface InputShape_ontologySchemaMigrationInputs {
+  type: "ontologySchemaMigrationInputs";
+  ontologySchemaMigrationInputs: OntologySchemaMigrationInputsShape;
+}
+
 export interface InputShape_ontologySdk {
   type: "ontologySdk";
   ontologySdk: OntologySdkShape;
@@ -11587,6 +11592,7 @@ export type InputShape =
   | InputShape_objectViewTab
   | InputShape_ontologyDatasource
   | InputShape_ontologyDatasourceRetention
+  | InputShape_ontologySchemaMigrationInputs
   | InputShape_ontologySdk
   | InputShape_overrideOntologyEntityApiNames
   | InputShape_parameter
@@ -14720,6 +14726,11 @@ export interface MarkingSizeConstraintsNotSatisfied {
   maxNumberInclusive: number;
   minNumberInclusive: number;
 }
+/**
+ * A reference to a MarkingsShape within the same block, used when another input shape sources part of its
+ * value from a marking input.
+ */
+export type MarkingsReference = BlockInternalId;
 export interface MarkingsShape {
   about: LocalizedTitleAndDescription;
   affectedShapes: Array<BlockInternalId>;
@@ -15934,7 +15945,53 @@ export type OntologyProjectAssociation =
   | OntologyProjectAssociation_useProject
   | OntologyProjectAssociation_useOntologyPackage;
 
+export interface OntologyPropertyValueSource_literal {
+  type: "literal";
+  literal: Void;
+}
+
+export interface OntologyPropertyValueSource_markings {
+  type: "markings";
+  markings: MarkingsReference;
+}
+/**
+ * Where the resolved value will come from.
+ */
+export type OntologyPropertyValueSource =
+  | OntologyPropertyValueSource_literal
+  | OntologyPropertyValueSource_markings;
+
 export type OntologyRid = string;
+export interface OntologySchemaMigration_setPropertyValueIfUnset {
+  type: "setPropertyValueIfUnset";
+  setPropertyValueIfUnset: OntologySetPropertyValueIfUnsetSchemaMigration;
+}
+export type OntologySchemaMigration =
+  OntologySchemaMigration_setPropertyValueIfUnset;
+
+export interface OntologySchemaMigrationCandidate {
+  about: LocalizedTitleAndDescription;
+  migration: OntologySchemaMigration;
+}
+/**
+ * Stable, cross-stack identifier for a potentially-inferrable migration.
+ */
+export type OntologySchemaMigrationCandidateId = string;
+
+/**
+ * Per-(OT, property, migration) inputs OMS may require at installation time when schema changes infer migrations
+ * whose execution varies by stack (e.g. setting a default value for a newly-introduced non-nullable property).
+ *
+ * OMS contributes this shape at packaging time for any potentially-inferrable migration; whether individual
+ * candidates must be resolved is determined at install time by schema migration inference.
+ */
+export interface OntologySchemaMigrationInputsShape {
+  about: LocalizedTitleAndDescription;
+  candidates: Record<
+    OntologySchemaMigrationCandidateId,
+    OntologySchemaMigrationCandidate
+  >;
+}
 export interface OntologySdkCreateBlockRequest {
   ontologySdkRid: string;
   ontologySdkVersion?: string | null | undefined;
@@ -15966,6 +16023,10 @@ export interface OntologySdkV2EntityIdentifier {
   repositoryRid: ArtifactsRepositoryRid;
 }
 export type OntologySdkVersion = string;
+export interface OntologySetPropertyValueIfUnsetSchemaMigration {
+  property: ObjectTypePropertyReference;
+  valueSource: OntologyPropertyValueSource;
+}
 export type OntologyVersion = string;
 export interface OpusFormat {}
 /**
