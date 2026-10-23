@@ -20,7 +20,11 @@ declare global {
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 import type { Client } from "@osdk/client";
-import { defineConfig, FoundryHostEventTarget } from "@osdk/widget.client";
+import {
+  defineConfig,
+  FoundryHostEventTarget,
+  type HostMessage,
+} from "@osdk/widget.client";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import type { Mock } from "vitest";
@@ -318,5 +322,60 @@ describe("FoundryWidget emitEvent race condition handling", () => {
     expect(mockEmitEvent).toHaveBeenNthCalledWith(5, "eventA", {
       parameterUpdates: { myParam: "fifth" },
     });
+  });
+});
+
+describe("FoundryWidget document theme", () => {
+  const token = "--bp-surface-border-radius";
+  let container: HTMLDivElement;
+  let root: Root;
+
+  beforeEach(() => {
+    container = document.createElement("div");
+    document.body.append(container);
+    root = createRoot(container);
+    act(() => {
+      root.render(
+        <FoundryWidget config={config}>
+          <span>Widget</span>
+        </FoundryWidget>,
+      );
+    });
+  });
+
+  afterEach(() => {
+    act(() => root.unmount());
+    container.remove();
+    document.documentElement.style.removeProperty(token);
+  });
+
+  function updateTheme(theme: HostMessage.ThemeV1 | undefined) {
+    act(() => {
+      mockWidgetClient.hostEventTarget.dispatchEvent(
+        new CustomEvent("host.update-theme", { detail: { theme } }),
+      );
+    });
+  }
+
+  it("applies and updates document tokens, then restores previous values and priorities", () => {
+    const style = document.documentElement.style;
+    style.setProperty(token, "6px", "important");
+    expect(style.getPropertyValue(token)).toBe("6px");
+    updateTheme({ version: 1, borderRadius: "SQUARE" });
+    expect(style.getPropertyValue(token)).toBe("0px");
+    updateTheme({ version: 1, borderRadius: "ROUNDED" });
+    expect(style.getPropertyValue(token)).toBe("8px");
+    updateTheme(undefined);
+    expect(style.getPropertyValue(token)).toBe("6px");
+    expect(style.getPropertyPriority(token)).toBe("important");
+  });
+
+  it("removes tokens on unmount when no previous override existed", () => {
+    const style = document.documentElement.style;
+    expect(style.getPropertyValue(token)).toBe("");
+    updateTheme({ version: 1, borderRadius: "REGULAR" });
+    expect(style.getPropertyValue(token)).toBe("4px");
+    act(() => root.render(null));
+    expect(style.getPropertyValue(token)).toBe("");
   });
 });
