@@ -48,6 +48,24 @@ type PrimitiveParameterTypes = {
 };
 type PrimitiveParameterType = keyof PrimitiveParameterTypes;
 
+/**
+ * Map of the name of a struct field type to the corresponding JavaScript type. Nested structs and arrays are not
+ * supported.
+ */
+type StructFieldTypes = Pick<
+  PrimitiveParameterTypes,
+  "boolean" | "date" | "number" | "string" | "timestamp"
+>;
+type StructParameterFieldType = keyof StructFieldTypes;
+
+/** Map of struct field IDs to their field types. */
+type StructFieldTypeMap = Record<string, StructParameterFieldType>;
+
+/** A struct value keyed by field ID. Fields that have no value are omitted. */
+export type StructValue<F extends StructFieldTypeMap = StructFieldTypeMap> = {
+  [K in keyof F]?: StructFieldTypes[F[K]];
+};
+
 export interface AbstractParameterValue<T extends PrimitiveParameterType> {
   type: T;
   value: AsyncValue<PrimitiveParameterTypes[T]>;
@@ -79,6 +97,21 @@ export interface GenericArrayParameterValue<T extends PrimitiveParameterType> {
   value: AsyncValue<PrimitiveParameterTypes[T][]>;
 }
 
+export interface StructParameterValue<
+  F extends StructFieldTypeMap = StructFieldTypeMap,
+> {
+  type: "struct";
+  value: AsyncValue<StructValue<F>>;
+}
+
+export interface StructArrayParameterValue<
+  F extends StructFieldTypeMap = StructFieldTypeMap,
+> {
+  type: "array";
+  subType: "struct";
+  value: AsyncValue<StructValue<F>[]>;
+}
+
 /**
  * Wire format of parameter values that will be sent through postMessage events to custom widgets.
  */
@@ -93,6 +126,8 @@ export namespace ParameterValue {
   export type ObjectSet<
     T extends AllowedObjectSetParameterType = AllowedObjectSetParameterType,
   > = ObjectSetParameterValue<T>;
+  export type Struct<F extends StructFieldTypeMap = StructFieldTypeMap> =
+    StructParameterValue<F>;
 
   export type StringArray = GenericArrayParameterValue<"string">;
   export type NumberArray = GenericArrayParameterValue<"number">;
@@ -100,16 +135,20 @@ export namespace ParameterValue {
   export type DateArray = GenericArrayParameterValue<"date">;
   export type TimestampArray = GenericArrayParameterValue<"timestamp">;
   export type ScenarioArray = GenericArrayParameterValue<"scenario">;
+  export type StructArray<F extends StructFieldTypeMap = StructFieldTypeMap> =
+    StructArrayParameterValue<F>;
   export type Array =
     | StringArray
     | NumberArray
     | BooleanArray
     | DateArray
     | TimestampArray
-    | ScenarioArray;
+    | ScenarioArray
+    | StructArray;
 
   export type Type = ParameterValue["type"];
   export type PrimitiveType = PrimitiveParameterType;
+  export type StructFieldType = StructParameterFieldType;
 }
 export type ParameterValue =
   | ParameterValue.String
@@ -120,4 +159,5 @@ export type ParameterValue =
   | ParameterValue.Scenario
   | ParameterValue.MapTileLayer
   | ParameterValue.ObjectSet
+  | ParameterValue.Struct
   | ParameterValue.Array;

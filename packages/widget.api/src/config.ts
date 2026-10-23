@@ -17,6 +17,7 @@
 import type {
   AllowedObjectSetParameterType,
   ParameterValue,
+  StructValue,
 } from "./parameters.js";
 import type { BrowserPermission } from "./permissions.js";
 import type { AsyncValue } from "./utils/asyncValue.js";
@@ -43,11 +44,32 @@ interface ObjectSetParameterDefinition<
   /** @deprecated Use allowedType instead */
   objectType?: '"objectType" is deprecated, use "allowedType" instead';
 }
+interface StructFieldDefinition {
+  type: ParameterValue.StructFieldType;
+  displayName: string;
+}
+/** Map of struct field IDs to their definitions, in display order. */
+type StructFieldDefinitions = Record<string, StructFieldDefinition>;
+interface StructParameterDefinition<F extends StructFieldDefinitions> {
+  // experimental - this allows us to hide the parameter type as a suggestion
+  type: "struct" & Record<never, never>;
+  displayName: string;
+  fields: F;
+}
+interface StructArrayParameterDefinition<F extends StructFieldDefinitions> {
+  type: ParameterValue.Array["type"];
+  displayName: string;
+  // experimental - this allows us to hide the parameter type as a suggestion
+  subType: "struct" & Record<never, never>;
+  fields: F;
+}
 export type ParameterDefinition =
   | PrimitiveParameterDefinition<ParameterValue.PrimitiveType>
   | ArrayParameterDefinition<ParameterValue.PrimitiveType>
   | MapTileLayerParameterDefinition
-  | ObjectSetParameterDefinition<AllowedObjectSetParameterType>;
+  | ObjectSetParameterDefinition<AllowedObjectSetParameterType>
+  | StructParameterDefinition<StructFieldDefinitions>
+  | StructArrayParameterDefinition<StructFieldDefinitions>;
 
 interface ManifestObjectSetParameterDefinition<
   T extends AllowedObjectSetParameterType,
@@ -63,7 +85,9 @@ export type ManifestParameterDefinition =
   | PrimitiveParameterDefinition<ParameterValue.PrimitiveType>
   | ArrayParameterDefinition<ParameterValue.PrimitiveType>
   | MapTileLayerParameterDefinition
-  | ManifestObjectSetParameterDefinition<AllowedObjectSetParameterType>;
+  | ManifestObjectSetParameterDefinition<AllowedObjectSetParameterType>
+  | StructParameterDefinition<StructFieldDefinitions>
+  | StructArrayParameterDefinition<StructFieldDefinitions>;
 
 export interface EventDefinition<P extends ParameterConfig> {
   displayName: string;
@@ -102,7 +126,18 @@ type EventParameterId<C extends ParameterConfig> = {
 export type AsyncParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
   [K in ParameterId<
     C["parameters"]
-  >]: C["parameters"][K] extends ArrayParameterDefinition<infer S>
+  >]: C["parameters"][K] extends StructArrayParameterDefinition<infer F>
+    ? {
+        type: "array";
+        subType: "struct";
+        value: AsyncValue<StructValueFromDefinitions<F>[]>;
+      }
+    : C["parameters"][K] extends StructParameterDefinition<infer F>
+      ? {
+          type: "struct";
+          value: AsyncValue<StructValueFromDefinitions<F>>;
+        }
+      : C["parameters"][K] extends ArrayParameterDefinition<infer S>
     ? // If it's an array, pull out the subtype correctly
       Extract<
         ParameterValue.Array,
@@ -138,7 +173,11 @@ export type AsyncParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
 export type ParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
   [K in ParameterId<
     C["parameters"]
-  >]: C["parameters"][K] extends ArrayParameterDefinition<infer S>
+  >]: C["parameters"][K] extends StructArrayParameterDefinition<infer F>
+    ? StructValueFromDefinitions<F>[]
+    : C["parameters"][K] extends StructParameterDefinition<infer F>
+      ? StructValueFromDefinitions<F>
+      : C["parameters"][K] extends ArrayParameterDefinition<infer S>
     ? Extract<
         ParameterValue.Array,
         { type: C["parameters"][K]["type"]; subType: S }
@@ -182,6 +221,10 @@ export type EventParameterValueMap<
   K extends EventId<C>,
 > = NotEmptyObject<{
   [P in EventParameterIdList<C, K>[number]]: ParameterValueMap<C>[P];
+}>;
+
+type StructValueFromDefinitions<F extends StructFieldDefinitions> = StructValue<{
+  [K in keyof F]: F[K]["type"];
 }>;
 
 type NotEmptyObject<T extends Record<string, any>> =
