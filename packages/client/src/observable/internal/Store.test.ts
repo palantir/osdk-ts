@@ -2743,6 +2743,312 @@ describe(Store, () => {
     });
 
     describe("ObjectSetQuery maybeUpdateAndRevalidate", () => {
+      describe("EXPERIMENTAL__observeObjectSetV2", () => {
+        beforeEach(() => {
+          fauxFoundry.getDefaultDataStore().clear();
+        });
+
+        it("refreshes a nested pivot when an intermediate object type changes", async () => {
+          const dataStore = fauxFoundry.getDefaultDataStore();
+          const employee = dataStore.registerObject(Employee, {
+            employeeId: 1,
+            fullName: "Alice",
+          });
+          const office = dataStore.registerObject(Office, {
+            officeId: "london-office",
+            name: "London",
+          });
+          dataStore.registerLink(employee, "officeLink", office, "occupants");
+
+          const objectSet = client(Employee)
+            .where({ employeeId: 1 })
+            .pivotTo("officeLink")
+            .where({ name: "London" })
+            .pivotTo("occupants");
+          const subscribe = vi.spyOn(objectSet, "subscribe");
+          const observableClient = new ObservableClientImpl(store);
+          const sub = mockObserver<ObjectSetPayload | undefined>();
+          defer(
+            observableClient.EXPERIMENTAL__observeObjectSetV2(
+              objectSet,
+              { streamUpdates: true },
+              sub,
+            ),
+          );
+
+          await vi.waitFor(() => {
+            expect(sub.error).not.toHaveBeenCalled();
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                status: "loaded",
+                resolvedList: [expect.objectContaining({ $primaryKey: 1 })],
+              }),
+            );
+          });
+
+          dataStore.replaceObjectOrThrow({ ...office, name: "Paris" });
+          expect((await objectSet.fetchPage()).data).toEqual([]);
+
+          await observableClient.invalidateObjectType(Office);
+
+          await vi.waitFor(() => {
+            expect(sub.error).not.toHaveBeenCalled();
+            expect(sub.next.mock.lastCall?.[0]?.resolvedList).toEqual([]);
+          });
+
+          dataStore.replaceObjectOrThrow(office);
+          await store.invalidateObject(Office, "london-office");
+          await vi.waitFor(() => {
+            expect(sub.next.mock.lastCall?.[0]?.resolvedList).toMatchObject([
+              { $primaryKey: 1 },
+            ]);
+          });
+          expect(subscribe).not.toHaveBeenCalled();
+        });
+
+        it("refreshes an interface object set when an implementing object type changes", async () => {
+          const dataStore = fauxFoundry.getDefaultDataStore();
+          dataStore.registerObject(Employee, {
+            employeeId: 1,
+            fullName: "Alice",
+          });
+
+          const objectSet = client(FooInterface);
+          const observableClient = new ObservableClientImpl(store);
+          const sub = mockObserver<ObjectSetPayload | undefined>();
+          defer(
+            observableClient.EXPERIMENTAL__observeObjectSetV2(
+              objectSet,
+              {},
+              sub,
+            ),
+          );
+
+          await vi.waitFor(() => {
+            expect(sub.error).not.toHaveBeenCalled();
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                status: "loaded",
+                resolvedList: [expect.objectContaining({ $primaryKey: 1 })],
+              }),
+            );
+          });
+
+          dataStore.registerObject(Employee, {
+            employeeId: 2,
+            fullName: "Bob",
+          });
+          const { data } = await objectSet.fetchPage();
+          expect(data.map((object) => object.$primaryKey).sort()).toEqual([
+            1, 2,
+          ]);
+
+          await observableClient.invalidateObjectType(Employee);
+
+          await vi.waitFor(() => {
+            expect(sub.error).not.toHaveBeenCalled();
+            expect(
+              sub.next.mock.lastCall?.[0]?.resolvedList
+                ?.map((object) => object.$primaryKey)
+                .sort(),
+            ).toEqual([1, 2]);
+          });
+        });
+
+        it("keeps V1 invalidation unchanged when V2 observes the same set", async () => {
+          const dataStore = fauxFoundry.getDefaultDataStore();
+          const alice = dataStore.registerObject(Employee, {
+            employeeId: 1,
+            fullName: "Alice",
+          });
+          const observableClient = new ObservableClientImpl(store);
+          const objectSet = client(Employee).where({ fullName: "Alice" });
+          const observer = mockObserver<ObjectSetPayload>();
+          const subscription = observableClient.observeObjectSet(
+            objectSet,
+            {},
+            observer,
+          );
+          defer(subscription);
+          await vi.waitFor(() =>
+            expect(observer.next.mock.lastCall?.[0]?.status).toBe("loaded"),
+          );
+
+          const v2Observer = mockObserver<ObjectSetPayload>();
+          defer(
+            observableClient.EXPERIMENTAL__observeObjectSetV2(
+              objectSet,
+              {},
+              v2Observer,
+            ),
+          );
+          await vi.waitFor(() =>
+            expect(v2Observer.next.mock.lastCall?.[0]?.status).toBe("loaded"),
+          );
+
+          dataStore.replaceObjectOrThrow({ ...alice, fullName: "Bob" });
+          await observableClient.invalidateObjectType(Employee);
+
+          await vi.waitFor(() =>
+            expect(v2Observer.next.mock.lastCall?.[0]?.resolvedList).toEqual(
+              [],
+            ),
+          );
+
+          expect(observer.next.mock.lastCall?.[0]?.resolvedList).toMatchObject([
+            { employeeId: 1 },
+          ]);
+        });
+
+        it("updates a base set locally when an object changes", async () => {
+          const dataStore = fauxFoundry.getDefaultDataStore();
+          const alice = dataStore.registerObject(Employee, {
+            employeeId: 1,
+            fullName: "Alice",
+          });
+          const observer = mockObserver<ObjectSetPayload>();
+          const subscription = new ObservableClientImpl(
+            store,
+          ).EXPERIMENTAL__observeObjectSetV2(client(Employee), {}, observer);
+          defer(subscription);
+          await vi.waitFor(() =>
+            expect(observer.next.mock.lastCall?.[0]?.status).toBe("loaded"),
+          );
+          const fetchPage = vi.spyOn(
+            observer.next.mock.lastCall![0]!.objectSet,
+            "fetchPage",
+          );
+
+          dataStore.replaceObjectOrThrow({ ...alice, fullName: "Bob" });
+          await store.invalidateObject(Employee, 1);
+
+          await vi.waitFor(() =>
+            expect(
+              observer.next.mock.lastCall?.[0]?.resolvedList,
+            ).toMatchObject([{ employeeId: 1, fullName: "Bob" }]),
+          );
+          expect(fetchPage).not.toHaveBeenCalled();
+        });
+
+        it("refreshes an RDP query when a linked object changes", async () => {
+          const dataStore = fauxFoundry.getDefaultDataStore();
+          const alice = dataStore.registerObject(Employee, {
+            employeeId: 1,
+            fullName: "Alice",
+          });
+          const office = dataStore.registerObject(Office, {
+            officeId: "London",
+            name: "London",
+          });
+          dataStore.registerLink(alice, "officeLink", office, "occupants");
+          const observer = mockObserver<ObjectSetPayload>();
+          defer(
+            new ObservableClientImpl(store).EXPERIMENTAL__observeObjectSetV2(
+              client(Employee).withProperties({
+                officeName: (base) =>
+                  base.pivotTo("officeLink").selectProperty("name"),
+              }),
+              {},
+              observer,
+            ),
+          );
+          await vi.waitFor(() =>
+            expect(
+              observer.next.mock.lastCall?.[0]?.resolvedList,
+            ).toMatchObject([{ employeeId: 1, officeName: "London" }]),
+          );
+
+          dataStore.replaceObjectOrThrow({ ...office, name: "Paris" });
+          await store.invalidateObject(Office, "London");
+
+          await vi.waitFor(() =>
+            expect(
+              observer.next.mock.lastCall?.[0]?.resolvedList,
+            ).toMatchObject([{ employeeId: 1, officeName: "Paris" }]),
+          );
+
+          const plainObserver = mockObserver<ObjectPayload>();
+          defer(
+            new ObservableClientImpl(store).observeObject(
+              Employee,
+              1,
+              { mode: "force" },
+              plainObserver,
+            ),
+          );
+          await vi.waitFor(() =>
+            expect(plainObserver.next.mock.lastCall?.[0]?.status).toBe(
+              "loaded",
+            ),
+          );
+          expect(
+            plainObserver.next.mock.lastCall?.[0]?.object,
+          ).not.toHaveProperty("officeName");
+          expect(observer.next.mock.lastCall?.[0]?.resolvedList).toMatchObject([
+            { employeeId: 1, officeName: "Paris" },
+          ]);
+        });
+
+        it("preserves server order for optimistic deletion and rollback in a nested query", async () => {
+          const dataStore = fauxFoundry.getDefaultDataStore();
+          dataStore.registerObject(Employee, {
+            employeeId: 1,
+            fullName: "Charlie",
+          });
+          dataStore.registerObject(Employee, {
+            employeeId: 2,
+            fullName: "Bob",
+          });
+          dataStore.registerObject(Employee, {
+            employeeId: 3,
+            fullName: "Alice",
+          });
+          const observer = mockObserver<ObjectSetPayload>();
+          const subscription = new ObservableClientImpl(
+            store,
+          ).EXPERIMENTAL__observeObjectSetV2(
+            client(Employee).where({ employeeId: { $gt: 0 } }),
+            { select: ["employeeId"], orderBy: { fullName: "asc" } },
+            observer,
+          );
+          defer(subscription);
+          await vi.waitFor(() =>
+            expect(observer.next.mock.lastCall?.[0]?.status).toBe("loaded"),
+          );
+          expect(
+            observer.next.mock.lastCall?.[0]?.resolvedList?.map(
+              (o) => o.$primaryKey,
+            ),
+          ).toEqual([3, 2, 1]);
+          const fetchPage = vi.spyOn(
+            observer.next.mock.lastCall![0]!.objectSet,
+            "fetchPage",
+          );
+          const rollback = runOptimisticJob(store, (ctx) => {
+            ctx.deleteObject(observer.next.mock.lastCall![0]!.resolvedList![1]);
+          });
+          try {
+            await vi.waitFor(() =>
+              expect(
+                observer.next.mock.lastCall?.[0]?.resolvedList?.map(
+                  (o) => o.$primaryKey,
+                ),
+              ).toEqual([3, 1]),
+            );
+          } finally {
+            await rollback();
+          }
+          await vi.waitFor(() =>
+            expect(
+              observer.next.mock.lastCall?.[0]?.resolvedList?.map(
+                (o) => o.$primaryKey,
+              ),
+            ).toEqual([3, 2, 1]),
+          );
+          expect(fetchPage).not.toHaveBeenCalled();
+        });
+      });
+
       it("should update list in-memory when strict-matching object is added", async () => {
         fauxFoundry.getDefaultDataStore().clear();
 
