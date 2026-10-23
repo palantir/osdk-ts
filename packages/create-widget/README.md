@@ -41,3 +41,14 @@ npx @osdk/create-widget [project] [--<option>]
 | Template name | Description                                                                |
 | ------------- | -------------------------------------------------------------------------- |
 | react         | [React](https://react.dev/) with [Vite](https://vitejs.dev/guide/why.html) |
+
+## Configuring generated projects
+
+The following options can be combined:
+
+- `--osdkPath <path>` uses a local SDK package through a `file:` dependency. The path is relative to the generated project. Supply its package name with `--osdkPackage`; no SDK registry URL is needed.
+- `--viteConfig <file>` copies a supplied Vite configuration into the generated project. The input path is relative to the current directory.
+- `--buildCommand <command>` sets the generated package's build script.
+- `--skipFoundryConfig` omits deployment configuration and widget-set/repository RID prompts. A remote SDK still needs its registry authentication configuration.
+
+Template maintainers can use these options while preparing repository templates, keeping repository creation independent of generator execution.
