@@ -5,7 +5,7 @@ The Maker package provides a type-safe, programmatic way to define ontologies, w
 ## Table of Contents
 
 - [Getting Started](#getting-started)
-- [Folder Placement Metadata](#folder-placement-metadata)
+- [Folder Placement](#folder-placement)
 - [Key Concepts](#key-concepts)
 - [Defining an Ontology](#defining-an-ontology)
 - [Defining Shared Property Types](#defining-shared-property-types)
@@ -25,17 +25,11 @@ To get started with the maker package, install it as a dependency in your projec
 npm install @osdk/maker
 ```
 
-## Folder Placement Metadata
+## Folder Placement
 
-Objects, interfaces, actions, links, and shared property types accept an optional `folder: string`. Action helpers also accept this option, including function-backed actions in `@osdk/maker-experimental`.
+Objects, interfaces, actions, links, and shared property types accept `folder: { id: "objects", location: "/objects" }` with `permission: "publicProject"`.
 
-The path is relative to the installation root: `folder: "/a/b"` describes nested folders `a` and `b`, while omitting `folder` or using `""` or `"/"` denotes the installation root. Maker stores the supplied string. During maker-experimental conversion, `""` is normalized to `"/"` and `"a//b/"` to `"/a/b"`, using forward slashes as separators. Names are preserved, including spaces and case. Conversion rejects `.` or `..` segments, malformed Unicode, and folder names exceeding Compass's 700-byte UTF-8 limit.
-
-During maker-experimental conversion, an explicit `folder`, including `""` or `"/"`, requires objects, interfaces, actions, links, and shared property types to explicitly set `permission: "publicProject"`. Omitted permissions, `"roles"`, and ontology-package permissions are rejected. Omitting `folder` preserves existing permission defaults and explicit permissions.
-
-Folder placement is separate from the entity's API name and identity. Each entity specifies its own placement; actions do not inherit the folder of their object or interface. Experimental conversion returns normalized paths in `outputFolderPaths` without changing maker's entity definitions.
-
-Maker-experimental emits Compass folder blocks and location mappings for ontology entities.
+`location` is relative to the installation root; maker-experimental creates nested folders automatically. Keep `id` stable across renames and moves. Omit `folder` to use the root. Each entity specifies its own placement.
 
 ## Defining Shared Property Types
 
