@@ -1,27 +1,18 @@
 # CbacPicker
 
-Components for managing [classification-based access control (CBAC)](https://www.palantir.com/docs/foundry/security/classification-based-access-controls/) markings. CBAC markings control who can access data — each piece of data can be tagged with markings from different categories, and the combination determines its access restrictions.
+`CbacPicker` lets users select classification-based access control (CBAC) markings grouped by category, while the server decides which combinations are valid.
+
+[CBAC markings](https://www.palantir.com/docs/foundry/security/classification-based-access-controls/) control who can access data. Each piece of data can carry markings from different categories, and the combination determines its access restrictions.
 
 The picker lets users select markings grouped by category. Some categories are **disjunctive** (pick exactly one, like a sensitivity level) and others are **conjunctive** (pick any combination, like access groups). The server enforces which combinations are valid, which markings are implied by others, and which are disallowed.
 
 ## Prerequisites
 
-Before using CBAC components, make sure you have completed the library setup described in the [README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md#setup), including:
+Before using CBAC components, make sure you have completed the library setup described in [Prerequisites](https://palantir.github.io/osdk-ts/components/prerequisites), including:
 
 - Installing the required dependencies
 - Wrapping your app with `OsdkProvider`
 - Adding the CSS imports
-
-## Table of Contents
-
-- [Basic Usage](#basic-usage)
-- [Props Reference](#props-reference)
-- [Base Components](#base-components)
-- [Types Reference](#types-reference)
-- [Selection Logic Utilities](#selection-logic-utilities)
-- [Examples](#examples)
-- [Architecture](#architecture)
-- [Troubleshooting](#troubleshooting)
 
 ## Import
 
@@ -512,4 +503,4 @@ The frontend handles **only UI concerns**: toggling selections (respecting conju
 - [CbacPickerDialog Implementation](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/src/cbac-picker/CbacPickerDialog.tsx)
 - [Selection Logic](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/src/cbac-picker/utils/selectionLogic.ts)
 - [Type Definitions](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/src/cbac-picker/types.ts)
-- [@osdk/react Documentation](https://github.com/palantir/osdk-ts/blob/main/docs/react/getting-started.md)
+- [@osdk/react documentation](https://palantir.github.io/osdk-ts/react/objects)

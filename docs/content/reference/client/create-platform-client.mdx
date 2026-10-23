@@ -1,0 +1,55 @@
+---
+title: createPlatformClient
+description: Create a client for Foundry platform APIs only, without binding it to an Ontology.
+---
+
+```ts
+import { createPlatformClient } from "@osdk/client";
+
+function createPlatformClient(
+  baseUrl: string,
+  tokenProvider: () => Promise<string>,
+  options?: undefined,
+  fetchFn?: typeof globalThis.fetch,
+): PlatformClient;
+```
+
+Returns a `PlatformClient` that you pass to functions from the `@osdk/foundry.*` packages, such as `Users.getCurrent(client)`. A `Client` from [`createClient`](./create-client.mdx) works with platform APIs too, so you only need this when you have no Ontology to query.
+
+## Parameters
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `baseUrl` | `string` | | The base URL of your Foundry stack. |
+| `tokenProvider` | `() => Promise<string>` | | Returns a bearer token for each request. |
+| `options` | `undefined` | | Reserved. Pass `undefined`. |
+| `fetchFn` | `typeof fetch` | The global `fetch` | The `fetch` implementation for every request. |
+
+## Returns
+
+`PlatformClient`: the base URL, token provider, and `fetch` that `@osdk/foundry.*` functions read.
+
+## Example
+
+```ts title="src/whoami.ts"
+import { createPlatformClient } from "@osdk/client";
+import { Users } from "@osdk/foundry.admin";
+import { createConfidentialOauthClient } from "@osdk/oauth";
+
+const foundryUrl = "https://example.palantirfoundry.com";
+const auth = createConfidentialOauthClient(
+  process.env.FOUNDRY_CLIENT_ID!,
+  process.env.FOUNDRY_CLIENT_SECRET!,
+  foundryUrl,
+);
+
+const platformClient = createPlatformClient(foundryUrl, auth);
+
+const me = await Users.getCurrent(platformClient);
+console.log(me.username);
+```
+
+## See also
+
+- [Platform SDK](/platform)
+- [Platform SDK setup](/platform/setup)

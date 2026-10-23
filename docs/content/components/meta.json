@@ -1,0 +1,32 @@
+{
+  "title": "Components",
+  "description": "Ontology-aware React components: tables, filters, forms, and media viewers.",
+  "icon": "LayoutGrid",
+  "root": true,
+  "pages": [
+    "---Get started---",
+    "Welcome",
+    "Prerequisites",
+    "---Data---",
+    "ObjectTable",
+    "FilterList",
+    "ActionForm",
+    "---Media---",
+    "DocumentViewer",
+    "PdfViewer",
+    "ImageViewer",
+    "VideoViewer",
+    "TiffViewer",
+    "MarkdownViewer",
+    "SpreadsheetViewer",
+    "EmailViewer",
+    "XmlViewer",
+    "---Experimental---",
+    "AipAgentChat",
+    "CbacPicker",
+    "---Theming---",
+    "StylingOverview",
+    "OsdkThemeProvider",
+    "CSSVariables"
+  ]
+}

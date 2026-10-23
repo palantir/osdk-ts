@@ -49,6 +49,23 @@ function readPackage(pkg, context) {
     pkg.dependencies.micromatch = "~4.0.8";
   }
 
+  if (pkg.name === "expo-router" && !pkg.peerDependencies?.["react-dom"]) {
+    pkg.peerDependencies = {
+      ...pkg.peerDependencies,
+      react: "*",
+      "react-dom": "*",
+    };
+    pkg.peerDependenciesMeta = {
+      ...pkg.peerDependenciesMeta,
+      "react-dom": { optional: true },
+    };
+  }
+
+  if (pkg.name === "fumadocs-mdx" && pkg.peerDependencies?.vite) {
+    delete pkg.peerDependencies.vite;
+    delete pkg.peerDependenciesMeta?.vite;
+  }
+
   return pkg;
 }
 

@@ -1,0 +1,157 @@
+---
+title: Derived properties
+description: Add computed properties to an object set with withProperties, from linked objects, link aggregations, and expressions, then filter and sort on them.
+foundryDocs:
+  - title: Derived properties
+    path: object-link-types/derived-properties
+---
+
+`withProperties` adds properties that the server computes at query time, such as an employee's number of reports or their lead's name. You can select, filter, sort, and aggregate on them like stored properties, and nothing is written to the Ontology.
+
+```ts title="src/teamSizes.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const page = await client(Employee)
+  .withProperties({
+    reportCount: (base) => base.pivotTo("reports").aggregate("$count"),
+    leadName: (base) => base.pivotTo("lead").selectProperty("fullName"),
+  })
+  .where({ reportCount: { $gt: 5 } })
+  .fetchPage({
+    $select: ["fullName", "reportCount", "leadName"],
+    $orderBy: { reportCount: "desc" },
+  });
+
+for (const employee of page.data) {
+  console.log(employee.fullName, employee.reportCount, employee.leadName);
+}
+```
+
+`withProperties` takes an object that maps each new property name to a function. The function receives a builder for the object it computes on, and returns a definition. The result is a new object set with the new properties typed: `reportCount` is a `number` and `leadName` is `string | undefined`.
+
+## Builder methods
+
+Start from the builder and chain:
+
+| Method | Available on | Returns |
+| --- | --- | --- |
+| `pivotTo(link)` | Every builder | A builder over the linked objects. After a many link, such as `reports`, the builder can only aggregate. |
+| `where(clause)` | Every builder | The builder, filtered. See [Filter objects](./filtering.mdx). |
+| `selectProperty(property)` | The base object, and builders reached through single links only | The property's value. |
+| `aggregate(metric, options?)` | Builders reached through a many link | One value computed over the linked objects. |
+
+`selectProperty` after a many link does not typecheck: an employee has many reports, so there is no single report name to select. Aggregate instead, for example with `collectList`.
+
+## Link aggregations
+
+`aggregate` takes `$count` or `"<property>:<metric>"`:
+
+| Metric | Property types | Options | Result type |
+| --- | --- | --- | --- |
+| `$count` | Not applicable | None | `number` |
+| `sum`, `avg` | Numeric | None | `number \| undefined` |
+| `min`, `max` | Numeric, date, timestamp | None | The property's type, or `undefined` |
+| `approximateDistinct`, `exactDistinct` | All | None | `number` |
+| `approximatePercentile` | Numeric | `{ percentile }` | `number \| undefined` |
+| `collectList` | All | `{ limit }`, up to 100. Default 100. | An array of the property's type |
+| `collectSet` | All | `{ limit }`, up to 100. Default 100. | An array of distinct values |
+
+```ts title="src/teamStats.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const page = await client(Employee)
+  .withProperties({
+    avgReportSalary: (base) => base.pivotTo("reports").aggregate("salary:avg"),
+    reportNames: (base) =>
+      base.pivotTo("reports").aggregate("fullName:collectList", { limit: 20 }),
+    engineeringReports: (base) =>
+      base.pivotTo("reports").where({ department: "Engineering" }).aggregate("$count"),
+    skipLevelCount: (base) => base.pivotTo("reports").pivotTo("reports").aggregate("$count"),
+  })
+  .fetchPage({ $pageSize: 20 });
+```
+
+## Values from single links
+
+On a single link, `selectProperty` reads one property of the linked object. Chain single links to go further:
+
+```ts title="src/leadInfo.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const page = await client(Employee)
+  .withProperties({
+    officeCity: (base) => base.pivotTo("office").selectProperty("city"),
+    leadsLeadName: (base) => base.pivotTo("lead").pivotTo("lead").selectProperty("fullName"),
+  })
+  .where({ officeCity: "London" })
+  .fetchPage({ $select: ["fullName", "officeCity", "leadsLeadName"] });
+```
+
+## Expressions
+
+A numeric definition, from `selectProperty` on a numeric property or a numeric aggregation, has expression methods. Each binary method takes a number or another numeric definition:
+
+| Method | Result |
+| --- | --- |
+| `add(x)`, `subtract(x)`, `multiply(x)`, `divide(x)` | Arithmetic. |
+| `min(x)`, `max(x)` | The smaller or larger value. |
+| `abs()`, `negate()` | The absolute value, or the value times -1. |
+
+A date or timestamp definition has:
+
+| Method | Result |
+| --- | --- |
+| `min(other)`, `max(other)` | The earlier or later of two date or timestamp definitions. |
+| `extractPart(part)` | The `"DAYS"`, `"MONTHS"`, `"QUARTERS"`, or `"YEARS"` part, as a string. |
+
+```ts title="src/expressions.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const page = await client(Employee)
+  .withProperties({
+    salaryPerReport: (base) =>
+      base.selectProperty("salary").divide(base.pivotTo("reports").aggregate("$count")),
+    proposedSalary: (base) => base.selectProperty("salary").multiply(1.05),
+    startYear: (base) => base.selectProperty("startDate").extractPart("YEARS"),
+    earlierStart: (base) =>
+      base.selectProperty("startDate").min(base.pivotTo("lead").selectProperty("startDate")),
+  })
+  .fetchPage({ $pageSize: 20 });
+```
+
+Arithmetic on two integers returns an integer. When either side is a `double`, a `float`, or a number literal, the result is a `double`.
+
+## Use derived properties
+
+Once added, a derived property works everywhere a stored property does on that object set:
+
+| Use | Example |
+| --- | --- |
+| Filter | `.where({ reportCount: { $gte: 3 } })` |
+| Sort | `.fetchPage({ $orderBy: { reportCount: "desc" } })` |
+| Select | `.fetchPage({ $select: ["fullName", "reportCount"] })` |
+| Aggregate | `.aggregate({ $select: { "reportCount:avg": "unordered" } })` |
+| Load by key | `.fetchOne(12345, { $select: ["reportCount"] })` |
+
+Derived properties are returned when you omit `$select`. If you pass `$select`, list them in it, along with every stored property you need.
+
+```ts title="src/avgTeamSize.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const byDepartment = await client(Employee)
+  .withProperties({
+    reportCount: (base) => base.pivotTo("reports").aggregate("$count"),
+  })
+  .where({ reportCount: { $gt: 0 } })
+  .aggregate({
+    $select: { "reportCount:avg": "unordered", $count: "unordered" },
+    $groupBy: { department: "exact" },
+  });
+```
+
+Each call to `withProperties` returns a new object set, and the properties exist only on it and on the sets derived from it. To reuse a set of definitions, store the object set in a variable.

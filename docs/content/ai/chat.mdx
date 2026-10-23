@@ -1,0 +1,358 @@
+---
+title: Generate and stream text
+description: Call Foundry-hosted language models with generateText and streamText from @osdk/aip-core, in Node.js or the browser.
+foundryDocs:
+  - title: Supported LLMs
+    path: aip/supported-llms
+---
+
+`@osdk/aip-core` sends chat completions to the Foundry Language Model Service (LMS) with the same auth, governance, and usage tracking as the rest of your OSDK app. Use `generateText` for a complete answer and `streamText` to render tokens as they arrive.
+
+<Callout type="warn">
+  `@osdk/aip-core` is at version 0.x, and its API can change in any minor release. The current release runs one model call per request: there is no built-in multi-step tool loop, no structured (JSON) output, and only text content parts are sent. Image and file parts are dropped with a warning.
+</Callout>
+
+## Install
+
+```npm
+npm install @osdk/aip-core @osdk/client @osdk/oauth
+```
+
+`@osdk/client` is a peer dependency. `@osdk/aip-core` brings in `@osdk/language-models` itself.
+
+## Create a model
+
+Every call takes a model handle from `foundryModel`. It needs a `PlatformClient` from `createPlatformClient` and the model's LMS API name.
+
+```ts title="src/model.ts"
+import { foundryModel } from "@osdk/aip-core";
+import { createPlatformClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
+
+const foundryUrl = "https://example.palantirfoundry.com";
+
+export const auth = createPublicOauthClient(
+  "<your-client-id>",
+  foundryUrl,
+  "http://localhost:8080/auth/callback",
+  {
+    scopes: [
+      "api:read-data",
+      "api:write-data",
+      "api:use-ontologies-read",
+      "api:use-ontologies-write",
+      "api:use-language-models-execute",
+    ],
+  },
+);
+
+export const platformClient = createPlatformClient(foundryUrl, auth);
+
+export const model = foundryModel({ client: platformClient, model: "gpt-4o" });
+```
+
+<Callout type="info">
+  Pass a client from `createPlatformClient`, not the `Client` from `createClient`: `foundryModel` reads `baseUrl`, `fetch`, and `tokenProvider` from the client, and an Ontology `Client` does not expose them. Reuse the same token provider for both clients so the user signs in once.
+</Callout>
+
+OAuth applications must request the `api:use-language-models-execute` scope. The default scopes of `createPublicOauthClient` do not include it, so list every scope your app needs. See [Authentication](../(docs)/authentication.mdx) for the other token providers.
+
+### Model identifiers
+
+`model` accepts an API name string or a `ModelIdentifier`:
+
+| Value | Example | Use it for |
+| --- | --- | --- |
+| `string` | `"gpt-4o"` | A built-in LMS model, by API name. Shorthand for `{ type: "lmsModel", apiName }`. |
+| `{ type: "lmsModel", apiName }` | `{ type: "lmsModel", apiName: "gpt-4o" }` | The same, spelled out. |
+| `{ type: "registeredModel", registeredModelRid }` | `{ type: "registeredModel", registeredModelRid: "ri.language-model-service..." }` | A model your organization registered in Foundry. |
+
+Which models you can call depends on your enrollment. Look up API names in Model Catalog in Foundry. The handle's `modelId` is `foundry/<apiName or rid>`, useful for logging.
+
+## Generate text
+
+`generateText` sends one request and resolves with the full response.
+
+```ts title="src/summarize.ts"
+import { generateText } from "@osdk/aip-core";
+import { model } from "./model";
+
+const result = await generateText({
+  model,
+  system: "Answer in one sentence.",
+  prompt: "What does an Ontology action type do?",
+  temperature: 0,
+  maxOutputTokens: 200,
+});
+
+console.log(result.text);
+console.log(result.finishReason, result.usage.totalTokens);
+```
+
+### Prompts, messages, and system instructions
+
+Give the conversation as either `prompt` or `messages`. Passing both throws. At least one of `system`, `prompt`, or `messages` is required.
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `prompt` | `string \| Array<ModelMessage>` | A string becomes one user message. |
+| `messages` | `Array<ModelMessage>` | The full conversation history. |
+| `system` | `string \| SystemModelMessage \| Array<SystemModelMessage>` | Instructions prepended before the conversation. An empty string is ignored. |
+
+A `ModelMessage` is one of:
+
+| `role` | `content` |
+| --- | --- |
+| `"system"` | `string` |
+| `"user"` | `string`, or an array of `{ type: "text", text }` parts. Image and file parts are accepted by the type but dropped. |
+| `"assistant"` | `string`, or an array of text and `tool-call` parts. |
+| `"tool"` | An array of `tool-result` parts. See [Tool calling](./tools.mdx). |
+
+To hold a multi-turn conversation, keep the history and append each answer before the next question:
+
+```ts title="src/conversation.ts"
+import { generateText, type ModelMessage } from "@osdk/aip-core";
+import { model } from "./model";
+
+const messages: Array<ModelMessage> = [];
+
+export async function ask(question: string): Promise<string> {
+  messages.push({ role: "user", content: question });
+  const result = await generateText({
+    model,
+    system: "You help employees find internal information.",
+    messages,
+  });
+  messages.push({ role: "assistant", content: result.text });
+  return result.text;
+}
+```
+
+## Stream text
+
+`streamText` returns immediately and starts the request. Read tokens from `textStream`, or every event from `fullStream`. The other fields are promises that resolve when the stream ends.
+
+<Tabs items={["Node.js", "Browser"]}>
+<Tab value="Node.js">
+
+```ts title="src/stream.ts"
+import { streamText } from "@osdk/aip-core";
+import { model } from "./model";
+
+const result = streamText({
+  model,
+  prompt: "Write a short welcome note for a new engineer.",
+});
+
+for await (const delta of result.textStream) {
+  process.stdout.write(delta);
+}
+
+console.log("\n", await result.usage);
+```
+
+</Tab>
+<Tab value="Browser">
+
+```ts title="src/stream.ts"
+import { streamText } from "@osdk/aip-core";
+import { model } from "./model";
+
+export async function streamInto(element: HTMLElement, prompt: string) {
+  const result = streamText({ model, prompt });
+  const reader = result.textStream.getReader();
+  element.textContent = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) {
+      break;
+    }
+    element.textContent += value;
+  }
+  return result.finishReason;
+}
+```
+
+Use `getReader()` in browsers: not every browser supports `for await` over a `ReadableStream`.
+
+</Tab>
+</Tabs>
+
+### Stream result
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `textStream` | `ReadableStream<string>` | Text deltas only. |
+| `fullStream` | `ReadableStream<TextStreamChunk>` | Every event, listed below. |
+| `text` | `Promise<string>` | The full answer. |
+| `reasoningText` | `Promise<string \| undefined>` | Reasoning text, for models that return it. |
+| `toolCalls` | `Promise<Array<ToolCall>>` | Tool calls requested by the model. |
+| `finishReason` | `Promise<FinishReason>` | Why generation stopped. |
+| `usage`, `totalUsage` | `Promise<LanguageModelUsage>` | Token counts. Identical while each call is a single step. |
+| `warnings` | `Promise<Array<Warning> \| undefined>` | Ignored inputs. Resolves even when the stream fails. |
+| `request`, `response` | `Promise<RequestMetadata \| undefined>`, `Promise<ResponseMetadata \| undefined>` | The request body sent, and the response id, model, timestamp, and assistant message. |
+
+`fullStream` emits these `TextStreamChunk` events:
+
+| `type` | Fields | When |
+| --- | --- | --- |
+| `"text-delta"` | `id`, `delta` | Each piece of answer text. |
+| `"reasoning-delta"` | `id`, `delta` | Each piece of reasoning text. |
+| `"tool-call"` | `toolCallId`, `toolName`, `input` | Once per tool call, after the model finishes, with `input` parsed from JSON. |
+| `"finish"` | `finishReason`, `rawFinishReason`, `usage` | Once, at the end. |
+| `"error"` | `error` | The request or stream failed. The stream then errors with the same `Error`. |
+
+`streamText` also takes `onChunk`, `onError`, and `onFinish` callbacks. `onFinish` receives `finishReason`, `text`, `reasoningText`, `toolCalls`, `usage`, `totalUsage`, `warnings`, `request`, and `response`.
+
+## Sampling options
+
+`generateText` and `streamText` share these options:
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `maxOutputTokens` | `number` | Maximum tokens to generate. |
+| `temperature` | `number` | Randomness. `0` is the most deterministic. |
+| `topP` | `number` | Nucleus sampling threshold. |
+| `presencePenalty` | `number` | Penalizes tokens that have appeared at all. |
+| `frequencyPenalty` | `number` | Penalizes tokens by how often they have appeared. |
+| `stopSequences` | `Array<string>` | Stops generation at any of these strings. |
+| `seed` | `number` | Seed for repeatable sampling, where the model supports it. |
+| `headers` | `Record<string, string \| undefined>` | Extra HTTP headers on the request. |
+| `abortSignal` | `AbortSignal` | Cancels the request. |
+
+Models differ in which options they honor. The LMS proxy does not accept `topK`, so there is no such option.
+
+## Cancel a request
+
+Pass an `AbortSignal`. `generateText` rejects, and `streamText` errors its streams and rejects its promises. Calling `cancel()` on `textStream` or `fullStream` also aborts the request.
+
+```ts title="src/cancel.ts"
+import { streamText } from "@osdk/aip-core";
+import { model } from "./model";
+
+const controller = new AbortController();
+const result = streamText({
+  model,
+  prompt: "Write a long report on office utilization.",
+  abortSignal: controller.signal,
+});
+
+setTimeout(() => controller.abort(), 5_000);
+
+try {
+  console.log(await result.text);
+} catch (error) {
+  if (controller.signal.aborted) {
+    console.log("Stopped by the user");
+  } else {
+    throw error;
+  }
+}
+```
+
+Check `signal.aborted` rather than `error.name`: the client's `fetch` wraps the abort in its own error type.
+
+## Usage and finish reason
+
+`generateText` resolves with a `GenerateTextResult`:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `text` | `string` | The answer text. |
+| `reasoningText` | `string \| undefined` | Reasoning text, for models that return it. |
+| `content` | `Array<ContentPart>` | Text, reasoning, and tool-call parts in order. |
+| `toolCalls` | `Array<ToolCall>` | Tool calls requested by the model. |
+| `toolResults` | `Array<ToolResult>` | Always empty: tools are not executed for you. |
+| `finishReason` | `FinishReason` | Normalized stop reason. |
+| `rawFinishReason` | `string \| undefined` | The provider's own value, such as `"tool_calls"`. |
+| `usage` | `LanguageModelUsage` | Token counts for this call. |
+| `totalUsage` | `LanguageModelUsage` | Same as `usage`. |
+| `steps` | `Array<StepResult>` | One entry per model call. Always one. |
+| `warnings` | `Array<Warning> \| undefined` | Inputs that were ignored. |
+| `request`, `response` | `RequestMetadata`, `ResponseMetadata` | The request body, plus response `id`, `modelId`, `timestamp`, `body`, and `messages`. |
+
+`FinishReason` is one of `"stop"`, `"length"` (hit `maxOutputTokens`), `"tool-calls"`, `"content-filter"`, `"error"`, or `"other"`.
+
+`LanguageModelUsage` has `inputTokens`, `outputTokens`, and `totalTokens`, each `number | undefined`, plus optional `reasoningTokens` and `cachedInputTokens`. Fields are `undefined` when the model does not report usage.
+
+`generateText` also accepts `onStepFinish(step)` and `onFinish(event)`, where `event` adds `steps` and `totalUsage` to the step result.
+
+## Errors and warnings
+
+Failed requests reject with `PalantirApiError` from `@osdk/client`, which carries `statusCode`, `errorName`, and `message`. A `403` usually means the token lacks `api:use-language-models-execute` or your user cannot use the model.
+
+Unsupported input does not throw. It is skipped and reported in `warnings`:
+
+| Input | Behavior |
+| --- | --- |
+| Image or file parts in a user message | Dropped. |
+| Reasoning or file parts in an assistant message | Dropped. |
+| Media in a tool result | Dropped. |
+| A tool whose `inputSchema` is not a JSON Schema object | Sent with empty parameters. |
+| Tool-call arguments that are not valid JSON | Passed through as the raw string. |
+
+## Use the AI SDK
+
+If your app already uses the [AI SDK](https://ai-sdk.dev), `@osdk/aip-core/ai-sdk` provides a Foundry provider for it. You get the AI SDK's own `generateText`, `streamText`, and `tool()` helpers, including its multi-step tool loop. The provider implements the v3 provider specification, so use `ai` version 6.
+
+```npm
+npm install @osdk/aip-core ai @ai-sdk/provider
+```
+
+```ts title="src/aiSdk.ts"
+import { createFoundryAI } from "@osdk/aip-core/ai-sdk";
+import { streamText } from "ai";
+import { platformClient } from "./model";
+
+const foundry = createFoundryAI({ client: platformClient });
+
+const result = streamText({
+  model: foundry("gpt-4o"),
+  prompt: "Suggest three names for an onboarding checklist app.",
+});
+
+for await (const delta of result.textStream) {
+  process.stdout.write(delta);
+}
+```
+
+`foundry(model)` and `foundry.languageModel(model)` accept the same API name or `ModelIdentifier` as `foundryModel`. The provider also ignores `topK` and JSON response formats, and reports them as warnings.
+
+## Call a provider SDK directly
+
+`@osdk/language-models` is the lower-level package `@osdk/aip-core` is built on. It returns Foundry's provider-compatible proxy URLs, so you can point an OpenAI, Anthropic, or Google SDK at Foundry instead of the provider. Use it when you need a provider feature `@osdk/aip-core` does not cover yet, such as the OpenAI Responses API or embeddings.
+
+| Function | Returns |
+| --- | --- |
+| `getOpenAiBaseUrl(client)` | `<foundryUrl>/api/v2/llm/proxy/openai/v1` |
+| `getAnthropicBaseUrl(client)` | `<foundryUrl>/api/v2/llm/proxy/anthropic` |
+| `getGoogleBaseUrl(client)` | `<foundryUrl>/api/v2/llm/proxy/google` |
+| `createFetch(client)` | The client's `fetch`, which sets a fresh `Authorization` header on every request. |
+| `getFoundryToken(client)` | `Promise<string>` with the current token. |
+
+Each function accepts an Ontology `Client` or a `PlatformClient`.
+
+```ts title="src/openai.ts"
+import { createFetch, getFoundryToken, getOpenAiBaseUrl } from "@osdk/language-models";
+import OpenAI from "openai";
+import { platformClient } from "./model";
+
+const openai = new OpenAI({
+  apiKey: await getFoundryToken(platformClient),
+  baseURL: getOpenAiBaseUrl(platformClient),
+  fetch: createFetch(platformClient),
+});
+
+const completion = await openai.chat.completions.create({
+  model: "gpt-4o",
+  messages: [{ role: "user", content: "Hello" }],
+});
+console.log(completion.choices[0]?.message.content);
+```
+
+`createFetch` replaces the `Authorization` header on each request, so the client keeps working after the token from `getFoundryToken` expires. The proxy accepts each provider's native request format; Foundry's [LLM-provider compatible APIs](https://www.palantir.com/docs/foundry/aip/llm-provider-compatible-apis) documentation lists the supported endpoints.
+
+## Next steps
+
+- [Tool calling](./tools.mdx): let the model query the Ontology and propose actions.
+- [React chat UIs](./react.mdx): stream into React with `useChat`.

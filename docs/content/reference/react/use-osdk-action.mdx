@@ -1,0 +1,76 @@
+---
+title: useOsdkAction
+description: Apply or validate an action from a component, with pending state, errors, and optional optimistic updates.
+---
+
+```ts
+import { useOsdkAction } from "@osdk/react";
+
+function useOsdkAction<Q extends ActionDefinition<any>>(
+  actionDef: Q,
+): UseOsdkActionResult<Q>;
+```
+
+Returns functions that apply or validate `actionDef` through the shared cache. After an action succeeds, cached objects and lists that it changed are refreshed.
+
+## Returns
+
+The result type has little JSDoc, so this table is written by hand.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `applyAction` | `(args: ApplyActionParams<Q> \| ApplyActionParams<Q>[]) => Promise<ActionEditResponse \| undefined>` | Applies the action. Pass an array to apply a batch. Rethrows on failure after setting `error`. |
+| `validateAction` | `(args) => Promise<ActionValidationResponse \| undefined>` | Validates the parameters without applying the action. A new call cancels the previous one, and the cancelled call resolves to `undefined`. Resolves to `undefined` without validating while `applyAction` is pending. |
+| `data` | `ActionEditResponse \| undefined` | The response from the last successful `applyAction`. |
+| `error` | `{ actionValidation?: ActionValidationError; unknown?: unknown } \| undefined` | The last failure. `actionValidation` is set when the server rejected the parameters; `unknown` holds any other error. Cleared when the next call starts. |
+| `isPending` | `boolean` | `true` while `applyAction` is running. |
+| `isValidating` | `boolean` | `true` while `validateAction` is running. |
+| `validationResult` | `ActionValidationResponse \| undefined` | The response from the last completed `validateAction`. |
+
+### `applyAction` arguments
+
+`ApplyActionParams<Q>` is the action's parameters plus:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `$optimisticUpdate` | `(ctx: OptimisticBuilder) => void` | Writes temporary changes to the cache that are rolled back when the action settles. In a batch, every entry's update runs. |
+
+## Example
+
+```tsx title="src/PromoteButton.tsx"
+import { Employee, modifyEmployee } from "@my-app/sdk";
+import { useOsdkAction } from "@osdk/react";
+
+export function PromoteButton({ employee }: { employee: Employee.OsdkInstance }) {
+  const { applyAction, isPending, error } = useOsdkAction(modifyEmployee);
+
+  async function promote() {
+    try {
+      await applyAction({
+        employee,
+        jobTitle: "Senior Engineer",
+        $optimisticUpdate: (ctx) => {
+          ctx.updateObject(employee.$clone({ jobTitle: "Senior Engineer" }));
+        },
+      });
+    } catch {
+      // The hook result exposes the failure as error.
+    }
+  }
+
+  return (
+    <>
+      <button disabled={isPending} onClick={() => void promote()}>
+        Promote
+      </button>
+      {error?.actionValidation && <p role="alert">Invalid parameters.</p>}
+    </>
+  );
+}
+```
+
+## See also
+
+- [Actions](/react/actions)
+- [Optimistic updates](/react/optimistic-updates)
+- [Errors](../client/errors.mdx)

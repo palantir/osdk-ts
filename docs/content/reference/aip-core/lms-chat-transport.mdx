@@ -1,0 +1,65 @@
+---
+title: LmsChatTransport
+description: A ChatTransport that streams chat replies from the Foundry Language Model Service as UI message chunks.
+---
+
+```ts
+import { LmsChatTransport } from "@osdk/aip-core";
+
+class LmsChatTransport implements ChatTransport<UIMessage> {
+  constructor(opts: LmsChatTransportOptions);
+  sendMessages(args: ChatTransportSendMessagesArgs<UIMessage>): Promise<ReadableStream<UIMessageChunk>>;
+  reconnectToStream(args: ChatTransportReconnectArgs): Promise<ReadableStream<UIMessageChunk> | null>;
+}
+```
+
+Converts a `UIMessage[]` conversation to model messages, calls [`streamText`](./stream-text.mdx), and returns the reply as a stream of `UIMessageChunk`s in the AI SDK v5 UI format. Pass it to any chat UI that accepts a `ChatTransport`.
+
+## Options
+
+<auto-type-table path="../../../../packages/aip-core/src/lmsChatTransport.ts" name="LmsChatTransportOptions" />
+
+`headers` passed to `sendMessages` are merged over the constructor's `headers`.
+
+## Methods
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `sendMessages(args)` | `Promise<ReadableStream<UIMessageChunk>>` | Streams the assistant reply to `args.messages`, using `args.messageId` as its ID. Model errors arrive as an `{ type: "error", errorText }` chunk. |
+| `reconnectToStream(args)` | `Promise<null>` | Always resolves to `null`; the transport cannot resume a stream. |
+
+## Example
+
+```ts title="src/askOnce.ts"
+import { foundryModel, generateMessageId, LmsChatTransport } from "@osdk/aip-core";
+import type { PlatformClient } from "@osdk/client";
+
+export async function askOnce(client: PlatformClient, question: string) {
+  const transport = new LmsChatTransport({
+    model: foundryModel({ client, model: "gpt-4o" }),
+    system: "Answer briefly.",
+  });
+
+  const stream = await transport.sendMessages({
+    trigger: "submit-message",
+    chatId: "chat-1",
+    messageId: generateMessageId(),
+    messages: [{ id: generateMessageId(), role: "user", parts: [{ type: "text", text: question }] }],
+    abortSignal: undefined,
+  });
+
+  let answer = "";
+  const reader = stream.getReader();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (value.type === "text-delta") answer += value.delta;
+  }
+  return answer;
+}
+```
+
+## See also
+
+- [Chat and text generation](/ai/chat)
+- [Utilities](./utilities.mdx)

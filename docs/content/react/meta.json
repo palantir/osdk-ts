@@ -1,0 +1,30 @@
+{
+  "title": "React",
+  "description": "Hooks for building reactive OSDK apps with @osdk/react, plus the in-app devtools.",
+  "icon": "Atom",
+  "root": true,
+  "pages": [
+    "index",
+    "---Read data---",
+    "objects",
+    "links",
+    "object-sets",
+    "aggregations",
+    "---Write data---",
+    "actions",
+    "optimistic-updates",
+    "functions",
+    "---Cache---",
+    "cache-invalidation",
+    "---Platform---",
+    "platform-apis",
+    "---Quality---",
+    "testing",
+    "---Devtools---",
+    "devtools/index",
+    "devtools/overview",
+    "devtools/components",
+    "devtools/console",
+    "devtools/cache"
+  ]
+}

@@ -1,0 +1,213 @@
+---
+title: Parameters and events
+description: Declare a widget's parameters, events, and browser permissions with defineConfig, and see how each field maps to the widgets.config.json manifest.
+foundryDocs:
+  - title: Parameters and events
+    path: custom-widgets/parameters-and-events
+---
+
+{/* cspell:ignore widgetregistry */}
+
+A widget config declares what the host can pass into your widget and what the widget can send back. Write one per widget with `defineConfig` from `@osdk/widget.client`. The config also types your React hooks, and the Vite plugin turns it into the manifest Foundry reads.
+
+## Define a config
+
+```ts title="src/main.config.ts"
+import { Employee } from "@my-app/sdk";
+import { defineConfig } from "@osdk/widget.client";
+
+export default defineConfig({
+  id: "employeeDirectory",
+  name: "Employee directory",
+  description: "Lists employees and reports the selected one",
+  type: "workshop",
+  parameters: {
+    title: {
+      displayName: "Title",
+      type: "string",
+    },
+    employees: {
+      displayName: "Employees",
+      type: "objectSet",
+      allowedType: Employee,
+    },
+    selectedEmployeeId: {
+      displayName: "Selected employee ID",
+      type: "number",
+    },
+    departments: {
+      displayName: "Departments",
+      type: "array",
+      subType: "string",
+    },
+  },
+  events: {
+    selectEmployee: {
+      displayName: "Select employee",
+      parameterUpdateIds: ["selectedEmployeeId"],
+    },
+  },
+});
+```
+
+Export the config as the file's default export, name the file `*.config.ts` (or `.js`, `.tsx`, `.jsx`), and import it from the widget's entrypoint script. The Vite plugin finds configs through that import; see [Build and publish](./publish.mdx#how-the-plugin-finds-configs).
+
+`defineConfig` returns its argument unchanged. Its `const` type parameter keeps parameter IDs, types, and `parameterUpdateIds` as literal types, which is what lets `useFoundryWidgetContext` and `emitEvent` type-check against your config.
+
+## Config fields
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `id` | `string` | Required | Unique within the widget set. camelCase: letters and digits only, starting with a lowercase letter. At most 100 characters. |
+| `name` | `string` | Required | The name shown in the host. At most 100 characters. |
+| `description` | `string` | | Shown in the host. At most 250 characters. |
+| `type` | `"workshop"` | Required | The host the widget targets. `"workshop"` is the only value. |
+| `parameters` | `Record<string, ParameterDefinition>` | Required | Values the host passes in, keyed by parameter ID. Use `{}` for none. |
+| `events` | `Record<string, EventDefinition>` | Required | Events the widget can emit, keyed by event ID. Use `{}` for none. |
+| `permissions` | `BrowserPermission[]` | | Extra browser capabilities the widget requests. See [Permissions](#permissions). |
+| `refreshHostDataOnAction` | `boolean` | Plugin default, else unset | Asks the host to refresh the Ontology data it passes in, currently object set parameters, when the widget is thought to have applied an action through the Ontology APIs. |
+
+TypeScript cannot check ID formats and lengths, so the Vite plugin validates them when it loads the config and fails the build or developer mode with messages such as `Widget id "my-widget" does not match allowed pattern (must be camelCase)`.
+
+## Parameter types
+
+Every parameter needs a `type` and a `displayName`, the label shown in the host's setup panel. Parameter IDs follow the same camelCase rule and 100-character limit as widget IDs.
+
+| `type` | Extra fields | Value in the widget | Notes |
+| --- | --- | --- | --- |
+| `"string"` | | `string` | |
+| `"number"` | | `number` | |
+| `"boolean"` | | `boolean` | |
+| `"date"` | | `string` | An ISO date, `YYYY-MM-DD`. |
+| `"timestamp"` | | `string` | An ISO datetime. |
+| `"scenario"` | | `string` | A Scenario RID. |
+| `"array"` | `subType` | An array of the `subType` value | `subType` is any of the six types above. |
+| `"objectSet"` | `allowedType` | `{ objectSetRid: string }` | `allowedType` is an object type or interface from your generated SDK, such as `Employee` or `Worker`. In React, the value also carries a hydrated `objectSet`; see [React widgets](./react.mdx#object-set-parameters). |
+| `"mapTileLayer"` | | `{ tileSourceId: string }` | Read-only: a tile source ID for the Foundry Tiles APIs. Events cannot update it. |
+
+An `objectSet` parameter needs the RID that generated SDKs embed in each type definition. If it is missing, the plugin fails with `ObjectSet parameter "employees" must have a valid rid in its metadata, make sure your OSDK was generated with a generator version >=2.6.2`. The older `objectType` field is deprecated; use `allowedType`.
+
+Dates and timestamps stay strings. Parse them with the date library your widget already uses.
+
+### Loading states
+
+The host sends each parameter as an async value, so your widget can show what is still loading. The `type` field moves through these states:
+
+| `type` | `value` | `error` | Meaning |
+| --- | --- | --- | --- |
+| `"not-started"` | | | The host has not started loading the value. |
+| `"loading"` | | | The first load is in progress. |
+| `"loaded"` | The value, or `undefined` | | The value is ready. `undefined` means the host variable has no value. |
+| `"reloading"` | The previous value | | A new value is loading. |
+| `"failed"` | The last value, if any | `Error` | Loading failed. |
+
+The types are exported from `@osdk/widget.client` as `AsyncValue`, `AsyncLoadedValue`, `AsyncFailedValue`, and so on. [React widgets](./react.mdx#loading-states) covers how `FoundryWidget` combines them.
+
+## Events
+
+An event tells the host to update one or more of the widget's parameters. Declare each event with a label and the parameters it updates:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `displayName` | `string` | The event name shown in the host, where builders attach behavior to it. |
+| `parameterUpdateIds` | `string[]` | The parameter IDs the event sets. Each must be a parameter in the same config, and none can be a `mapTileLayer` parameter. |
+
+When you emit the event, `parameterUpdates` must contain a value for every ID in `parameterUpdateIds`, typed like the parameter's value:
+
+```ts
+emitEvent("selectEmployee", {
+  parameterUpdates: { selectedEmployeeId: 42 },
+});
+```
+
+To fire an event without updating anything, set `parameterUpdateIds: []` and emit `parameterUpdates: {}`. Listing a `mapTileLayer` parameter is a type error, and the plugin rejects it with `Event "selectTile" cannot update read-only map tile layer parameter "tiles"`.
+
+## Permissions
+
+A widget runs in a sandboxed frame. Request extra capabilities with `permissions`:
+
+```ts title="src/main.config.ts"
+import { defineConfig } from "@osdk/widget.client";
+
+export default defineConfig({
+  id: "badgeScanner",
+  name: "Badge scanner",
+  type: "workshop",
+  parameters: {},
+  events: {},
+  permissions: ["camera", "allow-downloads"],
+});
+```
+
+| Value | Requests |
+| --- | --- |
+| `"camera"` | The `camera` permissions policy. |
+| `"microphone"` | The `microphone` permissions policy. |
+| `"autoplay"` | The `autoplay` permissions policy. |
+| `"allow-downloads"` | The `allow-downloads` sandbox flag. |
+| `"allow-forms"` | The `allow-forms` sandbox flag. |
+| `"allow-modals"` | The `allow-modals` sandbox flag. |
+| `"allow-popups"` | The `allow-popups` sandbox flag. |
+
+The same values are available as constants on `BrowserPermission` from `@osdk/widget.api`, such as `BrowserPermission.CAMERA`. A request does not guarantee access: the user may still need to accept a browser prompt, depending on the permission and browser settings.
+
+## How the config maps to the manifest
+
+`vite build` writes one manifest per widget set to `.palantir/widgets.config.json` in the build output. Each widget's config becomes an entry under `widgetSet.widgets`, keyed by widget ID. For the config at the top of this page, the manifest looks like this:
+
+```json title="dist/.palantir/widgets.config.json"
+{
+  "manifestVersion": "1.0.0",
+  "widgetSet": {
+    "rid": "ri.widgetregistry..widget-set.<id>",
+    "version": "1.2.0",
+    "widgets": {
+      "employeeDirectory": {
+        "id": "employeeDirectory",
+        "name": "Employee directory",
+        "description": "Lists employees and reports the selected one",
+        "type": "workshopWidgetV1",
+        "entrypointJs": [{ "path": "assets/index-Bx1a2b3c.js", "type": "module" }],
+        "entrypointCss": [{ "path": "assets/index-Dq4e5f6g.css" }],
+        "parameters": {
+          "title": { "displayName": "Title", "type": "string" },
+          "employees": {
+            "type": "objectSet",
+            "displayName": "Employees",
+            "objectTypeRids": ["ri.ontology.main.object-type.<id>"],
+            "allowedType": "ri.ontology.main.object-type.<id>"
+          },
+          "selectedEmployeeId": { "displayName": "Selected employee ID", "type": "number" },
+          "departments": { "displayName": "Departments", "type": "array", "subType": "string" }
+        },
+        "events": {
+          "selectEmployee": {
+            "displayName": "Select employee",
+            "parameterUpdateIds": ["selectedEmployeeId"]
+          }
+        }
+      }
+    },
+    "inputSpec": {
+      "discovered": {
+        "sdks": [{ "rid": "ri.third-party-applications.main.sdk-package.<id>", "version": "1.0.0" }]
+      }
+    }
+  }
+}
+```
+
+| Manifest field | Source |
+| --- | --- |
+| `widgetSet.rid` | `widgetSet.rid` in `foundry.config.json`. |
+| `widgetSet.version` | `widgetSet.autoVersion` in `foundry.config.json`; by default the `version` in `package.json`. See [Versioning](./publish.mdx#versioning). |
+| `widgets.<id>` | One entry per HTML entrypoint, keyed by the config's `id`. Two widgets with the same ID fail the build with `Duplicate widget ID`. |
+| `id`, `name`, `description`, `events`, `permissions` | Copied from the config. |
+| `type` | `"workshop"` becomes `"workshopWidgetV1"`. |
+| `entrypointJs`, `entrypointCss` | The script and stylesheet tags in the built HTML file, in order, with the leading `/` removed. |
+| `parameters` | Copied from the config, except `objectSet`: `allowedType` becomes the type's RID, and `objectTypeRids` holds the object type RID, or is empty for an interface. |
+| `refreshHostDataOnAction` | The config's value, else the plugin's `defaults.refreshHostDataOnAction`. |
+| `inputSpec.discovered.sdks` | The `rid` and `version` of every installed package whose `package.json` has an `osdk.packageRid`. |
+| `inputSpec.discovered.authorizations` | `authorizations.read` and `authorizations.requiredRead` from `resources.json` in the project root, when that file exists. |
+
+Fields without a value, such as an unset `permissions`, are left out of the JSON. In developer mode the plugin sends Foundry the same widget entries, but with `entrypointJs` pointing at your dev server.

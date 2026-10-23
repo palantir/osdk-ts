@@ -1,0 +1,93 @@
+---
+title: WhereClause
+description: Filter operators accepted by ObjectSet.where and the where option of @osdk/react hooks, by property type.
+---
+
+```ts
+import type { WhereClause } from "@osdk/client";
+
+type WhereClause<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> =
+  | { $and: WhereClause<T, RDPs>[] }
+  | { $or: WhereClause<T, RDPs>[] }
+  | { $not: WhereClause<T, RDPs> }
+  | { $title?: Filter; $primaryKey?: Filter }
+  | { [property in PropertyKeys<T>]?: FilterFor<property> };
+```
+
+A where clause maps property names to filters. Properties in one clause combine with AND. A bare value, such as `{ department: "Engineering" }`, is shorthand for `$eq`. Each filter object holds exactly one operator.
+
+The type is a union of mapped and conditional types, so these tables are written by hand.
+
+## Logical operators
+
+| Operator | Value | Matches |
+| --- | --- | --- |
+| `$and` | `WhereClause[]` | Objects that match every clause. |
+| `$or` | `WhereClause[]` | Objects that match at least one clause. |
+| `$not` | `WhereClause` | Objects that do not match the clause. |
+
+## Operators by property type
+
+| Operator | string | number | date and timestamp | boolean | Value |
+| --- | --- | --- | --- | --- | --- |
+| `$eq`, `$ne` | Yes | Yes | Yes | Yes | A value of the property's type. |
+| `$in` | Yes | Yes | Yes | Yes | An array of values. An empty array matches every object. |
+| `$isNull` | Yes | Yes | Yes | Yes | `true` or `false`. |
+| `$gt`, `$gte`, `$lt`, `$lte` | Yes | Yes | Yes | | A bound. Dates and timestamps take ISO 8601 strings. |
+| `$startsWith` | Yes | | | | A prefix. |
+| `$containsAnyTerm` | Yes | | | | A string, or `{ term, fuzzySearch? }`. Matches any whitespace-separated term. |
+| `$containsAllTerms` | Yes | | | | A string, or `{ term, fuzzySearch? }`. Matches every term, in any order. |
+| `$containsAllTermsInOrder` | Yes | | | | A string. Matches the terms in order. |
+| `$interval` | Yes | | | | An `IntervalRule`. |
+| `$matchesRegex` | Yes | | | | Beta. A regular expression in Foundry search syntax. |
+
+Number filters apply to `integer`, `long`, `double`, `float`, `decimal`, and `byte` properties.
+
+### Array properties
+
+| Operator | Value | Matches |
+| --- | --- | --- |
+| `$contains` | An element value | Arrays that contain the value. |
+| `$isNull` | `boolean` | Arrays that are null, or not null. |
+
+### Geo properties
+
+`geopoint` and `geoshape` properties take `$within`, `$intersects`, and `$isNull`.
+
+| Operator | Value |
+| --- | --- |
+| `$within` | `{ $distance: [number, unit], $of: [lon, lat] \| Point }`, `{ $bbox: BBox }`, a `BBox`, `{ $polygon: coordinates }`, or a GeoJSON `Polygon`. |
+| `$intersects` | `{ $bbox: BBox }`, a `BBox`, `{ $polygon: coordinates }`, or a GeoJSON `Polygon`. |
+
+The distance unit is one of `"cm"`, `"m"`, `"km"`, `"inches"`, `"feet"`, `"yards"`, `"miles"`, or `"nautical miles"`, or a singular or long form such as `"meter"` or `"kilometers"`.
+
+### Struct properties
+
+Filter one field of a struct property by nesting it: `{ address: { city: { $eq: "Denver" } } }`. A struct filter holds exactly one field.
+
+## Example
+
+```ts title="src/seniorEngineers.ts"
+import { Employee } from "@my-app/sdk";
+import type { Client, WhereClause } from "@osdk/client";
+
+const seniorEngineers: WhereClause<Employee> = {
+  $and: [
+    { department: "Engineering" },
+    { startDate: { $lt: "2020-01-01" } },
+    { $or: [{ jobTitle: { $startsWith: "Senior" } }, { skills: { $contains: "Go" } }] },
+    { $not: { salary: { $isNull: true } } },
+  ],
+};
+
+export function loadSeniorEngineers(client: Client) {
+  return client(Employee).where(seniorEngineers).fetchPage({ $pageSize: 50 });
+}
+```
+
+## See also
+
+- [Filtering](/sdk/filtering)

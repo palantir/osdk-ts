@@ -69,7 +69,7 @@ export interface PublicOauthClientOptions {
   postLoginPage?: string;
 
   /**
-   * * @param {string[]} [scopes=[]] - OAuth scopes to request. If not provided, defaults to `["api:read-data", "api:write-data", "api:use-ontologies-read", "api:use-ontologies-write"]`
+   * OAuth scopes to request. Defaults to `["api:read-data", "api:write-data", "api:use-ontologies-read", "api:use-ontologies-write"]`.
    */
   scopes?: string[];
 

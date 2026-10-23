@@ -1,0 +1,49 @@
+---
+title: generateText
+description: Generate a complete text response from a Foundry language model in one request.
+---
+
+```ts
+import { generateText } from "@osdk/aip-core";
+
+function generateText<TOOLS extends ToolSet = ToolSet>(
+  options: GenerateTextOptions<TOOLS>,
+): Promise<GenerateTextResult<TOOLS>>;
+```
+
+Sends one request to the Foundry Language Model Service and resolves when the model finishes. The call is single-step: when the model requests a tool, the result lists the call in `toolCalls`, and your code runs the tool and sends a follow-up request.
+
+## Options
+
+<auto-type-table path="../../../../packages/aip-core/src/generateText.ts" name="GenerateTextOptions" />
+
+Pass either `prompt` or `messages`, not both; passing both throws. The call also throws when `system`, `prompt`, and `messages` are all empty. Tool `inputSchema` must be a plain JSON Schema object.
+
+## Returns
+
+<auto-type-table path="../../../../packages/aip-core/src/generateText.ts" name="GenerateTextResult" />
+
+`steps` always holds one step, and `totalUsage` equals `usage`.
+
+## Example
+
+```ts title="src/summarize.ts"
+import { foundryModel, generateText } from "@osdk/aip-core";
+import type { PlatformClient } from "@osdk/client";
+
+export async function summarize(client: PlatformClient, notes: string) {
+  const { text, usage } = await generateText({
+    model: foundryModel({ client, model: "gpt-4o" }),
+    system: "Summarize in two sentences.",
+    prompt: notes,
+    maxOutputTokens: 200,
+  });
+  console.log(usage);
+  return text;
+}
+```
+
+## See also
+
+- [Chat and text generation](/ai/chat)
+- [streamText](./stream-text.mdx)
