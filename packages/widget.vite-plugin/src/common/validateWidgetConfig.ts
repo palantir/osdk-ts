@@ -20,6 +20,8 @@ const ID_PATTERN = /^([a-z][a-z0-9]*)([A-Z][a-z0-9]*)*$/u;
 const ID_MAX_LENGTH = 100;
 const NAME_MAX_LENGTH = 100;
 const DESCRIPTION_MAX_LENGTH = 250;
+const STRUCT_FIELDS_MAX_COUNT = 50;
+const STRUCT_FIELD_DISPLAY_NAME_MAX_LENGTH = 100;
 
 /**
  * Validates the requirements that can't be expressed via TypeScript type-checking
@@ -87,6 +89,43 @@ function validateWidgetParameters(parameters: ParameterConfig): void {
           )}'`,
         );
       }
+    }
+    if ("fields" in parameterConfig) {
+      validateStructFields(parameterId, parameterConfig.fields);
+    }
+  }
+}
+
+function validateStructFields(
+  parameterId: string,
+  fields: Record<string, { displayName: string }>,
+): void {
+  const fieldEntries = Object.entries(fields);
+  if (fieldEntries.length === 0) {
+    throw new Error(
+      `Struct parameter "${parameterId}" must have at least one field`,
+    );
+  }
+  if (fieldEntries.length > STRUCT_FIELDS_MAX_COUNT) {
+    throw new Error(
+      `Struct parameter "${parameterId}" can have at most ${STRUCT_FIELDS_MAX_COUNT} fields`,
+    );
+  }
+  for (const [fieldId, field] of fieldEntries) {
+    if (fieldId.length > ID_MAX_LENGTH) {
+      throw new Error(
+        `Struct field id length can be at most ${ID_MAX_LENGTH} characters`,
+      );
+    }
+    if (!ID_PATTERN.test(fieldId)) {
+      throw new Error(
+        `Struct field id "${fieldId}" in parameter "${parameterId}" does not match allowed pattern (must be camelCase)`,
+      );
+    }
+    if (field.displayName.length > STRUCT_FIELD_DISPLAY_NAME_MAX_LENGTH) {
+      throw new Error(
+        `Struct field display name length can be at most ${STRUCT_FIELD_DISPLAY_NAME_MAX_LENGTH} characters`,
+      );
     }
   }
 }
