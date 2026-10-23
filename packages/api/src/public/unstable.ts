@@ -15,6 +15,7 @@
  */
 
 export type { AgentDefinition } from "../agents/AgentDefinition.js";
+export type { AgentParam } from "../agents/AgentParam.js";
 export type { AgentSession } from "../agents/AgentSession.js";
 export type { Experiment, ExperimentFns } from "../experimental/Experiment.js";
 
