@@ -15,11 +15,7 @@
  */
 import type { Node, Root } from "fumadocs-core/page-tree";
 import { site, siteUrl } from "./site";
-import { type Page, source } from "./source";
-
-export function markdownTwinUrl(page: Page): string {
-  return `${siteUrl}${page.url === "/" ? "/index" : page.url}.md`;
-}
+import { docsLlms, markdownTwinUrl, source } from "./source";
 
 export function renderLlmsIndex(): string {
   const tree = source.getPageTree();
@@ -29,10 +25,22 @@ export function renderLlmsIndex(): string {
     `> ${site.description}`,
     "",
     "Every link below points to the Markdown version of a page. Append `.md` to any docs URL to get the same. The complete documentation in one file is at "
-    + `${siteUrl}/llms-full.txt.`,
+    + `[llms-full.txt](${siteUrl}/llms-full.txt).`,
   ];
   renderChildren(tree, lines, 2);
   return lines.join("\n") + "\n";
+}
+
+export async function renderLlmsFull(): Promise<string> {
+  return [
+    `# ${site.name}`,
+    "",
+    `> ${site.description}`,
+    "",
+    `This file contains every page of the documentation as Markdown. An index of the pages is at [llms.txt](${siteUrl}/llms.txt).`,
+    "",
+    await docsLlms.full(),
+  ].join("\n");
 }
 
 function renderChildren(

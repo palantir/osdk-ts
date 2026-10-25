@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 import { CopyCommand } from "@/components/copy-command";
+import { FeatureCard } from "@/components/feature-card";
+import { HomeSection } from "@/components/home-section";
 import { withBasePath } from "@/lib/site";
 import {
   ArrowRight,
@@ -26,7 +28,6 @@ import {
   Workflow,
 } from "lucide-react";
 import Link from "next/link";
-import type { ComponentType, ReactNode } from "react";
 
 const startHere = [
   {
@@ -123,21 +124,21 @@ export default function HomePage() {
           </div>
         </section>
 
-        <Section title="Start here">
+        <HomeSection title="Start here">
           <div className="grid gap-4 md:grid-cols-3">
             {startHere.map((item) => <FeatureCard key={item.href} {...item} />)}
           </div>
-        </Section>
+        </HomeSection>
 
-        <Section title="Go further">
+        <HomeSection title="Go further">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {more.map((item) => (
               <FeatureCard key={item.href} {...item} compact />
             ))}
           </div>
-        </Section>
+        </HomeSection>
 
-        <Section title="Built for AI assistants">
+        <HomeSection title="Built for AI assistants">
           <div className="grid gap-4 rounded-2xl border bg-fd-card p-6 md:grid-cols-[1fr_auto] md:items-center md:p-8">
             <div className="flex flex-col gap-2">
               <p className="text-base font-medium">
@@ -164,55 +165,8 @@ export default function HomePage() {
               </a>
             </div>
           </div>
-        </Section>
+        </HomeSection>
       </div>
     </main>
-  );
-}
-
-function Section({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="flex flex-col gap-5 pt-12">
-      <h2 className="text-sm font-medium tracking-wide text-fd-muted-foreground uppercase">
-        {title}
-      </h2>
-      {children}
-    </section>
-  );
-}
-
-function FeatureCard({
-  href,
-  icon: Icon,
-  title,
-  description,
-  compact = false,
-}: {
-  href: string;
-  icon: ComponentType<{ className?: string }>;
-  title: string;
-  description: string;
-  compact?: boolean;
-}) {
-  return (
-    <Link
-      href={href}
-      className="group flex flex-col gap-3 rounded-xl border bg-fd-card p-5 transition-colors hover:border-fd-primary/40 hover:bg-fd-accent/40"
-    >
-      <span className="flex size-9 items-center justify-center rounded-lg border bg-fd-background text-fd-primary">
-        <Icon className="size-4" />
-      </span>
-      <span className="flex items-center gap-1.5 font-medium">
-        {title}
-        <ArrowRight className="size-3.5 -translate-x-1 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
-      </span>
-      <span
-        className={compact
-          ? "text-sm text-fd-muted-foreground"
-          : "text-sm text-fd-muted-foreground md:text-[0.9375rem]"}
-      >
-        {description}
-      </span>
-    </Link>
   );
 }

@@ -12,9 +12,10 @@
         "scripts/**",
         "*.mjs",
         "*.json",
-        "$TURBO_ROOT$/packages/react-components/docs/**"
+        "$TURBO_ROOT$/packages/react-components/docs/**",
+        "$TURBO_ROOT$/packages/*/src/**"
       ],
-      "outputs": ["out/**", ".next/**", "!.next/cache/**"]
+      "outputs": ["out/**"]
     },
     "dev": {
       "cache": false,

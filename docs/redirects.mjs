@@ -13,37 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { componentPages, toKebabCase } from "./lib/component-pages.mjs";
 
-const componentPages = [
-  "Prerequisites",
-  "ObjectTable",
-  "FilterList",
-  "ActionForm",
-  "DocumentViewer",
-  "PdfViewer",
-  "ImageViewer",
-  "VideoViewer",
-  "TiffViewer",
-  "MarkdownViewer",
-  "SpreadsheetViewer",
-  "EmailViewer",
-  "XmlViewer",
-  "AipAgentChat",
-  "CbacPicker",
-  "StylingOverview",
-  "OsdkThemeProvider",
-  "CSSVariables",
-];
-
-function toKebabCase(name) {
-  return name
-    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
-    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
-    .toLowerCase();
-}
-
-/** Old Docusaurus paths (without base path) mapped to their new location. */
 export default {
+  ...Object.fromEntries(
+    componentPages.map((name) => [
+      `react-components/${name}`,
+      `/components/${toKebabCase(name)}`,
+    ]),
+  ),
   "react/prerequisites": "/installation",
   "react/getting-started": "/quickstart",
   "react/querying-data": "/react/objects",
@@ -67,10 +45,4 @@ export default {
   "react-components/TokenTypography": "/components/css-variables",
   "cbac-components/CbacPicker": "/components/cbac-picker",
   CHANGELOG: "/",
-  ...Object.fromEntries(
-    componentPages.map((name) => [
-      `react-components/${name}`,
-      `/components/${toKebabCase(name)}`,
-    ]),
-  ),
 };

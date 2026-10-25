@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 import {
-  access,
   cp,
   mkdir,
   readdir,
   readFile,
+  stat,
   writeFile,
 } from "node:fs/promises";
 import path from "node:path";
+import { site } from "../lib/site.ts";
 
 const out = path.resolve(import.meta.dirname, "../out");
 const markdownRoot = path.join(out, "llms.mdx");
@@ -51,20 +52,31 @@ for await (const file of walk(markdownRoot)) {
 
 const redirects = (await import("../redirects.mjs")).default;
 for (const [from, to] of Object.entries(redirects)) {
-  const href = `/osdk-ts${to}`;
-  const target = path.join(out, `${from}.html`);
-  await mkdir(path.dirname(target), { recursive: true });
-  await writeFile(
-    target,
-    `<!doctype html><meta charset="utf-8"><title>Redirecting…</title><link rel="canonical" href="${href}"><meta http-equiv="refresh" content="0; url=${href}"><a href="${href}">${href}</a>\n`,
-  );
+  const href = `${site.basePath}${to}`;
+  for (const target of [`${from}.html`, path.join(from, "index.html")]) {
+    await mkdir(path.dirname(path.join(out, target)), { recursive: true });
+    await writeFile(
+      path.join(out, target),
+      `<!doctype html><meta charset="utf-8"><title>Redirecting…</title><link rel="canonical" href="${href}"><meta http-equiv="refresh" content="0; url=${href}"><a href="${href}">${href}</a>\n`,
+    );
+  }
 }
 
 await writeFile(path.join(out, ".nojekyll"), "");
 
-const basePath = "/osdk-ts";
 const broken = [];
 for await (const file of walk(out)) {
+  if (file.endsWith(".md") && !file.startsWith(markdownRoot)) {
+    const markdown = await readFile(file, "utf8");
+    for (
+      const [, href] of markdown.matchAll(
+        /\]\((\.{0,2}\/(?:[^()\s]|\([^()\s]*\))*)\)/g,
+      )
+    ) {
+      broken.push([file, href]);
+    }
+    continue;
+  }
   if (!file.endsWith(".html")) {
     continue;
   }
@@ -74,10 +86,10 @@ for await (const file of walk(out)) {
       broken.push([file, href]);
       continue;
     }
-    if (!href.startsWith(`${basePath}/`)) {
+    if (!href.startsWith(`${site.basePath}/`)) {
       continue;
     }
-    const target = decodeURI(href.slice(basePath.length).split(/[?#]/)[0]);
+    const target = decodeURI(href.slice(site.basePath.length).split(/[?#]/)[0]);
     if (!(await exists(target))) {
       broken.push([file, href]);
     }
@@ -90,8 +102,9 @@ async function exists(target) {
     : [target, `${target}.html`, path.join(target, "index.html")];
   for (const candidate of candidates) {
     try {
-      await access(path.join(out, candidate));
-      return true;
+      if ((await stat(path.join(out, candidate))).isFile()) {
+        return true;
+      }
     } catch {}
   }
   return false;
