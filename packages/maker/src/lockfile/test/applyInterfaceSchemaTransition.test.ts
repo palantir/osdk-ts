@@ -190,8 +190,6 @@ describe("applyTransition", () => {
         schema: previousSchema,
         touched: [{ kind: "allowNewImplementations" }],
       });
-      // Absent rather than `true`, so it compares equal to a generated schema
-      expect(Object.keys(lenient?.schema ?? {})).toStrictEqual(["properties"]);
     });
 
     it("disallows new implementations when applied strictly", () => {

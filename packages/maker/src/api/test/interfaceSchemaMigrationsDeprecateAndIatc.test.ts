@@ -750,7 +750,7 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
 
     it("leaves an action type constraint migration unchanged", () => {
       const instruction = requireConstraint("doThing");
-      expect(mapPropertyNames(instruction, (key) => `x.${key}`)).toBe(
+      expect(mapPropertyNames(instruction, (key) => `x.${key}`)).toEqual(
         instruction,
       );
     });

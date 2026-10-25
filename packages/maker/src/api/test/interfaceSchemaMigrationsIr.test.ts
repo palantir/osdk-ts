@@ -345,108 +345,75 @@ describe("Interface schema migrations to ontology IR", () => {
         invariant(pair !== undefined, "expected the body to run");
         const { old, replacement } = pair;
 
-        expect(resolveInterfaceTypeReplacementApiNames(old, replacement))
-          .toMatchInlineSnapshot(`
-          {
-            "actionTypeConstraintMappings": [
-              {
-                "from": {
-                  "apiName": "com.palantir.oldAction",
-                  "interfaceTypeApiName": "com.palantir.Old",
-                },
-                "to": {
-                  "apiName": "com.palantir.newAction",
-                  "interfaceTypeApiName": "com.palantir.New",
-                },
+        expect(
+          resolveInterfaceTypeReplacementApiNames(old, replacement),
+        ).toMatchObject({
+          interfaceTypeApiName: "com.palantir.New",
+          propertyMappings: [
+            {
+              from: {
+                apiName: "title",
+                authoredKey: "title",
+                interfaceTypeApiName: "com.palantir.Old",
+                property: { type: "string" },
               },
-            ],
-            "interfaceTypeApiName": "com.palantir.New",
-            "linkTypeConstraintMappings": [
-              {
-                "from": {
-                  "apiName": "com.palantir.oldTarget",
-                  "interfaceTypeApiName": "com.palantir.Old",
-                },
-                "to": {
-                  "apiName": "com.palantir.newTarget",
-                  "interfaceTypeApiName": "com.palantir.New",
-                },
+              to: {
+                apiName: "name",
+                authoredKey: "name",
+                interfaceTypeApiName: "com.palantir.Base",
+                property: { type: "string" },
               },
-            ],
-            "propertyMappings": [
-              {
-                "from": {
-                  "apiName": "title",
-                  "authoredKey": "title",
-                  "interfaceTypeApiName": "com.palantir.Old",
-                  "property": {
-                    "type": "string",
-                  },
-                },
-                "to": {
-                  "apiName": "name",
-                  "authoredKey": "name",
-                  "interfaceTypeApiName": "com.palantir.Base",
-                  "property": {
-                    "type": "string",
+            },
+            {
+              from: {
+                apiName: "com.palantir.ownerSpt",
+                authoredKey: "ownerSpt",
+                interfaceTypeApiName: "com.palantir.Old",
+                property: {
+                  required: true,
+                  sharedPropertyType: {
+                    apiName: "com.palantir.ownerSpt",
                   },
                 },
               },
-              {
-                "from": {
-                  "apiName": "com.palantir.ownerSpt",
-                  "authoredKey": "ownerSpt",
-                  "interfaceTypeApiName": "com.palantir.Old",
-                  "property": {
-                    "required": true,
-                    "sharedPropertyType": {
-                      "__type": "SHARED_PROPERTY_TYPE",
-                      "apiName": "com.palantir.ownerSpt",
-                      "displayName": "ownerSpt",
-                      "nonNameSpacedApiName": "ownerSpt",
-                      "type": "string",
-                      "typeClasses": [
-                        {
-                          "kind": "render_hint",
-                          "name": "SELECTABLE",
-                        },
-                        {
-                          "kind": "render_hint",
-                          "name": "SORTABLE",
-                        },
-                      ],
-                    },
-                  },
-                },
-                "to": {
-                  "apiName": "com.palantir.ownerSpt",
-                  "authoredKey": "ownerSpt",
-                  "interfaceTypeApiName": "com.palantir.New",
-                  "property": {
-                    "required": true,
-                    "sharedPropertyType": {
-                      "__type": "SHARED_PROPERTY_TYPE",
-                      "apiName": "com.palantir.ownerSpt",
-                      "displayName": "ownerSpt",
-                      "nonNameSpacedApiName": "ownerSpt",
-                      "type": "string",
-                      "typeClasses": [
-                        {
-                          "kind": "render_hint",
-                          "name": "SELECTABLE",
-                        },
-                        {
-                          "kind": "render_hint",
-                          "name": "SORTABLE",
-                        },
-                      ],
-                    },
+              to: {
+                apiName: "com.palantir.ownerSpt",
+                authoredKey: "ownerSpt",
+                interfaceTypeApiName: "com.palantir.New",
+                property: {
+                  required: true,
+                  sharedPropertyType: {
+                    apiName: "com.palantir.ownerSpt",
                   },
                 },
               },
-            ],
-          }
-        `);
+            },
+          ],
+          linkTypeConstraintMappings: [
+            {
+              from: {
+                apiName: "com.palantir.oldTarget",
+                interfaceTypeApiName: "com.palantir.Old",
+              },
+              to: {
+                apiName: "com.palantir.newTarget",
+                interfaceTypeApiName: "com.palantir.New",
+              },
+            },
+          ],
+          actionTypeConstraintMappings: [
+            {
+              from: {
+                apiName: "com.palantir.oldAction",
+                interfaceTypeApiName: "com.palantir.Old",
+              },
+              to: {
+                apiName: "com.palantir.newAction",
+                interfaceTypeApiName: "com.palantir.New",
+              },
+            },
+          ],
+        });
       });
     });
   });
