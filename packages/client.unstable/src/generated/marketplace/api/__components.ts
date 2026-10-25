@@ -392,6 +392,12 @@ export interface AdditionalOutputShapeResult {
   shape: OutputShape;
 }
 /**
+ * Migration instruction to require implementing object types to implement an interface action type constraint.
+ */
+export interface AddRequiredInterfaceActionTypeConstraintMigration {
+  actionTypeConstraint: InterfaceActionTypeConstraintReference;
+}
+/**
  * Migration instruction to add a required property to an interface type.
  */
 export interface AddRequiredInterfacePropertyMigration {
@@ -13497,15 +13503,54 @@ export interface InterfaceTypeReferenceUnresolvable {
   expected: InterfaceTypeReference;
 }
 export type InterfaceTypeRid = string;
+/**
+ * Migration instruction to require that no object type implements an interface type once the grace period
+ * elapses, optionally replacing each implementation with an implementation of another interface type.
+ */
+export interface DeprecateInterfaceMigration {
+  replacement?: InterfaceTypeReplacement | null | undefined;
+}
 export interface InterfaceTypeSchemaMigrationInstruction_addRequiredProperty {
   type: "addRequiredProperty";
   addRequiredProperty: AddRequiredInterfacePropertyMigration;
+}
+
+export interface InterfaceTypeSchemaMigrationInstruction_addRequiredActionTypeConstraint {
+  type: "addRequiredActionTypeConstraint";
+  addRequiredActionTypeConstraint: AddRequiredInterfaceActionTypeConstraintMigration;
+}
+
+export interface InterfaceTypeSchemaMigrationInstruction_deprecate {
+  type: "deprecate";
+  deprecate: DeprecateInterfaceMigration;
 }
 /**
  * A single migration instruction within an interface type schema transition.
  */
 export type InterfaceTypeSchemaMigrationInstruction =
-  InterfaceTypeSchemaMigrationInstruction_addRequiredProperty;
+  | InterfaceTypeSchemaMigrationInstruction_addRequiredProperty
+  | InterfaceTypeSchemaMigrationInstruction_addRequiredActionTypeConstraint
+  | InterfaceTypeSchemaMigrationInstruction_deprecate;
+
+/**
+ * The interface type that replaces a deprecated one, and how the deprecated interface type's
+ * properties, link type constraints, and action type constraints map onto the replacement's.
+ */
+export interface InterfaceTypeReplacement {
+  actionTypeConstraintMappings: Record<
+    InterfaceActionTypeConstraintReference,
+    InterfaceActionTypeConstraintReference
+  >;
+  interfaceType: InterfaceTypeReference;
+  linkTypeConstraintMappings: Record<
+    InterfaceLinkTypeReference,
+    InterfaceLinkTypeReference
+  >;
+  propertyMappings: Record<
+    InterfacePropertyTypeReference,
+    InterfacePropertyTypeReference
+  >;
+}
 
 export type InterfaceTypeSchemaTransitionId = string;
 

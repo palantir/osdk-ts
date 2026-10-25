@@ -24,6 +24,14 @@ import type { DatasourceRid as _api_DatasourceRid } from "../__components.js";
 import type { InterfacePropertyTypeRid as _api_InterfacePropertyTypeRid } from "../__components.js";
 import type { InterfacePropertyTypeRidOrIdInRequest as _api_InterfacePropertyTypeRidOrIdInRequest } from "../__components.js";
 import type { InterfaceTypeRid as _api_InterfaceTypeRid } from "../__components.js";
+import type { InterfaceTypeRidOrIdInRequest as _api_InterfaceTypeRidOrIdInRequest } from "../__components.js";
+import type { InterfaceTypeApiName as _api_InterfaceTypeApiName } from "../__components.js";
+import type { InterfaceActionTypeConstraintRid as _api_InterfaceActionTypeConstraintRid } from "../__components.js";
+import type { InterfaceActionTypeConstraintRidOrIdInRequest as _api_InterfaceActionTypeConstraintRidOrIdInRequest } from "../__components.js";
+import type { InterfaceActionTypeConstraintApiName as _api_InterfaceActionTypeConstraintApiName } from "../__components.js";
+import type { InterfaceLinkTypeRid as _api_InterfaceLinkTypeRid } from "../__components.js";
+import type { InterfaceLinkTypeRidOrIdInRequest as _api_InterfaceLinkTypeRidOrIdInRequest } from "../__components.js";
+import type { InterfaceLinkTypeApiName as _api_InterfaceLinkTypeApiName } from "../__components.js";
 import type { Attribution as _api_Attribution } from "../__components.js";
 import type { ObjectTypeRid as _api_ObjectTypeRid } from "../__components.js";
 import type { OntologyVersion as _api_OntologyVersion } from "../__components.js";
@@ -246,6 +254,66 @@ export interface InitializePatchesMigrationModification {
   propertyRenames: Array<RenamePropertyMigrationModification>;
 }
 /**
+ * Migration to require implementing object types to implement an interface action type constraint
+ */
+export interface InterfaceTypeAddRequiredActionTypeConstraintMigration {
+  actionTypeConstraintRid: _api_InterfaceActionTypeConstraintRid;
+}
+/**
+ * Migration to require implementing object types to implement an interface action type constraint
+ */
+export interface InterfaceTypeAddRequiredActionTypeConstraintMigrationModification {
+  actionTypeConstraint: _api_InterfaceActionTypeConstraintRidOrIdInRequest;
+}
+/**
+ * Migration to require that no object type implements this interface type once the grace period elapses,
+ * optionally replacing each implementation with an implementation of another interface type.
+ */
+export interface InterfaceTypeDeprecateMigration {
+  replacement?: InterfaceTypeReplacement | null | undefined;
+}
+/**
+ * Migration to require that no object type implements this interface type once the grace period elapses,
+ * optionally replacing each implementation with an implementation of another interface type.
+ */
+export interface InterfaceTypeDeprecateMigrationModification {
+  replacement?: InterfaceTypeReplacementModification | null | undefined;
+}
+/**
+ * The interface type that replaces a deprecated one, and how the deprecated interface type's
+ * properties, link type constraints, and action type constraints map onto the replacement's.
+ */
+export interface InterfaceTypeReplacement {
+  actionTypeConstraintMappings: Record<
+    _api_InterfaceActionTypeConstraintRid,
+    _api_InterfaceActionTypeConstraintRid
+  >;
+  interfaceTypeRid: _api_InterfaceTypeRid;
+  linkTypeConstraintMappings: Record<
+    _api_InterfaceLinkTypeRid,
+    _api_InterfaceLinkTypeRid
+  >;
+  propertyMappings: Record<
+    _api_InterfacePropertyTypeRid,
+    _api_InterfacePropertyTypeRid
+  >;
+}
+export interface InterfaceTypeReplacementModification {
+  actionTypeConstraintMappings: Record<
+    _api_InterfaceActionTypeConstraintRid,
+    _api_InterfaceActionTypeConstraintRidOrIdInRequest
+  >;
+  interfaceTypeRid: _api_InterfaceTypeRidOrIdInRequest;
+  linkTypeConstraintMappings: Record<
+    _api_InterfaceLinkTypeRid,
+    _api_InterfaceLinkTypeRidOrIdInRequest
+  >;
+  propertyMappings: Record<
+    _api_InterfacePropertyTypeRid,
+    _api_InterfacePropertyTypeRidOrIdInRequest
+  >;
+}
+/**
  * Migration to add a required property to an interface
  */
 export interface InterfaceTypeAddRequiredPropertyMigration {
@@ -296,21 +364,45 @@ export interface InterfaceTypeSchemaMigrationInstruction_addRequiredProperty {
   type: "addRequiredProperty";
   addRequiredProperty: InterfaceTypeAddRequiredPropertyMigration;
 }
+
+export interface InterfaceTypeSchemaMigrationInstruction_addRequiredActionTypeConstraint {
+  type: "addRequiredActionTypeConstraint";
+  addRequiredActionTypeConstraint: InterfaceTypeAddRequiredActionTypeConstraintMigration;
+}
+
+export interface InterfaceTypeSchemaMigrationInstruction_deprecate {
+  type: "deprecate";
+  deprecate: InterfaceTypeDeprecateMigration;
+}
 /**
  * An instruction in an InterfaceType schema transition.
  */
 export type InterfaceTypeSchemaMigrationInstruction =
-  InterfaceTypeSchemaMigrationInstruction_addRequiredProperty;
+  | InterfaceTypeSchemaMigrationInstruction_addRequiredProperty
+  | InterfaceTypeSchemaMigrationInstruction_addRequiredActionTypeConstraint
+  | InterfaceTypeSchemaMigrationInstruction_deprecate;
 
 export interface InterfaceTypeSchemaMigrationInstructionModification_addRequiredProperty {
   type: "addRequiredProperty";
   addRequiredProperty: InterfaceTypeAddRequiredPropertyMigrationModification;
 }
+
+export interface InterfaceTypeSchemaMigrationInstructionModification_addRequiredActionTypeConstraint {
+  type: "addRequiredActionTypeConstraint";
+  addRequiredActionTypeConstraint: InterfaceTypeAddRequiredActionTypeConstraintMigrationModification;
+}
+
+export interface InterfaceTypeSchemaMigrationInstructionModification_deprecate {
+  type: "deprecate";
+  deprecate: InterfaceTypeDeprecateMigrationModification;
+}
 /**
  * A modification instruction in an InterfaceType schema transition.
  */
 export type InterfaceTypeSchemaMigrationInstructionModification =
-  InterfaceTypeSchemaMigrationInstructionModification_addRequiredProperty;
+  | InterfaceTypeSchemaMigrationInstructionModification_addRequiredProperty
+  | InterfaceTypeSchemaMigrationInstructionModification_addRequiredActionTypeConstraint
+  | InterfaceTypeSchemaMigrationInstructionModification_deprecate;
 
 export interface InterfaceTypeSchemaMigrationModification {
   transitions: Array<InterfaceTypeSchemaTransitionModification>;
@@ -775,6 +867,38 @@ export interface OntologyIrInitializePatchesMigration {
   propertyRenames: Array<OntologyIrRenamePropertyMigration>;
 }
 /**
+ * Migration to require implementing object types to implement an interface action type constraint
+ */
+export interface OntologyIrInterfaceTypeAddRequiredActionTypeConstraintMigration {
+  actionTypeConstraintRid: _api_InterfaceActionTypeConstraintApiName;
+}
+/**
+ * Migration to require that no object type implements this interface type once the grace period elapses,
+ * optionally replacing each implementation with an implementation of another interface type.
+ */
+export interface OntologyIrInterfaceTypeDeprecateMigration {
+  replacement?: OntologyIrInterfaceTypeReplacement | null | undefined;
+}
+/**
+ * The interface type that replaces a deprecated one, and how the deprecated interface type's
+ * properties, link type constraints, and action type constraints map onto the replacement's.
+ */
+export interface OntologyIrInterfaceTypeReplacement {
+  actionTypeConstraintMappings: Record<
+    _api_InterfaceActionTypeConstraintApiName,
+    _api_InterfaceActionTypeConstraintApiName
+  >;
+  interfaceTypeRid: _api_InterfaceTypeApiName;
+  linkTypeConstraintMappings: Record<
+    _api_InterfaceLinkTypeApiName,
+    _api_InterfaceLinkTypeApiName
+  >;
+  propertyMappings: Record<
+    _api_InterfacePropertyTypeApiName,
+    _api_InterfacePropertyTypeApiName
+  >;
+}
+/**
  * Migration to add a required property to an interface
  */
 export interface OntologyIrInterfaceTypeAddRequiredPropertyMigration {
@@ -784,11 +908,23 @@ export interface OntologyIrInterfaceTypeSchemaMigrationInstruction_addRequiredPr
   type: "addRequiredProperty";
   addRequiredProperty: OntologyIrInterfaceTypeAddRequiredPropertyMigration;
 }
+
+export interface OntologyIrInterfaceTypeSchemaMigrationInstruction_addRequiredActionTypeConstraint {
+  type: "addRequiredActionTypeConstraint";
+  addRequiredActionTypeConstraint: OntologyIrInterfaceTypeAddRequiredActionTypeConstraintMigration;
+}
+
+export interface OntologyIrInterfaceTypeSchemaMigrationInstruction_deprecate {
+  type: "deprecate";
+  deprecate: OntologyIrInterfaceTypeDeprecateMigration;
+}
 /**
  * An instruction in an InterfaceType schema transition.
  */
 export type OntologyIrInterfaceTypeSchemaMigrationInstruction =
-  OntologyIrInterfaceTypeSchemaMigrationInstruction_addRequiredProperty;
+  | OntologyIrInterfaceTypeSchemaMigrationInstruction_addRequiredProperty
+  | OntologyIrInterfaceTypeSchemaMigrationInstruction_addRequiredActionTypeConstraint
+  | OntologyIrInterfaceTypeSchemaMigrationInstruction_deprecate;
 
 /**
  * A collection of instructions for migrating an InterfaceType schema.

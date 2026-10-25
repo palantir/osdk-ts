@@ -225,6 +225,14 @@ export interface InterfaceTypeRestrictionStatus {
   publicProject?: boolean | null | undefined;
 }
 export interface InterfaceTypeSchemaMigrationBlockData {
+  interfaceActionTypeConstraintRidsToApiNames: Record<
+    _api_InterfaceActionTypeConstraintRid,
+    _api_InterfaceActionTypeConstraintApiName
+  >;
+  interfaceLinkTypeRidsToApiNames: Record<
+    _api_InterfaceLinkTypeRid,
+    _api_InterfaceLinkTypeApiName
+  >;
   interfacePropertyTypeRidsToApiNames: Record<
     _api_InterfacePropertyTypeRid,
     _api_InterfacePropertyTypeApiName
@@ -232,6 +240,10 @@ export interface InterfaceTypeSchemaMigrationBlockData {
   schemaTransitions: Record<
     _api_InterfaceTypeSchemaTransitionRid,
     _api_schemamigrations_InterfaceTypeSchemaTransition
+  >;
+  interfaceTypeRidsToApiNames: Record<
+    _api_InterfaceTypeRid,
+    _api_InterfaceTypeApiName
   >;
 }
 /**
@@ -397,6 +409,11 @@ export interface MarketplaceDataSecurity {
   markingConstraint?: _api_MandatoryMarkingConstraint | null | undefined;
 }
 export interface MarketplaceDeprecatedInterfaceTypeStatus {
+  /**
+   * Whether object types may newly implement this interface type. Existing implementations may remain
+   * but should be removed by the deadline. Defaults to true.
+   */
+  allowNewImplementations?: boolean | null | undefined;
   deadline: string;
   message: string;
   replacedBy?: _api_InterfaceTypeRid | null | undefined;
@@ -755,6 +772,11 @@ export interface OntologyIrMarketplaceDataSecurity {
     | undefined;
 }
 export interface OntologyIrMarketplaceDeprecatedInterfaceTypeStatus {
+  /**
+   * Whether object types may newly implement this interface type. Existing implementations may remain
+   * but should be removed by the deadline. Defaults to true.
+   */
+  allowNewImplementations?: boolean | null | undefined;
   deadline: string;
   message: string;
   replacedBy?: _api_InterfaceTypeApiName | null | undefined;
