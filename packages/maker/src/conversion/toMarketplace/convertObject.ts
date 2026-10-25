@@ -164,24 +164,30 @@ export function convertObject(
 }
 
 /**
- * Extracts marking group names of a specific type from object properties
+ * Extracts the distinct marking group names of a specific type from object
+ * properties, in first-seen order. Properties that share a group share one
+ * datasource marking input.
  */
 export function extractMarkingGroups(
   properties: ObjectPropertyType[],
   markingType: "CBAC" | "MANDATORY",
 ): string[] {
-  return properties
-    .map((prop) => {
-      if (
-        typeof prop.type === "object" &&
-        prop.type.type === "marking" &&
-        prop.type.markingType === markingType
-      ) {
-        return prop.type.markingInputGroupName;
-      }
-      return undefined;
-    })
-    .filter((val): val is string => val !== undefined);
+  return [
+    ...new Set(
+      properties
+        .map((prop) => {
+          if (
+            typeof prop.type === "object" &&
+            prop.type.type === "marking" &&
+            prop.type.markingType === markingType
+          ) {
+            return prop.type.markingInputGroupName;
+          }
+          return undefined;
+        })
+        .filter((val): val is string => val !== undefined),
+    ),
+  ];
 }
 export function extractPropertyDatasource(
   property: ObjectPropertyType,
