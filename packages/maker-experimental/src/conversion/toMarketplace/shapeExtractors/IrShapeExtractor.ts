@@ -19,6 +19,7 @@ import type {
   InterfaceActionTypeConstraint,
   InterfaceParameterConstraint,
   InterfaceTypeBlockDataV2,
+  InterfaceTypeReplacement,
   InterfaceTypeSchemaMigrationInstruction,
   InterfaceTypeSchemaTransition,
   KnownMarketplaceIdentifiers,
@@ -39,6 +40,7 @@ import type {
   InterfaceParameterConstraintShape,
   InterfacePropertyTypeOutputShape,
   InterfaceTypeOutputShape,
+  InterfaceTypeReplacement as MarketplaceInterfaceTypeReplacement,
   InterfaceTypeSchemaTransitionOutputShape,
   InterfaceTypeSchemaMigrationInstruction as MarketplaceInterfaceTypeSchemaMigrationInstruction,
   LocalizedTitleAndDescription,
@@ -472,12 +474,84 @@ function toMarketplaceSchemaMigrationInstruction(
           ),
         },
       };
-    default:
-      // TODO: add a never exhaustiveness check once there's more than one instruction type
+    case "addRequiredActionTypeConstraint":
+      return {
+        type: "addRequiredActionTypeConstraint",
+        addRequiredActionTypeConstraint: {
+          actionTypeConstraint: requireKnownIdentifier(
+            knownMarketplaceIdentifiers.interfaceActionTypeConstraints,
+            instruction.addRequiredActionTypeConstraint.actionTypeConstraintRid,
+            "interface action type constraint",
+          ),
+        },
+      };
+    case "deprecate": {
+      const { replacement } = instruction.deprecate;
+      return {
+        type: "deprecate",
+        deprecate:
+          replacement != null
+            ? {
+                replacement: toMarketplaceInterfaceTypeReplacement(
+                  replacement,
+                  knownMarketplaceIdentifiers,
+                ),
+              }
+            : {},
+      };
+    }
+    default: {
+      const unhandled: never = instruction;
       throw new Error(
-        `Unknown schema migration instruction type: ${instruction.type}`,
+        `Unknown schema migration instruction type: ${
+          (unhandled as InterfaceTypeSchemaMigrationInstruction).type
+        }`,
       );
+    }
   }
+}
+
+/**
+ * The replacement and its members resolve to output shapes when defined in this block, and to the
+ * input shapes `ImportedShapeExtractor` emits when imported.
+ */
+function toMarketplaceInterfaceTypeReplacement(
+  replacement: InterfaceTypeReplacement,
+  knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
+): MarketplaceInterfaceTypeReplacement {
+  const toReferences = (
+    mappings: Record<string, string>,
+    identifiers: Record<string, string> | undefined,
+    kind: string,
+  ) =>
+    Object.fromEntries(
+      Object.entries(mappings).map(([from, to]) => [
+        requireKnownIdentifier(identifiers, from, kind),
+        requireKnownIdentifier(identifiers, to, kind),
+      ]),
+    );
+  return {
+    interfaceType: requireKnownIdentifier(
+      knownMarketplaceIdentifiers.interfaceTypes,
+      replacement.interfaceTypeRid,
+      "interface type",
+    ),
+    propertyMappings: toReferences(
+      replacement.propertyMappings,
+      knownMarketplaceIdentifiers.interfacePropertyTypes,
+      "interface property type",
+    ),
+    linkTypeConstraintMappings: toReferences(
+      replacement.linkTypeConstraintMappings,
+      knownMarketplaceIdentifiers.interfaceLinkTypes,
+      "interface link type",
+    ),
+    actionTypeConstraintMappings: toReferences(
+      replacement.actionTypeConstraintMappings,
+      knownMarketplaceIdentifiers.interfaceActionTypeConstraints,
+      "interface action type constraint",
+    ),
+  };
 }
 
 /**

@@ -19,12 +19,20 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import type {
+  InterfaceTypeBlockDataV2,
+  OntologyBlockDataV2,
+} from "@osdk/client.unstable";
+import type { OutputShape } from "@osdk/client.unstable/api";
 import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME } from "@osdk/maker";
 import { consola } from "consola";
+import invariant from "tiny-invariant";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { ReadableIdGenerator } from "../../util/generateRid.js";
 import main from "../main.js";
+import { toBlockShapeId } from "../marketplaceSerialization/CodeBlockSpec.js";
 
 const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURES = path.join(TEST_DIR, "fixtures");
@@ -198,6 +206,280 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
     await run("personLastNameFinalized");
 
     expect(await fs.readFile(lockfile, "utf-8")).toBe(contents);
+  });
+
+  async function readBlockData(): Promise<OntologyBlockDataV2> {
+    return JSON.parse(
+      await fs.readFile(
+        path.join(workDir, "build", "temp_block_data", "ontology.json"),
+        "utf-8",
+      ),
+    );
+  }
+
+  async function readOutputShapes(): Promise<Record<string, OutputShape>> {
+    const [ontologyResult] = JSON.parse(await fs.readFile(output, "utf-8"));
+    return ontologyResult.outputs;
+  }
+
+  function interfaceBlock(
+    blockData: OntologyBlockDataV2,
+    apiName: string,
+  ): { rid: string; block: InterfaceTypeBlockDataV2 } {
+    const found = Object.entries(blockData.interfaceTypes).find(
+      ([, block]) => block.interfaceType.apiName === apiName,
+    );
+    invariant(found != null, `expected interface ${apiName}`);
+    return { rid: found[0], block: found[1] };
+  }
+
+  function propertyRid(block: InterfaceTypeBlockDataV2, apiName: string) {
+    const found = Object.entries(block.interfaceType.propertiesV3).find(
+      ([, property]) =>
+        property.type === "interfaceDefinedPropertyType" &&
+        property.interfaceDefinedPropertyType.apiName === apiName,
+    );
+    invariant(found != null, `expected property ${apiName}`);
+    return found[0];
+  }
+
+  function transitionShape(
+    shapes: Record<string, OutputShape>,
+    interfaceApiName: string,
+    transitionId: string,
+  ) {
+    const shape =
+      shapes[
+        ReadableIdGenerator.getForInterfaceSchemaTransition(
+          interfaceApiName,
+          transitionId,
+        )
+      ];
+    invariant(shape?.type === "interfaceTypeSchemaTransition");
+    return shape.interfaceTypeSchemaTransition;
+  }
+
+  describe("addRequiredActionTypeConstraint", () => {
+    const IN_FLIGHT = {
+      version: 1,
+      interfaces: {
+        Person: {
+          schema: {
+            properties: { firstName: { type: "string", required: true } },
+            actionTypeConstraints: {
+              sendEmail: { requireImplementation: false },
+            },
+          },
+          transitions: [
+            {
+              id: "requireSendEmail",
+              gracePeriod: { type: "afterInstall", days: 30 },
+              instructions: [
+                {
+                  type: "addRequiredActionTypeConstraint",
+                  actionTypeConstraint: "sendEmail",
+                },
+              ],
+            },
+          ],
+        },
+      },
+    };
+
+    it("emits the in-flight migration and locks the lenient constraint", async () => {
+      await run("personSendEmailInFlight", "--write-locks");
+
+      expect(await readLockfile()).toStrictEqual(IN_FLIGHT);
+      const { block } = interfaceBlock(await readBlockData(), "Person");
+      const [constraint] = block.interfaceType.actionTypeConstraints;
+      expect(constraint.requireImplementation).toBe(false);
+      const [transition] = Object.values(
+        block.schemaMigrations?.schemaTransitions ?? {},
+      );
+      expect(transition.migrations).toEqual([
+        {
+          type: "addRequiredActionTypeConstraint",
+          addRequiredActionTypeConstraint: {
+            actionTypeConstraintRid: constraint.rid,
+          },
+        },
+      ]);
+      expect(
+        block.schemaMigrations?.interfaceActionTypeConstraintRidsToApiNames,
+      ).toEqual({ [constraint.rid]: "sendEmail" });
+      expect(
+        transitionShape(await readOutputShapes(), "Person", "requireSendEmail")
+          .migrations,
+      ).toEqual([
+        {
+          type: "addRequiredActionTypeConstraint",
+          addRequiredActionTypeConstraint: {
+            actionTypeConstraint: toBlockShapeId(
+              ReadableIdGenerator.getForInterfaceActionTypeConstraint(
+                "Person",
+                "sendEmail",
+              ),
+            ),
+          },
+        },
+      ]);
+    });
+
+    it("locks the strict constraint once finalized", async () => {
+      await run("personSendEmailInFlight", "--write-locks");
+
+      await run("personSendEmailFinalized", "--write-locks", "--yes");
+
+      expect(await readLockfile()).toStrictEqual({
+        version: 1,
+        interfaces: {
+          Person: {
+            schema: {
+              properties: { firstName: { type: "string", required: true } },
+              actionTypeConstraints: {
+                sendEmail: { requireImplementation: true },
+              },
+            },
+            transitions: [],
+          },
+        },
+      });
+      const { block } = interfaceBlock(await readBlockData(), "Person");
+      expect(
+        block.interfaceType.actionTypeConstraints.map(
+          (constraint) => constraint.requireImplementation,
+        ),
+      ).toEqual([true]);
+      expect(block.schemaMigrations?.schemaTransitions).toEqual({});
+    });
+  });
+
+  describe("deprecate", () => {
+    it("emits the in-flight migration and locks the lenient schema", async () => {
+      await run("legacyPersonDeprecateInFlight", "--write-locks");
+
+      expect(await readLockfile()).toStrictEqual({
+        version: 1,
+        interfaces: {
+          LegacyPerson: {
+            schema: {
+              properties: { fullName: { type: "string", required: true } },
+            },
+            transitions: [
+              {
+                id: "replaceWithPerson",
+                gracePeriod: { type: "afterInstall", days: 30 },
+                instructions: [
+                  {
+                    type: "deprecate",
+                    replacement: {
+                      interfaceType: "Person",
+                      propertyMappings: { fullName: "firstName" },
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      });
+
+      const blockData = await readBlockData();
+      const legacy = interfaceBlock(blockData, "LegacyPerson").block;
+      const person = interfaceBlock(blockData, "Person");
+      const [transition] = Object.values(
+        legacy.schemaMigrations?.schemaTransitions ?? {},
+      );
+      const fullNameRid = propertyRid(legacy, "fullName");
+      const firstNameRid = propertyRid(person.block, "firstName");
+      expect(transition.migrations).toEqual([
+        {
+          type: "deprecate",
+          deprecate: {
+            replacement: {
+              interfaceTypeRid: person.rid,
+              propertyMappings: { [fullNameRid]: firstNameRid },
+              linkTypeConstraintMappings: {},
+              actionTypeConstraintMappings: {},
+            },
+          },
+        },
+      ]);
+      expect(legacy.schemaMigrations).toMatchObject({
+        interfaceTypeRidsToApiNames: { [person.rid]: "Person" },
+        interfacePropertyTypeRidsToApiNames: {
+          [fullNameRid]: "fullName",
+          [firstNameRid]: "firstName",
+        },
+      });
+
+      const blockId = toBlockShapeId;
+      expect(
+        transitionShape(
+          await readOutputShapes(),
+          "LegacyPerson",
+          "replaceWithPerson",
+        ).migrations,
+      ).toEqual([
+        {
+          type: "deprecate",
+          deprecate: {
+            replacement: {
+              interfaceType: blockId(
+                ReadableIdGenerator.getForInterface("Person"),
+              ),
+              propertyMappings: {
+                [blockId(
+                  ReadableIdGenerator.getForInterfaceProperty(
+                    "LegacyPerson",
+                    "fullName",
+                  ),
+                )]: blockId(
+                  ReadableIdGenerator.getForInterfaceProperty(
+                    "Person",
+                    "firstName",
+                  ),
+                ),
+              },
+              linkTypeConstraintMappings: {},
+              actionTypeConstraintMappings: {},
+            },
+          },
+        },
+      ]);
+    });
+
+    it("locks allowNewImplementations: false once finalized", async () => {
+      await run("legacyPersonDeprecateInFlight", "--write-locks");
+
+      await run("legacyPersonDeprecateFinalized", "--write-locks", "--yes");
+
+      expect(await readLockfile()).toStrictEqual({
+        version: 1,
+        interfaces: {
+          LegacyPerson: {
+            schema: {
+              properties: { fullName: { type: "string", required: true } },
+              allowNewImplementations: false,
+            },
+            transitions: [],
+          },
+        },
+      });
+      const legacy = interfaceBlock(
+        await readBlockData(),
+        "LegacyPerson",
+      ).block;
+      expect(legacy.interfaceType.status).toEqual({
+        type: "deprecated",
+        deprecated: {
+          message: "Use Person instead",
+          deadline: "2027-01-01T00:00:00Z",
+          allowNewImplementations: false,
+        },
+      });
+      expect(legacy.schemaMigrations?.schemaTransitions).toEqual({});
+    });
   });
 
   describe("function-backed second pass", () => {
