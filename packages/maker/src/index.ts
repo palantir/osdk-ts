@@ -160,7 +160,16 @@ export type {
 } from "./api/values/ValueTypeType.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";
 export { default } from "./cli/main.js";
-export { convertInterfaceSchemaGracePeriod } from "./conversion/toMarketplace/convertInterfaceSchemaMigrations.js";
+export type {
+  ResolvedInterfaceMember,
+  ResolvedInterfaceMemberMapping,
+  ResolvedInterfaceProperty,
+  ResolvedInterfaceTypeReplacement,
+} from "./conversion/toMarketplace/convertInterfaceSchemaMigrations.js";
+export {
+  convertInterfaceSchemaGracePeriod,
+  resolveInterfaceTypeReplacementApiNames,
+} from "./conversion/toMarketplace/convertInterfaceSchemaMigrations.js";
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";
 export { DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME } from "./lockfile/OntologySchemaLockfile.js";
 export {
