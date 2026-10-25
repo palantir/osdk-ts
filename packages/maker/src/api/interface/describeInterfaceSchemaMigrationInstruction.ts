@@ -41,11 +41,35 @@ export function mapPropertyNames(
         type: "addRequiredProperty",
         property: rename(instruction.property),
       };
-    default:
-      // TODO: add a never exhaustiveness check once there's more than one instruction type
+    case "addRequiredActionTypeConstraint":
+      return instruction;
+    case "deprecate": {
+      const { replacement } = instruction;
+      if (replacement === undefined) {
+        return instruction;
+      }
+      // Only the keys are this interface type's properties; the values belong to the replacement
+      return {
+        type: "deprecate",
+        replacement: {
+          ...replacement,
+          propertyMappings: Object.fromEntries(
+            Object.entries(replacement.propertyMappings).map(([from, to]) => [
+              rename(from),
+              to,
+            ]),
+          ),
+        },
+      };
+    }
+    default: {
+      const unhandled: never = instruction;
       throw new Error(
-        `Unknown schema migration instruction type: ${instruction.type}`,
+        `Unknown schema migration instruction type: ${
+          (unhandled as InterfaceSchemaMigrationInstruction).type
+        }`,
       );
+    }
   }
 }
 
@@ -65,11 +89,49 @@ function proseFor(
           `instructions: [{ type: "addRequiredProperty", property: "${propertyApiName}" }] }`,
       };
     }
-    default:
-      // TODO: add a never exhaustiveness check once there's more than one instruction type
+    case "addRequiredActionTypeConstraint": {
+      const { actionTypeConstraint } = instruction;
+      return {
+        describe: `addRequiredActionTypeConstraint("${actionTypeConstraint}")`,
+        finalization: `set "${actionTypeConstraint}" to \`requireImplementation: true\``,
+        suggestedTransition:
+          `{ id: "require-${actionTypeConstraint}", title: "Require ${actionTypeConstraint}", ` +
+          `gracePeriod: { type: "afterInstall", days: 30 }, ` +
+          `instructions: [{ type: "addRequiredActionTypeConstraint", actionTypeConstraint: "${actionTypeConstraint}" }] }`,
+      };
+    }
+    case "deprecate": {
+      const { replacement } = instruction;
+      const replacementApiName =
+        replacement === undefined
+          ? undefined
+          : typeof replacement.interfaceType === "string"
+            ? replacement.interfaceType
+            : replacement.interfaceType.apiName;
+      return {
+        describe:
+          replacementApiName === undefined
+            ? `deprecate()`
+            : `deprecate(replacement: "${replacementApiName}")`,
+        finalization: `set \`allowNewImplementations: false\` on the deprecated status`,
+        suggestedTransition:
+          `{ id: "deprecate", title: "Deprecate", ` +
+          `gracePeriod: { type: "afterInstall", days: 30 }, ` +
+          `instructions: [{ type: "deprecate"${
+            replacementApiName === undefined
+              ? ""
+              : `, replacement: { interfaceType: "${replacementApiName}", propertyMappings: {} }`
+          } }] }`,
+      };
+    }
+    default: {
+      const unhandled: never = instruction;
       throw new Error(
-        `Unknown schema migration instruction type: ${instruction.type}`,
+        `Unknown schema migration instruction type: ${
+          (unhandled as InterfaceSchemaMigrationInstruction).type
+        }`,
       );
+    }
   }
 }
 

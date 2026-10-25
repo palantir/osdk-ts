@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import type { InterfaceTypeStatus } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 
+import { namespace } from "../defineOntology.js";
+import { combineApiNamespaceIfMissing } from "../namespace/combineApiNamespaceIfMissing.js";
 import { describeInstruction } from "./describeInterfaceSchemaMigrationInstruction.js";
 import {
   type InterfacePropertyType,
@@ -25,6 +28,8 @@ import type {
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
   InterfaceSchemaMigrations,
+  InterfaceSchemaTransition,
+  InterfaceTypeReplacement,
 } from "./InterfaceSchemaMigrations.js";
 
 // Constants enforced by OMS at installation-time.
@@ -46,6 +51,7 @@ export function validateInterfaceSchemaMigrations(
   // The interface type's locally-defined properties; inherited properties are not included
   // (since migrations for those should occur in the interface that defines them)
   propertiesV3: Record<string, InterfacePropertyType>,
+  status: InterfaceTypeStatus,
 ): void {
   const { transitions } = schemaMigrations;
 
@@ -101,20 +107,24 @@ export function validateInterfaceSchemaMigrations(
     validateGracePeriod(interfaceApiName, id, gracePeriod);
 
     for (const instruction of instructions) {
+      validateInstruction(interfaceApiName, transition, instruction, {
+        transitionCount: transitions.length,
+        propertiesV3,
+        status,
+      });
+
       const instructionDescription = describeInstruction(instruction);
       for (const claim of getClaims(instruction)) {
         const conflict = claimedBy.get(claim);
         invariant(
           conflict === undefined,
-          `Schema migration transition "${id}" on interface ${interfaceApiName} declares ${instructionDescription}, which conflicts with ${conflict?.description} already declared by transition "${conflict?.transitionId}". A property may be migrated by at most one in-flight transition.`,
+          `Schema migration transition "${id}" on interface ${interfaceApiName} declares ${instructionDescription}, which conflicts with ${conflict?.description} already declared by transition "${conflict?.transitionId}". A property or action type constraint may be migrated by at most one in-flight transition.`,
         );
         claimedBy.set(claim, {
           transitionId: id,
           description: instructionDescription,
         });
       }
-
-      validateInstruction(interfaceApiName, id, instruction, propertiesV3);
     }
   }
 }
@@ -167,12 +177,25 @@ function validateGracePeriod(
   }
 }
 
+interface InstructionContext {
+  transitionCount: number;
+  // The interface type's locally-defined properties
+  propertiesV3: Record<string, InterfacePropertyType>;
+  status: InterfaceTypeStatus;
+}
+
+/**
+ * Checks that need only the declaring interface type. Checks against other entities (action type
+ * constraints, link constraints, the replacement interface type, etc.) are deferred to
+ * `validateInterfaceSchemaMigrationReferences`, since those are attached after `defineInterface`.
+ */
 function validateInstruction(
   interfaceApiName: string,
-  transitionId: string,
+  transition: InterfaceSchemaTransition,
   instruction: InterfaceSchemaMigrationInstruction,
-  propertiesV3: Record<string, InterfacePropertyType>,
+  { transitionCount, propertiesV3, status }: InstructionContext,
 ): void {
+  const transitionId = transition.id;
   switch (instruction.type) {
     case "addRequiredProperty": {
       const { property: propertyApiName } = instruction;
@@ -186,11 +209,67 @@ function validateInstruction(
       );
       return;
     }
-    default:
-      // TODO: add a never exhaustiveness check once there's more than one instruction type
-      throw new Error(
-        `Unknown schema migration instruction type: ${instruction.type}`,
+    case "addRequiredActionTypeConstraint":
+      // Whether the constraint exists is checked once the ontology is fully defined
+      return;
+    case "deprecate": {
+      const description = describeInstruction(instruction);
+      invariant(
+        status.type === "deprecated",
+        `Schema migration transition "${transitionId}" on interface ${interfaceApiName} declares ${description}, but interface ${interfaceApiName} has status "${status.type}". Set its status to \`{ type: "deprecated", ... }\` while the migration is in flight.`,
       );
+      invariant(
+        transition.instructions.length === 1 && transitionCount === 1,
+        `Schema migration transition "${transitionId}" on interface ${interfaceApiName} declares ${description}, but ${
+          transitionCount === 1
+            ? `the transition has ${transition.instructions.length} instructions`
+            : `interface ${interfaceApiName} has ${transitionCount} transitions`
+        }. A deprecation must be the only instruction of the only transition on its interface; finalize or remove the other migrations first.`,
+      );
+      if (instruction.replacement !== undefined) {
+        validateReplacementMappings(
+          interfaceApiName,
+          transitionId,
+          description,
+          instruction.replacement,
+        );
+      }
+      return;
+    }
+    default: {
+      const unhandled: never = instruction;
+      throw new Error(
+        `Unknown schema migration instruction type: ${
+          (unhandled as InterfaceSchemaMigrationInstruction).type
+        }`,
+      );
+    }
+  }
+}
+
+const REPLACEMENT_MAPPINGS = [
+  "propertyMappings",
+  "linkTypeConstraintMappings",
+  "actionTypeConstraintMappings",
+] as const satisfies ReadonlyArray<keyof InterfaceTypeReplacement>;
+
+/** Rejects mappings that send two of this interface type's entities to the same target. */
+function validateReplacementMappings(
+  interfaceApiName: string,
+  transitionId: string,
+  description: string,
+  replacement: InterfaceTypeReplacement,
+): void {
+  for (const field of REPLACEMENT_MAPPINGS) {
+    const sourceByTarget = new Map<string, string>();
+    for (const [source, target] of Object.entries(replacement[field] ?? {})) {
+      const previous = sourceByTarget.get(target);
+      invariant(
+        previous === undefined,
+        `Schema migration transition "${transitionId}" on interface ${interfaceApiName} declares ${description}, whose ${field} maps both "${previous}" and "${source}" to "${target}". Each target may be mapped from at most one source.`,
+      );
+      sourceByTarget.set(target, source);
+    }
   }
 }
 
@@ -206,10 +285,22 @@ function getClaims(
   switch (instruction.type) {
     case "addRequiredProperty":
       return [`property:${instruction.property}`];
-    default:
-      // TODO: add a never exhaustiveness check once there's more than one instruction type
+    case "addRequiredActionTypeConstraint":
+      return [
+        `actionTypeConstraint:${combineApiNamespaceIfMissing(
+          namespace,
+          instruction.actionTypeConstraint,
+        )}`,
+      ];
+    case "deprecate":
+      return ["deprecate"];
+    default: {
+      const unhandled: never = instruction;
       throw new Error(
-        `Unknown schema migration instruction type: ${instruction.type}`,
+        `Unknown schema migration instruction type: ${
+          (unhandled as InterfaceSchemaMigrationInstruction).type
+        }`,
       );
+    }
   }
 }

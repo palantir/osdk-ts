@@ -52,7 +52,16 @@ import {
 } from "./validateMetadataLengths.js";
 
 export type SimplifiedInterfaceTypeStatus =
-  | { type: "deprecated"; message: string; deadline: string }
+  | {
+      type: "deprecated";
+      message: string;
+      deadline: string;
+      /**
+       * Whether object types may newly implement this interface type. Existing implementations may
+       * remain but should be removed by the deadline. Defaults to true.
+       */
+      allowNewImplementations?: boolean;
+    }
   | { type: "active" }
   | { type: "experimental" }
   | { type: "example" };
@@ -240,6 +249,7 @@ export function defineInterface(
       apiName,
       interfaceDef.schemaMigrations,
       propertiesV3,
+      status,
     );
   }
   validateSchemaMigrationsFamilyOptIn(

@@ -51,6 +51,7 @@ import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import type { OntologyEntityType } from "./common/OntologyEntityTypeMapping.js";
 import type { FolderDefinition } from "./defineFolder.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
+import { validateInterfaceSchemaMigrationReferences } from "./interface/validateInterfaceSchemaMigrationReferences.js";
 import type {
   IntermediaryObjectLinkReference,
   LinkType,
@@ -131,6 +132,7 @@ export async function defineOntology(
     consola.debug("Unexpected error while processing the body of the ontology");
     throw e;
   }
+  validateInterfaceSchemaMigrationReferences(ontologyDefinition);
   await beforeWrite?.(ontologyDefinition);
   if (outputDir) {
     writeStaticObjects(outputDir);

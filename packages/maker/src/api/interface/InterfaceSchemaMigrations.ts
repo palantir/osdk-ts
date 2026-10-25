@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { InterfaceType } from "./InterfaceType.js";
+
 /**
  * Interface Schema Migrations declare impending, but not yet enforced, schema changes
  * for an interface. These give implementing object types a grace period to comply with the
@@ -86,4 +88,53 @@ export type InterfaceSchemaMigrationInstruction =
    * The referenced property must be declared `required: false` on the interface type until
    * the schema migration is finalized.
    */
-  { type: "addRequiredProperty"; property: string };
+  | { type: "addRequiredProperty"; property: string }
+  /**
+   * A new or existing interface action type constraint will become required-to-implement once the
+   * grace period elapses.
+   *
+   * The referenced constraint must be defined directly on this interface type (not inherited) via
+   * `defineInterfaceActionTypeConstraint`, and must be `requireImplementation: false` until the
+   * schema migration is finalized.
+   *
+   * @param actionTypeConstraint the API name of the interface action type constraint
+   */
+  | { type: "addRequiredActionTypeConstraint"; actionTypeConstraint: string }
+  /**
+   * No object type may implement this interface type once the grace period elapses.
+   *
+   * Use this to replace an interface type with another, for example when API names change. If
+   * `replacement` is set, proposals swap each object type's implementation of this interface type
+   * for the replacement. Consumers must already read both interface types, because object types
+   * move over one at a time during the grace period.
+   *
+   * Without a `replacement`, proposals simply remove the implementation.
+   *
+   * The interface type must have a `deprecated` status, and this must be the only instruction of the
+   * only transition it declares. Finalize the migration by setting the status's
+   * `allowNewImplementations` to `false`; delete it by leaving `allowNewImplementations` `true`.
+   */
+  | { type: "deprecate"; replacement?: InterfaceTypeReplacement };
+
+export interface InterfaceTypeReplacement {
+  /**
+   * The interface type that replaces this one. Pass the object returned by `defineInterface`, or an
+   * API name for an interface type declared as an input to this project.
+   */
+  interfaceType: InterfaceType | string;
+  /**
+   * Maps this interface type's property API names to the replacement's. Every property that is
+   * required on the replacement must be a target, so that proposals produce a valid implementation.
+   */
+  propertyMappings: Record<string, string>;
+  /**
+   * Maps this interface type's link type constraint API names to the replacement's, with the same
+   * semantics as `propertyMappings`.
+   */
+  linkTypeConstraintMappings?: Record<string, string>;
+  /**
+   * Maps this interface type's action type constraint API names to the replacement's, with the same
+   * semantics as `propertyMappings`.
+   */
+  actionTypeConstraintMappings?: Record<string, string>;
+}

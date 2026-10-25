@@ -86,7 +86,11 @@ function defineWithMigrations(
   properties: Record<string, AuthoredProperty> = Object.fromEntries(
     transitions
       .flatMap((t) => t.instructions)
-      .map((instruction) => [instruction.property, OPTIONAL_STRING]),
+      .flatMap((instruction) =>
+        instruction.type === "addRequiredProperty"
+          ? [[instruction.property, OPTIONAL_STRING]]
+          : [],
+      ),
   ),
 ): InterfaceType {
   return defineInterface({
@@ -329,7 +333,7 @@ describe("Interface schema migrations", () => {
           transition({ id: "t2", instructions: [instruction] }),
         ]),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t2" on interface com.palantir.Foo declares addRequiredProperty("optional0"), which conflicts with addRequiredProperty("optional0") already declared by transition "t1". A property may be migrated by at most one in-flight transition.]`,
+        `[Error: Invariant failed: Schema migration transition "t2" on interface com.palantir.Foo declares addRequiredProperty("optional0"), which conflicts with addRequiredProperty("optional0") already declared by transition "t1". A property or action type constraint may be migrated by at most one in-flight transition.]`,
       );
     });
 
@@ -341,7 +345,7 @@ describe("Interface schema migrations", () => {
           transition({ id: "t1", instructions: [instruction, instruction] }),
         ]),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares addRequiredProperty("optional0"), which conflicts with addRequiredProperty("optional0") already declared by transition "t1". A property may be migrated by at most one in-flight transition.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares addRequiredProperty("optional0"), which conflicts with addRequiredProperty("optional0") already declared by transition "t1". A property or action type constraint may be migrated by at most one in-flight transition.]`,
       );
     });
   });

@@ -115,8 +115,10 @@ export type {
   InterfaceSchemaMigrationInstruction,
   InterfaceSchemaMigrations,
   InterfaceSchemaTransition,
+  InterfaceTypeReplacement,
 } from "./api/interface/InterfaceSchemaMigrations.js";
 export type { InterfaceType } from "./api/interface/InterfaceType.js";
+export { validateInterfaceSchemaMigrationReferences } from "./api/interface/validateInterfaceSchemaMigrationReferences.js";
 export type {
   LinkType,
   OneToManyLinkTypeDefinition,
